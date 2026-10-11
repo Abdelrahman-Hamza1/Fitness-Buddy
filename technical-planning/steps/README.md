@@ -93,7 +93,7 @@ _Written in Phase E: built · deviations · follow-ups · new TDs · measurement
 | Needed by | What | Notes |
 |---|---|---|
 | **S01** | **A private GitHub repository** for this project (there is no remote yet), with the session's access to push | Free |
-| S05 | **Hetzner Cloud** account + API token. **A domain name** (e.g. from Cloudflare Registrar) with DNS on **Cloudflare**. **Tailscale** account. **Grafana Cloud** and **Sentry** accounts (free tiers) | ≈ €10/mo staging + domain |
+| S05 (start of P3) | **Hetzner Cloud** account + API token. **A domain name** (e.g. from Cloudflare Registrar) with DNS on **Cloudflare**. **Tailscale** account. **Grafana Cloud** and **Sentry** accounts (free tiers) | ≈ €10/mo staging + domain |
 | S06 | Android phone (A55) with "install unknown apps" allowed for early APKs | — |
 | S07 | ~30 min to review the design gallery and mockups on the phone | — |
 | S10 | API keys with spend caps: **Anthropic**, **OpenAI**, **Google AI Studio**. Run one latency script from home (~10 min) | A few dollars total |
@@ -160,4 +160,6 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [S49](S49-security-r1-signoff.md) | Security review, restore drill & R1 sign-off | P8 | S47, S48 | M | ⬜ |
 | [D1–D6](D-reference-dish-batches.md) | Reference dish batches | P1–P5 | S11 | S each | ⬜ |
 
-**Suggested first sessions:** S01 → S02 → S08 → S06 → S03 → S04 → S09 → S07 → S11 → D1 → S10 → S05 → S12. Any order that respects the dependencies works.
+**Suggested order:** S01 → S02 → S08 → S06 → S03 → S04 → S09 → S07 → S11 → D1 → S10 → S12 → **P1 (S13–S18) → P2 (S19–S23)** → **S05** → S24 → … Any order that respects the dependencies works.
+
+**Hetzner is deferred until it's needed** (owner, 2026-10-11): everything up to the end of P2 runs locally (API + Postgres in Docker via `make up`), and the phone uses offline features only. S05 (staging on Hetzner) runs at the start of P3, right before sign-in and sync, which are the first features the phone needs a reachable server for. Spikes S10/S12 use the local API.
