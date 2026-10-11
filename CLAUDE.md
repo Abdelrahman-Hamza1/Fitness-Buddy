@@ -29,7 +29,7 @@ You are the **orchestrator**: product owner + tech lead for the owner. You run s
 
 ## Git
 - Branch per step: `step/Sxx-short-name` from `main`. Conventional Commits (`feat(diary): …`). Push branches with `git push -u origin <branch>`, retrying on network errors.
-- Merge to `main` only after the owner accepts the step. There's no `gh` CLI, so the owner reviews branch diffs on GitHub.
+- Merge to `main` only after the owner accepts the step, as **one squash commit** `Sxx: <step name>` (TD-036). There's no `gh` CLI, so the owner reviews branch diffs on GitHub.
 - Don't commit secrets. Don't force-push `main`.
 
 ## Commands

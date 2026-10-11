@@ -46,7 +46,7 @@ Track progress with a todo list mirroring the phases below. Keep the owner infor
 2. Update the status board (✅ after the owner's OK; until then keep 🟨 with a note "awaiting owner"), any planning docs the step changed, and `technical-planning/steps/backlog.md` (follow-ups, minor findings).
 3. Commit (`docs(Sxx): outcome`) and **push the branch** (`git push -u origin step/Sxx-…`, retry on network errors with backoff).
 4. **Owner gate:** send the **close summary** (template in process §5.2) with demo steps for the A55 when relevant, and the GitHub branch name for reviewing the diff. **Wait for the owner's OK.**
-5. On OK: merge into `main` (`git checkout main && git pull && git merge --no-ff step/Sxx-…`, or squash per the owner's preference), run `make check test` on `main`, push `main`, delete the step branch locally and remotely, and mark ✅ on the board (commit + push).
+5. On OK: **squash-merge** into `main` (`git checkout main && git pull && git merge --squash step/Sxx-… && git commit` with message `Sxx: <step name>` + a short summary of the Outcome; TD-036), run `make check test` on `main`, push `main`, delete the step branch locally and remotely, and mark ✅ on the board (commit + push).
 6. Propose the next step.
 
 ## Always

@@ -173,6 +173,20 @@ The client sends remaining kcal and protein, the halal flag, time of day / Ramad
 - **Prompt caching:** static parts first (rules, schema, exercise library, few-shot examples), volatile context last.
 - **Content-free logs:** the API logs task, model, prompt version, latency, tokens, cost and outcome code. **Never message text** (`09` §4).
 
+### 9.1 The AI stack (TD-035)
+
+| Layer | Choice | Why |
+|---|---|---|
+| Framework | **None.** No agent or orchestration framework (Microsoft Agent Framework, Semantic Kernel, LangChain…) | Buddy isn't an autonomous agent: one structured model call per message, then deterministic code. Frameworks add abstraction, churn and hidden prompts we'd have to fight. We can revisit for Later features (program generation, meal planning) |
+| Client interface | **Microsoft.Extensions.AI** (`IChatClient`): Microsoft's standard .NET abstraction for chat models | One interface for every provider. Middleware pipeline (OpenTelemetry, retries, caching). The official Anthropic C# SDK implements it (`AsIChatClient`), and so does the OpenAI .NET library. Google via its .NET SDK or a thin adapter (S10 confirms) |
+| Our port | `ILlmClient` (Buddy module, Application layer): `InterpretAsync`, `ExtractLabelAsync`, `ParseImportAsync`, `SuggestAsync`, `ReviewAsync` | Task-level, provider-agnostic. Handles routing, fallback, the repair retry, cost accounting and content-free logging. Infrastructure implements it on top of `IChatClient` |
+| Provider features | Prompt caching, reasoning effort, native JSON-schema output, vision: set through provider options where the abstraction doesn't cover them | Keeps the speed and cost wins. Verified per provider in S10 |
+| Structured output | JSON schemas generated from C# records (internal, per task) → model native structured output → **our validation** → one repair retry → else `Clarify` | Reliable parsing. Public DTOs never depend on prompts |
+| Prompts | Versioned text files in `backend/src/Modules/Buddy/Prompts/` with simple placeholders. Version recorded on every response | Reviewable diffs. Every change runs the eval |
+| Observability | OpenTelemetry GenAI conventions (latency, tokens, model, cost) with **message content capture disabled** | Privacy (AC-041, `09` §4) |
+| Quality | **`tools/buddy_eval`** (§11) is the judge for every prompt/model change | Measured, not assumed |
+| Models | Chosen by the S10 bake-off: Claude Haiku 5.5 vs Gemini Flash-Lite class vs GPT-5.x nano/mini, with a fallback provider | Arabic/Arabizi quality, latency and cost must be measured |
+
 ## 10. Latency & cost budgets
 
 **Latency target (AQ-12):** proposal ≤ 5 s for ≥ 90% of messages.

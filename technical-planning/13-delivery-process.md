@@ -67,7 +67,7 @@ A step is **ready** when: its dependencies are ✅ on the board, the owner prere
 1. The orchestrator writes the card's **Outcome** (built, deviations, follow-ups, new TDs, measurements, review rounds).
 2. Update the status board, any planning doc the step changed, and `steps/backlog.md`.
 3. Push the branch. Send the owner the **close summary** (§5.2) with demo instructions for the A55 when relevant.
-4. **Owner gate:** on the owner's OK (or after on-device checks pass), merge into `main` (squash or merge commit, linear history), push, and delete the branch. Without `gh` there are no PRs: the owner can review the branch diff on GitHub.
+4. **Owner gate:** on the owner's OK (or after on-device checks pass), **squash-merge** into `main` as one commit `Sxx: <step name>` (TD-036), push, and delete the branch. Without `gh` there are no PRs: the owner can review the branch diff on GitHub.
 
 ## 4. Decision rights
 

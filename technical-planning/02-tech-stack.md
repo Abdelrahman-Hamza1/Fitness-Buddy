@@ -75,7 +75,7 @@ Selection rules, in order: (1) fits the drivers in `01` §1; (2) mature, maintai
 | Concern | Choice | Why |
 |---|---|---|
 | Model provider | **Chosen by the S10 bake-off** on the spec's test set. Candidates (paid tiers, no training on our data): **Claude Haiku 5.5** ($0.10 in / $0.50 out per M tokens), **Gemini Flash-Lite class**, **GPT-5.x nano/mini** | Arabic/Arabizi understanding and latency from the region must be measured |
-| Integration | `ILlmClient` port in the Buddy module, one adapter per provider, structured output (JSON schema) on every call, per-task routing table, fallback provider | Swappable, measurable |
+| Integration | **No agent framework.** `ILlmClient` port in the Buddy module, built on **Microsoft.Extensions.AI `IChatClient`** with the official provider SDKs. Structured output (JSON schema) on every call, a per-task routing table, a fallback provider (TD-035, `06` §9.1) | Standard, swappable, measurable, minimal machinery |
 | Vision | The same provider's multimodal model if it passes the label eval, otherwise route vision separately | On-device ML Kit has no Arabic script, and labels can be Arabic (D-073) |
 | Embeddings | Only if the eval shows trigram + alias matching isn't enough (`pgvector`) | Avoid unmeasured complexity |
 
