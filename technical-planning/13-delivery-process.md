@@ -69,6 +69,10 @@ A step is **ready** when: its dependencies are ✅ on the board, the owner prere
 3. Push the branch. Send the owner the **close summary** (§5.2) with demo instructions for the A55 when relevant.
 4. **Owner gate:** on the owner's OK (or after on-device checks pass), **squash-merge** into `main` as one commit `Sxx: <step name>` (TD-036), push, and delete the branch. Without `gh` there are no PRs: the owner can review the branch diff on GitHub.
 
+## 3a. Delegated gates (TD-037)
+
+The owner delegated both gates (2026-10-11). For a step with **no ⚠️ OWNER item** where **all automated gates pass**, the orchestrator approves the plan and accepts/merges the step itself, then continues to the next ready step. The plan summary and the close summary are still sent (FYI). Any ⚠️ OWNER item, a failed gate that can't be fixed within the loop limits, or a needed prerequisite → stop and ask. Owner on-device checks are collected in a running list and don't block merging.
+
 ## 4. Decision rights
 
 | The orchestrator decides (and informs the owner) | The owner decides (the orchestrator asks first) |
