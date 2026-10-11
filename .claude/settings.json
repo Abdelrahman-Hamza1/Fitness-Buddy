@@ -1,0 +1,63 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(make *)",
+      "Bash(dart *)",
+      "Bash(flutter *)",
+      "Bash(melos *)",
+      "Bash(dotnet *)",
+      "Bash(docker compose *)",
+      "Bash(docker build *)",
+      "Bash(docker ps *)",
+      "Bash(docker logs *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git checkout *)",
+      "Bash(git switch *)",
+      "Bash(git branch *)",
+      "Bash(git merge *)",
+      "Bash(git fetch *)",
+      "Bash(git pull *)",
+      "Bash(git push -u origin step/*)",
+      "Bash(git push origin step/*)",
+      "Bash(git stash *)",
+      "Bash(git worktree *)",
+      "Bash(git rev-parse *)",
+      "Bash(git ls-remote *)",
+      "Bash(tofu fmt *)",
+      "Bash(tofu validate *)",
+      "Bash(tofu plan *)",
+      "Bash(tofu init *)",
+      "Bash(kamal config *)",
+      "Bash(actionlint *)",
+      "Bash(hadolint *)",
+      "Bash(redocly *)",
+      "Bash(spectral *)",
+      "Bash(oasdiff *)",
+      "Bash(npx @redocly/cli *)",
+      "Bash(npx @stoplight/spectral-cli *)"
+    ],
+    "ask": [
+      "Bash(git push origin main*)",
+      "Bash(git push -u origin main*)",
+      "Bash(tofu apply *)",
+      "Bash(tofu destroy *)",
+      "Bash(kamal deploy *)",
+      "Bash(kamal rollback *)",
+      "Bash(kamal remove *)",
+      "Bash(kamal app *)",
+      "Bash(kamal accessory *)"
+    ],
+    "deny": [
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git push origin +*)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~*)"
+    ]
+  }
+}

@@ -8,6 +8,8 @@ Each step has a **card** in this folder. The card is the session's brief, and la
 
 Every step session follows these phases. The owner can stop the session at the end of any phase.
 
+> **Who does what:** the main session is the **orchestrator** and runs this protocol with the **`run-step`** skill. It delegates to specialist agents (`.claude/agents/`): `tech-researcher` and `step-planner` + `architect` in Phase B, the engineers per work package in Phase C, the reviewers and `verifier` in Phase D. Owner gates: **plan approval** (end of B) and **step acceptance** (end of E). The full process (roles, decision rights, communication, quality gates) is in **`../13-delivery-process.md`**.
+
 ### Phase A: Orient (≈ 10 min)
 1. Read this README's **status board** (§4). Confirm the step's dependencies are ✅ and that `main` is green.
 2. Read the step card, then the docs in its **Read first** list. Skim the **Outcome** sections of its dependencies, which may have changed assumptions.

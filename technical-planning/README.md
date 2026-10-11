@@ -71,12 +71,13 @@ The ideas that carry the design:
 | `10-engineering-practices.md` | Repo layout, conventions for both stacks, enforced architecture rules, testing, traceability, git workflow, CI/CD, Definition of Done |
 | `11-roadmap.md` | Phases, milestones, the step list with dependencies, R2/R3 outlines |
 | `12-decisions-and-questions.md` | Technical decision log (TD-001–TD-034) and the owner's open/answered questions |
+| `13-delivery-process.md` | **How work gets done:** orchestrator + specialist agents, the step lifecycle, owner gates, decision rights, communication, quality gates |
 | `steps/` | **One card per step** + the session protocol, card template, status board and owner prerequisites (`steps/README.md`) |
 | `research-notes.md` | What was looked up, sources, and what still needs verifying |
 
 ## How to use this folder
 
-- **To start building:** open `steps/README.md`, follow the session protocol, and pick the next unblocked step on the status board.
+- **To start building:** ask the session to run the next step. It uses the `run-step` skill and the process in `13-delivery-process.md`. Agents live in `.claude/agents/`, skills in `.claude/skills/`.
 - **To challenge a decision:** find it in `12`. Proposed decisions can be changed by discussion. Accepted ones get a new superseding entry.
 - **To understand a part of the system:** the file map above. Each step card lists the sections to read.
 - **When reality differs from the plan:** fix the plan in the same PR (an outdated doc is a bug), and record significant changes as TDs.
