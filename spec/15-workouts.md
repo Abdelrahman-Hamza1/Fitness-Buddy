@@ -1,12 +1,13 @@
 # 15 — Workouts
 
-_Status: **Draft v1** · 2026-10-10 · Main decisions: D-028 to D-030, D-040, D-057, D-058, D-079._
+_Status: **Draft v1** · 2026-10-10 · Main decisions: D-028 to D-030, D-040, D-057, D-058, D-079, D-080._
 
 Scope: **simple strength logging, usually entered after the session** (D-028). Built for the owner's PPL routine 3–4×/week. Out of scope: RPE/RIR, tempo, periodization, rest timer, notes (NG-7, D-057).
 
 ## 1. Exercise library (D-029)
 
-- **WO-001** `[R1]` A built-in list of ~100 common gym exercises (names only: no videos or instructions), each with English and Arabic names and aliases ("bench", "flat bench", "BB bench", "بنش").
+- **WO-001** `[R1]` A built-in list of ~100 common gym exercises (names only: no videos or instructions), each with English names and aliases ("bench", "flat bench", "BB bench"). Buddy still understands Arabic names ("بنش") through the AI (AI-010).
+- **WO-006** `[R2]` The built-in exercises also have Arabic names, for the Arabic interface (D-080).
 - **WO-002** `[R1]` Equipment variants are **separate exercises** (barbell bench press ≠ dumbbell bench press ≠ machine chest press), so history and PRs stay meaningful.
 - **WO-003** `[R1]` Custom exercises can be added by form or chat ("add exercise: cable fly low to high").
 - **WO-004** `[R1]` Each exercise has a **type**, which decides which fields are logged:

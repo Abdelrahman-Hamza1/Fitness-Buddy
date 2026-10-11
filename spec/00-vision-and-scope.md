@@ -1,6 +1,6 @@
 # 00 — Vision & Scope
 
-_Status: **Draft v2** · 2026-10-10 · Based on D-001 to D-079._
+_Status: **Draft v2** · 2026-10-11 · Based on D-001 to D-081._
 
 ## 1. The problem
 
@@ -80,7 +80,7 @@ Releases: **R1** = owner · **R2** = friends · **R3** = public · **Later** = n
 | **Workouts**: chat/form logging, PPL templates, last session, graphs, PRs, manual cardio | All | Hide module | | Notes, rest timer, programs | `15-workouts.md` |
 | **Home & insights**: dashboard, weekly summary, charts | All | | | | `16-insights-and-home.md` |
 | **Notifications** (configurable) | Core reminders | | | | `17-notifications.md` |
-| **Localization & culture**: units, Arabic input, halal, Ramadan | Input, halal, Ramadan | Arabic RTL interface | | | `18-localization-and-culture.md` |
+| **Localization & culture**: units, Arabic input, halal, Ramadan | Arabic & Arabizi input, halal, Ramadan | Arabic RTL interface, Arabic replies, Arabic names on all foods (D-080) | | | `18-localization-and-culture.md` |
 | **Accounts & data**: sign-in, sync, guest mode, offline, export, deletion | All | | | | `20-accounts-and-data.md` |
 | **Steps** (read-only, info only) | | ✓ | | | `16-insights-and-home.md` |
 | **Quick entry**: widget, share sheet | | ✓ | | | `30-ux-principles.md` |
@@ -106,7 +106,7 @@ Recipe library and progress photos are R2: both are wanted, but neither is neede
 
 ## 7. Constraints
 
-- **C-1** Flutter, iOS + Android phones (D-004).
+- **C-1** Flutter, iOS + Android phones (D-004). R1 ships on Android only, and iOS follows in R2 (D-081).
 - **C-2** Solo developer: scope must stay realistic per release.
 - **C-3** AI must be cheap and good enough. Cloud AI is acceptable (D-018). The free tier must be affordable to run (D-041).
 - **C-4** Store rules: in-app account deletion, Sign in with Apple when Google sign-in is offered (D-059, D-067).

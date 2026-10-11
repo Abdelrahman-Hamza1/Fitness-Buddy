@@ -9,11 +9,11 @@
 |---|---|
 | Research | Round 1 done (`research/`) |
 | Requirements Q&A | Rounds 1–3 ✅ processed. No broad rounds planned |
-| Decisions | 79 recorded (`decisions.md`) |
+| Decisions | 81 recorded (`decisions.md`) |
 | Product spec | **Draft v1 complete. Awaiting owner review & sign-off** |
-| Technical planning | **Out of scope for `spec/`** (D-005). Starts after sign-off |
+| Technical planning | **Plan v2 in `technical-planning/`** (outside `spec/`, D-005): architecture, decisions, and 49 step cards |
 
-_Last updated: 2026-10-10_
+_Last updated: 2026-10-11_
 
 ## Vision
 
@@ -50,7 +50,7 @@ Rules:
 | File | Purpose | State |
 |---|---|---|
 | `README.md` | This index | ✅ |
-| `decisions.md` | Decision log (append-only) | ✅ D-001 to D-079 |
+| `decisions.md` | Decision log (append-only) | ✅ D-001 to D-081 |
 | `glossary.md` | Shared vocabulary | ✅ |
 | `research/competitive-analysis.md` | Existing apps: what they do well and badly, what we take from them | ✅ |
 | `research/domain-pitfalls.md` | Hard problems in nutrition, weight and AI logging | ✅ |

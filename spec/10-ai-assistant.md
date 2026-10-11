@@ -1,6 +1,6 @@
 # 10 — AI Assistant ("Buddy")
 
-_Status: **Draft v1** · 2026-10-10 · Main decisions: D-010 to D-018, D-036, D-043 to D-046, D-062, D-063, D-066, D-072, D-077, D-079._
+_Status: **Draft v1** · 2026-10-10 · Main decisions: D-010 to D-018, D-036, D-043 to D-046, D-062, D-063, D-066, D-072, D-077, D-079, D-080._
 
 Requirement format: **ID** `[release]` statement. Releases: R1 owner · R2 friends · R3 public · Later.
 
@@ -167,10 +167,11 @@ Details are in `12-diary-meals-recipes.md` §5. Buddy's part:
 - **AI-131** `[R1]` The tone is factual and kind, with no shaming (PR-12). It takes under 30 seconds to read.
 - **AI-132** `[R1]` Past reviews are kept and viewable from the weekly summary (`16-insights-and-home.md`).
 
-## 13. Tone & language (D-062, D-063)
+## 13. Tone & language (D-062, D-063, D-080)
 
 - **AI-140** `[R1]` Friendly and short. Confirmation replies are one line ("Logged ✓ 191 kcal — 1,240 left today").
-- **AI-141** `[R1]` Replies in the language and script the user wrote in (English, Arabic, or Arabizi).
+- **AI-141** `[R2]` Replies in the language and script the user wrote in (English, Arabic, or Arabizi) (moved from R1 by D-080).
+- **AI-143** `[R1]` Replies in English, whatever language or script the message was written in. Understanding is unaffected (AI-010) (D-080).
 - **AI-142** `[R1]` No food judgements ("bad", "cheat", "guilty"). Opinions only when asked, plus the weekly review.
 
 ## 14. Failure handling

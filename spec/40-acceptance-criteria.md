@@ -1,20 +1,20 @@
 # 40 — Acceptance Criteria
 
-_Status: **Draft v1** · 2026-10-10 · Main decisions: D-060, D-075, D-076, D-079, success criteria SC-1 to SC-6._
+_Status: **Draft v1** · 2026-10-10 · Main decisions: D-060, D-075, D-076, D-079, D-080, success criteria SC-1 to SC-6._
 
 ## 1. R1 is "done" when
 
 - **AT-001** Every requirement tagged `[R1]` across the spec is implemented, or explicitly moved to a later release by a new decision.
 - **AT-002** The AI test set (§3) meets every threshold in §2.
 - **AT-003** Every item on the must-cover list (`11` §6) exists as a reviewed reference dish or a database food, and can be found by English, Arabic and Arabizi name.
-- **AT-004** The speed targets in `30-ux-principles.md` §1 are met on a mid-range Android phone and a recent iPhone.
+- **AT-004** The speed targets in `30-ux-principles.md` §1 are met on a mid-range Android phone (the Samsung A55). The same check on a recent iPhone happens in R2 (D-081).
 - **AT-005** The offline scenarios in §4 pass.
 - **AT-006** Data survives reinstall and a switch to a new phone (SC-6). An export contains everything (AC-030).
 - **AT-007** **The owner has used it as their only tracker for 2 weeks** with no blocking issue. (SC-1 is then checked at 4 weeks.)
 
 ## 2. AI quality thresholds
 
-Measured on the test set (§3), expanded to **at least 150 messages** before sign-off. The expanded set includes Arabic-script and Arabizi versions of each case and more of each category.
+Measured on the test set (§3), expanded to **at least 150 messages** before sign-off. The expanded set includes more of each category, and Arabic-script and Arabizi messages written the way the owner writes them (at least a quarter of the cases). Arabic and Arabizi versions of **every** case come in R2 (D-080).
 
 | ID | Metric | Threshold |
 |---|---|---|
@@ -28,7 +28,7 @@ Measured on the test set (§3), expanded to **at least 150 messages** before sig
 | AQ-08 | More than 2 questions on one message | **0 cases** |
 | AQ-09 | Q&A answers numerically correct vs. calculated from the data | **100%** |
 | AQ-10 | Every estimate is marked as an estimate | **100%** |
-| AQ-11 | Arabic and Arabizi versions score within 5 percentage points of the English version on AQ-02 to AQ-07 | yes |
+| AQ-11 | **R2 gate** (D-080): Arabic and Arabizi versions score within 5 percentage points of the English version on AQ-02 to AQ-07. In R1, per-language scores are reported, with no threshold | R2: yes |
 | AQ-12 | Proposal shown within 5 s | ≥ 90% of messages |
 
 ## 3. AI test set — core cases (D-076)
@@ -50,8 +50,8 @@ Assume no saved defaults unless the case says otherwise.
 ### Home-cooked, no amounts / family-cooked
 | # | Message | Expected |
 |---|---|---|
-| T07 | `akalt sahen maqlobe 3nd sitti` | Reference dish maqluba, 1 plate, `~ estimate`. Variant chip (chicken default), with a question only if the variants differ beyond the AI-060 threshold. Reply in Arabizi. |
-| T08 | `صحن ملوخية مع رز` | Mloukhiyeh + rice, 1 plate, reference dish, `~`. Reply in Arabic. |
+| T07 | `akalt sahen maqlobe 3nd sitti` | Reference dish maqluba, 1 plate, `~ estimate`. Variant chip (chicken default), with a question only if the variants differ beyond the AI-060 threshold. Reply in English (AI-143). |
+| T08 | `صحن ملوخية مع رز` | Mloukhiyeh + rice, 1 plate, reference dish, `~`. Reply in English (AI-143). |
 | T09 | `labaneh w zaatar w zeit w taboon` | Labaneh ~2 tbsp, zaatar ~1 tbsp, olive oil ~1 tbsp, taboon bread ×1, all `~`, as one breakfast group. |
 | T10 | `i ate my share of the mansaf, big plate, we were 6` | Reference dish mansaf, 1 large plate (the "we were 6" context is noted but a stated plate takes priority), `~`. |
 | T11 | `ate a lot at the wedding` | **No proposal.** Asks what was eaten, with typical wedding foods as chips (D-072, AI-152). |

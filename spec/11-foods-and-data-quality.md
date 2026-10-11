@@ -1,14 +1,16 @@
 # 11 — Foods & Data Quality
 
-_Status: **Draft v1** · 2026-10-10 · Main decisions: D-011, D-019, D-037, D-046 to D-048, D-051, D-064, D-073, D-075._
+_Status: **Draft v1** · 2026-10-10 · Main decisions: D-011, D-019, D-037, D-046 to D-048, D-051, D-064, D-073, D-075, D-080._
 
 This file defines **what food data the product needs and how it behaves**. Which databases or APIs supply it is decided in technical planning (D-005). Their licences must allow everything below (C-5).
 
 ## 1. What a food is
 
-- **FD-001** `[R1]` Every food has: a name in English and Arabic, aliases (including common Arabizi and dialect spellings), nutrients per 100 g (or per 100 ml for drinks), its state (raw / cooked / dry / as sold), optional brand, optional barcode(s), serving units with their gram weights, a **source**, and a verification status.
+- **FD-001** `[R1]` Every food has: a name in English, aliases, nutrients per 100 g (or per 100 ml for drinks), its state (raw / cooked / dry / as sold), optional brand, optional barcode(s), serving units with their gram weights, a **source**, and a verification status.
 - **FD-002** `[R1]` Core nutrients, always present: **calories, protein, carbs, fat, fiber** (D-037). Optional when the data has them: sugar, saturated fat, sodium, and others. They're shown under "more" on an item, never required (D-019).
 - **FD-003** `[R1]` Serving units include standard ones (g, ml, oz, cup, tbsp, tsp, piece) and local ones where they make sense (رغيف loaf, صحن plate, حبة piece, كاسة glass, سندويشة sandwich, قرص disc), each with a gram weight for that specific food.
+- **FD-004** `[R1]` Must-cover items (§6) and the basics also have an Arabic name and common Arabizi and dialect spellings as aliases (D-080).
+- **FD-005** `[R2]` Every food has an Arabic name (D-080, for the Arabic interface, LC-003).
 
 ## 2. Sources & provenance (D-011)
 
@@ -25,7 +27,8 @@ This file defines **what food data the product needs and how it behaves**. Which
 
 ## 3. Search (manual logging)
 
-- **FD-020** `[R1]` One search box, English or Arabic or Arabizi, tolerant of typos.
+- **FD-020** `[R1]` One search box, tolerant of typos in English. Arabic script and Arabizi find foods by their listed names and spellings (FD-004) (D-080).
+- **FD-024** `[R2]` Arabizi search is also tolerant of unlisted spellings and typos (D-080).
 - **FD-021** `[R1]` **No duplicate clutter** (PR-5): results are de-duplicated, and each distinct food appears once. Your foods and recent foods come first, then database results, then reference dishes.
 - **FD-022** `[R1]` Picking a result → amount + unit picker (defaulting to your last-used amount for that food) → add. This is a direct action (AI-048), so it applies immediately with undo.
 - **FD-023** `[R1]` Offline search covers: your history, your foods, and a built-in set of common basic foods, including all must-cover items (§6) (D-049).

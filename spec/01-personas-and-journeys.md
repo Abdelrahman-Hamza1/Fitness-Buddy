@@ -42,13 +42,13 @@ Each journey lists the main requirements involved.
 1. Types `akalt sahen maqlobe 3nd sitti`.
 2. Card: maqluba (chicken), 1 plate, `~ 780 kcal` (estimated, range on tap). Chip shows the variant.
 3. Taps Log it.
-→ AI-021, AI-032, FD-050, AI-141.
+→ AI-021, AI-032, FD-050, AI-143.
 
 ### J3 — Eating out (P1)
 1. Types `شاورما دجاج عربي وبيبسي`.
-2. Card: shawarma arabi (reference, `~`) + Pepsi can (database). Reply in Arabic.
+2. Card: shawarma arabi (reference, `~`) + Pepsi can (database). Reply in English in R1, in Arabic from R2 (AI-141).
 3. Log it.
-→ D-046, FD-011, AI-141.
+→ D-046, FD-011, AI-141, AI-143.
 
 ### J4 — Packaged product not in the database (P1)
 1. Taps barcode → not found → "Scan the label instead".

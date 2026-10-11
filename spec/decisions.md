@@ -296,7 +296,7 @@ _Entries marked **(provisional)** apply Claude's recommendation to a question th
 - Decision: Friendly and short. Replies in the user's language. Gives opinions only when asked.
 
 ## D-063 — Arabic details (provisional)
-- Status: **Confirmed by D-069**
+- Status: **Confirmed by D-069**. **Amended by D-080** (replies in the user's language move to R2)
 - Source: round-02 R2-15 (blank)
 - Decision: Understands any Arabic dialect (Palestinian/Levantine first), Arabizi/Franco ("akalt 2 ta3meya"), and mixed Arabic/English sentences. Full Arabic right-to-left interface in R2.
 
@@ -377,3 +377,30 @@ _Entries marked **(provisional)** apply Claude's recommendation to a question th
 - Rule of thumb: **what the AI interprets is a proposal; what the user taps directly is an action.** Tapping a quick-add chip, choosing an amount after a barcode scan, or editing a number by hand applies immediately, with undo.
 - Why: The owner wants to see and approve what gets logged. Trust (PR-3) matters more than saving one tap. Speed is kept by making confirmation a single tap on a card that appears right where the user is looking.
 - Affects: D-060 (speed target becomes message → card ready ≤ 5 s, then 1 tap), PR-4, `10-ai-assistant.md` §4.
+
+---
+
+# Technical-planning decisions
+
+## D-080 — Arabic scope trimmed for R1
+- Date / Source: 2026-10-11 · owner message during technical planning ("if Arabic or other language support will cause us issues, we can move them to R2 or even R3")
+- Status: Accepted. **Amends D-063**, FD-001, FD-020, WO-001, AI-141, AQ-11.
+- Decision: R1 keeps the parts the owner uses daily, which are cheap because the AI model does the work:
+  - Buddy **understands** English, Arabic, Arabizi and mixed messages (AI-010, LC-001).
+  - Local portion words (LC-051) and Arabic label photos (FD-040).
+  - Must-cover items have English, Arabic and Arabizi names (AT-003).
+
+  Moved to **R2**, together with the Arabic interface (LC-003) for friends who prefer Arabic:
+  - Buddy replying in the user's language and script (AI-141). In R1, Buddy replies in English (AI-143).
+  - An Arabic name on every food (FD-001). In R1, only must-cover items and basics have one (FD-004).
+  - Typo-tolerant Arabizi in the manual search box beyond the listed spellings (FD-020, FD-024).
+  - Arabic names in the built-in exercise library (WO-001). Buddy still understands Arabic exercise names in R1.
+  - The AQ-11 parity gate and an Arabic and Arabizi version of every test case. R1 reports scores per language, with no gate.
+- Why: Understanding Arabic and Arabizi is mostly the AI model's job, so it costs little, and it's how the owner writes. The expensive parts are everything around it: translating every food and every reply template, writing three versions of the test set, and blocking R1 on a parity score. The owner reads English and the R1 interface is English, so none of that is needed until friends arrive.
+
+## D-081 — Android-first R1, iPhone later
+- Date / Source: 2026-10-11 · owner during technical planning ("We can use my android to test. Push iPhone stuff for later"), answering TQ-22
+- Status: Accepted. Amends C-1 and AT-004 for R1.
+- Decision: R1 is built, tested and distributed on **Android only** (the owner's Samsung A55, via Google Play internal testing). All iPhone work moves to **R2**: iOS builds and distribution (TestFlight), Sign in with Apple (AC-001), and the iPhone speed check in AT-004. The app stays a cross-platform Flutter app, and no Android-only shortcuts are allowed in shared code.
+- Why: The owner uses Android and has no Mac. Nobody uses an iPhone in R1. Deferring iOS removes cloud-Mac setup, Apple fees and a second test target until friends need it.
+
