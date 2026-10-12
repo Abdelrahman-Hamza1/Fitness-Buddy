@@ -1,0 +1,22 @@
+namespace FitnessBuddy.Zz.Tests;
+
+public sealed class ZzTests
+{
+    [Fact]
+    [Trait("Req", "ZZ-040")]
+    public void Single_trait() { }
+
+    [Fact, Trait("Req", "ZZ-041")]
+    public void Trait_in_an_attribute_list() { }
+
+    [Fact]
+    [Trait("Category", "ZZ-042")]
+    public void Other_traits_do_not_count() { }
+
+    // covers: ZZ-043 ZZ-044
+    [Fact]
+    public void Covers_comment() { }
+
+    [Fact]
+    public void ZZ_045_in_a_method_name_does_not_count() { }
+}

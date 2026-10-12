@@ -1,0 +1,14 @@
+name: fitness_buddy_workspace
+description: Pub workspace root for Fitness Buddy. Holds no code of its own.
+publish_to: none
+
+environment:
+  sdk: ^3.13.0
+
+workspace:
+  - packages/fb_domain
+  - packages/fb_text
+  - tools/trace
+
+dev_dependencies:
+  very_good_analysis: 11.0.0

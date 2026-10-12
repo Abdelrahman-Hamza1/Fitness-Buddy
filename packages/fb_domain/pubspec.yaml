@@ -1,0 +1,17 @@
+name: fb_domain
+description: Pure Dart domain models, business rules and algorithms for Fitness Buddy.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.13.0
+
+# No runtime dependencies. Adding one needs an entry in the allowlist in
+# test/dependencies_test.dart.
+
+dev_dependencies:
+  # Pinned to the version Flutter's own tooling uses (test_api 0.7.12), so the
+  # Flutter app can join this workspace without a version conflict.
+  test: 1.31.1
+  very_good_analysis: 11.0.0
+  yaml: ^3.1.3

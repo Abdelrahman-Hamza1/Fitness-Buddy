@@ -1,0 +1,26 @@
+import 'package:test/test.dart';
+
+void main() {
+  group('ZZ-001 ZZ-002 a group with two leading IDs', () {
+    test('ZZ-003, ZZ-004: comma-separated leading IDs', () {});
+    test("ZZ-005 double-quoted name", () {});
+    test(r'ZZ-006 raw single-quoted name', () {});
+    test(
+      r"ZZ-007 raw double-quoted name on the next line",
+      () {},
+    );
+    test('''ZZ-008 triple-quoted name''', () {});
+  });
+  testWidgets('ZZ-010 a widget test', (tester) async {});
+  patrolTest('ZZ-011 a patrol test', ($) async {});
+  goldenTest('ZZ-012 a golden test', fileName: 'x', builder: () {});
+
+  test('mentions ZZ-020 in the middle, which does not count', () {});
+  test('ZZ-021x is not an ID because the name runs on', () {});
+  expect('ZZ-022 is not a test call', isNotNull);
+  mytest('ZZ-023 is not one of the test functions', () {});
+  harness.test('ZZ-024 is a method, not the test function', () {});
+
+  // covers: ZZ-030, ZZ-031
+  test('a name without IDs', () {}); // covers: ZZ-032
+}

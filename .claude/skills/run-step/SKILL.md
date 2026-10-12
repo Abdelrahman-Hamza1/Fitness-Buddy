@@ -46,10 +46,12 @@ Track progress with a todo list mirroring the phases below. Keep the owner infor
 2. Update the status board (✅ after the owner's OK; until then keep 🟨 with a note "awaiting owner"), any planning docs the step changed, and `technical-planning/steps/backlog.md` (follow-ups, minor findings).
 3. Commit (`docs(Sxx): outcome`) and **push the branch** (`git push -u origin step/Sxx-…`, retry on network errors with backoff).
 4. **Owner gate:** send the **close summary** (template in process §5.2) with demo steps for the A55 when relevant, and the GitHub branch name for reviewing the diff. **Wait for the owner's OK.**
-5. On OK: **squash-merge** into `main` (`git checkout main && git pull && git merge --squash step/Sxx-… && git commit` with message `Sxx: <step name>` + a short summary of the Outcome; TD-036), run `make check test` on `main`, push `main`, delete the step branch locally and remotely, and mark ✅ on the board (commit + push).
+5. On OK: the board ✅ and the Outcome are committed on the step branch first (`main` only accepts CI-verified commits, so nothing goes to `main` afterwards). Then squash on a local `merge/Sxx` branch from `origin/main` (one commit `Sxx: <step name>`; the body keeps the branch's commit subjects, Outcome and board ✅ included) → `git push -u origin merge/Sxx` → `tools/scripts/ci-status.sh <sha>` green → `git push origin merge/Sxx:main` (fast-forward, same SHA) → delete `merge/Sxx` and the step branch (TD-036, TD-039). Dependabot PRs: only PRs by `dependabot[bot]` whose head sits on current `main` with `ci` green may go straight to `main` (`git push origin <sha>:main`); anything else, and any code from a fork, goes through a `merge/*` branch.
 6. Propose the next step.
 
 ## Always
+- **Handoff (process §8a):** append a line to the card's Progress log and push the branch at every phase change, WP commit, owner question/answer, and before long agent or CI waits. Resuming: start from the Progress log.
+- Owner messages: brief. Result or question first, ≤ 5 lines unless they ask for more.
 - Never skip a gate or mark a criterion done without evidence.
 - Never change the spec or an Accepted TD without the owner (`record-decision`).
 - Keep messages to the owner short: the decision or result first, then details. Every question comes with your recommendation.

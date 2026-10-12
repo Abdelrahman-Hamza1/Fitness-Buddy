@@ -84,6 +84,9 @@ Fill the card's **Low-level plan** section:
 ## Low-level plan
 _Written in Phase B._
 
+## Progress log
+_One dated line per event, newest last (process §8a)._
+
 ## Outcome
 _Written in Phase E: built · deviations · follow-ups · new TDs · measurements._
 ```
@@ -92,7 +95,7 @@ _Written in Phase E: built · deviations · follow-ups · new TDs · measurement
 
 | Needed by | What | Notes |
 |---|---|---|
-| **S01** | **A private GitHub repository** for this project (there is no remote yet), with the session's access to push | Free |
+| **S01** ✅ | GitHub repository (public per TD-042), push via the laptop SSH key | Done 2026-10-12 |
 | S05 (start of P3) | **Hetzner Cloud** account + API token. **A domain name** (e.g. from Cloudflare Registrar) with DNS on **Cloudflare**. **Tailscale** account. **Grafana Cloud** and **Sentry** accounts (free tiers) | ≈ €10/mo staging + domain |
 | S06 | Android phone (A55) with "install unknown apps" allowed for early APKs | — |
 | S07 | ~30 min to review the design gallery and mockups on the phone | — |
@@ -109,7 +112,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 
 | ID | Step | Phase | Depends on | Size | Status |
 |---|---|---|---|---|---|
-| [S01](S01-repo-tooling-ci.md) | Repo, tooling & CI foundation | P0 | — | M | ⬜ |
+| [S01](S01-repo-tooling-ci.md) | Repo, tooling & CI foundation | P0 | — | M | ✅ |
 | [S02](S02-api-contract-pipeline.md) | API contract pipeline | P0 | S01 | M | ⬜ |
 | [S03](S03-backend-host.md) | Backend host & HTTP conventions | P0 | S02 | M | ⬜ |
 | [S04](S04-backend-persistence.md) | Backend persistence, outbox & jobs | P0 | S03 | M | ⬜ |

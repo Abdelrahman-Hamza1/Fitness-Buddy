@@ -29,6 +29,19 @@ Subagents can't spawn other agents. **All orchestration happens in the main sess
 | `ux-reviewer` | Reviews UI against the spec's UX rules (states, copy, colour, taps, accessibility) | Phase D when the diff touches screens or user-facing copy | No |
 | `verifier` | Independently checks every exit criterion with evidence (runs tests, measurements) | End of Phase D, before close | No (may add evidence notes) |
 
+### 2.1 Model policy (TD-038)
+
+| Default model | Agents | Why |
+|---|---|---|
+| **Opus** | `step-planner`, `architect`, `code-reviewer`, `security-reviewer`, `flutter-engineer`, `dotnet-engineer`, `platform-engineer`, `ai-engineer` | Judgment-heavy, or mistakes are expensive (design, review, production code, infra, prompts) |
+| **Sonnet** | `tech-researcher`, `verifier`, `data-curator`, `ux-reviewer` | Structured fact-finding or checklist work, each backed by hard checks (cited sources, executed tests, CI validation, owner skim) |
+
+Per-brief overrides by the orchestrator (the Agent tool's `model` parameter):
+- **Down to Sonnet** for small mechanical WPs: boilerplate, renames, config files, doc updates, test fixtures, applying already-specified review fixes.
+- **Up to Opus** for any Sonnet-default agent when the task needs judgment: a research question with a hard trade-off, the S49 verification, a dish batch that needs nutritional reasoning beyond the template.
+- **Never Sonnet** for: security-sensitive code (auth, sync, RLS), production infrastructure, architecture reviews, or a WP that already failed once.
+- If a Sonnet result fails review or verification, the retry runs on Opus.
+
 ## 3. Step lifecycle (what runs when)
 
 ```
@@ -67,7 +80,7 @@ A step is **ready** when: its dependencies are ✅ on the board, the owner prere
 1. The orchestrator writes the card's **Outcome** (built, deviations, follow-ups, new TDs, measurements, review rounds).
 2. Update the status board, any planning doc the step changed, and `steps/backlog.md`.
 3. Push the branch. Send the owner the **close summary** (§5.2) with demo instructions for the A55 when relevant.
-4. **Owner gate:** on the owner's OK (or after on-device checks pass), **squash-merge** into `main` as one commit `Sxx: <step name>` (TD-036), push, and delete the branch. Without `gh` there are no PRs: the owner can review the branch diff on GitHub.
+4. **Owner gate:** on the owner's OK (or after on-device checks pass), merge into `main` through the CI-verified flow: squash on a local `merge/Sxx` branch from `origin/main` (one commit `Sxx: <step name>`; the body keeps the branch's commit subjects, Outcome and board ✅ included) → `git push -u origin merge/Sxx` → `tools/scripts/ci-status.sh <sha>` green → `git push origin merge/Sxx:main` (fast-forward, same SHA) → delete `merge/Sxx` and the step branch (TD-036, TD-039). The `main` ruleset rejects any commit on which the `ci` check hasn't passed. Without `gh` there are no PRs: the owner can review the branch diff on GitHub.
 
 ## 3a. Delegated gates (TD-037)
 
@@ -162,6 +175,12 @@ Rules: one WP per brief. Never ask an engineer to "do the whole step". Never for
 | Code history | Branch per step, merged to `main` |
 
 **Per-step metrics** (in the Outcome): planned vs actual size, number of WPs, review rounds, findings by severity, tests added, notable measurements. Every ~10 steps the orchestrator reviews these and proposes process changes to the owner (e.g. a step-size rule, a recurring finding becoming a lint).
+
+## 8a. Session handoff (sessions can be lost)
+
+Every step card has a **Progress log** section above the Outcome: one dated line per event, newest last, with what happened, what's pending, and what the owner was asked. The orchestrator **appends a line and pushes the branch** at each phase change, each WP commit, each question to the owner and each owner answer, and before any long-running agent or CI wait. The board status is updated at the same moments.
+
+**Resuming a lost session:** read the card's Progress log → `git log` on the step branch → check CI and the ruleset with `tools/scripts/ci-status.sh` / the GitHub API → re-run any agent whose result isn't recorded in the log → tell the owner in 3 lines where things stand.
 
 ## 9. Failure handling
 

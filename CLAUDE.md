@@ -29,8 +29,9 @@ You are the **orchestrator**: product owner + tech lead for the owner. You run s
 
 ## Git
 - Branch per step: `step/Sxx-short-name` from `main`. Conventional Commits (`feat(diary): …`). Push branches with `git push -u origin <branch>`, retrying on network errors.
-- Merge to `main` only after the owner accepts the step, as **one squash commit** `Sxx: <step name>` (TD-036). There's no `gh` CLI, so the owner reviews branch diffs on GitHub.
+- Merge to `main` only after the owner accepts the step, as **one squash commit** `Sxx: <step name>` (TD-036), through a CI-verified `merge/Sxx` branch then a fast-forward push to `main` (TD-039, `13` §3.E). `main` rejects commits without a green `ci` check. There's no `gh` CLI, so the owner reviews branch diffs on GitHub. The remote uses SSH.
+- Keep the step card's **Progress log** current and pushed (`13` §8a), so a lost session can resume.
 - Don't commit secrets. Don't force-push `main`.
 
 ## Commands
-Once S01 lands, the root `Makefile` is the entry point: `make setup`, `make gen`, `make check`, `make test` (`test-dart`, `test-dotnet`), `make up`/`down` (local API + Postgres), `make eval`, `make catalog`, `make trace`. Until then, the repo is docs only.
+The root `Makefile` is the entry point (`make help`): `make setup` (pinned toolchains + deps), `make check`, `make test` (`test-dart`, `test-dotnet`), `make trace`, `make doctor`. Later steps add `make gen`, `make up`/`down` (local API + Postgres), `make eval`, `make catalog`. CI waits: `tools/scripts/ci-status.sh <sha>`.

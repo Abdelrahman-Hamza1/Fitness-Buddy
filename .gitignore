@@ -1,0 +1,58 @@
+# --- Dart / Flutter -----------------------------------------------------------
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+pubspec_overrides.yaml
+*.iml
+
+# --- .NET (scoped to backend/: Dart packages have real bin/ folders) ----------
+backend/**/bin/
+backend/**/obj/
+backend/artifacts/
+TestResults/
+*.trx
+*.user
+*.suo
+.vs/
+
+# --- Coverage output (specific names: `coverage.*` would hide coverage.dart) --
+coverage/
+lcov.info
+*.cobertura.xml
+*.coverage
+coverage.json
+
+# --- IDE / OS -----------------------------------------------------------------
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+*.swp
+*~
+
+# --- Secrets: never commit (use GitHub/Kamal secrets, see 08 / S03+) ----------
+.env
+.env.*
+!.env.example
+**/.kamal/secrets*
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+key.properties
+appsettings.*.local.json
+secrets.json
+id_rsa*
+id_ed25519*
+# OpenTofu / Terraform state and variables (state holds secrets in plain text)
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfvars
+!*.tfvars.example
+
+# --- Claude Code: per-user settings -------------------------------------------
+.claude/settings.local.json

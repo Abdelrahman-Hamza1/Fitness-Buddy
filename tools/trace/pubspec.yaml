@@ -1,0 +1,22 @@
+name: fb_trace
+description: Requirement traceability report for Fitness Buddy (spec IDs vs tagged tests, AT-001).
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.13.0
+
+executables:
+  trace: trace
+
+dependencies:
+  # Same versions as Flutter's own tooling, so the workspace resolves with the
+  # Flutter SDK pins (flutter_tools: args 2.7.0, path 1.9.1).
+  args: ^2.7.0
+  path: ^1.9.1
+
+dev_dependencies:
+  # Pinned to the version Flutter's own tooling uses (test_api 0.7.12), so the
+  # Flutter app can join this workspace without a version conflict.
+  test: 1.31.1
+  very_good_analysis: 11.0.0

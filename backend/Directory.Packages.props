@@ -1,0 +1,16 @@
+<Project>
+  <!-- Central package management: every version lives here, projects reference packages
+       without a version. Transitive pinning lets a version here also override a transitive
+       dependency (e.g. to pick up a security fix). No lock files yet (S01 D6). -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup Label="Testing">
+    <!-- xunit.v3 4.x runs on Microsoft.Testing.Platform v2 (no Microsoft.NET.Test.Sdk). -->
+    <PackageVersion Include="xunit.v3" Version="4.0.2" />
+    <PackageVersion Include="TngTech.ArchUnitNET" Version="0.13.4" />
+    <PackageVersion Include="TngTech.ArchUnitNET.xUnitV3" Version="0.13.4" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,3 @@
+# Shared lint rules for every Dart package in the workspace. Packages include
+# this file with a relative path from their own analysis_options.yaml.
+include: package:very_good_analysis/analysis_options.yaml

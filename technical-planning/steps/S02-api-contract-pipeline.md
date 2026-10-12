@@ -18,6 +18,7 @@
 - **Dart client generation** into `packages/fb_api_client` (dio-based), generated code committed, `make gen` regenerates it. CI fails if the regenerated output differs.
 - **Server side, minimal:** `GET /v1/config` implemented in `backend/src/Host` (hard-coded values for now), the ASP.NET Core OpenAPI document generated at build time, and a **conformance check** that diffs it against the contract.
 - `contracts/testdata/` folder + README (golden files shared by both stacks, filled by later steps).
+- **From S01 review (A15):** `make gen` must format its generated output, and the generated client must be excluded from analysis (`--fatal-infos`). The `fb_api_client` dependency allowlist test needs `dio` (and the generator's runtime packages).
 - `contract` CI workflow (`10` §7).
 
 ## Out of scope

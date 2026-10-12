@@ -1,0 +1,27 @@
+import 'package:test/test.dart';
+
+void main() {
+  // test('ZZ-050 a commented-out test', () {});
+  /// test('ZZ-051 a test in a doc comment', () {});
+  /* test('ZZ-052 a test in a block comment', () {}); */
+  /*
+  testWidgets('ZZ-053 a test in a multi-line block comment', (t) async {});
+  */
+  /* outer /* inner */ test('ZZ-054 still in the outer comment', () {}); */
+  // test('ZZ-055 commented out, with a real list') // covers: ZZ-070
+  /* a block comment */ test('ZZ-060 after a block comment', () {});
+
+  // Comment markers inside strings are text: the test after them counts.
+  const url = 'https://example.com'; test('ZZ-061 after a URL', () {});
+  const glob = "/*"; test('ZZ-062 after an opening marker in a string', () {});
+  test('ZZ-063 a // in the name', () {}); test('ZZ-064 same line', () {});
+  const dir = r'C:\'; test('ZZ-065 after a raw string', () {}); // test('ZZ-056')
+  test('ZZ-066 it\'s escaped // fine', () {}); test('ZZ-067 same line', () {});
+  test('''ZZ-068 a ' quote // here''', () {}); test('ZZ-069 same line', () {});
+  test('ZZ-071 ${'//'} interpolated', () {}); test('ZZ-072 same line', () {});
+  test(
+    """ZZ-073 a multi-line name
+    // that is still part of the string""",
+    () {},
+  ); // test('ZZ-057')
+}

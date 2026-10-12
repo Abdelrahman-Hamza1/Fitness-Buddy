@@ -20,7 +20,7 @@ fitness_buddy/
 │  ├─ fb_api_client/              GENERATED from contracts/openapi.yaml
 │  └─ fb_design_system/           Flutter UI kit
 ├─ backend/
-│  ├─ FitnessBuddy.sln
+│  ├─ FitnessBuddy.slnx           (.NET 10 XML solution; global.json, Directory.*.props, nuget.config here too)
 │  ├─ src/Host/                   composition root; roles: api | worker | migrate
 │  ├─ src/BuildingBlocks/         results, outbox, jobs, auth context, clock, ids, problem details
 │  ├─ src/Modules/<Module>/       Api/ Application/ Domain/ Infrastructure/  (one project per module)
@@ -29,7 +29,8 @@ fitness_buddy/
 ├─ tools/
 │  ├─ buddy_eval/                 AI acceptance suite (Dart)
 │  ├─ catalog/                    catalog build/validate (Dart)
-│  └─ trace/                      requirement traceability report (Dart)
+│  ├─ trace/                      requirement traceability report (Dart)
+│  └─ scripts/                    shell scripts: toolchain setup, test runners, ci-status
 ├─ infra/
 │  ├─ tofu/                       OpenTofu: Hetzner resources per environment
 │  ├─ cloud-init/                 base OS setup
@@ -106,9 +107,9 @@ The pyramid is weighted toward pure logic, where the product promises live:
 
 ## 6. Git & workflow
 
-- **Trunk-based on `main`** (renamed from `master` in S01). Short-lived branches per step: `step/S14-diary-domain`. Merged by PR (even solo), so CI gates every change and PRs form the changelog.
-- **Conventional Commits** (`feat(diary): …`, `fix(api): …`). Release notes generated from them.
-- **PR checklist:** step ID + spec IDs · tests added · migrations + migration tests if the schema changed · contract updated + client regenerated if the API changed · eval run if AI-related · screenshots if UI · runbook updated if ops changed · no new warnings.
+- **Trunk-based on `main`** (renamed from `master` in S01). Short-lived branches per step: `step/S14-diary-domain`, with Conventional Commits. `main` gets **one squash commit `Sxx: <name>` per step**, whose body keeps the branch's commit subjects (TD-036). **Every change to `main`** (steps, docs, Dependabot, hotfixes) **goes through a CI-verified SHA**: the ruleset requires the `ci` check, blocks force pushes and deletions, and there are no PRs (TD-039, `13` §3.E).
+- **Conventional Commits** (`feat(diary): …`, `fix(api): …`). Release notes come from the `main` commit bodies + step Outcomes.
+- **Step checklist** (run-step E, squash commit body): step ID + spec IDs · tests added · migrations + migration tests if the schema changed · contract updated + client regenerated if the API changed · eval run if AI-related · screenshots if UI · runbook updated if ops changed · no new warnings.
 - Unfinished work merges behind feature flags.
 - **Releases:** API: tag `api-vX.Y.Z` → prod deploy. App: tag `app-vX.Y.Z` → store tracks. Contract: `contracts-vX.Y.Z` marks a published contract (the oasdiff baseline).
 
@@ -116,8 +117,8 @@ The pyramid is weighted toward pure logic, where the product promises live:
 
 | Workflow | Trigger | Steps |
 |---|---|---|
-| `ci-dart` | PRs/pushes touching Dart | format · analyze · codegen up-to-date · unit/widget/golden tests · architecture checks · `fb_domain` coverage gate |
-| `ci-dotnet` | PRs/pushes touching `backend/` | format · build (warnings as errors) · unit + integration tests (Testcontainers) · ArchUnitNET · vulnerable-package check |
+| `ci` (**built in S01**, `.github/workflows/ci.yml`) | every push and PR, weekly (Mon 04:00 UTC), manual | Job `dart`: `make deps-dart check-dart test-dart` (format · analyze `--fatal-infos` · tests) + `make trace` into the job summary. Job `dotnet`: `make deps-dotnet check-dotnet test-dotnet` (format · build with warnings as errors + NuGetAudit, TD-041 · tests incl. ArchUnitNET). Gate job **`ci`** needs every job and is the **only required check** (TD-039). Later: codegen up-to-date (S02/S06), Testcontainers (S04), `fb_domain` coverage gate (S08) |
+| _Later gates_ | | `contract`, `catalog`, `eval` and Android builds become jobs in `ci.yml` (or reusable workflows called from it) and are added to the gate's `needs:`, so the ruleset never changes |
 | `contract` | PRs touching `contracts/` or `backend/` | bundle · Spectral · oasdiff vs the last `contracts-v*` · regenerate the Dart client and fail if it differs · server conformance diff |
 | `catalog` | PRs touching `data/` or `tools/catalog` | validate dishes · build the pack · AT-003 name-resolution test |
 | `eval` | PRs touching prompts, model config, resolver, engine or catalog · nightly | start the API (Docker) · run `buddy_eval` · post the summary · **fail on AQ regression** |

@@ -1,0 +1,105 @@
+# Fitness Buddy
+
+A local-first nutrition and weight tracking app (Flutter, Android first) with an AI assistant, "Buddy", backed by an ASP.NET Core API. The phone is the source of truth and everything except the AI works offline. This monorepo holds the product spec ([`spec/`](spec/README.md)), the technical plan ([`technical-planning/`](technical-planning/README.md)), the Dart packages and app, the .NET backend, and the tooling that builds and checks them with one command.
+
+## Prerequisites
+
+- Linux x64, about **6 GB** of free disk, **no sudo needed** (everything installs under your home directory).
+- `git`, `curl`, `python3`, `make`, `tar`, `xz-utils`, `unzip`.
+
+On Debian/Ubuntu: `sudo apt-get install git curl python3 make tar xz-utils unzip` (the only step that needs sudo, and only if one of them is missing).
+
+## Quick start
+
+```bash
+make setup    # install the pinned Flutter + .NET SDKs (user-local), then fetch all dependencies
+make check    # format + static analysis, Dart and .NET
+make test     # all tests, Dart then .NET
+make trace    # requirement coverage report (RELEASE=R1|R2|R3|Later|all, default R1)
+make doctor   # tool versions, free disk and RAM; fails if a pinned SDK is missing
+make help     # every target, with a one-line description
+```
+
+The first `make setup` downloads the SDKs and packages (about 3.5 GB on disk once unpacked, plus caches in `~/.pub-cache` and `~/.nuget`); later runs skip what is already there. CI runs the same `make` targets.
+
+### What `make setup` installs, and where
+
+| Tool | Version pinned in | Installed to |
+|---|---|---|
+| Flutter SDK (includes Dart) | `.fvmrc` | `~/development/flutter-<version>` |
+| .NET SDK | `backend/global.json` | `~/.dotnet` |
+
+Downloads are checksum-verified. A system-wide .NET is never touched or used. The Makefile calls the SDKs by full path, so nothing needs to be on your `PATH`.
+
+To bump a version, edit `.fvmrc` (`"flutter"`) or `backend/global.json` (`sdk.version`) and run `make toolchain`. Old SDK folders are left in place; delete them by hand if you want the space back.
+
+Optional, if you want `flutter`, `dart` and `dotnet` in your own shell (prepend, so the pinned ones win):
+
+```bash
+export DOTNET_ROOT="$HOME/.dotnet"
+export PATH="$HOME/development/flutter-3.47.7/bin:$DOTNET_ROOT:$PATH"   # use the version from .fvmrc
+```
+
+### Low-RAM machines (7 GB)
+
+Targets run one at a time (`.NOTPARALLEL`), the build uses `-m:4`, and tests use `--max-parallel-test-modules 2`, so a full `make check test` fits in 7 GB. Don't run `make -j`. After a .NET session, free the memory of the build servers:
+
+```bash
+~/.dotnet/dotnet build-server shutdown
+```
+
+## Repository map
+
+Exists today:
+
+| Folder | What it is |
+|---|---|
+| [`spec/`](spec/README.md) | Product spec: what and why. The source of truth for requirements. |
+| [`technical-planning/`](technical-planning/README.md) | Architecture, decisions (TDs) and one card per delivery step in `steps/`. |
+| [`packages/`](packages/README.md) | Shared Dart packages (`fb_domain`, `fb_text`) in the pub workspace. |
+| [`backend/`](backend/README.md) | .NET 10 API: Host, BuildingBlocks, architecture tests. |
+| [`tools/`](tools/README.md) | Bash scripts behind the Makefile, and `trace/` (requirement coverage). |
+| `.github/` | CI workflow (`workflows/ci.yml`) and Dependabot config. |
+| `.claude/` | Agent and skill definitions for the delivery process. |
+| `Makefile`, `pubspec.yaml`, `pubspec.lock` | One entry point; the Dart workspace root and its single lockfile. |
+
+Planned (full map: [`technical-planning/10-engineering-practices.md`](technical-planning/10-engineering-practices.md) §1):
+
+| Folder | What it will be |
+|---|---|
+| `apps/mobile/` | Flutter app (planned) |
+| `packages/fb_api_client/`, `packages/fb_design_system/` | Generated API client, UI kit (planned) |
+| `contracts/` | OpenAPI sources, bundled contract, Spectral rules, golden test data (planned) |
+| `data/` | Reference dishes, exercises, portion words (planned) |
+| `tools/buddy_eval/`, `tools/catalog/` | AI acceptance suite, catalog build/validate (planned) |
+| `infra/` | OpenTofu, cloud-init, Kamal, local Docker Compose (planned) |
+| `docs/runbooks/` | Operational procedures (planned) |
+
+## CI
+
+One workflow, `.github/workflows/ci.yml`, runs on every push and pull request. Its gate job **`ci`** is the one required check on `main`: it passes only if the Dart and .NET jobs pass. In CI, `make deps-dart` runs `flutter pub get --enforce-lockfile`, so `pubspec.lock` can never be re-resolved silently; to update it, run `make deps-dart` locally and commit the result.
+
+To wait for and read the result of a pushed commit (no `gh` or token needed, public repo):
+
+```bash
+tools/scripts/ci-status.sh <sha>     # exit 0 = ci passed, 1 = failed, 2 = timed out
+```
+
+## Merge flow
+
+Work happens on a step branch (`step/Sxx-name`) with Conventional Commits. At the end of a step:
+
+1. Squash the branch on a local `merge/Sxx` branch, one commit `Sxx: <step name>`, and push it.
+2. Wait for `ci` to be green on that SHA (`tools/scripts/ci-status.sh <sha>`).
+3. Fast-forward `main` to the same SHA (`git push origin merge/Sxx:main`), then delete both branches.
+
+`main` only accepts commits on which `ci` already passed. Details: [`technical-planning/13-delivery-process.md`](technical-planning/13-delivery-process.md).
+
+## Conventions
+
+- **Commits:** [Conventional Commits](https://www.conventionalcommits.org/), e.g. `feat(diary): …`, `fix(api): …`, `build(S01): …`.
+- **Traceability:** every test that proves a spec requirement carries its ID, and `make trace` reports coverage per release.
+  - Dart: `test('AI-060 rejects an empty proposal', …)`, or a `// covers: AI-060, AI-061` comment.
+  - C#: `[Trait("Req", "AI-060")]`, or the same `// covers:` comment.
+  - Details: [`tools/trace/README.md`](tools/trace/README.md).
+- **Code style:** `dart format` + `very_good_analysis` (infos are errors); `dotnet format` + analyzers with warnings as errors. `make check` enforces both.

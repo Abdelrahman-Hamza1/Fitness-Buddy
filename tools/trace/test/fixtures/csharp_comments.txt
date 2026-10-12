@@ -1,0 +1,28 @@
+namespace FitnessBuddy.Zz.Tests;
+
+public sealed class ZzCommentTests
+{
+    // [Trait("Req", "ZZ-080")]
+    /// [Trait("Req", "ZZ-081")]
+    /* [Trait("Req", "ZZ-082")] */
+    /*
+    [Fact, Trait("Req", "ZZ-083")]
+    */
+    [Fact]
+    [Trait("Req", "ZZ-090")] // [Trait("Req", "ZZ-084")]
+    public void Real_trait() { }
+
+    // Comment markers inside strings are text: the trait after them counts.
+    private const string Url = "https://example.com"; [Fact, Trait("Req", "ZZ-091")] public void A() { }
+    private const string Open = "/*"; [Fact, Trait("Req", "ZZ-092")] public void B() { }
+    private const string Path = @"C:\"; // [Trait("Req", "ZZ-085")]
+    private const string Quoted = @"say ""//"" "; [Fact, Trait("Req", "ZZ-093")] public void C() { }
+    private const char Quote = '"'; // [Trait("Req", "ZZ-086")]
+    private const string OneQuote = @""""; // [Trait("Req", "ZZ-088")]
+    private const string Raw = """a " // b"""; [Fact, Trait("Req", "ZZ-094")] public void D() { }
+    private const string Both = $@"{Url}\"; // [Trait("Req", "ZZ-087")]
+
+    /* C# block comments don't nest: /* */ [Fact, Trait("Req", "ZZ-095")] public void E() { }
+
+    // covers: ZZ-096
+}

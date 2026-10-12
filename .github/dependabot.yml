@@ -1,0 +1,97 @@
+# Dependabot version updates (S01 D4, A12). Security updates are enabled in the
+# repo settings and arrive immediately, outside this schedule and PR limit.
+#
+# Monthly, at most 3 open PRs per ecosystem. Minor + patch bumps are grouped
+# into one PR per ecosystem; majors come one PR each. Every PR runs CI through
+# the `pull_request` trigger. Merge path (A12): if the PR head sits directly on
+# the current main and `ci` passed on it, push that SHA to main; otherwise
+# squash it onto a `merge/deps-YYYYMMDD` branch and merge that through CI.
+#
+# cooldown: a release must be 7 days old before a version-update PR proposes it,
+# so a compromised or broken release has time to be caught and yanked first.
+# Supported (default-days) by every ecosystem used here: pub, nuget, dotnet-sdk,
+# github-actions, docker (GitHub docs, checked 2026-10). Security updates are
+# not delayed by it.
+version: 2
+
+updates:
+  # Dart pub workspace: one root pubspec.yaml + pubspec.lock for every member.
+  # Whether Dependabot follows workspace members is checked after the first run
+  # (S01 risk list; fallback: a scheduled `dart pub outdated` job).
+  - package-ecosystem: pub
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore(deps)
+    cooldown:
+      default-days: 7
+    groups:
+      pub-minor-patch:
+        update-types: [minor, patch]
+    ignore:
+      # Pinned to the version Flutter's own tooling uses (test_api); bump it
+      # only together with the Flutter SDK (.fvmrc).
+      - dependency-name: test
+      # Lint-rule majors add new rules; take them on purpose, not monthly.
+      - dependency-name: very_good_analysis
+        update-types: ['version-update:semver-major']
+
+  # NuGet packages (central package management in backend/Directory.Packages.props).
+  - package-ecosystem: nuget
+    directory: /backend
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore(deps)
+    cooldown:
+      default-days: 7
+    groups:
+      nuget-minor-patch:
+        update-types: [minor, patch]
+
+  # The .NET SDK pin in backend/global.json.
+  - package-ecosystem: dotnet-sdk
+    directory: /backend
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore(deps)
+    cooldown:
+      default-days: 7
+    groups:
+      dotnet-sdk-minor-patch:
+        update-types: [minor, patch]
+
+  # Actions in .github/workflows (pinned by SHA with a `# vX.Y.Z` comment;
+  # Dependabot updates both).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore(deps)
+    cooldown:
+      default-days: 7
+    groups:
+      actions-minor-patch:
+        update-types: [minor, patch]
+
+  # Added in S03 together with the first Dockerfile (Dependabot errors on a
+  # directory without one):
+  # - package-ecosystem: docker
+  #   directory: /backend
+  #   schedule:
+  #     interval: monthly
+  #   open-pull-requests-limit: 3
+  #   commit-message:
+  #     prefix: chore(deps)
+  #   cooldown:
+  #     default-days: 7
+  #   groups:
+  #     docker-minor-patch:
+  #       update-types: [minor, patch]

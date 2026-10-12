@@ -1,0 +1,121 @@
+# Fitness Buddy CI: the one workflow and the one required check.
+#
+# Jobs `dart` and `dotnet` run the same `make` targets as a laptop does. The gate
+# job `ci` always runs and passes only if every job it `needs` succeeded; it is
+# the only check the `main` ruleset requires (S01 A1). New gates (contract,
+# catalog, eval, android) are added as jobs here and to `ci.needs`, so the
+# ruleset never changes.
+#
+# No path filtering (S01 A2): every push runs everything.
+# Actions are pinned to full commit SHAs; Dependabot (github-actions) bumps them.
+name: CI
+
+on:
+  push:
+    branches: ['**', '!dependabot/**'] # Dependabot branches run via pull_request
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Weekly run on main (Mon 04:00 UTC): new NuGet advisories (NuGetAudit) and
+    # toolchain drift surface without a commit.
+    - cron: '0 4 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  # One run per branch or PR: a newer push cancels the older run. On main every
+  # run gets its own group (run_id), so nothing there is cancelled or dropped.
+  group: ci-${{ github.ref }}${{ github.ref == 'refs/heads/main' && format('-{0}', github.run_id) || '' }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash # bash -eo pipefail
+
+jobs:
+  dart:
+    name: dart
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Flutter (version from .fvmrc)
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+          # The action appends -<hashFiles('**/pubspec.lock')> to this key itself.
+          pub-cache-key: 'flutter-pub-:os:-:version:-:arch:'
+
+      # Tool paths are overridden on the command line (S01 D3): flutter-action
+      # puts flutter and dart on PATH. No toolchain-* target runs in CI.
+      - name: Dependencies, format + analyze, tests
+        run: make deps-dart check-dart test-dart FLUTTER=flutter DART=dart
+
+      - name: Traceability report (into the job summary)
+        run: make trace FLUTTER=flutter DART=dart | tee -a "$GITHUB_STEP_SUMMARY"
+
+  dotnet:
+    name: dotnet
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # No built-in `cache:`: it requires packages.lock.json, which we don't use
+      # yet (S01 D6). The NuGet cache is the actions/cache step below.
+      - name: Set up .NET (SDK from backend/global.json)
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: backend/global.json
+
+      - name: Cache NuGet packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('backend/Directory.Packages.props', 'backend/**/*.csproj', 'backend/global.json') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      # setup-dotnet installs into DOTNET_ROOT (/usr/share/dotnet) and exports it.
+      # Pass the same root to make, so `dotnet` and the MTP test apphosts use the
+      # SDK that was just installed (S01 D3).
+      - name: Restore, format + build (warnings as errors), tests
+        run: |
+          : "${DOTNET_ROOT:?setup-dotnet did not export DOTNET_ROOT}"
+          make deps-dotnet check-dotnet test-dotnet DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT"
+
+  # The one required status check. Fails unless every needed job succeeded:
+  # failure, cancelled and skipped all fail the gate (nothing is skipped on
+  # purpose while there is no path filtering).
+  ci:
+    name: ci
+    if: always()
+    needs: [dart, dotnet]
+    runs-on: ubuntu-24.04
+    permissions: {} # reads only `needs`; no token scopes at all
+    timeout-minutes: 5
+    steps:
+      - name: All jobs succeeded
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          jq -r 'to_entries[] | "\(.key)\t\(.value.result)"' <<<"$NEEDS" | {
+            failed=0 seen=0
+            while IFS=$'\t' read -r job result; do
+              printf '%-10s %s\n' "$job" "$result"
+              seen=$((seen + 1))
+              [[ "$result" == success ]] || failed=1
+            done
+            if (( failed || seen == 0 )); then
+              echo "::error title=ci gate::at least one job did not succeed (see above)"
+              exit 1
+            fi
+          }

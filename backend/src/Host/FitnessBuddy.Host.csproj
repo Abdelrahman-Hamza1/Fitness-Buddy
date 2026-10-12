@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <!-- Composition root: wires the modules and runs as api | worker | migrate (04, 08). -->
+  <ItemGroup>
+    <ProjectReference Include="..\BuildingBlocks\FitnessBuddy.BuildingBlocks.csproj" />
+  </ItemGroup>
+</Project>
