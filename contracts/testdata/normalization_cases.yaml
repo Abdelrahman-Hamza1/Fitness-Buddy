@@ -1,0 +1,600 @@
+# Search-key normalization cases (S08 D11 + A1-A3, D13, TD-030).
+#
+# The shared spec for normalizeKey: fb_text (Dart) and the Catalog module (C#)
+# both load this file and must pass every case. Format, pipeline, tables and
+# the pass rule: README.md in this folder ("normalization_cases.yaml").
+#
+# Rules for editing: ids are stable (never rename or reuse one), every input
+# and key is double-quoted, invisible and look-alike characters are written as
+# \uXXXX escapes. A bug fix on either side starts with a new case here.
+version: 1
+cases:
+  # --- ar-: Arabic script ----------------------------------------------------
+  - id: ar-tashkeel-damma
+    input: "فُول"
+    key: "فول"
+  - id: ar-tashkeel-full
+    input: "مُجَدَّرَة"
+    key: "مجدره"
+    note: "fatha, damma and shadda deleted, then ة → ه"
+  - id: ar-tashkeel-tanween
+    input: "شَايٌ"
+    key: "شاي"
+  - id: ar-tashkeel-sukun
+    input: "لَبْنَة"
+    key: "لبنه"
+  - id: ar-shadda-not-doubled
+    input: "سكّر"
+    key: "سكر"
+    note: "shadda is deleted, never expanded into a double letter"
+  - id: ar-superscript-alef
+    input: "هٰذا"
+    key: "هذا"
+  - id: ar-combining-hamza-above
+    input: "أرز"
+    key: "ارز"
+    note: "combining hamza above (U+0654) is tashkeel, so the result equals أرز"
+  - id: ar-quranic-mark
+    input: "فولۖ"
+    key: "فول"
+  - id: ar-tatweel
+    input: "فـــول"
+    key: "فول"
+  - id: ar-tatweel-single
+    input: "مـنسف"
+    key: "منسف"
+  - id: ar-tatweel-only
+    input: "ـ"
+    key: ""
+  - id: ar-alef-hamza-above
+    input: "أرز"
+    key: "ارز"
+  - id: ar-alef-hamza-below
+    input: "إفطار"
+    key: "افطار"
+  - id: ar-alef-madda
+    input: "آيس كريم"
+    key: "ايس كريم"
+  - id: ar-alef-wasla
+    input: "ٱلأرز"
+    key: "الارز"
+  - id: ar-teh-marbuta
+    input: "ملوخية"
+    key: "ملوخيه"
+  - id: ar-teh-marbuta-written-heh
+    input: "ملوخيه"
+    key: "ملوخيه"
+  - id: ar-teh-marbuta-with-shadda
+    input: "ملوخيّة"
+    key: "ملوخيه"
+  - id: ar-alef-maksura
+    input: "كشرى"
+    key: "كشري"
+  - id: ar-alef-maksura-written-yeh
+    input: "كشري"
+    key: "كشري"
+  - id: ar-alef-maksura-halawa
+    input: "حلوى"
+    key: "حلوي"
+  - id: ar-hamza-standalone-kept
+    input: "شيء"
+    key: "شيء"
+    note: "a standalone ء is kept (A3), so شيء stays apart from شي"
+  - id: ar-hamza-yeh-seat
+    input: "شئ"
+    key: "شي"
+    note: "ئ → ي (A3), so شئ = شي"
+  - id: ar-hamza-plain-shi
+    input: "شي"
+    key: "شي"
+  - id: ar-hamza-seat-after-yeh
+    input: "شيئ"
+    key: "شي"
+    note: "ئ → ي gives يي, a long-vowel run that collapses to one"
+  - id: ar-hamza-yeh-seat-middle
+    input: "مائدة"
+    key: "مايده"
+  - id: ar-hamza-waw-seat
+    input: "لؤلؤ"
+    key: "لولو"
+  - id: ar-hamza-after-alef
+    input: "ماء"
+    key: "ماء"
+  - id: ar-lam-alef-ligature
+    input: "سﻼطة"
+    key: "سلاطه"
+    note: "presentation-form lam-alef (final) → لا"
+  - id: ar-lam-alef-hamza-ligature
+    input: "ﻷ"
+    key: "لا"
+  - id: ar-lam-alef-madda-ligature
+    input: "ﻵ"
+    key: "لا"
+  - id: ar-persian-keheh
+    input: "کباب"
+    key: "كباب"
+  - id: ar-persian-yeh-and-tcheh
+    input: "چای"
+    key: "جاي"
+  - id: ar-veh
+    input: "ڤيتامين"
+    key: "فيتامين"
+  - id: ar-peh
+    input: "پيتزا"
+    key: "بيتزا"
+  - id: ar-gaf
+    input: "برگر"
+    key: "بركر"
+  - id: ar-double-lam-kept
+    input: "اللبن"
+    key: "اللبن"
+    note: "a run of 2 consonants stays (A1): اللبن (the yogurt) ≠ البن (the coffee)"
+  - id: ar-single-lam
+    input: "البن"
+    key: "البن"
+  - id: ar-double-meem-kept
+    input: "مملح"
+    key: "مملح"
+    note: "مملح (salted) ≠ ملح (salt)"
+  - id: ar-single-meem
+    input: "ملح"
+    key: "ملح"
+  - id: ar-repeat-waw-2
+    input: "فوول"
+    key: "فول"
+    note: "long vowels collapse from a run of 2"
+  - id: ar-repeat-waw-4
+    input: "فوووول"
+    key: "فول"
+  - id: ar-repeat-alef
+    input: "شاااي"
+    key: "شاي"
+  - id: ar-repeat-yeh
+    input: "كشريي"
+    key: "كشري"
+  - id: ar-repeat-consonant-3
+    input: "حمممص"
+    key: "حمص"
+    note: "other letters collapse from a run of 3"
+  - id: ar-repeat-consonant-2-kept
+    input: "حممص"
+    key: "حممص"
+  - id: ar-repeat-consonant-5
+    input: "ممتاززززز"
+    key: "ممتاز"
+  - id: ar-repeat-hamza-3
+    input: "ءءء"
+    key: "ء"
+  - id: ar-repeat-from-folds
+    input: "فؤو"
+    key: "فو"
+    note: "ؤ → و first, then the و run collapses"
+  - id: ar-dish-ful-medames
+    input: "فول مدمس"
+    key: "فول مدمس"
+  - id: ar-dish-maqluba
+    input: "مقلوبة"
+    key: "مقلوبه"
+  - id: ar-dish-musakhan
+    input: "مسخّن"
+    key: "مسخن"
+  - id: ar-dish-mansaf
+    input: "منسف"
+    key: "منسف"
+  - id: ar-dish-hummus
+    input: "حُمُّص"
+    key: "حمص"
+  - id: ar-dish-falafel
+    input: "فلافل"
+    key: "فلافل"
+  - id: ar-dish-shawarma
+    input: "شاورما"
+    key: "شاورما"
+  - id: ar-dish-knafeh
+    input: "كنافة نابلسية"
+    key: "كنافه نابلسيه"
+  - id: ar-dish-qatayef
+    input: "قطايف"
+    key: "قطايف"
+  - id: ar-dish-tabbouleh
+    input: "تبّولة"
+    key: "تبوله"
+  - id: ar-dish-fattoush
+    input: "فتّوش"
+    key: "فتوش"
+  - id: ar-dish-freekeh
+    input: "فريكة"
+    key: "فريكه"
+  - id: ar-dish-qamar-aldin
+    input: "قمر الدين"
+    key: "قمر الدين"
+  - id: ar-dish-arabic-coffee
+    input: "قهوة عربية"
+    key: "قهوه عربيه"
+  - id: ar-dish-waraq-dawali
+    input: "ورق دوالي"
+    key: "ورق دوالي"
+  - id: ar-dish-kaak-alquds
+    input: "كعك القدس"
+    key: "كعك القدس"
+  - id: ar-punct-arabic-comma
+    input: "رز، دجاج"
+    key: "رز دجاج"
+  - id: ar-punct-arabic-question
+    input: "شو في؟"
+    key: "شو في"
+  - id: ar-punct-arabic-semicolon
+    input: "لبنة؛ زعتر"
+    key: "لبنه زعتر"
+
+  # --- lat-: Latin script ----------------------------------------------------
+  - id: lat-plain
+    input: "chicken"
+    key: "chicken"
+  - id: lat-upper
+    input: "CHICKEN"
+    key: "chicken"
+  - id: lat-title-case
+    input: "Chicken Breast"
+    key: "chicken breast"
+  - id: lat-repeat-run
+    input: "chiiicken"
+    key: "chicken"
+  - id: lat-repeat-mixed-case
+    input: "CHiiIcken"
+    key: "chicken"
+    note: "lowercase runs before the collapse, so case doesn't break a run"
+  - id: lat-double-coffee
+    input: "coffee"
+    key: "cofe"
+    note: "every Latin run of 2 collapses (A1), real doubles included"
+  - id: lat-double-apple
+    input: "Apple"
+    key: "aple"
+  - id: lat-accent-acute
+    input: "café"
+    key: "cafe"
+  - id: lat-accent-combining
+    input: "café"
+    key: "cafe"
+    note: "combining marks U+0300-U+036F are deleted"
+  - id: lat-accent-creme-brulee
+    input: "Crème Brûlée"
+    key: "creme brule"
+  - id: lat-accent-jalapeno
+    input: "jalapeño"
+    key: "jalapeno"
+  - id: lat-accent-acai
+    input: "açaí"
+    key: "acai"
+  - id: lat-accent-doner
+    input: "Döner"
+    key: "doner"
+  - id: lat-sharp-s
+    input: "Weißwurst"
+    key: "weiswurst"
+    note: "ß → ss, then the ss run collapses"
+  - id: lat-ligature-ae
+    input: "Æbleskiver"
+    key: "aebleskiver"
+  - id: lat-ligature-oe
+    input: "Œuf"
+    key: "oeuf"
+  - id: lat-o-slash
+    input: "Smørrebrød"
+    key: "smorebrod"
+  - id: lat-thorn
+    input: "Þorramatur"
+    key: "thoramatur"
+    note: "Þ → th, then the rr run collapses"
+  - id: lat-dotted-capital-i
+    input: "İSKENDER"
+    key: "iskender"
+    note: "the table maps İ to i: no locale lowercase, never i + U+0307"
+  - id: lat-dotless-i
+    input: "kızartma"
+    key: "kizartma"
+  - id: lat-extended-a
+    input: "Łosoś"
+    key: "losos"
+  - id: lat-extended-a-caron
+    input: "Šopska"
+    key: "sopska"
+  - id: lat-long-s
+    input: "ſalt"
+    key: "salt"
+  - id: lat-apostrophe
+    input: "don't"
+    key: "dont"
+  - id: lat-apostrophe-curly
+    input: "McDonald’s"
+    key: "mcdonalds"
+  - id: lat-apostrophe-modifier
+    input: "kaʼak"
+    key: "kak"
+  - id: lat-hyphen
+    input: "al-quds"
+    key: "al quds"
+  - id: lat-ampersand
+    input: "fish & chips!"
+    key: "fish chips"
+  - id: lat-slash
+    input: "salt/pepper"
+    key: "salt peper"
+  - id: lat-cyrillic
+    input: "борщ"
+    key: ""
+    note: "letters outside the allowed set become spaces"
+  - id: lat-cyrillic-with-latin
+    input: "борщ soup"
+    key: "soup"
+  - id: lat-cyrillic-lookalike
+    input: "сhicken"
+    key: "hicken"
+    note: "Cyrillic с (U+0441) looks like c but is not folded"
+  - id: lat-greek
+    input: "μ"
+    key: ""
+  - id: lat-fullwidth
+    input: "ＲＩＣＥ"
+    key: "rice"
+    note: "fullwidth ASCII folds to ASCII in step 1, then lowercases"
+  - id: lat-fullwidth-lowercase
+    input: "ｃｈｉｃｋｅｎ ｓｏｕｐ"
+    key: "chicken soup"
+  - id: lat-fullwidth-mixed-ascii
+    input: "Ｂｅｅｆ burger"
+    key: "bef burger"
+  - id: lat-fullwidth-apostrophe
+    input: "ｄｏｎ＇ｔ"
+    key: "dont"
+    note: "fullwidth ' folds to ' before the apostrophes are deleted"
+  - id: lat-fullwidth-punctuation
+    input: "ｒｉｃｅ！（ｗｈｉｔｅ）"
+    key: "rice white"
+  - id: lat-ligature-fi
+    input: "ﬁsh"
+    key: "fish"
+    note: "Latin ligatures U+FB00-U+FB06 fold to their letters in step 1"
+  - id: lat-ligature-fl
+    input: "ﬂour"
+    key: "flour"
+  - id: lat-ligature-ff
+    input: "oﬀal"
+    key: "ofal"
+    note: "ff from the ligature collapses like any Latin run"
+  - id: lat-ligature-ffi
+    input: "eﬃcient"
+    key: "eficient"
+  - id: lat-ligature-ffl
+    input: "WAﬄE"
+    key: "wafle"
+  - id: lat-ligature-long-st
+    input: "toaﬅ"
+    key: "toast"
+  - id: lat-ligature-st
+    input: "toaﬆ"
+    key: "toast"
+  - id: lat-micro-sign
+    input: "µg"
+    key: "g"
+  - id: lat-ordinal
+    input: "1º"
+    key: "1"
+
+  # --- digit-: digits --------------------------------------------------------
+  - id: digit-fullwidth
+    input: "１００ｇ"
+    key: "100g"
+    note: "fullwidth digits fold to ASCII in step 1"
+  - id: digit-arabic-indic
+    input: "١٢٣"
+    key: "123"
+  - id: digit-persian
+    input: "۱۲۳"
+    key: "123"
+  - id: digit-persian-four-five-six
+    input: "۴۵۶"
+    key: "456"
+  - id: digit-arabic-indic-all
+    input: "٠١٢٣٤٥٦٧٨٩"
+    key: "0123456789"
+  - id: digit-run-kept
+    input: "100"
+    key: "100"
+    note: "digits never collapse"
+  - id: digit-arabic-indic-run-kept
+    input: "١٠٠ غرام"
+    key: "100 غرام"
+  - id: digit-repeat-kept
+    input: "1111"
+    key: "1111"
+  - id: digit-leading-zeros
+    input: "007"
+    key: "007"
+  - id: digit-decimal-dot
+    input: "1.5 kg"
+    key: "1 5 kg"
+    note: "the key is for search; numbers are parsed separately"
+  - id: digit-decimal-arabic
+    input: "١٫٥"
+    key: "1 5"
+  - id: digit-arabic-percent
+    input: "١٠٠٪ عصير"
+    key: "100 عصير"
+  - id: digit-attached-latin
+    input: "7up"
+    key: "7up"
+  - id: digit-fraction-char
+    input: "½ رغيف"
+    key: "رغيف"
+  - id: digit-superscript
+    input: "m²"
+    key: "m"
+  - id: digit-multiplication-sign
+    input: "2×3"
+    key: "2 3"
+
+  # --- space-: whitespace, invisibles, symbols -------------------------------
+  - id: space-empty
+    input: ""
+    key: ""
+  - id: space-only
+    input: "   "
+    key: ""
+  - id: space-trim
+    input: "  فول  "
+    key: "فول"
+  - id: space-collapse
+    input: "فول    مدمس"
+    key: "فول مدمس"
+  - id: space-tab-newline
+    input: "rice\t\nchicken"
+    key: "rice chicken"
+  - id: space-nbsp
+    input: "rice chicken"
+    key: "rice chicken"
+  - id: space-ideographic
+    input: "rice　bowl"
+    key: "rice bowl"
+  - id: space-runs-not-joined
+    input: "aa  aa"
+    key: "a a"
+    note: "a space between runs keeps them apart"
+  - id: space-zwnj-inside-word
+    input: "فو‌ل"
+    key: "فول"
+    note: "invisibles are deleted, not turned into spaces"
+  - id: space-zwj
+    input: "ش‍اي"
+    key: "شاي"
+  - id: space-zwsp
+    input: "chick​en"
+    key: "chicken"
+  - id: space-rlm-lrm
+    input: "‏فول‎"
+    key: "فول"
+  - id: space-arabic-letter-mark
+    input: "؜فول"
+    key: "فول"
+  - id: space-bidi-isolates
+    input: "⁧فول⁩ 2"
+    key: "فول 2"
+  - id: space-bidi-embedding
+    input: "‫رز‬"
+    key: "رز"
+  - id: space-bom
+    input: "﻿rice"
+    key: "rice"
+  - id: space-soft-hyphen
+    input: "choc­olate"
+    key: "chocolate"
+  - id: space-word-joiner
+    input: "lab⁠neh"
+    key: "labneh"
+  - id: space-punct-only
+    input: "!!!"
+    key: ""
+  - id: space-emoji
+    input: "🍕 pizza"
+    key: "piza"
+    note: "the emoji becomes a space; zz collapses like every Latin run"
+  - id: space-emoji-between
+    input: "فول🔥مدمس"
+    key: "فول مدمس"
+  - id: space-emoji-only
+    input: "🙂"
+    key: ""
+  - id: space-emoji-skin-tone
+    input: "👍🏽ok"
+    key: "ok"
+
+  # --- mixed-: scripts and symbols together ----------------------------------
+  - id: mixed-arabic-latin
+    input: "فول ful"
+    key: "فول ful"
+  - id: mixed-number-and-words
+    input: "2 رغيف خبز"
+    key: "2 رغيف خبز"
+  - id: mixed-dash
+    input: "شاورما-دجاج"
+    key: "شاورما دجاج"
+  - id: mixed-parentheses
+    input: "حمص (صحن)"
+    key: "حمص صحن"
+  - id: mixed-brand
+    input: "Pepsi بيبسي"
+    key: "pepsi بيبسي"
+  - id: mixed-arabic-digit-latin
+    input: "٧UP"
+    key: "7up"
+  - id: mixed-attached-digit
+    input: "شاي2"
+    key: "شاي2"
+  - id: mixed-percent
+    input: "حليب 3%"
+    key: "حليب 3"
+  - id: mixed-hashtag
+    input: "#فطور"
+    key: "فطور"
+  - id: mixed-underscore
+    input: "ful_medames"
+    key: "ful medames"
+  - id: mixed-abbreviation-dot
+    input: "د. فول"
+    key: "د فول"
+  - id: mixed-all-steps
+    input: "  ‏أَرُزّ   بـالـدجـاج ١٠٠ Grs!! 🍗 "
+    key: "ارز بالدجاج 100 grs"
+
+  # --- arabizi-: Arabic in Latin letters and digits --------------------------
+  - id: arabizi-7ommos
+    input: "7ommos"
+    key: "7omos"
+  - id: arabizi-7ummus-upper
+    input: "7UMMUS"
+    key: "7umus"
+  - id: arabizi-fool
+    input: "fool"
+    key: "fol"
+    note: "fool and ful stay different keys; listed aliases cover both (FD-020)"
+  - id: arabizi-fuul
+    input: "fuul"
+    key: "ful"
+  - id: arabizi-ka3ek
+    input: "ka3ek"
+    key: "ka3ek"
+  - id: arabizi-digit-run-kept
+    input: "ka33ek"
+    key: "ka33ek"
+  - id: arabizi-apostrophe-letter
+    input: "3'ada"
+    key: "3ada"
+    note: "the apostrophe is deleted, so 3' (غ) reads like 3 (ع); aliases disambiguate"
+  - id: arabizi-mlo5ia
+    input: "Mlo5ia"
+    key: "mlo5ia"
+  - id: arabizi-ma2loobe
+    input: "ma2loobe"
+    key: "ma2lobe"
+  - id: arabizi-mana2eesh
+    input: "mana2eesh"
+    key: "mana2esh"
+  - id: arabizi-za3tar
+    input: "Za3tar"
+    key: "za3tar"
+  - id: arabizi-sa7lab
+    input: "sa7lab"
+    key: "sa7lab"
+  - id: arabizi-shaaay
+    input: "shaaaay"
+    key: "shay"
+  - id: arabizi-wa7ed
+    input: "wa7ed ful"
+    key: "wa7ed ful"
+  - id: arabizi-hyphen
+    input: "ma2lobe-djaj"
+    key: "ma2lobe djaj"
+  - id: arabizi-with-arabic
+    input: "fool مدمس"
+    key: "fol مدمس"

@@ -26,6 +26,9 @@
 - HLC encoding on the wire and in Postgres (sortable text vs composite columns).
 - Pull page size and cursor semantics under concurrent pushes.
 
+## Notes from earlier steps
+- **From S08:** HLC text format and receive result (`ok`/`driftRejected`) are in `fb_domain` (TD-049). Add `contracts/testdata/sync/hlc_cases.yaml` so C# matches.
+
 ## Exit criteria
 - [ ] The convergence simulation passes ≥ 1,000 randomised runs against the fake, and ≥ 50 against the real API.
 - [ ] Fault-injection tests pass (no loss, no duplicates).

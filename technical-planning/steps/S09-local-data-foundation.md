@@ -29,6 +29,9 @@
 - Inverse computation strategy (snapshot before write vs per-op inverse).
 - How domain events are delivered to Riverpod (stream vs callbacks).
 
+## Notes from earlier steps
+- **From S08:** HLC columns use binary collation (SQLite default `BINARY`; TD-049). Use `fb_domain`'s `Clock`/`IdGenerator`; the app wires `lib/system.dart` (not exported from the barrel). `EntryTime` stores `occurredAtUtc` + `tzOffsetMin`.
+
 ## Exit criteria
 - [ ] A change set with several ops applies atomically. A failure in one op rolls everything back (test).
 - [ ] Undo restores the exact previous state, including tombstoned rows (test).

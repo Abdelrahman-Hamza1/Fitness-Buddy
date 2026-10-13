@@ -119,7 +119,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [S05](S05-staging-infrastructure.md) | Staging infrastructure & deploy pipeline | P0 | S04 | L | ⬜ |
 | [S06](S06-app-shell.md) | App shell | P0 | S02 | M | ⬜ |
 | [S07](S07-design-system.md) | Design system v0 & key screen mockups | P0 | S06 | L | ⬜ |
-| [S08](S08-domain-primitives.md) | Domain primitives & text normalization | P0 | S01 | M | ⬜ |
+| [S08](S08-domain-primitives.md) | Domain primitives & text normalization | P0 | S01 | M | ✅ |
 | [S09](S09-local-data-foundation.md) | Local data foundation | P0 | S06, S08 | M | ⬜ |
 | [S10](S10-spike-ai-bakeoff.md) | Spike: AI bake-off & eval harness v0 | P0 | S03, S08 | L | ⬜ |
 | [S11](S11-spike-food-data.md) | Spike: food data | P0 | S08 | M | ⬜ |

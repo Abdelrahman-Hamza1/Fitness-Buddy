@@ -75,7 +75,7 @@ review:
 
 ### 5.1 Normalization (TD-030: implemented in Dart and C#, one shared spec)
 
-- **Arabic:** strip diacritics (tashkeel) and tatweel; unify alef forms (أ إ آ ٱ → ا); ة → ه; ى → ي; ؤ ئ → ء-forms; Arabic-Indic and Persian digits → ASCII.
+- **Arabic:** strip diacritics (tashkeel) and tatweel; unify alef forms (أ إ آ ٱ → ا); ة → ه; ى → ي; seat folding ئ → ي and ؤ → و (standalone ء kept; TD-050); Arabic-Indic and Persian digits → ASCII. The exact pipeline and tables are specified in `contracts/testdata/README.md` and the shared golden file (TD-030, TD-050).
 - **Latin:** lowercase, strip accents, collapse repeated letters ("chiiicken").
 - **Arabizi (R1):** the **curated alias list per food** is the mechanism (FD-020). **R2 (FD-024):** a "skeleton" key for unlisted spellings: digit-letters mapped (2→ء/q, 3→ع, 5→خ, 7→ح, 8→غ/q, 9→ق/ص), vowels dropped, doubled consonants collapsed.
 - **Numbers & units** (Dart only, for manual entry and cross-checking the model): EN/AR number words, fractions ("نص", "ربع", "half"), unit words.

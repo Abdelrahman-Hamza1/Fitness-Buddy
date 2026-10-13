@@ -10,6 +10,9 @@ environment:
 # test/dependencies_test.dart.
 
 dev_dependencies:
+  # Property tests (S08 D14). Pinned: last release Dec 2023, dev only; the
+  # fallback is kiri_check 1.3.2 if a future SDK breaks it.
+  glados: 1.1.7
   # Pinned to the version Flutter's own tooling uses (test_api 0.7.12), so the
   # Flutter app can join this workspace without a version conflict.
   test: 1.31.1

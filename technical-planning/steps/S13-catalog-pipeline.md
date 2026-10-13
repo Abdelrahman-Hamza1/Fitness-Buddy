@@ -28,6 +28,9 @@
 - The ID scheme (prefix + slug vs opaque) and how the stability check stores the previous release.
 - How much of the USDA selection is curated now vs grown in D batches.
 
+## Notes from earlier steps
+- **From S08:** tune the `SanityCheck` thresholds (one tolerance value in `fb_domain`) on real catalog data. Yield factors feed `YieldConverter` (direct row or inverse, no chaining). Resolve علبة (backlog #26).
+
 ## Exit criteria
 - [ ] `make catalog` builds the pack locally. CI builds it on every `data/` change and fails on a sanity violation, a duplicate name or a changed ID (tests with fixtures).
 - [ ] `catalog.db` < 10 MB. Counts per kind in the Outcome.

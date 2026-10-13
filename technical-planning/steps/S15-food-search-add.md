@@ -26,6 +26,9 @@
 - The ranking formula weights and tie-breakers (documented and unit-tested).
 - How "recent foods" are derived (diary history query vs a cache table).
 
+## Notes from earlier steps
+- **From S08:** search keys come from `fb_text` `normalizeKey` (TD-050). Dedup on a stricter key without Latin repeat-collapse (coffee → cofe is fine for search, not for merging). Quantity parsing: `fb_text` parser returns unit codes resolved by `fb_domain` `FoodMeasures`. A split is a hypothesis: try a catalog match on `ParsedQuantity.original` (the whole text) before trusting `rest` (حبة البركة, 7 Up, omega 3).
+
 ## Exit criteria
 - [ ] In airplane mode: search "maqluba", "مقلوبة" and an Arabizi alias → the same single result, add 1 plate, and it appears in the diary data with an undo (integration test).
 - [ ] Ranking/dedup unit tests with fixtures (duplicates collapsed, personal first).

@@ -9,7 +9,7 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 3 | S01 | Verify Dependabot handles the pub workspace after its first monthly run; fallback: scheduled `dart pub outdated` | minor | next after first run | open |
 | 4 | S01 | Flutter pin bump cadence: manual, quarterly (Dependabot covers the .NET SDK) | minor | recurring | open |
 | 5 | S01 | Nightly `trace` workflow + "implemented" column in the report | minor | backlog | open |
-| 6 | S01 | `fb_domain` coverage gate in CI | minor | S08 | open |
+| 6 | S01 | `fb_domain` coverage gate in CI | minor | S08 | done (S08 WP1) |
 | 7 | S01 review | trace v0 counts `skip:` tests as covered (documented limitation) | minor | S47 or earlier | open |
 | 8 | S01 review | Makefile: missing python3 is a parse-time error, so `make doctor` can't report it | nit | backlog | open |
 | 9 | S01 review | `pubspec.lock` is `linguist-generated` (collapsed in diffs): add a check that every lock `url:` is `https://pub.dev` | nit | S02 | open |
@@ -28,4 +28,10 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 23 | S02 r2 | contract-breaking.sh blocking mode: pass oasdiff githubactions output through the same annotation-only filter as conformance | nit | next touch | open |
 | 24 | S02 r2 | fb-problem-json-errors accepts only one `allOf` level of ProblemDetails extension; recurse if a nested extension is ever needed | nit | when needed | open |
 | 25 | S02 r2 | fb-oneof-discriminator compares mapping count, not targets (resolved doc loses `$ref` identity) | nit | accepted | open |
+| 26 | S08 | Portion word علبة (can/box) is ambiguous and not mapped by the parser; resolve with real data | minor | S13/S15 | open |
+| 27 | S08 | Promote `ManualClock` from fb_domain test helpers to a shared test package if S09+ needs a fake clock | nit | S09 | open |
+| 28 | S08 r2 | Parser: two quantities in a row via x-count or glued unit ("2 x2 eggs", "2 100g rice") should be null; pin cases | minor | S15 | open |
+| 29 | S08 r2 | Parser: zero gives null without `original` ("Coke 0"); document that callers catalog-match the raw text on null, pin "Coke 0" | minor | S15 | open |
+| 30 | S08 r2 | Ban list shorthand: `clock?.now()` false positive; `[.now()]` / `{.now()}` not caught; stripComments EOF backslash guard | minor | S09 | open |
+| 31 | S08 r2 | End-quantity-wins rule also applies to English implicit start portions ("cup of tea 2 tbsp"); document or pin | nit | S15 | open |
 | 13 | S01 | Spec tidy: add a Release column to the UX-/AQ- tables, then drop the trace overrides | minor | owner, later | open |

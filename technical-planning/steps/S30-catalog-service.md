@@ -28,6 +28,9 @@
 - Index design (GIN trigram on normalized names, and per-language columns vs one alias table).
 - How search ranking weights are shared or kept in sync with the Dart ranking (a shared fixture file of query → expected order).
 
+## Notes from earlier steps
+- **From S08:** C# normalization implements `contracts/testdata/README.md` exactly with explicit tables (no `FormD`, no `ToLower`/culture APIs) and must pass every case in `normalization_cases.yaml` (TD-030, TD-050).
+
 ## Exit criteria
 - [ ] The golden normalization file passes in **both** test suites in CI.
 - [ ] Search p95 < 150 ms server time on staging with the full catalog. Relevance fixtures pass (query → expected top results).

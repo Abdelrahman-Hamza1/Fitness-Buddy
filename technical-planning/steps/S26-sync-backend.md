@@ -28,6 +28,9 @@
 - How entity JSON schemas flow from the contract into the backend at build time.
 - Partition readiness (keep the schema partition-friendly by `user_id`, no partitioning yet).
 
+## Notes from earlier steps
+- **From S08:** reconcile the client's max forward drift (24 h default) with the server clamp ("a few minutes", `05` §5.2). Compare HLCs with `COLLATE "C"` (TD-049).
+
 ## Exit criteria
 - [ ] Integration tests: LWW for concurrent edits from two devices, history captured, a tombstone beats an older update, a future-dated HLC is clamped, invalid payloads are rejected per change, pagination is complete under concurrent pushes, anonymous → `403`, **user A can't read B's documents even with a crafted request**.
 - [ ] The convergence simulation from S12 passes against the production module.
