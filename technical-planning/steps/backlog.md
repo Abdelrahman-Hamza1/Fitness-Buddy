@@ -18,4 +18,14 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 12 | S01 security | Scheduled workflows stop after 60 days without repo activity (weekly NuGetAudit run) | nit | note | open |
 | 14 | S01 security r2 | setup-dotnet.sh: unparseable URL port exits with a Python traceback instead of `die` (fails closed); cleanup trap quoting of `$work` | nit | next touch of the script | open |
 | 15 | S01 security r2 | Optional: commit the expected .NET SDK sha512 next to `global.json` (today the hash comes from the same Microsoft host) | nit | backlog | open |
+| 16 | S02 | Docker Hub anonymous pull limits on CI runners: if they bite, cache images (`docker save` + `actions/cache` keyed on digests) or mirror to GHCR | minor | when seen | open |
+| 17 | S02 | Verify Dependabot's `docker-compose` updater bumps `tag@sha256` in `tools/contract-tools/compose.yaml` | minor | after first run | open |
+| 18 | S02 | Enum schema transformer for the Host (proven snippet in `backend/README.md`) | minor | first step with an enum | open |
+| 19 | S02 | Tag ruleset protecting `contracts-v*` (no update/delete), owner clicks | minor | S29 (first tag) | open |
+| 20 | S02 | Move `Host/Config/` (`GET /v1/config`) into the Account module, same operationId + tag | minor | S24/S28 | open |
+| 21 | S02 | Contract.Tests: validate runtime responses against the bundled schema generically, once there are several endpoints | minor | ~S26 | open |
+| 22 | S02 | Host build prints an MVC "No action descriptors found" info line during OpenAPI generation; filter in logging config | nit | S03 | open |
+| 23 | S02 r2 | contract-breaking.sh blocking mode: pass oasdiff githubactions output through the same annotation-only filter as conformance | nit | next touch | open |
+| 24 | S02 r2 | fb-problem-json-errors accepts only one `allOf` level of ProblemDetails extension; recurse if a nested extension is ever needed | nit | when needed | open |
+| 25 | S02 r2 | fb-oneof-discriminator compares mapping count, not targets (resolved doc loses `$ref` identity) | nit | accepted | open |
 | 13 | S01 | Spec tidy: add a Release column to the UX-/AQ- tables, then drop the trace overrides | minor | owner, later | open |

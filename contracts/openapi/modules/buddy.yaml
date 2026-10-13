@@ -1,0 +1,4 @@
+# Buddy module: interpret, suggest, review, label, import (04 §4.3 Buddy, 06).
+# No endpoints yet; a later step fills this file. Then list each path in
+# ../openapi.yaml under `paths` and add the `Buddy` tag there.
+paths: {}

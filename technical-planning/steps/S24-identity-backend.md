@@ -30,6 +30,9 @@
 - Key storage for signing keys (database encrypted with a key from secrets vs a file secret).
 - Exact token lifetimes.
 
+## Notes from earlier steps
+- **From S02:** JwtBearer 401/403 challenges must emit `application/problem+json` (the Spectral rule and the runtime must agree). Decide per auth POST whether it is `x-fb-idempotency: exempt` (with `x-fb-idempotency-reason`): token responses must not be stored and replayed. Move `GET /v1/config` into the Account module if it exists by then (backlog #20).
+
 ## Exit criteria
 - [ ] Integration tests: each sign-in flow, refresh rotation, **refresh reuse → family revoked**, expired/invalid Google tokens rejected (wrong `aud`, wrong `iss`, expired), email code expiry/attempt limits/throttling, link keeps the user ID, link conflict → `409`, anonymous users rejected by the "registered user" policy.
 - [ ] A JWKS rotation test: tokens signed with the old key stay valid until expiry, and new tokens use the new key.

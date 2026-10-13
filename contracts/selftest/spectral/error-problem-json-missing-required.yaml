@@ -1,0 +1,38 @@
+# expect: fb-problem-json-errors
+# A 404 error whose problem+json schema does not require status.
+openapi: 3.1.1
+info:
+  title: Spectral self-test
+  version: 0.0.0
+  description: 'A 404 error whose problem+json schema does not require status.'
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Test
+    description: Self-test operations.
+paths:
+  /v1/things:
+    get:
+      tags: [Test]
+      operationId: getThing
+      description: Returns a thing.
+      parameters:
+        - $ref: './_shared.yaml#/components/parameters/AppVersion'
+        - $ref: './_shared.yaml#/components/parameters/Platform'
+        - $ref: './_shared.yaml#/components/parameters/DeviceId'
+      responses:
+        '200':
+          $ref: './_shared.yaml#/components/responses/Thing'
+        '500':
+          $ref: './_shared.yaml#/components/responses/InternalError'
+        '404':
+          description: Not found.
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                required: [type, title]
+                properties:
+                  type: { type: string, format: uri-reference }
+                  title: { type: string }
+                  status: { type: integer, format: int32 }

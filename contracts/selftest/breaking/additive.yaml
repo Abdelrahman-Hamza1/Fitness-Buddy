@@ -1,0 +1,41 @@
+# MUST PASS: adds an endpoint and a new required response property (old apps ignore both).
+openapi: 3.1.1
+info:
+  title: Breaking self-test
+  version: 1.0.0
+paths:
+  /v1/things/{thingId}:
+    get:
+      operationId: getThing
+      parameters:
+        - name: thingId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: A thing.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Thing' }
+  /v1/things:
+    get:
+      operationId: listThings
+      responses:
+        '200':
+          description: All things.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Thing' }
+components:
+  schemas:
+    Thing:
+      type: object
+      required: [id, name, status, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        status: { type: string, enum: [active, archived] }
+        createdAt: { type: string, format: date-time }

@@ -1,0 +1,58 @@
+# Account module (04 §4.3): /v1/config now; /v1/me (GET, DELETE) later.
+# Tag: Account. Every path here is listed in ../openapi.yaml under `paths`.
+paths:
+  /v1/config:
+    get:
+      tags: [Account]
+      operationId: getConfig
+      summary: Get the client configuration
+      description: >-
+        What the app needs to know about the server's expectations: the
+        minimum supported app version, feature flags and client thresholds.
+        The app fetches it in the background and caches it; it is never on the
+        startup path.
+      parameters:
+        - $ref: '../components/headers.yaml#/components/parameters/AppVersion'
+        - $ref: '../components/headers.yaml#/components/parameters/Platform'
+        - $ref: '../components/headers.yaml#/components/parameters/DeviceId'
+      responses:
+        '200':
+          description: The current client configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientConfig'
+              example:
+                minimumAppVersion: 0.1.0
+                featureFlags: {}
+                thresholds: {}
+        '500':
+          $ref: '../components/problems.yaml#/components/responses/InternalError'
+
+components:
+  schemas:
+    ClientConfig:
+      type: object
+      description: Server-controlled settings for the app.
+      required: [minimumAppVersion, featureFlags, thresholds]
+      properties:
+        minimumAppVersion:
+          type: string
+          pattern: '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
+          description: >-
+            The oldest app version (`MAJOR.MINOR.PATCH`) the server still
+            serves. Older apps are asked to update (426, S03).
+        featureFlags:
+          type: object
+          description: Feature flags by name. A flag the app doesn't know is ignored; a missing flag means off.
+          additionalProperties:
+            type: boolean
+        thresholds:
+          type: object
+          description: >-
+            Numeric client thresholds by name (for example the AI confidence
+            minimum, AI-060). A missing threshold means the app's built-in
+            default.
+          additionalProperties:
+            type: number
+            format: double

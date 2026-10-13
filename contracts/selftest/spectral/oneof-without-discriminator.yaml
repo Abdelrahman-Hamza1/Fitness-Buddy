@@ -1,0 +1,49 @@
+# expect: fb-oneof-discriminator
+# A oneOf union without a discriminator (S02 A4).
+openapi: 3.1.1
+info:
+  title: Spectral self-test
+  version: 0.0.0
+  description: 'A oneOf union without a discriminator (S02 A4).'
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Test
+    description: Self-test operations.
+paths:
+  /v1/things:
+    get:
+      tags: [Test]
+      operationId: getThing
+      description: Returns a thing.
+      parameters:
+        - $ref: './_shared.yaml#/components/parameters/AppVersion'
+        - $ref: './_shared.yaml#/components/parameters/Platform'
+        - $ref: './_shared.yaml#/components/parameters/DeviceId'
+      responses:
+        '200':
+          description: An intent.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Intent'
+        '500':
+          $ref: './_shared.yaml#/components/responses/InternalError'
+components:
+  schemas:
+    Intent:
+      oneOf:
+        - $ref: '#/components/schemas/LogFood'
+        - $ref: '#/components/schemas/AskQuestion'
+    LogFood:
+      type: object
+      required: [kind, food]
+      properties:
+        kind: { type: string, const: logFood }
+        food: { type: string }
+    AskQuestion:
+      type: object
+      required: [kind, question]
+      properties:
+        kind: { type: string, const: askQuestion }
+        question: { type: string }

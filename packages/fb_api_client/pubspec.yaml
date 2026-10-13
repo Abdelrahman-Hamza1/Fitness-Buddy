@@ -1,0 +1,29 @@
+name: fb_api_client
+description: Dart client for the Fitness Buddy API, generated from contracts/openapi.yaml (dio + retrofit, freezed models).
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.13.0
+
+# Runtime dependencies are limited to the generated code's runtime (allowlist in
+# test/dependencies_test.dart). Every generator-related version is pinned
+# exactly (S02 D1): they move together with the Flutter pin (the analyzer < 14
+# cap) and with a `make gen` regeneration commit. Dependabot ignores them.
+dependencies:
+  dio: 5.11.1
+  freezed_annotation: 3.1.0
+  json_annotation: 4.12.0
+  retrofit: 4.10.0
+
+dev_dependencies:
+  build_runner: 2.16.1
+  freezed: 4.0.1
+  json_serializable: 6.14.1
+  retrofit_generator: 10.2.11
+  swagger_parser: 1.45.0
+  # Pinned to the version Flutter's own tooling uses (test_api 0.7.12), so the
+  # Flutter app can join this workspace without a version conflict.
+  test: 1.31.1
+  very_good_analysis: 11.0.0
+  yaml: ^3.1.3

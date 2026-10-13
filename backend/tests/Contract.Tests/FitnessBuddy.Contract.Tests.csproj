@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Runtime checks of the HTTP API against contracts/openapi.yaml (S02). The build-time
+       document is diffed by `make contract-conformance`; these tests check the real JSON.
+       xUnit v3 on Microsoft.Testing.Platform, like Architecture.Tests. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Host\FitnessBuddy.Host.csproj" />
+  </ItemGroup>
+</Project>

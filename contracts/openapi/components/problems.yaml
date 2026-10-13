@@ -1,0 +1,52 @@
+# Errors (04 §4.2 "Errors"): RFC 9457 problem details, always
+# `application/problem+json` (Spectral rule fb-problem-json-errors).
+# The error-type catalogue is the table in contracts/README.md (S02 A2).
+components:
+  schemas:
+    ProblemDetails:
+      type: object
+      description: >-
+        RFC 9457 problem details. Members not listed here are extensions (for
+        example `errors` on validation failures, S03) and clients must ignore
+        the ones they don't know.
+      required: [type, title, status]
+      properties:
+        type:
+          type: string
+          format: uri-reference
+          description: >-
+            Identifies the kind of problem. Our own problems use a stable,
+            relative reference `/errors/<kebab-slug>` from the catalogue in
+            contracts/README.md (`/errors/validation-failed`,
+            `/errors/rate-limited`, `/errors/version-conflict`,
+            `/errors/upgrade-required`). It is an opaque string: clients
+            compare it exactly and never dereference it, and an entry is never
+            renamed or removed within an API version. Problems we don't map
+            carry the framework's default (an RFC link or `about:blank`), so
+            this is a free string, not an enum.
+        title:
+          type: string
+          description: Short, human-readable summary of the problem type (English, not for display as-is).
+        status:
+          type: integer
+          format: int32
+          description: The HTTP status code, repeated for convenience.
+        detail:
+          type: string
+          description: Human-readable explanation of this occurrence (English, never user content).
+        instance:
+          type: string
+          format: uri-reference
+          description: Identifies this occurrence (for example the request path).
+
+  responses:
+    InternalError:
+      description: Unexpected server error. Retry later; quote the `X-Request-Id` response header when reporting it.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          example:
+            type: https://tools.ietf.org/html/rfc9110#section-15.6.1
+            title: An error occurred while processing your request.
+            status: 500

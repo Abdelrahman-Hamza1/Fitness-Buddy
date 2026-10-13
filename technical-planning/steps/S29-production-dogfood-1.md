@@ -29,6 +29,9 @@
 - **The Postgres hosting option** (`08` §4: Kamal accessory + WAL-G vs native + pgBackRest via Ansible).
 - The second backup provider. VM sizes. The alert delivery channel.
 
+## Notes from earlier steps
+- **From S02 (TD-044):** with the first `app-v*` release that calls the API, set `info.version` to 1.0.0 and create the first contract tag `contracts-v1.0.0`; from then on the breaking gate blocks. Add the `contracts-v*` tag ruleset (backlog #19).
+
 ## Exit criteria
 - [ ] The restore drill is done: recovery to a chosen point in time within the target (≤ 1 h). Timings are in the runbook.
 - [ ] The automated restore test runs green on schedule, and a forced failure alerts the owner.

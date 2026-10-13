@@ -1,0 +1,68 @@
+# Shared value types (04 §4.2 "Formats", 05 §1). Reference them from module
+# files as '../components/types.yaml#/components/schemas/<Name>'.
+# They are registered in openapi.yaml, so they are bundled even before an
+# endpoint uses them.
+components:
+  schemas:
+    Id:
+      type: string
+      format: uuid
+      description: >-
+        A UUIDv7 (time-ordered), generated where the object is created (usually
+        on the device), lower-case canonical text form.
+      examples:
+        - 0192a5d4-7c3e-7b1a-9f2e-3c4d5e6f7a8b
+
+    Instant:
+      type: string
+      format: date-time
+      description: >-
+        A point in time, RFC 3339 in UTC with a `Z` suffix. Pair it with a
+        `TzOffsetMin` wherever the local time matters.
+      examples:
+        - '2026-10-13T07:30:00Z'
+
+    LocalDate:
+      type: string
+      format: date
+      description: >-
+        A calendar day without a time zone, `YYYY-MM-DD` (the user's local day
+        when the thing happened).
+      examples:
+        - '2026-10-13'
+
+    TzOffsetMin:
+      type: integer
+      format: int32
+      minimum: -840
+      maximum: 840
+      description: >-
+        The device's UTC offset in minutes at that moment (east of UTC is
+        positive), e.g. 180 for UTC+3.
+      examples:
+        - 180
+
+    Grams:
+      type: number
+      format: double
+      description: Mass of food in grams (canonical food unit). Precision is documented per field.
+
+    Milliliters:
+      type: number
+      format: double
+      description: Volume in millilitres (canonical liquid unit). Precision is documented per field.
+
+    Kilocalories:
+      type: number
+      format: double
+      description: Energy in kilocalories (kcal). Precision is documented per field.
+
+    Kilograms:
+      type: number
+      format: double
+      description: Body or lifted weight in kilograms. Precision is documented per field.
+
+    Centimeters:
+      type: number
+      format: double
+      description: Body measurement or height in centimetres. Precision is documented per field.

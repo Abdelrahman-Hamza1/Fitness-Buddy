@@ -1,0 +1,54 @@
+# Standard headers (04 §4.2 "Client headers", "Idempotency", "Tracing").
+# Reference them as '../components/headers.yaml#/components/parameters/<Name>'.
+components:
+  parameters:
+    AppVersion:
+      name: X-App-Version
+      in: header
+      required: true
+      description: >-
+        The app's version, compared with `ClientConfig.minimumAppVersion` (the
+        426 gate arrives in S03). Set by the API client, not by callers.
+      schema:
+        type: string
+
+    Platform:
+      name: X-Platform
+      in: header
+      required: true
+      description: The app's platform. Set by the API client, not by callers.
+      schema:
+        type: string
+        enum: [android, ios]
+
+    DeviceId:
+      name: X-Device-Id
+      in: header
+      required: true
+      description: >-
+        A random install ID (UUID) generated on first launch. Not a hardware
+        identifier. Set by the API client, not by callers.
+      schema:
+        type: string
+        format: uuid
+
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: >-
+        Required on every unsafe POST. The server stores the result for 24 h and
+        replays it for a repeated key (Buddy uses the chat message ID).
+      schema:
+        type: string
+        format: uuid
+
+  headers:
+    # Defined now, referenced by no response yet: oasdiff can't compare
+    # response-header schemas (oasdiff #1094), so S03 decides how to declare it.
+    XRequestId:
+      description: >-
+        The request's correlation ID, echoed on every response and written in
+        every server log line. Quote it when reporting a problem.
+      schema:
+        type: string

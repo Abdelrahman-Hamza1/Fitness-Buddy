@@ -1,0 +1,30 @@
+# expect: fb-client-headers
+# X-Device-Id declared as a string without format uuid.
+openapi: 3.1.1
+info:
+  title: Spectral self-test
+  version: 0.0.0
+  description: 'X-Device-Id declared as a string without format uuid.'
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Test
+    description: Self-test operations.
+paths:
+  /v1/things:
+    get:
+      tags: [Test]
+      operationId: getThing
+      description: Returns a thing.
+      parameters:
+        - $ref: './_shared.yaml#/components/parameters/AppVersion'
+        - $ref: './_shared.yaml#/components/parameters/Platform'
+        - name: X-Device-Id
+          in: header
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          $ref: './_shared.yaml#/components/responses/Thing'
+        '500':
+          $ref: './_shared.yaml#/components/responses/InternalError'

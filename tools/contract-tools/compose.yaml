@@ -1,0 +1,71 @@
+# Contract tools (S02 D8): Redocly (bundle), Spectral (lint) and oasdiff
+# (breaking + conformance), each pinned by tag AND digest. Dependabot
+# (docker-compose ecosystem) proposes bumps; the digest is what actually runs.
+#
+# Never call this file directly: the Makefile runs every tool through
+#   docker compose -f tools/contract-tools/compose.yaml run --rm -T <service> ...
+# and exports UID, GID and REPO_ROOT for it, and creates build/contract/ first.
+#
+# Every service runs:
+# - with no network at all (network_mode: none): no telemetry, no remote $refs,
+#   nothing uploaded (never use `oasdiff --open`);
+# - as the caller's uid:gid, so files it writes (the bundle) are not root-owned;
+# - with the repository mounted READ-ONLY at /work, except build/contract/
+#   (/work/build/contract, writable: the tools' output), and a read-only root
+#   filesystem. build/contract/ must exist on the host before a run: compose
+#   refuses to start rather than create it as root (create_host_path: false);
+# - with every Linux capability dropped and no privilege escalation.
+name: fb-contract-tools
+
+x-tool: &tool
+  network_mode: none
+  user: "${UID:?run through make (UID not set)}:${GID:?run through make (GID not set)}"
+  working_dir: /work
+  volumes:
+    - type: bind
+      source: "${REPO_ROOT:?run through make (REPO_ROOT not set)}"
+      target: /work
+      read_only: true
+      bind:
+        create_host_path: false
+    - type: bind
+      source: "${REPO_ROOT:?run through make (REPO_ROOT not set)}/build/contract"
+      target: /work/build/contract
+      bind:
+        create_host_path: false
+  read_only: true
+  tmpfs:
+    - /tmp
+  cap_drop: [ALL]
+  security_opt:
+    - no-new-privileges:true
+  pull_policy: missing
+
+services:
+  redocly:
+    <<: *tool
+    image: redocly/cli:2.62.1@sha256:261f36d945b600fef03341316de1fde6921c3fefaf13b114a1fb4705428acd74
+    environment:
+      HOME: /tmp
+      REDOCLY_TELEMETRY: "off"
+      REDOCLY_SUPPRESS_UPDATE_NOTICE: "true"
+      NO_UPDATE_NOTIFIER: "1"
+
+  spectral:
+    <<: *tool
+    image: stoplight/spectral:6.17.0@sha256:c8ffae6ee561b70e80402f1ea669e8b37c74fee48a3dbe2147b71359ed987239
+    # The image's default entrypoint starts a Scarf telemetry script first;
+    # call the CLI directly instead (and opt out, in case it ever runs).
+    entrypoint: ["spectral"]
+    environment:
+      HOME: /tmp
+      DO_NOT_TRACK: "1"
+      SCARF_NO_ANALYTICS: "true"
+      NODE_OPTIONS: "--no-deprecation"
+      NODE_NO_WARNINGS: "1"
+
+  oasdiff:
+    <<: *tool
+    image: tufin/oasdiff:v1.33.0@sha256:6263a96dd2ef0726c54e21fea9b8e1607eac4841add0079324b424c1f52b819c
+    environment:
+      HOME: /tmp

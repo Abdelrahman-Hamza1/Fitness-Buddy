@@ -1,0 +1,76 @@
+# Fitness Buddy API: the source of the contract (TD-023, 04 §4).
+# Edit the files under contracts/openapi/, then run `make gen`: it bundles them
+# into contracts/openapi.yaml (committed, never edited by hand) and regenerates
+# the Dart client. How to change the API: contracts/README.md.
+openapi: 3.1.1
+info:
+  title: Fitness Buddy API
+  version: 0.1.0
+  summary: The API between the Fitness Buddy app and its backend.
+  description: >-
+    Contract-first: this document is the source of truth. The Dart client is
+    generated from it and the server is checked against it in CI; when they
+    disagree, the contract wins. Conventions: technical-planning/04-backend.md
+    §4.2 and contracts/README.md.
+
+servers:
+  - url: http://localhost:8080
+    description: Local API on the developer machine (the ASP.NET Core container port).
+
+# One tag per module (the Dart client gets one class per tag). Add a module's
+# tag when its first operation lands.
+tags:
+  - name: Account
+    description: Client configuration, and later the user's account (`/v1/me`).
+
+# Every path is defined in its module file and listed here.
+paths:
+  /v1/config:
+    $ref: './modules/account.yaml#/paths/~1v1~1config'
+
+# Shared components, registered here so that they are bundled (and reviewed)
+# before any endpoint uses them. Module-specific schemas stay in their module
+# file and are pulled in by the bundler when referenced.
+components:
+  schemas:
+    Id:
+      $ref: './components/types.yaml#/components/schemas/Id'
+    Instant:
+      $ref: './components/types.yaml#/components/schemas/Instant'
+    LocalDate:
+      $ref: './components/types.yaml#/components/schemas/LocalDate'
+    TzOffsetMin:
+      $ref: './components/types.yaml#/components/schemas/TzOffsetMin'
+    Grams:
+      $ref: './components/types.yaml#/components/schemas/Grams'
+    Milliliters:
+      $ref: './components/types.yaml#/components/schemas/Milliliters'
+    Kilocalories:
+      $ref: './components/types.yaml#/components/schemas/Kilocalories'
+    Kilograms:
+      $ref: './components/types.yaml#/components/schemas/Kilograms'
+    Centimeters:
+      $ref: './components/types.yaml#/components/schemas/Centimeters'
+    NextCursor:
+      $ref: './components/pagination.yaml#/components/schemas/NextCursor'
+    ProblemDetails:
+      $ref: './components/problems.yaml#/components/schemas/ProblemDetails'
+  parameters:
+    AppVersion:
+      $ref: './components/headers.yaml#/components/parameters/AppVersion'
+    Platform:
+      $ref: './components/headers.yaml#/components/parameters/Platform'
+    DeviceId:
+      $ref: './components/headers.yaml#/components/parameters/DeviceId'
+    IdempotencyKey:
+      $ref: './components/headers.yaml#/components/parameters/IdempotencyKey'
+    Cursor:
+      $ref: './components/pagination.yaml#/components/parameters/Cursor'
+    Limit:
+      $ref: './components/pagination.yaml#/components/parameters/Limit'
+  headers:
+    XRequestId:
+      $ref: './components/headers.yaml#/components/headers/XRequestId'
+  responses:
+    InternalError:
+      $ref: './components/problems.yaml#/components/responses/InternalError'

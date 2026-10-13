@@ -1,0 +1,207 @@
+# Tricky-shape fixture for the Dart client generator (S02 D3). NOT part of the
+# API: it lives here so it never ships in contracts/ and is never frozen by the
+# breaking gate. `make gen` generates it into test/generated/, and
+# test/union_fixture_test.dart proves the shapes the real contract will need:
+# - a Buddy-like `Intent` oneOf + discriminator.mapping, 3 variants, one of them
+#   named `unknown` (a real variant, distinct from the `unrecognized` fallback),
+# - a list of intents in a response, decoded through a retrofit/dio call,
+# - an OAS 3.1 type-array nullable and a oneOf null-wrap (both must become T?),
+# - LocalDate (`format: date`), which must stay a `YYYY-MM-DD` string (D2).
+# It follows the contract's conventions (D4: every property required, absent
+# values are null; client headers; Idempotency-Key on POST; problem+json).
+openapi: 3.1.1
+info:
+  title: Fitness Buddy generator fixture
+  version: 0.0.0
+tags:
+  - name: Buddy
+paths:
+  /v1/buddy/interpret:
+    post:
+      tags:
+        - Buddy
+      operationId: interpret
+      parameters:
+        - $ref: '#/components/parameters/AppVersion'
+        - $ref: '#/components/parameters/Platform'
+        - $ref: '#/components/parameters/DeviceId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterpretRequest'
+      responses:
+        '200':
+          description: The interpretation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Interpretation'
+        '500':
+          description: Unexpected server error.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+components:
+  parameters:
+    AppVersion:
+      name: X-App-Version
+      in: header
+      required: true
+      schema:
+        type: string
+    Platform:
+      name: X-Platform
+      in: header
+      required: true
+      schema:
+        type: string
+        enum:
+          - android
+          - ios
+    DeviceId:
+      name: X-Device-Id
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    Id:
+      type: string
+      format: uuid
+    Instant:
+      type: string
+      format: date-time
+    LocalDate:
+      type: string
+      format: date
+    ProblemDetails:
+      type: object
+      required:
+        - type
+        - title
+        - status
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+    InterpretRequest:
+      type: object
+      required:
+        - messageId
+        - text
+        - sentAt
+        - localDate
+      properties:
+        messageId:
+          $ref: '#/components/schemas/Id'
+        text:
+          type: string
+        sentAt:
+          $ref: '#/components/schemas/Instant'
+        localDate:
+          $ref: '#/components/schemas/LocalDate'
+    Interpretation:
+      type: object
+      required:
+        - id
+        - intents
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        intents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Intent'
+    Intent:
+      oneOf:
+        - $ref: '#/components/schemas/LogFoodIntent'
+        - $ref: '#/components/schemas/AskQuestionIntent'
+        - $ref: '#/components/schemas/UnknownIntent'
+      discriminator:
+        propertyName: kind
+        mapping:
+          logFood: '#/components/schemas/LogFoodIntent'
+          askQuestion: '#/components/schemas/AskQuestionIntent'
+          unknown: '#/components/schemas/UnknownIntent'
+    FoodItem:
+      type: object
+      required:
+        - query
+        - quantity
+        - unit
+      properties:
+        query:
+          type: string
+        quantity:
+          type: number
+          format: double
+        unit:
+          type: string
+    LogFoodIntent:
+      type: object
+      required:
+        - kind
+        - items
+        - eatenAt
+        - date
+      properties:
+        kind:
+          type: string
+          const: logFood
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FoodItem'
+        eatenAt:
+          $ref: '#/components/schemas/Instant'
+        date:
+          # oneOf null-wrap around a $ref.
+          oneOf:
+            - $ref: '#/components/schemas/LocalDate'
+            - type: 'null'
+    AskQuestionIntent:
+      type: object
+      required:
+        - kind
+        - question
+        - topic
+      properties:
+        kind:
+          type: string
+          const: askQuestion
+        question:
+          type: string
+        topic:
+          # OAS 3.1 type-array nullable.
+          type:
+            - string
+            - 'null'
+    UnknownIntent:
+      type: object
+      required:
+        - kind
+        - reason
+      properties:
+        kind:
+          type: string
+          const: unknown
+        reason:
+          type:
+            - string
+            - 'null'

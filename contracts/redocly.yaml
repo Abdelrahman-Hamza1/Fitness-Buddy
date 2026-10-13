@@ -1,0 +1,8 @@
+# Redocly CLI config: bundling only (`make gen-contract`). Linting is Spectral's
+# job (contracts/spectral.yaml), so no lint rules are configured here.
+# Telemetry is off here and in the container environment, and the container
+# has no network anyway (tools/contract-tools/compose.yaml).
+telemetry: off
+apis:
+  fitness-buddy:
+    root: openapi/openapi.yaml

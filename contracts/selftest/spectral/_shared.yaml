@@ -1,0 +1,49 @@
+# Shared parts of the Spectral self-test fixtures. Not a fixture itself:
+# contract-selftest.sh skips files whose name starts with "_".
+components:
+  parameters:
+    AppVersion:
+      name: X-App-Version
+      in: header
+      required: true
+      schema: { type: string }
+    Platform:
+      name: X-Platform
+      in: header
+      required: true
+      schema: { type: string, enum: [android, ios] }
+    DeviceId:
+      name: X-Device-Id
+      in: header
+      required: true
+      schema: { type: string, format: uuid }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: { type: string, format: uuid }
+  schemas:
+    Thing:
+      type: object
+      required: [id, name]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+    ProblemDetails:
+      type: object
+      required: [type, title, status]
+      properties:
+        type: { type: string, format: uri-reference }
+        title: { type: string }
+        status: { type: integer, format: int32 }
+  responses:
+    Thing:
+      description: A thing.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Thing' }
+    InternalError:
+      description: Unexpected server error.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ProblemDetails' }

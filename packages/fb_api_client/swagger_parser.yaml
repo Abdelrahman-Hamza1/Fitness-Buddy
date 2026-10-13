@@ -1,0 +1,33 @@
+# swagger_parser configuration (S02 D1). Don't run swagger_parser directly:
+# `make gen` (tools/scripts/gen-dart.sh) first copies the specs into
+# .dart_tool/fb_gen/ and strips `format: date` (D2), then runs it with this file.
+swagger_parser:
+  # Shared by both schemes.
+  language: dart
+  json_serializer: freezed
+  use_freezed3: true
+  root_client: true
+  put_clients_in_folder: true
+  unknown_enum_value: true
+  # Unknown future union kinds decode to a `...Unrecognized` variant. Must not
+  # equal a real variant name (Buddy may get a real `unknown` intent).
+  fallback_union: unrecognized
+  mark_files_as_generated: true
+  original_http_response: false
+  # Set by a dio interceptor (S03), not by callers.
+  skipped_parameters:
+    - X-App-Version
+    - X-Platform
+    - X-Device-Id
+  schemes:
+    # The API contract: the package's public API.
+    - schema_path: .dart_tool/fb_gen/openapi.yaml
+      output_directory: lib/src/generated
+      name: fb_api
+      root_client_name: FbApi
+    # The tricky-shape fixture (D3): proves unions, nullables and LocalDate.
+    # Tests only, never shipped.
+    - schema_path: .dart_tool/fb_gen/union_fixture.openapi.yaml
+      output_directory: test/generated
+      name: fixture_api
+      root_client_name: FixtureApi

@@ -2,7 +2,7 @@
 # Prints the toolchain versions and machine resources, and checks the pinned
 # SDKs. Called by `make doctor`, which passes the tool paths through the
 # environment (FLUTTER, DART, DOTNET, FLUTTER_VERSION, DOTNET_ROOT, ...).
-# Exit code: 0 if the pinned toolchain is in place, 1 otherwise.
+# Exit code: 0 if the pinned toolchain and Docker (contract tools) are in place, 1 otherwise.
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -98,6 +98,51 @@ if [[ -n "$DOTNET_ROOT" && -n "$path_dotnet" \
   && "$(readlink -f "$path_dotnet")" == "$(readlink -f "$DOTNET_ROOT/dotnet" 2>/dev/null || echo none)" \
   && -e "$DOTNET_ROOT/tools/dotnet-ef" ]]; then
   warnings+=("'dotnet' on PATH is $path_dotnet and a global dotnet-ef exists in $DOTNET_ROOT/tools; it was built for an older .NET and may fail. The repo will use a local tool manifest (S04).")
+fi
+
+# Docker runs the contract tools (S02 D8): Redocly, Spectral, oasdiff.
+echo
+echo "Docker (contract tools: tools/contract-tools/compose.yaml)"
+if have docker; then
+  row "docker CLI" "$(first_line docker --version)"
+  if server="$(docker version --format '{{.Server.Version}}' 2>/dev/null)" && [[ -n "$server" ]]; then
+    row "daemon" "Docker Engine $server  [OK]"
+    daemon_ok=true
+  else
+    daemon_ok=false
+    row "daemon" "NOT REACHABLE"
+    problems+=("the Docker daemon is not reachable as $(id -un) (is it running? is $(id -un) in the 'docker' group? see README Prerequisites)")
+  fi
+  if compose="$(docker compose version --short 2>/dev/null)" && [[ -n "$compose" ]]; then
+    compose_major="${compose#v}"
+    compose_major="${compose_major%%.*}"
+    if [[ "$compose_major" =~ ^[0-9]+$ ]] && ((compose_major >= 2)); then
+      row "compose" "$compose  [OK]"
+    else
+      row "compose" "$compose  [TOO OLD]"
+      problems+=("Docker Compose $compose is too old; the plugin 'docker compose' v2 or newer is needed")
+    fi
+    if [[ "$daemon_ok" == true ]]; then
+      missing=0
+      while read -r image; do
+        [[ -z "$image" ]] && continue
+        if ! docker image inspect "$image" >/dev/null 2>&1; then missing=$((missing + 1)); fi
+      done < <(export UID; GID="$(id -g)" REPO_ROOT="$repo_root" \
+        docker compose -f "$repo_root/tools/contract-tools/compose.yaml" config --images 2>/dev/null)
+      if ((missing == 0)); then
+        row "images" "contract tools pulled  [OK]"
+      else
+        row "images" "$missing contract tool image(s) not pulled yet"
+        warnings+=("$missing contract tool image(s) missing; 'make contract-tools' pulls them (any contract target also pulls on first use)")
+      fi
+    fi
+  else
+    row "compose" "MISSING"
+    problems+=("the Docker Compose plugin is missing ('docker compose'; Ubuntu: sudo apt-get install docker-compose-v2, or Docker's docker-compose-plugin)")
+  fi
+else
+  row "docker CLI" "MISSING"
+  problems+=("Docker Engine + Compose v2 are needed for the contract tools (see README Prerequisites)")
 fi
 
 echo

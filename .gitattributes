@@ -26,3 +26,10 @@ Makefile text eol=lf
 
 # Generated files: collapsed in GitHub diffs.
 pubspec.lock linguist-generated=true
+
+# The bundled API contract (make gen-contract).
+contracts/openapi.yaml linguist-generated=true
+
+# The generated Dart API client and the generator fixture's output (make gen-dart).
+packages/fb_api_client/lib/src/generated/** linguist-generated=true
+packages/fb_api_client/test/generated/** linguist-generated=true

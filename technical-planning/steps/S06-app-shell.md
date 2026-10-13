@@ -32,6 +32,9 @@
 - How the APK reaches the owner during P0–P2 (a GitHub Actions artifact sideload vs Firebase App Distribution vs Play internal testing early). Default: the GitHub artifact until S29.
 - Typed routes approach for go_router (codegen or hand-written route constants).
 
+## Notes from earlier steps
+- **From S02:** the app fetches `/v1/config` in the background and caches it, never on the startup path (CLAUDE.md rule 3); the 426 gate never blocks startup on the network. Release builds use an HTTPS base URL and Android disallows cleartext. Construct union values through the generated union factories.
+
 ## Exit criteria
 - [ ] The owner installs the staging build on the A55. Four tabs work, and light/dark follows the system.
 - [ ] With staging up (S05) the app fetches `/v1/config`. With the API down it still starts normally (offline-first). Before S05, use the local API in `dev`.

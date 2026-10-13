@@ -4,23 +4,25 @@ A local-first nutrition and weight tracking app (Flutter, Android first) with an
 
 ## Prerequisites
 
-- Linux x64, about **6 GB** of free disk, **no sudo needed** (everything installs under your home directory).
+- Linux x64, about **6.5 GB** of free disk. The SDKs install under your home directory, no sudo needed.
 - `git`, `curl`, `python3`, `make`, `tar`, `xz-utils`, `unzip`.
+- **Docker Engine + Docker Compose v2** (the `docker compose` plugin), usable without sudo. They run the API contract tools (Redocly, Spectral, oasdiff) as pinned images with no network access, so no Node.js is needed. `make doctor` checks them.
 
-On Debian/Ubuntu: `sudo apt-get install git curl python3 make tar xz-utils unzip` (the only step that needs sudo, and only if one of them is missing).
+On Debian/Ubuntu: `sudo apt-get install git curl python3 make tar xz-utils unzip`. For Docker, follow [Docker's install guide for Ubuntu](https://docs.docker.com/engine/install/ubuntu/) (it includes the Compose plugin), then let your user run it: `sudo usermod -aG docker "$USER"` and log out and back in. These are the only steps that need sudo, and only if something is missing.
 
 ## Quick start
 
 ```bash
 make setup    # install the pinned Flutter + .NET SDKs (user-local), then fetch all dependencies
-make check    # format + static analysis, Dart and .NET
+make check    # format + static analysis (Dart, .NET), then the API contract checks
+make gen      # after editing contracts/openapi/: re-bundle the contract and regenerate the Dart client
 make test     # all tests, Dart then .NET
 make trace    # requirement coverage report (RELEASE=R1|R2|R3|Later|all, default R1)
 make doctor   # tool versions, free disk and RAM; fails if a pinned SDK is missing
 make help     # every target, with a one-line description
 ```
 
-The first `make setup` downloads the SDKs and packages (about 3.5 GB on disk once unpacked, plus caches in `~/.pub-cache` and `~/.nuget`); later runs skip what is already there. CI runs the same `make` targets.
+The first `make setup` downloads the SDKs and packages (about 3.5 GB on disk once unpacked, plus caches in `~/.pub-cache` and `~/.nuget`) and pulls the three contract tool images (about 0.5 GB); later runs skip what is already there. CI runs the same `make` targets.
 
 ### What `make setup` installs, and where
 
@@ -28,6 +30,7 @@ The first `make setup` downloads the SDKs and packages (about 3.5 GB on disk onc
 |---|---|---|
 | Flutter SDK (includes Dart) | `.fvmrc` | `~/development/flutter-<version>` |
 | .NET SDK | `backend/global.json` | `~/.dotnet` |
+| Contract tools: Redocly CLI, Spectral, oasdiff | `tools/contract-tools/compose.yaml` (tag + digest) | Docker's image store |
 
 Downloads are checksum-verified. A system-wide .NET is never touched or used. The Makefile calls the SDKs by full path, so nothing needs to be on your `PATH`.
 
@@ -58,7 +61,8 @@ Exists today:
 | [`technical-planning/`](technical-planning/README.md) | Architecture, decisions (TDs) and one card per delivery step in `steps/`. |
 | [`packages/`](packages/README.md) | Shared Dart packages (`fb_domain`, `fb_text`) in the pub workspace. |
 | [`backend/`](backend/README.md) | .NET 10 API: Host, BuildingBlocks, architecture tests. |
-| [`tools/`](tools/README.md) | Bash scripts behind the Makefile, and `trace/` (requirement coverage). |
+| [`contracts/`](contracts/README.md) | The API contract: OpenAPI 3.1 sources, the committed bundle, Spectral rules, self-test fixtures, shared golden test data. |
+| [`tools/`](tools/README.md) | Bash scripts behind the Makefile, the contract tool images, and `trace/` (requirement coverage). |
 | `.github/` | CI workflow (`workflows/ci.yml`) and Dependabot config. |
 | `.claude/` | Agent and skill definitions for the delivery process. |
 | `Makefile`, `pubspec.yaml`, `pubspec.lock` | One entry point; the Dart workspace root and its single lockfile. |
@@ -69,7 +73,6 @@ Planned (full map: [`technical-planning/10-engineering-practices.md`](technical-
 |---|---|
 | `apps/mobile/` | Flutter app (planned) |
 | `packages/fb_api_client/`, `packages/fb_design_system/` | Generated API client, UI kit (planned) |
-| `contracts/` | OpenAPI sources, bundled contract, Spectral rules, golden test data (planned) |
 | `data/` | Reference dishes, exercises, portion words (planned) |
 | `tools/buddy_eval/`, `tools/catalog/` | AI acceptance suite, catalog build/validate (planned) |
 | `infra/` | OpenTofu, cloud-init, Kamal, local Docker Compose (planned) |

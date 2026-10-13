@@ -1,0 +1,4 @@
+# Usage module: AI usage counters and limits (04 §3.1).
+# No endpoints yet; a later step fills this file. Then list each path in
+# ../openapi.yaml under `paths` and add the `Usage` tag there.
+paths: {}

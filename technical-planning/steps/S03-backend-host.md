@@ -33,6 +33,9 @@
 - Runtime base image (chiseled/distroless vs standard).
 - The exact shape of `IModule` and endpoint-group conventions.
 
+## Notes from earlier steps
+- **From S02:** header middleware and `ClientHeadersOperationTransformer` derive from one definition (a `/v1` route group with endpoint metadata). `/v1/config` declares the client headers even if it is exempt from the 426 gate. Golden problem bodies in `contracts/testdata/problems/*.json`, used by C# and Dart `Failure` mapping tests. Always set `type`/`title`; runtime test for statuses without a framework default (429). `ValidationProblem` + 400/426/429 responses land here. A dio interceptor sets `X-App-Version`/`X-Platform`/`X-Device-Id` (skipped in the generated client) and decodes problem+json. Request DTOs: consider `RespectRequiredConstructorParameters`/`RespectNullableAnnotations`. `X-Device-Id` stays out of logs/telemetry. Keep `detail` free of exception messages and user content. `ASPNETCORE_ENVIRONMENT` is never `Development` outside local dev.
+
 ## Exit criteria
 - [ ] `make up` starts the API. `GET /v1/config` returns contract-conformant JSON, and the conformance check passes.
 - [ ] Tests: an old `X-App-Version` → `426` problem details. Validation errors → `400` with an `errors` map. An unhandled exception → `500` with a request ID and no stack trace. `X-Request-Id` is echoed.

@@ -1,0 +1,4 @@
+# Sync endpoints (UserData module, 04 §3.1): push, pull, history (04 §4.3 Sync, 05).
+# No endpoints yet; a later step fills this file. Then list each path in
+# ../openapi.yaml under `paths` and add the `Sync` tag there.
+paths: {}

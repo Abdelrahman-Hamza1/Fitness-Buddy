@@ -14,7 +14,7 @@ Selection rules, in order: (1) fits the drivers in `01` §1; (2) mature, maintai
 | Navigation | **go_router**, typed routes, behind an `AppRouter` wrapper | Official, deep links (NT-024), tab shells (UX-010). Maintenance mode is fine, and the wrapper keeps a swap local | auto_route |
 | Local database | **drift** (SQLite) + `sqlite3_flutter_libs` | Typed SQL, reactive `watch()`, generated migration tests, transactions, FTS5 with trigram tokenizer, background isolate | Isar/ObjectBox, Hive, sqflite |
 | Models | **freezed** + **json_serializable** | Immutable models, sealed unions, JSON | built_value |
-| API client | **Generated from `contracts/openapi.yaml`** into `fb_api_client` (generator chosen in S02, e.g. `swagger_parser` or `openapi-generator` dart-dio), on **dio** | The app never hand-writes API types. Interceptors handle auth refresh, retry, `Idempotency-Key`, version headers, cancellation | Hand-written client |
+| API client | **Generated from `contracts/openapi.yaml`** into `fb_api_client` with **swagger_parser** (freezed sealed unions with an `unrecognized` fallback, retrofit clients) on **dio**, generated code committed and checked by `make gen-check` (TD-045) | The app never hand-writes API types. Interceptors handle auth refresh, retry, `Idempotency-Key`, version headers, cancellation | Hand-written client |
 | Sign-in SDKs | **google_sign_in**, **sign_in_with_apple** (iOS, R2, D-081) | Native flows. The ID token is sent to our API (`04` §5) | Firebase Auth, Supabase Auth |
 | Barcode | **mobile_scanner** | On-device (ML Kit / Apple Vision), fast | — |
 | Camera / images | **image_picker** + **flutter_image_compress** | Photos resized to ~1024 px JPEG before upload | `camera` |

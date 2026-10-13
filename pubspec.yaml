@@ -6,6 +6,7 @@ environment:
   sdk: ^3.13.0
 
 workspace:
+  - packages/fb_api_client
   - packages/fb_domain
   - packages/fb_text
   - tools/trace

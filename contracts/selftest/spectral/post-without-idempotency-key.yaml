@@ -1,0 +1,27 @@
+# expect: fb-idempotency-key
+# A POST without an Idempotency-Key header.
+openapi: 3.1.1
+info:
+  title: Spectral self-test
+  version: 0.0.0
+  description: 'A POST without an Idempotency-Key header.'
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Test
+    description: Self-test operations.
+paths:
+  /v1/things:
+    post:
+      tags: [Test]
+      operationId: createThing
+      description: Creates a thing.
+      parameters:
+        - $ref: './_shared.yaml#/components/parameters/AppVersion'
+        - $ref: './_shared.yaml#/components/parameters/Platform'
+        - $ref: './_shared.yaml#/components/parameters/DeviceId'
+      responses:
+        '200':
+          $ref: './_shared.yaml#/components/responses/Thing'
+        '500':
+          $ref: './_shared.yaml#/components/responses/InternalError'

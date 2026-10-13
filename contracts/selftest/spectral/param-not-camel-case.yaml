@@ -1,0 +1,30 @@
+# expect: fb-camel-case-params
+# A query parameter in snake_case.
+openapi: 3.1.1
+info:
+  title: Spectral self-test
+  version: 0.0.0
+  description: 'A query parameter in snake_case.'
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Test
+    description: Self-test operations.
+paths:
+  /v1/things:
+    get:
+      tags: [Test]
+      operationId: getThing
+      description: Returns a thing.
+      parameters:
+        - $ref: './_shared.yaml#/components/parameters/AppVersion'
+        - $ref: './_shared.yaml#/components/parameters/Platform'
+        - $ref: './_shared.yaml#/components/parameters/DeviceId'
+        - name: sort_order
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          $ref: './_shared.yaml#/components/responses/Thing'
+        '500':
+          $ref: './_shared.yaml#/components/responses/InternalError'

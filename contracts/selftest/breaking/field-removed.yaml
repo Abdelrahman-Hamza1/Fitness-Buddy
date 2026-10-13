@@ -1,0 +1,28 @@
+# MUST FAIL: removes the required response property Thing.name (old apps read it).
+openapi: 3.1.1
+info:
+  title: Breaking self-test
+  version: 1.0.0
+paths:
+  /v1/things/{thingId}:
+    get:
+      operationId: getThing
+      parameters:
+        - name: thingId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: A thing.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Thing' }
+components:
+  schemas:
+    Thing:
+      type: object
+      required: [id, status]
+      properties:
+        id: { type: string, format: uuid }
+        status: { type: string, enum: [active, archived] }

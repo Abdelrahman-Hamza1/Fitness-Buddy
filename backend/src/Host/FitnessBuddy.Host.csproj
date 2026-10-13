@@ -1,5 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <!-- Composition root: wires the modules and runs as api | worker | migrate (04, 08). -->
+
+  <!-- Build-time OpenAPI document (S02 D9): every build writes backend/artifacts/openapi/server.json
+       (gitignored), which `make contract-conformance` diffs against contracts/openapi.yaml.
+       The generator runs plain `dotnet` from PATH, so the .NET 10 SDK must come first on PATH
+       (the Makefile does this). It is incremental on the assembly: to force a fresh document,
+       delete obj/FitnessBuddy.Host.OpenApiFiles.cache (the Makefile does this too). -->
+  <PropertyGroup>
+    <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)/../../artifacts/openapi</OpenApiDocumentsDirectory>
+    <OpenApiGenerateDocumentsOptions>--file-name server --document-name v1 --openapi-version OpenApi3_1</OpenApiGenerateDocumentsOptions>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Server">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\BuildingBlocks\FitnessBuddy.BuildingBlocks.csproj" />
   </ItemGroup>

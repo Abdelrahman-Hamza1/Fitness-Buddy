@@ -1,10 +1,19 @@
 # Fitness Buddy CI: the one workflow and the one required check.
 #
-# Jobs `dart` and `dotnet` run the same `make` targets as a laptop does. The gate
-# job `ci` always runs and passes only if every job it `needs` succeeded; it is
-# the only check the `main` ruleset requires (S01 A1). New gates (contract,
-# catalog, eval, android) are added as jobs here and to `ci.needs`, so the
-# ruleset never changes.
+# Jobs `dart`, `dotnet` and `contract` run the same `make` targets as a laptop
+# does. The API contract checks (`make check-contract`, TD-023) are spread over
+# three jobs so that no toolchain is set up or built twice (S02 D13):
+#   contract  bundle fresh, Spectral lint, self-test, breaking-change report
+#             (Docker only, no Flutter or .NET)
+#   dart      gen-check: the committed Dart client is what the generator produces
+#   dotnet    contract-conformance: the Host's OpenAPI document matches the
+#             contract (reuses the Release build of the job; runs before the
+#             tests, so a server-only drift shows the conformance message
+#             first, not a Contract.Tests failure)
+# Every check runs exactly once. The gate job `ci` always runs and passes only if
+# every job it `needs` succeeded; it is the only check the `main` ruleset requires
+# (S01 A1). New gates (catalog, eval, android) are added as jobs here and to
+# `ci.needs`, so the ruleset never changes.
 #
 # No path filtering (S01 A2): every push runs everything.
 # Actions are pinned to full commit SHAs; Dependabot (github-actions) bumps them.
@@ -57,6 +66,13 @@ jobs:
       - name: Dependencies, format + analyze, tests
         run: make deps-dart check-dart test-dart FLUTTER=flutter DART=dart
 
+      # Regenerates packages/fb_api_client from contracts/openapi.yaml and fails
+      # if the worktree then differs from the commit (S02 D2). Runs after the
+      # tests on purpose: it needs a clean worktree, and nothing above writes
+      # into packages/fb_api_client.
+      - name: Generated Dart API client is up to date
+        run: make gen-check FLUTTER=flutter DART=dart
+
       - name: Traceability report (into the job summary)
         run: make trace FLUTTER=flutter DART=dart | tee -a "$GITHUB_STEP_SUMMARY"
 
@@ -87,10 +103,48 @@ jobs:
       # setup-dotnet installs into DOTNET_ROOT (/usr/share/dotnet) and exports it.
       # Pass the same root to make, so `dotnet` and the MTP test apphosts use the
       # SDK that was just installed (S01 D3).
-      - name: Restore, format + build (warnings as errors), tests
+      - name: Restore, format + build (warnings as errors)
         run: |
           : "${DOTNET_ROOT:?setup-dotnet did not export DOTNET_ROOT}"
-          make deps-dotnet check-dotnet test-dotnet DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT"
+          make deps-dotnet check-dotnet DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT"
+
+      # Rebuilds the Host (incremental after the build above, which already wrote
+      # backend/artifacts/openapi/server.json) and diffs that document against
+      # contracts/openapi.yaml with oasdiff. Docker is preinstalled on the runner;
+      # compose pulls the digest-pinned oasdiff image on demand (S02 D8, D9).
+      # The Makefile puts $DOTNET_ROOT first on PATH: the build runs plain `dotnet`.
+      # Before the tests on purpose: a server-only change fails here with the
+      # conformance message and one ::error annotation per difference.
+      - name: API contract conformance (server document vs contract)
+        run: make contract-conformance DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT"
+
+      # Reuses the Release build above (no restore, incremental).
+      - name: Tests
+        run: make test-dotnet DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT"
+
+  # Docker-only contract checks (S02 D13). Redocly, Spectral and oasdiff run as
+  # digest-pinned, offline containers via tools/contract-tools/compose.yaml;
+  # Docker Engine and Compose v2 come with the runner image. The Makefile exports
+  # UID, GID and REPO_ROOT for compose. No Flutter or .NET here.
+  contract:
+    name: contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      # Full history and tags: contract-breaking compares with the newest
+      # contracts-v* tag, or before the first tag with the merge-base with
+      # origin/main (S02 A1).
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Pull the pinned contract tool images
+        run: make contract-tools
+
+      - name: Bundle fresh, lint, self-test, breaking-change report
+        run: make contract-bundle-check contract-lint contract-selftest contract-breaking
 
   # The one required status check. Fails unless every needed job succeeded:
   # failure, cancelled and skipped all fail the gate (nothing is skipped on
@@ -98,7 +152,7 @@ jobs:
   ci:
     name: ci
     if: always()
-    needs: [dart, dotnet]
+    needs: [dart, dotnet, contract]
     runs-on: ubuntu-24.04
     permissions: {} # reads only `needs`; no token scopes at all
     timeout-minutes: 5

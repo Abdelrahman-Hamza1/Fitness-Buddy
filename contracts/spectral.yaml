@@ -1,0 +1,306 @@
+# Spectral ruleset: the API style guide (technical-planning/04-backend.md §4.2)
+# as checks. `make contract-lint` runs it on the bundle (contracts/openapi.yaml)
+# and fails on warnings too. Every fb-* rule has a failing fixture in
+# contracts/selftest/spectral/ (`make contract-selftest`), so loosening a rule by
+# accident fails CI.
+#
+# All JSONPaths run on the resolved document ($refs followed).
+extends: [[spectral:oas, recommended]]
+
+functionsDir: ./spectral-functions
+functions:
+  - fbHasFormat
+  - fbOneOfDiscriminator
+
+aliases:
+  # Operation objects (no path-level `parameters`, `summary`, ...).
+  Operations:
+    - "$.paths[*][get,put,post,delete,options,head,patch,trace]"
+  # Operations under a versioned path (/v1/..., /v2/...).
+  VersionedOperations:
+    - "$.paths[?(@property.match(/^\\/v[0-9]+\\//))][get,put,post,delete,options,head,patch,trace]"
+  # Every schema property map, wherever it is (components, inline, nested).
+  PropertyMaps:
+    - "$..properties"
+
+rules:
+  # --- Built-in rules: adjusted (S02 D6, D7) ----------------------------------
+  # Shared components are registered before an endpoint uses them, on purpose.
+  oas3-unused-component: off
+  # A private API with one owner: no contact object.
+  info-contact: off
+  # operationId is the Dart method name and the tag is the Dart client class:
+  # missing or duplicate ones would silently rename the app's API.
+  operation-operationId: error
+  operation-operationId-unique: error
+  operation-tags: error
+  operation-tag-defined: error
+
+  fb-single-tag:
+    description: >-
+      Every operation has exactly one tag, its module's: the tag is the Dart
+      client class, and a second tag would put the method in two classes.
+    message: "Operation must have exactly one tag (its module's)."
+    severity: error
+    given: "#Operations"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          required: [tags]
+          properties:
+            tags: { type: array, minItems: 1, maxItems: 1 }
+
+  # --- Paths and versioning ----------------------------------------------------
+  fb-path-versioned:
+    description: Paths start with /v<major>/ (or /health/, /.well-known/). 04 §4.2 Versioning.
+    message: "Path {{property}} must start with /v<major>/ (or /health/, /.well-known/)."
+    severity: error
+    given: "$.paths"
+    then:
+      field: "@key"
+      function: pattern
+      functionOptions:
+        match: "^/(v[0-9]+|health|\\.well-known)/"
+
+  # --- Errors ------------------------------------------------------------------
+  fb-problem-json-errors:
+    description: >-
+      Every 4XX/5XX/default response has a body, its only media type is
+      application/problem+json (RFC 9457), and that schema requires type, title
+      and status (directly, or in one of its allOf parts when it extends
+      ProblemDetails). 04 §4.2 Errors.
+    message: "4XX/5XX/default responses need a body with exactly one media type, application/problem+json, whose schema requires type, title and status."
+    severity: error
+    given: "#Operations.responses[?(@property.match(/^([45]|default$)/i))]"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          required: [content]
+          properties:
+            content:
+              type: object
+              required: [application/problem+json]
+              maxProperties: 1
+              properties:
+                application/problem+json:
+                  type: object
+                  required: [schema]
+                  properties:
+                    schema:
+                      anyOf:
+                        - $ref: "#/$defs/requiresProblemMembers"
+                        - type: object
+                          required: [allOf]
+                          properties:
+                            allOf:
+                              type: array
+                              contains: { $ref: "#/$defs/requiresProblemMembers" }
+          $defs:
+            requiresProblemMembers:
+              type: object
+              required: [required]
+              properties:
+                required:
+                  type: array
+                  allOf:
+                    - contains: { const: type }
+                    - contains: { const: title }
+                    - contains: { const: status }
+
+  # --- Pagination --------------------------------------------------------------
+  fb-no-offset-pagination:
+    description: >-
+      Cursor pagination only (cursor + limit, nextCursor). No offset/page
+      parameters (the list in the S02 card §3.2). 04 §4.2 Pagination.
+    message: "Query parameter '{{value}}' looks like offset/page pagination: use cursor + limit."
+    severity: error
+    given: "$..parameters[?(@ && @.in == 'query')].name"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "/^(offset|page|pageNumber|pageSize|skip|take)$/i"
+
+  # --- Headers -----------------------------------------------------------------
+  fb-client-headers:
+    description: >-
+      Every versioned operation declares the required client headers, with
+      their schemas: X-App-Version (string), X-Platform (string, enum android,
+      ios) and X-Device-Id (string, format uuid). 04 §4.2 Client headers.
+    message: "Operation must declare the required header parameters X-App-Version (string), X-Platform (string enum android|ios) and X-Device-Id (string uuid): $ref components/headers.yaml."
+    severity: error
+    given: "#VersionedOperations"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          required: [parameters]
+          properties:
+            parameters:
+              type: array
+              allOf:
+                - contains:
+                    allOf:
+                      - $ref: "#/$defs/header"
+                      - properties:
+                          name: { const: X-App-Version }
+                          schema:
+                            type: object
+                            required: [type]
+                            properties:
+                              type: { const: string }
+                - contains:
+                    allOf:
+                      - $ref: "#/$defs/header"
+                      - properties:
+                          name: { const: X-Platform }
+                          schema:
+                            type: object
+                            required: [type, enum]
+                            properties:
+                              type: { const: string }
+                              enum:
+                                type: array
+                                minItems: 2
+                                maxItems: 2
+                                uniqueItems: true
+                                allOf:
+                                  - contains: { const: android }
+                                  - contains: { const: ios }
+                - contains:
+                    allOf:
+                      - $ref: "#/$defs/header"
+                      - properties:
+                          name: { const: X-Device-Id }
+                          schema:
+                            type: object
+                            required: [type, format]
+                            properties:
+                              type: { const: string }
+                              format: { const: uuid }
+          $defs:
+            header:
+              type: object
+              required: [name, in, required, schema]
+              properties:
+                in: { const: header }
+                required: { const: true }
+
+  fb-idempotency-key:
+    description: >-
+      Every POST declares a required Idempotency-Key header, unless it is marked
+      `x-fb-idempotency: exempt` (with `x-fb-idempotency-reason`). 04 §4.2 Idempotency.
+    message: "POST must declare a required Idempotency-Key header parameter (or be marked x-fb-idempotency: exempt with a reason)."
+    severity: error
+    given: "$.paths[*][?(@property === 'post' && @['x-fb-idempotency'] !== 'exempt')]"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          required: [parameters]
+          properties:
+            parameters:
+              type: array
+              contains:
+                type: object
+                required: [name, in, required]
+                properties:
+                  name: { const: Idempotency-Key }
+                  in: { const: header }
+                  required: { const: true }
+
+  fb-idempotency-exempt:
+    description: >-
+      `x-fb-idempotency` only takes the value `exempt`, and an exempt operation
+      says why in `x-fb-idempotency-reason`.
+    message: "x-fb-idempotency must be 'exempt' and come with a non-empty x-fb-idempotency-reason."
+    severity: error
+    given: "$.paths[*][?(@ && @['x-fb-idempotency'] !== undefined)]"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          required: [x-fb-idempotency, x-fb-idempotency-reason]
+          properties:
+            x-fb-idempotency: { const: exempt }
+            x-fb-idempotency-reason: { type: string, minLength: 10 }
+
+  # --- Naming --------------------------------------------------------------------
+  fb-camel-case-properties:
+    description: Schema property names are camelCase. 04 §4.2.
+    message: "Property '{{property}}' must be camelCase (^[a-z][a-zA-Z0-9]*$)."
+    severity: error
+    given: "#PropertyMaps"
+    then:
+      field: "@key"
+      function: pattern
+      functionOptions:
+        match: "^[a-z][a-zA-Z0-9]*$"
+
+  fb-camel-case-params:
+    description: Query and path parameter names are camelCase (headers keep their HTTP names).
+    message: "Parameter '{{value}}' must be camelCase (^[a-z][a-zA-Z0-9]*$)."
+    severity: error
+    given: "$..parameters[?(@ && (@.in == 'query' || @.in == 'path'))].name"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[a-z][a-zA-Z0-9]*$"
+
+  fb-operation-id-camel-case:
+    description: operationId is camelCase (it becomes the Dart method name).
+    message: "operationId '{{value}}' must be camelCase (^[a-z][a-zA-Z0-9]*$)."
+    severity: error
+    given: "#Operations.operationId"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[a-z][a-zA-Z0-9]*$"
+
+  # --- Formats (04 §4.2 Formats) -----------------------------------------------
+  # A nullable value may be a type array ([string, 'null']) or a oneOf
+  # null-wrap; fbHasFormat accepts both.
+  fb-id-format:
+    description: Properties named `id` or `<x>Id` are UUIDs (format uuid, UUIDv7 by convention; $ref Id).
+    message: "{{error}} IDs are UUIDs ($ref Id)."
+    severity: error
+    given: "#PropertyMaps[?(@property.match(/^(id|[a-z][a-zA-Z0-9]*Id)$/))]"
+    then:
+      function: fbHasFormat
+      functionOptions: { format: uuid }
+
+  fb-instant-format:
+    description: Properties named `<x>At` or `<x>AtUtc` are RFC 3339 instants (format date-time; $ref Instant).
+    message: "{{error}} Instants are RFC 3339 date-times ($ref Instant)."
+    severity: error
+    given: "#PropertyMaps[?(@property.match(/^[a-z][a-zA-Z0-9]*(At|AtUtc)$/))]"
+    then:
+      function: fbHasFormat
+      functionOptions: { format: date-time }
+
+  fb-local-date-format:
+    description: Properties named `date` or `<x>Date` are local dates (format date, YYYY-MM-DD; $ref LocalDate).
+    message: "{{error}} Local dates are YYYY-MM-DD ($ref LocalDate)."
+    severity: error
+    given: "#PropertyMaps[?(@property.match(/^(date|[a-z][a-zA-Z0-9]*Date)$/))]"
+    then:
+      function: fbHasFormat
+      functionOptions: { format: date }
+
+  # --- Unions (S02 A4) -----------------------------------------------------------
+  fb-oneof-discriminator:
+    description: >-
+      Every oneOf and anyOf, except a two-branch null-wrap, has
+      discriminator.propertyName and a mapping with one entry per branch, and
+      every branch requires that property.
+    message: "{{error}}"
+    severity: error
+    given: "$..[?(@ && (@.oneOf || @.anyOf))]"
+    then:
+      function: fbOneOfDiscriminator

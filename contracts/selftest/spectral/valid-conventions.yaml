@@ -1,0 +1,147 @@
+# expect: none
+# Follows every convention, including the allowed edge cases: discriminated
+# oneOf and anyOf unions, oneOf and anyOf null-wraps and a type-array nullable,
+# nullable ID/time/date properties, cursor pagination, a problem+json schema
+# that extends ProblemDetails with allOf, and a POST exempt from
+# Idempotency-Key with a reason. Proves the fb-* rules don't fire on valid shapes.
+openapi: 3.1.1
+info:
+  title: Spectral self-test
+  version: 0.0.0
+  description: Valid shapes; no rule may fire.
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Test
+    description: Self-test operations.
+paths:
+  /v1/intents:
+    get:
+      tags: [Test]
+      operationId: listIntents
+      description: Lists intents, one cursor page at a time.
+      parameters:
+        - $ref: './_shared.yaml#/components/parameters/AppVersion'
+        - $ref: './_shared.yaml#/components/parameters/Platform'
+        - $ref: './_shared.yaml#/components/parameters/DeviceId'
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, format: int32, minimum: 1, maximum: 100 }
+      responses:
+        '200':
+          description: A page of intents.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, nextCursor]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Intent' }
+                  nextCursor: { type: [string, 'null'] }
+        '500':
+          $ref: './_shared.yaml#/components/responses/InternalError'
+    post:
+      tags: [Test]
+      operationId: createIntent
+      description: Creates an intent.
+      x-fb-idempotency: exempt
+      x-fb-idempotency-reason: Self-test only; shows that an exemption with a reason passes.
+      parameters:
+        - $ref: './_shared.yaml#/components/parameters/AppVersion'
+        - $ref: './_shared.yaml#/components/parameters/Platform'
+        - $ref: './_shared.yaml#/components/parameters/DeviceId'
+      responses:
+        '200':
+          $ref: './_shared.yaml#/components/responses/Thing'
+        '500':
+          $ref: './_shared.yaml#/components/responses/InternalError'
+  /v1/things:
+    post:
+      tags: [Test]
+      operationId: createThing
+      description: Creates a thing.
+      parameters:
+        - $ref: './_shared.yaml#/components/parameters/AppVersion'
+        - $ref: './_shared.yaml#/components/parameters/Platform'
+        - $ref: './_shared.yaml#/components/parameters/DeviceId'
+        - $ref: './_shared.yaml#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          $ref: './_shared.yaml#/components/responses/Thing'
+        '400':
+          description: The request is invalid.
+          content:
+            application/problem+json:
+              schema:
+                allOf:
+                  - $ref: './_shared.yaml#/components/schemas/ProblemDetails'
+                  - type: object
+                    required: [errors]
+                    properties:
+                      errors:
+                        type: object
+                        additionalProperties:
+                          type: array
+                          items: { type: string }
+        '500':
+          $ref: './_shared.yaml#/components/responses/InternalError'
+components:
+  schemas:
+    Reply:
+      anyOf:
+        - $ref: '#/components/schemas/LogFood'
+        - $ref: '#/components/schemas/AskQuestion'
+      discriminator:
+        propertyName: kind
+        mapping:
+          logFood: '#/components/schemas/LogFood'
+          askQuestion: '#/components/schemas/AskQuestion'
+    Intent:
+      oneOf:
+        - $ref: '#/components/schemas/LogFood'
+        - $ref: '#/components/schemas/AskQuestion'
+      discriminator:
+        propertyName: kind
+        mapping:
+          logFood: '#/components/schemas/LogFood'
+          askQuestion: '#/components/schemas/AskQuestion'
+    LogFood:
+      type: object
+      required: [kind, foodId, eatenAt, localDate, note, source]
+      properties:
+        kind: { type: string, const: logFood }
+        foodId: { type: string, format: uuid }
+        eatenAt: { type: string, format: date-time }
+        localDate: { type: [string, 'null'], format: date }
+        note:
+          oneOf:
+            - $ref: '#/components/schemas/Note'
+            - type: 'null'
+        source:
+          anyOf:
+            - $ref: '#/components/schemas/Note'
+            - type: 'null'
+    AskQuestion:
+      allOf:
+        - type: object
+          required: [kind]
+          properties:
+            kind: { type: string, const: askQuestion }
+        - type: object
+          required: [question, parentId]
+          properties:
+            question: { type: string }
+            parentId:
+              oneOf:
+                - { type: string, format: uuid }
+                - type: 'null'
+    Note:
+      type: object
+      required: [text]
+      properties:
+        text: { type: string }

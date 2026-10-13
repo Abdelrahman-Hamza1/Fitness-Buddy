@@ -1,0 +1,29 @@
+# expect: fb-single-tag
+# An operation with two (declared) tags: the Dart method would land in two client classes.
+openapi: 3.1.1
+info:
+  title: Spectral self-test
+  version: 0.0.0
+  description: 'An operation with two (declared) tags: the Dart method would land in two client classes.'
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Test
+    description: Self-test operations.
+  - name: Other
+    description: A second module.
+paths:
+  /v1/things:
+    get:
+      tags: [Test, Other]
+      operationId: getThing
+      description: Returns a thing.
+      parameters:
+        - $ref: './_shared.yaml#/components/parameters/AppVersion'
+        - $ref: './_shared.yaml#/components/parameters/Platform'
+        - $ref: './_shared.yaml#/components/parameters/DeviceId'
+      responses:
+        '200':
+          $ref: './_shared.yaml#/components/responses/Thing'
+        '500':
+          $ref: './_shared.yaml#/components/responses/InternalError'

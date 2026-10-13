@@ -1,0 +1,4 @@
+# Identity module: auth, tokens, account linking (04 §4.3 Auth).
+# No endpoints yet; a later step fills this file. Then list each path in
+# ../openapi.yaml under `paths` and add the `Identity` tag there.
+paths: {}

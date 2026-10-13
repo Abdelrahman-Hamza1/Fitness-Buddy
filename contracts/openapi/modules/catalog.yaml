@@ -1,0 +1,4 @@
+# Catalog module: food search, barcode lookup, catalog packs (04 §4.3 Foods, 07).
+# No endpoints yet; a later step fills this file. Then list each path in
+# ../openapi.yaml under `paths` and add the `Catalog` tag there.
+paths: {}

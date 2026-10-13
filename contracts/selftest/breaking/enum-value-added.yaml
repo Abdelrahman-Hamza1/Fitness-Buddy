@@ -1,0 +1,30 @@
+# MUST PASS: adds a response enum value. Clients map unknown values to their
+# `unknown` fallback (04 §4.2), so breaking-levels.txt downgrades this to info.
+openapi: 3.1.1
+info:
+  title: Breaking self-test
+  version: 1.0.0
+paths:
+  /v1/things/{thingId}:
+    get:
+      operationId: getThing
+      parameters:
+        - name: thingId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: A thing.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Thing' }
+components:
+  schemas:
+    Thing:
+      type: object
+      required: [id, name, status]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        status: { type: string, enum: [active, archived, deleted] }

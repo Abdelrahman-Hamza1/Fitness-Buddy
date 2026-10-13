@@ -10,8 +10,8 @@
 # cooldown: a release must be 7 days old before a version-update PR proposes it,
 # so a compromised or broken release has time to be caught and yanked first.
 # Supported (default-days) by every ecosystem used here: pub, nuget, dotnet-sdk,
-# github-actions, docker (GitHub docs, checked 2026-10). Security updates are
-# not delayed by it.
+# github-actions, docker, docker-compose (GitHub docs, checked 2026-10).
+# Security updates are not delayed by it.
 version: 2
 
 updates:
@@ -37,6 +37,18 @@ updates:
       # Lint-rule majors add new rules; take them on purpose, not monthly.
       - dependency-name: very_good_analysis
         update-types: ['version-update:semver-major']
+      # The API client generator and its runtime (S02 D1, A7). They move
+      # together, with the Flutter pin (the analyzer < 14 cap) and with a
+      # `make gen` regeneration commit. Dependabot can't regenerate, so a lone
+      # bump would always fail gen-check.
+      - dependency-name: swagger_parser
+      - dependency-name: build_runner
+      - dependency-name: freezed
+      - dependency-name: freezed_annotation
+      - dependency-name: json_serializable
+      - dependency-name: json_annotation
+      - dependency-name: retrofit_generator
+      - dependency-name: retrofit
 
   # NuGet packages (central package management in backend/Directory.Packages.props).
   - package-ecosystem: nuget
@@ -79,6 +91,25 @@ updates:
       default-days: 7
     groups:
       actions-minor-patch:
+        update-types: [minor, patch]
+
+  # The contract tool images (Redocly, Spectral, oasdiff), pinned by tag and
+  # digest in tools/contract-tools/compose.yaml (S02 D8). Whether Dependabot
+  # bumps the digest together with the tag is checked after the first run
+  # (S02 risk list; fallback: bump by hand in the quarterly toolchain review).
+  # A bump changes tool behaviour: `make contract-selftest` in CI proves the
+  # checks still catch what they must before it's merged.
+  - package-ecosystem: docker-compose
+    directory: /tools/contract-tools
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore(deps)
+    cooldown:
+      default-days: 7
+    groups:
+      contract-tools-minor-patch:
         update-types: [minor, patch]
 
   # Added in S03 together with the first Dockerfile (Dependabot errors on a

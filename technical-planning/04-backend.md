@@ -104,7 +104,7 @@ The same container image runs as:
 | Transport | HTTPS only (TLS 1.2+), JSON (UTF-8), gzip/brotli |
 | Versioning | `/v1/...` in the path. Only additive changes within a version. Deprecation via the `Sunset` header. **Minimum app version gate:** `426 Upgrade Required` + store link when `X-App-Version` is below the configured minimum |
 | Auth | `Authorization: Bearer <access JWT>` (≈ 15 min, ES256, `kid` header). Refresh tokens are opaque, rotated on every use and stored hashed. Reusing a refresh token revokes its whole family |
-| Errors | **RFC 9457** `application/problem+json` with a stable `type` URI (e.g. `…/errors/rate-limited`, `…/version-conflict`, `…/upgrade-required`) and an `errors` map for validation. The app maps `type` to its `Failure` values (`09` §8) |
+| Errors | **RFC 9457** `application/problem+json` with a stable `type` URI (relative, e.g. `/errors/rate-limited`, `/errors/version-conflict`, `/errors/upgrade-required`) and an `errors` map for validation. The app maps `type` to its `Failure` values (`09` §8) |
 | Idempotency | `Idempotency-Key` header on every unsafe POST. The server stores the result for 24 h and replays it. Buddy uses the chat message ID (MN-005) |
 | Concurrency | Single-resource updates use `ETag` / `If-Match`. Sync uses HLC last-write-wins (`05` §5) |
 | Pagination | Cursor-based (`cursor`, `limit`, response `nextCursor`). Never offsets |
@@ -113,6 +113,8 @@ The same container image runs as:
 | Tracing | W3C `traceparent` accepted and propagated. `X-Request-Id` echoed on every response and in every log line |
 | Rate limits | `429` + `Retry-After` + `RateLimit-Policy` / `RateLimit` headers. Per user, per IP on unauthenticated endpoints |
 | Size limits | Body ≤ 256 KB, except image uploads (≤ 2 MB, JPEG ≤ 1024 px, `09` §4) |
+| Schema shape (TD-043) | Every property is in `required`; a value that can be absent is `type: [T, 'null']` and is sent as `null`, never as a missing key (a server emission rule: no `WhenWritingNull`). No merge-patch semantics: updates are full replacement (`If-Match`) or command POSTs. A request property added within a version is optional with a server default. Unions are discriminated (`discriminator` + complete `mapping`). One tag per module = one Dart client class; `operationId` = the Dart method name |
+| Error types (TD-043) | `ProblemDetails.type` is a relative `/errors/<kebab-slug>`, compared as an opaque string, never renamed or removed within a version. `type`, `title`, `status` always present. Catalogue: `contracts/README.md` (+ golden bodies in `contracts/testdata/problems/` from S03) |
 | Forward compatibility | Clients ignore unknown fields. Every enum has an `unknown` fallback on the client. New intent kinds degrade to "Buddy can't do that in this version yet" |
 
 ### 4.3 Endpoint map (v1)

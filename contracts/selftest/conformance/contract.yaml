@@ -1,0 +1,91 @@
+# Conformance self-test: the contract side (from the S02 research). server-match.json
+# is the matching server document, server-renamed.json renames a response field.
+openapi: 3.1.1
+info:
+  title: Fitness Buddy API
+  version: 0.1.0
+  description: Contract-first API. The contract wins.
+servers:
+  - url: https://api.example.invalid
+tags:
+  - name: Config
+    description: Client configuration.
+paths:
+  /v1/config:
+    get:
+      tags:
+        - Config
+      operationId: getConfig
+      summary: Get client configuration
+      description: Minimum app version, feature flags and client thresholds.
+      responses:
+        '200':
+          description: The current client configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppConfig'
+              examples:
+                default:
+                  value:
+                    minimumAppVersion: 1.0.0
+                    featureFlags:
+                      buddy: true
+                    thresholds:
+                      aiConfidenceMin: 0.7
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  schemas:
+    AppConfig:
+      type: object
+      description: What the app needs before it talks to anything else.
+      required:
+        - minimumAppVersion
+        - featureFlags
+        - thresholds
+      properties:
+        minimumAppVersion:
+          type: string
+          description: Semantic version; older apps get 426.
+        featureFlags:
+          type: object
+          additionalProperties:
+            type: boolean
+        thresholds:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
+    ProblemDetails:
+      type: object
+      description: RFC 9457 problem details.
+      properties:
+        type:
+          type:
+            - string
+            - 'null'
+        title:
+          type:
+            - string
+            - 'null'
+        status:
+          type:
+            - integer
+            - 'null'
+          format: int32
+        detail:
+          type:
+            - string
+            - 'null'
+        instance:
+          type:
+            - string
+            - 'null'
+  responses:
+    InternalError:
+      description: Unexpected server error.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'

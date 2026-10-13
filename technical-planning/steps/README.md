@@ -113,7 +113,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | ID | Step | Phase | Depends on | Size | Status |
 |---|---|---|---|---|---|
 | [S01](S01-repo-tooling-ci.md) | Repo, tooling & CI foundation | P0 | — | M | ✅ |
-| [S02](S02-api-contract-pipeline.md) | API contract pipeline | P0 | S01 | M | ⬜ |
+| [S02](S02-api-contract-pipeline.md) | API contract pipeline | P0 | S01 | M | ✅ |
 | [S03](S03-backend-host.md) | Backend host & HTTP conventions | P0 | S02 | M | ⬜ |
 | [S04](S04-backend-persistence.md) | Backend persistence, outbox & jobs | P0 | S03 | M | ⬜ |
 | [S05](S05-staging-infrastructure.md) | Staging infrastructure & deploy pipeline | P0 | S04 | L | ⬜ |
