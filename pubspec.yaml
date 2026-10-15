@@ -6,9 +6,11 @@ environment:
   sdk: ^3.13.0
 
 workspace:
+  - apps/mobile
   - packages/fb_api_client
   - packages/fb_domain
   - packages/fb_text
+  - tools/app_check
   - tools/trace
 
 dev_dependencies:

@@ -49,6 +49,16 @@ updates:
       - dependency-name: json_annotation
       - dependency-name: retrofit_generator
       - dependency-name: retrofit
+      # The app's codegen and UI kit (S06 plan D1), pinned exactly: a bump
+      # changes the generated providers (riverpod_annotation and
+      # riverpod_generator move together, with a `make gen` commit) or the
+      # golden images (material_ui, alchemist: `make goldens`). Bumped on
+      # purpose. riverpod_lint is pinned in analysis_options.yaml, which
+      # Dependabot doesn't read; bump it with the other two.
+      - dependency-name: riverpod_annotation
+      - dependency-name: riverpod_generator
+      - dependency-name: material_ui
+      - dependency-name: alchemist
 
   # NuGet packages (central package management in backend/Directory.Packages.props).
   - package-ecosystem: nuget

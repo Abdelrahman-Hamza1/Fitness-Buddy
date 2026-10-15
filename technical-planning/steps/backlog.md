@@ -35,3 +35,15 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 30 | S08 r2 | Ban list shorthand: `clock?.now()` false positive; `[.now()]` / `{.now()}` not caught; stripComments EOF backslash guard | minor | S09 | open |
 | 31 | S08 r2 | End-quantity-wins rule also applies to English implicit start portions ("cup of tea 2 tbsp"); document or pin | nit | S15 | open |
 | 13 | S01 | Spec tidy: add a Release column to the UX-/AQ- tables, then drop the trace overrides | minor | owner, later | open |
+| 32 | S06a review | Android hardening for the first APK: cleartext only in the dev build and only for 127.0.0.1/localhost (`network_security_config` in the dev source set); release not debuggable; `allowBackup`/`dataExtractionRules` exclude the install device id (a restore must not clone it); signing files out of git | minor | S06b | open |
+| 33 | S06a review | `tools/trace` scans only `test/` and `integration_test/`: add `patrol_test/` | minor | S06b | open |
+| 34 | S06a security | Before setting a Sentry DSN: native (Java/NDK) event scrubbing or `enableNativeCrashHandling=false` (A5); Sentry project with "Prevent storing IP addresses", server-side scrubbing, EU region | minor | S05 | open |
+| 35 | S06a UX | Tab placeholders are text only, with an AppBar repeating the tab name; replace them with designed empty states, and drop the plain title bar on Today (16) | minor | S07/S16 | open |
+| 36 | S06a UX | Update-required screen: tell R1 sideload users where to get the new build (once the release channel exists) | minor | S29 | open |
+| 37 | S06a review | app_check rule: only `app/app_scope.dart` may import `package:fb_domain/system.dart` | nit | next touch of app_check | open |
+| 38 | S06a architect | app_check rule for "only ChangeSetApplier writes user tables" (`03` §5, `10` §3); decide whether `presentation-io` extends to `application/` for `core/db` | minor | S09 | open |
+| 39 | S06a architect | Small read facade over `clientConfigProvider` (`isEnabled(flag)`, `threshold(key, fallback)`) so presentation never names the generated DTO | minor | first flag/threshold consumer | open |
+| 40 | S06a security r2 | Native Android Sentry logs/metrics are forced on in sentry_flutter 10: add a native `beforeSendLog`/`beforeSendMetric` that drops everything, keep the Gradle plugin's logcat instrumentation off | minor | S05 | open |
+| 41 | S06a security r2 | The auth (`Authorization`) interceptor reuses `ClientHeadersInterceptor.isApiOrigin` (or a shared helper), so tokens never leave the API origin | minor | S25 | open |
+| 42 | S06a security r2 | Route paths are kept in navigation breadcrumbs: route paths must never carry user data (food names, free text) | nit | every routing step | open |
+| 43 | S06a fix r1 | If `/v1/config` answers 426 for old versions, `refresh()` should report it, so the update screen says "still old", not "are you online?" | minor | S03 | open |

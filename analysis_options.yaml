@@ -1,3 +1,11 @@
 # Shared lint rules for every Dart package in the workspace. Packages include
 # this file with a relative path from their own analysis_options.yaml.
 include: package:very_good_analysis/analysis_options.yaml
+
+# Native analyzer plugins are configured here only (the workspace root): the
+# analyzer warns about plugins in a package's own options. riverpod_lint is
+# pinned exactly (S06 plan D1); the analysis server fetches it on first run.
+# `dart analyze` prints its diagnostics, `flutter analyze` doesn't (research
+# "S06 — Flutter package set"), so `make check-dart` uses `dart analyze`.
+plugins:
+  riverpod_lint: 3.1.9

@@ -117,7 +117,8 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [S03](S03-backend-host.md) | Backend host & HTTP conventions | P0 | S02 | M | ⬜ |
 | [S04](S04-backend-persistence.md) | Backend persistence, outbox & jobs | P0 | S03 | M | ⬜ |
 | [S05](S05-staging-infrastructure.md) | Staging infrastructure & deploy pipeline | P0 | S04 | L | ⬜ |
-| [S06](S06-app-shell.md) | App shell | P0 | S02 | M | ⬜ |
+| [S06a](S06-app-shell.md) | App shell: skeleton | P0 | S02 | M | ✅ |
+| [S06b](S06-app-shell.md) | App shell: Android builds & device | P0 | S06a | M | ⬜ |
 | [S07](S07-design-system.md) | Design system v0 & key screen mockups | P0 | S06 | L | ⬜ |
 | [S08](S08-domain-primitives.md) | Domain primitives & text normalization | P0 | S01 | M | ✅ |
 | [S09](S09-local-data-foundation.md) | Local data foundation | P0 | S06, S08 | M | ⬜ |

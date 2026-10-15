@@ -57,7 +57,7 @@ deps: deps-dart deps-dotnet ## Fetch dependencies for the Dart workspace and the
 check: check-dart check-dotnet check-contract ## Format + static analysis for both stacks, then the API contract checks (no tests)
 
 .PHONY: gen
-gen: gen-contract gen-dart ## Regenerate everything derived from the contract: the bundle, then the Dart client
+gen: gen-contract gen-dart gen-app ## Regenerate all committed generated code: contract bundle, Dart client, app l10n + providers
 
 .PHONY: test
 test: test-dart test-dotnet ## Run all tests, Dart then .NET
@@ -104,7 +104,7 @@ check-dotnet: ## Verify C# formatting, then build Release with analyzers + warni
 test-dotnet: ## Run the backend tests (xUnit v3 on Microsoft.Testing.Platform)
 	cd '$(REPO_ROOT)/backend' && '$(DOTNET)' test --solution $(DOTNET_SLN) -c Release --no-restore --max-parallel-test-modules 2
 
-##@ Dart workspace (pubspec.yaml, packages/, tools/)
+##@ Dart workspace (pubspec.yaml, apps/, packages/, tools/)
 
 # One pub workspace, one resolution, one pubspec.lock. `dart format .` and
 # `dart analyze` only look at Dart files, so backend/ and spec/ are not touched.
@@ -120,38 +120,63 @@ deps-dart: ## Resolve Dart dependencies for the whole workspace (flutter pub get
 	cd '$(REPO_ROOT)' && '$(FLUTTER)' pub get $(PUB_GET_FLAGS)
 
 .PHONY: check-dart
-check-dart: ## Verify Dart formatting, then analyze with very_good_analysis (infos are errors)
+check-dart: ## Verify Dart formatting, analyze (very_good_analysis + riverpod_lint, infos are errors), then app-check
 	cd '$(REPO_ROOT)' && '$(DART)' format --output=none --set-exit-if-changed .
 	cd '$(REPO_ROOT)' && '$(DART)' analyze --fatal-infos
+	$(APP_CHECK)
+
+# The app's architecture rules the analyzer can't express (S06 plan D16):
+# import boundaries, raw user-facing strings, left/right layout. Part of
+# check-dart, so CI's dart job runs it. Rules: tools/app_check/README.md.
+APP_CHECK = cd '$(REPO_ROOT)' && '$(DART)' run tools/app_check/bin/app_check.dart apps/mobile
+.PHONY: app-check
+app-check: ## Check apps/mobile/lib: feature/layer import boundaries, no raw UI strings, no left/right layout
+	$(APP_CHECK)
 
 .PHONY: test-dart
 test-dart: ## Run the tests of every workspace member (flutter test or dart test), one at a time
 	@DART='$(DART)' FLUTTER='$(FLUTTER)' bash '$(REPO_ROOT)/tools/scripts/dart-test-all.sh'
 
-# The Dart API client (S02 D1, D2): generated from contracts/openapi.yaml into
-# packages/fb_api_client and committed. gen-check is the CI guard: it regenerates
+# Committed generated Dart code: the API client (S02 D1, D2), generated from
+# contracts/openapi.yaml into packages/fb_api_client, and the app's gen-l10n and
+# Riverpod output (S06 plan D14). gen-check is the CI guard: it regenerates
 # and fails if the result differs from what git has. It compares the working tree
 # with the index, so locally `git add` of a fresh regeneration counts as done (in
 # CI the index is the commit). It doesn't bundle first: contract-bundle-check
 # guards the bundle.
-# Only the generated folders (gen-dart.sh writes nothing else): a hand edit
-# elsewhere in the package is not a stale client.
-GEN_DART_DIRS := packages/fb_api_client/lib/src/generated packages/fb_api_client/test/generated
+# Only the generated paths (gen-dart.sh and gen-app.sh write nothing else): a
+# hand edit elsewhere is not stale generated code. The app's paths: gen-l10n
+# output and riverpod_generator's *.g.dart files (S06 plan D14).
+GEN_DART_DIRS := packages/fb_api_client/lib/src/generated packages/fb_api_client/test/generated \
+  apps/mobile/lib/l10n/gen ':(glob)apps/mobile/lib/**/*.g.dart'
 
 .PHONY: gen-dart
 gen-dart: ## Regenerate the Dart API client in packages/fb_api_client from contracts/openapi.yaml
 	@DART='$(DART)' bash '$(REPO_ROOT)/tools/scripts/gen-dart.sh'
 
+.PHONY: gen-app
+gen-app: ## Regenerate the app's committed code in apps/mobile: gen-l10n (lib/l10n/gen), Riverpod providers (*.g.dart)
+	@DART='$(DART)' FLUTTER='$(FLUTTER)' bash '$(REPO_ROOT)/tools/scripts/gen-app.sh'
+
 .PHONY: gen-check
-gen-check: gen-dart ## Fail if the committed Dart API client is not what `make gen-dart` produces
+gen-check: gen-dart gen-app ## Fail if the committed generated Dart code (API client, app) is not what `make gen-dart gen-app` produces
 	@stale="$$(git -C '$(REPO_ROOT)' status --porcelain --untracked-files=all -- $(GEN_DART_DIRS) | grep -v '^. ' || true)"; \
 	if [[ -n "$$stale" ]]; then \
-	  echo "Generated client is out of date: run 'make gen' and commit." >&2; \
+	  echo "Generated Dart code is out of date: run 'make gen' and commit." >&2; \
 	  echo "$$stale" | sed 's/^/  /' >&2; \
 	  git -C '$(REPO_ROOT)' --no-pager diff --stat -- $(GEN_DART_DIRS) >&2; \
 	  exit 1; \
 	fi
-	@echo "gen-check: OK, the generated code in packages/fb_api_client is up to date"
+	@echo "gen-check: OK, the generated code in packages/fb_api_client and apps/mobile is up to date"
+
+##@ Mobile app (apps/mobile)
+
+# Goldens are alchemist's CI variant only (S06 plan D17): text renders as blocks,
+# so the images are identical on the laptop and in CI. `make test-dart` compares
+# them; this target rewrites them after an intended UI change (review the PNGs).
+.PHONY: goldens
+goldens: ## Regenerate the app's golden images (apps/mobile/test/**/goldens/ci), then review and commit them
+	cd '$(REPO_ROOT)/apps/mobile' && '$(FLUTTER)' test --update-goldens --tags golden
 
 ##@ API contract (contracts/, TD-023)
 

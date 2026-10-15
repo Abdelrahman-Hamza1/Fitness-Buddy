@@ -71,9 +71,9 @@ fitness_buddy/
 | Rule | Check |
 |---|---|
 | `fb_domain`, `fb_text`, `fb_api_client` have no Flutter or I/O dependencies | Pure Dart packages + a dependency allowlist test |
-| App features import each other only via barrels | Import-graph test (a Dart script over `lib/features/**`) |
+| App features import each other only via barrels (and the other layer boundaries of `03` §3.2) | `tools/app_check` (`make app-check`, in `check-dart`) |
 | Only `ChangeSetApplier` writes user tables | Library-private write APIs + an architecture test |
-| No `left/right` layout, no raw strings in widgets | Lint + grep checks |
+| No `left/right` layout, no raw strings in widgets | `tools/app_check` (rules `directional`, `raw-string`) |
 | Backend layer direction (Domain ← Application ← Api/Infrastructure) | **ArchUnitNET** tests |
 | Backend modules don't reference each other's internals or tables | ArchUnitNET + `internal` visibility + one schema per module |
 | The API matches the contract | Conformance diff (S02) |

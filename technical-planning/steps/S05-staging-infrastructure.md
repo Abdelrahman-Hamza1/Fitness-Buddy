@@ -32,6 +32,9 @@
 - The uptime monitor product (any free one on a different provider).
 - The exact VM type (current Hetzner line-up and prices).
 
+## Notes from earlier steps
+- **From S06a:** the app's `staging` flavor points at a `.invalid` placeholder URL with an empty Sentry DSN; set the real URL (https only outside `dev`) and check the app fetches `/v1/config` from staging. Before setting any DSN: native (Java/NDK) Sentry scrubbing or `enableNativeCrashHandling=false` (A5), a native `beforeSendLog`/`beforeSendMetric` that drops everything (sentry_flutter 10 forces native logs/metrics on), and a Sentry project in the EU region with "Prevent storing IP addresses" and server-side scrubbing (backlog #34, #40). Sentry navigation breadcrumbs were deferred to here.
+
 ## Exit criteria
 - [ ] `tofu apply` from a clean state creates staging. Destroying and re-creating it, then redeploying, works by following the runbook.
 - [ ] `https://api-staging.<domain>/v1/config` serves valid TLS and a contract-conformant response.

@@ -1,0 +1,53 @@
+name: fb_mobile
+description: Fitness Buddy, the Flutter app (Android in R1, D-081).
+publish_to: none
+version: 0.1.0+1
+resolution: workspace
+
+environment:
+  sdk: ^3.13.0
+
+# Versions: S06 plan D1 (research "S06 — Flutter package set"). Exact pins are
+# bumped on purpose, never by Dependabot (see .github/dependabot.yml): codegen
+# and goldens change with them. riverpod_lint is not here: it is an analyzer
+# plugin, pinned in the root analysis_options.yaml.
+dependencies:
+  # Same exact pin as fb_api_client (its generated code runs on it).
+  dio: 5.11.1
+  fb_api_client:
+    path: ../../packages/fb_api_client
+  fb_domain:
+    path: ../../packages/fb_domain
+  flutter:
+    sdk: flutter
+  # Needed by the gen-l10n output (lib/l10n/gen). The app's delegates come
+  # from material_ui (plan D15), not from this package.
+  flutter_localizations:
+    sdk: flutter
+  flutter_riverpod: ^3.4.3
+  go_router: ^18.0.2
+  intl: ^0.20.2
+  material_ui: 1.6.0
+  # X-App-Version and the update gate read the installed version.
+  package_info_plus: ^10.2.2
+  riverpod_annotation: 4.0.7
+  # Error reporting, after the first frame, off while the DSN is empty.
+  sentry_flutter: ^10.0.0
+  # The device id and the cached /v1/config (not secret, not user data).
+  shared_preferences: ^2.5.6
+
+dev_dependencies:
+  alchemist: 0.14.1
+  build_runner: 2.16.1
+  flutter_test:
+    sdk: flutter
+  riverpod_generator: 4.0.9
+  # Test only: the in-memory SharedPreferencesAsync platform (the plugin's
+  # documented way to test it). Comes with shared_preferences.
+  shared_preferences_platform_interface: ^2.4.2
+  very_good_analysis: 11.0.0
+
+flutter:
+  uses-material-design: true
+  # Required by `flutter gen-l10n` (it refuses to run without it).
+  generate: true

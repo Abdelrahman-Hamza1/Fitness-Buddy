@@ -1,0 +1,8 @@
+# build_runner for the app: riverpod_generator only, over lib/ (S06 plan D14).
+# Its *.g.dart output is committed; `make gen` regenerates it.
+targets:
+  $default:
+    builders:
+      riverpod_generator:
+        generate_for:
+          - lib/**

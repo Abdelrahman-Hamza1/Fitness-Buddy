@@ -1,0 +1,9 @@
+# Test tags. `golden`: alchemist golden tests (S06 plan D17);
+# `make goldens` regenerates their images. `live`: tests against a running
+# local API, skipped unless asked for (S06 plan WP2):
+#   (backend/) dotnet run --project src/Host --urls http://localhost:5198
+#   (apps/mobile/) flutter test --tags live --run-skipped
+tags:
+  golden:
+  live:
+    skip: 'needs the local API on port 5198 (see apps/mobile/dart_test.yaml)'

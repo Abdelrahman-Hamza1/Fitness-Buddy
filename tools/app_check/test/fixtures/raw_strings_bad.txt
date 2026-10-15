@@ -1,0 +1,47 @@
+// Fixture for app_check rule raw-string (not compiled). The test places it at
+// lib/features/today/presentation/bad_screen.dart. Every line marked
+// `expect: <rule>` must be reported with that rule, and nothing else.
+import 'package:material_ui/material_ui.dart';
+
+class BadScreen extends StatelessWidget {
+  const BadScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Today')), // expect: raw-string
+      body: Column(
+        children: [
+          Text("Double quotes"), // expect: raw-string
+          const Text(
+            'On its own line after the widget', // expect: raw-string
+          ),
+          Text(r'Raw literal'), // expect: raw-string
+          Text('''Triple quoted'''), // expect: raw-string
+          Text('Hello $name'), // expect: raw-string
+          Text(isOn ? 'On' : l10n.off), // expect: raw-string
+          Text('Hi ' + name), // expect: raw-string
+          Text('مرحبا'), // expect: raw-string
+          Text(key: const Key('k'), 'After a named argument'), // expect: raw-string
+          SelectableText('Selectable'), // expect: raw-string
+          Text(l10n.x, semanticsLabel: 'Spoken'), // expect: raw-string
+          Text.rich(TextSpan(text: 'Rich')), // expect: raw-string
+          Tooltip(message: 'Tip', child: icon), // expect: raw-string
+          IconButton(tooltip: 'Back', onPressed: null, icon: icon), // expect: raw-string
+          TextField(
+            decoration: InputDecoration(
+              labelText: 'Name', // expect: raw-string
+              hintText: 'e.g. Sam', // expect: raw-string
+              helperText: 'Optional', // expect: raw-string
+              errorText: 'Required', // expect: raw-string
+            ),
+          ),
+          NavigationDestination(icon: icon, label: 'Today'), // expect: raw-string
+          ListTile(title: Text('Row'), subtitle: Text('Detail')), // expect: raw-string
+          Icon(Icons.home, semanticLabel: 'Home'), // expect: raw-string
+          Semantics(label: 'Weight chart', child: chart), // expect: raw-string
+        ],
+      ),
+    );
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "FB_FLAVOR": "dev",
+  "FB_API_BASE_URL": "http://127.0.0.1:5198",
+  "FB_SENTRY_DSN": ""
+}

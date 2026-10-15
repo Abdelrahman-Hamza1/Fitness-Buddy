@@ -82,11 +82,15 @@ tools/trace/          Dart CLI · requirement traceability report
 
 ```
 apps/mobile/lib/
-  app/            bootstrap, flavors, router, root providers, theme wiring
+  app/            composition root: bootstrap, router (the only go_router user), shell,
+                  root provider overrides, theme wiring
   core/           db (drift schema, migrations), sync, api (client wiring, auth interceptor),
-                  errors, events, undo, l10n
+                  errors, events, undo, l10n, config (flavor config, remote config),
+                  storage (small settings: device id, config cache), ids (ID generator port),
+                  navigation (typed `AppRoute`s + the `AppNavigator` port; go_router stays in app/router)
   features/
     today/        Today screen composition (HM-*)
+    me/           Me tab composition: profile, goals, targets, "Buddy remembers", settings (UX-010)
     buddy/        input bar, chat sheet, proposal cards, message queue (AI-*)
     diary/        entries, slots, groups, day marks, copy/move (DY-001–032)
     foods/        search, barcode, label scan, personal foods, saved meals (FD-*)
@@ -105,7 +109,9 @@ apps/mobile/lib/
 
 Each feature has the same anatomy: `<feature>.dart` (the barrel, the only file others may import), `presentation/`, `application/`, `data/`.
 
-**Cross-feature rule:** features import each other only through barrels. Cross-cutting reactions ("diary changed → reschedule notifications", "weigh-in saved → refresh trend") go through **domain events**, not direct calls.
+**Cross-feature rule:** features import each other only through barrels. Features never import `app/` (the composition root): they navigate through the `AppNavigator` port in `core/navigation/` (S06 A2). Cross-cutting reactions ("diary changed → reschedule notifications", "weigh-in saved → refresh trend") go through **domain events**, not direct calls.
+
+**Enforced by `tools/app_check`** (`make app-check`, part of `make check-dart` and CI): feature barrels, `presentation/` never imports `data/`, I/O packages (dio, the API client, drift, shared_preferences, Sentry) only in `data/` and `core/`, `core/` never imports `features/` or `app/`, features never import `app/`, presentation never imports `core/api|db|sync`, go_router only in `app/router/`, no raw user-facing strings, no left/right layout APIs. Rules, fixes and the `// app-check: allow <rule-id> <reason>` escape hatch (only for `raw-string` and `directional`; the import boundaries have none): `tools/app_check/README.md`.
 
 ## 4. Read model
 

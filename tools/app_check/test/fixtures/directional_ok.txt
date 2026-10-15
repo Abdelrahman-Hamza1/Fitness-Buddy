@@ -1,0 +1,25 @@
+// Fixture for app_check rule directional (not compiled): the allowed forms.
+// The test places it at lib/features/today/presentation/ok_layout.dart and
+// expects no violation at all.
+
+// EdgeInsets.only(left: 8) in a comment is not code.
+Widget okLayout() => Column(
+  children: [
+    Padding(padding: EdgeInsetsDirectional.only(start: 8, end: 4)),
+    Padding(padding: const EdgeInsets.only(top: 4, bottom: 8)),
+    Padding(padding: EdgeInsets.symmetric(horizontal: 16)),
+    Padding(padding: EdgeInsetsDirectional.fromSTEB(1, 2, 3, 4)),
+    PositionedDirectional(start: 0, top: 0, child: x),
+    Align(alignment: AlignmentDirectional.centerStart),
+    Align(alignment: Alignment.center),
+    Text(l10n.x, textAlign: TextAlign.start),
+    Icon(Icons.arrow_back),
+    Icon(Icons.copyright),
+    Icon(Icons.flight),
+    ClipRRect(borderRadius: BorderRadiusDirectional.only(topStart: r)),
+    DecoratedBox(decoration: BoxDecoration(border: BorderDirectional(end: side))),
+    Text(isFirst ? left : right),
+    Text(l10n.label('left: 4')),
+    Icon(Icons.chevron_left), // app-check: allow directional mirrors in RTL (matchTextDirection)
+  ],
+);

@@ -1,0 +1,63 @@
+{
+  "@@locale": "en",
+  "appTitle": "Fitness Buddy",
+  "@appTitle": {
+    "description": "The app's name, shown by the OS task switcher."
+  },
+  "tabToday": "Today",
+  "@tabToday": {
+    "description": "Bottom navigation tab: the home screen with today's diary (UX-010)."
+  },
+  "tabProgress": "Progress",
+  "@tabProgress": {
+    "description": "Bottom navigation tab: weight trend, charts and weekly summaries (UX-010)."
+  },
+  "tabWorkouts": "Workouts",
+  "@tabWorkouts": {
+    "description": "Bottom navigation tab: workout plan, sessions and history (UX-010)."
+  },
+  "tabMe": "Me",
+  "@tabMe": {
+    "description": "Bottom navigation tab: profile, goals, targets, memory and settings (UX-010)."
+  },
+  "todayPlaceholder": "Your day's meals and totals will show up here.",
+  "@todayPlaceholder": {
+    "description": "Placeholder body of the Today tab until the diary is built."
+  },
+  "progressPlaceholder": "Your weight trend and weekly summaries will show up here.",
+  "@progressPlaceholder": {
+    "description": "Placeholder body of the Progress tab until charts are built."
+  },
+  "workoutsPlaceholder": "Your workout plan and history will show up here.",
+  "@workoutsPlaceholder": {
+    "description": "Placeholder body of the Workouts tab until workouts are built."
+  },
+  "mePlaceholder": "Your profile, goals and settings will show up here.",
+  "@mePlaceholder": {
+    "description": "Placeholder body of the Me tab until profile and settings are built."
+  },
+  "updateRequiredTitle": "Update needed",
+  "@updateRequiredTitle": {
+    "description": "Title of the screen shown when this app version is too old to talk to the server."
+  },
+  "updateRequiredBody": "This version can't connect any more. Install the latest one to continue. Your data stays on your phone.",
+  "@updateRequiredBody": {
+    "description": "Body of the update-required screen. Plain language, reassures that local data is kept."
+  },
+  "updateRequiredCheckAgain": "Check again",
+  "@updateRequiredCheckAgain": {
+    "description": "Button on the update-required screen: asks the server again whether this version is allowed."
+  },
+  "updateRequiredChecking": "Checking…",
+  "@updateRequiredChecking": {
+    "description": "Shown under the Check again button while the app asks the server whether this version is allowed."
+  },
+  "updateRequiredStillOld": "Still on an older version. Install the new build, then check again.",
+  "@updateRequiredStillOld": {
+    "description": "Shown after Check again when the server still says this version is too old."
+  },
+  "updateRequiredCheckFailed": "Couldn't check. Are you online?",
+  "@updateRequiredCheckFailed": {
+    "description": "Shown after Check again when the server could not be reached (offline, timeout or error)."
+  }
+}

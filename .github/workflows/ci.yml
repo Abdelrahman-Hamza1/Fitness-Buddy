@@ -66,11 +66,12 @@ jobs:
       - name: Dependencies, format + analyze, tests
         run: make deps-dart check-dart test-dart FLUTTER=flutter DART=dart
 
-      # Regenerates packages/fb_api_client from contracts/openapi.yaml and fails
-      # if the worktree then differs from the commit (S02 D2). Runs after the
-      # tests on purpose: it needs a clean worktree, and nothing above writes
-      # into packages/fb_api_client.
-      - name: Generated Dart API client is up to date
+      # Regenerates packages/fb_api_client from contracts/openapi.yaml (S02 D2)
+      # and the app's l10n + Riverpod code in apps/mobile (S06 D14), and fails
+      # if the worktree then differs from the commit. Runs after the tests on
+      # purpose: it needs a clean worktree, and nothing above changes the
+      # generated paths.
+      - name: Generated Dart code (API client, app) is up to date
         run: make gen-check FLUTTER=flutter DART=dart
 
       - name: Traceability report (into the job summary)

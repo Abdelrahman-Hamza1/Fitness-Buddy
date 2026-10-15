@@ -1,0 +1,23 @@
+// Fixture for app_check rule directional (not compiled). The test places it
+// at lib/features/today/presentation/bad_layout.dart. Every line marked
+// `expect: <rule>` must be reported with that rule, and nothing else.
+Widget badLayout() => Column(
+  children: [
+    Padding(padding: EdgeInsets.only(left: 8)), // expect: directional
+    Padding(padding: const EdgeInsets.only(top: 4, right: 8)), // expect: directional
+    Padding(padding: EdgeInsets.fromLTRB(1, 2, 3, 4)), // expect: directional
+    Positioned(
+      left: 0, // expect: directional
+      top: 0,
+      child: x,
+    ),
+    Align(alignment: Alignment.centerLeft), // expect: directional
+    Align(alignment: Alignment.bottomRight), // expect: directional
+    Align(alignment: FractionalOffset.topLeft), // expect: directional
+    Text(l10n.x, textAlign: TextAlign.right), // expect: directional
+    Icon(Icons.chevron_left), // expect: directional
+    Icon(Icons.keyboard_arrow_right_rounded), // expect: directional
+    ClipRRect(borderRadius: BorderRadius.only(topLeft: r)), // expect: directional
+    DecoratedBox(decoration: BoxDecoration(border: Border(right: side))), // expect: directional
+  ],
+);

@@ -59,6 +59,7 @@ Exists today:
 |---|---|
 | [`spec/`](spec/README.md) | Product spec: what and why. The source of truth for requirements. |
 | [`technical-planning/`](technical-planning/README.md) | Architecture, decisions (TDs) and one card per delivery step in `steps/`. |
+| [`apps/mobile/`](apps/mobile/README.md) | The Flutter app (`fb_mobile`): four-tab shell, flavors, localization. Android builds come in S06b. |
 | [`packages/`](packages/README.md) | Shared Dart packages (`fb_domain`, `fb_text`) in the pub workspace. |
 | [`backend/`](backend/README.md) | .NET 10 API: Host, BuildingBlocks, architecture tests. |
 | [`contracts/`](contracts/README.md) | The API contract: OpenAPI 3.1 sources, the committed bundle, Spectral rules, self-test fixtures, shared golden test data. |
@@ -71,7 +72,6 @@ Planned (full map: [`technical-planning/10-engineering-practices.md`](technical-
 
 | Folder | What it will be |
 |---|---|
-| `apps/mobile/` | Flutter app (planned) |
 | `packages/fb_api_client/`, `packages/fb_design_system/` | Generated API client, UI kit (planned) |
 | `data/` | Reference dishes, exercises, portion words (planned) |
 | `tools/buddy_eval/`, `tools/catalog/` | AI acceptance suite, catalog build/validate (planned) |

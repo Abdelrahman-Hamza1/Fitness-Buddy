@@ -1,0 +1,5 @@
+{
+  "FB_FLAVOR": "prod",
+  "FB_API_BASE_URL": "https://api.invalid",
+  "FB_SENTRY_DSN": ""
+}

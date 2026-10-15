@@ -33,3 +33,6 @@ contracts/openapi.yaml linguist-generated=true
 # The generated Dart API client and the generator fixture's output (make gen-dart).
 packages/fb_api_client/lib/src/generated/** linguist-generated=true
 packages/fb_api_client/test/generated/** linguist-generated=true
+# The app's gen-l10n and Riverpod output (make gen-app).
+apps/mobile/lib/l10n/gen/** linguist-generated=true
+apps/mobile/lib/**/*.g.dart linguist-generated=true

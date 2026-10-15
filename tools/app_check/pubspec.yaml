@@ -1,0 +1,20 @@
+name: fb_app_check
+description: >-
+  Architecture checks for the Flutter app (apps/mobile/lib): import boundaries,
+  raw user-facing strings, left/right layout.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.13.0
+
+executables:
+  app_check: app_check
+
+# No runtime dependencies on purpose (S06 plan D16): the check is plain
+# dart:io and regular expressions.
+
+dev_dependencies:
+  # The same pins as tools/trace (the versions Flutter's own tooling uses).
+  test: 1.31.1
+  very_good_analysis: 11.0.0

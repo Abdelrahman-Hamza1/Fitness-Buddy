@@ -1,0 +1,42 @@
+// Fixture for app_check rule raw-string (not compiled): the allowed forms.
+// The test places it at lib/features/today/presentation/ok_screen.dart and
+// expects no violation at all.
+import 'package:material_ui/material_ui.dart';
+
+/// Doc comments may quote code: `Text('Not code')`.
+class OkScreen extends StatelessWidget {
+  const OkScreen({super.key});
+
+  static const _restorationId = 'today_list';
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    // A comment with Text('Not code either') is not code.
+    final notAWidget = "Text('inside a string')";
+    return Column(
+      children: [
+        Text(l10n.tabToday),
+        Text(context.l10n.greeting(name)),
+        Text('$count'),
+        Text('${entry.kcal} / ${target.kcal}'),
+        Text(' · '),
+        Text('42'),
+        Text(''),
+        Text('\n'),
+        Text(DateFormat('yMMMd').format(day)),
+        Text(l10n.items, key: const ValueKey('items')),
+        Text(names.join(', ')),
+        Text(isOn ? l10n.on : l10n.off),
+        Text(l10n.title, style: TextStyle(fontFamily: 'Roboto')),
+        Text('Debug build'), // app-check: allow raw-string developer-only banner
+        Image.asset('assets/logo.png'),
+        TextField(focusNode: FocusNode(debugLabel: 'Search field')),
+        AppBar(title: Text(l10n.tabToday)),
+        ListTile(title: Text(l10n.row), subtitle: Text('${l10n.kcal}')),
+        Tooltip(message: l10n.tip, child: icon),
+        InputDecoration(labelText: l10n.name, hintText: '${l10n.example} 70'),
+      ],
+    );
+  }
+}

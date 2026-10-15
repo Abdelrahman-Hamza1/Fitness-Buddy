@@ -95,7 +95,7 @@ Cheap now, expensive later, so from the **first screen**:
 
 ## 9. Configuration & feature flags
 
-- **App flavors:** `dev` (local API in Docker), `staging`, `prod`, each pointing at its own API base URL. Config via `--dart-define-from-file`.
+- **App flavors:** `dev` (local API: `dotnet run` until the Docker setup of S03/S04), `staging`, `prod`, each pointing at its own API base URL. Config via `--dart-define-from-file` (`apps/mobile/config/<flavor>.json`).
 - **Remote config:** `GET /v1/config` returns the minimum app version, feature flags (e.g. `buddy.photo_enabled`) and client thresholds (AI-060 values, so tuning needs no release). Cached locally, with safe defaults offline.
 - **API configuration:** standard .NET configuration (appsettings + environment variables + secrets). Feature flags in config, read through an `IFeatureFlags` port.
 - Unfinished features ship dark behind flags rather than living on long branches.

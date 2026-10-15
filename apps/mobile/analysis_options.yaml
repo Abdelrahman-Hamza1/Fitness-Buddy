@@ -1,0 +1,8 @@
+# The workspace rules (very_good_analysis + the riverpod_lint plugin) apply
+# unchanged. Generated code (lib/l10n/gen, *.g.dart) carries its own
+# `// ignore_for_file: type=lint`, so the analyzer still reports compile
+# errors in it.
+analyzer:
+  exclude:
+    - build/**
+include: ../../analysis_options.yaml
