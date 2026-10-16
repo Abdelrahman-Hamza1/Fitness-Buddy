@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><IsPackable>false</IsPackable></PropertyGroup>
+  <ItemGroup><Using Include="Xunit" /></ItemGroup>
+  <ItemGroup><PackageReference Include="xunit.v3" /></ItemGroup>
+  <ItemGroup><ProjectReference Include="../../src/Modules/Buddy/FitnessBuddy.Modules.Buddy.csproj" /></ItemGroup>
+  <ItemGroup><ProjectReference Include="../../tools/BuddySpike/FitnessBuddy.BuddySpike.csproj" ReferenceOutputAssembly="false" /></ItemGroup>
+  <ItemGroup>
+    <Content Include="../../../tools/buddy_eval/fixtures/*.json" Link="fixtures/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../src/Modules/Buddy/Prompts/interpret-v0.schema.json" Link="schema.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

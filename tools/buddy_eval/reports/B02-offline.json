@@ -1,0 +1,63 @@
+{
+  "mode": "fixture",
+  "model": "gpt-6-luna",
+  "promptVersion": "interpret-v0",
+  "completed": true,
+  "passed": true,
+  "cases": [
+    {
+      "id": "en-eggs",
+      "status": "success",
+      "passed": true,
+      "checks": {
+        "language": true,
+        "script": true,
+        "intent": true,
+        "food": true,
+        "amount": true,
+        "state": true,
+        "ambiguities": true
+      },
+      "providerHttpStatus": null,
+      "elapsedMs": null,
+      "usage": null,
+      "estimatedUsd": null
+    },
+    {
+      "id": "ar-eggs",
+      "status": "success",
+      "passed": true,
+      "checks": {
+        "language": true,
+        "script": true,
+        "intent": true,
+        "food": true,
+        "amount": true,
+        "state": true,
+        "ambiguities": true
+      },
+      "providerHttpStatus": null,
+      "elapsedMs": null,
+      "usage": null,
+      "estimatedUsd": null
+    },
+    {
+      "id": "az-eggs",
+      "status": "success",
+      "passed": true,
+      "checks": {
+        "language": true,
+        "script": true,
+        "intent": true,
+        "food": true,
+        "amount": true,
+        "state": true,
+        "ambiguities": true
+      },
+      "providerHttpStatus": null,
+      "elapsedMs": null,
+      "usage": null,
+      "estimatedUsd": null
+    }
+  ]
+}

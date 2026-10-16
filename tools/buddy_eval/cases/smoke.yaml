@@ -1,0 +1,21 @@
+# Synthetic only. Small owner-approved B02 smoke set, not the R1 acceptance suite.
+cases:
+  - id: en-eggs
+    text: 2 boiled eggs
+    language: english
+    script: latin
+  - id: ar-eggs
+    text: أكلت بيضتين مسلوقتين
+    language: arabic
+    script: arabic
+  - id: az-eggs
+    text: akalt 2 bayd masloo2
+    language: arabic
+    script: arabizi
+expected:
+  kind: foodLog
+  names: [egg, eggs, boiled egg, boiled eggs, hard-boiled egg, hard-boiled eggs]
+  amount: 2
+  unit: piece
+  state: cooked
+  ambiguities: []

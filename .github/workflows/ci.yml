@@ -162,6 +162,17 @@ jobs:
       - name: Tests
         run: make test-dotnet DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT"
 
+      # B02's private .NET CLI + Dart parse graders; fixtures only, no API credential in CI.
+      - name: Set up Flutter for the offline Buddy harness
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+          pub-cache-key: 'flutter-pub-:os:-:version:-:arch:'
+
+      - name: Offline Buddy SDK replay and parse grading (B02)
+        run: make deps-dart eval DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT" FLUTTER=flutter DART=dart
+
   # The same hardened image; B01 also checks the Dart client against its real HTTP API.
   image:
     name: image

@@ -4,6 +4,7 @@ WORKDIR /src
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1
 COPY global.json Directory.Build.props Directory.Packages.props nuget.config ./
 COPY src/BuildingBlocks/FitnessBuddy.BuildingBlocks.csproj src/BuildingBlocks/
+COPY src/Modules/Buddy/FitnessBuddy.Modules.Buddy.csproj src/Modules/Buddy/
 COPY src/Modules/Account/FitnessBuddy.Modules.Account.csproj src/Modules/Account/
 COPY src/Modules/UserData/FitnessBuddy.Modules.UserData.csproj src/Modules/UserData/
 COPY src/Host/FitnessBuddy.Host.csproj src/Host/

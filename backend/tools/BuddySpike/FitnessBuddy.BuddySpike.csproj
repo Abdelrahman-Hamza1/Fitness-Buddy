@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup><ProjectReference Include="../../src/Modules/Buddy/FitnessBuddy.Modules.Buddy.csproj" /></ItemGroup>
+</Project>

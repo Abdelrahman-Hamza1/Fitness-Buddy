@@ -44,13 +44,14 @@ internal static class ObservabilitySetup
                     serviceVersion: Assembly.GetExecutingAssembly().GetName().Version?.ToString())
                 .AddAttributes([new KeyValuePair<string, object>("deployment.environment.name", builder.Environment.EnvironmentName)]))
             .WithTracing(traces => traces
+                .AddSource("FitnessBuddy.Buddy")
                 .AddAspNetCoreInstrumentation(options =>
                 {
                     options.Filter = context => !context.Request.Path.StartsWithSegments("/health");
                     options.RecordException = false;
                 })
                 .AddHttpClientInstrumentation(options => options.RecordException = false))
-            .WithMetrics(metrics => metrics.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation().AddRuntimeInstrumentation());
+            .WithMetrics(metrics => metrics.AddMeter("FitnessBuddy.Buddy").AddAspNetCoreInstrumentation().AddHttpClientInstrumentation().AddRuntimeInstrumentation());
 
         if (!PlatformSetup.IsBuildTimeDocument)
         {

@@ -1,0 +1,78 @@
+{
+  "mode": "live",
+  "model": "gpt-6-luna",
+  "promptVersion": "interpret-v0",
+  "cases": [
+    {
+      "id": "en-eggs",
+      "status": "success",
+      "passed": false,
+      "checks": {
+        "language": true,
+        "script": true,
+        "intent": true,
+        "food": true,
+        "amount": true,
+        "state": false,
+        "ambiguities": true
+      },
+      "providerHttpStatus": null,
+      "elapsedMs": 4958.7062,
+      "usage": {
+        "input": 863,
+        "cachedInput": 0,
+        "output": 168
+      },
+      "estimatedUsd": 0.0001703
+    },
+    {
+      "id": "ar-eggs",
+      "status": "success",
+      "passed": true,
+      "checks": {
+        "language": true,
+        "script": true,
+        "intent": true,
+        "food": true,
+        "amount": true,
+        "state": true,
+        "ambiguities": true
+      },
+      "providerHttpStatus": null,
+      "elapsedMs": 3378.1171,
+      "usage": {
+        "input": 870,
+        "cachedInput": 0,
+        "output": 194
+      },
+      "estimatedUsd": 0.000184
+    },
+    {
+      "id": "az-eggs",
+      "status": "success",
+      "passed": true,
+      "checks": {
+        "language": true,
+        "script": true,
+        "intent": true,
+        "food": true,
+        "amount": true,
+        "state": true,
+        "ambiguities": true
+      },
+      "providerHttpStatus": null,
+      "elapsedMs": 3616.9468,
+      "usage": {
+        "input": 869,
+        "cachedInput": 0,
+        "output": 205
+      },
+      "estimatedUsd": 0.0001894
+    }
+  ],
+  "recordedAtUtc": "2026-10-16T20:02:42.520012+00:00",
+  "schemaBlobAtSmoke": "502c85663ab9e51d60dae854f26239b2a19c04c2",
+  "note": "Three live calls only. Review later closed the food-unit enum; that hardening was tested offline, not with additional paid calls. English cooked-state check failed; backlog #58/B08.",
+  "completed": true,
+  "passed": false
+}

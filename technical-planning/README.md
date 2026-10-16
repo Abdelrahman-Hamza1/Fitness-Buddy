@@ -14,7 +14,7 @@ _Status: **Plan v2** · 2026-10-11 · Based on spec D-001 to D-081. R1 is Androi
 | Technical decisions | 34 TDs: backend/infra **accepted**, spikes pending, others Proposed (accepted when implemented) (`12`) |
 | Open owner questions | 6 (`12` §2.1), none blocking. TQ-22 answered: Android-first R1 (D-081) |
 | Delivery plan | Two tracks, each step with a card: app `A01–A43` (Claude), backend `B01–B16` (Codex), milestones M1–M7 + R1 (`steps/README.md`, TD-063) |
-| Code | Foundation done (S01–S04, S06a/b, S08). Two tracks (TD-059/061/063): Codex on the backend track (`AGENTS.md`, B01 next), Claude on the app track (`CLAUDE.md`, A01 next). Hetzner last; the laptop is the test server until then (TD-064). See `steps/README.md` §4 |
+| Code | Foundation done (S01–S04, S06a/b, S08). Two tracks (TD-059/061/063): Codex on the backend track (`AGENTS.md`, B01/B02 done, B03 next), Claude on the app track (`CLAUDE.md`, A01 next). Hetzner last; the laptop is the test server until then (TD-064). See `steps/README.md` §4 |
 
 ## The plan in one page
 
@@ -48,7 +48,7 @@ The ideas that carry the design:
 6. **The server stores synced data as validated JSON documents**, so the backend doesn't change when the app's data model grows (TD-031).
 7. **Postgres is the only stateful component**, on its own VM, with point-in-time backups to two providers and a **restore test every week**.
 8. **Servers are built from code** (OpenTofu, cloud-init) and deployed with zero downtime and one-command rollback (Kamal).
-9. **The AI model is chosen by measurement** (B02 bake-off) behind a provider-agnostic port. The eval suite gates every AI change.
+9. **The initial AI model is owner-selected OpenAI GPT-6 Luna** (TD-008/067), behind a provider-agnostic port. B02 builds offline fixture gates and a tiny live smoke; B08/B15 retain broader acceptance measurements.
 10. **The user model is structured and visible**: Buddy learns habits only from confirmed data and shows everything it uses (TD-032).
 
 **Stack:** Flutter · Riverpod 3 · go_router · drift · freezed · `material_ui` · **ASP.NET Core (.NET 10 LTS)** · EF Core + Npgsql · **PostgreSQL 18** · OpenAPI 3.1 (Redocly, Spectral, oasdiff) · **Hetzner** · OpenTofu · Kamal 2 · Tailscale · OpenTelemetry → Grafana Cloud · Sentry · GitHub Actions. Details and alternatives: `02`.

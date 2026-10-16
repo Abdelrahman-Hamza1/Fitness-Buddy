@@ -7,7 +7,7 @@ _How Buddy meets `10-ai-assistant.md` and the AQ thresholds in `40-acceptance-cr
 1. **AI understands, code decides.** The model outputs a *structured interpretation*: foods, amounts, states, references. Every number and every spec rule (thresholds, question budget, safety floors) is deterministic Dart in `fb_domain`. Prompts aren't policy.
 2. **Hot path = one model call.** Parse → deterministic retrieval → client computation. A second call happens only when measured to help (low-confidence rerank).
 3. **Stateless API, minimum context.** The app sends exactly the context a request needs (AC-041). The API forgets after responding.
-4. **Every model output is validated** against a JSON schema. Invalid → one repair retry → otherwise a graceful "didn't get that" (AI-150).
+4. **Every model output is validated** against a JSON schema. Production: invalid → one repair retry → otherwise a graceful "didn't get that" (AI-150). The owner-limited B02 spike disables all retries (TD-067).
 5. **Measured, not assumed.** Every prompt or model change runs the eval suite (§11).
 
 ## 2. Pipeline overview
@@ -166,8 +166,8 @@ The client sends remaining kcal and protein, the halal flag, time of day / Ramad
 ## 9. Provider strategy & privacy
 
 - **`ILlmClient` port** with one adapter per provider (official SDKs where stable, REST otherwise). A **task routing table** in configuration: `interpret`, `rerank`, `vision_food`, `vision_label`, `import`, `suggest`, `review` → (provider, model, effort, max tokens, timeout).
-- **Selection:** the B02 bake-off decides (TD-008). The default expectation is a small model at low reasoning effort for `interpret`, possibly a stronger one for `review` or vision.
-- **Fallback:** on a provider error or timeout, retry once on the secondary provider. If that fails, the message goes pending (AI-153).
+- **Selection:** owner-selected OpenAI `gpt-6-luna`, initially low effort for interpret (TD-008/067). B02 is a three-prompt integration smoke, not a provider bake-off. Broader quality and task-specific decisions remain B08/B10/B12/B15.
+- **Fallback:** none for now (owner, TD-067). B02 makes no repair or provider retries; on failure return an outcome and keep the caller message pending (AI-153). B08 defines production retry policy with the owner's paid-call scope.
 - **Privacy (AC-040–042):** paid API tiers only (no training on our data). No identity in prompts. Photos aren't stored by us. **Zero data retention** is requested before R3 (TQ-06 answered: standard terms for R1/R2).
 - **Prompt registry:** versioned prompt files in `backend/src/Modules/Buddy/Prompts/`. Each response records `promptVersion` + `model`. Changes go through a PR + eval run.
 - **Prompt caching:** static parts first (rules, schema, exercise library, few-shot examples), volatile context last.
@@ -178,14 +178,14 @@ The client sends remaining kcal and protein, the halal flag, time of day / Ramad
 | Layer | Choice | Why |
 |---|---|---|
 | Framework | **None.** No agent or orchestration framework (Microsoft Agent Framework, Semantic Kernel, LangChain…) | Buddy isn't an autonomous agent: one structured model call per message, then deterministic code. Frameworks add abstraction, churn and hidden prompts we'd have to fight. We can revisit for Later features (program generation, meal planning) |
-| Client interface | **Microsoft.Extensions.AI** (`IChatClient`): Microsoft's standard .NET abstraction for chat models | One interface for every provider. Middleware pipeline (OpenTelemetry, retries, caching). The official Anthropic C# SDK implements it (`AsIChatClient`), and so does the OpenAI .NET library. Google via its .NET SDK or a thin adapter (B02 confirms) |
-| Our port | `ILlmClient` (Buddy module, Application layer): `InterpretAsync`, `ExtractLabelAsync`, `ParseImportAsync`, `SuggestAsync`, `ReviewAsync` | Task-level, provider-agnostic. Handles routing, fallback, the repair retry, cost accounting and content-free logging. Infrastructure implements it on top of `IChatClient` |
-| Provider features | Prompt caching, reasoning effort, native JSON-schema output, vision: set through provider options where the abstraction doesn't cover them | Keeps the speed and cost wins. Verified per provider in B02 |
+| Client interface | **Microsoft.Extensions.AI** (`IChatClient`): Microsoft's standard .NET abstraction for chat models | One interface for every provider. Middleware pipeline (OpenTelemetry, retries, caching). The official Anthropic C# SDK implements it (`AsIChatClient`), and so does the OpenAI .NET library. B02 implements OpenAI only; any other provider is future owner-approved scope |
+| Our port | `ILlmClient` (Buddy module, Application layer): B02 `InterpretAsync`; label/import/suggest/review ports added by their owning steps | Task-level, provider-agnostic, on `IChatClient`. B02 accounts for cost and logs codes only, with no retries/fallback (TD-067); B08 owns production routing/repair policy |
+| Provider features | Prompt caching, reasoning effort, native JSON-schema output, vision: set through provider options where the abstraction doesn't cover them | Keeps the speed and cost wins. B02 wire-tests the OpenAI feature mapping; other providers are deferred |
 | Structured output | JSON schemas generated from C# records (internal, per task) → model native structured output → **our validation** → one repair retry → else `Clarify` | Reliable parsing. Public DTOs never depend on prompts |
 | Prompts | Versioned text files in `backend/src/Modules/Buddy/Prompts/` with simple placeholders. Version recorded on every response | Reviewable diffs. Every change runs the eval |
 | Observability | OpenTelemetry GenAI conventions (latency, tokens, model, cost) with **message content capture disabled** | Privacy (AC-041, `09` §4) |
 | Quality | **`tools/buddy_eval`** (§11) is the judge for every prompt/model change | Measured, not assumed |
-| Models | Chosen by the B02 bake-off: Claude Haiku 5.5 vs Gemini Flash-Lite class vs GPT-5.x nano/mini, with a fallback provider | Arabic/Arabizi quality, latency and cost must be measured |
+| Models | OpenAI `gpt-6-luna`, selected by the owner (TD-008/067); no automatic fallback | B02 small smoke observations only; broad quality/latency evidence remains B08/B15 |
 
 ## 10. Latency & cost budgets
 
@@ -195,23 +195,23 @@ The client sends remaining kcal and protein, the halal flag, time of day / Ramad
 |---|---|
 | Client context build (local SQL + fuzzy match) | ≤ 100 ms |
 | Network West Bank ↔ Germany (TLS reused) | ≈ 100–200 ms |
-| Model parse call (small model, low effort, cached prefix) | ≈ 1.0–2.5 s (**measured in B02**) |
+| Model parse call (small model, low effort, cached prefix) | Target ≈ 1.0–2.5 s (not established by B02; three smoke samples were 3.38–4.96 s) |
 | Retrieval (Postgres trigram, indexed) | ≤ 150 ms |
 | Client ProposalEngine + render | ≤ 50 ms |
 | **Total p90 target** | **≤ 3.5 s** (headroom for a rerank or a slow network) |
 
 If p90 misses: stream intents (SSE) so the first card renders while the rest finish, and/or route to a faster model.
 
-**Cost per food message** (estimate until B02 measures it): ≈ 2,000–3,000 input tokens (mostly cached) + 300–500 output tokens ≈ **$0.0003–0.001**. 15 messages a day ≈ **$0.15–0.45 per user per month**. Vision calls cost a few times more but are rarer. Repeat logging never uses AI (MN-021).
+**Cost per food message** (planning estimate for representative meals, not established by B02's three egg prompts): ≈ 2,000–3,000 input tokens (mostly cached) + 300–500 output tokens ≈ **$0.0003–0.001**. 15 messages a day ≈ **$0.15–0.45 per user per month**. Vision calls cost a few times more but are rarer. Repeat logging never uses AI (MN-021).
 
 ## 11. Evaluation: the AI quality system
 
 `tools/buddy_eval` (Dart CLI) is how we know Buddy is good enough (AT-002). Built in B02, grown in every Buddy step.
 
-- **Test set:** `tools/buddy_eval/cases/*.yaml`. It starts with T01–T41 from the spec plus Arabic-script and Arabizi messages in the owner's style (≥ ¼ of cases), and grows to ≥ 150 (`spec/40` §2). Full Arabic + Arabizi versions of every case come in R2 (D-080). Each case holds: message, starting state (defaults, open batches, recent entries) and the **expected structured outcome** (intents, food IDs, grams, questions asked or not, estimate flags, slot/date).
-- **Runner:** sends each case to a **real API instance** (local Docker or staging), then runs the **real `ProposalEngine`** (Dart) on the response. It computes AQ-01–12 with per-language breakdowns and writes a Markdown report + JSON for trends.
+- **Test set:** `tools/buddy_eval/cases/*.yaml`. B02 starts with three short synthetic EN/AR/Arabizi prompts under the owner's explicit paid-test limit (TD-067); these are not acceptance evidence. B08/B15 expand to T01–T41 plus Arabic-script/Arabizi cases (≥ ¼ of cases), then ≥ 150 (`spec/40` §2). Full Arabic + Arabizi versions of every case come in R2 (D-080). Each case holds: message, starting state (defaults, open batches, recent entries) and the **expected structured outcome** (intents, food IDs, grams, questions asked or not, estimate flags, slot/date).
+- **Runner:** B02 uses a private CLI pipe and parse-only graders, offline by default. B08/B15 extend it to a **real API instance** (local Docker or staging) and the **real `ProposalEngine`** (Dart, A21). It computes AQ-01–12 with per-language breakdowns and writes a Markdown report + JSON for trends.
 - **Graders:** deterministic wherever possible (IDs, grams, ±% kcal, counts). Only free-text quality (tone, AI-131) uses a model judge, reported separately.
-- **When it runs:** on every PR touching prompts, model config, the resolver, the engine or the catalog. Nightly on `main`. A full run costs cents.
+- **When it runs:** B02 CI runs offline SDK fixture replay and deterministic parse grading with no key or paid calls. Live smoke is explicit and ≤3 requests, no retries (TD-067). The broader acceptance/nightly system remains B08/B15; paid execution must respect the owner's scope.
 - **Owner feedback loop:** discarded or heavily edited proposals in real use become candidate cases. The owner exports them with one action (TQ-07).
 
 ## 12. Safety in the AI layer

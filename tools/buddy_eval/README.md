@@ -1,0 +1,11 @@
+# Buddy eval v0
+
+B02's small, offline-first parse harness (TD-067). The owner chose OpenAI `gpt-6-luna`; this is not a provider bake-off. Three short synthetic messages cover English, Arabic and Arabizi. `cases/smoke.yaml` holds exact parse expectations; aliases are explicit, numbers/units/state exact, ambiguity candidates separate from client question policy.
+
+- `make eval`: builds the private .NET CLI, replays hand-authored synthetic `fixtures/*.json` through the real OpenAI SDK/`IChatClient`/`ILlmClient`, runs Dart graders, writes `reports/B02-offline.{md,json}`. No credentials or network calls to OpenAI. CI runs this mode only.
+- `make eval-live`: **paid**, explicit. At most three fixed prompts, sequential, no retries/repair/fallback; first provider failure stops. Reads only `~/.config/fitness-buddy/openai-api-key` (0600), inside the CLI. Never supply the key in command arguments or commit it. The CLI rejects unknown/duplicate IDs and changed message text. Writes `reports/B02-live.{md,json}` even for a partial/failed smoke; no prompts, provider error bodies or raw model content in reports.
+- `make eval-schema`: regenerate the committed internal JSON schema from C# records; review and commit it alongside prompt/schema changes. This is not an app contract: B08 owns the generated public API contract.
+
+The CLI uses a local JSONL pipe with no HTTP listener or database. Regular API startup exposes no Buddy route and never loads this key. Live usage has a 1200-output-token cap per request, low effort, a 20-second deadline; cancellation/timeout is not proof a provider didn't charge. Estimated USD uses standard short-context rates dated 2026-10-16 ($0.10 input/$0.01 cached/$0.50 output per million), excludes taxes/other billing adjustments and is not the invoice. `store:false` disables stored Responses state, not standard abuse-monitoring retention.
+
+Offline reports prove plumbing only. Three live samples cannot establish AQ-02/03/06/07/11 quality, AQ-12 p90, production latency or language equivalence. B08/B15 and A21 keep the broader acceptance work. No model judge or nightly paid run is installed. Future live runs need the owner's explicit testing scope; don't treat `make eval-live` as a routine verification command.

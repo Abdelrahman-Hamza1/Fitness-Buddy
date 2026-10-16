@@ -1,0 +1,7 @@
+# Buddy
+
+Internal interpretation foundation (B02, TD-035/067). `Application/ILlmClient` returns a typed interpretation or a content-free failure; it never writes user data. `Infrastructure` uses OpenAI Responses via the standard `IChatClient`; the only current route is interpret → OpenAI `gpt-6-luna`, low effort, 1200 output tokens, 20-second CLI deadline, no retries/fallback. The ordinary Host registers a dark module with no endpoints or credentials. B08 owns production routing, auth, usage budgets and the public contract.
+
+`Prompts/interpret-v0.txt` is embedded; `interpret-v0.schema.json` is generated from Domain records. `make eval-schema` regenerates it; tests reject drift and malformed output. Nullable fields must still be present, objects are closed, and runtime semantic checks apply independently of provider enforcement. The schema cannot express nutrients or writes.
+
+`make check test` includes offline SDK contract, privacy, failure and semantic tests. `make eval` runs the three hand-authored synthetic wire fixtures through the private CLI and Dart graders, without a key. `make eval-live` is explicitly paid, at most three fixed synthetic prompts, no retries and stop on first provider failure. See `tools/buddy_eval/README.md`. No API key in the phone app or repo; the CLI reads only the external owner file in live mode. `store:false` is not a claim of provider zero retention.

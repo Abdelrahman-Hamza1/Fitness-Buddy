@@ -106,7 +106,7 @@ In the order they're needed:
 |---|---|---|
 | **S01** ✅ | GitHub repository (public per TD-042), push via the laptop SSH key | Done 2026-10-12 |
 | A02 | ~30 min to review the design gallery and mockups on the A55 (also covers S06b's deferred device check) | — |
-| B02 | API keys with spend caps: **Anthropic**, **OpenAI**, **Google AI Studio**. Run one latency script from home (~10 min) | A few dollars total |
+| B02 | **OpenAI** project key only, GPT-6 Luna; a few small synthetic smoke prompts (TD-067) | Owner configured; no provider bake-off |
 | B03 | A **Tailscale** account and the Tailscale app on the A55 (the phone reaches the laptop server through it) | Free |
 | A03, dish batches | Skim each dish batch (≈ 15 min). Name family recipes to use (TQ-08) | — |
 | A11 | A **Sentry** account (EU region) for crash reports | Free tier |
@@ -189,7 +189,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | ID | Step | Depends on | Size | Was | Milestone | Status |
 |---|---|---|---|---|---|---|
 | [B01](B01-spike-sync.md) | Spike: sync | S04 ✅, S08 ✅ | M | S12 |  | ✅ |
-| [B02](B02-spike-ai-bakeoff.md) | Spike: AI bake-off & eval harness v0 | S03 ✅, S08 ✅ | L | S10 |  | ⬜ |
+| [B02](B02-spike-ai-bakeoff.md) | OpenAI interpretation spike & eval harness v0 | S03 ✅, S08 ✅ | L | S10 |  | ✅ |
 | [B03](B03-laptop-test-server.md) | Laptop test server for the phone | S04 ✅ | S | new |  | ⬜ |
 | [B04](B04-identity-backend.md) | Identity backend | S04 ✅ | L | S24 (real email sender → B14) |  | ⬜ |
 | [B05](B05-sync-backend.md) | Sync backend | B01, B04 | M | S26 |  | ⬜ |

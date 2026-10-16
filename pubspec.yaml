@@ -12,6 +12,7 @@ workspace:
   - packages/fb_text
   - tools/app_check
   - tools/trace
+  - tools/buddy_eval
   - tools/sync_sim
 
 dev_dependencies:

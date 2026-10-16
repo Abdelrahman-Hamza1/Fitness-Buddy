@@ -1,6 +1,7 @@
 using FitnessBuddy.BuildingBlocks.Web.Modules;
 using FitnessBuddy.Modules.Account;
 using FitnessBuddy.Modules.UserData;
+using FitnessBuddy.Modules.Buddy;
 
 namespace FitnessBuddy.Host;
 
@@ -10,5 +11,5 @@ namespace FitnessBuddy.Host;
 /// </summary>
 public static class ModuleCatalog
 {
-    public static IReadOnlyList<IModule> All { get; } = [new AccountModule(), new UserDataModule()];
+    public static IReadOnlyList<IModule> All { get; } = [new AccountModule(), new UserDataModule(), new BuddyModule()];
 }

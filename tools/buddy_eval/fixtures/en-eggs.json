@@ -1,0 +1,41 @@
+{
+  "id": "resp_synthetic_en-eggs",
+  "object": "response",
+  "created_at": 1792177200,
+  "status": "completed",
+  "error": null,
+  "incomplete_details": null,
+  "model": "gpt-6-luna",
+  "store": false,
+  "output": [
+    {
+      "id": "rs_synthetic",
+      "type": "reasoning",
+      "summary": []
+    },
+    {
+      "id": "msg_synthetic",
+      "type": "message",
+      "status": "completed",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "{\"language\":\"english\",\"script\":\"latin\",\"intents\":[{\"kind\":\"foodLog\",\"timeHint\":null,\"slotHint\":null,\"items\":[{\"mention\":\"2 boiled eggs\",\"canonicalNameEn\":\"egg\",\"nameAr\":null,\"amount\":2,\"unit\":\"piece\",\"amountExplicit\":true,\"state\":\"cooked\",\"variant\":null,\"share\":null,\"ambiguities\":[]}],\"weighIn\":null,\"exercises\":[],\"reason\":null}]}",
+          "annotations": []
+        }
+      ]
+    }
+  ],
+  "usage": {
+    "input_tokens": 100,
+    "input_tokens_details": {
+      "cached_tokens": 32
+    },
+    "output_tokens": 60,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 160
+  }
+}

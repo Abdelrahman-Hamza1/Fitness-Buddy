@@ -250,3 +250,7 @@ The endpoints return 501 in normal API environments. The harness alone uses
 This is not an authentication option for real data. B04/B05 replace the gate
 with identity, schema validation, clock recovery, history/tombstone retention
 and dataset reset handling (proposed TD-066); A34 supplies the real phone engine.
+
+## Buddy interpretation spike (B02)
+
+The dark Buddy module has no HTTP endpoints; `backend/tools/BuddySpike` is a local JSONL CLI, with no database or user identity. `make eval` builds it and runs three synthetic provider fixtures through the real OpenAI SDK and Dart graders. CI never loads an API key. `make eval-live` explicitly makes at most three small `gpt-6-luna` calls, using the owner's external 0600 key file; no retries or fallback. `make eval-schema` refreshes the internal C# record schema snapshot. See [Buddy](src/Modules/Buddy/README.md) and [harness](../tools/buddy_eval/README.md). Public contract, production auth/routing/usage and catalog resolution are B08.

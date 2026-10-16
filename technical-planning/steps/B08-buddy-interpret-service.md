@@ -49,3 +49,6 @@ _Written in Phase B._
 
 ## Outcome
 _Written in Phase E._
+
+## B02 handoff (2026-10-16)
+OpenAI `gpt-6-luna` only (owner, TD-008/067), no fallback for now. The internal port/schema/prompt and offline harness are ready; there is no public endpoint yet. Three synthetic live calls checked connectivity, not R1 quality: EN cooked-state mismatch, AR/Arabizi pass (backlog #58). B08 must resolve this before production acceptance. Broad eval/ProposalEngine integration remains B08/B15/A21; obtain a new explicit owner budget before further paid tests. Do not infer auth, usage enforcement, repair retries or production routing from the spike.

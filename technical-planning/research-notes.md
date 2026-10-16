@@ -340,3 +340,9 @@ Initial laptop result: 1,000 fake scenarios and 50 Docker API scenarios pass;
 5,000 small synthetic rows pushed in 3,096 ms and fresh-pulled in 174 ms over
 Docker loopback (not a Wi-Fi measurement). Formal post-review evidence belongs
 in `technical-planning/steps/evidence/B01-verification.md`.
+
+## 2026-10-16 — B02 OpenAI-only integration (TD-067)
+
+Owner chose GPT-6 Luna, not a provider bake-off; few synthetic paid checks only. Official model ID `gpt-6-luna`, Responses API, structured outputs and low reasoning supported. Published standard short-context token prices: $0.10 input / $0.01 cached input / $0.50 output per million; estimated cost must be labelled and versioned, not confused with billing. [Model](https://developers.openai.com/api/docs/models/gpt-6-luna). All schema properties required, closed objects, nullable fields as needed; refusal/incomplete are separate outcomes ([Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)). Explicit `store:false` disables stored Responses state; standard abuse-monitoring retention can still be up to 30 days, so no ZDR claim ([data controls](https://developers.openai.com/api/docs/guides/your-data)).
+
+NuGet primary registration metadata: Microsoft.Extensions.AI.OpenAI 10.10.1 published 2026-09-25, requires OpenAI ≥2.14.0 (2026-09-15); 10.11.0 published Oct 14 is inside the 7-day cooldown and not chosen. Preserve TD-035 IChatClient with the official Responses adapter, no orchestration framework. No live requests performed during research.

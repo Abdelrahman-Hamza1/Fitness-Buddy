@@ -1,0 +1,252 @@
+{
+  "type": "object",
+  "properties": {
+    "language": {
+      "enum": [
+        "english",
+        "arabic",
+        "mixed"
+      ]
+    },
+    "script": {
+      "enum": [
+        "latin",
+        "arabic",
+        "arabizi",
+        "mixed"
+      ]
+    },
+    "intents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "enum": [
+              "foodLog",
+              "weighIn",
+              "workout",
+              "clarify",
+              "outOfScope"
+            ]
+          },
+          "timeHint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slotHint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "mention": {
+                  "type": "string"
+                },
+                "canonicalNameEn": {
+                  "type": "string"
+                },
+                "nameAr": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "amount": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "unit": {
+                  "enum": [
+                    "g",
+                    "kg",
+                    "ml",
+                    "l",
+                    "piece",
+                    "tsp",
+                    "tbsp",
+                    "cup",
+                    "plate",
+                    "loaf",
+                    "serving",
+                    null
+                  ]
+                },
+                "amountExplicit": {
+                  "type": "boolean"
+                },
+                "state": {
+                  "enum": [
+                    "raw",
+                    "cooked",
+                    "dry",
+                    "drained",
+                    "fried",
+                    null
+                  ]
+                },
+                "variant": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "share": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "fraction": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "people": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "fraction",
+                    "people"
+                  ],
+                  "additionalProperties": false
+                },
+                "ambiguities": {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "state",
+                      "fat",
+                      "variant",
+                      "portion"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "mention",
+                "canonicalNameEn",
+                "nameAr",
+                "amount",
+                "unit",
+                "amountExplicit",
+                "state",
+                "variant",
+                "share",
+                "ambiguities"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "weighIn": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "value": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "value",
+              "unit"
+            ],
+            "additionalProperties": false
+          },
+          "exercises": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "sets": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "count": {
+                        "type": "integer"
+                      },
+                      "reps": {
+                        "type": "integer"
+                      },
+                      "weight": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "unit": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "count",
+                      "reps",
+                      "weight",
+                      "unit"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "name",
+                "sets"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "reason": {
+            "enum": [
+              "unclear",
+              "unsupported",
+              "medical",
+              "offTopic",
+              null
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "timeHint",
+          "slotHint",
+          "items",
+          "weighIn",
+          "exercises",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "language",
+    "script",
+    "intents"
+  ],
+  "additionalProperties": false
+}
