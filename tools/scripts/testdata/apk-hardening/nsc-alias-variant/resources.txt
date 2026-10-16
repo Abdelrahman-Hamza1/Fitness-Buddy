@@ -1,0 +1,10 @@
+Binary APK
+Package name=io.github.abdelrahmanhamza1.fitnessbuddy.staging id=7f
+  type xml id=10 entryCount=3
+    resource 0x7f100000 xml/backup_rules
+      () (file) res/Qq.xml type=XML
+    resource 0x7f100001 xml/data_extraction_rules
+      () (file) res/4j.xml type=XML
+    resource 0x7f100002 xml/network_security_config
+      () (file) res/8G.xml type=XML
+      (v24) @0x7f100001

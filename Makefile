@@ -36,6 +36,16 @@ export PATH := $(DOTNET_ROOT):$(PATH)
 export DOTNET_CLI_TELEMETRY_OPTOUT := 1
 export DOTNET_NOLOGO := 1
 
+# Android: Temurin JDK 21 + Android SDK, pinned in tools/scripts/setup-android.sh
+# (S06 plan D19). Exported so Flutter, Gradle and sdkmanager use them. A value in
+# the environment wins over these defaults: CI sets the runner's JDK 21 and SDK;
+# on the laptop a shell-exported JAVA_HOME must be unset or point here (`make
+# doctor` shows the one used). The JDK dir name is the pinned build: bump it
+# together with the script.
+JAVA_HOME ?= $(HOME)/development/jdk-21.0.12.1+1
+ANDROID_HOME ?= $(HOME)/development/android-sdk
+export JAVA_HOME ANDROID_HOME
+
 .PHONY: help
 help: ## Show this list of targets
 	@echo "Fitness Buddy: make <target>"
@@ -54,7 +64,7 @@ setup: toolchain deps contract-tools ## First-time setup: install the pinned SDK
 deps: deps-dart deps-dotnet ## Fetch dependencies for the Dart workspace and the .NET backend
 
 .PHONY: check
-check: check-dart check-dotnet check-contract ## Format + static analysis for both stacks, then the API contract checks (no tests)
+check: check-dart check-dotnet check-contract apk-hardening-selftest ## Format + static analysis for both stacks, the API contract checks, the APK hardening self-test (no tests)
 
 .PHONY: gen
 gen: gen-contract gen-dart gen-app ## Regenerate all committed generated code: contract bundle, Dart client, app l10n + providers
@@ -69,10 +79,21 @@ doctor: ## Show tool versions, free disk/RAM; fail if the pinned SDKs are missin
 	@FLUTTER='$(FLUTTER)' DART='$(DART)' DOTNET='$(DOTNET)' \
 	  FLUTTER_VERSION='$(FLUTTER_VERSION)' \
 	  FLUTTER_ROOT_ORIGIN='$(origin FLUTTER_ROOT)' DOTNET_ROOT_ORIGIN='$(origin DOTNET_ROOT)' \
+	  JAVA_HOME_ORIGIN='$(origin JAVA_HOME)' ANDROID_HOME_ORIGIN='$(origin ANDROID_HOME)' \
 	  bash '$(REPO_ROOT)/tools/scripts/doctor.sh'
 
 .PHONY: toolchain
-toolchain: toolchain-flutter toolchain-dotnet ## Install the pinned Flutter and .NET SDKs (user-local, no sudo)
+toolchain: toolchain-flutter toolchain-dotnet toolchain-android ## Install the pinned Flutter, .NET and Android toolchains (user-local, no sudo)
+
+.PHONY: toolchain-android
+toolchain-android: ## Install JDK 21 + the Android SDK into ~/development and accept the SDK licences (skips what is present)
+	@bash '$(REPO_ROOT)/tools/scripts/setup-android.sh' '$(JAVA_HOME)' '$(ANDROID_HOME)'
+
+# CI (jobs android, android-it): the runner brings JDK 21 and an SDK; this adds
+# only the SDK packages the build needs (NDK, CMake, ...), from the same list.
+.PHONY: toolchain-android-sdk
+toolchain-android-sdk: ## Install the pinned SDK packages into an existing SDK at ANDROID_HOME (CI: the runner's), using the JDK at JAVA_HOME
+	@bash '$(REPO_ROOT)/tools/scripts/setup-android.sh' --sdk-only '$(ANDROID_HOME)'
 
 .PHONY: toolchain-flutter
 toolchain-flutter: ## Install the Flutter SDK from .fvmrc into ~/development (skips if present)
@@ -177,6 +198,70 @@ gen-check: gen-dart gen-app ## Fail if the committed generated Dart code (API cl
 .PHONY: goldens
 goldens: ## Regenerate the app's golden images (apps/mobile/test/**/goldens/ci), then review and commit them
 	cd '$(REPO_ROOT)/apps/mobile' && '$(FLUTTER)' test --update-goldens --tags golden
+
+# Android builds (S06 plan D4-D7, A6, A8). Flavors: dev (local API over adb
+# reverse), staging, prod; each installs side by side. The flavor's Dart config
+# is apps/mobile/config/$(FLAVOR).json (--dart-define-from-file).
+# Release signing: the stable key from the environment (CI secrets) or from
+# FB_RELEASE_ENV (laptop; `FB_RELEASE_ENV=` to ignore it); without one, *-debugkey.*
+# outputs (why: docs/runbooks/android-signing.md).
+# Every target stops the Gradle daemons afterwards (7 GB laptop).
+FLAVOR ?= staging
+MODE ?= release
+BUILD_NUMBER ?=
+FB_RELEASE_ENV ?= $(HOME)/.fitness-buddy/keys/release.env
+ADB := $(ANDROID_HOME)/platform-tools/adb
+# The local API's port (backend/README.md): `make run-dev` forwards it from the phone.
+DEV_API_PORT := 5198
+COLD_START_APP ?= io.github.abdelrahmanhamza1.fitnessbuddy.staging
+RUNS ?= 10
+
+.PHONY: build-android
+build-android: ## Build FLAVOR=staging|prod|dev: release APK (arm64) + AAB, checked (no cleartext, signer); MODE=debug for a debug APK; BUILD_NUMBER=n
+	@FLUTTER='$(FLUTTER)' REPO_ROOT='$(REPO_ROOT)' FLAVOR='$(FLAVOR)' MODE='$(MODE)' \
+	  BUILD_NUMBER='$(BUILD_NUMBER)' FB_RELEASE_ENV='$(FB_RELEASE_ENV)' \
+	  bash '$(REPO_ROOT)/tools/scripts/build-android.sh'
+
+# No Android SDK needed: it runs the check on captured aapt2 dumps.
+.PHONY: apk-hardening-selftest
+apk-hardening-selftest: ## Prove the release APK hardening check still catches what it must (fixtures in tools/scripts/testdata/apk-hardening/)
+	@bash '$(REPO_ROOT)/tools/scripts/apk-hardening-selftest.sh'
+
+.PHONY: run-dev
+run-dev: ## Run the dev flavor on the connected phone (debug, hot reload) against the local API on port 5198 (adb reverse)
+	@if ! '$(ADB)' get-state >/dev/null 2>&1; then \
+	  echo "run-dev: no single device: connect the phone (USB or Wireless debugging) and allow it; with several, set ANDROID_SERIAL" >&2; exit 1; fi
+	'$(ADB)' reverse tcp:$(DEV_API_PORT) tcp:$(DEV_API_PORT)
+	@status=0; \
+	cd '$(REPO_ROOT)/apps/mobile' && '$(FLUTTER)' run --flavor dev --dart-define-from-file=config/dev.json \
+	  $(if $(ANDROID_SERIAL),-d '$(ANDROID_SERIAL)') || status=$$?; \
+	(cd '$(REPO_ROOT)/apps/mobile/android' && ./gradlew --stop -q >/dev/null 2>&1) || true; \
+	exit $$status
+
+# Integration tests (S06 plan D18): Patrol, apps/mobile/patrol_test/, dev flavor
+# with config/dev.json (no API reachable on an emulator). patrol_cli is pinned
+# here and pairs with the `patrol` pin in apps/mobile/pubspec.yaml (bump both,
+# compatibility table at patrol.leancode.co); activated globally when missing
+# or at another version. PATROL_ARGS passes extra flags (e.g. --verbose).
+# test-it needs one running emulator or connected phone (never an emulator on
+# the 7 GB laptop: CI's android-it job runs it); build-it needs no device.
+PATROL_CLI_VERSION := 4.8.0
+PATROL_ARGS ?=
+PATROL_ANDROID = @DART='$(DART)' FLUTTER='$(FLUTTER)' REPO_ROOT='$(REPO_ROOT)' \
+  PATROL_CLI_VERSION='$(PATROL_CLI_VERSION)' PATROL_ARGS='$(PATROL_ARGS)' \
+  bash '$(REPO_ROOT)/tools/scripts/patrol-android.sh'
+
+.PHONY: test-it
+test-it: ## Run the Patrol integration tests (patrol_test/, dev flavor) on the one connected emulator or phone
+	$(PATROL_ANDROID) test
+
+.PHONY: build-it
+build-it: ## Build the Patrol test APKs (dev debug app + instrumentation APK), no device needed
+	$(PATROL_ANDROID) build
+
+.PHONY: cold-start
+cold-start: ## Measure cold start on the connected phone: 1 warm-up + RUNS=10 `am start -W`, median + p90 (COLD_START_APP=<application id>)
+	@ADB='$(ADB)' bash '$(REPO_ROOT)/tools/scripts/cold-start.sh' '$(COLD_START_APP)' '$(RUNS)'
 
 ##@ API contract (contracts/, TD-023)
 

@@ -46,3 +46,6 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Patrol: the test bundle patrol_cli generates on every build/test run (S06 plan D18)
+/patrol_test/test_bundle.dart

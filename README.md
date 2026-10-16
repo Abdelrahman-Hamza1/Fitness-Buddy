@@ -4,7 +4,7 @@ A local-first nutrition and weight tracking app (Flutter, Android first) with an
 
 ## Prerequisites
 
-- Linux x64, about **6.5 GB** of free disk. The SDKs install under your home directory, no sudo needed.
+- Linux x64, about **14 GB** of free disk (6.5 GB for Flutter + .NET, about 7.5 GB for the Android JDK, SDK and the Gradle cache). The SDKs install under your home directory, no sudo needed.
 - `git`, `curl`, `python3`, `make`, `tar`, `xz-utils`, `unzip`.
 - **Docker Engine + Docker Compose v2** (the `docker compose` plugin), usable without sudo. They run the API contract tools (Redocly, Spectral, oasdiff) as pinned images with no network access, so no Node.js is needed. `make doctor` checks them.
 
@@ -13,7 +13,7 @@ On Debian/Ubuntu: `sudo apt-get install git curl python3 make tar xz-utils unzip
 ## Quick start
 
 ```bash
-make setup    # install the pinned Flutter + .NET SDKs (user-local), then fetch all dependencies
+make setup    # install the pinned Flutter, .NET and Android toolchains (user-local), then fetch all dependencies
 make check    # format + static analysis (Dart, .NET), then the API contract checks
 make gen      # after editing contracts/openapi/: re-bundle the contract and regenerate the Dart client
 make test     # all tests, Dart then .NET
@@ -22,7 +22,7 @@ make doctor   # tool versions, free disk and RAM; fails if a pinned SDK is missi
 make help     # every target, with a one-line description
 ```
 
-The first `make setup` downloads the SDKs and packages (about 3.5 GB on disk once unpacked, plus caches in `~/.pub-cache` and `~/.nuget`) and pulls the three contract tool images (about 0.5 GB); later runs skip what is already there. CI runs the same `make` targets.
+The first `make setup` downloads the SDKs and packages (about 3.5 GB on disk once unpacked, plus caches in `~/.pub-cache` and `~/.nuget`), the Android JDK + SDK (about 3.3 GB), and pulls the three contract tool images (about 0.5 GB). It also **accepts the Android SDK licences** (S06 plan D19). The first Android build fills `~/.gradle` (about 4 GB). Later runs skip what is already there. CI runs the same `make` targets.
 
 ### What `make setup` installs, and where
 
@@ -30,9 +30,10 @@ The first `make setup` downloads the SDKs and packages (about 3.5 GB on disk onc
 |---|---|---|
 | Flutter SDK (includes Dart) | `.fvmrc` | `~/development/flutter-<version>` |
 | .NET SDK | `backend/global.json` | `~/.dotnet` |
+| JDK (Temurin 21) and Android SDK (cmdline-tools, platforms 36 + 35, build-tools, NDK, CMake) | `tools/scripts/setup-android.sh` (+ the default paths in the `Makefile`) | `~/development/jdk-<version>`, `~/development/android-sdk` |
 | Contract tools: Redocly CLI, Spectral, oasdiff | `tools/contract-tools/compose.yaml` (tag + digest) | Docker's image store |
 
-Downloads are checksum-verified. A system-wide .NET is never touched or used. The Makefile calls the SDKs by full path, so nothing needs to be on your `PATH`.
+Downloads are checksum-verified. A system-wide .NET or JDK is never touched or used. The Makefile calls the SDKs by full path, so nothing needs to be on your `PATH`.
 
 To bump a version, edit `.fvmrc` (`"flutter"`) or `backend/global.json` (`sdk.version`) and run `make toolchain`. Old SDK folders are left in place; delete them by hand if you want the space back.
 
@@ -45,7 +46,7 @@ export PATH="$HOME/development/flutter-3.47.7/bin:$DOTNET_ROOT:$PATH"   # use th
 
 ### Low-RAM machines (7 GB)
 
-Targets run one at a time (`.NOTPARALLEL`), the build uses `-m:4`, and tests use `--max-parallel-test-modules 2`, so a full `make check test` fits in 7 GB. Don't run `make -j`. After a .NET session, free the memory of the build servers:
+Targets run one at a time (`.NOTPARALLEL`), the build uses `-m:4`, and tests use `--max-parallel-test-modules 2`, so a full `make check test` fits in 7 GB. Don't run `make -j`. Gradle is capped at 2 GB of heap (`apps/mobile/android/gradle.properties`), and the Android targets stop its daemons when they finish. After a .NET session, free the memory of the build servers:
 
 ```bash
 ~/.dotnet/dotnet build-server shutdown
@@ -59,11 +60,12 @@ Exists today:
 |---|---|
 | [`spec/`](spec/README.md) | Product spec: what and why. The source of truth for requirements. |
 | [`technical-planning/`](technical-planning/README.md) | Architecture, decisions (TDs) and one card per delivery step in `steps/`. |
-| [`apps/mobile/`](apps/mobile/README.md) | The Flutter app (`fb_mobile`): four-tab shell, flavors, localization. Android builds come in S06b. |
+| [`apps/mobile/`](apps/mobile/README.md) | The Flutter app (`fb_mobile`): four-tab shell, flavors (dev/staging/prod), localization, Android build (`make build-android`). |
 | [`packages/`](packages/README.md) | Shared Dart packages (`fb_domain`, `fb_text`) in the pub workspace. |
 | [`backend/`](backend/README.md) | .NET 10 API: Host, BuildingBlocks, architecture tests. |
 | [`contracts/`](contracts/README.md) | The API contract: OpenAPI 3.1 sources, the committed bundle, Spectral rules, self-test fixtures, shared golden test data. |
 | [`tools/`](tools/README.md) | Bash scripts behind the Makefile, the contract tool images, and `trace/` (requirement coverage). |
+| [`docs/runbooks/`](docs/runbooks/) | Operational procedures. Today: Android release signing. |
 | `.github/` | CI workflow (`workflows/ci.yml`) and Dependabot config. |
 | `.claude/` | Agent and skill definitions for the delivery process. |
 | `Makefile`, `pubspec.yaml`, `pubspec.lock` | One entry point; the Dart workspace root and its single lockfile. |
@@ -76,7 +78,6 @@ Planned (full map: [`technical-planning/10-engineering-practices.md`](technical-
 | `data/` | Reference dishes, exercises, portion words (planned) |
 | `tools/buddy_eval/`, `tools/catalog/` | AI acceptance suite, catalog build/validate (planned) |
 | `infra/` | OpenTofu, cloud-init, Kamal, local Docker Compose (planned) |
-| `docs/runbooks/` | Operational procedures (planned) |
 
 ## CI
 

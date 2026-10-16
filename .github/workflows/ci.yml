@@ -1,8 +1,9 @@
 # Fitness Buddy CI: the one workflow and the one required check.
 #
-# Jobs `dart`, `dotnet` and `contract` run the same `make` targets as a laptop
-# does. The API contract checks (`make check-contract`, TD-023) are spread over
-# three jobs so that no toolchain is set up or built twice (S02 D13):
+# Jobs `dart`, `dotnet`, `contract`, `android` and `android-it` run the same
+# `make` targets as a laptop does. The API contract checks (`make
+# check-contract`, TD-023) are spread over three jobs so that no toolchain is
+# set up or built twice (S02 D13):
 #   contract  bundle fresh, Spectral lint, self-test, breaking-change report
 #             (Docker only, no Flutter or .NET)
 #   dart      gen-check: the committed Dart client is what the generator produces
@@ -12,7 +13,7 @@
 #             first, not a Contract.Tests failure)
 # Every check runs exactly once. The gate job `ci` always runs and passes only if
 # every job it `needs` succeeded; it is the only check the `main` ruleset requires
-# (S01 A1). New gates (catalog, eval, android) are added as jobs here and to
+# (S01 A1). New gates (catalog, eval) are added as jobs here and to
 # `ci.needs`, so the ruleset never changes.
 #
 # No path filtering (S01 A2): every push runs everything.
@@ -62,7 +63,7 @@ jobs:
           pub-cache-key: 'flutter-pub-:os:-:version:-:arch:'
 
       # Tool paths are overridden on the command line (S01 D3): flutter-action
-      # puts flutter and dart on PATH. No toolchain-* target runs in CI.
+      # puts flutter and dart on PATH, so toolchain-flutter doesn't run in CI.
       - name: Dependencies, format + analyze, tests
         run: make deps-dart check-dart test-dart FLUTTER=flutter DART=dart
 
@@ -147,13 +148,338 @@ jobs:
       - name: Bundle fresh, lint, self-test, breaking-change report
         run: make contract-bundle-check contract-lint contract-selftest contract-breaking
 
+  # The owner's Android build (S06 plan D3, D4, D7, A6, A8): `make build-android`
+  # for the staging flavor, a release APK (arm64, for the phone) + an AAB (for
+  # Play, S29), versionCode = the run number so each build installs over the
+  # last. build-android.sh checks the APK (not debuggable, no cleartext) and the
+  # signer: with the release key the certificate must be the pinned one.
+  # Signing: 3 Actions secrets (docs/runbooks/android-signing.md §3); without
+  # them (forks, Dependabot) a *-debugkey.* build and no upload. The signed APK is
+  # uploaded unzipped (`archive: false`) for the owner to download on the phone.
+  # The runner brings JDK 21 and an Android SDK; `toolchain-android-sdk` adds the
+  # NDK and CMake versions the build needs. No debug build here: the dev-flavor
+  # debug APK is what android-it builds (plan D7).
+  android:
+    name: android
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Start time
+        id: start
+        run: echo "epoch=$(date +%s)" >>"$GITHUB_OUTPUT"
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Captured aapt2 dumps only (no SDK): fails in seconds, before the build.
+      - name: APK hardening check self-test
+        run: make apk-hardening-selftest
+
+      - name: Set up Flutter (version from .fvmrc)
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+          pub-cache-key: 'flutter-pub-:os:-:version:-:arch:'
+
+      # The runner's preinstalled Temurin 21 (from its tool cache, no download).
+      # setup-java exports JAVA_HOME; the Makefile's `JAVA_HOME ?=` takes it.
+      - name: Set up JDK 21 (Temurin)
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Android SDK packages (NDK, CMake) into the runner's SDK
+        run: make toolchain-android-sdk
+
+      # The open-source cache provider; read-only off main (the action's
+      # default), so only main writes the Gradle cache.
+      - name: Set up Gradle (cache)
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-provider: basic
+          add-job-summary: on-failure
+
+      # apps/mobile/android/gradle.properties caps the heaps for the 7 GB laptop.
+      # The Gradle user home's gradle.properties wins over it: the runner has 16 GB.
+      - name: Gradle heap for the 16 GB runner
+        run: |
+          gradle_home="${GRADLE_USER_HOME:-$HOME/.gradle}"
+          mkdir -p "$gradle_home"
+          {
+            echo 'org.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=1G -XX:ReservedCodeCacheSize=512m -XX:+HeapDumpOnOutOfMemoryError'
+            echo 'kotlin.daemon.jvmargs=-Xmx2G'
+          } >>"$gradle_home/gradle.properties"
+
+      - name: Dart dependencies
+        run: make deps-dart FLUTTER=flutter DART=dart
+
+      # Writes the keystore only when the secret is set. The secret reaches the
+      # shell through env (never interpolated into the script) and is never
+      # printed; `signed` is the only thing later steps see.
+      - name: Release key (only when the secrets are set)
+        id: key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.FB_ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [[ -z "$KEYSTORE_BASE64" ]]; then
+            echo "signed=false" >>"$GITHUB_OUTPUT"
+            echo "No FB_ANDROID_KEYSTORE_BASE64 secret (fork, Dependabot, or not set up yet):"
+            echo "debug-key build (*-debugkey.*), nothing is uploaded."
+            exit 0
+          fi
+          keystore="$RUNNER_TEMP/fb-release.jks"
+          if ! (umask 077 && base64 -d <<<"$KEYSTORE_BASE64" >"$keystore" 2>/dev/null); then
+            rm -f -- "$keystore"
+            echo "::error title=release key::FB_ANDROID_KEYSTORE_BASE64 is not valid base64 (docs/runbooks/android-signing.md §3)"
+            exit 1
+          fi
+          { echo "signed=true"; echo "keystore=$keystore"; } >>"$GITHUB_OUTPUT"
+          echo "Release keystore restored to \$RUNNER_TEMP."
+
+      # FB_RELEASE_ENV= : never read a laptop key file. Without the secrets
+      # FB_KEYSTORE_PATH is empty and build-android.sh signs with the debug key.
+      # The alias isn't a secret (it's in the runbook): a secret would mask
+      # "fitnessbuddy", and with it the application id, in every log.
+      - name: Build the staging release APK (arm64) + AAB
+        env:
+          FB_KEYSTORE_PATH: ${{ steps.key.outputs.keystore }}
+          FB_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.FB_ANDROID_KEYSTORE_PASSWORD }}
+          FB_ANDROID_KEY_ALIAS: fitnessbuddy
+          FB_ANDROID_KEY_PASSWORD: ${{ secrets.FB_ANDROID_KEY_PASSWORD }}
+        run: |
+          make build-android FLAVOR=staging BUILD_NUMBER="$GITHUB_RUN_NUMBER" FB_RELEASE_ENV= \
+            FLUTTER=flutter DART=dart
+
+      - name: Delete the release keystore
+        if: always()
+        run: rm -f -- "$RUNNER_TEMP/fb-release.jks"
+
+      # Only a build signed with the release key reaches the owner: build-android
+      # failed above if the certificate wasn't the pinned one, and a debug-key
+      # build is named *-debugkey.apk, which this exact path never matches.
+      - name: Upload the signed staging APK (unzipped, 30 days)
+        if: steps.key.outputs.signed == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          path: apps/mobile/build/app/outputs/flutter-apk/app-staging-release.apk
+          archive: false
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Job summary (signing, outputs, time)
+        if: always()
+        env:
+          SIGNED: ${{ steps.key.outputs.signed }}
+          START: ${{ steps.start.outputs.epoch }}
+        run: |
+          outputs=apps/mobile/build/app/outputs
+          {
+            echo "### Android staging build (run ${GITHUB_RUN_NUMBER})"
+            if [[ "$SIGNED" == true ]]; then
+              echo "- Signing: **release key** (secrets present); APK uploaded as \`app-staging-release.apk\`"
+            else
+              echo "- Signing: **debug key** (no release-key secrets in this run); nothing uploaded"
+            fi
+            shopt -s nullglob
+            for f in "$outputs"/flutter-apk/app-staging-release*.apk "$outputs"/bundle/stagingRelease/*.aab; do
+              echo "- \`${f##*/}\` $(du -h "$f" | cut -f1), sha256 \`$(sha256sum "$f" | cut -d' ' -f1)\`"
+            done
+            echo "- Job time: $(( $(date +%s) - START )) s"
+            echo "- Disk free: $(df -h --output=avail / | tail -n 1 | tr -d ' ')"
+          } >>"$GITHUB_STEP_SUMMARY"
+          # Also as an annotation: readable through the API without a login.
+          apk="$outputs/flutter-apk/app-staging-release.apk"
+          if [[ "$SIGNED" == true && -f "$apk" ]]; then
+            echo "::notice title=android signing::signed=true: app-staging-release.apk uploaded, sha256 $(sha256sum "$apk" | cut -d' ' -f1)"
+          else
+            echo "::notice title=android signing::signed=false: no release-key secrets in this run, debug-key build, nothing uploaded"
+          fi
+
+  # Integration tests (S06 plan D18, A7): `make test-it` runs the Patrol tests in
+  # apps/mobile/patrol_test/ (dev flavor, debug) on an API 34 emulator. Nothing
+  # serves the dev API on the emulator, so they also prove the app starts and
+  # works offline. Needs KVM: the job checks /dev/kvm first and fails readably
+  # without it. At most one automatic retry of the emulator run (A7), shown as a
+  # warning and in the job summary; a second failure fails the job.
+  android-it:
+    name: android-it
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      EMULATOR_OPTIONS: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+    steps:
+      - name: Start time
+        id: start
+        run: echo "epoch=$(date +%s)" >>"$GITHUB_OUTPUT"
+
+      - name: KVM present?
+        run: |
+          if [[ -e /dev/kvm ]]; then
+            ls -l /dev/kvm
+            echo "- /dev/kvm: present (\`$(ls -l /dev/kvm)\`)" >>"$GITHUB_STEP_SUMMARY"
+          else
+            echo "- /dev/kvm: **missing**" >>"$GITHUB_STEP_SUMMARY"
+            echo "::error title=KVM::/dev/kvm is missing on this runner: the emulator can't run (S06 plan A7: ask the owner)"
+            exit 1
+          fi
+
+      # The emulator-runner README's step: the runner user gets access to /dev/kvm.
+      - name: Enable KVM for the runner user
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules >/dev/null
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Flutter (version from .fvmrc)
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+          pub-cache-key: 'flutter-pub-:os:-:version:-:arch:'
+
+      - name: Set up JDK 21 (Temurin)
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Android SDK packages (NDK, CMake) into the runner's SDK
+        run: make toolchain-android-sdk
+
+      - name: Set up Gradle (cache)
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-provider: basic
+          add-job-summary: on-failure
+
+      - name: Gradle heap for the 16 GB runner
+        run: |
+          gradle_home="${GRADLE_USER_HOME:-$HOME/.gradle}"
+          mkdir -p "$gradle_home"
+          {
+            echo 'org.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=1G -XX:ReservedCodeCacheSize=512m -XX:+HeapDumpOnOutOfMemoryError'
+            echo 'kotlin.daemon.jvmargs=-Xmx2G'
+          } >>"$gradle_home/gradle.properties"
+
+      - name: Dart dependencies
+        run: make deps-dart FLUTTER=flutter DART=dart
+
+      # Compiles before the emulator starts, so the emulator never waits on a
+      # cold Gradle build; `make test-it` below then only rebuilds what changed.
+      - name: Build the test APKs (dev debug app + instrumentation)
+        run: make build-it FLUTTER=flutter DART=dart
+
+      - name: Cache the AVD
+        id: avd-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ runner.os }}-api34-google_apis-x86_64-v1
+
+      # Cache miss only: boot once and save a snapshot, so later runs boot from it.
+      - name: Create the AVD and its snapshot
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: ${{ env.EMULATOR_OPTIONS }}
+          disable-animations: false
+          script: echo "AVD and snapshot created for the cache."
+
+      # Each `script` line runs on its own (sh -c): one line only. The output is
+      # also kept in $RUNNER_TEMP for the summary (the test result lines).
+      - name: Patrol tests on the emulator
+        id: it1
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save ${{ env.EMULATOR_OPTIONS }}
+          disable-animations: true
+          script: bash -o pipefail -c 'make test-it FLUTTER=flutter DART=dart 2>&1 | tee "$RUNNER_TEMP/patrol-attempt-1.log"'
+
+      - name: Patrol tests on the emulator (the one automatic retry, plan A7)
+        id: it2
+        if: steps.it1.outcome == 'failure'
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save ${{ env.EMULATOR_OPTIONS }}
+          disable-animations: true
+          script: bash -o pipefail -c 'make test-it FLUTTER=flutter DART=dart 2>&1 | tee "$RUNNER_TEMP/patrol-attempt-2.log"'
+
+      - name: Job summary (attempts, time)
+        if: always()
+        env:
+          IT1: ${{ steps.it1.outcome }}
+          IT2: ${{ steps.it2.outcome }}
+          AVD_HIT: ${{ steps.avd-cache.outputs.cache-hit }}
+          START: ${{ steps.start.outputs.epoch }}
+        run: |
+          if [[ "$IT1" == failure ]]; then
+            echo "::warning title=android-it retry::the first emulator run failed; retried once (plan A7): ${IT2:-not run}"
+          fi
+          # Patrol's per-test and total lines, without colour codes (the last
+          # lines of the output if none match).
+          results() {
+            [[ -f "$1" ]] || return 0
+            local clean
+            clean="$(sed 's/\x1b\[[0-9;]*[A-Za-z]//g' "$1")"
+            grep -E '[A-Z]{2,3}-[0-9]{3}|Total:|Successful:|Failed:|Skipped:|Duration:' <<<"$clean" \
+              || tail -n 15 <<<"$clean"
+          }
+          {
+            echo "### Android integration tests (Patrol, API 34 google_apis x86_64)"
+            echo "- AVD cache: $([[ "$AVD_HIT" == true ]] && echo hit || echo 'miss (AVD + snapshot created)')"
+            echo "- Attempt 1: ${IT1:-not run}"
+            if [[ "$IT1" == failure ]]; then
+              echo "- **Attempt 2 (automatic retry, plan A7): ${IT2:-not run}**"
+            fi
+            echo "- Job time: $(( $(date +%s) - START )) s"
+            echo "- Disk free: $(df -h --output=avail / | tail -n 1 | tr -d ' ')"
+            for n in 1 2; do
+              lines="$(results "$RUNNER_TEMP/patrol-attempt-$n.log")"
+              [[ -n "$lines" ]] || continue
+              fence='```'
+              printf '\nAttempt %s:\n%s\n%s\n%s\n' "$n" "$fence" "$lines" "$fence"
+            done
+          } >>"$GITHUB_STEP_SUMMARY"
+          # Also as annotations: readable through the API without a login.
+          for n in 1 2; do
+            lines="$(results "$RUNNER_TEMP/patrol-attempt-$n.log")"
+            [[ -n "$lines" ]] || continue
+            lines="${lines//'%'/'%25'}"
+            echo "::notice title=Patrol attempt $n::${lines//$'\n'/'%0A'}"
+          done
+
   # The one required status check. Fails unless every needed job succeeded:
   # failure, cancelled and skipped all fail the gate (nothing is skipped on
   # purpose while there is no path filtering).
   ci:
     name: ci
     if: always()
-    needs: [dart, dotnet, contract]
+    needs: [dart, dotnet, contract, android, android-it]
     runs-on: ubuntu-24.04
     permissions: {} # reads only `needs`; no token scopes at all
     timeout-minutes: 5

@@ -41,6 +41,11 @@ dev_dependencies:
   build_runner: 2.16.1
   flutter_test:
     sdk: flutter
+  # Integration tests in patrol_test/ (S06 plan D18). Exact pin: its Android
+  # runner is wired into android/app/build.gradle.kts and must match the
+  # patrol_cli the Makefile activates (PATROL_CLI_VERSION, compatibility table
+  # at patrol.leancode.co). Bumped on purpose, with patrol_cli.
+  patrol: 4.10.0
   riverpod_generator: 4.0.9
   # Test only: the in-memory SharedPreferencesAsync platform (the plugin's
   # documented way to test it). Comes with shared_preferences.
@@ -51,3 +56,12 @@ flutter:
   uses-material-design: true
   # Required by `flutter gen-l10n` (it refuses to run without it).
   generate: true
+
+# Patrol (S06 plan D18): `make test-it` runs patrol_test/ on a device or
+# emulator, `make build-it` only builds the APKs. The dev flavor's app, so
+# package_name has the flavor's applicationIdSuffix (android/app/build.gradle.kts).
+patrol:
+  app_name: FB Dev
+  flavor: dev
+  android:
+    package_name: io.github.abdelrahmanhamza1.fitnessbuddy.dev

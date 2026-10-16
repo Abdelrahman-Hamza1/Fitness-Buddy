@@ -53,7 +53,10 @@ fitness_buddy/
 **Both stacks**
 - Immutability by default. Explicit result types for expected failures. Exhaustive `switch` over sealed types.
 - No `now()` or `random` in domain or application code: inject `Clock` / `IClock` and ID generators.
-- Comments explain *why*. Requirement IDs in doc comments where code implements a spec rule (`/// Implements AI-060, AI-061.`).
+- **Comments: the right amount, not the most** (TD-054). A comment earns its place by saying what the code can't: *why* this way, a non-obvious constraint, a trap, the spec/TD/plan ID behind a rule (`/// Implements AI-060, AI-061.`). Don't restate the code, narrate the history ("moved from…", "review r1 fix"), or repeat the same rationale in several files: say it once where it matters and reference it.
+  - Public APIs (barrels, ports, `*.Contracts`): a short doc comment on what it is and its contract (one to three lines is typical).
+  - Private code: none when names and types already say it; a line where a reader would otherwise stop and wonder.
+  - Long rationale belongs in the plan, a TD or a README, not in a block comment.
 - A one-line justification (maintenance, licence, size) for every new dependency, in the PR.
 
 **Dart / Flutter**

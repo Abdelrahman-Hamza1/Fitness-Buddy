@@ -1,0 +1,2 @@
+fail
+android:debuggable is @0x7f050001 (must be absent or explicitly false)

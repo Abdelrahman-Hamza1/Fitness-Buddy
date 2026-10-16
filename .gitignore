@@ -43,6 +43,10 @@ coverage.json
 *.jks
 *.keystore
 key.properties
+# Android release signing (S06 D4): the key and its passwords live in
+# ~/.fitness-buddy/keys and the CI secrets, never here (docs/runbooks/android-signing.md).
+release.env
+*.jks.base64
 appsettings.*.local.json
 secrets.json
 id_rsa*

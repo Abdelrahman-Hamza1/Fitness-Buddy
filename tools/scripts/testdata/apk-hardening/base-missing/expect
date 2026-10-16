@@ -1,0 +1,2 @@
+fail
+base-config does not set cleartextTrafficPermitted (must be explicitly false)

@@ -39,6 +39,8 @@
 ## Owner involvement
 A ~30-minute review of the gallery and mockups on the phone. Pick a palette variant.
 
+The same phone session also covers S06b's deferred device acceptance (S06 A11): install the signed staging APK on the A55, check the four tabs and light/dark, `make cold-start` baseline (recorded in S06's Outcome), and `make run-dev` + local Host for `/v1/config` on the device.
+
 ---
 
 ## Low-level plan

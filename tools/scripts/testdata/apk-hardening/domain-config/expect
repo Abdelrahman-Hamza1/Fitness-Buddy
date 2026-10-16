@@ -1,0 +1,2 @@
+fail
+staging: <domain-config> is not allowed (domains: api.example.com)

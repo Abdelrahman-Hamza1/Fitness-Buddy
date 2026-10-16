@@ -1,0 +1,2 @@
+fail
+android:usesCleartextTraffic is true (must be absent or explicitly false)

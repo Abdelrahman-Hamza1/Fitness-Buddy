@@ -2,7 +2,8 @@
 # Prints the toolchain versions and machine resources, and checks the pinned
 # SDKs. Called by `make doctor`, which passes the tool paths through the
 # environment (FLUTTER, DART, DOTNET, FLUTTER_VERSION, DOTNET_ROOT, ...).
-# Exit code: 0 if the pinned toolchain and Docker (contract tools) are in place, 1 otherwise.
+# Exit code: 0 if the pinned toolchains (Flutter, .NET, Android) and Docker
+# (contract tools) are in place, 1 otherwise.
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -98,6 +99,51 @@ if [[ -n "$DOTNET_ROOT" && -n "$path_dotnet" \
   && "$(readlink -f "$path_dotnet")" == "$(readlink -f "$DOTNET_ROOT/dotnet" 2>/dev/null || echo none)" \
   && -e "$DOTNET_ROOT/tools/dotnet-ef" ]]; then
   warnings+=("'dotnet' on PATH is $path_dotnet and a global dotnet-ef exists in $DOTNET_ROOT/tools; it was built for an older .NET and may fail. The repo will use a local tool manifest (S04).")
+fi
+
+# Android toolchain (S06 plan D19): JDK + SDK from `make toolchain-android`,
+# or the CI runner's (JAVA_HOME / ANDROID_HOME from the environment).
+echo
+echo "Android (tools/scripts/setup-android.sh)"
+JAVA_HOME="${JAVA_HOME:-}"
+ANDROID_HOME="${ANDROID_HOME:-}"
+if [[ -n "$JAVA_HOME" && -x "$JAVA_HOME/bin/java" ]]; then
+  java_version="$(sed -n 's/^JAVA_VERSION="\(.*\)"$/\1/p' "$JAVA_HOME/release" 2>/dev/null)"
+  if [[ "${java_version%%.*}" == 21 ]]; then status="OK"; else
+    status="UNEXPECTED (want 21)"
+    problems+=("the JDK at $JAVA_HOME is ${java_version:-unknown}, the build is pinned to JDK 21 (run: make toolchain-android)")
+  fi
+  row "JDK" "${java_version:-?}  [$status]  $JAVA_HOME  (from ${JAVA_HOME_ORIGIN:-unknown})"
+else
+  row "JDK" "NOT INSTALLED at ${JAVA_HOME:-<unset>}"
+  problems+=("JDK 21 is not installed (run: make toolchain-android)")
+fi
+if [[ -n "$ANDROID_HOME" && -d "$ANDROID_HOME" ]]; then
+  row "ANDROID_HOME" "$ANDROID_HOME  (from ${ANDROID_HOME_ORIGIN:-unknown})"
+  # The same list setup-android.sh installs.
+  sdk_missing=() sdk_dirs=()
+  while IFS='|' read -r _ dir; do
+    sdk_dirs+=("$dir")
+    [[ -f "$ANDROID_HOME/$dir/source.properties" ]] || sdk_missing+=("$dir")
+  done < <(grep -v -e '^#' -e '^[[:space:]]*$' "$repo_root/tools/scripts/android-sdk-packages.txt")
+  if ((${#sdk_missing[@]} == 0)); then
+    row "SDK" "${sdk_dirs[*]}  [OK]"
+  else
+    row "SDK" "MISSING: ${sdk_missing[*]}"
+    problems+=("Android SDK packages missing: ${sdk_missing[*]} (run: make toolchain-android)")
+  fi
+  if [[ -f "$ANDROID_HOME/licenses/android-sdk-license" ]]; then
+    row "licences" "accepted  [OK]"
+  else
+    row "licences" "NOT ACCEPTED"
+    problems+=("the Android SDK licences are not accepted (run: make toolchain-android)")
+  fi
+  if [[ -x "$ANDROID_HOME/platform-tools/adb" ]]; then
+    row "adb" "$(first_line "$ANDROID_HOME/platform-tools/adb" version)"
+  fi
+else
+  row "ANDROID_HOME" "NOT INSTALLED at ${ANDROID_HOME:-<unset>}"
+  problems+=("the Android SDK is not installed (run: make toolchain-android)")
 fi
 
 # Docker runs the contract tools (S02 D8): Redocly, Spectral, oasdiff.

@@ -60,6 +60,7 @@ A step is **ready** when: its dependencies are ✅ on the board, the owner prere
 1. **Research first** if the card's "Decide in the low-level plan" items need external facts → `tech-researcher` (one brief per question, run in parallel).
 2. **`step-planner`** writes the Low-level plan into the card, using the research.
 3. **`architect`** reviews the plan → `approve` / `approve with changes` / `rework`. At most 2 rework rounds, then the orchestrator escalates to the owner.
+**S-sized steps (TD-054):** one pass: the planner writes a short plan and the architect reviews it in the same brief. No separate research unless a new dependency or an external fact is involved.
 4. **Owner gate (mandatory):** the orchestrator sends a compact plan summary (§5.2). Implementation starts only after the owner's OK. For S-sized steps, the owner may answer "ok" without reading the full plan.
 
 ### C. Implement
@@ -68,12 +69,11 @@ A step is **ready** when: its dependencies are ✅ on the board, the owner prere
 3. Brief the right engineer per WP (§6). **Sequential by default.** Independent WPs in different areas (e.g. backend vs app) may run in parallel, each in an isolated worktree, and are merged by the orchestrator.
 4. After each WP: the orchestrator runs `make check test` (or the relevant subset), inspects the diff, and commits (Conventional Commits). A red build stops the line until fixed.
 5. **API changes are contract-first:** contract WP → client regeneration → server WP → app WP.
-6. A short progress ping to the owner at WP boundaries (one line each).
 
 ### D. Review & verify (the `review-changes` skill)
-1. Pick reviewers by what changed (§2): `code-reviewer` always, plus `security-reviewer`, `ux-reviewer`, `architect` when triggered. Run them in parallel.
+1. Pick reviewers by what changed (§2): `code-reviewer` always, plus `security-reviewer`, `ux-reviewer`, `architect` **only when their trigger really applies** (TD-054): UX for real screens or user-facing copy (not placeholders), architect for new modules, packages, public interfaces or cross-cutting mechanisms, security for its listed areas. Run them in parallel.
 2. Findings have a severity: **blocker** / **major** / **minor** / **nit**. Blockers and majors must be fixed. Minors are fixed or logged in `steps/backlog.md`. Nits are optional.
-3. Fixes go back to the engineer who wrote the code, then are re-reviewed by the same reviewer. **At most 3 rounds**, then the architect arbitrates, then the owner decides.
+3. Fixes go back to the engineer who wrote the code. **Re-review only when the round had a blocker or major** (by the same reviewer, scoped to those findings + regressions); fixes of minors and nits are checked by the orchestrator (diff + `make check test`) without another reviewer round (TD-054). **At most 3 rounds**, then the architect arbitrates, then the owner decides.
 4. **`verifier`** checks every exit criterion with evidence (test names, outputs, measurements, screenshots), marking each ✅ / ❌ / ⚠️ (needs the owner, e.g. on-device checks). Any ❌ returns to C.
 
 ### E. Close
@@ -108,8 +108,7 @@ When in doubt, ask. A short question costs less than rework.
 |---|---|---|
 | Session start | Which step, the goal, what will be needed from the owner | 2–4 lines |
 | Plan ready | **Plan approval request** (gate) | §5.2 template |
-| WP boundaries | Progress ping | 1 line |
-| Immediately | Blockers, missing prerequisites, any deviation from spec/TDs, cost or security concerns | Short, with a recommendation |
+| Immediately | Owner actions needed, blockers, missing prerequisites, any deviation from spec/TDs, cost or security concerns | Short, with a recommendation |
 | Step done | **Close summary** + demo instructions (gate) | §5.2 template |
 | Every ~5 steps or on request | **Status report** (the `owner-update` skill): board, milestone progress, risks, open questions | ≤ 25 lines |
 

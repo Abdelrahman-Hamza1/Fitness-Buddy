@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Staging and prod (S06 plan A8): HTTPS only, system CAs only. The dev flavor
+     replaces this file (src/dev/res/xml/network_security_config.xml).
+     tools/scripts/apk_hardening_check.py checks the built APK against it. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

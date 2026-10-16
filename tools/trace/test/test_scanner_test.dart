@@ -146,6 +146,24 @@ void main() {
       expect(coverage['ZZ-040'], ['backend/tests/X.Tests/ZzTests.cs']);
     });
 
+    test('AT-001 scans Patrol tests in patrol_test/ (S06 plan D18)', () {
+      final root = tempRepo({
+        'apps/mobile/patrol_test/app_test.dart': r'''
+void main() {
+  patrolTest('ZZ-060 app launches offline', ($) async {});
+}
+''',
+        'apps/mobile/patrol_test/flows/tabs_test.dart': dartSource,
+      });
+
+      final coverage = const TestScanner().scan(root);
+
+      expect(coverage['ZZ-060'], ['apps/mobile/patrol_test/app_test.dart']);
+      expect(coverage['ZZ-001'], [
+        'apps/mobile/patrol_test/flows/tabs_test.dart',
+      ]);
+    });
+
     test('AT-001 skips .dart_tool, build, bin, obj and trace fixtures', () {
       final root = tempRepo({
         'packages/p/.dart_tool/test/a_test.dart': dartSource,

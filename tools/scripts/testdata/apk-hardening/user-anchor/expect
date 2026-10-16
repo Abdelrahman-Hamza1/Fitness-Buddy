@@ -1,0 +1,2 @@
+fail
+base-config/trust-anchors: trust anchor <certificates src="user" (Raw: "user")> (only src="system" is allowed)

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dev flavor only (S06 plan D6, A8): HTTPS everywhere, except plain HTTP to the
+     local API on this device's loopback (127.0.0.1:5198, forwarded to the laptop
+     with `adb reverse`, see `make run-dev`). Overrides the main source set's file
+     of the same name; staging and prod never see this one. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">127.0.0.1</domain>
+        <domain includeSubdomains="false">localhost</domain>
+    </domain-config>
+</network-security-config>

@@ -20,14 +20,20 @@ const Set<String> skippedDirectoryNames = {'.dart_tool', 'build', 'bin', 'obj'};
 /// The trace tool's own fixtures (fake sources), never scanned.
 const String traceFixturesPath = 'tools/trace/test/fixtures';
 
-/// Top-level folders searched for Dart tests (`test/`, `integration_test/`).
+/// Top-level folders searched for Dart tests (`test/`, `integration_test/`,
+/// `patrol_test/`).
 const List<String> dartSourceRoots = ['apps', 'packages', 'tools'];
 
 /// The folder searched for C# tests.
 const String csharpTestsRoot = 'backend/tests';
 
-/// Folder names that mark a Dart file as a test file.
-const Set<String> dartTestDirectoryNames = {'test', 'integration_test'};
+/// Folder names that mark a Dart file as a test file. `patrol_test` is
+/// Patrol's default folder (the app's integration tests, S06 plan D18).
+const Set<String> dartTestDirectoryNames = {
+  'test',
+  'integration_test',
+  'patrol_test',
+};
 
 // A test call up to the opening quote of its first argument: the name, `(`,
 // any whitespace (also newlines), an optional raw prefix and the quote
@@ -83,7 +89,8 @@ class TestScanner {
 
   /// Scans the repository at [root].
   ///
-  /// Dart files under any `test/` or `integration_test/` folder in
+  /// Dart files under any `test/`, `integration_test/` or `patrol_test/`
+  /// folder in
   /// [dartSourceRoots], and C# files under [csharpTestsRoot]. Skips
   /// [skippedDirectoryNames] and [traceFixturesPath].
   ///

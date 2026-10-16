@@ -1,0 +1,16 @@
+# The Android SDK packages the app's Gradle build needs (S06 plan D19), one per
+# line: <sdkmanager package>|<dir under the SDK>. Read by setup-android.sh
+# (installs them), doctor.sh (reports them) and build-android.sh (aapt2 and
+# apksigner from the build-tools line). Pre-installed so a build never downloads
+# SDK parts itself.
+#   platforms;android-36, build-tools 36.0.0, NDK r28c: Flutter 3.47.7's template
+#     (AGP 9.1, compileSdk 36).
+#   platforms;android-35, cmake;3.22.1: package:jni (via sentry_flutter) compiles
+#     against SDK 35 and builds its C code with AGP's default CMake (measured: AGP
+#     downloaded both on the first build).
+platform-tools|platform-tools
+platforms;android-36|platforms/android-36
+platforms;android-35|platforms/android-35
+build-tools;36.0.0|build-tools/36.0.0
+ndk;28.2.13676358|ndk/28.2.13676358
+cmake;3.22.1|cmake/3.22.1

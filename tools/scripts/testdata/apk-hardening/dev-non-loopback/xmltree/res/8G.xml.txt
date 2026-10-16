@@ -1,0 +1,14 @@
+E: network-security-config (line=6)
+    E: base-config (line=7)
+      A: cleartextTrafficPermitted=false
+        E: trust-anchors (line=8)
+            E: certificates (line=9)
+              A: src="system" (Raw: "system")
+    E: domain-config (line=12)
+      A: cleartextTrafficPermitted=true
+        E: domain (line=13)
+          A: includeSubdomains=false
+            T: '127.0.0.1'
+        E: domain (line=14)
+          A: includeSubdomains=false
+            T: '10.0.2.2'

@@ -39,8 +39,9 @@ Top-level `spec/*.md` files only (not `research/` or `questions/`), skipping
 
 ## How tests claim coverage
 
-Scanned: Dart files under any `test/` or `integration_test/` folder in `apps/`,
-`packages/` and `tools/`, and C# files under `backend/tests/`. Skipped:
+Scanned: Dart files under any `test/`, `integration_test/` or `patrol_test/`
+(Patrol, the app's integration tests) folder in `apps/`, `packages/` and
+`tools/`, and C# files under `backend/tests/`. Skipped:
 `.dart_tool`, `build`, `bin`, `obj` and `tools/trace/test/fixtures`.
 
 - **Dart test names:** the IDs at the *start* of the first string literal of

@@ -32,7 +32,7 @@ Track progress with a todo list mirroring the phases below. Keep the owner infor
    - Brief the right specialist (`flutter-engineer`, `dotnet-engineer`, `platform-engineer`, `ai-engineer`, `data-curator`) with the **self-contained brief** template (process §6). One WP per brief.
    - Independent WPs in different areas may run in parallel with `isolation: "worktree"`. Then merge their branches into the step branch yourself.
    - When it returns: inspect the diff (`git diff`), run `make check` + the relevant tests, fix small issues or re-brief once with specifics. Commit with a Conventional Commit message referencing the step.
-   - Send a one-line progress ping to the owner.
+   - No per-WP ping to the owner (TD-054); message them only for owner actions or blockers.
 2. Contract changes go first: contract WP → `make gen` → server WP → app WP.
 3. Red build = stop the line. Fix before the next WP.
 4. Deviation from the plan, scope or a TD → pause and decide per process §4 (ask the owner if it's theirs to decide).

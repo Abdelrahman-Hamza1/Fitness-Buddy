@@ -19,7 +19,7 @@ The step ID and card path, the branch (diff against `main`), and the review roun
    - **Invariants:** single writer (`ChangeSetApplier`), no AI-produced numbers, contract-first (DTOs match `contracts/`), module boundaries and layering, local-first (nothing user-critical on the network path), no user content in logs.
    - **Plan & scope:** implements the plan. No unplanned scope. Out-of-scope items untouched. Deviations explained.
    - **Tests:** meaningful assertions, spec IDs tagged, edge cases covered, no flaky timing, no sleeping, fakes for clock/IDs, migration tests for schema changes, property tests where invariants exist.
-   - **Simplicity & readability:** dead code, duplication, needless abstraction, naming, comments explaining *why*.
+   - **Simplicity & readability:** dead code, duplication, needless abstraction, naming, comments explaining *why* at the right density (`10` §2, TD-054): flag restating, history narration, repeated rationale, and missing comments where a reader would get stuck.
    - **Conventions:** the l10n/RTL rules (app), problem details/Result (backend), dependency additions justified.
 5. **Re-review rounds:** check only the listed findings + regressions in the touched code.
 

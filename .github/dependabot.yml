@@ -59,6 +59,11 @@ updates:
       - dependency-name: riverpod_generator
       - dependency-name: material_ui
       - dependency-name: alchemist
+      # Integration tests (S06 plan D1, D18): patrol pairs with patrol_cli,
+      # pinned as PATROL_CLI_VERSION in the Makefile (Dependabot doesn't read
+      # it), and ships Android code wired into android/app/build.gradle.kts.
+      # Bump both together, on purpose, and rerun the android-it job.
+      - dependency-name: patrol
 
   # NuGet packages (central package management in backend/Directory.Packages.props).
   - package-ecosystem: nuget

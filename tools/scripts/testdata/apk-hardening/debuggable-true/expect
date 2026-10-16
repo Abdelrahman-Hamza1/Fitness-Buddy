@@ -1,0 +1,2 @@
+fail
+android:debuggable is true (must be absent or explicitly false)
