@@ -140,3 +140,19 @@ updates:
     groups:
       docker-minor-patch:
         update-types: [minor, patch]
+
+  # The local/test Postgres pin; image-smoke also checks the Testcontainers pin matches.
+  - package-ecosystem: docker-compose
+    directory: /infra/compose
+    allow:
+      - dependency-name: postgres
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore(deps)
+    cooldown:
+      default-days: 7
+    groups:
+      postgres-minor-patch:
+        update-types: [minor, patch]

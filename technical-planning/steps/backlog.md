@@ -4,7 +4,7 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 
 | # | From | Item | Severity | Target step | Status |
 |---|---|---|---|---|---|
-| 1 | S01 | NuGet lock files (`packages.lock.json`) once Dependabot + CPM support is solid | minor | S04 | open |
+| 1 | S01 | NuGet lock files (`packages.lock.json`) once Dependabot + CPM support is solid. Rechecked S04 (2026-10-16): [upstream #13950](https://github.com/dependabot/dependabot-core/issues/13950) is still open for downstream ProjectReference lock updates; S01 baseline retained | minor | next dependency review / before S24 | open |
 | 2 | S01 | Dependabot `docker` ecosystem entry (needs a Dockerfile) | minor | S03 | done (S03) |
 | 3 | S01 | Verify Dependabot handles the pub workspace after its first monthly run; fallback: scheduled `dart pub outdated` | minor | next after first run | open |
 | 4 | S01 | Flutter pin bump cadence: manual, quarterly (Dependabot covers the .NET SDK) | minor | recurring | open |

@@ -11,6 +11,7 @@
     <Project Path="tests/BuildingBlocks.Tests/FitnessBuddy.BuildingBlocks.Tests.csproj" />
     <Project Path="tests/Contract.Tests/FitnessBuddy.Contract.Tests.csproj" />
     <Project Path="tests/Host.Tests/FitnessBuddy.Host.Tests.csproj" />
+    <Project Path="tests/Persistence.Tests/FitnessBuddy.Persistence.Tests.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="Directory.Build.props" />

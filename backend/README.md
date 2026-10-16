@@ -1,6 +1,6 @@
 # backend/
 
-The Fitness Buddy API: an ASP.NET Core (.NET 10) modular monolith. Architecture, modules and rules are in `technical-planning/04-backend.md`. Right now: the host with its three roles and module system (S03), one module (`Account`, `GET /v1/config`), and a build-time OpenAPI document that CI checks against `contracts/openapi.yaml` (S02).
+The Fitness Buddy API: an ASP.NET Core (.NET 10) modular monolith. Architecture, modules and rules are in `technical-planning/04-backend.md`. Right now: the host with its three roles and module system (S03), one module (`Account`, `GET /v1/config`), a build-time OpenAPI document that CI checks against `contracts/openapi.yaml` (S02), and transactional Postgres persistence, outbox/jobs/schedules and POST replay (S04).
 
 ## Layout
 
@@ -31,8 +31,8 @@ One executable, three roles, chosen by the first argument (`args[0]`, when it do
 | Role | Does |
 |---|---|
 | `api` | Stateless HTTP (`WebApplication`) |
-| `worker` | Generic host for the outbox and jobs. Until S04 it only logs that it has nothing to do and waits for shutdown |
-| `migrate` | One-shot: applies migrations and exits. Until S04 it logs that there are none and exits 0 |
+| `worker` | Polls durable outbox/jobs and UTC schedules using fb_app; handles shutdown cancellation without consuming attempts |
+| `migrate` | Applies explicitly registered module migrations under one advisory lock with fb_migrator; exits 1 on failure or missing migrator configuration |
 
 `api` and `worker` share `PlatformSetup.AddFbPlatform` (options with validation on start, `TimeProvider`, ids, flags, the current user, every module's services). Shutdown waits up to 25 s for in-flight work (under Kamal's 30 s stop wait).
 
@@ -72,14 +72,42 @@ violating types, including all banned static time/ID calls.
 
 ## HTTP pipeline (api role)
 
-In order (`src/Host/Http/HttpSetup.cs`): forwarded headers → request id → exception handler → HSTS (not in Development) → status-code pages → routing → rate limiter → client headers + 426 gate → endpoints (`/health/*`, `/v1`).
+In order (`src/Host/Http/HttpSetup.cs`): forwarded headers → request id → exception handler → HSTS (not in Development) → status-code pages → routing → rate limiter → client headers + 426 gate → authentication (S24) → opted-in POST idempotency → endpoints (`/health/*`, `/v1`).
 
 - **Forwarded headers:** `X-Forwarded-For`/`-Proto`, one hop, trusted from loopback and `Proxy:TrustedNetworks` (CIDRs, checked at startup) only.
 - **Request id:** every response has `X-Request-Id` = the W3C trace id (32 lowercase hex), also the problem's `traceId`. An inbound `traceparent` is honoured; an inbound `X-Request-Id` is ignored.
 - **Problems:** everything goes through `IProblemDetailsService`, so `ProblemDetailsCustomizer` shapes every error body: `type`/`title` always set, `traceId` added, every 400 is `/errors/validation-failed` with `errors` (keys camelCased; empty, with a fixed `detail`, when the body can't be read). Middleware writes its problems the same way. Unhandled exceptions: 500 with no `detail`.
 - **Client headers:** `/v1` endpoints need valid `X-App-Version`, `X-Platform`, `X-Device-Id` (400, keyed by the lowercase header name). A valid version below `Clients:MinimumAppVersion` gets 426 first, unless the endpoint is `.AllowOutdatedClients()` (`/v1/config`).
 - **Limits:** request bodies ≤ 256 KB (Kestrel, 413). Rate limit `per-ip` on `/v1` (`RateLimiting:PerIp`, IPv6 by /64): 429 with `Retry-After`, `RateLimit`, `RateLimit-Policy`.
-- **Health:** `/health/live` and `/health/ready` (plain text), outside `/v1`: no client headers, no rate limit, not in the contract.
+- **Health:** `/health/live` is independent; `/health/ready` executes a bounded Postgres probe and returns 503 when it fails. Both are plain text outside `/v1`: no client headers, no rate limit, not in the contract.
+
+## Persistence and background work (S04, TD-062)
+
+`make up` builds one image, starts a private Postgres 18.6, applies migrations, then starts api + worker.
+Only the API publishes a loopback port (5198). `make down` preserves the database volume. Bootstrap
+passwords in `infra/compose/postgres/001-roles.sql` are **local-only**; S05 provisions real secrets.
+Neither the API nor worker receives migrator credentials. Password/SCRAM connections disable native GSS/Kerberos discovery; explicit GSS Require is rejected rather than downgraded. TLS settings are preserved. Do not point this bootstrap at an existing
+production database. A changed bootstrap script only applies to a fresh local volume.
+
+For native `dotnet run`, set `ConnectionStrings__Application` to a reachable fb_app connection;
+the Development default points at localhost, but compose deliberately publishes no database port.
+Use compose for the full stack. Supply `ConnectionStrings__Migrator` **only** to the migrate process.
+Build-time OpenAPI generation never opens a database or runs migrations.
+
+- A module registers `ModuleMigration(schema, connection => new MyContext(DatabaseConfiguration.ContextOptions<MyContext>(connection, schema)))` in its `AddServices`. Its context derives from `ModuleDbContext`, configures entities, then calls base. Each schema has its own `__ef_migrations_history`. Migrations are ordered by schema and then EF migration ID, under a shared session lock. Avoid cross-module migration dependencies. Expand first; destructive contractions need a later release.
+- Infrastructure repositories start `UserDatabase.BeginAsync(ct)` (identity from ICurrentUser), create a context with `session.Connection`, and call `session.EnlistAsync(context, ct)`. Use the injected clock/UUIDv7 generator for values. Context and raw commands then share one transaction. User-owned tables require ENABLE + FORCE RLS with USING and WITH CHECK against `NULLIF(current_setting('app.user_id', true), '')::uuid`. No identity means no rows; never set a session-level user. Ordinary repositories still scope queries by the principal.
+- `QueueWriter` uses that same scoped session. Publish events before committing the business change. User identity is copied from the session into the durable envelope and set transaction-locally by the worker. System jobs have no user context. `ops.*` is internal infrastructure owned by BuildingBlocks; product modules never query it directly. No product tables have been added yet: a test-only module proves the pattern.
+- Register database-only `IOutboxHandler` / `IJobHandler` implementations. Their writes use the supplied session, with **no commits or network calls**. Keep event type and handler name stable across deploys. Effects, per-handler processed marker and acknowledgement commit together. A crash rolls them all back; duplicate delivery skips processed handlers. This provides exactly-once database effects, not exactly-once remote calls. External adapters must accept a stable operation key and be independently idempotent.
+- Default retries: five attempts, starting at 5 seconds, doubling to a one-hour cap. Failures roll back to a savepoint before persisting attempts. Exhausted/unknown message types become dead letters; payloads and exception messages never enter logs. Shutdown cancellation rolls back without counting an attempt. Dead letters remain for inspection; there is no public administrative queue API.
+- `JobScheduler.RegisterAsync` uses five-field UTC cron. Durable cursors survive restarts; missed ticks coalesce into one run. Claims and uniquely keyed job insertion share a transaction. The worker registers `ops.cleanup` every five minutes: expired replay records and completed queue records older than seven days are removed; dead letters stay. Future history/account purge handlers arrive with their modules.
+- An unsafe POST opts in using `.RequireIdempotency()` and declares its header/400/409 responses in the contract **before** becoming a product endpoint. The middleware requires authenticated ICurrentUser (S24 must define any pre-auth scope), serializes user + method + path + key, fingerprints body bytes/content type/query, and commits business effects + response atomically. Replays last 24 h; changed fingerprints get 409. Buffers: 256 KiB request, 1 MiB response. 5xx, exceptions and cancellation roll back. Only ETag/Location replay; never cookies. Problem bodies refresh traceId to match the current X-Request-Id. All actual product POSTs are still later steps.
+- Postgres logs only infrastructure-level FATAL/PANIC messages, with terse detail and statement/parameter logging disabled; ordinary SQL errors can echo private values. API/worker logs retain scrubbed error types and IDs. Carry these settings into S05.
+- SQL diagnostics/logging and Npgsql command/batch/COPY/open tracing are disabled at the source, including under broad listeners. Never enable sensitive data, parameter logging, SQL enrichment or driver error detail.
+
+`tests/Persistence.Tests` uses one assembly-shared Testcontainers Postgres 18.6 (digest matches compose),
+real application/migrator logins, a test-only schema/context and isolated IDs. Tests terminate a backend
+connection after an effect, race workers/requests, advance a fake clock, pause Postgres for health
+checks and inject private canaries into database errors. Docker must be available for `make test-dotnet`.
 
 ## Logging rule
 

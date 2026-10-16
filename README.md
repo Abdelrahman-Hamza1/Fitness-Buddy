@@ -55,16 +55,17 @@ Targets run one at a time (`.NOTPARALLEL`), the build uses `-m:4`, and tests use
 ## Run the local API
 
 ```bash
-make up     # build the non-root API image; wait for readiness on 127.0.0.1:5198
+make up     # start Postgres, migrate, then api + worker; wait for readiness on 127.0.0.1:5198
 curl -H 'X-App-Version: 0.1.0' -H 'X-Platform: android' \
   -H 'X-Device-Id: 0192a5d4-7c3e-7b1a-9f2e-3c4d5e6f7a8b' \
   http://127.0.0.1:5198/v1/config
 make down
-make image-smoke  # health, config, trace correlation, non-root UID, migrate, shutdown and size
+make image-smoke  # isolated Postgres, repeat migrations, api/worker, DB-down health, trace, UID and shutdown
 ```
 
 The compose setup uses Development **locally only**, prints traces/metrics and binds only loopback.
-Postgres is added in S04. The chiseled image has no shell and runs as UID 1654 with a read-only
+Postgres 18.6 stays on the private Docker network; migrations run with a separate schema-owner login.
+`make down` preserves the database volume. Credentials in compose are local-only. The chiseled image has no shell and runs as UID 1654 with a read-only
 filesystem, `/tmp` tmpfs and no Linux capabilities. Image defaults remain production-shaped.
 
 To exercise the app's update screen: `FB_MIN_APP_VERSION=99.0.0 make up`, then `make run-dev`
@@ -85,7 +86,7 @@ Exists today:
 | [`apps/mobile/`](apps/mobile/README.md) | The Flutter app (`fb_mobile`): four-tab shell, flavors (dev/staging/prod), localization, Android build (`make build-android`). |
 | [`packages/`](packages/README.md) | Shared Dart packages (`fb_domain`, `fb_text`) in the pub workspace. |
 | [`backend/`](backend/README.md) | .NET 10 modular API, observability, architecture tests and Docker image. |
-| [`infra/compose/`](infra/compose/docker-compose.yml) | Local API container; Postgres follows in S04. |
+| [`infra/compose/`](infra/compose/docker-compose.yml) | Local API + worker + Postgres, with a one-shot migration service. |
 | [`contracts/`](contracts/README.md) | The API contract: OpenAPI 3.1 sources, the committed bundle, Spectral rules, self-test fixtures, shared golden test data. |
 | [`tools/`](tools/README.md) | Bash scripts behind the Makefile, the contract tool images, and `trace/` (requirement coverage). |
 | [`docs/runbooks/`](docs/runbooks/) | Operational procedures. Today: Android release signing. |

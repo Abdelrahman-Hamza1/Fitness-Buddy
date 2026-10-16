@@ -125,13 +125,13 @@ check-dotnet: ## Verify C# formatting, then build Release with analyzers + warni
 test-dotnet: ## Run the backend tests (xUnit v3 on Microsoft.Testing.Platform)
 	cd '$(REPO_ROOT)/backend' && '$(DOTNET)' test --solution $(DOTNET_SLN) -c Release --no-restore --max-parallel-test-modules 2
 
-##@ Local API container
+##@ Local backend containers
 
 API_COMPOSE := docker compose -f '$(REPO_ROOT)/infra/compose/docker-compose.yml'
 
 .PHONY: up
-up: ## Build and start the local API on 127.0.0.1:5198, then wait for readiness
-	$(API_COMPOSE) up -d --build
+up: ## Build and start api + worker + Postgres, apply migrations, then wait for readiness
+	$(API_COMPOSE) up -d --build --force-recreate migrate api worker postgres
 	@for attempt in {1..30}; do \
 	  if curl --fail --silent --max-time 1 http://127.0.0.1:5198/health/ready >/dev/null; then \
 	    echo 'API ready: http://127.0.0.1:5198'; exit 0; \
@@ -139,7 +139,7 @@ up: ## Build and start the local API on 127.0.0.1:5198, then wait for readiness
 	done; $(API_COMPOSE) logs api; echo 'API readiness timed out' >&2; exit 1
 
 .PHONY: down
-down: ## Stop and remove the local API container and network
+down: ## Stop local backend containers and network (preserves database volume)
 	$(API_COMPOSE) down
 
 .PHONY: image-smoke
@@ -371,4 +371,4 @@ RELEASE ?= R1
 trace: ## Print the requirement coverage report (RELEASE=R1|R2|R3|Later|all, default R1)
 	@cd '$(REPO_ROOT)' && '$(DART)' run tools/trace/bin/trace.dart --root . --release '$(RELEASE)'
 
-# Later steps add: up/down (S03/S04), eval, catalog.
+# Later steps add: eval, catalog.

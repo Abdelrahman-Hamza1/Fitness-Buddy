@@ -1,4 +1,5 @@
 using FitnessBuddy.Host.Platform;
+using FitnessBuddy.BuildingBlocks.Web.Idempotency;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace FitnessBuddy.Host.Http;
@@ -59,7 +60,8 @@ internal static class HttpSetup
         app.UseRouting();
         app.UseRateLimiter();
         app.UseMiddleware<ClientHeadersMiddleware>();
-        // S24: authentication and authorization go here.
+        // S24: authentication and authorization go here, before idempotency.
+        app.UseMiddleware<IdempotencyMiddleware>();
 
         ForwardedHeadersSetup.LogTrustedNetworks(app);
         return app;

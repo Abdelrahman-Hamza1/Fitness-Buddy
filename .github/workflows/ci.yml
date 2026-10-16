@@ -157,7 +157,8 @@ jobs:
       - name: API contract conformance (server document vs contract)
         run: make contract-conformance DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT"
 
-      # Reuses the Release build above (no restore, incremental).
+      # Reuses the Release build above. S04 Persistence.Tests starts one digest-pinned
+      # Postgres Testcontainer; Docker is preinstalled, no hosted database/service credentials.
       - name: Tests
         run: make test-dotnet DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT"
 

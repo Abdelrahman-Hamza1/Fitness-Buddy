@@ -24,7 +24,17 @@
     <PackageVersion Include="Sentry.AspNetCore" Version="6.12.0" />
   </ItemGroup>
 
+  <ItemGroup Label="Persistence">
+    <PackageVersion Include="Cronos" Version="0.13.0" />
+    <!-- Newly introduced EF packages obey the 7-day cooldown; runtime security pins remain 10.0.13. -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.12" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+    <PackageVersion Include="Npgsql" Version="10.0.3" />
+  </ItemGroup>
+
   <ItemGroup Label="Testing">
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.16.0" />
     <!-- xunit.v3 4.x runs on Microsoft.Testing.Platform v2 (no Microsoft.NET.Test.Sdk). -->
     <PackageVersion Include="xunit.v3" Version="4.0.2" />
     <PackageVersion Include="TngTech.ArchUnitNET" Version="0.13.4" />

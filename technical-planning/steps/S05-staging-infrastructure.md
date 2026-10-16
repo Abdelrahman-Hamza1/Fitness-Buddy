@@ -37,6 +37,8 @@
 
 - **From S03:** `/v1/config` synthetic uptime and deploy probes must send `X-App-Version`, `X-Platform` and a fixed UUID `X-Device-Id` (otherwise 400). The chiseled image has no shell/HEALTHCHECK: kamal-proxy probes `/health/ready` at app port 8080. Verify proxy CIDRs/forwarded headers on the real network; local compose binds loopback only. Revisit OTLP exception-type display (`ScrubbedException`; original type in its message) when wiring Grafana. Sentry stays errors-only with local scrubbing.
 
+- **From S04:** api/worker require `ConnectionStrings:Application` (fb_app); only migrate gets `ConnectionStrings:Migrator` (fb_migrator). Provision roles independently of local bootstrap passwords. Migration registry/history is schema-local, with an advisory lock. Carry Postgres privacy settings from compose into the accessory: no ordinary statement-error/parameter logs, FATAL/PANIC infrastructure messages only with terse verbosity. `/health/ready` checks DB availability; outbox/jobs handlers must remain database-only, with stable idempotency keys for future external effects.
+
 ## Exit criteria
 - [ ] `tofu apply` from a clean state creates staging. Destroying and re-creating it, then redeploying, works by following the runbook.
 - [ ] `https://api-staging.<domain>/v1/config` serves valid TLS and a contract-conformant response.

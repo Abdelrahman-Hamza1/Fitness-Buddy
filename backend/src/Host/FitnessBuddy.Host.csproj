@@ -34,5 +34,6 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="FitnessBuddy.Host.Tests" />
+    <InternalsVisibleTo Include="FitnessBuddy.Persistence.Tests" />
   </ItemGroup>
 </Project>

@@ -16,6 +16,7 @@ internal static class ApiRole
     {
         var builder = WebApplication.CreateBuilder(args);
         builder.AddFbPlatform();
+        builder.AddFbPersistence();
         builder.AddFbObservability("api");
         builder.AddFbHttp();
 

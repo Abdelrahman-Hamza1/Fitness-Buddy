@@ -7,17 +7,15 @@ namespace FitnessBuddy.Host.Tests.Http;
 // Rules 08 §4 "Deploys" (kamal-proxy probes /health/ready) and 09 §4 "Transport" (HSTS).
 public sealed class HealthAndHstsTests
 {
-    [Theory]
-    [InlineData("/health/live")]
-    [InlineData("/health/ready")]
+    [Fact]
     [Trait("Rule", "08.4-deploys")]
-    public async Task Health_live_and_ready_return_200_without_client_headers_and_are_not_rate_limited(string path)
+    public async Task Liveness_returns_200_without_client_headers_and_is_not_rate_limited()
     {
         await using var factory = ApiFactory.With(new Dictionary<string, string?> { ["RateLimiting:PerIp:PermitLimit"] = "1" });
         using var client = factory.CreateClient();
         for (var i = 0; i < 3; i++)
         {
-            using var response = await client.GetAsync(new Uri(path, UriKind.Relative), Api.Ct);
+            using var response = await client.GetAsync(new Uri("/health/live", UriKind.Relative), Api.Ct);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("Healthy", await response.Content.ReadAsStringAsync(Api.Ct));
         }

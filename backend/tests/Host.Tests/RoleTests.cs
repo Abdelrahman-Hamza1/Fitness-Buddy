@@ -37,8 +37,8 @@ public sealed class RoleTests
     }
 
     [Fact]
-    public async Task Migrate_role_exits_zero()
+    public async Task Migrate_role_requires_migrator_connection()
     {
-        Assert.Equal(0, await MigrateRole.RunAsync(["--foo=1"]));
+        Assert.Equal(1, await MigrateRole.RunAsync(["--ConnectionStrings:Migrator="]));
     }
 }

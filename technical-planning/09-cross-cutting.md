@@ -58,7 +58,7 @@ Cheap now, expensive later, so from the **first screen**:
 | AI data minimization | Context builder whitelist (AC-041). No identity to the model. No images stored server-side. Paid no-training tiers. Zero data retention before R3 |
 | Local data | App sandbox + OS full-disk encryption. **SQLCipher** is an R3 decision (performance and complexity cost) |
 | Progress photos (R2) | App-private directory, excluded from OS backups, never synced, never sent to AI (WB-050, AC-043) |
-| **Logging** | **No user content** (food text, weights, messages) in server logs, traces or Sentry. IDs and codes only. TD-058: JSON console + OpenTelemetry logging; every non-Sentry provider wraps exceptions into type + stack without messages, Data or inner messages. No HTTP logging or instrumentation `Enrich*`. Sentry errors-only `BeforeSend` allowlists headers and clears query/data/cookies/user/extra/exception values; breadcrumbs, transactions, SDK logs and metrics are dropped. Canary tests inspect logs, spans, metric tags and serialized Sentry envelopes |
+| **Logging** | **No user content** (food text, weights, messages) in server logs, traces or Sentry. IDs and codes only. TD-058: JSON console + OpenTelemetry logging; every non-Sentry provider wraps exceptions into type + stack without messages, Data or inner messages. No HTTP logging or instrumentation `Enrich*`. Sentry errors-only `BeforeSend` allowlists headers and clears query/data/cookies/user/extra/exception values; breadcrumbs, transactions, SDK logs and metrics are dropped. Postgres ordinary statement-error logs are suppressed (FATAL/PANIC only, terse; no statement or parameter logs). Npgsql SQL/parameter/error-detail logging and command/batch/COPY/open tracing are disabled at source; EF uses a null logger with command diagnostics suppressed. Canary tests inspect logs, spans, metric tags and serialized Sentry envelopes |
 | Dependencies | Lockfiles (pub, NuGet `packages.lock.json`). Renovate/Dependabot. Vulnerability scanning in CI. A one-line justification for every new package |
 | Servers | `08` §6 |
 | Compliance prep (R3) | Privacy policy EN/AR (AC-044), store data-safety forms. Account deletion and export already exist from R1 |
@@ -95,7 +95,7 @@ Cheap now, expensive later, so from the **first screen**:
 
 ## 9. Configuration & feature flags
 
-- **App flavors:** `dev` (local API: `dotnet run` until the Docker setup of S03/S04), `staging`, `prod`, each pointing at its own API base URL. Config via `--dart-define-from-file` (`apps/mobile/config/<flavor>.json`).
+- **App flavors:** `dev` (local API + worker + Postgres: `make up`), `staging`, `prod`, each pointing at its own API base URL. Config via `--dart-define-from-file` (`apps/mobile/config/<flavor>.json`).
 - **Remote config:** `GET /v1/config` returns the minimum app version, feature flags (e.g. `buddy.photo_enabled`) and client thresholds (AI-060 values, so tuning needs no release). Cached locally, with safe defaults offline.
 - **API configuration:** standard .NET configuration (appsettings + environment variables + secrets). Feature flags in config, read through an `IFeatureFlags` port.
 - Unfinished features ship dark behind flags rather than living on long branches.

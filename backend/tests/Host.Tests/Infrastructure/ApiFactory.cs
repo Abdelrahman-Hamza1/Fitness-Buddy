@@ -16,6 +16,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     private readonly Dictionary<string, string?> settings = new(StringComparer.OrdinalIgnoreCase)
     {
         ["Clients:MinimumAppVersion"] = "0.1.0",
+        ["ConnectionStrings:Application"] = "Host=127.0.0.1;Port=1;Database=unused;Username=fb_app;Pooling=false",
         // High, so the shared factory never throttles; the rate-limit tests set their own.
         ["RateLimiting:PerIp:PermitLimit"] = "100000",
     };

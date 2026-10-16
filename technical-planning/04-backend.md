@@ -82,7 +82,7 @@ The same container image runs as:
 - **`worker`**: outbox delivery and scheduled jobs: purge `row_history` older than 30 days (AC-012), compact tombstones, finalise account deletions (AC-031), expire the OFF cache, publish catalog packs.
 - **`migrate`**: a one-shot command that applies database migrations before a deploy switches traffic (`08` §4).
 
-**Job queue:** Postgres-backed (`FOR UPDATE SKIP LOCKED`), plus simple cron-style schedules. No Redis or RabbitMQ until a measurement says so (TD-025).
+**Job queue:** Postgres-backed (`FOR UPDATE SKIP LOCKED`), plus five-field UTC cron schedules. S04/TD-062 use an explicit connection/transaction session: database-only handler effects, processed markers and acknowledgement commit together, with savepoint rollback on failure and capped retries/dead letters. External effects need adapter idempotency keys. Schedule cursors persist; missed ticks coalesce into one job. No Redis or RabbitMQ until a measurement says so (TD-025).
 
 ## 4. The API contract (TD-023)
 
@@ -147,7 +147,7 @@ The same container image runs as:
 - **Defense in depth:** Postgres **row-level security** on user-owned tables. The backend sets `app.user_id` per transaction (`SET LOCAL`), so a forgotten `WHERE user_id = …` still can't leak another user's rows. Tests assert user A can't read or write B's data.
 - **Two database roles:** the application role (with RLS) and a migration role (owns the schema). Only the Account module's deletion job uses an elevated path, and it's audited.
 - EF Core for most access. Dapper and raw SQL for the sync and search hot paths.
-- **Migrations:** EF Core migrations per module context (raw SQL where needed: `pg_trgm`, RLS policies, partitioning). Always **expand → migrate code → contract** across releases, so old and new instances both work during a deploy.
+- **Migrations:** explicitly registered EF Core migrations per module context (S04), schema-local history and a shared advisory lock in the migrate role only. User sessions attach EF contexts/raw commands to one transaction with transaction-local identity (TD-062). EF Core migrations per module context (raw SQL where needed: `pg_trgm`, RLS policies, partitioning). Always **expand → migrate code → contract** across releases, so old and new instances both work during a deploy.
 
 ## 7. Server storage of user data (TD-031)
 
