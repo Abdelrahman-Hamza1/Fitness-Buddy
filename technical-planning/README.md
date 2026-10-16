@@ -14,7 +14,7 @@ _Status: **Plan v2** · 2026-10-11 · Based on spec D-001 to D-081. R1 is Androi
 | Technical decisions | 34 TDs: backend/infra **accepted**, spikes pending, others Proposed (accepted when implemented) (`12`) |
 | Open owner questions | 6 (`12` §2.1), none blocking. TQ-22 answered: Android-first R1 (D-081) |
 | Delivery plan | 49 steps + 6 data batches, each with a card (`steps/README.md`) |
-| Code | None yet. **Next: S01** (needs a GitHub repo, see `steps/README.md` §3) |
+| Code | S01, S02, S06, S08 done. Two implementers (TD-059): Codex on backend + integration (`AGENTS.md`, now S03), Claude on the app (`CLAUDE.md`). See the board's Owner column |
 
 ## The plan in one page
 

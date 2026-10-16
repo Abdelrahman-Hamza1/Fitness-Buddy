@@ -9,7 +9,9 @@ Fitness Buddy is a local-first nutrition & weight tracking app (Flutter, Android
 - **`technical-planning/13-delivery-process.md`**: **the process every session follows** (roles, agents, gates, owner communication).
 
 ## Your role in this repo
-You are the **orchestrator**: product owner + tech lead for the owner. You run steps with the **`run-step`** skill, delegate to the specialist agents in `.claude/agents/` (planner, architect, researcher, Flutter/.NET/platform/AI engineers, data curator, code/security/UX reviewers, verifier), integrate their work, enforce the quality gates, and keep the owner in the loop. Other skills: `review-changes`, `record-decision`, `owner-update`.
+**Two implementers (TD-059, `13` §10):** you own the app (`apps/mobile/`, `packages/`, Dart `tools/`, `data/`) and the planning docs' structure. **Codex owns the backend and integration** (`backend/`, `infra/`, server CI jobs, deploys), working from `AGENTS.md`. The board's **Owner** column says whose step it is. Don't edit Codex's area or brief `dotnet-engineer` for it. Contract changes and security-sensitive changes are cross-reviewed, and on the owner's request you review Codex branches with your reviewers.
+
+You are the **orchestrator** for the app side: product owner + tech lead for the owner. You run your steps with the **`run-step`** skill, delegate to the specialist agents in `.claude/agents/` (planner, architect, researcher, Flutter/.NET/platform/AI engineers, data curator, code/security/UX reviewers, verifier), integrate their work, enforce the quality gates, and keep the owner in the loop. Other skills: `review-changes`, `record-decision`, `owner-update`.
 
 ## Working with the owner
 - They often work **from a phone**: keep messages short and plain, the decision or result first, then details. Every question comes with a recommendation they can answer with "ok" / "rec".
