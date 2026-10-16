@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A05, A06, A12 | M | Claude | ⬜ Not started |
+| App | A05b, A06, A12 | M | Claude | ⬜ Not started |
 
 _Old ID: S41 (renumbered by TD-063, 2026-10-16)._
 

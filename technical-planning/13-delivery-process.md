@@ -87,6 +87,15 @@ A step is **ready** when: its dependencies are ✅ on the board, the owner prere
 
 The owner delegated both gates (2026-10-11). For a step with **no ⚠️ OWNER item** where **all automated gates pass**, the orchestrator approves the plan and accepts/merges the step itself, then continues to the next ready step. The plan summary and the close summary are still sent (FYI). Any ⚠️ OWNER item, a failed gate that can't be fixed within the loop limits, or a needed prerequisite → stop and ask. Owner on-device checks are collected in a running list and don't block merging.
 
+## 3b. Waves (TD-068)
+
+Several ready steps of the app track can run as one **wave**:
+1. **Group plan:** the orchestrator groups the wave's steps into **lanes** of related steps (e.g. local data A01+A06, food data A03–A05, design A02) and briefs one `step-planner` per lane, in parallel. Each step's plan still goes into its own card. Plans may rely on an earlier step's plan in the same lane.
+2. **Group plan review:** one `architect` pass over every plan in the wave, checking cross-step seams too. Plans are committed together on a `plan/wave-N` branch and merged to `main` as `docs: wave N low-level plans`.
+3. **Implement lane by lane:** each step on its own `step/<ID>-…` branch, in dependency order, sequentially in the one folder.
+4. **Group review:** the reviewers for every finished step of the wave run in parallel (one brief per step). Then a verifier per step.
+5. **Close per step:** its own Outcome and squash merge (TD-036), in dependency order. TD-037 gates are unchanged; owner on-device checks and skims are collected for the whole wave.
+
 ## 4. Decision rights
 
 | The orchestrator decides (and informs the owner) | The owner decides (the orchestrator asks first) |

@@ -140,12 +140,13 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 
 | ID | Step | Depends on | Size | Was | Milestone | Status |
 |---|---|---|---|---|---|---|
-| [A01](A01-local-data-foundation.md) | Local data foundation | S06 ✅, S08 ✅ | M | S09 |  | ⬜ |
-| [A02](A02-design-system.md) | Design system v0 & key screen mockups | S06 ✅ | L | S07 |  | ⬜ |
-| [A03](A03-spike-food-data.md) | Spike: food data | S08 ✅ | M | S11 |  | ⬜ |
-| [A04](dish-batches.md) | Dish batch 1: basics, breakfast & bread | A03 | S | D1 |  | ⬜ |
-| [A05](A05-catalog-pipeline.md) | Catalog pipeline & offline pack v1 | A03, A04 | M | S13 |  | ⬜ |
-| [A06](A06-diary-domain.md) | Diary domain & storage | A01 | M | S14 |  | ⬜ |
+| [A01](A01-local-data-foundation.md) | Local data foundation | S06 ✅, S08 ✅ | M | S09 |  | 🟦 wave 1 |
+| [A02](A02-design-system.md) | Design system v0 & key screen mockups | S06 ✅ | L | S07 |  | 🟦 wave 1 |
+| [A03](A03-spike-food-data.md) | Spike: food data | S08 ✅ | M | S11 |  | 🟦 wave 1 |
+| [A04](dish-batches.md) | Dish batch 1: basics, breakfast & bread | A03 | S | D1 |  | 🟦 wave 1 |
+| [A05](A05-catalog-pipeline.md) | Catalog pipeline & offline pack v1 | A01, A03, A04 | L | S13 |  | 🟦 wave 1 |
+| [A05b](A05b-exercises-cities-data.md) | Exercises & cities data | A05 | S | S13 part |  | ⬜ |
+| [A06](A06-diary-domain.md) | Diary domain & storage | A01 | M | S14 |  | 🟦 wave 1 |
 | [A07](A07-food-search-add.md) | Food search & add flow | A02, A05, A06 | M | S15 |  | ⬜ |
 | [A08](A08-today-diary-ui.md) | Today screen & diary UI | A07 | L | S16 |  | ⬜ |
 | [A09](A09-personal-foods-quick-add.md) | Personal foods, saved meals & quick-add | A08 | M | S17 |  | ⬜ |
@@ -175,12 +176,12 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A33](A33-sign-in-guest-app.md) | Sign-in & guest upgrade | A20, **B04** | M | S25 |  | ⬜ |
 | [A34](A34-sync-engine-app.md) | Sync engine (app) | A33, **B05** | L | S27 |  | ⬜ |
 | [A35](A35-account-deletion-app.md) | Account deletion (app) | A34, **B06** | S | S28 deletion part | **M5** | ⬜ |
-| [A36](A36-workout-domain.md) | Workout domain, library & templates | A05, A06, A12 | M | S41 |  | ⬜ |
+| [A36](A36-workout-domain.md) | Workout domain, library & templates | A05b, A06, A12 | M | S41 |  | ⬜ |
 | [A37](A37-workout-logging.md) | Workout logging, history & PRs (app) | A23, A36, **B12** (contract) | L | S42 app part |  | ⬜ |
 | [A38](A38-adaptive-targets.md) | Adaptive targets & weekly check-in | A16, A23 | M | S43 |  | ⬜ |
 | [A39](A39-weekly-review.md) | Weekly summary & Buddy review (app) | A37, A38, **B12** (contract) | M | S44 app part |  | ⬜ |
 | [A40](A40-notifications.md) | Notifications | A27, A37, A39 | M | S45 |  | ⬜ |
-| [A41](A41-ramadan.md) | Ramadan mode (app) | A15, A38, A40, **B12** (contract) | L | S46 app part | **M6** | ⬜ |
+| [A41](A41-ramadan.md) | Ramadan mode (app) | A05b, A15, A38, A40, **B12** (contract) | L | S46 app part | **M6** | ⬜ |
 | [A42](A42-performance-a11y-offline.md) | Performance, accessibility & offline acceptance | A41 | M | S48 | **R1** | ⬜ |
 | [A43](A43-play-internal-release.md) | Play internal testing release | A42, **B14** | S | S29 app part | **M7** | ⬜ |
 
