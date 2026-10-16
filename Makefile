@@ -125,6 +125,27 @@ check-dotnet: ## Verify C# formatting, then build Release with analyzers + warni
 test-dotnet: ## Run the backend tests (xUnit v3 on Microsoft.Testing.Platform)
 	cd '$(REPO_ROOT)/backend' && '$(DOTNET)' test --solution $(DOTNET_SLN) -c Release --no-restore --max-parallel-test-modules 2
 
+##@ Local API container
+
+API_COMPOSE := docker compose -f '$(REPO_ROOT)/infra/compose/docker-compose.yml'
+
+.PHONY: up
+up: ## Build and start the local API on 127.0.0.1:5198, then wait for readiness
+	$(API_COMPOSE) up -d --build
+	@for attempt in {1..30}; do \
+	  if curl --fail --silent --max-time 1 http://127.0.0.1:5198/health/ready >/dev/null; then \
+	    echo 'API ready: http://127.0.0.1:5198'; exit 0; \
+	  fi; sleep 1; \
+	done; $(API_COMPOSE) logs api; echo 'API readiness timed out' >&2; exit 1
+
+.PHONY: down
+down: ## Stop and remove the local API container and network
+	$(API_COMPOSE) down
+
+.PHONY: image-smoke
+image-smoke: ## Build and smoke-test the non-root API image, exporters and process lifecycle
+	@bash '$(REPO_ROOT)/tools/scripts/image-smoke.sh'
+
 ##@ Dart workspace (pubspec.yaml, apps/, packages/, tools/)
 
 # One pub workspace, one resolution, one pubspec.lock. `dart format .` and

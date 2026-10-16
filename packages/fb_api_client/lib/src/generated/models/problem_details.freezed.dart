@@ -21,7 +21,8 @@ mixin _$ProblemDetails {
  String get title;/// The HTTP status code, repeated for convenience.
  int get status;/// Human-readable explanation of this occurrence (English, never user content).
  String? get detail;/// Identifies this occurrence (for example the request path).
- String? get instance;
+ String? get instance;/// W3C trace id of the request (32 lowercase hex), the same value as the `X-Request-Id` response header. Quote it when reporting a problem.
+ String? get traceId;
 /// Create a copy of ProblemDetails
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -35,20 +36,20 @@ $ProblemDetailsCopyWith<ProblemDetails> get copyWith => _$ProblemDetailsCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as ProblemDetails;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProblemDetails&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.detail, _this.detail) || other.detail == _this.detail)&&(identical(other.instance, _this.instance) || other.instance == _this.instance));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProblemDetails&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.detail, _this.detail) || other.detail == _this.detail)&&(identical(other.instance, _this.instance) || other.instance == _this.instance)&&(identical(other.traceId, _this.traceId) || other.traceId == _this.traceId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as ProblemDetails;
-  return Object.hash(runtimeType,_this.type,_this.title,_this.status,_this.detail,_this.instance);
+  return Object.hash(runtimeType,_this.type,_this.title,_this.status,_this.detail,_this.instance,_this.traceId);
 }
 
 @override
 String toString() {
   final _this = this as ProblemDetails;
-  return 'ProblemDetails(type: ${_this.type}, title: ${_this.title}, status: ${_this.status}, detail: ${_this.detail}, instance: ${_this.instance})';
+  return 'ProblemDetails(type: ${_this.type}, title: ${_this.title}, status: ${_this.status}, detail: ${_this.detail}, instance: ${_this.instance}, traceId: ${_this.traceId})';
 }
 
 
@@ -59,7 +60,7 @@ abstract mixin class $ProblemDetailsCopyWith<$Res>  {
   factory $ProblemDetailsCopyWith(ProblemDetails value, $Res Function(ProblemDetails) _then) = _$ProblemDetailsCopyWithImpl;
 @useResult
 $Res call({
- String type, String title, int status, String? detail, String? instance
+ String type, String title, int status, String? detail, String? instance, String? traceId
 });
 
 
@@ -76,13 +77,14 @@ class _$ProblemDetailsCopyWithImpl<$Res>
 
 /// Create a copy of ProblemDetails
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? type = null,Object? title = null,Object? status = null,Object? detail = freezed,Object? instance = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? type = null,Object? title = null,Object? status = null,Object? detail = freezed,Object? instance = freezed,Object? traceId = freezed,}) {
   return _then(ProblemDetails(
 type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as int,detail: freezed == detail ? _self.detail : detail // ignore: cast_nullable_to_non_nullable
 as String?,instance: freezed == instance ? _self.instance : instance // ignore: cast_nullable_to_non_nullable
+as String?,traceId: freezed == traceId ? _self.traceId : traceId // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -168,10 +170,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String type,  String title,  int status,  String? detail,  String? instance)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String type,  String title,  int status,  String? detail,  String? instance,  String? traceId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProblemDetails() when $default != null:
-return $default(_that.type,_that.title,_that.status,_that.detail,_that.instance);case _:
+return $default(_that.type,_that.title,_that.status,_that.detail,_that.instance,_that.traceId);case _:
   return orElse();
 
 }
@@ -189,10 +191,10 @@ return $default(_that.type,_that.title,_that.status,_that.detail,_that.instance)
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String type,  String title,  int status,  String? detail,  String? instance)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String type,  String title,  int status,  String? detail,  String? instance,  String? traceId)  $default,) {final _that = this;
 switch (_that) {
 case _ProblemDetails():
-return $default(_that.type,_that.title,_that.status,_that.detail,_that.instance);case _:
+return $default(_that.type,_that.title,_that.status,_that.detail,_that.instance,_that.traceId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -209,10 +211,10 @@ return $default(_that.type,_that.title,_that.status,_that.detail,_that.instance)
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String type,  String title,  int status,  String? detail,  String? instance)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String type,  String title,  int status,  String? detail,  String? instance,  String? traceId)?  $default,) {final _that = this;
 switch (_that) {
 case _ProblemDetails() when $default != null:
-return $default(_that.type,_that.title,_that.status,_that.detail,_that.instance);case _:
+return $default(_that.type,_that.title,_that.status,_that.detail,_that.instance,_that.traceId);case _:
   return null;
 
 }
@@ -224,7 +226,7 @@ return $default(_that.type,_that.title,_that.status,_that.detail,_that.instance)
 @JsonSerializable()
 
 class _ProblemDetails implements ProblemDetails {
-  const _ProblemDetails({required this.type, required this.title, required this.status, this.detail, this.instance});
+  const _ProblemDetails({required this.type, required this.title, required this.status, this.detail, this.instance, this.traceId});
   factory _ProblemDetails.fromJson(Map<String, dynamic> json) => _$ProblemDetailsFromJson(json);
 
 /// Identifies the kind of problem. Our own problems use a stable, relative reference `/errors/<kebab-slug>` from the catalogue in contracts/README.md (`/errors/validation-failed`, `/errors/rate-limited`, `/errors/version-conflict`, `/errors/upgrade-required`). It is an opaque string: clients compare it exactly and never dereference it, and an entry is never renamed or removed within an API version. Problems we don't map carry the framework's default (an RFC link or `about:blank`), so this is a free string, not an enum.
@@ -237,6 +239,8 @@ class _ProblemDetails implements ProblemDetails {
 @override final  String? detail;
 /// Identifies this occurrence (for example the request path).
 @override final  String? instance;
+/// W3C trace id of the request (32 lowercase hex), the same value as the `X-Request-Id` response header. Quote it when reporting a problem.
+@override final  String? traceId;
 
 /// Create a copy of ProblemDetails
 /// with the given fields replaced by the non-null parameter values.
@@ -251,18 +255,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProblemDetails&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.status, status) || other.status == status)&&(identical(other.detail, detail) || other.detail == detail)&&(identical(other.instance, instance) || other.instance == instance));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProblemDetails&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.status, status) || other.status == status)&&(identical(other.detail, detail) || other.detail == detail)&&(identical(other.instance, instance) || other.instance == instance)&&(identical(other.traceId, traceId) || other.traceId == traceId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,type,title,status,detail,instance);
+    return Object.hash(runtimeType,type,title,status,detail,instance,traceId);
 }
 
 @override
 String toString() {
-    return 'ProblemDetails(type: $type, title: $title, status: $status, detail: $detail, instance: $instance)';
+    return 'ProblemDetails(type: $type, title: $title, status: $status, detail: $detail, instance: $instance, traceId: $traceId)';
 }
 
 
@@ -273,7 +277,7 @@ abstract mixin class _$ProblemDetailsCopyWith<$Res> implements $ProblemDetailsCo
   factory _$ProblemDetailsCopyWith(_ProblemDetails value, $Res Function(_ProblemDetails) _then) = __$ProblemDetailsCopyWithImpl;
 @override @useResult
 $Res call({
- String type, String title, int status, String? detail, String? instance
+ String type, String title, int status, String? detail, String? instance, String? traceId
 });
 
 
@@ -290,13 +294,14 @@ class __$ProblemDetailsCopyWithImpl<$Res>
 
 /// Create a copy of ProblemDetails
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? type = null,Object? title = null,Object? status = null,Object? detail = freezed,Object? instance = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? type = null,Object? title = null,Object? status = null,Object? detail = freezed,Object? instance = freezed,Object? traceId = freezed,}) {
   return _then(_ProblemDetails(
 type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as int,detail: freezed == detail ? _self.detail : detail // ignore: cast_nullable_to_non_nullable
 as String?,instance: freezed == instance ? _self.instance : instance // ignore: cast_nullable_to_non_nullable
+as String?,traceId: freezed == traceId ? _self.traceId : traceId // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

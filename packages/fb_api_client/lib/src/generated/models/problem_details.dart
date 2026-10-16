@@ -7,7 +7,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'problem_details.freezed.dart';
 part 'problem_details.g.dart';
 
-/// RFC 9457 problem details. Members not listed here are extensions (for example `errors` on validation failures, S03) and clients must ignore the ones they don't know.
+/// RFC 9457 problem details. Members not listed here are extensions and clients must ignore the ones they don't know.
 @Freezed()
 abstract class ProblemDetails with _$ProblemDetails {
   const factory ProblemDetails({
@@ -25,6 +25,9 @@ abstract class ProblemDetails with _$ProblemDetails {
 
     /// Identifies this occurrence (for example the request path).
     String? instance,
+
+    /// W3C trace id of the request (32 lowercase hex), the same value as the `X-Request-Id` response header. Quote it when reporting a problem.
+    String? traceId,
   }) = _ProblemDetails;
 
   factory ProblemDetails.fromJson(Map<String, Object?> json) =>

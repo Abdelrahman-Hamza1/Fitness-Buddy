@@ -52,6 +52,28 @@ Targets run one at a time (`.NOTPARALLEL`), the build uses `-m:4`, and tests use
 ~/.dotnet/dotnet build-server shutdown
 ```
 
+## Run the local API
+
+```bash
+make up     # build the non-root API image; wait for readiness on 127.0.0.1:5198
+curl -H 'X-App-Version: 0.1.0' -H 'X-Platform: android' \
+  -H 'X-Device-Id: 0192a5d4-7c3e-7b1a-9f2e-3c4d5e6f7a8b' \
+  http://127.0.0.1:5198/v1/config
+make down
+make image-smoke  # health, config, trace correlation, non-root UID, migrate, shutdown and size
+```
+
+The compose setup uses Development **locally only**, prints traces/metrics and binds only loopback.
+Postgres is added in S04. The chiseled image has no shell and runs as UID 1654 with a read-only
+filesystem, `/tmp` tmpfs and no Linux capabilities. Image defaults remain production-shaped.
+
+To exercise the app's update screen: `FB_MIN_APP_VERSION=99.0.0 make up`, then `make run-dev`
+(with the phone connected). `/v1/config` stays readable so the app learns the forced minimum;
+automated tests prove the 426 status on gated endpoints. Restore with `make up`.
+
+Bump the SDK tag/digest in `backend/Dockerfile` together with `backend/global.json`.
+The smoke test rejects a mismatch. The runtime image tag tracks the patched ASP.NET packages.
+
 ## Repository map
 
 Exists today:
@@ -62,7 +84,8 @@ Exists today:
 | [`technical-planning/`](technical-planning/README.md) | Architecture, decisions (TDs) and one card per delivery step in `steps/`. |
 | [`apps/mobile/`](apps/mobile/README.md) | The Flutter app (`fb_mobile`): four-tab shell, flavors (dev/staging/prod), localization, Android build (`make build-android`). |
 | [`packages/`](packages/README.md) | Shared Dart packages (`fb_domain`, `fb_text`) in the pub workspace. |
-| [`backend/`](backend/README.md) | .NET 10 API: Host, BuildingBlocks, architecture tests. |
+| [`backend/`](backend/README.md) | .NET 10 modular API, observability, architecture tests and Docker image. |
+| [`infra/compose/`](infra/compose/docker-compose.yml) | Local API container; Postgres follows in S04. |
 | [`contracts/`](contracts/README.md) | The API contract: OpenAPI 3.1 sources, the committed bundle, Spectral rules, self-test fixtures, shared golden test data. |
 | [`tools/`](tools/README.md) | Bash scripts behind the Makefile, the contract tool images, and `trace/` (requirement coverage). |
 | [`docs/runbooks/`](docs/runbooks/) | Operational procedures. Today: Android release signing. |
@@ -77,11 +100,11 @@ Planned (full map: [`technical-planning/10-engineering-practices.md`](technical-
 | `packages/fb_api_client/`, `packages/fb_design_system/` | Generated API client, UI kit (planned) |
 | `data/` | Reference dishes, exercises, portion words (planned) |
 | `tools/buddy_eval/`, `tools/catalog/` | AI acceptance suite, catalog build/validate (planned) |
-| `infra/` | OpenTofu, cloud-init, Kamal, local Docker Compose (planned) |
+| `infra/tofu/`, `infra/cloud-init/`, `infra/kamal/` | Infrastructure provisioning and deployments (S05/S29) |
 
 ## CI
 
-One workflow, `.github/workflows/ci.yml`, runs on every push and pull request. Its gate job **`ci`** is the one required check on `main`: it passes only if the Dart and .NET jobs pass. In CI, `make deps-dart` runs `flutter pub get --enforce-lockfile`, so `pubspec.lock` can never be re-resolved silently; to update it, run `make deps-dart` locally and commit the result.
+One workflow, `.github/workflows/ci.yml`, runs on every push and pull request. Its gate job **`ci`** is the one required check on `main`: it passes only if Dart, .NET, contract and image jobs pass, plus Android jobs when required (TD-060). In CI, `make deps-dart` runs `flutter pub get --enforce-lockfile`, so `pubspec.lock` can never be re-resolved silently; to update it, run `make deps-dart` locally and commit the result.
 
 To wait for and read the result of a pushed commit (no `gh` or token needed, public repo):
 

@@ -6,7 +6,7 @@ Files (present and planned):
 
 | File | Content | Used by | Arrives in |
 |---|---|---|---|
-| `problems/*.json` | Example `application/problem+json` bodies, one per error type in the catalogue (`../README.md`) | C# problem mapping tests, Dart `Failure` mapping tests | S03 |
+| `problems/*.json` | Example `application/problem+json` bodies, one per error type in the catalogue (`../README.md`) | C# problem pipeline tests (Host.Tests), Dart `Failure` mapping tests | S03 ✅ |
 | `normalization_cases.yaml` | Text normalization cases (input → normalized key), at least 100 | `fb_text` (Dart), Catalog module (C#) | S08 (Dart) ✅, S30 (C#) |
 | `sync/*.json` | Sync push/pull payload examples | the app's sync code (Dart), UserData module (C#) | the sync steps |
 
@@ -18,6 +18,15 @@ Files (present and planned):
 - **Both sides read the same bytes.** Tests load the file from this folder. Never copy it into a package.
 - **No user content and no secrets.** Use invented examples. These files are public in the repository.
 - **Wire examples follow the contract.** A JSON example here must be valid against `../openapi.yaml` (the test that uses it checks that, where practical).
+
+## `problems/`
+
+One file per type in the error catalogue (`../README.md`), named after its slug: `/errors/validation-failed` → `validation-failed.json`. Each is exactly the `application/problem+json` body the server sends for that type (no extra fields, JSON key order as the server writes it):
+
+- `type`, `title`, `status` always; `detail` where the server sets one; `errors` (field → messages) for `validation-failed`.
+- `traceId` is an example value (32 lowercase hex). It differs on every request.
+
+**A body passes** when the server's body for that type has the same `type`, `title`, `status` and `detail` (or both have none), the same set of `errors` keys (messages are not compared: they come from the validation framework), the same set of members, and a `traceId` matching `^[0-9a-f]{32}$`. The Dart side maps each file to its `Failure`.
 
 ## `normalization_cases.yaml`
 

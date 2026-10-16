@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ClientConfig {
 
-/// The oldest app version (`MAJOR.MINOR.PATCH`) the server still serves. Older apps are asked to update (426, S03).
+/// The oldest app version (`MAJOR.MINOR.PATCH`) the server still serves. Older apps are asked to update (426).
  String get minimumAppVersion;/// Feature flags by name. A flag the app doesn't know is ignored; a missing flag means off.
  Map<String, bool> get featureFlags;/// Numeric client thresholds by name (for example the AI confidence minimum, AI-060). A missing threshold means the app's built-in default.
  Map<String, double> get thresholds;
@@ -223,7 +223,7 @@ class _ClientConfig implements ClientConfig {
   const _ClientConfig({required this.minimumAppVersion, required  Map<String, bool> featureFlags, required  Map<String, double> thresholds}): _featureFlags = featureFlags,_thresholds = thresholds;
   factory _ClientConfig.fromJson(Map<String, dynamic> json) => _$ClientConfigFromJson(json);
 
-/// The oldest app version (`MAJOR.MINOR.PATCH`) the server still serves. Older apps are asked to update (426, S03).
+/// The oldest app version (`MAJOR.MINOR.PATCH`) the server still serves. Older apps are asked to update (426).
 @override final  String minimumAppVersion;
 /// Feature flags by name. A flag the app doesn't know is ignored; a missing flag means off.
  final  Map<String, bool> _featureFlags;

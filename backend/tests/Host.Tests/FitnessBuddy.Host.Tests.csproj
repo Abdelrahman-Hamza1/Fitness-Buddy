@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Tests of the Host: roles, the HTTP pipeline (through WebApplicationFactory and a test-only ProbeModule)
+       and, from WP4, observability. xUnit v3 on Microsoft.Testing.Platform, like the other test projects. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The ProbeModule is a module like any other: it needs ASP.NET Core and the validation source generator. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Host\FitnessBuddy.Host.csproj" />
+  </ItemGroup>
+</Project>

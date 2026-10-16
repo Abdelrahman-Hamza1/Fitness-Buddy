@@ -5,17 +5,20 @@ using Microsoft.OpenApi;
 namespace FitnessBuddy.Host.OpenApi;
 
 /// <summary>
-/// Rewrites the framework's <see cref="ProblemDetails"/> schema (every member nullable and optional)
-/// into the contract's RFC 9457 shape (S02 D5, contract schema <c>ProblemDetails</c>):
-/// <c>type</c> (uri-reference), <c>title</c> and <c>status</c> (int32) are required and non-null;
-/// <c>detail</c> and <c>instance</c> (uri-reference) are optional. Extension members stay allowed.
-/// The runtime side (every problem body sets type, title and status) is S03's error mapping.
+/// Rewrites the framework's problem schemas (every member nullable and optional) into the contract's
+/// <c>ProblemDetails</c> and <c>ValidationProblemDetails</c>: <c>type</c> (uri-reference), <c>title</c> and
+/// <c>status</c> (int32) required and non-null; <c>detail</c>, <c>instance</c> (uri-reference) and <c>traceId</c>
+/// optional; on validation problems a required, non-null <c>errors</c> map.
 /// </summary>
 internal sealed class ProblemDetailsSchemaTransformer : IOpenApiSchemaTransformer
 {
+    /// <summary>The contract's <c>traceId</c> pattern: a W3C trace id.</summary>
+    internal const string TraceIdPattern = "^[0-9a-f]{32}$";
+
     public Task TransformAsync(OpenApiSchema schema, OpenApiSchemaTransformerContext context, CancellationToken cancellationToken)
     {
-        if (!typeof(ProblemDetails).IsAssignableFrom(context.JsonTypeInfo.Type) || schema.Properties is not { } properties)
+        var type = context.JsonTypeInfo.Type;
+        if (!typeof(ProblemDetails).IsAssignableFrom(type) || schema.Properties is not { } properties)
         {
             return Task.CompletedTask;
         }
@@ -25,11 +28,26 @@ internal sealed class ProblemDetailsSchemaTransformer : IOpenApiSchemaTransforme
         Reshape(properties, "status", JsonSchemaType.Integer, "int32");
         Reshape(properties, "detail", JsonSchemaType.String, format: null);
         Reshape(properties, "instance", JsonSchemaType.String, "uri-reference");
+        properties["traceId"] = new OpenApiSchema { Type = JsonSchemaType.String, Pattern = TraceIdPattern };
 
         schema.Required ??= new HashSet<string>(StringComparer.Ordinal);
         schema.Required.Add("type");
         schema.Required.Add("title");
         schema.Required.Add("status");
+
+        if (typeof(HttpValidationProblemDetails).IsAssignableFrom(type))
+        {
+            properties["errors"] = new OpenApiSchema
+            {
+                Type = JsonSchemaType.Object,
+                AdditionalProperties = new OpenApiSchema
+                {
+                    Type = JsonSchemaType.Array,
+                    Items = new OpenApiSchema { Type = JsonSchemaType.String },
+                },
+            };
+            schema.Required.Add("errors");
+        }
 
         return Task.CompletedTask;
     }

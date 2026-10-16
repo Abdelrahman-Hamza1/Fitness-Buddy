@@ -1,0 +1,324 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'validation_problem_details.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
+T _$identity<T>(T value) => value;
+
+/// @nodoc
+mixin _$ValidationProblemDetails {
+
+/// Always `/errors/validation-failed`.
+ String get type;/// Short, human-readable summary of the problem type (English, not for display as-is).
+ String get title;/// Always 400.
+ int get status;/// Field (camelCase JSON path such as `items[0].qty`, or a lowercase header name such as `x-app-version`) → messages. Empty when the request could not be read (malformed JSON, wrong type, missing member).
+ Map<String, List<String>> get errors;/// Human-readable explanation of this occurrence (English, never user content).
+ String? get detail;/// Identifies this occurrence (for example the request path).
+ String? get instance;/// W3C trace id of the request (32 lowercase hex), the same value as the `X-Request-Id` response header. Quote it when reporting a problem.
+ String? get traceId;
+/// Create a copy of ValidationProblemDetails
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ValidationProblemDetailsCopyWith<ValidationProblemDetails> get copyWith => _$ValidationProblemDetailsCopyWithImpl<ValidationProblemDetails>(this as ValidationProblemDetails, _$identity);
+
+  /// Serializes this ValidationProblemDetails to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as ValidationProblemDetails;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ValidationProblemDetails&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.status, _this.status) || other.status == _this.status)&&const DeepCollectionEquality().equals(other.errors, _this.errors)&&(identical(other.detail, _this.detail) || other.detail == _this.detail)&&(identical(other.instance, _this.instance) || other.instance == _this.instance)&&(identical(other.traceId, _this.traceId) || other.traceId == _this.traceId));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+  final _this = this as ValidationProblemDetails;
+  return Object.hash(runtimeType,_this.type,_this.title,_this.status,const DeepCollectionEquality().hash(_this.errors),_this.detail,_this.instance,_this.traceId);
+}
+
+@override
+String toString() {
+  final _this = this as ValidationProblemDetails;
+  return 'ValidationProblemDetails(type: ${_this.type}, title: ${_this.title}, status: ${_this.status}, errors: ${_this.errors}, detail: ${_this.detail}, instance: ${_this.instance}, traceId: ${_this.traceId})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ValidationProblemDetailsCopyWith<$Res>  {
+  factory $ValidationProblemDetailsCopyWith(ValidationProblemDetails value, $Res Function(ValidationProblemDetails) _then) = _$ValidationProblemDetailsCopyWithImpl;
+@useResult
+$Res call({
+ String type, String title, int status, Map<String, List<String>> errors, String? detail, String? instance, String? traceId
+});
+
+
+
+
+}
+/// @nodoc
+class _$ValidationProblemDetailsCopyWithImpl<$Res>
+    implements $ValidationProblemDetailsCopyWith<$Res> {
+  _$ValidationProblemDetailsCopyWithImpl(this._self, this._then);
+
+  final ValidationProblemDetails _self;
+  final $Res Function(ValidationProblemDetails) _then;
+
+/// Create a copy of ValidationProblemDetails
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? type = null,Object? title = null,Object? status = null,Object? errors = null,Object? detail = freezed,Object? instance = freezed,Object? traceId = freezed,}) {
+  return _then(ValidationProblemDetails(
+type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as int,errors: null == errors ? _self.errors : errors // ignore: cast_nullable_to_non_nullable
+as Map<String, List<String>>,detail: freezed == detail ? _self.detail : detail // ignore: cast_nullable_to_non_nullable
+as String?,instance: freezed == instance ? _self.instance : instance // ignore: cast_nullable_to_non_nullable
+as String?,traceId: freezed == traceId ? _self.traceId : traceId // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [ValidationProblemDetails].
+extension ValidationProblemDetailsPatterns on ValidationProblemDetails {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ValidationProblemDetails value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ValidationProblemDetails() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ValidationProblemDetails value)  $default,){
+final _that = this;
+switch (_that) {
+case _ValidationProblemDetails():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ValidationProblemDetails value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ValidationProblemDetails() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String type,  String title,  int status,  Map<String, List<String>> errors,  String? detail,  String? instance,  String? traceId)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ValidationProblemDetails() when $default != null:
+return $default(_that.type,_that.title,_that.status,_that.errors,_that.detail,_that.instance,_that.traceId);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String type,  String title,  int status,  Map<String, List<String>> errors,  String? detail,  String? instance,  String? traceId)  $default,) {final _that = this;
+switch (_that) {
+case _ValidationProblemDetails():
+return $default(_that.type,_that.title,_that.status,_that.errors,_that.detail,_that.instance,_that.traceId);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String type,  String title,  int status,  Map<String, List<String>> errors,  String? detail,  String? instance,  String? traceId)?  $default,) {final _that = this;
+switch (_that) {
+case _ValidationProblemDetails() when $default != null:
+return $default(_that.type,_that.title,_that.status,_that.errors,_that.detail,_that.instance,_that.traceId);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _ValidationProblemDetails implements ValidationProblemDetails {
+  const _ValidationProblemDetails({required this.type, required this.title, required this.status, required  Map<String, List<String>> errors, this.detail, this.instance, this.traceId}): _errors = errors;
+  factory _ValidationProblemDetails.fromJson(Map<String, dynamic> json) => _$ValidationProblemDetailsFromJson(json);
+
+/// Always `/errors/validation-failed`.
+@override final  String type;
+/// Short, human-readable summary of the problem type (English, not for display as-is).
+@override final  String title;
+/// Always 400.
+@override final  int status;
+/// Field (camelCase JSON path such as `items[0].qty`, or a lowercase header name such as `x-app-version`) → messages. Empty when the request could not be read (malformed JSON, wrong type, missing member).
+ final  Map<String, List<String>> _errors;
+/// Field (camelCase JSON path such as `items[0].qty`, or a lowercase header name such as `x-app-version`) → messages. Empty when the request could not be read (malformed JSON, wrong type, missing member).
+@override Map<String, List<String>> get errors {
+  if (_errors is EqualUnmodifiableMapView) return _errors;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_errors);
+}
+
+/// Human-readable explanation of this occurrence (English, never user content).
+@override final  String? detail;
+/// Identifies this occurrence (for example the request path).
+@override final  String? instance;
+/// W3C trace id of the request (32 lowercase hex), the same value as the `X-Request-Id` response header. Quote it when reporting a problem.
+@override final  String? traceId;
+
+/// Create a copy of ValidationProblemDetails
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ValidationProblemDetailsCopyWith<_ValidationProblemDetails> get copyWith => __$ValidationProblemDetailsCopyWithImpl<_ValidationProblemDetails>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ValidationProblemDetailsToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ValidationProblemDetails&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.errors, _errors)&&(identical(other.detail, detail) || other.detail == detail)&&(identical(other.instance, instance) || other.instance == instance)&&(identical(other.traceId, traceId) || other.traceId == traceId));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,type,title,status,const DeepCollectionEquality().hash(_errors),detail,instance,traceId);
+}
+
+@override
+String toString() {
+    return 'ValidationProblemDetails(type: $type, title: $title, status: $status, errors: $errors, detail: $detail, instance: $instance, traceId: $traceId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ValidationProblemDetailsCopyWith<$Res> implements $ValidationProblemDetailsCopyWith<$Res> {
+  factory _$ValidationProblemDetailsCopyWith(_ValidationProblemDetails value, $Res Function(_ValidationProblemDetails) _then) = __$ValidationProblemDetailsCopyWithImpl;
+@override @useResult
+$Res call({
+ String type, String title, int status, Map<String, List<String>> errors, String? detail, String? instance, String? traceId
+});
+
+
+
+
+}
+/// @nodoc
+class __$ValidationProblemDetailsCopyWithImpl<$Res>
+    implements _$ValidationProblemDetailsCopyWith<$Res> {
+  __$ValidationProblemDetailsCopyWithImpl(this._self, this._then);
+
+  final _ValidationProblemDetails _self;
+  final $Res Function(_ValidationProblemDetails) _then;
+
+/// Create a copy of ValidationProblemDetails
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? type = null,Object? title = null,Object? status = null,Object? errors = null,Object? detail = freezed,Object? instance = freezed,Object? traceId = freezed,}) {
+  return _then(_ValidationProblemDetails(
+type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as int,errors: null == errors ? _self._errors : errors // ignore: cast_nullable_to_non_nullable
+as Map<String, List<String>>,detail: freezed == detail ? _self.detail : detail // ignore: cast_nullable_to_non_nullable
+as String?,instance: freezed == instance ? _self.instance : instance // ignore: cast_nullable_to_non_nullable
+as String?,traceId: freezed == traceId ? _self.traceId : traceId // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+// dart format on

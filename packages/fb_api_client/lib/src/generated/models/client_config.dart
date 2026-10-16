@@ -11,7 +11,7 @@ part 'client_config.g.dart';
 @Freezed()
 abstract class ClientConfig with _$ClientConfig {
   const factory ClientConfig({
-    /// The oldest app version (`MAJOR.MINOR.PATCH`) the server still serves. Older apps are asked to update (426, S03).
+    /// The oldest app version (`MAJOR.MINOR.PATCH`) the server still serves. Older apps are asked to update (426).
     required String minimumAppVersion,
 
     /// Feature flags by name. A flag the app doesn't know is ignored; a missing flag means off.

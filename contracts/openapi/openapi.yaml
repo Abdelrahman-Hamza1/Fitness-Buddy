@@ -55,6 +55,8 @@ components:
       $ref: './components/pagination.yaml#/components/schemas/NextCursor'
     ProblemDetails:
       $ref: './components/problems.yaml#/components/schemas/ProblemDetails'
+    ValidationProblemDetails:
+      $ref: './components/problems.yaml#/components/schemas/ValidationProblemDetails'
   parameters:
     AppVersion:
       $ref: './components/headers.yaml#/components/parameters/AppVersion'
@@ -71,6 +73,18 @@ components:
   headers:
     XRequestId:
       $ref: './components/headers.yaml#/components/headers/XRequestId'
+    RetryAfter:
+      $ref: './components/headers.yaml#/components/headers/RetryAfter'
+    RateLimit:
+      $ref: './components/headers.yaml#/components/headers/RateLimit'
+    RateLimitPolicy:
+      $ref: './components/headers.yaml#/components/headers/RateLimitPolicy'
   responses:
+    ValidationFailed:
+      $ref: './components/problems.yaml#/components/responses/ValidationFailed'
+    UpgradeRequired:
+      $ref: './components/problems.yaml#/components/responses/UpgradeRequired'
+    RateLimited:
+      $ref: './components/problems.yaml#/components/responses/RateLimited'
     InternalError:
       $ref: './components/problems.yaml#/components/responses/InternalError'

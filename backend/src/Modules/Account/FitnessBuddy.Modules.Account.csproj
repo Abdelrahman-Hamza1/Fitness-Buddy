@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Account module (04 §3.1): client configuration now; the user's account and deletion later. -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\FitnessBuddy.BuildingBlocks.csproj" />
+  </ItemGroup>
+</Project>

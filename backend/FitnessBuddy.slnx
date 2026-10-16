@@ -3,9 +3,14 @@
     <Project Path="src/BuildingBlocks/FitnessBuddy.BuildingBlocks.csproj" />
     <Project Path="src/Host/FitnessBuddy.Host.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/">
+    <Project Path="src/Modules/Account/FitnessBuddy.Modules.Account.csproj" />
+  </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Architecture.Tests/FitnessBuddy.Architecture.Tests.csproj" />
+    <Project Path="tests/BuildingBlocks.Tests/FitnessBuddy.BuildingBlocks.Tests.csproj" />
     <Project Path="tests/Contract.Tests/FitnessBuddy.Contract.Tests.csproj" />
+    <Project Path="tests/Host.Tests/FitnessBuddy.Host.Tests.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="Directory.Build.props" />

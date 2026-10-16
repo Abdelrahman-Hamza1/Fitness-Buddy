@@ -19,7 +19,7 @@ paths:
         - Account
       operationId: getConfig
       summary: Get the client configuration
-      description: 'What the app needs to know about the server''s expectations: the minimum supported app version, feature flags and client thresholds. The app fetches it in the background and caches it; it is never on the startup path.'
+      description: 'What the app needs to know about the server''s expectations: the minimum supported app version, feature flags and client thresholds. The app fetches it in the background and caches it; it is never on the startup path. Never answers 426: it is how an outdated app learns `minimumAppVersion`.'
       parameters:
         - $ref: '#/components/parameters/AppVersion'
         - $ref: '#/components/parameters/Platform'
@@ -27,6 +27,9 @@ paths:
       responses:
         '200':
           description: The current client configuration.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
           content:
             application/json:
               schema:
@@ -35,6 +38,10 @@ paths:
                 minimumAppVersion: 0.1.0
                 featureFlags: {}
                 thresholds: {}
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '429':
+          $ref: '#/components/responses/RateLimited'
         '500':
           $ref: '#/components/responses/InternalError'
 components:
@@ -92,7 +99,7 @@ components:
       description: Pass it as `cursor` to get the next page. `null` when this is the last page.
     ProblemDetails:
       type: object
-      description: RFC 9457 problem details. Members not listed here are extensions (for example `errors` on validation failures, S03) and clients must ignore the ones they don't know.
+      description: RFC 9457 problem details. Members not listed here are extensions and clients must ignore the ones they don't know.
       required:
         - type
         - title
@@ -116,6 +123,48 @@ components:
           type: string
           format: uri-reference
           description: Identifies this occurrence (for example the request path).
+        traceId:
+          type: string
+          pattern: ^[0-9a-f]{32}$
+          description: W3C trace id of the request (32 lowercase hex), the same value as the `X-Request-Id` response header. Quote it when reporting a problem.
+    ValidationProblemDetails:
+      type: object
+      description: 'The problem details of a `400 /errors/validation-failed`: the ProblemDetails members plus a required `errors` map.'
+      required:
+        - type
+        - title
+        - status
+        - errors
+      properties:
+        type:
+          type: string
+          format: uri-reference
+          description: Always `/errors/validation-failed`.
+        title:
+          type: string
+          description: Short, human-readable summary of the problem type (English, not for display as-is).
+        status:
+          type: integer
+          format: int32
+          description: Always 400.
+        detail:
+          type: string
+          description: Human-readable explanation of this occurrence (English, never user content).
+        instance:
+          type: string
+          format: uri-reference
+          description: Identifies this occurrence (for example the request path).
+        traceId:
+          type: string
+          pattern: ^[0-9a-f]{32}$
+          description: W3C trace id of the request (32 lowercase hex), the same value as the `X-Request-Id` response header. Quote it when reporting a problem.
+        errors:
+          type: object
+          description: Field (camelCase JSON path such as `items[0].qty`, or a lowercase header name such as `x-app-version`) → messages. Empty when the request could not be read (malformed JSON, wrong type, missing member).
+          additionalProperties:
+            type: array
+            items:
+              type: string
     ClientConfig:
       type: object
       description: Server-controlled settings for the app.
@@ -127,7 +176,7 @@ components:
         minimumAppVersion:
           type: string
           pattern: ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$
-          description: The oldest app version (`MAJOR.MINOR.PATCH`) the server still serves. Older apps are asked to update (426, S03).
+          description: The oldest app version (`MAJOR.MINOR.PATCH`) the server still serves. Older apps are asked to update (426).
         featureFlags:
           type: object
           description: Feature flags by name. A flag the app doesn't know is ignored; a missing flag means off.
@@ -144,7 +193,7 @@ components:
       name: X-App-Version
       in: header
       required: true
-      description: The app's version, compared with `ClientConfig.minimumAppVersion` (the 426 gate arrives in S03). Set by the API client, not by callers.
+      description: The app's version, `MAJOR.MINOR.PATCH`. Missing or invalid → 400; below `ClientConfig.minimumAppVersion` → 426 (except `getConfig`). Set by the API client, not by callers.
       schema:
         type: string
     Platform:
@@ -191,12 +240,83 @@ components:
         minimum: 1
   headers:
     XRequestId:
-      description: The request's correlation ID, echoed on every response and written in every server log line. Quote it when reporting a problem.
+      description: 'Sent on every response. The request''s W3C trace id (32 lowercase hex), the same value as `traceId` in a problem body and in the server''s log lines. Quote it when reporting a problem. Response only: an inbound `X-Request-Id` is ignored (correlation in is W3C `traceparent`).'
+      schema:
+        type: string
+        pattern: ^[0-9a-f]{32}$
+    RetryAfter:
+      description: Seconds until a retry may succeed.
+      schema:
+        type: integer
+        minimum: 0
+    RateLimit:
+      description: The remaining quota (draft-ietf-httpapi-ratelimit-headers-11), for example `"per-ip";r=0;t=37`. Sent on 429 only.
+      schema:
+        type: string
+    RateLimitPolicy:
+      description: The quota policy (draft-ietf-httpapi-ratelimit-headers-11), for example `"per-ip";q=300;w=60`. Sent on 429 only.
       schema:
         type: string
   responses:
+    ValidationFailed:
+      description: 'The request is invalid (`/errors/validation-failed`): a field, a client header, or a body that could not be read. `errors` names the fields.'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ValidationProblemDetails'
+          example:
+            type: /errors/validation-failed
+            title: One or more validation errors occurred.
+            status: 400
+            traceId: 4bf92f3577b34da6a3ce929d0e0e4736
+            errors:
+              name:
+                - The name field is required.
+              items[0].qty:
+                - The field qty must be between 1 and 1000.
+    UpgradeRequired:
+      description: The app is older than `ClientConfig.minimumAppVersion` (`/errors/upgrade-required`). The app shows its update screen.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          example:
+            type: /errors/upgrade-required
+            title: Upgrade required
+            status: 426
+            detail: This app version is no longer supported. Update the app.
+            traceId: 4bf92f3577b34da6a3ce929d0e0e4736
+    RateLimited:
+      description: Too many requests (`/errors/rate-limited`). Retry after `Retry-After` seconds.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/XRequestId'
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+        RateLimit:
+          $ref: '#/components/headers/RateLimit'
+        RateLimit-Policy:
+          $ref: '#/components/headers/RateLimitPolicy'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          example:
+            type: /errors/rate-limited
+            title: Too many requests
+            status: 429
+            traceId: 4bf92f3577b34da6a3ce929d0e0e4736
     InternalError:
-      description: Unexpected server error. Retry later; quote the `X-Request-Id` response header when reporting it.
+      description: Unexpected server error. Retry later; quote `traceId` (= the `X-Request-Id` response header) when reporting it.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/XRequestId'
       content:
         application/problem+json:
           schema:
@@ -205,3 +325,4 @@ components:
             type: https://tools.ietf.org/html/rfc9110#section-15.6.1
             title: An error occurred while processing your request.
             status: 500
+            traceId: 4bf92f3577b34da6a3ce929d0e0e4736

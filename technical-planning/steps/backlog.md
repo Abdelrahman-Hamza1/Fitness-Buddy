@@ -5,7 +5,7 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | # | From | Item | Severity | Target step | Status |
 |---|---|---|---|---|---|
 | 1 | S01 | NuGet lock files (`packages.lock.json`) once Dependabot + CPM support is solid | minor | S04 | open |
-| 2 | S01 | Dependabot `docker` ecosystem entry (needs a Dockerfile) | minor | S03 | open |
+| 2 | S01 | Dependabot `docker` ecosystem entry (needs a Dockerfile) | minor | S03 | done (S03) |
 | 3 | S01 | Verify Dependabot handles the pub workspace after its first monthly run; fallback: scheduled `dart pub outdated` | minor | next after first run | open |
 | 4 | S01 | Flutter pin bump cadence: manual, quarterly (Dependabot covers the .NET SDK) | minor | recurring | open |
 | 5 | S01 | Nightly `trace` workflow + "implemented" column in the report | minor | backlog | open |
@@ -22,9 +22,9 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 17 | S02 | Verify Dependabot's `docker-compose` updater bumps `tag@sha256` in `tools/contract-tools/compose.yaml` | minor | after first run | open |
 | 18 | S02 | Enum schema transformer for the Host (proven snippet in `backend/README.md`) | minor | first step with an enum | open |
 | 19 | S02 | Tag ruleset protecting `contracts-v*` (no update/delete), owner clicks | minor | S29 (first tag) | open |
-| 20 | S02 | Move `Host/Config/` (`GET /v1/config`) into the Account module, same operationId + tag | minor | S24/S28 | open |
+| 20 | S02 | Move `Host/Config/` (`GET /v1/config`) into the Account module, same operationId + tag | minor | S24/S28 | done (S03) |
 | 21 | S02 | Contract.Tests: validate runtime responses against the bundled schema generically, once there are several endpoints | minor | ~S26 | open |
-| 22 | S02 | Host build prints an MVC "No action descriptors found" info line during OpenAPI generation; filter in logging config | nit | S03 | open |
+| 22 | S02 | Host build prints an MVC "No action descriptors found" info line during OpenAPI generation; filter in logging config | nit | S03 | done (S03) |
 | 23 | S02 r2 | contract-breaking.sh blocking mode: pass oasdiff githubactions output through the same annotation-only filter as conformance | nit | next touch | open |
 | 24 | S02 r2 | fb-problem-json-errors accepts only one `allOf` level of ProblemDetails extension; recurse if a nested extension is ever needed | nit | when needed | open |
 | 25 | S02 r2 | fb-oneof-discriminator compares mapping count, not targets (resolved doc loses `$ref` identity) | nit | accepted | open |
@@ -46,7 +46,7 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 40 | S06a security r2 | Native Android Sentry logs/metrics are forced on in sentry_flutter 10: add a native `beforeSendLog`/`beforeSendMetric` that drops everything, keep the Gradle plugin's logcat instrumentation off | minor | S05 | open |
 | 41 | S06a security r2 | The auth (`Authorization`) interceptor reuses `ClientHeadersInterceptor.isApiOrigin` (or a shared helper), so tokens never leave the API origin | minor | S25 | open |
 | 42 | S06a security r2 | Route paths are kept in navigation breadcrumbs: route paths must never carry user data (food names, free text) | nit | every routing step | open |
-| 43 | S06a fix r1 | If `/v1/config` answers 426 for old versions, `refresh()` should report it, so the update screen says "still old", not "are you online?" | minor | S03 | open |
+| 43 | S06a fix r1 | If `/v1/config` answers 426 for old versions, `refresh()` should report it, so the update screen says "still old", not "are you online?" | minor | S03 | done (S03) |
 | 44 | S06b WP4 | Plugin native libs ship for 3 ABIs while the Flutter engine is arm64 only: add `abiFilters` (arm32 phones could install then crash) | minor | before R2 / S29 | open |
 | 45 | S06b WP4 + security | DB backup policy (AC-040–044): the local DB goes to Google backup/device transfer by default (`allowBackup=true`, only prefs/datastore excluded). Decide explicitly; if backed up, `disableIfNoEncryptionCapabilities="true"` on `<cloud-backup>`. Also the Android 16 QPR2 `cross-platform-transfer` section | minor | S09 | open |
 | 46 | S06b WP6 | Signing passwords are in the Gradle build env (plugin/Maven code could read them): build unsigned, then sign with `apksigner` in a separate step; together with Gradle dependency verification (`gradle/verification-metadata.xml`, sha256, refreshed on each bump) | minor | before S29 | open |
@@ -56,3 +56,4 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 50 | S06b review | Dependabot has no `gradle` ecosystem: AGP, KGP, androidx orchestrator and the Gradle wrapper get no update/security PRs | minor | S07 or next platform touch | open |
 | 51 | S06b review | S29: decide sideload builds vs Play upload key (the CI pin is the app-signing cert); verify the AAB manifest too, not only the APK | minor | S29 | open |
 | 52 | S06b r2 | apk_hardening_check keys `<application>` attributes by namespace+name: reject an attribute with an android resource id but no android namespace (only a hand-crafted binary can produce it) | nit | next touch | open |
+| 53 | S03 review r1 | Unsupported `Accept` (e.g. `text/html`) makes framework problem writing decline and status pages return text/plain for 400/404. Current app JSON requests are unaffected. Guarantee problem+json (or define explicit negotiation) across middleware, status pages and exceptions, with unsupported-Accept tests. | minor | S24 / next HTTP-pipeline touch | open |

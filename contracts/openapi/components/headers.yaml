@@ -7,8 +7,9 @@ components:
       in: header
       required: true
       description: >-
-        The app's version, compared with `ClientConfig.minimumAppVersion` (the
-        426 gate arrives in S03). Set by the API client, not by callers.
+        The app's version, `MAJOR.MINOR.PATCH`. Missing or invalid → 400;
+        below `ClientConfig.minimumAppVersion` → 426 (except `getConfig`). Set
+        by the API client, not by callers.
       schema:
         type: string
 
@@ -44,11 +45,32 @@ components:
         format: uuid
 
   headers:
-    # Defined now, referenced by no response yet: oasdiff can't compare
-    # response-header schemas (oasdiff #1094), so S03 decides how to declare it.
     XRequestId:
       description: >-
-        The request's correlation ID, echoed on every response and written in
-        every server log line. Quote it when reporting a problem.
+        Sent on every response. The request's W3C trace id (32 lowercase hex),
+        the same value as `traceId` in a problem body and in the server's log
+        lines. Quote it when reporting a problem. Response only: an inbound
+        `X-Request-Id` is ignored (correlation in is W3C `traceparent`).
+      schema:
+        type: string
+        pattern: '^[0-9a-f]{32}$'
+
+    RetryAfter:
+      description: Seconds until a retry may succeed.
+      schema:
+        type: integer
+        minimum: 0
+
+    RateLimit:
+      description: >-
+        The remaining quota (draft-ietf-httpapi-ratelimit-headers-11), for
+        example `"per-ip";r=0;t=37`. Sent on 429 only.
+      schema:
+        type: string
+
+    RateLimitPolicy:
+      description: >-
+        The quota policy (draft-ietf-httpapi-ratelimit-headers-11), for example
+        `"per-ip";q=300;w=60`. Sent on 429 only.
       schema:
         type: string

@@ -63,7 +63,7 @@ Dependencies point inward. Domain and Application never reference Infrastructure
 | Single responsibility | One handler per use case. Adapters only do I/O. Endpoints only map HTTP ↔ handler. |
 | Open/closed | A new AI provider, email vendor or food source is a **new adapter class**. Pipelines aren't edited. |
 | Liskov substitution | Every adapter of a port passes **the same contract test suite** (e.g. all `ILlmClient`s against recorded fixtures). |
-| Interface segregation | Small ports (`IFoodSearch`, `IBarcodeLookup`, `IClock`, `IIdGenerator`), never a "god service". |
+| Interface segregation | Small ports (`IFoodSearch`, `IBarcodeLookup`, `TimeProvider`, `IIdGenerator`), never a "god service". |
 | Dependency inversion | Application code depends on ports. Tests swap in fakes. No static calls to time, randomness or I/O. |
 
 **No mediator library.** Handlers are plain classes injected into endpoints. It's explicit, debuggable, and has no licence risk.
@@ -72,8 +72,8 @@ Dependencies point inward. Domain and Application never reference Infrastructure
 
 1. A module **never touches another module's tables**. It calls the other module's **public interface** (a small `*.Contracts` namespace) in process, or reacts to its **integration events**.
 2. Integration events go through a **transactional outbox**: written in the same transaction as the change, delivered by the worker, and handled idempotently. Nothing is lost and there are no dual-write bugs.
-3. Module internals are `internal`, so the compiler blocks reaching in. **ArchUnitNET tests** enforce the layer direction and the module rules.
-4. Shared code lives in `BuildingBlocks` and stays small: result/error types, outbox, job queue, auth context, `IClock`, `IIdGenerator` (UUIDv7), problem-details mapping, test helpers.
+3. Module internals are `internal`, except validated request records under `*.Api` (the .NET validation generator requires public DTOs). **ArchUnitNET tests** enforce layer direction, module isolation (public DTOs are not contracts), the public surface, Host/BuildingBlocks boundaries and injected time/IDs. Broken fixtures prove the rules fail.
+4. Shared code lives in `BuildingBlocks` and stays small: result/error types, outbox, job queue, auth context, `TimeProvider`, `IIdGenerator` (UUIDv7), problem-details mapping, test helpers.
 
 ### 3.4 Process roles
 
@@ -102,16 +102,16 @@ The same container image runs as:
 | Concern | Rule |
 |---|---|
 | Transport | HTTPS only (TLS 1.2+), JSON (UTF-8), gzip/brotli |
-| Versioning | `/v1/...` in the path. Only additive changes within a version. Deprecation via the `Sunset` header. **Minimum app version gate:** `426 Upgrade Required` + store link when `X-App-Version` is below the configured minimum |
+| Versioning | `/v1/...` in the path. Only additive changes within a version. Deprecation via the `Sunset` header. **Minimum app version gate:** `426 Upgrade Required` + the app update screen when `X-App-Version` is below the configured minimum; `/v1/config` is exempt so outdated apps can learn the minimum. Store link added with the release channel in S29 |
 | Auth | `Authorization: Bearer <access JWT>` (≈ 15 min, ES256, `kid` header). Refresh tokens are opaque, rotated on every use and stored hashed. Reusing a refresh token revokes its whole family |
-| Errors | **RFC 9457** `application/problem+json` with a stable `type` URI (relative, e.g. `/errors/rate-limited`, `/errors/version-conflict`, `/errors/upgrade-required`) and an `errors` map for validation. The app maps `type` to its `Failure` values (`09` §8) |
+| Errors | **RFC 9457** `application/problem+json` with a stable `type` URI (relative, e.g. `/errors/rate-limited`, `/errors/version-conflict`, `/errors/upgrade-required`) and an `errors` map on every 400 (camelCase field paths; `{}` with fixed detail for unreadable input). Every problem carries `traceId`; 500s contain no exception detail. The app maps `type` to its `Failure` values (`09` §8) |
 | Idempotency | `Idempotency-Key` header on every unsafe POST. The server stores the result for 24 h and replays it. Buddy uses the chat message ID (MN-005) |
 | Concurrency | Single-resource updates use `ETag` / `If-Match`. Sync uses HLC last-write-wins (`05` §5) |
 | Pagination | Cursor-based (`cursor`, `limit`, response `nextCursor`). Never offsets |
 | Formats | IDs: UUIDv7 strings. Times: RFC 3339 UTC + explicit `tzOffsetMin` where local time matters. Canonical units: g, ml, kcal, kg, cm (`05` §1). Decimals as JSON numbers with documented precision |
 | Client headers | `X-App-Version`, `X-Platform` (`android`/`ios`), `X-Device-Id`, `Accept-Language` |
-| Tracing | W3C `traceparent` accepted and propagated. `X-Request-Id` echoed on every response and in every log line |
-| Rate limits | `429` + `Retry-After` + `RateLimit-Policy` / `RateLimit` headers. Per user, per IP on unauthenticated endpoints |
+| Tracing | W3C `traceparent` accepted and propagated. Response `X-Request-Id` = W3C trace id (32 lowercase hex), the problem `traceId` and request-log `TraceId`. Inbound `X-Request-Id` is ignored (TD-057) |
+| Rate limits | `429` + `Retry-After` + `RateLimit-Policy` / `RateLimit` headers (IETF draft -11; headers only on 429 in v1). Per IP now (IPv6 /64), per user from S24 |
 | Size limits | Body ≤ 256 KB, except image uploads (≤ 2 MB, JPEG ≤ 1024 px, `09` §4) |
 | Schema shape (TD-043) | Every property is in `required`; a value that can be absent is `type: [T, 'null']` and is sent as `null`, never as a missing key (a server emission rule: no `WhenWritingNull`). No merge-patch semantics: updates are full replacement (`If-Match`) or command POSTs. A request property added within a version is optional with a server default. Unions are discriminated (`discriminator` + complete `mapping`). One tag per module = one Dart client class; `operationId` = the Dart method name |
 | Error types (TD-043) | `ProblemDetails.type` is a relative `/errors/<kebab-slug>`, compared as an opaque string, never renamed or removed within a version. `type`, `title`, `status` always present. Catalogue: `contracts/README.md` (+ golden bodies in `contracts/testdata/problems/` from S03) |

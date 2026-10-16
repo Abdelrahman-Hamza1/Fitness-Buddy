@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -133,6 +134,52 @@ void main() {
         );
       }
     });
+  });
+
+  // Rule: 04 §4.2 errors (golden bodies in contracts/testdata/problems).
+  group('golden problem bodies map to a Failure', () {
+    final dir = Directory('../../contracts/testdata/problems');
+    final files = dir.listSync().whereType<File>().where(
+      (f) => f.path.endsWith('.json'),
+    );
+
+    // Expected failure per catalogue type; a new golden file needs a row.
+    final expected = <String, Matcher>{
+      ProblemTypes.validationFailed: isA<InvalidInputFailure>().having(
+        (f) => f.fieldErrors.keys.toSet(),
+        'fieldErrors keys',
+        {'name', 'items[0].qty'},
+      ),
+      ProblemTypes.upgradeRequired: isA<UpgradeRequiredFailure>(),
+      ProblemTypes.rateLimited: isA<RateLimitedFailure>(),
+      ProblemTypes.versionConflict: isA<ConflictFailure>(),
+    };
+
+    test('the golden folder is found and covers every catalogue type', () {
+      expect(files, isNotEmpty);
+      final types = {
+        for (final f in files)
+          (jsonDecode(f.readAsStringSync()) as Map<String, Object?>)['type']!,
+      };
+      expect(types, ProblemTypes.all);
+    });
+
+    for (final file in files) {
+      final name = file.uri.pathSegments.last;
+      test(name, () {
+        final body =
+            jsonDecode(file.readAsStringSync()) as Map<String, Object?>;
+        final type = body['type']! as String;
+        final matcher = expected[type];
+        if (matcher == null) {
+          fail('$name: no expectation for type $type; add one');
+        }
+        final failure = FailureMapper.fromDio(
+          _response(body['status']! as int, body: body),
+        );
+        expect(failure, matcher);
+      });
+    }
   });
 
   test('every type in the contracts/README.md catalogue has a ProblemTypes '

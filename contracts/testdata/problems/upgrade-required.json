@@ -1,0 +1,7 @@
+{
+  "type": "/errors/upgrade-required",
+  "title": "Upgrade required",
+  "status": 426,
+  "detail": "This app version is no longer supported. Update the app.",
+  "traceId": "4bf92f3577b34da6a3ce929d0e0e4736"
+}

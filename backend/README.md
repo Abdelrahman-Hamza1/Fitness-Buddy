@@ -1,26 +1,107 @@
 # backend/
 
-The Fitness Buddy API: an ASP.NET Core (.NET 10) modular monolith. Architecture, modules and rules are in `technical-planning/04-backend.md`. Right now it's the skeleton (S01) plus the contract pipeline (S02): one endpoint, `GET /v1/config`, and a build-time OpenAPI document that CI checks against `contracts/openapi.yaml`.
+The Fitness Buddy API: an ASP.NET Core (.NET 10) modular monolith. Architecture, modules and rules are in `technical-planning/04-backend.md`. Right now: the host with its three roles and module system (S03), one module (`Account`, `GET /v1/config`), and a build-time OpenAPI document that CI checks against `contracts/openapi.yaml` (S02).
 
 ## Layout
 
 | Path | What it is |
 |---|---|
 | `FitnessBuddy.slnx` | The solution (XML `.slnx` format) |
-| `global.json` | Pins the .NET SDK (10.0.401, latest patch) and selects Microsoft.Testing.Platform for `dotnet test` |
+| `global.json` | Pins the .NET SDK (10.0.402, latest patch) and selects Microsoft.Testing.Platform for `dotnet test` |
 | `Directory.Build.props` | Settings for every project: `net10.0`, nullable, analyzers (`latest-recommended`) and code style in the build, warnings as errors, NuGet audit |
 | `Directory.Packages.props` | Central package management: every package version lives here, with transitive pinning |
 | `nuget.config` | nuget.org is the only package source (source mapping `*` → nuget.org) |
-| `src/Host/` | Composition root (`Microsoft.NET.Sdk.Web`). Later it runs as `api`, `worker` or `migrate` |
+| `src/Host/` | Composition root (`Microsoft.NET.Sdk.Web`): `Program.cs` (role dispatch), `Roles/` (`api`, `worker`, `migrate`), `Platform/` (what the roles share), `ModuleCatalog.cs` |
+| `src/Host/Http/` | The HTTP pipeline (below): request id, problem details, client headers and the 426 gate, rate limiting, forwarded headers, health |
 | `src/Host/OpenApi/` | OpenAPI transformers that make the generated document match the contract's conventions (see below) |
-| `src/Host/Config/` | `GET /v1/config` (temporary, see below) |
-| `src/BuildingBlocks/` | The lowest shared layer (results, outbox, jobs, clock, ids). Must never depend on Host or a module |
-| `src/Modules/<Module>/` | *(from S04)* one project per module, with Api/Application/Domain/Infrastructure folders |
+| `src/BuildingBlocks/` | The lowest shared layer. `FitnessBuddy.BuildingBlocks.*`: results/errors, ids, feature flags, current user, client info, no ASP.NET Core. `FitnessBuddy.BuildingBlocks.Web.*`: `IModule`, the `/v1` group (`V1Api`), problem types, `Error` → problem mapping. Never depends on Host or a module |
+| `src/Modules/<Module>/` | One project per module (`FitnessBuddy.Modules.<Module>`), with `Api/`, `Application/`, `Domain/`, `Infrastructure/` folders as needed. Today: `Account` |
+| `tests/BuildingBlocks.Tests/` | Unit tests of BuildingBlocks |
+| `tests/Host.Tests/` | Tests of the Host: roles and the HTTP pipeline, through `ApiFactory` (the real api role in environment `Testing`) and a test-only `ProbeModule` under `/v1/_probe/…`; golden problem bodies |
 | `tests/Architecture.Tests/` | ArchUnitNET rules that keep the layers and module boundaries honest |
 | `tests/Contract.Tests/` | HTTP tests (`WebApplicationFactory<Program>`) that check the runtime JSON against the contract |
 | `artifacts/openapi/server.json` | *(generated, gitignored)* the server's OpenAPI document, written by every Host build |
 
 Code style: `.editorconfig` at the repo root (C# section). Style and analyzer warnings fail the build.
+
+## Roles
+
+One executable, three roles, chosen by the first argument (`args[0]`, when it doesn't start with `-`; default `api`): `FitnessBuddy.Host [api|worker|migrate] [host options]`. Anything else exits with code 2 and a usage line. The role token is removed before the host builder sees the arguments.
+
+| Role | Does |
+|---|---|
+| `api` | Stateless HTTP (`WebApplication`) |
+| `worker` | Generic host for the outbox and jobs. Until S04 it only logs that it has nothing to do and waits for shutdown |
+| `migrate` | One-shot: applies migrations and exits. Until S04 it logs that there are none and exits 0 |
+
+`api` and `worker` share `PlatformSetup.AddFbPlatform` (options with validation on start, `TimeProvider`, ids, flags, the current user, every module's services). Shutdown waits up to 25 s for in-flight work (under Kamal's 30 s stop wait).
+
+## Modules
+
+A module is a project under `src/Modules/<Name>/`. Its public surface is the `IModule` implementation, `*.Contracts` types for other modules, and validated request records under `*.Api` (the validation generator requires public types). Response DTOs and other implementation types are `internal`. Public API records remain inaccessible to other modules under the architecture rules.
+
+```csharp
+public interface IModule
+{
+    string Name { get; }                                                     // = its OpenAPI tag
+    void AddServices(IServiceCollection services, IConfiguration configuration);
+    void MapEndpoints(RouteGroupBuilder group);                              // routes relative to /v1
+}
+```
+
+- **Add a module:** create the project (`Microsoft.NET.Sdk` + `<FrameworkReference Include="Microsoft.AspNetCore.App" />`, referencing BuildingBlocks), add it to the solution and as a reference of the Host, add one line to `ModuleCatalog.All`, and include its project in the Dockerfile restore-copy list. There is no assembly scanning.
+- **The `/v1` group is the one definition** of what every endpoint shares (`V1Api.MapV1`): the client-header requirement (`ClientHeadersMetadata`), the `per-ip` rate limit, and the shared error responses 400 (`ValidationProblem`), 429, 500, plus 426 for every endpoint that isn't `.AllowOutdatedClients()`. The Host maps each module into `V1Api.MapModuleGroup`, which tags the group with the module's name. Endpoints declare only their own success and domain-error responses.
+- **Layers** (`04` §3.2): `Api/` (endpoints + DTOs) → `Application/` (one handler per use case, ports as interfaces, options) → `Domain/` (pure). `Infrastructure/` implements ports. Application and Domain never use ASP.NET Core.
+- **Endpoints are thin:** bind, call the injected handler, map the result. A handler returns `Result<T>`/`Result` for expected failures, and the endpoint maps it with `result.ToHttpResult(TypedResults.Ok)`: Validation → 400 `validation-failed` with `errors`, VersionConflict → 412 `version-conflict`, NotFound/Conflict/Unauthorized/Forbidden → 404/409/401/403 with the framework's default `type`. `Error.Code` is for logs and tests and is never sent; `Error.Detail` is, so it must be English and free of user content.
+- **Time and ids:** inject `TimeProvider` (BCL; tests use a fake) and `IIdGenerator` (UUIDv7). Never `DateTime.UtcNow`, `DateTimeOffset.UtcNow`, `TimeProvider.System` or `Guid.NewGuid()` in module code.
+- **Client headers** are validated before the endpoint runs; read them with `HttpContext.GetClientInfo()`. `ClientInfo.DeviceId` never goes into logs or telemetry.
+- **Validation** (built-in, DataAnnotations): put the rules on the request DTO with `[property: …]` (validates *and* documents the constraint). Two traps of the .NET 10 source generator, both silent (the endpoint just isn't validated):
+  - **Every module calls `services.AddValidation()` in its own `AddServices`.** The generator only sees the endpoints and DTOs of the assembly that makes the call, so a call in the Host doesn't cover a module.
+  - **Request DTOs that carry validation are `public`** (and so are the types nested in them). The generator skips `internal` types, and `[ValidatableType]` doesn't change that. Response DTOs and everything else stay `internal`.
+
+  Cross-field rules use `IValidatableObject`. Rules that need data (ownership, uniqueness) belong in the handler and return a `Result` error.
+
+## Architecture gate
+
+`tests/Architecture.Tests/ArchitectureRules.cs` builds the same ArchUnitNET rules for the real module
+catalogue and the clean/broken fixtures. Rules cover BuildingBlocks core/web boundaries, inward layers,
+module contracts, the public surface, Host isolation, no HTTP logging and injected time/IDs. Dependency
+targets include referenced type stubs, so framework bans cannot pass merely because a framework assembly
+wasn't loaded. Empty future layers are permitted; broken fixtures prove positive failures and name the
+violating types, including all banned static time/ID calls.
+
+## HTTP pipeline (api role)
+
+In order (`src/Host/Http/HttpSetup.cs`): forwarded headers → request id → exception handler → HSTS (not in Development) → status-code pages → routing → rate limiter → client headers + 426 gate → endpoints (`/health/*`, `/v1`).
+
+- **Forwarded headers:** `X-Forwarded-For`/`-Proto`, one hop, trusted from loopback and `Proxy:TrustedNetworks` (CIDRs, checked at startup) only.
+- **Request id:** every response has `X-Request-Id` = the W3C trace id (32 lowercase hex), also the problem's `traceId`. An inbound `traceparent` is honoured; an inbound `X-Request-Id` is ignored.
+- **Problems:** everything goes through `IProblemDetailsService`, so `ProblemDetailsCustomizer` shapes every error body: `type`/`title` always set, `traceId` added, every 400 is `/errors/validation-failed` with `errors` (keys camelCased; empty, with a fixed `detail`, when the body can't be read). Middleware writes its problems the same way. Unhandled exceptions: 500 with no `detail`.
+- **Client headers:** `/v1` endpoints need valid `X-App-Version`, `X-Platform`, `X-Device-Id` (400, keyed by the lowercase header name). A valid version below `Clients:MinimumAppVersion` gets 426 first, unless the endpoint is `.AllowOutdatedClients()` (`/v1/config`).
+- **Limits:** request bodies ≤ 256 KB (Kestrel, 413). Rate limit `per-ip` on `/v1` (`RateLimiting:PerIp`, IPv6 by /64): 429 with `Retry-After`, `RateLimit`, `RateLimit-Policy`.
+- **Health:** `/health/live` and `/health/ready` (plain text), outside `/v1`: no client headers, no rate limit, not in the contract.
+
+## Logging rule
+
+Log message templates take **IDs, codes and enums only**: never request or response bodies, message text, emails, tokens, codes sent to users, device ids, query values or exception messages (`09` §4). Use `[LoggerMessage]` source-generated methods.
+
+## Observability
+
+All roles use JSON console logging (UTC, trace scopes), OpenTelemetry and errors-only Sentry (TD-058).
+Every non-Sentry logger provider is decorated: exceptions keep their original type name and stack,
+with messages, Data and inner messages removed. Sentry preserves real exception types for grouping;
+its final `BeforeSend` clears request content, query, cookies, user, extra and exception values, retaining
+only the client version/platform and content headers. Breadcrumbs, transactions, logs and metrics from
+Sentry are disabled. Keep logger registration last (`ScrubLoggerProviders`); provider meta tests fail
+if a new sink bypasses it.
+
+- `Observability:ConsoleExporter=true` enables trace/metric console exporters **only in Development**
+  (`appsettings.Development.json` enables this locally). Health requests are excluded from traces.
+- `OTEL_EXPORTER_OTLP_ENDPOINT` enables OTLP traces, metrics and logs. Standard `_HEADERS` and
+  `_PROTOCOL` environment settings apply (`http/protobuf` by default, `grpc` supported).
+- `OTEL_SERVICE_NAME` defaults to `fitness-buddy-<role>`; resources include service version and environment.
+- `Sentry__Dsn` enables error reporting; an empty DSN is off. Build-time document generation starts no exporters.
+- Never enable HTTP logging, exception recording on spans or instrumentation `Enrich*` callbacks.
 
 ## Build and test
 
@@ -50,20 +131,21 @@ When conformance fails, the contract wins: fix the C#, or change the contract fi
 - It is incremental on the assembly only (`obj/FitnessBuddy.Host.OpenApiFiles.cache`). After deleting `server.json` or changing the generator options, delete that cache file (`make contract-conformance` always does).
 
 **Endpoints.**
-- Name every operation with the contract's `operationId` (`.WithName("getConfig")`) and tag it with its module's tag (`.WithTags("Account")`). They become the Dart method and client class names.
-- Return `TypedResults` so the success response is documented. Declare every error status the contract lists with `.ProducesProblem(status)` (`ProblemHttpResult` and `TypedResults.NotFound()` document no problem body on their own).
-- `/v1/` operations get the client headers (`X-App-Version`, `X-Platform`, `X-Device-Id`) from `ClientHeadersOperationTransformer`; don't declare them per endpoint. S03 adds the middleware that enforces them, and both should then come from one definition (S02 A8).
+- Name every operation with the contract's `operationId` (`.WithName("getConfig")`). The tag is the module's `Name`, set by its group (`IModule`, above). They become the Dart method and client class names.
+- Return `TypedResults` so the success response is documented. Declare each domain error status the contract lists for the operation with `.ProducesProblem(status)` (`ProblemHttpResult` and `TypedResults.NotFound()` document no problem body on their own).
+- Don't declare the client headers or the shared 400/426/429/500 responses per endpoint: the `/v1` group sets the metadata, and the transformers below document it.
 
 **DTOs (S02 D4 + A3).**
 - Request and response DTOs are hand-written **positional records** (`sealed`, `internal` where the build allows). The generator then lists every property in `required`, and nullable ones as `[T, null]`, which is the contract's rule.
 - Absent values are sent as JSON `null`, never as a missing key. So **no `JsonIgnoreCondition.WhenWritingNull`** (or `WhenWritingDefault`), neither on a property nor in `JsonSerializerOptions`.
 - The only optional members: a request property added to a published version (a non-positional `init` property with a default), and the optional `ProblemDetails` members.
-- JSON options (`Program.cs`): `NumberHandling = Strict` (the web default would document every number as `number | string`), enums as camelCase strings.
-- Constraints the contract states (`pattern`, `minimum`, …) are mirrored with data annotations so the document carries them, e.g. `[property: RegularExpression(...)]` on `ClientConfig.MinimumAppVersion`.
+- JSON options (`Roles/ApiRole.cs`): `NumberHandling = Strict` (the web default would document every number as `number | string`), enums as camelCase strings, `RespectRequiredConstructorParameters` and `RespectNullableAnnotations` (a missing member, or `null` for a non-nullable one, is an unreadable body).
+- Constraints the contract states (`pattern`, `minimum`, …) are mirrored with data annotations so the document carries them, e.g. `[property: RegularExpression(AppVersion.Pattern)]` on `ClientConfig.MinimumAppVersion`.
 
 **Transformers** (`src/Host/OpenApi/`, registered in `AddOpenApi("v1", …)`):
-- `ProblemDetailsSchemaTransformer`: the framework's `ProblemDetails` schema is all-nullable and all-optional. This rewrites it into the contract's RFC 9457 shape: `type` (uri-reference), `title`, `status` (int32) required and non-null, `detail` and `instance` optional.
-- `ClientHeadersOperationTransformer`: the client headers above.
+- `ProblemDetailsSchemaTransformer`: the framework's `ProblemDetails` schema is all-nullable and all-optional. This rewrites it into the contract's RFC 9457 shape: `type` (uri-reference), `title`, `status` (int32) required and non-null, `detail`, `instance` and `traceId` optional. On `HttpValidationProblemDetails` (the contract's `ValidationProblemDetails`) it also makes `errors` required and non-null.
+- `ClientHeadersOperationTransformer`: the client headers, on every operation with `ClientHeadersMetadata`.
+- `ResponseHeadersOperationTransformer`: `X-Request-Id` on every response; `Retry-After`, `RateLimit` and `RateLimit-Policy` on 429.
 - **Deferred: enum schema transformer.** .NET 10 emits string enums as `enum: [...]` *without* `type: string`. The first step that adds an enum to the API adds this transformer (proven in the S02 research) and a conformance check of the enum:
 
   ```csharp
@@ -80,19 +162,16 @@ When conformance fails, the contract wins: fix the C#, or change the contract fi
   });
   ```
 
-**Startup must stay side-effect free (rule for S04 on).** To write the document, the build runs the Host's `Program.cs` inside the `GetDocument.Insider` tool, with no database, secrets or network. Any startup work with side effects (database migrations, connecting to Postgres, starting jobs, failing on missing secrets, options `ValidateOnStart`) must be skipped there:
+**Startup must stay side-effect free (rule for S04 on).** To write the document, the build runs the Host's `Program.cs` inside the `GetDocument.Insider` tool, with no database, secrets or network. Any startup work with side effects (database migrations, connecting to Postgres, starting jobs, failing on missing secrets, options `ValidateOnStart`) must be skipped there, with `PlatformSetup.IsBuildTimeDocument`:
 
 ```csharp
-var isBuildTimeDocument = Assembly.GetEntryAssembly()?.GetName().Name == "GetDocument.Insider";
-if (!isBuildTimeDocument)
+if (!PlatformSetup.IsBuildTimeDocument)
 {
-    // migrations, eager connections, ...
+    options.ValidateOnStart(); // migrations, eager connections, ...
 }
 ```
 
 The live document (`/openapi/v1.json`) is mapped only in Development. The build-time document doesn't need it.
-
-**`GET /v1/config` lives in the Host for now.** That is a temporary exception to `04` §3 (endpoints belong to modules): it moves into the Account module when that module is created, with the same `operationId` and tag, and conformance proves the move changed nothing (S02 A6). Its values are hard-coded (`ClientConfig.Defaults`) until then.
 
 ## Tests run on Microsoft.Testing.Platform
 
@@ -101,7 +180,19 @@ Test projects use xUnit v3 on Microsoft.Testing.Platform (MTP), not VSTest:
 - A test project is an executable (`<OutputType>Exe</OutputType>`) that references `xunit.v3`. Don't add `Microsoft.NET.Test.Sdk` or `xunit.runner.visualstudio`.
 - `dotnet test` uses the MTP syntax: `dotnet test --solution FitnessBuddy.slnx`, or `--project <csproj>`. Test options go straight on the command line, e.g. `--filter-method "*BuildingBlocks*"` or `--report-xunit-trx`. List them with `dotnet test --project <csproj> --help`. MSBuild switches like `-m:4` are passed on to the test app and fail it.
 - You can also run a built test project directly (`tests/Architecture.Tests/bin/Release/net10.0/FitnessBuddy.Architecture.Tests`). It then uses xUnit's own option syntax (`-method`, `-trait`, see `--help`).
-- Tag tests with the spec IDs they cover: `[Trait("Req", "AC-012")]` (see `technical-planning/10-engineering-practices.md` §5).
+- Tag tests with the spec IDs they cover: `[Trait("Req", "AC-012")]` (see `technical-planning/10-engineering-practices.md` §5). A test of a rule without a spec ID gets `[Trait("Rule", "<doc>.<section>-<slug>")]` (e.g. `"04.4.2-errors"`) and a one-line class comment.
+
+## Container
+
+`backend/Dockerfile` uses digest-pinned SDK 10.0.402 and ASP.NET 10.0.13 noble-chiseled-extra stages.
+Bump the SDK image together with `global.json` (the image smoke test checks this). ICU and tzdata
+are present; there is no shell or HEALTHCHECK. The executable runs as UID 1654 on port 8080;
+proxy health is `/health/ready`. `api` is the default command; `worker` and `migrate` use the same image.
+
+From the root: `make up` / `make down` use `infra/compose/docker-compose.yml`, with loopback port 5198,
+a read-only filesystem, `/tmp` tmpfs, no capabilities and no privilege escalation. Development and the
+console exporters are local-only. `make image-smoke` builds and checks the production artifact and
+prints its size (engine bytes and a gzipped image archive, not a registry transfer size).
 
 ## Low RAM
 

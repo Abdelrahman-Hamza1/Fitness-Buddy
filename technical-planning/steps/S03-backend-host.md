@@ -2,7 +2,7 @@
 
 | Phase | Depends on | Size | Status |
 |---|---|---|---|
-| P0 Foundations | S02 | L | 🟨 In progress |
+| P0 Foundations | S02 | L | ✅ Done |
 
 **Goal.** A production-shaped ASP.NET Core host. Every cross-cutting rule of the API style guide works once, here, so that modules added later only add endpoints and handlers.
 
@@ -11,7 +11,7 @@
 ## Scope
 - **Host roles:** `api`, `worker`, `migrate` selected by a command-line argument. Graceful shutdown.
 - **Module system:** an `IModule` pattern (register services, map endpoint group, register jobs/handlers) and a sample `Account` module exposing `/v1/config` (moved from S02).
-- **BuildingBlocks:** `Result<T>` / `Error` types, problem-details mapping (RFC 9457, `type` URIs from the contract), `IClock`, `IIdGenerator` (UUIDv7 via `Guid.CreateVersion7`), user/auth context abstraction (filled in S24), `IFeatureFlags`.
+- **BuildingBlocks:** `Result<T>` / `Error` types, problem-details mapping (RFC 9457, `type` URIs from the contract), `TimeProvider`, `IIdGenerator` (UUIDv7 via `Guid.CreateVersion7`), user/auth context abstraction (filled in S24), `IFeatureFlags`.
 - **HTTP pipeline:** forwarded headers (behind kamal-proxy), HSTS, request ID (`X-Request-Id`) + W3C `traceparent`, client headers parsing (`X-App-Version`, `X-Platform`, `X-Device-Id`), **minimum-version gate → `426`**, request size limits, rate limiting policies (per IP now, per user later), output of `RateLimit` headers, global exception handler (500 with request ID, no internals).
 - **Validation:** request validation producing problem details with an `errors` map.
 - **Observability:** structured JSON logs, OpenTelemetry tracing + metrics + logs (OTLP endpoint configurable, console in dev), Sentry SDK (DSN from config, scrubbing). **Log scrubbing:** no request/response bodies, with tests.
@@ -40,12 +40,12 @@
 - **From S06a:** the app trips its update gate on any `426` or `/errors/upgrade-required` (dio interceptor); demo it with a server-forced 426 (the app only had a simulated one). If `/v1/config` itself answers 426 for old versions, make that distinguishable for the client (backlog #43). The app sends no `X-Request-Id` (A4): decide request correlation here, and if a header is added, add it to the contract first. The app's API Dio never follows redirects, so don't rely on them.
 
 ## Exit criteria
-- [ ] `make up` starts the API. `GET /v1/config` returns contract-conformant JSON, and the conformance check passes.
-- [ ] Tests: an old `X-App-Version` → `426` problem details. Validation errors → `400` with an `errors` map. An unhandled exception → `500` with a request ID and no stack trace. `X-Request-Id` is echoed.
-- [ ] A log scrubbing test proves request bodies never reach logs.
-- [ ] Traces appear in the console exporter locally, and the OTLP exporter is configurable.
-- [ ] ArchUnitNET rules pass and fail correctly (one deliberately broken fixture).
-- [ ] The container image runs as non-root. Note its size in the Outcome.
+- [x] `make up` starts the API. `GET /v1/config` returns contract-conformant JSON, and the conformance check passes.
+- [x] Tests: an old `X-App-Version` → `426` problem details. Validation errors → `400` with an `errors` map. An unhandled exception → `500` with a request ID and no stack trace. `X-Request-Id` is returned on every response and equals `traceId` (inbound values are ignored).
+- [x] A log scrubbing test proves request bodies never reach logs.
+- [x] Traces appear in the console exporter locally, and the OTLP exporter is configurable.
+- [x] ArchUnitNET rules pass and fail correctly (one deliberately broken fixture).
+- [x] The container image runs as non-root. Note its size in the Outcome.
 
 ## Read first
 `04-backend.md` §2–4 · `09-cross-cutting.md` §4, §8 · `08-infrastructure-and-operations.md` §7
@@ -315,6 +315,8 @@ Rulings: one step, not split (TD-054). WP0 inside S03. `TimeProvider` accepted (
 
 **Plan approved by the orchestrator under TD-037 (no ⚠️ OWNER item), 2026-10-16.**
 
+Codex implementation clarification (2026-10-16): T-A9 permits public positional records under a module's `Api` namespace for built-in validation, including nested request DTO types; responses stay internal by convention. T-A6 still rejects any cross-module use of these public records. Architecture targets include referenced type stubs; missing Domain/Infrastructure layers are allowed, with broken fixtures proving each restriction.
+
 ## Handoff to Codex (2026-10-16, TD-059)
 The owner moved backend work to Codex. From here, Codex owns this step: plan changes, implementation, review, verify, close and merge (`AGENTS.md`, `13` §10). Claude did the plan and WP0–WP3 + WP7.
 
@@ -324,9 +326,9 @@ The owner moved backend work to Codex. From here, Codex owns this step: plan cha
 - ✅ WP2: BuildingBlocks, IModule + the Account module, `/v1` group, roles.
 - ✅ WP3: HTTP pipeline.
 - ✅ WP7: app golden mapping.
-- ⬜ **WP4** Observability + scrubbing (D3, D6, D7, A3; TD-058).
-- ⬜ **WP5** Architecture rules (T-A list, A7).
-- ⬜ **WP6** Container, compose, CI `image` job (D15, D16).
+- ✅ **WP4** Observability + scrubbing (D3, D6, D7, A3; TD-058).
+- ✅ **WP5** Architecture rules (T-A list, A7).
+- ✅ **WP6** Container, compose, CI `image` job (D15, D16).
 
 **What to know** (details in the Progress log and `backend/README.md`):
 - **Validation:** built-in validation runs only when each module calls `services.AddValidation()` in its `AddServices` (Account does). The .NET 10.0.13 generator silently skips `internal` DTOs, so **validated request DTOs must be `public`**. WP5 must loosen T-A9 for public request records in `*.Api`, while T-A6 still blocks cross-module use.
@@ -336,7 +338,7 @@ The owner moved backend work to Codex. From here, Codex owns this step: plan cha
 - **At close:**
   - TD-057 and TD-058 become Accepted.
   - Docs at close: §4 "Docs at close" plus A6.
-  - Forward notes: the S05 uptime check needs the client headers (A7); backlog #2 and #20–#22 are closed by this step; tag `10` §5 with the `Rule` trait convention (A4).
+  - Forward notes: the S05 uptime check needs the client headers (A7); backlog #2, #20, #22 and #43 are closed by this step (#21 stays with S26: generic multi-endpoint response schema validation); tag `10` §5 with the `Rule` trait convention (A4).
 
 ## Progress log
 _One dated line per event, newest last (process §8a)._
@@ -351,5 +353,38 @@ _One dated line per event, newest last (process §8a)._
 - 2026-10-16 · C: WP3 committed (pipeline: forwarded headers, X-Request-Id = trace id, exception handler, HSTS, client headers + 426 first, per-ip rate limit with RateLimit headers on 429, 256 KB body limit, problem customizer with camelCase errors, health; golden problem test; 119 .NET tests). Spike: built-in validation works per module (`AddValidation()` in each module). ⚠️ for WP5: the .NET 10.0.13 generator skips `internal` DTOs, so validated request DTOs must be public → adjust T-A9. Paused before WP4–WP6: owner is moving backend + integration to Codex; collaboration model to agree first.
 - 2026-10-16 · Handoff: owner moved backend to Codex (TD-059). Handoff section written; Codex continues with WP4–WP6, review, verify, close.
 
+- 2026-10-16 · C: Codex resumed; merged origin/main (TD-061). Re-read AGENTS Review: independent whole-diff review with a security pass, no Claude cross-review. WP4 → WP5 → WP6, then review/verify/close.
+
+- 2026-10-16 · C: WP4 complete: JSON console + OTel traces/metrics/logs, configurable OTLP and local-only console exporters, errors-only Sentry, exception/provider scrubbing for all roles. Canary/serialized-envelope tests prove no content and one correctly grouped 500; OTLP HTTP receiver and lifecycle/scope tests pass. Gates: check-dart (format/analyze/app-check), check-dotnet, check-contract, APK hardening self-tests and make test green (132 .NET tests). Deviations: custom capturing logger instead of FakeLogger; exact ASP.NET/generic Sentry provider allowlist; metrics dropped by callback (EnableMetrics is ignored); public OTLP protocol/URL overload. Research and backend README updated. WP5 next.
+
+- 2026-10-16 · C: WP5 complete: reusable ArchUnitNET rules over the real ModuleCatalog plus clean/broken fixtures; layer and module isolation, public surface (Api request-record exception), Host isolation, no HTTP logging and injected time/IDs. 15 broken-fixture cases identify offending types, including forbidden cross-module public DTO use. Referenced type stubs and method-call targets are included so framework/static-call bans cannot silently pass. make check test green, 158 .NET tests. WP6 next.
+
+- 2026-10-16 · C: WP6 complete: digest-pinned SDK/runtime Dockerfile, non-root chiseled-extra image, loopback-only hardened compose, make up/down/image-smoke, Dependabot docker entry and required CI image job. Image smoke PASS: UID 1654, config/health 200, matching console trace, migrate exit 0, stop 0 s/exit 0; image 164,996,413 bytes, gzip archive 69,587,394 bytes. Compose normal and forced-minimum (99.0.0) configs both 200; down removed container/network. Local dotnet run Development also printed a matching trace. make check test gen-check green (158 .NET tests). Closeout conventions/stack/S05 forward notes updated. Image probe corrected to include PID in docker top output (Docker requires it).
+- 2026-10-16 · D: independent whole-diff code/security review launched in separate reviewer agent s03_independent_review (TD-061), including inherited WP0–WP3/WP7. No heavy builds remain running; awaiting findings before formal verification. WP6 pushed for CI.
+
+- 2026-10-16 · D: independent review r1 (whole diff + security) requested one major fix: ordinary AddHttpLogging/UseHttpLogging extension calls bypassed the namespace ban and optional-interceptor probe. Fix targets their assembly, adds both extension-call fixtures and checks the required pool service with a positive no-options registration test. One minor (unsupported Accept yields text/plain) logged as backlog #53; current app JSON requests unaffected. No production content leak or other blocker found. Scoped re-review follows green checks.
+
+- 2026-10-16 · D: review r2 approved the HTTP-logging guard fix; no remaining blockers/majors or regressions. Verification: all six exit criteria passed with named tests, real OTLP receiver, dotnet/container console traces, compose demos, non-root/lifecycle/size measurements; evidence in steps/evidence/S03-verification.md. Full final checks rerun for the review fix (161 .NET cases).
+
+- 2026-10-16 · E: verified 6/6 exit criteria after independent review r2 approval; full make check test (161 .NET cases), gen-check, image/compose/console/OTLP evidence recorded. Outcome, board, TD-057/058 and backlog updated. No owner action needed (TD-037/061). Preparing the CI-verified squash on merge/S03; main is fast-forwarded only after ci succeeds on that exact SHA.
+
+- 2026-10-16 · C: squash 467013e held from main: CI .NET tests failed on the shutdown capture provider's immediate Disposed assertion (all other .NET cases passed; build/conformance/image passed). WebApplicationFactory and RunAsync may dispose the host concurrently. Reopened implementation: await an explicit disposal signal with a bounded timeout, retaining final-line, correlation and disposal assertions. No production-source change. Re-review and fresh squash CI required.
+
+- 2026-10-16 · D/E: independent review r3 approved the disposal-signal fix; no open blockers/majors. Five focused shutdown-test runs and GITHUB_ACTIONS=true make check test pass (161 .NET cases). Verification/Outcome updated; source/image unchanged. Recreating merge/S03 from origin/main for a fresh squash CI run; failed 467013e will never be pushed to main.
+
+- 2026-10-16 · E: replacement squash 0c2fd97 passed .NET and image CI jobs. Final closeout check found stale start-here status in AGENTS.md and technical-planning/README.md; updated only those status lines to S03 complete / S04 next. Rebuilding the squash so the final documentation and code share the same CI-verified SHA.
+
 ## Outcome
-_Written in Phase E._
+_Written 2026-10-16, Phase E._
+
+**Built.** A modular ASP.NET Core host with api/worker/migrate roles, shared platform services, Account-owned `/v1/config`, contract-driven `/v1` conventions and complete HTTP error/client-header/version/rate-limit/forwarded-header/body-limit/health handling. Structured JSON logs, OTel traces/metrics/logs and errors-only Sentry share the TD-058 privacy boundary; canaries cover actual sink surfaces and serialized Sentry events. Architecture rules enforce boundaries and injected time/IDs, with positive failure fixtures. A digest-pinned, non-root chiseled-extra image runs through hardened local compose; the `image` CI job smoke-tests it and joins the required gate. Four golden problems also map through the app.
+
+**Verification.** Six exit criteria pass; [evidence](evidence/S03-verification.md) names tests, real OTLP/console/compose demos and measurements. `make check test` passes: **161 .NET cases**, Dart/app/tool checks and tests, contract checks/conformance and APK hardening self-tests, zero new warnings. `make gen-check` is clean. Independent whole-diff code/security review: **3 rounds**, **0 blockers, 1 major fixed and re-reviewed, 1 minor logged** (#53), no open blocker/major. The major was a false-negative HTTP logging guard, corrected to cover the assembly and both ordinary extension calls plus the required-service meta probe. Merge uses only a squash SHA with a green `ci` gate (TD-036/039).
+
+**Deviations.** Built-in validation requires per-module `AddValidation()` and public request records; T-A9 permits Api records while module isolation still forbids cross-module consumption (handoff amendment). A custom capturing logger replaces the planned FakeLogger dependency. Sentry ASP.NET has two specialized providers, so exact ASP.NET/generic identities bypass the exception wrapper and BeforeSend performs scrubbing; the one-event/original-type test proves deduplication. Sentry metrics use a drop callback because EnableMetrics is ignored. OTel 1.19.1 needs the public protocol/base-URL exporter overload. Image compression is measured as a gzipped image archive, clearly labelled rather than claimed as registry-transfer size. The first squash CI exposed a test-host disposal race: the shutdown test now awaits the sink's explicit disposal signal with a bounded timeout rather than assuming the host graph is already drained. Independent review round 3 approved this without weakening final-record/disposal checks. Amendments A1–A7 remain in force, including response-only request correlation and BCL TimeProvider.
+
+**Follow-ups.** Backlog #2 (Dependabot Docker), #20 (Account move), #22 (MVC log noise) and #43 (old-version config refresh) closed. #21 remains S26's generic multi-endpoint runtime schema validator, outside this step's single-config scope. Review minor #53: unsupported Accept can yield plain-text fallback; app JSON requests are unaffected. S05 carries real proxy/telemetry/uptime-header checks. Phone forced-minimum demo is batched with S07 under TD-037; server/config behavior is verified here.
+
+**TDs.** TD-057 (single trace-id correlation) and TD-058 (server telemetry privacy) Accepted. TD-061 governs independent Codex review; no new vendor, paid service, scope cut, Accepted-TD change or production operation.
+
+**Metrics.** Planned **L (~2.5 sessions)**; actual **L**, completed across the inherited Claude work and this Codex continuation. **8 WPs + 2 fix packages**. **161 .NET cases** (159 added versus main's 2; 42 added after the 119-case handoff), four shared Dart golden cases, 17 broken architecture fixture cases plus the clean fixture. Runtime **UID 1654**, image **164,996,413 bytes (157.35 MiB)**, gzip archive **69,587,394 bytes (66.36 MiB)**; migrate exit 0, idle API stop **0 s / exit 0**. Lesson: privacy guard fixtures must exercise the ordinary extension methods, not only option types in the expected namespace.

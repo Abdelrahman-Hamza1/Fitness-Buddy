@@ -59,4 +59,4 @@ The root `Makefile` is the entry point (`make help`): `make setup`, `make check`
 - Tell them at step start, when you need an owner action or decision, when something blocks, and at step close (a short summary).
 
 ## Start here
-**S03 (Backend host & HTTP conventions)** is yours and in progress on branch `step/S03-backend-host`. WP0–WP3 and WP7 are done; WP4 (observability + scrubbing), WP5 (architecture rules) and WP6 (container, compose, CI `image` job) remain, then review, verify and close. Read the card's **Handoff to Codex** section first. After S03: S04 → S05, then the next Codex step on the board.
+**S03 (Backend host & HTTP conventions) is complete.** Its Outcome and `technical-planning/steps/evidence/S03-verification.md` record the implementation, independent review and verification. **S04 (Backend persistence, outbox & jobs)** is the next Codex step: orient from the board, read its card and S03's Outcome, then write its Low-level plan before code. S05 follows when its owner prerequisites and the board's deferred-infrastructure timing allow it.

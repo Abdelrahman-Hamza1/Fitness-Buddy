@@ -11,11 +11,12 @@ void main() {
         'status': 400,
         'detail': 'See errors.',
         'instance': '/v1/config',
+        'traceId': '4bf92f3577b34da6a3ce929d0e0e4736',
         // Extension members (RFC 9457 §3.2): not in the schema, ignored.
         'errors': {
           'text': ['required'],
         },
-        'traceId': '00-abc-def-01',
+        'requestId': '0HN7:00000001',
       });
 
       expect(
@@ -26,11 +27,12 @@ void main() {
           status: 400,
           detail: 'See errors.',
           instance: '/v1/config',
+          traceId: '4bf92f3577b34da6a3ce929d0e0e4736',
         ),
       );
     });
 
-    test('detail and instance are optional members', () {
+    test('detail, instance and traceId are optional members', () {
       final problem = ProblemDetails.fromJson({
         'type': 'about:blank',
         'title': 'Not Found',
@@ -39,6 +41,7 @@ void main() {
 
       expect(problem.detail, isNull);
       expect(problem.instance, isNull);
+      expect(problem.traceId, isNull);
     });
   });
 }

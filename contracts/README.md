@@ -39,12 +39,12 @@ The full style guide is `04-backend.md` §4.2. These are the rules the contract 
 
 **Paths and operations.** Every path starts with `/v<major>/` (or `/health/`, `/.well-known/`) [`fb-path-versioned`]. Every operation has a camelCase `operationId` (it becomes the Dart method name) and exactly one tag, its module's (it becomes the Dart client class) [`operation-operationId`, `fb-operation-id-camel-case`, `operation-tag-defined`, `fb-single-tag`]. Today's tags: `Account`. Later: `Identity`, `Sync`, `Buddy`, `Catalog`, `Usage`.
 
-**Headers.** Every `/v1/` operation lists the client headers `X-App-Version` (string), `X-Platform` (string, enum `android`, `ios`) and `X-Device-Id` (string, format `uuid`) as required header parameters with exactly those schemas (`$ref` them from `components/headers.yaml`) [`fb-client-headers`]. The API client sets them, so they don't appear as Dart method parameters. Every POST lists a required `Idempotency-Key` [`fb-idempotency-key`]. A POST that is safe to repeat without it can be marked `x-fb-idempotency: exempt` with an `x-fb-idempotency-reason` [`fb-idempotency-exempt`]; that is decided per endpoint and reviewed.
+**Headers.** Every `/v1/` operation lists the client headers `X-App-Version` (string), `X-Platform` (string, enum `android`, `ios`) and `X-Device-Id` (string, format `uuid`) as required header parameters with exactly those schemas (`$ref` them from `components/headers.yaml`) [`fb-client-headers`]. The API client sets them, so they don't appear as Dart method parameters. Every POST lists a required `Idempotency-Key` [`fb-idempotency-key`]. Every response carries `X-Request-Id` (declared on each response, `components/headers.yaml`): the request's W3C trace id, 32 lowercase hex. It is response-only; an inbound `X-Request-Id` is ignored, and inbound correlation is the W3C `traceparent` header. A POST that is safe to repeat without it can be marked `x-fb-idempotency: exempt` with an `x-fb-idempotency-reason` [`fb-idempotency-exempt`]; that is decided per endpoint and reviewed.
 
-**Names and formats.** Property and query/path parameter names are camelCase [`fb-camel-case-properties`, `fb-camel-case-params`]. IDs (`id`, `<x>Id`) are UUIDs, `$ref: Id` [`fb-id-format`]. Instants (`<x>At`, `<x>AtUtc`) are RFC 3339 UTC date-times, `$ref: Instant`, with a `TzOffsetMin` where the local time matters [`fb-instant-format`]. Local days (`date`, `<x>Date`) are `YYYY-MM-DD`, `$ref: LocalDate` [`fb-local-date-format`]. Identifiers that are not our UUIDs (a barcode, a provider's subject) must not be named `…Id` (use `barcode`, `subject`, …). Quantities use the canonical units in `components/types.yaml` (g, ml, kcal, kg, cm).
+**Names and formats.** Property and query/path parameter names are camelCase [`fb-camel-case-properties`, `fb-camel-case-params`]. IDs (`id`, `<x>Id`) are UUIDs, `$ref: Id` [`fb-id-format`]; the one exception is `ProblemDetails.traceId`, the W3C trace id (32 hex). Instants (`<x>At`, `<x>AtUtc`) are RFC 3339 UTC date-times, `$ref: Instant`, with a `TzOffsetMin` where the local time matters [`fb-instant-format`]. Local days (`date`, `<x>Date`) are `YYYY-MM-DD`, `$ref: LocalDate` [`fb-local-date-format`]. Identifiers that are not our UUIDs (a barcode, a provider's subject) must not be named `…Id` (use `barcode`, `subject`, …). Quantities use the canonical units in `components/types.yaml` (g, ml, kcal, kg, cm).
 
 **Required and nullable (S02 D4, A3).** Every property is listed in `required`. A value that can be absent is nullable, `type: [T, 'null']`, and is sent as JSON `null`, never as a missing key. The server never omits null members. Exceptions:
-- `ProblemDetails` members `detail` and `instance` are optional (RFC 9457).
+- `ProblemDetails` members `detail`, `instance` and `traceId` are optional (RFC 9457; the server always sends `traceId`, but clients must not depend on it).
 - A **request** property added to an already published version is optional, with a server-side default (so older apps that don't send it keep working).
 
 There are no "absent means unchanged" (merge-patch) semantics. An update is a full replacement (with `If-Match`) or a command POST.
@@ -55,6 +55,11 @@ There are no "absent means unchanged" (merge-patch) semantics. An update is a fu
 
 **Errors.** Every 4XX/5XX/default response has a body whose only media type is `application/problem+json`, with the `ProblemDetails` schema (RFC 9457) or an `allOf` extension of it; the schema requires `type`, `title` and `status` [`fb-problem-json-errors`]. They are always present. Unknown members are extensions and clients ignore them.
 
+- **`traceId`** is on every problem the server writes: the same value as the `X-Request-Id` response header. It finds the server's trace and log lines for the request; the app shows it (or logs it) for bug reports.
+- **400 has one shape:** `ValidationFailed` (`ValidationProblemDetails`, a flat copy of the `ProblemDetails` members plus a required `errors` map). Keys are camelCase JSON paths (`items[0].qty`) or lowercase header names (`x-app-version`).
+- **429** (`RateLimited`) comes with `Retry-After` (seconds), `RateLimit` and `RateLimit-Policy` (draft-ietf-httpapi-ratelimit-headers-11). These headers are sent on 429 only, not on successful responses.
+- **426** (`UpgradeRequired`) is answered by every `/v1` operation except `getConfig`, which an outdated app needs to learn `minimumAppVersion`.
+
 **Forward compatibility.** Clients ignore unknown fields, map unknown enum values to the generator's `$unknown` enum member (swagger_parser `unknown_enum_value`), and unknown union kinds to the `…Unrecognized` variant (`fallback_union: unrecognized`). So adding a response field, an enum value or a union variant is not breaking (`oasdiff/breaking-levels.txt`).
 
 ### Error type catalogue
@@ -63,12 +68,12 @@ There are no "absent means unchanged" (merge-patch) semantics. An update is a fu
 
 | `type` | Status | When | Added |
 |---|---|---|---|
-| `/errors/validation-failed` | 400 | The request is well-formed but invalid. Carries an `errors` map (field → messages). | S03 |
-| `/errors/rate-limited` | 429 | Too many requests. Comes with `Retry-After`. | S03 |
-| `/errors/version-conflict` | 412 | The resource changed since it was read (`If-Match` mismatch). The status is confirmed in S03. | S03 |
+| `/errors/validation-failed` | 400 | The request is invalid: a field, or a missing/invalid client header. Carries an `errors` map (field → messages). Also when the request can't be read (malformed JSON, wrong type, missing member): then `errors` is empty. | S03 |
+| `/errors/rate-limited` | 429 | Too many requests. Comes with `Retry-After`, `RateLimit` and `RateLimit-Policy`. | S03 |
+| `/errors/version-conflict` | 412 | The resource changed since it was read (`If-Match` mismatch). 412, confirmed in S03. | S03 |
 | `/errors/upgrade-required` | 426 | The app is older than `ClientConfig.minimumAppVersion`. | S03 |
 
-The responses that use them, the golden problem bodies (`testdata/problems/`) and the server mapping arrive with S03. Add a row here whenever a new type is introduced.
+Every type has a golden body in `testdata/problems/<slug>.json` (exactly what the server sends), checked by the C# pipeline tests and the Dart `Failure` mapping tests. Adding a type means a row here, a golden file and a `ProblemTypes` constant on both sides.
 
 ## Breaking changes
 

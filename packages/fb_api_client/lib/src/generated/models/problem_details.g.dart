@@ -13,6 +13,7 @@ _ProblemDetails _$ProblemDetailsFromJson(Map<String, dynamic> json) =>
       status: (json['status'] as num).toInt(),
       detail: json['detail'] as String?,
       instance: json['instance'] as String?,
+      traceId: json['traceId'] as String?,
     );
 
 Map<String, dynamic> _$ProblemDetailsToJson(_ProblemDetails instance) =>
@@ -22,4 +23,5 @@ Map<String, dynamic> _$ProblemDetailsToJson(_ProblemDetails instance) =>
       'status': instance.status,
       'detail': instance.detail,
       'instance': instance.instance,
+      'traceId': instance.traceId,
     };

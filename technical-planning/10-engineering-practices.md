@@ -52,7 +52,7 @@ fitness_buddy/
 
 **Both stacks**
 - Immutability by default. Explicit result types for expected failures. Exhaustive `switch` over sealed types.
-- No `now()` or `random` in domain or application code: inject `Clock` / `IClock` and ID generators.
+- No `now()` or `random` in domain or application code: inject Dart `Clock` / .NET `TimeProvider` and ID generators.
 - **Comments: the right amount, not the most** (TD-054). A comment earns its place by saying what the code can't: *why* this way, a non-obvious constraint, a trap, the spec/TD/plan ID behind a rule (`/// Implements AI-060, AI-061.`). Don't restate the code, narrate the history ("moved from…", "review r1 fix"), or repeat the same rationale in several files: say it once where it matters and reference it.
   - Public APIs (barrels, ports, `*.Contracts`): a short doc comment on what it is and its contract (one to three lines is typical).
   - Private code: none when names and types already say it; a line where a reader would otherwise stop and wonder.
@@ -108,6 +108,7 @@ The pyramid is weighted toward pure logic, where the product promises live:
 ## 5. Requirement traceability (AT-001)
 
 - Tests name the requirement they prove: `test('AI-060 asks only above threshold', …)` in Dart, `[Trait("Req", "AC-012")]` in C#, or a `// covers: AI-060` comment.
+- Rules without a spec ID use `[Trait("Rule", "<doc>.<section>-<slug>")]` plus a one-line class comment (e.g. `09.4-logging`); never tag them as a `Req`. Dart tests name the rule without a spec-ID prefix.
 - `tools/trace` (built in S01) parses `spec/*.md` for R1 IDs and scans both test trees. It reports implemented / tested / missing per release.
 - Each step card lists its spec IDs. The traceability report is the "is R1 done?" dashboard.
 
@@ -124,6 +125,7 @@ The pyramid is weighted toward pure logic, where the product promises live:
 | Workflow | Trigger | Steps |
 |---|---|---|
 | `ci` (**built in S01**, `.github/workflows/ci.yml`) | every push and PR, weekly (Mon 04:00 UTC), manual | Job `dart`: `make deps-dart check-dart test-dart` (format · analyze `--fatal-infos` · tests) + `make trace` into the job summary. Job `dotnet`: `make deps-dotnet check-dotnet test-dotnet` (format · build with warnings as errors + NuGetAudit, TD-041 · tests incl. ArchUnitNET). Gate job **`ci`** needs every job and is the **only required check** (TD-039). Later: codegen up-to-date (S02/S06), Testcontainers (S04), `fb_domain` coverage gate (S08) |
+| `image` (**built in S03**, inside `ci.yml`) | every push and PR | `make image-smoke`: pinned non-root container, config/health, console trace correlation, migrate, graceful stop and image size; included in the `ci` gate |
 | `android`, `android-it` (**built in S06b**, inside `ci.yml`) | every push, except step branches whose diff against `main` touches nothing Android-relevant (TD-060); always on `main`, `merge/*`, PRs | signed staging APK + AAB with the hardening check; Patrol on an API 34 emulator |
 | _Later gates_ | | `catalog`, `eval` and Android builds become jobs in `ci.yml` (or reusable workflows called from it) and are added to the gate's `needs:`, so the ruleset never changes |
 | `contract` (**built in S02**, distributed inside `ci.yml`) | every push and PR (no path filter) | Job `contract` (Docker only, pinned images, offline): bundle freshness · Spectral (`fb-*` rules) · rule self-tests · oasdiff breaking report vs the newest `contracts-v*` tag (before the first tag: vs the merge-base with `main`, reported but not blocking, TD-044). Job `dart`: `make gen-check` (committed `fb_api_client` = generator output). Job `dotnet`: `make contract-conformance` (server's build-time OpenAPI = contract, TD-046), before the tests. Locally: `make check-contract` |

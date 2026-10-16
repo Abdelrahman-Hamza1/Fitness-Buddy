@@ -1,14 +1,14 @@
 # Errors (04 §4.2 "Errors"): RFC 9457 problem details, always
 # `application/problem+json` (Spectral rule fb-problem-json-errors).
-# The error-type catalogue is the table in contracts/README.md (S02 A2).
+# The error-type catalogue is the table in contracts/README.md (S02 A2), and
+# contracts/testdata/problems/ has one golden body per catalogue type.
 components:
   schemas:
     ProblemDetails:
       type: object
       description: >-
-        RFC 9457 problem details. Members not listed here are extensions (for
-        example `errors` on validation failures, S03) and clients must ignore
-        the ones they don't know.
+        RFC 9457 problem details. Members not listed here are extensions and
+        clients must ignore the ones they don't know.
       required: [type, title, status]
       properties:
         type:
@@ -38,10 +38,130 @@ components:
           type: string
           format: uri-reference
           description: Identifies this occurrence (for example the request path).
+        traceId:
+          type: string
+          pattern: '^[0-9a-f]{32}$'
+          description: >-
+            W3C trace id of the request (32 lowercase hex), the same value as
+            the `X-Request-Id` response header. Quote it when reporting a
+            problem.
+
+    # Flat (not an allOf of ProblemDetails): the same shape the server's
+    # HttpValidationProblemDetails produces, so conformance compares like with
+    # like (S03 plan D19).
+    ValidationProblemDetails:
+      type: object
+      description: >-
+        The problem details of a `400 /errors/validation-failed`: the
+        ProblemDetails members plus a required `errors` map.
+      required: [type, title, status, errors]
+      properties:
+        type:
+          type: string
+          format: uri-reference
+          description: Always `/errors/validation-failed`.
+        title:
+          type: string
+          description: Short, human-readable summary of the problem type (English, not for display as-is).
+        status:
+          type: integer
+          format: int32
+          description: Always 400.
+        detail:
+          type: string
+          description: Human-readable explanation of this occurrence (English, never user content).
+        instance:
+          type: string
+          format: uri-reference
+          description: Identifies this occurrence (for example the request path).
+        traceId:
+          type: string
+          pattern: '^[0-9a-f]{32}$'
+          description: >-
+            W3C trace id of the request (32 lowercase hex), the same value as
+            the `X-Request-Id` response header. Quote it when reporting a
+            problem.
+        errors:
+          type: object
+          description: >-
+            Field (camelCase JSON path such as `items[0].qty`, or a lowercase
+            header name such as `x-app-version`) → messages. Empty when the
+            request could not be read (malformed JSON, wrong type, missing
+            member).
+          additionalProperties:
+            type: array
+            items:
+              type: string
 
   responses:
+    ValidationFailed:
+      description: >-
+        The request is invalid (`/errors/validation-failed`): a field, a client
+        header, or a body that could not be read. `errors` names the fields.
+      headers:
+        X-Request-Id:
+          $ref: './headers.yaml#/components/headers/XRequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ValidationProblemDetails'
+          example:
+            type: /errors/validation-failed
+            title: One or more validation errors occurred.
+            status: 400
+            traceId: 4bf92f3577b34da6a3ce929d0e0e4736
+            errors:
+              name:
+                - The name field is required.
+              items[0].qty:
+                - The field qty must be between 1 and 1000.
+
+    UpgradeRequired:
+      description: >-
+        The app is older than `ClientConfig.minimumAppVersion`
+        (`/errors/upgrade-required`). The app shows its update screen.
+      headers:
+        X-Request-Id:
+          $ref: './headers.yaml#/components/headers/XRequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          example:
+            type: /errors/upgrade-required
+            title: Upgrade required
+            status: 426
+            detail: This app version is no longer supported. Update the app.
+            traceId: 4bf92f3577b34da6a3ce929d0e0e4736
+
+    RateLimited:
+      description: >-
+        Too many requests (`/errors/rate-limited`). Retry after `Retry-After`
+        seconds.
+      headers:
+        X-Request-Id:
+          $ref: './headers.yaml#/components/headers/XRequestId'
+        Retry-After:
+          $ref: './headers.yaml#/components/headers/RetryAfter'
+        RateLimit:
+          $ref: './headers.yaml#/components/headers/RateLimit'
+        RateLimit-Policy:
+          $ref: './headers.yaml#/components/headers/RateLimitPolicy'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          example:
+            type: /errors/rate-limited
+            title: Too many requests
+            status: 429
+            traceId: 4bf92f3577b34da6a3ce929d0e0e4736
+
     InternalError:
-      description: Unexpected server error. Retry later; quote the `X-Request-Id` response header when reporting it.
+      description: Unexpected server error. Retry later; quote `traceId` (= the `X-Request-Id` response header) when reporting it.
+      headers:
+        X-Request-Id:
+          $ref: './headers.yaml#/components/headers/XRequestId'
       content:
         application/problem+json:
           schema:
@@ -50,3 +170,4 @@ components:
             type: https://tools.ietf.org/html/rfc9110#section-15.6.1
             title: An error occurred while processing your request.
             status: 500
+            traceId: 4bf92f3577b34da6a3ce929d0e0e4736

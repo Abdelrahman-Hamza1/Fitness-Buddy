@@ -1,28 +1,31 @@
-using ArchUnitNET.Fluent;
 using ArchUnitNET.Loader;
-using ArchUnitNET.xUnitV3;
 using FitnessBuddy.BuildingBlocks;
-using static ArchUnitNET.Fluent.ArchRuleDefinition;
+using FitnessBuddy.Host;
 using ArchitectureModel = ArchUnitNET.Domain.Architecture;
-using Assembly = System.Reflection.Assembly;
 
 namespace FitnessBuddy.Architecture.Tests;
 
-/// <summary>Layer rules from 04-backend: dependencies point inward, Host is the composition root.</summary>
+// Proves 04 §3 / S03 A7: clean layers, module isolation, internal visibility and injected time/ids.
+[Trait("Rule", "04.3-module-boundaries")]
 public sealed class LayerRulesTests
 {
-    private static readonly Assembly HostAssembly = typeof(Program).Assembly;
+    private static readonly ModuleBoundary[] Modules = [.. ModuleCatalog.All.Select(module =>
+        new ModuleBoundary(module.GetType().Namespace!, module.GetType().Assembly))];
 
     private static readonly ArchitectureModel Architecture = new ArchLoader()
-        .LoadAssemblies(BuildingBlocksAssembly.Assembly, HostAssembly)
+        .LoadAssemblies([BuildingBlocksAssembly.Assembly, typeof(Program).Assembly, .. Modules.Select(module => module.Assembly)])
         .Build();
 
-    [Fact]
-    public void BuildingBlocks_does_not_depend_on_Host()
-    {
-        IArchRule rule = Types().That().ResideInAssembly(BuildingBlocksAssembly.Assembly)
-            .Should().NotDependOnAny(Types().That().ResideInAssembly(HostAssembly));
+    public static TheoryData<string> RuleNames => new(ArchitectureRules.Create(Architecture,
+        "FitnessBuddy.BuildingBlocks", "FitnessBuddy.Host", Modules).Keys);
 
-        rule.Check(Architecture);
+    [Theory]
+    [MemberData(nameof(RuleNames))]
+    public void Production_code_obeys_each_architecture_rule(string ruleName)
+    {
+        Assert.NotEmpty(Modules);
+        var rule = ArchitectureRules.Create(Architecture, "FitnessBuddy.BuildingBlocks", "FitnessBuddy.Host", Modules)[ruleName];
+        var violations = rule.Evaluate(Architecture).Where(result => !result.Passed).ToArray();
+        Assert.True(violations.Length == 0, string.Join('\n', violations.Select(result => result.Description)));
     }
 }

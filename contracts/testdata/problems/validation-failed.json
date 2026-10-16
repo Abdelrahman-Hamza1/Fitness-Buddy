@@ -1,0 +1,14 @@
+{
+  "type": "/errors/validation-failed",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "errors": {
+    "name": [
+      "The name field is required."
+    ],
+    "items[0].qty": [
+      "The field qty must be between 1 and 1000."
+    ]
+  },
+  "traceId": "4bf92f3577b34da6a3ce929d0e0e4736"
+}

@@ -2,7 +2,7 @@
 # Follows every convention, including the allowed edge cases: discriminated
 # oneOf and anyOf unions, oneOf and anyOf null-wraps and a type-array nullable,
 # nullable ID/time/date properties, cursor pagination, a problem+json schema
-# that extends ProblemDetails with allOf, and a POST exempt from
+# that extends ProblemDetails with allOf (and the non-UUID `traceId`), and a POST exempt from
 # Idempotency-Key with a reason. Proves the fb-* rules don't fire on valid shapes.
 openapi: 3.1.1
 info:
@@ -83,6 +83,7 @@ paths:
                   - type: object
                     required: [errors]
                     properties:
+                      traceId: { type: string, pattern: '^[0-9a-f]{32}$' }
                       errors:
                         type: object
                         additionalProperties:

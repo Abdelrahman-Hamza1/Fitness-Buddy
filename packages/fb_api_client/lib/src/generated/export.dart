@@ -16,6 +16,7 @@ export 'models/kilograms.dart';
 export 'models/centimeters.dart';
 export 'models/next_cursor.dart';
 export 'models/problem_details.dart';
+export 'models/validation_problem_details.dart';
 export 'models/client_config.dart';
 // Root client
 export 'fb_api.dart';

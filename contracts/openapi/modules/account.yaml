@@ -10,7 +10,8 @@ paths:
         What the app needs to know about the server's expectations: the
         minimum supported app version, feature flags and client thresholds.
         The app fetches it in the background and caches it; it is never on the
-        startup path.
+        startup path. Never answers 426: it is how an outdated app learns
+        `minimumAppVersion`.
       parameters:
         - $ref: '../components/headers.yaml#/components/parameters/AppVersion'
         - $ref: '../components/headers.yaml#/components/parameters/Platform'
@@ -18,6 +19,9 @@ paths:
       responses:
         '200':
           description: The current client configuration.
+          headers:
+            X-Request-Id:
+              $ref: '../components/headers.yaml#/components/headers/XRequestId'
           content:
             application/json:
               schema:
@@ -26,6 +30,10 @@ paths:
                 minimumAppVersion: 0.1.0
                 featureFlags: {}
                 thresholds: {}
+        '400':
+          $ref: '../components/problems.yaml#/components/responses/ValidationFailed'
+        '429':
+          $ref: '../components/problems.yaml#/components/responses/RateLimited'
         '500':
           $ref: '../components/problems.yaml#/components/responses/InternalError'
 
@@ -41,7 +49,7 @@ components:
           pattern: '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
           description: >-
             The oldest app version (`MAJOR.MINOR.PATCH`) the server still
-            serves. Older apps are asked to update (426, S03).
+            serves. Older apps are asked to update (426).
         featureFlags:
           type: object
           description: Feature flags by name. A flag the app doesn't know is ignored; a missing flag means off.

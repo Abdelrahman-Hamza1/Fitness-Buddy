@@ -266,11 +266,13 @@ rules:
   # --- Formats (04 §4.2 Formats) -----------------------------------------------
   # A nullable value may be a type array ([string, 'null']) or a oneOf
   # null-wrap; fbHasFormat accepts both.
+  # One exception: `traceId` (ProblemDetails) is the W3C trace id, 32 hex
+  # (S03 plan D8, D19).
   fb-id-format:
-    description: Properties named `id` or `<x>Id` are UUIDs (format uuid, UUIDv7 by convention; $ref Id).
+    description: Properties named `id` or `<x>Id` (except `traceId`) are UUIDs (format uuid, UUIDv7 by convention; $ref Id).
     message: "{{error}} IDs are UUIDs ($ref Id)."
     severity: error
-    given: "#PropertyMaps[?(@property.match(/^(id|[a-z][a-zA-Z0-9]*Id)$/))]"
+    given: "#PropertyMaps[?(@property.match(/^(id|(?!traceId$)[a-z][a-zA-Z0-9]*Id)$/))]"
     then:
       function: fbHasFormat
       functionOptions: { format: uuid }

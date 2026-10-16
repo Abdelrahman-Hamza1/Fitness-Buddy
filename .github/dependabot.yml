@@ -127,17 +127,16 @@ updates:
       contract-tools-minor-patch:
         update-types: [minor, patch]
 
-  # Added in S03 together with the first Dockerfile (Dependabot errors on a
-  # directory without one):
-  # - package-ecosystem: docker
-  #   directory: /backend
-  #   schedule:
-  #     interval: monthly
-  #   open-pull-requests-limit: 3
-  #   commit-message:
-  #     prefix: chore(deps)
-  #   cooldown:
-  #     default-days: 7
-  #   groups:
-  #     docker-minor-patch:
-  #       update-types: [minor, patch]
+  # API build/runtime images; SDK tag must stay aligned with backend/global.json.
+  - package-ecosystem: docker
+    directory: /backend
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore(deps)
+    cooldown:
+      default-days: 7
+    groups:
+      docker-minor-patch:
+        update-types: [minor, patch]

@@ -15,7 +15,7 @@ abstract class AccountClient {
 
   /// Get the client configuration.
   ///
-  /// What the app needs to know about the server's expectations: the minimum supported app version, feature flags and client thresholds. The app fetches it in the background and caches it; it is never on the startup path.
+  /// What the app needs to know about the server's expectations: the minimum supported app version, feature flags and client thresholds. The app fetches it in the background and caches it; it is never on the startup path. Never answers 426: it is how an outdated app learns `minimumAppVersion`.
   @GET('/v1/config')
   Future<ClientConfig> getConfig();
 }

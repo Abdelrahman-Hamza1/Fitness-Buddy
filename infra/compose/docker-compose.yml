@@ -1,0 +1,22 @@
+name: fitness-buddy
+services:
+  api:
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile
+    image: fitness-buddy-api:local
+    ports:
+      - "127.0.0.1:5198:8080"
+    environment:
+      # Local-only: never use Development on staging/production (09 §9).
+      ASPNETCORE_ENVIRONMENT: Development
+      Observability__ConsoleExporter: "true"
+      Clients__MinimumAppVersion: "${FB_MIN_APP_VERSION:-0.1.0}"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 30s

@@ -35,16 +35,17 @@ Selection rules, in order: (1) fits the drivers in `01` §1; (2) mature, maintai
 | Concern | Choice | Why | Alternatives considered |
 |---|---|---|---|
 | Runtime / language | **.NET 10 (LTS, supported to Nov 2028), C#** | Fast, strongly typed, rich built-in platform, long support | Spring Boot (Kotlin), NestJS (TypeScript), Go, FastAPI (Python). See Appendix B |
+| Container | Digest-pinned SDK 10.0.402 + ASP.NET 10.0.13 noble-chiseled-extra, UID 1654 | Small runtime with ICU/tzdata, no shell; proxy health probe | Standard Ubuntu runtime |
 | Web | **ASP.NET Core Minimal APIs** (endpoint groups per module) | Lean, fast, first-class OpenAPI generation, built-in rate limiting, health checks, output caching, problem details | Controllers (more ceremony) |
 | Architecture | **Modular monolith, clean/hexagonal layers per module** | SOLID boundaries without microservice overhead (`04` §3) | Microservices, flat layered app |
 | Data access | **EF Core 10 + Npgsql**, **Dapper** for hot paths | Migrations, JSONB, strong Postgres support. Raw SQL where it matters | Dapper only, Marten |
 | Database | **PostgreSQL 18**: `pg_trgm` for search, JSONB for synced documents, RLS for defense in depth | One relational store for everything | — |
 | Jobs / events | **Postgres-backed queue** (`SKIP LOCKED`) + transactional outbox, in `BuildingBlocks` (or Hangfire if S04 finds the in-house version insufficient) | One stateful dependency (TD-025) | Redis + queue library, RabbitMQ |
 | Auth | Our **Identity module**: JWT ES256 via `Microsoft.IdentityModel`, JwtBearer validation, OIDC ID-token verification for Google/Apple, email one-time codes | No auth vendor. Narrow, well-known flows (`04` §5) | Supabase Auth, Firebase Auth, Zitadel/Keycloak |
-| Validation | ASP.NET Core built-in validation or FluentValidation (decided in S03) + JSON Schema validation of sync payloads (JsonSchema.Net) | Contract-driven input checks | — |
+| Validation | ASP.NET Core built-in `AddValidation()` + DataAnnotations (S03; public request DTOs and per-module registration) + JSON Schema validation of sync payloads (JsonSchema.Net) | Contract-driven input checks | — |
 | AI providers | Official SDKs where stable (`Anthropic` NuGet, beta; `OpenAI`; `Google.GenAI`), or plain REST, **always behind our `ILlmClient` port** | Swappable, testable, per-task routing (`06` §9) | Semantic Kernel / Microsoft.Extensions.AI (possible inside an adapter) |
-| Observability | **OpenTelemetry .NET** (traces, metrics, logs) + **Sentry .NET** | Vendor-neutral telemetry | — |
-| Tests | **xUnit v3**, **Testcontainers** (real Postgres), `WebApplicationFactory`, **ArchUnitNET**, Verify (snapshots), recorded LLM fixtures | Real-database tests, enforced architecture | — |
+| Observability | Built-in JSON console + **OpenTelemetry .NET 1.19.1** (instrumentation 1.19.0; traces, metrics, logs) + **Sentry.AspNetCore 6.12.0** (errors-only, scrubbed; TD-058) | Vendor-neutral telemetry | — |
+| Tests | **xUnit v3**, **Testcontainers** (real Postgres), `WebApplicationFactory`, **ArchUnitNET 0.13.4**, Verify (snapshots), recorded LLM fixtures | Real-database tests, enforced architecture | — |
 
 ## 3. Contract & code generation
 

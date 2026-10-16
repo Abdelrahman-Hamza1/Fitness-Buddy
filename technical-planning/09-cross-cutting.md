@@ -58,7 +58,7 @@ Cheap now, expensive later, so from the **first screen**:
 | AI data minimization | Context builder whitelist (AC-041). No identity to the model. No images stored server-side. Paid no-training tiers. Zero data retention before R3 |
 | Local data | App sandbox + OS full-disk encryption. **SQLCipher** is an R3 decision (performance and complexity cost) |
 | Progress photos (R2) | App-private directory, excluded from OS backups, never synced, never sent to AI (WB-050, AC-043) |
-| **Logging** | **No user content** (food text, weights, messages) in server logs, traces or Sentry. IDs and codes only. Enforced by log scrubbers with unit tests, and Sentry `beforeSend` filters |
+| **Logging** | **No user content** (food text, weights, messages) in server logs, traces or Sentry. IDs and codes only. TD-058: JSON console + OpenTelemetry logging; every non-Sentry provider wraps exceptions into type + stack without messages, Data or inner messages. No HTTP logging or instrumentation `Enrich*`. Sentry errors-only `BeforeSend` allowlists headers and clears query/data/cookies/user/extra/exception values; breadcrumbs, transactions, SDK logs and metrics are dropped. Canary tests inspect logs, spans, metric tags and serialized Sentry envelopes |
 | Dependencies | Lockfiles (pub, NuGet `packages.lock.json`). Renovate/Dependabot. Vulnerability scanning in CI. A one-line justification for every new package |
 | Servers | `08` §6 |
 | Compliance prep (R3) | Privacy policy EN/AR (AC-044), store data-safety forms. Account deletion and export already exist from R1 |

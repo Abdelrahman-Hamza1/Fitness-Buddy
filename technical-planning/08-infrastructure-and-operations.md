@@ -107,9 +107,9 @@ Kubernetes (k3s on VMs, or a managed cluster) with the **same images and the sam
 
 | Signal | Tool | What |
 |---|---|---|
-| Traces, metrics, logs | **OpenTelemetry** SDK → OTLP → **Grafana Cloud** (free tier) | Request traces (app → API → Postgres/LLM), RED metrics per endpoint, LLM latency/tokens/cost per task and model, sync volumes, job queue depth. Structured JSON logs **with no user content** (`09` §4) |
+| Traces, metrics, logs | **OpenTelemetry** SDK → OTLP → **Grafana Cloud** (free tier) | Request traces (app → API → Postgres/LLM), RED metrics per endpoint, LLM latency/tokens/cost per task and model, sync volumes, job queue depth. Built-in JSON logs **with no user content**; every non-Sentry sink scrubs exception messages (TD-058, `09` §4) |
 | Errors | **Sentry** (app + backend) | Exceptions, release health, scrubbed of personal data |
-| Uptime | External monitor (different provider) | `/health/ready` and a synthetic `/v1/config` call every minute |
+| Uptime | External monitor (different provider) | `/health/ready` and a synthetic `/v1/config` call every minute (three client headers, fixed device UUID) |
 | Alerts | Grafana alerting → email/phone push | 5xx rate, Buddy p90 > 5 s, AI cost per day over budget, disk > 80%, **backup age > 26 h**, **failed restore test**, certificate expiry, job queue stuck |
 
 If the free tiers run out (R3), the same OpenTelemetry signals can go to a self-hosted Grafana stack on a small ops VM. Nothing in the app changes.
