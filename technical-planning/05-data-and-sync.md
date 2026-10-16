@@ -83,9 +83,9 @@ Other server data: `identity.*` (users, identities, tokens), `catalog.*` (global
 
 ### 5.1 Why custom (and the escape hatch)
 
-Our sync problem is the **easy kind**: every row has exactly one owner, there's no collaboration, conflicts are rare (one person on two phones), and the policy is **row-level last-write-wins + history** (AC-012). A custom protocol keeps full drift features (foreign keys, FTS5 triggers, typed migrations), makes guest mode trivial, and needs no vendor. **B01 spikes it before we commit.**
+Our sync problem is the **easy kind**: every row has exactly one owner, there's no collaboration, conflicts are rare (one person on two phones), and the policy is **row-level last-write-wins + history** (AC-012). A custom protocol keeps full drift features (foreign keys, FTS5 triggers, typed migrations), makes guest mode trivial, and needs no vendor. **B01 confirmed feasibility:** 1,000 fake and 50 real Docker API scenarios, full-version recovery and fault checks pass; see its verification evidence. Production implementation remains B05/A34.
 
-**Escape hatch:** the app talks to a `SyncEngine` interface. If the spike shows problems, **PowerSync** (self-hostable against our Postgres) replaces the implementation. Repositories and features don't change.
+**Escape hatch:** the app talks to a `SyncEngine` interface. If later integration invalidates the spike results, **PowerSync** (self-hostable against our Postgres) replaces the implementation. Repositories and features don't change.
 
 ### 5.2 Protocol
 
@@ -94,16 +94,16 @@ sequenceDiagram
   participant C as App (SyncEngine)
   participant S as API (UserData module)
   Note over C: every local write → trigger → sync_outbox
-  C->>S: POST /v1/sync/push {changes:[{entity, id, schemaVersion, hlc, deviceId, deletedAt?, payload}]}
-  S->>S: per change: validate schema · if incoming.hlc > stored.hlc → upsert,<br/>copy replaced version to row_history if it came from another device, assign server_seq<br/>else → rejected (client will pull the newer version)
-  S-->>C: per-change result (accepted / stale / invalid) + max server_seq
-  C->>C: delete acknowledged outbox entries
+  C->>S: POST /v1/sync/push {changes:[{entity, id, schemaVersion, hlc, deviceId, deletedAt, payload}]}
+  S->>S: validate envelope · serialize per user before sequence allocation<br/>per change: validate · LWW upsert and archive displaced version,<br/>or preserve stale incoming version in history
+  S-->>C: per-change result (accepted / stale / invalid) + serverTime
+  C->>C: delete only acknowledged immutable outbox versions; keep pull cursor
   C->>S: GET /v1/sync/pull?cursor=<last server_seq>&limit=500
   S-->>C: changed documents with server_seq > cursor (any entity), nextCursor
   C->>C: apply each unless a newer local pending change exists (LWW), advance cursor
 ```
 
-- **Ordering:** a **hybrid logical clock** per device (wall time + counter + device ID), so edits order correctly even with clock skew. The server clamps HLCs more than a few minutes in the future (G6). Ties go to the higher device ID.
+- **Ordering:** a **hybrid logical clock** per device (wall time + counter + device ID), so edits order correctly even with clock skew. B01 bounds future-clock admission at five minutes with `invalid/clockDrift`; the pending version stays local. B05 defines production clock recovery (TD-049). Ties go to the higher device ID.
 - **When it runs:** after each local change set (debounced a few seconds), on app foreground, on reconnect, and on pull-to-refresh. **Never on the startup critical path** (UX-001). R2+: an optional "something changed" nudge (SSE or push) for live multi-device updates.
 - **Deletes** are tombstones that sync like updates. Tombstones are compacted on the server after 30 days.
 - **First sync on a new phone** (AC-011): paged pull from cursor 0. Years of data fit in tens of MB.
@@ -120,6 +120,20 @@ sequenceDiagram
 - **OF-03** as an end-to-end test against a local API.
 - **Fault injection:** network drop mid-push, duplicated responses, server rejects, app killed between push and acknowledgement.
 - **Version skew:** an older-schema client syncing with a newer server, and the reverse.
+
+### 5.4 B01 experimental wire handoff (2026-10-16)
+
+This is the protocol A01's outbox should accommodate; the production engine remains A34 and authenticated service B05. The B01 endpoints are unavailable (501) in normal environments. A dedicated `SyncSpike` environment, enabled flag, random test key and configured synthetic user are required by the test harness. Never send real user data to this prototype.
+
+- `POST /v1/sync/push`: `{changes: [{entity,id,schemaVersion,hlc,deviceId,deletedAt,payload}]}`. Required nullable `deletedAt`; object `payload`; prototype allows only `diaryEntry` and `weighIn`, schema 1. 1–500 changes, also constrained by the host's 256 KiB request cap. Split by bytes as well as row count. Each immutable `(entity,id,hlc)` identifies a version. Retrying it is idempotent; a different payload/metadata with that identity is `invalid` (`versionConflict`). Thus this POST is exempt from the generic HTTP idempotency cache. The spike's additional `X-Sync-Spike-Key` is test access only, never the app's authentication protocol.
+- Response `{results:[{entity,id,hlc,status,reason}],serverTime}` in input order. `hlc` echoes the submitted version. Status is `accepted`, `stale` or `invalid`; nullable reason is `clockDrift`, `versionConflict` or `unsupported` for invalid changes. Accepted and stale are durably acknowledged; invalid remains in the outbox for intervention/retry. Acknowledging a sent version must not erase a newer concurrent local edit. No sequence in this response may move the pull cursor.
+- `GET /v1/sync/pull?cursor=0&limit=100`: `{changes:[{...document,serverSeq}],nextCursor}`. Cursor and sequence are nonnegative decimal **strings** (Postgres bigint), maximum page 500. `nextCursor` is the last **delivered** sequence, or the input cursor when empty. Keep pulling until an empty page. Apply rows and save cursor in one local transaction. Merge by HLC, preserve newer local pending versions, and feed received HLCs to the local clock before further writes. Never set a cursor to the largest sequence in a push acknowledgement or to a global database maximum.
+- Pushes serialize **per user before sequence allocation** (`CACHE 1` sequences), within the same transaction as all document/history writes. Global sequence gaps are allowed; same-user commits cannot overtake a previously allocated sequence. Changes concurrent with a pull can move to later pages; duplicate delivery is safe. A fresh device begins at cursor `0`.
+- HLC format and binary ordering are exactly TD-049. The HLC device suffix must match `deviceId`. An incoming wall time more than five minutes ahead is `invalid/clockDrift` (response carries server time), keeping the pending row. This bounds admission without changing a version's identity behind the client. B05 decides recovery/re-stamping; TD-049's receive API/default is unchanged.
+- The server stores a displaced cross-device version **and a stale incoming cross-device loser** in deduplicated `row_history`. B01 also retains same-device losing versions so immutable version identity can be checked after replacement. A tombstone is an ordinary version, so only a strictly later version can restore it. History has a 30-day recovery horizon; cleanup and resurrection after compaction remain B05 production work.
+- Prototype-only `GET /v1/sync/history?cursor=0&limit=100` returns `{changes,nextCursor}` with the same document shape, cursor paging over a separate history sequence. It exists for the harness's independent no-loss assertions, not history UI. A history cursor must never be used as a document pull cursor.
+
+B05 also resolves dataset reset detection (proposed TD-066), schema validation, authentication and production retention. B01 proves convergence within one database dataset; it does not certify reset recovery or a phone network's timing.
 
 ## 6. Guest mode & account lifecycle
 

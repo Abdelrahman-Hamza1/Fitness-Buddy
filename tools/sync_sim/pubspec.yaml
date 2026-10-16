@@ -1,0 +1,15 @@
+name: sync_sim
+description: B01 reusable synthetic-data sync engine and convergence harness.
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.13.0
+dependencies:
+  dio: 5.11.1
+  fb_api_client:
+    path: ../../packages/fb_api_client
+  fb_domain:
+    path: ../../packages/fb_domain
+dev_dependencies:
+  test: 1.31.1
+  yaml: ^3.1.3

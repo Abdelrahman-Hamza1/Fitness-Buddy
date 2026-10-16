@@ -23,8 +23,17 @@ tags:
   - name: Account
     description: Client configuration, and later the user's account (`/v1/me`).
 
+  - name: UserData
+    description: Experimental B01 sync prototype; synthetic data only, disabled by default.
+
 # Every path is defined in its module file and listed here.
 paths:
+  /v1/sync/push:
+    $ref: './modules/userdata.yaml#/paths/~1v1~1sync~1push'
+  /v1/sync/pull:
+    $ref: './modules/userdata.yaml#/paths/~1v1~1sync~1pull'
+  /v1/sync/history:
+    $ref: './modules/userdata.yaml#/paths/~1v1~1sync~1history'
   /v1/config:
     $ref: './modules/account.yaml#/paths/~1v1~1config'
 

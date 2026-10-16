@@ -5,6 +5,7 @@
   </Folder>
   <Folder Name="/src/Modules/">
     <Project Path="src/Modules/Account/FitnessBuddy.Modules.Account.csproj" />
+    <Project Path="src/Modules/UserData/FitnessBuddy.Modules.UserData.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Architecture.Tests/FitnessBuddy.Architecture.Tests.csproj" />

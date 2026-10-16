@@ -158,7 +158,7 @@ userdata.documents(
   user_id uuid, entity text, id uuid,          -- PK (user_id, entity, id)
   schema_version int, hlc text, device_id uuid,
   deleted_at timestamptz null, payload jsonb,
-  server_seq bigint                             -- from a sequence, indexed (user_id, server_seq)
+  server_seq bigint                             -- CACHE 1 sequence, indexed (user_id, server_seq)
 )
 userdata.row_history(…same columns…, replaced_at timestamptz)   -- 30-day retention
 ```
@@ -169,6 +169,8 @@ userdata.row_history(…same columns…, replaced_at timestamptz)   -- 30-day re
 | Simplicity | One push/pull implementation for every entity. Deletion = `DELETE … WHERE user_id = $1` |
 | Safety | Payloads are validated against the entity's JSON schema (from the contract) and size limits. Unknown entities are rejected |
 | Future server features | If R2/R3 needs server-side queries over user data, a module **projects** documents into typed read tables via outbox events. The sync path stays unchanged |
+
+B01 confirms this storage design with two synthetic entities. Pushes take a per-user transaction lock **before** allocating a sequence (`CACHE 1`); a bare sequence does not guarantee commit order. Deduplicated history preserves stale incoming as well as displaced versions, including same-device versions to enforce immutable HLC retry identity. The spike has a separate history cursor sequence. Normal environments return 501 for its experimental routes; production authentication, payload-schema validation, clock recovery and 30-day cleanup remain B04/B05. No real user data is served by the prototype.
 
 Details of the protocol: `05` §5.
 

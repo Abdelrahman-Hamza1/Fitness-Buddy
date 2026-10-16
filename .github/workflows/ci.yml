@@ -162,7 +162,7 @@ jobs:
       - name: Tests
         run: make test-dotnet DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT"
 
-  # The same hardened image and smoke checks used locally; no credentials or SDK setup required.
+  # The same hardened image; B01 also checks the Dart client against its real HTTP API.
   image:
     name: image
     runs-on: ubuntu-24.04
@@ -175,6 +175,19 @@ jobs:
 
       - name: Build and smoke-test the API image
         run: make image-smoke
+
+      - name: Set up Flutter for the sync harness (version from .fvmrc)
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+          pub-cache-key: 'flutter-pub-:os:-:version:-:arch:'
+
+      - name: Real sync convergence, faults and throughput (B01)
+        env:
+          SYNC_SPIKE_IMAGE: fitness-buddy-api:smoke
+          SYNC_SPIKE_SKIP_BUILD: '1'
+        run: make deps-dart sync-spike FLUTTER=flutter DART=dart
 
   # Docker-only contract checks (S02 D13). Redocly, Spectral and oasdiff run as
   # digest-pinned, offline containers via tools/contract-tools/compose.yaml;

@@ -146,6 +146,10 @@ down: ## Stop local backend containers and network (preserves database volume)
 image-smoke: ## Build and smoke-test the non-root API image, exporters and process lifecycle
 	@bash '$(REPO_ROOT)/tools/scripts/image-smoke.sh'
 
+.PHONY: sync-spike
+sync-spike: ## Run B01 synthetic convergence/fault/5000-row checks against isolated Docker API + Postgres
+	@DART='$(DART)' bash '$(REPO_ROOT)/tools/scripts/sync-spike.sh'
+
 ##@ Dart workspace (pubspec.yaml, apps/, packages/, tools/)
 
 # One pub workspace, one resolution, one pubspec.lock. `dart format .` and

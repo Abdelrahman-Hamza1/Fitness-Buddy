@@ -188,7 +188,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 
 | ID | Step | Depends on | Size | Was | Milestone | Status |
 |---|---|---|---|---|---|---|
-| [B01](B01-spike-sync.md) | Spike: sync | S04 ✅, S08 ✅ | M | S12 |  | ⬜ |
+| [B01](B01-spike-sync.md) | Spike: sync | S04 ✅, S08 ✅ | M | S12 |  | ✅ |
 | [B02](B02-spike-ai-bakeoff.md) | Spike: AI bake-off & eval harness v0 | S03 ✅, S08 ✅ | L | S10 |  | ⬜ |
 | [B03](B03-laptop-test-server.md) | Laptop test server for the phone | S04 ✅ | S | new |  | ⬜ |
 | [B04](B04-identity-backend.md) | Identity backend | S04 ✅ | L | S24 (real email sender → B14) |  | ⬜ |

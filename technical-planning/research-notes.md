@@ -305,3 +305,38 @@ Sources: [Sentry middleware 6.12.0](https://github.com/getsentry/sentry-dotnet/b
 - Npgsql 10 defaults GSS encryption to Prefer, causing missing libgssapi messages in the chiseled image. This password/SCRAM deployment disables discovery, rejects an explicit GSS Require, and preserves TLS configuration: https://www.npgsql.org/doc/release-notes/10.0.html.
 
 - S04 backlog #1 recheck (2026-10-16): GitHub issue 13950 remains **open** (API checked; last update 2026-04-07) and describes CPM updates leaving downstream ProjectReference packages.lock.json stale, matching this multi-project solution. Keep the S01 baseline and revisit before S24/next dependency review: https://github.com/dependabot/dependabot-core/issues/13950.
+
+## 2026-10-16 — B01 sync escape hatch and sequence safety
+
+PowerSync remains a credible alternative, rather than a service adopted in this
+step. The official [Flutter SDK guide](https://docs.powersync.com/client-sdks/reference/flutter)
+describes a backend connector that supplies credentials and uploads local
+writes to the application's API. Guest/local-only use can leave the database
+disconnected. We would still own upload validation and conflict/history policy.
+The official [Drift integration guide](https://docs.powersync.com/client-sdks/orms/flutter-orm-support)
+uses `drift_sqlite_async` and currently labels ORM support beta, including a
+local-only table notification caveat. Adopting it would change A01/A34's database
+integration, so the existing SyncEngine boundary remains useful.
+
+PowerSync's [self-hosting guide](https://docs.powersync.com/intro/self-hosting)
+supports Docker deployments. Its [self-hosted instance configuration](https://docs.powersync.com/configuration/powersync-service/self-hosted-instances)
+requires source replication, bucket storage (Postgres or MongoDB), client auth
+and sync-stream configuration. Postgres can remain the only database engine,
+but the extra sync service and storage/configuration still add operations.
+**Inference for Fitness Buddy:** keep the custom path if the spike's real-server
+convergence/history/fault results hold; PowerSync reduces download machinery,
+but does not remove our business conflict/recovery/auth responsibilities.
+No PowerSync dependency, deployment or paid account was added.
+
+Postgres [sequence functions](https://www.postgresql.org/docs/18/functions-sequence.html)
+allocate independently of transaction rollback; even `ON CONFLICT` may consume
+values. **Design inference:** sequence values alone are not a commit-order
+cursor. B01 serializes each user's pushes before allocation, permits gaps and
+returns only the last delivered sequence. A real Postgres test blocks a second
+push behind an uncommitted first allocation, then checks both pages after
+commit. Never replace this with an unconstrained sequence maximum.
+
+Initial laptop result: 1,000 fake scenarios and 50 Docker API scenarios pass;
+5,000 small synthetic rows pushed in 3,096 ms and fresh-pulled in 174 ms over
+Docker loopback (not a Wi-Fi measurement). Formal post-review evidence belongs
+in `technical-planning/steps/evidence/B01-verification.md`.

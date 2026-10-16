@@ -1,6 +1,6 @@
 # backend/
 
-The Fitness Buddy API: an ASP.NET Core (.NET 10) modular monolith. Architecture, modules and rules are in `technical-planning/04-backend.md`. Right now: the host with its three roles and module system (S03), one module (`Account`, `GET /v1/config`), a build-time OpenAPI document that CI checks against `contracts/openapi.yaml` (S02), and transactional Postgres persistence, outbox/jobs/schedules and POST replay (S04).
+The Fitness Buddy API: an ASP.NET Core (.NET 10) modular monolith. Architecture, modules and rules are in `technical-planning/04-backend.md`. Right now: the host with its three roles and module system (S03), the `Account` module (`GET /v1/config`) and the isolated experimental `UserData` sync module (B01), a build-time OpenAPI document that CI checks against `contracts/openapi.yaml` (S02), and transactional Postgres persistence, outbox/jobs/schedules and POST replay (S04).
 
 ## Layout
 
@@ -72,7 +72,7 @@ violating types, including all banned static time/ID calls.
 
 ## HTTP pipeline (api role)
 
-In order (`src/Host/Http/HttpSetup.cs`): forwarded headers → request id → exception handler → HSTS (not in Development) → status-code pages → routing → rate limiter → client headers + 426 gate → authentication (S24) → opted-in POST idempotency → endpoints (`/health/*`, `/v1`).
+In order (`src/Host/Http/HttpSetup.cs`): forwarded headers → request id → exception handler → HSTS (not in Development) → status-code pages → routing → rate limiter → client headers + 426 gate → authentication (B04) → opted-in POST idempotency → endpoints (`/health/*`, `/v1`).
 
 - **Forwarded headers:** `X-Forwarded-For`/`-Proto`, one hop, trusted from loopback and `Proxy:TrustedNetworks` (CIDRs, checked at startup) only.
 - **Request id:** every response has `X-Request-Id` = the W3C trace id (32 lowercase hex), also the problem's `traceId`. An inbound `traceparent` is honoured; an inbound `X-Request-Id` is ignored.
@@ -85,7 +85,7 @@ In order (`src/Host/Http/HttpSetup.cs`): forwarded headers → request id → ex
 
 `make up` builds one image, starts a private Postgres 18.6, applies migrations, then starts api + worker.
 Only the API publishes a loopback port (5198). `make down` preserves the database volume. Bootstrap
-passwords in `infra/compose/postgres/001-roles.sql` are **local-only**; S05 provisions real secrets.
+passwords in `infra/compose/postgres/001-roles.sql` are **local-only**; B13 provisions real secrets.
 Neither the API nor worker receives migrator credentials. Password/SCRAM connections disable native GSS/Kerberos discovery; explicit GSS Require is rejected rather than downgraded. TLS settings are preserved. Do not point this bootstrap at an existing
 production database. A changed bootstrap script only applies to a fresh local volume.
 
@@ -100,8 +100,8 @@ Build-time OpenAPI generation never opens a database or runs migrations.
 - Register database-only `IOutboxHandler` / `IJobHandler` implementations. Their writes use the supplied session, with **no commits or network calls**. Keep event type and handler name stable across deploys. Effects, per-handler processed marker and acknowledgement commit together. A crash rolls them all back; duplicate delivery skips processed handlers. This provides exactly-once database effects, not exactly-once remote calls. External adapters must accept a stable operation key and be independently idempotent.
 - Default retries: five attempts, starting at 5 seconds, doubling to a one-hour cap. Failures roll back to a savepoint before persisting attempts. Exhausted/unknown message types become dead letters; payloads and exception messages never enter logs. Shutdown cancellation rolls back without counting an attempt. Dead letters remain for inspection; there is no public administrative queue API.
 - `JobScheduler.RegisterAsync` uses five-field UTC cron. Durable cursors survive restarts; missed ticks coalesce into one run. Claims and uniquely keyed job insertion share a transaction. The worker registers `ops.cleanup` every five minutes: expired replay records and completed queue records older than seven days are removed; dead letters stay. Future history/account purge handlers arrive with their modules.
-- An unsafe POST opts in using `.RequireIdempotency()` and declares its header/400/409 responses in the contract **before** becoming a product endpoint. The middleware requires authenticated ICurrentUser (S24 must define any pre-auth scope), serializes user + method + path + key, fingerprints body bytes/content type/query, and commits business effects + response atomically. Replays last 24 h; changed fingerprints get 409. Buffers: 256 KiB request, 1 MiB response. 5xx, exceptions and cancellation roll back. Only ETag/Location replay; never cookies. Problem bodies refresh traceId to match the current X-Request-Id. All actual product POSTs are still later steps.
-- Postgres logs only infrastructure-level FATAL/PANIC messages, with terse detail and statement/parameter logging disabled; ordinary SQL errors can echo private values. API/worker logs retain scrubbed error types and IDs. Carry these settings into S05.
+- An unsafe POST opts in using `.RequireIdempotency()` and declares its header/400/409 responses in the contract **before** becoming a product endpoint. The middleware requires authenticated ICurrentUser (B04 must define any pre-auth scope), serializes user + method + path + key, fingerprints body bytes/content type/query, and commits business effects + response atomically. Replays last 24 h; changed fingerprints get 409. Buffers: 256 KiB request, 1 MiB response. 5xx, exceptions and cancellation roll back. Only ETag/Location replay; never cookies. Problem bodies refresh traceId to match the current X-Request-Id. All actual product POSTs are still later steps.
+- Postgres logs only infrastructure-level FATAL/PANIC messages, with terse detail and statement/parameter logging disabled; ordinary SQL errors can echo private values. API/worker logs retain scrubbed error types and IDs. Carry these settings into B13.
 - SQL diagnostics/logging and Npgsql command/batch/COPY/open tracing are disabled at the source, including under broad listeners. Never enable sensitive data, parameter logging, SQL enrichment or driver error detail.
 
 `tests/Persistence.Tests` uses one assembly-shared Testcontainers Postgres 18.6 (digest matches compose),
@@ -229,3 +229,24 @@ The laptop has about 3 GB free, so the Makefile builds with `-m:4`, turns off MS
 ```bash
 DOTNET_ROOT=~/.dotnet ~/.dotnet/dotnet build-server shutdown
 ```
+
+## Sync spike (B01)
+
+`make sync-spike` builds the shipped image and tests it against ephemeral pinned
+Postgres, through the generated Dart client in `tools/sync_sim/`. It runs 50
+seeded multi-device scenarios, fault cases and a 5,000-row push/fresh-pull timing;
+`make test-dart` also runs 1,000 fake-server scenarios. The CI image job runs the
+real harness. Its key/data/network are temporary; it binds to loopback only.
+
+`UserData` owns the `userdata` schema, global document/history sequences and
+forced RLS. Push transactions serialize per user **before** allocating sequence
+numbers; otherwise an earlier uncommitted row could land behind a cursor.
+History preserves stale incoming and displaced versions, including same-device
+versions for immutable retry identity. Pull advances only to delivered rows.
+No payload or test key belongs in telemetry. Wire details: `05` §5.4.
+
+The endpoints return 501 in normal API environments. The harness alone uses
+`SyncSpike` + enabled flag + random 32-byte key + a configured synthetic user.
+This is not an authentication option for real data. B04/B05 replace the gate
+with identity, schema validation, clock recovery, history/tombstone retention
+and dataset reset handling (proposed TD-066); A34 supplies the real phone engine.

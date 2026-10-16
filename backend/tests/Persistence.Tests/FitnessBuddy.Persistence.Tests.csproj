@@ -9,6 +9,7 @@
     <PackageReference Include="Testcontainers.PostgreSql" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <ProjectReference Include="../../src/Host/FitnessBuddy.Host.csproj" />
+    <None Include="../../../contracts/testdata/sync/hlc_cases.yaml" Link="hlc_cases.yaml" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../../infra/compose/postgres/001-roles.sql" Link="bootstrap.sql" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

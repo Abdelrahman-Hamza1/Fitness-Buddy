@@ -5,6 +5,7 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1
 COPY global.json Directory.Build.props Directory.Packages.props nuget.config ./
 COPY src/BuildingBlocks/FitnessBuddy.BuildingBlocks.csproj src/BuildingBlocks/
 COPY src/Modules/Account/FitnessBuddy.Modules.Account.csproj src/Modules/Account/
+COPY src/Modules/UserData/FitnessBuddy.Modules.UserData.csproj src/Modules/UserData/
 COPY src/Host/FitnessBuddy.Host.csproj src/Host/
 RUN dotnet restore src/Host/FitnessBuddy.Host.csproj
 COPY src/ src/
@@ -17,6 +18,6 @@ WORKDIR /app
 COPY --from=build /app ./
 USER $APP_UID
 EXPOSE 8080
-# No shell/HEALTHCHECK in the chiseled image; the proxy probes /health/ready (S05).
+# No shell/HEALTHCHECK in the chiseled image; the proxy probes /health/ready (B13).
 ENTRYPOINT ["dotnet", "FitnessBuddy.Host.dll"]
 CMD ["api"]

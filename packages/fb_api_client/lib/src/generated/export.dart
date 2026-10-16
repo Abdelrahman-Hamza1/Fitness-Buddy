@@ -3,6 +3,7 @@
 // ignore_for_file: type=lint, unused_import, invalid_annotation_target, unnecessary_import
 
 // Clients
+export 'clients/user_data_client.dart';
 export 'clients/account_client.dart';
 // Data classes
 export 'models/id.dart';
@@ -17,6 +18,12 @@ export 'models/centimeters.dart';
 export 'models/next_cursor.dart';
 export 'models/problem_details.dart';
 export 'models/validation_problem_details.dart';
+export 'models/sync_change.dart';
+export 'models/sync_push_request.dart';
+export 'models/sync_push_result.dart';
+export 'models/sync_push_response.dart';
+export 'models/sync_document.dart';
+export 'models/sync_page.dart';
 export 'models/client_config.dart';
 // Root client
 export 'fb_api.dart';
