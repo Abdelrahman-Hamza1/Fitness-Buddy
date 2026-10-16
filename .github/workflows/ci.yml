@@ -16,7 +16,11 @@
 # (S01 A1). New gates (catalog, eval) are added as jobs here and to
 # `ci.needs`, so the ruleset never changes.
 #
-# No path filtering (S01 A2): every push runs everything.
+# Every job runs on every push, with one exception (TD-060, supersedes S01 A2
+# for these two jobs): on step branches that change nothing the Android build
+# can depend on (`changes` job), `android` and `android-it` are skipped, so a
+# backend-only branch doesn't wait for them. main, merge/*, pull requests,
+# schedule and manual runs always run everything, so nothing reaches main untested.
 # Actions are pinned to full commit SHAs; Dependabot (github-actions) bumps them.
 name: CI
 
@@ -44,6 +48,39 @@ defaults:
     shell: bash # bash -eo pipefail
 
 jobs:
+  # Does this branch touch anything the Android jobs build or check? Compared
+  # with its merge-base on main, so a branch that touched the app once keeps
+  # running them. Any doubt (no merge-base, a full-run ref) means yes.
+  changes:
+    name: changes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      android: ${{ steps.android.outputs.android }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Android-relevant changes?
+        id: android
+        env:
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+        run: |
+          android=true
+          if [[ "$EVENT" == push && "$REF" != refs/heads/main && "$REF" != refs/heads/merge/* ]] \
+            && base="$(git merge-base origin/main HEAD 2>/dev/null)"; then
+            relevant='^(apps/mobile/|packages/|contracts/|pubspec\.(yaml|lock)$|analysis_options\.yaml$|\.fvmrc$|Makefile$|\.github/workflows/ci\.yml$|tools/scripts/(build-android|setup-android|patrol-android|android-|apk_hardening|apk-hardening|testdata/apk-hardening/))'
+            if ! git diff --name-only "$base" HEAD | grep -Eq "$relevant"; then
+              android=false
+            fi
+          fi
+          echo "android=$android" >>"$GITHUB_OUTPUT"
+          echo "Android jobs run: $android" >>"$GITHUB_STEP_SUMMARY"
+
   dart:
     name: dart
     runs-on: ubuntu-24.04
@@ -161,6 +198,8 @@ jobs:
   # debug APK is what android-it builds (plan D7).
   android:
     name: android
+    needs: changes
+    if: needs.changes.outputs.android == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -307,6 +346,8 @@ jobs:
   # warning and in the job summary; a second failure fails the job.
   android-it:
     name: android-it
+    needs: changes
+    if: needs.changes.outputs.android == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
@@ -473,13 +514,13 @@ jobs:
             echo "::notice title=Patrol attempt $n::${lines//$'\n'/'%0A'}"
           done
 
-  # The one required status check. Fails unless every needed job succeeded:
-  # failure, cancelled and skipped all fail the gate (nothing is skipped on
-  # purpose while there is no path filtering).
+  # The one required status check. Fails unless every needed job succeeded.
+  # The only allowed skip: android/android-it when `changes` says the branch
+  # doesn't touch Android (TD-060). Any other failure, cancel or skip fails it.
   ci:
     name: ci
     if: always()
-    needs: [dart, dotnet, contract, android, android-it]
+    needs: [changes, dart, dotnet, contract, android, android-it]
     runs-on: ubuntu-24.04
     permissions: {} # reads only `needs`; no token scopes at all
     timeout-minutes: 5
@@ -487,12 +528,16 @@ jobs:
       - name: All jobs succeeded
         env:
           NEEDS: ${{ toJSON(needs) }}
+          ANDROID: ${{ needs.changes.outputs.android }}
         run: |
           jq -r 'to_entries[] | "\(.key)\t\(.value.result)"' <<<"$NEEDS" | {
             failed=0 seen=0
             while IFS=$'\t' read -r job result; do
               printf '%-10s %s\n' "$job" "$result"
               seen=$((seen + 1))
+              if [[ "$result" == skipped && "$ANDROID" == false && ( "$job" == android || "$job" == android-it ) ]]; then
+                continue
+              fi
               [[ "$result" == success ]] || failed=1
             done
             if (( failed || seen == 0 )); then
