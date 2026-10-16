@@ -11,13 +11,13 @@
            fails a release build that allows cleartext or is debuggable.
          - Backup: the install's device id (shared_preferences key fb.device_id) must
            not be restored onto another install or device, or two installs would
-           share one id (X-Device-Id, and the sync clock's node id from S09).
+           share one id (X-Device-Id, and the sync clock's node id from A01).
            SharedPreferencesAsync stores it with DataStore in
            files/datastore/FlutterSharedPreferences.preferences_pb, the legacy API
            in shared_prefs/. Both are excluded from cloud backup and device
            transfer (Android 12+: data_extraction_rules; Android 8-11:
            backup_rules; keep the two files in sync). Whether the local database
-           is backed up is S09's call. -->
+           is backed up is A01's call. -->
     <application
         android:label="@string/app_name"
         android:name="${applicationName}"

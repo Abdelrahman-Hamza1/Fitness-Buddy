@@ -70,11 +70,11 @@ _Round 1 · 2026-10-10 · Round 2 (backend & hosting) · 2026-10-11. Fast-moving
 | Self-hosted Supabase ≈ 10 containers, ~4 GB RAM, lacks some cloud features (managed backups/PITR, logs) | Medium (community + vendors) | [GitHub issue](https://github.com/supabase/supabase-js/issues/1581), [selfhost.dev](https://selfhost.dev/blog/supabase-self-hosting/) |
 
 ### Still to verify (round 2)
-- [ ] Current Hetzner VM line-up and prices (S05/S29).
+- [ ] Current Hetzner VM line-up and prices (old S05/S29 → B13/B14).
 - [ ] .NET 10 built-in Minimal API validation capabilities vs FluentValidation (S03).
 - [x] Dart OpenAPI generator support for OpenAPI 3.1 `oneOf` + discriminator (S02). See "S02 — Dart client generator" below.
-- [ ] WAL-G vs pgBackRest support for Postgres 18 (S29).
-- [ ] The email provider's EU data handling and free tier (S24).
+- [ ] WAL-G vs pgBackRest support for Postgres 18 (old S29 → B14).
+- [ ] The email provider's EU data handling and free tier (old S24 → B14).
 
 
 ## S02 — Contract tooling, .NET 10 build-time OpenAPI, conformance diff (2026-10-12)
@@ -278,7 +278,7 @@ Compressed linux/amd64 size from MCR manifests (2026-10-16):
 - [x] `ProducesValidationProblem()` / `ProducesProblem()` conformance and DTOs in another assembly verified in S03. Each module calls AddValidation; validated DTOs must be public.
 - [x] Request-id present on all status paths, including 500/429/426 (S03 tests).
 - [x] Real appsettings suppress request-start info; provider scrubbing removes exception messages; canary tests cover all sinks (S03).
-- [ ] Forwarded-headers behaviour with the real Docker bridge range and kamal-proxy (S05/S29); whether app containers are published to the host.
+- [ ] Forwarded-headers behaviour with the real Docker bridge range and kamal-proxy (old S05/S29 → B03 for the serve hop, B13/B14); whether app containers are published to the host.
 - [x] S03 image smoke verifies configured/process UID 1654, port 8080 and image size (164,996,413 bytes). Kamal app_port wiring remains S05.
 - [x] S03 follows cooldown: OTel core/exporters 1.19.1 + instrumentation 1.19.0 verified with console, real OTLP receiver and canary tests; 1.20.x deferred to Dependabot.
 

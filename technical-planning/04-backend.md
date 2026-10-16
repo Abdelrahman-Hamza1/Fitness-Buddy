@@ -102,7 +102,7 @@ The same container image runs as:
 | Concern | Rule |
 |---|---|
 | Transport | HTTPS only (TLS 1.2+), JSON (UTF-8), gzip/brotli |
-| Versioning | `/v1/...` in the path. Only additive changes within a version. Deprecation via the `Sunset` header. **Minimum app version gate:** `426 Upgrade Required` + the app update screen when `X-App-Version` is below the configured minimum; `/v1/config` is exempt so outdated apps can learn the minimum. Store link added with the release channel in S29 |
+| Versioning | `/v1/...` in the path. Only additive changes within a version. Deprecation via the `Sunset` header. **Minimum app version gate:** `426 Upgrade Required` + the app update screen when `X-App-Version` is below the configured minimum; `/v1/config` is exempt so outdated apps can learn the minimum. Store link added with the release channel in A43 |
 | Auth | `Authorization: Bearer <access JWT>` (≈ 15 min, ES256, `kid` header). Refresh tokens are opaque, rotated on every use and stored hashed. Reusing a refresh token revokes its whole family |
 | Errors | **RFC 9457** `application/problem+json` with a stable `type` URI (relative, e.g. `/errors/rate-limited`, `/errors/version-conflict`, `/errors/upgrade-required`) and an `errors` map on every 400 (camelCase field paths; `{}` with fixed detail for unreadable input). Every problem carries `traceId`; 500s contain no exception detail. The app maps `type` to its `Failure` values (`09` §8) |
 | Idempotency | `Idempotency-Key` header on every unsafe POST. The server stores the result for 24 h and replays it. Buddy uses the chat message ID (MN-005) |
@@ -111,7 +111,7 @@ The same container image runs as:
 | Formats | IDs: UUIDv7 strings. Times: RFC 3339 UTC + explicit `tzOffsetMin` where local time matters. Canonical units: g, ml, kcal, kg, cm (`05` §1). Decimals as JSON numbers with documented precision |
 | Client headers | `X-App-Version`, `X-Platform` (`android`/`ios`), `X-Device-Id`, `Accept-Language` |
 | Tracing | W3C `traceparent` accepted and propagated. Response `X-Request-Id` = W3C trace id (32 lowercase hex), the problem `traceId` and request-log `TraceId`. Inbound `X-Request-Id` is ignored (TD-057) |
-| Rate limits | `429` + `Retry-After` + `RateLimit-Policy` / `RateLimit` headers (IETF draft -11; headers only on 429 in v1). Per IP now (IPv6 /64), per user from S24 |
+| Rate limits | `429` + `Retry-After` + `RateLimit-Policy` / `RateLimit` headers (IETF draft -11; headers only on 429 in v1). Per IP now (IPv6 /64), per user from B04 |
 | Size limits | Body ≤ 256 KB, except image uploads (≤ 2 MB, JPEG ≤ 1024 px, `09` §4) |
 | Schema shape (TD-043) | Every property is in `required`; a value that can be absent is `type: [T, 'null']` and is sent as `null`, never as a missing key (a server emission rule: no `WhenWritingNull`). No merge-patch semantics: updates are full replacement (`If-Match`) or command POSTs. A request property added within a version is optional with a server default. Unions are discriminated (`discriminator` + complete `mapping`). One tag per module = one Dart client class; `operationId` = the Dart method name |
 | Error types (TD-043) | `ProblemDetails.type` is a relative `/errors/<kebab-slug>`, compared as an opaque string, never renamed or removed within a version. `type`, `title`, `status` always present. Catalogue: `contracts/README.md` (+ golden bodies in `contracts/testdata/problems/` from S03) |
@@ -134,7 +134,7 @@ The same container image runs as:
 |---|---|
 | **Google** | Native sign-in in the app (`google_sign_in`). The app sends the Google **ID token**. The backend verifies the signature (Google JWKS), `aud` (our client IDs), `iss` and `exp`, then finds or creates the user and issues our tokens |
 | **Apple** (iOS, **R2**, D-081) | Same pattern with Apple's JWKS. A nonce protects against replay. Apple's "hide my email" relay addresses are supported |
-| **Email** | **Passwordless one-time code**: `email/start` sends a 6-digit code (valid 10 min, ≤ 5 attempts, throttled per address and IP). `email/verify` exchanges it for tokens. No passwords to store, reset or leak. The code is sent through `IEmailSender` (vendor chosen in S24) |
+| **Email** | **Passwordless one-time code**: `email/start` sends a 6-digit code (valid 10 min, ≤ 5 attempts, throttled per address and IP). `email/verify` exchanges it for tokens. No passwords to store, reset or leak. The code is sent through `IEmailSender` (vendor chosen in B04) |
 | **Guests** (AC-002) | `auth/anonymous` creates an anonymous user, used **only** for rate limiting and abuse protection. **Sync endpoints refuse anonymous users**, so guest data never leaves the phone |
 | **Upgrade** (AC-003) | `auth/link/{provider}` attaches an identity to the current anonymous user. **The user ID stays the same.** The app then enables sync and pushes everything. If the identity already belongs to another account, the API returns a `409` and the app asks: merge this device's data into that account, or discard it (`05` §6) |
 | **Tokens** | Access JWT ≈ 15 min, ES256, keys rotatable (`kid`, JWKS published). Refresh tokens are opaque and random, stored as hashes, rotated on use, with family revocation on reuse. Logout revokes the family |

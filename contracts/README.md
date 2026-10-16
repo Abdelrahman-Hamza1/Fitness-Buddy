@@ -81,7 +81,7 @@ Every type has a golden body in `testdata/problems/<slug>.json` (exactly what th
 
 **Before the first app release (now).** No `contracts-v*` tag exists, so the gate compares with the merge-base with `origin/main` (on `main` itself: the previous commit), **reports** the breaking changes (log, GitHub notice, job-summary table) and **passes**. Nobody runs an old app yet, so `/v1` can still change (S02 A1, the owner's reading of TD-023's "published version").
 
-**From the first app release on.** The first tag, `contracts-v1.0.0`, is created together with the first `app-v*` release that calls the API (S29), and `info.version` becomes `1.0.0`. From then on the gate compares with the newest `contracts-v*` tag and **fails** on any breaking change. Within `/v1` only additive changes are allowed: add a field instead of renaming one, or put the new shape under `/v2` next to `/v1` until old apps age out (`04` §8). The `426` minimum-version gate is the kill switch.
+**From the first app release on.** The first tag, `contracts-v1.0.0`, is created together with the first `app-v*` release that calls the API (A43), and `info.version` becomes `1.0.0`. From then on the gate compares with the newest `contracts-v*` tag and **fails** on any breaking change. Within `/v1` only additive changes are allowed: add a field instead of renaming one, or put the new shape under `/v2` next to `/v1` until old apps age out (`04` §8). The `426` minimum-version gate is the kill switch.
 
 To check against a specific version at any time (it then blocks): `CONTRACT_BASE_REF=<git ref> make contract-breaking`.
 

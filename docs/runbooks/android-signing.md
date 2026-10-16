@@ -70,14 +70,14 @@ make build-android FB_RELEASE_ENV=   # ignore the key: *-debugkey.apk / *-debugk
 
 CI: the `android` job summary shows the APK's SHA-256. The signed APK is uploaded only when it was signed with this key.
 
-## 5. Google Play (S29)
+## 5. Google Play (A43)
 
-Not decided yet. This key is pinned in `build-android.sh` and is the certificate every installed build carries, so it stays the app's signing key. At S29, decide between:
+Not decided yet. This key is pinned in `build-android.sh` and is the certificate every installed build carries, so it stays the app's signing key. At A43, decide between:
 
 - **Keep sideloading** the builds signed with this key (no Play), or
 - **Play with Play App Signing**, enrolling **this key as the app signing key** ("Use existing app signing key from Java keystore", uploaded with Google's PEPK tool), so Play's builds update the sideloaded installs in place. Play then also wants an **upload key**: either a new one (the CI secrets would sign uploads with it, and the pin would have to cover two certificates) or this key itself.
 
-Record the choice in S29's card and update this runbook and the pin.
+Record the choice in A43's card and update this runbook and the pin.
 
 ## 6. If something goes wrong
 

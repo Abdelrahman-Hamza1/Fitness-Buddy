@@ -4,7 +4,7 @@ import 'package:fb_domain/src/nutrition/nutrients.dart';
 import 'package:fb_domain/src/units/food_measures.dart';
 
 /// The thresholds of the FD-012 sanity check (S08 D5, A4). One value, so the
-/// catalog build (S13) can tune them without touching the rule.
+/// catalog build (A05) can tune them without touching the rule.
 final class SanityTolerance {
   /// Thresholds; the defaults are the documented ones (README "Sanity
   /// tolerances").

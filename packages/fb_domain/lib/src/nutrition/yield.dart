@@ -4,7 +4,7 @@ import 'package:fb_domain/src/units/amounts.dart';
 
 /// One yield row (FD-060): [factor] grams of [to] per gram of [from] for a
 /// food [group], e.g. rice dry → cooked × 2.5. The rows come from the catalog
-/// (S13).
+/// (A05).
 final class YieldFactor {
   /// A row. [factor] must be finite and positive.
   new({

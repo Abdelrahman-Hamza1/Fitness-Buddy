@@ -101,7 +101,7 @@ Planned (full map: [`technical-planning/10-engineering-practices.md`](technical-
 | `packages/fb_api_client/`, `packages/fb_design_system/` | Generated API client, UI kit (planned) |
 | `data/` | Reference dishes, exercises, portion words (planned) |
 | `tools/buddy_eval/`, `tools/catalog/` | AI acceptance suite, catalog build/validate (planned) |
-| `infra/tofu/`, `infra/cloud-init/`, `infra/kamal/` | Infrastructure provisioning and deployments (S05/S29) |
+| `infra/tofu/`, `infra/cloud-init/`, `infra/kamal/` | Infrastructure provisioning and deployments (B13/B14) |
 
 ## CI
 

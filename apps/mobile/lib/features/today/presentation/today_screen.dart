@@ -13,7 +13,7 @@ class TodayScreen extends StatelessWidget {
       appBar: AppBar(title: Text(l10n.tabToday)),
       body: Center(
         child: Padding(
-          // S07 replaces this with a design-system spacing token.
+          // A02 replaces this with a design-system spacing token.
           padding: const EdgeInsetsDirectional.symmetric(horizontal: 24),
           child: Text(l10n.todayPlaceholder, textAlign: TextAlign.center),
         ),

@@ -202,7 +202,7 @@ jobs:
 
   # The owner's Android build (S06 plan D3, D4, D7, A6, A8): `make build-android`
   # for the staging flavor, a release APK (arm64, for the phone) + an AAB (for
-  # Play, S29), versionCode = the run number so each build installs over the
+  # Play, A43), versionCode = the run number so each build installs over the
   # last. build-android.sh checks the APK (not debuggable, no cleartext) and the
   # signer: with the release key the certificate must be the pinned one.
   # Signing: 3 Actions secrets (docs/runbooks/android-signing.md §3); without

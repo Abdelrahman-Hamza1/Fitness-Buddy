@@ -9,7 +9,7 @@
 #   FB_RELEASE_ENV  file with the release signing variables (default
 #                 ~/.fitness-buddy/keys/release.env; empty = don't read one)
 #
-# release: an arm64 APK for the phone + an AAB (all ABIs, for Play from S29).
+# release: an arm64 APK for the phone + an AAB (all ABIs, for Play from A43).
 #   - hardening: tools/scripts/apk_hardening_check.py on the built APK (not
 #     debuggable, no cleartext, system CAs only). A failing build's outputs are
 #     deleted.

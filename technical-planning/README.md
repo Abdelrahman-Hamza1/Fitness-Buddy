@@ -3,7 +3,7 @@
 > How we build what `spec/` describes. `spec/` stays the source of truth for **what** and **why**. This folder covers **how**.
 > If something here contradicts the spec, the spec wins. Either this folder gets fixed, or a spec change goes through `spec/decisions.md` first.
 
-_Status: **Plan v2** · 2026-10-11 · Based on spec D-001 to D-081. R1 is Android-only (D-081). Backend reworked to an own ASP.NET Core API on Hetzner VMs (TD-021–TD-030, owner-accepted). Delivery split into 49 step cards (`steps/`)._
+_Status: **Plan v2** · 2026-10-11 · Based on spec D-001 to D-081. R1 is Android-only (D-081). Backend reworked to an own ASP.NET Core API on Hetzner VMs (TD-021–TD-030, owner-accepted). Delivery in step cards on two tracks (`steps/`, TD-063, 2026-10-16)._
 
 ## Status
 
@@ -13,8 +13,8 @@ _Status: **Plan v2** · 2026-10-11 · Based on spec D-001 to D-081. R1 is Androi
 | Research (versions, prices, licences, hosting) | ✅ rounds 1–2, `research-notes.md` |
 | Technical decisions | 34 TDs: backend/infra **accepted**, spikes pending, others Proposed (accepted when implemented) (`12`) |
 | Open owner questions | 6 (`12` §2.1), none blocking. TQ-22 answered: Android-first R1 (D-081) |
-| Delivery plan | 49 steps + 6 data batches, each with a card (`steps/README.md`) |
-| Code | S01, S02, S03, S04, S06, S08 done. Two implementers (TD-059/061): Codex on backend + integration (`AGENTS.md`, S10 next when its owner prerequisites exist; S05 deferred to P3), Claude on the app (`CLAUDE.md`). See the board's Owner column |
+| Delivery plan | Two tracks, each step with a card: app `A01–A43` (Claude), backend `B01–B16` (Codex), milestones M1–M7 + R1 (`steps/README.md`, TD-063) |
+| Code | Foundation done (S01–S04, S06a/b, S08). Two tracks (TD-059/061/063): Codex on the backend track (`AGENTS.md`, B01 next), Claude on the app track (`CLAUDE.md`, A01 next). Hetzner last; the laptop is the test server until then (TD-064). See `steps/README.md` §4 |
 
 ## The plan in one page
 
@@ -48,12 +48,12 @@ The ideas that carry the design:
 6. **The server stores synced data as validated JSON documents**, so the backend doesn't change when the app's data model grows (TD-031).
 7. **Postgres is the only stateful component**, on its own VM, with point-in-time backups to two providers and a **restore test every week**.
 8. **Servers are built from code** (OpenTofu, cloud-init) and deployed with zero downtime and one-command rollback (Kamal).
-9. **The AI model is chosen by measurement** (S10 bake-off) behind a provider-agnostic port. The eval suite gates every AI change.
+9. **The AI model is chosen by measurement** (B02 bake-off) behind a provider-agnostic port. The eval suite gates every AI change.
 10. **The user model is structured and visible**: Buddy learns habits only from confirmed data and shows everything it uses (TD-032).
 
 **Stack:** Flutter · Riverpod 3 · go_router · drift · freezed · `material_ui` · **ASP.NET Core (.NET 10 LTS)** · EF Core + Npgsql · **PostgreSQL 18** · OpenAPI 3.1 (Redocly, Spectral, oasdiff) · **Hetzner** · OpenTofu · Kamal 2 · Tailscale · OpenTelemetry → Grafana Cloud · Sentry · GitHub Actions. Details and alternatives: `02`.
 
-**Delivery:** P0 foundations and spikes → P1 manual tracker → P2 targets & weight → P3 accounts, sync, production → **Dogfood 1** → P4 Buddy core → P5 Buddy breadth → **Dogfood 2** → P6 workouts → P7 insights, notifications, Ramadan → P8 hardening → **R1**. See `11` and `steps/`.
+**Delivery:** two parallel tracks. App: manual tracker → **Dogfood 1** (offline, M1) → targets & weight → Buddy core (M3, laptop server) → Buddy breadth → **Dogfood 2** (M4) → sign-in & sync → workouts, insights, notifications, Ramadan → performance → Play release. Backend: spikes + laptop test server → identity, sync, deletion → catalog + Buddy services → **Hetzner staging & production last** (M7) → final eval + security → **R1**. See `11` and `steps/README.md`.
 
 ## File map
 
@@ -69,7 +69,7 @@ The ideas that carry the design:
 | `08-infrastructure-and-operations.md` | Hetzner environments, topology and scaling stages, provisioning and deploys, backups and restore, server security, observability, runbooks, cost |
 | `09-cross-cutting.md` | Notifications, time & Ramadan, localization/RTL, security & privacy, observability, performance, accessibility, errors, configuration |
 | `10-engineering-practices.md` | Repo layout, conventions for both stacks, enforced architecture rules, testing, traceability, git workflow, CI/CD, Definition of Done |
-| `11-roadmap.md` | Phases, milestones, the step list with dependencies, R2/R3 outlines |
+| `11-roadmap.md` | The two tracks, milestones, servers until production, R2/R3 outlines (the board is `steps/README.md`) |
 | `12-decisions-and-questions.md` | Technical decision log (TD-001–TD-034) and the owner's open/answered questions |
 | `13-delivery-process.md` | **How work gets done:** orchestrator + specialist agents, the step lifecycle, owner gates, decision rights, communication, quality gates |
 | `steps/` | **One card per step** + the session protocol, card template, status board and owner prerequisites (`steps/README.md`) |

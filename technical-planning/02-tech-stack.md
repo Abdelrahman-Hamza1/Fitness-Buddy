@@ -18,17 +18,17 @@ Selection rules, in order: (1) fits the drivers in `01` §1; (2) mature, maintai
 | Sign-in SDKs | **google_sign_in**, **sign_in_with_apple** (iOS, R2, D-081) | Native flows. The ID token is sent to our API (`04` §5) | Firebase Auth, Supabase Auth |
 | Barcode | **mobile_scanner** | On-device (ML Kit / Apple Vision), fast | — |
 | Camera / images | **image_picker** + **flutter_image_compress** | Photos resized to ~1024 px JPEG before upload | `camera` |
-| Charts | **fl_chart** behind design-system chart widgets. Feasibility check at the start of S22, with `CustomPainter` as the fallback | Free, flexible, popular | Syncfusion (licence), `graphic` |
+| Charts | **fl_chart** behind design-system chart widgets. Feasibility check at the start of A15, with `CustomPainter` as the fallback | Free, flexible, popular | Syncfusion (licence), `graphic` |
 | Local notifications | **flutter_local_notifications** + **timezone** | All R1 notifications are local (`09` §1) | FCM (R2+ if needed) |
 | Prayer times | **adhan_dart** (offline) | No network. Multiple calculation methods | Aladhan API |
-| Hijri calendar | An Umm al-Qura package (chosen in S46) + the user's ±1-day shift | LC-020, LC-030 | — |
+| Hijri calendar | An Umm al-Qura package (chosen in A41) + the user's ±1-day shift | LC-020, LC-030 | — |
 | Localization | **gen-l10n (ARB)** + `intl` | Official. Strings externalized from R1, so the R2 Arabic UI is translation work | easy_localization |
 | Secure storage | **flutter_secure_storage** | Tokens in Keychain/Keystore | — |
 | Connectivity | **connectivity_plus** + a real reachability check | Drives queues (AC-020) | — |
 | Errors / performance | **sentry_flutter** | Crashes, release health, traces, PII scrubbing | Crashlytics |
 | R2 extras | `health`, `home_widget`, a share-intent package | Picked when R2 starts | — |
 
-**Fonts:** bundled Latin + Arabic pair with matching weights, e.g. Inter + IBM Plex Sans Arabic (chosen in S07).
+**Fonts:** bundled Latin + Arabic pair with matching weights, e.g. Inter + IBM Plex Sans Arabic (chosen in A02).
 
 ## 2. Backend (`04`)
 
@@ -69,13 +69,13 @@ Selection rules, in order: (1) fits the drivers in `01` §1; (2) mature, maintai
 | DNS | **Cloudflare** (DNS only) |
 | Backups | **WAL-G** (or pgBackRest) → object storage in another DC + weekly copy to a second provider |
 | Monitoring | **Grafana Cloud** (OpenTelemetry), **Sentry**, an external uptime monitor |
-| Email (sign-in codes) | Transactional email provider, chosen in S24 (e.g. Postmark, Amazon SES, Resend) |
+| Email (sign-in codes) | Transactional email provider, chosen in B04 (e.g. Postmark, Amazon SES, Resend) |
 
 ## 5. AI
 
 | Concern | Choice | Why |
 |---|---|---|
-| Model provider | **Chosen by the S10 bake-off** on the spec's test set. Candidates (paid tiers, no training on our data): **Claude Haiku 5.5** ($0.10 in / $0.50 out per M tokens), **Gemini Flash-Lite class**, **GPT-5.x nano/mini** | Arabic/Arabizi understanding and latency from the region must be measured |
+| Model provider | **Chosen by the B02 bake-off** on the spec's test set. Candidates (paid tiers, no training on our data): **Claude Haiku 5.5** ($0.10 in / $0.50 out per M tokens), **Gemini Flash-Lite class**, **GPT-5.x nano/mini** | Arabic/Arabizi understanding and latency from the region must be measured |
 | Integration | **No agent framework.** `ILlmClient` port in the Buddy module, built on **Microsoft.Extensions.AI `IChatClient`** with the official provider SDKs. Structured output (JSON schema) on every call, a per-task routing table, a fallback provider (TD-035, `06` §9.1) | Standard, swappable, measurable, minimal machinery |
 | Vision | The same provider's multimodal model if it passes the label eval, otherwise route vision separately | On-device ML Kit has no Arabic script, and labels can be Arabic (D-073) |
 | Embeddings | Only if the eval shows trigram + alias matching isn't enough (`pgvector`) | Avoid unmeasured complexity |

@@ -9,7 +9,7 @@ You are the **UX & product-quality reviewer** for Fitness Buddy. The owner quit 
 
 ## Know the rules
 - `spec/00-vision-and-scope.md` §5 (principles PR-1..PR-12), `spec/30-ux-principles.md` (speed targets, navigation, the proposal card pattern, undo, visuals, states, accessibility), `spec/21-safety-and-wellbeing.md` §3 (language), `spec/16-insights-and-home.md` (Today/Progress layouts), plus the spec module for the feature under review.
-- The design system (`packages/fb_design_system`) and the S07 mockups/feedback in its card's Outcome.
+- The design system (`packages/fb_design_system`) and the A02 mockups/feedback in its card's Outcome.
 
 ## Checklist
 - **Convenience:** taps to complete the core action vs the spec target (repeat meal ≤ 2, weigh-in ≤ 3, confirm = 1, nothing important > 2 taps from Today). No forms where a tap or a sentence would do.

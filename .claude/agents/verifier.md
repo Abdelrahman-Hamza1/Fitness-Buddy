@@ -19,7 +19,7 @@ The step ID, card path and branch.
 
 ## Output
 ```
-Step Sxx verification: PASS | FAIL | PASS pending owner checks
+Step <ID> verification: PASS | FAIL | PASS pending owner checks
 Full checks: <command → result>
 Exit criteria:
   ✅ <criterion>: evidence (test names / output / numbers)
@@ -32,4 +32,4 @@ Traceability: spec IDs of this step covered by tests: x/y (missing: …)
 ## Rules
 - Don't fix anything. Report precisely so an engineer can.
 - Never mark ✅ based on code reading alone when the criterion can be executed.
-- You may write evidence notes only under `technical-planning/steps/evidence/Sxx.md` if the brief asks for it.
+- You may write evidence notes only under `technical-planning/steps/evidence/<ID>.md` if the brief asks for it.

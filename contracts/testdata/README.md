@@ -7,7 +7,7 @@ Files (present and planned):
 | File | Content | Used by | Arrives in |
 |---|---|---|---|
 | `problems/*.json` | Example `application/problem+json` bodies, one per error type in the catalogue (`../README.md`) | C# problem pipeline tests (Host.Tests), Dart `Failure` mapping tests | S03 ✅ |
-| `normalization_cases.yaml` | Text normalization cases (input → normalized key), at least 100 | `fb_text` (Dart), Catalog module (C#) | S08 (Dart) ✅, S30 (C#) |
+| `normalization_cases.yaml` | Text normalization cases (input → normalized key), at least 100 | `fb_text` (Dart), Catalog module (C#) | S08 (Dart) ✅, B07 (C#) |
 | `sync/*.json` | Sync push/pull payload examples | the app's sync code (Dart), UserData module (C#) | the sync steps |
 
 ## Rules
@@ -30,7 +30,7 @@ One file per type in the error catalogue (`../README.md`), named after its slug:
 
 ## `normalization_cases.yaml`
 
-The specification of the **search key** (`normalizeKey` in `packages/fb_text`, S08 D11 + A1–A3, TD-030): the text that both the search index and the query are reduced to before they are compared. The C# Catalog module (S30) must give the same key, byte for byte. Don't use Unicode normalization (`string.Normalize(FormD)`), `ToLower`/`ToLowerInvariant` or culture APIs on either side: use the steps and tables below, nothing else.
+The specification of the **search key** (`normalizeKey` in `packages/fb_text`, S08 D11 + A1–A3, TD-030): the text that both the search index and the query are reduced to before they are compared. The C# Catalog module (B07) must give the same key, byte for byte. Don't use Unicode normalization (`string.Normalize(FormD)`), `ToLower`/`ToLowerInvariant` or culture APIs on either side: use the steps and tables below, nothing else.
 
 ### Format
 

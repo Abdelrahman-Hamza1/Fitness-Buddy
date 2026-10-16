@@ -166,7 +166,7 @@ The client sends remaining kcal and protein, the halal flag, time of day / Ramad
 ## 9. Provider strategy & privacy
 
 - **`ILlmClient` port** with one adapter per provider (official SDKs where stable, REST otherwise). A **task routing table** in configuration: `interpret`, `rerank`, `vision_food`, `vision_label`, `import`, `suggest`, `review` → (provider, model, effort, max tokens, timeout).
-- **Selection:** the S10 bake-off decides (TD-008). The default expectation is a small model at low reasoning effort for `interpret`, possibly a stronger one for `review` or vision.
+- **Selection:** the B02 bake-off decides (TD-008). The default expectation is a small model at low reasoning effort for `interpret`, possibly a stronger one for `review` or vision.
 - **Fallback:** on a provider error or timeout, retry once on the secondary provider. If that fails, the message goes pending (AI-153).
 - **Privacy (AC-040–042):** paid API tiers only (no training on our data). No identity in prompts. Photos aren't stored by us. **Zero data retention** is requested before R3 (TQ-06 answered: standard terms for R1/R2).
 - **Prompt registry:** versioned prompt files in `backend/src/Modules/Buddy/Prompts/`. Each response records `promptVersion` + `model`. Changes go through a PR + eval run.
@@ -178,14 +178,14 @@ The client sends remaining kcal and protein, the halal flag, time of day / Ramad
 | Layer | Choice | Why |
 |---|---|---|
 | Framework | **None.** No agent or orchestration framework (Microsoft Agent Framework, Semantic Kernel, LangChain…) | Buddy isn't an autonomous agent: one structured model call per message, then deterministic code. Frameworks add abstraction, churn and hidden prompts we'd have to fight. We can revisit for Later features (program generation, meal planning) |
-| Client interface | **Microsoft.Extensions.AI** (`IChatClient`): Microsoft's standard .NET abstraction for chat models | One interface for every provider. Middleware pipeline (OpenTelemetry, retries, caching). The official Anthropic C# SDK implements it (`AsIChatClient`), and so does the OpenAI .NET library. Google via its .NET SDK or a thin adapter (S10 confirms) |
+| Client interface | **Microsoft.Extensions.AI** (`IChatClient`): Microsoft's standard .NET abstraction for chat models | One interface for every provider. Middleware pipeline (OpenTelemetry, retries, caching). The official Anthropic C# SDK implements it (`AsIChatClient`), and so does the OpenAI .NET library. Google via its .NET SDK or a thin adapter (B02 confirms) |
 | Our port | `ILlmClient` (Buddy module, Application layer): `InterpretAsync`, `ExtractLabelAsync`, `ParseImportAsync`, `SuggestAsync`, `ReviewAsync` | Task-level, provider-agnostic. Handles routing, fallback, the repair retry, cost accounting and content-free logging. Infrastructure implements it on top of `IChatClient` |
-| Provider features | Prompt caching, reasoning effort, native JSON-schema output, vision: set through provider options where the abstraction doesn't cover them | Keeps the speed and cost wins. Verified per provider in S10 |
+| Provider features | Prompt caching, reasoning effort, native JSON-schema output, vision: set through provider options where the abstraction doesn't cover them | Keeps the speed and cost wins. Verified per provider in B02 |
 | Structured output | JSON schemas generated from C# records (internal, per task) → model native structured output → **our validation** → one repair retry → else `Clarify` | Reliable parsing. Public DTOs never depend on prompts |
 | Prompts | Versioned text files in `backend/src/Modules/Buddy/Prompts/` with simple placeholders. Version recorded on every response | Reviewable diffs. Every change runs the eval |
 | Observability | OpenTelemetry GenAI conventions (latency, tokens, model, cost) with **message content capture disabled** | Privacy (AC-041, `09` §4) |
 | Quality | **`tools/buddy_eval`** (§11) is the judge for every prompt/model change | Measured, not assumed |
-| Models | Chosen by the S10 bake-off: Claude Haiku 5.5 vs Gemini Flash-Lite class vs GPT-5.x nano/mini, with a fallback provider | Arabic/Arabizi quality, latency and cost must be measured |
+| Models | Chosen by the B02 bake-off: Claude Haiku 5.5 vs Gemini Flash-Lite class vs GPT-5.x nano/mini, with a fallback provider | Arabic/Arabizi quality, latency and cost must be measured |
 
 ## 10. Latency & cost budgets
 
@@ -195,18 +195,18 @@ The client sends remaining kcal and protein, the halal flag, time of day / Ramad
 |---|---|
 | Client context build (local SQL + fuzzy match) | ≤ 100 ms |
 | Network West Bank ↔ Germany (TLS reused) | ≈ 100–200 ms |
-| Model parse call (small model, low effort, cached prefix) | ≈ 1.0–2.5 s (**measured in S10**) |
+| Model parse call (small model, low effort, cached prefix) | ≈ 1.0–2.5 s (**measured in B02**) |
 | Retrieval (Postgres trigram, indexed) | ≤ 150 ms |
 | Client ProposalEngine + render | ≤ 50 ms |
 | **Total p90 target** | **≤ 3.5 s** (headroom for a rerank or a slow network) |
 
 If p90 misses: stream intents (SSE) so the first card renders while the rest finish, and/or route to a faster model.
 
-**Cost per food message** (estimate until S10 measures it): ≈ 2,000–3,000 input tokens (mostly cached) + 300–500 output tokens ≈ **$0.0003–0.001**. 15 messages a day ≈ **$0.15–0.45 per user per month**. Vision calls cost a few times more but are rarer. Repeat logging never uses AI (MN-021).
+**Cost per food message** (estimate until B02 measures it): ≈ 2,000–3,000 input tokens (mostly cached) + 300–500 output tokens ≈ **$0.0003–0.001**. 15 messages a day ≈ **$0.15–0.45 per user per month**. Vision calls cost a few times more but are rarer. Repeat logging never uses AI (MN-021).
 
 ## 11. Evaluation: the AI quality system
 
-`tools/buddy_eval` (Dart CLI) is how we know Buddy is good enough (AT-002). Built in S10, grown in every Buddy step.
+`tools/buddy_eval` (Dart CLI) is how we know Buddy is good enough (AT-002). Built in B02, grown in every Buddy step.
 
 - **Test set:** `tools/buddy_eval/cases/*.yaml`. It starts with T01–T41 from the spec plus Arabic-script and Arabizi messages in the owner's style (≥ ¼ of cases), and grows to ≥ 150 (`spec/40` §2). Full Arabic + Arabizi versions of every case come in R2 (D-080). Each case holds: message, starting state (defaults, open batches, recent entries) and the **expected structured outcome** (intents, food IDs, grams, questions asked or not, estimate flags, slot/date).
 - **Runner:** sends each case to a **real API instance** (local Docker or staging), then runs the **real `ProposalEngine`** (Dart) on the response. It computes AQ-01–12 with per-language breakdowns and writes a Markdown report + JSON for trends.

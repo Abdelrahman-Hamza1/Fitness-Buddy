@@ -14,7 +14,7 @@ class ProgressScreen extends StatelessWidget {
       appBar: AppBar(title: Text(l10n.tabProgress)),
       body: Center(
         child: Padding(
-          // S07 replaces this with a design-system spacing token.
+          // A02 replaces this with a design-system spacing token.
           padding: const EdgeInsetsDirectional.symmetric(horizontal: 24),
           child: Text(l10n.progressPlaceholder, textAlign: TextAlign.center),
         ),

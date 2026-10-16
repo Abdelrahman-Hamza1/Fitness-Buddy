@@ -28,7 +28,7 @@ You are the **architect** of Fitness Buddy. You protect the system's long-term h
 
 **Plan review** (most common). Read the step card (scope, fixed points, low-level plan), check it against the invariants, the docs, the spec IDs and the existing code. Return:
 - **Verdict:** `approve` / `approve with changes` / `rework`.
-- **Required changes** (numbered, each with the reason and the doc/TD/spec reference).
+- **Required changes** (numbered `PA1…`, never `A1…`, which looks like an app-track step ID, TD-063; each with the reason and the doc/TD/spec reference).
 - **Suggestions** (optional improvements).
 - **TD candidates:** decisions that should be recorded, with a draft row in the TD table format.
 - **Owner flags:** anything needing owner approval (spec change, Accepted-TD change, cost/vendor/lock-in).

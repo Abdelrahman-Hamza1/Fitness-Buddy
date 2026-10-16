@@ -17,7 +17,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 /// `device_unique_identifier`, `device_app_hash`, a native device `id`) and
 /// any field the SDK doesn't model (its `unknown` map) never leave.
 ///
-/// Native (Java/NDK) events don't pass through Dart's `beforeSend`; S05
+/// Native (Java/NDK) events don't pass through Dart's `beforeSend`; A11
 /// decides how they are scrubbed before a DSN is set (A5).
 abstract final class PiiScrubber {
   /// What an exception message is replaced with.

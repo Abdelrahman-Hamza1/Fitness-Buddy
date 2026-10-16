@@ -52,15 +52,15 @@ No emulator is installed locally (8 GB image, and it can't run next to Gradle on
 | Flavor | Application ID | Launcher label | API | Cleartext HTTP |
 |---|---|---|---|---|
 | `dev` | `io.github.abdelrahmanhamza1.fitnessbuddy.dev` | FB Dev | `http://127.0.0.1:5198` (the laptop's API via `adb reverse`) | only to 127.0.0.1 / localhost |
-| `staging` | `io.github.abdelrahmanhamza1.fitnessbuddy.staging` | FB Staging | `https://api.staging.invalid` (placeholder until S05) | none |
-| `prod` | `io.github.abdelrahmanhamza1.fitnessbuddy` | Fitness Buddy | `https://api.invalid` (placeholder until S29) | none |
+| `staging` | `io.github.abdelrahmanhamza1.fitnessbuddy.staging` | FB Staging | `https://api.staging.invalid` (placeholder; CI sets the laptop test server from A11, Hetzner staging from B13) | none |
+| `prod` | `io.github.abdelrahmanhamza1.fitnessbuddy` | Fitness Buddy | `https://api.invalid` (placeholder; the laptop test server from A11, production from B14) | none |
 
 All three install side by side. `minSdk` is 26 (Android 8.0, needed by Sentry 10). Hardening is in `android/app/src/main/AndroidManifest.xml`: no cleartext outside dev, release not debuggable, and the install's device id excluded from cloud backup and device transfer.
 
 ### Build
 
 ```bash
-make build-android                       # staging release: arm64 APK (for the phone) + AAB (for Play, S29)
+make build-android                       # staging release: arm64 APK (for the phone) + AAB (for Play, A43)
 make build-android FLAVOR=prod BUILD_NUMBER=42
 make build-android FLAVOR=dev MODE=debug # dev debug APK
 ```
@@ -79,7 +79,7 @@ Times on the laptop: the first build is slow (it downloads Gradle and the depend
 2. Start the local API: `dotnet run --project src/Host --urls http://localhost:5198` from `backend/`.
 3. Connect the phone, then run `make run-dev`. This sets `adb reverse tcp:5198 tcp:5198`, then runs `flutter run --flavor dev` with hot reload. With several devices connected, set `ANDROID_SERIAL=<serial>`.
 
-### Install a build on the Galaxy A55 (sideload, until S29)
+### Install a build on the Galaxy A55 (sideload, until A43)
 
 1. Download the APK on the phone. From CI, open the run's artifact in Chrome while signed in to GitHub. It downloads as a plain `.apk`, not a zip.
 2. **Install unknown apps:** the first time, Android asks to allow installs from Chrome (or My Files). Allow it for that app only: Settings → Apps → Chrome → Install unknown apps.
@@ -118,7 +118,7 @@ It prints each `TotalTime` (`am start -S -W`, about the time to Flutter's first 
 - Strings only in `lib/l10n/app_en.arb`, read with `context.l10n.<key>`. English only in R1 (LC-002).
 - Directional layout only: `EdgeInsetsDirectional`, `AlignmentDirectional`, `start`/`end`.
 - Navigate with `ref.read(appNavigatorProvider).go(const ProgressRoute())`. New screens get an `AppRoute` in `lib/core/navigation/app_route.dart`; the router's exhaustive `switch` (a screen per route) and its test (every route registered) make you wire it up.
-- Light/dark follows the system (UX-040). Real design tokens come with S07.
+- Light/dark follows the system (UX-040). Real design tokens come with A02.
 - Startup does no I/O before the first frame (UX-001): the config refresh, error reporting, the device id and the package info all start afterwards. `/v1/config` failures are silent; the app runs on the cache or the defaults.
 - The update gate: any 426 (or the `/errors/upgrade-required` problem), or a cached/fresh `minimumAppVersion` above the installed version, shows the update screen everywhere. A malformed version never gates.
 - Error reporting is off while the flavor's `FB_SENTRY_DSN` is empty. Never put user content (food text, weights, messages) in exceptions, logs or Sentry: the scrubber drops exception messages, but don't rely on it.

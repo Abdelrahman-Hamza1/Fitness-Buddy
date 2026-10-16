@@ -9,7 +9,7 @@ Fitness Buddy is a local-first nutrition & weight tracking app (Flutter, Android
 - **`technical-planning/13-delivery-process.md`**: **the process every session follows** (roles, agents, gates, owner communication).
 
 ## Your role in this repo
-**Two implementers (TD-059, TD-061, `13` §10):** you own the app (`apps/mobile/`, `packages/`, Dart `tools/`, `data/`) and the planning docs' structure. **Codex owns the backend and integration** (`backend/`, `infra/`, server CI jobs, deploys), working from `AGENTS.md`. The board's **Owner** column says whose step it is. Don't edit Codex's area or brief `dotnet-engineer` for it. Codex reviews its own work (TD-061). You don't review Codex branches. When a card's Progress log reports a contract change, adapt the app.
+**Two implementers (TD-059, TD-061, `13` §10):** you own the app (`apps/mobile/`, `packages/`, Dart `tools/` except `tools/buddy_eval` and `tools/sync_sim`, `data/`) and the planning docs' structure. **Codex owns the backend and integration** (`backend/`, `infra/`, server CI jobs, deploys), working from `AGENTS.md`. Your steps are the **app track `A01–A43`** (`steps/README.md` §4.1, TD-063); Codex has the backend track `B01–B16`. You and Codex share `~/work/fitness_buddy`, **one at a time**: start only with a clean `git status`, and push your branch before handing over. Don't edit Codex's area or brief `dotnet-engineer` for it. Codex reviews its own work (TD-061). You don't review Codex branches. When a card's Progress log reports a contract change, adapt the app.
 
 You are the **orchestrator** for the app side: product owner + tech lead for the owner. You run your steps with the **`run-step`** skill, delegate to the specialist agents in `.claude/agents/` (planner, architect, researcher, Flutter/.NET/platform/AI engineers, data curator, code/security/UX reviewers, verifier), integrate their work, enforce the quality gates, and keep the owner in the loop. Other skills: `review-changes`, `record-decision`, `owner-update`.
 
@@ -30,8 +30,8 @@ You are the **orchestrator** for the app side: product owner + tech lead for the
 8. Every user-data change is undoable (direct action) or confirmed (proposal). Strings in ARB. Directional layout only.
 
 ## Git
-- Branch per step: `step/Sxx-short-name` from `main`. Conventional Commits (`feat(diary): …`). Push branches with `git push -u origin <branch>`, retrying on network errors.
-- Merge to `main` only after the owner accepts the step, as **one squash commit** `Sxx: <step name>` (TD-036), through a CI-verified `merge/Sxx` branch then a fast-forward push to `main` (TD-039, `13` §3.E). `main` rejects commits without a green `ci` check. There's no `gh` CLI, so the owner reviews branch diffs on GitHub. The remote uses SSH.
+- Branch per step: `step/<ID>-short-name` from `main`. Conventional Commits (`feat(diary): …`). Push branches with `git push -u origin <branch>`, retrying on network errors.
+- Merge to `main` only after the owner accepts the step, as **one squash commit** `<ID>: <step name>` (TD-036), through a CI-verified `merge/<ID>` branch then a fast-forward push to `main` (TD-039, `13` §3.E). `main` rejects commits without a green `ci` check. There's no `gh` CLI, so the owner reviews branch diffs on GitHub. The remote uses SSH.
 - Keep the step card's **Progress log** current and pushed (`13` §8a), so a lost session can resume.
 - Don't commit secrets. Don't force-push `main`.
 

@@ -28,7 +28,7 @@ Every catalog row has `source` (usda / reference / off / user), `source_ref` (FD
 | Open Food Facts | **ODbL** (database), DbCL (contents), **CC BY-SA** (images) | Commercial use with **attribution** and **share-alike** for adapted databases used publicly | **Keep OFF data isolated** in `catalog.off_cache`, never merged into our own catalog tables. Show "© Open Food Facts contributors" with a link wherever OFF data is displayed. Don't use OFF images. R3 idea: users opt in to contribute label scans back to OFF |
 | Our reference dishes | Ours | — | Each YAML file cites the recipe sources used for review (FD-051). We derive numbers and never copy recipe text |
 | GeoNames | CC BY 4.0 | Commercial use with attribution | Attribution in About |
-| Commercial APIs (FatSecret, Nutritionix, Edamam…) | Per contract, often restricting caching | — | **Not in R1.** Only if the S11 measurement shows OFF + label scan isn't enough. Caching limits would conflict with offline use |
+| Commercial APIs (FatSecret, Nutritionix, Edamam…) | Per contract, often restricting caching | — | **Not in R1.** Only if the A03 measurement shows OFF + label scan isn't enough. Caching limits would conflict with offline use |
 
 **OFF API rules:** ≈ 15 product reads/min and ≈ 10 searches/min per IP, a custom `User-Agent`, caching encouraged. → All barcode lookups go **through the API**, which caches results in `off_cache` (TTL ≈ 30 days, refreshed on access). The app never calls OFF directly.
 
@@ -67,8 +67,8 @@ review:
 
 - `tools/catalog` computes per-100 g nutrients from the recipe (catalog ingredients + yields), runs the sanity checks, checks that every name is unique after normalization, and fails CI on errors.
 - **Ranges** (D-045, AI-032) come from the portion range × recipe variation.
-- **Workflow (data batches D1–D6, `steps/D-reference-dish-batches.md`):** Claude drafts a batch with sources → CI validates → the owner skims (D-075: skim, not blocking) → status `reviewed` → shipped as ⓡ. Unreviewed dishes are **excluded** from the build, so Buddy falls back to `~ estimate` for them (FD-051). (TQ-08: the owner may name family recipes to use as the reference.)
-- **Throughput target:** ≈ 15–25 dishes per session. The must-cover list takes 6 batches spread over P1–P5.
+- **Workflow (dish batches A04, A17–A19, A30, A32, `steps/dish-batches.md`):** Claude drafts a batch with sources → CI validates → the owner skims (D-075: skim, not blocking) → status `reviewed` → shipped as ⓡ. Unreviewed dishes are **excluded** from the build, so Buddy falls back to `~ estimate` for them (FD-051). (TQ-08: the owner may name family recipes to use as the reference.)
+- **Throughput target:** ≈ 15–25 dishes per session. The must-cover list takes 6 batches spread over the app track (before M4).
 - **AT-003 check:** a CI test asserts every must-cover item resolves by an English, an Arabic and an Arabizi query.
 
 ## 5. Search & matching
@@ -99,7 +99,7 @@ Embeddings (`pgvector`) are **not** planned unless the eval shows misses that al
 ## 6. Catalog builds & the offline pack
 
 `tools/catalog build` (Dart, reusing `fb_domain`'s nutrition math) produces **one versioned catalog release**:
-1. **Server load files** (JSON/CSV) imported into `catalog.*` by the Catalog module's `catalog import` command (S30). The import is idempotent and keyed by stable IDs.
+1. **Server load files** (JSON/CSV) imported into `catalog.*` by the Catalog module's `catalog import` command (B07). The import is idempotent and keyed by stable IDs.
 2. **`catalog.db`**: a small read-only SQLite (target < 10 MB) with basics, all reviewed reference dishes, yields, portion words, exercises and cities. It's **bundled in the app** and **published to object storage** with a version and checksum.
 
 The app checks `GET /v1/catalog/packs/latest` in the background, downloads a newer pack, verifies the checksum and swaps it atomically. Diary entries are unaffected (snapshots). **Catalog IDs are stable forever** (never reused), so references from entries, memory and saved meals stay valid.
@@ -114,4 +114,4 @@ scan → personal foods by barcode (local) → offline pack by barcode (local)
      → offline: queue the lookup as pending (OF-02)
 ```
 
-**S11 measurement (→ TR-02):** the owner scans ~30 products from their own kitchen. We record the OFF hit rate and data completeness. Below about 40%, the label-scan path is the main experience and gets optimised first (it's already R1).
+**Coverage measurement (→ TR-02, TD-064):** A03 counts the region's products in the OFF data export (Palestine, Jordan, Israel) and how many have complete nutrients, plus a sample of local brands; no owner input. From A28 on, the app counts barcode lookups found / incomplete / not found **on the device**, which gives the real hit rate from daily use. If coverage is low (below about 40%), the label-scan path is the main experience and gets optimised first (it's already R1).

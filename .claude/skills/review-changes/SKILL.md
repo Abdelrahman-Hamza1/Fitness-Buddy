@@ -31,12 +31,12 @@ Brief each with: step ID, card path, branch, round number, and (for re-reviews) 
 
 ## 4. Fix loop (max 3 rounds)
 - Group the fixes by area and brief the engineer who owns that area (one brief per group, with the findings verbatim + the expected tests).
-- After the fixes: run `make check test`, commit (`fix(Sxx): address review round N`), then re-run **only the reviewers who had a blocker or major**, scoped to those findings + regressions. Minor/nit fixes: check the diff yourself and don't run another round (TD-054).
+- After the fixes: run `make check test`, commit (`fix(<ID>): address review round N`), then re-run **only the reviewers who had a blocker or major**, scoped to those findings + regressions. Minor/nit fixes: check the diff yourself and don't run another round (TD-054).
 - Still blockers or majors after round 3 → stop and escalate to the owner with a summary and a recommendation.
 
 ## 5. Report (to yourself / the owner)
 ```
-Review Sxx: round N: approved | open findings
+Review <ID>: round N: approved | open findings
 Reviewers: code ✅, security ✅, ux –, architect –
 Fixed: <count by severity> · Logged to backlog: <items>
 Open: <none | list>

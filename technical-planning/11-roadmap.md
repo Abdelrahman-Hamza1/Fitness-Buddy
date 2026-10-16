@@ -1,102 +1,37 @@
-# 11 — Roadmap: Phases, Milestones & Steps
+# 11 — Roadmap: Tracks, Milestones & Steps
 
-_Phases are ordered by **dependency** and **risk**: the riskiest unknowns are retired first, and the owner gets something usable early. Each phase ends with a working app. Work is done in **steps** (`steps/`), one focused session each._
+_Two implementers build R1 in parallel on two tracks (TD-059, TD-063): the **app track** (Claude, `A01–A43`) and the **backend track** (Codex, `B01–B16`). Within a track the step number is the order; the only waits are the cross-track handoffs. Work is done in **steps** (`steps/`), each with a card. The **status board, milestones and handoffs live in `steps/README.md` §4–6**, the single place that tracks them._
 
 ## 1. Overview
 
+- **Foundation (done):** S01 repo & CI, S02 contract pipeline, S03 backend host, S04 persistence, S06a/b app shell & Android builds, S08 domain primitives.
+- **App track:** the manual tracker first (A01–A11 → **M1 Dogfood 1**, usable offline every day), then targets & weight (→ **M2**), Buddy core (→ **M3**, against the laptop server), Buddy breadth (→ **M4 Dogfood 2**), sign-in & sync (→ **M5**), workouts, insights, notifications & Ramadan (→ **M6**), then performance and the Play release.
+- **Backend track:** the spikes and the laptop test server first (B01–B03), then identity, sync and deletion (B04–B06), the catalog and Buddy services (B07–B12), and **Hetzner last** (B13 staging, B14 production → **M7**), then the final eval and security review (B15, B16 → **R1**).
+
 ```mermaid
 flowchart LR
-  P0[P0 Foundations<br/>S01–S12<br/>incl. 3 spikes] --> P1[P1 Manual tracker<br/>offline<br/>S13–S18]
-  P1 --> P2[P2 Targets<br/>& weight<br/>S19–S23]
-  P2 --> P3[P3 Accounts, sync<br/>& prod<br/>S24–S29]
-  P3 --> M1{{Dogfood 1<br/>owner uses it daily}}
-  M1 --> P4[P4 Buddy core<br/>S30–S34]
-  P4 --> P5[P5 Buddy breadth<br/>S35–S40]
-  P5 --> M2{{Dogfood 2<br/>AI-first logging}}
-  M2 --> P6[P6 Workouts<br/>S41–S42]
-  P6 --> P7[P7 Insights, adaptive,<br/>notifications, Ramadan<br/>S43–S46]
-  P7 --> P8[P8 Hardening<br/>& acceptance<br/>S47–S49]
-  P8 --> R1{{R1 done}}
+  F[Foundation ✅<br/>S01–S08] --> A1[App: A01–A11] --> M1{{M1 Dogfood 1}} --> A2[A12–A16] --> M2{{M2}} --> A3[A17–A23] --> M3{{M3 Buddy}} --> A4[A24–A32] --> M4{{M4 Dogfood 2}} --> A5[A33–A35] --> M5{{M5 Sync}} --> A6[A36–A41] --> M6{{M6}} --> A7[A42–A43]
+  F --> B1[Backend: B01–B06] --> B2[B07–B12] --> B3[B13–B14 Hetzner] --> M7{{M7 Production}} --> B4[B15–B16]
+  A7 --> R1{{R1 done}}
+  B4 --> R1
 ```
 
-**Data workstream:** reference-dish batches **D1–D6** run in parallel from P1 to P5 (`steps/D-reference-dish-batches.md`).
+**Sizes:** S ≈ one session · M ≈ 1–2 sessions · L ≈ 2–3 sessions. If a low-level plan shows a step is bigger than L, split it (`A07a`, `A07b`) and update the board.
 
-**Sizes:** S ≈ one session · M ≈ 1–2 sessions · L ≈ 2–3 sessions. If a low-level plan shows a step is bigger than L, split it (`S14a`, `S14b`) and update the board.
+## 2. Milestones
 
-## 2. Phases and exit criteria
+The milestone table with exit criteria is in **`steps/README.md` §5**: M1 Dogfood 1 (offline tracker, A11) · M2 targets & weight (A16) · M3 Buddy on the laptop (A23 + B09's eval) · M4 Dogfood 2 (A31–A32 + B09–B11) · M5 accounts & sync (A35) · M6 workouts, insights & Ramadan (A41) · M7 production (B14 + A43) · R1 done (A42, B15, B16, 2 weeks of exclusive use).
 
-| Phase | Goal | Steps | Exit (the phase is done when…) |
-|---|---|---|---|
-| **P0 Foundations** | Skeletons for both stacks, the contract pipeline, staging, design system, domain + local DB foundations, risk spikes | S01–S12 | All CI gates green. The empty app runs on the A55 from a CI build and talks to the staging API. TD-006, TD-008 and TD-010 are decided by spikes. The owner has reviewed the mockups |
-| **P1 Manual tracker** | A fast, clean, offline manual food tracker | S13–S18 | OF-01 food parts pass. A day of food can be logged by search and quick-add in airplane mode |
-| **P2 Targets & weight** | Targets, weekly budget, weigh-ins, trend, weight graph, measurements, Progress v1 | S19–S23 | Targets property tests pass. The owner's weight-note history is entered and charted |
-| **P3 Accounts, sync & prod** | Own auth, sync, export, deletion, production with backups | S24–S29 | OF-03 and AT-006 pass on prod. A restore drill is done. **Milestone Dogfood 1: the owner uses the app daily as a manual tracker + weight log** |
-| **P4 Buddy core** | Text → proposal → confirm for food | S30–S34 | T01–T16, T19, T39–T41 meet AQ thresholds. p90 ≤ 5 s measured from the owner's location |
-| **P5 Buddy breadth** | Edits, memory, batches, barcode/labels, photos, imports, Q&A, suggestions | S35–S40 | T17–T29, T33, T36–T38 pass. OF-02 passes. AT-003 green. **Milestone Dogfood 2: the owner logs mostly through Buddy** |
-| **P6 Workouts** | Library, templates, form + chat logging, history, PRs | S41–S42 | J10, T34, T35 pass |
-| **P7 Insights & time** | Adaptive targets, weekly review, notifications, Ramadan | S43–S46 | J9, J11, T30–T32 pass. Every NT rule has a planner test |
-| **P8 Hardening** | Eval at ≥ 150 cases, performance, accessibility, security, sign-off | S47–S49 | AT-001 to AT-007 met. **R1 done.** SC-1 checked at 4 weeks |
+## 3. Servers until production (TD-064)
 
-## 3. Step list
-
-| ID | Step | Phase | Depends on | Size |
-|---|---|---|---|---|
-| S01 | Repo, tooling & CI foundation | P0 | — | M |
-| S02 | API contract pipeline | P0 | S01 | M |
-| S03 | Backend host & HTTP conventions | P0 | S02 | M |
-| S04 | Backend persistence, outbox & jobs | P0 | S03 | M |
-| S05 | Staging infrastructure & deploy pipeline | P0 | S04 | L |
-| S06 | App shell | P0 | S02 | M |
-| S07 | Design system v0 & key screen mockups | P0 | S06 | L |
-| S08 | Domain primitives & text normalization | P0 | S01 | M |
-| S09 | Local data foundation | P0 | S06, S08 | M |
-| S10 | Spike: AI bake-off & eval harness v0 | P0 | S03, S08 | L |
-| S11 | Spike: food data | P0 | S08 | M |
-| S12 | Spike: sync | P0 | S04, S09 | M |
-| S13 | Catalog pipeline & offline pack v1 | P1 | S11, D1 | M |
-| S14 | Diary domain & storage | P1 | S09 | M |
-| S15 | Food search & add flow | P1 | S07, S13, S14 | M |
-| S16 | Today screen & diary UI | P1 | S15 | L |
-| S17 | Personal foods, saved meals & quick-add | P1 | S16 | M |
-| S18 | Settings & meal slots | P1 | S16 | M |
-| S19 | Targets engine | P2 | S08, S14 | M |
-| S20 | Goals & targets UI, R1 onboarding | P2 | S18, S19 | M |
-| S21 | Weigh-ins & trend | P2 | S16 | M |
-| S22 | Weight graph & measurements | P2 | S19, S21 | L |
-| S23 | Progress tab v1 | P2 | S20, S22 | M |
-| S24 | Identity backend | P3 | S05 | L |
-| S25 | Sign-in & guest mode (app) | P3 | S18, S24 | M |
-| S26 | Sync backend | P3 | S12, S24 | M |
-| S27 | Sync engine (app) | P3 | S25, S26 | L |
-| S28 | Export & account deletion | P3 | S27 | M |
-| S29 | Production environment & Dogfood 1 release | P3 | S27, S28 | L |
-| S30 | Catalog service & online search | P4 | S13, S24 | M |
-| S31 | Buddy interpret service | P4 | S10, S30 | L |
-| S32 | ProposalEngine | P4 | S10, S15, S19 | L |
-| S33 | Chat sheet & proposal card | P4 | S16, S31, S32 | L |
-| S34 | Message lifecycle, pending & failures | P4 | S33 | M |
-| S35 | Diary edits by chat | P5 | S34 | M |
-| S36 | Memory & user model | P5 | S34 | M |
-| S37 | Batches, personal foods & saved meals by chat | P5 | S17, S34 | L |
-| S38 | Barcode & label scan | P5 | S30, S34 | L |
-| S39 | Photo logging, body data by chat & paste import | P5 | S22, S34 | M |
-| S40 | Q&A, suggestions & halal | P5 | S36 | M |
-| S41 | Workout domain, library & templates | P6 | S13, S14, S19 | M |
-| S42 | Workout logging, history & PRs | P6 | S34, S41 | L |
-| S43 | Adaptive targets & weekly check-in | P7 | S23, S34 | M |
-| S44 | Weekly summary & Buddy review | P7 | S42, S43 | M |
-| S45 | Notifications | P7 | S37, S42, S44 | M |
-| S46 | Ramadan mode | P7 | S22, S43, S45 | L |
-| S47 | AI eval expansion & tuning | P8 | S46 | M |
-| S48 | Performance, accessibility & offline acceptance | P8 | S46 | M |
-| S49 | Security review, restore drill & R1 sign-off | P8 | S47, S48 | M |
-| D1–D6 | Reference dish batches | P1–P5 | S11 (D1), then each previous batch | S each |
-
-**Parallelism:** sessions are sequential (one developer), but the graph allows several orders. Inside P0, for example, S06–S09 (app side) and S03–S05 (backend side) can interleave. Pick whichever unblocked step fits the session. The **status board** in `steps/README.md` is the single place that tracks this.
+- **The phone is the source of truth** (TD-001), so everything except Buddy, online search, sign-in and sync works with no server at all. Dogfood 1 starts on the phone alone.
+- **The laptop is the test server:** a separate stack (api + worker + Postgres, `main` images, not the dev stack) behind `tailscale serve`, reachable by the A55 over HTTPS from anywhere on the owner's tailnet, never from the internet (B03). Online features work whenever the laptop is on.
+- **The owner's daily app is the prod flavor** (final app ID) pointing at the laptop, so its data never moves to another app (A11). When production exists, the laptop database moves into it and the build's URL switches (B14).
+- **Hetzner comes last:** B13 starts when the app track reaches A38 (or earlier if the owner asks). The cost starts then.
 
 ## 4. Spec coverage
 
-Every R1 requirement ID is assigned to at least one step card (see each card's **Spec** line). `tools/trace` (S01) checks that every R1 ID is covered by tests by the end (AT-001). Requirements implemented across several steps (e.g. AI-001 input bar: S16 layout, S33 behaviour) list each step.
+Every R1 requirement ID is assigned to at least one step card (see each card's **Spec** line). `tools/trace` (S01) checks that every R1 ID is covered by tests by the end (AT-001). Requirements implemented across several steps (e.g. AI-001 input bar: A08 layout, A22 behaviour) list each step.
 
 ## 5. R2 outline (friends)
 
@@ -108,7 +43,8 @@ Paid tier + daily AI allowance + allowance UI (MN-001–007, AI-154) via store b
 
 ## 7. What could change the order
 
-- **S10 shows the AI is weaker than hoped on Arabic/Arabizi:** P4 grows (more prompt work, possibly a stronger model). P1–P3 are unaffected, which is exactly why they come first.
-- **S12 shows custom sync is risky:** switch to PowerSync (S26/S27 change shape, the rest doesn't).
-- **S11 shows poor OFF coverage:** S38 prioritises the label-scan path and makes it the default flow.
-- **The owner wants Buddy before sync (TQ-10):** P4 can move before P3. The cost is that dogfooding with real data waits longer.
+- **B02 shows the AI is weaker than hoped on Arabic/Arabizi:** the Buddy steps grow (more prompt work, possibly a stronger model). The app's manual tracker (A01–A16) is unaffected, which is why it comes first.
+- **B01 shows custom sync is risky:** switch to PowerSync (B05/A34 change shape, the rest doesn't).
+- **A03 shows poor OFF coverage:** A28 makes the label-scan path the default flow.
+- **The owner wants sync or production earlier:** A33–A35 can move before the Buddy steps, and B13/B14 can start any time (they only wait on the owner's choice, TD-064).
+- **The laptop isn't practical as the server** (e.g. Buddy needed while it's off): bring B13/B14 forward.

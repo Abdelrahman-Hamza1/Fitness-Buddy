@@ -76,7 +76,7 @@ final class ErrorReporting {
       // every one, so nothing the app or a package logs is sent.
       ..beforeSendLog = dropLog
       ..beforeSendMetric = dropMetric
-      // Performance tracing is tuned in S05.
+      // Performance tracing is tuned in A11.
       ..tracesSampleRate = 0;
     // Session replay records the screen, i.e. user content: never.
     options.replay

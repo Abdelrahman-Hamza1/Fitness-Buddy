@@ -1,6 +1,6 @@
 # 05 — Data Model, Local Storage & Sync
 
-_Logical model. Exact columns are fixed in the migrations of S09/S14 and later steps. This file fixes the **conventions** and **entities**, which are expensive to change later._
+_Logical model. Exact columns are fixed in the migrations of A01/A06 and later steps. This file fixes the **conventions** and **entities**, which are expensive to change later._
 
 ## 1. Conventions (every user-data table)
 
@@ -83,7 +83,7 @@ Other server data: `identity.*` (users, identities, tokens), `catalog.*` (global
 
 ### 5.1 Why custom (and the escape hatch)
 
-Our sync problem is the **easy kind**: every row has exactly one owner, there's no collaboration, conflicts are rare (one person on two phones), and the policy is **row-level last-write-wins + history** (AC-012). A custom protocol keeps full drift features (foreign keys, FTS5 triggers, typed migrations), makes guest mode trivial, and needs no vendor. **S12 spikes it before we commit.**
+Our sync problem is the **easy kind**: every row has exactly one owner, there's no collaboration, conflicts are rare (one person on two phones), and the policy is **row-level last-write-wins + history** (AC-012). A custom protocol keeps full drift features (foreign keys, FTS5 triggers, typed migrations), makes guest mode trivial, and needs no vendor. **B01 spikes it before we commit.**
 
 **Escape hatch:** the app talks to a `SyncEngine` interface. If the spike shows problems, **PowerSync** (self-hostable against our Postgres) replaces the implementation. Repositories and features don't change.
 
@@ -114,7 +114,7 @@ sequenceDiagram
 - **Earlier versions** (G7): item detail → "Earlier versions" calls `GET /v1/sync/history/{entity}/{id}` (online only).
 - **Anonymous users** get `403` from sync endpoints (`04` §5).
 
-### 5.3 Sync tests (must pass before S27 ends)
+### 5.3 Sync tests (must pass before A34 ends)
 
 - **Convergence simulation** (property-based, Dart): N simulated devices perform random operations offline, then sync in random orders and interleavings against an in-memory fake of the server rules **and** against the real API (Testcontainers). Assert: every device converges to identical state, no confirmed write is lost without a `row_history` entry, and tombstones win correctly.
 - **OF-03** as an end-to-end test against a local API.

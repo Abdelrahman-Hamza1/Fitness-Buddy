@@ -16,10 +16,11 @@ _Where the backend runs, how it's deployed, kept safe and observed. Decisions: T
 | Env | Where | Database | Deploys | Purpose |
 |---|---|---|---|---|
 | **dev** | Your machine, `docker compose up` | Postgres container | — | Development, tests (Testcontainers) |
-| **staging** | 1 small VM (≈ 2 vCPU / 4 GB) | Postgres container on the same VM | Every merge to `main` | Integration, eval runs, release candidates, restore tests |
+| **laptop test server** (until B14, TD-064) | The owner's laptop: a separate stack running `main` images, production-like config, behind `tailscale serve` (HTTPS, tailnet only, ACL to the A55, never Funnel), B03 | Its own Postgres container and volume, nightly `pg_dump` | By hand (`make`) from `main` | The phone's server for online features until production; its data moves into prod in B14 |
+| **staging** (from B13, near the end of R1) | 1 small VM (≈ 2 vCPU / 4 GB) | Postgres container on the same VM | Every merge to `main` | Integration, eval runs, release candidates, restore tests |
 | **prod** | app VM + **separate** db VM (§3) | Postgres 18 on the db VM, with point-in-time backups | Git tag `api-v*` | The owner (R1), friends (R2), public (R3) |
 
-Supporting services: **GitHub** (code, CI, container registry GHCR) · **Cloudflare** (DNS only) · **Tailscale** (private SSH access) · **Sentry** (errors) · **Grafana Cloud** free tier (metrics, logs, traces) · an **external uptime monitor** · an **email provider** for sign-in codes (chosen in S24).
+Supporting services: **GitHub** (code, CI, container registry GHCR) · **Cloudflare** (DNS only) · **Tailscale** (the phone ↔ laptop test server; private SSH access) · **Sentry** (errors) · **Grafana Cloud** free tier (metrics, logs, traces) · an **external uptime monitor** · an **email provider** for sign-in codes (chosen in B14).
 
 ## 3. Topology
 
@@ -41,7 +42,7 @@ Supporting services: **GitHub** (code, CI, container registry GHCR) · **Cloudfl
                      └──────────────────────┘
 ```
 
-The database has its own VM **from the first real data (Dogfood 1, S29)**, so scaling the API later is just adding app VMs.
+The database has its own VM **from production (B14)**, the first time real data lives on Hetzner (TD-064), so scaling the API later is just adding app VMs.
 
 ### 3.2 Stage 2: R3 (public)
 
@@ -75,7 +76,7 @@ Kubernetes (k3s on VMs, or a managed cluster) with the **same images and the sam
 |---|---|
 | Infrastructure as code | **OpenTofu** (open-source Terraform) with the `hcloud` provider: VMs, private network, firewall rules, volumes, load balancer (stage 2), object storage buckets. State stored in a private object-storage bucket. Code in `infra/tofu/` |
 | Base OS setup | **cloud-init** (`infra/cloud-init/`): Ubuntu LTS, a non-root deploy user, SSH keys only, Docker, Tailscale, `unattended-upgrades`, fail2ban, time sync, a swap file, log rotation |
-| Database host setup | Decided in S29 between (a) Postgres in a container managed as a Kamal *accessory* with WAL-G, and (b) native Postgres from the PGDG apt repository with pgBackRest, configured by a small Ansible playbook. Default: **(a)**, so Kamal remains the one deploy tool |
+| Database host setup | Decided in B14 between (a) Postgres in a container managed as a Kamal *accessory* with WAL-G, and (b) native Postgres from the PGDG apt repository with pgBackRest, configured by a small Ansible playbook. Default: **(a)**, so Kamal remains the one deploy tool |
 | Deploys | **Kamal 2**: builds the image (or pulls it from GHCR), starts new containers over SSH, waits for `/health/ready`, switches traffic in kamal-proxy, then stops the old ones. Zero downtime. Automatic Let's Encrypt TLS. `kamal rollback` returns to the previous image in one command |
 | Migrations in deploys | The pipeline runs the new image's **`migrate`** command against the database **before** `kamal deploy`. Migrations are always backward-compatible with the running version (expand → migrate → contract, `04` §6) |
 | Pipeline | GitHub Actions: build → test → image to GHCR → staging deploy on merge to `main` → prod deploy on tag `api-v*` (manual approval) → smoke test (`/health/ready`, `/v1/config`) → automatic rollback if the smoke test fails |
@@ -114,11 +115,11 @@ Kubernetes (k3s on VMs, or a managed cluster) with the **same images and the sam
 
 If the free tiers run out (R3), the same OpenTelemetry signals can go to a self-hosted Grafana stack on a small ops VM. Nothing in the app changes.
 
-## 8. Runbooks (`docs/runbooks/`, written in S29, kept current)
+## 8. Runbooks (`docs/runbooks/`, written in B14, kept current)
 
 Restore the database to a point in time · rebuild a VM from code · roll back a deploy · rotate a secret or signing key · handle a "my data is missing" report · delete an account manually · Postgres minor and major upgrades · disk full on the db VM.
 
-## 9. Running cost (estimate, verify at S05/S29)
+## 9. Running cost (estimate, verify at B13/B14)
 
 | Item | Stage 1 |
 |---|---|

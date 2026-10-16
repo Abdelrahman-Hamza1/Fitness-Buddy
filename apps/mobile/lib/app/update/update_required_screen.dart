@@ -25,7 +25,7 @@ class UpdateRequiredScreen extends ConsumerWidget {
       UpdateCheckStatus.stillOld => l10n.updateRequiredStillOld,
       UpdateCheckStatus.failed => l10n.updateRequiredCheckFailed,
     };
-    // S07 replaces the spacing values with design-system tokens.
+    // A02 replaces the spacing values with design-system tokens.
     return Scaffold(
       appBar: AppBar(title: Text(l10n.updateRequiredTitle)),
       body: SafeArea(

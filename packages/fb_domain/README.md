@@ -64,7 +64,7 @@ The one source for how numbers are rounded (S08 D1–D3, A8). Code:
 ## Sanity tolerances
 
 The FD-012 check (`SanityCheck`, `lib/src/nutrition/sanity.dart`; S08 D5,
-A4). All thresholds are in one `SanityTolerance` value; S13 may tune them
+A4). All thresholds are in one `SanityTolerance` value; A05 may tune them
 after running the check over the catalog.
 
 1. Expected kcal is computed two ways and the **closer** one is used:
@@ -126,13 +126,13 @@ S08 D9, D10, A5, A6. Code: `lib/src/ids/`.
   must be a lowercase canonical UUID. Text order = `compareTo` order (wall,
   counter, then device ID; ties go to the higher device ID). **Compare HLC
   columns with a binary collation**: SQLite `BINARY` (the default; never
-  `NOCASE`), Postgres `COLLATE "C"` (S09, S12, S26).
+  `NOCASE`), Postgres `COLLATE "C"` (A01, B01, B05).
 - **`HybridLogicalClock(clock:, deviceId:, maxForwardDrift:, last:)`**:
   `now()` for local events, `receive(remote)` for timestamps from other
   devices, both strictly after everything seen before. `receive` returns
   `HlcReceived(hlc)`, or `HlcDriftRejected` (clock unchanged) when the remote
   wall time is more than `maxForwardDrift` (default 24 h) ahead of the
-  physical clock; what sync does then is S26's policy. A counter past 99,999
+  physical clock; what sync does then is B05's policy. A counter past 99,999
   throws `HlcOverflowException`. The app passes `last` (the highest stored
   HLC) at startup so the order holds across restarts.
 

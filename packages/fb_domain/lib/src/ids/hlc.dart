@@ -22,7 +22,7 @@ import 'package:fb_domain/src/time/clock.dart';
 /// That only holds under a **binary (code-point) collation**. Databases must
 /// compare HLC columns byte by byte: SQLite's default `BINARY` collation
 /// (never `NOCASE` or a locale collation) and Postgres `COLLATE "C"` (a
-/// locale collation may ignore the `-`). Forward note for S09, S12 and S26.
+/// locale collation may ignore the `-`). Forward note for A01, B01 and B05.
 ///
 /// 13 digits of milliseconds last until the year 2286.
 final class Hlc implements Comparable<Hlc> {
@@ -160,7 +160,7 @@ final class HlcReceived extends HlcReceive {
 }
 
 /// The remote timestamp was too far in the future and was not merged; the
-/// clock is unchanged. What sync does with it is S26's policy.
+/// clock is unchanged. What sync does with it is B05's policy.
 final class HlcDriftRejected extends HlcReceive {
   /// [remote] is [aheadBy] ahead of the local physical clock.
   const new({required this.remote, required this.aheadBy}) : super._();

@@ -114,7 +114,7 @@ The pyramid is weighted toward pure logic, where the product promises live:
 
 ## 6. Git & workflow
 
-- **Trunk-based on `main`** (renamed from `master` in S01). Short-lived branches per step: `step/S14-diary-domain`, with Conventional Commits. `main` gets **one squash commit `Sxx: <name>` per step**, whose body keeps the branch's commit subjects (TD-036). **Every change to `main`** (steps, docs, Dependabot, hotfixes) **goes through a CI-verified SHA**: the ruleset requires the `ci` check, blocks force pushes and deletions, and there are no PRs (TD-039, `13` §3.E).
+- **Trunk-based on `main`** (renamed from `master` in S01). Short-lived branches per step: `step/A06-diary-domain`, with Conventional Commits. `main` gets **one squash commit `Sxx: <name>` per step**, whose body keeps the branch's commit subjects (TD-036). **Every change to `main`** (steps, docs, Dependabot, hotfixes) **goes through a CI-verified SHA**: the ruleset requires the `ci` check, blocks force pushes and deletions, and there are no PRs (TD-039, `13` §3.E).
 - **Conventional Commits** (`feat(diary): …`, `fix(api): …`). Release notes come from the `main` commit bodies + step Outcomes.
 - **Step checklist** (run-step E, squash commit body): step ID + spec IDs · tests added · migrations + migration tests if the schema changed · contract updated + client regenerated if the API changed · eval run if AI-related · screenshots if UI · runbook updated if ops changed · no new warnings.
 - Unfinished work merges behind feature flags.
@@ -138,7 +138,7 @@ The pyramid is weighted toward pure logic, where the product promises live:
 
 ## 8. Environments
 
-See `08` §2. The app's `dev` flavor points at the local API (`make up`), `staging` at the staging API, `prod` at production.
+See `08` §2. The app's `dev` flavor points at the local API (`make up`), `staging` at the staging API, `prod` at production. Until production (B14) the staging and prod builds point at the laptop test server (B03, TD-064).
 
 ## 9. Definition of Done (every step)
 
@@ -157,5 +157,5 @@ See `08` §2. The app's `dev` flavor points at the local API (`make up`), `stagi
 
 - `technical-planning/` holds the architecture, decisions and steps. An outdated doc is a bug.
 - Every package and module has a short README: purpose, public API, how to test.
-- `docs/runbooks/` from S29 (`08` §8).
+- `docs/runbooks/` from B14 (`08` §8).
 - The root `README.md` explains setup in under 10 minutes: prerequisites, `make setup`, `make up`, `make test`, running the app against the local API.

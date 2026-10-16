@@ -1,6 +1,6 @@
 /// The character tables of the search-key normalization (S08 D11, A1–A3).
 ///
-/// These tables are the specification. The C# Catalog module (S30) uses the
+/// These tables are the specification. The C# Catalog module (B07) uses the
 /// same tables, so both sides give the same bytes (TD-030). No Unicode
 /// normalization (NFD) and no locale or Unicode case APIs are used anywhere.
 /// The tables are also listed in `contracts/testdata/README.md`: change both

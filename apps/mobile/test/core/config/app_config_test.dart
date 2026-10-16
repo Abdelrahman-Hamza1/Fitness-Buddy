@@ -36,7 +36,7 @@ void main() {
         expect(defines.keys.toSet(), AppConfig.keys, reason: name);
         final config = AppConfig.fromDefines(defines);
         expect(config.flavor.name, name);
-        // No Sentry project yet (S05): reporting is off in every flavor.
+        // No Sentry project yet (A11): reporting is off in every flavor.
         expect(config.sentryDsn, isEmpty, reason: name);
       }
     });

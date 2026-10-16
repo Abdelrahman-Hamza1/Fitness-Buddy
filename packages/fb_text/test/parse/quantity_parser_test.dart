@@ -351,7 +351,7 @@ void main() {
     test('parser keeps the whole text available for food names that look '
         'like quantities', () {
       // Today's split, pinned. Each is a hypothesis: callers match
-      // `original` against the catalog before they trust `rest` (S15).
+      // `original` against the catalog before they trust `rest` (A07).
       final cases = <String, ParsedQuantity>{
         'حبة البركة': _implicit('piece', 'البركة'),
         'حبة حلوة': _implicit('piece', 'حلوة'),

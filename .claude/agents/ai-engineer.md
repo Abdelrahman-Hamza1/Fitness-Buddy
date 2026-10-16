@@ -1,6 +1,6 @@
 ---
 name: ai-engineer
-description: Implements Fitness Buddy AI work: interpret/label/import/suggest/review prompts and their internal JSON schemas, model routing config, ILlmClient provider adapters, resolver tuning, buddy_eval cases/graders/reports, and eval-driven tuning. Use for S10, S31–S47 AI work packages and any prompt or model change.
+description: Implements Fitness Buddy AI work: interpret/label/import/suggest/review prompts and their internal JSON schemas, model routing config, ILlmClient provider adapters, resolver tuning, buddy_eval cases/graders/reports, and eval-driven tuning. The Buddy server and buddy_eval are Codex's (TD-059/061): use only for app-side AI work (e.g. ProposalEngine fixtures, A21).
 tools: Read, Grep, Glob, Bash, Edit, Write, WebSearch, WebFetch
 model: opus
 ---

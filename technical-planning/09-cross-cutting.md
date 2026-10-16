@@ -39,7 +39,7 @@ Cheap now, expensive later, so from the **first screen**:
 - All strings in ARB files (gen-l10n). No string literals in widgets (lint check).
 - **Directional layout only:** `EdgeInsetsDirectional`, `AlignmentDirectional`, `start/end`, never `left/right` (lint/grep check in CI).
 - Numbers and dates go through `intl` formatters that will respect the digit-style setting (LC-004, R2).
-- Golden tests for design-system components run in **LTR and RTL** from S07. Screen goldens run in LTR in R1, with RTL added at the start of R2.
+- Golden tests for design-system components run in **LTR and RTL** from A02. Screen goldens run in LTR in R1, with RTL added at the start of R2.
 - Bilingual food names (LC-005): display in the interface language, with the other language on details **when the food has one** (D-080).
 - Buddy **understands** EN/AR/Arabizi in R1. Replies are English (AI-143). Per-message reply language comes in R2 (AI-141).
 - Charts: time axes stay chronological (LC-003), handled in our chart wrappers.
@@ -95,7 +95,7 @@ Cheap now, expensive later, so from the **first screen**:
 
 ## 9. Configuration & feature flags
 
-- **App flavors:** `dev` (local API + worker + Postgres: `make up`), `staging`, `prod`, each pointing at its own API base URL. Config via `--dart-define-from-file` (`apps/mobile/config/<flavor>.json`).
+- **App flavors:** `dev` (local API + worker + Postgres: `make up`, via `adb reverse`), `staging`, `prod`, each pointing at its own API base URL. Config via `--dart-define-from-file` (`apps/mobile/config/<flavor>.json`); from A11 the staging and prod CI builds take the URL from a GitHub Actions variable: the laptop test server until production (TD-064). The owner's daily app is the prod flavor.
 - **Remote config:** `GET /v1/config` returns the minimum app version, feature flags (e.g. `buddy.photo_enabled`) and client thresholds (AI-060 values, so tuning needs no release). Cached locally, with safe defaults offline.
 - **API configuration:** standard .NET configuration (appsettings + environment variables + secrets). Feature flags in config, read through an `IFeatureFlags` port.
 - Unfinished features ship dark behind flags rather than living on long branches.

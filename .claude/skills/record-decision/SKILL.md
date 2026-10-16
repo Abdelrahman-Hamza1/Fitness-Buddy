@@ -26,7 +26,7 @@ description: Record a Fitness Buddy decision correctly: technical decisions as T
 
 ## 3. Technical decision (TD-xxx)
 - Add a row to the TD table in `12` §1 with the next free number: `| TD-0xx | **<decision>** | <Status> | <main reason> | <alternatives> | <doc § details> |`.
-- Status: `Proposed` (default) · `Pending spike Sxx` · `Accepted (owner, YYYY-MM-DD)` · `Rejected` · `Superseded by TD-0yy`.
+- Status: `Proposed` (default) · `Pending spike <ID>` · `Accepted (owner, YYYY-MM-DD)` · `Rejected` · `Superseded by TD-0yy`.
 - Changing an **Accepted** TD = a **new** TD that supersedes it. Mark the old one `Superseded by TD-0yy` (the only edit allowed on it).
 - Update the detailed doc section the row points to, so docs and log agree.
 

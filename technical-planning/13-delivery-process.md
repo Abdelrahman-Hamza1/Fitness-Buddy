@@ -23,8 +23,8 @@ Subagents can't spawn other agents. **All orchestration happens in the main sess
 | `flutter-engineer` | Implements app work: Flutter, Riverpod, drift, `fb_domain`, `fb_text`, `fb_design_system`, Dart tools | Phase C, app work packages | Yes |
 | `dotnet-engineer` | Implements backend work: ASP.NET Core modules, EF Core, Postgres, contract conformance | Phase C, backend work packages | Yes |
 | `platform-engineer` | CI/CD, OpenTofu, cloud-init, Kamal, Docker, backups, observability, Makefile | Phase C, infra/tooling work packages | Yes |
-| `ai-engineer` | Prompts, model routing, `ILlmClient` adapters, `buddy_eval` cases and graders, eval reports | Phase C for S10, S31–S47 AI work. Any prompt/model change | Yes |
-| `data-curator` | Reference dishes, basics data, portion words, exercises (`data/`) with cited sources | D1–D6, S11, S13 data work | Data files only |
+| `ai-engineer` | Prompts, model routing, `ILlmClient` adapters, `buddy_eval` cases and graders, eval reports | App-side AI work (e.g. A21's engine fixtures). The Buddy server and `buddy_eval` are Codex's (B02, B08–B12, B15) | Yes |
+| `data-curator` | Reference dishes, basics data, portion words, exercises (`data/`) with cited sources | The dish batches (A04, A17–A19, A30, A32), A03, A05 data work | Data files only |
 | `code-reviewer` | Reviews the diff for correctness, design, tests, spec/DoD compliance | Phase D of **every** step | No |
 | `security-reviewer` | Reviews auth, authorization, secrets, logging/privacy, infra exposure, AI context | Phase D when the diff touches identity, sync, user data, infra, secrets, logging, AI requests | No |
 | `ux-reviewer` | Reviews UI against the spec's UX rules (states, copy, colour, taps, accessibility) | Phase D when the diff touches screens or user-facing copy | No |
@@ -39,7 +39,7 @@ Subagents can't spawn other agents. **All orchestration happens in the main sess
 
 Per-brief overrides by the orchestrator (the Agent tool's `model` parameter):
 - **Down to Sonnet** for small mechanical WPs: boilerplate, renames, config files, doc updates, test fixtures, applying already-specified review fixes.
-- **Up to Opus** for any Sonnet-default agent when the task needs judgment: a research question with a hard trade-off, the S49 verification, a dish batch that needs nutritional reasoning beyond the template.
+- **Up to Opus** for any Sonnet-default agent when the task needs judgment: a research question with a hard trade-off, the R1 verification, a dish batch that needs nutritional reasoning beyond the template.
 - **Never Sonnet** for: security-sensitive code (auth, sync, RLS), production infrastructure, architecture reviews, or a WP that already failed once.
 - If a Sonnet result fails review or verification, the retry runs on Opus.
 
@@ -65,7 +65,7 @@ A step is **ready** when: its dependencies are ✅ on the board, the owner prere
 4. **Owner gate (mandatory):** the orchestrator sends a compact plan summary (§5.2). Implementation starts only after the owner's OK. For S-sized steps, the owner may answer "ok" without reading the full plan.
 
 ### C. Implement
-1. Create the branch `step/Sxx-short-name` from `main`.
+1. Create the branch `step/<ID>-short-name` from `main` (IDs per TD-063: `A01…` app, `B01…` backend).
 2. Split the plan's task list into **work packages** (WPs) by specialty (app / backend / platform / AI / data). Each WP is small enough to review on its own.
 3. Brief the right engineer per WP (§6). **Sequential by default.** Independent WPs in different areas (e.g. backend vs app) may run in parallel, each in an isolated worktree, and are merged by the orchestrator.
 4. After each WP: the orchestrator runs `make check test` (or the relevant subset), inspects the diff, and commits (Conventional Commits). A red build stops the line until fixed.
@@ -81,7 +81,7 @@ A step is **ready** when: its dependencies are ✅ on the board, the owner prere
 1. The orchestrator writes the card's **Outcome** (built, deviations, follow-ups, new TDs, measurements, review rounds).
 2. Update the status board, any planning doc the step changed, and `steps/backlog.md`.
 3. Push the branch. Send the owner the **close summary** (§5.2) with demo instructions for the A55 when relevant.
-4. **Owner gate:** on the owner's OK (or after on-device checks pass), merge into `main` through the CI-verified flow: squash on a local `merge/Sxx` branch from `origin/main` (one commit `Sxx: <step name>`; the body keeps the branch's commit subjects, Outcome and board ✅ included) → `git push -u origin merge/Sxx` → `tools/scripts/ci-status.sh <sha>` green → `git push origin merge/Sxx:main` (fast-forward, same SHA) → delete `merge/Sxx` and the step branch (TD-036, TD-039). The `main` ruleset rejects any commit on which the `ci` check hasn't passed. Without `gh` there are no PRs: the owner can review the branch diff on GitHub.
+4. **Owner gate:** on the owner's OK (or after on-device checks pass), merge into `main` through the CI-verified flow: squash on a local `merge/<ID>` branch from `origin/main` (one commit `<ID>: <step name>`; the body keeps the branch's commit subjects, Outcome and board ✅ included) → `git push -u origin merge/<ID>` → `tools/scripts/ci-status.sh <sha>` green → `git push origin merge/<ID>:main` (fast-forward, same SHA) → delete `merge/<ID>` and the step branch (TD-036, TD-039). The `main` ruleset rejects any commit on which the `ci` check hasn't passed. Without `gh` there are no PRs: the owner can review the branch diff on GitHub.
 
 ## 3a. Delegated gates (TD-037)
 
@@ -96,7 +96,7 @@ The owner delegated both gates (2026-10-11). For a step with **no ⚠️ OWNER i
 | Test strategy details, refactors inside the step scope | New paid services, accounts, or anything with a running cost |
 | Splitting an oversized step into a/b (inform immediately) | Cutting scope that affects a milestone or an R1 requirement |
 | Fixing or logging review findings per §3.D | Security trade-offs. Accepting a known risk |
-| Ordering of ready steps (following the suggested order) | Destructive operations on production data or infrastructure |
+| Ordering of ready steps (each track's numbers, `steps/README.md` §7) | Destructive operations on production data or infrastructure |
 | | Accepting a step as done (close gate) |
 
 When in doubt, ask. A short question costs less than rework.
@@ -119,7 +119,7 @@ Messages are **mobile-friendly**: short, plain language, the decision first, the
 
 **Plan approval request**
 ```
-S14 · Diary domain & storage: plan ready for approval
+A06 · Diary domain & storage: plan ready for approval
 What it builds: <1–2 lines>
 Key design choices: <3–5 bullets, each with a 1-line why>
 Decisions for you (if any): <question + my rec>
@@ -129,7 +129,7 @@ Reply "ok" to start implementation, or comment.
 
 **Close summary**
 ```
-S14 · Diary domain & storage: done, ready for your OK
+A06 · Diary domain & storage: done, ready for your OK
 Built: <3–5 bullets>
 Evidence: <tests passing, measurements>
 Deviations: <none | what + why>
@@ -143,8 +143,8 @@ Next: <proposed next step>
 Agents start with no memory of the conversation. Every brief is **self-contained**:
 
 ```
-Step: S14 · Diary domain & storage · branch step/S14-diary-domain
-Card: technical-planning/steps/S14-diary-domain.md (read the Low-level plan)
+Step: A06 · Diary domain & storage · branch step/A06-diary-domain
+Card: technical-planning/steps/A06-diary-domain.md (read the Low-level plan)
 Work package: WP2: ChangeOps for entries + SlotAssigner
 Do: <exact tasks from the plan>
 Files: <expected files to touch>
@@ -190,27 +190,30 @@ Every step card has a **Progress log** section above the Outcome: one dated line
 | CI red | Stop the line. Fix before any new WP |
 | A flaky test | Quarantine with a backlog entry and an owner-visible note. Fix within 2 steps |
 | The plan is wrong mid-step | Pause. Architect consult. Update the plan in the card, and ask the owner if it changes approved scope or design |
-| The step is too big | Close the finished part as `Sxxa`, create `Sxxb`, update the board, inform the owner |
+| The step is too big | Close the finished part as `<ID>a`, create `<ID>b`, update the board, inform the owner |
 | Reviewers disagree | Architect arbitrates. If it's still unresolved, the owner decides |
 | A prerequisite is missing | Tell the owner immediately. Pick another ready step meanwhile |
 
-## 10. Two implementers: Claude and Codex (TD-059)
+## 10. Two implementers: Claude and Codex (TD-059, TD-063)
 
 The owner splits the work between two AI implementers (2026-10-16):
 
 | | **Claude** (`CLAUDE.md`) | **Codex** (`AGENTS.md`) |
 |---|---|---|
-| Code it owns | `apps/mobile/`, `packages/` (Dart), Dart `tools/`, `data/` | `backend/`, `infra/`, Docker/compose, deploys, backups, observability |
+| Code it owns | `apps/mobile/`, `packages/` (Dart), Dart `tools/` except `buddy_eval` and `sync_sim`, `data/` | `backend/`, `infra/`, Docker/compose, deploys, backups, observability, `tools/buddy_eval`, `tools/sync_sim` |
 | Contract | Consumes `packages/fb_api_client` (generated) | Keeps the server conformant |
 | CI jobs | `dart`, `android`, `android-it` | `dotnet`, `contract`, `image` |
-| Steps | the board's **Owner** column (`steps/README.md` §4) | the same |
+| Steps | the **app track** `A01…` (`steps/README.md` §4.1) | the **backend track** `B01…` (§4.2) |
+| Working folder | `~/work/fitness_buddy`, one implementer at a time | the same |
 
 **Rules**
-- **Each side plans its own code.** It writes the Low-level plan for its steps. In a shared step ("A + B"), the lead (A) owns the card, and B writes its own work packages in the card's plan. Both follow §3's phases and §7's gates. Codex uses its own tooling instead of `.claude/agents/`, with the same evidence standard: self-review, verification evidence in `steps/evidence/`, and the Outcome.
+- **Each side plans its own code** and owns its track's cards. There are no shared steps: a feature that needs both sides is two steps, one per track, joined by an explicit dependency (`steps/README.md` §6). Both follow §3's phases and §7's gates. Codex uses its own tooling instead of `.claude/agents/`, with the same evidence standard: self-review, verification evidence in `steps/evidence/`, and the Outcome.
 - **Gates:** TD-037 applies to both sides: self-approve and self-merge when there's no ⚠️ OWNER item and every gate passes.
 - **Contract:** changes go in their own commit before any code (`10` §6), with a Progress-log line naming what changed. Additive changes don't wait for the other side. Breaking changes need the owner (TD-061).
 - **Reviews:** each side is fully in charge of reviewing its own area (TD-061). Claude uses its reviewer agents (§3.D). Codex runs an independent review (a separate reviewer agent or a fresh session) with a security pass for sensitive areas (`AGENTS.md`). Neither side waits for the other's review.
 - **No overlap:** one owner per branch. Don't edit the other side's area; ask through the card's Progress log or the owner. Shared files (`Makefile`, `ci.yml`, `contracts/`, `technical-planning/`, `steps/backlog.md`, the board) get small commits, rebased on `main` often. Each side edits only its own rows and sections. TD numbers come from the latest `main`.
-- **Parallel tracks:** the two sides work at the same time, so a step can start once its dependencies are ✅ on `main`, whoever built them.
+- **Parallel tracks:** each side takes the lowest-numbered open step in its track (`steps/README.md` §7). A step can start once its dependencies are ✅ on `main`; "(contract)" dependencies need only the B step's contract handoff merge (`Bxx (contract): …`, TD-065).
+- **One folder, separate branches:** One folder, one implementer at a time (owner, 2026-10-16): both work in `~/work/fitness_buddy`. Before starting, check that the folder is clean (`git status`), commit and push your branch before handing over, and start your step branch from the latest `main`. Whoever merges second rebases on the new `main` and re-runs CI first.
+- **Shared Dart seams:** `fb_domain`'s entry points used by `buddy_eval` (A21) and the sync engine interfaces used by `tools/sync_sim` are public APIs pinned by tests in their package; `buddy_eval`/`sync_sim` run in the `dart` CI job and Codex fixes their failures. The pub workspace lockfile is shared.
 - Claude no longer briefs `dotnet-engineer`, nor `platform-engineer` for server infrastructure. `platform-engineer` stays for the app's build and CI.
 

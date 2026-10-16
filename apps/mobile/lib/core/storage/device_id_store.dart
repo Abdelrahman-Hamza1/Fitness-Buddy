@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 part 'device_id_store.g.dart';
 
 /// The install's id (S06 plan D8): the single id of this install, used for
-/// the `X-Device-Id` header and, from S09, as the node id of the hybrid
+/// the `X-Device-Id` header and, from A01, as the node id of the hybrid
 /// logical clock (TD-049). Never sent to error reporting (A5).
 ///
 /// A UUIDv7 made once, on first use, and kept in preferences: an install
