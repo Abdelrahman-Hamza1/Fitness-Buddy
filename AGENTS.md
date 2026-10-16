@@ -2,7 +2,7 @@
 
 Fitness Buddy is a local-first nutrition & weight tracking app (Flutter, Android-first) with an AI assistant ("Buddy"), backed by an ASP.NET Core API on Hetzner VMs, joined by an OpenAPI contract. Built for the owner first (R1), then friends (R2), then possibly the public (R3).
 
-Two AI implementers share this repo (TD-059). **Codex owns the backend and integration. Claude owns the app.** Claude works from `CLAUDE.md`; this file is yours. The engineering rules are the same for both.
+Two AI implementers share this repo (TD-059, TD-061). **Codex is fully in charge of the backend, infra and integration, including their reviews. Claude owns the app.** Claude works from `CLAUDE.md`; this file is yours. The engineering rules are the same for both.
 
 ## Where the truth lives
 - **`spec/`**: what and why (product). Changes only via a new entry in `spec/decisions.md`, **with the owner's approval**.
@@ -20,7 +20,7 @@ Two AI implementers share this repo (TD-059). **Codex owns the backend and integ
 
 ## The API contract is the meeting point (rule 4)
 - `contracts/openapi/` is the source of truth: contract first → `make gen` (bundle + the generated Dart client in `packages/fb_api_client`) → server change → `make contract-conformance`.
-- A contract change goes in **its own commit before any code**. It needs a review by the other side (the owner relays it, or Claude reviews it on the branch). Additive changes are the norm. Breaking changes need the owner.
+- A contract change goes in **its own commit before any code**, with a Progress-log line in the card naming what changed, so Claude can adapt the app. Additive changes don't wait for Claude. **Breaking changes need the owner.**
 - You may regenerate `packages/fb_api_client` with `make gen`, but never hand-edit it.
 
 ## Non-negotiable engineering rules (details in technical-planning)
@@ -39,7 +39,7 @@ Two AI implementers share this repo (TD-059). **Codex owns the backend and integ
 2. **Plan:** write the Low-level plan in the card: design, file list, tests mapped to spec IDs and exit criteria, work packages, risks. Review it yourself against `03`/`04`/`09`/`10` and the TDs. Architecture-level choices become TD entries.
 3. **Owner gate:** under TD-037 you approve your own plan and merge your own step when it has **no ⚠️ OWNER item** (spec change, Accepted-TD change, new paid service/vendor, security trade-off, scope cut, destructive production operation) and every automated gate passes. Otherwise ask the owner and wait.
 4. **Implement:** branch `step/Sxx-short-name` from `main`, Conventional Commits (`feat(S04): …`), `make check test` green after every commit. Don't expand scope: anything new goes to `steps/backlog.md` or a later card.
-5. **Review:** review your own diff for correctness, design and the rules above. Changes to the contract, auth, sync, RLS, secrets, logging/telemetry or infrastructure exposure also get a cross-review (ask the owner to have Claude run its security/code reviewers on your branch).
+5. **Review:** an independent review of the whole diff before verification, by a separate reviewer agent or a fresh review session, not the session that wrote the code. It covers correctness, design and the rules above, with a security pass for auth, sync, RLS, secrets, logging/telemetry and infrastructure exposure. Fix blockers and majors, then re-review them. Log minors in `steps/backlog.md`. Record the rounds and findings in the Outcome.
 6. **Verify:** tick every exit criterion with evidence (test names, outputs, measurements) in `technical-planning/steps/evidence/Sxx-verification.md`.
 7. **Close:** write the card's **Outcome** (built, deviations and why, follow-ups, new TDs, measurements). Update the board, `steps/backlog.md` and any doc the step changed (an outdated doc is a bug). Then merge as below.
 

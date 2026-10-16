@@ -8,7 +8,7 @@ _How the work in `steps/` actually gets done: who does what, which specialist ag
 |---|---|---|---|
 | **Owner** | You | Product direction, the spec, architecture approval, plan approval, step acceptance, accounts and prerequisites | — |
 | **Orchestrator** (product owner + tech lead) | The main Claude session (app steps, the planning docs' structure, the board) | Runs the step lifecycle. Briefs agents, integrates their work, guards scope and quality, keeps the owner informed, writes Outcomes, commits, pushes, merges after approval | Changes the spec or an accepted TD without the owner. Skips a gate. Lets an agent's claim stand without evidence |
-| **Codex** (backend & integration implementer, TD-059) | Codex sessions, working from `AGENTS.md` | Plans, builds, verifies and closes the steps marked Codex on the board, and the server work packages of shared steps (§10) | Edits Claude's area (`apps/mobile/`, `packages/`, Dart `tools/`, `data/`). Changes the contract without a cross-review |
+| **Codex** (backend & integration implementer, TD-059) | Codex sessions, working from `AGENTS.md` | Plans, builds, verifies and closes the steps marked Codex on the board, and the server work packages of shared steps (§10) | Edits Claude's area (`apps/mobile/`, `packages/`, Dart `tools/`, `data/`). Breaks the contract without the owner |
 | **Specialist agents** | `.claude/agents/*.md` | One job each (§2), with a self-contained brief from the orchestrator | Talk to the owner directly, push, merge, or widen scope |
 
 Subagents can't spawn other agents. **All orchestration happens in the main session**, using the `run-step` skill.
@@ -208,8 +208,8 @@ The owner splits the work between two AI implementers (2026-10-16):
 **Rules**
 - **Each side plans its own code.** It writes the Low-level plan for its steps. In a shared step ("A + B"), the lead (A) owns the card, and B writes its own work packages in the card's plan. Both follow §3's phases and §7's gates. Codex uses its own tooling instead of `.claude/agents/`, with the same evidence standard: self-review, verification evidence in `steps/evidence/`, and the Outcome.
 - **Gates:** TD-037 applies to both sides: self-approve and self-merge when there's no ⚠️ OWNER item and every gate passes.
-- **Contract:** changes go in their own commit before any code (`10` §6). The other side reviews: the owner relays it, or the reviewer reads the branch. Breaking changes need the owner.
-- **Cross-review:** changes to the contract, auth, sync, RLS, secrets, logging/telemetry or infrastructure exposure get a review from the other side (Claude can run its `security-reviewer`/`code-reviewer` on a Codex branch on the owner's request).
+- **Contract:** changes go in their own commit before any code (`10` §6), with a Progress-log line naming what changed. Additive changes don't wait for the other side. Breaking changes need the owner (TD-061).
+- **Reviews:** each side is fully in charge of reviewing its own area (TD-061). Claude uses its reviewer agents (§3.D). Codex runs an independent review (a separate reviewer agent or a fresh session) with a security pass for sensitive areas (`AGENTS.md`). Neither side waits for the other's review.
 - **No overlap:** one owner per branch. Don't edit the other side's area; ask through the card's Progress log or the owner. Shared files (`Makefile`, `ci.yml`, `contracts/`, `technical-planning/`, `steps/backlog.md`, the board) get small commits, rebased on `main` often. Each side edits only its own rows and sections. TD numbers come from the latest `main`.
 - **Parallel tracks:** the two sides work at the same time, so a step can start once its dependencies are ✅ on `main`, whoever built them.
 - Claude no longer briefs `dotnet-engineer`, nor `platform-engineer` for server infrastructure. `platform-engineer` stays for the app's build and CI.

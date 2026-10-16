@@ -332,7 +332,7 @@ The owner moved backend work to Codex. From here, Codex owns this step: plan cha
 - **Validation:** built-in validation runs only when each module calls `services.AddValidation()` in its `AddServices` (Account does). The .NET 10.0.13 generator silently skips `internal` DTOs, so **validated request DTOs must be `public`**. WP5 must loosen T-A9 for public request records in `*.Api`, while T-A6 still blocks cross-module use.
 - **WP4 seam:** `HttpSetup.AddFbHttp` sets `SuppressDiagnosticsCallback`. It suppresses only `BadHttpRequestException`, so real 500s still reach logging and Sentry. The `ProxyOptions` trusted-networks line logged at startup is configuration only.
 - **426 demo:** on the phone only via `FB_MIN_APP_VERSION=99.0.0 make up` + `make run-dev` (config path). A real 426 needs a gated endpoint the app calls (S24/S25). Tests cover it.
-- **Review:** WP4 touches logging/telemetry, so ask the owner for Claude's security cross-review before merging (`13` §10). The contract (WP1) is already in.
+- **Review:** your own independent review with a security pass (WP4 touches logging/telemetry; TD-061). No Claude cross-review. The contract (WP1) is already in.
 - **At close:**
   - TD-057 and TD-058 become Accepted.
   - Docs at close: §4 "Docs at close" plus A6.
