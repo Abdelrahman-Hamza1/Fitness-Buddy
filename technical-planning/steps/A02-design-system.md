@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | S06 ✅ | L | Claude | ⬜ Not started |
+| App | S06 ✅ | L | Claude | 🟨 In progress |
 
 _Old ID: S07 (renumbered by TD-063, 2026-10-16)._
 
@@ -243,7 +243,7 @@ No streak, badge-as-reward, score or "failed" component exists (IN-020, SF-022).
 
 ## Progress log
 - 2026-10-17: Wave 1 (TD-068): plan written, architect group review approve-with-changes, amendments applied. Plan approved by the orchestrator under TD-037 (no blocking owner item). Next: implementation.
-_Empty until Phase C._
+- 2026-10-17: Phase C started on `step/A02-design-system` (process v2: Normal tier, Sonnet implements + reviews; owner: "full thing", own branch, don't block Codex). WP1 next.
 
 ## Outcome
 _Written in Phase E._
