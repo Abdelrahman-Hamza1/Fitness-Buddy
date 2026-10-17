@@ -68,3 +68,5 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 60 | A02 plan review | Spec inconsistency: `spec/10` §4.1 legend shows an ⓛ (label) badge, `spec/11` §2 FD-010 has four sources (yours, database, reference, estimate). Owner decision; default four badges (A02 PA1), label scans show ⓨ | minor | owner, before A07 | open |
 
 | 61 | A01 | Run `patrol_test/db_perf_test.dart` on the A55; if the device median ≥ 10 ms, run the applier transaction in the database isolate (TD-069 fallback). Per-op handler reads cost ~0.5 ms each on the host: A06+ handlers read at most once per op | minor | owner phone session (A02) / A06 | open |
+| 62 | A06 review | AI-072 override step: carry `edited_by_user` on CopyMeal/SaveMeal, and decide whether an amount or food edit of an overridden entry clears it | minor | AI-072 step (A27) | open |
+| 63 | A06 review | Sync: per-row last-writer-wins can break "a dish group and its entries share date and slot" under concurrent edits (one device moves the group, another logs into it); copy already copes. Decide the repair rule | minor | A34 | open |

@@ -169,4 +169,168 @@ void main() {
     final first = EntryTime(DateTime.utc(1), -60);
     expect(() => first.localDate, throwsArgumentError);
   });
+
+  group('LocalTime:', () {
+    test('fields are validated; minute of day round trip', () {
+      expect(() => LocalTime(24), throwsRangeError);
+      expect(() => LocalTime(0, 60), throwsRangeError);
+      expect(() => LocalTime(0, 0, 60), throwsRangeError);
+      expect(() => LocalTime(0, 0, 0, 1000), throwsRangeError);
+      expect(() => LocalTime.ofMinuteOfDay(1440), throwsRangeError);
+      expect(() => LocalTime.ofMinuteOfDay(-1), throwsRangeError);
+      expect(LocalTime.ofMinuteOfDay(1185), LocalTime(19, 45));
+      expect(LocalTime(19, 45).minuteOfDay, 1185);
+      expect(LocalTime(0, 0, 1, 5).millisOfDay, 1005);
+      expect(LocalTime.midnight, LocalTime(0));
+      expect(LocalTime.minutesPerDay, 1440);
+    });
+
+    test('order, equality, text and date', () {
+      final a = LocalTime(8, 5);
+      final b = LocalTime(8, 5, 0, 1);
+      expect(a.compareTo(b), lessThan(0));
+      expect(a, LocalTime(8, 5));
+      expect(a.hashCode, LocalTime(8, 5).hashCode);
+      expect(a == b, isFalse);
+      expect('$a', '08:05:00');
+      expect('$b', '08:05:00.001');
+      final date = LocalDate(2026, 10, 13);
+      expect(
+        b.on(date),
+        LocalDateTime(date, hour: 8, minute: 5, millisecond: 1),
+      );
+      expect(b.on(date).time, b);
+    });
+  });
+
+  group('DY-002 EntryTime from a local time:', () {
+    test('EntryTime.local subtracts the given offset', () {
+      final local = LocalDateTime(LocalDate(2026, 10, 13), minute: 30);
+      final time = EntryTime.local(local, 180);
+      expect(time.occurredAtUtc, DateTime.utc(2026, 10, 12, 21, 30));
+      expect(time.tzOffsetMin, 180);
+      expect(time.localDateTime, local);
+      expect(() => EntryTime.local(local, 900), throwsArgumentError);
+    });
+
+    test('DY-001 an entry at 00:30 (and suhoor at 03:30) belongs to the new '
+        'calendar day', () {
+      final clock = ManualClock(
+        DateTime.utc(2027, 2, 10, 12),
+        offsetMinutes: 120,
+      );
+      final day = LocalDate(2027, 2, 10);
+      final late = EntryTime.fromLocal(LocalDateTime(day, minute: 30), clock);
+      expect(late.localDate, day);
+      expect(late.occurredAtUtc, DateTime.utc(2027, 2, 9, 22, 30));
+      final suhoor = EntryTime.fromLocal(
+        LocalDateTime(day, hour: 3, minute: 30),
+        clock,
+      );
+      expect(suhoor.localDate, day);
+      expect(suhoor.occurredAtUtc, DateTime.utc(2027, 2, 10, 1, 30));
+    });
+
+    test('DY-002 EntryTime.fromLocal uses the offset at that instant; DST gap '
+        'and overlap resolve deterministically', () {
+      final clock = ManualClock(DateTime.utc(2026, 7), zone: _london);
+      EntryTime at(int month, int day, int hour, [int minute = 0]) =>
+          EntryTime.fromLocal(
+            LocalDateTime(
+              LocalDate(2026, month, day),
+              hour: hour,
+              minute: minute,
+            ),
+            clock,
+          );
+      // Plain summer and winter times.
+      expect(at(7, 1, 12), EntryTime(DateTime.utc(2026, 7, 1, 11), 60));
+      expect(at(1, 15, 12), EntryTime(DateTime.utc(2026, 1, 15, 12), 0));
+      // The day before the spring change, far from it.
+      expect(at(3, 28, 12), EntryTime(DateTime.utc(2026, 3, 28, 12), 0));
+      // Gap (01:00–02:00 on 03-29 doesn't exist): moves forward by the gap.
+      final gap = at(3, 29, 1, 30);
+      expect(gap, EntryTime(DateTime.utc(2026, 3, 29, 1, 30), 60));
+      expect(gap.localDateTime.time, LocalTime(2, 30));
+      expect(at(3, 29, 1).localDateTime.time, LocalTime(2));
+      expect(at(3, 29, 0, 59), EntryTime(DateTime.utc(2026, 3, 29, 0, 59), 0));
+      expect(at(3, 29, 2), EntryTime(DateTime.utc(2026, 3, 29, 1), 60));
+      // Overlap (01:00–02:00 on 10-25 happens twice): the earlier instant.
+      final overlap = at(10, 25, 1, 30);
+      expect(overlap, EntryTime(DateTime.utc(2026, 10, 25, 0, 30), 60));
+      expect(overlap.localDateTime.time, LocalTime(1, 30));
+      expect(
+        at(10, 25, 0, 59),
+        EntryTime(DateTime.utc(2026, 10, 24, 23, 59), 60),
+      );
+      expect(at(10, 25, 2), EntryTime(DateTime.utc(2026, 10, 25, 2), 0));
+      // The same input gives the same result.
+      expect(at(10, 25, 1, 30), overlap);
+    });
+
+    test("DY-002 a stored entry's local date and time don't change when the "
+        "clock's zone changes", () {
+      final clock = ManualClock(DateTime.utc(2026, 10, 13), offsetMinutes: 180);
+      final local = LocalDateTime(
+        LocalDate(2026, 10, 13),
+        hour: 13,
+        minute: 15,
+      );
+      final stored = EntryTime.fromLocal(local, clock);
+      clock
+        ..offsetMinutes = -240
+        ..utc = DateTime.utc(2026, 11);
+      expect(stored.localDateTime, local);
+      expect(
+        EntryTime(stored.occurredAtUtc, stored.tzOffsetMin).localDateTime,
+        local,
+      );
+      // Edits keep the stored offset, not the device's new zone.
+      final edited = stored.withLocalTime(LocalTime(19));
+      expect(edited.tzOffsetMin, 180);
+      expect(
+        edited.localDateTime,
+        LocalDateTime(LocalDate(2026, 10, 13), hour: 19),
+      );
+      final moved = stored.onDate(LocalDate(2026, 10, 10));
+      expect(moved.tzOffsetMin, 180);
+      expect(
+        moved.localDateTime,
+        LocalDateTime(LocalDate(2026, 10, 10), hour: 13, minute: 15),
+      );
+      expect(moved.occurredAtUtc, DateTime.utc(2026, 10, 10, 10, 15));
+    });
+
+    Glados2(
+      any.intInRange(-2208988800000, 7258118400000), // 1900 … 2200
+      any.intInRange(minTzOffsetMinutes, maxTzOffsetMinutes + 1),
+      propertyRuns,
+    ).test('property: DY-002 fromLocal inverts the wall time in a fixed zone', (
+      ms,
+      offset,
+    ) {
+      final instant = utcMillis(ms);
+      final clock = ManualClock(instant, offsetMinutes: offset);
+      final local = localDateTimeOf(instant, offset);
+      expect(EntryTime.fromLocal(local, clock), EntryTime(instant, offset));
+      expect(EntryTime.local(local, offset), EntryTime(instant, offset));
+    });
+
+    Glados(
+      any.intInRange(
+        DateTime.utc(2026).millisecondsSinceEpoch,
+        DateTime.utc(2027).millisecondsSinceEpoch,
+      ),
+      propertyRuns,
+    ).test('property: DY-002 fromLocal across DST gives the same wall time, '
+        'the earlier instant in an overlap', (ms) {
+      final clock = ManualClock(DateTime.utc(2026), zone: _london);
+      final original = EntryTime.at(utcMillis(ms), clock);
+      final local = original.localDateTime;
+      final back = EntryTime.fromLocal(local, clock);
+      expect(back.localDateTime, local);
+      final earlierBy = original.occurredAtUtc.difference(back.occurredAtUtc);
+      expect(earlierBy, anyOf(Duration.zero, const Duration(hours: 1)));
+    });
+  });
 }

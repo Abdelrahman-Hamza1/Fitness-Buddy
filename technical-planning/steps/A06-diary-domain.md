@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A01 | M | Claude | ⬜ Not started |
+| App | A01 | M | Claude | ✅ Done |
 
 _Old ID: S14 (renumbered by TD-063, 2026-10-16)._
 
@@ -30,10 +30,10 @@ _Old ID: S14 (renumbered by TD-063, 2026-10-16)._
 - Indexing for range queries (charts over a year).
 
 ## Exit criteria
-- [ ] Unit tests: slot assignment at window edges, past-day entries, tz changes not moving entries, totals = sum of snapshots (property test).
-- [ ] Data tests: each op + its undo restores the exact state. Copy produces new IDs with the same snapshots.
-- [ ] Migration test from the A01 schema version.
-- [ ] A day query with 30 entries < 5 ms on the A55.
+- [x] Unit tests: slot assignment at window edges, past-day entries, tz changes not moving entries, totals = sum of snapshots (property test).
+- [x] Data tests: each op + its undo restores the exact state. Copy produces new IDs with the same snapshots.
+- [x] Migration test from the A01 schema version.
+- [ ] A day query with 30 entries < 5 ms on the A55. ⚠️ Host median ~1.9 ms; the A55 run is batched for the owner (TD-037)
 
 ## Read first
 `05-data-and-sync.md` §1–2 · `spec/12-diary-meals-recipes.md` §1–4 · `03-architecture.md` §5
@@ -181,6 +181,20 @@ application/diary_providers.dart  dayProvider(date), dayTotalsProvider(date) (Di
 ## Progress log
 _One dated line per event, newest last (process §8a)._
 - 2026-10-17: Wave 1 (TD-068): plan written, architect group review approve-with-changes, amendments applied. Plan approved by the orchestrator under TD-037 (no blocking owner item). Next: implementation.
+- 2026-10-17: Implementation started (TD-073: flutter-engineer on Sonnet). WP1 (83725ad) diary domain in fb_domain, 100% coverage. Deviation: `CopyMeal` carries `copyIds` (architect guidance: create ops carry their new IDs); DST rule like java.time. Next: WP2.
+- 2026-10-17: Rebased on main after the A01 merge (e348ee3). WP2 (tables, migration v3 with default slots seeded uncaptured, repositories, query-plan test): day query host median ~1.9 ms, p95 ~2.8 ms; the 2-column partial index suffices (no covering index). Next: WP3.
+- 2026-10-17: Phase D (TD-073: one Opus code reviewer, no verifier): 1 major (MarkDay undo emitted the wrong state), 5 minor, 3 nit; all fixed in f57ca93 (major checked by the orchestrator). CI green on f5f09cd. Closed under TD-037.
+- 2026-10-17: WP3+WP4 `DiaryOpHandler` (all 11 ops, copy/save in `diary_copy.dart`), registered in `app_scope`. Rejection codes are camelCase (`futureDate`, `groupMismatch`, `unknownSlot`, `noSlot`, `emptySource`, `missingCopyId`) to match `InvalidOp` elsewhere. Undo applies one change set at a time (a restore bumps the version, so older inverses conflict, by A01 design). Next: WP5+.
 
 ## Outcome
-_Written in Phase E._
+**Built:** `fb_domain` diary model (entries with per-100 + nutrient snapshots, canonical amount + basis, `FoodRef`, provenance, `DiaryTotals`, `SlotAssigner`, `DefaultSlots` as UUIDv5 literals, the `DiaryOp` family of 11 ops, four events, `EntryTime.fromLocal`) · six drift tables with sync columns and triggers, migration v3 (default slots seeded from a pinned v3 list, not captured) · `DiaryRepository` watch streams + `dayProvider`/`dayTotalsProvider` · `DiaryOpHandler` for all 11 ops (log, update, move, delete, mark day, dish groups, copy meal, save meal).
+
+**Evidence:** `make check`, `make test-dart`, `make trace` green; CI green on f5f09cd. Exit criteria → tests: `DY-011 slot by time at window edges …` + 1,000-run properties · `DY-003 a past day with a time …` · `DY-002 an entry keeps its stored local time and date after the device zone changes` · `property: day totals equal the sum of the stored snapshots …` · undo `state() == before` tests for every op (`diary_entry_ops_test.dart`, `diary_group_copy_test.dart`) · `DY-023 DY-032 a slot copied to another day: new IDs, same snapshots …` · `DY-010 migration v2→v3 keeps the v2 setting and seeds the four default slots without capturing them`.
+
+**Measurements (host):** day query with 30 entries in a 5,500-entry year: median 1.84–2.01 ms, p95 ~2.8 ms (target < 5 ms on the A55; device run pending: `patrol_test/diary_perf_test.dart`). Yearly daily-totals query ~5.4 ms. The 2-column partial index is enough; no covering index.
+
+**Deviations:** camelCase `InvalidOp` codes (match A01) · `CopyMeal` carries `copyIds` (create ops carry their IDs, architect guidance) · MarkDay also rejects future dates · today + explicit slot + no time uses now if the slot's window starts later · inactive or other-mode slots rejected (`inactiveSlot`) · unknown values from a newer app read as the nearest known value.
+
+**Follow-ups:** A55 run of both perf tests (owner, backlog #61) · forward notes in backlog: the AI-072 override step must carry `edited_by_user` on copy/save and decide whether edits clear it; the group/slot invariant under concurrent sync edits (A34).
+
+**Metrics:** planned M (1.5–2 sessions), actual ~1.3 sessions · 4 WPs in 3 briefs (Sonnet) · 1 review round (1 major, 5 minor, 3 nit) · tests: app +77 (197 → 274), fb_domain +60 (146 → 206, 100% coverage).

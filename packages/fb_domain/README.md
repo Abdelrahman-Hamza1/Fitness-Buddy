@@ -107,6 +107,13 @@ S08 D7 (DY-001, DY-002, LC-021). Code: `lib/src/time/`.
   zone, so travelling doesn't move past entries (DY-002). `EntryTime.at` and
   `EntryTime.now` take the offset from the `Clock` for that instant. Offsets
   must be −720…+840 minutes.
+- **`EntryTime.local(localDateTime, offset)`** builds the instant from a
+  wall time and a given offset (edits keep the entry's stored offset:
+  `withLocalTime`, `onDate`). **`EntryTime.fromLocal(localDateTime, clock)`**
+  uses the device zone's offset at that instant (A06 D6). DST edges resolve
+  like `java.time`: in an overlap the earlier instant, in a gap the wall time
+  moves forward by the gap (02:30 in a 02:00→03:00 gap is 03:30).
+- **`LocalTime`**: a time of day (`HH:MM:SS`), `minuteOfDay`, `on(date)`.
 - **`localDateOf(utc, offset)`**: the diary day of an instant (DY-001): the
   local calendar day, so food after midnight, suhoor included, counts toward
   the new day.
@@ -169,6 +176,63 @@ ProposalEngine, `buddy_eval`) can build drafts.
   segments (`units.system`), because they are part of the row's natural ID
   `setting:<key>`. `valueJson` must be JSON text. `toString` shows the key,
   never the value. `SettingsChanged(keys)` is its event.
+
+## Diary
+
+A06 D1–D14 (DY-001–004, DY-010/011, DY-021–024, DY-032, FD-010, FD-073,
+SC-4). Code: `lib/src/diary/`. The app's `DiaryOpHandler` and drift tables
+use these; nothing here does I/O.
+
+- **Slots** (`MealSlot`): `defaultKey` (default slots) or a user `name`,
+  `sortOrder`, an optional `TimeWindow`, `mode` (`SlotMode.normal` /
+  `ramadan`) and `active`. A `TimeWindow(startMin, endMin)` is
+  `[start, end)` in minutes after local midnight (0–1439); start > end wraps
+  midnight; start == end is invalid. A default slot shows the ARB label for
+  its `defaultKey` until renamed (`name` is `null`).
+- **`DefaultSlots`** (DY-010, A06 D8): breakfast 04:00–11:00, lunch
+  11:00–16:00, dinner 16:00–22:00, snacks (no window). Their IDs are fixed
+  UUIDv5 literals of `mealSlot:normal:<key>` (TD-070); the app's tests
+  recompute them.
+- **`SlotAssigner.assign(minuteOfDay, slots, mode)`** (DY-011, A06 D7),
+  among the active slots of the mode: (1) a window containing the time,
+  lowest `sortOrder` then lowest ID; (2) else a slot with no window;
+  (3) else the window that started most recently (back across midnight);
+  (4) else `null`. Only used when the op gives no slot.
+- **Entries** (`DiaryEntry`, the read model) carry everything they show
+  (FD-073): `EntryTime` + `localDate`, `slotId`, `dishGroupId?`, an
+  `EntryFood` (`FoodRef`, `FoodNames` en + ar?, per-100 `Nutrients`,
+  `Provenance`), an `EntryAmount` (input `Quantity`, canonical amount and
+  `NutrientBasis` g/ml) and the nutrient `snapshot`. Amount edits recompute
+  the snapshot from the entry's own per-100 values.
+- **`FoodRef`** (A06 D3): `FoodRefKind` (`catalog` · `personal` ·
+  `estimate`; `fromCode` returns `null` for a kind a newer app wrote, like
+  A27's `batch`), an **opaque** ID (`null` only for an estimate) and the
+  catalog pack version at log time. Never parsed or joined on.
+- **`Provenance`** (FD-010, SC-4): `FoodSource` (`yours` · `database` ·
+  `reference` · `estimate`, the `spec/11` §2 badges), `isEstimate`
+  (implied by an estimate source), an `EstimateRange` (estimates only) and
+  the assumptions.
+- **Totals** (`DiaryTotals.day`, `.slot`, `.bySlot`; A06 D12, TD-048): the
+  sum of the stored snapshots at storage precision, an extra only when every
+  entry has it. Display rounds the total, never sums rounded values.
+- **Ops** (`sealed class DiaryOp`, family `diary`): `LogEntries`
+  (`NewDiaryEntry` with `EntryWhen.at` / `EntryWhen.onDay`),
+  `UpdateDiaryEntry` (`EntryPatch`: amount, food, slot, local time, local
+  date), `MoveEntries`, `DeleteEntries`, `CreateDishGroup`,
+  `RenameDishGroup`, `MoveDishGroup`, `DeleteDishGroup`, `CopyMeal`,
+  `SaveMeal` (`MealSource.slot` / `.day` / `.entries`) and `MarkDay`.
+  Existing rows are addressed with `VersionedId` / `expectedVersion`.
+  **New rows get their IDs in the op**, assigned when it is built, so a
+  recomputed proposal keeps them and a second confirm fails as a duplicate:
+  `NewDiaryEntry.id`, `CreateDishGroup.id`, `SaveMeal.savedMealId`, and
+  `CopyMeal.copyIds` (source entry or group ID → copy ID, for every row
+  copied). Only derived rows (saved-meal items) take IDs from the applier.
+- **Events** (A06 D14): `EntriesLogged`, `EntryChanged`, `EntryDeleted`
+  (entry IDs and dates) and `DayMarked(date, incomplete)`. No names, no
+  numbers.
+- **No user content in `toString`**: food and group names, saved-meal
+  names and assumptions never appear; errors about blank names don't echo
+  the text.
 
 ## Tests
 

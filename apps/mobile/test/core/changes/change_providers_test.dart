@@ -88,7 +88,7 @@ void main() {
       container
           .read(changeOpHandlersProvider)(container.read(appDatabaseProvider))
           .map((h) => h.family),
-      [SettingsOp.familyName],
+      [SettingsOp.familyName, DiaryOp.familyName],
     );
     expect(container.read(clockProvider), isA<SystemClock>());
     final result = await container

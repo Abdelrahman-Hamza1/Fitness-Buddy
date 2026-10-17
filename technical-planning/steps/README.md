@@ -146,7 +146,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A04](dish-batches.md) | Dish batch 1: basics, breakfast & bread | A03 | S | D1 |  | 🟦 wave 1 |
 | [A05](A05-catalog-pipeline.md) | Catalog pipeline & offline pack v1 | A01, A03, A04 | L | S13 |  | 🟦 wave 1 |
 | [A05b](A05b-exercises-cities-data.md) | Exercises & cities data | A05 | S | S13 part |  | ⬜ |
-| [A06](A06-diary-domain.md) | Diary domain & storage | A01 | M | S14 |  | 🟦 wave 1 |
+| [A06](A06-diary-domain.md) | Diary domain & storage | A01 | M | S14 |  | ✅ |
 | [A07](A07-food-search-add.md) | Food search & add flow | A02, A05, A06 | M | S15 |  | ⬜ |
 | [A08](A08-today-diary-ui.md) | Today screen & diary UI | A07 | L | S16 |  | ⬜ |
 | [A09](A09-personal-foods-quick-add.md) | Personal foods, saved meals & quick-add | A08 | M | S17 |  | ⬜ |

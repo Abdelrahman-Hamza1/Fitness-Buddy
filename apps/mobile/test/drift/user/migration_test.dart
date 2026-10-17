@@ -3,6 +3,7 @@
 // keeps them current). A new schema version adds its own data test here.
 import 'package:drift/drift.dart';
 import 'package:drift_dev/api/migrations_native.dart';
+import 'package:fb_domain/fb_domain.dart' show DefaultSlots;
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/db/write_guard.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
+import 'generated/schema_v3.dart' as v3;
 
 const _hlc = '1760351234567-00000-0199e3c2-5b1a-7c3d-8e4f-0123456789ab';
 
@@ -135,4 +137,75 @@ void main() {
       await db.close();
     },
   );
+
+  test('DY-010 migration v2→v3 keeps the v2 setting and seeds the four default '
+      'slots without capturing them', () async {
+    const settingId = '0199e3c2-5b1a-7c3d-8e4f-0123456789ae';
+    await verifier.testWithDataIntegrity(
+      oldVersion: 2,
+      newVersion: 3,
+      createOld: v2.DatabaseAtV2.new,
+      createNew: v3.DatabaseAtV3.new,
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) {
+        batch.insert(
+          oldDb.settingsKv,
+          const v2.SettingsKvData(
+            id: settingId,
+            createdAt: 1,
+            updatedHlc: _hlc,
+            version: 1,
+            deviceId: '0199e3c2-5b1a-7c3d-8e4f-0123456789ab',
+            origin: 'direct',
+            editedByUser: 0,
+            valueJson: '"metric"',
+          ),
+        );
+      },
+      validateItems: (newDb) async {
+        final settings = await newDb.select(newDb.settingsKv).get();
+        expect(settings.map((r) => (r.id, r.valueJson)), [
+          (settingId, '"metric"'),
+        ]);
+        final slots = await (newDb.select(
+          newDb.mealSlots,
+        )..orderBy([(t) => OrderingTerm(expression: t.sortOrder)])).get();
+        expect(
+          slots.map(
+            (r) => (
+              r.id,
+              r.defaultKey,
+              r.name,
+              r.windowStartMin,
+              r.windowEndMin,
+              r.mode,
+              r.active,
+              r.createdAt,
+              r.version,
+              r.origin,
+            ),
+          ),
+          [
+            for (final slot in DefaultSlots.all)
+              (
+                slot.id,
+                slot.defaultKey,
+                null,
+                slot.window?.startMin,
+                slot.window?.endMin,
+                'normal',
+                1,
+                0,
+                1,
+                'system',
+              ),
+          ],
+        );
+        // Seeds are not captured: the outbox only has the v2 setting's row.
+        final outbox = await newDb.select(newDb.syncOutbox).get();
+        expect(outbox.map((r) => r.entity), ['setting']);
+        expect(await newDb.select(newDb.diaryEntries).get(), isEmpty);
+      },
+    );
+  });
 }

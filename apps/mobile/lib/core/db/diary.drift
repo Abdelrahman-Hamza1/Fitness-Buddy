@@ -1,0 +1,19 @@
+-- The diary's indexes (A06 D2, PA4). Partial on live rows: every read query
+-- includes deleted_at IS NULL, so the planner can use them.
+import 'tables/diary_tables.dart';
+
+-- The day and slot queries (prefix), and range scans by day.
+CREATE INDEX ix_diary_entries_live ON diary_entries (local_date, slot_id)
+  WHERE deleted_at IS NULL;
+
+CREATE INDEX ix_diary_entries_group ON diary_entries (dish_group_id)
+  WHERE dish_group_id IS NOT NULL AND deleted_at IS NULL;
+
+CREATE INDEX ix_dish_groups_live ON dish_groups (local_date)
+  WHERE deleted_at IS NULL;
+
+CREATE INDEX ix_saved_meal_items_meal ON saved_meal_items (saved_meal_id)
+  WHERE deleted_at IS NULL;
+
+CREATE INDEX ix_day_marks_date ON day_marks (local_date)
+  WHERE deleted_at IS NULL;
