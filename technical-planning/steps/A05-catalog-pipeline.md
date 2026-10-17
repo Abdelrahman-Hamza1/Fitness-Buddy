@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A01, A03, A04 | L | Claude | ⬜ Not started |
+| App | A01, A03, A04 | L | Claude | ✅ Done |
 
 _Old ID: S13 (renumbered by TD-063, 2026-10-16)._
 
@@ -34,10 +34,10 @@ _Old ID: S13 (renumbered by TD-063, 2026-10-16)._
 - **From S08:** tune the `SanityCheck` thresholds (one tolerance value in `fb_domain`) on real catalog data. Yield factors feed `YieldConverter` (direct row or inverse, no chaining). Resolve علبة (backlog #26).
 
 ## Exit criteria
-- [ ] `make catalog` builds the pack locally. CI builds it on every `data/` change and fails on a sanity violation, a duplicate name or a changed ID (tests with fixtures).
-- [ ] `catalog.db` < 10 MB. Counts per kind in the Outcome.
-- [ ] The app opens the bundled pack. An FTS query for an A04 dish by EN/AR/Arabizi returns it (integration test).
-- [ ] The AT-003 check runs and reports the dishes present.
+- [x] `make catalog` builds the pack locally. CI builds it on every `data/` change and fails on a sanity violation, a duplicate name or a changed ID (tests with fixtures).
+- [x] `catalog.db` < 10 MB. Counts per kind in the Outcome.
+- [x] The app opens the bundled pack. An FTS query for an A04 dish by EN/AR/Arabizi returns it (integration test).
+- [x] The AT-003 check runs and reports the dishes present.
 
 ## Read first
 `07-food-data.md` §1–6 · `steps/dish-batches.md` · `05-data-and-sync.md` §3
@@ -148,6 +148,18 @@ No ⚠️ OWNER item in A05 itself (the D4 volume change is carried by A03 D14).
 ## Progress log
 _One dated line per event, newest last (process §8a)._
 - 2026-10-17: Wave 1 (TD-068): plan written, architect group review approve-with-changes, amendments applied. Plan approved by the orchestrator under TD-037 (no blocking owner item). Next: implementation.
+- 2026-10-17: Owner: every A05 part on Sonnet (implementation and review). WP3 (c1b8340): علبة/3elbe/can → `can` unit (backlog #26); sanity tolerance unchanged (16 flagged foods are spices/acids, explained). WP1 (1105761): release build, `data/catalog_ids.lock` (v1, 246 IDs), content-hash `catalog_version`, `make catalog` / non-mutating `catalog-pack` / `catalog-check`; release pack 397 KB (246 basics, 0 dishes: all drafts). **Contract note for Codex (B07):** new additive `contracts/catalog/` (JSON Lines schemas for foods, dishes, names, servings, yields, exercises, cities + manifest; README there) is the catalog release format B07 imports (TD-072). Next: WP4 CI + WP5 app bundle.
+- 2026-10-17: WP4 (0c9f325): `catalog` CI job (fetch-depth 0, in `ci.needs`, artifact, summary), Android targets depend on `catalog-pack`, release drafts guard; scratch proof: editing a locked ID → `catalog-check` fails "locked ID usda:allspice_ground changed". WP5 (4185b94): bundled pack, `CatalogPackInstaller` (after first frame, atomic copy, old versions deleted), `OfflineCatalog`, fixture SQL + freshness, Patrol `catalog_test`. Review (Sonnet, owner direction): approve with 8 minor + 4 nit; fixed in efbe84e (fixture freshness in catalog-check, `info()` for About, error reporting by type only, corrupt pack reads as absent); rest to backlog. CI fully green on 4185b94 incl. android-it. Closed under TD-037.
 
 ## Outcome
-_Written in Phase E._
+**Built:** release build in `tools/catalog` (pack schema v1, append-only `data/catalog_ids.lock` checked against the merge base, content-hash `catalog_version`, load files + manifest in the new `contracts/catalog/` for B07, attribution) · `make catalog` (updates lock/version, fixture SQL), non-mutating `make catalog-pack`, `make catalog-check` · `catalog` CI job + drafts guard on release builds · علبة/3elbe/can → `can` unit (backlog #26) · app: bundled pack, `CatalogPackInstaller` (after the first frame), read-only attach via A01's seam, `OfflineCatalog` (`byId`, `byBarcode`, `search`, `yieldFactors`, `info`), corrupt or missing pack reads as absent.
+
+**Evidence:** `make check`, `make test-dart` green; CI green on 4185b94 (catalog, dart, android, android-it with `patrol_test/catalog_test.dart`: installs, attaches and finds rice by `rice`, `رز`, `ruz`). Tool tests: ID lock (removed, changed, reused, stale), determinism, size budget, sanity and duplicate-name failures. Scratch proof of the lock in the Progress log.
+
+**Counts (release pack v1, 397,312 bytes, budget 10 MB):** 246 basics, 0 dishes (all 12 refs are drafts until the owner skim), 1,216 names, 198 servings, 12 yield rows, 0 exercises/cities (A05b). Sanity: 230 ok, 13 warn, 3 overridden; tolerance unchanged (the flagged foods are spices and acids). AT-003: 115 must-cover items: 42 basic, 10 draft, 63 missing (dishes deferred, TD-074).
+
+**Deviations:** the A04-dish FTS exit criterion is proven on basics (no reviewed dish exists yet; TD-074) · pack DDL lives in Dart, not a `.sql` file · `density_g_per_ml` always NULL for now · `search` returns `CatalogFood` with servings embedded (D10 named `CatalogHit`) · `deleteSync` in the installer because app_check rule 11 matches `delete(` lexically (documented) · every A05 part ran on Sonnet, including the review (owner direction).
+
+**Follow-ups:** backlog #66–#70.
+
+**Metrics:** planned L (~2.25 sessions), actual ~1 session · 4 WPs (two pairs in parallel), all Sonnet · 1 review round (0 major, 8 minor, 4 nit) · agent tokens ≈ 170k + 43k + 56k + 127k (implementation) + 91k (review) + 62k (fixes).

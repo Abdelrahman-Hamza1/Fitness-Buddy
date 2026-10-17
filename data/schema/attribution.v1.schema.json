@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fitnessbuddy.local/schema/attribution.v1.schema.json",
+  "title": "Fitness Buddy data attribution (A05 D18)",
+  "description": "data/attribution.yaml: who the catalog's data comes from, shown in About and stored in the pack's meta.attribution. `reserved` sources are not in the pack yet.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sources"],
+  "properties": {
+    "sources": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/source" } }
+  },
+  "definitions": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "licence", "url", "credit", "used_for", "status"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "name": { "type": "string", "minLength": 1 },
+        "licence": { "type": "string", "minLength": 1 },
+        "url": { "type": "string", "pattern": "^https://" },
+        "credit": { "type": "string", "minLength": 1 },
+        "used_for": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["active", "reserved"] },
+        "note": { "type": "string" }
+      }
+    }
+  }
+}

@@ -13,6 +13,8 @@
 #   - hardening: tools/scripts/apk_hardening_check.py on the built APK (not
 #     debuggable, no cleartext, system CAs only). A failing build's outputs are
 #     deleted.
+#   - catalog (A05 D8): the bundled pack (assets/catalog/catalog_manifest.json,
+#     made by `make catalog-pack`) must not include drafts; else the build stops.
 #   - signing: with FB_KEYSTORE_PATH + FB_ANDROID_KEYSTORE_PASSWORD,
 #     FB_ANDROID_KEY_ALIAS, FB_ANDROID_KEY_PASSWORD in the environment (CI) or
 #     in FB_RELEASE_ENV (laptop), the outputs must carry the pinned certificate
@@ -132,6 +134,19 @@ describe() {
   printf '    sha256 %s\n    signer certificate SHA-256 %s\n' "$(sha256sum "$file" | cut -d' ' -f1)" "$cert"
 }
 
+# A05 D8: a release must not ship draft catalog entries (`make catalog
+# CATALOG_DRAFTS=1` is a dev-only pack). Checked before the long Gradle build.
+check_catalog_pack() {
+  local manifest="$app/assets/catalog/catalog_manifest.json"
+  [[ -f "$manifest" ]] || die "no bundled catalog pack ($manifest): run 'make catalog-pack'"
+  local drafts
+  drafts="$(python3 -I -c 'import json,sys; print(json.load(open(sys.argv[1])).get("includes_drafts"))' "$manifest")" \
+    || die "cannot read $manifest"
+  [[ "$drafts" == False ]] \
+    || die "the bundled catalog pack includes drafts (includes_drafts=$drafts in $manifest): rebuild it with 'make catalog-pack' (no CATALOG_DRAFTS) before a release build"
+  log "catalog pack: no drafts"
+}
+
 main() {
   local define="--dart-define-from-file=config/$FLAVOR.json"
   local number=()
@@ -152,6 +167,7 @@ main() {
     return
   fi
 
+  check_catalog_pack
   load_release_env
   local signed=false
   if [[ -n "${FB_KEYSTORE_PATH:-}" ]]; then

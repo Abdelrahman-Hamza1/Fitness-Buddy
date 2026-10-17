@@ -4,6 +4,8 @@ import 'package:fb_catalog/fb_catalog.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
+import 'support/data_dir.dart';
+
 final String fixtures = p.join('test', 'fixtures');
 final String schemaDir = p.join('..', '..', 'data', 'schema');
 
@@ -208,6 +210,7 @@ void main() {
 
   group('cli', () {
     test('build, query and coverage run end to end', () async {
+      final data = makeDataDir();
       final dir = Directory.systemTemp.createTempSync('pack_cli');
       addTearDown(() => dir.deleteSync(recursive: true));
       final pack = p.join(dir.path, 'catalog.db');
@@ -217,16 +220,13 @@ void main() {
       expect(
         await run([
           'build',
-          '--selection',
-          p.join(fixtures, 'selection.yaml'),
-          '--extract',
-          p.join(fixtures, 'extract.jsonl'),
-          '--dishes',
-          p.join(fixtures, 'pack'),
-          '--schema-dir',
-          schemaDir,
-          '--out',
-          pack,
+          '--update',
+          '--data-dir',
+          data.path,
+          '--contract-dir',
+          contractDir,
+          '--out-dir',
+          dir.path,
           '--include-drafts',
         ]),
         0,

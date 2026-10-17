@@ -1,0 +1,291 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fitnessbuddy.local/catalog/manifest.schema.json",
+  "title": "Catalog release manifest (manifest.json)",
+  "description": "Describes one catalog release: version, content hash, the load files with checksums and counts, and the offline pack. content_sha256 is the sha256 over the load files in the order foods, dishes, names, servings, yields, exercises, cities, each preceded by its name and a NUL byte. git_commit is informational and not part of the hash.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "catalog_version",
+    "schema_version",
+    "content_sha256",
+    "git_commit",
+    "includes_drafts",
+    "files",
+    "pack",
+    "counts"
+  ],
+  "properties": {
+    "catalog_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "content_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "git_commit": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{7,40}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "includes_drafts": {
+      "type": "boolean"
+    },
+    "files": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "foods.jsonl",
+        "dishes.jsonl",
+        "names.jsonl",
+        "servings.jsonl",
+        "yields.jsonl",
+        "exercises.jsonl",
+        "cities.jsonl"
+      ],
+      "properties": {
+        "foods.jsonl": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sha256",
+            "count",
+            "bytes"
+          ],
+          "properties": {
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "bytes": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "dishes.jsonl": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sha256",
+            "count",
+            "bytes"
+          ],
+          "properties": {
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "bytes": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "names.jsonl": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sha256",
+            "count",
+            "bytes"
+          ],
+          "properties": {
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "bytes": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "servings.jsonl": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sha256",
+            "count",
+            "bytes"
+          ],
+          "properties": {
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "bytes": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "yields.jsonl": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sha256",
+            "count",
+            "bytes"
+          ],
+          "properties": {
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "bytes": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "exercises.jsonl": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sha256",
+            "count",
+            "bytes"
+          ],
+          "properties": {
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "bytes": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "cities.jsonl": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sha256",
+            "count",
+            "bytes"
+          ],
+          "properties": {
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "bytes": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "pack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "file",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "file": {
+          "const": "catalog.db"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "basics",
+        "dishes",
+        "variants",
+        "exercises",
+        "cities",
+        "names",
+        "servings",
+        "yields"
+      ],
+      "properties": {
+        "basics": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dishes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "variants": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exercises": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cities": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "names": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "servings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "yields": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/config/package_info.dart';
 import 'package:fb_mobile/core/errors/pii_scrubber.dart';
@@ -48,6 +50,13 @@ final class ErrorReporting {
       ),
     );
     return true;
+  }
+
+  /// Reports only the runtime type of [error] (no message, path or stack
+  /// content), when reporting has started. For failures that are absorbed.
+  void reportKind(Object error) {
+    if (config.sentryDsn.isEmpty) return;
+    unawaited(Sentry.captureMessage('absorbed: ${error.runtimeType}'));
   }
 
   /// Sets the privacy-first [options] (S06 plan D12, A5).

@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fitnessbuddy.local/catalog/cities.schema.json",
+  "title": "Catalog load file: cities.jsonl",
+  "description": "A city for the location and timezone features (A05b fills it; empty until then). id is city:<geonameid>.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name_en",
+    "name_ar",
+    "country_code",
+    "admin1",
+    "lat",
+    "lon",
+    "timezone",
+    "population"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^city:[0-9]+$"
+    },
+    "name_en": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name_ar": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "country_code": {
+      "type": "string",
+      "pattern": "^[A-Z]{2}$"
+    },
+    "admin1": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lat": {
+      "type": "number",
+      "minimum": -90,
+      "maximum": 90
+    },
+    "lon": {
+      "type": "number",
+      "minimum": -180,
+      "maximum": 180
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1
+    },
+    "population": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

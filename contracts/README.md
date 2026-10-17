@@ -10,6 +10,7 @@ The API contract between the app and the backend (TD-023, `technical-planning/04
 | `spectral.yaml`, `spectral-functions/` | The style guide as lint rules (Spectral), with two small custom functions. |
 | `oasdiff/` | Severity overrides for the breaking-change gate (`breaking-levels.txt`) and the server conformance check (`conformance-levels.txt`). |
 | `selftest/` | Fixtures that prove the checks still catch what they must (`make contract-selftest`). |
+| `catalog/` | JSON Schemas and the format of the food catalog release (A05, TD-072): the load files B07 imports. See [catalog/README.md](catalog/README.md). |
 | `testdata/` | Golden files shared by the Dart and C# test suites ([README](testdata/README.md)). |
 
 The tools (Redocly, Spectral, oasdiff) run as Docker images pinned by digest, offline, through `make` (`tools/contract-tools/compose.yaml`). They see the repository read-only; their only writable folder is `build/contract/`. You need Docker Engine and Compose v2 (root README, Prerequisites); `make doctor` checks them.

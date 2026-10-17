@@ -4,6 +4,7 @@ import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/db/catalog/catalog_pack_source.dart';
 import 'package:fb_mobile/core/db/connection.dart';
 import 'package:fb_mobile/core/db/database_location.dart';
+import 'package:fb_mobile/core/errors/error_reporting.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'db_providers.g.dart';
@@ -29,6 +30,9 @@ AppDatabase appDatabase(Ref ref) {
   final db = AppDatabase(
     openUserDatabase(ref.watch(databaseLocationProvider)),
     catalog: ref.watch(catalogPackSourceProvider),
+    // The error's runtime type only: no paths, no messages.
+    onCatalogError: (error, _) =>
+        ref.read(errorReportingProvider).reportKind(error),
   );
   ref.onDispose(() => unawaited(db.close()));
   return db;

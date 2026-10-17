@@ -28,7 +28,7 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 23 | S02 r2 | contract-breaking.sh blocking mode: pass oasdiff githubactions output through the same annotation-only filter as conformance | nit | next touch | open |
 | 24 | S02 r2 | fb-problem-json-errors accepts only one `allOf` level of ProblemDetails extension; recurse if a nested extension is ever needed | nit | when needed | open |
 | 25 | S02 r2 | fb-oneof-discriminator compares mapping count, not targets (resolved doc loses `$ref` identity) | nit | accepted | open |
-| 26 | S08 | Portion word علبة (can/box) is ambiguous and not mapped by the parser; resolve with real data | minor | A05/A07 | open |
+| 26 | S08 | Portion word علبة (can/box) is ambiguous and not mapped by the parser; resolve with real data | minor | A05/A07 | done (A05) |
 | 27 | S08 | Promote `ManualClock` from fb_domain test helpers to a shared test package if A01+ needs a fake clock | nit | A01 | done (A01) |
 | 28 | S08 r2 | Parser: two quantities in a row via x-count or glued unit ("2 x2 eggs", "2 100g rice") should be null; pin cases | minor | A07 | open |
 | 29 | S08 r2 | Parser: zero gives null without `original` ("Coke 0"); document that callers catalog-match the raw text on null, pin "Coke 0" | minor | A07 | open |
@@ -72,3 +72,8 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 63 | A06 review | Sync: per-row last-writer-wins can break "a dish group and its entries share date and slot" under concurrent edits (one device moves the group, another logs into it); copy already copes. Decide the repair rule | minor | A34 | open |
 | 64 | A04 review | Matvaretabellen (halloumi source) licence unclear ("cite the source", no explicit licence): confirm with matvaretabellen@mattilsynet.no or replace the source before the item ships reviewed | minor | owner skim / before R2 | open |
 | 65 | A04 review | Dish schema: `yield_group` on `ref:` items (freekeh's yield row can't attach) and a way to say "fiber unknown" (sumac stores 0) | minor | A05 | open |
+| 66 | A05 review | Validation cascade: a schema-invalid basic drops every basic and reports ~175 "does not resolve" errors (root cause first). Skip reference resolution when the selection/extract failed, or cap with "and N more" | minor | next catalog change | open |
+| 67 | A05 review | `bundled_pack_test.dart` skips when the pack isn't built, so the `dart` job never runs it (the Patrol test covers it). Make `test-dart` depend on `catalog-pack` or accept | minor | A07 | open |
+| 68 | A05 review | Dev builds can't include drafts: `run-dev`/`build-it`/`test-it` rebuild `catalog-pack` without drafts, overwriting `CATALOG_DRAFTS=1 make catalog`. Add a draft-aware dev variant | minor | owner skim / A07 | open |
+| 69 | A05 review | `reattachCatalog` (detach + attach) can race an in-flight multi-query `search` at a version upgrade; a pack that attaches then fails reads has no dedicated test | minor | A24 (pack updates) | open |
+| 70 | A05 review | `git_base.dart`: a mistyped `CATALOG_BASE_REF` passes as "no lock yet"; fail when the ref doesn't exist. `search` is N+1 queries (batch at A07) | nit | A07 | open |

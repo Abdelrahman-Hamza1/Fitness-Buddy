@@ -21,8 +21,10 @@ Future<int> runCatalog(
         ..addCommand(ImportUsdaCommand(out))
         ..addCommand(ValidateCommand(out, err))
         ..addCommand(BuildCommand(out, err))
+        ..addCommand(CheckCommand(out, err))
         ..addCommand(QueryCommand(out, err))
-        ..addCommand(CoverageCommand(out, err));
+        ..addCommand(CoverageCommand(out, err))
+        ..addCommand(EmitSqlCommand(out, err));
   try {
     return await runner.run(arguments) ?? 0;
   } on UsageException catch (e) {

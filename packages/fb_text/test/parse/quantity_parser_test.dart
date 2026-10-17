@@ -70,6 +70,20 @@ void main() {
       });
     });
 
+    test('LC-051 A05-D14 علبة 3elbe can tin map to the can unit', () {
+      _expectAll({
+        'علبة تونة': _implicit('can', 'تونة'),
+        'علبه حمص': _implicit('can', 'حمص'),
+        '2 علب كولا': _q(2, 'can', 'كولا'),
+        'علبتين كولا': _q(2, 'can', 'كولا'),
+        '3elbe tuna': _implicit('can', 'tuna'),
+        '2 3elab cola': _q(2, 'can', 'cola'),
+        '2 cans cola': _q(2, 'can', 'cola'),
+        '1 tin tuna': _q(1, 'can', 'tuna'),
+        'can of tuna': _implicit('can', 'tuna'),
+      });
+    });
+
     test('LC-051 Arabic dual (رغيفين, حبتين, صحنين, كاستين) means 2', () {
       _expectAll({
         'رغيفين عيش': _q(2, 'loaf', 'عيش'),
@@ -123,17 +137,6 @@ void main() {
         'نص ملعقة صغيرة ملح': _q(0.5, 'tsp', 'ملح'),
         'ma3la2a soghayara sokkar': _implicit('tsp', 'sokkar'),
       });
-    });
-
-    test('LC-051 علبة (can or box) is not a unit yet (A10 backlog)', () {
-      expect(
-        parseQuantity('علبة تونة'),
-        const ParsedQuantity.none('علبة تونة'),
-      );
-      expect(
-        parseQuantity('2 علبة تونة'),
-        _q(2, null, 'علبة تونة', '2 علبة تونة'),
-      );
     });
   });
 

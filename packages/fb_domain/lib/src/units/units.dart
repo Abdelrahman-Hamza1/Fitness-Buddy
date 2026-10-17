@@ -113,7 +113,11 @@ enum PortionUnit {
   disc('disc'),
 
   /// One serving as the food data defines it.
-  serving('serving');
+  serving('serving'),
+
+  /// A can or tin (علبة): 330 ml of cola, 160 g of tuna. No default size,
+  /// a food without a `can` serving unit gets an unknown-unit answer.
+  can('can');
 
   new(this.code);
 

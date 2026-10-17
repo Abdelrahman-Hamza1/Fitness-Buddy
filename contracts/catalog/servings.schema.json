@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fitnessbuddy.local/catalog/servings.schema.json",
+  "title": "Catalog load file: servings.jsonl",
+  "description": "What one named unit (loaf, piece, glass, can, cup, ...) of a food weighs (g) or holds (ml). Exactly one of g or ml is set. Dish portions are repeated on every variant.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "food_id",
+    "unit_code",
+    "g",
+    "ml",
+    "range_lo",
+    "range_hi",
+    "source"
+  ],
+  "properties": {
+    "food_id": {
+      "type": "string",
+      "pattern": "^(usda|ref):[a-z0-9][a-z0-9_]*(/[a-z0-9][a-z0-9_]*)?$",
+      "maxLength": 64
+    },
+    "unit_code": {
+      "type": "string",
+      "minLength": 1
+    },
+    "g": {
+      "anyOf": [
+        {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ml": {
+      "anyOf": [
+        {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "range_lo": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "range_hi": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "g": {
+          "type": "number"
+        },
+        "ml": {
+          "type": "null"
+        }
+      }
+    },
+    {
+      "properties": {
+        "g": {
+          "type": "null"
+        },
+        "ml": {
+          "type": "number"
+        }
+      }
+    }
+  ]
+}

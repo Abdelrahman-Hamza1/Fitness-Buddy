@@ -65,7 +65,7 @@ for what the lint can't see: a write hidden in SQL it doesn't parse (a
 `Migrator`, and anything reached through a re-export. A gap in the lint fails
 at runtime (and in the tests), not silently.
 
-Rule 11 is lexical and has no types: in a file that imports drift or
+Rule 11 is lexical and has no types: dart:io file deletion in such files uses `deleteSync`. In a file that imports drift or
 `core/db/`, any call with one of those names counts, so `map.update(…)` or a
 method named `update(` fails there too (rename it, or keep the code out of
 that file). A file with neither import passes. `customSelect(` is judged by

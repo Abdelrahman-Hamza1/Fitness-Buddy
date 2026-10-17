@@ -1,7 +1,9 @@
 import 'package:fb_domain/system.dart';
 import 'package:fb_mobile/app/router/app_router.dart';
+import 'package:fb_mobile/core/catalog/catalog.dart';
 import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
+import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/settings/settings_op_handler.dart';
@@ -19,6 +21,10 @@ import 'package:flutter_riverpod/misc.dart';
 List<Override> appOverrides(AppConfig config) => [
   appConfigProvider.overrideWithValue(config),
   appNavigatorProvider.overrideWith((ref) => ref.watch(appRouterProvider)),
+  // The database attaches whichever pack the installer finds on disk (A05).
+  catalogPackSourceProvider.overrideWith(
+    (ref) => ref.watch(catalogPackInstallerProvider),
+  ),
   clockProvider.overrideWithValue(const SystemClock()),
   idGeneratorProvider.overrideWithValue(systemUuidV7Generator()),
   changeOpHandlersProvider.overrideWithValue(

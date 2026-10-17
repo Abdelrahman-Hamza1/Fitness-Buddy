@@ -1,12 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:fb_catalog/src/load/load_catalog.dart';
-import 'package:fb_catalog/src/model/dish.dart';
+import 'package:fb_catalog/src/release/release.dart';
 import 'package:fb_catalog/src/validate/report.dart';
-import 'package:fb_domain/fb_domain.dart';
-import 'package:fb_text/fb_text.dart';
 import 'package:path/path.dart' as p;
-import 'package:sqlite3/sqlite3.dart';
+import 'package:sqlite3/sqlite3.dart' hide Row;
 
 /// The data is not fit to build a pack from.
 class PackException implements Exception {
@@ -37,20 +36,9 @@ class PackSummary {
   final int bytes;
 }
 
-const _core = ['kcal', 'protein', 'carbs', 'fat', 'fiber'];
-
-List<double> _values(Nutrients n) => [
-  n.kcal,
-  n.protein,
-  n.carbs,
-  n.fat,
-  n.fiber,
-];
-
-/// Writes the prototype pack (A03 D8, D9) to [out], replacing any old file.
-///
-/// Draft dishes are left out unless [includeDrafts]. Any loading or
-/// validation error stops the build (the pack must not hold unvalidated data).
+/// Builds a pack straight from validated data with every row at catalog
+/// version 0 (no lock). For tests and quick looks; the release build is
+/// `runBuild`.
 PackSummary buildPack({
   required CatalogData data,
   required ValidationReport report,
@@ -64,163 +52,212 @@ PackSummary buildPack({
       '${errors.first}',
     );
   }
-  final outFile = File(out);
-  outFile.parent.createSync(recursive: true);
-  if (outFile.existsSync()) outFile.deleteSync();
-  final dishes = [
-    for (final d in data.dishes)
-      if (includeDrafts || !d.isDraft) d,
-  ]..sort((a, b) => a.id.compareTo(b.id));
-  final basics = [...data.basics]..sort((a, b) => a.id.compareTo(b.id));
-
-  final db = sqlite3.open(out);
-  var names = 0;
-  var variants = 0;
-  try {
-    db
-      ..execute('PRAGMA journal_mode = OFF')
-      ..execute(_ddl)
-      ..execute('BEGIN');
-    final addMeta = db.prepare('INSERT INTO meta VALUES (?, ?)');
-    final addFood = db.prepare(
-      'INSERT INTO foods VALUES (${List.filled(19, '?').join(', ')})',
-    );
-    final addDish = db.prepare('INSERT INTO dishes VALUES (?, ?, ?, ?)');
-    final addName = db.prepare(
-      'INSERT INTO names (target, lang, name, key, display) '
-      'VALUES (?, ?, ?, ?, ?)',
-    );
-    final addServing = db.prepare(
-      'INSERT INTO servings VALUES (?, ?, ?, ?, ?)',
-    );
-
-    void addNames(String target, Names byLang) {
-      for (final lang in nameLanguages) {
-        final list = byLang[lang] ?? const <String>[];
-        for (var i = 0; i < list.length; i++) {
-          final key = normalizeKey(list[i]);
-          if (key.isEmpty) continue;
-          addName.execute([target, lang, list[i], key, if (i == 0) 1 else 0]);
-          names++;
-        }
-      }
-    }
-
-    for (final b in basics) {
-      final n = b.nutrients!;
-      final v = _values(n.rounded());
-      addFood.execute([b.id, 'basic', null, b.state.name, ...v, ...v, ...v]);
-      addNames(b.id, b.names);
-    }
-    for (final d in dishes) {
-      addDish.execute([
-        d.id,
-        d.defaultVariant?.slug,
-        d.review.status,
-        d.timeMin,
-      ]);
-      addNames(d.id, d.names);
-      for (final e in d.portions.entries) {
-        addServing.execute([
-          d.id,
-          e.key,
-          e.value.g,
-          e.value.range.lo,
-          e.value.range.hi,
-        ]);
-      }
-      for (final v in d.variants) {
-        final id = d.variantId(v);
-        final c = report.computed[id];
-        if (c == null) throw PackException('$id has no computed values');
-        addFood.execute([
-          id,
-          'variant',
-          d.id,
-          d.state.name,
-          ..._values(c.typical),
-          ..._values(c.low),
-          ..._values(c.high),
-        ]);
-        variants++;
-        addNames(id, v.names);
-        for (final e in v.portions.entries) {
-          addServing.execute([
-            id,
-            e.key,
-            e.value.g,
-            e.value.range.lo,
-            e.value.range.hi,
-          ]);
-        }
-      }
-    }
-    db.execute(
-      'INSERT INTO names_fts (rowid, key) SELECT rowid, key FROM names',
-    );
-    final skipped = data.dishes.length - dishes.length;
-    for (final e in {
-      'format': 'prototype-1',
+  final release = composeRelease(
+    data: data,
+    report: report,
+    versionOf: (_) => 0,
+    attribution: const [],
+    includeDrafts: includeDrafts,
+  );
+  writePack(
+    release,
+    out,
+    meta: {
+      'schema_version': '$schemaVersion',
+      'catalog_version': '0',
+      'content_sha256': '',
       'includes_drafts': includeDrafts ? '1' : '0',
-      'basics': '${basics.length}',
-      'dishes': '${dishes.length}',
-      'skipped_drafts': '$skipped',
-    }.entries) {
-      addMeta.execute([e.key, e.value]);
-    }
-    db.execute('COMMIT');
-    for (final s in [addMeta, addFood, addDish, addName, addServing]) {
-      s.close();
-    }
-  } finally {
-    db.close();
-  }
+      'attribution': '[]',
+    },
+  );
   return PackSummary(
-    basics: basics.length,
-    dishes: dishes.length,
-    variants: variants,
-    skippedDrafts: data.dishes.length - dishes.length,
-    names: names,
+    basics: release.countFoods('basic'),
+    dishes: release.count('dishes'),
+    variants: release.countFoods('variant'),
+    skippedDrafts: data.dishes.length - release.count('dishes'),
+    names: release.count('names'),
     bytes: File(out).lengthSync(),
   );
 }
 
-String _cols(String prefix) =>
-    [for (final c in _core) '${prefix}_$c REAL NOT NULL'].join(', ');
+Object? _cell(Row row, String column) {
+  if (column != 'extras_json') return row[column];
+  final extras = row['extras'];
+  return extras == null ? null : jsonEncode(extras);
+}
 
-final String _ddl =
-    '''
+/// Columns inserted per table, in DDL order. A column named `extras_json`
+/// takes the row's `extras` map as JSON text.
+const packColumns = <String, List<String>>{
+  'foods': [
+    'id', 'kind', 'source', 'source_ref', 'dish_id', 'name_en', 'name_ar',
+    'state', 'basis', 'kcal', 'protein_g', 'carbs_g', 'fat_g', 'fiber_g',
+    'kcal_low', 'kcal_high', 'protein_low', 'protein_high', 'carbs_low',
+    'carbs_high', 'fat_low', 'fat_high', 'fiber_low', 'fiber_high',
+    'extras_json', 'density_g_per_ml', 'yield_group', 'verified',
+    'review_status', 'sanity', 'catalog_version', //
+  ],
+  'dishes': [
+    'id', 'name_en', 'name_ar', 'default_variant_id', 'review_status',
+    'time_min', 'catalog_version', //
+  ],
+  'names': ['target_id', 'lang', 'name', 'key', 'is_display'],
+  'servings': [
+    'food_id', 'unit_code', 'g', 'ml', 'range_lo', 'range_hi', 'source', //
+  ],
+  'yields': ['yield_group', 'from_state', 'to_state', 'factor', 'source'],
+  'exercises': [
+    'id',
+    'name_en',
+    'type',
+    'equipment',
+    'primary_muscle',
+    'catalog_version', //
+  ],
+  'cities': [
+    'id', 'name_en', 'name_ar', 'country_code', 'admin1', 'lat', 'lon',
+    'timezone', 'population', //
+  ],
+};
+
+/// Writes [release] as a read-only-ready SQLite pack at [out] (A05 D5),
+/// replacing any old file. Insert order is fixed, so equal data gives equal
+/// bytes.
+void writePack(
+  Release release,
+  String out, {
+  required Map<String, String> meta,
+}) {
+  final outFile = File(out);
+  outFile.parent.createSync(recursive: true);
+  if (outFile.existsSync()) outFile.deleteSync();
+  final db = sqlite3.open(out);
+  try {
+    db
+      ..execute('PRAGMA page_size = 4096')
+      ..execute('PRAGMA journal_mode = OFF')
+      ..execute(packDdl)
+      ..execute('BEGIN');
+    for (final MapEntry(key: table, value: columns) in packColumns.entries) {
+      final insert = db.prepare(
+        'INSERT INTO $table (${columns.join(', ')}) '
+        'VALUES (${List.filled(columns.length, '?').join(', ')})',
+      );
+      for (final row in release.table(table)) {
+        insert.execute([for (final c in columns) _cell(row, c)]);
+      }
+      insert.close();
+    }
+    db.execute(
+      'INSERT INTO names_fts (rowid, key) SELECT rowid, key FROM names',
+    );
+    final addMeta = db.prepare('INSERT INTO meta VALUES (?, ?)');
+    for (final e
+        in meta.entries.toList()..sort((a, b) => a.key.compareTo(b.key))) {
+      addMeta.execute([e.key, e.value]);
+    }
+    addMeta.close();
+    db
+      ..execute('COMMIT')
+      ..execute('PRAGMA user_version = $schemaVersion')
+      ..execute('VACUUM');
+  } finally {
+    db.close();
+  }
+}
+
+/// The pack schema v1 (A05 D5). `exercises` and `cities` are empty until
+/// A05b; `barcodes` until FD-030.
+const packDdl = '''
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL) WITHOUT ROWID;
 CREATE TABLE foods (
   id TEXT PRIMARY KEY,
   kind TEXT NOT NULL,
+  source TEXT NOT NULL,
+  source_ref TEXT,
   dish_id TEXT,
+  name_en TEXT NOT NULL,
+  name_ar TEXT,
   state TEXT NOT NULL,
-  ${_cols('typ')},
-  ${_cols('lo')},
-  ${_cols('hi')}
+  basis TEXT NOT NULL,
+  kcal REAL NOT NULL,
+  protein_g REAL NOT NULL,
+  carbs_g REAL NOT NULL,
+  fat_g REAL NOT NULL,
+  fiber_g REAL NOT NULL,
+  kcal_low REAL, kcal_high REAL,
+  protein_low REAL, protein_high REAL,
+  carbs_low REAL, carbs_high REAL,
+  fat_low REAL, fat_high REAL,
+  fiber_low REAL, fiber_high REAL,
+  extras_json TEXT,
+  density_g_per_ml REAL,
+  yield_group TEXT,
+  verified INTEGER NOT NULL,
+  review_status TEXT NOT NULL,
+  sanity TEXT NOT NULL,
+  catalog_version INTEGER NOT NULL
 ) WITHOUT ROWID;
+CREATE INDEX foods_dish ON foods (dish_id);
 CREATE TABLE dishes (
   id TEXT PRIMARY KEY,
-  default_variant TEXT,
+  name_en TEXT NOT NULL,
+  name_ar TEXT,
+  default_variant_id TEXT,
   review_status TEXT NOT NULL,
-  time_min REAL
+  time_min REAL,
+  catalog_version INTEGER NOT NULL
 ) WITHOUT ROWID;
 CREATE TABLE names (
-  target TEXT NOT NULL,
+  target_id TEXT NOT NULL,
   lang TEXT NOT NULL,
   name TEXT NOT NULL,
   key TEXT NOT NULL,
-  display INTEGER NOT NULL
+  is_display INTEGER NOT NULL
 );
 CREATE INDEX names_key ON names (key);
+CREATE INDEX names_target ON names (target_id);
 CREATE TABLE servings (
-  target TEXT NOT NULL,
-  word TEXT NOT NULL,
-  g REAL NOT NULL,
-  lo REAL NOT NULL,
-  hi REAL NOT NULL
-);
+  food_id TEXT NOT NULL,
+  unit_code TEXT NOT NULL,
+  g REAL,
+  ml REAL,
+  range_lo REAL,
+  range_hi REAL,
+  source TEXT NOT NULL,
+  PRIMARY KEY (food_id, unit_code)
+) WITHOUT ROWID;
+CREATE TABLE yields (
+  yield_group TEXT NOT NULL,
+  from_state TEXT NOT NULL,
+  to_state TEXT NOT NULL,
+  factor REAL NOT NULL,
+  source TEXT NOT NULL,
+  PRIMARY KEY (yield_group, from_state, to_state)
+) WITHOUT ROWID;
+CREATE TABLE barcodes (
+  code TEXT PRIMARY KEY,
+  food_id TEXT NOT NULL
+) WITHOUT ROWID;
+CREATE TABLE exercises (
+  id TEXT PRIMARY KEY,
+  name_en TEXT NOT NULL,
+  type TEXT NOT NULL,
+  equipment TEXT NOT NULL,
+  primary_muscle TEXT NOT NULL,
+  catalog_version INTEGER NOT NULL
+) WITHOUT ROWID;
+CREATE TABLE cities (
+  id TEXT PRIMARY KEY,
+  name_en TEXT NOT NULL,
+  name_ar TEXT,
+  country_code TEXT NOT NULL,
+  admin1 TEXT,
+  lat REAL NOT NULL,
+  lon REAL NOT NULL,
+  timezone TEXT NOT NULL,
+  population INTEGER
+) WITHOUT ROWID;
 CREATE VIRTUAL TABLE names_fts USING fts5(
   key, content='names', content_rowid='rowid', tokenize='trigram'
 );

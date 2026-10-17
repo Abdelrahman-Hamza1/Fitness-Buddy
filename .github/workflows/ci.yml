@@ -1,7 +1,7 @@
 # Fitness Buddy CI: the one workflow and the one required check.
 #
-# Jobs `dart`, `dotnet`, `contract`, `image`, `android` and `android-it` run the same
-# `make` targets as a laptop does. The API contract checks (`make
+# Jobs `catalog`, `dart`, `dotnet`, `contract`, `image`, `android` and
+# `android-it` run the same `make` targets as a laptop does. The API contract checks (`make
 # check-contract`, TD-023) are spread over three jobs so that no toolchain is
 # set up or built twice (S02 D13):
 #   contract  bundle fresh, Spectral lint, self-test, breaking-change report
@@ -13,7 +13,7 @@
 #             first, not a Contract.Tests failure)
 # Every check runs exactly once. The gate job `ci` always runs and passes only if
 # every job it `needs` succeeded; it is the only check the `main` ruleset requires
-# (S01 A1). New gates (catalog, eval) are added as jobs here and to
+# (S01 A1). New gates (eval) are added as jobs here and to
 # `ci.needs`, so the ruleset never changes.
 #
 # Every job runs on every push, with one exception (TD-060, supersedes S01 A2
@@ -73,13 +73,69 @@ jobs:
           android=true
           if [[ "$EVENT" == push && "$REF" != refs/heads/main && "$REF" != refs/heads/merge/* ]] \
             && base="$(git merge-base origin/main HEAD 2>/dev/null)"; then
-            relevant='^(apps/mobile/|packages/|contracts/|pubspec\.(yaml|lock)$|analysis_options\.yaml$|\.fvmrc$|Makefile$|\.github/workflows/ci\.yml$|tools/scripts/(build-android|setup-android|patrol-android|android-|apk_hardening|apk-hardening|testdata/apk-hardening/))'
+            relevant='^(apps/mobile/|packages/|contracts/|data/|tools/catalog/|pubspec\.(yaml|lock)$|analysis_options\.yaml$|\.fvmrc$|Makefile$|\.github/workflows/ci\.yml$|tools/scripts/(build-android|setup-android|patrol-android|android-|apk_hardening|apk-hardening|testdata/apk-hardening/))'
             if ! git diff --name-only "$base" HEAD | grep -Eq "$relevant"; then
               android=false
             fi
           fi
           echo "android=$android" >>"$GITHUB_OUTPUT"
           echo "Android jobs run: $android" >>"$GITHUB_STEP_SUMMARY"
+
+  # Food catalog (A05 D11): `make catalog-check` validates data/, checks the ID
+  # lock against the merge base on origin/main (an ID may never change or
+  # disappear), freshness of data/catalog_release.yaml, the contracts/catalog
+  # schemas, the pack size budget and the AT-003 must-cover regression. Then
+  # builds the release pack and uploads it with its manifest.
+  catalog:
+    name: catalog
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      # Full history: the lock check compares with the merge base (CATALOG_BASE_REF
+      # defaults to origin/main).
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Flutter (version from .fvmrc)
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+          pub-cache-key: 'flutter-pub-:os:-:version:-:arch:'
+
+      - name: Dart dependencies
+        run: make deps-dart FLUTTER=flutter DART=dart
+
+      # Counts and the AT-003 table go to the job summary; the exit code is the
+      # catalog tool's, not tee's (pipefail).
+      - name: Catalog checks (validation, ID lock, freshness, schemas, size, AT-003)
+        run: |
+          make catalog-check FLUTTER=flutter DART=dart | tee "$RUNNER_TEMP/catalog-check.txt"
+          {
+            echo "### Food catalog"
+            echo
+            grep -E '^(catalog v|  )' "$RUNNER_TEMP/catalog-check.txt" | sed 's/^/- /; s/^-   /- /' || true
+            echo
+            grep -E '^\|' "$RUNNER_TEMP/catalog-check.txt" || true
+            echo
+            grep -E '^Must-cover' "$RUNNER_TEMP/catalog-check.txt" || true
+          } >>"$GITHUB_STEP_SUMMARY"
+
+      - name: Build the release pack (no drafts)
+        run: make catalog-pack FLUTTER=flutter DART=dart
+
+      - name: Upload the pack and its manifest
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: catalog-pack
+          path: |
+            apps/mobile/assets/catalog/catalog.db
+            apps/mobile/assets/catalog/catalog_manifest.json
+          retention-days: 30
+          if-no-files-found: error
 
   dart:
     name: dart
@@ -325,6 +381,9 @@ jobs:
       # FB_KEYSTORE_PATH is empty and build-android.sh signs with the debug key.
       # The alias isn't a secret (it's in the runbook): a secret would mask
       # "fitnessbuddy", and with it the application id, in every log.
+      # `make build-android` first runs catalog-pack (the non-mutating release
+      # pack into the app assets, A05 D7), and build-android.sh refuses a pack
+      # with drafts (D8).
       - name: Build the staging release APK (arm64) + AAB
         env:
           FB_KEYSTORE_PATH: ${{ steps.key.outputs.keystore }}
@@ -457,8 +516,10 @@ jobs:
       - name: Dart dependencies
         run: make deps-dart FLUTTER=flutter DART=dart
 
-      # Compiles before the emulator starts, so the emulator never waits on a
-      # cold Gradle build; `make test-it` below then only rebuilds what changed.
+      # `make build-it` and `make test-it` depend on catalog-pack: the bundled
+      # pack (A05 D7) is built before Gradle. Compiles before the emulator
+      # starts, so the emulator never waits on a cold Gradle build; `make
+      # test-it` below then only rebuilds what changed.
       - name: Build the test APKs (dev debug app + instrumentation)
         run: make build-it FLUTTER=flutter DART=dart
 
@@ -562,7 +623,7 @@ jobs:
   ci:
     name: ci
     if: always()
-    needs: [changes, dart, dotnet, contract, image, android, android-it]
+    needs: [changes, catalog, dart, dotnet, contract, image, android, android-it]
     runs-on: ubuntu-24.04
     permissions: {} # reads only `needs`; no token scopes at all
     timeout-minutes: 5

@@ -58,7 +58,7 @@ help: ## Show this list of targets
 ##@ Everyday (both stacks)
 
 .PHONY: setup
-setup: toolchain deps contract-tools ## First-time setup: install the pinned SDKs, fetch all dependencies, pull the contract tools
+setup: toolchain deps contract-tools catalog-pack ## First-time setup: install the pinned SDKs, fetch all dependencies, pull the contract tools, build the bundled catalog pack
 
 .PHONY: deps
 deps: deps-dart deps-dotnet ## Fetch dependencies for the Dart workspace and the .NET backend
@@ -263,7 +263,7 @@ COLD_START_APP ?= io.github.abdelrahmanhamza1.fitnessbuddy.staging
 RUNS ?= 10
 
 .PHONY: build-android
-build-android: ## Build FLAVOR=staging|prod|dev: release APK (arm64) + AAB, checked (no cleartext, signer); MODE=debug for a debug APK; BUILD_NUMBER=n
+build-android: catalog-pack ## Build FLAVOR=staging|prod|dev: release APK (arm64) + AAB, checked (no cleartext, signer); MODE=debug for a debug APK; BUILD_NUMBER=n
 	@FLUTTER='$(FLUTTER)' REPO_ROOT='$(REPO_ROOT)' FLAVOR='$(FLAVOR)' MODE='$(MODE)' \
 	  BUILD_NUMBER='$(BUILD_NUMBER)' FB_RELEASE_ENV='$(FB_RELEASE_ENV)' \
 	  bash '$(REPO_ROOT)/tools/scripts/build-android.sh'
@@ -274,7 +274,7 @@ apk-hardening-selftest: ## Prove the release APK hardening check still catches w
 	@bash '$(REPO_ROOT)/tools/scripts/apk-hardening-selftest.sh'
 
 .PHONY: run-dev
-run-dev: ## Run the dev flavor on the connected phone (debug, hot reload) against the local API on port 5198 (adb reverse)
+run-dev: catalog-pack ## Run the dev flavor on the connected phone (debug, hot reload) against the local API on port 5198 (adb reverse)
 	@if ! '$(ADB)' get-state >/dev/null 2>&1; then \
 	  echo "run-dev: no single device: connect the phone (USB or Wireless debugging) and allow it; with several, set ANDROID_SERIAL" >&2; exit 1; fi
 	'$(ADB)' reverse tcp:$(DEV_API_PORT) tcp:$(DEV_API_PORT)
@@ -298,11 +298,11 @@ PATROL_ANDROID = @DART='$(DART)' FLUTTER='$(FLUTTER)' REPO_ROOT='$(REPO_ROOT)' \
   bash '$(REPO_ROOT)/tools/scripts/patrol-android.sh'
 
 .PHONY: test-it
-test-it: ## Run the Patrol integration tests (patrol_test/, dev flavor) on the one connected emulator or phone
+test-it: catalog-pack ## Run the Patrol integration tests (patrol_test/, dev flavor) on the one connected emulator or phone
 	$(PATROL_ANDROID) test
 
 .PHONY: build-it
-build-it: ## Build the Patrol test APKs (dev debug app + instrumentation APK), no device needed
+build-it: catalog-pack ## Build the Patrol test APKs (dev debug app + instrumentation APK), no device needed
 	$(PATROL_ANDROID) build
 
 .PHONY: cold-start
@@ -396,7 +396,7 @@ RELEASE ?= R1
 trace: ## Print the requirement coverage report (RELEASE=R1|R2|R3|Later|all, default R1)
 	@cd '$(REPO_ROOT)' && '$(DART)' run tools/trace/bin/trace.dart --root . --release '$(RELEASE)'
 
-##@ Food catalog (A03)
+##@ Food catalog (A03, A05)
 
 # USDA_DIR=<dir with sr_legacy/ and foundation/> reuses an earlier download.
 .PHONY: catalog-usda
@@ -406,11 +406,22 @@ catalog-usda: ## Download the pinned USDA CSVs to a temp dir, then rewrite data/
 	  bash '$(REPO_ROOT)/tools/scripts/fetch-usda.sh' "$$tmp/raw"; dir="$$tmp/raw"; fi; \
 	cd '$(REPO_ROOT)' && '$(DART)' run tools/catalog/bin/catalog.dart import-usda --usda-dir "$$dir"
 
+CATALOG := cd '$(REPO_ROOT)' && '$(DART)' run tools/catalog/bin/catalog.dart
+CATALOG_ASSETS := apps/mobile/assets/catalog
+
 .PHONY: catalog
-catalog: ## A03: validate the catalog data, build the prototype pack (drafts included) in build/catalog/, print the must-cover coverage table
-	cd '$(REPO_ROOT)' && '$(DART)' run tools/catalog/bin/catalog.dart validate
-	cd '$(REPO_ROOT)' && '$(DART)' run tools/catalog/bin/catalog.dart build --include-drafts
-	cd '$(REPO_ROOT)' && '$(DART)' run tools/catalog/bin/catalog.dart coverage
+catalog: ## A05: validate, append new IDs to data/catalog_ids.lock, bump data/catalog_release.yaml, build build/catalog/ and the app assets, print the must-cover table. Commit what it changes. CATALOG_DRAFTS=1 packs drafts too (dev)
+	$(CATALOG) build --update --coverage --assets-dir $(CATALOG_ASSETS) $(if $(CATALOG_DRAFTS),--include-drafts)
+	$(CATALOG) emit-sql
+
+.PHONY: catalog-pack
+catalog-pack: ## A05: non-mutating: validate, build the release pack (no drafts) and copy it to the app assets; fails if the lock or version is stale
+	$(CATALOG) build --assets-dir $(CATALOG_ASSETS)
+
+.PHONY: catalog-check
+catalog-check: ## A05: CI checks, write nothing under data/: validation, ID lock vs the merge base (CATALOG_BASE_REF), freshness, schemas, size, AT-003 coverage, fixture SQL
+	$(CATALOG) check
+	$(CATALOG) emit-sql --check
 
 .PHONY: off-coverage
 off-coverage: ## A03: unit-test the script, then download the OFF export (~0.9 GB, needs 2 GB free) and print region coverage as Markdown (not in CI)

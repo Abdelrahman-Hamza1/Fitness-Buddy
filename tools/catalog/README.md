@@ -69,3 +69,32 @@ the value, no Open Food Facts source, `unit` is not a mass or volume code (`g`,
 `ml`, ...), a basic's `state` is a from/to state of its yield group, and a
 selection `servings` entry must equal the portion word with the same unit
 (household units have one owner: `portion_words.yaml`).
+
+## `catalog build` and `catalog check` (A05 WP1)
+
+```sh
+dart run tools/catalog/bin/catalog.dart build [--update] [--include-drafts] [--assets-dir <dir>] [--coverage]
+dart run tools/catalog/bin/catalog.dart check [--base <git ref>]
+```
+
+`build` validates (Arabic names required), then writes `build/catalog/catalog.db`
+(pack schema v1), `build/catalog/release/*.jsonl` and `manifest.json` (formats in
+`contracts/catalog/`; every line is schema-checked). Sizes: fails at 10,000,000
+bytes, warns from 8,000,000. It prints counts per kind and the FD-012 sanity
+distribution. Without `--update` it never writes `data/`; a missing lock entry or a
+changed content hash fails with "run `make catalog` and commit". With `--update`
+(`make catalog`) it appends new released IDs to `data/catalog_ids.lock` and bumps
+`data/catalog_release.yaml`. `--include-drafts` packs drafts too (never for release).
+
+`check` is `build` without writing under `data/`, plus the ID lock compared with the
+merge base (`CATALOG_BASE_REF`, else the merge-base with `origin/main`, on `main` the
+previous commit): a removed or changed locked ID, a retired ID that is active again, a
+released ID gone from the data, or a changed kind fails. It also prints the AT-003
+table (resolved / draft / missing) and fails only if a reviewed must-cover item stops
+resolving by EN, AR or Arabizi name.
+
+| Exit code | Meaning |
+|---|---|
+| 0 | Ok. |
+| 1 | The data, the lock, the size or the schemas are wrong (the message says which). |
+| 64 | Bad usage. |

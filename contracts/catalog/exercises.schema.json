@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fitnessbuddy.local/catalog/exercises.schema.json",
+  "title": "Catalog load file: exercises.jsonl",
+  "description": "A catalogued exercise (A05b fills it; the file is empty until then). Equipment variants are separate entries.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name_en",
+    "type",
+    "equipment",
+    "primary_muscle",
+    "catalog_version"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^ex:[a-z0-9_]+$",
+      "maxLength": 64
+    },
+    "name_en": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "enum": [
+        "weight_reps",
+        "bodyweight_reps",
+        "duration",
+        "distance_duration"
+      ]
+    },
+    "equipment": {
+      "enum": [
+        "barbell",
+        "dumbbell",
+        "machine",
+        "cable",
+        "bodyweight",
+        "kettlebell",
+        "band",
+        "other"
+      ]
+    },
+    "primary_muscle": {
+      "type": "string",
+      "minLength": 1
+    },
+    "catalog_version": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

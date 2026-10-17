@@ -54,6 +54,10 @@ class PackSearch {
     return rows.isEmpty ? null : rows.first['value'] as String;
   }
 
+  /// Rows in [table] (a pack table name).
+  int count(String table) =>
+      _db.select('SELECT count(*) AS n FROM $table').first['n'] as int;
+
   Map<String, String> get meta => {
     for (final r in _db.select('SELECT key, value FROM meta ORDER BY key'))
       r['key'] as String: r['value'] as String,
@@ -76,7 +80,7 @@ class PackSearch {
     for (final token in tokens) {
       if (token.runes.length < 3) {
         for (final r in _db.select(
-          'SELECT target, name FROM names WHERE key = ?',
+          'SELECT target_id AS target, name FROM names WHERE key = ?',
           [token],
         )) {
           note(r['target'] as String, token, 0, r['name'] as String);
@@ -87,7 +91,7 @@ class PackSearch {
       final best = <String, double>{};
       final names = <String, String>{};
       for (final r in _db.select(
-        'SELECT n.target AS target, n.name AS name, bm25(names_fts) AS rank '
+        'SELECT n.target_id AS target, n.name AS name, bm25(names_fts) AS rank '
         'FROM names_fts JOIN names n ON n.rowid = names_fts.rowid '
         'WHERE names_fts MATCH ?',
         ['"$token"'],
@@ -104,9 +108,10 @@ class PackSearch {
       }
     }
     // A name equal to the whole query is the best possible match.
-    for (final r in _db.select('SELECT target, name FROM names WHERE key = ?', [
-      key,
-    ])) {
+    for (final r in _db.select(
+      'SELECT target_id AS target, name FROM names WHERE key = ?',
+      [key],
+    )) {
       final t = r['target'] as String;
       scores[t] = (scores[t] ?? 0) + 1000;
       matched.putIfAbsent(t, () => {}).addAll(tokens);
@@ -143,12 +148,13 @@ class PackSearch {
     Map<String, String> matchedName,
   ) {
     final display = _db.select(
-      "SELECT name FROM names WHERE target = ? AND lang = 'en' AND display = 1",
+      "SELECT name FROM names WHERE target_id = ? AND lang = 'en' AND "
+      'is_display = 1',
       [target],
     );
     final food = _db.select(
-      'SELECT typ_kcal FROM foods WHERE id = ? OR id = '
-      "(SELECT d.id || '/' || d.default_variant FROM dishes d WHERE d.id = ?)",
+      'SELECT kcal FROM foods WHERE id = ? OR id = '
+      '(SELECT d.default_variant_id FROM dishes d WHERE d.id = ?)',
       [target, target],
     );
     return PackHit(
@@ -158,9 +164,7 @@ class PackSearch {
           : display.first['name'] as String,
       matchedTokens: matched[target]!.length,
       score: scores[target]!,
-      kcalPer100: food.isEmpty
-          ? null
-          : (food.first['typ_kcal'] as num).toDouble(),
+      kcalPer100: food.isEmpty ? null : (food.first['kcal'] as num).toDouble(),
       reviewStatus: reviewStatus(target),
     );
   }

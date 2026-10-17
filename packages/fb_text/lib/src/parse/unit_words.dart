@@ -6,8 +6,10 @@
 /// (`normalizeKey`), like the number words. A key with a space is a phrase
 /// over several words.
 ///
-/// Not mapped on purpose: علبة (can or box) has no fixed meaning yet (A10
-/// backlog), and "bowl" or "slice" have no unit code.
+/// علبة (can or box) is the `can` unit (A05 D14, backlog #26). Its size
+/// depends on the food (a cola can is 330 ml, a tuna can 160 g), so the
+/// food's own `can` serving unit gives it; "bowl" or "slice" have no unit
+/// code.
 library;
 
 /// Every unit code the parser can return: the mass and volume units of D4
@@ -30,6 +32,7 @@ const Set<String> parsedUnitCodes = {
   'sandwich',
   'disc',
   'serving',
+  'can',
 };
 
 /// English unit words, singular and plural. At the start of the text
@@ -111,6 +114,10 @@ const Map<String, String> englishUnitWords = {
   'disks': 'disc',
   'serving': 'serving',
   'servings': 'serving',
+  'can': 'can',
+  'cans': 'can',
+  'tin': 'can',
+  'tins': 'can',
 };
 
 /// Arabic unit and portion words (and a few Arabizi ones), singular and
@@ -187,6 +194,8 @@ const Map<String, String> arabicUnitWords = {
   'أقراص': 'disc',
   'حصة': 'serving',
   'حصص': 'serving',
+  'علبة': 'can',
+  'علب': 'can',
   // Arabizi.
   'kobaya': 'glass',
   'kobbaya': 'glass',
@@ -197,6 +206,9 @@ const Map<String, String> arabicUnitWords = {
   'sa7n': 'plate',
   'ragheef': 'loaf',
   'raghif': 'loaf',
+  '3elbe': 'can',
+  '3elba': 'can',
+  '3elab': 'can',
 };
 
 /// Unit abbreviations that are a unit only right after a number ("٥ غ",
@@ -223,6 +235,7 @@ const Set<String> arabicDualUnits = {
   'سندويشة',
   'قرص',
   'حصة',
+  'علبة',
   'ملعقة',
   'معلقة',
   'كيلو',

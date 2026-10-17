@@ -62,3 +62,7 @@ id_ed25519*
 .claude/settings.local.json
 __pycache__/
 *.pyc
+
+# Generated catalog pack (A05 D7): `make catalog-pack` writes it.
+apps/mobile/assets/catalog/*
+!apps/mobile/assets/catalog/.gitkeep

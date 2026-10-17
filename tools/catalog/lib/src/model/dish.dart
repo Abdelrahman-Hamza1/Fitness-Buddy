@@ -134,6 +134,7 @@ class BasicFood {
     this.sanityOverrideReason,
     this.yieldGroup,
     this.servings = const {},
+    this.fdcId,
   });
 
   final String file;
@@ -153,4 +154,7 @@ class BasicFood {
 
   /// Household units in grams, by unit code (`servings:` in the selection).
   final Map<String, double> servings;
+
+  /// The USDA FoodData Central ID this basic was taken from.
+  final int? fdcId;
 }

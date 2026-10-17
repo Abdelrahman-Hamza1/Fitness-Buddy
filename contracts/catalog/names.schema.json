@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fitnessbuddy.local/catalog/names.schema.json",
+  "title": "Catalog load file: names.jsonl",
+  "description": "One searchable name of a food, dish, variant or exercise. `key` is the normalized form used for matching (fb_text normalizeKey, same rules as contracts/testdata/normalization_cases.yaml). is_display marks the first name of each language.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "target_id",
+    "lang",
+    "name",
+    "key",
+    "is_display"
+  ],
+  "properties": {
+    "target_id": {
+      "type": "string",
+      "pattern": "^(usda:|ref:|ex:)[a-z0-9_/]+$",
+      "maxLength": 64
+    },
+    "lang": {
+      "enum": [
+        "en",
+        "ar",
+        "arabizi"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "is_display": {
+      "enum": [
+        0,
+        1
+      ]
+    }
+  }
+}

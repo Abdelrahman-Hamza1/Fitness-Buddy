@@ -1,0 +1,313 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fitnessbuddy.local/catalog/foods.schema.json",
+  "title": "Catalog load file: foods.jsonl",
+  "description": "One loggable food: a USDA basic or a variant of a reference dish. Values are per 100 g (per_100g). Ranges (_low/_high) are set for variants only. Extras only when present. IDs are stable forever (data/catalog_ids.lock).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "kind",
+    "source",
+    "source_ref",
+    "dish_id",
+    "name_en",
+    "name_ar",
+    "state",
+    "basis",
+    "kcal",
+    "protein_g",
+    "carbs_g",
+    "fat_g",
+    "fiber_g",
+    "kcal_low",
+    "kcal_high",
+    "protein_low",
+    "protein_high",
+    "carbs_low",
+    "carbs_high",
+    "fat_low",
+    "fat_high",
+    "fiber_low",
+    "fiber_high",
+    "extras",
+    "density_g_per_ml",
+    "yield_group",
+    "verified",
+    "review_status",
+    "sanity",
+    "catalog_version"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^(usda|ref):[a-z0-9][a-z0-9_]*(/[a-z0-9][a-z0-9_]*)?$",
+      "maxLength": 64
+    },
+    "kind": {
+      "enum": [
+        "basic",
+        "variant"
+      ]
+    },
+    "source": {
+      "enum": [
+        "usda",
+        "reference"
+      ]
+    },
+    "source_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "dish_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^ref:[a-z0-9][a-z0-9_]*$",
+          "maxLength": 64
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "name_en": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name_ar": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "state": {
+      "enum": [
+        "raw",
+        "cooked",
+        "dry",
+        "drained",
+        "fried",
+        "as_sold"
+      ]
+    },
+    "basis": {
+      "enum": [
+        "per_100g",
+        "per_100ml"
+      ]
+    },
+    "kcal": {
+      "type": "number",
+      "minimum": 0
+    },
+    "protein_g": {
+      "type": "number",
+      "minimum": 0
+    },
+    "carbs_g": {
+      "type": "number",
+      "minimum": 0
+    },
+    "fat_g": {
+      "type": "number",
+      "minimum": 0
+    },
+    "fiber_g": {
+      "type": "number",
+      "minimum": 0
+    },
+    "kcal_low": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "kcal_high": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "protein_low": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "protein_high": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "carbs_low": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "carbs_high": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "fat_low": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "fat_high": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "fiber_low": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "fiber_high": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "extras": {
+      "anyOf": [
+        {
+          "type": "object",
+          "propertyNames": {
+            "enum": [
+              "sugar",
+              "saturated_fat",
+              "trans_fat",
+              "sodium",
+              "cholesterol",
+              "alcohol"
+            ]
+          },
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "density_g_per_ml": {
+      "anyOf": [
+        {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "yield_group": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "verified": {
+      "enum": [
+        0,
+        1
+      ]
+    },
+    "review_status": {
+      "enum": [
+        "draft",
+        "reviewed"
+      ]
+    },
+    "sanity": {
+      "enum": [
+        "ok",
+        "warn",
+        "waived"
+      ]
+    },
+    "catalog_version": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

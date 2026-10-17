@@ -78,7 +78,8 @@ void main() {
       expect(MassUnit.fromCode('G'), isNull);
       expect(VolumeUnit.fromCode('floz'), isNull);
       expect(LengthUnit.fromCode('m'), isNull);
-      expect(PortionUnit.fromCode('can'), isNull);
+      expect(PortionUnit.fromCode('can'), PortionUnit.can);
+      expect(PortionUnit.fromCode('bowl'), isNull);
     });
 
     test('isKnownFoodUnitCode covers mass, volume and portion codes', () {
@@ -100,6 +101,7 @@ void main() {
         'sandwich',
         'disc',
         'serving',
+        'can',
       ]) {
         expect(isKnownFoodUnitCode(code), isTrue, reason: code);
       }

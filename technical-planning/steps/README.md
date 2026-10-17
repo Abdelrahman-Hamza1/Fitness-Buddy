@@ -144,7 +144,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A02](A02-design-system.md) | Design system v0 & key screen mockups | S06 ✅ | L | S07 |  | 🟦 wave 1 |
 | [A03](A03-spike-food-data.md) | Spike: food data | S08 ✅ | M | S11 |  | ✅ |
 | [A04](dish-batches.md) | Dish batch 1: basics (breakfast & bread → A17, TD-074) | A03 | S | D1 |  | ✅ |
-| [A05](A05-catalog-pipeline.md) | Catalog pipeline & offline pack v1 | A01, A03, A04 | L | S13 |  | 🟦 wave 1 |
+| [A05](A05-catalog-pipeline.md) | Catalog pipeline & offline pack v1 | A01, A03, A04 | L | S13 |  | ✅ |
 | [A05b](A05b-exercises-cities-data.md) | Exercises & cities data | A05 | S | S13 part |  | ⬜ |
 | [A06](A06-diary-domain.md) | Diary domain & storage | A01 | M | S14 |  | ✅ |
 | [A07](A07-food-search-add.md) | Food search & add flow | A02, A05, A06 | M | S15 |  | ⬜ |

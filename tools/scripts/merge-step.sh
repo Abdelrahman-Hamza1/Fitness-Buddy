@@ -28,7 +28,7 @@ cd "$root"
 git rev-parse --verify -q "refs/heads/$branch" >/dev/null || die "no local branch $branch"
 
 git fetch -q origin main
-git push -q -u origin "$branch"
+git push -q -u --force-with-lease origin "$branch"
 
 subjects=$(git log --reverse --format='- %s' "origin/main..$branch")
 [[ -n $subjects ]] || die "$branch has no commits beyond origin/main"

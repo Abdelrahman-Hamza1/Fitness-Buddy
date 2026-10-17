@@ -1,0 +1,255 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fitnessbuddy.local/catalog/dishes.schema.json",
+  "title": "Catalog load file: dishes.jsonl",
+  "description": "A reference dish: a search/grouping target that resolves to its default variant. Carries the recipes (with catalog IDs), portions with ranges and the review record. Rows with review_status draft appear only in builds with includes_drafts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name_en",
+    "name_ar",
+    "default_variant_id",
+    "review_status",
+    "time_min",
+    "catalog_version",
+    "variants",
+    "portions",
+    "review"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^ref:[a-z0-9][a-z0-9_]*$",
+      "maxLength": 64
+    },
+    "name_en": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name_ar": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "default_variant_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^ref:[a-z0-9][a-z0-9_]*/[a-z0-9][a-z0-9_]*$",
+          "maxLength": 64
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "review_status": {
+      "enum": [
+        "draft",
+        "reviewed"
+      ]
+    },
+    "time_min": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "catalog_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "variants": {
+      "type": "array",
+      "items": {
+        "description": "",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "recipe",
+          "cooked_total_g",
+          "cooked_total_range_lo",
+          "cooked_total_range_hi",
+          "nutrient_source"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^ref:[a-z0-9][a-z0-9_]*/[a-z0-9][a-z0-9_]*$",
+            "maxLength": 64
+          },
+          "recipe": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "description": "",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "food",
+                    "grams",
+                    "range_lo",
+                    "range_hi"
+                  ],
+                  "properties": {
+                    "food": {
+                      "type": "string",
+                      "pattern": "^(usda|ref):[a-z0-9][a-z0-9_]*(/[a-z0-9][a-z0-9_]*)?$",
+                      "maxLength": 64
+                    },
+                    "grams": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "range_lo": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "range_hi": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cooked_total_g": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cooked_total_range_lo": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cooked_total_range_hi": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "nutrient_source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "portions": {
+      "type": "object",
+      "additionalProperties": {
+        "description": "",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "g",
+          "range_lo",
+          "range_hi"
+        ],
+        "properties": {
+          "g": {
+            "type": "number",
+            "minimum": 0
+          },
+          "range_lo": {
+            "type": "number",
+            "minimum": 0
+          },
+          "range_hi": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "review": {
+      "description": "",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reviewed_by",
+        "sources",
+        "notes"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "draft",
+            "reviewed"
+          ]
+        },
+        "reviewed_by": {
+          "type": "string"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

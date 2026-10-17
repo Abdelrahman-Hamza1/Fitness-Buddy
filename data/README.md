@@ -11,6 +11,9 @@ bulk downloads are never committed. Tooling: `tools/catalog/` (`make catalog`).
 | `must_cover.yaml` | The spec's must-cover list (`spec/11` section 6, FD-052) with EN, AR and Arabizi names. `catalog coverage` reports how each item resolves. |
 | `yields.yaml` | Cooking yield factors (FD-060): grams of `to` per gram of `from`, one row per group and pair (`yields.v1.schema.json`). The only owner of yield factors. |
 | `portion_words.yaml` | What one loaf, piece, glass, can, tbsp or tsp of a food weighs or holds (FD-003, `portion_words.v1.schema.json`). The only owner of household units: a `servings` entry in the selection with the same unit must agree (the validator checks). |
+| `attribution.yaml` | Data sources and licences for About and the pack's `meta.attribution` (A05 D18). Includes the open Matvaretabellen licence question (backlog #64). |
+| `catalog_ids.lock` | Append-only list of every released catalog ID (TD-071). Written by `make catalog` only; never edit or delete a line. Drafts are never in it. |
+| `catalog_release.yaml` | The current `catalog_version` and content hash. Written by `make catalog` only. |
 | `schema/` | JSON Schemas for the selection, the reference dishes, yields and portion words. |
 | `sources/` | Small curated samples used as evidence (e.g. `off_local_sample.yaml`). |
 
@@ -19,17 +22,19 @@ USDA FoodData Central is CC0 (citation requested). Matvaretabellen (Norwegian Fo
 ## Commands
 
 ```sh
-make catalog                         # validate + build (drafts included) + coverage table
+make catalog        # validate, lock new IDs, bump the version, build build/catalog/ + app assets, print coverage. Commit what changed (the lock and catalog_release.yaml).
+make catalog-pack   # non-mutating: the same build without writing data/; fails with "run make catalog" when stale (used by Android builds)
+make catalog-check  # CI: read-only checks incl. the ID lock against the merge base (CATALOG_BASE_REF)
 dart run tools/catalog/bin/catalog.dart validate
-dart run tools/catalog/bin/catalog.dart build [--include-drafts] [--out build/catalog/catalog.db]
 dart run tools/catalog/bin/catalog.dart query "maqlobe"
-dart run tools/catalog/bin/catalog.dart coverage
 ```
 
-`build` writes a prototype `catalog.db` (SQLite, FTS5 trigram over
-`fb_text` normalized name keys) under `build/catalog/`, which is gitignored.
-Draft dishes are left out unless `--include-drafts` (they don't ship). The
-pack is a spike artefact: A05 finalises the schema, A07 owns ranking.
+After any change under `data/` run `make catalog` and commit `catalog_ids.lock` and
+`catalog_release.yaml` with it. Reviewed dishes and basics get an ID in the lock
+once; renaming or deleting a released ID is refused (retire it in the lock instead).
+Draft dishes are excluded from the release and from the lock, so they can still be
+renamed. `CATALOG_DRAFTS=1 make catalog` also packs drafts for dev runs.
+The release format is documented in `contracts/catalog/`.
 
 ## `must_cover.yaml`
 

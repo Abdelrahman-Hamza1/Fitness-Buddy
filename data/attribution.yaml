@@ -1,0 +1,32 @@
+# Data attribution (A05 D18). Shown in About; stored in the pack's meta.attribution.
+# Format: data/schema/attribution.v1.schema.json. `reserved` = not in the pack yet.
+sources:
+  - id: usda_fdc
+    name: "USDA FoodData Central"
+    licence: "CC0 1.0 (public domain); credit requested"
+    url: "https://fdc.nal.usda.gov/"
+    credit: "U.S. Department of Agriculture, Agricultural Research Service. FoodData Central. fdc.nal.usda.gov."
+    used_for: "Per-100 g nutrient values of the basics (SR Legacy 2018-04 and Foundation Foods)"
+    status: active
+  - id: matvaretabellen
+    name: "Norwegian Food Composition Table (Matvaretabellen)"
+    licence: "Not confirmed: the source asks to be cited; no explicit licence found (backlog #64)"
+    url: "https://www.matvaretabellen.no/"
+    credit: "Norwegian Food Composition Table 2024. The Norwegian Food Safety Authority. www.matvaretabellen.no"
+    used_for: "A cited source of the halloumi reference dish"
+    status: active
+    note: "Confirm terms with matvaretabellen@mattilsynet.no, or replace the source, before R2/R3 (backlog #64)."
+  - id: geonames
+    name: "GeoNames"
+    licence: "CC BY 4.0"
+    url: "https://www.geonames.org/"
+    credit: "City data from GeoNames (geonames.org), licensed under CC BY 4.0."
+    used_for: "Cities with coordinates and time zones (arrives with A05b)"
+    status: reserved
+  - id: open_food_facts
+    name: "Open Food Facts"
+    licence: "ODbL 1.0 (database), DbCL (contents)"
+    url: "https://world.openfoodfacts.org/"
+    credit: "Contains information from Open Food Facts contributors, made available under the ODbL."
+    used_for: "Barcode lookups through the server (A28/B10). Never part of this pack."
+    status: reserved

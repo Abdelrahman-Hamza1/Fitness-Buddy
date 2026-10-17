@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fitnessbuddy.local/catalog/yields.schema.json",
+  "title": "Catalog load file: yields.jsonl",
+  "description": "Cooking yield factor (FD-060): grams of to_state per gram of from_state, per food group. Consumers use a direct row or its inverse, never a chain.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "yield_group",
+    "from_state",
+    "to_state",
+    "factor",
+    "source"
+  ],
+  "properties": {
+    "yield_group": {
+      "type": "string",
+      "minLength": 1
+    },
+    "from_state": {
+      "enum": [
+        "raw",
+        "cooked",
+        "dry",
+        "drained",
+        "fried",
+        "as_sold"
+      ]
+    },
+    "to_state": {
+      "enum": [
+        "raw",
+        "cooked",
+        "dry",
+        "drained",
+        "fried",
+        "as_sold"
+      ]
+    },
+    "factor": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

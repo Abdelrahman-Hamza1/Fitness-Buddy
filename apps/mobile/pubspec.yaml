@@ -24,6 +24,9 @@ dependencies:
     path: ../../packages/fb_api_client
   fb_domain:
     path: ../../packages/fb_domain
+  # Query normalization for the offline catalog search (A05 D10).
+  fb_text:
+    path: ../../packages/fb_text
   flutter:
     sdk: flutter
   # Needed by the gen-l10n output (lib/l10n/gen). The app's delegates come
@@ -69,6 +72,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  # The bundled catalog pack and its manifest (A05 D7); `make catalog-pack`
+  # writes them (gitignored), the installer copies the pack on first run.
+  assets:
+    - assets/catalog/
   # Required by `flutter gen-l10n` (it refuses to run without it).
   generate: true
 

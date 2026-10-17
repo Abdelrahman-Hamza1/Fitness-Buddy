@@ -12,6 +12,7 @@ const dishSchemaFile = 'reference_dish.v1.schema.json';
 const selectionSchemaFile = 'usda_selection.v1.schema.json';
 const yieldsSchemaFile = 'yields.v1.schema.json';
 const portionWordsSchemaFile = 'portion_words.v1.schema.json';
+const attributionSchemaFile = 'attribution.v1.schema.json';
 
 /// Loads the schema [name] from [schemaDir].
 JsonSchema loadSchema(String schemaDir, String name) {

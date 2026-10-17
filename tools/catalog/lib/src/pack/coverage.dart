@@ -181,6 +181,27 @@ List<CoverRow> measureCoverage(
   return rows;
 }
 
+/// AT-003 regressions (A05 D17): reviewed dishes that don't resolve by EN, AR
+/// and Arabizi names in the release pack. Missing and draft items are only
+/// reported; A32 makes "missing = 0" a hard gate.
+List<String> coverageRegressions(List<CoverRow> rows) {
+  final problems = <String>[];
+  for (final r in rows) {
+    if (r.status != CoverStatus.reviewed || !r.byLang.values.contains(false)) {
+      continue;
+    }
+    final langs = [
+      for (final e in r.byLang.entries)
+        if (!e.value) e.key,
+    ].join(', ');
+    problems.add(
+      'must-cover item `${r.item.id}` (${r.target}) no longer resolves by '
+      '$langs',
+    );
+  }
+  return problems;
+}
+
 /// The coverage table as Markdown text.
 String formatCoverage(List<CoverRow> rows) {
   final b = StringBuffer()

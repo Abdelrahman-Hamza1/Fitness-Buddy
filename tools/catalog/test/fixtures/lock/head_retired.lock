@@ -1,0 +1,6 @@
+# fixture
+ref:musakhan	dish	1	active
+ref:musakhan/standard	variant	1	active
+usda:new_thing	food	2	active
+usda:olive_oil	food	1	retired
+usda:rice_raw	food	1	active
