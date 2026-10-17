@@ -40,7 +40,7 @@ Track progress with a todo list mirroring the phases below. Keep the owner infor
 
 ## D. Review & verify
 1. Run the `review-changes` skill (it picks reviewers by what changed, runs them in parallel, and manages the fix loop).
-2. Launch `verifier` on the branch. Any ❌ → back to C for the fix (then re-verify). ⚠️ items → prepare exact owner instructions.
+2. At milestone steps (or when the evidence is in doubt, TD-073), launch `verifier` on the branch; otherwise the code reviewer's exit-criteria check plus green CI is the evidence. Any ❌ → back to C for the fix (then re-verify). ⚠️ items → prepare exact owner instructions.
 
 ## E. Close
 1. Write the card's **Outcome**: built · deviations (and why) · follow-ups · new TDs · measurements · metrics (planned vs actual size, WPs, review rounds, findings by severity, tests added).

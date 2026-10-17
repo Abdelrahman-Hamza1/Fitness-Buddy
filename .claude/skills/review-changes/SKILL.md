@@ -14,10 +14,10 @@ Classify the changed paths:
 
 | Changed paths / content | Reviewers |
 |---|---|
-| anything | `code-reviewer` (always) |
+| anything | `code-reviewer` (always; also checks the exit criteria against tests and CI, TD-073) |
 | `backend/**/Identity/**`, auth/JWT/token code, `userdata`/sync, RLS/migrations with policies, `infra/**`, `.github/workflows/**`, secrets/config, logging/telemetry, Buddy request/context building, outbound HTTP clients | `security-reviewer` |
 | `apps/mobile/**/presentation/**`, `packages/fb_design_system/**`, `*.arb`, notification wording, any user-facing text | `ux-reviewer` |
-| new module/package, new public interface (`*.Contracts`, barrels), `contracts/openapi/**` shape changes beyond additive fields, schema conventions, cross-cutting mechanisms | `architect` (structural review mode) |
+| (TD-073: architect only for new foundations/seams, not feature steps on existing seams) new module/package, new public interface (`*.Contracts`, barrels), `contracts/openapi/**` shape changes beyond additive fields, schema conventions, cross-cutting mechanisms | `architect` (structural review mode) |
 
 Apply the triggers strictly (TD-054): placeholder screens don't need UX, a change inside an existing module doesn't need the architect.
 

@@ -30,17 +30,17 @@ Subagents can't spawn other agents. **All orchestration happens in the main sess
 | `ux-reviewer` | Reviews UI against the spec's UX rules (states, copy, colour, taps, accessibility) | Phase D when the diff touches screens or user-facing copy | No |
 | `verifier` | Independently checks every exit criterion with evidence (runs tests, measurements) | End of Phase D, before close | No (may add evidence notes) |
 
-### 2.1 Model policy (TD-038)
+### 2.1 Model policy (TD-038, amended by TD-073)
 
 | Default model | Agents | Why |
 |---|---|---|
-| **Opus** | `step-planner`, `architect`, `code-reviewer`, `security-reviewer`, `flutter-engineer`, `dotnet-engineer`, `platform-engineer`, `ai-engineer` | Judgment-heavy, or mistakes are expensive (design, review, production code, infra, prompts) |
-| **Sonnet** | `tech-researcher`, `verifier`, `data-curator`, `ux-reviewer` | Structured fact-finding or checklist work, each backed by hard checks (cited sources, executed tests, CI validation, owner skim) |
+| **Opus** | `step-planner`, `architect`, `code-reviewer`, `security-reviewer`, `dotnet-engineer`, `platform-engineer`, `ai-engineer` | Judgment-heavy, or mistakes are expensive (design, review, production code, infra, prompts) |
+| **Sonnet** | `flutter-engineer` (TD-073), `tech-researcher`, `verifier`, `data-curator`, `ux-reviewer` | Structured fact-finding or checklist work, each backed by hard checks (cited sources, executed tests, CI validation, owner skim) |
 
 Per-brief overrides by the orchestrator (the Agent tool's `model` parameter):
 - **Down to Sonnet** for small mechanical WPs: boilerplate, renames, config files, doc updates, test fixtures, applying already-specified review fixes.
 - **Up to Opus** for any Sonnet-default agent when the task needs judgment: a research question with a hard trade-off, the R1 verification, a dish batch that needs nutritional reasoning beyond the template.
-- **Never Sonnet** for: security-sensitive code (auth, sync, RLS), production infrastructure, architecture reviews, or a WP that already failed once.
+- **Never Sonnet** for: security-sensitive code (auth, sync, RLS), production infrastructure, architecture reviews, or a WP that already failed once. On the app track that means **Opus** for the write path (`core/db`, `core/changes`), sync (A34), sign-in and sessions (A20, A33, A35), the ProposalEngine (A21) and backups or data leaving the phone (TD-073).
 - If a Sonnet result fails review or verification, the retry runs on Opus.
 
 ## 3. Step lifecycle (what runs when)
@@ -72,10 +72,10 @@ A step is **ready** when: its dependencies are ✅ on the board, the owner prere
 5. **API changes are contract-first:** contract WP → client regeneration → server WP → app WP.
 
 ### D. Review & verify (the `review-changes` skill)
-1. Pick reviewers by what changed (§2): `code-reviewer` always, plus `security-reviewer`, `ux-reviewer`, `architect` **only when their trigger really applies** (TD-054): UX for real screens or user-facing copy (not placeholders), architect for new modules, packages, public interfaces or cross-cutting mechanisms, security for its listed areas. Run them in parallel.
+1. Pick reviewers by what changed (§2, TD-073): `code-reviewer` always; it also checks each exit criterion against the tests and CI evidence. `architect` only for **new foundations and seams** (new modules or packages, public interfaces other steps build on, cross-cutting mechanisms), not for feature steps that build on existing seams; its plan review per wave is unchanged. `security-reviewer` only for sync, sign-in and sessions, backups or data leaving the phone, logging/telemetry and AI requests. `ux-reviewer` for real screens or user-facing copy (not placeholders). Run them in parallel.
 2. Findings have a severity: **blocker** / **major** / **minor** / **nit**. Blockers and majors must be fixed. Minors are fixed or logged in `steps/backlog.md`. Nits are optional.
 3. Fixes go back to the engineer who wrote the code. **Re-review only when the round had a blocker or major** (by the same reviewer, scoped to those findings + regressions); fixes of minors and nits are checked by the orchestrator (diff + `make check test`) without another reviewer round (TD-054). **At most 3 rounds**, then the architect arbitrates, then the owner decides.
-4. **`verifier`** checks every exit criterion with evidence (test names, outputs, measurements, screenshots), marking each ✅ / ❌ / ⚠️ (needs the owner, e.g. on-device checks). Any ❌ returns to C.
+4. **`verifier`** only at milestone steps (A11 M1, A16 M2, A23 M3, A31/A32 M4, A35 M5, A41 M6, A42/A43 M7 and R1) and when the orchestrator doubts the evidence (TD-073). It checks every exit criterion with evidence (test names, outputs, measurements, screenshots), marking each ✅ / ❌ / ⚠️ (needs the owner, e.g. on-device checks). Any ❌ returns to C. Other steps: the code reviewer's exit-criteria check plus green CI.
 
 ### E. Close
 1. The orchestrator writes the card's **Outcome** (built, deviations, follow-ups, new TDs, measurements, review rounds).
