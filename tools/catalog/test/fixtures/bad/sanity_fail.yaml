@@ -1,0 +1,18 @@
+schema: 1
+id: ref:sanity_fail
+names:
+  en: [Bad dish sanity_fail]
+  ar: [طبق sanity-fail]
+  arabizi: [tabak sanity fail]
+state: cooked
+variants:
+  - id: only
+    default: true
+    per_100g: {kcal: 900, protein: 5, carbs: 5, fat: 5, fiber: 0}
+    nutrient_source: "Test fixture"
+portions:
+  plate: {g: 350, range: [300, 450]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources: [https://example.org/recipes/bad]

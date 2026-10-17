@@ -1,0 +1,92 @@
+schema: 1
+id: ref:maqluba
+names:
+  en: [Maqluba, Makloubeh, Upside-down rice]
+  ar: [مقلوبة, مقلوبة دجاج]
+  arabizi: [maqluba, maqlouba, maqlobe, makloubeh, maklooba, ma2lube, ma2louba, maglooba]
+state: cooked
+variants:
+  - id: chicken
+    default: true
+    names:
+      en: [Chicken maqluba, Maqluba with chicken and vegetables]
+      ar: [مقلوبة دجاج بالخضار]
+      arabizi: [maqluba djaj, maqlouba dajaj, maqluba ma3 djaj]
+    recipe:
+      - {food: usda:rice_white_long_grain_raw, grams: 450, range: [400, 500], note: "CPT: 450 g medium-grain rice"}
+      - {food: usda:chicken_thigh_raw, grams: 700, range: [600, 800], note: "1 kg bone-in pieces (CPT) is about 700 g edible meat and skin; bones are not counted"}
+      - {food: usda:onion_raw, grams: 110}
+      - {food: usda:eggplant_raw, grams: 250, range: [150, 400], note: "fried before layering"}
+      - {food: usda:cauliflower_raw, grams: 250, range: [150, 400], note: "fried before layering"}
+      - {food: usda:potato_raw, grams: 250, range: [150, 400]}
+      - {food: usda:carrot_raw, grams: 150, range: [0, 300]}
+      - {food: usda:vegetable_oil_soybean, grams: 100, range: [60, 150], note: "oil that stays in the pot after shallow frying the vegetables and browning the chicken; the biggest uncertainty"}
+      - {food: usda:turmeric_ground, grams: 3}
+      - {food: usda:allspice_ground, grams: 3}
+      - {food: usda:cumin_seed, grams: 2}
+      - {food: usda:black_pepper, grams: 3}
+      - {food: usda:salt_table, grams: 12}
+    cooked_total_g: 2350
+    cooked_total_range: [2100, 2600]
+  - id: cauliflower
+    default: false
+    names:
+      en: [Cauliflower maqluba, Maqluba with cauliflower]
+      ar: [مقلوبة زهرة, مقلوبة قرنبيط, مقلوبة دجاج وزهرة]
+      arabizi: [maqluba zahra, maqlouba arnabeet, maqlobe qarnabeet, maqluba karnabeet]
+    recipe:
+      - {food: usda:rice_white_long_grain_raw, grams: 450, range: [400, 500]}
+      - {food: usda:chicken_thigh_raw, grams: 700, range: [600, 800]}
+      - {food: usda:onion_raw, grams: 110}
+      - {food: usda:cauliflower_raw, grams: 600, range: [450, 800], note: "one large head, fried before layering"}
+      - {food: usda:potato_raw, grams: 250, range: [150, 400]}
+      - {food: usda:carrot_raw, grams: 150, range: [0, 300]}
+      - {food: usda:vegetable_oil_soybean, grams: 90, range: [55, 140], note: "cauliflower takes up less oil than eggplant (assumption)"}
+      - {food: usda:turmeric_ground, grams: 3}
+      - {food: usda:allspice_ground, grams: 3}
+      - {food: usda:cumin_seed, grams: 2}
+      - {food: usda:black_pepper, grams: 3}
+      - {food: usda:salt_table, grams: 12}
+    cooked_total_g: 2350
+    cooked_total_range: [2100, 2600]
+  - id: eggplant
+    default: false
+    names:
+      en: [Eggplant maqluba, Maqluba with eggplant, Aubergine maqluba]
+      ar: [مقلوبة باذنجان, مقلوبة دجاج وباذنجان]
+      arabizi: [maqluba badinjan, maqlouba bathinjan, maqlobe batinjan, maqluba badenjan]
+    recipe:
+      - {food: usda:rice_white_long_grain_raw, grams: 450, range: [400, 500]}
+      - {food: usda:chicken_thigh_raw, grams: 700, range: [600, 800]}
+      - {food: usda:onion_raw, grams: 110}
+      - {food: usda:eggplant_raw, grams: 600, range: [450, 800], note: "two eggplants, fried before layering"}
+      - {food: usda:potato_raw, grams: 250, range: [150, 400]}
+      - {food: usda:carrot_raw, grams: 150, range: [0, 300]}
+      - {food: usda:vegetable_oil_soybean, grams: 140, range: [90, 200], note: "fried eggplant soaks up a lot of oil (assumption); the biggest uncertainty"}
+      - {food: usda:turmeric_ground, grams: 3}
+      - {food: usda:allspice_ground, grams: 3}
+      - {food: usda:cumin_seed, grams: 2}
+      - {food: usda:black_pepper, grams: 3}
+      - {food: usda:salt_table, grams: 12}
+    cooked_total_g: 2400
+    cooked_total_range: [2150, 2650]
+portions:
+  plate: {g: 380, range: [300, 500]}
+  small_plate: {g: 280, range: [230, 330]}
+  large_plate: {g: 500, range: [430, 620]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+    - "Christian Peacemaker Teams (CPT), Recipes from our PalestineTeam, Maqluba with Chicken (serves 6-8): https://cpt.org/suppers/recipes-from-palestine"
+    - "Dumplings and More, Maqluba / Maklouba (500 g rice, 4 chicken thighs, 1 cauliflower, 2 eggplants, 2 potatoes, serves 8): https://dumplingsandmore.fr/?p=53209"
+    - "USDA FoodData Central (SR Legacy and Foundation) for every ingredient"
+  notes: >-
+    Recipe lists differ on the vegetables (CPT: one eggplant OR cauliflower plus potato and carrot; Dumplings and More:
+    cauliflower, 2 eggplants and 2 potatoes). The default is a mixed pot (eggplant and cauliflower, as many Palestinian
+    families do); the other two variants use one main vegetable. Oil is the biggest uncertainty: the sources only say
+    to shallow fry the vegetables 0.5-1 cm deep and give no total, so 90-140 g retained in the pot is our assumption
+    (range 55-200 g). All weights are edible (no bones); the pot's cooked weight (2.35 kg) and the plate sizes are
+    modelled (pot divided by 6-8 servings, CPT), not weighed. Chicken is skin-on thigh and its fat stays in the broth
+    that cooks the rice, so a skimmed or skinless version will be lighter. Restaurant and lamb maqluba are not covered.
+time_min: 20

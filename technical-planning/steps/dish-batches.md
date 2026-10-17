@@ -12,12 +12,12 @@
 
 | Batch | When (needed by) | Content |
 |---|---|---|
-| **A04** (was D1) | Before A05 | **Basics** for the offline pack: Arabic names + Arabizi aliases for the generic basics list (`spec/11` §6 "Basics"), yields, portion words. **Breakfast & bread** (taboon, pita/khubz, shrak, ka'ak al-quds, labaneh, zaatar + oil, white cheeses, halloumi, olives, eggs, shakshuka, makdous, Arabic salad) |
-| **A17** (was D2) | After M2 | **Main dishes A:** maqluba (3 variants), musakhan, mansaf, mujaddara, maftoul, freekeh with chicken, mloukhiyeh with rice, rice with vermicelli, chicken & rice, kabsa, sumaqiyyeh, qidra |
-| **A18** (was D3) | Before B09's M3 eval run (B08's eval is parse-level and doesn't need it) | **Out & street food:** falafel (piece, sandwich), chicken shawarma (sandwich, arabi, plate), meat shawarma, hummus plate, ful, msabbaha, fries, zinger, broasted, manakeesh, lahm bi ajeen/sfiha, fatayer, pizza slice, burger |
-| **A19** (was D4) | Before M3 (Buddy on the laptop) | **Main dishes B + salads & sides:** waraq dawali, mahshi, kofta/siniyyeh, fasoulia, bamia, bazella, shish tawook, kebab, grilled chicken, fatteh, lentil soup, freekeh soup, pasta with sauce · tabbouleh, fattoush, baba ghanoush/mutabbal, tahini salad, yogurt-cucumber, pickles |
-| **A30** (was D5) | During the Buddy breadth steps | **Sweets, drinks, Ramadan staples:** knafeh, qatayef (variants), baklava, harissa/basbousa, ma'amoul, awameh, muhallabiya, halawa · Arabic/Turkish coffee, tea with sugar, sahlab, laban/ayran, juices, soft drinks, qamar al-din, jallab, tamarind · dates |
-| **A32** (was D6) | Before M4 (Dogfood 2) | **Gap fill:** dishes the owner actually logged as `~ estimate` during dogfooding, misses from the eval, anything still failing AT-003 |
+| **A04** (was D1) | Before A05 | **Basics** for the offline pack: Arabic names + Arabizi aliases for the generic basics list (`spec/11` §6 "Basics"), yields, portion words. ~~Breakfast & bread~~ (moved to A17 by TD-074) (taboon, pita/khubz, shrak, ka'ak al-quds, labaneh, zaatar + oil, white cheeses, halloumi, olives, eggs, shakshuka, makdous, Arabic salad) |
+| **A17** (was D2) | **Deferred by TD-074:** after A41, before A42 (R1) | **Breakfast & bread** (from A04: taboon, pita/khubz, shrak, ka'ak al-quds, labaneh, zaatar + oil, white cheeses, halloumi, olives, shakshuka, makdous, Arabic salad) · **Main dishes A:** maqluba (3 variants), musakhan, mansaf, mujaddara, maftoul, freekeh with chicken, mloukhiyeh with rice, rice with vermicelli, chicken & rice, kabsa, sumaqiyyeh, qidra |
+| **A18** (was D3) | **Deferred by TD-074:** after A41, before A42 (R1) | **Out & street food:** falafel (piece, sandwich), chicken shawarma (sandwich, arabi, plate), meat shawarma, hummus plate, ful, msabbaha, fries, zinger, broasted, manakeesh, lahm bi ajeen/sfiha, fatayer, pizza slice, burger |
+| **A19** (was D4) | **Deferred by TD-074:** after A41, before A42 (R1) | **Main dishes B + salads & sides:** waraq dawali, mahshi, kofta/siniyyeh, fasoulia, bamia, bazella, shish tawook, kebab, grilled chicken, fatteh, lentil soup, freekeh soup, pasta with sauce · tabbouleh, fattoush, baba ghanoush/mutabbal, tahini salad, yogurt-cucumber, pickles |
+| **A30** (was D5) | **Deferred by TD-074:** after A41, before A42 (R1) | **Sweets, drinks, Ramadan staples:** knafeh, qatayef (variants), baklava, harissa/basbousa, ma'amoul, awameh, muhallabiya, halawa · Arabic/Turkish coffee, tea with sugar, sahlab, laban/ayran, juices, soft drinks, qamar al-din, jallab, tamarind · dates |
+| **A32** (was D6) | **Deferred by TD-074:** after A41, before A42 (R1); fills what dogfooding logged as `~ estimate` | **Gap fill:** dishes the owner actually logged as `~ estimate` during dogfooding, misses from the eval, anything still failing AT-003 |
 
 ## Per-batch session protocol
 1. Pick the batch list. Check what's already covered by USDA basics.
@@ -63,8 +63,8 @@ _Written in Phase B (2026-10-17, wave 1, lane F) by the step-planner. Built on A
 |---|---|---|---|
 | WP1 | Basics list (D1): FDC IDs, short EN names, AR names, ≥ 2 Arabizi spellings where people type the word in Latin, `servings`, `yield_group`, `fiber_zero` where right. `make catalog-usda` | `data/usda_selection.yaml`, `data/usda/extract.jsonl` | `make catalog` green with `--require-ar`; no duplicate normalized names |
 | WP2 | Yields (D4) and portion words (D5), each row cited | `data/yields.yaml`, `data/portion_words.yaml` (+ `flutter-engineer` adds `data/schema/{yields,portion_words}.v1.schema.json` + loaders + validation in `tools/catalog` (≈ 0.1 session). A05 reuses them) | Validate green; every FD-060 staple has a row |
-| WP3 | Breakfast & bread items (D2, D3): ≈ 12 entries as draft, sources, ranges, `time_min` | `data/reference_dishes/*.yaml` | Validate + sanity green; `must_cover.yaml` entries for the breakfast list point at their IDs |
-| WP4 | `make catalog` coverage report: every breakfast & basics item resolved by EN/AR/Arabizi (drafts included) | — | Report pasted into the Log row below |
+| ~~WP3~~ | **Dropped by TD-074** (owner, 2026-10-17: dishes later, basics first). Breakfast & bread dishes move to A17 | — | — |
+| WP4 | `make catalog` coverage report: every basics item resolved by EN/AR/Arabizi (drafts included) | — | Report pasted into the Log row below |
 
 **Tests / checks.** Required schema tests (WP2 adds the schemas): `FD-060 yields schema rejects factor ≤ 0 and unknown states`, `LC-051 portion word rows need g or ml, not both`. The batch exit criteria are shown by `make catalog` (validate, sanity, AT-003 coverage for the batch) in CI's `dart` job.
 

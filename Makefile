@@ -172,6 +172,7 @@ check-dart: ## Verify Dart formatting, analyze (very_good_analysis + riverpod_li
 	$(APP_CHECK)
 	@bash '$(REPO_ROOT)/tools/scripts/check-frozen-migrations-selftest.sh'
 	@bash '$(REPO_ROOT)/tools/scripts/check-frozen-migrations.sh'
+	PYTHONDONTWRITEBYTECODE=1 python3 -I -m unittest discover -s '$(REPO_ROOT)/tools/scripts' -p 'test_off*.py'
 
 # The app's architecture rules the analyzer can't express (S06 plan D16):
 # import boundaries, the single-writer write path (A01 D12), raw user-facing
@@ -395,6 +396,27 @@ RELEASE ?= R1
 trace: ## Print the requirement coverage report (RELEASE=R1|R2|R3|Later|all, default R1)
 	@cd '$(REPO_ROOT)' && '$(DART)' run tools/trace/bin/trace.dart --root . --release '$(RELEASE)'
 
+##@ Food catalog (A03)
+
+# USDA_DIR=<dir with sr_legacy/ and foundation/> reuses an earlier download.
+.PHONY: catalog-usda
+catalog-usda: ## Download the pinned USDA CSVs to a temp dir, then rewrite data/usda/extract.jsonl from data/usda_selection.yaml
+	@set -e; tmp=""; dir='$(USDA_DIR)'; \
+	if [ -z "$$dir" ]; then tmp="$$(mktemp -d)"; trap 'rm -rf "$$tmp"' EXIT; \
+	  bash '$(REPO_ROOT)/tools/scripts/fetch-usda.sh' "$$tmp/raw"; dir="$$tmp/raw"; fi; \
+	cd '$(REPO_ROOT)' && '$(DART)' run tools/catalog/bin/catalog.dart import-usda --usda-dir "$$dir"
+
+.PHONY: catalog
+catalog: ## A03: validate the catalog data, build the prototype pack (drafts included) in build/catalog/, print the must-cover coverage table
+	cd '$(REPO_ROOT)' && '$(DART)' run tools/catalog/bin/catalog.dart validate
+	cd '$(REPO_ROOT)' && '$(DART)' run tools/catalog/bin/catalog.dart build --include-drafts
+	cd '$(REPO_ROOT)' && '$(DART)' run tools/catalog/bin/catalog.dart coverage
+
+.PHONY: off-coverage
+off-coverage: ## A03: unit-test the script, then download the OFF export (~0.9 GB, needs 2 GB free) and print region coverage as Markdown (not in CI)
+	PYTHONDONTWRITEBYTECODE=1 python3 -I -m unittest discover -s '$(REPO_ROOT)/tools/scripts' -p 'test_off*.py'
+	bash '$(REPO_ROOT)/tools/scripts/off-coverage.sh'
+
 ##@ Buddy interpretation spike (B02)
 
 BUDDY_SPIKE_PROJECT := tools/BuddySpike/FitnessBuddy.BuddySpike.csproj
@@ -412,5 +434,3 @@ eval-live: eval-cli ## PAID: at most three fixed synthetic Luna requests; no ret
 
 eval-schema: eval-cli ## Regenerate Buddy's internal schema from C# records
 	cd '$(REPO_ROOT)' && '$(DOTNET)' '$(BUDDY_SPIKE_DLL)' --schema > backend/src/Modules/Buddy/Prompts/interpret-v0.schema.json
-
-# Later steps add: catalog.

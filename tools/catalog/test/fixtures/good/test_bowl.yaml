@@ -1,0 +1,20 @@
+schema: 1
+id: ref:test_bowl
+names:
+  en: [Test bowl]
+  ar: [صحن تجريبي]
+  arabizi: [sahen tajribi]
+state: cooked
+variants:
+  - id: standard
+    default: true
+    recipe:
+      - {food: "ref:test_pilaf/chicken", grams: 250}
+      - {food: usda:olive_oil, grams: 5}
+    cooked_total_g: 255
+portions:
+  bowl: {g: 255, range: [200, 300]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources: ["Test fixture (a dish used as an ingredient)"]

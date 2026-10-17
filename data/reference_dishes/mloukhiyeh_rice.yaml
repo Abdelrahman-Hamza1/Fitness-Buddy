@@ -1,0 +1,70 @@
+schema: 1
+id: ref:mloukhiyeh_rice
+names:
+  en: [Mloukhiyeh with rice, Mulukhiyah with rice, Jute mallow stew with rice]
+  ar: [ملوخية بالرز, ملوخية بالدجاج والرز, ملوخية]
+  arabizi: [mloukhiyeh, mloukhieh, molokhia, molokhiya, mulukhiyah, mulukhia, mlokhia, mloukhiya, mloukhiyeh bil ruz]
+state: cooked
+variants:
+  - id: chicken
+    default: true
+    names:
+      en: [Chicken mloukhiyeh with vermicelli rice]
+      ar: [ملوخية دجاج مع رز بالشعيرية]
+      arabizi: [mloukhiyeh djaj, molokhia ma3 ruz]
+    recipe:
+      - {food: usda:jute_potherb_raw, grams: 175, range: [125, 220], note: "5 cups tightly packed fresh leaves (Falasteeni Foodie); USDA gives 28 g per loose cup, so tight packing is our assumption; frozen or dried leaves give less"}
+      - {food: usda:garlic_raw, grams: 33, range: [24, 40], note: "8 large cloves plus 1 tbsp garlic powder, counted as fresh garlic"}
+      - {food: usda:olive_oil, grams: 27, range: [20, 45], note: "2 tbsp for frying the garlic"}
+      - {food: usda:tomato_raw, grams: 60}
+      - {food: usda:chicken_thigh_roasted, grams: 210, range: [170, 260], note: "1.5 cups cooked boneless chicken; family pots often use skin-on pieces, which adds fat"}
+      - {food: usda:paprika, grams: 7, note: "stands in for 1 tbsp Aleppo pepper"}
+      - {food: usda:coriander_seed, grams: 5}
+      - {food: usda:salt_table, grams: 12, note: "salt plus bouillon"}
+      - {food: usda:rice_white_long_grain_raw, grams: 277, range: [250, 310], note: "1.5 cups jasmine rice"}
+      - {food: usda:wheat_flour_white, grams: 30, note: "stands in for 1/3 cup toasted vermicelli, which USDA lacks"}
+      - {food: usda:vegetable_oil_soybean, grams: 27, range: [15, 45], note: "2 tbsp to toast the vermicelli"}
+    cooked_total_g: 1600
+    cooked_total_range: [1450, 1750]
+    portions:
+      plate: {g: 370, range: [300, 450]}
+      small_plate: {g: 270, range: [220, 330]}
+  - id: stew_only
+    default: false
+    names:
+      en: [Mloukhiyeh stew without rice, Mulukhiyah soup]
+      ar: [ملوخية بدون رز, شوربة ملوخية]
+      arabizi: [mloukhiyeh bidoun ruz, molokhia soup, mloukhiyeh shorbet]
+    recipe:
+      - {food: usda:jute_potherb_raw, grams: 175, range: [125, 220]}
+      - {food: usda:garlic_raw, grams: 33, range: [24, 40]}
+      - {food: usda:olive_oil, grams: 27, range: [20, 45]}
+      - {food: usda:tomato_raw, grams: 60}
+      - {food: usda:chicken_thigh_roasted, grams: 210, range: [170, 260]}
+      - {food: usda:paprika, grams: 7}
+      - {food: usda:coriander_seed, grams: 5}
+      - {food: usda:salt_table, grams: 6}
+    cooked_total_g: 850
+    cooked_total_range: [750, 950]
+    portions:
+      bowl: {g: 300, range: [250, 380]}
+      ladle: {g: 120, range: [90, 150]}
+portions:
+  plate: {g: 370, range: [300, 450]}
+  small_plate: {g: 270, range: [220, 330]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+    - "Falasteeni Foodie, Mulukhiyah Stew (Jute Mallow Stew) with vermicelli rice (serves 5): https://falasteenifoodie.com/mulukhiyah-stew-jute-mallow-stew/"
+    - "Handmade Palestine, Molokhiya recipe, a taste of Palestine's summer tradition (frozen leaves, chicken broth, garlic in olive oil, served over rice; no rice or serving amounts): https://handmadepalestine.com/blogs/news/molokhiya-recipe-a-taste-of-palestine-s-summer-tradition"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    Quantities are from Falasteeni Foodie (serves 5); plate = pot divided by 4-5 servings with a little extra for
+    a hungry plate. Handmade Palestine gives no usable quantities and uses frozen leaves; its salsa is not
+    included. The cooked pot weight (1.6 kg: about 0.85 kg stew and 0.75 kg rice) is modelled from the 2 cups of
+    water for the stew and the rice's absorption, not weighed. Palestinian mloukhiyeh is the soupy kind, so a
+    plate is rice with stew poured over. Oil (garlic and vermicelli, 54 g in total) is the biggest uncertainty;
+    family pots often use more, and with whole skin-on chicken pieces and fat in the broth. Lemon juice and bread
+    on the side are not included. The stew_only variant has bowl and ladle portions (a ladle is about 1/2 cup).
+time_min: 15

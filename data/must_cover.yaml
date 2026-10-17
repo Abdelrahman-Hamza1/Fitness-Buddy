@@ -1,0 +1,264 @@
+# Must-cover list (spec/11 section 6, FD-052). Read by `catalog coverage`.
+# An item resolves when one of its names finds a catalog ID that is the item
+# `id` (as `ref:<id>` or `usda:<id>`, or a longer slug or variant of it), or
+# one of its optional `match:` IDs, in the top 5 hits. `id` is a catalog slug.
+groups:
+  # Main dishes
+  - id: main
+    items:
+      - id: maqluba
+        names: {en: ["Maqluba"], ar: ["مقلوبة"], arabizi: ["maqluba"]}
+      - id: musakhan
+        names: {en: ["Musakhan"], ar: ["مسخن"], arabizi: ["musakhan"]}
+      - id: mansaf
+        names: {en: ["Mansaf"], ar: ["منسف"], arabizi: ["mansaf"]}
+      - id: mujaddara
+        names: {en: ["Mujaddara"], ar: ["مجدرة"], arabizi: ["mujaddara"]}
+      - id: maftoul
+        names: {en: ["Maftoul"], ar: ["مفتول"], arabizi: ["maftoul"]}
+      - id: freekeh_with_chicken
+        names: {en: ["Freekeh with chicken"], ar: ["فريكة مع دجاج"], arabizi: ["freekeh ma djaj"]}
+      - id: mloukhiyeh_rice
+        names: {en: ["Mloukhiyeh with rice"], ar: ["ملوخية مع رز"], arabizi: ["mloukhiyeh ma ruz"]}
+      - id: rice_with_vermicelli
+        names: {en: ["Rice with vermicelli"], ar: ["رز بشعرية"], arabizi: ["ruz bi sh'arieh"]}
+      - id: chicken_and_rice
+        names: {en: ["Chicken and rice"], ar: ["دجاج مع رز"], arabizi: ["djaj ma ruz"]}
+      - id: kabsa
+        names: {en: ["Kabsa"], ar: ["كبسة"], arabizi: ["kabsa"]}
+      - id: sumaqiyyeh
+        names: {en: ["Sumaqiyyeh"], ar: ["سماقية"], arabizi: ["sumaqiyyeh"]}
+      - id: qidra
+        names: {en: ["Qidra"], ar: ["قدرة"], arabizi: ["qidra"]}
+      - id: waraq_dawali
+        names: {en: ["Stuffed grape leaves (waraq dawali)"], ar: ["ورق دوالي"], arabizi: ["waraq dawali"]}
+      - id: mahshi_kousa
+        names: {en: ["Mahshi kousa"], ar: ["محشي كوسا"], arabizi: ["mahshi kousa"]}
+      - id: mahshi_eggplant
+        names: {en: ["Mahshi eggplant"], ar: ["محشي باذنجان"], arabizi: ["mahshi bathenjan"]}
+      - id: kofta_bil_tahini
+        names: {en: ["Kofta bil tahini (siniyyeh)"], ar: ["كفتة بالطحينة"], arabizi: ["kofta bi tahini"]}
+      - id: fasoulia_with_rice
+        names: {en: ["Fasoulia with rice"], ar: ["فاصوليا مع رز"], arabizi: ["fasoulia ma ruz"]}
+      - id: bamia_with_rice
+        names: {en: ["Bamia with rice"], ar: ["بامية مع رز"], arabizi: ["bamia ma ruz"]}
+      - id: bazella_with_rice
+        names: {en: ["Bazella with rice"], ar: ["بازيلا مع رز"], arabizi: ["bazella ma ruz"]}
+      - id: shish_tawook
+        names: {en: ["Shish tawook"], ar: ["شيش طاووق"], arabizi: ["shish tawook"]}
+      - id: kebab
+        names: {en: ["Kebab"], ar: ["كباب"], arabizi: ["kebab"]}
+      - id: grilled_chicken
+        names: {en: ["Grilled chicken (quarter, half, whole)"], ar: ["دجاج مشوي"], arabizi: ["djaj mashwi"]}
+      - id: fatteh
+        names: {en: ["Fatteh (hummus fatteh)"], ar: ["فتة حمص"], arabizi: ["fatteh hummus"]}
+      - id: lentil_soup
+        names: {en: ["Lentil soup (shorbat adas)"], ar: ["شوربة عدس"], arabizi: ["shorbat adas"]}
+        match: [ref:lentil_soup, ref:shorbat_adas]
+      - id: freekeh_soup
+        names: {en: ["Freekeh soup"], ar: ["شوربة فريكة"], arabizi: ["shorbat freekeh"]}
+      - id: pasta_with_sauce
+        names: {en: ["Pasta / spaghetti with sauce"], ar: ["معكرونة بالصلصة"], arabizi: ["makarona bi salsa"]}
+  # Out and street food
+  - id: street
+    items:
+      - id: falafel
+        names: {en: ["Falafel (piece, sandwich)"], ar: ["فلافل"], arabizi: ["falafel"]}
+      - id: chicken_shawarma
+        names: {en: ["Chicken shawarma (sandwich, arabi, plate)"], ar: ["شاورما دجاج"], arabizi: ["shawarma djaj"]}
+      - id: meat_shawarma
+        names: {en: ["Meat shawarma"], ar: ["شاورما لحم"], arabizi: ["shawarma lahme"]}
+      - id: hummus_plate
+        names: {en: ["Hummus plate"], ar: ["صحن حمص"], arabizi: ["sahen hummus"]}
+      - id: ful_medames
+        names: {en: ["Ful medames"], ar: ["فول مدمس"], arabizi: ["ful medames"]}
+      - id: msabbaha
+        names: {en: ["Msabbaha"], ar: ["مسبحة"], arabizi: ["msabbaha"]}
+      - id: fries
+        names: {en: ["Fries"], ar: ["بطاطا مقلية"], arabizi: ["batata maklieh"]}
+      - id: zinger_sandwich
+        names: {en: ["Zinger sandwich"], ar: ["زنجر"], arabizi: ["zinger"]}
+      - id: broasted_chicken
+        names: {en: ["Broasted chicken"], ar: ["بروستد دجاج"], arabizi: ["broasted djaj"]}
+      - id: manakeesh_zaatar
+        names: {en: ["Manakeesh zaatar"], ar: ["مناقيش زعتر"], arabizi: ["manakish zaatar"]}
+      - id: manakeesh_cheese
+        names: {en: ["Manakeesh cheese"], ar: ["مناقيش جبنة"], arabizi: ["manakish jibneh"]}
+      - id: lahm_bi_ajeen
+        names: {en: ["Lahm bi ajeen / sfiha"], ar: ["لحم بعجين"], arabizi: ["lahm bi ajeen"]}
+      - id: fatayer_spinach
+        names: {en: ["Fatayer spinach"], ar: ["فطائر سبانخ"], arabizi: ["fatayer sabanekh"]}
+      - id: fatayer_cheese
+        names: {en: ["Fatayer cheese"], ar: ["فطائر جبنة"], arabizi: ["fatayer jibneh"]}
+      - id: pizza_slice
+        names: {en: ["Pizza slice"], ar: ["شريحة بيتزا"], arabizi: ["pizza slice"]}
+      - id: burger
+        names: {en: ["Burger"], ar: ["برجر"], arabizi: ["burger"]}
+  # Breakfast and bread
+  - id: breakfast
+    items:
+      - id: taboon_bread
+        names: {en: ["Taboon bread"], ar: ["خبز طابون"], arabizi: ["khubz taboon"]}
+      - id: pita
+        names: {en: ["Pita / khubz"], ar: ["خبز عربي"], arabizi: ["khubz arabi"]}
+        match: [ref:pita, usda:pita]
+      - id: shrak
+        names: {en: ["Shrak / markouk"], ar: ["شراك"], arabizi: ["shrak"]}
+        match: [ref:shrak, ref:markouk]
+      - id: kaak_al_quds
+        names: {en: ["Ka'ak al-Quds (plain, with egg or falafel)"], ar: ["كعك القدس"], arabizi: ["kaak al quds"]}
+      - id: labaneh
+        names: {en: ["Labaneh"], ar: ["لبنة"], arabizi: ["labaneh"]}
+      - id: zaatar_with_olive_oil
+        names: {en: ["Zaatar with olive oil"], ar: ["زعتر وزيت"], arabizi: ["zaatar w zeit"]}
+      - id: nabulsi_cheese
+        names: {en: ["Nabulsi cheese"], ar: ["جبنة نابلسية"], arabizi: ["jibneh nabulsiyeh"]}
+      - id: akkawi_cheese
+        names: {en: ["Akkawi cheese"], ar: ["جبنة عكاوي"], arabizi: ["jibneh akkawi"]}
+      - id: baladi_cheese
+        names: {en: ["Baladi cheese"], ar: ["جبنة بلدية"], arabizi: ["jibneh baladi"]}
+      - id: halloumi
+        names: {en: ["Halloumi"], ar: ["حلوم"], arabizi: ["halloumi"]}
+      - id: olives
+        names: {en: ["Olives"], ar: ["زيتون"], arabizi: ["zeitoun"]}
+      - id: boiled_egg
+        names: {en: ["Egg, boiled"], ar: ["بيض مسلوق"], arabizi: ["bayd maslouk"]}
+      - id: fried_egg
+        names: {en: ["Egg, fried"], ar: ["بيض مقلي"], arabizi: ["bayd makli"]}
+      - id: omelette
+        names: {en: ["Omelette"], ar: ["عجة"], arabizi: ["ijjeh"]}
+      - id: shakshuka
+        names: {en: ["Shakshuka"], ar: ["شكشوكة"], arabizi: ["shakshuka"]}
+      - id: makdous
+        names: {en: ["Makdous"], ar: ["مكدوس"], arabizi: ["makdous"]}
+      - id: arabic_salad
+        names: {en: ["Arabic salad"], ar: ["سلطة عربية"], arabizi: ["salata arabiyeh"]}
+  # Salads and sides
+  - id: salads
+    items:
+      - id: tabbouleh
+        names: {en: ["Tabbouleh"], ar: ["تبولة"], arabizi: ["tabbouleh"]}
+      - id: fattoush
+        names: {en: ["Fattoush"], ar: ["فتوش"], arabizi: ["fattoush"]}
+      - id: baba_ghanoush
+        names: {en: ["Baba ghanoush / mutabbal"], ar: ["بابا غنوج"], arabizi: ["baba ghanoush"]}
+      - id: tahini_salad
+        names: {en: ["Tahini salad"], ar: ["سلطة طحينة"], arabizi: ["salatet tahini"]}
+      - id: yogurt_cucumber_salad
+        names: {en: ["Yogurt-cucumber salad"], ar: ["سلطة لبن وخيار"], arabizi: ["salatet laban w khiyar"]}
+      - id: pickles
+        names: {en: ["Pickles"], ar: ["مخللات"], arabizi: ["mkhalalat"]}
+        match: [ref:pickles, usda:pickled_cucumber]
+  # Sweets
+  - id: sweets
+    items:
+      - id: knafeh_nabulsiyeh
+        names: {en: ["Knafeh nabulsiyeh"], ar: ["كنافة نابلسية"], arabizi: ["knafeh nabulsiyeh"]}
+      - id: qatayef
+        names: {en: ["Qatayef (walnut or cheese, fried or baked)"], ar: ["قطايف"], arabizi: ["qatayef"]}
+      - id: baklava
+        names: {en: ["Baklava"], ar: ["بقلاوة"], arabizi: ["baklawa"]}
+      - id: basbousa
+        names: {en: ["Harissa / basbousa"], ar: ["هريسة"], arabizi: ["harissa"]}
+      - id: maamoul
+        names: {en: ["Ma'amoul"], ar: ["معمول"], arabizi: ["maamoul"]}
+      - id: awameh
+        names: {en: ["Awameh / luqaimat"], ar: ["عوامة"], arabizi: ["awameh"]}
+      - id: muhallabiya
+        names: {en: ["Muhallabiya"], ar: ["مهلبية"], arabizi: ["muhallabiya"]}
+      - id: halawa
+        names: {en: ["Halawa"], ar: ["حلاوة"], arabizi: ["halawa"]}
+  # Drinks
+  - id: drinks
+    items:
+      - id: arabic_coffee
+        names: {en: ["Arabic coffee"], ar: ["قهوة عربية"], arabizi: ["ahwa arabiyeh"]}
+      - id: turkish_coffee
+        names: {en: ["Turkish coffee"], ar: ["قهوة تركية"], arabizi: ["ahwa turkiyeh"]}
+      - id: tea_with_sugar
+        names: {en: ["Tea with sugar"], ar: ["شاي بسكر"], arabizi: ["shai bi sukkar"]}
+      - id: sahlab
+        names: {en: ["Sahlab"], ar: ["سحلب"], arabizi: ["sahlab"]}
+      - id: laban
+        names: {en: ["Laban / ayran"], ar: ["لبن عيران"], arabizi: ["laban ayran"]}
+      - id: fresh_juice
+        names: {en: ["Fresh juice"], ar: ["عصير طازج"], arabizi: ["aseer tazej"]}
+      - id: soft_drink
+        names: {en: ["Soft drink"], ar: ["مشروب غازي"], arabizi: ["mashroub ghazi"]}
+      - id: qamar_al_din
+        names: {en: ["Qamar al-din"], ar: ["قمر الدين"], arabizi: ["qamar al din"]}
+      - id: jallab
+        names: {en: ["Jallab"], ar: ["جلاب"], arabizi: ["jallab"]}
+      - id: tamarind
+        names: {en: ["Tamarind (tamer hindi)"], ar: ["تمر هندي"], arabizi: ["tamer hindi"]}
+  # Ramadan staples (the rest are listed above)
+  - id: ramadan
+    items:
+      - id: dates
+        names: {en: ["Dates"], ar: ["تمر"], arabizi: ["tamer"]}
+  # Basics
+  - id: basics
+    items:
+      - id: rice
+        names: {en: ["Rice"], ar: ["رز"], arabizi: ["ruz"]}
+      - id: bulgur
+        names: {en: ["Bulgur"], ar: ["برغل"], arabizi: ["burghul"]}
+      - id: freekeh
+        names: {en: ["Freekeh"], ar: ["فريكة"], arabizi: ["freekeh"]}
+      - id: pasta
+        names: {en: ["Pasta"], ar: ["معكرونة"], arabizi: ["makarona"]}
+      - id: lentils
+        names: {en: ["Lentils"], ar: ["عدس"], arabizi: ["adas"]}
+      - id: chickpeas
+        names: {en: ["Chickpeas"], ar: ["حمص"], arabizi: ["hummus"]}
+      - id: chicken_breast
+        names: {en: ["Chicken breast"], ar: ["صدر دجاج"], arabizi: ["sadr djaj"]}
+      - id: chicken_thigh
+        names: {en: ["Chicken thigh"], ar: ["فخذ دجاج"], arabizi: ["fakhd djaj"]}
+      - id: minced_beef
+        names: {en: ["Minced beef"], ar: ["لحم بقر مفروم"], arabizi: ["lahme baqar mafroum"]}
+        match: [usda:beef_ground]
+      - id: lamb
+        names: {en: ["Lamb"], ar: ["لحم غنم"], arabizi: ["lahme ghanam"]}
+      - id: fish
+        names: {en: ["Fish"], ar: ["سمك"], arabizi: ["samak"]}
+      - id: egg
+        names: {en: ["Eggs"], ar: ["بيض"], arabizi: ["bayd"]}
+      - id: milk
+        names: {en: ["Milk"], ar: ["حليب"], arabizi: ["haleeb"]}
+      - id: yogurt
+        names: {en: ["Yogurt"], ar: ["لبن زبادي"], arabizi: ["laban zabadi"]}
+      - id: olive_oil
+        names: {en: ["Olive oil"], ar: ["زيت زيتون"], arabizi: ["zeit zeitoun"]}
+      - id: vegetable_oil
+        names: {en: ["Vegetable oil"], ar: ["زيت نباتي"], arabizi: ["zeit nabati"]}
+      - id: butter
+        names: {en: ["Butter"], ar: ["زبدة"], arabizi: ["zebdeh"]}
+      - id: ghee
+        names: {en: ["Ghee"], ar: ["سمنة"], arabizi: ["samneh"]}
+      - id: apple
+        names: {en: ["Apple"], ar: ["تفاح"], arabizi: ["tuffah"]}
+      - id: banana
+        names: {en: ["Banana"], ar: ["موز"], arabizi: ["moz"]}
+      - id: orange
+        names: {en: ["Orange"], ar: ["برتقال"], arabizi: ["burtuqal"]}
+      - id: tomato
+        names: {en: ["Tomato"], ar: ["بندورة"], arabizi: ["banadoura"]}
+      - id: cucumber
+        names: {en: ["Cucumber"], ar: ["خيار"], arabizi: ["khiyar"]}
+      - id: potato
+        names: {en: ["Potato"], ar: ["بطاطا"], arabizi: ["batata"]}
+      - id: onion
+        names: {en: ["Onion"], ar: ["بصل"], arabizi: ["basal"]}
+      - id: carrot
+        names: {en: ["Carrot"], ar: ["جزر"], arabizi: ["jazar"]}
+      - id: almonds
+        names: {en: ["Almonds"], ar: ["لوز"], arabizi: ["lawz"]}
+      - id: walnuts
+        names: {en: ["Walnuts"], ar: ["جوز"], arabizi: ["jawz"]}
+      - id: tahini
+        names: {en: ["Tahini"], ar: ["طحينة"], arabizi: ["tahini"]}
+      - id: sugar
+        names: {en: ["Sugar"], ar: ["سكر"], arabizi: ["sukkar"]}
+      - id: honey
+        names: {en: ["Honey"], ar: ["عسل"], arabizi: ["asal"]}

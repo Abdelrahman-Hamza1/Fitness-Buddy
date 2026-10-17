@@ -1,0 +1,13 @@
+groups:
+  - id: main
+    items:
+      - id: maqluba
+        names: {en: [Maqluba], ar: [مقلوبة], arabizi: [maqlobe]}
+      - id: musakhan
+        names: {en: [Musakhan], ar: [مسخن], arabizi: [mosakhan]}
+      - id: kabsa
+        names: {en: [Kabsa], ar: [كبسة], arabizi: [kabsa]}
+  - id: basics
+    items:
+      - id: rice_raw
+        names: {en: ["Rice, raw"], ar: [رز], arabizi: [ruz]}

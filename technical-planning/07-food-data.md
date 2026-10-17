@@ -6,7 +6,7 @@ _Food data is half the product (D-011, D-046). This file decides where it comes 
 
 | Need | Volume (R1) | Source |
 |---|---|---|
-| Generic basics, raw/cooked (rice, chicken, oils, produce…) | ≈ 1–3k items | **USDA FoodData Central** (public domain), curated subset. Arabic names + Arabizi aliases on the basics list (FD-004) |
+| Generic basics, raw/cooked (rice, chicken, oils, produce…) | ≈ 150–250 curated items in R1 (A03/A04, TD-010) | **USDA FoodData Central** (public domain): SR Legacy, Foundation where complete; curated subset. Arabic names + Arabizi aliases on the basics list (FD-004) |
 | Local & mixed dishes with portions (must-cover list) | ≈ 120 dishes, ≈ 200+ variants | **Our own reference dishes** (authored + reviewed, §4) |
 | Raw ↔ cooked yield factors (FD-060) | ≈ 20 staples | Published yield tables (USDA), stored in the catalog |
 | Local portion words with grams per food (FD-003, LC-051) | per food | Our own data, authored with the dishes |
@@ -38,7 +38,8 @@ Reference dishes are **source code for data**: reviewed YAML in the repo, valida
 
 ```yaml
 # data/reference_dishes/maqluba.yaml
-id: ref.maqluba
+schema: 1
+id: ref:maqluba             # format v1: data/schema/reference_dish.v1.schema.json (A03)
 names:
   en: [Maqluba, Maqloubeh]
   ar: [مقلوبة]

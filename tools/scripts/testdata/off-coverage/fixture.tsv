@@ -1,0 +1,21 @@
+code	countries_tags	brands_tags	product_name	energy-kcal_100g	energy_100g	proteins_100g	carbohydrates_100g	fat_100g	fiber_100g
+6251001	en:jordan	hammoudeh	Hammoudeh Halloumi	300		20	1	25	0
+6251002	en:jordan,en:palestine	juneidi	Halawa plain		2000	10	50	30	
+7291003	en:israel	tnuva	Tnuva Milk 3%	60		3	5	3	0
+7291004	en:israel	osem	Bamba						
+6251005	en:jordan	unknown	Mystery	100		5	5		1
+6281006	en:palestine	siniora	Siniora Mortadella	250		12	2	22	0
+5000007	en:united-kingdom	tnuva	Tnuva Milk elsewhere	60		3	5	3	0
+8690008	en:west-bank	ulker	Ulker biscuits	450		6	70	15	2
+8690009	en:gaza-strip	x	Y						
+123	en:france		Plain	1		1	1	1	1
+5000010	en:germany		Filler 10	1		1	1	1	1
+5000011	en:germany		Filler 11	1		1	1	1	1
+5000012	en:germany		Filler 12	1		1	1	1	1
+5000013	en:germany		Filler 13	1		1	1	1	1
+5000014	en:germany		Filler 14	1		1	1	1	1
+5000015	en:germany		Filler 15	1		1	1	1	1
+5000016	en:germany		Filler 16	1		1	1	1	1
+5000017	en:germany		Filler 17	1		1	1	1	1
+5000018	en:germany		Filler 18	1		1	1	1	1
+5000019	en:germany		Filler 19	1		1	1	1	1

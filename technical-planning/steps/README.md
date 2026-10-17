@@ -142,7 +142,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 |---|---|---|---|---|---|---|
 | [A01](A01-local-data-foundation.md) | Local data foundation | S06 ✅, S08 ✅ | M | S09 |  | ✅ |
 | [A02](A02-design-system.md) | Design system v0 & key screen mockups | S06 ✅ | L | S07 |  | 🟦 wave 1 |
-| [A03](A03-spike-food-data.md) | Spike: food data | S08 ✅ | M | S11 |  | 🟦 wave 1 |
+| [A03](A03-spike-food-data.md) | Spike: food data | S08 ✅ | M | S11 |  | ✅ |
 | [A04](dish-batches.md) | Dish batch 1: basics, breakfast & bread | A03 | S | D1 |  | 🟦 wave 1 |
 | [A05](A05-catalog-pipeline.md) | Catalog pipeline & offline pack v1 | A01, A03, A04 | L | S13 |  | 🟦 wave 1 |
 | [A05b](A05b-exercises-cities-data.md) | Exercises & cities data | A05 | S | S13 part |  | ⬜ |
@@ -157,9 +157,9 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A14](A14-weigh-ins-trend.md) | Weigh-ins & trend | A08 | M | S21 |  | ⬜ |
 | [A15](A15-weight-graph-measurements.md) | Weight graph & measurements | A12, A14 | L | S22 |  | ⬜ |
 | [A16](A16-progress-tab.md) | Progress tab v1 | A13, A15 | M | S23 | **M2** | ⬜ |
-| [A17](dish-batches.md) | Dish batch 2: main dishes A | A04 | S | D2 |  | ⬜ |
-| [A18](dish-batches.md) | Dish batch 3: out & street food | A17 | S | D3 |  | ⬜ |
-| [A19](dish-batches.md) | Dish batch 4: main dishes B, salads & sides | A18 | S | D4 |  | ⬜ |
+| [A17](dish-batches.md) | Dish batch 2: main dishes A | A04 | S | D2 |  | ⏸ deferred (TD-074): after A41 |
+| [A18](dish-batches.md) | Dish batch 3: out & street food | A17 | S | D3 |  | ⏸ deferred (TD-074): after A41 |
+| [A19](dish-batches.md) | Dish batch 4: main dishes B, salads & sides | A18 | S | D4 |  | ⏸ deferred (TD-074): after A41 |
 | [A20](A20-api-session.md) | API session: anonymous identity & auth interceptor | **B04** (contract) | S | S25 part |  | ⬜ |
 | [A21](A21-proposal-engine.md) | ProposalEngine | A07, A12, **B02** | L | S32 |  | ⬜ |
 | [A22](A22-chat-proposal-card.md) | Chat sheet & proposal card | A08, A20, A21, **B08** | L | S33 |  | ⬜ |
@@ -170,9 +170,9 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A27](A27-batches-chat-foods.md) | Batches, personal foods & saved meals by chat (app) | A09, A23, **B09** (contract) | L | S37 app part |  | ⬜ |
 | [A28](A28-barcode-label-scan.md) | Barcode & label scan (app) | A23, **B10** (contract) | L | S38 app part |  | ⬜ |
 | [A29](A29-photo-body-import.md) | Photo logging, body data by chat & paste import (app) | A15, A23, **B10** (contract) | M | S39 app part |  | ⬜ |
-| [A30](dish-batches.md) | Dish batch 5: sweets, drinks & Ramadan staples | A19 | S | D5 |  | ⬜ |
+| [A30](dish-batches.md) | Dish batch 5: sweets, drinks & Ramadan staples | A19 | S | D5 |  | ⏸ deferred (TD-074): after A41 |
 | [A31](A31-qa-suggestions-halal.md) | Q&A, suggestions & halal (app) | A26, **B11** (contract) | M | S40 app part |  | ⬜ |
-| [A32](dish-batches.md) | Dish batch 6: gap fill from dogfooding | A30 | S | D6 | **M4** | ⬜ |
+| [A32](dish-batches.md) | Dish batch 6: gap fill from dogfooding | A30 | S | D6 |  | ⏸ deferred (TD-074): after A41 |
 | [A33](A33-sign-in-guest-app.md) | Sign-in & guest upgrade | A20, **B04** | M | S25 |  | ⬜ |
 | [A34](A34-sync-engine-app.md) | Sync engine (app) | A33, **B05** | L | S27 |  | ⬜ |
 | [A35](A35-account-deletion-app.md) | Account deletion (app) | A34, **B06** | S | S28 deletion part | **M5** | ⬜ |
@@ -184,6 +184,8 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A41](A41-ramadan.md) | Ramadan mode (app) | A05b, A15, A38, A40, **B12** (contract) | L | S46 app part | **M6** | ⬜ |
 | [A42](A42-performance-a11y-offline.md) | Performance, accessibility & offline acceptance | A41 | M | S48 | **R1** | ⬜ |
 | [A43](A43-play-internal-release.md) | Play internal testing release | A42, **B14** | S | S29 app part | **M7** | ⬜ |
+
+**Dish batches deferred (TD-074, owner 2026-10-17):** A17–A19, A30 and A32 keep their IDs but run after A41, before A42, an exception to "the number is the order". Until then local dishes are logged as `~ estimate` from the basics; the reference-dish pipeline (A03, A05) stays, so batches can be added any time.
 
 ### 4.2 Backend track (Codex)
 
@@ -210,7 +212,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 flowchart LR
   subgraph App["App track · Claude"]
     a1["A01–A10<br/>food tracker"] --> M1{{"M1 Dogfood 1<br/>offline"}} --> a2["A12–A16<br/>targets & weight"] --> M2{{"M2"}}
-    M2 --> a3["A17–A19 dishes<br/>A20–A23 Buddy core"] --> M3{{"M3 Buddy<br/>on the laptop"}} --> a4["A24–A32<br/>Buddy breadth"] --> M4{{"M4 Dogfood 2"}}
+    M2 --> a3["A20–A23 Buddy core"] --> M3{{"M3 Buddy<br/>on the laptop"}} --> a4["A24–A32<br/>Buddy breadth"] --> M4{{"M4 Dogfood 2"}}
     M4 --> a5["A33–A35<br/>sign-in & sync"] --> M5{{"M5"}} --> a6["A36–A41 workouts,<br/>insights, Ramadan"] --> M6{{"M6"}} --> a7["A42 performance<br/>A43 Play release"]
   end
   subgraph Backend["Backend track · Codex"]
@@ -236,11 +238,11 @@ flowchart LR
 | **M1 Dogfood 1: offline food tracker** | A11 | OF-01 food parts pass. A day of food can be logged by search and quick-add in airplane mode. The owner uses the prod build daily and can export | None needed (the laptop for `/v1/config` only) |
 | **M2 Targets & weight** | A16 | Targets property tests pass. The owner's weight-note history is entered and charted | None |
 | **M3 Buddy on the laptop** | A23 + B09's eval run | T01–T16, T19, T39–T41 meet the AQ thresholds (B09 runs the eval). p90 ≤ 5 s measured from the owner's location | Laptop (B03) |
-| **M4 Dogfood 2: Buddy-first** | A31, A32 + B09–B11's eval runs | T17–T29, T33, T36–T38 pass. OF-02 passes. AT-003 green. The owner logs mostly through Buddy for a week | Laptop |
+| **M4 Dogfood 2: Buddy-first** | A31 + B09–B11's eval runs | T17–T29, T33, T36–T38 pass (dish cases may score as estimates until the deferred batches, TD-074). OF-02 passes. The owner logs mostly through Buddy for a week | Laptop |
 | **M5 Accounts & sync** | A35 (+ B05, B06) | OF-03 passes against the laptop server. Google sign-in, guest upgrade and account deletion work on the A55 | Laptop |
 | **M6 Workouts, insights & Ramadan** | A41 (+ B12) | J9, J10, J11, T30–T35 pass. Every NT rule has a planner test | Laptop |
 | **M7 Production** | B14 + A43 | The restore drill is done. AT-006 passes on production. The app installs from Play. The laptop's data has moved in | Hetzner (B13, B14) |
-| **R1 done** | A42, A43 (M7), B15, B16 | AT-001 to AT-007 met. Every AQ threshold met on ≥ 150 cases. The owner uses it as the only tracker for 2 weeks. SC-1 checked at 4 weeks | Production |
+| **R1 done** | A42, A43 (M7), B15, B16, the dish batches (AT-003 green, TD-074) | AT-001 to AT-007 met. Every AQ threshold met on ≥ 150 cases. The owner uses it as the only tracker for 2 weeks. SC-1 checked at 4 weeks | Production |
 
 **While the laptop is the server:** everything except Buddy, online search, sign-in and sync works with the laptop off (local-first). Online features work whenever the laptop runs the test-server stack + the Tailscale mapping (B03 runbook).
 

@@ -1,0 +1,168 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fitnessbuddy.local/schema/reference_dish.v1.schema.json",
+  "title": "Fitness Buddy reference dish, format v1 (A03 D5)",
+  "description": "One data/reference_dishes/<slug>.yaml. Frozen at the end of A03. Catalog IDs: ref:<slug> for the dish, ref:<slug>/<variant> for a variant (A03 D4).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "names", "state", "variants", "portions", "review"],
+  "properties": {
+    "schema": { "const": 1 },
+    "id": { "$ref": "#/definitions/dishId" },
+    "names": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["en", "ar", "arabizi"],
+      "properties": {
+        "en": { "$ref": "#/definitions/nameList" },
+        "ar": { "$ref": "#/definitions/nameList" },
+        "arabizi": { "$ref": "#/definitions/nameList" }
+      }
+    },
+    "state": { "enum": ["raw", "cooked", "dry", "drained", "fried", "as_sold"] },
+    "variants": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/variant" }
+    },
+    "portions": { "$ref": "#/definitions/portions", "minProperties": 1 },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reviewed_by", "sources"],
+      "properties": {
+        "status": { "enum": ["draft", "reviewed"] },
+        "reviewed_by": { "enum": ["claude-draft", "owner"] },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/text" }
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "sanity_override": { "$ref": "#/definitions/sanityOverride" },
+    "time_min": { "type": "number", "exclusiveMinimum": 0 }
+  },
+  "definitions": {
+    "text": { "type": "string", "pattern": "\\S" },
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$" },
+    "dishId": {
+      "type": "string",
+      "maxLength": 64,
+      "pattern": "^ref:(?!\\d+$)[a-z0-9]+(_[a-z0-9]+)*$"
+    },
+    "foodRef": {
+      "type": "string",
+      "maxLength": 64,
+      "pattern": "^(usda|ref):(?!\\d+(/|$))[a-z0-9]+(_[a-z0-9]+)*(/[a-z0-9]+(_[a-z0-9]+)*)?$"
+    },
+    "nameList": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/definitions/text" }
+    },
+    "range": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": { "type": "number", "minimum": 0 }
+    },
+    "sanityOverride": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason"],
+      "properties": { "reason": { "$ref": "#/definitions/text" } }
+    },
+    "portions": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/definitions/slug" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["g", "range"],
+        "properties": {
+          "g": { "type": "number", "exclusiveMinimum": 0 },
+          "range": { "$ref": "#/definitions/range" }
+        }
+      }
+    },
+    "per100g": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kcal", "protein", "carbs", "fat", "fiber"],
+      "properties": {
+        "kcal": { "type": "number", "minimum": 0 },
+        "protein": { "type": "number", "minimum": 0 },
+        "carbs": { "type": "number", "minimum": 0 },
+        "fat": { "type": "number", "minimum": 0 },
+        "fiber": { "type": "number", "minimum": 0 },
+        "extras": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sugar": { "type": "number", "minimum": 0 },
+            "saturated_fat": { "type": "number", "minimum": 0 },
+            "trans_fat": { "type": "number", "minimum": 0 },
+            "sodium": { "type": "number", "minimum": 0 },
+            "cholesterol": { "type": "number", "minimum": 0 },
+            "alcohol": { "type": "number", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "recipeItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["food", "grams"],
+      "properties": {
+        "food": { "$ref": "#/definitions/foodRef" },
+        "grams": { "type": "number", "exclusiveMinimum": 0 },
+        "range": { "$ref": "#/definitions/range" },
+        "note": { "type": "string" }
+      }
+    },
+    "variant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "default"],
+      "properties": {
+        "id": { "$ref": "#/definitions/slug" },
+        "default": { "type": "boolean" },
+        "names": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "en": { "$ref": "#/definitions/nameList" },
+            "ar": { "$ref": "#/definitions/nameList" },
+            "arabizi": { "$ref": "#/definitions/nameList" }
+          }
+        },
+        "recipe": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/recipeItem" } },
+        "cooked_total_g": { "type": "number", "exclusiveMinimum": 0 },
+        "cooked_total_range": { "$ref": "#/definitions/range" },
+        "per_100g": { "$ref": "#/definitions/per100g" },
+        "nutrient_source": { "$ref": "#/definitions/text" },
+        "portions": { "$ref": "#/definitions/portions" },
+        "sanity_override": { "$ref": "#/definitions/sanityOverride" }
+      },
+      "oneOf": [
+        {
+          "required": ["recipe", "cooked_total_g"],
+          "not": { "anyOf": [{ "required": ["per_100g"] }, { "required": ["nutrient_source"] }] }
+        },
+        {
+          "required": ["per_100g", "nutrient_source"],
+          "not": {
+            "anyOf": [
+              { "required": ["recipe"] },
+              { "required": ["cooked_total_g"] },
+              { "required": ["cooked_total_range"] }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,229 @@
+# A03 D12: ~30 products well known in West Bank / Jordan shops. Used only by
+# tools/scripts/off_coverage.py to ask "does Open Food Facts know this product,
+# and with complete data?". Names and brands only: no OFF data, no barcodes
+# (no non-OFF barcode source was used). Format is a restricted YAML subset so the
+# stdlib-only script can parse it: one "- id:" item per product, scalar fields,
+# and inline lists [a, b].
+#   brand_any: substrings, any of which must occur in an OFF brands_tags value
+#   name_any:  lowercase words, any of which must occur in the product name
+#   source:    shop or brand page showing the product is sold locally
+#   verified:  true = page seen while writing this file; false = brand's
+#              well-known site, not opened (the owner can spot-check)
+# Region: PS = Palestine, JO = Jordan, TR = Turkey, INT = international line sold locally.
+- id: juneidi-halawa
+  name: Al-Juneidi halawa 250 g
+  brand_any: [juneidi, junaidi]
+  name_any: [halawa, halva, halwa]
+  region: JO
+  source: https://www.talabat.com/jordan/grocery/652242/tijareyeh-1/breakfast-food/spreads?aid=4978
+  verified: true
+- id: juneidi-halawa-pistachio
+  name: Al-Juneidi halawa with pistachio 250 g
+  brand_any: [juneidi, junaidi]
+  name_any: [pistachio]
+  region: JO
+  source: https://www.talabat.com/jordan/grocery/652242/tijareyeh-1/breakfast-food/spreads?aid=4978
+  verified: true
+- id: hammoudeh-halloumi
+  name: Hammoudeh halloumi cheese 250 g
+  brand_any: [hammoudeh, hamoudeh, hamodeh]
+  name_any: [halloumi, haloumi, hallumi]
+  region: JO
+  source: https://www.talabat.com/jordan/grocery/655981/al-awdah/dairy-eggs/cheese?aid=6614
+  verified: true
+- id: almarai-triangle-cheese
+  name: Almarai processed cheese triangles
+  brand_any: [almarai]
+  name_any: [triangle, triangles, cheese]
+  region: JO
+  source: https://www.talabat.com/jordan/grocery/655981/al-awdah/dairy-eggs/cheese?aid=6614
+  verified: true
+- id: almarai-cream-cheese
+  name: Almarai spreadable cream cheese 500 g
+  brand_any: [almarai]
+  name_any: [cream]
+  region: JO
+  source: https://www.talabat.com/jordan/grocery/655981/al-awdah/dairy-eggs/cheese?aid=6614
+  verified: true
+- id: almarai-milk
+  name: Almarai fresh full-fat milk
+  brand_any: [almarai]
+  name_any: [milk]
+  region: JO
+  source: https://www.almarai.com/
+  verified: false
+- id: al-arz-tahini
+  name: Al Arz tahini (sesame paste)
+  brand_any: [al-arz, alarz, arz]
+  name_any: [tahini, tahina, sesame]
+  region: PS
+  source: https://www.walmart.com/ip/Al-Arz-Tahini-Sesame-Seed-Paste-16-oz/223288309
+  verified: true
+- id: siniora-mortadella
+  name: Siniora beef mortadella
+  brand_any: [siniora]
+  name_any: [mortadella]
+  region: PS
+  source: https://en.wikipedia.org/wiki/Siniora_(company)
+  verified: true
+- id: siniora-frankfurter
+  name: Siniora frankfurters / hot dogs
+  brand_any: [siniora]
+  name_any: [frankfurter, frankfurters, hot, sausage, sausages]
+  region: PS
+  source: https://en.wikipedia.org/wiki/Siniora_(company)
+  verified: true
+- id: sinokrot-dates
+  name: Palestine Gardens (Sinokrot) Medjool dates
+  brand_any: [palestine-gardens, sinokrot, qamar, sahara-crown]
+  name_any: [date, dates, medjool, medjoul]
+  region: PS
+  source: https://nutrada.com/suppliers/palestine-gardens
+  verified: true
+- id: sinokrot-chocolate
+  name: Sinokrot chocolate / candy
+  brand_any: [sinokrot]
+  name_any: [chocolate, candy, wafer, biscuit, biscuits]
+  region: PS
+  source: https://en.wikipedia.org/wiki/Sinokrot
+  verified: true
+- id: nabulsi-cheese
+  name: Nabulsi cheese
+  brand_any: [nabulsi, nablus]
+  name_any: [nabulsi, nablus]
+  region: PS
+  source: https://www.talabat.com/jordan/grocery/655981/al-awdah/dairy-eggs/cheese?aid=6614
+  verified: false
+- id: wadi-akhdar-chickpeas
+  name: Al-Wadi Al-Akhdar canned chickpeas / foul
+  brand_any: [wadi, akhdar]
+  name_any: [chickpeas, hummus, foul, fava, beans]
+  region: PS
+  source: https://www.talabat.com/jordan/grocery/
+  verified: false
+- id: tnuva-milk
+  name: Tnuva milk 3%
+  brand_any: [tnuva]
+  name_any: [milk]
+  region: PS
+  source: https://www.tnuva.co.il/
+  verified: false
+- id: tara-milk
+  name: Tara milk
+  brand_any: [tara]
+  name_any: [milk]
+  region: PS
+  source: https://www.tara.co.il/
+  verified: false
+- id: osem-bamba
+  name: Osem Bamba peanut snack
+  brand_any: [osem]
+  name_any: [bamba]
+  region: PS
+  source: https://www.osem.co.il/
+  verified: false
+- id: elite-coffee
+  name: Elite Turkish coffee
+  brand_any: [elite]
+  name_any: [coffee, turkish]
+  region: PS
+  source: https://www.strauss-group.com/
+  verified: false
+- id: nescafe-3in1
+  name: Nescafe 3 in 1 instant coffee
+  brand_any: [nescafe]
+  name_any: [3, coffee]
+  region: INT
+  source: https://www.nescafe.com/
+  verified: false
+- id: nestle-cerelac
+  name: Nestle Cerelac infant cereal
+  brand_any: [nestle, cerelac]
+  name_any: [cerelac]
+  region: INT
+  source: https://www.nestle-mena.com/
+  verified: false
+- id: pepsi
+  name: Pepsi cola can
+  brand_any: [pepsi]
+  name_any: [pepsi]
+  region: INT
+  source: https://www.pepsico.com/
+  verified: false
+- id: coca-cola
+  name: Coca-Cola classic
+  brand_any: [coca-cola]
+  name_any: [coca, cola]
+  region: INT
+  source: https://www.coca-cola.com/
+  verified: false
+- id: tang-orange
+  name: Tang orange drink powder
+  brand_any: [tang]
+  name_any: [tang, orange]
+  region: INT
+  source: https://www.talabat.com/jordan/grocery/
+  verified: false
+- id: rani-juice
+  name: Rani fruit juice
+  brand_any: [rani]
+  name_any: [juice, rani]
+  region: JO
+  source: https://www.talabat.com/jordan/grocery/
+  verified: false
+- id: indomie
+  name: Indomie instant noodles
+  brand_any: [indomie]
+  name_any: [noodle, noodles, indomie]
+  region: INT
+  source: https://www.talabat.com/jordan/grocery/
+  verified: false
+- id: ulker-biscuits
+  name: Ulker biscuits
+  brand_any: [ulker]
+  name_any: [biscuit, biscuits, ulker]
+  region: TR
+  source: https://www.ulker.com.tr/
+  verified: false
+- id: eti-petit-beurre
+  name: Eti Petit Beurre biscuits
+  brand_any: [eti]
+  name_any: [petit, beurre, biscuit]
+  region: TR
+  source: https://www.eti.com.tr/
+  verified: false
+- id: kelloggs-corn-flakes
+  name: Kellogg's Corn Flakes
+  brand_any: [kellogg]
+  name_any: [corn, flakes]
+  region: INT
+  source: https://www.kelloggs.com/
+  verified: false
+- id: lipton-yellow-label
+  name: Lipton Yellow Label tea
+  brand_any: [lipton]
+  name_any: [tea, yellow]
+  region: INT
+  source: https://www.lipton.com/
+  verified: false
+- id: nutella
+  name: Nutella hazelnut spread
+  brand_any: [nutella, ferrero]
+  name_any: [nutella]
+  region: INT
+  source: https://www.nutella.com/
+  verified: false
+- id: lays-chips
+  name: Lay's potato chips
+  brand_any: [lay]
+  name_any: [chips, potato, lay]
+  region: INT
+  source: https://www.lays.com/
+  verified: false
+- id: pringles
+  name: Pringles original
+  brand_any: [pringles]
+  name_any: [pringles, original]
+  region: INT
+  source: https://www.pringles.com/
+  verified: false

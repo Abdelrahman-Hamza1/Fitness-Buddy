@@ -1,0 +1,18 @@
+schema: 1
+id: ref:off_nutrient_source
+names:
+  en: [Bad dish off_nutrient_source]
+  ar: [طبق off-nutrient-source]
+  arabizi: [tabak off nutrient source]
+state: cooked
+variants:
+  - id: only
+    default: true
+    per_100g: {kcal: 130, protein: 2.7, carbs: 28, fat: 0.3, fiber: 0.4}
+    nutrient_source: "https://uk.openfoodfacts.org/product/456"
+portions:
+  plate: {g: 350, range: [300, 450]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources: [https://example.org/recipes/bad]

@@ -1,0 +1,21 @@
+schema: 1
+id: ref:unknown_field
+names:
+  en: [Bad dish unknown_field]
+  ar: [طبق unknown-field]
+  arabizi: [tabak unknown field]
+state: cooked
+serving_size: 3
+variants:
+  - id: only
+    default: true
+    recipe:
+      - {food: usda:rice_raw, grams: 300}
+      - {food: usda:chicken_thigh_cooked, grams: 400}
+    cooked_total_g: 1000
+portions:
+  plate: {g: 350, range: [300, 450]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources: [https://example.org/recipes/bad]

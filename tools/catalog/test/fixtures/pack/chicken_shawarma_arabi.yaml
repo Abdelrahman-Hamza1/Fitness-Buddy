@@ -1,0 +1,25 @@
+schema: 1
+id: ref:chicken_shawarma_arabi
+names:
+  en: [Chicken shawarma arabi]
+  ar: [شاورما دجاج عربي]
+  arabizi: [shawarma djaj arabi, shawerma chicken]
+state: cooked
+variants:
+  - id: standard
+    default: true
+    per_100g:
+      kcal: 229
+      protein: 15
+      carbs: 22
+      fat: 9
+      fiber: 1
+    nutrient_source: "Test fixture figures"
+portions:
+  plate: {g: 300, range: [250, 400]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+    - https://example.org/recipes/chicken_shawarma_arabi
+  notes: Test fixture.

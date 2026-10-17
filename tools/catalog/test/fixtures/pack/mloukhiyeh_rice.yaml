@@ -1,0 +1,25 @@
+schema: 1
+id: ref:mloukhiyeh_rice
+names:
+  en: [Mloukhiyeh with rice]
+  ar: [ملوخية مع رز]
+  arabizi: [mloukhiyeh, molokhia, mulukhiyah]
+state: cooked
+variants:
+  - id: standard
+    default: true
+    per_100g:
+      kcal: 128
+      protein: 6
+      carbs: 17
+      fat: 4
+      fiber: 1
+    nutrient_source: "Test fixture figures"
+portions:
+  plate: {g: 300, range: [250, 400]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+    - https://example.org/recipes/mloukhiyeh_rice
+  notes: Test fixture.

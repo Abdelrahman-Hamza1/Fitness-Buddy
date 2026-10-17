@@ -10,7 +10,7 @@ _Two implementers build R1 in parallel on two tracks (TD-059, TD-063): the **app
 
 ```mermaid
 flowchart LR
-  F[Foundation ✅<br/>S01–S08] --> A1[App: A01–A11] --> M1{{M1 Dogfood 1}} --> A2[A12–A16] --> M2{{M2}} --> A3[A17–A23] --> M3{{M3 Buddy}} --> A4[A24–A32] --> M4{{M4 Dogfood 2}} --> A5[A33–A35] --> M5{{M5 Sync}} --> A6[A36–A41] --> M6{{M6}} --> A7[A42–A43]
+  F[Foundation ✅<br/>S01–S08] --> A1[App: A01–A11] --> M1{{M1 Dogfood 1}} --> A2[A12–A16] --> M2{{M2}} --> A3[A20–A23] --> M3{{M3 Buddy}} --> A4[A24–A32] --> M4{{M4 Dogfood 2}} --> A5[A33–A35] --> M5{{M5 Sync}} --> A6[A36–A41] --> M6{{M6}} --> A7[A42–A43]
   F --> B1[Backend: B01–B06] --> B2[B07–B12] --> B3[B13–B14 Hetzner] --> M7{{M7 Production}} --> B4[B15–B16]
   A7 --> R1{{R1 done}}
   B4 --> R1
@@ -20,7 +20,7 @@ flowchart LR
 
 ## 2. Milestones
 
-The milestone table with exit criteria is in **`steps/README.md` §5**: M1 Dogfood 1 (offline tracker, A11) · M2 targets & weight (A16) · M3 Buddy on the laptop (A23 + B09's eval) · M4 Dogfood 2 (A31–A32 + B09–B11) · M5 accounts & sync (A35) · M6 workouts, insights & Ramadan (A41) · M7 production (B14 + A43) · R1 done (A42, B15, B16, 2 weeks of exclusive use).
+The milestone table with exit criteria is in **`steps/README.md` §5**: M1 Dogfood 1 (offline tracker, A11) · M2 targets & weight (A16) · M3 Buddy on the laptop (A23 + B09's eval) · M4 Dogfood 2 (A31 + B09–B11) · M5 accounts & sync (A35) · M6 workouts, insights & Ramadan (A41) · M7 production (B14 + A43) · R1 done (A42, B15, B16, the deferred dish batches (TD-074), 2 weeks of exclusive use).
 
 ## 3. Servers until production (TD-064)
 

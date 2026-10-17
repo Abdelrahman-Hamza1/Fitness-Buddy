@@ -1,0 +1,22 @@
+schema: 1
+id: ref:recipe_and_per_100g
+names:
+  en: [Bad dish recipe_and_per_100g]
+  ar: [طبق recipe-and-per-100g]
+  arabizi: [tabak recipe and per 100g]
+state: cooked
+variants:
+  - id: only
+    default: true
+    recipe:
+      - {food: usda:rice_raw, grams: 300}
+      - {food: usda:chicken_thigh_cooked, grams: 400}
+    cooked_total_g: 1000
+    nutrient_source: USDA
+    per_100g: {kcal: 100, protein: 1, carbs: 20, fat: 1, fiber: 1}
+portions:
+  plate: {g: 350, range: [300, 450]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources: [https://example.org/recipes/bad]

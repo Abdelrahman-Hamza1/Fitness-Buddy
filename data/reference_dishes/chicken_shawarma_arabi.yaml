@@ -1,0 +1,47 @@
+schema: 1
+id: ref:chicken_shawarma_arabi
+names:
+  en: [Chicken shawarma arabi, Chicken shawarma sandwich, Chicken shawarma]
+  ar: [شاورما دجاج عربي, شاورما دجاج, ساندويش شاورما دجاج]
+  arabizi: [shawarma djaj arabi, shawarma dajaj, shawerma djaj, shawarma chicken, sandwich shawarma djaj, shawirma ajaj, shaorma djaj]
+state: cooked
+variants:
+  - id: sandwich
+    default: true
+    names:
+      en: [Chicken shawarma in arabic bread with garlic sauce and pickles]
+      ar: [شاورما دجاج بالخبز العربي والثوم]
+      arabizi: [shawarma djaj bil khubz el arabi, shawarma djaj toum]
+    recipe:
+      - {food: usda:chicken_thigh_roasted, grams: 440, range: [360, 520], note: "cooked weight; about 590 g raw boneless thigh at 75% yield. Shops use skinless thigh; USDA roasted thigh, meat only, is the match"}
+      - {food: usda:olive_oil, grams: 25, range: [10, 50], note: "marinade oil that stays on the meat or in the pan; Palestine in a Dish uses 1/4 cup for 2 breasts, most of it is left behind"}
+      - {food: usda:yogurt_plain_whole, grams: 35, range: [20, 60], note: "marinade; Nick's Kitchen uses 70 g per 900 g chicken"}
+      - {food: usda:pita_white, grams: 280, range: [240, 340], note: "4 thin arabic breads of about 70 g"}
+      - {food: usda:vegetable_oil_soybean, grams: 65, range: [40, 100], note: "oil in the garlic sauce (toum), about 70-80 percent of it by weight (Nick's Kitchen uses 414 ml oil); about 22 g sauce per sandwich"}
+      - {food: usda:garlic_raw, grams: 15}
+      - {food: usda:lemon_juice_raw, grams: 8}
+      - {food: usda:pickled_cucumber_dill, grams: 60, range: [30, 100], note: "stands in for pickled cucumbers and turnips"}
+      - {food: usda:cabbage_raw, grams: 60, range: [0, 100], note: "red cabbage, Palestine in a Dish"}
+      - {food: usda:onion_raw, grams: 40, note: "sumac onions"}
+      - {food: usda:tahini, grams: 30, range: [0, 60], note: "tahini dressing, optional"}
+    cooked_total_g: 1058
+    cooked_total_range: [950, 1250]
+portions:
+  sandwich: {g: 270, range: [200, 340]}
+  small_sandwich: {g: 190, range: [150, 230]}
+  large_sandwich: {g: 340, range: [280, 420]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+    - "Palestine in a Dish, chicken shawarma wrap (marinade 1/4 cup oil, 1/4 cup lemon, 1/4 cup yogurt for 2 breasts; red cabbage, pickles, sumac onions, tahini): https://palestineinadish.com/?p=1546"
+    - "Nick's Kitchen, Chicken shawarma (900 g thighs, 70 g yogurt, toum with 414 ml oil, 2 tsp toum per wrap; its own estimate is 558 kcal per half wrap): https://nickskitchen.com/chicken-shawarma-recipe/"
+    - "Babish, Palestinian chicken shawarma marinade (yogurt, 1/2 cup olive oil, 8 cloves garlic, no chicken weight): https://www.babi.sh/recipes/2017/8/22/shawarma"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    Modelled for 4 sandwiches in arabic bread: about 110 g cooked chicken each. No cited recipe gives a
+    per-sandwich filling weight, so the chicken, sauce and vegetable grams are assumptions built from the
+    cited ratios (check with a shop sandwich). The garlic sauce is the biggest uncertainty (22 g per sandwich
+    here, mostly oil; shops can use twice that) followed by marinade oil. Fries in the sandwich, common in some
+    shops, are not included. The thin arabic bread is modelled with USDA white pita. A beef or lamb shawarma is a separate dish.
+time_min: 15

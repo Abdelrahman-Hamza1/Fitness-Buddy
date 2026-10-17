@@ -1,0 +1,24 @@
+# Tiny basics list for the WP2 tests (A03). Numbers are chosen so hand
+# calculations stay easy.
+foods:
+  - id: usda:rice_raw
+    fdc_id: 1001
+    state: dry
+    names:
+      en: ["Rice, raw"]
+      ar: ["رز"]
+      arabizi: ["ruz"]
+  - id: usda:chicken_thigh_cooked
+    fdc_id: 1002
+    state: cooked
+    names:
+      en: ["Chicken thigh, cooked"]
+      ar: ["فخذ دجاج"]
+      arabizi: ["fakhd djaj"]
+  - id: usda:olive_oil
+    fdc_id: 1003
+    state: as_sold
+    names:
+      en: ["Olive oil"]
+      ar: ["زيت زيتون"]
+      arabizi: ["zeit zeitoun"]

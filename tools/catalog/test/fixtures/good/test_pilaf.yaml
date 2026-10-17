@@ -1,0 +1,38 @@
+schema: 1
+id: ref:test_pilaf
+names:
+  en: [Test pilaf]
+  ar: [مقلوبة]
+  arabizi: [maqluba, maqlobe]
+state: cooked
+variants:
+  - id: chicken
+    default: true
+    names:
+      en: [Test pilaf with chicken]
+    recipe:
+      - {food: usda:rice_raw, grams: 300, range: [280, 320]}
+      - {food: usda:chicken_thigh_cooked, grams: 400, range: [350, 450]}
+      - {food: usda:olive_oil, grams: 40, range: [20, 60], note: "oil varies 20-60 g"}
+    cooked_total_g: 1000
+    cooked_total_range: [950, 1100]
+  - id: plain
+    default: false
+    per_100g:
+      kcal: 130
+      protein: 2.7
+      carbs: 28
+      fat: 0.3
+      fiber: 0.4
+      extras: {sodium: 1}
+    nutrient_source: "USDA FoodData Central, rice, white, cooked (SR Legacy 168878)"
+portions:
+  plate: {g: 350, range: [300, 450]}
+  small_plate: {g: 200, range: [150, 250]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+    - https://example.org/recipes/pilaf
+  notes: Test fixture.
+time_min: 20

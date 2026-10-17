@@ -1,0 +1,47 @@
+schema: 1
+id: ref:musakhan
+names:
+  en: [Musakhan, Sumac onion chicken on taboon bread]
+  ar: [مسخن, مسخن دجاج]
+  arabizi: [musakhan, mosakhan, msakhan, moussakhan, mosakhkhan, musakhkhan, mus5an, msakhen]
+state: cooked
+variants:
+  - id: chicken
+    default: true
+    names:
+      en: [Chicken musakhan]
+      ar: [مسخن دجاج]
+      arabizi: [musakhan djaj, msakhan dajaj]
+    recipe:
+      - {food: usda:pita_white, grams: 330, range: [300, 450], note: "taboon proxy: 4 taboon breads weigh 330 g (Gulf News); real taboon is thicker and denser, so this may be low"}
+      - {food: usda:onion_raw, grams: 500, range: [450, 700], note: "3 large red onions 500 g (Gulf News); CPT uses about 900 g per 6 servings"}
+      - {food: usda:olive_oil, grams: 130, range: [90, 150], note: "120 ml plus 2-3 tbsp to finish (Gulf News), less what stays in the roasting tray; the biggest uncertainty"}
+      - {food: usda:chicken_thigh_raw, grams: 450, range: [400, 500], note: "half of the 1.4 kg bone-in cut chicken, bones not counted"}
+      - {food: usda:chicken_breast_raw, grams: 450, range: [400, 500]}
+      - {food: usda:pine_nuts_dried, grams: 30, range: [20, 40]}
+      - {food: usda:parsley_fresh, grams: 5}
+      - {food: usda:paprika, grams: 18, range: [12, 24], note: "stands in for 3 tbsp sumac, which USDA lacks; sumac is close in energy at this quantity"}
+      - {food: usda:cumin_seed, grams: 7}
+      - {food: usda:cinnamon_ground, grams: 1}
+      - {food: usda:allspice_ground, grams: 1}
+      - {food: usda:salt_table, grams: 6}
+    cooked_total_g: 1400
+    cooked_total_range: [1250, 1550]
+portions:
+  piece: {g: 350, range: [280, 450]}
+  small_piece: {g: 235, range: [180, 290]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+    - "Gulf News, Palestinian chicken musakhan (serves 4): https://gulfnews.com/food/cooking-cuisines/palestinian-chicken-musakhan-1.1621941750675"
+    - "CPT, Recipes from our PalestineTeam, Musakhan (serves 6, about 1/2 cup oil for the onions): https://cpt.org/suppers/recipes-from-palestine"
+    - "Food Heritage Foundation, Palestinian chicken musakhan (serves 5, 4 large onions, 1/5 cup oil): https://food-heritage.org/palestinian-chicken-musakhan/"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    One piece is one taboon bread with its onion topping and one quarter of the chicken (the pot divided by 4, Gulf
+    News); small_piece is the pot divided by 6 (CPT). The sources disagree on onions per person and on oil
+    (Gulf News about 32 g oil per serving; CPT just over 1/2 cup, about 18 g per serving, for the onions plus an unmeasured drizzle on the chicken), and oil
+    is the biggest uncertainty: please check against your family's cooking. Roasting juices soak into the bread,
+    so the fat of the chicken is counted in full. Yogurt, salad and the bread dipped in oil at the side are not included.
+time_min: 15

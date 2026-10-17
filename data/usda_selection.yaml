@@ -1,0 +1,545 @@
+# Draft USDA basics selection (A03 WP1). Each entry picks one FDC food; the
+# importer (`catalog import-usda`) copies its nutrients into data/usda/extract.jsonl.
+# The dataset (SR Legacy or Foundation) follows from the FDC ID (A03 D1).
+# `fiber_zero: true`: USDA omits fiber for this food, store 0 (A03 D3).
+# Known USDA gaps (no entry): sumac, freekeh, taboon, local cheeses, shrak.
+foods:
+  - id: usda:rice_white_long_grain_raw
+    fdc_id: 168877
+    state: dry
+    yield_group: rice
+    names:
+      en: ["Rice, white, raw"]
+      ar: ["رز أبيض", "رز"]
+      arabizi: ["ruz abyad", "riz"]
+    servings: [{unit: cup, g: 185}]
+  - id: usda:rice_white_long_grain_cooked
+    fdc_id: 168878
+    state: cooked
+    yield_group: rice
+    names:
+      en: ["Rice, white, cooked"]
+      ar: ["رز مطبوخ"]
+      arabizi: ["ruz matbookh"]
+    servings: [{unit: cup, g: 158}]
+  - id: usda:rice_white_foundation_raw
+    fdc_id: 2512381
+    state: dry
+    yield_group: rice
+    names:
+      en: ["Rice, white, long grain, raw (Foundation)"]
+  - id: usda:bulgur_dry
+    fdc_id: 2710820
+    state: dry
+    yield_group: bulgur
+    names:
+      en: ["Bulgur, dry"]
+      ar: ["برغل"]
+      arabizi: ["burghul", "bourghol"]
+    servings: [{unit: cup, g: 140}]
+  - id: usda:bulgur_cooked
+    fdc_id: 170287
+    state: cooked
+    yield_group: bulgur
+    names:
+      en: ["Bulgur, cooked"]
+      ar: ["برغل مطبوخ"]
+    servings: [{unit: cup, g: 182}]
+  - id: usda:semolina_fine_dry
+    fdc_id: 2003589
+    state: dry
+    names:
+      en: ["Semolina, fine"]
+      ar: ["سميد"]
+      arabizi: ["smeed"]
+  - id: usda:wheat_flour_white
+    fdc_id: 168894
+    state: dry
+    names:
+      en: ["Wheat flour, white, all-purpose"]
+      ar: ["طحين أبيض"]
+      arabizi: ["tahin abyad", "flour"]
+    servings: [{unit: cup, g: 125}]
+  - id: usda:pita_white
+    fdc_id: 174915
+    state: cooked
+    names:
+      en: ["Pita bread, white (taboon proxy)"]
+      ar: ["خبز عربي"]
+      arabizi: ["khubz arabi", "taboon"]
+  - id: usda:pita_whole_wheat
+    fdc_id: 174916
+    state: cooked
+    names:
+      en: ["Pita bread, whole wheat"]
+      ar: ["خبز عربي قمح كامل"]
+  - id: usda:chicken_breast_raw
+    fdc_id: 171474
+    state: raw
+    yield_group: chicken
+    names:
+      en: ["Chicken breast with skin, raw"]
+      ar: ["صدر دجاج"]
+      arabizi: ["sadr djaj"]
+  - id: usda:chicken_breast_roasted
+    fdc_id: 171477
+    state: cooked
+    yield_group: chicken
+    names:
+      en: ["Chicken breast, roasted, meat only"]
+      ar: ["صدر دجاج مشوي"]
+    fiber_zero: true
+  - id: usda:chicken_thigh_raw
+    fdc_id: 172385
+    state: raw
+    yield_group: chicken
+    names:
+      en: ["Chicken thigh with skin, raw"]
+      ar: ["ورك دجاج"]
+      arabizi: ["werek djaj"]
+  - id: usda:chicken_thigh_roasted
+    fdc_id: 172388
+    state: cooked
+    yield_group: chicken
+    names:
+      en: ["Chicken thigh, roasted, meat only"]
+      ar: ["ورك دجاج مشوي"]
+    fiber_zero: true
+  - id: usda:lamb_ground_raw
+    fdc_id: 174370
+    state: raw
+    yield_group: lamb
+    names:
+      en: ["Lamb, ground, raw"]
+      ar: ["لحم غنم مفروم"]
+      arabizi: ["lahme ghanam mafroum"]
+  - id: usda:lamb_ground_cooked
+    fdc_id: 172544
+    state: cooked
+    yield_group: lamb
+    names:
+      en: ["Lamb, ground, cooked"]
+      ar: ["لحم غنم مفروم مطبوخ"]
+    fiber_zero: true
+  - id: usda:lamb_leg_raw
+    fdc_id: 174311
+    state: raw
+    yield_group: lamb
+    names:
+      en: ["Lamb leg, raw"]
+      ar: ["فخذ خروف"]
+    fiber_zero: true
+  - id: usda:lamb_leg_roasted
+    fdc_id: 174312
+    state: cooked
+    yield_group: lamb
+    names:
+      en: ["Lamb leg, roasted"]
+      ar: ["فخذ خروف مشوي"]
+    fiber_zero: true
+  - id: usda:beef_ground_80_raw
+    fdc_id: 174036
+    state: raw
+    yield_group: beef
+    names:
+      en: ["Minced beef 80/20, raw"]
+      ar: ["لحم بقر مفروم"]
+      arabizi: ["lahme mafroum"]
+    fiber_zero: true
+  - id: usda:beef_ground_90_raw
+    fdc_id: 174030
+    state: raw
+    yield_group: beef
+    names:
+      en: ["Minced beef 90/10, raw"]
+      ar: ["لحم بقر مفروم قليل الدسم"]
+    fiber_zero: true
+  - id: usda:egg_whole_raw
+    fdc_id: 171287
+    state: raw
+    names:
+      en: ["Egg, whole, raw"]
+      ar: ["بيض"]
+      arabizi: ["bayd"]
+    fiber_zero: true
+  - id: usda:egg_whole_hard_boiled
+    fdc_id: 173424
+    state: cooked
+    names:
+      en: ["Egg, hard-boiled"]
+      ar: ["بيض مسلوق"]
+      arabizi: ["bayd maslouq"]
+    fiber_zero: true
+  - id: usda:onion_raw
+    fdc_id: 170000
+    state: raw
+    names:
+      en: ["Onion, raw"]
+      ar: ["بصل"]
+      arabizi: ["basal"]
+  - id: usda:cauliflower_raw
+    fdc_id: 2685573
+    state: raw
+    names:
+      en: ["Cauliflower, raw"]
+      ar: ["قرنبيط"]
+      arabizi: ["qarnabeet", "zahra"]
+  - id: usda:eggplant_raw
+    fdc_id: 2685577
+    state: raw
+    names:
+      en: ["Eggplant, raw"]
+      ar: ["باذنجان"]
+      arabizi: ["badenjan"]
+  - id: usda:potato_raw
+    fdc_id: 170026
+    state: raw
+    names:
+      en: ["Potato, raw"]
+      ar: ["بطاطا"]
+      arabizi: ["batata"]
+  - id: usda:tomato_raw
+    fdc_id: 170457
+    state: raw
+    names:
+      en: ["Tomato, raw"]
+      ar: ["بندورة"]
+      arabizi: ["banadura", "tomato"]
+  - id: usda:tomato_paste_canned
+    fdc_id: 170459
+    state: dry
+    names:
+      en: ["Tomato paste, canned"]
+      ar: ["رب بندورة"]
+      arabizi: ["rab banadura"]
+  - id: usda:cucumber_raw
+    fdc_id: 168409
+    state: raw
+    names:
+      en: ["Cucumber, raw"]
+      ar: ["خيار"]
+      arabizi: ["khyar"]
+  - id: usda:parsley_fresh
+    fdc_id: 170416
+    state: raw
+    names:
+      en: ["Parsley, fresh"]
+      ar: ["بقدونس"]
+      arabizi: ["baqdounes"]
+  - id: usda:jute_potherb_raw
+    fdc_id: 168419
+    state: raw
+    names:
+      en: ["Jute (mloukhiyeh) leaves, raw"]
+      ar: ["ورق ملوخية"]
+      arabizi: ["waraq mloukhiyeh", "mloukhiyeh leaves", "molokhia leaves"]
+    fiber_zero: true
+    notes: USDA has no fiber value for raw jute; 0 is a placeholder (cooked jute has fiber). A04 to review.
+  - id: usda:jute_potherb_cooked
+    fdc_id: 168420
+    state: cooked
+    names:
+      en: ["Jute (mloukhiyeh), boiled"]
+      ar: ["ملوخية مطبوخة"]
+      arabizi: ["mloukhiyeh matbookha"]
+  - id: usda:garlic_raw
+    fdc_id: 169230
+    state: raw
+    names:
+      en: ["Garlic, raw"]
+      ar: ["ثوم"]
+      arabizi: ["toum", "thoum"]
+  - id: usda:lemon_juice_raw
+    fdc_id: 167747
+    state: raw
+    names:
+      en: ["Lemon juice"]
+      ar: ["عصير ليمون"]
+      arabizi: ["laymoun"]
+  - id: usda:pickled_cucumber_dill
+    fdc_id: 168558
+    state: raw
+    names:
+      en: ["Pickled cucumbers, dill"]
+      ar: ["مخلل خيار"]
+      arabizi: ["mkhallal khyar"]
+  - id: usda:olives_green_pickled
+    fdc_id: 169096
+    state: raw
+    names:
+      en: ["Olives, green, pickled"]
+      ar: ["زيتون أخضر"]
+      arabizi: ["zaytoun"]
+  - id: usda:olives_ripe_canned
+    fdc_id: 169094
+    state: raw
+    names:
+      en: ["Olives, ripe, canned"]
+      ar: ["زيتون أسود"]
+  - id: usda:zucchini_raw
+    fdc_id: 169291
+    state: raw
+    names:
+      en: ["Zucchini, raw"]
+      ar: ["كوسا"]
+      arabizi: ["koosa"]
+  - id: usda:bell_pepper_red_raw
+    fdc_id: 170108
+    state: raw
+    names:
+      en: ["Red bell pepper, raw"]
+      ar: ["فلفل أحمر حلو"]
+  - id: usda:bell_pepper_green_raw
+    fdc_id: 170427
+    state: raw
+    names:
+      en: ["Green bell pepper, raw"]
+      ar: ["فلفل أخضر"]
+  - id: usda:cabbage_raw
+    fdc_id: 169975
+    state: raw
+    names:
+      en: ["Cabbage, raw"]
+      ar: ["ملفوف"]
+      arabizi: ["malfouf"]
+  - id: usda:carrot_raw
+    fdc_id: 170393
+    state: raw
+    names:
+      en: ["Carrot, raw"]
+      ar: ["جزر"]
+      arabizi: ["jazar"]
+  - id: usda:spinach_raw
+    fdc_id: 168462
+    state: raw
+    names:
+      en: ["Spinach, raw"]
+      ar: ["سبانخ"]
+      arabizi: ["sabanekh"]
+  - id: usda:lettuce_romaine_raw
+    fdc_id: 169247
+    state: raw
+    names:
+      en: ["Lettuce, romaine, raw"]
+      ar: ["خس"]
+  - id: usda:okra_raw
+    fdc_id: 169260
+    state: raw
+    names:
+      en: ["Okra, raw"]
+      ar: ["بامية"]
+      arabizi: ["bamya"]
+  - id: usda:fava_beans_raw
+    fdc_id: 170377
+    state: raw
+    names:
+      en: ["Fava beans, immature, raw"]
+      ar: ["فول أخضر"]
+  - id: usda:chickpeas_dry
+    fdc_id: 173756
+    state: dry
+    names:
+      en: ["Chickpeas, dry"]
+      ar: ["حمص حب"]
+      arabizi: ["hummus"]
+  - id: usda:chickpeas_cooked
+    fdc_id: 173757
+    state: cooked
+    names:
+      en: ["Chickpeas, boiled"]
+      ar: ["حمص مسلوق"]
+  - id: usda:chickpeas_canned_drained
+    fdc_id: 173800
+    state: cooked
+    names:
+      en: ["Chickpeas, canned, drained"]
+  - id: usda:lentils_dry
+    fdc_id: 172420
+    state: dry
+    names:
+      en: ["Lentils, dry"]
+      ar: ["عدس"]
+      arabizi: ["adas"]
+  - id: usda:tahini
+    fdc_id: 170189
+    state: raw
+    names:
+      en: ["Tahini (sesame paste)"]
+      ar: ["طحينة"]
+      arabizi: ["tahini", "tahineh"]
+    servings: [{unit: tbsp, g: 15}]
+  - id: usda:sesame_seeds
+    fdc_id: 170150
+    state: raw
+    names:
+      en: ["Sesame seeds"]
+      ar: ["سمسم"]
+      arabizi: ["simsim"]
+  - id: usda:pine_nuts_dried
+    fdc_id: 170591
+    state: raw
+    names:
+      en: ["Pine nuts"]
+      ar: ["صنوبر"]
+      arabizi: ["snobar"]
+  - id: usda:olive_oil
+    fdc_id: 171413
+    state: raw
+    names:
+      en: ["Olive oil"]
+      ar: ["زيت زيتون"]
+      arabizi: ["zeit zaytoun"]
+    servings: [{unit: tbsp, g: 13.5}]
+    fiber_zero: true
+  - id: usda:vegetable_oil_soybean
+    fdc_id: 171411
+    state: raw
+    names:
+      en: ["Vegetable oil (soybean)"]
+      ar: ["زيت نباتي"]
+      arabizi: ["zeit nabati"]
+    servings: [{unit: tbsp, g: 13.6}]
+    fiber_zero: true
+  - id: usda:canola_oil
+    fdc_id: 172336
+    state: raw
+    names:
+      en: ["Canola oil"]
+      ar: ["زيت كانولا"]
+    fiber_zero: true
+  - id: usda:butter_unsalted
+    fdc_id: 173430
+    state: raw
+    names:
+      en: ["Butter, unsalted"]
+      ar: ["زبدة"]
+      arabizi: ["zebde"]
+    fiber_zero: true
+  - id: usda:yogurt_plain_whole
+    fdc_id: 171284
+    state: raw
+    names:
+      en: ["Yogurt, plain, whole milk"]
+      ar: ["لبن زبادي"]
+      arabizi: ["laban", "yoghurt"]
+    servings: [{unit: cup, g: 245}]
+  - id: usda:feta_cheese
+    fdc_id: 173420
+    state: raw
+    names:
+      en: ["Feta cheese"]
+      ar: ["جبنة فيتا"]
+      arabizi: ["jibne feta"]
+  - id: usda:milk_whole
+    fdc_id: 171265
+    state: raw
+    names:
+      en: ["Milk, whole"]
+      ar: ["حليب كامل الدسم"]
+      arabizi: ["haleeb"]
+  - id: usda:sugar_granulated
+    fdc_id: 169655
+    state: dry
+    names:
+      en: ["Sugar"]
+      ar: ["سكر"]
+      arabizi: ["sukkar"]
+    servings: [{unit: tsp, g: 4}]
+    fiber_zero: true
+  - id: usda:honey
+    fdc_id: 169640
+    state: raw
+    names:
+      en: ["Honey"]
+      ar: ["عسل"]
+      arabizi: ["asal"]
+    servings: [{unit: tbsp, g: 21}]
+    fiber_zero: true
+  - id: usda:salt_table
+    fdc_id: 173468
+    state: dry
+    names:
+      en: ["Salt"]
+      ar: ["ملح"]
+      arabizi: ["milh"]
+    fiber_zero: true
+  - id: usda:vinegar_cider
+    fdc_id: 173469
+    state: raw
+    names:
+      en: ["Vinegar, cider"]
+      ar: ["خل"]
+    fiber_zero: true
+  - id: usda:cumin_seed
+    fdc_id: 170923
+    state: dry
+    names:
+      en: ["Cumin"]
+      ar: ["كمون"]
+      arabizi: ["kammoun"]
+  - id: usda:cinnamon_ground
+    fdc_id: 171320
+    state: dry
+    names:
+      en: ["Cinnamon, ground"]
+      ar: ["قرفة"]
+      arabizi: ["erfe"]
+  - id: usda:allspice_ground
+    fdc_id: 171315
+    state: dry
+    sanity_override:
+      reason: USDA spice energy uses its own Atwater factors and most of the fiber is unavailable (FD-012 check expects 4 kcal/g)
+    names:
+      en: ["Allspice, ground"]
+      ar: ["بهارات"]
+      arabizi: ["baharat"]
+  - id: usda:black_pepper
+    fdc_id: 170931
+    state: dry
+    names:
+      en: ["Black pepper"]
+      ar: ["فلفل أسود"]
+      arabizi: ["filfil aswad"]
+  - id: usda:paprika
+    fdc_id: 171329
+    state: dry
+    names:
+      en: ["Paprika"]
+      ar: ["بابريكا"]
+  - id: usda:turmeric_ground
+    fdc_id: 172231
+    state: dry
+    names:
+      en: ["Turmeric, ground"]
+      ar: ["كركم"]
+      arabizi: ["kurkum"]
+  - id: usda:coriander_seed
+    fdc_id: 170922
+    state: dry
+    sanity_override:
+      reason: USDA spice energy uses its own Atwater factors and most of the fiber is unavailable (FD-012 check expects 4 kcal/g)
+    names:
+      en: ["Coriander seed"]
+      ar: ["كزبرة"]
+      arabizi: ["kosbara"]
+  - id: usda:mint_fresh
+    fdc_id: 173475
+    state: raw
+    names:
+      en: ["Mint, fresh (spearmint)"]
+      ar: ["نعنع"]
+      arabizi: ["na3na3"]
+  - id: usda:pomegranate_raw
+    fdc_id: 169134
+    state: raw
+    names:
+      en: ["Pomegranate"]
+      ar: ["رمان"]
+      arabizi: ["rummaan"]
+  - id: usda:dates_medjool
+    fdc_id: 168191
+    state: raw
+    names:
+      en: ["Dates, medjool"]
+      ar: ["تمر"]
+      arabizi: ["tamr"]

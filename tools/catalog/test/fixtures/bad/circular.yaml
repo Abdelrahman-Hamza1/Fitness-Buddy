@@ -1,0 +1,20 @@
+schema: 1
+id: ref:circular
+names:
+  en: [Bad dish circular]
+  ar: [طبق circular]
+  arabizi: [tabak circular]
+state: cooked
+variants:
+  - id: only
+    default: true
+    recipe:
+      - {food: ref:circular, grams: 300}
+      - {food: usda:chicken_thigh_cooked, grams: 400}
+    cooked_total_g: 1000
+portions:
+  plate: {g: 350, range: [300, 450]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources: [https://example.org/recipes/bad]

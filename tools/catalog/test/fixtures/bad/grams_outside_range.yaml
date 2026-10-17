@@ -1,0 +1,20 @@
+schema: 1
+id: ref:grams_outside_range
+names:
+  en: [Bad dish grams_outside_range]
+  ar: [طبق grams-outside-range]
+  arabizi: [tabak grams outside range]
+state: cooked
+variants:
+  - id: only
+    default: true
+    recipe:
+      - {food: usda:rice_raw, grams: 300, range: [100, 200]}
+      - {food: usda:chicken_thigh_cooked, grams: 400}
+    cooked_total_g: 1000
+portions:
+  plate: {g: 350, range: [300, 450]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources: [https://example.org/recipes/bad]

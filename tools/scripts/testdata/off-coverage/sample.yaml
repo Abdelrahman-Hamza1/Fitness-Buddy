@@ -1,0 +1,20 @@
+- id: hamm
+  name: Hammoudeh halloumi
+  brand_any: [hammoudeh]
+  name_any: [halloumi]
+  region: JO
+- id: tnuva
+  name: Tnuva milk
+  brand_any: [tnuva]
+  name_any: [milk]
+  region: PS
+- id: bamba
+  name: Osem Bamba
+  brand_any: [osem]
+  name_any: [bamba]
+  region: PS
+- id: none
+  name: Missing brand
+  brand_any: [nothere]
+  name_any: [x]
+  region: PS

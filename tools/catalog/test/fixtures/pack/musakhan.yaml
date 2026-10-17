@@ -1,0 +1,25 @@
+schema: 1
+id: ref:musakhan
+names:
+  en: [Musakhan]
+  ar: [مسخن]
+  arabizi: [musakhan, mosakhan, mussakhan]
+state: cooked
+variants:
+  - id: standard
+    default: true
+    per_100g:
+      kcal: 218
+      protein: 12
+      carbs: 20
+      fat: 10
+      fiber: 1
+    nutrient_source: "Test fixture figures"
+portions:
+  plate: {g: 300, range: [250, 400]}
+review:
+  status: reviewed
+  reviewed_by: owner
+  sources:
+    - https://example.org/recipes/musakhan
+  notes: Test fixture.

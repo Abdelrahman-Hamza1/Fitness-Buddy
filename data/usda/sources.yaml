@@ -1,0 +1,13 @@
+# Pinned USDA FoodData Central CSV releases (CC0). Written by
+# tools/scripts/fetch-usda.sh on the first download; later runs verify against it.
+datasets:
+  - name: sr_legacy
+    release: "2018-04"
+    url: https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip
+    downloaded: 2026-10-17
+    sha256: b80817294b8850530aaedf2e515c02593b1824f763a0ff356e5c2081643e6fd0
+  - name: foundation
+    release: "2026-04-30"
+    url: https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_foundation_food_csv_2026-04-30.zip
+    downloaded: 2026-10-17
+    sha256: 70457ee9d9342f43bda2010318c85f04210c689fdeb9cd2da4c513b0e8dbc655

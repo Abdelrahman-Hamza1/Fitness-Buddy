@@ -1,0 +1,73 @@
+schema: 1
+id: ref:falafel_sandwich
+names:
+  en: [Falafel sandwich, Falafel wrap]
+  ar: [ساندويش فلافل, سندويشة فلافل]
+  arabizi: [falafel sandwich, sandwich falafel, sandwitch falafel, sandwich flafel, falafel sandwish, falafel wrap, sandwichet falafel]
+state: cooked
+variants:
+  - id: sandwich
+    default: true
+    names:
+      en: [Falafel in pita with tahini and vegetables]
+      ar: [فلافل بالخبز والطحينة]
+      arabizi: [falafel bil khubz, falafel bi tahini]
+    recipe:
+      - {food: usda:chickpeas_dry, grams: 200, range: [180, 230], note: "1 cup dry, soaked overnight, not canned (cooked.wiki); about 11 balls per cup (Once Upon a Chef: 2 cups give 20-24)"}
+      - {food: usda:onion_raw, grams: 120, range: [80, 150]}
+      - {food: usda:parsley_fresh, grams: 70, range: [50, 100], note: "parsley and coriander leaves together; coriander leaves are counted as parsley"}
+      - {food: usda:garlic_raw, grams: 9}
+      - {food: usda:coriander_seed, grams: 6}
+      - {food: usda:cumin_seed, grams: 6}
+      - {food: usda:salt_table, grams: 6}
+      - {food: usda:vegetable_oil_soybean, grams: 55, range: [30, 80], note: "frying oil absorbed by the balls; the biggest uncertainty (Once Upon a Chef assumes only about 2 tbsp for 22 balls)"}
+      - {food: usda:pita_white, grams: 320, range: [260, 400], note: "4 breads of about 80 g (taboon 330 g for 4, Gulf News)"}
+      - {food: usda:tahini, grams: 60, range: [40, 100], note: "tahini sauce, thinned with lemon and water"}
+      - {food: usda:lemon_juice_raw, grams: 15}
+      - {food: usda:tomato_raw, grams: 120, range: [60, 200]}
+      - {food: usda:pickled_cucumber_dill, grams: 60, range: [30, 100], note: "stands in for pickled cucumbers and turnips"}
+      - {food: usda:lettuce_romaine_raw, grams: 60, range: [0, 100]}
+    cooked_total_g: 1125
+    cooked_total_range: [1000, 1250]
+  - id: balls
+    default: false
+    names:
+      en: [Falafel balls, Falafel pieces, Falafel plate]
+      ar: [فلافل, حبات فلافل, قرص فلافل]
+      arabizi: [falafel, falafil, flafel, qors falafel, 7abbat falafel]
+    recipe:
+      - {food: usda:chickpeas_dry, grams: 200, range: [180, 230]}
+      - {food: usda:onion_raw, grams: 120, range: [80, 150]}
+      - {food: usda:parsley_fresh, grams: 70, range: [50, 100]}
+      - {food: usda:garlic_raw, grams: 9}
+      - {food: usda:coriander_seed, grams: 6}
+      - {food: usda:cumin_seed, grams: 6}
+      - {food: usda:salt_table, grams: 6}
+      - {food: usda:vegetable_oil_soybean, grams: 55, range: [30, 80]}
+    cooked_total_g: 430
+    cooked_total_range: [380, 480]
+    portions:
+      piece: {g: 22, range: [15, 32]}
+      plate: {g: 130, range: [90, 180]}
+portions:
+  sandwich: {g: 280, range: [220, 350]}
+  small_sandwich: {g: 200, range: [160, 240]}
+  large_sandwich: {g: 380, range: [320, 450]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+    - "cooked.wiki, Traditional Crispy and Fluffy Palestinian Falafel (1 cup dry chickpeas, herbs, onion, garlic, spices, tahini sauce, garnish): https://cooked.wiki/saved/2e283df1-46af-49bb-a735-c7534ab75e22"
+    - "Once Upon a Chef, Falafel (2 cups dry chickpeas make 20-24 falafel; oil absorption note): https://www.onceuponachef.com/recipes/falafel.html"
+    - "Gulf News, Palestinian chicken musakhan (4 taboon breads = 330 g, used for the bread weight): https://gulfnews.com/food/cooking-cuisines/palestinian-chicken-musakhan-1.1621941750675"
+    - "Cross-check only: USDA FoodData Central SR Legacy 172455, Falafel, home-prepared (333 kcal, 13.3 g protein, 31.8 g carbs, 17.8 g fat per 100 g; one 17 g patty)"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    The recipe is for 4 sandwiches (20 balls of about 22 g, 5 per sandwich, that is about 107 g of falafel
+    each). The two cited recipes give no ball weight or total oil; 22 g per ball (a falafel mould) is our
+    assumption and 11 balls per cup of dry chickpeas would make them about twice as big, which changes the
+    count but not the grams. Absorbed frying oil (55 g, range 30-80) is the biggest uncertainty; it is anchored by
+    the USDA home-prepared falafel at 17.8 g fat per 100 g (the balls variant comes out close). Fillings are tahini
+    sauce, tomato, pickles and lettuce; shop sandwiches with fries, hummus or extra tahini are heavier. The cooked
+    weight includes about 60 g of water in the tahini sauce. The balls variant has its own piece and plate portions.
+time_min: 20
