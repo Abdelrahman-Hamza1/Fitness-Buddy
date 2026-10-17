@@ -122,6 +122,16 @@ class ValidateCommand extends Command<int> {
         defaultsTo: 'data/reference_dishes',
       )
       ..addOption(
+        'yields',
+        help: 'The yield factors (skipped when the file is absent).',
+        defaultsTo: 'data/yields.yaml',
+      )
+      ..addOption(
+        'portion-words',
+        help: 'The portion words (skipped when the file is absent).',
+        defaultsTo: 'data/portion_words.yaml',
+      )
+      ..addOption(
         'schema-dir',
         help: 'Folder with the JSON Schemas.',
         defaultsTo: 'data/schema',
@@ -151,11 +161,15 @@ class ValidateCommand extends Command<int> {
       selection: File(args.option('selection')!),
       extract: File(args.option('extract')!),
       dishesDir: Directory(args.option('dishes')!),
+      yields: File(args.option('yields')!),
+      portionWords: File(args.option('portion-words')!),
     );
     final report = validateCatalog(
       basics: data.basics,
       dishes: data.dishes,
       requireAr: args.flag('require-ar'),
+      yields: data.yields,
+      portionWords: data.portionWords,
     );
     for (final id in report.computed.keys.toList()..sort()) {
       final t = report.computed[id]!.typical;
@@ -180,7 +194,9 @@ class ValidateCommand extends Command<int> {
     }
     _out.writeln(
       'catalog: ${data.basics.length} basics and ${data.dishes.length} '
-      'dishes valid (${report.warnings.length} warnings)',
+      'dishes valid (${report.warnings.length} warnings); '
+      '${data.yields?.length ?? 0} yield rows, '
+      '${data.portionWords?.length ?? 0} portion words',
     );
     return 0;
   }

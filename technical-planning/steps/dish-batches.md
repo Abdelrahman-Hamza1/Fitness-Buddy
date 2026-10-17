@@ -77,8 +77,10 @@ _Written in Phase B (2026-10-17, wave 1, lane F) by the step-planner. Built on A
 ## Progress log
 _One dated line per event, newest last (process §8a)._
 - 2026-10-17: Wave 1 (TD-068): plan written, architect group review approve-with-changes, amendments applied. Plan approved by the orchestrator under TD-037 (no blocking owner item). Next: implementation.
+- 2026-10-17: Implemented basics-only (TD-074): 246 curated basics with AR + Arabizi, 12 yield rows, 74 portion words, yields/portion-words formats + validation (household units owned by portion_words; servings must agree). Seven local single foods (freekeh, Nabulsi, Akkawi, halloumi, labaneh, zaatar, sumac) added as draft `per_100g` refs per D2, kept here rather than moved to A17 because they are basics people log daily. 'Chicken breast' defaults to skinless. Review (TD-073, one Opus code review): 3 major (real yields/portion files not checked in CI; duplicate portion grams conflicting; uncited freekeh yield), 8 minor, 5 nit; all fixed in b249678. CI green on 018de70. Closed under TD-037. Owner skim pending (non-blocking, D6): the 7 drafts, freekeh yield 3.0 (estimate), bulgur 3.8, pita 60 g (bakery loaves 100–200 g).
 
 ## Log
 | Batch | Date | Dishes | Notes |
 |---|---|---|---|
+| A04 | 2026-10-17 | 0 dishes (TD-074); 246 basics, 7 draft single local foods | `make catalog`: 246 basics + 12 dishes valid, 12 yield rows, 74 portion words; must-cover 115: 42 basic, 10 draft, 63 missing (dishes deferred) |
 | | | | |

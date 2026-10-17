@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:fb_catalog/src/load/load_catalog.dart';
 import 'package:fb_catalog/src/model/dish.dart';
-import 'package:fb_catalog/src/validate/validate.dart';
+import 'package:fb_catalog/src/validate/report.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_text/fb_text.dart';
 import 'package:path/path.dart' as p;

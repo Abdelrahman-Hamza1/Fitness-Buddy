@@ -1,0 +1,86 @@
+# Portion words (A04, FD-003): what one loaf, piece, glass, can, tbsp, tsp weighs for
+# a food. Format: data/schema/portion_words.v1.schema.json. Exactly one of
+# g or ml. Spoon weights for labaneh and zaatar live in their dish files.
+# Sources: USDA SR Legacy 2018-04 portions (CC0) by FDC ID, or a stated household measure.
+# Unit codes are the fb_domain codes; `slice` is not one yet, so sliced bread uses piece.
+rows:
+  # Bread
+  - {food: "usda:pita_white", unit: loaf, g: 60, range: [28, 200], source: "USDA FDC 174915: large 6.5 in pita 60 g, small 4 in 28 g", note: "Taboon proxy: bakery/taboon loaves run 100 to 200 g, so the range goes up to 200. Check the local loaf."}
+  - {food: "usda:pita_whole_wheat", unit: loaf, g: 64, range: [28, 100], source: "USDA FDC 174916: large 6.5 in pita 64 g, small 4 in 28 g"}
+  - {food: "usda:bread_white_sliced", unit: piece, g: 27, range: [25, 29], source: "USDA FDC 174924: slice 25 to 29 g", note: "One slice."}
+  - {food: "usda:bread_whole_wheat_sliced", unit: piece, g: 32, range: [28, 36], source: "USDA FDC 172688: slice 32 g", note: "One slice."}
+  # Eggs
+  - {food: "usda:egg_whole_raw", unit: piece, g: 50, range: [38, 63], source: "USDA FDC 171287: large 50 g, small 38 g, jumbo 63 g"}
+  - {food: "usda:egg_whole_hard_boiled", unit: piece, g: 50, range: [44, 56], source: "USDA FDC 173424: large 50 g", note: "Edible egg without shell."}
+  - {food: "usda:egg_whole_fried", unit: piece, g: 46, range: [40, 55], source: "USDA FDC 173423: large 46 g"}
+  # Fruit and vegetables (one fruit)
+  - {food: "usda:apple_raw", unit: piece, g: 182, range: [101, 223], source: "USDA FDC 171688: medium 3 in 182 g, extra small 101 g, large 223 g"}
+  - {food: "usda:banana_raw", unit: piece, g: 118, range: [81, 152], source: "USDA FDC 173944: medium 118 g, extra small 81 g, extra large 152 g", note: "Peeled weight."}
+  - {food: "usda:orange_raw", unit: piece, g: 131, range: [96, 184], source: "USDA FDC 169097: fruit 2.6 in 131 g, small 96 g, large 184 g"}
+  - {food: "usda:mandarin_raw", unit: piece, g: 88, range: [76, 120], source: "USDA FDC 169105: medium 88 g, small 76 g, large 120 g"}
+  - {food: "usda:peach_raw", unit: piece, g: 150, range: [130, 224], source: "USDA FDC 169928: medium 150 g, small 130 g, extra large 224 g"}
+  - {food: "usda:nectarine_raw", unit: piece, g: 142, range: [129, 156], source: "USDA FDC 169914: medium 142 g"}
+  - {food: "usda:pear_raw", unit: piece, g: 178, range: [148, 230], source: "USDA FDC 169118: medium 178 g, small 148 g, large 230 g"}
+  - {food: "usda:plum_raw", unit: piece, g: 66, range: [50, 90], source: "USDA FDC 169949: fruit 2 in 66 g", note: "Range is an estimate for local plum sizes."}
+  - {food: "usda:apricot_raw", unit: piece, g: 35, range: [25, 50], source: "USDA FDC 171697: apricot 35 g"}
+  - {food: "usda:fig_raw", unit: piece, g: 50, range: [40, 64], source: "USDA FDC 173021: medium 50 g, small 40 g, large 64 g"}
+  - {food: "usda:kiwi_raw", unit: piece, g: 69, range: [55, 100], source: "USDA FDC 168153: fruit 2 in 69 g"}
+  - {food: "usda:pomegranate_raw", unit: piece, g: 282, range: [200, 400], source: "USDA FDC 169134: pomegranate 4 in 282 g", note: "Whole fruit, including the part that is not eaten; the catalog entry is arils only."}
+  - {food: "usda:lemon_raw", unit: piece, g: 58, range: [58, 84], source: "USDA FDC 167746: fruit 2.1 in 58 g, 2.4 in 84 g"}
+  - {food: "usda:avocado_raw", unit: piece, g: 201, range: [140, 300], source: "USDA FDC 171705: avocado (NS as to Florida or California) 201 g"}
+  - {food: "usda:cucumber_raw", unit: piece, g: 120, range: [80, 300], source: "USDA FDC 168409: cucumber 8.25 in 301 g (large, unpeeled); default is a typical local cucumber", note: "Curator estimate for the default: local small cucumbers are about 100 to 150 g, USDA's 301 g is a large one (top of the range)."}
+  - {food: "usda:tomato_raw", unit: piece, g: 123, range: [91, 182], source: "USDA FDC 170457: medium 123 g, small 91 g, large 182 g"}
+  - {food: "usda:potato_raw", unit: piece, g: 213, range: [170, 369], source: "USDA FDC 170026: medium 213 g, small 170 g, large 369 g"}
+  - {food: "usda:potato_boiled", unit: piece, g: 167, range: [125, 300], source: "USDA FDC 170440: medium 167 g, small 125 g, large 300 g"}
+  - {food: "usda:onion_raw", unit: piece, g: 110, range: [70, 150], source: "USDA FDC 170000: medium 110 g, small 70 g, large 150 g"}
+  - {food: "usda:carrot_raw", unit: piece, g: 61, range: [40, 72], source: "USDA FDC 170393: medium 61 g, large 72 g"}
+  - {food: "usda:bell_pepper_red_raw", unit: piece, g: 119, range: [74, 164], source: "USDA FDC 170108: medium 119 g, small 74 g, large 164 g"}
+  - {food: "usda:bell_pepper_green_raw", unit: piece, g: 119, range: [74, 164], source: "USDA FDC 170427: medium 119 g, small 74 g, large 164 g"}
+  - {food: "usda:zucchini_raw", unit: piece, g: 196, range: [118, 323], source: "USDA FDC 169291: medium 196 g, small 118 g, large 323 g"}
+  # Dates, olives, nuts
+  - {food: "usda:dates_medjool", unit: piece, g: 24, range: [20, 30], source: "USDA FDC 168191: date, pitted 24 g"}
+  - {food: "usda:dates_deglet_noor", unit: piece, g: 7.1, range: [6, 10], source: "USDA FDC 171726: date, pitted 7.1 g"}
+  - {food: "usda:olives_green_pickled", unit: piece, g: 2.7, range: [2, 5], source: "USDA FDC 169096: olive 2.7 g"}
+  - {food: "usda:olives_ripe_canned", unit: piece, g: 4.4, range: [3.2, 4.4], source: "USDA FDC 169094: large 4.4 g, small 3.2 g"}
+  - {food: "usda:cookies_butter", unit: piece, g: 5, range: [4, 12], source: "USDA FDC 174950: cookie 5 g", note: "A small commercial butter cookie; ka'ak and ma'amoul are much heavier."}
+  # Drinks: glass is a kaase (كاسة), about 250 ml; can is 330 ml
+  - {food: "usda:milk_whole", unit: glass, ml: 250, range: [200, 300], source: "USDA FDC 171265 cup 244 g (about 240 ml); a Levantine glass (كاسة) is stated here as 250 ml household measure"}
+  - {food: "usda:milk_reduced_fat_2", unit: glass, ml: 250, range: [200, 300], source: "USDA FDC 171267 cup 244 g; glass 250 ml household measure"}
+  - {food: "usda:milk_skim", unit: glass, ml: 250, range: [200, 300], source: "USDA FDC 171269 cup 245 g; glass 250 ml household measure"}
+  - {food: "usda:buttermilk_lowfat", unit: glass, ml: 250, range: [200, 300], source: "USDA FDC 170874 cup 245 g; glass 250 ml household measure"}
+  - {food: "usda:orange_juice", unit: glass, ml: 250, range: [200, 300], source: "USDA FDC 169098 cup 248 g; glass 250 ml household measure"}
+  - {food: "usda:apple_juice", unit: glass, ml: 250, range: [200, 300], source: "USDA FDC 173933 cup 248 g; glass 250 ml household measure"}
+  - {food: "usda:grape_juice", unit: glass, ml: 250, range: [200, 300], source: "USDA FDC 173042 cup 253 g; glass 250 ml household measure"}
+  - {food: "usda:pomegranate_juice", unit: glass, ml: 250, range: [200, 300], source: "USDA FDC 167787 cup 249 g; glass 250 ml household measure"}
+  - {food: "usda:almond_milk_unsweetened", unit: glass, ml: 250, range: [200, 300], source: "USDA FDC 174832 cup 262 g; glass 250 ml household measure"}
+  - {food: "usda:cola", unit: glass, ml: 250, range: [200, 300], source: "USDA FDC 174852; glass 250 ml household measure"}
+  - {food: "usda:tea_black_brewed", unit: glass, ml: 150, range: [100, 200], source: "Household measure: the small Levantine tea glass (كاسة شاي) holds about 100 to 200 ml; USDA FDC 173227 lists the 237 ml cup only", note: "Estimate; tea glasses are much smaller than milk glasses."}
+  - {food: "usda:tea_green_brewed", unit: glass, ml: 150, range: [100, 200], source: "Household measure as for black tea; USDA FDC 171917 lists the 245 g cup only"}
+  - {food: "usda:hibiscus_tea_brewed", unit: glass, ml: 250, range: [200, 300], source: "USDA FDC 171946 8 fl oz = 237 g; glass 250 ml household measure"}
+  - {food: "usda:water_tap", unit: glass, ml: 250, range: [200, 300], source: "USDA FDC 173647 serving 8 fl oz = 237 g; glass 250 ml household measure"}
+  - {food: "usda:cola", unit: can, ml: 330, range: [330, 355], source: "Standard 330 ml beverage can size (USDA FDC 174852 lists the US 12 fl oz can as 370 g)"}
+  - {food: "usda:cola_diet", unit: can, ml: 330, range: [330, 355], source: "Standard 330 ml beverage can size (USDA FDC 171876 lists the US 12 fl oz can as 355 g)"}
+  - {food: "usda:lemon_lime_soda", unit: can, ml: 330, range: [330, 355], source: "Standard 330 ml beverage can size (USDA FDC 173205 lists the US 12 fl oz drink as 368 g)"}
+  # Spoons (fats, tahini, honey, spreads, spices)
+  - {food: "usda:olive_oil", unit: tbsp, g: 13.5, range: [10, 18], source: "USDA FDC 171413: tablespoon 13.5 g", note: "A heaped or poured spoon varies a lot; oil is the biggest uncertainty in home cooking."}
+  - {food: "usda:olive_oil", unit: tsp, g: 4.5, range: [3, 6], source: "USDA FDC 171413: tsp 4.5 g"}
+  - {food: "usda:vegetable_oil_soybean", unit: tbsp, g: 13.6, range: [10, 18], source: "USDA FDC 171411: tablespoon 13.6 g"}
+  - {food: "usda:vegetable_oil_soybean", unit: tsp, g: 4.5, range: [3, 6], source: "USDA FDC 171411: tsp 4.5 g"}
+  - {food: "usda:sunflower_oil", unit: tbsp, g: 13.6, range: [10, 18], source: "USDA FDC 171025: tablespoon 13.6 g"}
+  - {food: "usda:sunflower_oil", unit: tsp, g: 4.5, range: [3, 6], source: "USDA FDC 171025: tsp 4.5 g"}
+  - {food: "usda:canola_oil", unit: tbsp, g: 14, range: [10, 18], source: "USDA FDC 172336: tablespoon 14 g"}
+  - {food: "usda:canola_oil", unit: tsp, g: 4.5, range: [3, 6], source: "USDA FDC 172336: tsp 4.5 g"}
+  - {food: "usda:butter_salted", unit: tbsp, g: 14.2, range: [10, 18], source: "USDA FDC 173410: tablespoon 14.2 g"}
+  - {food: "usda:butter_unsalted", unit: tbsp, g: 14.2, range: [10, 18], source: "USDA FDC 173430: tablespoon 14.2 g"}
+  - {food: "usda:tahini", unit: tbsp, g: 15, range: [12, 20], source: "USDA FDC 170189: tablespoon 15 g"}
+  - {food: "usda:honey", unit: tbsp, g: 21, range: [18, 25], source: "USDA FDC 169640: tablespoon 21 g"}
+  - {food: "usda:honey", unit: tsp, g: 7, range: [5, 9], source: "One third of the USDA FDC 169640 tablespoon (21 g)"}
+  - {food: "usda:sugar_granulated", unit: tsp, g: 4.2, range: [3.5, 5], source: "USDA FDC 169655: tsp 4.2 g"}
+  - {food: "usda:jam", unit: tbsp, g: 20, range: [15, 25], source: "USDA FDC 169641: tablespoon 20 g"}
+  - {food: "usda:tomato_paste_canned", unit: tbsp, g: 16, range: [12, 20], source: "USDA FDC 170459: tablespoon 16 g"}
+  - {food: "usda:salt_table", unit: tsp, g: 6, range: [4, 6], source: "USDA FDC 173468: tsp 6 g"}
+  - {food: "usda:cumin_seed", unit: tsp, g: 2.1, range: [1.5, 3], source: "USDA FDC 170923: tsp whole 2.1 g"}
+  - {food: "usda:cinnamon_ground", unit: tsp, g: 2.6, range: [2, 3.5], source: "USDA FDC 171320: tsp 2.6 g"}
+  - {food: "usda:allspice_ground", unit: tsp, g: 1.9, range: [1.5, 3], source: "USDA FDC 171315: tsp 1.9 g"}
+  - {food: "usda:paprika", unit: tsp, g: 2.3, range: [2, 3], source: "USDA FDC 171329: tsp 2.3 g"}
+  - {food: "usda:turmeric_ground", unit: tsp, g: 3, range: [2, 4], source: "USDA FDC 172231: tsp 3 g"}

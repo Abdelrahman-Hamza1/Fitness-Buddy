@@ -1,0 +1,21 @@
+schema: 1
+id: ref:zaatar_mix
+names:
+  en: [Zaatar mix, Za'atar, Zaatar spice blend]
+  ar: [زعتر, زعتر مطحون, زعتر مخلوط]
+  arabizi: [zaatar, za'atar, zatar, zaatar mix, zaatar mkhalat, zaatar halabi]
+state: dry
+variants:
+  - id: dry_blend
+    default: true
+    per_100g: {kcal: 454, protein: 13.5, carbs: 16, fat: 33.3, fiber: 24, extras: {sugar: 0.8, saturated_fat: 5.22}}
+    nutrient_source: "Sligro Spice Market Za'atar (white sesame seed, thyme, sumac), product specification per 100 g: https://psinfoodservice.com/en/product/2084567-za-atar. EU labelling: carbohydrate excludes fibre (energy 1900 kJ / 454 kcal counts fibre at 2 kcal/g)."
+portions:
+  tbsp: {g: 6, range: [4, 10]}
+  tsp: {g: 2, range: [1, 4]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+    - "Sligro Spice Market Za'atar specification (PS in Foodservice): https://psinfoodservice.com/en/product/2084567-za-atar"
+  notes: "Dry blend of sesame, thyme and sumac (no oil). Palestinian zaatar often has more sesame and oil-cured olive oil mixed in, so energy varies about +-80 kcal per 100 g between families and shops. Zaatar served with olive oil is a separate dish (zaatar_with_olive_oil), where the oil is the main variable. Spoon weights are typical household values."

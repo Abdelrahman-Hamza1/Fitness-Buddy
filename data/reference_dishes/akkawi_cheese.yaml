@@ -1,0 +1,21 @@
+schema: 1
+id: ref:akkawi_cheese
+names:
+  en: [Akkawi cheese, Akawi cheese, Akkawi white cheese]
+  ar: [جبنة عكاوي, جبنة عكاوية, عكاوي]
+  arabizi: [jibne akkawi, jebneh akkawi, akkawi cheese, akawi cheese, jibneh 3akkawi, akkawi]
+state: as_sold
+variants:
+  - id: brined
+    default: true
+    per_100g: {kcal: 262, protein: 22, carbs: 3, fat: 18, fiber: 0, extras: {saturated_fat: 14, sodium: 1000}}
+    nutrient_source: "Baladna Akawi Cheese, label values per 100 g (fresh cow's milk, salt, microbial rennet, purified water; 400 g pack): https://baladna.com/en/product/akawi-cheese. Fibre is not printed on the label; 0 is used for a plain cheese."
+portions:
+  slice: {g: 30, range: [20, 50]}
+  piece: {g: 60, range: [40, 100]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+    - "Baladna Akawi Cheese product page (label per 100 g): https://baladna.com/en/product/akawi-cheese"
+  notes: "One Gulf brand label (cow's milk, sodium 1000 mg, so very salty unless soaked). Soaking in water before eating lowers sodium but changes energy little. Portion weights are typical household values, not from the label."

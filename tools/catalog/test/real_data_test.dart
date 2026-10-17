@@ -15,8 +15,16 @@ final String dataDir = p.join('..', '..', 'data');
     selection: File(p.join(dataDir, 'usda_selection.yaml')),
     extract: File(p.join(dataDir, 'usda', 'extract.jsonl')),
     dishesDir: Directory(p.join(dataDir, 'reference_dishes')),
+    yields: File(p.join(dataDir, 'yields.yaml')),
+    portionWords: File(p.join(dataDir, 'portion_words.yaml')),
   );
-  final report = validateCatalog(basics: data.basics, dishes: data.dishes);
+  final report = validateCatalog(
+    basics: data.basics,
+    dishes: data.dishes,
+    requireAr: true,
+    yields: data.yields,
+    portionWords: data.portionWords,
+  );
   final out = p.join(dir.path, 'catalog.db');
   buildPack(data: data, report: report, out: out, includeDrafts: true);
   return (data: data, report: report, pack: out);
@@ -38,7 +46,27 @@ void main() {
 
   test('FD-050 the real data validates with no errors', () {
     expect([...real.data.issues, ...real.report.errors], isEmpty);
-    expect(real.data.dishes, hasLength(5));
+    expect(real.data.dishes.length, greaterThanOrEqualTo(5));
+  });
+
+  test('FD-060 every staple group has a yields row', () {
+    final groups = {for (final y in real.data.yields!) y.group};
+    const staples = [
+      'rice',
+      'bulgur',
+      'freekeh',
+      'pasta',
+      'lentils',
+      'chickpeas',
+      'beans',
+      'chicken',
+      'beef',
+      'lamb',
+      'fish',
+      'potatoes',
+    ];
+    expect(groups, containsAll(staples));
+    expect(real.data.portionWords, isNotEmpty);
   });
 
   test('T07 "akalt sahen maqlobe 3nd sitti" returns ref:maqluba first', () {
@@ -60,7 +88,7 @@ void main() {
   });
 
   test('FD-020 every real dish resolves by its EN, AR and Arabizi names', () {
-    expect(real.data.dishes, hasLength(5));
+    expect(real.data.dishes.length, greaterThanOrEqualTo(5));
     for (final d in real.data.dishes) {
       for (final lang in ['en', 'ar', 'arabizi']) {
         final name = d.names[lang]!.first;

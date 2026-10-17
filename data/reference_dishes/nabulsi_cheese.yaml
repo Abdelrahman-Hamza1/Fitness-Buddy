@@ -1,0 +1,21 @@
+schema: 1
+id: ref:nabulsi_cheese
+names:
+  en: [Nabulsi cheese, Nablus cheese, Nabulsi white cheese]
+  ar: [جبنة نابلسية, جبنة نابلسي, نابلسية]
+  arabizi: [jibne nabulsi, jebneh nabulsiyeh, nabulsi cheese, jibneh nablusiyyeh, nabulsi, jebne nabolsi]
+state: as_sold
+variants:
+  - id: brined
+    default: true
+    per_100g: {kcal: 292, protein: 24, carbs: 4, fat: 20, fiber: 0, extras: {saturated_fat: 14, sodium: 900}}
+    nutrient_source: "Baladna Nabulsi Cheese, label values per 100 g (fresh cow's milk, salt, microbial rennet, black seeds; 200 g pack): https://baladna.com/en/product/nabulsi-cheese. Fibre is not printed on the label; 0 is used for a plain cheese."
+portions:
+  slice: {g: 30, range: [20, 50]}
+  piece: {g: 60, range: [40, 100]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+    - "Baladna Nabulsi Cheese product page (label per 100 g): https://baladna.com/en/product/nabulsi-cheese"
+  notes: "One Gulf brand label (cow's milk, high salt: sodium 900 mg). Nabulsi made in Palestine from sheep or goat milk, or desalted for eating, can differ by about +-50 kcal; the other published values seen ranged 260-380 kcal per 100 g. Portion weights are typical household values, not from the label. Check against the brand your family buys."

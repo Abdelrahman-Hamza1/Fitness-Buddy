@@ -43,3 +43,29 @@ It prints each variant's per-100 g (typical value; the low/high bounds are in
 `cooked_total_g` x 100 through `fb_domain`; the low bound takes every ranged
 ingredient at its low over the high end of `cooked_total_range`, the high bound
 the reverse.
+
+### Yields and portion words (A04 WP2)
+
+`validate` also checks `data/yields.yaml` and `data/portion_words.yaml` when
+they exist (`--yields`, `--portion-words`), against `data/schema/yields.v1.schema.json`
+and `portion_words.v1.schema.json`. Both are `rows:` lists.
+
+```yaml
+# yields.yaml: grams of `to` per gram of `from`; one row per group + pair
+rows:
+  - {group: rice, from: dry, to: cooked, factor: 2.8, source: "USDA SR Legacy raw vs cooked"}
+  - {group: chicken, from: raw, to: cooked, factor: 0.72, source: "USDA Table of Cooking Yields (2014)"}
+# portion_words.yaml: exactly one of g / ml; optional range [lo, hi]
+rows:
+  - {food: "usda:egg_whole_raw", unit: piece, g: 50, range: [44, 58], source: "USDA SR Legacy portion"}
+  - {food: "usda:cola", unit: can, ml: 330, source: "label"}
+```
+
+Rules: states are the `fb_domain` `FoodState` codes, `factor > 0`, `from` !=
+`to`, no duplicate or inverse-duplicate rows, a basic's `yield_group` needs a
+row (checked once `yields.yaml` exists), `food` resolves to a basic or dish,
+`unit` is known to `fb_domain` (plus `can`, ahead of A05), the range contains
+the value, no Open Food Facts source, `unit` is not a mass or volume code (`g`,
+`ml`, ...), a basic's `state` is a from/to state of its yield group, and a
+selection `servings` entry must equal the portion word with the same unit
+(household units have one owner: `portion_words.yaml`).

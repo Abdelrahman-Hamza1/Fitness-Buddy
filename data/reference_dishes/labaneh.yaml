@@ -1,0 +1,21 @@
+schema: 1
+id: ref:labaneh
+names:
+  en: [Labaneh, Labneh, Strained yogurt]
+  ar: [لبنة, لبنه, لبنة كاملة الدسم]
+  arabizi: [labaneh, labneh, labne, lebneh, labne full fat, laban mostawi]
+state: as_sold
+variants:
+  - id: full_fat
+    default: true
+    per_100g: {kcal: 154, protein: 9, carbs: 7, fat: 10, fiber: 0, extras: {sodium: 300}}
+    nutrient_source: "Baladna Fresh Labneh Full Fat, label values per 100 g (fresh cow's milk, bacterial starter culture, salt 0.6%; 200 g tub): https://baladna.com/en/product/full-fat-fresh-labneh. Fibre is not printed on the label; 0 is used."
+portions:
+  tbsp: {g: 20, range: [15, 30]}
+  serving: {g: 60, range: [40, 100]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+    - "Baladna Fresh Labneh Full Fat product page (label per 100 g): https://baladna.com/en/product/full-fat-fresh-labneh"
+  notes: "One Gulf brand label; labaneh varies a lot with straining time and milk fat (Baladna's own Turkish full fat labneh page lists 158 kcal and its Jarashia style 123 kcal per 100 g). Labaneh balls in oil are much richer (Baladna: 322 kcal) and are not covered here: that page does not say whether the figures are for drained solids. Spoon and serving weights are typical household values."

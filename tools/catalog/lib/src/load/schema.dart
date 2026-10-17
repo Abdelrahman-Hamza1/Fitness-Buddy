@@ -10,6 +10,8 @@ import 'package:yaml/yaml.dart';
 /// File names of the committed schemas in `data/schema/`.
 const dishSchemaFile = 'reference_dish.v1.schema.json';
 const selectionSchemaFile = 'usda_selection.v1.schema.json';
+const yieldsSchemaFile = 'yields.v1.schema.json';
+const portionWordsSchemaFile = 'portion_words.v1.schema.json';
 
 /// Loads the schema [name] from [schemaDir].
 JsonSchema loadSchema(String schemaDir, String name) {
@@ -85,6 +87,13 @@ CatalogIssue _friendly(String file, String path, String message) {
       file,
       path,
       'needs at least ${items[2]} item(s), has ${items[1]}',
+    );
+  }
+  if (message.contains('oneOf') && path.contains('/rows/')) {
+    return CatalogIssue(
+      file,
+      path,
+      'a portion word needs `g` or `ml`, and not both',
     );
   }
   if (message.contains('oneOf')) {

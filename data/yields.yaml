@@ -1,0 +1,23 @@
+# Yield factors (A04, FD-060): grams of `to` per gram of `from`, one row per
+# group and pair. Format: data/schema/yields.v1.schema.json.
+# Grains and pulses: (100 - water% raw) / (100 - water% cooked) from USDA SR Legacy
+# 2018-04 (CC0), i.e. dry matter is conserved and only the water changes. Where the
+# FDC ID of the dry food is a Foundation ID, protein is conserved instead.
+# Meats: USDA Table of Cooking Yields for Meat and Poultry, Release 2 (2014), raw to
+# cooked weight % (the water method fails for meat: fat and juices are lost too).
+# Fish and potatoes: the same dry-matter method as grains (fish: protein agrees).
+# Home cooking varies (esp. how much water rice and bulgur take), so each row is a
+# typical value, not exact. Never Open Food Facts.
+rows:
+  - {group: rice, from: dry, to: cooked, factor: 2.8, source: "USDA SR Legacy FDC 168877 (white long grain, raw, water 11.62%) vs 168878 (cooked, 68.44%): 2.80", note: "Brown long grain 169703/169704 gives 2.97, white medium grain 168879/168880 gives 2.78. Maqluba-style rice cooked in broth takes about 2.5 to 3."}
+  - {group: bulgur, from: dry, to: cooked, factor: 3.8, source: "USDA FDC 2710820 (Foundation, bulgur dry, protein 11.76 g/100 g) vs 170287 (SR Legacy, cooked, 3.08 g): 3.82", note: "SR Legacy raw bulgur 170286 vs 170287 by water gives 4.06. Pilaf-style home bulgur (about 1 part bulgur : 2 water) is often nearer 2.5 to 3, so check against family cooking."}
+  - {group: pasta, from: dry, to: cooked, factor: 2.4, source: "USDA SR Legacy FDC 169736 (dry, water 9.9%) vs 169737 (cooked, 62.13%): 2.38; whole wheat 169738/168910: 2.40"}
+  - {group: lentils, from: dry, to: cooked, factor: 3.0, source: "USDA SR Legacy FDC 172420 (lentils raw, water 8.26%) vs 172421 (boiled, 69.64%): 3.02; red lentils 174284 vs 172421: 3.04"}
+  - {group: chickpeas, from: dry, to: cooked, factor: 2.3, source: "USDA SR Legacy FDC 173756 (raw, water 7.68%) vs 173757 (boiled, 60.21%): 2.32", note: "Home chickpeas soaked overnight and cooked soft take about 2.2 to 2.5."}
+  - {group: beans, from: dry, to: cooked, factor: 2.7, source: "USDA SR Legacy: kidney 173744/173740 gives 2.67, white 175202/175203 gives 2.40, fava 175205/173753 gives 3.13; mean 2.7", note: "Mean of three bean types, which differ by about 25%. A per-bean split can come later."}
+  - {group: chicken, from: raw, to: cooked, factor: 0.72, source: "USDA Table of Cooking Yields for Meat and Poultry (2014), broiler-fryer breast, meat and skin, baked or roasted: 72% (thigh 69%)", note: "Poached/simmered chicken (as in maqluba or mansaf) is 74 to 77% in the same table. Cooked weight is meat and skin without bone. The catalog pairs the factor only with skinless raw (usda:chicken_breast_skinless_raw, usda:chicken_thigh_skinless_raw) and the meat-only cooked entries (usda:chicken_breast_roasted, usda:chicken_thigh_roasted); the with-skin raw entries carry no yield_group because skin is not in the cooked entries."}
+  - {group: beef, from: raw, to: cooked, factor: 0.67, source: "USDA Table of Cooking Yields for Meat and Poultry (2014): ground beef medium fat (12-22%) crumbles pan-fried 67%; chuck braised cuts 64 to 71%", note: "Steaks cook to about 0.8 (top sirloin broiled 80%); ground-meat dishes and stews are the common case here."}
+  - {group: lamb, from: raw, to: cooked, factor: 0.67, source: "USDA Table of Cooking Yields for Meat and Poultry (2014): lamb retail cuts, roasts 74%; shoulder/shank braised 60%; mean 0.67", note: "Roast leg is nearer 0.74, braised shoulder (stews, mansaf) nearer 0.60. The 2014 table has no row for ground lamb."}
+  - {group: fish, from: raw, to: cooked, factor: 0.8, source: "USDA SR Legacy FDC 175176 vs 175177 (tilapia, 0.77), 175179 vs 175180 (shrimp, 0.84); salmon 175167 vs 175168 is 1.0", note: "Lean fish and shrimp lose about 20% on cooking; fatty salmon barely changes. 0.8 suits lean white fish."}
+  - {group: potatoes, from: raw, to: cooked, factor: 0.92, source: "USDA SR Legacy FDC 170026 (raw, water 79.25%) vs 170440 (boiled, 77.46%): 0.92", note: "The cooked entry is flesh only, so this includes peeling loss."}
+  - {group: freekeh, from: dry, to: cooked, factor: 3.0, source: "curator estimate (no published yield found); owner skim", note: "On the owner skim list. Arithmetic from the ref:freekeh label serving (180 g dry per cup, with 2 to 2.5 cups of water fully absorbed) gives 3.6 to 4.3, but home freekeh is often drained or absorbs less, so 3.0 is used; plausible range 2.5 to 4. ref:freekeh cannot carry a yield_group (that field is on basics), so the app must look up this group by name until refs can join one."}

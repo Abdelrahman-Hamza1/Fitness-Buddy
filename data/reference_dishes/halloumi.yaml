@@ -1,0 +1,21 @@
+schema: 1
+id: ref:halloumi
+names:
+  en: [Halloumi, Halloumi cheese, Haloumi]
+  ar: [حلوم, جبنة حلوم]
+  arabizi: [halloumi, haloumi, halloum, hallum, jibne halloumi, hloum]
+state: as_sold
+variants:
+  - id: plain
+    default: true
+    per_100g: {kcal: 290, protein: 22.3, carbs: 0.9, fat: 21.9, fiber: 0, extras: {sugar: 0.9, saturated_fat: 14.9, sodium: 1680}}
+    nutrient_source: "Matvaretabellen (Norwegian Food Safety Authority food composition table), Cheese, Halloumi, food ID 01.270, per 100 g edible portion: https://www.matvaretabellen.no/en/cheese-halloumi/"
+portions:
+  slice: {g: 30, range: [20, 45]}
+  piece: {g: 60, range: [40, 90]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+    - "Matvaretabellen, Cheese, Halloumi (01.270): https://www.matvaretabellen.no/en/cheese-halloumi/"
+  notes: "Published table value (not a brand label); brand labels in FDC range 296-393 kcal per 100 g depending on fat, so +-30 kcal is normal. Portion weights are typical household values (a grilled slice 25-45 g). Grilling without oil adds nothing; frying in oil adds the oil."

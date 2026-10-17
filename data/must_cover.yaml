@@ -123,10 +123,13 @@ groups:
         names: {en: ["Olives"], ar: ["زيتون"], arabizi: ["zeitoun"]}
       - id: boiled_egg
         names: {en: ["Egg, boiled"], ar: ["بيض مسلوق"], arabizi: ["bayd maslouk"]}
+        match: [usda:egg_whole_hard_boiled]
       - id: fried_egg
         names: {en: ["Egg, fried"], ar: ["بيض مقلي"], arabizi: ["bayd makli"]}
+        match: [usda:egg_whole_fried]
       - id: omelette
         names: {en: ["Omelette"], ar: ["عجة"], arabizi: ["ijjeh"]}
+        match: [usda:egg_whole_omelet]
       - id: shakshuka
         names: {en: ["Shakshuka"], ar: ["شكشوكة"], arabizi: ["shakshuka"]}
       - id: makdous
@@ -173,6 +176,7 @@ groups:
     items:
       - id: arabic_coffee
         names: {en: ["Arabic coffee"], ar: ["قهوة عربية"], arabizi: ["ahwa arabiyeh"]}
+        match: [usda:coffee_brewed]
       - id: turkish_coffee
         names: {en: ["Turkish coffee"], ar: ["قهوة تركية"], arabizi: ["ahwa turkiyeh"]}
       - id: tea_with_sugar
@@ -181,10 +185,13 @@ groups:
         names: {en: ["Sahlab"], ar: ["سحلب"], arabizi: ["sahlab"]}
       - id: laban
         names: {en: ["Laban / ayran"], ar: ["لبن عيران"], arabizi: ["laban ayran"]}
+        match: [usda:buttermilk_lowfat]
       - id: fresh_juice
         names: {en: ["Fresh juice"], ar: ["عصير طازج"], arabizi: ["aseer tazej"]}
+        match: [usda:orange_juice, usda:apple_juice, usda:pomegranate_juice]
       - id: soft_drink
         names: {en: ["Soft drink"], ar: ["مشروب غازي"], arabizi: ["mashroub ghazi"]}
+        match: [usda:cola, usda:lemon_lime_soda]
       - id: qamar_al_din
         names: {en: ["Qamar al-din"], ar: ["قمر الدين"], arabizi: ["qamar al din"]}
       - id: jallab
@@ -222,6 +229,7 @@ groups:
         names: {en: ["Lamb"], ar: ["لحم غنم"], arabizi: ["lahme ghanam"]}
       - id: fish
         names: {en: ["Fish"], ar: ["سمك"], arabizi: ["samak"]}
+        match: [usda:tuna_canned_water_drained, usda:sardines_canned_oil_drained, usda:salmon_farmed_raw, usda:tilapia_raw, usda:shrimp_raw]
       - id: egg
         names: {en: ["Eggs"], ar: ["بيض"], arabizi: ["bayd"]}
       - id: milk

@@ -1,25 +1,11 @@
 import 'package:fb_catalog/src/compute/dish_nutrients.dart';
 import 'package:fb_catalog/src/model/dish.dart';
 import 'package:fb_catalog/src/model/issue.dart';
+import 'package:fb_catalog/src/model/yields.dart';
+import 'package:fb_catalog/src/validate/report.dart';
+import 'package:fb_catalog/src/validate/validate_yields.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_text/fb_text.dart';
-
-/// What `validateCatalog` found.
-class ValidationReport {
-  /// Problems that fail the build.
-  final errors = <CatalogIssue>[];
-
-  /// Sanity warnings (A03 D7): reported, the build continues.
-  final warnings = <CatalogIssue>[];
-
-  /// Sanity failures waived by a reviewed `sanity_override`, with the reason.
-  final overrides = <CatalogIssue>[];
-
-  /// Per-100 g of every variant that resolved, by `ref:<dish>/<variant>`.
-  final computed = <String, DishPer100>{};
-}
-
-final _offUrl = RegExp(r'openfoodfacts\.', caseSensitive: false);
 
 /// The semantic rules the JSON Schema can't express: references resolve,
 /// exactly one default variant, ordered ranges, no Open Food Facts source
@@ -29,6 +15,8 @@ ValidationReport validateCatalog({
   required List<BasicFood> basics,
   required List<ReferenceDish> dishes,
   bool requireAr = false,
+  List<YieldRow>? yields,
+  List<PortionWordRow>? portionWords,
   SanityCheck sanity = const SanityCheck(),
 }) {
   final report = ValidationReport();
@@ -52,6 +40,13 @@ ValidationReport validateCatalog({
     _dish(report, dish, known, sortedDishes, computer, sanity);
   }
   _names(report, basics, sortedDishes);
+  validateYieldsAndPortionWords(
+    report,
+    basics: basics,
+    dishes: sortedDishes,
+    yields: yields,
+    portionWords: portionWords,
+  );
   return report;
 }
 
@@ -157,7 +152,7 @@ void _dish(
         if (range != null) {
           _range(error, '$at/recipe/$ri/range', range, item.grams, 'grams');
         }
-        if (!_resolves(item.food, basicIds, allDishes)) {
+        if (!foodResolves(item.food, basicIds, allDishes)) {
           error(
             '$at/recipe/$ri/food',
             '`${item.food}` does not resolve to a USDA basic or a '
@@ -201,7 +196,7 @@ void _offSource(
   String path,
   String source,
 ) {
-  if (_offUrl.hasMatch(source)) {
+  if (offSourcePattern.hasMatch(source)) {
     error(
       path,
       'Open Food Facts is not allowed as a source (ODbL isolation, C-5): '
@@ -234,17 +229,6 @@ void _portionRanges(
   for (final MapEntry(key: code, value: portion) in portions.entries) {
     _range(error, '$path/$code/range', portion.range, portion.g, 'g');
   }
-}
-
-bool _resolves(String food, Set<String> basicIds, List<ReferenceDish> dishes) {
-  if (food.startsWith('usda:')) return basicIds.contains(food);
-  final slash = food.indexOf('/');
-  final dishId = slash < 0 ? food : food.substring(0, slash);
-  for (final d in dishes) {
-    if (d.id != dishId) continue;
-    return slash < 0 || d.variants.any((v) => d.variantId(v) == food);
-  }
-  return false;
 }
 
 /// FD-004: within one language, a normalized name belongs to one item (a

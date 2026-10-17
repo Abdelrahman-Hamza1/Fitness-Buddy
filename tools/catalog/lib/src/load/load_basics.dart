@@ -84,5 +84,11 @@ BasicFood _basic(
     nutrients: extract[id],
     sanityOverrideReason:
         (m['sanity_override'] as Map<String, dynamic>?)?['reason'] as String?,
+    yieldGroup: m['yield_group'] as String?,
+    servings: {
+      for (final s in (m['servings'] as List<dynamic>?) ?? const [])
+        (s as Map<String, dynamic>)['unit'] as String: (s['g'] as num)
+            .toDouble(),
+    },
   );
 }

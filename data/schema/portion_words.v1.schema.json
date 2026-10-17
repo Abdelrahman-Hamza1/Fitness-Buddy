@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fitnessbuddy.local/schema/portion_words.v1.schema.json",
+  "title": "Fitness Buddy portion words (A04)",
+  "description": "data/portion_words.yaml: what one portion word (loaf, piece, glass, can, tbsp ...) weighs for a food (FD-003, LC-051). Exactly one of `g` (solids) or `ml` (drinks).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["rows"],
+  "properties": {
+    "rows": { "type": "array", "items": { "$ref": "#/definitions/row" } }
+  },
+  "definitions": {
+    "text": { "type": "string", "pattern": "\\S" },
+    "amount": { "type": "number", "exclusiveMinimum": 0 },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["food", "unit", "source"],
+      "oneOf": [{ "required": ["g"] }, { "required": ["ml"] }],
+      "properties": {
+        "food": { "$ref": "#/definitions/text" },
+        "unit": { "$ref": "#/definitions/text" },
+        "g": { "$ref": "#/definitions/amount" },
+        "ml": { "$ref": "#/definitions/amount" },
+        "range": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "type": "number", "minimum": 0 }
+        },
+        "source": { "$ref": "#/definitions/text" },
+        "note": { "type": "string" }
+      }
+    }
+  }
+}

@@ -9,10 +9,12 @@ bulk downloads are never committed. Tooling: `tools/catalog/` (`make catalog`).
 | `usda/extract.jsonl` | Per-100 g values of the selection, written by `make catalog-usda` (sorted, deterministic). `usda/sources.yaml` pins the downloads by sha256. |
 | `reference_dishes/<slug>.yaml` | One reference dish each (format v1, `schema/reference_dish.v1.schema.json`): names, variants (recipe or `per_100g`), portions with ranges, review status and sources. New dishes start as `draft`. |
 | `must_cover.yaml` | The spec's must-cover list (`spec/11` section 6, FD-052) with EN, AR and Arabizi names. `catalog coverage` reports how each item resolves. |
-| `schema/` | JSON Schemas for the dishes and the selection. |
+| `yields.yaml` | Cooking yield factors (FD-060): grams of `to` per gram of `from`, one row per group and pair (`yields.v1.schema.json`). The only owner of yield factors. |
+| `portion_words.yaml` | What one loaf, piece, glass, can, tbsp or tsp of a food weighs or holds (FD-003, `portion_words.v1.schema.json`). The only owner of household units: a `servings` entry in the selection with the same unit must agree (the validator checks). |
+| `schema/` | JSON Schemas for the selection, the reference dishes, yields and portion words. |
 | `sources/` | Small curated samples used as evidence (e.g. `off_local_sample.yaml`). |
 
-USDA FoodData Central is CC0 (citation requested). Open Food Facts (ODbL) data never enters `data/`: `sources/off_local_sample.yaml` only names products.
+USDA FoodData Central is CC0 (citation requested). Matvaretabellen (Norwegian Food Composition Table, Mattilsynet) is cited as a source in `reference_dishes/halloumi.yaml`. Its licence is not CC BY 4.0 as far as we could verify: mattilsynet.no says the values may not be published without a reference, data.norge.no lists it only as "open license", and matvaretabellen.no states no licence (it asks to be cited). Cite as "Norwegian Food Composition Table 2024. The Norwegian Food Safety Authority. www.matvaretabellen.no"; confirm terms with matvaretabellen@mattilsynet.no before R2/R3. Open Food Facts (ODbL) data never enters `data/`: `sources/off_local_sample.yaml` only names products.
 
 ## Commands
 

@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fitnessbuddy.local/schema/yields.v1.schema.json",
+  "title": "Fitness Buddy yield factors (A04)",
+  "description": "data/yields.yaml: grams of `to` per gram of `from` for a food group (FD-060). fb_domain's YieldConverter uses a direct row or the inverse, never a chain. Basics join a group through `yield_group` in the selection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["rows"],
+  "properties": {
+    "rows": { "type": "array", "items": { "$ref": "#/definitions/row" } }
+  },
+  "definitions": {
+    "text": { "type": "string", "pattern": "\\S" },
+    "state": { "enum": ["raw", "cooked", "dry", "drained", "fried", "as_sold"] },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["group", "from", "to", "factor", "source"],
+      "properties": {
+        "group": { "type": "string", "maxLength": 64, "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$" },
+        "from": { "$ref": "#/definitions/state" },
+        "to": { "$ref": "#/definitions/state" },
+        "factor": { "type": "number", "exclusiveMinimum": 0 },
+        "source": { "$ref": "#/definitions/text" },
+        "note": { "type": "string" }
+      }
+    }
+  }
+}

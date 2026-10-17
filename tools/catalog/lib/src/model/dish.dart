@@ -132,6 +132,8 @@ class BasicFood {
     required this.state,
     this.nutrients,
     this.sanityOverrideReason,
+    this.yieldGroup,
+    this.servings = const {},
   });
 
   final String file;
@@ -145,4 +147,10 @@ class BasicFood {
   /// Per-100 g values from the extract; `null` when it has no line for [id].
   final Nutrients? nutrients;
   final String? sanityOverrideReason;
+
+  /// The `group` of the yields row that converts this basic's state (FD-060).
+  final String? yieldGroup;
+
+  /// Household units in grams, by unit code (`servings:` in the selection).
+  final Map<String, double> servings;
 }

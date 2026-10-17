@@ -1,0 +1,20 @@
+schema: 1
+id: ref:sumac
+names:
+  en: [Sumac, Ground sumac]
+  ar: [سماق, سماق مطحون]
+  arabizi: [sumac, summaq, sumaq, soumak, sumak]
+state: dry
+variants:
+  - id: ground
+    default: true
+    per_100g: {kcal: 376, protein: 3.3, carbs: 61.5, fat: 13, fiber: 0, extras: {sugar: 0.5, saturated_fat: 2.9}}
+    nutrient_source: "Steenbergs Sumac (ingredients: sumac, salt), label values per 100 g: https://steenbergs.co.uk/product/sumac/. Fibre is not printed on the page; 0 means 'not listed', not 'none'."
+portions:
+  tsp: {g: 2.5, range: [1.5, 4]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+    - "Steenbergs Sumac product page (label per 100 g): https://steenbergs.co.uk/product/sumac/"
+  notes: "One UK spice-shop label (with added salt, 5.7 g salt per 100 g). Other sumac labels range 250-585 kcal per 100 g and several list 40+ g fibre, so treat as +-30%. The amount used in a dish (1 to 5 g) makes the effect on a plate small. Fibre is unknown, shown as 0."
