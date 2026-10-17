@@ -35,21 +35,8 @@ Two AI implementers share this repo (TD-059, TD-061). **Codex is fully in charge
 8. Comments say what the code can't (why, constraints, spec/TD IDs), at the right density (`10` §2, TD-054).
 9. Tests prove spec rules by ID (`[Trait("Req", "XX-000")]`), and rules without a spec ID use `[Trait("Rule", "<doc>.<section>-<slug>")]` (`10` §5).
 
-## How a step runs (`13` §3, §10)
-1. **Orient:** read the board, the card, its **Read first** docs, the **Outcome** of its dependencies, and the card's **Progress log** (that's where a step resumes).
-2. **Plan:** write the Low-level plan in the card: design, file list, tests mapped to spec IDs and exit criteria, work packages, risks. Review it yourself against `03`/`04`/`09`/`10` and the TDs. Architecture-level choices become TD entries.
-3. **Owner gate:** under TD-037 you approve your own plan and merge your own step when it has **no ⚠️ OWNER item** (spec change, Accepted-TD change, new paid service/vendor, security trade-off, scope cut, destructive production operation) and every automated gate passes. Otherwise ask the owner and wait.
-4. **Implement:** branch `step/<ID>-short-name` from `main`, Conventional Commits (`feat(B05): …`), `make check test` green after every commit. Don't expand scope: anything new goes to `steps/backlog.md` or a later card.
-5. **Review:** an independent review of the whole diff before verification, by a separate reviewer agent or a fresh review session, not the session that wrote the code. It covers correctness, design and the rules above, with a security pass for auth, sync, RLS, secrets, logging/telemetry and infrastructure exposure. Fix blockers and majors, then re-review them. Log minors in `steps/backlog.md`. Record the rounds and findings in the Outcome.
-6. **Verify:** tick every exit criterion with evidence (test names, outputs, measurements) in `technical-planning/steps/evidence/<ID>-verification.md`.
-7. **Close:** write the card's **Outcome** (built, deviations and why, follow-ups, new TDs, measurements). Update the board, `steps/backlog.md` and any doc the step changed (an outdated doc is a bug). Then merge as below.
-
-**Handoff:** append one dated line to the card's Progress log at every phase change and work-package commit, and push. A lost session must be able to resume from it.
-
-## Git
-- Push with `git push -u origin <branch>`; retry on network errors. The remote uses SSH. There is no `gh` CLI, so the owner reviews branch diffs on GitHub.
-- **Merge to `main`** (TD-036, TD-039): one squash commit `<ID>: <step name>` on a local `merge/<ID>` branch from `origin/main` (the body keeps the branch's commit subjects) → `git push -u origin merge/<ID>` → `tools/scripts/ci-status.sh <sha>` green → `git push origin merge/<ID>:main` (fast-forward, same SHA) → delete `merge/<ID>` and the step branch. `main` rejects commits without a green `ci` check.
-- Don't commit secrets. Don't force-push `main`.
+## How a step runs and merges
+**Follow `PROCESS.md`** (Part A shared rules, Part C Codex): tiers, one independent review by a fresh **GPT-6.1 Sol** session plus a separate fresh GPT-6.1 Sol **security review** on Risky and security-relevant steps (GPT-6.1 Sol for everything), owner gates (TD-037), and merges only through `tools/scripts/merge-step.sh <ID> "<name>" <branch>`, which moves `main` only when `ci` is green. Card mechanics: write the Low-level plan in the card, keep its Progress log current and pushed, and write the Outcome at close (built, deviations, follow-ups, TDs, measurements, review findings). Push branches with `git push -u origin <branch>` (SSH remote, retry on network errors). Don't commit secrets. Don't force-push `main`.
 
 ## Commands
 The root `Makefile` is the entry point (`make help`): `make setup`, `make check`, `make test` (`test-dotnet`, `test-dart`), `make gen`, `make gen-check`, `make contract-conformance`, `make trace`, `make doctor`. Backend details and conventions: `backend/README.md`. The laptop has 7 GB of RAM: run one heavy build at a time and `~/.dotnet/dotnet build-server shutdown` after .NET sessions.

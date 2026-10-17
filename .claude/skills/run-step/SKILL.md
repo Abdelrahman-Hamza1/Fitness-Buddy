@@ -47,7 +47,7 @@ Track progress with a todo list mirroring the phases below. Keep the owner infor
 2. Update the status board (✅ after the owner's OK; until then keep 🟨 with a note "awaiting owner"), any planning docs the step changed, and `technical-planning/steps/backlog.md` (follow-ups, minor findings).
 3. Commit (`docs(<ID>): outcome`) and **push the branch** (`git push -u origin step/<ID>-…`, retry on network errors with backoff).
 4. **Owner gate:** send the **close summary** (template in process §5.2) with demo steps for the A55 when relevant, and the GitHub branch name for reviewing the diff. **Wait for the owner's OK.**
-5. On OK: the board ✅ and the Outcome are committed on the step branch first (`main` only accepts CI-verified commits, so nothing goes to `main` afterwards). Then squash on a local `merge/<ID>` branch from `origin/main` (one commit `<ID>: <step name>`; the body keeps the branch's commit subjects, Outcome and board ✅ included) → `git push -u origin merge/<ID>` → `tools/scripts/ci-status.sh <sha>` green → `git push origin merge/<ID>:main` (fast-forward, same SHA) → delete `merge/<ID>` and the step branch (TD-036, TD-039). Dependabot PRs: only PRs by `dependabot[bot]` whose head sits on current `main` with `ci` green may go straight to `main` (`git push origin <sha>:main`); anything else, and any code from a fork, goes through a `merge/*` branch.
+5. On OK: commit the Outcome and board ✅ on the step branch, then `tools/scripts/merge-step.sh <ID> "<step name>" step/<ID>-…` with `MERGE_TRAILER` set to the attribution line. It squashes onto `merge/<ID>`, waits for `ci` and moves `main` only when green (TD-036, TD-039, `PROCESS.md` A5). Never push to `main` by hand.
 6. Propose the next step.
 
 ## Always

@@ -1,5 +1,7 @@
 # 13 — Delivery Process: Orchestrator, Agents & Gates
 
+_**`PROCESS.md` (TD-075) is the one-page process and wins where this file differs;** this file keeps the details and templates._
+
 _How the work in `steps/` actually gets done: who does what, which specialist agent runs when, where the owner is consulted, and which quality gates every step passes. This file is the process contract. `CLAUDE.md` points every session here._
 
 ## 1. Roles

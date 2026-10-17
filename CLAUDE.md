@@ -6,7 +6,7 @@ Fitness Buddy is a local-first nutrition & weight tracking app (Flutter, Android
 - **`spec/`**: what and why (product). Changes only via a new entry in `spec/decisions.md`, **with the owner's approval**.
 - **`technical-planning/`**: how. Start at its `README.md`. Decisions in `12-decisions-and-questions.md`.
 - **`technical-planning/steps/`**: the delivery plan: one card per step + the status board (`steps/README.md` §4).
-- **`technical-planning/13-delivery-process.md`**: **the process every session follows** (roles, agents, gates, owner communication).
+- **`PROCESS.md`**: **the process every session follows** (shared rules, Claude's model tiers, Codex's rules; TD-075). Details and templates: `technical-planning/13-delivery-process.md`.
 
 ## Your role in this repo
 **Two implementers (TD-059, TD-061, `13` §10):** you own the app (`apps/mobile/`, `packages/`, Dart `tools/` except `tools/buddy_eval` and `tools/sync_sim`, `data/`) and the planning docs' structure. **Codex owns the backend and integration** (`backend/`, `infra/`, server CI jobs, deploys), working from `AGENTS.md`. Your steps are the **app track `A01–A43`** (`steps/README.md` §4.1, TD-063); Codex has the backend track `B01–B16`. You and Codex share `~/work/fitness_buddy`, **one at a time**: start only with a clean `git status`, and push your branch before handing over. Don't edit Codex's area or brief `dotnet-engineer` for it. Codex reviews its own work (TD-061). You don't review Codex branches. When a card's Progress log reports a contract change, adapt the app.
@@ -16,8 +16,8 @@ You are the **orchestrator** for the app side: product owner + tech lead for the
 ## Working with the owner
 - They often work **from a phone**: keep messages short and plain, the decision or result first, then details. Every question comes with a recommendation they can answer with "ok" / "rec".
 - They oversee **architecture and product**, not Flutter code line by line. Explain choices at that level.
-- **Gates where you must wait for them:** plan approval (before implementation) and step acceptance (before merging to `main`). Also ask before any spec change, any change to an Accepted TD, new paid services/vendors, scope cuts affecting milestones, security trade-offs, and destructive production operations.
-- Inform them proactively: session start, one-line progress pings, blockers immediately, the close summary at the end.
+- **Gates (TD-037, `PROCESS.md` A6):** self-approve and self-merge when there's no owner item and every gate passes. Ask first before any spec change, any change to an Accepted TD, new paid services/vendors, scope cuts affecting milestones, security trade-offs, and destructive production operations.
+- Inform them proactively: session start, blockers immediately, the close summary at the end.
 
 ## Non-negotiable engineering rules (details in technical-planning)
 1. **AI interprets, code computes:** models never produce nutrition numbers (except the badged estimate fallback).
@@ -31,7 +31,7 @@ You are the **orchestrator** for the app side: product owner + tech lead for the
 
 ## Git
 - Branch per step: `step/<ID>-short-name` from `main`. Conventional Commits (`feat(diary): …`). Push branches with `git push -u origin <branch>`, retrying on network errors.
-- Merge to `main` only after the owner accepts the step, as **one squash commit** `<ID>: <step name>` (TD-036), through a CI-verified `merge/<ID>` branch then a fast-forward push to `main` (TD-039, `13` §3.E). `main` rejects commits without a green `ci` check. There's no `gh` CLI, so the owner reviews branch diffs on GitHub. The remote uses SSH.
+- Merge to `main` only through `tools/scripts/merge-step.sh <ID> "<name>" <branch>` (one squash commit `<ID>: <step name>`, moves `main` only when `ci` is green; TD-036, TD-039). There's no `gh` CLI, so the owner reviews branch diffs on GitHub. The remote uses SSH.
 - Keep the step card's **Progress log** current and pushed (`13` §8a), so a lost session can resume.
 - Don't commit secrets. Don't force-push `main`.
 
