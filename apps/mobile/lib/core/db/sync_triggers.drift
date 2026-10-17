@@ -1,0 +1,33 @@
+-- Outbox capture for every synced table (A01 D8, AC-012). Per table:
+--   <t>_outbox_ai  AFTER INSERT: one outbox row for the new version,
+--   <t>_outbox_au  AFTER UPDATE that changed updated_hlc: the same,
+--   <t>_no_delete  BEFORE DELETE: synced rows are tombstoned, never deleted.
+-- The two outbox triggers are gated by sync_state['outbox.capture']: '0' turns
+-- capture off (seeds, A34's remote apply); a missing row means on. no_delete
+-- is never gated: a hard DELETE always aborts.
+-- A new synced table appends its three triggers here (and creates them in its
+-- migration). test/core/db/sync_triggers_test.dart fails if one is missing and
+-- prints the SQL to paste.
+import 'tables/sync_tables.dart';
+import 'tables/settings_tables.dart';
+
+-- settings_kv (entity 'setting', A01 D16)
+CREATE TRIGGER settings_kv_outbox_ai AFTER INSERT ON settings_kv
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('setting', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER settings_kv_outbox_au AFTER UPDATE ON settings_kv
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('setting', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER settings_kv_no_delete BEFORE DELETE ON settings_kv
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;

@@ -5,6 +5,9 @@ import 'package:test/test.dart';
 /// The one file allowed to read the clock, the device zone and randomness.
 const _systemFile = 'lib/system.dart';
 
+/// Test fakes, also kept out of the barrel (A01 D20).
+const _testingFile = 'lib/testing.dart';
+
 /// What domain code must not call (S08 D8, A7). Domain time arithmetic uses
 /// `DateTime.utc(...)` and UTC `DateTime`s only. The patterns run over the
 /// whole comment-free file, so `\s*` also spans line breaks.
@@ -21,9 +24,12 @@ final _banned = <String, RegExp>{
   'Random( / Random.secure(': RegExp(r'\bRandom\s*(?:\.\s*secure\s*)?\('),
   'Random.new / DateTime.new': RegExp(r'\b(?:Random|DateTime)\s*\.\s*new\b'),
   // A dot shorthand (`DateTime at = .now();`). Not a bare `.now(`:
-  // `HybridLogicalClock.now()` is fine.
+  // `HybridLogicalClock.now()` is fine. A `?` counts only with space after
+  // it (`c ? .now() : x`, `a ?? .now()`): `clock?.now()` is a null-aware
+  // call.
   'shorthand .now( / .timestamp( / .secure(': RegExp(
-    r'(?:[=(,:?]|=>|\breturn)\s*\.\s*(?:now|timestamp|secure)\s*\(',
+    r'(?:(?:[=(,:[{]|=>|\breturn)\s*|\?\s+)'
+    r'\.\s*(?:now|timestamp|secure)\s*\(',
   ),
 };
 
@@ -77,6 +83,7 @@ String stripComments(String source) {
       var j = i + open[0]!.length;
       while (j < source.length && !source.startsWith(quote, j)) {
         if (!raw && source[j] == r'\') j++;
+        if (j >= source.length) break;
         if (quote.length == 1 && source[j] == '\n') break;
         j++;
       }
@@ -133,16 +140,32 @@ void main() {
       expect(found, isEmpty, reason: 'move these into $_systemFile');
     });
 
-    test('system.dart exists and the barrel does not export it', () {
-      expect(File(_systemFile).existsSync(), isTrue);
+    test('system.dart and testing.dart exist and the barrel does not export '
+        'them', () {
       final barrel = File('lib/fb_domain.dart').readAsStringSync();
-      final exportsSystem = RegExp(
-        r'''^\s*export\s+['"][^'"]*system\.dart['"]''',
-        multiLine: true,
-      );
-      expect(exportsSystem.hasMatch(barrel), isFalse);
-      expect(exportsSystem.hasMatch("export 'system.dart';"), isTrue);
+      for (final file in [_systemFile, _testingFile]) {
+        expect(File(file).existsSync(), isTrue, reason: file);
+        final name = file.split('/').last;
+        final exports = RegExp(
+          '^\\s*export\\s+[\'"][^\'"]*${RegExp.escape(name)}[\'"]',
+          multiLine: true,
+        );
+        expect(exports.hasMatch(barrel), isFalse, reason: file);
+        expect(exports.hasMatch("export '$name';"), isTrue, reason: file);
+      }
     });
+
+    // testing.dart has no exemption: its fakes need no clock or randomness.
+    test(
+      'the libraries outside lib/src are the barrel, system and testing',
+      () {
+        final libraries = {
+          for (final file in Directory('lib').listSync())
+            if (file is File) file.uri.pathSegments.last,
+        };
+        expect(libraries, {'fb_domain.dart', 'system.dart', 'testing.dart'});
+      },
+    );
 
     test('the ban list catches every banned use and allows UTC', () {
       const banned = [
@@ -168,6 +191,10 @@ void main() {
         'return .timestamp();',
         'final r = c ? .secure() : null;',
         'Random r = .secure();',
+        'final times = [.now()];',
+        'final times = {.now()};',
+        'final t = a ?? .now();',
+        'final t = c ?\n    .now() : null;',
         'final now = DateTime\n    .now();',
         'final r = Random\n  (1);',
         'final d = DateTime.fromMillisecondsSinceEpoch(\n  ms,\n);',
@@ -191,6 +218,9 @@ void main() {
         '/* a /* nested */ DateTime.now() */ final y = 2;',
         'final t = HybridLogicalClock.now();',
         'final t = clock.now();',
+        'final t = clock?.now();',
+        'final t = c?.timestamp() ?? x?.secure();',
+        'final times = [clock.now()];',
         _multiLineUtc,
         r"final s = 'it\'s'; final u = 1; // DateTime.now()",
       ];
@@ -204,6 +234,9 @@ void main() {
         '2: DateTime.now',
       ]);
       expect(stripComments("a; // b\nc = 'd // e';"), "a;     \nc = 'd // e';");
+      // An unterminated string ending in a backslash.
+      expect(stripComments(r"s = 'a\"), r"s = 'a\");
+      expect(violations(r"s = 'a\"), isEmpty);
     });
   });
 }

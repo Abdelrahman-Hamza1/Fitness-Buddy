@@ -1,0 +1,53 @@
+// Fixture for app_check rules db-write-api and db-write-call (not compiled).
+// The test places it at lib/features/diary/data/diary_repository.dart. Every
+// line marked `expect: <rule>` must be reported with that rule, and nothing
+// else.
+import 'package:drift/drift.dart';
+import 'package:fb_mobile/core/db/app_database.dart';
+import 'package:fb_mobile/core/db/write/row_writer.dart'; // expect: db-write-api
+import '../../../core/db/write/row_writer.dart'; // expect: db-write-api
+import 'package:fb_mobile/core/db/write_guard.dart'; // expect: db-write-call
+// Opening an own connection bypasses the write guard.
+import 'package:drift/native.dart'; // expect: db-write-call
+import 'package:drift/isolate.dart'; // expect: db-write-call
+import 'package:sqlite3/sqlite3.dart'; // expect: db-write-call
+
+final class DiaryRepository {
+  DiaryRepository(this.db);
+
+  final AppDatabase db;
+
+  Future<void> sneakyWrites(Map<String, int> counts) async {
+    await db.into(db.settingsKv).insert(row); // expect: db-write-call
+    await db.update(db.settingsKv).write(row); // expect: db-write-call
+    await db.delete(db.settingsKv).go(); // expect: db-write-call
+    await db.batch((b) => b.insertAll(db.settingsKv, rows)); // expect: db-write-call
+    await db.transaction(() async {}); // expect: db-write-call
+    await db.customStatement('DELETE FROM settings_kv'); // expect: db-write-call
+    await db.customInsert('INSERT INTO x VALUES (1)'); // expect: db-write-call
+    await db.customUpdate('UPDATE x SET a = 1'); // expect: db-write-call
+    await db.settingsKv.insertOnConflictUpdate(row); // expect: db-write-call
+    await db.settingsKv.insertReturning(row); // expect: db-write-call
+    await db.settingsKv.insertOne(row); // expect: db-write-call
+    await db.settingsKv.replace(row); // expect: db-write-call
+    await db.settingsKv.deleteWhere((t) => t.id.equals('x')); // expect: db-write-call
+    await db.settingsKv.deleteAll(); // expect: db-write-call
+    final executor = db.executor;
+    await executor.runInsert('INSERT INTO x VALUES (1)', []); // expect: db-write-call
+    await executor.runUpdate('UPDATE x SET a = 1', []); // expect: db-write-call
+    await executor.runDelete('DELETE FROM x', []); // expect: db-write-call
+    await executor.runCustom('DELETE FROM x'); // expect: db-write-call
+    await executor.runBatched(statements); // expect: db-write-call
+    NativeDatabase.opened(sqlite3.open(path)); // ok: the import fails above
+    sqlite3.open(path).execute('DELETE FROM x'); // expect: db-write-call
+    await runAuthorizedWrite(
+      () => db
+          .update // expect: db-write-call
+          (db.settingsKv)
+          .write(row),
+    );
+    // In a file that imports drift, a Map's update counts too: the rule
+    // can't tell them apart without types.
+    counts.update('a', (n) => n + 1); // expect: db-write-call
+  }
+}

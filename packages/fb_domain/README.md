@@ -16,6 +16,10 @@ Rules for this package:
   `DateTime.parse`, `.toLocal()`, `.timeZoneOffset`, `.timeZoneName`,
   `Random(...)`, `Random.secure()`, or `fromMillisecondsSinceEpoch` without
   `isUtc: true` on the same line. Domain code uses UTC `DateTime`s only.
+- Test fakes (`ManualClock`, `SequenceIdGenerator`, `utcMillis`) live in
+  `lib/testing.dart`, also not exported by the barrel; tests in any package
+  import `package:fb_domain/testing.dart`. They need no clock or randomness,
+  so the determinism test checks that file like any other.
 - No runtime dependencies unless they are added to the allowlist in
   `test/dependencies_test.dart`, which fails the build otherwise.
 
@@ -135,6 +139,36 @@ S08 D9, D10, A5, A6. Code: `lib/src/ids/`.
   physical clock; what sync does then is B05's policy. A counter past 99,999
   throws `HlcOverflowException`. The app passes `last` (the highest stored
   HLC) at startup so the order holds across restarts.
+
+## Change sets
+
+A01 D1, D4, D16. Code: `lib/src/changes/`, `lib/src/settings/`. The app's
+`ChangeSetApplier` is the only writer of user data (`03` §5); this package
+holds the pure values it takes and emits, so domain code (the
+ProposalEngine, `buddy_eval`) can build drafts.
+
+- **`ChangeOp`**: one intended change. Each feature owns one `sealed` op
+  family that implements it and names its `family` (the key the app's
+  handler is registered under). Ops are immutable values with `==`, carry
+  IDs, expected versions and intent, never SQL. Hand-written, not freezed:
+  this package has no runtime dependencies.
+- **`ChangeSet(ops, origin:)`**: 1 to 500 ops, applied in order in one
+  transaction, all or nothing. Equal when the origin and the ops in order
+  are equal.
+- **`Origin`** (sealed), stored on every row in its text form:
+  `direct` · `proposal:<proposal id>` · `undo:<change set id>` · `system`.
+  IDs are lowercase canonical UUIDs. `Origin.parse` is strict
+  (`FormatException`), `tryParse` returns `null`.
+- **`DomainEvent`**: the base of every event the app's `DomainEventBus`
+  emits after commit. Events carry IDs and keys, never user content.
+  `ChangeSetApplied(changeSetId, origin, entities)` follows the events of a
+  change set's ops; `entities` are the entity wire names written.
+- **`SettingsOp`**: the settings family (`settings`):
+  `SettingsOp.put(key, valueJson)` and `SettingsOp.reset(key)` (back to the
+  default; the row is tombstoned). Keys are dot-separated camelCase
+  segments (`units.system`), because they are part of the row's natural ID
+  `setting:<key>`. `valueJson` must be JSON text. `toString` shows the key,
+  never the value. `SettingsChanged(keys)` is its event.
 
 ## Tests
 

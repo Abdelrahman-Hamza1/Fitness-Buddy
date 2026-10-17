@@ -57,7 +57,8 @@ bool isGenerated(String path) =>
     path.startsWith('lib/l10n/gen/');
 
 /// The rules an `// app-check: allow <rule-id> <reason>` comment may name:
-/// the lexical ones. Import boundaries (rules 1 to 7) have no exceptions.
+/// the lexical UI ones. The boundary and write-path rules have no
+/// exceptions (TD-052).
 const Set<Rule> allowableRules = {Rule.rawString, Rule.directional};
 
 /// Checks one file of the app.
@@ -74,8 +75,13 @@ List<Violation> checkFile({
   if (!path.endsWith('.dart') || isGenerated(path)) return const [];
   final scanned = ScannedSource.scan(source);
   final file = _AppPath(path);
+  final directives = _directiveUris(scanned).toList();
   final found = [
-    ..._checkDirectives(file, scanned, packageName),
+    for (final (line, uri) in directives)
+      ..._checkImport(file, uri, line, packageName),
+    if (file.mayCallDriftWrites &&
+        directives.any((d) => _reachesDatabase(file.path, d.$2, packageName)))
+      ..._checkDriftWrites(file, scanned),
     if (file.showsText) ..._checkRawStrings(file, scanned),
     ..._checkDirectional(file, scanned),
   ];
@@ -147,8 +153,8 @@ Map<int, _Allow> _allows(ScannedSource scanned) {
           ),
           [final id, ...] when boundaries.contains(id) => _Allow(
             problem:
-                "`$id` can't be allowed: import boundary rules have no "
-                'exceptions; fix the import',
+                "`$id` can't be allowed: boundary and write-path rules have "
+                'no exceptions; fix the code',
           ),
           [final id, ...] when !allowable.containsKey(id) => _Allow(
             problem: 'unknown rule `$id` in `// app-check: allow`; $usage',
@@ -178,6 +184,7 @@ final class _AppPath {
 
   bool get isBarrel => inFeature != null && inFeature == '$feature.dart';
   bool get isPresentation => inFeature?.startsWith('presentation/') ?? false;
+  bool get isApplication => inFeature?.startsWith('application/') ?? false;
   bool get isData => inFeature?.startsWith('data/') ?? false;
   bool get isCore => path.startsWith('lib/core/');
   bool get isApp => path.startsWith('lib/app/');
@@ -193,6 +200,22 @@ final class _AppPath {
       path.startsWith('lib/app/shell/') ||
       path.startsWith('lib/app/update/');
 
+  /// `core/db/` (the database, its tables and the write guard).
+  bool get isCoreDb => path.startsWith('lib/core/db/');
+
+  /// The row writer, `core/db/write/` (rule 10).
+  bool get isDbWrite => path.startsWith('lib/core/db/write/');
+
+  /// The single writer, the only importer of [isDbWrite] code (rule 10).
+  bool get isApplier => path == applierPath;
+
+  /// `core/changes/` (rule 13).
+  bool get isCoreChanges => path.startsWith('lib/core/changes/');
+
+  /// Where drift's write calls are allowed (rule 11): the database layer
+  /// (A34's sync writes go there too) and the applier's transaction.
+  bool get mayCallDriftWrites => !isCoreDb && !isApplier;
+
   /// `core/api`, `core/db` or `core/sync`.
   bool get isCoreIo =>
       path.startsWith('lib/core/api/') ||
@@ -206,21 +229,17 @@ final RegExp _directive = RegExp(
 );
 final RegExp _packageUri = RegExp('^package:([^/]+)/(.*)');
 
-Iterable<Violation> _checkDirectives(
-  _AppPath from,
-  ScannedSource scanned,
-  String packageName,
-) sync* {
+/// Every URI of every `import` / `export` directive of [scanned], with its
+/// line: the URI, then any conditional URIs (`if (dart.library.io) '…'`).
+Iterable<(int, String)> _directiveUris(ScannedSource scanned) sync* {
   for (final directive in _directive.allMatches(scanned.code)) {
     final semicolon = scanned.code.indexOf(';', directive.end);
     final end = semicolon == -1 ? scanned.code.length : semicolon;
     final line = scanned.lineOf(directive.start);
-    // The URI, then any conditional URIs (`if (dart.library.io) '…'`).
-    final uris = scanned.literals.values
-        .where((l) => l.start > directive.start && l.start < end)
-        .map((l) => l.staticText.trim());
-    for (final uri in uris) {
-      yield* _checkImport(from, uri, line, packageName);
+    for (final literal in scanned.literals.values) {
+      if (literal.start > directive.start && literal.start < end) {
+        yield (line, literal.staticText.trim());
+      }
     }
   }
 }
@@ -246,6 +265,14 @@ Iterable<Violation> _checkImport(
         'features/*/data/ and core/; reach it through a repository',
       );
     }
+    if (opensConnection(uri) && !from.isCoreDb) {
+      yield v(
+        Rule.dbWriteCall,
+        'imports $uri, which opens database connections, outside core/db/; '
+        'an unguarded connection bypasses the write guard: use the '
+        'AppDatabase from core/db/ and write with a change set',
+      );
+    }
     if (external == 'go_router' && !from.path.startsWith('lib/app/router/')) {
       yield v(
         Rule.goRouter,
@@ -256,9 +283,7 @@ Iterable<Violation> _checkImport(
     return;
   }
 
-  final resolved = package != null
-      ? 'lib/${package.group(2)}'
-      : _resolveRelative(from.path, uri);
+  final resolved = _appTarget(from.path, uri, packageName);
   if (resolved == null) return; // dart:, data:, or outside the app.
   final target = _AppPath(resolved);
 
@@ -293,12 +318,179 @@ Iterable<Violation> _checkImport(
       'through AppNavigator in core/navigation)',
     );
   }
+  if (target.isDbWrite && !from.isDbWrite && !from.isApplier) {
+    yield v(
+      Rule.dbWriteApi,
+      'imports $resolved; core/db/write/ is the row writer, imported only '
+      'by $applierPath; write user data with a change set '
+      '(ChangeSetApplier.apply)',
+    );
+  }
+  if (resolved == writeGuardPath && !from.isCoreDb) {
+    yield v(
+      Rule.dbWriteCall,
+      'imports $resolved (runAuthorizedWrite) outside core/db/; only the '
+      'single writer opens a write scope: write user data with a change set',
+    );
+  }
+  if (resolved == seedRowsPath && !from.isCoreDb) {
+    yield v(
+      Rule.dbWriteCall,
+      'imports $resolved (seedRows) outside core/db/; seeds are written by '
+      'migrations only: write user data with a change set',
+    );
+  }
+  if (from.isApplication && target.isCoreDb) {
+    yield v(
+      Rule.applicationDb,
+      'application/ imports $resolved from core/db/; read and write through '
+      "the feature's data/ repositories",
+    );
+  }
+  if (from.isPresentationLayer && target.isCoreChanges) {
+    yield v(
+      Rule.presentationChanges,
+      'presentation code imports $resolved from core/changes/; change data '
+      'through application/ commands',
+    );
+  }
   if (from.isPresentationLayer && target.isCoreIo) {
     yield v(
       Rule.presentationIo,
       'presentation code imports $resolved; core/api, core/db and core/sync '
       'are reached only through data/ or application/ providers',
     );
+  }
+}
+
+/// The single writer (A01 D12): the only file that imports `core/db/write/`.
+const String applierPath = 'lib/core/changes/change_set_applier.dart';
+
+/// The write guard (A01 D11): its `runAuthorizedWrite` opens a write scope.
+const String writeGuardPath = 'lib/core/db/write_guard.dart';
+
+/// The seed helper (A01 D7): writes rows outside the applier, for
+/// migrations.
+const String seedRowsPath = 'lib/core/db/seed_rows.dart';
+
+/// The app file (`lib/...`) [uri] names when imported from [from], or null
+/// for other packages, `dart:` and paths outside the app.
+String? _appTarget(String from, String uri, String packageName) {
+  final package = _packageUri.firstMatch(uri);
+  if (package == null) return _resolveRelative(from, uri);
+  return package.group(1) == packageName ? 'lib/${package.group(2)}' : null;
+}
+
+/// The libraries that open or reach a raw database connection (rule 11):
+/// sqlite3 (`sqlite3.open`, `execute`), drift's backends (`NativeDatabase`,
+/// `DriftIsolate`, remote and web executors) and drift's connection
+/// packages. Only `core/db/` (`connection.dart`) may import them, so a
+/// repository can't open a connection the write guard doesn't wrap. An
+/// entry ending in `/` or `*` matches by prefix.
+const Set<String> connectionLibraries = {
+  'package:drift/backends.dart',
+  'package:drift/isolate.dart',
+  'package:drift/native.dart',
+  'package:drift/remote.dart',
+  'package:drift/wasm.dart',
+  'package:drift/web.dart',
+  'package:drift/web/',
+  'package:drift_flutter/',
+  'package:drift_sqflite/',
+  'package:sqlite3*',
+};
+
+/// Whether [uri] is one of the [connectionLibraries].
+bool opensConnection(String uri) => connectionLibraries.any(
+  (entry) => entry.endsWith('/') || entry.endsWith('*')
+      ? uri.startsWith(entry.replaceAll('*', ''))
+      : uri == entry,
+);
+
+/// Whether importing [uri] from [from] gives drift's write calls (rule 11):
+/// any `package:drift/` library, or anything under `core/db/` (the
+/// database, which re-exports drift's API).
+bool _reachesDatabase(String from, String uri, String packageName) =>
+    uri.startsWith('package:drift/') ||
+    uri.startsWith('package:sqlite3') ||
+    (_appTarget(from, uri, packageName)?.startsWith('lib/core/db/') ?? false);
+
+/// The drift calls that write (rule 11, A01 D12): statements on the
+/// database (`into(`, `update(`, `delete(`, `batch(`, `transaction(`,
+/// `custom…(`), the table shortcuts (`insertOne(`, `replace(`, …), the raw
+/// executor (`runInsert(`, `runCustom(`, …) and sqlite3's `execute(`.
+const Set<String> driftWriteCalls = {
+  'batch',
+  'customInsert',
+  'customStatement',
+  'customUpdate',
+  'customWriteReturning',
+  'delete',
+  'deleteAll',
+  'deleteWhere',
+  'execute',
+  'insert',
+  'insertAll',
+  'insertOnConflictUpdate',
+  'insertOne',
+  'insertReturning',
+  'insertReturningOrNull',
+  'into',
+  'replace',
+  'runBatched',
+  'runCustom',
+  'runDelete',
+  'runInsert',
+  'runUpdate',
+  'transaction',
+  'update',
+};
+
+final RegExp _driftWriteCall = RegExp(
+  '(?<![\\w\$])(${driftWriteCalls.join('|')})\\s*(?:<[^()]*>\\s*)?\\(',
+);
+
+final RegExp _customSelect = RegExp(r'(?<![\w$])customSelect\s*\(');
+final RegExp _writeSql = RegExp(
+  r'^\s*(?:INSERT|UPDATE|DELETE|REPLACE)\b|\bRETURNING\b'
+  r'|^\s*WITH\b[\s\S]*\b(?:INSERT|UPDATE|DELETE|REPLACE)\b',
+  caseSensitive: false,
+);
+
+Iterable<Violation> _checkDriftWrites(
+  _AppPath file,
+  ScannedSource scanned,
+) sync* {
+  for (final call in _driftWriteCall.allMatches(scanned.code)) {
+    yield Violation(
+      path: file.path,
+      line: scanned.lineOf(call.start),
+      rule: Rule.dbWriteCall,
+      message:
+          '`${call[1]}(` writes through drift outside core/db/; only the '
+          'ChangeSetApplier writes user data: return RowOps from an op '
+          'handler, or apply a change set',
+    );
+  }
+  // A write run as a query: its SQL is the first argument's literals.
+  for (final call in _customSelect.allMatches(scanned.code)) {
+    final sql = _argumentLiterals(
+      scanned,
+      call.end,
+      wholeList: false,
+    ).map((l) => l.staticText).join();
+    if (_writeSql.hasMatch(sql)) {
+      yield Violation(
+        path: file.path,
+        line: scanned.lineOf(call.start),
+        rule: Rule.dbWriteCall,
+        message:
+            '`customSelect(` runs a write (INSERT/UPDATE/DELETE/REPLACE or '
+            'RETURNING) outside core/db/; only the ChangeSetApplier writes '
+            'user data: return RowOps from an op handler, or apply a change '
+            'set',
+      );
+    }
   }
 }
 

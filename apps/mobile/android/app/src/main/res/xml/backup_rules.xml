@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Android 8-11 (Auto Backup): keeps the device id out of backups. Why, and
-     where it is stored: AndroidManifest.xml. Same rules as data_extraction_rules.xml. -->
+<!-- Android 8-11 (Auto Backup): keeps the device id, the local databases
+     (profiles/: user.db, -wal, -shm) and the catalog packs (catalog/) out of
+     backups. Why, and where they are stored: AndroidManifest.xml. Same rules as
+     data_extraction_rules.xml. -->
 <full-backup-content>
     <exclude domain="sharedpref" path="." />
     <exclude domain="file" path="datastore/" />
+    <exclude domain="file" path="profiles/" />
+    <exclude domain="file" path="catalog/" />
 </full-backup-content>

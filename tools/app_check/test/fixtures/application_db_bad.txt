@@ -1,0 +1,11 @@
+// Fixture for app_check rule application-db (not compiled). The test places
+// it at lib/features/diary/application/diary_controller.dart. Every line
+// marked `expect: <rule>` must be reported with that rule, and nothing else.
+import 'package:fb_mobile/core/db/app_database.dart'; // expect: application-db
+import '../../../core/db/natural_id.dart'; // expect: application-db
+export 'package:fb_mobile/core/db/tables/settings_tables.dart'; // expect: application-db
+// application/ may use the applier, undo and its own data/ repositories.
+import 'package:fb_mobile/core/changes/change_set_applier.dart';
+import 'package:fb_mobile/core/undo/undo_stack.dart';
+import 'package:fb_mobile/features/diary/data/diary_repository.dart';
+import '../data/diary_tables.dart';

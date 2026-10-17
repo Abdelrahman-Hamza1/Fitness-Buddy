@@ -29,10 +29,10 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 24 | S02 r2 | fb-problem-json-errors accepts only one `allOf` level of ProblemDetails extension; recurse if a nested extension is ever needed | nit | when needed | open |
 | 25 | S02 r2 | fb-oneof-discriminator compares mapping count, not targets (resolved doc loses `$ref` identity) | nit | accepted | open |
 | 26 | S08 | Portion word علبة (can/box) is ambiguous and not mapped by the parser; resolve with real data | minor | A05/A07 | open |
-| 27 | S08 | Promote `ManualClock` from fb_domain test helpers to a shared test package if A01+ needs a fake clock | nit | A01 | open |
+| 27 | S08 | Promote `ManualClock` from fb_domain test helpers to a shared test package if A01+ needs a fake clock | nit | A01 | done (A01) |
 | 28 | S08 r2 | Parser: two quantities in a row via x-count or glued unit ("2 x2 eggs", "2 100g rice") should be null; pin cases | minor | A07 | open |
 | 29 | S08 r2 | Parser: zero gives null without `original` ("Coke 0"); document that callers catalog-match the raw text on null, pin "Coke 0" | minor | A07 | open |
-| 30 | S08 r2 | Ban list shorthand: `clock?.now()` false positive; `[.now()]` / `{.now()}` not caught; stripComments EOF backslash guard | minor | A01 | open |
+| 30 | S08 r2 | Ban list shorthand: `clock?.now()` false positive; `[.now()]` / `{.now()}` not caught; stripComments EOF backslash guard | minor | A01 | done (A01) |
 | 31 | S08 r2 | End-quantity-wins rule also applies to English implicit start portions ("cup of tea 2 tbsp"); document or pin | nit | A07 | open |
 | 13 | S01 | Spec tidy: add a Release column to the UX-/AQ- tables, then drop the trace overrides | minor | owner, later | open |
 | 32 | S06a review | Android hardening for the first APK: cleartext only in the dev build and only for 127.0.0.1/localhost (`network_security_config` in the dev source set); release not debuggable; `allowBackup`/`dataExtractionRules` exclude the install device id (a restore must not clone it); signing files out of git | minor | S06b | done (S06b WP4, review r1) |
@@ -41,7 +41,7 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 35 | S06a UX | Tab placeholders are text only, with an AppBar repeating the tab name; replace them with designed empty states, and drop the plain title bar on Today (16) | minor | A02/A08 | open |
 | 36 | S06a UX | Update-required screen: tell R1 sideload users where to get the new build (once the release channel exists) | minor | A11 | open |
 | 37 | S06a review | app_check rule: only `app/app_scope.dart` may import `package:fb_domain/system.dart` | nit | next touch of app_check | open |
-| 38 | S06a architect | app_check rule for "only ChangeSetApplier writes user tables" (`03` §5, `10` §3); decide whether `presentation-io` extends to `application/` for `core/db` | minor | A01 | open |
+| 38 | S06a architect | app_check rule for "only ChangeSetApplier writes user tables" (`03` §5, `10` §3); decide whether `presentation-io` extends to `application/` for `core/db` | minor | A01 | done (A01 WP4: `db-write-api`, `db-write-call`, `application-db`, `presentation-changes`) |
 | 39 | S06a architect | Small read facade over `clientConfigProvider` (`isEnabled(flag)`, `threshold(key, fallback)`) so presentation never names the generated DTO | minor | first flag/threshold consumer | open |
 | 40 | S06a security r2 | Native Android Sentry logs/metrics are forced on in sentry_flutter 10: add a native `beforeSendLog`/`beforeSendMetric` that drops everything, keep the Gradle plugin's logcat instrumentation off | minor | B13 | open |
 | 41 | S06a security r2 | The auth (`Authorization`) interceptor reuses `ClientHeadersInterceptor.isApiOrigin` (or a shared helper), so tokens never leave the API origin | minor | A20 | open |
@@ -66,3 +66,5 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 58 | B02 live smoke | English `2 boiled eggs` succeeded structurally but failed the expected cooked-state check; AR/Arabizi variants passed. Preserve the strict grader; inspect/model cooking-state normalization in B08, then validate within the owner's next explicitly authorized live budget. Three calls used, no retry; $0.0005437 estimated total. No broad AQ/latency claim. | follow-up | B08 | open |
 | 59 | A02 | Palette A/B follow-up: the owner picks palette A or B on the phone (A02 WP7); apply the pick as the default, drop or keep the other variant, record the AA contrast numbers | minor | after the A02 owner session | open |
 | 60 | A02 plan review | Spec inconsistency: `spec/10` §4.1 legend shows an ⓛ (label) badge, `spec/11` §2 FD-010 has four sources (yours, database, reference, estimate). Owner decision; default four badges (A02 PA1), label scans show ⓨ | minor | owner, before A07 | open |
+
+| 61 | A01 | Run `patrol_test/db_perf_test.dart` on the A55; if the device median ≥ 10 ms, run the applier transaction in the database isolate (TD-069 fallback). Per-op handler reads cost ~0.5 ms each on the host: A06+ handlers read at most once per op | minor | owner phone session (A02) / A06 | open |

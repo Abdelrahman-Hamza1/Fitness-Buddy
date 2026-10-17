@@ -7,9 +7,12 @@ export 'src/checker.dart'
         allowCount,
         allowableRules,
         checkFile,
+        connectionLibraries,
+        driftWriteCalls,
         ioPackages,
         isGenerated,
         isIoPackage,
+        opensConnection,
         textArguments;
 export 'src/cli.dart';
 export 'src/rules.dart';

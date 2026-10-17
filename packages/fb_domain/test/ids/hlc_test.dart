@@ -1,7 +1,7 @@
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_domain/testing.dart';
 import 'package:glados/glados.dart';
 
-import '../helpers/clocks.dart';
 import '../helpers/property.dart';
 
 const _device = '0199e3c2-5b1a-7c3d-8e4f-0123456789ab';

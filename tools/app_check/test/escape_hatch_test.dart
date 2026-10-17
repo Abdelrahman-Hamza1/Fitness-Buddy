@@ -91,7 +91,10 @@ final d = 1; // app-check: allow
         ))
           if (v.rule == Rule.invalidAllow) v.line: v.message,
       };
-      expect(messages[1], contains('import boundary rules have no exceptions'));
+      expect(
+        messages[1],
+        contains('boundary and write-path rules have no exceptions'),
+      );
       expect(messages[2], contains('// app-check: allow <rule-id> <reason>'));
     });
   });

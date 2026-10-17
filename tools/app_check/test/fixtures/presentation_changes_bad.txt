@@ -1,0 +1,9 @@
+// Fixture for app_check rule presentation-changes (not compiled). The test
+// places it at lib/features/diary/presentation/diary_screen.dart. Every line
+// marked `expect: <rule>` must be reported with that rule, and nothing else.
+import 'package:fb_mobile/core/changes/change_set_applier.dart'; // expect: presentation-changes
+import '../../../core/changes/apply_result.dart'; // expect: presentation-changes
+import 'package:fb_mobile/core/changes/row_ops.dart'; // expect: presentation-changes
+// Presentation goes through application/ commands; undo is core/undo.
+import 'package:fb_mobile/core/undo/undo_stack.dart';
+import 'package:fb_mobile/features/diary/application/diary_controller.dart';

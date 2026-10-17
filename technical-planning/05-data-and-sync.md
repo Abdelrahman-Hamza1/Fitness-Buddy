@@ -6,7 +6,7 @@ _Logical model. Exact columns are fixed in the migrations of A01/A06 and later s
 
 | Convention | Rule | Why |
 |---|---|---|
-| IDs | **UUIDv7**, generated on the device, stored as text | Created offline without collisions. Time-sortable. Same ID on phone and server |
+| IDs | **UUIDv7**, generated on the device, stored as text. Natural-key rows (settings, default slots, day marks) use a deterministic **UUIDv5** of `<entity>:<key>` (TD-070) | Created offline without collisions. Time-sortable. Same ID on phone and server |
 | Ownership | `user_id` on the server document. Locally, one user per database file | Multi-user from day one (D-001). Simple deletion |
 | Sync metadata | `created_at`, `updated_hlc` (hybrid logical clock), `version` (+1 per write), `deleted_at` (tombstone), `device_id` | Last-write-wins sync, deletes that sync, optimistic checks in proposals |
 | Units | Canonical: **g / ml** food, **kcal**, **kg** body and lifted weight, **cm** measurements. The **original input** is kept too (`input_amount`, `input_unit`) | Display follows the unit setting (LC-010/011) without rounding drift |
@@ -70,7 +70,7 @@ PRs, e1RM, trend weight, expenditure and weekly summaries are **derived**, not s
 - **FTS5 indexes** (trigram tokenizer) over normalized names. Normalization comes from `fb_text`, so search behaves the same on the phone and the server.
 - **Migrations:** drift schema versions with generated **migration tests** from every older version. A shipped migration is never edited.
 - **Triggers** on every synced table append to `sync_outbox`, so no code path can forget to sync a change.
-- Runs in a **background isolate** (`NativeDatabase.createInBackground`) so the UI thread stays free (UX-007).
+- Runs in a **background isolate** (`DriftIsolate.spawn` + `sqlite3.open(uri: true)`, A01 `core/db/connection.dart`; `uri: true` enables the read-only catalog ATTACH) so the UI thread stays free (UX-007).
 - **One database per account.** Signing out with "keep a copy" leaves a read-only file. A guest has their own file until they upgrade (§6).
 
 ## 4. Server storage

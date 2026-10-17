@@ -166,17 +166,20 @@ deps-dart: ## Resolve Dart dependencies for the whole workspace (flutter pub get
 	cd '$(REPO_ROOT)' && '$(FLUTTER)' pub get $(PUB_GET_FLAGS)
 
 .PHONY: check-dart
-check-dart: ## Verify Dart formatting, analyze (very_good_analysis + riverpod_lint, infos are errors), then app-check
+check-dart: ## Verify Dart formatting, analyze (very_good_analysis + riverpod_lint, infos are errors), app-check, frozen migrations
 	cd '$(REPO_ROOT)' && '$(DART)' format --output=none --set-exit-if-changed .
 	cd '$(REPO_ROOT)' && '$(DART)' analyze --fatal-infos
 	$(APP_CHECK)
+	@bash '$(REPO_ROOT)/tools/scripts/check-frozen-migrations-selftest.sh'
+	@bash '$(REPO_ROOT)/tools/scripts/check-frozen-migrations.sh'
 
 # The app's architecture rules the analyzer can't express (S06 plan D16):
-# import boundaries, raw user-facing strings, left/right layout. Part of
-# check-dart, so CI's dart job runs it. Rules: tools/app_check/README.md.
+# import boundaries, the single-writer write path (A01 D12), raw user-facing
+# strings, left/right layout. Part of check-dart, so CI's dart job runs it.
+# Rules: tools/app_check/README.md.
 APP_CHECK = cd '$(REPO_ROOT)' && '$(DART)' run tools/app_check/bin/app_check.dart apps/mobile
 .PHONY: app-check
-app-check: ## Check apps/mobile/lib: feature/layer import boundaries, no raw UI strings, no left/right layout
+app-check: ## Check apps/mobile/lib: feature/layer import boundaries, single-writer write path, no raw UI strings, no left/right layout
 	$(APP_CHECK)
 
 .PHONY: test-dart
@@ -193,15 +196,21 @@ test-dart: ## Run the tests of every workspace member (flutter test or dart test
 # Only the generated paths (gen-dart.sh and gen-app.sh write nothing else): a
 # hand edit elsewhere is not stale generated code. The app's paths: gen-l10n
 # output and riverpod_generator's *.g.dart files (S06 plan D14).
+# drift (A01 D15): its *.g.dart (build_runner), the migration steps
+# (lib/**/*.steps.dart) and the schema classes of the migration tests
+# (test/drift/*/generated), all derived from apps/mobile/drift_schemas/, and
+# the *.g.dart of test-only drift databases (test/**/*.g.dart, A01 WP3).
 GEN_DART_DIRS := packages/fb_api_client/lib/src/generated packages/fb_api_client/test/generated \
-  apps/mobile/lib/l10n/gen ':(glob)apps/mobile/lib/**/*.g.dart'
+  apps/mobile/lib/l10n/gen ':(glob)apps/mobile/lib/**/*.g.dart' \
+  ':(glob)apps/mobile/lib/**/*.steps.dart' ':(glob)apps/mobile/test/**/*.g.dart' \
+  ':(glob)apps/mobile/test/drift/*/generated/**'
 
 .PHONY: gen-dart
 gen-dart: ## Regenerate the Dart API client in packages/fb_api_client from contracts/openapi.yaml
 	@DART='$(DART)' bash '$(REPO_ROOT)/tools/scripts/gen-dart.sh'
 
 .PHONY: gen-app
-gen-app: ## Regenerate the app's committed code in apps/mobile: gen-l10n (lib/l10n/gen), Riverpod providers (*.g.dart)
+gen-app: ## Regenerate the app's committed code in apps/mobile: gen-l10n (lib/l10n/gen), Riverpod + drift (*.g.dart), drift migration steps + test schemas
 	@DART='$(DART)' FLUTTER='$(FLUTTER)' bash '$(REPO_ROOT)/tools/scripts/gen-app.sh'
 
 .PHONY: gen-check
@@ -216,6 +225,17 @@ gen-check: gen-dart gen-app ## Fail if the committed generated Dart code (API cl
 	@echo "gen-check: OK, the generated code in packages/fb_api_client and apps/mobile is up to date"
 
 ##@ Mobile app (apps/mobile)
+
+# Database schema changes (A01 D15): change the tables, bump schemaVersion in
+# lib/core/db/app_database.dart, then run this. It dumps the new version to
+# drift_schemas/, regenerates the steps and the migration test schemas, and
+# prints the step to write in lib/core/db/migrations/from_<n>_to_<n+1>.dart.
+# Shipped dumps and steps are frozen (tools/scripts/check-frozen-migrations.sh).
+.PHONY: db-migrations
+db-migrations: ## After a schema change: dump the new drift schema version, regenerate steps + migration tests (apps/mobile)
+	cd '$(REPO_ROOT)/apps/mobile' && '$(DART)' run build_runner build
+	cd '$(REPO_ROOT)/apps/mobile' && '$(DART)' run drift_dev make-migrations
+	cd '$(REPO_ROOT)/apps/mobile' && '$(DART)' format lib/core/db test/drift
 
 # Goldens are alchemist's CI variant only (S06 plan D17): text renders as blocks,
 # so the images are identical on the laptop and in CI. `make test-dart` compares

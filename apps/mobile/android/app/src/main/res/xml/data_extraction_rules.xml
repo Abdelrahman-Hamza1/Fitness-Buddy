@@ -1,13 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Android 12+: keeps the device id out of cloud backup and device transfer.
-     Why, and where it is stored: AndroidManifest.xml. Same rules as backup_rules.xml. -->
+<!-- Android 12+: what leaves the device in cloud backup, device-to-device
+     transfer and (Android 16 QPR2+) transfer to iOS. Why, and where each file
+     is stored: AndroidManifest.xml. Same rules as backup_rules.xml.
+     - sharedpref, datastore/: the install's device id (S06b).
+     - profiles/: the local databases, user.db with its -wal and -shm files,
+       excluded together (A01 D21, backlog #45: the owner decides before A11
+       whether they're backed up).
+     - catalog/: the read-only food catalog packs (not user data; the app
+       gets them again). -->
 <data-extraction-rules>
     <cloud-backup>
         <exclude domain="sharedpref" path="." />
         <exclude domain="file" path="datastore/" />
+        <exclude domain="file" path="profiles/" />
+        <exclude domain="file" path="catalog/" />
     </cloud-backup>
     <device-transfer>
         <exclude domain="sharedpref" path="." />
         <exclude domain="file" path="datastore/" />
+        <exclude domain="file" path="profiles/" />
+        <exclude domain="file" path="catalog/" />
     </device-transfer>
+    <!-- No <platform-specific-params> yet: there is no iOS app to pair with
+         (D-081), so nothing can be matched for transfer. The exclusions are
+         explicit anyway, so adding the params later can't send the databases
+         along by accident. -->
+    <cross-platform-transfer platform="ios">
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="file" path="datastore/" />
+        <exclude domain="file" path="profiles/" />
+        <exclude domain="file" path="catalog/" />
+    </cross-platform-transfer>
 </data-extraction-rules>

@@ -12,8 +12,14 @@ environment:
 # and goldens change with them. riverpod_lint is not here: it is an analyzer
 # plugin, pinned in the root analysis_options.yaml.
 dependencies:
+  # UUIDv5 natural IDs (A01 D6). Already in the lockfile.
+  crypto: ^3.0.7
   # Same exact pin as fb_api_client (its generated code runs on it).
   dio: 5.11.1
+  # Local database (A01 D13-D15). Exact pin: drift and drift_dev are a codegen
+  # pair, bumped together on purpose (like riverpod). No drift_flutter (why:
+  # lib/core/db/connection.dart).
+  drift: 2.35.2
   fb_api_client:
     path: ../../packages/fb_api_client
   fb_domain:
@@ -30,15 +36,24 @@ dependencies:
   material_ui: 1.6.0
   # X-App-Version and the update gate read the installed version.
   package_info_plus: ^10.2.2
+  # The profile database directory (A01 D13).
+  path_provider: ^2.1.5
   riverpod_annotation: 4.0.7
   # Error reporting, after the first frame, off while the DSN is empty.
   sentry_flutter: ^10.0.0
   # The device id and the cached /v1/config (not secret, not user data).
   shared_preferences: ^2.5.6
+  # Direct: drift's `setup` callback gets a sqlite3 Database (pragmas). sqlite3
+  # 3.x bundles SQLite through build hooks (sqlite3_flutter_libs is EOL). Hook
+  # overrides (user_defines) go in the root pubspec only (A01 plan §3.5).
+  sqlite3: ^3.7.1
 
 dev_dependencies:
   alchemist: 0.14.1
   build_runner: 2.16.1
+  # drift's code generator and migration tooling (make-migrations), pinned
+  # with drift.
+  drift_dev: 2.35.1
   flutter_test:
     sdk: flutter
   # Integration tests in patrol_test/ (S06 plan D18). Exact pin: its Android

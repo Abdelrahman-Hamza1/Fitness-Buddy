@@ -19,8 +19,8 @@ const String _usage =
     '''
 Usage: app_check [<app-dir>]
 
-Checks the Flutter app's lib/ folder: import boundaries, raw user-facing
-strings, left/right layout. <app-dir> holds pubspec.yaml and lib/
+Checks the Flutter app's lib/ folder: import boundaries, the single-writer
+write path, raw user-facing strings, left/right layout. <app-dir> holds pubspec.yaml and lib/
 (default: $defaultAppDir). Rules: tools/app_check/README.md.
 
 Exit codes: 0 no violations, 1 violations (one per line on stderr,

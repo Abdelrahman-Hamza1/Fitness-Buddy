@@ -1,7 +1,7 @@
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_domain/testing.dart';
 import 'package:glados/glados.dart';
 
-import '../helpers/clocks.dart';
 import '../helpers/property.dart';
 
 /// A `Random` that always returns the largest value: counters are seeded

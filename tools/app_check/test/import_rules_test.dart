@@ -100,11 +100,12 @@ void main() {
         'sentry_flutter',
         'sentry_dio',
       ]) {
-        expect(
-          _imports(todayScreen, "import 'package:$package/$package.dart';"),
-          {'1 io-package'},
-          reason: package,
-        );
+        final uri = 'package:$package/$package.dart';
+        expect(_imports(todayScreen, "import '$uri';"), {
+          '1 io-package',
+          // Connection libraries are restricted to core/db/ (rule 11).
+          if (opensConnection(uri)) '1 db-write-call',
+        }, reason: package);
       }
       expect(
         _imports(

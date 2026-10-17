@@ -1,0 +1,44 @@
+// Fixture for app_check rule db-write-call (not compiled): a repository that
+// imports no drift library, only core/db/, still can't write through it. The
+// test places it at lib/features/diary/data/diary_repository.dart. Every line
+// marked `expect: <rule>` must be reported with that rule, and nothing else.
+import 'package:fb_mobile/core/db/app_database.dart';
+import 'package:fb_mobile/core/db/seed_rows.dart'; // expect: db-write-call
+
+final class DiaryRepository {
+  DiaryRepository(this.db);
+
+  final AppDatabase db;
+
+  Future<void> sneakyWrites() async {
+    await db.into(db.settingsKv).insert(row); // expect: db-write-call
+    await db.customStatement('UPDATE settings_kv SET value_json = 1'); // expect: db-write-call
+    await db.customSelect('DELETE FROM settings_kv RETURNING id').get(); // expect: db-write-call
+    await db.customSelect(' insert into x VALUES (1)').get(); // expect: db-write-call
+    await db.customSelect("UPDATE x SET a = 1").get(); // expect: db-write-call
+    await db.customSelect('REPLACE INTO x VALUES (1)').get(); // expect: db-write-call
+    await db.customSelect('WITH d AS (SELECT 1) DELETE FROM x').get(); // expect: db-write-call
+    await db
+        .customSelect( // expect: db-write-call
+          'with d as (select 1) '
+          'insert into x select * from d',
+        )
+        .get();
+    await db
+        .customSelect( // expect: db-write-call
+          'SELECT 1 '
+          'FROM x WHERE y = 1 RETURNING id',
+        )
+        .get();
+  }
+
+  // Reads pass, also when their text mentions a write.
+  Future<void> reads() async {
+    await db.customSelect('SELECT id FROM settings_kv').get();
+    await db.customSelect("SELECT 'not deleted' AS s").get();
+    await db.customSelect('WITH d AS (SELECT 1) SELECT * FROM d').get();
+    await db.customSelect(_sql).get();
+  }
+
+  static const _sql = 'SELECT 1';
+}

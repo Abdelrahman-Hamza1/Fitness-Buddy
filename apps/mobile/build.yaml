@@ -1,8 +1,26 @@
-# build_runner for the app: riverpod_generator only, over lib/ (S06 plan D14).
-# Its *.g.dart output is committed; `make gen` regenerates it.
+# build_runner for the app (S06 plan D14, A01 D15): riverpod_generator and
+# drift_dev over lib/. Their *.g.dart output is committed; `make gen`
+# regenerates it.
 targets:
   $default:
     builders:
       riverpod_generator:
         generate_for:
           - lib/**
+      drift_dev:
+        options:
+          # No manager API (`db.managers…`): nothing uses it, and its write
+          # methods would be more calls for app_check rule 11 to know.
+          generate_manager: false
+          # Migration tooling (`make db-migrations`): schema dumps per version
+          # in drift_schemas/, generated migration tests in test/drift/.
+          databases:
+            user: lib/core/db/app_database.dart
+          schema_dir: drift_schemas/
+          test_dir: test/drift/
+          sql:
+            dialect: sqlite
+            options:
+              # The bundled SQLite is 3.54 (A01 §3.5); 3.53 is the
+              # newest sqlparser knows.
+              version: "3.53"

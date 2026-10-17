@@ -1,0 +1,34 @@
+// Fixture for app_check rule db-write-call (not compiled): a repository that
+// only reads passes. The test places it at
+// lib/features/diary/data/diary_repository.dart.
+import 'package:drift/drift.dart';
+import 'package:fb_mobile/core/changes/row_ops.dart';
+import 'package:fb_mobile/core/db/app_database.dart';
+
+final class DiaryRepository {
+  DiaryRepository(this.db);
+
+  final AppDatabase db;
+
+  // Comments may say db.into(t).insert(row) or db.transaction(...).
+  Stream<List<SettingRow>> watchAll() => db.select(db.settingsKv).watch();
+
+  Future<int> count() async {
+    final rows = await db
+        .customSelect('SELECT count(*) AS n FROM settings_kv WHERE x = "update("')
+        .get();
+    return rows.single.read<int>('n');
+  }
+
+  // A handler plans writes as data; the applier runs them.
+  RowOp plan(String id) => UpdateRow(
+    db.settingsKv,
+    id,
+    const SettingsKvCompanion(valueJson: Value('1')),
+  );
+
+  bool isUpdated(String s) => s.endsWith('updated') || isInTransaction();
+  bool isInTransaction() => false;
+  void reupdate() => onUpdate();
+  void onUpdate() {}
+}

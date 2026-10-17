@@ -89,6 +89,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # Full history: check-dart's frozen-migrations check compares with
+          # the merge base on origin/main (A01 D15).
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Set up Flutter (version from .fvmrc)

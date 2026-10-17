@@ -30,8 +30,24 @@ enum Rule {
   /// 9. No left/right layout APIs: start/end (directional) only.
   directional('directional'),
 
+  /// 10. `core/db/write/` only from the applier (A01 D12).
+  dbWriteApi('db-write-api'),
+
+  /// 11. No drift write calls (or `customSelect` writes) outside `core/db/`
+  /// and the applier, and the write guard (`runAuthorizedWrite`) and
+  /// `seed_rows.dart` and the connection libraries (sqlite3, drift's
+  /// backends) only from `core/db/` (A01 D12).
+  dbWriteCall('db-write-call'),
+
+  /// 12. `features/*/application/` never imports `core/db/` (A01 D12).
+  applicationDb('application-db'),
+
+  /// 13. Presentation code never imports `core/changes/` (A01 D12).
+  presentationChanges('presentation-changes'),
+
   /// An `// app-check: allow` comment without a rule id or a reason, or
-  /// naming a rule that can't be allowed (the import boundaries 1 to 7).
+  /// naming a rule that can't be allowed (every rule but the lexical
+  /// `raw-string` and `directional`).
   invalidAllow('invalid-allow');
 
   new(this.id);

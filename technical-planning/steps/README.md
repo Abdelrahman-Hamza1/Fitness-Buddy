@@ -140,7 +140,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 
 | ID | Step | Depends on | Size | Was | Milestone | Status |
 |---|---|---|---|---|---|---|
-| [A01](A01-local-data-foundation.md) | Local data foundation | S06 ✅, S08 ✅ | M | S09 |  | 🟦 wave 1 |
+| [A01](A01-local-data-foundation.md) | Local data foundation | S06 ✅, S08 ✅ | M | S09 |  | ✅ |
 | [A02](A02-design-system.md) | Design system v0 & key screen mockups | S06 ✅ | L | S07 |  | 🟦 wave 1 |
 | [A03](A03-spike-food-data.md) | Spike: food data | S08 ✅ | M | S11 |  | 🟦 wave 1 |
 | [A04](dish-batches.md) | Dish batch 1: basics, breakfast & bread | A03 | S | D1 |  | 🟦 wave 1 |
