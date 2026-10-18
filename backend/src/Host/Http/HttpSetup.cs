@@ -34,6 +34,7 @@ internal static class HttpSetup
         // subdomains until the domain is fixed (S05).
         services.AddHsts(options => options.MaxAge = TimeSpan.FromDays(365));
 
+        services.AddSingleton<IProblemDetailsWriter, ApiProblemDetailsWriter>();
         services.AddProblemDetails(options => options.CustomizeProblemDetails = ProblemDetailsCustomizer.Apply);
         services.AddExceptionHandler<UnhandledExceptionHandler>();
         // A client error (unreadable or too large body) is not a server error: no error log or metric for it.
@@ -41,6 +42,7 @@ internal static class HttpSetup
             options.SuppressDiagnosticsCallback = context => context.Exception is BadHttpRequestException);
 
         services.AddFbRateLimiting();
+        services.AddSingleton<UserRequestLimiter>();
         services.AddHealthChecks();
 
         return builder;
@@ -60,7 +62,9 @@ internal static class HttpSetup
         app.UseRouting();
         app.UseRateLimiter();
         app.UseMiddleware<ClientHeadersMiddleware>();
-        // S24: authentication and authorization go here, before idempotency.
+        app.UseAuthentication();
+        app.UseMiddleware<UserRateLimiting>();
+        app.UseAuthorization();
         app.UseMiddleware<IdempotencyMiddleware>();
 
         ForwardedHeadersSetup.LogTrustedNetworks(app);

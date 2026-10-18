@@ -145,7 +145,7 @@ The same container image runs as:
 
 - Every authenticated request carries a `UserId` (from the JWT). Every repository query is scoped by it. Handlers never accept a user ID from the request body.
 - **Defense in depth:** Postgres **row-level security** on user-owned tables. The backend sets `app.user_id` per transaction (`SET LOCAL`), so a forgotten `WHERE user_id = …` still can't leak another user's rows. Tests assert user A can't read or write B's data.
-- **Two database roles:** the application role (with RLS) and a migration role (owns the schema). Only the Account module's deletion job uses an elevated path, and it's audited.
+- **Two database roles:** the application role (with RLS) and a migration role (owns the schema). Elevated paths are limited to the audited Account deletion job and narrowly scoped Identity pre-auth functions (TD-077). The API never receives migration credentials or a general RLS bypass; Identity functions have explicit grants, fixed trusted search paths and proof-bound operations (B04 D3).
 - EF Core for most access. Dapper and raw SQL for the sync and search hot paths.
 - **Migrations:** explicitly registered EF Core migrations per module context (S04), schema-local history and a shared advisory lock in the migrate role only. User sessions attach EF contexts/raw commands to one transaction with transaction-local identity (TD-062). EF Core migrations per module context (raw SQL where needed: `pg_trgm`, RLS policies, partitioning). Always **expand → migrate code → contract** across releases, so old and new instances both work during a deploy.
 

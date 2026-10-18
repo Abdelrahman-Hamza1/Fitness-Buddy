@@ -21,6 +21,12 @@ internal static class PlatformSetup
 
     public static IHostApplicationBuilder AddFbPlatform(this IHostApplicationBuilder builder)
     {
+        var identityConfig = Environment.GetEnvironmentVariable("FB_IDENTITY_CONFIG_FILE");
+        if (!IsBuildTimeDocument && !string.IsNullOrEmpty(identityConfig))
+        {
+            if (!Path.IsPathFullyQualified(identityConfig)) { throw new InvalidOperationException("Identity config path must be absolute."); }
+            builder.Configuration.AddJsonFile(identityConfig, optional: false, reloadOnChange: false);
+        }
         var services = builder.Services;
         var configuration = builder.Configuration;
 
@@ -40,7 +46,8 @@ internal static class PlatformSetup
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IIdGenerator, UuidV7IdGenerator>();
         services.AddSingleton<IFeatureFlags, OptionsFeatureFlags>();
-        services.AddSingleton<ICurrentUser, AnonymousCurrentUser>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUser, HttpCurrentUser>();
 
         foreach (var module in ModuleCatalog.All)
         {

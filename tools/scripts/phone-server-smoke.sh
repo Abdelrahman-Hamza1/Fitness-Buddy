@@ -132,6 +132,59 @@ INSERT INTO userdata.b03_smoke VALUES ('0192a5d4-7c3e-7b1a-9f2e-3c4d5e6f7a8b', 1
             time.sleep(1)
         else:
             raise AssertionError('worker schedule missing')
+        # B04: enable the private overlay using synthetic IDs/keys, never Google or paid APIs.
+        clients = state / 'synthetic-google.json'
+        phone.json_write(clients, {'AndroidClientId': '123-android.apps.googleusercontent.com',
+                                   'WebClientId': '123-server.apps.googleusercontent.com'})
+        phone.configure_identity(state, clients)
+        phone.compose(state, 'up', '-d', '--force-recreate', 'migrate', 'api', 'worker')
+        port = phone.compose(state, 'port', 'api', '8080').decode().strip().split(':')[-1]
+        base = 'http://127.0.0.1:' + port
+        for _ in range(60):
+            if phone.ready(base):
+                break
+            time.sleep(1)
+        else:
+            raise AssertionError('identity-enabled synthetic image did not become ready')
+        def auth_call(path, payload=None, token=None, method='POST'):
+            request_headers = {key: value for key, value in headers.items() if key != 'X-Sync-Spike-Key'}
+            request_headers['Content-Type'] = 'application/json'
+            if token:
+                request_headers['Authorization'] = 'Bearer ' + token
+            request = urllib.request.Request(base + path, data=json.dumps(payload).encode() if payload is not None else (b'' if method == 'POST' else None), headers=request_headers, method=method)
+            with urllib.request.urlopen(request) as response:
+                data = response.read()
+                return response.status, json.loads(data) if data else None, response.headers
+        status, first, response_headers = auth_call('/v1/auth/anonymous')
+        assert status == 200 and first['isAnonymous'] and response_headers['Cache-Control'] == 'no-store'
+        status, me, _ = auth_call('/v1/me', token=first['accessToken'], method='GET')
+        assert status == 200 and me['userId'] == first['userId']
+        status, refreshed, _ = auth_call('/v1/auth/refresh', {'refreshToken': first['refreshToken']})
+        assert status == 200 and refreshed['refreshToken'] != first['refreshToken']
+        try:
+            auth_call('/v1/auth/refresh', {'refreshToken': first['refreshToken']})
+            raise AssertionError('refresh reuse was accepted')
+        except urllib.error.HTTPError as error:
+            assert error.code == 401
+        try:
+            auth_call('/v1/me', token=refreshed['accessToken'], method='GET')
+            raise AssertionError('revoked successor remained authenticated')
+        except urllib.error.HTTPError as error:
+            assert error.code == 401
+        status, challenge, _ = auth_call('/v1/auth/email/start', {'email': 'synthetic@example.invalid', 'purpose': 'signIn'})
+        assert status == 200
+        email_file = state / 'identity' / 'email' / (challenge['challengeId'] + '.json')
+        delivered = phone.read_json(email_file)
+        status, signed_in, _ = auth_call('/v1/auth/email/verify', {'challengeId': challenge['challengeId'], 'code': delivered['code']})
+        assert status == 200 and not signed_in['isAnonymous']
+        auth_call('/v1/auth/logout', token=signed_in['accessToken'])
+        api = phone.compose(state, 'ps', '-q', 'api').decode().strip()
+        assert json.loads(phone.run(['docker', 'inspect', api]))[0]['Config']['User'] == str(os.getuid())
+        phone.backup(state)
+        phone.restore_check(state)
+        recovery = phone.read_json(state / 'backups' / 'identity-recovery.json')
+        assert set(recovery['files']) == {'config.json', 'pepper', 'v1.key'}
+        print('B04 synthetic Production image: private UID/secret mounts, explicit key provisioning, guest/me/refresh/reuse/email/logout, backup and recovery passed; no live provider calls')
         print('B03 synthetic smoke: immutable Production image, loopback-only hardened API, exact gateway/HSTS, dark routes, read-only complete RLS backup, scratch restore 2 rows/sum 33, dev-volume isolation, restart persistence and worker passed')
     finally:
         # These names are random and hold synthetic data only, never fitness-buddy-phone.

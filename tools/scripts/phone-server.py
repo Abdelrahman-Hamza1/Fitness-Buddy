@@ -108,7 +108,80 @@ def compose(state, *args, data=None, timeout=300):
     private(state / 'compose.yml')
     private(state / 'init-roles.sh', public_read=True)
     return run(['docker', 'compose', '--env-file', '/dev/null', '-p', PROJECT,
-                '-f', str(state / 'compose.yml'), *args], env=secrets_env(state), data=data, timeout=timeout)
+                '-f', str(state / 'compose.yml'), *identity_compose_args(state), *args], env=secrets_env(state), data=data, timeout=timeout)
+
+
+def identity_compose_args(state):
+    overlay = state / 'identity-compose.json'
+    if not overlay.exists():
+        return []
+    private(overlay)
+    safe_dir(state / 'identity')
+    safe_dir(state / 'identity' / 'email')
+    config = read_json(state / 'identity' / 'config.json')
+    if config.get('Identity', {}).get('PrivateLaptop') is not True:
+        raise Failure('Identity overlay is restricted to the private laptop')
+    for secret in (state / 'identity').glob('*.key'):
+        private(secret)
+        if len(secret.read_bytes()) != 32:
+            raise Failure('Invalid identity key; recover original private material')
+    for name in ('v1.key', 'pepper'):
+        private(state / 'identity' / name)
+        if len((state / 'identity' / name).read_bytes()) != 32:
+            raise Failure('Invalid identity secret; recover original private material')
+    return ['-f', str(overlay)]
+
+
+def configure_identity(state, clients_path):
+    init(state)
+    if os.getuid() == 0:
+        raise Failure('Identity runtime must use an unprivileged operator UID')
+    clients = read_json(clients_path.absolute())
+    if set(clients) != {'AndroidClientId', 'WebClientId'} or any(
+            not isinstance(v, str) or not re.fullmatch(r'[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com', v)
+            for v in clients.values()):
+        raise Failure('Expected Android and web OAuth client IDs only')
+    folder = state / 'identity'
+    safe_dir(folder)
+    safe_dir(folder / 'email')
+    configured = (folder / 'config.json').exists()
+    for name in ('v1.key', 'pepper'):
+        secret = folder / name
+        if secret.exists() or secret.is_symlink():
+            private(secret)
+            if len(secret.read_bytes()) != 32:
+                raise Failure('Invalid identity secret; recover original private material')
+        elif configured:
+            raise Failure('Missing identity secret; recover it, never regenerate against existing identities')
+        else:
+            atomic(secret, secrets.token_bytes(32))
+    # Android registration is for the app; native ID tokens must target our web/server client ID.
+    json_write(folder / 'config.json', {'Identity': {
+        'Enabled': True, 'PrivateLaptop': True, 'Issuer': 'fitness-buddy', 'Audience': 'fitness-buddy-api',
+        'WrappingKeysDirectory': '/identity', 'PepperFile': '/identity/pepper',
+        'GoogleClientIds': [clients['WebClientId']],
+        'Email': {'LocalFile': {'Enabled': True, 'Directory': '/identity/email'}}}})
+    runtime = {'user': str(os.getuid()), 'environment': {'FB_IDENTITY_CONFIG_FILE': '/identity/config.json'},
+               'volumes': [{'type': 'bind', 'source': str(folder), 'target': '/identity', 'read_only': True},
+                           {'type': 'bind', 'source': str(folder / 'email'), 'target': '/identity/email'}]}
+    migrate = {**runtime, 'command': ['migrate', '--Identity:KeyOperation=ensure', '--Identity:WrappingVersion=v1']}
+    json_write(state / 'identity-compose.json', {'services': {'api': runtime, 'worker': runtime, 'migrate': migrate}})
+    identity_compose_args(state)
+    print('Private identity configuration prepared; takes effect on next main-image deployment')
+
+
+def identity_recovery(state):
+    if not (state / 'identity-compose.json').exists():
+        return
+    identity_compose_args(state)
+    import base64
+    folder = state / 'identity'
+    names = ['config.json', 'pepper', *sorted(path.name for path in folder.glob('*.key'))]
+    files = {}
+    for name in names:
+        private(folder / name)
+        files[name] = base64.b64encode((folder / name).read_bytes()).decode('ascii')
+    json_write(state / 'backups' / 'identity-recovery.json', {'format': 1, 'files': files})
 
 
 def init(state):
@@ -343,6 +416,7 @@ def backup(state):
                       'export PGPASSWORD="$FB_PHONE_BACKUP_PASSWORD"; exec pg_dump -w -h 127.0.0.1 -U fb_backup -d fitness_buddy -Fc', timeout=900)
     if not archive.startswith(b'PGDMP'):
         raise Failure('Invalid dump output; old backups retained')
+    identity_recovery(state)
     atomic(folder / name, archive)
     cutoff = time.time() - 7 * 86400
     for path in folder.iterdir():
@@ -368,7 +442,7 @@ def restore_check(state):
         compose(state, 'exec', '-T', 'postgres', 'sh', '-c',
                 'export PGPASSWORD="$POSTGRES_PASSWORD"; exec pg_restore -w -h 127.0.0.1 -U postgres --exit-on-error --no-owner --no-acl -d "$1"',
                 'sh', scratch, data=archive.read_bytes(), timeout=900)
-        count = sql(state, "SELECT count(*) FROM pg_tables WHERE schemaname IN ('ops','userdata');", database=scratch).strip()
+        count = sql(state, "SELECT count(*) FROM pg_tables WHERE schemaname IN ('ops','userdata','identity');", database=scratch).strip()
         if not count.isdecimal() or int(count) < 1:
             raise Failure('Restore has no expected module tables')
         # No live counts: writes during a dump would make that comparison misleading.
@@ -428,7 +502,8 @@ def status(state):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--state', type=Path, default=DEFAULT_STATE)
-    parser.add_argument('command', choices=['prepare', 'policy', 'confirm-policy', 'accept-unencrypted-storage', 'up', 'stop', 'backup', 'restore-check', 'install-timer', 'status'])
+    parser.add_argument('--google-clients', type=Path, default=Path.home() / '.local/share/fitness-buddy/identity/google-clients.json')
+    parser.add_argument('command', choices=['configure-identity', 'prepare', 'policy', 'confirm-policy', 'accept-unencrypted-storage', 'up', 'stop', 'backup', 'restore-check', 'install-timer', 'status'])
     args = parser.parse_args()
     os.umask(0o077)
     state = args.state.absolute()
@@ -439,7 +514,7 @@ def main():
             private(lock)
         with lock.open('a') as handle:
             fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            {'prepare': prepare, 'policy': policy, 'confirm-policy': confirm_policy, 'up': up,
+            {'configure-identity': lambda target: configure_identity(target, args.google_clients), 'prepare': prepare, 'policy': policy, 'confirm-policy': confirm_policy, 'up': up,
              'accept-unencrypted-storage': accept_unencrypted_storage,
              'stop': stop, 'backup': backup, 'restore-check': restore_check,
              'install-timer': install_timer, 'status': status}[args.command](state)

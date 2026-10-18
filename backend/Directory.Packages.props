@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup Label="Web">
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12" />
     <!-- Build-time OpenAPI document of the Host (S02 D9): the server side of contract conformance.
          Same patch as the ASP.NET Core runtime the SDK ships. -->
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.13" />

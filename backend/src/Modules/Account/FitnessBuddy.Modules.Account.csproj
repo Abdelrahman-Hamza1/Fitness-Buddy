@@ -7,4 +7,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\BuildingBlocks\FitnessBuddy.BuildingBlocks.csproj" />
   </ItemGroup>
+  <ItemGroup><ProjectReference Include="../Identity/FitnessBuddy.Modules.Identity.csproj" /></ItemGroup>
 </Project>

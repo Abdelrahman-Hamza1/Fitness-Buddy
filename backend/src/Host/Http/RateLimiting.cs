@@ -35,6 +35,14 @@ internal static class RateLimiting
                         QueueLimit = 0,
                     });
             });
+            options.AddPolicy("auth", context => RateLimitPartition.GetFixedWindowLimiter(
+                PartitionKey(context.Connection.RemoteIpAddress), _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 20,
+                    Window = TimeSpan.FromMinutes(1),
+                    QueueLimit = 0,
+                    AutoReplenishment = true,
+                }));
             options.OnRejected = OnRejectedAsync;
         });
         return services;
@@ -65,7 +73,9 @@ internal static class RateLimiting
     }
 
     private static PerIpRateLimitOptions Limits(HttpContext context) =>
-        context.RequestServices.GetRequiredService<IOptions<PerIpRateLimitOptions>>().Value;
+        context.GetEndpoint()?.Metadata.GetMetadata<Microsoft.AspNetCore.RateLimiting.EnableRateLimitingAttribute>()?.PolicyName == "auth"
+            ? new PerIpRateLimitOptions { PermitLimit = 20, WindowSeconds = 60 }
+            : context.RequestServices.GetRequiredService<IOptions<PerIpRateLimitOptions>>().Value;
 
     private static async ValueTask OnRejectedAsync(OnRejectedContext rejected, CancellationToken cancellationToken)
     {

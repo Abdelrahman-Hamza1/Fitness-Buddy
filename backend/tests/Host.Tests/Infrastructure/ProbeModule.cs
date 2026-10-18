@@ -44,6 +44,8 @@ internal sealed class ProbeModule : IModule
 
     public void MapEndpoints(RouteGroupBuilder group)
     {
+        group.MapGet("/_probe/identity-forbidden", () => TypedResults.Problem(statusCode: 403, title: "Forbidden", type: ProblemTypes.Forbidden));
+        group.MapGet("/_probe/identity-conflict", () => TypedResults.Problem(statusCode: 409, title: "Identity already linked", type: ProblemTypes.IdentityConflict));
         var probe = group.MapGroup("/_probe");
         probe.MapGet("/ok", () => TypedResults.Ok(new ProbeReply("ok")));
         probe.MapPost("/validate", (ProbeRequest request) => TypedResults.Ok(new ProbeReply(request.Name)));

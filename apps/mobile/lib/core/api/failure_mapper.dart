@@ -42,6 +42,9 @@ abstract final class FailureMapper {
     Response<Object?> response,
     Object? body,
   ) => switch (type) {
+    ProblemTypes.unauthorized => const UnauthorizedFailure(),
+    ProblemTypes.forbidden => const ForbiddenFailure(),
+    ProblemTypes.identityConflict => const ConflictFailure(),
     ProblemTypes.validationFailed => InvalidInputFailure(
       fieldErrors: _fieldErrors(body),
     ),
@@ -57,6 +60,7 @@ abstract final class FailureMapper {
       switch (status) {
         400 => const InvalidInputFailure(),
         401 => const UnauthorizedFailure(),
+        403 => const ForbiddenFailure(),
         404 => const NotFoundFailure(),
         409 || 412 => const ConflictFailure(),
         426 => const UpgradeRequiredFailure(),

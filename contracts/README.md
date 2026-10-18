@@ -69,6 +69,9 @@ There are no "absent means unchanged" (merge-patch) semantics. An update is a fu
 
 | `type` | Status | When | Added |
 |---|---|---|---|
+| `/errors/unauthorized` | 401 | Invalid credentials or inactive session. |
+| `/errors/forbidden` | 403 | The account cannot perform this operation. |
+| `/errors/identity-conflict` | 409 | The verified identity belongs to another account; linking transfers no data. |
 | `/errors/validation-failed` | 400 | The request is invalid: a field, or a missing/invalid client header. Carries an `errors` map (field → messages). Also when the request can't be read (malformed JSON, wrong type, missing member): then `errors` is empty. | S03 |
 | `/errors/rate-limited` | 429 | Too many requests. Comes with `Retry-After`, `RateLimit` and `RateLimit-Policy`. | S03 |
 | `/errors/version-conflict` | 412 | The resource changed since it was read (`If-Match` mismatch). 412, confirmed in S03. | S03 |

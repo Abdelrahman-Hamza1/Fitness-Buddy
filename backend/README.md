@@ -1,6 +1,6 @@
 # backend/
 
-The Fitness Buddy API: an ASP.NET Core (.NET 10) modular monolith. Architecture, modules and rules are in `technical-planning/04-backend.md`. Right now: the host with its three roles and module system (S03), the `Account` module (`GET /v1/config`) and the isolated experimental `UserData` sync module (B01), a build-time OpenAPI document that CI checks against `contracts/openapi.yaml` (S02), and transactional Postgres persistence, outbox/jobs/schedules and POST replay (S04).
+The Fitness Buddy API: an ASP.NET Core (.NET 10) modular monolith. Architecture, modules and rules are in `technical-planning/04-backend.md`. Right now: the host with its three roles and module system (S03), the `Account` module (`GET /v1/config`) and the isolated experimental `UserData` sync module (B01), a build-time OpenAPI document that CI checks against `contracts/openapi.yaml` (S02), transactional Postgres persistence, outbox/jobs/schedules and POST replay (S04), and the Identity module (B04) for guest/Google/email sign-in and sessions.
 
 ## Layout
 
@@ -264,3 +264,16 @@ and dataset reset handling (proposed TD-066); A34 supplies the real phone engine
 ## Buddy interpretation spike (B02)
 
 The dark Buddy module has no HTTP endpoints; `backend/tools/BuddySpike` is a local JSONL CLI, with no database or user identity. `make eval` builds it and runs three synthetic provider fixtures through the real OpenAI SDK and Dart graders. CI never loads an API key. `make eval-live` explicitly makes at most three small `gpt-6-luna` calls, using the owner's external 0600 key file; no retries or fallback. `make eval-schema` refreshes the internal C# record schema snapshot. See [Buddy](src/Modules/Buddy/README.md) and [harness](../tools/buddy_eval/README.md). Public contract, production auth/routing/usage and catalog resolution are B08.
+
+## Identity (B04)
+
+Identity is off by default. Explicit private laptop configuration enables guest/Google/email sign-in,
+opaque rotating refresh tokens, live-session revocation, guest linking and public ES256 JWKS.
+Only the named pre-auth database capabilities receive app-role execution; forced RLS and denied
+app table grants protect credential tables (TD-077). The Host supplies principal-backed ICurrentUser,
+`any-user` / `registered-user` policies and content-free auth problems.
+
+See [identity operations](../docs/runbooks/identity.md) for private secret mounts, explicit migration-role
+signing-key provisioning/rotation/rewrap, local email opt-in, and recovery. Normal API/worker startup
+never generates keys. Google token checks use offline signed fixtures in CI; never run live AI evals
+as part of identity testing. App integration is A20/A33; production sender/configuration is B14.

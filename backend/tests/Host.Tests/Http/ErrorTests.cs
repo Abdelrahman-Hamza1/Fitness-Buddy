@@ -5,6 +5,21 @@ namespace FitnessBuddy.Host.Tests.Http;
 // Rule 04 §4.2 "Errors": RFC 9457 problems with type and title always set, and no internals.
 public sealed class ErrorTests(ApiFactory factory) : IClassFixture<ApiFactory>
 {
+    [Theory]
+    [InlineData("/v1/config", 400)]
+    [InlineData("/v1/does-not-exist", 404)]
+    [InlineData("/v1/_probe/throw", 500)]
+    [InlineData("/v1/me", 401)]
+    [Trait("Rule", "04.4.2-errors")]
+    public async Task Unsupported_accept_still_returns_contract_problem_json(string path, int status)
+    {
+        using var client = factory.CreateClient();
+        using var request = path == "/v1/config" ? new HttpRequestMessage(HttpMethod.Get, path) : Api.Get(path);
+        request.Headers.Accept.ParseAdd("text/html");
+        using var response = await client.FetchAsync(request);
+        await Api.ProblemAsync(response, status);
+    }
+
     [Fact]
     [Trait("Rule", "04.4.2-errors")]
     public async Task Unhandled_exception_gets_500_with_traceId_and_X_Request_Id_and_no_internals()

@@ -6,12 +6,15 @@ namespace FitnessBuddy.BuildingBlocks.Web.Problems;
 /// </summary>
 public static class ProblemTypes
 {
+    public const string Unauthorized = "/errors/unauthorized";
+    public const string Forbidden = "/errors/forbidden";
+    public const string IdentityConflict = "/errors/identity-conflict";
     public const string ValidationFailed = "/errors/validation-failed";
     public const string RateLimited = "/errors/rate-limited";
     public const string VersionConflict = "/errors/version-conflict";
     public const string UpgradeRequired = "/errors/upgrade-required";
 
-    public static IReadOnlyList<string> All { get; } = [ValidationFailed, RateLimited, VersionConflict, UpgradeRequired];
+    public static IReadOnlyList<string> All { get; } = [ValidationFailed, RateLimited, VersionConflict, UpgradeRequired, Unauthorized, Forbidden, IdentityConflict];
 }
 
 /// <summary>The <c>title</c> that goes with each catalogue type (the golden bodies hold the same strings).</summary>

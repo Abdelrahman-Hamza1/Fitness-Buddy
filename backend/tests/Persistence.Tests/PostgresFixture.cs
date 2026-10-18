@@ -1,6 +1,7 @@
 using FitnessBuddy.BuildingBlocks.Persistence;
 using Npgsql;
 using FitnessBuddy.Modules.UserData.Infrastructure;
+using FitnessBuddy.Modules.Identity.Infrastructure;
 using Testcontainers.PostgreSql;
 
 [assembly: Xunit.v3.Parallelization(Mode = Xunit.Sdk.ParallelMode.None)]
@@ -39,6 +40,7 @@ public sealed class PostgresFixture : IAsyncLifetime
         appSettings.Password = "local-migrator-only";
         MigratorConnection = appSettings.ConnectionString;
         Runner = new MigrationRunner([
+            new ModuleMigration("identity", connection => new IdentityContext(DatabaseConfiguration.ContextOptions<IdentityContext>(connection, "identity"))),
             new ModuleMigration("ops", connection => new OpsDbContext(DatabaseConfiguration.ContextOptions<OpsDbContext>(connection, "ops"))),
             new ModuleMigration("userdata", connection => new UserDataContext(DatabaseConfiguration.ContextOptions<UserDataContext>(connection, "userdata"))),
             new ModuleMigration("testdata", connection => new SampleContext(DatabaseConfiguration.ContextOptions<SampleContext>(connection, "testdata"))),

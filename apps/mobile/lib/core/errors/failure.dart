@@ -59,6 +59,12 @@ final class UnauthorizedFailure extends Failure {
   const new();
 }
 
+/// The signed-in account cannot perform this operation (403).
+final class ForbiddenFailure extends Failure {
+  /// Creates the failure.
+  const new();
+}
+
 /// This app version is too old for the server (`/errors/upgrade-required`,
 /// 426). The update gate shows the update screen (S06 plan D10).
 final class UpgradeRequiredFailure extends Failure {

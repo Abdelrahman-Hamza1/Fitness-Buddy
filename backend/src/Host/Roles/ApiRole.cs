@@ -34,6 +34,8 @@ internal static class ApiRole
         builder.Services.AddOpenApi("v1", options =>
         {
             options.AddSchemaTransformer<ProblemDetailsSchemaTransformer>();
+            options.AddSchemaTransformer<IdentityContractTransformer>();
+            options.AddOperationTransformer<IdentityContractTransformer>();
             options.AddOperationTransformer<ClientHeadersOperationTransformer>();
             options.AddOperationTransformer<ResponseHeadersOperationTransformer>();
         });
@@ -49,6 +51,7 @@ internal static class ApiRole
             app.MapOpenApi();
         }
 
+        FitnessBuddy.Modules.Identity.IdentityModule.MapPublicEndpoints(app);
         var v1 = V1Api.MapV1(app);
         foreach (var module in app.Services.GetServices<IModule>())
         {

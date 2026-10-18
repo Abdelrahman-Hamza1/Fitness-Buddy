@@ -20,6 +20,8 @@ servers:
 # One tag per module (the Dart client gets one class per tag). Add a module's
 # tag when its first operation lands.
 tags:
+  - name: Identity
+    description: Guest accounts, sign-in and sessions.
   - name: Account
     description: Client configuration, and later the user's account (`/v1/me`).
 
@@ -28,6 +30,24 @@ tags:
 
 # Every path is defined in its module file and listed here.
 paths:
+  /v1/auth/anonymous:
+    $ref: './modules/identity.yaml#/paths/~1v1~1auth~1anonymous'
+  /v1/auth/google:
+    $ref: './modules/identity.yaml#/paths/~1v1~1auth~1google'
+  /v1/auth/email/start:
+    $ref: './modules/identity.yaml#/paths/~1v1~1auth~1email~1start'
+  /v1/auth/email/verify:
+    $ref: './modules/identity.yaml#/paths/~1v1~1auth~1email~1verify'
+  /v1/auth/refresh:
+    $ref: './modules/identity.yaml#/paths/~1v1~1auth~1refresh'
+  /v1/auth/logout:
+    $ref: './modules/identity.yaml#/paths/~1v1~1auth~1logout'
+  /v1/auth/link/{provider}:
+    $ref: './modules/identity.yaml#/paths/~1v1~1auth~1link~1{provider}'
+  /.well-known/jwks.json:
+    $ref: './modules/identity.yaml#/paths/~1.well-known~1jwks.json'
+  /v1/me:
+    $ref: './modules/identity.yaml#/paths/~1v1~1me'
   /v1/sync/push:
     $ref: './modules/userdata.yaml#/paths/~1v1~1sync~1push'
   /v1/sync/pull:
@@ -41,6 +61,11 @@ paths:
 # before any endpoint uses them. Module-specific schemas stay in their module
 # file and are pulled in by the bundler when referenced.
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Id:
       $ref: './components/types.yaml#/components/schemas/Id'

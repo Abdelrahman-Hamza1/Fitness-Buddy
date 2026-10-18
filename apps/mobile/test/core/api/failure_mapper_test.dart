@@ -153,6 +153,9 @@ void main() {
       ProblemTypes.upgradeRequired: isA<UpgradeRequiredFailure>(),
       ProblemTypes.rateLimited: isA<RateLimitedFailure>(),
       ProblemTypes.versionConflict: isA<ConflictFailure>(),
+      ProblemTypes.unauthorized: isA<UnauthorizedFailure>(),
+      ProblemTypes.forbidden: isA<ForbiddenFailure>(),
+      ProblemTypes.identityConflict: isA<ConflictFailure>(),
     };
 
     test('the golden folder is found and covers every catalogue type', () {
@@ -210,7 +213,7 @@ void main() {
         429: isA<RateLimitedFailure>(),
         500: isA<ServerFailure>().having((f) => f.status, 'status', 500),
         503: isA<ServerFailure>().having((f) => f.status, 'status', 503),
-        403: isA<UnexpectedFailure>(),
+        403: isA<ForbiddenFailure>(),
         418: isA<UnexpectedFailure>(),
       };
       for (final MapEntry(key: status, value: matcher) in expected.entries) {

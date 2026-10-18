@@ -20,5 +20,9 @@ public sealed class AccountModule : IModule
         services.AddValidation();
     }
 
-    public void MapEndpoints(RouteGroupBuilder group) => group.MapConfigEndpoints();
+    public void MapEndpoints(RouteGroupBuilder group)
+    {
+        group.MapConfigEndpoints();
+        Api.AccountEndpoints.Map(group);
+    }
 }

@@ -39,6 +39,48 @@ class PhoneServerTests(unittest.TestCase):
                 'Peer': {'p': {'ID': 'phone', 'TailscaleIPs': ['100.64.0.3']}},
                 'CertDomains': ['test.example.ts.net']}
 
+    def configure_identity(self):
+        clients = self.state / 'google.json'
+        phone.json_write(clients, {'AndroidClientId': '123-android.apps.googleusercontent.com',
+                                   'WebClientId': '123-server.apps.googleusercontent.com'})
+        with patch.object(phone.os, 'getuid', return_value=clients.stat().st_uid):
+            phone.configure_identity(self.state, clients)
+
+    def test_identity_configuration_is_private_persistent_and_accepts_only_web_audience(self):
+        self.configure_identity()
+        first = (self.state / 'identity' / 'v1.key').read_bytes()
+        self.configure_identity()
+        self.assertEqual(first, (self.state / 'identity' / 'v1.key').read_bytes())
+        config = phone.read_json(self.state / 'identity' / 'config.json')['Identity']
+        self.assertEqual(config['GoogleClientIds'], ['123-server.apps.googleusercontent.com'])
+        self.assertTrue(config['PrivateLaptop'])
+        self.assertEqual(phone.identity_compose_args(self.state), ['-f', str(self.state / 'identity-compose.json')])
+        overlay = phone.read_json(self.state / 'identity-compose.json')
+        self.assertNotEqual(overlay['services']['api']['user'], '0')
+        self.assertEqual(overlay['services']['migrate']['command'][1], '--Identity:KeyOperation=ensure')
+        self.assertNotIn('ConnectionStrings__Migrator', overlay['services']['api']['environment'])
+
+    def test_identity_missing_or_linked_secret_refuses_regeneration(self):
+        self.configure_identity()
+        key = self.state / 'identity' / 'v1.key'
+        key.unlink()
+        with self.assertRaisesRegex(phone.Failure, 'recover'):
+            self.configure_identity()
+        self.assertFalse(key.exists())
+        key.symlink_to(self.state / 'credentials.json')
+        with self.assertRaises(phone.Failure):
+            phone.identity_compose_args(self.state)
+
+    def test_identity_recovery_excludes_email_codes_and_preserves_all_wrapping_versions(self):
+        self.configure_identity()
+        phone.atomic(self.state / 'identity' / 'v2.key', b'2' * 32)
+        phone.atomic(self.state / 'identity' / 'email' / 'private.json', b'private-code-canary')
+        phone.identity_recovery(self.state)
+        recovery = phone.read_json(self.state / 'backups' / 'identity-recovery.json')
+        self.assertEqual(set(recovery['files']), {'config.json', 'pepper', 'v1.key', 'v2.key'})
+        self.assertNotIn('private-code-canary', json.dumps(recovery))
+        self.assertEqual(stat.S_IMODE((self.state / 'backups' / 'identity-recovery.json').stat().st_mode), 0o600)
+
     def test_credentials_survive_repeated_init_and_have_distinct_roles(self):
         first = (self.state / 'credentials.json').read_bytes()
         phone.init(self.state)

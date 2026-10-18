@@ -27,6 +27,14 @@ internal static partial class MigrateRole
         {
             var stopping = host.Services.GetRequiredService<IHostApplicationLifetime>().ApplicationStopping;
             await host.Services.GetRequiredService<MigrationRunner>().RunAsync(connection, stopping);
+            var keyOperation = builder.Configuration["Identity:KeyOperation"];
+            if (!string.IsNullOrEmpty(keyOperation))
+            {
+                await FitnessBuddy.Modules.Identity.IdentityModule.MaintainSigningKeysAsync(connection,
+                    builder.Configuration["Identity:WrappingKeysDirectory"] ?? "",
+                    builder.Configuration["Identity:WrappingVersion"] ?? "v1", keyOperation,
+                    host.Services.GetRequiredService<TimeProvider>(), stopping);
+            }
             LogCompleted(logger);
             return 0;
         }

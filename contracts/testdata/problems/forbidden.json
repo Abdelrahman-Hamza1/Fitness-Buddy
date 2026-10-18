@@ -1,0 +1,6 @@
+{
+  "type": "/errors/forbidden",
+  "title": "Forbidden",
+  "status": 403,
+  "traceId": "4bf92f3577b34da6a3ce929d0e0e4736"
+}
