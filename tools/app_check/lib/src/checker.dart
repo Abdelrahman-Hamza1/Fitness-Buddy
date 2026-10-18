@@ -67,15 +67,21 @@ const Set<Rule> allowableRules = {Rule.rawString, Rule.directional};
 /// slashes). [packageName] is the app's package (`fb_mobile`), used to
 /// resolve `package:fb_mobile/...` imports. Returns the violations sorted by
 /// line; none for generated files and non-Dart files.
+///
+/// With [packageMode] (a UI package such as `fb_design_system`, D17) only the
+/// lexical rules run, on every file of `lib/`: `raw-string` and `directional`.
 List<Violation> checkFile({
   required String path,
   required String source,
   required String packageName,
+  bool packageMode = false,
 }) {
   if (!path.endsWith('.dart') || isGenerated(path)) return const [];
   final scanned = ScannedSource.scan(source);
-  final file = _AppPath(path);
-  final directives = _directiveUris(scanned).toList();
+  final file = _AppPath(path, package: packageMode);
+  final directives = packageMode
+      ? const <(int, String)>[]
+      : _directiveUris(scanned).toList();
   final found = [
     for (final (line, uri) in directives)
       ..._checkImport(file, uri, line, packageName),
@@ -169,7 +175,11 @@ Map<int, _Allow> _allows(ScannedSource scanned) {
 
 /// Where a file sits in the app's folder layout (`03-architecture.md` §3.2).
 final class _AppPath {
-  new(this.path) : _feature = _featurePath.firstMatch(path);
+  new(this.path, {this.package = false})
+    : _feature = _featurePath.firstMatch(path);
+
+  /// A UI package checked with `--package`: every file shows text.
+  final bool package;
 
   static final RegExp _featurePath = RegExp(r'^lib/features/([^/]+)/(.+)$');
 
@@ -191,7 +201,7 @@ final class _AppPath {
   bool get isMain => path == 'lib/main.dart';
 
   /// UI code that shows text: presentation, `app/`, `main.dart` (rule 8).
-  bool get showsText => isPresentation || isApp || isMain;
+  bool get showsText => package || isPresentation || isApp || isMain;
 
   /// Presentation code that must not reach HTTP, the database or sync
   /// through `core/` (rule 6, S06 A3).
@@ -518,6 +528,10 @@ final RegExp _textArgument = RegExp(
 final RegExp _namedArgument = RegExp(r'\s*[A-Za-z_$][\w$]*\s*:(?!:)');
 final RegExp _letter = RegExp(r'\p{L}', unicode: true);
 
+const String _appArbHint = '(lib/l10n/app_en.arb, context.l10n.<key>)';
+const String _packageArbHint =
+    '(lib/l10n/fb_ds_en.arb, FbLocalizations) or a parameter';
+
 Iterable<Violation> _checkRawStrings(
   _AppPath file,
   ScannedSource scanned,
@@ -533,7 +547,7 @@ Iterable<Violation> _checkRawStrings(
               message:
                   'raw string ${_snippet(scanned.source, l)} in $where; '
                   'user-facing text comes from the ARB file '
-                  '(lib/l10n/app_en.arb, context.l10n.<key>)',
+                  '${file.package ? _packageArbHint : _appArbHint}',
             ),
           );
 

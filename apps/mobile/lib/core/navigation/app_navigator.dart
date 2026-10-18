@@ -12,6 +12,13 @@ part 'app_navigator.g.dart';
 abstract interface class AppNavigator {
   /// Shows [route], replacing the current location (tabs keep their state).
   void go(AppRoute route);
+
+  /// Shows [route] on top of the current screen, so [pop] (or the system
+  /// back gesture) returns to it. For detail screens nested in a tab.
+  void push(AppRoute route);
+
+  /// Closes the topmost pushed screen. Does nothing when there is none.
+  void pop();
 }
 
 /// The app's [AppNavigator]. `main` overrides it with the router

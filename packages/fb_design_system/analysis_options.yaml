@@ -1,0 +1,7 @@
+# The workspace rules (very_good_analysis + the riverpod_lint plugin) apply
+# unchanged. Generated code (lib/l10n/gen) carries its own
+# `// ignore_for_file: type=lint`.
+analyzer:
+  exclude:
+    - build/**
+include: ../../analysis_options.yaml

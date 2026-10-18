@@ -9,7 +9,9 @@
 #      D15): lib/core/db/app_database.steps.dart and the migration tests'
 #      schema classes in test/drift/<db>/generated/. New dumps come from
 #      `make db-migrations`, never from here.
-#   4. dart format all of it, so `make check-dart` accepts them as they are.
+#   4. gen-l10n of the design system (packages/fb_design_system, A02 D5):
+#      lib/l10n/fb_ds_en.arb -> lib/l10n/gen/.
+#   5. dart format all of it, so `make check-dart` accepts them as they are.
 # Old outputs are deleted first, so a removed ARB file or provider leaves no
 # stale file behind. The result is committed; `make gen-check` fails CI if it
 # is stale.
@@ -42,9 +44,19 @@ rm -rf test/drift/user/generated
 "$DART" run drift_dev schema generate --data-classes --companions \
   drift_schemas/user test/drift/user/generated
 
-# --- 4. Format ------------------------------------------------------------------
+# --- 4. Design system localizations -----------------------------------------------
+cd "$repo_root/packages/fb_design_system"
+rm -rf lib/l10n/gen
+echo "gen-app: flutter gen-l10n (fb_design_system)"
+"$FLUTTER" gen-l10n
+[[ -f lib/l10n/gen/fb_localizations.dart ]] ||
+  { echo "gen-app: error: gen-l10n wrote nothing to fb_design_system/lib/l10n/gen" >&2; exit 1; }
+"$DART" format lib/l10n/gen | tail -n 1
+
+# --- 5. Format ------------------------------------------------------------------
+cd "$repo_root/apps/mobile"
 mapfile -t outputs < <(find lib/l10n/gen -name '*.dart'; find lib -name '*.g.dart' -o -name '*.steps.dart';
   find test -name '*.g.dart';
   find test/drift -path '*/generated/*.dart')
 "$DART" format "${outputs[@]}" | tail -n 1
-echo "gen-app: wrote apps/mobile/lib/l10n/gen, lib/**/*.g.dart, lib/**/*.steps.dart, test/**/*.g.dart, test/drift/*/generated (${#outputs[@]} files)"
+echo "gen-app: wrote apps/mobile/lib/l10n/gen, lib/**/*.g.dart, lib/**/*.steps.dart, test/**/*.g.dart, test/drift/*/generated (${#outputs[@]} files); and packages/fb_design_system/lib/l10n/gen (not counted)"

@@ -178,9 +178,12 @@ check-dart: ## Verify Dart formatting, analyze (very_good_analysis + riverpod_li
 # import boundaries, the single-writer write path (A01 D12), raw user-facing
 # strings, left/right layout. Part of check-dart, so CI's dart job runs it.
 # Rules: tools/app_check/README.md.
-APP_CHECK = cd '$(REPO_ROOT)' && '$(DART)' run tools/app_check/bin/app_check.dart apps/mobile
+# `--package` checks the design system's lib/ with the two lexical rules only
+# (A02 D17): no raw UI strings, no left/right layout.
+APP_CHECK_BIN = cd '$(REPO_ROOT)' && '$(DART)' run tools/app_check/bin/app_check.dart
+APP_CHECK = $(APP_CHECK_BIN) apps/mobile && $(APP_CHECK_BIN) --package packages/fb_design_system
 .PHONY: app-check
-app-check: ## Check apps/mobile/lib: feature/layer import boundaries, single-writer write path, no raw UI strings, no left/right layout
+app-check: ## Check apps/mobile/lib (import boundaries, single-writer write path, raw UI strings, left/right layout) and packages/fb_design_system/lib (raw UI strings, left/right layout)
 	$(APP_CHECK)
 
 .PHONY: test-dart
@@ -202,7 +205,8 @@ test-dart: ## Run the tests of every workspace member (flutter test or dart test
 # (test/drift/*/generated), all derived from apps/mobile/drift_schemas/, and
 # the *.g.dart of test-only drift databases (test/**/*.g.dart, A01 WP3).
 GEN_DART_DIRS := packages/fb_api_client/lib/src/generated packages/fb_api_client/test/generated \
-  apps/mobile/lib/l10n/gen ':(glob)apps/mobile/lib/**/*.g.dart' \
+  apps/mobile/lib/l10n/gen packages/fb_design_system/lib/l10n/gen \
+  ':(glob)apps/mobile/lib/**/*.g.dart' \
   ':(glob)apps/mobile/lib/**/*.steps.dart' ':(glob)apps/mobile/test/**/*.g.dart' \
   ':(glob)apps/mobile/test/drift/*/generated/**'
 
@@ -242,7 +246,8 @@ db-migrations: ## After a schema change: dump the new drift schema version, rege
 # so the images are identical on the laptop and in CI. `make test-dart` compares
 # them; this target rewrites them after an intended UI change (review the PNGs).
 .PHONY: goldens
-goldens: ## Regenerate the app's golden images (apps/mobile/test/**/goldens/ci), then review and commit them
+goldens: ## Regenerate the golden images of packages/fb_design_system and apps/mobile (test/**/goldens/ci), then review and commit them
+	cd '$(REPO_ROOT)/packages/fb_design_system' && '$(FLUTTER)' test --update-goldens --tags golden
 	cd '$(REPO_ROOT)/apps/mobile' && '$(FLUTTER)' test --update-goldens --tags golden
 
 # Android builds (S06 plan D4-D7, A6, A8). Flavors: dev (local API over adb
@@ -267,6 +272,21 @@ build-android: catalog-pack ## Build FLAVOR=staging|prod|dev: release APK (arm64
 	@FLUTTER='$(FLUTTER)' REPO_ROOT='$(REPO_ROOT)' FLAVOR='$(FLAVOR)' MODE='$(MODE)' \
 	  BUILD_NUMBER='$(BUILD_NUMBER)' FB_RELEASE_ENV='$(FB_RELEASE_ENV)' \
 	  bash '$(REPO_ROOT)/tools/scripts/build-android.sh'
+
+# Installs what `make build-android` built (same FLAVOR and MODE) on the one
+# connected phone: the owner's A55 sessions (A02 D18). The release-key APK, or
+# the *-debugkey.apk a machine without the key produces.
+.PHONY: install-android
+install-android: ## Install the APK that build-android built (FLAVOR=staging|prod|dev, MODE) on the connected phone with adb install -r
+	@apk_dir='$(REPO_ROOT)/apps/mobile/build/app/outputs/flutter-apk'; \
+	apk="$$apk_dir/app-$(FLAVOR)-$(MODE).apk"; \
+	[[ -f "$$apk" ]] || apk="$$apk_dir/app-$(FLAVOR)-$(MODE)-debugkey.apk"; \
+	if [[ ! -f "$$apk" ]]; then \
+	  echo "install-android: no APK for FLAVOR=$(FLAVOR) MODE=$(MODE) in $$apk_dir: run 'make build-android FLAVOR=$(FLAVOR)' first" >&2; exit 1; fi; \
+	if ! '$(ADB)' get-state >/dev/null 2>&1; then \
+	  echo "install-android: no single device: connect the phone (USB or Wireless debugging) and allow it; with several, set ANDROID_SERIAL" >&2; exit 1; fi; \
+	echo "install-android: installing $$apk"; \
+	'$(ADB)' $(if $(ANDROID_SERIAL),-s '$(ANDROID_SERIAL)') install -r "$$apk"
 
 # No Android SDK needed: it runs the check on captured aapt2 dumps.
 .PHONY: apk-hardening-selftest

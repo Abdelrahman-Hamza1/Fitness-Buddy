@@ -1,3 +1,4 @@
+import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -34,23 +35,23 @@ class AppShell extends StatelessWidget {
         onDestinationSelected: onTabSelected,
         destinations: [
           NavigationDestination(
-            icon: const Icon(Icons.today_outlined),
-            selectedIcon: const Icon(Icons.today),
+            icon: const Icon(FbIcons.navToday),
+            selectedIcon: const Icon(FbIcons.navTodaySelected),
             label: l10n.tabToday,
           ),
           NavigationDestination(
-            icon: const Icon(Icons.insights_outlined),
-            selectedIcon: const Icon(Icons.insights),
+            icon: const Icon(FbIcons.navProgress),
+            selectedIcon: const Icon(FbIcons.navProgressSelected),
             label: l10n.tabProgress,
           ),
           NavigationDestination(
-            icon: const Icon(Icons.fitness_center_outlined),
-            selectedIcon: const Icon(Icons.fitness_center),
+            icon: const Icon(FbIcons.navWorkouts),
+            selectedIcon: const Icon(FbIcons.navWorkoutsSelected),
             label: l10n.tabWorkouts,
           ),
           NavigationDestination(
-            icon: const Icon(Icons.person_outline),
-            selectedIcon: const Icon(Icons.person),
+            icon: const Icon(FbIcons.navMe),
+            selectedIcon: const Icon(FbIcons.navMeSelected),
             label: l10n.tabMe,
           ),
         ],

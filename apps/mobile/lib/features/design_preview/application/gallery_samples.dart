@@ -1,0 +1,91 @@
+// The constants are sample data, documented by the class.
+// ignore_for_file: public_member_api_docs
+
+/// Sample content of the component gallery: made-up food names, numbers and
+/// state names, as data and not UI strings (A02 D15). The gallery's own labels
+/// (headings, buttons) are in the ARB file.
+abstract final class GallerySamples {
+  /// Sample text drawn on each colour pair of the Tokens tab.
+  static const String contrastSample = 'Aa';
+
+  // Buttons and chips.
+  static const String logIt = 'Log it';
+  static const String discard = 'Discard';
+  static const String notNow = 'Not now';
+  static const String addFood = 'Add food';
+  static const String scan = 'Scan';
+  static const String more = 'More';
+  static const String longButton = 'Add this meal to the diary for dinner';
+  static const String assumption = 'Assumed 1 cup of rice';
+  static const String small = 'Small';
+  static const String medium = 'Medium';
+  static const String large = 'Large';
+  static const String coffee = 'Coffee';
+  static const String banana = 'Banana';
+  static const String yoghurt = 'Greek yoghurt with honey';
+
+  // Cards, rows and headers.
+  static const String chickenAndRice = 'Chicken and rice, 520 kcal';
+  static const String longText =
+      'A long description that wraps at large text sizes';
+  static const String breakfast = 'Breakfast';
+  static const String twoItems = '2 items';
+  static const String oats = 'Oats';
+  static const String oatsAmount = '40 g';
+  static const String oatsKcal = '150 kcal';
+  static const String longRowTitle =
+      'Grilled chicken breast with roasted vegetables and tahini sauce';
+  static const String longRowSubtitle =
+      'A long subtitle that also needs to wrap on narrow screens';
+  static const String chicken650 = '650 kcal';
+  static const String dinner = 'Dinner';
+  static const String add = 'Add';
+  static const String seeAll = 'See all';
+  static const String longSectionTitle = 'A very long section title that wraps';
+
+  // Numbers.
+  static const String kcalLeftValue = '1,240';
+  static const String kcalLeft = 'kcal left';
+  static const String kcalOverValue = '180';
+  static const String kcalOver = 'kcal over';
+  static const String hugeValue = '12,345,678';
+  static const String protein = 'Protein';
+  static const String carbs = 'Carbs';
+  static const String fat = 'Fat';
+  static const String fiber = 'Fiber';
+
+  // Banners, empty state, input.
+  static const String bannerInfo = 'Weights are shown in kilograms.';
+  static const String bannerOffline =
+      'You are offline. Buddy needs a connection.';
+  static const String bannerPending = 'Waiting to sync.';
+  static const String bannerError = 'Something went wrong.';
+  static const String bannerErrorLong =
+      'Could not save this entry, please try again later.';
+  static const String retry = 'Retry';
+  static const String emptyTitle = 'Nothing logged yet';
+  static const String emptyMessage =
+      'Tell Buddy what you ate and it shows up here.';
+  static const String hint = 'Tell Buddy what you ate';
+  static const String longHint =
+      'Tell Buddy what you ate, weighed or want to log later';
+
+  // Dates, estimates, sheets, snackbars.
+  static const String yesterday = 'Yesterday';
+  static const String today = 'Today';
+  static const String longDate = 'Wednesday, 30 September 2026';
+  static const String estimateRange = '450 to 650 kcal';
+  static const String estimateReason =
+      'The portion size and the oil used were not stated.';
+  static const String sheetTitle = 'Add food';
+  static const String sheetBody =
+      'Sheet content that explains something helpful.';
+  static const String loggedOats = 'Logged Oats, 150 kcal';
+  static const String weightSaved = 'Weight saved';
+
+  // Units.
+  static const String gram = 'g';
+  static const String millilitre = 'ml';
+  static const String piece = 'piece';
+  static const String cup = 'cup';
+}

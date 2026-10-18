@@ -1,0 +1,47 @@
+{
+  "@@locale": "en",
+
+  "fbUndo": "Undo",
+  "@fbUndo": { "description": "Action on the undo snackbar (UX-030)." },
+  "fbDone": "Done",
+  "@fbDone": { "description": "Confirms the number pad." },
+
+  "fbAnswerDefault": "Default",
+  "@fbAnswerDefault": { "description": "Marks the answer chip that is assumed when the user does not pick one (AI-034)." },
+
+  "fbSourceBadgeYours": "Y",
+  "@fbSourceBadgeYours": { "description": "Letter in the badge for values that are yours (your label scans, your edits)." },
+  "fbSourceBadgeDatabase": "D",
+  "@fbSourceBadgeDatabase": { "description": "Letter in the badge for values from the food database." },
+  "fbSourceBadgeReference": "R",
+  "@fbSourceBadgeReference": { "description": "Letter in the badge for values from a reference dish." },
+  "fbSourceBadgeEstimate": "~",
+  "@fbSourceBadgeEstimate": { "description": "Mark for estimated values." },
+
+  "fbSourceLegendTitle": "Where numbers come from",
+  "fbSourceYoursTitle": "Yours",
+  "fbSourceYoursBody": "Numbers you entered or scanned from a label.",
+  "fbSourceDatabaseTitle": "Food database",
+  "fbSourceDatabaseBody": "Looked up in the food database, scaled to your portion.",
+  "fbSourceReferenceTitle": "Reference dish",
+  "fbSourceReferenceBody": "Typical numbers for a dish, scaled to your portion.",
+  "fbSourceEstimateTitle": "Estimate",
+  "fbSourceEstimateBody": "A rough guess. The real value could be higher or lower.",
+
+  "fbEstimateRangeTitle": "Estimate",
+  "fbEstimateRangeLabel": "Likely range",
+  "fbEstimateReasonLabel": "Why it is an estimate",
+
+  "fbNumberPadBackspace": "Delete last digit",
+  "fbNumberPadDecimal": "Decimal point",
+
+  "fbInputCamera": "Take a photo",
+  "fbInputBarcode": "Scan a barcode",
+
+  "fbDatePrevious": "Previous day",
+  "fbDateNext": "Next day",
+
+  "fbChartPlaceholder": "Chart coming soon",
+  "fbSheetDragHandle": "Drag handle",
+  "fbLoading": "Loading"
+}

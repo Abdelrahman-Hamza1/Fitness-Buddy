@@ -1,6 +1,7 @@
 import 'package:fb_mobile/app/router/app_router.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/features/design_preview/design_preview.dart';
 import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:fb_mobile/features/today/today.dart';
@@ -10,15 +11,17 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../helpers/pump_app.dart';
 
-/// Every route, with the screen it shows and whether it is a tab.
+/// Every route, with the screen it shows and whether the tab bar is shown
+/// (the tabs and the screens nested in them).
 ///
 /// The exhaustive `switch` makes this file fail to compile when a route is
 /// added, so the new route gets a row here.
-(Type screen, bool isTab) _expected(AppRoute route) => switch (route) {
+(Type screen, bool hasTabBar) _expected(AppRoute route) => switch (route) {
   TodayRoute() => (TodayScreen, true),
   ProgressRoute() => (ProgressScreen, true),
   WorkoutsRoute() => (WorkoutsScreen, true),
   MeRoute() => (MeScreen, true),
+  DesignPreviewRoute() => (DesignPreviewScreen, true),
   UpdateRequiredRoute() => (UpdateRequiredScreen, false),
 };
 
@@ -27,12 +30,13 @@ const List<AppRoute> _allRoutes = [
   ProgressRoute(),
   WorkoutsRoute(),
   MeRoute(),
+  DesignPreviewRoute(),
   UpdateRequiredRoute(),
 ];
 
 void main() {
   test('typed routes: locations are unique and tabs are in UX-010 order', () {
-    expect(_allRoutes.map((r) => r.location).toSet(), hasLength(5));
+    expect(_allRoutes.map((r) => r.location).toSet(), hasLength(6));
     expect(AppRouter.tabs.map((r) => r.location), [
       '/today',
       '/progress',
@@ -40,12 +44,12 @@ void main() {
       '/me',
     ]);
     expect(
-      [...AppRouter.tabs, ...AppRouter.outsideTabs].map((r) => r.location),
+      [
+        ...AppRouter.tabs,
+        ...AppRouter.outsideTabs,
+        const DesignPreviewRoute(),
+      ].map((r) => r.location),
       unorderedEquals(_allRoutes.map((r) => r.location)),
-    );
-    expect(
-      AppRouter.tabs.map((r) => r.location),
-      _allRoutes.where((r) => _expected(r).$2).map((r) => r.location),
     );
   });
 
@@ -55,7 +59,7 @@ void main() {
     final router = container.read(appRouterProvider);
 
     for (final route in _allRoutes) {
-      final (screen, isTab) = _expected(route);
+      final (screen, hasTabBar) = _expected(route);
       showRoute(container, route);
       await tester.pumpAndSettle();
 
@@ -67,7 +71,7 @@ void main() {
       expect(find.byType(screen), findsOneWidget, reason: '$route');
       expect(
         find.byType(NavigationBar),
-        isTab ? findsOneWidget : findsNothing,
+        hasTabBar ? findsOneWidget : findsNothing,
         reason: '$route',
       );
     }

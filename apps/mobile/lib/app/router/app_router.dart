@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:fb_mobile/app/shell/app_shell.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
+import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/config/update_gate.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/features/design_preview/design_preview.dart';
 import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:fb_mobile/features/today/today.dart';
@@ -17,7 +21,8 @@ part 'app_router.g.dart';
 /// port. `package:go_router` is imported only in `lib/app/router/`.
 ///
 /// Four tabs in a `StatefulShellRoute` (each tab keeps its own navigation
-/// stack and state, UX-010) and the screens outside the tabs.
+/// stack and state, UX-010), the detail screens nested in a tab (only the dev
+/// flavor's design preview so far) and the screens outside the tabs.
 ///
 /// The update gate (S06 plan D10, A1) is a redirect: while an update is
 /// required every location shows [UpdateRequiredRoute]; once it is lifted
@@ -25,10 +30,17 @@ part 'app_router.g.dart';
 final class AppRouter implements AppNavigator {
   /// Creates the router, starting at [TodayRoute]. [updateRequired] is the
   /// update gate; the router re-checks its redirect when it changes.
-  new({required ValueListenable<bool> updateRequired})
-    : config = _createConfig(updateRequired);
+  /// [designPreview] registers the [DesignPreviewRoute] (dev flavor only,
+  /// A02 D15).
+  new({
+    required ValueListenable<bool> updateRequired,
+    bool designPreview = false,
+  }) : config = _createConfig(updateRequired, designPreview: designPreview);
 
-  static GoRouter _createConfig(ValueListenable<bool> gate) => GoRouter(
+  static GoRouter _createConfig(
+    ValueListenable<bool> gate, {
+    required bool designPreview,
+  }) => GoRouter(
     navigatorKey: GlobalKey<NavigatorState>(debugLabel: 'root'),
     initialLocation: TodayRoute.path,
     refreshListenable: gate,
@@ -51,7 +63,19 @@ final class AppRouter implements AppNavigator {
         // Order = the tab order in AppShell.
         branches: [
           for (final route in tabs)
-            StatefulShellBranch(routes: [_goRoute(route)]),
+            StatefulShellBranch(
+              routes: [
+                _goRoute(
+                  route,
+                  // Detail screens nest in their tab, so the tab bar stays
+                  // and the tab keeps its stack.
+                  children: [
+                    if (route is MeRoute && designPreview)
+                      _goRoute(const DesignPreviewRoute(), nested: true),
+                  ],
+                ),
+              ],
+            ),
         ],
       ),
       for (final route in outsideTabs) _goRoute(route),
@@ -80,8 +104,16 @@ final class AppRouter implements AppNavigator {
     return null;
   }
 
-  static GoRoute _goRoute(AppRoute route) =>
-      GoRoute(path: route.location, builder: (_, _) => _screen(route));
+  static GoRoute _goRoute(
+    AppRoute route, {
+    List<RouteBase> children = const [],
+    bool nested = false,
+  }) => GoRoute(
+    // A nested route's path is relative to its parent's.
+    path: nested ? route.location.split('/').last : route.location,
+    builder: (_, _) => _screen(route),
+    routes: children,
+  );
 
   // Exhaustive: a new AppRoute without a screen doesn't compile.
   static Widget _screen(AppRoute route) => switch (route) {
@@ -89,11 +121,20 @@ final class AppRouter implements AppNavigator {
     ProgressRoute() => const ProgressScreen(),
     WorkoutsRoute() => const WorkoutsScreen(),
     MeRoute() => const MeScreen(),
+    DesignPreviewRoute() => const DesignPreviewScreen(),
     UpdateRequiredRoute() => const UpdateRequiredScreen(),
   };
 
   @override
   void go(AppRoute route) => config.go(route.location);
+
+  @override
+  void push(AppRoute route) => unawaited(config.push<void>(route.location));
+
+  @override
+  void pop() {
+    if (config.canPop()) config.pop();
+  }
 
   /// Releases the router's listeners.
   void dispose() => config.dispose();
@@ -109,7 +150,11 @@ AppRouter appRouter(Ref ref) {
     (_, required) => updateRequired.value = required,
     fireImmediately: true,
   );
-  final router = AppRouter(updateRequired: updateRequired);
+  final router = AppRouter(
+    updateRequired: updateRequired,
+    // The design preview exists in the dev flavor only (A02 D15).
+    designPreview: ref.read(appConfigProvider).flavor == AppFlavor.dev,
+  );
   ref.onDispose(() {
     router.dispose();
     updateRequired.dispose();

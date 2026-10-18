@@ -15,7 +15,8 @@
 ///   `lib/app/router/` (route classes stay free of go_router);
 /// - a detail route nests inside its tab's branch, so the tab bar stays and
 ///   the tab keeps its stack;
-/// - `AppNavigator` gains `push` and `pop` with that first detail screen.
+/// - `AppNavigator` has `push` and `pop` for it ([DesignPreviewRoute] is the
+///   first, dev flavor only).
 sealed class AppRoute {
   /// Creates a route.
   const new();
@@ -82,6 +83,22 @@ final class UpdateRequiredRoute extends AppRoute {
 
   /// The route's path pattern.
   static const path = '/update-required';
+
+  @override
+  String get location => path;
+}
+
+/// The design preview (A02 D15): a detail screen of the Me tab with the
+/// component gallery, the token pages and the mockups.
+///
+/// Only registered in the dev flavor; elsewhere the location is unknown and
+/// goes to Today.
+final class DesignPreviewRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/design-preview';
 
   @override
   String get location => path;

@@ -10,7 +10,15 @@ the pub workspace.
 ```sh
 make app-check                                    # part of make check-dart (and so of CI)
 dart run tools/app_check/bin/app_check.dart apps/mobile
+dart run tools/app_check/bin/app_check.dart --package packages/fb_design_system
 ```
+
+`--package <dir>` (A02 D17) checks a UI package instead of the app: only rules 8
+(`raw-string`) and 9 (`directional`), on every file of its `lib/` (not just
+`presentation/`). The import-boundary and write-path rules (1 to 7, 10 to 13)
+never run in package mode; the package's own dependency test covers its
+imports. A raw string there is fixed with a parameter or
+`lib/l10n/fb_ds_en.arb` (`FbLocalizations`). The OK line says `package mode`.
 
 It reads `apps/mobile/lib/**.dart` (the package name comes from
 `apps/mobile/pubspec.yaml`) and prints one line per problem to stderr:

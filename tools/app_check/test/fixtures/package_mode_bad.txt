@@ -1,0 +1,32 @@
+// Fixture for `app_check --package` (not compiled). The test places it at
+// lib/src/components/bad.dart of a UI package. Only raw-string and
+// directional run there: imports that the app rules would flag, and a
+// "presentation" check that does not apply, stay silent. Every line marked
+// `expect: <rule>` must be reported with that rule, and nothing else.
+import 'package:dio/dio.dart';
+import 'package:fb_other/src/internal.dart';
+import 'package:fb_mobile/features/me/presentation/me_screen.dart';
+
+class Bad extends StatelessWidget {
+  const Bad({super.key, required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8), // expect: directional
+      child: Row(
+        children: [
+          Text(label),
+          const Text('Undo'), // expect: raw-string
+          Text(l10n.undo),
+          Text('$label'),
+          Icon(Icons.chevron_left), // expect: directional
+          Align(alignment: Alignment.centerRight), // expect: directional
+          Text('Done'), // app-check: allow raw-string fixture allow comment
+        ],
+      ),
+    );
+  }
+}

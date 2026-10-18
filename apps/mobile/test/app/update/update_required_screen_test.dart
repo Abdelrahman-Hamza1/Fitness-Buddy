@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/app/app.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -47,7 +48,7 @@ void main() {
       ),
       findsOneWidget,
     );
-    final icon = find.byIcon(Icons.system_update_outlined);
+    final icon = find.byIcon(FbIcons.info);
     expect(icon, findsOneWidget);
     expect(
       find.ancestor(of: icon, matching: find.byType(ExcludeSemantics)),

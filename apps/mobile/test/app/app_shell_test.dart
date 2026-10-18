@@ -40,10 +40,10 @@ void main() {
       final todayElement = tester.element(find.byType(TodayScreen));
 
       final tabs = {
-        'Progress': (1, ProgressScreen, 'Your weight trend'),
-        'Workouts': (2, WorkoutsScreen, 'Your workout plan'),
-        'Me': (3, MeScreen, 'Your profile, goals'),
-        'Today': (0, TodayScreen, "Your day's meals"),
+        'Progress': (1, ProgressScreen, 'Charts appear after'),
+        'Workouts': (2, WorkoutsScreen, 'Your workouts will'),
+        'Me': (3, MeScreen, 'Your profile and settings'),
+        'Today': (0, TodayScreen, 'Tell Buddy what you ate'),
       };
       for (final MapEntry(key: label, value: (index, screen, text))
           in tabs.entries) {

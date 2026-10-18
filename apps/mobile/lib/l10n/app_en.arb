@@ -20,19 +20,19 @@
   "@tabMe": {
     "description": "Bottom navigation tab: profile, goals, targets, memory and settings (UX-010)."
   },
-  "todayPlaceholder": "Your day's meals and totals will show up here.",
+  "todayPlaceholder": "Tell Buddy what you ate and it shows up here.",
   "@todayPlaceholder": {
     "description": "Placeholder body of the Today tab until the diary is built."
   },
-  "progressPlaceholder": "Your weight trend and weekly summaries will show up here.",
+  "progressPlaceholder": "Charts appear after a few days of logging.",
   "@progressPlaceholder": {
     "description": "Placeholder body of the Progress tab until charts are built."
   },
-  "workoutsPlaceholder": "Your workout plan and history will show up here.",
+  "workoutsPlaceholder": "Your workouts will show up here.",
   "@workoutsPlaceholder": {
     "description": "Placeholder body of the Workouts tab until workouts are built."
   },
-  "mePlaceholder": "Your profile, goals and settings will show up here.",
+  "mePlaceholder": "Your profile and settings will live here.",
   "@mePlaceholder": {
     "description": "Placeholder body of the Me tab until profile and settings are built."
   },
@@ -59,5 +59,541 @@
   "updateRequiredCheckFailed": "Couldn't check. Are you online?",
   "@updateRequiredCheckFailed": {
     "description": "Shown after Check again when the server could not be reached (offline, timeout or error)."
+  },
+  "todayEmptyTitle": "Nothing logged yet",
+  "@todayEmptyTitle": {
+    "description": "Title of the Today tab's empty state until the diary is built."
+  },
+  "progressEmptyTitle": "No data yet",
+  "@progressEmptyTitle": {
+    "description": "Title of the Progress tab's empty state until charts are built."
+  },
+  "workoutsEmptyTitle": "No workouts yet",
+  "@workoutsEmptyTitle": {
+    "description": "Title of the Workouts tab's empty state until workouts are built."
+  },
+  "meEmptyTitle": "Nothing to set up yet",
+  "@meEmptyTitle": {
+    "description": "Title of the Me tab's empty state until profile and settings are built."
+  },
+  "meDesignPreview": "Design preview",
+  "@meDesignPreview": {
+    "description": "Row on the Me tab that opens the design preview. Only in the dev flavor."
+  },
+  "previewTitle": "Design preview",
+  "@previewTitle": {
+    "description": "Title of the design preview screen (dev flavor only)."
+  },
+  "previewTabMockups": "Mockups",
+  "@previewTabMockups": {
+    "description": "Design preview tab: mockups of the main screens."
+  },
+  "previewTabComponents": "Components",
+  "@previewTabComponents": {
+    "description": "Design preview tab: the gallery of design-system components."
+  },
+  "previewTabTokens": "Tokens",
+  "@previewTabTokens": {
+    "description": "Design preview tab: colours, type and contrast ratios."
+  },
+  "previewVariantLabel": "Palette",
+  "@previewVariantLabel": {
+    "description": "Design preview: label (screen readers) of the A/B palette switch."
+  },
+  "previewVariantA": "A",
+  "@previewVariantA": {
+    "description": "Design preview: palette variant A, the first option of the A/B switch."
+  },
+  "previewVariantB": "B",
+  "@previewVariantB": {
+    "description": "Design preview: palette variant B, the second option of the A/B switch."
+  },
+  "previewModeLabel": "Theme",
+  "@previewModeLabel": {
+    "description": "Design preview: label (screen readers) of the light/dark/system switch."
+  },
+  "previewModeLight": "Light",
+  "@previewModeLight": {
+    "description": "Design preview: light theme option."
+  },
+  "previewModeDark": "Dark",
+  "@previewModeDark": {
+    "description": "Design preview: dark theme option."
+  },
+  "previewModeSystem": "System",
+  "@previewModeSystem": {
+    "description": "Design preview: follow-the-system theme option."
+  },
+  "previewMockupToday": "Today",
+  "@previewMockupToday": {
+    "description": "Design preview: name of the Today screen mockup."
+  },
+  "previewMockupFoodProposal": "Food proposal",
+  "@previewMockupFoodProposal": {
+    "description": "Design preview: name of the food proposal mockup."
+  },
+  "previewMockupEditProposal": "Edit proposal",
+  "@previewMockupEditProposal": {
+    "description": "Design preview: name of the edit proposal mockup."
+  },
+  "previewMockupWeightCard": "Weight card",
+  "@previewMockupWeightCard": {
+    "description": "Design preview: name of the weight card mockup."
+  },
+  "previewMockupProgress": "Progress",
+  "@previewMockupProgress": {
+    "description": "Design preview: name of the Progress overview mockup."
+  },
+  "previewOpenSheet": "Open sheet",
+  "@previewOpenSheet": {
+    "description": "Design preview gallery: button that opens a bottom sheet."
+  },
+  "previewOpenSourceLegend": "Open source legend",
+  "@previewOpenSourceLegend": {
+    "description": "Design preview gallery: button that opens the source legend sheet."
+  },
+  "previewOpenEstimateRange": "Open estimate range",
+  "@previewOpenEstimateRange": {
+    "description": "Design preview gallery: button that opens the estimate range sheet."
+  },
+  "previewShowUndoSnackBar": "Show undo snackbar",
+  "@previewShowUndoSnackBar": {
+    "description": "Design preview gallery: button that shows a snackbar with Undo."
+  },
+  "previewShowSnackBar": "Show snackbar",
+  "@previewShowSnackBar": {
+    "description": "Design preview gallery: button that shows a plain snackbar."
+  },
+  "previewTokensColors": "Colours",
+  "@previewTokensColors": {
+    "description": "Design preview, Tokens tab: heading of the colour swatches."
+  },
+  "previewTokensType": "Type",
+  "@previewTokensType": {
+    "description": "Design preview, Tokens tab: heading of the type scale."
+  },
+  "previewTokensContrast": "Contrast",
+  "@previewTokensContrast": {
+    "description": "Design preview, Tokens tab: heading of the contrast ratios."
+  },
+  "previewTypeSample": "Eat well, feel good",
+  "@previewTypeSample": {
+    "description": "Design preview, Tokens tab: sample text shown in each type style."
+  },
+  "previewContrastPasses": "Passes",
+  "@previewContrastPasses": {
+    "description": "Design preview, Tokens tab: screen-reader label of a contrast pair that reaches its minimum."
+  },
+  "previewContrastFails": "Below the minimum",
+  "@previewContrastFails": {
+    "description": "Design preview, Tokens tab: screen-reader label of a contrast pair that misses its minimum."
+  },
+  "todayKcalLeft": "kcal left today",
+  "@todayKcalLeft": {
+    "description": "Today: caption under the big remaining-calories number (HM-001)."
+  },
+  "todayKcalOver": "kcal over today",
+  "@todayKcalOver": {
+    "description": "Today: caption of the big number when the day is over the budget. Neutral wording (SF-021)."
+  },
+  "todayEatenOfBudget": "{eaten} / {budget} kcal",
+  "@todayEatenOfBudget": {
+    "description": "Today: eaten calories out of the day budget, next to the progress bar.",
+    "placeholders": {
+      "eaten": {
+        "type": "String"
+      },
+      "budget": {
+        "type": "String"
+      }
+    }
+  },
+  "todayWeekUnder": "This week: {amount} kcal under",
+  "@todayWeekUnder": {
+    "description": "Today: weekly line when under the weekly budget (HM-002).",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "todayWeekOver": "This week: {amount} kcal over",
+  "@todayWeekOver": {
+    "description": "Today: weekly line when over the weekly budget (HM-002). Neutral wording.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "todayMacroProtein": "Protein",
+  "@todayMacroProtein": {
+    "description": "Today: protein macro bar label (HM-003)."
+  },
+  "todayMacroCarbs": "Carbs",
+  "@todayMacroCarbs": {
+    "description": "Today: carbs macro bar label (HM-003)."
+  },
+  "todayMacroFat": "Fat",
+  "@todayMacroFat": {
+    "description": "Today: fat macro bar label (HM-003)."
+  },
+  "todayMacroFiber": "Fiber",
+  "@todayMacroFiber": {
+    "description": "Today: fiber macro bar label (HM-003)."
+  },
+  "todayToConfirm": "{count} to confirm",
+  "@todayToConfirm": {
+    "description": "Today: title of the strip shown while proposals wait for confirmation (HM-004).",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "todayToConfirmKcal": "+{kcal} kcal",
+  "@todayToConfirmKcal": {
+    "description": "Today: calories the pending proposals would add, in the to-confirm strip.",
+    "placeholders": {
+      "kcal": {
+        "type": "String"
+      }
+    }
+  },
+  "todayWeight": "Weight",
+  "@todayWeight": {
+    "description": "Today: title of the weight row (HM-005)."
+  },
+  "todayWeightTrendRate": "{trend} trend · {rate}/wk",
+  "@todayWeightTrendRate": {
+    "description": "Today: weight row summary, trend weight and weekly rate.",
+    "placeholders": {
+      "trend": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "todayWorkoutHint": "{name} today",
+  "@todayWorkoutHint": {
+    "description": "Today: workout hint row, shown when a weekly plan exists (HM-006).",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "todaySlotBreakfast": "Breakfast",
+  "@todaySlotBreakfast": {
+    "description": "Diary meal slot: breakfast."
+  },
+  "todaySlotLunch": "Lunch",
+  "@todaySlotLunch": {
+    "description": "Diary meal slot: lunch."
+  },
+  "todaySlotSnacks": "Snacks",
+  "@todaySlotSnacks": {
+    "description": "Diary meal slot: snacks."
+  },
+  "todaySlotDinner": "Dinner",
+  "@todaySlotDinner": {
+    "description": "Diary meal slot: dinner."
+  },
+  "todaySlotEmpty": "Nothing logged yet",
+  "@todaySlotEmpty": {
+    "description": "Today: subtitle of a diary slot without entries."
+  },
+  "todaySlotNoKcal": "—",
+  "@todaySlotNoKcal": {
+    "description": "Today: calories column of a diary slot without entries."
+  },
+  "todayConfirmAll": "Confirm all",
+  "@todayConfirmAll": {
+    "description": "Today: button in the to-confirm strip that confirms every waiting proposal (HM-004)."
+  },
+  "todaySlotNoKcalSemantics": "Nothing logged",
+  "@todaySlotNoKcalSemantics": {
+    "description": "Today: screen-reader text for the dash shown as calories of an empty diary slot."
+  },
+  "todayQuickAddMore": "Add food",
+  "@todayQuickAddMore": {
+    "description": "Today: quick-add chip that opens the add-food flow (HM-008)."
+  },
+  "todayInputHint": "Tell Buddy what you ate…",
+  "@todayInputHint": {
+    "description": "Hint of the input bar at the bottom of Today (HM-008)."
+  },
+  "proposalSlotAtTime": "{slot} · {time}",
+  "@proposalSlotAtTime": {
+    "description": "Proposal card heading: meal slot and time (AI-031).",
+    "placeholders": {
+      "slot": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalItemKcal": "{kcal} kcal",
+  "@proposalItemKcal": {
+    "description": "Proposal card: calories of one item.",
+    "placeholders": {
+      "kcal": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalTotalKcal": "{kcal} kcal",
+  "@proposalTotalKcal": {
+    "description": "Proposal card: total calories of the card.",
+    "placeholders": {
+      "kcal": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalMacrosShort": "Protein {protein} g · Carbs {carbs} g · Fat {fat} g · Fiber {fiber} g",
+  "@proposalMacrosShort": {
+    "description": "Proposal card: total protein, carbs, fat and fiber in grams, short form.",
+    "placeholders": {
+      "protein": {
+        "type": "String"
+      },
+      "carbs": {
+        "type": "String"
+      },
+      "fat": {
+        "type": "String"
+      },
+      "fiber": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalTodayAfter": "Today after this: {left} left",
+  "@proposalTodayAfter": {
+    "description": "Proposal card: remaining calories today once the card is logged (AI-031).",
+    "placeholders": {
+      "left": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalDiscard": "Discard",
+  "@proposalDiscard": {
+    "description": "Proposal card: removes the proposal, nothing is logged (AI-037)."
+  },
+  "proposalLogIt": "Log it",
+  "@proposalLogIt": {
+    "description": "Proposal card: confirms the proposal in one tap (AI-035)."
+  },
+  "proposalApplyChange": "Apply change",
+  "@proposalApplyChange": {
+    "description": "Edit proposal card: confirms the change to the diary entry."
+  },
+  "proposalAssumptionTitle": "Change the assumption",
+  "@proposalAssumptionTitle": {
+    "description": "Title of the sheet with alternatives for an assumption chip (AI-033)."
+  },
+  "proposalEditLabel": "Change to your diary",
+  "@proposalEditLabel": {
+    "description": "Edit proposal card: small heading above the entry being changed (AI-050)."
+  },
+  "proposalFieldAmount": "Amount",
+  "@proposalFieldAmount": {
+    "description": "Edit proposal card: row label for the amount."
+  },
+  "proposalFieldCalories": "Calories",
+  "@proposalFieldCalories": {
+    "description": "Edit proposal card: row label for the calories."
+  },
+  "proposalFieldProtein": "Protein",
+  "@proposalFieldProtein": {
+    "description": "Edit proposal card: row label for the protein."
+  },
+  "proposalFieldLeftToday": "Left today",
+  "@proposalFieldLeftToday": {
+    "description": "Edit proposal card: row label for the calories left today, before and after the change."
+  },
+  "proposalChangeSemantics": "{label}: {before}, now {after}",
+  "@proposalChangeSemantics": {
+    "description": "Edit proposal card: screen-reader text of one before and after row.",
+    "placeholders": {
+      "label": { "type": "String" },
+      "before": { "type": "String" },
+      "after": { "type": "String" }
+    }
+  },
+  "weightTitle": "Weight",
+  "@weightTitle": {
+    "description": "Weight card: title (HM-005)."
+  },
+  "weightTrendCaption": "kg trend",
+  "@weightTrendCaption": {
+    "description": "Weight card: caption under the big trend number."
+  },
+  "weightRatePerWeek": "{rate} kg per week",
+  "@weightRatePerWeek": {
+    "description": "Weight card: weekly rate of change of the trend.",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "weightLastWeighIn": "Last weigh-in: {value} kg · {date}",
+  "@weightLastWeighIn": {
+    "description": "Weight card: the most recent weigh-in.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "weightToGoal": "{amount} kg to your goal",
+  "@weightToGoal": {
+    "description": "Weight card: distance to the goal weight, neutral wording.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "weightRange": "Last 3 months",
+  "@weightRange": {
+    "description": "Weight card: time range of the chart."
+  },
+  "weightLog": "Log weigh-in",
+  "@weightLog": {
+    "description": "Weight card: opens the number pad to log a weigh-in (WB-001)."
+  },
+  "progressWeekTitle": "This week",
+  "@progressWeekTitle": {
+    "description": "Progress: heading of the weekly summary (IN-001)."
+  },
+  "progressReviewTitle": "Buddy's review",
+  "@progressReviewTitle": {
+    "description": "Progress: heading of the weekly review written by Buddy (AI-130)."
+  },
+  "progressAvgCalories": "Average calories",
+  "@progressAvgCalories": {
+    "description": "Progress: weekly summary row label."
+  },
+  "progressAvgCaloriesValue": "{avg} of {budget} kcal",
+  "@progressAvgCaloriesValue": {
+    "description": "Progress: average daily calories against the budget.",
+    "placeholders": {
+      "avg": {
+        "type": "String"
+      },
+      "budget": {
+        "type": "String"
+      }
+    }
+  },
+  "progressDaysWithin": "Days within target",
+  "@progressDaysWithin": {
+    "description": "Progress: weekly summary row label."
+  },
+  "progressOutOf": "{done} of {total}",
+  "@progressOutOf": {
+    "description": "Progress: a count out of a total, e.g. days or workouts.",
+    "placeholders": {
+      "done": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "progressProteinDays": "Protein target days",
+  "@progressProteinDays": {
+    "description": "Progress: weekly summary row label."
+  },
+  "progressFiberAvg": "Fiber average",
+  "@progressFiberAvg": {
+    "description": "Progress: weekly summary row label."
+  },
+  "progressGrams": "{amount} g",
+  "@progressGrams": {
+    "description": "Progress: an amount in grams.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "progressWeightChange": "Trend weight change",
+  "@progressWeightChange": {
+    "description": "Progress: weekly summary row label."
+  },
+  "progressKg": "{amount} kg",
+  "@progressKg": {
+    "description": "Progress: an amount in kilograms.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "progressWorkouts": "Workouts done",
+  "@progressWorkouts": {
+    "description": "Progress: weekly summary row label."
+  },
+  "progressChartCalories": "Calories",
+  "@progressChartCalories": {
+    "description": "Progress: heading of the calories chart (IN-002)."
+  },
+  "progressChartMacros": "Macros",
+  "@progressChartMacros": {
+    "description": "Progress: heading of the macros chart (IN-003)."
+  },
+  "progressChartWeight": "Weight",
+  "@progressChartWeight": {
+    "description": "Progress: heading of the weight chart (IN-004)."
+  },
+  "progressGoalTitle": "Goal",
+  "@progressGoalTitle": {
+    "description": "Progress: heading of the goal progress card (IN-007)."
+  },
+  "progressGoalPhase": "Phase: {phase}",
+  "@progressGoalPhase": {
+    "description": "Progress: the current goal phase.",
+    "placeholders": {
+      "phase": {
+        "type": "String"
+      }
+    }
+  },
+  "progressGoalNowTarget": "{now} now · {target} target",
+  "@progressGoalNowTarget": {
+    "description": "Progress: current and target weight.",
+    "placeholders": {
+      "now": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "progressGoalMonth": "This month: {done} of {target} kg",
+  "@progressGoalMonth": {
+    "description": "Progress: this month against the monthly target.",
+    "placeholders": {
+      "done": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
   }
 }

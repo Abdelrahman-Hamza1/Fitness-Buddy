@@ -82,7 +82,7 @@ Cheap now, expensive later, so from the **first screen**:
 
 ## 7. Accessibility (UX-070–072)
 
-- Text scaling: layouts tested at 1.0 / 1.5 / 2.0 in golden tests. The big numbers use responsive type.
+- Text scaling: layouts tested at 1.0 and 2.0 in golden tests (2.0 bounds 1.5; the big number, which clamps its scale at 1.5, also has a 1.5 row; A02 D9). The big numbers use responsive type.
 - Contrast: design tokens checked for WCAG AA in both themes (automated test over the palette).
 - Never colour alone: macro colours always come with labels. Over-target uses a neutral tone + text (SF-021).
 - R2: semantics labels on all controls in EN + AR.

@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | S06 ✅ | L | Claude | ⬜ Not started |
+| App | S06 ✅ | L | Claude | ✅ Done (owner phone review = follow-up #72) |
 
 _Old ID: S07 (renumbered by TD-063, 2026-10-16)._
 
@@ -31,9 +31,9 @@ _Old ID: S07 (renumbered by TD-063, 2026-10-16)._
 - The icon set (Material Symbols vs an alternative).
 
 ## Exit criteria
-- [ ] The gallery shows every component in light/dark. Goldens for all components pass in CI (light/dark × scale 1.0/2.0 × LTR/RTL).
-- [ ] The contrast test passes for all text/background token pairs.
-- [ ] The owner reviewed the mockups **on the A55**. Feedback is recorded in the Outcome and applied (or ticketed to a later step).
+- [x] The gallery shows every component in light/dark. Goldens for all components pass in CI (light/dark × scale 1.0/2.0 × LTR/RTL).
+- [x] The contrast test passes for all text/background token pairs.
+- [ ] _(deferred: backlog #72, owner 2026-10-18 "mark the phone test as a followup")_ The owner reviewed the mockups **on the A55**. Feedback is recorded in the Outcome and applied (or ticketed to a later step).
 
 ## Read first
 `spec/30-ux-principles.md` · `spec/16-insights-and-home.md` §1 · `spec/10-ai-assistant.md` §4 · `09-cross-cutting.md` §3, §7
@@ -243,7 +243,44 @@ No streak, badge-as-reward, score or "failed" component exists (IN-020, SF-022).
 
 ## Progress log
 - 2026-10-17: Wave 1 (TD-068): plan written, architect group review approve-with-changes, amendments applied. Plan approved by the orchestrator under TD-037 (no blocking owner item). Next: implementation.
-_Empty until Phase C._
+- 2026-10-17: Phase C started on `step/A02-design-system` (process v2: Normal tier, Sonnet implements + reviews; owner: "full thing", own branch, don't block Codex). WP1 next.
+- 2026-10-18: WP1 done on the branch (3 commits): `fb_design_system` package (fonts pinned, tokens, palettes A/B, FbTheme, contrast tests green for A and B x light/dark, DS ARB + gen-l10n, dependency test, alchemist config + `loadFbTestFonts` via `lib/testing.dart`, `fbGoldenMatrix`, tokens golden), `app_check --package`, Makefile `goldens`/`install-android`, app on `FbTheme` + `FbLocalizations`, 2 app goldens regenerated. `make check-dart gen-check test-dart` green, test-dart 1m20s. D19: confirmed (tests assert Inter/Noto widths differ from Ahem). D7 specimen spike: dropped (laptop-only determinism can't be checked against CI in the time box). Next: WP2.
+- 2026-10-18: WP2 done on the branch: display components in `fb_design_system/lib/src/components/` (button, card, list row, section header, big number, progress bar, macro bars, three chips, source badge + legend, estimate marker + range sheet, empty state, inline banner, skeleton) and, because the legend and range sheet need it, `FbSheet`/`showFbSheet` already (WP3 adds its UX-011 test only). 24 widget tests in `test/components/display_test.dart` (all §5 B names), ARB key `fbAnswerDefault` added. Source-badge touch area is 24 dp (16 dp circle + 4 dp padding), not 48. `make check`, `test-dart`, `gen-check` green. Next: WP3.
+- 2026-10-18: WP3 done on the branch: `NumberPadBuffer`/`FbNumberPad`/`FbUnitPicker`, `FbInputBar`, `showFbUndoSnackBar`/`showFbSnackBar` (+`FbSnackBarHandle`), `FbDateHeader`, chart types + `FbTimeSeriesChart` placeholder (`lib/src/charts/`); 31 tests in `test/components/input_shell_test.dart` (all §5 C names, incl. barrel and LC-002 scan). Finding: Flutter 3.47's `SnackBar` with an action persists forever by default, so the 5 s window needs `persist: false`; `showFbUndoSnackBar` passes `persist: accessibleNavigation` (no timeout for TalkBack, WCAG 2.2.1), pinned by test. ARB: +`fbInputCamera`, `fbInputBarcode`, -unused `fbClose`. `make check`, `test-dart`, `gen-check` green. Next: WP4.
+- 2026-10-18: WP4 done on the branch: 21 component golden matrices (`test/components/*_golden_test.dart`, PNGs in `test/components/goldens/ci/`, 696 KB total; tokens golden regenerated too), all 8 light/dark x 1.0/2.0 x LTR/RTL combos, big number also 1.5. All PNGs eyeballed: no overflow stripes, RTL mirrors correctly. Fixes: `fbGoldenCell` now has a `Material` surface (chips/ink need one; tokens PNG text widths shifted slightly); `FbInputBar` hint is now one line with ellipsis (a wrapped hint poked out of the stadium shape at 2.0); legend and estimate-range sheet bodies extracted as `@visibleForTesting` widgets (barrel now uses `show` for those two files). Snackbar golden renders the `SnackBar` widget in place at a fixed cell height (its Wrap has no intrinsic sizes). `make test-dart` 1m23s before, 1m43s after (+20s). `make check`, `test-dart`, `gen-check` green. Next: WP5.
+- 2026-10-18: WP5 done on the branch: `themeVariantProvider`/`themeModeProvider` (in `core/theme/`, not `app/theme/`: app_check rule 5 forbids features importing `app/`), watched in `app.dart`; `DesignPreviewRoute` (`/me/design-preview`) nested in Me, registered only in dev; `AppNavigator.push/pop`; `features/design_preview/` (Mockups placeholders, Components gallery with a section registry + coverage test, Tokens with live contrast); #35 tab placeholders are `FbEmptyState` (Today has no title bar), update screen uses `FbButton`/`FbSpace`. Gallery sample strings live in `application/gallery_samples.dart` as data (D15). No emulator run, so no screenshot (the plan's screenshot item is deferred to the owner session). `make check`, `test-dart`, `gen-check` green. Next: WP6.
+- 2026-10-18: WP6 done on the branch: `application/fake_data.dart` + five mockups in `presentation/mockups/` (Today, Food proposal, Edit proposal, Weight card, Progress) from DS components only; ~60 product-copy ARB keys (`today…`, `proposal…`, `weight…`, `progress…`); mockup goldens (`test/features/design_preview/goldens/ci/mockup_*.png`, LTR, light/dark x 1.0/2.0, 360 wide, min height 800, taller content shown whole); interaction tests (assumption chip, answer chip, `~` marker); LC-002 test now also accepts ARB templates with placeholders filled and FakeData strings; shell uses new `FbIcons.nav*` (WP5 leftover). `make check`, `test-dart`, `gen-check` green; `make build-android FLAVOR=dev` builds (APK 26 MB). Next: WP7 (owner session).
+- 2026-10-18 **Owner review instructions** (phone session, ~30 min, A55 by USB):
+  1. Phone: Settings > Developer options > USB debugging on; plug in, allow the laptop. Orchestrator checks `adb devices`, then `git switch step/A02-design-system && make build-android FLAVOR=dev && make install-android FLAVOR=dev` ("FB Dev" icon next to "FB Staging").
+  2. Open **FB Dev** > **Me** tab > **Design preview** row. The screen has three tabs (Mockups, Components, Tokens) and, pinned above them, the palette switch (A / B) and the theme switch (Light / Dark / System).
+  3. **Mockups** tab, scroll through: Today, Food proposal (tap the assumption chip, an answer chip, the `~` marker, a ⓓ badge and an item row: each opens a sheet or changes selection), Edit proposal, Weight card, Progress. The Arabic name (Labaneh · لبنة) should look right next to the English text.
+  4. Flip the **A/B** switch and look at Today and the Food proposal in both. Then flip Light / Dark.
+  5. Phone Settings > Display > Font size and style > largest, and look at Today and the proposals again (nothing should be cut off; the proposal buttons stack, Log it on top).
+  6. **Components** and **Tokens** tabs: a quick scroll.
+  7. Owner answers: palette **A or B** (default A). Per mockup: anything cluttered, dated or hard to read? Is the Arabic name right? Record the pick and feedback here, and where each item went.
+  8. S06b part: install the CI staging APK (latest `android` artifact) and check the four tabs in light/dark; `make cold-start` (10 runs); `/v1/config` on the device (local Host + `make run-dev`, or the laptop test server).
+- 2026-10-18: Review round 1 fixes applied (estimate marker 24 dp, contrast pairs, snackbar persist rule, copy, shared proposal action row, Today and proposal mockups, consistent fake data, tab placeholder messages). Owner review instructions above are unchanged except step 3 (tap a row of the food proposal to open the adjust sheet) and step 5 (the proposal buttons stack at the largest font size).
+
+- 2026-10-18: Phase D done (code review Sonnet: approve, 0 blocker/major, 4 minor + 4 nits; UX review Sonnet: 3 major, 13 minor, 5 nits; all fixed in round 1 or logged, orchestrator re-checked the fixes per TD-054). Owner: "complete, finish, merge; mark the phone test as a followup". Closing.
 
 ## Outcome
-_Written in Phase E._
+**Built.** New workspace package `packages/fb_design_system`: Inter + Noto Sans Arabic (variable, OFL, pinned commit + sha256), tokens (two palettes A "Fresh" teal / B "Warm" indigo, light and dark; type scale with tabular numerals; spacing, radii, elevation, motion that honours disableAnimations), `FbTheme` (explicit ColorScheme + `FbColors` ThemeExtension), `FbIcons`, its own ARB (`FbLocalizations`), 19 components + chart types and a placeholder `FbTimeSeriesChart`, `lib/testing.dart` (`loadFbTestFonts` for goldens). Automated WCAG AA contrast tests over every text/background and non-text pair, for A and B × light/dark. 21 component golden matrices (light/dark × 1.0/2.0 × LTR/RTL, big number + 1.5) and a tokens sheet. `tools/app_check --package` (raw-string + directional) runs on the package. App: on `FbTheme`, theme variant/mode providers in `core/theme/`, dev-only **Design preview** under Me (Mockups · Components · Tokens, A/B and light/dark switches), five static mockups (Today, Food proposal, Edit proposal, Weight card, Progress) with ~60 reusable product-copy ARB keys and LTR goldens, tab placeholders as `FbEmptyState` (#35), shell icons via `FbIcons`. Makefile: `goldens` covers both packages, new `install-android`.
+
+**Deviations (and why).**
+- Owner A55 review (exit criterion 3) and the palette pick are deferred to backlog #72/#59 (owner decision 2026-10-18). Default palette is A.
+- Font files renamed (`InterVariable.ttf`, `NotoSansArabicVariable.ttf`) to avoid brackets in asset paths; `SOURCES.md` maps them.
+- Theme providers live in `core/theme/`, not `app/theme/` (app_check rule 5: features can't import `app/`).
+- `lib/testing.dart` is a public test-only entry (the app's goldens need the prefixed package fonts).
+- D7 real-text specimen spike dropped (determinism vs CI couldn't be checked in the time box); goldens draw text as blocks, glyph look is for the phone review.
+- Snackbars: Flutter 3.47 makes an action snackbar persistent by default, so both snackbars pass `persist: accessibleNavigation` (5 s window, no timeout with TalkBack, WCAG 2.2.1).
+- Source badge and `~` marker tap area 24×24 dp (WCAG 2.5.8 AA), not Material's 48 dp, to keep rows compact; owner judges on the A55 (#72).
+- Mockup goldens are 360 wide with min height 800 (taller content is shown whole instead of cropped).
+- `09` §7 aligned to the card: goldens at 1.0 and 2.0, plus 1.5 for the big number.
+
+**Follow-ups.** #72 owner phone session (A02 review + S06b device check + #61 perf run), #59 palette pick, #60 badge spec, #71 proposal action row into the DS (A22), #73 to-confirm row layout at text scale 2.0.
+
+**New TDs.** TD-076 Design-system conventions (Accepted).
+
+**Measurements.** `make test-dart` 1m23s → ~1m45s (+goldens). Component PNGs 696 KB, mockups ~180 KB. Fonts +1.7 MB raw. Dev release APK 26 MB.
+
+**Metrics.** Planned L (~2.75 sessions); actual about 1 session of Sonnet work (6 WPs, 7 agent runs incl. one resumed after the usage limit) + 2 reviews + 1 fix round. Review findings: 3 major (UX copy/layout), 17 minor, 9 nits; all majors fixed. Tests added: ~125 in `fb_design_system` (contrast, tokens, fonts, dependencies, components, 22 goldens), ~15 in the app (design preview, gating, switches, mockup interactions, 5 mockup goldens), 6 in `app_check`.

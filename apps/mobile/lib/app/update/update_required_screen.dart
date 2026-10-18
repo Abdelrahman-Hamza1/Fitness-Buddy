@@ -1,3 +1,4 @@
+import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/app/update/update_check.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,17 +26,16 @@ class UpdateRequiredScreen extends ConsumerWidget {
       UpdateCheckStatus.stillOld => l10n.updateRequiredStillOld,
       UpdateCheckStatus.failed => l10n.updateRequiredCheckFailed,
     };
-    // A02 replaces the spacing values with design-system tokens.
     return Scaffold(
       appBar: AppBar(title: Text(l10n.updateRequiredTitle)),
       body: SafeArea(
         // Scrolls at large text sizes and in landscape; centred otherwise.
         child: LayoutBuilder(
           builder: (context, constraints) => SingleChildScrollView(
-            padding: const EdgeInsetsDirectional.all(24),
+            padding: const EdgeInsetsDirectional.all(FbSpace.s5),
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                minHeight: (constraints.maxHeight - 48).clamp(
+                minHeight: (constraints.maxHeight - 2 * FbSpace.s5).clamp(
                   0,
                   double.infinity,
                 ),
@@ -46,33 +46,34 @@ class UpdateRequiredScreen extends ConsumerWidget {
                 children: [
                   ExcludeSemantics(
                     child: Icon(
-                      Icons.system_update_outlined,
-                      size: 48,
+                      FbIcons.info,
+                      size: FbSpace.s7,
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: FbSpace.s4),
                   Text(l10n.updateRequiredBody),
-                  const SizedBox(height: 24),
-                  FilledButton(
+                  const SizedBox(height: FbSpace.s5),
+                  FbButton.primary(
+                    label: l10n.updateRequiredCheckAgain,
+                    expand: true,
                     // Disabled while a check runs, so taps don't pile up.
                     onPressed: checking
                         ? null
                         : () => ref
                               .read(updateCheckProvider.notifier)
                               .checkAgain(),
-                    child: Text(l10n.updateRequiredCheckAgain),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: FbSpace.s4),
                   if (checking)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox.square(
-                          dimension: 16,
+                          dimension: FbSpace.s4,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: FbSpace.s2),
                         Flexible(child: Text(l10n.updateRequiredChecking)),
                       ],
                     )

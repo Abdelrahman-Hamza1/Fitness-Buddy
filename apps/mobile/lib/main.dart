@@ -1,3 +1,4 @@
+import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/app/app.dart';
 import 'package:fb_mobile/app/app_scope.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
@@ -10,6 +11,8 @@ import 'package:material_ui/material_ui.dart';
 /// the config is compiled in.
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // Lazy: the font licences are read only when the licence page opens.
+  registerFbFontLicenses();
   final container = ProviderContainer(
     overrides: appOverrides(AppConfig.fromEnvironment()),
   );

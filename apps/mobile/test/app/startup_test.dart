@@ -85,7 +85,7 @@ void main() {
       await tester.tap(find.text('Me'));
       await tester.pumpAndSettle();
       expect(
-        find.text('Your profile, goals and settings will show up here.'),
+        find.text('Your profile and settings will live here.'),
         findsOneWidget,
       );
     });

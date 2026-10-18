@@ -8,6 +8,7 @@ environment:
 workspace:
   - apps/mobile
   - packages/fb_api_client
+  - packages/fb_design_system
   - packages/fb_domain
   - packages/fb_text
   - tools/app_check

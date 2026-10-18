@@ -54,10 +54,10 @@ void main() {
 
       // Every tab works offline, and Today comes back as it was.
       final tabs = {
-        'Progress': (ProgressScreen, 'Your weight trend'),
-        'Workouts': (WorkoutsScreen, 'Your workout plan'),
-        'Me': (MeScreen, 'Your profile, goals'),
-        'Today': (TodayScreen, "Your day's meals"),
+        'Progress': (ProgressScreen, 'Charts appear after'),
+        'Workouts': (WorkoutsScreen, 'Your workouts will show up'),
+        'Me': (MeScreen, 'Your profile and settings'),
+        'Today': (TodayScreen, 'Tell Buddy what you ate'),
       };
       for (final MapEntry(key: label, value: (screen, text)) in tabs.entries) {
         await $(NavigationBar).$(label).tap();

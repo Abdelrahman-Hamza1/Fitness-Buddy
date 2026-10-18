@@ -1,0 +1,44 @@
+name: fb_design_system
+description: "Fitness Buddy design system, with tokens, themes, components and the bundled Latin and Arabic font pair."
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.13.0
+
+# Pure presentation (A02 D6): no state management, no I/O, no domain types.
+# Adding a runtime dependency needs an entry in the allowlist in
+# test/dependencies_test.dart.
+dependencies:
+  flutter:
+    sdk: flutter
+  # Needed by the gen-l10n output (lib/l10n/gen).
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+  # Same exact pin as the app (TD-014). Bumped on purpose, in both places.
+  material_ui: 1.6.0
+
+dev_dependencies:
+  alchemist: 0.14.1
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: 11.0.0
+  yaml: ^3.1.3
+
+flutter:
+  uses-material-design: true
+  # Required by `flutter gen-l10n`.
+  generate: true
+  # Variable fonts (A02 D1): fontWeight drives the wght axis. Sources, hashes
+  # and licences: assets/fonts/SOURCES.md.
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/InterVariable.ttf
+    - family: NotoSansArabic
+      fonts:
+        - asset: assets/fonts/NotoSansArabicVariable.ttf
+  assets:
+    - assets/fonts/OFL-Inter.txt
+    - assets/fonts/OFL-NotoSansArabic.txt

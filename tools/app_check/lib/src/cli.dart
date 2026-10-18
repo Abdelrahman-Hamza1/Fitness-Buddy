@@ -18,10 +18,14 @@ const String defaultAppDir = 'apps/mobile';
 const String _usage =
     '''
 Usage: app_check [<app-dir>]
+       app_check --package <package-dir>
 
 Checks the Flutter app's lib/ folder: import boundaries, the single-writer
 write path, raw user-facing strings, left/right layout. <app-dir> holds pubspec.yaml and lib/
 (default: $defaultAppDir). Rules: tools/app_check/README.md.
+
+--package checks a UI package (e.g. packages/fb_design_system) instead: only
+the raw-string and directional rules, on every file of its lib/.
 
 Exit codes: 0 no violations, 1 violations (one per line on stderr,
 "path:line: rule: message"), 64 bad command line.''';
@@ -40,7 +44,11 @@ int runAppCheck(
     out.writeln(_usage);
     return exitOk;
   }
-  if (arguments.length > 1 || arguments.any((a) => a.startsWith('-'))) {
+  final packageMode = arguments.contains('--package');
+  final positional = arguments.where((a) => a != '--package').toList();
+  if (positional.length > 1 ||
+      (packageMode && positional.isEmpty) ||
+      positional.any((a) => a.startsWith('-'))) {
     err
       ..writeln(
         'app-check: error: unexpected arguments: ${arguments.join(' ')}',
@@ -49,7 +57,7 @@ int runAppCheck(
     return exitUsage;
   }
 
-  var appDir = arguments.isEmpty ? defaultAppDir : arguments.single;
+  var appDir = positional.isEmpty ? defaultAppDir : positional.single;
   appDir = appDir.replaceAll(r'\', '/');
   while (appDir.length > 1 && appDir.endsWith('/')) {
     appDir = appDir.substring(0, appDir.length - 1);
@@ -90,6 +98,7 @@ int runAppCheck(
         path: relative,
         source: source,
         packageName: packageName,
+        packageMode: packageMode,
       ).map((v) => v.withPath('$shown$relative')),
     );
     allows += allowCount(path: relative, source: source);
@@ -98,7 +107,8 @@ int runAppCheck(
   if (violations.isEmpty) {
     out.writeln(
       'app-check: OK, ${files.length} Dart files under ${shown}lib '
-      '(generated files skipped), $allows allow comment(s)',
+      '(${packageMode ? 'package mode: raw-string and directional only, ' : ''}'
+      'generated files skipped), $allows allow comment(s)',
     );
     return exitOk;
   }
