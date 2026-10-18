@@ -277,6 +277,8 @@ No streak, badge-as-reward, score or "failed" component exists (IN-020, SF-022).
 - Mockup goldens are 360 wide with min height 800 (taller content is shown whole instead of cropped).
 - `09` §7 aligned to the card: goldens at 1.0 and 2.0, plus 1.5 for the big number.
 
+**Owner review (2026-10-18, A55).** "I like it… comfy and easy to read. Seems solid." Palette **B** (#59), prefers dark (#75), too much scrolling: wants denser screens later (#74).
+
 **Follow-ups.** #72 owner phone session (A02 review + S06b device check + #61 perf run), #59 palette pick, #60 badge spec, #71 proposal action row into the DS (A22), #73 to-confirm row layout at text scale 2.0.
 
 **New TDs.** TD-076 Design-system conventions (Accepted).
