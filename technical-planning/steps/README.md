@@ -193,7 +193,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 |---|---|---|---|---|---|---|
 | [B01](B01-spike-sync.md) | Spike: sync | S04 ✅, S08 ✅ | M | S12 |  | ✅ |
 | [B02](B02-spike-ai-bakeoff.md) | OpenAI interpretation spike & eval harness v0 | S03 ✅, S08 ✅ | L | S10 |  | ✅ |
-| [B03](B03-laptop-test-server.md) | Laptop test server for the phone | S04 ✅ | S | new |  | ⬜ |
+| [B03](B03-laptop-test-server.md) | Laptop test server for the phone | S04 ✅ | S | new |  | ✅ (reboot follow-up#76) |
 | [B04](B04-identity-backend.md) | Identity backend | S04 ✅ | L | S24 (real email sender → B14) |  | ⬜ |
 | [B05](B05-sync-backend.md) | Sync backend | B01, B04 | M | S26 |  | ⬜ |
 | [B06](B06-account-deletion-backend.md) | Account deletion (backend) | B04, B05 | M | S28 server part |  | ⬜ |

@@ -246,6 +246,11 @@ jobs:
       - name: Build and smoke-test the API image
         run: make image-smoke
 
+      - name: Private laptop stack safety, isolation and restore (B03, synthetic only)
+        env:
+          PHONE_SERVER_SMOKE_IMAGE: fitness-buddy-api:smoke
+        run: make phone-server-smoke
+
       - name: Set up Flutter for the sync harness (version from .fvmrc)
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:

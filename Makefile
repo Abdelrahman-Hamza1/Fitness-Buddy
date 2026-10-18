@@ -465,3 +465,29 @@ eval-live: eval-cli ## PAID: at most three fixed synthetic Luna requests; no ret
 
 eval-schema: eval-cli ## Regenerate Buddy's internal schema from C# records
 	cd '$(REPO_ROOT)' && '$(DOTNET)' '$(BUDDY_SPIKE_DLL)' --schema > backend/src/Modules/Buddy/Prompts/interpret-v0.schema.json
+
+##@ Private laptop test server (B03)
+
+PHONE_SERVER := python3 '$(REPO_ROOT)/tools/scripts/phone-server.py'
+.PHONY: serve-phone-prepare serve-phone-policy serve-phone serve-phone-stop serve-phone-status serve-phone-backup serve-phone-restore-check serve-phone-timer phone-server-check phone-server-smoke
+serve-phone-prepare: ## Build an immutable backend image from origin/main and prepare private state outside git
+	$(PHONE_SERVER) prepare
+serve-phone-policy: ## Generate the private A55-only tailnet policy for owner application
+	$(PHONE_SERVER) policy
+serve-phone: ## Start the private phone stack (requires confirmed ACL, HTTPS and protected/owner-approved laptop storage)
+	$(PHONE_SERVER) up
+serve-phone-stop: ## Stop the private phone stack and its owned Serve mapping; preserve data
+	$(PHONE_SERVER) stop
+serve-phone-status: ## Report phone-server readiness, main revision and backup age
+	$(PHONE_SERVER) status
+serve-phone-backup: ## Dump the phone database privately; retain seven days after success
+	$(PHONE_SERVER) backup
+serve-phone-restore-check: ## Restore latest phone backup into an isolated scratch database, then remove the scratch
+	$(PHONE_SERVER) restore-check
+serve-phone-timer: ## Enable the nightly backup user timer (requires prepared private snapshot)
+	$(PHONE_SERVER) install-timer
+phone-server-check: ## Offline safety tests for laptop operations, no Tailscale or paid API access
+	PYTHONDONTWRITEBYTECODE=1 python3 -I -m unittest discover -s '$(REPO_ROOT)/tools/scripts' -p test_phone_server.py
+	bash -n '$(REPO_ROOT)/tools/scripts/setup-tailscale.sh' '$(REPO_ROOT)/infra/phone-server/init-roles.sh'
+phone-server-smoke: phone-server-check ## Synthetic Docker isolation/backup/restore/proxy smoke; no phone or Tailscale changes
+	@bash '$(REPO_ROOT)/tools/scripts/phone-server-smoke.sh'

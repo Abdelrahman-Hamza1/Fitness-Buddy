@@ -85,7 +85,7 @@ In order (`src/Host/Http/HttpSetup.cs`): forwarded headers → request id → ex
 
 `make up` builds one image, starts a private Postgres 18.6, applies migrations, then starts api + worker.
 Only the API publishes a loopback port (5198). `make down` preserves the database volume. Bootstrap
-passwords in `infra/compose/postgres/001-roles.sql` are **local-only**; B13 provisions real secrets.
+passwords in `infra/compose/postgres/001-roles.sql` are **local-only**; B03 uses independent secrets for the private phone server; B13 provisions Hetzner secrets.
 Neither the API nor worker receives migrator credentials. Password/SCRAM connections disable native GSS/Kerberos discovery; explicit GSS Require is rejected rather than downgraded. TLS settings are preserved. Do not point this bootstrap at an existing
 production database. A changed bootstrap script only applies to a fresh local volume.
 
@@ -229,6 +229,16 @@ The laptop has about 3 GB free, so the Makefile builds with `-m:4`, turns off MS
 ```bash
 DOTNET_ROOT=~/.dotnet ~/.dotnet/dotnet build-server shutdown
 ```
+
+## Private phone server (B03)
+
+`make serve-phone-prepare` builds an immutable backend image from `origin/main`, with its own
+credentials, compose project, volume and external snapshots. `make serve-phone` is gated on
+confirmed A55-only Tailscale policy, HTTPS and encrypted database/backup storage (or the explicit owner-approved private-laptop exception). The loopback
+API is 5199; dev remains 5198. Nightly private dumps and isolated restore checks use a dedicated
+read-only backup role. See [the runbook](../docs/runbooks/laptop-test-server.md); a connected
+Tailscale client alone does not mean the server is activated. `make phone-server-smoke` proves
+synthetic isolation/backup boundaries in CI without touching the owner's stack or tailnet.
 
 ## Sync spike (B01)
 
