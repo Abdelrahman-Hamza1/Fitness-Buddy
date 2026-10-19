@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SyncPushResponse {
 
- List<SyncPushResult> get results; DateTime get serverTime;
+ List<SyncPushResult> get results; DateTime get serverTime; String get datasetId;
 /// Create a copy of SyncPushResponse
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +30,20 @@ $SyncPushResponseCopyWith<SyncPushResponse> get copyWith => _$SyncPushResponseCo
 @override
 bool operator ==(Object other) {
   final _this = this as SyncPushResponse;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SyncPushResponse&&const DeepCollectionEquality().equals(other.results, _this.results)&&(identical(other.serverTime, _this.serverTime) || other.serverTime == _this.serverTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SyncPushResponse&&const DeepCollectionEquality().equals(other.results, _this.results)&&(identical(other.serverTime, _this.serverTime) || other.serverTime == _this.serverTime)&&(identical(other.datasetId, _this.datasetId) || other.datasetId == _this.datasetId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as SyncPushResponse;
-  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.results),_this.serverTime);
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.results),_this.serverTime,_this.datasetId);
 }
 
 @override
 String toString() {
   final _this = this as SyncPushResponse;
-  return 'SyncPushResponse(results: ${_this.results}, serverTime: ${_this.serverTime})';
+  return 'SyncPushResponse(results: ${_this.results}, serverTime: ${_this.serverTime}, datasetId: ${_this.datasetId})';
 }
 
 
@@ -54,7 +54,7 @@ abstract mixin class $SyncPushResponseCopyWith<$Res>  {
   factory $SyncPushResponseCopyWith(SyncPushResponse value, $Res Function(SyncPushResponse) _then) = _$SyncPushResponseCopyWithImpl;
 @useResult
 $Res call({
- List<SyncPushResult> results, DateTime serverTime
+ List<SyncPushResult> results, DateTime serverTime, String datasetId
 });
 
 
@@ -71,11 +71,12 @@ class _$SyncPushResponseCopyWithImpl<$Res>
 
 /// Create a copy of SyncPushResponse
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? results = null,Object? serverTime = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? results = null,Object? serverTime = null,Object? datasetId = null,}) {
   return _then(SyncPushResponse(
 results: null == results ? _self.results : results // ignore: cast_nullable_to_non_nullable
 as List<SyncPushResult>,serverTime: null == serverTime ? _self.serverTime : serverTime // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,datasetId: null == datasetId ? _self.datasetId : datasetId // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -160,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<SyncPushResult> results,  DateTime serverTime)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<SyncPushResult> results,  DateTime serverTime,  String datasetId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SyncPushResponse() when $default != null:
-return $default(_that.results,_that.serverTime);case _:
+return $default(_that.results,_that.serverTime,_that.datasetId);case _:
   return orElse();
 
 }
@@ -181,10 +182,10 @@ return $default(_that.results,_that.serverTime);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<SyncPushResult> results,  DateTime serverTime)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<SyncPushResult> results,  DateTime serverTime,  String datasetId)  $default,) {final _that = this;
 switch (_that) {
 case _SyncPushResponse():
-return $default(_that.results,_that.serverTime);case _:
+return $default(_that.results,_that.serverTime,_that.datasetId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +202,10 @@ return $default(_that.results,_that.serverTime);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<SyncPushResult> results,  DateTime serverTime)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<SyncPushResult> results,  DateTime serverTime,  String datasetId)?  $default,) {final _that = this;
 switch (_that) {
 case _SyncPushResponse() when $default != null:
-return $default(_that.results,_that.serverTime);case _:
+return $default(_that.results,_that.serverTime,_that.datasetId);case _:
   return null;
 
 }
@@ -216,7 +217,7 @@ return $default(_that.results,_that.serverTime);case _:
 @JsonSerializable()
 
 class _SyncPushResponse implements SyncPushResponse {
-  const _SyncPushResponse({required  List<SyncPushResult> results, required this.serverTime}): _results = results;
+  const _SyncPushResponse({required  List<SyncPushResult> results, required this.serverTime, required this.datasetId}): _results = results;
   factory _SyncPushResponse.fromJson(Map<String, dynamic> json) => _$SyncPushResponseFromJson(json);
 
  final  List<SyncPushResult> _results;
@@ -227,6 +228,7 @@ class _SyncPushResponse implements SyncPushResponse {
 }
 
 @override final  DateTime serverTime;
+@override final  String datasetId;
 
 /// Create a copy of SyncPushResponse
 /// with the given fields replaced by the non-null parameter values.
@@ -241,18 +243,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SyncPushResponse&&const DeepCollectionEquality().equals(other.results, _results)&&(identical(other.serverTime, serverTime) || other.serverTime == serverTime));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SyncPushResponse&&const DeepCollectionEquality().equals(other.results, _results)&&(identical(other.serverTime, serverTime) || other.serverTime == serverTime)&&(identical(other.datasetId, datasetId) || other.datasetId == datasetId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_results),serverTime);
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_results),serverTime,datasetId);
 }
 
 @override
 String toString() {
-    return 'SyncPushResponse(results: $results, serverTime: $serverTime)';
+    return 'SyncPushResponse(results: $results, serverTime: $serverTime, datasetId: $datasetId)';
 }
 
 
@@ -263,7 +265,7 @@ abstract mixin class _$SyncPushResponseCopyWith<$Res> implements $SyncPushRespon
   factory _$SyncPushResponseCopyWith(_SyncPushResponse value, $Res Function(_SyncPushResponse) _then) = __$SyncPushResponseCopyWithImpl;
 @override @useResult
 $Res call({
- List<SyncPushResult> results, DateTime serverTime
+ List<SyncPushResult> results, DateTime serverTime, String datasetId
 });
 
 
@@ -280,11 +282,12 @@ class __$SyncPushResponseCopyWithImpl<$Res>
 
 /// Create a copy of SyncPushResponse
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? results = null,Object? serverTime = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? results = null,Object? serverTime = null,Object? datasetId = null,}) {
   return _then(_SyncPushResponse(
 results: null == results ? _self._results : results // ignore: cast_nullable_to_non_nullable
 as List<SyncPushResult>,serverTime: null == serverTime ? _self.serverTime : serverTime // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,datasetId: null == datasetId ? _self.datasetId : datasetId // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

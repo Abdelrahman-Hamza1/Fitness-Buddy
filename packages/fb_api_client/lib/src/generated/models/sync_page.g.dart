@@ -11,9 +11,15 @@ _SyncPage _$SyncPageFromJson(Map<String, dynamic> json) => _SyncPage(
       .map((e) => SyncDocument.fromJson(e as Map<String, dynamic>))
       .toList(),
   nextCursor: json['nextCursor'] as String,
+  datasetId: json['datasetId'] as String,
+  serverTime: DateTime.parse(json['serverTime'] as String),
+  reason: json['reason'] as String?,
 );
 
 Map<String, dynamic> _$SyncPageToJson(_SyncPage instance) => <String, dynamic>{
   'changes': instance.changes.map((e) => e.toJson()).toList(),
   'nextCursor': instance.nextCursor,
+  'datasetId': instance.datasetId,
+  'serverTime': instance.serverTime.toIso8601String(),
+  'reason': instance.reason,
 };

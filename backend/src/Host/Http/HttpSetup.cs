@@ -60,6 +60,7 @@ internal static class HttpSetup
 
         app.UseStatusCodePages();
         app.UseRouting();
+        app.UseMiddleware<HttpPrivacyMiddleware>();
         app.UseRateLimiter();
         app.UseMiddleware<ClientHeadersMiddleware>();
         app.UseAuthentication();

@@ -613,21 +613,14 @@ paths:
       tags:
         - UserData
       operationId: pushSync
-      summary: Experimental sync push
-      description: B01 feasibility prototype, synthetic data only; disabled in normal environments. See technical-planning/05 section 5.4.
-      x-fb-experimental: true
+      summary: sync push
+      description: Registered-user document sync; immutable HLC versions, dataset-bound admission and recoverable history. See technical-planning/05 section 5.
       x-fb-idempotency: exempt
       x-fb-idempotency-reason: Immutable entity, row id and HLC version identity makes retries idempotent without caching a stale batch response.
       parameters:
         - $ref: '#/components/parameters/AppVersion'
         - $ref: '#/components/parameters/Platform'
         - $ref: '#/components/parameters/DeviceId'
-        - name: X-Sync-Spike-Key
-          in: header
-          required: true
-          description: Ephemeral synthetic-data test access; unavailable in normal API environments.
-          schema:
-            type: string
       requestBody:
         required: true
         content:
@@ -636,7 +629,7 @@ paths:
               $ref: '#/components/schemas/SyncPushRequest'
       responses:
         '200':
-          description: The experimental sync result.
+          description: Sync result; dataset mismatch never acknowledges or writes a version.
           headers:
             X-Request-Id:
               $ref: '#/components/headers/XRequestId'
@@ -647,7 +640,16 @@ paths:
         '400':
           $ref: '#/components/responses/ValidationFailed'
         '401':
-          description: Invalid experimental access key.
+          description: Invalid credentials or inactive session.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '403':
+          description: This account cannot perform this operation.
           headers:
             X-Request-Id:
               $ref: '#/components/headers/XRequestId'
@@ -661,33 +663,19 @@ paths:
           $ref: '#/components/responses/RateLimited'
         '500':
           $ref: '#/components/responses/InternalError'
-        '501':
-          description: The experimental API is disabled.
-          headers:
-            X-Request-Id:
-              $ref: '#/components/headers/XRequestId'
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
+      security:
+        - bearerAuth: []
   /v1/sync/pull:
     get:
       tags:
         - UserData
       operationId: pullSync
-      summary: Experimental sync pull
-      description: B01 feasibility prototype, synthetic data only; disabled in normal environments. See technical-planning/05 section 5.4.
-      x-fb-experimental: true
+      summary: sync pull
+      description: Registered-user document sync; immutable HLC versions, dataset-bound admission and recoverable history. See technical-planning/05 section 5.
       parameters:
         - $ref: '#/components/parameters/AppVersion'
         - $ref: '#/components/parameters/Platform'
         - $ref: '#/components/parameters/DeviceId'
-        - name: X-Sync-Spike-Key
-          in: header
-          required: true
-          description: Ephemeral synthetic-data test access; unavailable in normal API environments.
-          schema:
-            type: string
         - name: cursor
           in: query
           required: true
@@ -702,9 +690,18 @@ paths:
           schema:
             type: integer
             format: int32
+        - name: datasetId
+          in: query
+          required: false
+          description: Dataset binding; omit only when starting discovery at cursor zero.
+          schema:
+            type:
+              - string
+              - 'null'
+            format: uuid
       responses:
         '200':
-          description: The experimental sync result.
+          description: Sync result; dataset mismatch never acknowledges or writes a version.
           headers:
             X-Request-Id:
               $ref: '#/components/headers/XRequestId'
@@ -715,7 +712,16 @@ paths:
         '400':
           $ref: '#/components/responses/ValidationFailed'
         '401':
-          description: Invalid experimental access key.
+          description: Invalid credentials or inactive session.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '403':
+          description: This account cannot perform this operation.
           headers:
             X-Request-Id:
               $ref: '#/components/headers/XRequestId'
@@ -729,33 +735,19 @@ paths:
           $ref: '#/components/responses/RateLimited'
         '500':
           $ref: '#/components/responses/InternalError'
-        '501':
-          description: The experimental API is disabled.
-          headers:
-            X-Request-Id:
-              $ref: '#/components/headers/XRequestId'
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
+      security:
+        - bearerAuth: []
   /v1/sync/history:
     get:
       tags:
         - UserData
       operationId: getSyncHistory
-      summary: Experimental sync history
-      description: B01 feasibility prototype, synthetic data only; disabled in normal environments. See technical-planning/05 section 5.4.
-      x-fb-experimental: true
+      summary: sync history
+      description: Registered-user document sync; immutable HLC versions, dataset-bound admission and recoverable history. See technical-planning/05 section 5.
       parameters:
         - $ref: '#/components/parameters/AppVersion'
         - $ref: '#/components/parameters/Platform'
         - $ref: '#/components/parameters/DeviceId'
-        - name: X-Sync-Spike-Key
-          in: header
-          required: true
-          description: Ephemeral synthetic-data test access; unavailable in normal API environments.
-          schema:
-            type: string
         - name: cursor
           in: query
           required: true
@@ -770,9 +762,18 @@ paths:
           schema:
             type: integer
             format: int32
+        - name: datasetId
+          in: query
+          required: false
+          description: Dataset binding; omit only when starting discovery at cursor zero.
+          schema:
+            type:
+              - string
+              - 'null'
+            format: uuid
       responses:
         '200':
-          description: The experimental sync result.
+          description: Sync result; dataset mismatch never acknowledges or writes a version.
           headers:
             X-Request-Id:
               $ref: '#/components/headers/XRequestId'
@@ -783,7 +784,16 @@ paths:
         '400':
           $ref: '#/components/responses/ValidationFailed'
         '401':
-          description: Invalid experimental access key.
+          description: Invalid credentials or inactive session.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '403':
+          description: This account cannot perform this operation.
           headers:
             X-Request-Id:
               $ref: '#/components/headers/XRequestId'
@@ -797,8 +807,69 @@ paths:
           $ref: '#/components/responses/RateLimited'
         '500':
           $ref: '#/components/responses/InternalError'
-        '501':
-          description: The experimental API is disabled.
+      security:
+        - bearerAuth: []
+  /v1/sync/history/{entity}/{id}:
+    get:
+      tags:
+        - UserData
+      operationId: getItemSyncHistory
+      summary: Recover earlier versions of one item
+      description: Registered-user document sync; immutable HLC versions, dataset-bound admission and recoverable history. See technical-planning/05 section 5.
+      parameters:
+        - $ref: '#/components/parameters/AppVersion'
+        - $ref: '#/components/parameters/Platform'
+        - $ref: '#/components/parameters/DeviceId'
+        - name: cursor
+          in: query
+          required: true
+          description: Last delivered sequence; start at zero. History and document cursors are separate.
+          schema:
+            type: string
+            pattern: ^(0|[1-9][0-9]{0,18})$
+        - name: limit
+          in: query
+          required: true
+          description: Maximum rows in this page (100 recommended).
+          schema:
+            type: integer
+            format: int32
+        - name: datasetId
+          in: query
+          required: false
+          description: Dataset binding; omit only when starting discovery at cursor zero.
+          schema:
+            type:
+              - string
+              - 'null'
+            format: uuid
+        - name: entity
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Sync result; dataset mismatch never acknowledges or writes a version.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncPage'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          description: Invalid credentials or inactive session.
           headers:
             X-Request-Id:
               $ref: '#/components/headers/XRequestId'
@@ -806,6 +877,23 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '403':
+          description: This account cannot perform this operation.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '426':
+          $ref: '#/components/responses/UpgradeRequired'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security:
+        - bearerAuth: []
   /v1/config:
     get:
       tags:
@@ -1162,6 +1250,12 @@ components:
           maxItems: 500
           items:
             $ref: '#/components/schemas/SyncChange'
+        datasetId:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: 'Optional for discovery only: unbound pushes perform no writes.'
     SyncPushResult:
       type: object
       required:
@@ -1185,12 +1279,13 @@ components:
           type:
             - string
             - 'null'
-          pattern: ^(clockDrift|versionConflict|unsupported)$
+          pattern: ^(clockDrift|versionConflict|unsupported|invalidPayload|datasetMismatch)$
     SyncPushResponse:
       type: object
       required:
         - results
         - serverTime
+        - datasetId
       properties:
         results:
           type: array
@@ -1199,6 +1294,9 @@ components:
         serverTime:
           type: string
           format: date-time
+        datasetId:
+          type: string
+          format: uuid
     SyncDocument:
       type: object
       description: A stored version with a decimal sequence. History sequences are in a separate cursor space.
@@ -1211,6 +1309,7 @@ components:
         - deletedAt
         - payload
         - serverSeq
+        - compacted
       properties:
         entity:
           type: string
@@ -1241,11 +1340,17 @@ components:
         serverSeq:
           type: string
           pattern: ^(0|[1-9][0-9]{0,18})$
+        compacted:
+          type: boolean
+          description: A retained deletion fence with empty payload; not an entity payload.
     SyncPage:
       type: object
       required:
         - changes
         - nextCursor
+        - datasetId
+        - serverTime
+        - reason
       properties:
         changes:
           type: array
@@ -1254,6 +1359,17 @@ components:
         nextCursor:
           type: string
           pattern: ^(0|[1-9][0-9]{0,18})$
+        datasetId:
+          type: string
+          format: uuid
+        serverTime:
+          type: string
+          format: date-time
+        reason:
+          type:
+            - string
+            - 'null'
+          pattern: ^(datasetMismatch|cursorInvalid)$
     ClientConfig:
       type: object
       description: Server-controlled settings for the app.

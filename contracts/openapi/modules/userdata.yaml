@@ -1,264 +1,704 @@
-# B01 experimental synthetic-data protocol; disabled outside the isolated harness.
-paths:
-  /v1/sync/push:
-    post:
-      tags: [UserData]
-      operationId: pushSync
-      summary: Experimental sync push
-      description: B01 feasibility prototype, synthetic data only; disabled in normal environments. See technical-planning/05 section 5.4.
-      x-fb-experimental: true
-      x-fb-idempotency: exempt
-      x-fb-idempotency-reason: Immutable entity, row id and HLC version identity makes retries idempotent without caching a stale batch response.
-      parameters:
-        - $ref: '../components/headers.yaml#/components/parameters/AppVersion'
-        - $ref: '../components/headers.yaml#/components/parameters/Platform'
-        - $ref: '../components/headers.yaml#/components/parameters/DeviceId'
-        - name: X-Sync-Spike-Key
-          in: header
-          required: true
-          description: Ephemeral synthetic-data test access; unavailable in normal API environments.
-          schema: {type: string}
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SyncPushRequest'
-      responses:
-        '200':
-          description: The experimental sync result.
-          headers:
-            X-Request-Id:
-              $ref: '../components/headers.yaml#/components/headers/XRequestId'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SyncPushResponse'
-        '400':
-          $ref: '../components/problems.yaml#/components/responses/ValidationFailed'
-        '401':
-          description: Invalid experimental access key.
-          headers:
-            X-Request-Id:
-              $ref: '../components/headers.yaml#/components/headers/XRequestId'
-          content:
-            application/problem+json:
-              schema:
-                $ref: '../components/problems.yaml#/components/schemas/ProblemDetails'
-        '426':
-          $ref: '../components/problems.yaml#/components/responses/UpgradeRequired'
-        '429':
-          $ref: '../components/problems.yaml#/components/responses/RateLimited'
-        '500':
-          $ref: '../components/problems.yaml#/components/responses/InternalError'
-        '501':
-          description: The experimental API is disabled.
-          headers:
-            X-Request-Id:
-              $ref: '../components/headers.yaml#/components/headers/XRequestId'
-          content:
-            application/problem+json:
-              schema:
-                $ref: '../components/problems.yaml#/components/schemas/ProblemDetails'
-  /v1/sync/pull:
-    get:
-      tags: [UserData]
-      operationId: pullSync
-      summary: Experimental sync pull
-      description: B01 feasibility prototype, synthetic data only; disabled in normal environments. See technical-planning/05 section 5.4.
-      x-fb-experimental: true
-      parameters:
-        - $ref: '../components/headers.yaml#/components/parameters/AppVersion'
-        - $ref: '../components/headers.yaml#/components/parameters/Platform'
-        - $ref: '../components/headers.yaml#/components/parameters/DeviceId'
-        - name: X-Sync-Spike-Key
-          in: header
-          required: true
-          description: Ephemeral synthetic-data test access; unavailable in normal API environments.
-          schema: {type: string}
-        - name: cursor
-          in: query
-          required: true
-          description: Last delivered sequence; start at zero. History and document cursors are separate.
-          schema: {type: string, pattern: '^(0|[1-9][0-9]{0,18})$'}
-        - name: limit
-          in: query
-          required: true
-          description: Maximum rows in this page (100 recommended).
-          schema: {type: integer, format: int32}
-      responses:
-        '200':
-          description: The experimental sync result.
-          headers:
-            X-Request-Id:
-              $ref: '../components/headers.yaml#/components/headers/XRequestId'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SyncPage'
-        '400':
-          $ref: '../components/problems.yaml#/components/responses/ValidationFailed'
-        '401':
-          description: Invalid experimental access key.
-          headers:
-            X-Request-Id:
-              $ref: '../components/headers.yaml#/components/headers/XRequestId'
-          content:
-            application/problem+json:
-              schema:
-                $ref: '../components/problems.yaml#/components/schemas/ProblemDetails'
-        '426':
-          $ref: '../components/problems.yaml#/components/responses/UpgradeRequired'
-        '429':
-          $ref: '../components/problems.yaml#/components/responses/RateLimited'
-        '500':
-          $ref: '../components/problems.yaml#/components/responses/InternalError'
-        '501':
-          description: The experimental API is disabled.
-          headers:
-            X-Request-Id:
-              $ref: '../components/headers.yaml#/components/headers/XRequestId'
-          content:
-            application/problem+json:
-              schema:
-                $ref: '../components/problems.yaml#/components/schemas/ProblemDetails'
-  /v1/sync/history:
-    get:
-      tags: [UserData]
-      operationId: getSyncHistory
-      summary: Experimental sync history
-      description: B01 feasibility prototype, synthetic data only; disabled in normal environments. See technical-planning/05 section 5.4.
-      x-fb-experimental: true
-      parameters:
-        - $ref: '../components/headers.yaml#/components/parameters/AppVersion'
-        - $ref: '../components/headers.yaml#/components/parameters/Platform'
-        - $ref: '../components/headers.yaml#/components/parameters/DeviceId'
-        - name: X-Sync-Spike-Key
-          in: header
-          required: true
-          description: Ephemeral synthetic-data test access; unavailable in normal API environments.
-          schema: {type: string}
-        - name: cursor
-          in: query
-          required: true
-          description: Last delivered sequence; start at zero. History and document cursors are separate.
-          schema: {type: string, pattern: '^(0|[1-9][0-9]{0,18})$'}
-        - name: limit
-          in: query
-          required: true
-          description: Maximum rows in this page (100 recommended).
-          schema: {type: integer, format: int32}
-      responses:
-        '200':
-          description: The experimental sync result.
-          headers:
-            X-Request-Id:
-              $ref: '../components/headers.yaml#/components/headers/XRequestId'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SyncPage'
-        '400':
-          $ref: '../components/problems.yaml#/components/responses/ValidationFailed'
-        '401':
-          description: Invalid experimental access key.
-          headers:
-            X-Request-Id:
-              $ref: '../components/headers.yaml#/components/headers/XRequestId'
-          content:
-            application/problem+json:
-              schema:
-                $ref: '../components/problems.yaml#/components/schemas/ProblemDetails'
-        '426':
-          $ref: '../components/problems.yaml#/components/responses/UpgradeRequired'
-        '429':
-          $ref: '../components/problems.yaml#/components/responses/RateLimited'
-        '500':
-          $ref: '../components/problems.yaml#/components/responses/InternalError'
-        '501':
-          description: The experimental API is disabled.
-          headers:
-            X-Request-Id:
-              $ref: '../components/headers.yaml#/components/headers/XRequestId'
-          content:
-            application/problem+json:
-              schema:
-                $ref: '../components/problems.yaml#/components/schemas/ProblemDetails'
-components:
-  schemas:
-    SyncChange:
-      type: object
-      description: An immutable client version; a non-null deletedAt marks a tombstone.
-      required: [entity, id, schemaVersion, hlc, deviceId, deletedAt, payload]
-      properties:
-        entity:
-          type: string
-          minLength: 1
-          maxLength: 64
-        id: {type: string, format: uuid}
-        schemaVersion: {type: integer, format: int32, minimum: 1, maximum: 2147483647}
-        hlc:
-          type: string
-          pattern: '^[0-9]{13}-[0-9]{5}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
-        deviceId: {type: string, format: uuid}
-        deletedAt: {type: [string, 'null'], format: date-time}
-        payload:
-          type: object
-          additionalProperties: {}
-    SyncDocument:
-      type: object
-      description: A stored version with a decimal sequence. History sequences are in a separate cursor space.
-      required: [entity, id, schemaVersion, hlc, deviceId, deletedAt, payload, serverSeq]
-      properties:
-        entity:
-          type: string
-          minLength: 1
-          maxLength: 64
-        id: {type: string, format: uuid}
-        schemaVersion: {type: integer, format: int32, minimum: 1, maximum: 2147483647}
-        hlc:
-          type: string
-          pattern: '^[0-9]{13}-[0-9]{5}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
-        deviceId: {type: string, format: uuid}
-        deletedAt: {type: [string, 'null'], format: date-time}
-        payload:
-          type: object
-          additionalProperties: {}
-        serverSeq: {type: string, pattern: '^(0|[1-9][0-9]{0,18})$'}
-    SyncPushRequest:
-      type: object
-      required: [changes]
-      properties:
-        changes:
-          type: array
-          minItems: 1
-          maxItems: 500
-          items:
-            $ref: '#/components/schemas/SyncChange'
-    SyncPushResult:
-      type: object
-      required: [entity, id, hlc, status, reason]
-      properties:
-        entity: {type: string}
-        id: {type: string, format: uuid}
-        hlc: {type: string}
-        status: {type: string, pattern: '^(accepted|stale|invalid)$'}
-        reason: {type: [string, 'null'], pattern: '^(clockDrift|versionConflict|unsupported)$'}
-    SyncPushResponse:
-      type: object
-      required: [results, serverTime]
-      properties:
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/SyncPushResult'
-        serverTime: {type: string, format: date-time}
-    SyncPage:
-      type: object
-      required: [changes, nextCursor]
-      properties:
-        changes:
-          type: array
-          items:
-            $ref: '#/components/schemas/SyncDocument'
-        nextCursor: {type: string, pattern: '^(0|[1-9][0-9]{0,18})$'}
+{
+  "paths": {
+    "/v1/sync/push": {
+      "post": {
+        "tags": [
+          "UserData"
+        ],
+        "operationId": "pushSync",
+        "summary": "sync push",
+        "description": "Registered-user document sync; immutable HLC versions, dataset-bound admission and recoverable history. See technical-planning/05 section 5.",
+        "x-fb-idempotency": "exempt",
+        "x-fb-idempotency-reason": "Immutable entity, row id and HLC version identity makes retries idempotent without caching a stale batch response.",
+        "parameters": [
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/AppVersion"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/Platform"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/DeviceId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncPushRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sync result; dataset mismatch never acknowledges or writes a version.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncPushResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "../components/problems.yaml#/components/responses/ValidationFailed"
+          },
+          "401": {
+            "description": "Invalid credentials or inactive session.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "426": {
+            "$ref": "../components/problems.yaml#/components/responses/UpgradeRequired"
+          },
+          "429": {
+            "$ref": "../components/problems.yaml#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "../components/problems.yaml#/components/responses/InternalError"
+          },
+          "403": {
+            "description": "This account cannot perform this operation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/sync/pull": {
+      "get": {
+        "tags": [
+          "UserData"
+        ],
+        "operationId": "pullSync",
+        "summary": "sync pull",
+        "description": "Registered-user document sync; immutable HLC versions, dataset-bound admission and recoverable history. See technical-planning/05 section 5.",
+        "parameters": [
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/AppVersion"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/Platform"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/DeviceId"
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": true,
+            "description": "Last delivered sequence; start at zero. History and document cursors are separate.",
+            "schema": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,18})$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "description": "Maximum rows in this page (100 recommended).",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "datasetId",
+            "in": "query",
+            "required": false,
+            "description": "Dataset binding; omit only when starting discovery at cursor zero.",
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sync result; dataset mismatch never acknowledges or writes a version.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "../components/problems.yaml#/components/responses/ValidationFailed"
+          },
+          "401": {
+            "description": "Invalid credentials or inactive session.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "426": {
+            "$ref": "../components/problems.yaml#/components/responses/UpgradeRequired"
+          },
+          "429": {
+            "$ref": "../components/problems.yaml#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "../components/problems.yaml#/components/responses/InternalError"
+          },
+          "403": {
+            "description": "This account cannot perform this operation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/sync/history": {
+      "get": {
+        "tags": [
+          "UserData"
+        ],
+        "operationId": "getSyncHistory",
+        "summary": "sync history",
+        "description": "Registered-user document sync; immutable HLC versions, dataset-bound admission and recoverable history. See technical-planning/05 section 5.",
+        "parameters": [
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/AppVersion"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/Platform"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/DeviceId"
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": true,
+            "description": "Last delivered sequence; start at zero. History and document cursors are separate.",
+            "schema": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,18})$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "description": "Maximum rows in this page (100 recommended).",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "datasetId",
+            "in": "query",
+            "required": false,
+            "description": "Dataset binding; omit only when starting discovery at cursor zero.",
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sync result; dataset mismatch never acknowledges or writes a version.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "../components/problems.yaml#/components/responses/ValidationFailed"
+          },
+          "401": {
+            "description": "Invalid credentials or inactive session.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "426": {
+            "$ref": "../components/problems.yaml#/components/responses/UpgradeRequired"
+          },
+          "429": {
+            "$ref": "../components/problems.yaml#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "../components/problems.yaml#/components/responses/InternalError"
+          },
+          "403": {
+            "description": "This account cannot perform this operation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/sync/history/{entity}/{id}": {
+      "get": {
+        "tags": [
+          "UserData"
+        ],
+        "operationId": "getItemSyncHistory",
+        "summary": "Recover earlier versions of one item",
+        "description": "Registered-user document sync; immutable HLC versions, dataset-bound admission and recoverable history. See technical-planning/05 section 5.",
+        "parameters": [
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/AppVersion"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/Platform"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/DeviceId"
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": true,
+            "description": "Last delivered sequence; start at zero. History and document cursors are separate.",
+            "schema": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,18})$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "description": "Maximum rows in this page (100 recommended).",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "datasetId",
+            "in": "query",
+            "required": false,
+            "description": "Dataset binding; omit only when starting discovery at cursor zero.",
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "entity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sync result; dataset mismatch never acknowledges or writes a version.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "../components/problems.yaml#/components/responses/ValidationFailed"
+          },
+          "401": {
+            "description": "Invalid credentials or inactive session.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "426": {
+            "$ref": "../components/problems.yaml#/components/responses/UpgradeRequired"
+          },
+          "429": {
+            "$ref": "../components/problems.yaml#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "../components/problems.yaml#/components/responses/InternalError"
+          },
+          "403": {
+            "description": "This account cannot perform this operation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SyncChange": {
+        "type": "object",
+        "description": "An immutable client version; a non-null deletedAt marks a tombstone.",
+        "required": [
+          "entity",
+          "id",
+          "schemaVersion",
+          "hlc",
+          "deviceId",
+          "deletedAt",
+          "payload"
+        ],
+        "properties": {
+          "entity": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "schemaVersion": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "hlc": {
+            "type": "string",
+            "pattern": "^[0-9]{13}-[0-9]{5}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "deviceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "deletedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        }
+      },
+      "SyncDocument": {
+        "type": "object",
+        "description": "A stored version with a decimal sequence. History sequences are in a separate cursor space.",
+        "required": [
+          "entity",
+          "id",
+          "schemaVersion",
+          "hlc",
+          "deviceId",
+          "deletedAt",
+          "payload",
+          "serverSeq",
+          "compacted"
+        ],
+        "properties": {
+          "entity": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "schemaVersion": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "hlc": {
+            "type": "string",
+            "pattern": "^[0-9]{13}-[0-9]{5}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "deviceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "deletedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "serverSeq": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,18})$"
+          },
+          "compacted": {
+            "type": "boolean",
+            "description": "A retained deletion fence with empty payload; not an entity payload."
+          }
+        }
+      },
+      "SyncPushRequest": {
+        "type": "object",
+        "required": [
+          "changes"
+        ],
+        "properties": {
+          "changes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 500,
+            "items": {
+              "$ref": "#/components/schemas/SyncChange"
+            }
+          },
+          "datasetId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Optional for discovery only: unbound pushes perform no writes."
+          }
+        }
+      },
+      "SyncPushResult": {
+        "type": "object",
+        "required": [
+          "entity",
+          "id",
+          "hlc",
+          "status",
+          "reason"
+        ],
+        "properties": {
+          "entity": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "hlc": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "pattern": "^(accepted|stale|invalid)$"
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^(clockDrift|versionConflict|unsupported|invalidPayload|datasetMismatch)$"
+          }
+        }
+      },
+      "SyncPushResponse": {
+        "type": "object",
+        "required": [
+          "results",
+          "serverTime",
+          "datasetId"
+        ],
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SyncPushResult"
+            }
+          },
+          "serverTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "datasetId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "SyncPage": {
+        "type": "object",
+        "required": [
+          "changes",
+          "nextCursor",
+          "datasetId",
+          "serverTime",
+          "reason"
+        ],
+        "properties": {
+          "changes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SyncDocument"
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,18})$"
+          },
+          "datasetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "serverTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^(datasetMismatch|cursorInvalid)$"
+          }
+        }
+      }
+    }
+  }
+}

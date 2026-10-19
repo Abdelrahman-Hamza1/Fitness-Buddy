@@ -76,7 +76,7 @@ with tempfile.TemporaryDirectory(prefix='b03-smoke-') as temp:
         with urllib.request.urlopen(urllib.request.Request(base + '/v1/config', headers=forwarded)) as response:
             assert 'max-age=' in response.headers['Strict-Transport-Security']
         # Build-time document and experimental sync must not be exposed on this real-data stack.
-        for path, expected in [('/openapi/v1.json', 404), ('/v1/sync/pull?cursor=0&limit=100', 501)]:
+        for path, expected in [('/openapi/v1.json', 404), ('/v1/sync/pull?cursor=0&limit=100', 401)]:
             try:
                 urllib.request.urlopen(urllib.request.Request(base + path, headers=headers))
             except urllib.error.HTTPError as error:

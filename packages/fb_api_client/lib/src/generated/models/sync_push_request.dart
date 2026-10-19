@@ -11,8 +11,12 @@ part 'sync_push_request.g.dart';
 
 @Freezed()
 abstract class SyncPushRequest with _$SyncPushRequest {
-  const factory SyncPushRequest({required List<SyncChange> changes}) =
-      _SyncPushRequest;
+  const factory SyncPushRequest({
+    required List<SyncChange> changes,
+
+    /// Optional for discovery only: unbound pushes perform no writes.
+    String? datasetId,
+  }) = _SyncPushRequest;
 
   factory SyncPushRequest.fromJson(Map<String, Object?> json) =>
       _$SyncPushRequestFromJson(json);

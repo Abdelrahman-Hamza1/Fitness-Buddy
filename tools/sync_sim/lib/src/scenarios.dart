@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:fb_api_client/fb_api_client.dart';
@@ -176,7 +177,10 @@ Future<void> runFaults(SyncTransport transport, DateTime base) async {
   current = engine();
   await current.sync();
   require(
-    store.outbox.isEmpty && store.rows[rowKey(original)]!.payload['value'] == 2,
+    store.outbox.isEmpty &&
+        (jsonDecode(store.rows[rowKey(original)]!.payload['note']! as String)
+                as Map<String, dynamic>)['value'] ==
+            2,
     'retry did not converge',
   );
   await transport.push([original, original]);
@@ -232,7 +236,7 @@ Future<({int pushMs, int pullMs})> benchmark(
     deviceId: syntheticId(1),
     clock: SimClock(base),
   );
-  for (var i = 0; i < 5000; i++) {
+  for (var i = 0; i < 10000; i++) {
     engine.confirmSynthetic(
       entity: i.isEven ? 'diaryEntry' : 'weighIn',
       id: syntheticId(10000000 + i),
@@ -256,12 +260,12 @@ Future<({int pushMs, int pullMs})> benchmark(
     fresh.rows.values
             .where(
               (row) =>
-                  row.payload.containsKey('value') &&
+                  row.payload.containsKey('note') &&
                   row.id.compareTo(syntheticId(10000000)) >= 0 &&
-                  row.id.compareTo(syntheticId(10005000)) < 0,
+                  row.id.compareTo(syntheticId(10010000)) < 0,
             )
             .length ==
-        5000,
+        10000,
     'benchmark fresh pull lost rows',
   );
   return (pushMs: pushMs, pullMs: pullMs);

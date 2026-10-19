@@ -14,6 +14,9 @@ abstract class SyncPage with _$SyncPage {
   const factory SyncPage({
     required List<SyncDocument> changes,
     required String nextCursor,
+    required String datasetId,
+    required DateTime serverTime,
+    required String? reason,
   }) = _SyncPage;
 
   factory SyncPage.fromJson(Map<String, Object?> json) =>

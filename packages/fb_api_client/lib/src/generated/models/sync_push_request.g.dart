@@ -11,9 +11,11 @@ _SyncPushRequest _$SyncPushRequestFromJson(Map<String, dynamic> json) =>
       changes: (json['changes'] as List<dynamic>)
           .map((e) => SyncChange.fromJson(e as Map<String, dynamic>))
           .toList(),
+      datasetId: json['datasetId'] as String?,
     );
 
 Map<String, dynamic> _$SyncPushRequestToJson(_SyncPushRequest instance) =>
     <String, dynamic>{
       'changes': instance.changes.map((e) => e.toJson()).toList(),
+      'datasetId': instance.datasetId,
     };

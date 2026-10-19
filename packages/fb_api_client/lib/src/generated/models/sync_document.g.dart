@@ -18,6 +18,7 @@ _SyncDocument _$SyncDocumentFromJson(Map<String, dynamic> json) =>
           : DateTime.parse(json['deletedAt'] as String),
       payload: json['payload'] as Map<String, dynamic>,
       serverSeq: json['serverSeq'] as String,
+      compacted: json['compacted'] as bool,
     );
 
 Map<String, dynamic> _$SyncDocumentToJson(_SyncDocument instance) =>
@@ -30,4 +31,5 @@ Map<String, dynamic> _$SyncDocumentToJson(_SyncDocument instance) =>
       'deletedAt': instance.deletedAt?.toIso8601String(),
       'payload': instance.payload,
       'serverSeq': instance.serverSeq,
+      'compacted': instance.compacted,
     };

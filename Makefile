@@ -67,7 +67,7 @@ deps: deps-dart deps-dotnet ## Fetch dependencies for the Dart workspace and the
 check: check-dart check-dotnet check-contract apk-hardening-selftest ## Format + static analysis for both stacks, the API contract checks, the APK hardening self-test (no tests)
 
 .PHONY: gen
-gen: gen-contract gen-dart gen-app ## Regenerate all committed generated code: contract bundle, Dart client, app l10n + providers
+gen: gen-contract gen-dart gen-app gen-sync-schemas ## Regenerate all committed generated code: contract bundle, Dart client, app l10n + providers
 
 .PHONY: test
 test: test-dart test-dotnet ## Run all tests, Dart then .NET
@@ -147,7 +147,7 @@ image-smoke: ## Build and smoke-test the non-root API image, exporters and proce
 	@bash '$(REPO_ROOT)/tools/scripts/image-smoke.sh'
 
 .PHONY: sync-spike
-sync-spike: ## Run B01 synthetic convergence/fault/5000-row checks against isolated Docker API + Postgres
+sync-spike: ## Run authenticated sync convergence/fault/10000-row checks against isolated Docker API + Postgres
 	@DART='$(DART)' bash '$(REPO_ROOT)/tools/scripts/sync-spike.sh'
 
 ##@ Dart workspace (pubspec.yaml, apps/, packages/, tools/)
@@ -219,7 +219,7 @@ gen-app: ## Regenerate the app's committed code in apps/mobile: gen-l10n (lib/l1
 	@DART='$(DART)' FLUTTER='$(FLUTTER)' bash '$(REPO_ROOT)/tools/scripts/gen-app.sh'
 
 .PHONY: gen-check
-gen-check: gen-dart gen-app ## Fail if the committed generated Dart code (API client, app) is not what `make gen-dart gen-app` produces
+gen-check: gen-dart gen-app check-sync-schemas ## Fail if the committed generated Dart code (API client, app) is not what `make gen-dart gen-app` produces
 	@stale="$$(git -C '$(REPO_ROOT)' status --porcelain --untracked-files=all -- $(GEN_DART_DIRS) | grep -v '^. ' || true)"; \
 	if [[ -n "$$stale" ]]; then \
 	  echo "Generated Dart code is out of date: run 'make gen' and commit." >&2; \
@@ -491,3 +491,9 @@ phone-server-check: ## Offline safety tests for laptop operations, no Tailscale 
 	bash -n '$(REPO_ROOT)/tools/scripts/setup-tailscale.sh' '$(REPO_ROOT)/infra/phone-server/init-roles.sh'
 phone-server-smoke: phone-server-check ## Synthetic Docker isolation/backup/restore/proxy smoke; no phone or Tailscale changes
 	@bash '$(REPO_ROOT)/tools/scripts/phone-server-smoke.sh'
+
+.PHONY: gen-sync-schemas check-sync-schemas
+gen-sync-schemas: ## Export bounded sync schemas from the contract
+	@python3 tools/scripts/export-sync-schemas.py
+check-sync-schemas: ## Check embedded sync schemas match the contract
+	@python3 tools/scripts/export-sync-schemas.py --check

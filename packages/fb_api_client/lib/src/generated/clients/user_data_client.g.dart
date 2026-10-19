@@ -21,14 +21,10 @@ class _UserDataClient implements UserDataClient {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<SyncPushResponse> pushSync({
-    required String xSyncSpikeKey,
-    required SyncPushRequest body,
-  }) async {
+  Future<SyncPushResponse> pushSync({required SyncPushRequest body}) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'X-Sync-Spike-Key': xSyncSpikeKey};
-    _headers.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(body.toJson());
     final _options = _setStreamType<SyncPushResponse>(
@@ -54,17 +50,18 @@ class _UserDataClient implements UserDataClient {
 
   @override
   Future<SyncPage> pullSync({
-    required String xSyncSpikeKey,
     required String cursor,
     required int limit,
+    String? datasetId,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'cursor': cursor,
       r'limit': limit,
+      r'datasetId': datasetId,
     };
-    final _headers = <String, dynamic>{r'X-Sync-Spike-Key': xSyncSpikeKey};
-    _headers.removeWhere((k, v) => v == null);
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<SyncPage>(
       Options(method: 'GET', headers: _headers, extra: _extra)
@@ -89,23 +86,62 @@ class _UserDataClient implements UserDataClient {
 
   @override
   Future<SyncPage> getSyncHistory({
-    required String xSyncSpikeKey,
     required String cursor,
     required int limit,
+    String? datasetId,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'cursor': cursor,
       r'limit': limit,
+      r'datasetId': datasetId,
     };
-    final _headers = <String, dynamic>{r'X-Sync-Spike-Key': xSyncSpikeKey};
-    _headers.removeWhere((k, v) => v == null);
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<SyncPage>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
             '/v1/sync/history',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, Object?>>(_options);
+    late SyncPage _value;
+    try {
+      _value = SyncPage.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<SyncPage> getItemSyncHistory({
+    required String cursor,
+    required int limit,
+    required String entity,
+    required String id,
+    String? datasetId,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'cursor': cursor,
+      r'limit': limit,
+      r'datasetId': datasetId,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<SyncPage>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/sync/history/${entity}/${id}',
             queryParameters: queryParameters,
             data: _data,
           )

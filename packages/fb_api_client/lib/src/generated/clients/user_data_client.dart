@@ -15,46 +15,59 @@ part 'user_data_client.g.dart';
 abstract class UserDataClient {
   factory UserDataClient(Dio dio, {String? baseUrl}) = _UserDataClient;
 
-  /// Experimental sync push.
+  /// sync push.
   ///
-  /// B01 feasibility prototype, synthetic data only; disabled in normal environments. See technical-planning/05 section 5.4.
-  ///
-  /// [xSyncSpikeKey] - Ephemeral synthetic-data test access; unavailable in normal API environments.
+  /// Registered-user document sync; immutable HLC versions, dataset-bound admission and recoverable history. See technical-planning/05 section 5.
   @POST('/v1/sync/push')
-  Future<SyncPushResponse> pushSync({
-    @Header('X-Sync-Spike-Key') required String xSyncSpikeKey,
-    @Body() required SyncPushRequest body,
-  });
+  Future<SyncPushResponse> pushSync({@Body() required SyncPushRequest body});
 
-  /// Experimental sync pull.
+  /// sync pull.
   ///
-  /// B01 feasibility prototype, synthetic data only; disabled in normal environments. See technical-planning/05 section 5.4.
-  ///
-  /// [xSyncSpikeKey] - Ephemeral synthetic-data test access; unavailable in normal API environments.
+  /// Registered-user document sync; immutable HLC versions, dataset-bound admission and recoverable history. See technical-planning/05 section 5.
   ///
   /// [cursor] - Last delivered sequence; start at zero. History and document cursors are separate.
   ///
   /// [limit] - Maximum rows in this page (100 recommended).
+  ///
+  /// [datasetId] - Dataset binding; omit only when starting discovery at cursor zero.
   @GET('/v1/sync/pull')
   Future<SyncPage> pullSync({
-    @Header('X-Sync-Spike-Key') required String xSyncSpikeKey,
     @Query('cursor') required String cursor,
     @Query('limit') required int limit,
+    @Query('datasetId') String? datasetId,
   });
 
-  /// Experimental sync history.
+  /// sync history.
   ///
-  /// B01 feasibility prototype, synthetic data only; disabled in normal environments. See technical-planning/05 section 5.4.
-  ///
-  /// [xSyncSpikeKey] - Ephemeral synthetic-data test access; unavailable in normal API environments.
+  /// Registered-user document sync; immutable HLC versions, dataset-bound admission and recoverable history. See technical-planning/05 section 5.
   ///
   /// [cursor] - Last delivered sequence; start at zero. History and document cursors are separate.
   ///
   /// [limit] - Maximum rows in this page (100 recommended).
+  ///
+  /// [datasetId] - Dataset binding; omit only when starting discovery at cursor zero.
   @GET('/v1/sync/history')
   Future<SyncPage> getSyncHistory({
-    @Header('X-Sync-Spike-Key') required String xSyncSpikeKey,
     @Query('cursor') required String cursor,
     @Query('limit') required int limit,
+    @Query('datasetId') String? datasetId,
+  });
+
+  /// Recover earlier versions of one item.
+  ///
+  /// Registered-user document sync; immutable HLC versions, dataset-bound admission and recoverable history. See technical-planning/05 section 5.
+  ///
+  /// [cursor] - Last delivered sequence; start at zero. History and document cursors are separate.
+  ///
+  /// [limit] - Maximum rows in this page (100 recommended).
+  ///
+  /// [datasetId] - Dataset binding; omit only when starting discovery at cursor zero.
+  @GET('/v1/sync/history/{entity}/{id}')
+  Future<SyncPage> getItemSyncHistory({
+    @Query('cursor') required String cursor,
+    @Query('limit') required int limit,
+    @Path('entity') required String entity,
+    @Path('id') required String id,
+    @Query('datasetId') String? datasetId,
   });
 }

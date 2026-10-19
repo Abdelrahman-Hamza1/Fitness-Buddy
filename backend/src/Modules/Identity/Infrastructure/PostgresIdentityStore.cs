@@ -1,3 +1,4 @@
+using FitnessBuddy.BuildingBlocks.Persistence;
 using FitnessBuddy.Modules.Identity.Application;
 using FitnessBuddy.Modules.Identity.Contracts;
 using Npgsql;
@@ -31,6 +32,14 @@ internal sealed class PostgresIdentityStore(NpgsqlDataSource source, TimeProvide
             [challenge, codeHash, purpose, NullableId(principal?.UserId), NullableId(principal?.SessionId), user, m.SessionId, m.DeviceId, m.RefreshHash, Now], ct);
     public Task<IdentitySession?> LinkGoogleAsync(IdentitySession p, GoogleIdentity i, SessionMaterial m, CancellationToken ct) =>
         ReadAsync("SELECT * FROM identity.link_google($1,$2,$3,$4,$5,$6,$7,$8)", [p.UserId, p.SessionId, i.Subject, i.Email, m.SessionId, m.DeviceId, m.RefreshHash, Now], ct);
+
+    public async Task<bool> CheckActiveAsync(DatabaseSession session, Guid userId, Guid sessionId, bool registeredOnly, CancellationToken cancellationToken)
+    {
+        await using var command = session.Command("SELECT identity.check_active($1,$2,$3,$4)");
+        command.Parameters.AddWithValue(userId); command.Parameters.AddWithValue(sessionId);
+        command.Parameters.AddWithValue(registeredOnly); command.Parameters.AddWithValue(Now);
+        return (bool)(await command.ExecuteScalarAsync(cancellationToken))!;
+    }
 
     private DateTimeOffset Now => clock.GetUtcNow();
     private static NpgsqlParameter NullableId(Guid? id) => new() { NpgsqlDbType = NpgsqlDbType.Uuid, Value = (object?)id ?? DBNull.Value };

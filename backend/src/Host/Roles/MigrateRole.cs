@@ -27,6 +27,8 @@ internal static partial class MigrateRole
         {
             var stopping = host.Services.GetRequiredService<IHostApplicationLifetime>().ApplicationStopping;
             await host.Services.GetRequiredService<MigrationRunner>().RunAsync(connection, stopping);
+            await FitnessBuddy.Modules.UserData.UserDataModule.SeedLegacyCleanupAsync(connection, host.Services.GetRequiredService<TimeProvider>(),
+                host.Services.GetRequiredService<FitnessBuddy.BuildingBlocks.Ids.IIdGenerator>(), stopping);
             var keyOperation = builder.Configuration["Identity:KeyOperation"];
             if (!string.IsNullOrEmpty(keyOperation))
             {
@@ -35,6 +37,8 @@ internal static partial class MigrateRole
                     builder.Configuration["Identity:WrappingVersion"] ?? "v1", keyOperation,
                     host.Services.GetRequiredService<TimeProvider>(), stopping);
             }
+            if (builder.Configuration.GetValue<bool>("Sync:RotateDataset"))
+            { await FitnessBuddy.Modules.UserData.UserDataModule.RotateDatasetAsync(connection, stopping); }
             LogCompleted(logger);
             return 0;
         }

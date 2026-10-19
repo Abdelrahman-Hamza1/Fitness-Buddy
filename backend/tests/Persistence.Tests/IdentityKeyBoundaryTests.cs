@@ -8,7 +8,7 @@ namespace FitnessBuddy.Persistence.Tests;
 [Trait("Rule", "04.6-authz")]
 public sealed class IdentityKeyBoundaryTests(PostgresFixture postgres)
 {
-    private static readonly string[] CapabilityNames = ["consume_email", "create_guest", "link_google", "read_keyring", "read_session", "revoke_session", "rotate_refresh", "sign_in_provider", "start_email"];
+    private static readonly string[] CapabilityNames = ["check_active", "consume_email", "create_guest", "link_google", "read_keyring", "read_session", "revoke_session", "rotate_refresh", "sign_in_provider", "start_email"];
 
     [Fact]
     public async Task Capability_inventory_and_force_rls_match_the_reviewed_boundary_exactly()

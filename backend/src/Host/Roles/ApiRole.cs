@@ -35,7 +35,9 @@ internal static class ApiRole
         {
             options.AddSchemaTransformer<ProblemDetailsSchemaTransformer>();
             options.AddSchemaTransformer<IdentityContractTransformer>();
+            options.AddSchemaTransformer<SyncContractTransformer>();
             options.AddOperationTransformer<IdentityContractTransformer>();
+            options.AddOperationTransformer<SyncContractTransformer>();
             options.AddOperationTransformer<ClientHeadersOperationTransformer>();
             options.AddOperationTransformer<ResponseHeadersOperationTransformer>();
         });

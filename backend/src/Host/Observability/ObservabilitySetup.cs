@@ -44,6 +44,7 @@ internal static class ObservabilitySetup
                     serviceVersion: Assembly.GetExecutingAssembly().GetName().Version?.ToString())
                 .AddAttributes([new KeyValuePair<string, object>("deployment.environment.name", builder.Environment.EnvironmentName)]))
             .WithTracing(traces => traces
+                .AddProcessor(new HttpActivityPrivacy())
                 .AddSource("FitnessBuddy.Buddy")
                 .AddAspNetCoreInstrumentation(options =>
                 {
@@ -51,7 +52,7 @@ internal static class ObservabilitySetup
                     options.RecordException = false;
                 })
                 .AddHttpClientInstrumentation(options => options.RecordException = false))
-            .WithMetrics(metrics => metrics.AddMeter("FitnessBuddy.Buddy").AddAspNetCoreInstrumentation().AddHttpClientInstrumentation().AddRuntimeInstrumentation());
+            .WithMetrics(metrics => metrics.AddMeter("FitnessBuddy.Buddy", "FitnessBuddy.Sync").AddAspNetCoreInstrumentation().AddHttpClientInstrumentation().AddRuntimeInstrumentation());
 
         if (!PlatformSetup.IsBuildTimeDocument)
         {

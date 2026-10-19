@@ -180,20 +180,21 @@ public sealed partial class TelemetryPrivacyTests
     }
 
     [Fact]
-    public async Task Wrapper_forwards_external_scopes_and_async_disposal()
+    public async Task Wrapper_filters_request_path_scopes_keeps_trace_ids_and_forwards_async_disposal()
     {
         var capture = new CapturingLoggerProvider();
         var wrapper = new ScrubbingLoggerProvider(capture);
         var scopes = new LoggerExternalScopeProvider();
         wrapper.SetScopeProvider(scopes);
-        using (scopes.Push("safe-scope"))
+        using (scopes.Push(new Dictionary<string, object?> { ["TraceId"] = "00000000000000000000000000000001", ["RequestPath"] = "CANARY-PATH" }))
         {
             wrapper.CreateLogger("test").Log(LogLevel.Information, new EventId(1), "Safe message", null, static (state, _) => state);
         }
 
         await wrapper.DisposeAsync();
         Assert.True(capture.Disposed);
-        Assert.Contains("safe-scope", Assert.Single(capture.Lines), StringComparison.Ordinal);
+        Assert.Contains("00000000000000000000000000000001", Assert.Single(capture.Lines), StringComparison.Ordinal);
+        Assert.DoesNotContain("CANARY-PATH", Assert.Single(capture.Lines), StringComparison.Ordinal);
     }
 
     internal static void AssertClean(string text)

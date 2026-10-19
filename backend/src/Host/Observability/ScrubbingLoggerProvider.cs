@@ -11,7 +11,7 @@ internal sealed class ScrubbingLoggerProvider(ILoggerProvider inner) : ILoggerPr
     {
         if (Inner is ISupportExternalScope scoped)
         {
-            scoped.SetScopeProvider(scopeProvider);
+            scoped.SetScopeProvider(new SafeScopeProvider(scopeProvider));
         }
     }
 
@@ -26,6 +26,21 @@ internal sealed class ScrubbingLoggerProvider(ILoggerProvider inner) : ILoggerPr
 
         Inner.Dispose();
         return ValueTask.CompletedTask;
+    }
+
+    private sealed class SafeScopeProvider(IExternalScopeProvider source) : IExternalScopeProvider
+    {
+        public void ForEachScope<TState>(Action<object?, TState> callback, TState state) => source.ForEachScope((scope, value) =>
+        {
+            var safe = Safe(scope);
+            if (safe.Length != 0) { callback(safe, value); }
+        }, state);
+        public IDisposable Push(object? state) => source.Push(Safe(state));
+        private static KeyValuePair<string, object?>[] Safe(object? state) => state is IEnumerable<KeyValuePair<string, object?>> fields ?
+            fields.Where(field => field.Key is "TraceId" or "SpanId" or "RequestId")
+                .Where(field => field.Value?.ToString() is { } text && text.Length == (field.Key == "SpanId" ? 16 : 32)
+                    && text.All(character => char.IsAsciiHexDigit(character)))
+                .ToArray() : [];
     }
 
     private sealed class ScrubbingLogger(ILogger logger) : ILogger

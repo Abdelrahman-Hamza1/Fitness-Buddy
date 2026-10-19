@@ -12,7 +12,7 @@ internal static partial class SyncRules
 
     public static string? InvalidReason(SyncVersion version, DateTimeOffset now)
     {
-        if (version.Entity is not ("diaryEntry" or "weighIn") || version.SchemaVersion != 1 ||
+        if (version.Entity.Length is < 1 or > 64 || version.SchemaVersion < 1 ||
             !IsHlc(version.Hlc) || version.Hlc[20..] != version.DeviceId.ToString()) { return "unsupported"; }
         var wall = long.Parse(version.Hlc.AsSpan(0, 13), CultureInfo.InvariantCulture);
         return wall > now.ToUnixTimeMilliseconds() + 300_000 ? "clockDrift" : null;

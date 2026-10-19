@@ -14,6 +14,7 @@ abstract class SyncPushResponse with _$SyncPushResponse {
   const factory SyncPushResponse({
     required List<SyncPushResult> results,
     required DateTime serverTime,
+    required String datasetId,
   }) = _SyncPushResponse;
 
   factory SyncPushResponse.fromJson(Map<String, Object?> json) =>

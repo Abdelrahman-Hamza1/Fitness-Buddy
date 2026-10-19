@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SyncPushRequest {
 
- List<SyncChange> get changes;
+ List<SyncChange> get changes;/// Optional for discovery only: unbound pushes perform no writes.
+ String? get datasetId;
 /// Create a copy of SyncPushRequest
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +31,20 @@ $SyncPushRequestCopyWith<SyncPushRequest> get copyWith => _$SyncPushRequestCopyW
 @override
 bool operator ==(Object other) {
   final _this = this as SyncPushRequest;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SyncPushRequest&&const DeepCollectionEquality().equals(other.changes, _this.changes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SyncPushRequest&&const DeepCollectionEquality().equals(other.changes, _this.changes)&&(identical(other.datasetId, _this.datasetId) || other.datasetId == _this.datasetId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as SyncPushRequest;
-  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.changes));
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.changes),_this.datasetId);
 }
 
 @override
 String toString() {
   final _this = this as SyncPushRequest;
-  return 'SyncPushRequest(changes: ${_this.changes})';
+  return 'SyncPushRequest(changes: ${_this.changes}, datasetId: ${_this.datasetId})';
 }
 
 
@@ -54,7 +55,7 @@ abstract mixin class $SyncPushRequestCopyWith<$Res>  {
   factory $SyncPushRequestCopyWith(SyncPushRequest value, $Res Function(SyncPushRequest) _then) = _$SyncPushRequestCopyWithImpl;
 @useResult
 $Res call({
- List<SyncChange> changes
+ List<SyncChange> changes, String? datasetId
 });
 
 
@@ -71,10 +72,11 @@ class _$SyncPushRequestCopyWithImpl<$Res>
 
 /// Create a copy of SyncPushRequest
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? changes = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? changes = null,Object? datasetId = freezed,}) {
   return _then(SyncPushRequest(
 changes: null == changes ? _self.changes : changes // ignore: cast_nullable_to_non_nullable
-as List<SyncChange>,
+as List<SyncChange>,datasetId: freezed == datasetId ? _self.datasetId : datasetId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -159,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<SyncChange> changes)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<SyncChange> changes,  String? datasetId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SyncPushRequest() when $default != null:
-return $default(_that.changes);case _:
+return $default(_that.changes,_that.datasetId);case _:
   return orElse();
 
 }
@@ -180,10 +182,10 @@ return $default(_that.changes);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<SyncChange> changes)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<SyncChange> changes,  String? datasetId)  $default,) {final _that = this;
 switch (_that) {
 case _SyncPushRequest():
-return $default(_that.changes);case _:
+return $default(_that.changes,_that.datasetId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +202,10 @@ return $default(_that.changes);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<SyncChange> changes)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<SyncChange> changes,  String? datasetId)?  $default,) {final _that = this;
 switch (_that) {
 case _SyncPushRequest() when $default != null:
-return $default(_that.changes);case _:
+return $default(_that.changes,_that.datasetId);case _:
   return null;
 
 }
@@ -215,7 +217,7 @@ return $default(_that.changes);case _:
 @JsonSerializable()
 
 class _SyncPushRequest implements SyncPushRequest {
-  const _SyncPushRequest({required  List<SyncChange> changes}): _changes = changes;
+  const _SyncPushRequest({required  List<SyncChange> changes, this.datasetId}): _changes = changes;
   factory _SyncPushRequest.fromJson(Map<String, dynamic> json) => _$SyncPushRequestFromJson(json);
 
  final  List<SyncChange> _changes;
@@ -225,6 +227,8 @@ class _SyncPushRequest implements SyncPushRequest {
   return EqualUnmodifiableListView(_changes);
 }
 
+/// Optional for discovery only: unbound pushes perform no writes.
+@override final  String? datasetId;
 
 /// Create a copy of SyncPushRequest
 /// with the given fields replaced by the non-null parameter values.
@@ -239,18 +243,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SyncPushRequest&&const DeepCollectionEquality().equals(other.changes, _changes));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SyncPushRequest&&const DeepCollectionEquality().equals(other.changes, _changes)&&(identical(other.datasetId, datasetId) || other.datasetId == datasetId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_changes));
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_changes),datasetId);
 }
 
 @override
 String toString() {
-    return 'SyncPushRequest(changes: $changes)';
+    return 'SyncPushRequest(changes: $changes, datasetId: $datasetId)';
 }
 
 
@@ -261,7 +265,7 @@ abstract mixin class _$SyncPushRequestCopyWith<$Res> implements $SyncPushRequest
   factory _$SyncPushRequestCopyWith(_SyncPushRequest value, $Res Function(_SyncPushRequest) _then) = __$SyncPushRequestCopyWithImpl;
 @override @useResult
 $Res call({
- List<SyncChange> changes
+ List<SyncChange> changes, String? datasetId
 });
 
 
@@ -278,10 +282,11 @@ class __$SyncPushRequestCopyWithImpl<$Res>
 
 /// Create a copy of SyncPushRequest
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? changes = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? changes = null,Object? datasetId = freezed,}) {
   return _then(_SyncPushRequest(
 changes: null == changes ? _self._changes : changes // ignore: cast_nullable_to_non_nullable
-as List<SyncChange>,
+as List<SyncChange>,datasetId: freezed == datasetId ? _self.datasetId : datasetId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

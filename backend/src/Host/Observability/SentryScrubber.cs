@@ -16,7 +16,10 @@ internal static class SentryScrubber
             request.Headers.Remove(key);
         }
 
-        request.Url = Uri.TryCreate(request.Url, UriKind.Absolute, out var url) ? url.AbsolutePath : null;
+        // URL/transaction names can contain unmatched paths as well as route arguments.
+        request.Url = null;
+        sentryEvent.TransactionName = null;
+        foreach (var tag in sentryEvent.Tags.Keys.ToArray()) { sentryEvent.UnsetTag(tag); }
         request.QueryString = null;
         request.Data = null;
         request.Cookies = null;

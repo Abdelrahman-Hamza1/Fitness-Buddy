@@ -7,39 +7,78 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:sync_sim/src/engine.dart';
 
 abstract interface class SyncTransport {
+  String? get datasetId;
+  set datasetId(String? value);
   Future<SyncPushResponse> push(List<SyncChange> changes);
   Future<SyncPage> pull(String cursor, int limit);
   Future<SyncPage> history(String cursor, int limit);
 }
 
 final class ApiSyncTransport implements SyncTransport {
-  new({required String baseUrl, required this.key, required String deviceId})
-    : dio = Dio(
-        BaseOptions(
-          baseUrl: baseUrl,
-          connectTimeout: const Duration(seconds: 5),
-          receiveTimeout: const Duration(seconds: 30),
-          headers: {
-            'X-App-Version': '0.1.0',
-            'X-Platform': 'android',
-            'X-Device-Id': deviceId,
-          },
-        ),
-      );
+  new({
+    required String baseUrl,
+    required String accessToken,
+    required String deviceId,
+  }) : dio = Dio(
+         BaseOptions(
+           baseUrl: baseUrl,
+           connectTimeout: const Duration(seconds: 5),
+           receiveTimeout: const Duration(seconds: 30),
+           headers: {
+             'Authorization': 'Bearer $accessToken',
+             'X-App-Version': '0.1.0',
+             'X-Platform': 'android',
+             'X-Device-Id': deviceId,
+           },
+         ),
+       );
   final Dio dio;
-  final String key;
+  @override
+  String? datasetId;
+  final Map<String, List<int>> _durations = {};
+  Map<String, ({int requests, double p95Ms})> latencySummary() => {
+    for (final entry in _durations.entries)
+      entry.key: (
+        requests: entry.value.length,
+        p95Ms:
+            (List<int>.of(entry.value)
+              ..sort())[(entry.value.length * .95).ceil() - 1] /
+            1000,
+      ),
+  };
+  Future<T> _timed<T>(String operation, Future<T> Function() send) async {
+    final timer = Stopwatch()..start();
+    try {
+      return await send();
+    } finally {
+      _durations
+          .putIfAbsent(operation, () => [])
+          .add(timer.elapsedMicroseconds);
+    }
+  }
+
   UserDataClient get _client => UserDataClient(dio);
   @override
-  Future<SyncPushResponse> push(List<SyncChange> changes) => _client.pushSync(
-    xSyncSpikeKey: key,
-    body: SyncPushRequest(changes: changes),
+  Future<SyncPushResponse> push(List<SyncChange> changes) => _timed(
+    'push',
+    () => _client.pushSync(
+      body: SyncPushRequest(changes: changes, datasetId: datasetId),
+    ),
   );
   @override
-  Future<SyncPage> pull(String cursor, int limit) =>
-      _client.pullSync(xSyncSpikeKey: key, cursor: cursor, limit: limit);
+  Future<SyncPage> pull(String cursor, int limit) => _timed(
+    'pull',
+    () => _client.pullSync(cursor: cursor, limit: limit, datasetId: datasetId),
+  );
   @override
-  Future<SyncPage> history(String cursor, int limit) =>
-      _client.getSyncHistory(xSyncSpikeKey: key, cursor: cursor, limit: limit);
+  Future<SyncPage> history(String cursor, int limit) => _timed(
+    'history',
+    () => _client.getSyncHistory(
+      cursor: cursor,
+      limit: limit,
+      datasetId: datasetId,
+    ),
+  );
   void close() => dio.close(force: true);
 }
 
@@ -49,11 +88,23 @@ final class ApiSyncTransport implements SyncTransport {
 final class FakeSyncTransport implements SyncTransport {
   new(this.clock);
   final Clock clock;
+  @override
+  String? datasetId;
+  String serverDataset = '00000000-0000-7000-8000-000000000777';
   final Map<String, SyncChange> _versions = {};
   final Map<String, SyncDocument> _documents = {};
   final Map<String, SyncDocument> _history = {};
   int _documentSeq = 0;
   int _historySeq = 0;
+
+  void resetDataset(String id) {
+    serverDataset = id;
+    _versions.clear();
+    _documents.clear();
+    _history.clear();
+    _documentSeq = 0;
+    _historySeq = 0;
+  }
 
   SyncDocument _stored(SyncChange row, int seq) => SyncDocument(
     entity: row.entity,
@@ -64,6 +115,7 @@ final class FakeSyncTransport implements SyncTransport {
     deletedAt: row.deletedAt,
     payload: row.payload,
     serverSeq: '$seq',
+    compacted: false,
   );
   void _archive(SyncChange row) =>
       _history.putIfAbsent(versionKey(row), () => _stored(row, ++_historySeq));
@@ -74,7 +126,9 @@ final class FakeSyncTransport implements SyncTransport {
     for (final row in changes) {
       String? reason;
       final hlc = Hlc.tryParse(row.hlc);
-      if (!{'diaryEntry', 'weighIn'}.contains(row.entity) ||
+      if (datasetId != serverDataset) {
+        reason = 'datasetMismatch';
+      } else if (!{'diaryEntry', 'weighIn'}.contains(row.entity) ||
           row.schemaVersion != 1 ||
           hlc == null ||
           hlc.deviceId != row.deviceId) {
@@ -110,7 +164,11 @@ final class FakeSyncTransport implements SyncTransport {
         ),
       );
     }
-    return SyncPushResponse(results: results, serverTime: clock.nowUtc());
+    return SyncPushResponse(
+      results: results,
+      serverTime: clock.nowUtc(),
+      datasetId: serverDataset,
+    );
   }
 
   SyncPage _page(Iterable<SyncDocument> documents, String cursor, int limit) {
@@ -123,7 +181,12 @@ final class FakeSyncTransport implements SyncTransport {
           );
     final page = rows.take(limit).toList();
     return SyncPage(
-      changes: page,
+      datasetId: serverDataset,
+      serverTime: clock.nowUtc(),
+      reason: datasetId != null && datasetId != serverDataset
+          ? 'datasetMismatch'
+          : null,
+      changes: datasetId != null && datasetId != serverDataset ? [] : page,
       nextCursor: page.isEmpty ? cursor : page.last.serverSeq,
     );
   }
@@ -141,6 +204,10 @@ final class FakeSyncTransport implements SyncTransport {
 final class FaultTransport implements SyncTransport {
   new(this.inner);
   final SyncTransport inner;
+  @override
+  String? get datasetId => inner.datasetId;
+  @override
+  set datasetId(String? value) => inner.datasetId = value;
   bool dropBefore = false;
   bool dropAfter = false;
   @override

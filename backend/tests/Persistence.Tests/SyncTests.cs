@@ -1,13 +1,8 @@
 using System.Globalization;
-using System.Net;
-using System.Net.Http.Json;
 using System.Text.Json;
 using FitnessBuddy.Modules.UserData.Domain;
 using Npgsql;
 using FitnessBuddy.Modules.UserData.Infrastructure;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
 
 namespace FitnessBuddy.Persistence.Tests;
 
@@ -17,7 +12,7 @@ public sealed class SyncTests(PostgresFixture database)
     private static readonly Guid DeviceB = Guid.Parse("0199e3c2-5b1a-7c3d-8e4f-0123456789ac");
     private static readonly DateTimeOffset Now = DateTimeOffset.FromUnixTimeMilliseconds(1_760_351_234_567);
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
-    private PostgresSyncStore Store => new(database.App);
+    private PostgresSyncStore Store => new(database.App, new FitnessBuddy.Modules.Identity.Infrastructure.PostgresIdentityStore(database.App, new TestClock()), TimeProvider.System, new FitnessBuddy.BuildingBlocks.Ids.UuidV7IdGenerator(TimeProvider.System));
     private static SyncVersion Version(Guid id, int counter, Guid? device = null, bool deleted = false, string text = "synthetic") =>
         new("diaryEntry", id, 1, $"1760351234567-{counter:D5}-{device ?? DeviceA}", device ?? DeviceA,
             deleted ? Now : null, JsonSerializer.SerializeToElement(new { text }));
@@ -171,73 +166,4 @@ public sealed class SyncTests(PostgresFixture database)
         Assert.Contains(rest.Changes, row => row.Version.Id == a && row.Version.Hlc == Version(a, 1).Hlc);
     }
 
-    [Fact, Trait("Rule", "04.4-contract-envelope")]
-    public async Task Null_change_elements_return_validation_400_without_applying_any_row()
-    {
-        await using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-        {
-            builder.UseEnvironment("SyncSpike");
-            builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ConnectionStrings:Application"] = database.AppConnection,
-                ["SyncSpike:Enabled"] = "true",
-                ["SyncSpike:Key"] = new('a', 64),
-                ["SyncSpike:UserId"] = Guid.NewGuid().ToString(),
-                ["RateLimiting:PerIp:PermitLimit"] = "10000",
-            }));
-        });
-        using var client = factory.CreateClient();
-        client.DefaultRequestHeaders.Add("X-App-Version", "0.1.0"); client.DefaultRequestHeaders.Add("X-Platform", "android");
-        client.DefaultRequestHeaders.Add("X-Device-Id", DeviceA.ToString()); client.DefaultRequestHeaders.Add("X-Sync-Spike-Key", new string('a', 64));
-        foreach (var changes in new object?[][] { [null], [Version(Guid.NewGuid(), 0), null] })
-        {
-            using var response = await client.PostAsJsonAsync("/v1/sync/push", new { changes }, Ct);
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
-            var problem = await response.Content.ReadFromJsonAsync<JsonElement>(Ct);
-            Assert.True(problem.GetProperty("errors").TryGetProperty("changes", out _));
-        }
-        using var pull = await client.GetAsync("/v1/sync/pull?cursor=0&limit=100", Ct);
-        var page = await pull.Content.ReadFromJsonAsync<JsonElement>(Ct);
-        Assert.Empty(page.GetProperty("changes").EnumerateArray());
-    }
-
-    [Theory, Trait("Rule", "04.6-spike-isolation")]
-    [InlineData("Production", true, 501)]
-    [InlineData("Development", true, 501)]
-    [InlineData("SyncSpike", false, 501)]
-    [InlineData("SyncSpike", true, 200)]
-    public async Task Experimental_http_access_is_fail_closed(string environment, bool enabled, int expected)
-    {
-        var user = Guid.NewGuid();
-        await using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-        {
-            builder.UseEnvironment(environment);
-            builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ConnectionStrings:Application"] = database.AppConnection,
-                ["SyncSpike:Enabled"] = enabled.ToString(),
-                ["SyncSpike:Key"] = new('a', 64),
-                ["SyncSpike:UserId"] = user.ToString(),
-                ["RateLimiting:PerIp:PermitLimit"] = "10000",
-            }));
-        });
-        using var client = factory.CreateClient();
-        client.DefaultRequestHeaders.Add("X-App-Version", "0.1.0"); client.DefaultRequestHeaders.Add("X-Platform", "android");
-        client.DefaultRequestHeaders.Add("X-Device-Id", DeviceA.ToString());
-        client.DefaultRequestHeaders.Add("X-Sync-Spike-Key", new string('a', 64));
-        using var page = await client.GetAsync("/v1/sync/pull?cursor=0&limit=100", Ct);
-        Assert.Equal(expected, (int)page.StatusCode);
-        if (expected == 200)
-        {
-            var row = Version(Guid.NewGuid(), 0) with { Hlc = $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds():D13}-00000-{DeviceA}" };
-            using var response = await client.PostAsJsonAsync("/v1/sync/push", new { changes = new[] { row } }, Ct);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var body = await response.Content.ReadFromJsonAsync<JsonElement>(Ct);
-            Assert.Equal("accepted", body.GetProperty("results")[0].GetProperty("status").GetString());
-            client.DefaultRequestHeaders.Remove("X-Sync-Spike-Key"); client.DefaultRequestHeaders.Add("X-Sync-Spike-Key", "wrong");
-            using var denied = await client.GetAsync("/v1/sync/pull?cursor=0&limit=100", Ct);
-            Assert.Equal(HttpStatusCode.Unauthorized, denied.StatusCode);
-        }
-    }
 }

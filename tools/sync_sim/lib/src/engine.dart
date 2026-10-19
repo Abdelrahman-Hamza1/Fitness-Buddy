@@ -25,8 +25,13 @@ final class SimStore {
   factory restore(String checkpoint) {
     final data = jsonDecode(checkpoint) as Map<String, dynamic>;
     final store = SimStore()
+      ..needsReupload = data['needsReupload'] as bool? ?? false
+      ..datasetId = data['datasetId'] as String?
       ..cursor = data['cursor'] as String
       ..lastHlc = data['lastHlc'] as String?;
+    store.compacted.addAll(
+      (data['compacted'] as List<dynamic>? ?? []).cast<String>(),
+    );
     for (final row in data['rows'] as List<dynamic>) {
       final change = SyncChange.fromJson(row as Map<String, dynamic>);
       store.rows[rowKey(change)] = change;
@@ -40,17 +45,24 @@ final class SimStore {
   Map<String, SyncChange> rows = {};
   final List<SyncChange> outbox = [];
   String cursor = '0';
+  String? datasetId;
+  bool needsReupload = false;
+  Set<String> compacted = {};
   String? lastHlc;
 
   String checkpoint() => jsonEncode({
     'rows': rows.values.toList(),
     'outbox': outbox,
     'cursor': cursor,
+    'datasetId': datasetId,
+    'needsReupload': needsReupload,
+    'compacted': compacted.toList(),
     'lastHlc': lastHlc,
   });
 
   void confirmSynthetic(SyncChange row) {
     rows[rowKey(row)] = row;
+    compacted.remove(rowKey(row));
     outbox.add(row);
     lastHlc = row.hlc;
   }
@@ -79,9 +91,11 @@ final class SimStore {
     SyncPage page,
     HybridLogicalClock clock, {
     void Function()? beforeCommit,
+    bool reset = false,
   }) {
     final staged = Map<String, SyncChange>.of(rows);
-    var previous = BigInt.parse(cursor);
+    final stagedCompacted = Set<String>.of(compacted);
+    var previous = BigInt.parse(reset ? '0' : cursor);
     for (final document in page.changes) {
       final seq = BigInt.parse(document.serverSeq);
       if (seq <= previous) throw StateError('unordered page');
@@ -93,10 +107,15 @@ final class SimStore {
       final local = staged[rowKey(row)];
       if (local == null || row.hlc.compareTo(local.hlc) > 0) {
         staged[rowKey(row)] = row;
+        if (document.compacted) {
+          stagedCompacted.add(rowKey(row));
+        } else {
+          stagedCompacted.remove(rowKey(row));
+        }
       }
     }
     final expected = page.changes.isEmpty
-        ? cursor
+        ? (reset ? '0' : cursor)
         : page.changes.last.serverSeq;
     if (page.nextCursor != expected) {
       throw StateError('cursor skips undelivered versions');
@@ -105,6 +124,9 @@ final class SimStore {
     // One atomic state replacement models rows + cursor + clock committed
     // together.
     rows = staged;
+    compacted = stagedCompacted;
+    needsReupload = needsReupload || reset;
+    datasetId = page.datasetId;
     cursor = page.nextCursor;
     lastHlc = clock.last?.toString() ?? lastHlc;
   }
@@ -144,13 +166,13 @@ final class PrototypeSyncEngine implements SyncEngine {
     bool deleted = false,
   }) {
     final row = SyncChange(
-      entity: entity,
+      entity: 'weighIn',
       id: id,
       schemaVersion: 1,
       hlc: _logicalClock().now().toString(),
       deviceId: deviceId,
       deletedAt: deleted ? clock.nowUtc() : null,
-      payload: payload,
+      payload: syntheticPayload({'kind': entity, ...payload}, clock.nowUtc()),
     );
     store.confirmSynthetic(row);
     return row;
@@ -158,18 +180,21 @@ final class PrototypeSyncEngine implements SyncEngine {
 
   @override
   Future<void> sync() async {
+    await pull();
     await pushPending();
     await pull();
   }
 
   @override
   Future<void> pushPending() async {
+    if (store.datasetId == null || store.needsReupload) await pull();
+    transport.datasetId = store.datasetId;
     final pending = List<SyncChange>.of(store.outbox);
     var offset = 0;
     while (offset < pending.length) {
       final batch = <SyncChange>[];
       var batchBytes =
-          14; // UTF-8 bytes in {"changes":[]} plus elements/commas.
+          128; // Envelope and optional dataset UUID, excluding elements/commas.
       // Stay below Kestrel's 256 KiB cap as well as the protocol's 500-row
       // bound.
       while (offset < pending.length && batch.length < 500) {
@@ -185,6 +210,10 @@ final class PrototypeSyncEngine implements SyncEngine {
         batch.add(pending[offset++]);
       }
       final response = await transport.push(batch);
+      if (response.datasetId != store.datasetId) {
+        await pull();
+        throw const SyncRejected();
+      }
       beforeAcknowledge?.call();
       store.acknowledge(batch, response.results);
       if (response.results.any((result) => result.status == 'invalid')) {
@@ -195,10 +224,41 @@ final class PrototypeSyncEngine implements SyncEngine {
 
   @override
   Future<void> pull() async {
+    var reset = false;
+    String? discovered;
     while (true) {
-      final page = await transport.pull(store.cursor, 100);
-      store.apply(page, _logicalClock(), beforeCommit: beforePullCommit);
-      if (page.changes.isEmpty) return;
+      transport.datasetId = reset ? discovered : store.datasetId;
+      final page = await transport.pull(reset ? '0' : store.cursor, 100);
+      if (page.reason != null ||
+          store.datasetId != null &&
+              page.datasetId != store.datasetId &&
+              !reset) {
+        if (reset && page.reason != null) throw const SyncRejected();
+        reset = true;
+        discovered = page.datasetId;
+        continue;
+      }
+      store.apply(
+        page,
+        _logicalClock(),
+        beforeCommit: beforePullCommit,
+        reset: reset,
+      );
+      reset = false;
+      transport.datasetId = store.datasetId;
+      if (page.changes.isEmpty) {
+        if (store.needsReupload) {
+          final pending = store.outbox.map(versionKey).toSet();
+          for (final row in store.rows.values) {
+            if (!store.compacted.contains(rowKey(row)) &&
+                pending.add(versionKey(row))) {
+              store.outbox.add(row);
+            }
+          }
+          store.needsReupload = false;
+        }
+        return;
+      }
     }
   }
 }
@@ -206,3 +266,18 @@ final class PrototypeSyncEngine implements SyncEngine {
 final class SyncRejected implements Exception {
   const new();
 }
+
+/// Canonical synthetic production payload. The note retains the random event
+/// for the independent oracle.
+Map<String, Object?> syntheticPayload(
+  Map<String, Object?> event,
+  DateTime now,
+) => {
+  'createdAtMs': now.millisecondsSinceEpoch,
+  'origin': 'direct',
+  'editedByUser': false,
+  'measuredAtUtc': now.millisecondsSinceEpoch,
+  'localDate': now.toIso8601String().substring(0, 10),
+  'kg': 75,
+  'note': jsonEncode(event),
+};

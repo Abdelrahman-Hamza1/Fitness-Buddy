@@ -48,6 +48,20 @@ public sealed class PostgresFixture : IAsyncLifetime
         await Runner.RunAsync(MigratorConnection, TestContext.Current.CancellationToken);
     }
 
+    public async Task<string> CreateUpgradeDatabaseAsync(string name)
+    {
+        if (!(name.StartsWith("fb_upgrade_", StringComparison.Ordinal) && name.Length == 43 && Guid.TryParseExact(name[11..], "N", out _))) { throw new ArgumentException("Invalid synthetic database.", nameof(name)); }
+        await using var admin = NpgsqlDataSource.Create(container.GetConnectionString());
+        await using var create = admin.CreateCommand($"CREATE DATABASE {name} OWNER fb_migrator"); await create.ExecuteNonQueryAsync(TestContext.Current.CancellationToken);
+        return new NpgsqlConnectionStringBuilder(MigratorConnection) { Database = name }.ConnectionString;
+    }
+    public async Task DropUpgradeDatabaseAsync(string name)
+    {
+        if (!(name.StartsWith("fb_upgrade_", StringComparison.Ordinal) && name.Length == 43 && Guid.TryParseExact(name[11..], "N", out _))) { throw new ArgumentException("Invalid synthetic database.", nameof(name)); }
+        await using var admin = NpgsqlDataSource.Create(container.GetConnectionString());
+        await using var drop = admin.CreateCommand($"DROP DATABASE {name} WITH (FORCE)"); await drop.ExecuteNonQueryAsync(TestContext.Current.CancellationToken);
+    }
+
     public Task PauseAsync() => container.PauseAsync(TestContext.Current.CancellationToken);
     public Task UnpauseAsync() => container.UnpauseAsync(CancellationToken.None);
 

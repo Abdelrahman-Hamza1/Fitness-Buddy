@@ -2,4 +2,6 @@
   <ItemGroup><FrameworkReference Include="Microsoft.AspNetCore.App" /></ItemGroup>
   <ItemGroup><ProjectReference Include="../../BuildingBlocks/FitnessBuddy.BuildingBlocks.csproj" /></ItemGroup>
   <ItemGroup><InternalsVisibleTo Include="FitnessBuddy.Persistence.Tests" /></ItemGroup>
+  <ItemGroup><EmbeddedResource Include="Infrastructure/Schemas/entities.json" /></ItemGroup>
+  <ItemGroup><ProjectReference Include="../Identity/FitnessBuddy.Modules.Identity.csproj" /></ItemGroup>
 </Project>

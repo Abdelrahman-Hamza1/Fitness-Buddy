@@ -19,6 +19,9 @@ abstract class SyncDocument with _$SyncDocument {
     required DateTime? deletedAt,
     required Map<String, dynamic> payload,
     required String serverSeq,
+
+    /// A retained deletion fence with empty payload; not an entity payload.
+    required bool compacted,
   }) = _SyncDocument;
 
   factory SyncDocument.fromJson(Map<String, Object?> json) =>

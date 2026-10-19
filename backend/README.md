@@ -240,26 +240,28 @@ read-only backup role. See [the runbook](../docs/runbooks/laptop-test-server.md)
 Tailscale client alone does not mean the server is activated. `make phone-server-smoke` proves
 synthetic isolation/backup boundaries in CI without touching the owner's stack or tailnet.
 
-## Sync spike (B01)
+## Document sync (B05)
 
-`make sync-spike` builds the shipped image and tests it against ephemeral pinned
-Postgres, through the generated Dart client in `tools/sync_sim/`. It runs 50
-seeded multi-device scenarios, fault cases and a 5,000-row push/fresh-pull timing;
-`make test-dart` also runs 1,000 fake-server scenarios. The CI image job runs the
-real harness. Its key/data/network are temporary; it binds to loopback only.
+Registered users use bearer-authenticated push/pull/history; guests receive403. Every production
+transaction takes the shared user lock, checks current Identity user/session state and uses forced
+RLS. The experimental key/environment bypass has been removed. The HTTP contract and embedded
+closed payload registry are the authority; `make gen-sync-schemas` / `make check-sync-schemas`
+export/check it without network or a runtime file dependency.
 
-`UserData` owns the `userdata` schema, global document/history sequences and
-forced RLS. Push transactions serialize per user **before** allocating sequence
-numbers; otherwise an earlier uncommitted row could land behind a cursor.
-History preserves stale incoming and displaced versions, including same-device
-versions for immutable retry identity. Pull advances only to delivered rows.
-No payload or test key belongs in telemetry. Wire details: `05` §5.4.
+Unbound/mismatched pushes never write or acknowledge an immutable version. Discover the dataset
+at pull cursor0, bind writes, merge a changed dataset before re-upload, and never advance a pull
+cursor from a push acknowledgement. Sequences are commit ordered per user. History expires after
+30days; payload compaction retains deletion fences and minimal immutable-version receipts until
+account erasure. Background cleanup is bounded and transactional. Recurring user-owned Ops schedules are registered
+with sync and seeded for legacy data by the migrator; no application-wide cleanup enumeration or
+elevated UserData function is granted.
 
-The endpoints return 501 in normal API environments. The harness alone uses
-`SyncSpike` + enabled flag + random 32-byte key + a configured synthetic user.
-This is not an authentication option for real data. B04/B05 replace the gate
-with identity, schema validation, clock recovery, history/tombstone retention
-and dataset reset handling (proposed TD-066); A34 supplies the real phone engine.
+`make sync-spike` is the retained target name for the **production-authenticated** synthetic harness:
+50 real randomized seeds, connection/replay/crash faults,10,000-row batched push/fresh pull and bounded
+server duration measurements. It uses isolated pinned Postgres and ephemeral local email/keys, with
+no owner data or external provider calls. Fake seeds/reset recovery run in `make test-dart`.
+
+See [sync operations](../docs/runbooks/sync.md) and `05` §5.5. A34 owns real Flutter/SQLite sync.
 
 ## Buddy interpretation spike (B02)
 

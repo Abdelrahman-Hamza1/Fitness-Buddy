@@ -39,7 +39,7 @@ public sealed class SentryPrivacyTests
         Assert.Contains(nameof(InvalidOperationException), envelope, StringComparison.Ordinal);
         var eventLine = envelope.Split('\n').First(line => line.Contains("\"exception\":", StringComparison.Ordinal));
         using var json = JsonDocument.Parse(eventLine);
-        Assert.Equal("/v1/_probe/throw", json.RootElement.GetProperty("request").GetProperty("url").GetString());
+        Assert.False(json.RootElement.GetProperty("request").TryGetProperty("url", out _));
         Assert.Equal(typeof(InvalidOperationException).FullName, json.RootElement.GetProperty("exception").GetProperty("values")[0].GetProperty("type").GetString());
         Assert.False(json.RootElement.GetProperty("exception").GetProperty("values")[0].TryGetProperty("value", out _));
     }
@@ -49,6 +49,7 @@ public sealed class SentryPrivacyTests
     {
         var sentryEvent = new SentryEvent
         {
+            TransactionName = "CANARY-BODY",
             Request = new SentryRequest
             {
                 Url = "https://example.test/path?q=CANARY-QUERY",
@@ -63,6 +64,7 @@ public sealed class SentryPrivacyTests
                 Type = "System.Exception", Value = "CANARY-EXCEPTION", Mechanism = new Mechanism(),
             }],
         };
+        sentryEvent.SetTag("RequestPath", "CANARY-BODY");
         sentryEvent.Request.Headers["Authorization"] = "CANARY-AUTH";
         sentryEvent.Request.Headers["X-Device-Id"] = TelemetryPrivacyTests.Canaries[4];
         sentryEvent.Request.Headers["x-app-version"] = "0.1.0";
@@ -72,7 +74,9 @@ public sealed class SentryPrivacyTests
         sentryEvent.SetExtra("CANARY-QUERY", "CANARY-BODY");
         Assert.Single(sentryEvent.SentryExceptions!).Mechanism!.Data["secret"] = "CANARY-BODY";
         SentryScrubber.Scrub(sentryEvent);
-        Assert.Equal("/path", sentryEvent.Request.Url);
+        Assert.Null(sentryEvent.Request.Url);
+        Assert.Null(sentryEvent.TransactionName);
+        Assert.Empty(sentryEvent.Tags);
         Assert.Equal(2, sentryEvent.Request.Headers.Count);
         Assert.Empty(sentryEvent.Extra);
         using var stream = new MemoryStream();

@@ -54,6 +54,8 @@ paths:
     $ref: './modules/userdata.yaml#/paths/~1v1~1sync~1pull'
   /v1/sync/history:
     $ref: './modules/userdata.yaml#/paths/~1v1~1sync~1history'
+  /v1/sync/history/{entity}/{id}:
+    $ref: './modules/userdata.yaml#/paths/~1v1~1sync~1history~1{entity}~1{id}'
   /v1/config:
     $ref: './modules/account.yaml#/paths/~1v1~1config'
 

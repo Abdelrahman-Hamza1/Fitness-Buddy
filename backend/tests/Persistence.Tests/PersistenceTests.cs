@@ -19,7 +19,7 @@ public sealed class PersistenceTests(PostgresFixture database)
         await using var command = source.CreateCommand("SELECT count(*) FROM ops.__ef_migrations_history UNION ALL SELECT count(*) FROM testdata.__ef_migrations_history");
         await using var reader = await command.ExecuteReaderAsync(Ct);
         Assert.True(await reader.ReadAsync(Ct));
-        Assert.Equal(2, reader.GetInt64(0));
+        Assert.Equal(3, reader.GetInt64(0));
         Assert.True(await reader.ReadAsync(Ct));
         Assert.Equal(1, reader.GetInt64(0));
     }
