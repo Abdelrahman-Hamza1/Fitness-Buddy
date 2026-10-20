@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A05 | S | Claude | ⬜ Not started |
+| App | A05 | S | Codex (TD-078) | ⬜ Not started |
 
 _Split from A05 at the wave-1 plan review (architect, 2026-10-17, PA6). Needed before A36 (workout library) and A41 (Ramadan / city for prayer times)._
 

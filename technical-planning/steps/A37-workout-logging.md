@@ -12,6 +12,7 @@ _Old ID: S42 app part (renumbered by TD-063, 2026-10-16)._
 
 ## Scope
 - **Workouts tab:** the plan for today, recent sessions, templates, exercises, and the input bar (AI-001).
+- **Custom exercise form** (name, aliases, type, equipment; create and edit) on A36's operations (moved from A36 by TD-078).
 - **Form logging** (WO-034): pick a template or an empty session → each exercise shows **last session's numbers** next to the inputs → enter/adjust sets → save (a direct action with undo). Cardio by form (WO-035).
 - **Chat logging** (WO-030, AI-053): a `Workout` intent (B12's contract and prompt; the app sends custom exercises in the context) → **workout proposal card** with exercises matched to the library, sets, and assumption chips ("'ohp' → Overhead press (barbell)"), with the same inline editing as food cards. The parser cross-checks the model's sets. **"Same as last push but bench 82.5"** (WO-032, T35). An unknown exercise → pick the closest or create a custom one (WO-033).
 - **Template update offer** (WO-022): after a session that differs from its template → "Update the Push template?" (a proposal).

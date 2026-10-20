@@ -2,7 +2,7 @@
 
 R1 is built on **two tracks** that run in parallel (TD-059, TD-063):
 
-- **App track `A01–A43`** (Claude): the Flutter app, the Dart packages and tools, the food data.
+- **App track `A01–A43`** (Claude): the Flutter app, the Dart packages and tools, the food data. Steps with no UI marked **Codex** in the board's **By** column are built by Codex (TD-078).
 - **Backend track `B01–B16`** (Codex): the API, the Buddy server, infrastructure and deploys.
 
 **Within a track the number is the order.** The only waits are the dependencies on the other track, shown in **bold** on the board (§4) and listed in §6. The finished foundation steps keep their old IDs (`S01`–`S04`, `S06a/b`, `S08`); old `Sxx` IDs are never reused, so a commit called `S04: …` is always the old plan and `A01: …` / `B01: …` the new one (§8).
@@ -120,6 +120,8 @@ In the order they're needed:
 
 **Owner** (TD-059, TD-061): **Codex** owns `backend/`, `infra/`, the server side of `contracts/`, the server CI jobs, deploys, `tools/buddy_eval` and the backend track. **Claude** owns `apps/mobile/`, `packages/`, the other Dart `tools/`, `data/`, the planning docs' structure and the app track.
 
+**App steps marked Codex** (TD-078, owner 2026-10-20): app steps with no screens, flows or user-facing copy (logic, data, plumbing) are built by Codex, as **whole steps**, so Claude's longer track and Codex's shorter one even out. Such a step keeps its A ID, card and the app's rules (`apps/mobile/`, `packages/` conventions, `app_check`, the `fb_domain` boundaries); Codex plans, builds, reviews (with the security review on Risky steps) and merges it, and Claude adds a short app-architecture review before the merge (`../13-delivery-process.md` §10). The **By** column shows who builds each app step.
+
 **Depends on:** same-track IDs are plain, other-track IDs are **bold**. "**B09** (contract)" means the app step can start once B09's **contract handoff merge** is on `main` (`B09 (contract): …`: the contract, the regenerated client and `501` server stubs, TD-065), using the generated client + fakes; its end-to-end checks wait for the finished B step.
 
 Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ blocked
@@ -136,54 +138,54 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [S06b](S06-app-shell.md) | App shell: Android builds & device | Claude | ✅ |
 | [S08](S08-domain-primitives.md) | Domain primitives & text normalization | Claude | ✅ |
 
-### 4.1 App track (Claude)
+### 4.1 App track (Claude, plus the steps marked Codex, TD-078)
 
-| ID | Step | Depends on | Size | Was | Milestone | Status |
-|---|---|---|---|---|---|---|
-| [A01](A01-local-data-foundation.md) | Local data foundation | S06 ✅, S08 ✅ | M | S09 |  | ✅ |
-| [A02](A02-design-system.md) | Design system v0 & key screen mockups | S06 ✅ | L | S07 |  | ✅ (phone review: backlog #72) |
-| [A03](A03-spike-food-data.md) | Spike: food data | S08 ✅ | M | S11 |  | ✅ |
-| [A04](dish-batches.md) | Dish batch 1: basics (breakfast & bread → A17, TD-074) | A03 | S | D1 |  | ✅ |
-| [A05](A05-catalog-pipeline.md) | Catalog pipeline & offline pack v1 | A01, A03, A04 | L | S13 |  | ✅ |
-| [A05b](A05b-exercises-cities-data.md) | Exercises & cities data | A05 | S | S13 part |  | ⬜ |
-| [A06](A06-diary-domain.md) | Diary domain & storage | A01 | M | S14 |  | ✅ |
-| [A07](A07-food-search-add.md) | Food search & add flow | A02, A05, A06 | M | S15 |  | ⬜ |
-| [A08](A08-today-diary-ui.md) | Today screen & diary UI | A07 | L | S16 |  | ⬜ |
-| [A09](A09-personal-foods-quick-add.md) | Personal foods, saved meals & quick-add | A08 | M | S17 |  | ⬜ |
-| [A10](A10-settings-slots.md) | Settings & meal slots | A08 | M | S18 |  | ⬜ |
-| [A11](A11-dogfood-1-readiness.md) | Dogfood 1 readiness: export, crash reports, daily build | A09, A10 · soft: **B03** | M | S28 export part + new | **M1** | ⬜ |
-| [A12](A12-targets-engine.md) | Targets engine | A06 | M | S19 |  | ⬜ |
-| [A13](A13-targets-ui-onboarding.md) | Goals & targets UI, R1 onboarding | A10, A12 | M | S20 |  | ⬜ |
-| [A14](A14-weigh-ins-trend.md) | Weigh-ins & trend | A08 | M | S21 |  | ⬜ |
-| [A15](A15-weight-graph-measurements.md) | Weight graph & measurements | A12, A14 | L | S22 |  | ⬜ |
-| [A16](A16-progress-tab.md) | Progress tab v1 | A13, A15 | M | S23 | **M2** | ⬜ |
-| [A17](dish-batches.md) | Dish batch 2: main dishes A | A04 | S | D2 |  | ⏸ deferred (TD-074): after A41 |
-| [A18](dish-batches.md) | Dish batch 3: out & street food | A17 | S | D3 |  | ⏸ deferred (TD-074): after A41 |
-| [A19](dish-batches.md) | Dish batch 4: main dishes B, salads & sides | A18 | S | D4 |  | ⏸ deferred (TD-074): after A41 |
-| [A20](A20-api-session.md) | API session: anonymous identity & auth interceptor | **B04** (contract) | S | S25 part |  | ⬜ |
-| [A21](A21-proposal-engine.md) | ProposalEngine | A07, A12, **B02** | L | S32 |  | ⬜ |
-| [A22](A22-chat-proposal-card.md) | Chat sheet & proposal card | A08, A20, A21, **B08** | L | S33 |  | ⬜ |
-| [A23](A23-message-lifecycle.md) | Message lifecycle, pending & failures | A22 | M | S34 | **M3** | ⬜ |
-| [A24](A24-online-search-pack-updates.md) | Online search & pack updates (app) | A07, **B07** | M | S30 app part |  | ⬜ |
-| [A25](A25-diary-edits-by-chat.md) | Diary edits by chat (app) | A23, **B09** (contract) | M | S35 app part |  | ⬜ |
-| [A26](A26-memory-user-model.md) | Memory & user model (app) | A23, **B09** (contract) | M | S36 app part |  | ⬜ |
-| [A27](A27-batches-chat-foods.md) | Batches, personal foods & saved meals by chat (app) | A09, A23, **B09** (contract) | L | S37 app part |  | ⬜ |
-| [A28](A28-barcode-label-scan.md) | Barcode & label scan (app) | A23, **B10** (contract) | L | S38 app part |  | ⬜ |
-| [A29](A29-photo-body-import.md) | Photo logging, body data by chat & paste import (app) | A15, A23, **B10** (contract) | M | S39 app part |  | ⬜ |
-| [A30](dish-batches.md) | Dish batch 5: sweets, drinks & Ramadan staples | A19 | S | D5 |  | ⏸ deferred (TD-074): after A41 |
-| [A31](A31-qa-suggestions-halal.md) | Q&A, suggestions & halal (app) | A26, **B11** (contract) | M | S40 app part |  | ⬜ |
-| [A32](dish-batches.md) | Dish batch 6: gap fill from dogfooding | A30 | S | D6 |  | ⏸ deferred (TD-074): after A41 |
-| [A33](A33-sign-in-guest-app.md) | Sign-in & guest upgrade | A20, **B04** | M | S25 |  | ⬜ |
-| [A34](A34-sync-engine-app.md) | Sync engine (app) | A33, **B05** | L | S27 |  | ⬜ |
-| [A35](A35-account-deletion-app.md) | Account deletion (app) | A34, **B06** | S | S28 deletion part | **M5** | ⬜ |
-| [A36](A36-workout-domain.md) | Workout domain, library & templates | A05b, A06, A12 | M | S41 |  | ⬜ |
-| [A37](A37-workout-logging.md) | Workout logging, history & PRs (app) | A23, A36, **B12** (contract) | L | S42 app part |  | ⬜ |
-| [A38](A38-adaptive-targets.md) | Adaptive targets & weekly check-in | A16, A23 | M | S43 |  | ⬜ |
-| [A39](A39-weekly-review.md) | Weekly summary & Buddy review (app) | A37, A38, **B12** (contract) | M | S44 app part |  | ⬜ |
-| [A40](A40-notifications.md) | Notifications | A27, A37, A39 | M | S45 |  | ⬜ |
-| [A41](A41-ramadan.md) | Ramadan mode (app) | A05b, A15, A38, A40, **B12** (contract) | L | S46 app part | **M6** | ⬜ |
-| [A42](A42-performance-a11y-offline.md) | Performance, accessibility & offline acceptance | A41 | M | S48 | **R1** | ⬜ |
-| [A43](A43-play-internal-release.md) | Play internal testing release | A42, **B14** | S | S29 app part | **M7** | ⬜ |
+| ID | Step | By | Depends on | Size | Was | Milestone | Status |
+|---|---|---|---|---|---|---|---|
+| [A01](A01-local-data-foundation.md) | Local data foundation | Claude | S06 ✅, S08 ✅ | M | S09 |  | ✅ |
+| [A02](A02-design-system.md) | Design system v0 & key screen mockups | Claude | S06 ✅ | L | S07 |  | ✅ (phone review: backlog #72) |
+| [A03](A03-spike-food-data.md) | Spike: food data | Claude | S08 ✅ | M | S11 |  | ✅ |
+| [A04](dish-batches.md) | Dish batch 1: basics (breakfast & bread → A17, TD-074) | Claude | A03 | S | D1 |  | ✅ |
+| [A05](A05-catalog-pipeline.md) | Catalog pipeline & offline pack v1 | Claude | A01, A03, A04 | L | S13 |  | ✅ |
+| [A05b](A05b-exercises-cities-data.md) | Exercises & cities data | **Codex** | A05 | S | S13 part |  | ⬜ |
+| [A06](A06-diary-domain.md) | Diary domain & storage | Claude | A01 | M | S14 |  | ✅ |
+| [A07](A07-food-search-add.md) | Food search & add flow | Claude | A02, A05, A06 | M | S15 |  | ⬜ |
+| [A08](A08-today-diary-ui.md) | Today screen & diary UI | Claude | A07 | L | S16 |  | ⬜ |
+| [A09](A09-personal-foods-quick-add.md) | Personal foods, saved meals & quick-add | Claude | A08 | M | S17 |  | ⬜ |
+| [A10](A10-settings-slots.md) | Settings & meal slots | Claude | A08 | M | S18 |  | ⬜ |
+| [A11](A11-dogfood-1-readiness.md) | Dogfood 1 readiness: export, crash reports, daily build | **Codex** | A09, A10 · soft: **B03** | M | S28 export part + new | **M1** | ⬜ |
+| [A12](A12-targets-engine.md) | Targets engine | **Codex** | A06 | M | S19 |  | ⬜ |
+| [A13](A13-targets-ui-onboarding.md) | Goals & targets UI, R1 onboarding | Claude | A10, A12 | M | S20 |  | ⬜ |
+| [A14](A14-weigh-ins-trend.md) | Weigh-ins & trend | Claude | A08 | M | S21 |  | ⬜ |
+| [A15](A15-weight-graph-measurements.md) | Weight graph & measurements | Claude | A12, A14 | L | S22 |  | ⬜ |
+| [A16](A16-progress-tab.md) | Progress tab v1 | Claude | A13, A15 | M | S23 | **M2** | ⬜ |
+| [A17](dish-batches.md) | Dish batch 2: main dishes A | Claude | A04 | S | D2 |  | ⏸ deferred (TD-074): after A41 |
+| [A18](dish-batches.md) | Dish batch 3: out & street food | Claude | A17 | S | D3 |  | ⏸ deferred (TD-074): after A41 |
+| [A19](dish-batches.md) | Dish batch 4: main dishes B, salads & sides | Claude | A18 | S | D4 |  | ⏸ deferred (TD-074): after A41 |
+| [A20](A20-api-session.md) | API session: anonymous identity & auth interceptor | **Codex** | **B04** (contract) | S | S25 part |  | ⬜ |
+| [A21](A21-proposal-engine.md) | ProposalEngine | **Codex** | A07, A12, **B02** | L | S32 |  | ⬜ |
+| [A22](A22-chat-proposal-card.md) | Chat sheet & proposal card | Claude | A08, A20, A21, **B08** | L | S33 |  | ⬜ |
+| [A23](A23-message-lifecycle.md) | Message lifecycle, pending & failures | Claude | A22 | M | S34 | **M3** | ⬜ |
+| [A24](A24-online-search-pack-updates.md) | Online search & pack updates (app) | **Codex** | A07, **B07** | M | S30 app part |  | ⬜ |
+| [A25](A25-diary-edits-by-chat.md) | Diary edits by chat (app) | Claude | A23, **B09** (contract) | M | S35 app part |  | ⬜ |
+| [A26](A26-memory-user-model.md) | Memory & user model (app) | Claude | A23, **B09** (contract) | M | S36 app part |  | ⬜ |
+| [A27](A27-batches-chat-foods.md) | Batches, personal foods & saved meals by chat (app) | Claude | A09, A23, **B09** (contract) | L | S37 app part |  | ⬜ |
+| [A28](A28-barcode-label-scan.md) | Barcode & label scan (app) | Claude | A23, **B10** (contract) | L | S38 app part |  | ⬜ |
+| [A29](A29-photo-body-import.md) | Photo logging, body data by chat & paste import (app) | Claude | A15, A23, **B10** (contract) | M | S39 app part |  | ⬜ |
+| [A30](dish-batches.md) | Dish batch 5: sweets, drinks & Ramadan staples | Claude | A19 | S | D5 |  | ⏸ deferred (TD-074): after A41 |
+| [A31](A31-qa-suggestions-halal.md) | Q&A, suggestions & halal (app) | Claude | A26, **B11** (contract) | M | S40 app part |  | ⬜ |
+| [A32](dish-batches.md) | Dish batch 6: gap fill from dogfooding | Claude | A30 | S | D6 |  | ⏸ deferred (TD-074): after A41 |
+| [A33](A33-sign-in-guest-app.md) | Sign-in & guest upgrade | Claude | A20, **B04** | M | S25 |  | ⬜ |
+| [A34](A34-sync-engine-app.md) | Sync engine (app) | **Codex** | A33, **B05** | L | S27 |  | ⬜ |
+| [A35](A35-account-deletion-app.md) | Account deletion (app) | Claude | A34, **B06** | S | S28 deletion part | **M5** | ⬜ |
+| [A36](A36-workout-domain.md) | Workout domain, library & templates | **Codex** | A05b, A06, A12 | M | S41 |  | ⬜ |
+| [A37](A37-workout-logging.md) | Workout logging, history & PRs (app) | Claude | A23, A36, **B12** (contract) | L | S42 app part |  | ⬜ |
+| [A38](A38-adaptive-targets.md) | Adaptive targets & weekly check-in | Claude | A16, A23 | M | S43 |  | ⬜ |
+| [A39](A39-weekly-review.md) | Weekly summary & Buddy review (app) | Claude | A37, A38, **B12** (contract) | M | S44 app part |  | ⬜ |
+| [A40](A40-notifications.md) | Notifications | Claude | A27, A37, A39 | M | S45 |  | ⬜ |
+| [A41](A41-ramadan.md) | Ramadan mode (app) | Claude | A05b, A15, A38, A40, **B12** (contract) | L | S46 app part | **M6** | ⬜ |
+| [A42](A42-performance-a11y-offline.md) | Performance, accessibility & offline acceptance | Claude | A41 | M | S48 | **R1** | ⬜ |
+| [A43](A43-play-internal-release.md) | Play internal testing release | **Codex** | A42, **B14** | S | S29 app part | **M7** | ⬜ |
 
 **Dish batches deferred (TD-074, owner 2026-10-17):** A17–A19, A30 and A32 keep their IDs but run after A41, before A42, an exception to "the number is the order". Until then local dishes are logged as `~ estimate` from the basics; the reference-dish pipeline (A03, A05) stays, so batches can be added any time.
 
@@ -273,6 +275,7 @@ The only places one track waits for the other. The contract is the meeting point
 1. Take the **lowest-numbered step in your track** that isn't ✅.
 2. If it waits on the other track or on an owner input (§3), tell the owner and take the next step in your track whose dependencies are met. Never start a step whose dependencies aren't met.
 3. Steps marked 🟨 resume from their card's **Progress log**.
+4. **Codex's queue** (TD-078) mixes its B steps and the A steps marked Codex. Default order: a Codex A step that Claude's next steps wait on goes first (A12 before Claude reaches A13, A21 before A22, A34 before A35), then the backend critical path, then the lowest-numbered ready step. The owner can reorder it. Claude skips A steps marked Codex.
 
 One folder, one implementer at a time (owner, 2026-10-16): both work in `~/work/fitness_buddy`. Before starting, check that the folder is clean (`git status`), commit and push your branch before handing over, and start your step branch from the latest `main`. Whoever merges second rebases on the new `main` first (`../13-delivery-process.md` §10).
 

@@ -4,7 +4,7 @@ _The one-page process for both implementers (TD-075, owner 2026-10-17). Part A i
 
 ## A. Shared rules (Claude and Codex)
 
-1. **Tracks.** Claude owns the app track `A01…`, Codex the backend track `B01…` (`technical-planning/steps/README.md` §4). Each side plans, builds, reviews and merges its own steps. The API contract is the meeting point: contract changes go in their own commit with a Progress-log note; breaking changes need the owner.
+1. **Tracks.** Claude owns the app track `A01…`, Codex the backend track `B01…` (`technical-planning/steps/README.md` §4). App steps with no UI are marked **Codex** in the board's **By** column and are Codex's, as whole steps (TD-078); Claude reviews their app architecture before the merge (`13` §10). Each side plans, builds, reviews and merges its own steps. The API contract is the meeting point: contract changes go in their own commit with a Progress-log note; breaking changes need the owner.
 2. **Step tiers**, set in the plan and shown on the card:
    - **Risky:** user-data write path, sync, sign-in and sessions, authorization/RLS, secrets, AI context or proposals, backups or data leaving the phone, infrastructure and production.
    - **Normal:** everything else that is code.

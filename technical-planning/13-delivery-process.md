@@ -214,7 +214,7 @@ The owner splits the work between two AI implementers (2026-10-16):
 | Code it owns | `apps/mobile/`, `packages/` (Dart), Dart `tools/` except `buddy_eval` and `sync_sim`, `data/` | `backend/`, `infra/`, Docker/compose, deploys, backups, observability, `tools/buddy_eval`, `tools/sync_sim` |
 | Contract | Consumes `packages/fb_api_client` (generated) | Keeps the server conformant |
 | CI jobs | `dart`, `android`, `android-it` | `dotnet`, `contract`, `image` |
-| Steps | the **app track** `A01…` (`steps/README.md` §4.1) | the **backend track** `B01…` (§4.2) |
+| Steps | the **app track** `A01…` (`steps/README.md` §4.1), except the steps marked Codex | the **backend track** `B01…` (§4.2) + the app steps marked Codex (TD-078) |
 | Working folder | `~/work/fitness_buddy`, one implementer at a time | the same |
 
 **Rules**
@@ -226,5 +226,6 @@ The owner splits the work between two AI implementers (2026-10-16):
 - **Parallel tracks:** each side takes the lowest-numbered open step in its track (`steps/README.md` §7). A step can start once its dependencies are ✅ on `main`; "(contract)" dependencies need only the B step's contract handoff merge (`Bxx (contract): …`, TD-065).
 - **One folder, separate branches:** One folder, one implementer at a time (owner, 2026-10-16): both work in `~/work/fitness_buddy`. Before starting, check that the folder is clean (`git status`), commit and push your branch before handing over, and start your step branch from the latest `main`. Whoever merges second rebases on the new `main` and re-runs CI first.
 - **Shared Dart seams:** `fb_domain`'s entry points used by `buddy_eval` (A21) and the sync engine interfaces used by `tools/sync_sim` are public APIs pinned by tests in their package; `buddy_eval`/`sync_sim` run in the `dart` CI job and Codex fixes their failures. The pub workspace lockfile is shared.
+- **App steps marked Codex (TD-078):** whole app steps with no screens, flows or copy, marked **Codex** in the board's **By** column. Codex owns that card and branch and may edit Claude's area on it, following the app's rules (`03`, `05`, `06`, `10`, `app_check`, the `fb_domain` boundaries, ARB strings). Codex plans, builds, reviews (with the security review on Risky steps) and merges as for a B step. **Before the merge** Codex pushes the branch and writes "ready for app review" in the Progress log; Claude, at its next session, runs a Sonnet `code-reviewer` pass over the branch diff from a separate worktree (app architecture and conventions only, read-only) and writes the findings in the Progress log; Codex fixes blockers and majors, then merges. Claude doesn't edit an open Codex step's branch, and a Claude step that needs it waits for its merge.
 - Claude no longer briefs `dotnet-engineer`, nor `platform-engineer` for server infrastructure. `platform-engineer` stays for the app's build and CI.
 

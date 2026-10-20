@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A05b, A06, A12 | M | Claude | ⬜ Not started |
+| App | A05b, A06, A12 | M | Codex (TD-078) | ⬜ Not started |
 
 _Old ID: S41 (renumbered by TD-063, 2026-10-16)._
 
@@ -11,7 +11,7 @@ _Old ID: S41 (renumbered by TD-063, 2026-10-16)._
 **Spec:** WO-001, WO-002, WO-003 (form), WO-004, WO-005, WO-010, WO-011, WO-020 (form + from session), WO-021, WO-031 (parser), WO-042 (domain), WO-060, WO-061, TG-043 (wiring) · **Decisions:** TD-009, TD-011
 
 ## Scope
-- **Library:** built-in exercises from the catalog pack (A05 data: ≈ 100, types, equipment variants as separate exercises, EN aliases). **Custom exercises** table (name, aliases, type, equipment), created by form here (chat in A37).
+- **Library:** built-in exercises from the catalog pack (A05 data: ≈ 100, types, equipment variants as separate exercises, EN aliases). **Custom exercises** table (name, aliases, type, equipment), with its create/edit operations here; the form and the chat path are A37's (TD-078: A36 has no screens).
 - **Types** (WO-004): weight×reps, bodyweight×reps (+added), assisted, reps only, time, cardio (duration + optional distance). Per-set fields by type. **Dumbbell weight is per dumbbell** (WO-005).
 - **Tables:** `workout_sessions` → `session_exercises` → `sets`, `workout_templates` (+ items with target sets×reps), `weekly_plan` (weekday → template). Change ops for each, with undo.
 - **Set-notation parser** in `fb_domain` (WO-031): `3x8 80`, `3×8@80`, `80x8x3`, `8,8,7 @80`, varying weights `80x8, 85x6`, `dips +10 3x8`, kg/lb. Also used to cross-check the model (AQ-03).

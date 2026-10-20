@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A42, **B14** | S | Claude | ⬜ Not started |
+| App | A42, **B14** | S | Codex (TD-078) | ⬜ Not started |
 
 _Old ID: S29 app part (renumbered by TD-063, 2026-10-16). The server side is B14._
 

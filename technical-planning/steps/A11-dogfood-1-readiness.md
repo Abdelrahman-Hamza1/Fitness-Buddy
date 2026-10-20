@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A09, A10 · soft: **B03** | M | Claude | ⬜ Not started |
+| App | A09, A10 · soft: **B03** | M | Codex (TD-078) | ⬜ Not started |
 
 _Old ID: S28 export part + new (TD-063, TD-064, 2026-10-16)._
 

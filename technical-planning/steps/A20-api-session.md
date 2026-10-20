@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | **B04** (contract) | S | Claude | ⬜ Not started |
+| App | **B04** (contract) | S | Codex (TD-078) | ⬜ Not started |
 
 _Old ID: S25 part (renumbered by TD-063, 2026-10-16). The sign-in screens and guest upgrade stay in A33._
 

@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A06 | M | Claude | ⬜ Not started |
+| App | A06 | M | Codex (TD-078) | ⬜ Not started |
 
 _Old ID: S19 (renumbered by TD-063, 2026-10-16)._
 

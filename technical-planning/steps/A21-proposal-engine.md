@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A07, A12, **B02** | L | Claude | ⬜ Not started |
+| App | A07, A12, **B02** | L | Codex (TD-078) | ⬜ Not started |
 
 _Old ID: S32 (renumbered by TD-063, 2026-10-16)._
 
