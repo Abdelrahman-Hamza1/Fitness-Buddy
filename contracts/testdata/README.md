@@ -112,3 +112,10 @@ Every step works on Unicode code points (a character outside the BMP, such as an
 8. **Spaces:** runs of spaces → one space, then trim both ends.
 
 The tables live in `packages/fb_text/lib/src/normalize/tables.dart`. Change the code, this section and the cases together.
+
+## `catalog_search.json`
+
+B07 shipped-release relevance probes: `query` must put stable catalog key `first` first. Backend CI
+loads the current full A05 release. A07/A24 should consume these expectations when adding ranking;
+Dart ranking parity is not claimed yet. Synthetic backend fixtures separately cover reference-dish
+aliases/default variants, strict resolver filters and paging equivalence.

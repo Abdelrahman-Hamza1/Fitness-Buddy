@@ -24,7 +24,7 @@ public sealed class RecoveryServerTests(PostgresFixture database)
         {
             // A crash before DB commit or a manual stale restore produces this same mismatch.
             database.Recovery.File.Write(Guid.NewGuid());
-            foreach (var path in new[] { "/v1/me", "/v1/sync/pull?cursor=0&limit=1", "/.well-known/jwks.json", "/health/ready" })
+            foreach (var path in new[] { "/v1/me", "/v1/sync/pull?cursor=0&limit=1", "/.well-known/jwks.json", "/health/ready", "/v1/foods/search?query=rice&limit=10", "/v1/foods/usda:rice_raw", "/v1/catalog/packs/latest", "/v1/catalog/packs/1" })
             { using var response = await client.GetAsync(path, Ct); Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode); }
             using (var signIn = await client.PostAsync("/v1/auth/anonymous", null, Ct)) { Assert.Equal(HttpStatusCode.ServiceUnavailable, signIn.StatusCode); }
             using (var deletion = await client.DeleteAsync("/v1/me", Ct)) { Assert.Equal(HttpStatusCode.ServiceUnavailable, deletion.StatusCode); }

@@ -1,0 +1,26 @@
+[
+  {
+    "query": "Almonds",
+    "first": "usda:almonds"
+  },
+  {
+    "query": "Rice, white, raw",
+    "first": "usda:rice_white_long_grain_raw"
+  },
+  {
+    "query": "لوز",
+    "first": "usda:almonds"
+  },
+  {
+    "query": "lawz",
+    "first": "usda:almonds"
+  },
+  {
+    "query": "رز أبيض",
+    "first": "usda:rice_white_long_grain_raw"
+  },
+  {
+    "query": "ruz abyad",
+    "first": "usda:rice_white_long_grain_raw"
+  }
+]

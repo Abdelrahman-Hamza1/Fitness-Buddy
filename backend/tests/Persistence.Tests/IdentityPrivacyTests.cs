@@ -97,6 +97,9 @@ public sealed class IdentityPrivacyTests(PostgresFixture postgres)
             using var unmatched = await historyClient.GetAsync("/CANARY-UNMATCHED-PRIVATE?q=CANARY-PATH-QUERY", TestContext.Current.CancellationToken); Assert.Equal(404, (int)unmatched.StatusCode);
             await failingFactory.Services.GetRequiredService<IHub>().FlushAsync(TimeSpan.FromSeconds(5));
         }
+        canaries.Add("CANARY-CATALOG-PRIVATE");
+        using (var search = await client.GetAsync("/v1/foods/search?query=CANARY-CATALOG-PRIVATE&limit=10", TestContext.Current.CancellationToken)) { Assert.Equal(200, (int)search.StatusCode); }
+        using (var missingFood = await client.GetAsync("/v1/foods/CANARY-CATALOG-PRIVATE", TestContext.Current.CancellationToken)) { Assert.Equal(404, (int)missingFood.StatusCode); }
         using var erased = await client.DeleteAsync("/v1/me", TestContext.Current.CancellationToken);
         Assert.Equal(204, (int)erased.StatusCode);
         using var afterErasure = await client.GetAsync("/v1/me", TestContext.Current.CancellationToken);

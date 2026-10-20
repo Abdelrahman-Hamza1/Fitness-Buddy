@@ -23,3 +23,7 @@ The dedicated `SyncSpike` environment + opt-in flag + random test key + fixed
 synthetic principal gate keeps the routes closed in normal runs. Never enable
 this on a real-data database. The script binds only loopback, uses no volume,
 and deletes its containers/network on exit.
+
+B07 also uses this existing backend-owned integration harness for the tiny offline
+`catalog_client_test.dart` gate: it verifies the generated API client preserves arbitrary binary
+pack bytes. `make catalog-client-smoke` runs it without a server, credentials or paid calls.

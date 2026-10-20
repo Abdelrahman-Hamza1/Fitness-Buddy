@@ -34,6 +34,9 @@ internal static partial class MigrateRole
                 {
                     await FitnessBuddy.Modules.UserData.UserDataModule.SeedLegacyCleanupAsync(connection, host.Services.GetRequiredService<TimeProvider>(),
                         host.Services.GetRequiredService<FitnessBuddy.BuildingBlocks.Ids.IIdGenerator>(), maintenanceToken);
+                    var catalogDirectory = builder.Configuration["Catalog:ImportDirectory"];
+                    if (!string.IsNullOrWhiteSpace(catalogDirectory))
+                    { await FitnessBuddy.Modules.Catalog.CatalogModule.ImportAsync(connection, catalogDirectory, maintenanceToken); }
                     var keyOperation = builder.Configuration["Identity:KeyOperation"];
                     if (!string.IsNullOrEmpty(keyOperation))
                     {

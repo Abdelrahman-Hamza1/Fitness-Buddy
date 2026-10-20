@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'clients/identity_client.dart';
 import 'clients/account_client.dart';
 import 'clients/user_data_client.dart';
+import 'clients/catalog_client.dart';
 
 /// Fitness Buddy API `v0.1.0`.
 ///
@@ -24,6 +25,7 @@ class FbApi {
   IdentityClient? _identity;
   AccountClient? _account;
   UserDataClient? _userData;
+  CatalogClient? _catalog;
 
   IdentityClient get identity =>
       _identity ??= IdentityClient(_dio, baseUrl: _baseUrl);
@@ -33,4 +35,7 @@ class FbApi {
 
   UserDataClient get userData =>
       _userData ??= UserDataClient(_dio, baseUrl: _baseUrl);
+
+  CatalogClient get catalog =>
+      _catalog ??= CatalogClient(_dio, baseUrl: _baseUrl);
 }

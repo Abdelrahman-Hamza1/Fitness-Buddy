@@ -1,0 +1,1186 @@
+{
+  "cities": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://fitnessbuddy.local/catalog/cities.schema.json",
+    "title": "Catalog load file: cities.jsonl",
+    "description": "A city for the location and timezone features (A05b fills it; empty until then). id is city:<geonameid>.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "id",
+      "name_en",
+      "name_ar",
+      "country_code",
+      "admin1",
+      "lat",
+      "lon",
+      "timezone",
+      "population"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^city:[0-9]+$"
+      },
+      "name_en": {
+        "type": "string",
+        "minLength": 1
+      },
+      "name_ar": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "country_code": {
+        "type": "string",
+        "pattern": "^[A-Z]{2}$"
+      },
+      "admin1": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "lat": {
+        "type": "number",
+        "minimum": -90,
+        "maximum": 90
+      },
+      "lon": {
+        "type": "number",
+        "minimum": -180,
+        "maximum": 180
+      },
+      "timezone": {
+        "type": "string",
+        "minLength": 1
+      },
+      "population": {
+        "anyOf": [
+          {
+            "type": "integer",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    }
+  },
+  "dishes": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://fitnessbuddy.local/catalog/dishes.schema.json",
+    "title": "Catalog load file: dishes.jsonl",
+    "description": "A reference dish: a search/grouping target that resolves to its default variant. Carries the recipes (with catalog IDs), portions with ranges and the review record. Rows with review_status draft appear only in builds with includes_drafts.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "id",
+      "name_en",
+      "name_ar",
+      "default_variant_id",
+      "review_status",
+      "time_min",
+      "catalog_version",
+      "variants",
+      "portions",
+      "review"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^ref:[a-z0-9][a-z0-9_]*$",
+        "maxLength": 64
+      },
+      "name_en": {
+        "type": "string",
+        "minLength": 1
+      },
+      "name_ar": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "default_variant_id": {
+        "anyOf": [
+          {
+            "type": "string",
+            "pattern": "^ref:[a-z0-9][a-z0-9_]*/[a-z0-9][a-z0-9_]*$",
+            "maxLength": 64
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "review_status": {
+        "enum": [
+          "draft",
+          "reviewed"
+        ]
+      },
+      "time_min": {
+        "anyOf": [
+          {
+            "type": "number",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "catalog_version": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "variants": {
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "recipe",
+            "cooked_total_g",
+            "cooked_total_range_lo",
+            "cooked_total_range_hi",
+            "nutrient_source"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^ref:[a-z0-9][a-z0-9_]*/[a-z0-9][a-z0-9_]*$",
+              "maxLength": 64
+            },
+            "recipe": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "description": "",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "food",
+                      "grams",
+                      "range_lo",
+                      "range_hi"
+                    ],
+                    "properties": {
+                      "food": {
+                        "type": "string",
+                        "pattern": "^(usda|ref):[a-z0-9][a-z0-9_]*(/[a-z0-9][a-z0-9_]*)?$",
+                        "maxLength": 64
+                      },
+                      "grams": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "range_lo": {
+                        "anyOf": [
+                          {
+                            "type": "number",
+                            "minimum": 0
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "range_hi": {
+                        "anyOf": [
+                          {
+                            "type": "number",
+                            "minimum": 0
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cooked_total_g": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cooked_total_range_lo": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cooked_total_range_hi": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "nutrient_source": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "portions": {
+        "type": "object",
+        "additionalProperties": {
+          "description": "",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "g",
+            "range_lo",
+            "range_hi"
+          ],
+          "properties": {
+            "g": {
+              "type": "number",
+              "minimum": 0
+            },
+            "range_lo": {
+              "type": "number",
+              "minimum": 0
+            },
+            "range_hi": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      },
+      "review": {
+        "description": "",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "reviewed_by",
+          "sources",
+          "notes"
+        ],
+        "properties": {
+          "status": {
+            "enum": [
+              "draft",
+              "reviewed"
+            ]
+          },
+          "reviewed_by": {
+            "type": "string"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "exercises": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://fitnessbuddy.local/catalog/exercises.schema.json",
+    "title": "Catalog load file: exercises.jsonl",
+    "description": "A catalogued exercise (A05b fills it; the file is empty until then). Equipment variants are separate entries.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "id",
+      "name_en",
+      "type",
+      "equipment",
+      "primary_muscle",
+      "catalog_version"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^ex:[a-z0-9_]+$",
+        "maxLength": 64
+      },
+      "name_en": {
+        "type": "string",
+        "minLength": 1
+      },
+      "type": {
+        "enum": [
+          "weight_reps",
+          "bodyweight_reps",
+          "duration",
+          "distance_duration"
+        ]
+      },
+      "equipment": {
+        "enum": [
+          "barbell",
+          "dumbbell",
+          "machine",
+          "cable",
+          "bodyweight",
+          "kettlebell",
+          "band",
+          "other"
+        ]
+      },
+      "primary_muscle": {
+        "type": "string",
+        "minLength": 1
+      },
+      "catalog_version": {
+        "type": "integer",
+        "minimum": 0
+      }
+    }
+  },
+  "foods": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://fitnessbuddy.local/catalog/foods.schema.json",
+    "title": "Catalog load file: foods.jsonl",
+    "description": "One loggable food: a USDA basic or a variant of a reference dish. Values are per 100 g (per_100g). Ranges (_low/_high) are set for variants only. Extras only when present. IDs are stable forever (data/catalog_ids.lock).",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "id",
+      "kind",
+      "source",
+      "source_ref",
+      "dish_id",
+      "name_en",
+      "name_ar",
+      "state",
+      "basis",
+      "kcal",
+      "protein_g",
+      "carbs_g",
+      "fat_g",
+      "fiber_g",
+      "kcal_low",
+      "kcal_high",
+      "protein_low",
+      "protein_high",
+      "carbs_low",
+      "carbs_high",
+      "fat_low",
+      "fat_high",
+      "fiber_low",
+      "fiber_high",
+      "extras",
+      "density_g_per_ml",
+      "yield_group",
+      "verified",
+      "review_status",
+      "sanity",
+      "catalog_version"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^(usda|ref):[a-z0-9][a-z0-9_]*(/[a-z0-9][a-z0-9_]*)?$",
+        "maxLength": 64
+      },
+      "kind": {
+        "enum": [
+          "basic",
+          "variant"
+        ]
+      },
+      "source": {
+        "enum": [
+          "usda",
+          "reference"
+        ]
+      },
+      "source_ref": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "dish_id": {
+        "anyOf": [
+          {
+            "type": "string",
+            "pattern": "^ref:[a-z0-9][a-z0-9_]*$",
+            "maxLength": 64
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "name_en": {
+        "type": "string",
+        "minLength": 1
+      },
+      "name_ar": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "state": {
+        "enum": [
+          "raw",
+          "cooked",
+          "dry",
+          "drained",
+          "fried",
+          "as_sold"
+        ]
+      },
+      "basis": {
+        "enum": [
+          "per_100g",
+          "per_100ml"
+        ]
+      },
+      "kcal": {
+        "type": "number",
+        "minimum": 0
+      },
+      "protein_g": {
+        "type": "number",
+        "minimum": 0
+      },
+      "carbs_g": {
+        "type": "number",
+        "minimum": 0
+      },
+      "fat_g": {
+        "type": "number",
+        "minimum": 0
+      },
+      "fiber_g": {
+        "type": "number",
+        "minimum": 0
+      },
+      "kcal_low": {
+        "anyOf": [
+          {
+            "type": "number",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "kcal_high": {
+        "anyOf": [
+          {
+            "type": "number",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "protein_low": {
+        "anyOf": [
+          {
+            "type": "number",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "protein_high": {
+        "anyOf": [
+          {
+            "type": "number",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "carbs_low": {
+        "anyOf": [
+          {
+            "type": "number",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "carbs_high": {
+        "anyOf": [
+          {
+            "type": "number",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "fat_low": {
+        "anyOf": [
+          {
+            "type": "number",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "fat_high": {
+        "anyOf": [
+          {
+            "type": "number",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "fiber_low": {
+        "anyOf": [
+          {
+            "type": "number",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "fiber_high": {
+        "anyOf": [
+          {
+            "type": "number",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "extras": {
+        "anyOf": [
+          {
+            "type": "object",
+            "propertyNames": {
+              "enum": [
+                "sugar",
+                "saturated_fat",
+                "trans_fat",
+                "sodium",
+                "cholesterol",
+                "alcohol"
+              ]
+            },
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "density_g_per_ml": {
+        "anyOf": [
+          {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "yield_group": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "verified": {
+        "enum": [
+          0,
+          1
+        ]
+      },
+      "review_status": {
+        "enum": [
+          "draft",
+          "reviewed"
+        ]
+      },
+      "sanity": {
+        "enum": [
+          "ok",
+          "warn",
+          "waived"
+        ]
+      },
+      "catalog_version": {
+        "type": "integer",
+        "minimum": 0
+      }
+    }
+  },
+  "manifest": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://fitnessbuddy.local/catalog/manifest.schema.json",
+    "title": "Catalog release manifest (manifest.json)",
+    "description": "Describes one catalog release: version, content hash, the load files with checksums and counts, and the offline pack. content_sha256 is the sha256 over the load files in the order foods, dishes, names, servings, yields, exercises, cities, each preceded by its name and a NUL byte. git_commit is informational and not part of the hash.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "catalog_version",
+      "schema_version",
+      "content_sha256",
+      "git_commit",
+      "includes_drafts",
+      "files",
+      "pack",
+      "counts"
+    ],
+    "properties": {
+      "catalog_version": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "schema_version": {
+        "const": 1
+      },
+      "content_sha256": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      },
+      "git_commit": {
+        "anyOf": [
+          {
+            "type": "string",
+            "pattern": "^[0-9a-f]{7,40}$"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "includes_drafts": {
+        "type": "boolean"
+      },
+      "files": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "foods.jsonl",
+          "dishes.jsonl",
+          "names.jsonl",
+          "servings.jsonl",
+          "yields.jsonl",
+          "exercises.jsonl",
+          "cities.jsonl"
+        ],
+        "properties": {
+          "foods.jsonl": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sha256",
+              "count",
+              "bytes"
+            ],
+            "properties": {
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "dishes.jsonl": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sha256",
+              "count",
+              "bytes"
+            ],
+            "properties": {
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "names.jsonl": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sha256",
+              "count",
+              "bytes"
+            ],
+            "properties": {
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "servings.jsonl": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sha256",
+              "count",
+              "bytes"
+            ],
+            "properties": {
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "yields.jsonl": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sha256",
+              "count",
+              "bytes"
+            ],
+            "properties": {
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "exercises.jsonl": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sha256",
+              "count",
+              "bytes"
+            ],
+            "properties": {
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "cities.jsonl": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sha256",
+              "count",
+              "bytes"
+            ],
+            "properties": {
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      },
+      "pack": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "file",
+          "sha256",
+          "bytes"
+        ],
+        "properties": {
+          "file": {
+            "const": "catalog.db"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "counts": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "basics",
+          "dishes",
+          "variants",
+          "exercises",
+          "cities",
+          "names",
+          "servings",
+          "yields"
+        ],
+        "properties": {
+          "basics": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "dishes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "variants": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exercises": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "cities": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "names": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "servings": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "yields": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  },
+  "names": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://fitnessbuddy.local/catalog/names.schema.json",
+    "title": "Catalog load file: names.jsonl",
+    "description": "One searchable name of a food, dish, variant or exercise. `key` is the normalized form used for matching (fb_text normalizeKey, same rules as contracts/testdata/normalization_cases.yaml). is_display marks the first name of each language.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "target_id",
+      "lang",
+      "name",
+      "key",
+      "is_display"
+    ],
+    "properties": {
+      "target_id": {
+        "type": "string",
+        "pattern": "^(usda:|ref:|ex:)[a-z0-9_/]+$",
+        "maxLength": 64
+      },
+      "lang": {
+        "enum": [
+          "en",
+          "ar",
+          "arabizi"
+        ]
+      },
+      "name": {
+        "type": "string",
+        "minLength": 1
+      },
+      "key": {
+        "type": "string",
+        "minLength": 1
+      },
+      "is_display": {
+        "enum": [
+          0,
+          1
+        ]
+      }
+    }
+  },
+  "servings": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://fitnessbuddy.local/catalog/servings.schema.json",
+    "title": "Catalog load file: servings.jsonl",
+    "description": "What one named unit (loaf, piece, glass, can, cup, ...) of a food weighs (g) or holds (ml). Exactly one of g or ml is set. Dish portions are repeated on every variant.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "food_id",
+      "unit_code",
+      "g",
+      "ml",
+      "range_lo",
+      "range_hi",
+      "source"
+    ],
+    "properties": {
+      "food_id": {
+        "type": "string",
+        "pattern": "^(usda|ref):[a-z0-9][a-z0-9_]*(/[a-z0-9][a-z0-9_]*)?$",
+        "maxLength": 64
+      },
+      "unit_code": {
+        "type": "string",
+        "minLength": 1
+      },
+      "g": {
+        "anyOf": [
+          {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "ml": {
+        "anyOf": [
+          {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "range_lo": {
+        "anyOf": [
+          {
+            "type": "number",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "range_hi": {
+        "anyOf": [
+          {
+            "type": "number",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "source": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "oneOf": [
+      {
+        "properties": {
+          "g": {
+            "type": "number"
+          },
+          "ml": {
+            "type": "null"
+          }
+        }
+      },
+      {
+        "properties": {
+          "g": {
+            "type": "null"
+          },
+          "ml": {
+            "type": "number"
+          }
+        }
+      }
+    ]
+  },
+  "yields": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://fitnessbuddy.local/catalog/yields.schema.json",
+    "title": "Catalog load file: yields.jsonl",
+    "description": "Cooking yield factor (FD-060): grams of to_state per gram of from_state, per food group. Consumers use a direct row or its inverse, never a chain.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "yield_group",
+      "from_state",
+      "to_state",
+      "factor",
+      "source"
+    ],
+    "properties": {
+      "yield_group": {
+        "type": "string",
+        "minLength": 1
+      },
+      "from_state": {
+        "enum": [
+          "raw",
+          "cooked",
+          "dry",
+          "drained",
+          "fried",
+          "as_sold"
+        ]
+      },
+      "to_state": {
+        "enum": [
+          "raw",
+          "cooked",
+          "dry",
+          "drained",
+          "fried",
+          "as_sold"
+        ]
+      },
+      "factor": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "source": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

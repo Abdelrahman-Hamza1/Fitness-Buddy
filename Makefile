@@ -122,7 +122,7 @@ check-dotnet: ## Verify C# formatting, then build Release with analyzers + warni
 	cd '$(REPO_ROOT)/backend' && '$(DOTNET)' build $(DOTNET_SLN) -c Release --no-restore -m:4 -nodeReuse:false
 
 .PHONY: test-dotnet
-test-dotnet: ## Run the backend tests (xUnit v3 on Microsoft.Testing.Platform)
+test-dotnet: catalog-pack catalog-client-smoke ## Run the backend tests (xUnit v3 on Microsoft.Testing.Platform)
 	cd '$(REPO_ROOT)/backend' && '$(DOTNET)' test --solution $(DOTNET_SLN) -c Release --no-restore --max-parallel-test-modules 2
 
 ##@ Local backend containers
@@ -497,3 +497,21 @@ gen-sync-schemas: ## Export bounded sync schemas from the contract
 	@python3 tools/scripts/export-sync-schemas.py
 check-sync-schemas: ## Check embedded sync schemas match the contract
 	@python3 tools/scripts/export-sync-schemas.py --check
+
+.PHONY: gen-catalog-schemas check-catalog-schemas catalog-import
+gen-catalog-schemas: ## Embed the closed catalog release schemas for backend/Docker
+	python3 tools/scripts/gen-catalog-schemas.py
+check-catalog-schemas:
+	python3 tools/scripts/gen-catalog-schemas.py --check
+check-dotnet: check-catalog-schemas
+gen: gen-catalog-schemas
+catalog-import: ## Import CATALOG_DIR (default build/catalog) using the configured migrate-role credentials and recovery directory
+	cd '$(REPO_ROOT)/backend' && '$(DOTNET)' run --project src/Host -c Release -- migrate --Catalog:ImportDirectory="$(abspath $(or $(CATALOG_DIR),build/catalog))"
+
+.PHONY: serve-phone-catalog-import
+serve-phone-catalog-import: ## Import the built public catalog into the private laptop stack (migrator only)
+	python3 tools/scripts/phone-server.py catalog-import --catalog-dir "$(abspath $(or $(CATALOG_DIR),build/catalog))"
+
+.PHONY: catalog-client-smoke
+catalog-client-smoke: ## Offline generated-client check: binary pack bytes survive without UTF8 decoding
+	cd '$(REPO_ROOT)/tools/sync_sim' && '$(DART)' test test/catalog_client_test.dart

@@ -16,6 +16,8 @@ tags:
     description: Client configuration and the current account lifecycle.
   - name: UserData
     description: Authenticated document sync, version history and dataset recovery.
+  - name: Catalog
+    description: Published food search and offline packs.
 paths:
   /v1/auth/anonymous:
     post:
@@ -957,6 +959,233 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
       security:
         - bearerAuth: []
+  /v1/foods/search:
+    get:
+      tags:
+        - Catalog
+      operationId: searchFoods
+      summary: Search published catalog foods
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AppVersion'
+        - $ref: '#/components/parameters/Platform'
+        - $ref: '#/components/parameters/DeviceId'
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type:
+              - string
+              - 'null'
+      responses:
+        '200':
+          description: Search published catalog foods
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogSearchPage'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          description: Invalid credentials or inactive session.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '426':
+          $ref: '#/components/responses/UpgradeRequired'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      description: 'Any authenticated account, including guests. Limit 1–50. Cursor is opaque and bound to the normalized query and current release; invalid, stale or mismatched cursors return 400. Empty normalized queries return no results. Results are deduplicated before pagination: verified basics, then reference variants; exact, prefix, token, substring and typo matches within each group, stable ID breaks ties. Personal results are merged on the phone (A24).'
+  /v1/foods/{id}:
+    get:
+      tags:
+        - Catalog
+      operationId: getFood
+      summary: Get a catalog food by stable ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AppVersion'
+        - $ref: '#/components/parameters/Platform'
+        - $ref: '#/components/parameters/DeviceId'
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get a catalog food by stable ID
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogFood'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          description: Invalid credentials or inactive session.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: The requested catalog resource has not been published.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '426':
+          $ref: '#/components/responses/UpgradeRequired'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      description: Get a catalog food by stable ID. Any authenticated account, including guests.
+  /v1/catalog/packs/latest:
+    get:
+      tags:
+        - Catalog
+      operationId: getLatestCatalogPack
+      summary: Get the latest published offline pack
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AppVersion'
+        - $ref: '#/components/parameters/Platform'
+        - $ref: '#/components/parameters/DeviceId'
+      responses:
+        '200':
+          description: Get the latest published offline pack
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogPack'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          description: Invalid credentials or inactive session.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: The requested catalog resource has not been published.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '426':
+          $ref: '#/components/responses/UpgradeRequired'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      description: URL is relative to this API origin and requires the same bearer token and client headers. Verify SHA256 and byte size before installing. Retired published versions remain downloadable.
+  /v1/catalog/packs/{version}:
+    get:
+      tags:
+        - Catalog
+      operationId: downloadCatalogPack
+      summary: Download an immutable offline pack
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AppVersion'
+        - $ref: '#/components/parameters/Platform'
+        - $ref: '#/components/parameters/DeviceId'
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Download an immutable offline pack
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          description: Invalid credentials or inactive session.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: The requested catalog resource has not been published.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '426':
+          $ref: '#/components/responses/UpgradeRequired'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+      description: Download an immutable offline pack. Any authenticated account, including guests.
   /v1/config:
     get:
       tags:
@@ -1433,6 +1662,178 @@ components:
             - string
             - 'null'
           pattern: ^(datasetMismatch|cursorInvalid)$
+    CatalogNutrients:
+      type: object
+      required:
+        - kcal
+        - proteinG
+        - carbsG
+        - fatG
+        - fiberG
+      properties:
+        kcal:
+          type: number
+          format: double
+        proteinG:
+          type: number
+          format: double
+        carbsG:
+          type: number
+          format: double
+        fatG:
+          type: number
+          format: double
+        fiberG:
+          type: number
+          format: double
+    CatalogNutrientRange:
+      type: object
+      required:
+        - low
+        - high
+      properties:
+        low:
+          $ref: '#/components/schemas/CatalogNutrients'
+        high:
+          $ref: '#/components/schemas/CatalogNutrients'
+    CatalogServing:
+      type: object
+      required:
+        - unitCode
+        - g
+        - ml
+        - rangeLo
+        - rangeHi
+        - source
+      properties:
+        unitCode:
+          type: string
+        g:
+          type:
+            - number
+            - 'null'
+          format: double
+        ml:
+          type:
+            - number
+            - 'null'
+          format: double
+        rangeLo:
+          type:
+            - number
+            - 'null'
+          format: double
+        rangeHi:
+          type:
+            - number
+            - 'null'
+          format: double
+        source:
+          type: string
+    CatalogFood:
+      type: object
+      required:
+        - catalogKey
+        - kind
+        - source
+        - sourceRef
+        - nameEn
+        - nameAr
+        - state
+        - verified
+        - catalogVersion
+        - nutrients
+        - ranges
+        - extras
+        - densityGPerMl
+        - yieldGroup
+        - servings
+      properties:
+        kind:
+          type: string
+        source:
+          type: string
+        sourceRef:
+          type:
+            - string
+            - 'null'
+        nameEn:
+          type: string
+        nameAr:
+          type:
+            - string
+            - 'null'
+        state:
+          type: string
+        verified:
+          type: boolean
+        catalogVersion:
+          type: integer
+          format: int32
+        nutrients:
+          $ref: '#/components/schemas/CatalogNutrients'
+        ranges:
+          oneOf:
+            - $ref: '#/components/schemas/CatalogNutrientRange'
+            - type: 'null'
+        extras:
+          type:
+            - object
+            - 'null'
+          additionalProperties:
+            type: number
+            format: double
+        densityGPerMl:
+          type:
+            - number
+            - 'null'
+          format: double
+        yieldGroup:
+          type:
+            - string
+            - 'null'
+        servings:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatalogServing'
+        catalogKey:
+          type: string
+    CatalogSearchPage:
+      type: object
+      required:
+        - items
+        - nextCursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatalogFood'
+        nextCursor:
+          type:
+            - string
+            - 'null'
+    CatalogPack:
+      type: object
+      required:
+        - version
+        - url
+        - sha256
+        - sizeBytes
+        - schemaVersion
+      properties:
+        version:
+          type: integer
+          format: int32
+        url:
+          type: string
+        sha256:
+          type: string
+        sizeBytes:
+          type: integer
+          format: int32
+        schemaVersion:
+          type: integer
+          format: int32
     ClientConfig:
       type: object
       description: Server-controlled settings for the app.

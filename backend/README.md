@@ -1,6 +1,9 @@
 # backend/
 
-The Fitness Buddy API: an ASP.NET Core (.NET 10) modular monolith. Architecture, modules and rules are in `technical-planning/04-backend.md`. Right now: the host with its three roles and module system (S03), the `Account` module (`GET /v1/config`) and the isolated experimental `UserData` sync module (B01), a build-time OpenAPI document that CI checks against `contracts/openapi.yaml` (S02), transactional Postgres persistence, outbox/jobs/schedules and POST replay (S04), and the Identity module (B04) for guest/Google/email sign-in and sessions.
+The Fitness Buddy API: an ASP.NET Core (.NET 10) modular monolith. Architecture, modules and rules are in `technical-planning/04-backend.md`. Implemented: the three-role host/module system (S03), transactional Postgres/outbox/jobs/replay
+(S04), Identity sign-in/sessions (B04), registered document sync (B05), atomic account erasure and
+protected recovery (B06), and the global food catalog/search/offline pack service (B07). Buddy
+remains the isolated B02 interpretation spike until B08. OpenAPI conformance gates server changes.
 
 ## Layout
 
@@ -15,7 +18,7 @@ The Fitness Buddy API: an ASP.NET Core (.NET 10) modular monolith. Architecture,
 | `src/Host/Http/` | The HTTP pipeline (below): request id, problem details, client headers and the 426 gate, rate limiting, forwarded headers, health |
 | `src/Host/OpenApi/` | OpenAPI transformers that make the generated document match the contract's conventions (see below) |
 | `src/BuildingBlocks/` | The lowest shared layer. `FitnessBuddy.BuildingBlocks.*`: results/errors, ids, feature flags, current user, client info, no ASP.NET Core. `FitnessBuddy.BuildingBlocks.Web.*`: `IModule`, the `/v1` group (`V1Api`), problem types, `Error` → problem mapping. Never depends on Host or a module |
-| `src/Modules/<Module>/` | One project per module (`FitnessBuddy.Modules.<Module>`), with `Api/`, `Application/`, `Domain/`, `Infrastructure/` folders as needed. Installed: `Identity`, `Account`, `UserData`, `Buddy` |
+| `src/Modules/<Module>/` | One project per module (`FitnessBuddy.Modules.<Module>`), with `Api/`, `Application/`, `Domain/`, `Infrastructure/` folders as needed. Installed: `Identity`, `Account`, `UserData`, `Buddy`, `Catalog` |
 | `tests/BuildingBlocks.Tests/` | Unit tests of BuildingBlocks |
 | `tests/Host.Tests/` | Tests of the Host: roles and the HTTP pipeline, through `ApiFactory` (the real api role in environment `Testing`) and a test-only `ProbeModule` under `/v1/_probe/…`; golden problem bodies |
 | `tests/Architecture.Tests/` | ArchUnitNET rules that keep the layers and module boundaries honest |
@@ -97,7 +100,7 @@ Build-time OpenAPI generation never opens a database or runs migrations.
 
 - A module registers `ModuleMigration(schema, connection => new MyContext(DatabaseConfiguration.ContextOptions<MyContext>(connection, schema)))` in its `AddServices`. Its context derives from `ModuleDbContext`, configures entities, then calls base. Each schema has its own `__ef_migrations_history`. Migrations are ordered by schema and then EF migration ID, under a shared session lock. Avoid cross-module migration dependencies. Expand first; destructive contractions need a later release.
 - Infrastructure repositories start `UserDatabase.BeginAsync(ct)` (identity from ICurrentUser), create a context with `session.Connection`, and call `session.EnlistAsync(context, ct)`. Use the injected clock/UUIDv7 generator for values. Context and raw commands then share one transaction. User-owned tables require ENABLE + FORCE RLS with USING and WITH CHECK against `NULLIF(current_setting('app.user_id', true), '')::uuid`. No identity means no rows; never set a session-level user. Ordinary repositories still scope queries by the principal.
-- `QueueWriter` uses that same scoped session. Publish events before committing the business change. User identity is copied from the session into the durable envelope and set transaction-locally by the worker. System jobs have no user context. `ops.*` is internal infrastructure owned by BuildingBlocks; product modules never query it directly. No product tables have been added yet: a test-only module proves the pattern.
+- `QueueWriter` uses that same scoped session. Publish events before committing the business change. User identity is copied from the session into the durable envelope and set transaction-locally by the worker. System jobs have no user context. `ops.*` is internal infrastructure owned by BuildingBlocks; product modules never query it directly. Product modules and the isolated test-only module use this same transaction pattern.
 - Register database-only `IOutboxHandler` / `IJobHandler` implementations. Their writes use the supplied session, with **no commits or network calls**. Keep event type and handler name stable across deploys. Effects, per-handler processed marker and acknowledgement commit together. A crash rolls them all back; duplicate delivery skips processed handlers. This provides exactly-once database effects, not exactly-once remote calls. External adapters must accept a stable operation key and be independently idempotent.
 - Default retries: five attempts, starting at 5 seconds, doubling to a one-hour cap. Failures roll back to a savepoint before persisting attempts. Exhausted/unknown message types become dead letters; payloads and exception messages never enter logs. Shutdown cancellation rolls back without counting an attempt. Dead letters remain for inspection; there is no public administrative queue API.
 - `JobScheduler.RegisterAsync` uses five-field UTC cron. Durable cursors survive restarts; missed ticks coalesce into one run. Claims and uniquely keyed job insertion share a transaction. The worker registers `ops.cleanup` every five minutes: expired replay records and completed queue records older than seven days are removed; dead letters stay. Future history/account purge handlers arrive with their modules.
@@ -301,3 +304,9 @@ API/worker/readiness require file/DB generation equality; every installed module
 except config hold a shared recovery lease before authentication. DELETE releases its preliminary
 lease before its own exclusive transaction. Worker/scheduler effects check the same fence before
 user/row locks. The Host uses a separate bounded gate pool to avoid exhausting business connections.
+
+## Catalog (B07)
+
+Release import, shared C# normalization, authenticated online food search/detail and immutable
+offline packs are implemented. `IFoodResolver` is ready for B08; A24 owns app online merge/pack
+updates. Read [the module](src/Modules/Catalog/README.md) and [operations](../docs/runbooks/catalog.md).

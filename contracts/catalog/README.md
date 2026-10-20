@@ -35,7 +35,7 @@ Every line is validated against its schema before it is written (a mismatch fail
 ## Rules for consumers
 
 - **`catalog_version`** is a monotonic integer. A row carries the version it **first appeared in**; it does not change when the row's content changes. `manifest.catalog_version` is the version of the whole release. It goes up when `content_sha256` changes.
-- **`content_sha256`** is the sha256 over the load files in the order foods, dishes, names, servings, yields, exercises, cities, each preceded by its name and a NUL byte. `git_commit` is informational and not part of the hash.
+- **`content_sha256`** is the sha256 over the load files in the order foods, dishes, names, servings, yields, exercises, cities, each preceded by its table name without `.jsonl` and a NUL byte (matching the A05 builder). `git_commit` is informational and not part of the hash.
 - **IDs are stable forever** (TD-071): `usda:<slug>`, `ref:<slug>` (a dish), `ref:<slug>/<variant>` (a loggable variant), `ex:<slug>`, `city:<geonameid>`; at most 64 ASCII characters. An ID is never reused or changed; an item is retired, not deleted. The importer may rely on that and upsert by ID.
 - **Drafts are not in a release.** `includes_drafts` is `false` for every shipped release; only dev builds set it. Reject a manifest where it is `true` in production.
 - Loggable rows are `foods` (basics and variants). A dish is a search/grouping target that resolves to its default variant (`default_variant_id`).

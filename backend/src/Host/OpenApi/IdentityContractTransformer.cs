@@ -9,7 +9,8 @@ internal sealed class IdentityContractTransformer : IOpenApiOperationTransformer
 {
     public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
     {
-        if (operation.OperationId is "getMe" or "deleteAccount" or "logoutSession" or "linkIdentity" or "pushSync" or "pullSync" or "getSyncHistory" or "getItemSyncHistory")
+        if (operation.OperationId is "getMe" or "deleteAccount" or "logoutSession" or "linkIdentity" or "pushSync" or "pullSync" or "getSyncHistory" or "getItemSyncHistory"
+            or "searchFoods" or "getFood" or "getLatestCatalogPack" or "downloadCatalogPack")
         {
             context.Document!.Components ??= new OpenApiComponents();
             context.Document!.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>(StringComparer.Ordinal);
@@ -20,6 +21,26 @@ internal sealed class IdentityContractTransformer : IOpenApiOperationTransformer
                 BearerFormat = "JWT",
             };
             operation.Security = [new OpenApiSecurityRequirement { [new OpenApiSecuritySchemeReference("bearerAuth", context.Document!)] = [] }];
+        }
+        if (operation.OperationId == "searchFoods")
+        {
+            // Optional query strings bind null when absent; the framework omits the nullable branch.
+            foreach (var parameter in operation.Parameters ?? [])
+            { if (parameter.Name == "cursor" && parameter.Schema is OpenApiSchema schema) { schema.Type |= JsonSchemaType.Null; } }
+        }
+        if (operation.OperationId == "downloadCatalogPack")
+        {
+            // FileContentHttpResult does not advertise a success body; bytes are sent verbatim, not base64 JSON.
+            operation.Responses!["200"] = new OpenApiResponse
+            {
+                Description = "Immutable offline pack.",
+                Headers = new Dictionary<string, IOpenApiHeader>(StringComparer.Ordinal)
+                {
+                    ["X-Request-Id"] = new OpenApiHeader { Schema = new OpenApiSchema { Type = JsonSchemaType.String, Pattern = ProblemDetailsSchemaTransformer.TraceIdPattern } },
+                },
+                Content = new Dictionary<string, OpenApiMediaType>(StringComparer.Ordinal)
+                { ["application/octet-stream"] = new() { Schema = new OpenApiSchema { Type = JsonSchemaType.String, Format = "binary" } } },
+            };
         }
         return Task.CompletedTask;
     }

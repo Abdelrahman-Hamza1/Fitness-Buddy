@@ -1,6 +1,7 @@
 using FitnessBuddy.BuildingBlocks.Persistence;
 using Npgsql;
 using FitnessBuddy.Modules.UserData.Infrastructure;
+using FitnessBuddy.Modules.Catalog.Infrastructure;
 using FitnessBuddy.Modules.Account.Infrastructure;
 using FitnessBuddy.Modules.Identity.Infrastructure;
 using Testcontainers.PostgreSql;
@@ -43,6 +44,7 @@ public sealed class PostgresFixture : IAsyncLifetime
         appSettings.Password = "local-migrator-only";
         MigratorConnection = appSettings.ConnectionString;
         Runner = new MigrationRunner([
+            new ModuleMigration("catalog", connection => new CatalogContext(DatabaseConfiguration.ContextOptions<CatalogContext>(connection, "catalog"))),
             new ModuleMigration("account", connection => new AccountContext(DatabaseConfiguration.ContextOptions<AccountContext>(connection, "account"))),
             new ModuleMigration("identity", connection => new IdentityContext(DatabaseConfiguration.ContextOptions<IdentityContext>(connection, "identity"))),
             new ModuleMigration("ops", connection => new OpsDbContext(DatabaseConfiguration.ContextOptions<OpsDbContext>(connection, "ops"))),

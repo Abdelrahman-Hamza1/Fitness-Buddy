@@ -43,6 +43,22 @@ for dir in "${generated_dirs[@]}"; do rm -rf "$dir"; done
 echo "gen-dart: swagger_parser"
 "$DART" run swagger_parser
 
+# swagger_parser 1.45 emits binary application/octet-stream as Stream<String>;
+# retrofit then UTF-8-decodes arbitrary SQLite bytes. Correct this generated
+# declaration BEFORE retrofit runs. This is a deterministic generation adapter,
+# never a hand edit; fail loudly if the upstream shape changes. SSE is untouched.
+python3 - "$pkg/lib/src/generated/clients/catalog_client.dart" <<'PYBINARY'
+import pathlib
+import sys
+p = pathlib.Path(sys.argv[1])
+text = p.read_text()
+old = "@DioResponseType(ResponseType.stream)\n  Stream<String> downloadCatalogPack("
+new = "@DioResponseType(ResponseType.bytes)\n  Future<List<int>> downloadCatalogPack("
+if text.count(old) != 1:
+    sys.exit("gen-dart: binary download generator shape changed; review the byte adapter")
+p.write_text(text.replace(old, new))
+PYBINARY
+
 # --- 4. Generated code is exempt from lints but still checked for errors ------
 # Its own analysis_options.yaml (no include) rather than `analyzer: exclude`,
 # which would also hide compile errors.

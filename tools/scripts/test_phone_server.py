@@ -22,6 +22,28 @@ REAL_POPEN = subprocess.Popen
 
 
 class PhoneServerTests(unittest.TestCase):
+    def test_catalog_import_uses_read_only_mount_and_always_removes_overlay(self):
+        release = self.state / 'public-release'
+        release.mkdir()
+        (release / 'release').mkdir()
+        (release / 'catalog.db').write_bytes(b'synthetic')
+        (release / 'release' / 'manifest.json').write_text('{}')
+        def check(*args, **kwargs):
+            overlay = phone.read_json(self.state / 'catalog-import.json')
+            mount = overlay['services']['migrate']['volumes'][0]
+            self.assertTrue(mount['read_only'])
+            self.assertEqual('/catalog-release', mount['target'])
+            self.assertIn('--no-deps', args)
+            self.assertIn('--Catalog:ImportDirectory=/catalog-release', args)
+            return b''
+        with patch.object(phone, 'compose', side_effect=check):
+            phone.catalog_import(self.state, release)
+        self.assertFalse((self.state / 'catalog-import.json').exists())
+        with patch.object(phone, 'compose', side_effect=phone.Failure('synthetic')):
+            with self.assertRaises(phone.Failure):
+                phone.catalog_import(self.state, release)
+        self.assertFalse((self.state / 'catalog-import.json').exists())
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='phone-safety-')
         self.state = Path(self.temp.name)

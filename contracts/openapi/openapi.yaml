@@ -28,6 +28,9 @@ tags:
   - name: UserData
     description: Authenticated document sync, version history and dataset recovery.
 
+  - name: Catalog
+    description: Published food search and offline packs.
+
 # Every path is defined in its module file and listed here.
 paths:
   /v1/auth/anonymous:
@@ -56,6 +59,14 @@ paths:
     $ref: './modules/userdata.yaml#/paths/~1v1~1sync~1history'
   /v1/sync/history/{entity}/{id}:
     $ref: './modules/userdata.yaml#/paths/~1v1~1sync~1history~1{entity}~1{id}'
+  /v1/foods/search:
+    $ref: './modules/catalog.yaml#/paths/~1v1~1foods~1search'
+  /v1/foods/{id}:
+    $ref: './modules/catalog.yaml#/paths/~1v1~1foods~1{id}'
+  /v1/catalog/packs/latest:
+    $ref: './modules/catalog.yaml#/paths/~1v1~1catalog~1packs~1latest'
+  /v1/catalog/packs/{version}:
+    $ref: './modules/catalog.yaml#/paths/~1v1~1catalog~1packs~1{version}'
   /v1/config:
     $ref: './modules/account.yaml#/paths/~1v1~1config'
 

@@ -6,6 +6,7 @@
 export 'clients/identity_client.dart';
 export 'clients/account_client.dart';
 export 'clients/user_data_client.dart';
+export 'clients/catalog_client.dart';
 // Data classes
 export 'models/id.dart';
 export 'models/instant.dart';
@@ -35,6 +36,12 @@ export 'models/sync_push_result.dart';
 export 'models/sync_push_response.dart';
 export 'models/sync_document.dart';
 export 'models/sync_page.dart';
+export 'models/catalog_nutrients.dart';
+export 'models/catalog_nutrient_range.dart';
+export 'models/catalog_serving.dart';
+export 'models/catalog_food.dart';
+export 'models/catalog_search_page.dart';
+export 'models/catalog_pack.dart';
 export 'models/client_config.dart';
 // Root client
 export 'fb_api.dart';

@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../Modules/Catalog/FitnessBuddy.Modules.Catalog.csproj" />
     <ProjectReference Include="..\BuildingBlocks\FitnessBuddy.BuildingBlocks.csproj" />
     <ProjectReference Include="../Modules/UserData/FitnessBuddy.Modules.UserData.csproj" />
     <ProjectReference Include="../Modules/Identity/FitnessBuddy.Modules.Identity.csproj" />
