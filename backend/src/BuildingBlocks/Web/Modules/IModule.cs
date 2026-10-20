@@ -15,6 +15,8 @@ public interface IModule
     /// <summary>The module's name, which is also its OpenAPI tag (one Dart client class per module).</summary>
     string Name { get; }
 
+    FitnessBuddy.BuildingBlocks.Messaging.UserDataOwnership UserData { get; }
+
     void AddServices(IServiceCollection services, IConfiguration configuration);
 
     /// <summary>Maps the module's endpoints. Routes are relative to <c>/v1</c>.</summary>

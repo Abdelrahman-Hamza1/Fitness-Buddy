@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| Backend | B04, B05 | L | Codex | 🟦 Planning |
+| Backend | B04, B05 | L | Codex | ✅ Done |
 
 _Old ID: S28 server part (renumbered by TD-063, 2026-10-16). The app side is A35._
 
@@ -22,9 +22,9 @@ _Old ID: S28 server part (renumbered by TD-063, 2026-10-16). The app side is A35
 - Whether deletion completes synchronously in the request or in the worker (with the app polling).
 
 ## Exit criteria
-- [ ] Integration test: after deletion, a query across all schemas finds zero rows for the user. Old refresh tokens fail.
-- [ ] Deletion is idempotent (a retry after a partial failure completes).
-- [ ] Contract conformance green; the Dart client regenerated.
+- [x] Integration test: after deletion, a query across all schemas finds zero rows for the user. Old refresh tokens fail.
+- [x] Deletion is idempotent (a retry after a partial failure completes).
+- [x] Contract conformance green; the Dart client regenerated.
 
 ## Read first
 `04-backend.md` §3, §6 · `05-data-and-sync.md` §6–7 · `spec/20-accounts-and-data.md` §4
@@ -85,5 +85,48 @@ The key risk is a request authenticated before deletion committing data afterwar
 
 - 2026-10-18 · B05 implementation handoff amendment: cleanup now uses ordinary Ops recurring schedules with user_id (no elevated UserData enumeration). B06 must purge user-owned ops.schedules along with jobs/replays/envelopes, under the same lifecycle/recovery ordering. Implementation still waits for B05 review/CI merge.
 
+- 2026-10-19 · Start/WP1: clean main atdb68b9e after B05 whole-diff/security approvals and exact-squash CI success (run39283509185). Re-read B05 Outcome; branch step/B06-account-deletion-backend. B05's user-owned Ops schedules are in the erasure inventory. Contract handoff adds bearer-authenticated DELETE /v1/me (guest or registered), atomic204, rollback/retry and post-success401 semantics; unchanged GET /me moved to its Account source file. Added generic503 declarations on recovery-guarded Identity/Account/Sync operations, using the existing ProblemDetails shape and no new problem type/app constants. Generated client, contract lint/self-tests and16 API-client tests pass. Full root checks were green on the unchanged B05 server immediately before this contract-only handoff; server conformance now correctly reports the not-yet-implemented DELETE/503 declarations and is required again with WP2–WP4 before merge. The API-client test command initially used the repository directory; rerunning from its required package directory passes. No Flutter implementation or paid/provider call.
+
+- 2026-10-19 · WP2 implementation amendment: actual ModuleCatalog installs Identity, Account, UserData and Buddy; Usage/Catalog projects do not exist yet. Classify/erase every installed module now and enforce registration for future installed modules rather than creating empty projects. Recovery primitives/metadata move forward into WP2 so the coordinator can fail closed before any erasure; operator initialization, HTTP/worker gates and backup manifests remain WP4. The DELETE capability stays unavailable until all installed erasers and protected recovery state are present.
+
+- 2026-10-19 · WP2 complete: added Account's forced-RLS pending intent and atomic coordinator, existing-outbox same-transaction dispatch, module-owned erasure metadata, Ops purge primitive/replay ownership migration and fail-closed recovery file/database primitives (global lock460391206; durable file+parent fsync). DELETE is authenticated and returns503 until all erasers and valid recovery state are present, never a false204. Known pre-commit rollback retains the global lock while reconciling; ambiguous commit never rolls the marker back. No current production endpoint opts into the generic replay cache, so the migration's one-time invalidation affects legacy pre-release/test cache only. Full `make check test` passes301 backend tests (zero failures/skips), app and10 Dart packages; server conformance is green again. New tests prove supplied-transaction event visibility/rollback/dedup and corrupt/missing/non-private/linked recovery-state refusal. WP3 implements the actual module erasers/lifecycle races; WP4 adds operator initialization, traffic/worker gates and guarded backup manifests. B05 main activation/readiness/401 and fresh backup/scratch restore passed; private receipt retained outside git. No owner deletion or provider calls.
+
+- 2026-10-19 · WP3 complete: module-owned Identity/UserData/Account erasers and explicit empty Buddy participant; four narrow Identity capabilities added (14 app-executable functions total), with fixed paths/grants/GUC checks. Identity mutations now take the common user lock before user/session/challenge row locks; refresh/provider/email paths revalidate after waiting. Generic replay stores user ownership and checks the trusted live session before its key/cache, including replay hits. Queue processor and scheduler discover without row locks, try the owner lock, claim/revalidate the exact row, and consume orphan work without invoking a handler; scheduler lifetime is scoped with its live-state dependency. Actual SQL tests prove zero remaining owner/session rows across schemas, history/receipt/fence erasure, unchanged shared keys/other-user data, failed-participant rollback/retry with generation reconciliation, guest/crafted-session handling, refresh+sync queued behind deletion, real table coverage and missing-eraser fail-closed. A foreign linked email challenge remains usable. Fixed the first erasure test failure by using parameterized Npgsql batches rather than multi-command positional statements; updated the B05 revocation race to execute revocation in the transaction already holding its now-shared lock. Full `make check test` passes308 backend tests, zero failures/skips, app and10 Dart packages; conformance green. Added account deletion runbook/backend handoff. WP4 traffic/readiness/backup fences and startup email cleanup remain; this branch is not deployed and no owner account was erased.
+
+- 2026-10-19 · WP4 complete: protected generation now gates readiness, all installed modules' online routes (runtime module metadata, independent of tags), queue/scheduler effects and migration maintenance. A bounded separate request pool avoids business-pool exhaustion; DELETE drops its preliminary shared lease before acquiring exclusive in its own transaction. Explicit initialization is allowed only for a never-initialized DB plus absent marker; matching repeats are stable, missing/corrupt/mismatched initialized state is refused. Migration's session lock spans initialization commit and seeds/keys/epoch work. Controller creates a separate private mount (API/migrate RW, worker RO), holds a real backup-role DB lock across dumps/drills, publishes generation+SHA256 manifests, refuses old/missing/tampered manifests before scratch creation, preserves ACLs/owner role, verifies restored generation and rotates only the scratch dataset. Old backups expire normally; no live restore/reset command was added. Email files publish atomically and expire by recorded expiry; startup prunes before traffic and refuses unsafe/unwritable cleanup. Self-review moved Identity HMAC secret preparation outside the DB transaction and wipes the scoped copy; a removed-file test proves the handler stays DB-only. Full `make check test` passes314 backend tests, zero failures/skips, app and10 Dart packages;30 operator tests pass. Initial rebuilt image hardening/role/restore smoke passed (25 tables including fixture), as did50 real sync seeds and10,000 rows (9267ms push/590ms fresh pull). Those image runs precede the final secret-preparation refinement; a final rebuild plus adversarial backup/delete/connection-loss/HTTP tests follow in WP5–WP6. No owner data erased/reset and no paid/provider calls.
+
+- 2026-10-20 · WP5 verification/resume: full `make check test` passes319 backend tests (zero failed/skipped), app and10 Dart packages. Added real HTTP deletion/replay/worker races, lost-response and terminated-connection faults, DELETE privacy sinks, recursive FK-derived ownership coverage and same-second backup selection regression (31 operator tests). Fresh whole-diff and separate security reviews found no blocker/major; security's ownership-test minor fixed/rechecked, queue first-page fairness minor logged#80. Provider sign-in/link/email-consume versus deletion was inspected rather than separately race-tested; refresh/sync/replay/worker races are exercised. Final current-image hardening and extended synthetic Production lifecycle/backup smoke passed:30,004 UserData rows erased in364ms HTTP including intentional backup-lock wait; old credentials rejected, second user preserved, stale/tampered dumps refused and post-delete scratch restore passed. Same-image sync regression passed50 real seeds and10,000 rows (8929ms push/590ms fresh pull). WP5 complete; no real owner data or provider calls.
+
+- 2026-10-20 · WP6/review close: one fresh GPT-6.1 Sol whole-diff review and separate security review approved with no blocker/major. Fixed/rechecked FK ownership coverage; queue fairness minor recorded#80. Final319 backend tests, app/10 Dart packages,31 operator tests, generated-code check, C# formatting, conformance, rebuilt image, extended Production deletion/backup smoke and same-image50-seed/10k-row sync regression all passed. Evidence in `evidence/B06-verification.md`. Exact-squash CI merge via the required script remains the final publication gate; laptop activation follows only merged main. No owner account deletion/reset, Flutter implementation or paid/provider calls.
+
 ## Outcome
-_Written in Phase E._
+
+**Built:** synchronous atomic `DELETE /v1/me`, installed-module erasers and enforced ownership inventory,
+Identity/replay/sync/worker lifecycle fencing, and a deletion-safe protected recovery generation.
+The private controller holds backup/restore locks, publishes digest/generation manifests and refuses
+stale snapshots. Startup email pruning and explicit migration initialization complete the laptop path.
+Contract and generated client are ready for A35.
+
+**Actual size:** L, six implementation WPs plus the shared B05/B06 plan review. No separate verifier
+agent (non-milestone); one independent code review and one separate security review. Zero
+blockers/majors; one fixed security minor (FK ownership guard), one code minor logged#80 (queue
+fairness). Both reviewers rechecked their dispositions. No new TD, vendor or owner gate.
+
+**Validation:**319 backend tests, app and10 Dart packages,31 operator tests; contract conformance,
+generation and formatting checks; current non-root image hardening and repeated migrations; real
+Production-image deletion/backup/restore/fault tests;50 real sync seeds and10,000-row regression.
+30,004 synthetic UserData rows deleted in364ms HTTP including intentional backup-lock wait.
+Detailed measurements and coverage are in [verification](evidence/B06-verification.md).
+
+**Deviations/limits:** only the four installed modules were implemented; future modules must declare
+their ownership/eraser. No dummy Usage/Catalog projects. Ambiguous connection failure can overblock
+recovery rather than risk resurrection. Old snapshots expire normally but cannot restore directly;
+no destructive live reset/restore command was introduced. Physical email cleanup requires a running
+process/startup and follows recorded10min expiry plus≤1min sweep. Provider sign-in/link/email-consume
+versus deletion were inspected, with other lifecycle races exercised. These are disclosed in evidence.
+
+**Handoff:** A35 owns confirmation/local wipe and uncertain lost-response UX; old-token401 after a
+lost204 alone is not proof of deletion. A34 owns real app sync. B14 must preserve the durable recovery
+barrier and existing production backup rules. B07 catalog is next; B13/B14 still wait for A38.
+Owner phone/reboot/off-laptop recovery-copy checks remain#76/#78/#79. B06 deployment uses only
+the merged main image and routine pre/post backup plus isolated scratch restore; no owner data erased.

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """B03 private laptop stack. Persistent state and credentials never live in git."""
 import argparse
+from contextlib import contextmanager
 import datetime as dt
 import fcntl
 import hashlib
@@ -10,6 +11,7 @@ import os
 from pathlib import Path
 import re
 import secrets
+import select
 import stat
 import subprocess
 import sys
@@ -18,6 +20,7 @@ import tempfile
 import time
 import urllib.error
 import urllib.request
+import uuid
 
 # The installed timer runs a private copy, whose ancestors are not a checkout.
 _CANDIDATE_REPO = Path(__file__).resolve().parents[2]
@@ -56,6 +59,11 @@ def atomic(path, content):
             stream.flush()
             os.fsync(stream.fileno())
         os.replace(temp, path)
+        parent = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(parent)
+        finally:
+            os.close(parent)
     finally:
         Path(temp).unlink(missing_ok=True)
 
@@ -104,11 +112,15 @@ def secrets_env(state):
     return env
 
 
-def compose(state, *args, data=None, timeout=300):
+def compose_command(state, *args):
     private(state / 'compose.yml')
     private(state / 'init-roles.sh', public_read=True)
-    return run(['docker', 'compose', '--env-file', '/dev/null', '-p', PROJECT,
-                '-f', str(state / 'compose.yml'), *identity_compose_args(state), *args], env=secrets_env(state), data=data, timeout=timeout)
+    return ['docker', 'compose', '--env-file', '/dev/null', '-p', PROJECT,
+            '-f', str(state / 'compose.yml'), *identity_compose_args(state), *recovery_compose_args(state), *args]
+
+
+def compose(state, *args, data=None, timeout=300):
+    return run(compose_command(state, *args), env=secrets_env(state), data=data, timeout=timeout)
 
 
 def identity_compose_args(state):
@@ -130,6 +142,131 @@ def identity_compose_args(state):
         if len((state / 'identity' / name).read_bytes()) != 32:
             raise Failure('Invalid identity secret; recover original private material')
     return ['-f', str(overlay)]
+
+
+def recovery_compose_args(state):
+    overlay = state / 'recovery-compose.json'
+    if not overlay.exists():
+        return []
+    private(overlay)
+    safe_dir(state / 'recovery')
+    return ['-f', str(overlay)]
+
+
+def configure_recovery(state):
+    if os.getuid() == 0:
+        raise Failure('Recovery runtime requires an unprivileged operator UID')
+    folder = state / 'recovery'
+    safe_dir(folder)
+    # Do not create/recover a generation here: only the guarded migrate command can initialize it.
+    runtime = {'user': str(os.getuid()), 'environment': {'Recovery__Directory': '/recovery'},
+               'volumes': [{'type': 'bind', 'source': str(folder), 'target': '/recovery'}]}
+    command = ['migrate']
+    if (state / 'identity-compose.json').exists():
+        command = read_json(state / 'identity-compose.json')['services']['migrate']['command']
+    command = [arg for arg in command if not arg.startswith('--Recovery:Initialize=')] + ['--Recovery:Initialize=true']
+    worker = {**runtime, 'volumes': [{**runtime['volumes'][0], 'read_only': True}]}
+    json_write(state / 'recovery-compose.json', {'services': {
+        'api': runtime, 'worker': worker, 'migrate': {**runtime, 'command': command}}})
+
+
+def protected_generation(state):
+    folder = state / 'recovery'
+    private(folder, directory=True)
+    marker = folder / 'generation'
+    private(marker)
+    if stat.S_IMODE(folder.stat().st_mode) != 0o700 or stat.S_IMODE(marker.stat().st_mode) != 0o600:
+        raise Failure('Protected recovery state must be private and writable by its owner')
+    raw = marker.read_text()
+    if len(raw) != 37 or raw[-1] != '\n':
+        raise Failure('Invalid protected recovery state; offline recovery required')
+    try:
+        generation = str(uuid.UUID(raw[:-1]))
+    except ValueError as exc:
+        raise Failure('Invalid protected recovery state; offline recovery required') from exc
+    if generation != raw[:-1] or generation == str(uuid.UUID(int=0)):
+        raise Failure('Invalid protected recovery state; offline recovery required')
+    return generation
+
+
+@contextmanager
+def recovery_lock(state):
+    # One DB transaction excludes deletion across the complete dump/restore operation. The existing
+    # controller flock also serializes local operator commands. No per-user deletion ledger exists.
+    command = ('export PGPASSWORD="$FB_PHONE_BACKUP_PASSWORD" PGCONNECT_TIMEOUT=5; '
+               'exec psql -X -q -w -h 127.0.0.1 -U fb_backup -d fitness_buddy -v ON_ERROR_STOP=1 -At')
+    process = None
+    try:
+        process = subprocess.Popen(compose_command(state, 'exec', '-T', 'postgres', 'sh', '-c', command),
+                                   env=secrets_env(state), stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE, bufsize=0)
+        process.stdin.write(b"BEGIN; SET LOCAL lock_timeout='20s'; SELECT pg_advisory_xact_lock(460391206); SELECT 'fb_recovery_locked';\n")
+        process.stdin.flush()
+        deadline = time.monotonic() + 30
+        output = b''
+        while b'fb_recovery_locked\n' not in output:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0 or process.poll() is not None:
+                raise Failure('Recovery lock unavailable; no backup or restore was authorized')
+            readable, _, _ = select.select([process.stdout], [], [], min(1, remaining))
+            if readable:
+                chunk = os.read(process.stdout.fileno(), 1024)
+                if not chunk or len(output) + len(chunk) > 4096:
+                    raise Failure('Recovery lock unavailable; no child output displayed')
+                output += chunk
+        generation = protected_generation(state)
+        if sql(state, 'SELECT generation::text FROM ops.recovery WHERE singleton;', role='fb_backup').strip() != generation:
+            raise Failure('Protected recovery state does not match database; offline recovery required')
+        yield generation
+        if process.poll() is not None or protected_generation(state) != generation or sql(state, 'SELECT generation::text FROM ops.recovery WHERE singleton;', role='fb_backup').strip() != generation:
+            raise Failure('Recovery lock or generation changed; operation was not completed')
+        process.stdin.write(b'COMMIT;\n\\q\n')
+        process.stdin.flush()
+        process.stdin.close()
+        if process.wait(timeout=10) != 0:
+            raise Failure('Recovery lock release failed; no child output displayed')
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise Failure('Recovery operation failed; no child output displayed') from exc
+    finally:
+        if process is not None:
+            if process.poll() is None:
+                try:
+                    if not process.stdin.closed:
+                        process.stdin.write(b'ROLLBACK;\n\\q\n')
+                        process.stdin.flush()
+                        process.stdin.close()
+                    process.wait(timeout=5)
+                except (OSError, subprocess.TimeoutExpired):
+                    process.terminate()
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        process.kill()
+                        process.wait(timeout=5)
+            for stream in (process.stdin, process.stdout, process.stderr):
+                if stream is not None:
+                    stream.close()
+
+
+def backup_manifest(archive):
+    return archive.with_suffix('.json')
+
+
+def verify_backup(archive, generation):
+    private(archive)
+    if not re.fullmatch(r'backup-[0-9]{8}T[0-9]{6}-[0-9a-f]{6}\.dump', archive.name):
+        raise Failure('Invalid backup name')
+    try:
+        manifest = read_json(backup_manifest(archive))
+    except (OSError, ValueError, KeyError) as exc:
+        raise Failure('Backup has no valid deletion-safe manifest; direct restore refused') from exc
+    if (set(manifest) != {'format', 'dump', 'sha256', 'generation'} or manifest.get('format') != 1 or
+            manifest.get('dump') != archive.name or manifest.get('generation') != generation):
+        raise Failure('Backup predates current deletion state or has no valid manifest; direct restore refused')
+    with archive.open('rb') as stream:
+        digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+    if manifest.get('sha256') != digest:
+        raise Failure('Backup digest mismatch; restore refused')
 
 
 def configure_identity(state, clients_path):
@@ -167,6 +304,8 @@ def configure_identity(state, clients_path):
     migrate = {**runtime, 'command': ['migrate', '--Identity:KeyOperation=ensure', '--Identity:WrappingVersion=v1']}
     json_write(state / 'identity-compose.json', {'services': {'api': runtime, 'worker': runtime, 'migrate': migrate}})
     identity_compose_args(state)
+    if (state / 'recovery-compose.json').exists():
+        configure_recovery(state)
     print('Private identity configuration prepared; takes effect on next main-image deployment')
 
 
@@ -222,6 +361,7 @@ def prepare(state):
         atomic(state / name, (REPO / 'infra/phone-server' / name).read_bytes())
         if name == 'init-roles.sh':
             (state / name).chmod(0o644)
+    configure_recovery(state)
     atomic(state / 'phone-server.py', Path(__file__).read_bytes())
     json_write(state / 'image.json', {'revision': revision, 'image': image})
     print(f'Prepared immutable backend from main {revision[:12]}; private state outside git')
@@ -411,20 +551,27 @@ def backup(state):
     folder = state / 'backups'
     private(folder, directory=True)
     name = 'backup-' + dt.datetime.now(dt.timezone.utc).strftime('%Y%m%dT%H%M%S') + '-' + secrets.token_hex(3) + '.dump'
-    # pg_dump's stderr may contain a private row; never echo it, including on failure.
-    archive = compose(state, 'exec', '-T', 'postgres', 'sh', '-c',
-                      'export PGPASSWORD="$FB_PHONE_BACKUP_PASSWORD"; exec pg_dump -w -h 127.0.0.1 -U fb_backup -d fitness_buddy -Fc', timeout=900)
-    if not archive.startswith(b'PGDMP'):
-        raise Failure('Invalid dump output; old backups retained')
-    identity_recovery(state)
-    atomic(folder / name, archive)
+    with recovery_lock(state) as generation:
+        # pg_dump's stderr may contain a private row; never echo it, including on failure.
+        archive = compose(state, 'exec', '-T', 'postgres', 'sh', '-c',
+                          'export PGPASSWORD="$FB_PHONE_BACKUP_PASSWORD"; exec pg_dump -w -h 127.0.0.1 -U fb_backup -d fitness_buddy -Fc', timeout=900)
+        if not archive.startswith(b'PGDMP'):
+            raise Failure('Invalid dump output; old backups retained')
+        identity_recovery(state)
+        atomic(folder / name, archive)
+        json_write(backup_manifest(folder / name), {'format': 1, 'dump': name,
+                   'sha256': hashlib.sha256(archive).hexdigest(), 'generation': generation})
     cutoff = time.time() - 7 * 86400
     for path in folder.iterdir():
         if re.fullmatch(r'backup-[0-9]{8}T[0-9]{6}-[0-9a-f]{6}\.dump', path.name):
             private(path)
             if path.stat().st_mtime < cutoff:
+                manifest = backup_manifest(path)
+                if manifest.exists() or manifest.is_symlink():
+                    private(manifest)
+                    manifest.unlink()
                 path.unlink()
-    print('Backup complete; seven-day local retention (no content logged)')
+    print('Backup complete with protected generation/digest; seven-day local retention')
     return folder / name
 
 
@@ -434,21 +581,30 @@ def restore_check(state):
     dumps = sorted(folder.glob('backup-*.dump'))
     if not dumps:
         raise Failure('No backup; create one first')
-    archive = dumps[-1]
-    private(archive)
-    scratch = 'fb_restore_' + secrets.token_hex(8)
-    sql(state, f'CREATE DATABASE {scratch};')
-    try:
-        compose(state, 'exec', '-T', 'postgres', 'sh', '-c',
-                'export PGPASSWORD="$POSTGRES_PASSWORD"; exec pg_restore -w -h 127.0.0.1 -U postgres --exit-on-error --no-owner --no-acl -d "$1"',
-                'sh', scratch, data=archive.read_bytes(), timeout=900)
-        count = sql(state, "SELECT count(*) FROM pg_tables WHERE schemaname IN ('ops','userdata','identity');", database=scratch).strip()
-        if not count.isdecimal() or int(count) < 1:
-            raise Failure('Restore has no expected module tables')
-        # No live counts: writes during a dump would make that comparison misleading.
-        print(f'Restore succeeded into isolated scratch database; {count} module tables')
-    finally:
-        sql(state, f'DROP DATABASE {scratch} WITH (FORCE);')
+    archive = max(dumps, key=lambda path: (path.stat().st_mtime_ns, path.name))
+    with recovery_lock(state) as generation:
+        # Validate BEFORE even a scratch database is created. There is no automatic live restore/reset.
+        verify_backup(archive, generation)
+        scratch = 'fb_restore_' + secrets.token_hex(8)
+        sql(state, f'CREATE DATABASE {scratch} OWNER fb_migrator;')
+        try:
+            compose(state, 'exec', '-T', 'postgres', 'sh', '-c',
+                    'export PGPASSWORD="$POSTGRES_PASSWORD"; exec pg_restore -w -h 127.0.0.1 -U postgres --role=fb_migrator --exit-on-error --no-owner -d "$1"',
+                    'sh', scratch, data=archive.read_bytes(), timeout=900)
+            count = sql(state, "SELECT count(*) FROM pg_tables WHERE schemaname IN ('ops','userdata','identity','account');", database=scratch).strip()
+            if not count.isdecimal() or int(count) < 1:
+                raise Failure('Restore has no expected module tables')
+            restored = sql(state, 'SELECT generation::text FROM ops.recovery WHERE singleton;', database=scratch).strip()
+            if restored != generation:
+                raise Failure('Restored recovery state does not match protected generation')
+            before = sql(state, 'SELECT id::text FROM userdata.dataset WHERE singleton;', database=scratch).strip()
+            sql(state, 'UPDATE userdata.dataset SET id=gen_random_uuid() WHERE singleton;', database=scratch)
+            after = sql(state, 'SELECT id::text FROM userdata.dataset WHERE singleton;', database=scratch).strip()
+            if not before or before == after:
+                raise Failure('Scratch restore dataset rotation failed')
+        finally:
+            sql(state, f'DROP DATABASE {scratch} WITH (FORCE);')
+    print(f'Restore succeeded into isolated scratch database; {count} module tables; recovery matched and dataset rotated')
 
 
 def install_timer(state):
@@ -497,6 +653,12 @@ def status(state):
     if backups:
         age = (time.time() - max(p.stat().st_mtime for p in backups)) / 3600
         print(f'Newest backup age: {age:.1f} hours' + (' — OVERDUE' if age > 26 else ''))
+        try:
+            verify_backup(max(backups, key=lambda path: path.stat().st_mtime), protected_generation(state))
+            safe = True
+        except (Failure, OSError, ValueError, KeyError):
+            safe = False
+        print('Newest backup matches protected generation/digest: ' + str(safe))
 
 
 def main():

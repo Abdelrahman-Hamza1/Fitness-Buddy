@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><AllowUnsafeBlocks>true</AllowUnsafeBlocks></PropertyGroup>
   <!-- Lowest shared layer (04 §3.3). Two namespaces in one project (S03 plan D13):
        FitnessBuddy.BuildingBlocks.* is plain .NET (no ASP.NET Core, an architecture rule enforces it);
        FitnessBuddy.BuildingBlocks.Web.* holds the HTTP pieces modules share. -->

@@ -14,6 +14,7 @@ namespace FitnessBuddy.Modules.UserData;
 public sealed class UserDataModule : IModule
 {
     public string Name => "UserData";
+    public FitnessBuddy.BuildingBlocks.Messaging.UserDataOwnership UserData => new(["documents", "row_history", "version_receipts"], ["dataset"], "userdata.erase");
 
     /// <summary>Operator-only: rotate after rollback restore, before opening traffic. Ordinary restarts retain the dataset.</summary>
     public static async Task RotateDatasetAsync(string migratorConnection, CancellationToken cancellationToken)
@@ -35,6 +36,7 @@ public sealed class UserDataModule : IModule
         services.AddSingleton<ISyncTelemetry, SyncTelemetry>();
         services.AddScoped<IJobHandler, SyncRetentionJob>();
         services.AddScoped<ISyncStore, PostgresSyncStore>();
+        services.AddScoped<FitnessBuddy.BuildingBlocks.Messaging.IOutboxHandler, UserDataErasure>();
         services.AddSingleton(new ModuleMigration("userdata", connection => new UserDataContext(DatabaseConfiguration.ContextOptions<UserDataContext>(connection, "userdata"))));
     }
 

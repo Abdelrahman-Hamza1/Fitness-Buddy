@@ -37,10 +37,10 @@ public sealed class IdempotencyStore(DatabaseSession session, TimeProvider clock
     public async Task WriteAsync(string scopeHash, string keyHash, string fingerprint, StoredResponse response, CancellationToken cancellationToken)
     {
         await using var command = session.Command("""
-            INSERT INTO ops.idempotency(scope_hash,key_hash,fingerprint,status,content_type,body,headers,created_at,expires_at)
-            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
+            INSERT INTO ops.idempotency(scope_hash,key_hash,fingerprint,status,content_type,body,headers,created_at,expires_at,user_id)
+            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
             ON CONFLICT(scope_hash,key_hash) DO UPDATE SET fingerprint=excluded.fingerprint,status=excluded.status,
-                content_type=excluded.content_type,body=excluded.body,headers=excluded.headers,created_at=excluded.created_at,expires_at=excluded.expires_at
+                content_type=excluded.content_type,body=excluded.body,headers=excluded.headers,created_at=excluded.created_at,expires_at=excluded.expires_at,user_id=excluded.user_id
             """);
         command.Parameters.AddWithValue(scopeHash);
         command.Parameters.AddWithValue(keyHash);
@@ -51,6 +51,7 @@ public sealed class IdempotencyStore(DatabaseSession session, TimeProvider clock
         command.Parameters.AddWithValue(NpgsqlDbType.Jsonb, JsonSerializer.Serialize(response.Headers));
         command.Parameters.AddWithValue(clock.GetUtcNow());
         command.Parameters.AddWithValue(clock.GetUtcNow() + TimeSpan.FromHours(24));
+        command.Parameters.AddWithValue(NpgsqlDbType.Uuid, (object?)session.UserId ?? DBNull.Value);
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
 }

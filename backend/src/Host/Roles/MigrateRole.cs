@@ -27,18 +27,24 @@ internal static partial class MigrateRole
         {
             var stopping = host.Services.GetRequiredService<IHostApplicationLifetime>().ApplicationStopping;
             await host.Services.GetRequiredService<MigrationRunner>().RunAsync(connection, stopping);
-            await FitnessBuddy.Modules.UserData.UserDataModule.SeedLegacyCleanupAsync(connection, host.Services.GetRequiredService<TimeProvider>(),
-                host.Services.GetRequiredService<FitnessBuddy.BuildingBlocks.Ids.IIdGenerator>(), stopping);
-            var keyOperation = builder.Configuration["Identity:KeyOperation"];
-            if (!string.IsNullOrEmpty(keyOperation))
-            {
-                await FitnessBuddy.Modules.Identity.IdentityModule.MaintainSigningKeysAsync(connection,
-                    builder.Configuration["Identity:WrappingKeysDirectory"] ?? "",
-                    builder.Configuration["Identity:WrappingVersion"] ?? "v1", keyOperation,
-                    host.Services.GetRequiredService<TimeProvider>(), stopping);
-            }
-            if (builder.Configuration.GetValue<bool>("Sync:RotateDataset"))
-            { await FitnessBuddy.Modules.UserData.UserDataModule.RotateDatasetAsync(connection, stopping); }
+            await FitnessBuddy.BuildingBlocks.Recovery.RecoveryMaintenance.RunAsync(connection,
+                host.Services.GetRequiredService<IOptions<FitnessBuddy.BuildingBlocks.Recovery.RecoveryOptions>>().Value,
+                host.Services.GetRequiredService<FitnessBuddy.BuildingBlocks.Ids.IIdGenerator>(),
+                builder.Configuration.GetValue<bool>("Recovery:Initialize"), async maintenanceToken =>
+                {
+                    await FitnessBuddy.Modules.UserData.UserDataModule.SeedLegacyCleanupAsync(connection, host.Services.GetRequiredService<TimeProvider>(),
+                        host.Services.GetRequiredService<FitnessBuddy.BuildingBlocks.Ids.IIdGenerator>(), maintenanceToken);
+                    var keyOperation = builder.Configuration["Identity:KeyOperation"];
+                    if (!string.IsNullOrEmpty(keyOperation))
+                    {
+                        await FitnessBuddy.Modules.Identity.IdentityModule.MaintainSigningKeysAsync(connection,
+                            builder.Configuration["Identity:WrappingKeysDirectory"] ?? "",
+                            builder.Configuration["Identity:WrappingVersion"] ?? "v1", keyOperation,
+                            host.Services.GetRequiredService<TimeProvider>(), maintenanceToken);
+                    }
+                    if (builder.Configuration.GetValue<bool>("Sync:RotateDataset"))
+                    { await FitnessBuddy.Modules.UserData.UserDataModule.RotateDatasetAsync(connection, maintenanceToken); }
+                }, stopping);
             LogCompleted(logger);
             return 0;
         }

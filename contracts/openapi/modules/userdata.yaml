@@ -1,3 +1,4 @@
+# Production authenticated sync contract.
 {
   "paths": {
     "/v1/sync/push": {
@@ -88,6 +89,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "$ref": "../components/problems.yaml#/components/responses/ServiceUnavailable"
           }
         },
         "security": [
@@ -206,6 +210,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "$ref": "../components/problems.yaml#/components/responses/ServiceUnavailable"
           }
         },
         "security": [
@@ -324,6 +331,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "$ref": "../components/problems.yaml#/components/responses/ServiceUnavailable"
           }
         },
         "security": [
@@ -461,6 +471,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "$ref": "../components/problems.yaml#/components/responses/ServiceUnavailable"
           }
         },
         "security": [

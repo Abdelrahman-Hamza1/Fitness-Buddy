@@ -21,11 +21,15 @@ After the B04 implementation is reviewed and merged to main:
    key only if none exists (`--Identity:KeyOperation=ensure`). Normal API/worker startup never creates keys.
 4. The overlay runs as the operator's unprivileged UID so private0600 bind-mounted secrets remain
    readable without broadening file permissions. Root, capability grants and writable image filesystems
-   are not needed. Config/wrapping keys mount read-only; only the local-code subdirectory is writable.
+   are not needed. Config/wrapping keys mount read-only; the local-code subdirectory is writable. B06 also mounts
+   separate protected recovery state read-write for API/migrate and read-only for worker.
 5. Local email delivery requires both `Identity:PrivateLaptop=true` and
    `Identity:Email:LocalFile:Enabled=true`; Production environment alone never enables it.
-   Codes are private0600 JSON files under `identity/email/`, capped at100 files, removed on issuance
-   or within one minute after their10-minute expiry by the reaper. Files are never logged or backed up.
+   Codes are private0600 JSON files under `identity/email/`, capped at100 files and published by
+   atomic rename. Their recorded10-minute expiry is checked on issuance, before host startup opens
+   traffic, and on each running one-minute reaper sweep. Unsafe/unwritable cleanup refuses startup;
+   a later reaper failure stops the host. A stopped process cannot physically erase files until it
+   restarts. Files are never logged or backed up.
    For a manual code check, read the matching challenge file on the laptop; never paste codes/tokens in git.
 
 The existing unencrypted-storage exception applies only to this private laptop. B13/B14 must reject
@@ -46,7 +50,10 @@ The restore-check command restores only into a scratch database; it never overwr
 
 ## Explicit rotation
 
-Use the migrate role with its original external migrator connection and identity config:
+Use the migrate role with its original external migrator connection, identity config and the
+existing protected recovery directory/mount. It verifies recovery state and holds the global
+maintenance lock before key operations. Routine rotation never replaces the recovery generation:
+
 
 - `migrate --Identity:KeyOperation=rotate --Identity:WrappingVersion=v1` makes a new active ES256 key;
   the preceding public key stays available for16 minutes (15-minute access lifetime plus30-second skew).
@@ -59,3 +66,7 @@ Use the migrate role with its original external migrator connection and identity
 
 Do not pass passwords or keys on the command line. Supply the existing secret configuration/mounts.
 No key-management endpoint exists, and the API has no key-write or migration grants.
+
+Account erasure and backup admission also depend on the protected generation. Follow
+[account deletion](account-deletion.md) and [laptop recovery](laptop-test-server.md); restoring the
+key bundle alone cannot authorize an old database snapshot.

@@ -25,12 +25,15 @@ internal sealed class IdempotencyApi(PostgresFixture database, TestClock clock) 
         {
             ["RateLimiting:PerIp:PermitLimit"] = "10000",
             ["ConnectionStrings:Application"] = database.AppConnection,
+            ["Recovery:Directory"] = database.RecoveryDirectory,
         }));
         builder.ConfigureTestServices(services =>
         {
             services.AddSingleton<TimeProvider>(clock);
             services.AddHttpContextAccessor();
             services.AddSingleton(Signals);
+            services.RemoveAll<IUserLifecycle>();
+            services.AddSingleton<IUserLifecycle, SyntheticLifecycle>();
             services.RemoveAll<ICurrentUser>();
             services.AddScoped<ICurrentUser, TestUser>();
             services.AddSingleton<IModule, TestModule>();
@@ -39,11 +42,13 @@ internal sealed class IdempotencyApi(PostgresFixture database, TestClock clock) 
     private sealed class TestUser(IHttpContextAccessor accessor) : ICurrentUser
     {
         public Guid? UserId => Guid.TryParse(accessor.HttpContext?.Request.Headers["Test-User"], out var id) ? id : null;
+        public Guid? SessionId => UserId.HasValue ? Guid.Parse("0192a5d4-7c3e-7b1a-9f2e-3c4d5e6f7a8b") : null;
         public bool IsAuthenticated => UserId is not null;
     }
     private sealed class TestModule : IModule
     {
         public string Name => "PersistenceProbe";
+        public FitnessBuddy.BuildingBlocks.Messaging.UserDataOwnership UserData => new([], [], null);
         public void AddServices(IServiceCollection services, IConfiguration configuration) { }
         public void MapEndpoints(RouteGroupBuilder group)
         {

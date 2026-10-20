@@ -21,12 +21,16 @@ internal static class PersistenceSetup
             options.Validate(settings => !string.IsNullOrWhiteSpace(settings.Application), "ConnectionStrings:Application is required.").ValidateOnStart();
         }
         builder.Services.AddFbDatabase(provider => provider.GetRequiredService<IOptions<DatabaseOptions>>().Value.Application);
+        builder.Services.Configure<FitnessBuddy.BuildingBlocks.Recovery.RecoveryOptions>(builder.Configuration.GetSection("Recovery"));
+        builder.Services.AddSingleton<FitnessBuddy.BuildingBlocks.Recovery.RecoveryBarrier>();
+        builder.Services.AddSingleton<RecoveryRequestGate>();
         builder.Services.AddSingleton<MigrationRunner>();
         builder.Services.AddScoped<QueueWriter>();
         builder.Services.AddSingleton(new QueuePolicy());
         builder.Services.AddScoped<QueueProcessor>();
-        builder.Services.AddSingleton<JobScheduler>();
+        builder.Services.AddScoped<JobScheduler>();
         builder.Services.AddScoped<IJobHandler, OpsCleanupJob>();
-        builder.Services.AddHealthChecks().AddCheck<DatabaseReadiness>("database", tags: ["ready"]);
+        builder.Services.AddHealthChecks().AddCheck<DatabaseReadiness>("database", tags: ["ready"])
+            .AddCheck<RecoveryReadiness>("recovery", tags: ["ready"]);
     }
 }

@@ -44,7 +44,7 @@ public static class V1Api
     public static RouteGroupBuilder MapModuleGroup(RouteGroupBuilder v1, IModule module)
     {
         ArgumentNullException.ThrowIfNull(module);
-        var group = v1.MapGroup(string.Empty).WithTags(module.Name);
+        var group = v1.MapGroup(string.Empty).WithTags(module.Name).WithMetadata(new ModuleEndpointMetadata(module.Name));
         module.MapEndpoints(group);
         return group;
     }

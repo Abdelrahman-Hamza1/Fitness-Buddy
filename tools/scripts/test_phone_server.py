@@ -1,5 +1,7 @@
 """Rules 08.2-laptop-test-server / 08.5-backups / 09.4-privacy: operator failure boundaries."""
 import importlib.util
+from contextlib import nullcontext
+import hashlib
 import ipaddress
 import json
 import os
@@ -15,6 +17,8 @@ SPEC = importlib.util.spec_from_file_location('phone_server', Path(__file__).wit
 phone = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(phone)
 REAL_RUN = phone.run
+REAL_RECOVERY_LOCK = phone.recovery_lock
+REAL_POPEN = subprocess.Popen
 
 
 class PhoneServerTests(unittest.TestCase):
@@ -26,6 +30,14 @@ class PhoneServerTests(unittest.TestCase):
         self.addCleanup(patch.stopall)
         self.addCleanup(self.temp.cleanup)
         phone.init(self.state)
+        self.generation = '0192a5d4-7c3e-7b1a-9f2e-3c4d5e6f7a8b'
+        phone.safe_dir(self.state / 'recovery')
+        phone.atomic(self.state / 'recovery' / 'generation', (self.generation + '\n').encode())
+        self.recovery_lock = patch.object(phone, 'recovery_lock', return_value=nullcontext(self.generation)).start()
+
+    def manifest(self, archive, generation=None):
+        phone.json_write(phone.backup_manifest(archive), {'format': 1, 'dump': archive.name,
+            'sha256': hashlib.sha256(archive.read_bytes()).hexdigest(), 'generation': generation or self.generation})
 
     def write(self, name, value):
         phone.json_write(self.state / name, value)
@@ -192,14 +204,107 @@ class PhoneServerTests(unittest.TestCase):
         archive = self.state / 'backups/backup-20000101T000000-aabbcc.dump'
         archive.write_bytes(b'PGDMP-fixture')
         archive.chmod(0o600)
+        self.manifest(archive)
         with patch.object(phone, 'sql') as sql, patch.object(phone, 'compose', side_effect=phone.Failure('restore failed')):
             with self.assertRaises(phone.Failure):
                 phone.restore_check(self.state)
         create = sql.call_args_list[0].args[1]
         drop = sql.call_args_list[1].args[1]
-        self.assertRegex(create, r'^CREATE DATABASE fb_restore_[0-9a-f]{16};$')
-        self.assertEqual(drop, create.replace('CREATE', 'DROP').replace(';', ' WITH (FORCE);'))
+        self.assertRegex(create, r'^CREATE DATABASE fb_restore_[0-9a-f]{16} OWNER fb_migrator;$')
+        self.assertEqual(drop, 'DROP DATABASE ' + create.split()[2] + ' WITH (FORCE);')
         self.assertNotIn('fitness_buddy', drop)
+
+    def test_recovery_overlay_preserves_identity_keys_and_limits_worker_to_read_only(self):
+        self.configure_identity()
+        key = (self.state / 'identity/v1.key').read_bytes()
+        phone.configure_recovery(self.state)
+        overlay = phone.read_json(self.state / 'recovery-compose.json')['services']
+        self.assertEqual((self.state / 'identity/v1.key').read_bytes(), key)
+        self.assertNotEqual(overlay['api']['user'], '0')
+        self.assertNotIn('read_only', overlay['api']['volumes'][0])
+        self.assertTrue(overlay['worker']['volumes'][0]['read_only'])
+        self.assertIn('--Identity:KeyOperation=ensure', overlay['migrate']['command'])
+        self.assertIn('--Recovery:Initialize=true', overlay['migrate']['command'])
+        self.assertEqual(overlay['api']['environment'], {'Recovery__Directory': '/recovery'})
+        self.assertEqual(phone.recovery_compose_args(self.state), ['-f', str(self.state / 'recovery-compose.json')])
+
+    def test_missing_stale_or_tampered_manifest_refuses_before_any_database_change(self):
+        archive = self.state / 'backups/backup-20000101T000000-aabbcc.dump'
+        phone.atomic(archive, b'PGDMP-fixture')
+        with patch.object(phone, 'sql') as sql, patch.object(phone, 'compose') as compose:
+            with self.assertRaisesRegex(phone.Failure, 'manifest'):
+                phone.restore_check(self.state)
+            sql.assert_not_called()
+            compose.assert_not_called()
+            self.manifest(archive, '0192a5d4-7c3e-7b1a-9f2e-3c4d5e6f7a8c')
+            with self.assertRaisesRegex(phone.Failure, 'predates'):
+                phone.restore_check(self.state)
+            sql.assert_not_called()
+            self.manifest(archive)
+            phone.atomic(archive, b'PGDMP-tampered')
+            with self.assertRaisesRegex(phone.Failure, 'digest'):
+                phone.restore_check(self.state)
+            sql.assert_not_called()
+            compose.assert_not_called()
+
+    def test_generation_file_missing_corrupt_public_or_linked_never_reinitializes(self):
+        marker = self.state / 'recovery/generation'
+        self.assertEqual(phone.protected_generation(self.state), self.generation)
+        phone.atomic(marker, b'corrupt')
+        with self.assertRaises(phone.Failure):
+            phone.protected_generation(self.state)
+        marker.unlink()
+        marker.symlink_to(self.state / 'credentials.json')
+        with self.assertRaises(phone.Failure):
+            phone.protected_generation(self.state)
+        marker.unlink()
+        phone.atomic(marker, (self.generation + '\n').encode())
+        marker.chmod(0o640)
+        with self.assertRaises(phone.Failure):
+            phone.protected_generation(self.state)
+        marker.unlink()
+        with self.assertRaises(OSError):
+            phone.protected_generation(self.state)
+        self.assertFalse(marker.exists())
+
+    def test_backup_manifest_captures_digest_and_current_generation(self):
+        with patch.object(phone, 'compose', return_value=b'PGDMP-fixture'):
+            archive = phone.backup(self.state)
+        manifest = phone.read_json(phone.backup_manifest(archive))
+        self.assertEqual(manifest['generation'], self.generation)
+        self.assertEqual(manifest['sha256'], hashlib.sha256(archive.read_bytes()).hexdigest())
+        self.assertEqual(stat.S_IMODE(phone.backup_manifest(archive).stat().st_mode), 0o600)
+        phone.verify_backup(archive, self.generation)
+
+    def test_lock_protocol_cleans_up_on_body_failure_without_exposing_child_output(self):
+        children = []
+        def spawn(args, **kwargs):
+            child = REAL_POPEN([os.sys.executable, '-u', '-c',
+                "import sys; print('fb_recovery_locked',flush=True); [(None if line.strip() != chr(92)+'q' else sys.exit(0)) for line in sys.stdin]"],
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
+            children.append(child)
+            return child
+        with patch.object(phone, 'compose_command', return_value=['synthetic-psql']), \
+                patch.object(phone.subprocess, 'Popen', side_effect=spawn), patch.object(phone, 'sql', return_value=self.generation):
+            with self.assertRaisesRegex(phone.Failure, 'synthetic failure'):
+                with REAL_RECOVERY_LOCK(self.state) as generation:
+                    self.assertEqual(generation, self.generation)
+                    raise phone.Failure('synthetic failure')
+        self.assertTrue(all(child.poll() is not None for child in children))
+
+    def test_same_second_backups_select_the_latest_installed_dump_not_random_name_order(self):
+        older = self.state / 'backups/backup-20000101T000000-ffffff.dump'
+        newer = self.state / 'backups/backup-20000101T000000-000000.dump'
+        phone.atomic(older, b'PGDMP-older')
+        self.manifest(older, '0192a5d4-7c3e-7b1a-9f2e-3c4d5e6f7a8c')
+        phone.atomic(newer, b'PGDMP-newer')
+        self.manifest(newer)
+        os.utime(older, ns=(1, 1))
+        os.utime(newer, ns=(2, 2))
+        with patch.object(phone, 'sql') as sql, patch.object(phone, 'compose', side_effect=phone.Failure('newer selected')):
+            with self.assertRaisesRegex(phone.Failure, 'newer selected'):
+                phone.restore_check(self.state)
+        self.assertIn('CREATE DATABASE fb_restore_', sql.call_args_list[0].args[1])
 
     def test_stop_refuses_unrelated_mapping_and_does_not_delete_data(self):
         self.write('serving.json', {'dns': 'test.example.ts.net'})

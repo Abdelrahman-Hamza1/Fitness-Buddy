@@ -59,7 +59,7 @@ public sealed partial class GoldenProblemTests
         using var client = factory.CreateClient();
         HttpRequestMessage Request() => slug switch
         {
-            "unauthorized" => Api.Get("/v1/me"),
+            "unauthorized" => Api.Get("/v1/_probe/identity-required"),
             "forbidden" => Api.Get("/v1/_probe/identity-forbidden"),
             "identity-conflict" => Api.Get("/v1/_probe/identity-conflict"),
             "validation-failed" => Api.Request(HttpMethod.Post, "/v1/_probe/validate", """{"name":"","items":[{"qty":0}],"child":{"code":"ab"}}"""),

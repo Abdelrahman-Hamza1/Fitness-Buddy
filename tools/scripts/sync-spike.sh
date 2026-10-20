@@ -45,20 +45,19 @@ done
 runtime_flags=(--read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges:true --network "$network")
 app_connection='Host=postgres;Database=fitness_buddy;Username=fb_app;Password=local-app-only'
 migrator_connection='Host=postgres;Database=fitness_buddy;Username=fb_migrator;Password=local-migrator-only'
-docker run --rm "${runtime_flags[@]}" -e "ConnectionStrings__Migrator=$migrator_connection" "$image" migrate >"$work/migrate"
 # Keys and local email deliveries are ephemeral; never use an owner identity or external provider.
-mkdir -p "$work/identity/email" "$work/email"
-chmod 700 "$work" "$work/identity" "$work/email"
+mkdir -p "$work/identity/email" "$work/email" "$work/recovery"
+chmod 700 "$work" "$work/identity" "$work/email" "$work/recovery"
 python3 - "$work/identity" <<'PYKEY'
 import os,pathlib,secrets,sys
 for name in ['v1.key','pepper']:
  p=pathlib.Path(sys.argv[1])/name;p.write_bytes(secrets.token_bytes(32));os.chmod(p,0o600)
 PYKEY
-identity_flags=(--user "$(id -u):$(id -g)" -v "$work/identity:/identity:ro" -v "$work/email:/identity/email:rw"
+identity_flags=(--user "$(id -u):$(id -g)" -v "$work/recovery:/recovery:rw" -e Recovery__Directory=/recovery -v "$work/identity:/identity:ro" -v "$work/email:/identity/email:rw"
   -e Identity__Enabled=true -e Identity__WrappingKeysDirectory=/identity -e Identity__PepperFile=/identity/pepper
   -e Identity__Email__LocalFile__Enabled=true -e Identity__PrivateLaptop=true
   -e Identity__Email__LocalFile__Directory=/identity/email)
-docker run --rm "${runtime_flags[@]}" "${identity_flags[@]}" -e "ConnectionStrings__Migrator=$migrator_connection" "$image" migrate --Identity:KeyOperation=ensure >"$work/keys"
+docker run --rm "${runtime_flags[@]}" "${identity_flags[@]}" -e "ConnectionStrings__Migrator=$migrator_connection" "$image" migrate --Identity:KeyOperation=ensure --Recovery:Initialize=true >"$work/keys"
 api="$(docker run -d "${runtime_flags[@]}" "${identity_flags[@]}" -p 127.0.0.1::8080 \
   -e ASPNETCORE_ENVIRONMENT=Production -e RateLimiting__PerUser__PermitLimit=100000 \
   -e Logging__LogLevel__FitnessBuddy.Modules.UserData.Infrastructure.SyncTelemetry=Debug \

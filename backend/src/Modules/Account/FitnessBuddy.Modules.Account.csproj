@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <!-- Account module (04 §3.1): client configuration now; the user's account and deletion later. -->
+  <!-- Account module (04 §3.1): configuration and B06 account lifecycle. -->
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
@@ -8,4 +8,5 @@
     <ProjectReference Include="..\..\BuildingBlocks\FitnessBuddy.BuildingBlocks.csproj" />
   </ItemGroup>
   <ItemGroup><ProjectReference Include="../Identity/FitnessBuddy.Modules.Identity.csproj" /></ItemGroup>
+<ItemGroup><InternalsVisibleTo Include="FitnessBuddy.Persistence.Tests" /></ItemGroup>
 </Project>

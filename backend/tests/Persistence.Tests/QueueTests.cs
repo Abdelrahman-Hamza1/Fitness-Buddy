@@ -147,7 +147,7 @@ public sealed class QueueTests(PostgresFixture database) : IAsyncLifetime
     [Trait("Rule", "04.3.4-jobs")]
     public async Task Persistent_cron_fires_on_fake_clock_and_coalesces_missed_ticks_without_duplicates()
     {
-        var scheduler = new JobScheduler(database.App, clock, new UuidV7IdGenerator(clock));
+        var scheduler = new JobScheduler(database.App, clock, new UuidV7IdGenerator(clock), new SyntheticLifecycle(), database.Recovery);
         var schedule = new JobSchedule("test.minute", "* * * * *", "test.job");
         await scheduler.RegisterAsync(schedule, Ct);
         Assert.False(await scheduler.TickAsync(Ct));
@@ -223,8 +223,35 @@ public sealed class QueueTests(PostgresFixture database) : IAsyncLifetime
         Assert.Equal(1, reader.GetInt64(2));
     }
 
+    [Fact]
+    [Trait("Req", "AC-031")]
+    public async Task Transactional_dispatch_shares_commit_rollback_and_worker_deduplication()
+    {
+        var user = Guid.CreateVersion7();
+        Guid rolledBack;
+        handler.Execute = (message, session, ct) => EffectAsync(session, message.Id, ct);
+        await using (var session = await database.SessionAsync(user))
+        {
+            rolledBack = await Writer(session).PublishAsync("test.event", new { }, Ct);
+            await Processor().DispatchWithinTransactionAsync(rolledBack, session, Ct);
+            Assert.Equal(0, await CountEffectsAsync(rolledBack)); // No separate connection sees uncommitted effects.
+        }
+        Assert.Equal(0, await CountEffectsAsync(rolledBack));
+        await using (var query = database.App.CreateCommand("SELECT count(*) FROM ops.processed_messages WHERE message_id=$1"))
+        { query.Parameters.AddWithValue(rolledBack); Assert.Equal(0L, await query.ExecuteScalarAsync(Ct)); }
+        Guid committed;
+        await using (var session = await database.SessionAsync(user))
+        {
+            committed = await Writer(session).PublishAsync("test.event", new { }, Ct);
+            await Processor().DispatchWithinTransactionAsync(committed, session, Ct);
+            await session.CommitAsync(Ct);
+        }
+        Assert.Equal(1, await CountEffectsAsync(committed));
+        Assert.False(await Processor().DispatchOutboxAsync(Ct));
+    }
+
     private QueueWriter Writer(DatabaseSession session) => new(session, clock, new UuidV7IdGenerator(clock));
-    private QueueProcessor Processor(QueuePolicy? policy = null) => new(database.App, clock, [handler], [handler], policy ?? new QueuePolicy(), NullLogger<QueueProcessor>.Instance);
+    private QueueProcessor Processor(QueuePolicy? policy = null) => new(database.App, clock, [handler], [handler], policy ?? new QueuePolicy(), NullLogger<QueueProcessor>.Instance, new SyntheticLifecycle(), database.Recovery);
 
     private async Task<Guid> PublishAsync()
     {

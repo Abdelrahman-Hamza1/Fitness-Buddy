@@ -128,13 +128,27 @@ all users' FORCE RLS rows. It has no write, create-database or create-role permi
 containers receive only fb_app; migrate receives only fb_migrator. Backup and scratch restore
 commands execute through the private Postgres container. No backup credential is given to API.
 
-Dumps are atomically installed only after successful completion. Only matching owned dump
+B06 adds private `recovery/generation` (0700 directory,0600 file) and a matching global DB row.
+Prepare creates only the directory and a runtime overlay. The explicit migrate command initializes
+a never-initialized DB with `--Recovery:Initialize=true`; repeated matching initialization is a
+no-op. An initialized DB with a missing/corrupt marker, a surviving marker with an uninitialized
+DB, or any mismatch is refused. API/worker startup never invents a replacement marker. API uses a
+writable mount; worker reads it read-only. This metadata has no user mapping.
+
+Backup and restore-check hold the same global database recovery lock as deletion, plus the private
+controller lock. Each dump has a private JSON manifest with its filename, SHA-256 and generation.
+The controller verifies file/DB equality before the dump and before completing the operation. Online
+module requests and worker effects wait while this exclusive lock is held; config/liveness remain
+available. A failed operation preserves existing backups.
+
+Dumps and their manifests are atomically installed only after successful dump completion. Only matching owned dump
 files older than seven days are pruned, after success; a failed dump preserves old backups.
-Restore-check creates a randomly named `fb_restore_…` database, restores without owner/ACL
-using admin, checks module tables, and drops only that scratch database, including on failure.
-The live database is never a restore target. CI additionally proves two synthetic RLS users'
-rows/counts and values survive restore. Live row counts are not compared with a concurrent
-changing database. Do not print user row contents for verification.
+Restore-check rejects a missing/stale manifest or digest mismatch before creating even a scratch
+DB. It creates a randomly named `fb_restore_…` database owned by fb_migrator, restores as that role
+while preserving ACLs, checks module tables and recovery generation, rotates the scratch sync
+dataset, and drops only that scratch database, including on failure. The live database is never a
+restore target. Metadata/epoch checks do not print private row contents. CI additionally proves two synthetic RLS users'
+rows/counts and values survive restore. The drill does not print live user contents. Do not print user row contents for verification.
 
 These are **local daily dumps**, not B14's off-device/PITR backups. Losing the laptop loses
 both server copy and local dumps; the phone still holds its local-first data. B14 will require
@@ -153,8 +167,11 @@ Do not enable the mapping until the stack is ready. Stop before planned shutdown
 backup timer returns at login. Do not use `docker compose down -v`, Docker volume pruning, dev
 credentials or a dev image tag against this stack.
 
-Before an upgrade, back up and restore-check, stop, then `make serve-phone-prepare` from main,
-then start and check. Preparing refuses a running stack. Migrations are forward/expand only;
+Before an upgrade, back up and restore-check using the currently installed controller, stop, then
+`make serve-phone-prepare` from main, then start and check. The first B06 upgrade initializes the
+protected generation once; take a new backup and restore-check immediately afterward. Older
+legacy dumps remain until normal expiry but have no deletion-safe manifest and cannot authorize
+a direct live restore. Preparing refuses a running stack. Migrations are forward/expand only;
 rolling back an image never rolls back database schema or overwrites data. Do not delete a
 volume to fix a credential/migration problem. The private snapshot can be run even while the
 repo is on another branch:
@@ -176,3 +193,18 @@ Sources: [official Ubuntu packages](https://pkgs.tailscale.com/stable/#ubuntu-no
 [Serve](https://tailscale.com/docs/reference/tailscale-cli/serve),
 [operator permissions](https://tailscale.com/docs/reference/troubleshooting/linux/linux-operator-permission),
 [policy reference](https://tailscale.com/docs/reference/syntax/policy-file).
+
+## Deletion-safe recovery (B06)
+
+After any successful account deletion, take a fresh backup and run restore-check. All snapshots
+before the latest deletion have an obsolete generation, even if their files remain within retention.
+Never copy a dump/manifest generation into the protected live marker to make a restore pass. The
+identity-key recovery bundle excludes this marker. A manual stale DB restore also makes readiness
+and direct online module traffic fail503, so bypassing the controller does not reopen old accounts.
+
+The controller offers no automatic live restore/reset. Missing protected state or an unsafe old
+snapshot requires a verified offline recovery procedure or an owner-approved clean reset; there is
+no per-user deletion ledger from which to reconstruct selective erasures. A matching approved live
+restore must rotate the sync dataset before traffic, just as restore-check does in scratch. Do not
+roll back to a pre-B06 binary after enabling deletion: it lacks this recovery boundary. B14 must
+carry the guard forward on production.

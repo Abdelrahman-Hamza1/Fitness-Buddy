@@ -15,7 +15,7 @@ internal static class SyncEndpoints
 {
     public static void MapSyncEndpoints(this RouteGroupBuilder group)
     {
-        var sync = group.MapGroup("/sync").RequireAuthorization("registered-user").ProducesProblem(401).ProducesProblem(403);
+        var sync = group.MapGroup("/sync").RequireAuthorization("registered-user").ProducesProblem(401).ProducesProblem(403).ProducesProblem(503);
         sync.MapPost("/push", Push).WithName("pushSync");
         sync.MapGet("/pull", Pull).WithName("pullSync");
         sync.MapGet("/history", History).WithName("getSyncHistory");

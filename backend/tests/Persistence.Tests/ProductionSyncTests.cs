@@ -155,7 +155,11 @@ public sealed class ProductionSyncTests(PostgresFixture database)
             if ((bool)(await probe.ExecuteScalarAsync(Ct))!) { blocked = true; break; }
             await Task.Delay(10, Ct);
         }
-        Assert.True(blocked); await h.Store.RevokeAsync(user.UserId, user.SessionId, Ct); await held.CommitAsync(Ct);
+        Assert.True(blocked);
+        // Revocation now shares the lifecycle lock: perform it in the transaction already holding it.
+        await using (var revoke = held.Command("SELECT identity.revoke_session($1,$2,$3)"))
+        { revoke.Parameters.AddWithValue(user.UserId); revoke.Parameters.AddWithValue(user.SessionId); revoke.Parameters.AddWithValue(h.Clock.GetUtcNow()); await revoke.ExecuteNonQueryAsync(Ct); }
+        await held.CommitAsync(Ct);
         Assert.Null(await pending); Assert.Empty((await Store(h).PullAsync(user.UserId, 0, 500, false, Ct)).Changes);
     }
 

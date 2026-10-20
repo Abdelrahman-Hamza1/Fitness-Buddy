@@ -16,6 +16,7 @@ namespace FitnessBuddy.Modules.Identity;
 public sealed class IdentityModule : IModule
 {
     public string Name => "Identity";
+    public FitnessBuddy.BuildingBlocks.Messaging.UserDataOwnership UserData => new(["users", "identities", "devices", "sessions", "refresh_tokens", "email_challenges", "audit", "throttles"], ["signing_keys"], "identity.erase");
 
     /// <summary>Operator-only entry point; call with migration credentials, never from the API.</summary>
     public static Task MaintainSigningKeysAsync(string migratorConnection, string keysDirectory, string version, string operation, TimeProvider clock, CancellationToken cancellationToken) =>
@@ -37,6 +38,10 @@ public sealed class IdentityModule : IModule
         services.Configure<IdentityOptions>(configuration.GetSection("Identity"));
         services.AddScoped<IIdentityStore, PostgresIdentityStore>();
         services.AddScoped<IIdentityAccess>(provider => provider.GetRequiredService<IIdentityStore>());
+        services.AddScoped<FitnessBuddy.BuildingBlocks.Auth.IUserLifecycle>(provider => (PostgresIdentityStore)provider.GetRequiredService<IIdentityStore>());
+        services.AddScoped<IdentityErasure>();
+        services.AddScoped<IIdentityDeletion>(provider => provider.GetRequiredService<IdentityErasure>());
+        services.AddScoped<FitnessBuddy.BuildingBlocks.Messaging.IOutboxHandler>(provider => provider.GetRequiredService<IdentityErasure>());
         services.AddScoped<IIdentityTokens, IdentityTokens>();
         services.AddScoped<IdentityService>();
         services.AddSingleton<IEmailSender, LocalFileEmailSender>();

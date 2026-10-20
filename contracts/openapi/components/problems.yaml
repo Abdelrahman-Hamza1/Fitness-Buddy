@@ -171,3 +171,13 @@ components:
             title: An error occurred while processing your request.
             status: 500
             traceId: 4bf92f3577b34da6a3ce929d0e0e4736
+
+    ServiceUnavailable:
+      description: Service temporarily unavailable.
+      headers:
+        X-Request-Id:
+          $ref: './headers.yaml#/components/headers/XRequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'

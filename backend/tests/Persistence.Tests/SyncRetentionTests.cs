@@ -29,9 +29,9 @@ public sealed class SyncRetentionTests(PostgresFixture database) : IAsyncLifetim
         var row = new SyncVersion("weighIn", Guid.NewGuid(), 1, $"{h.Clock.GetUtcNow().ToUnixTimeMilliseconds():D13}-00000-{h.Device}", h.Device, null, JsonSerializer.SerializeToElement(new { value = 1 }));
         await store.PushAsync(user.UserId, [row, row with { Hlc = row.Hlc.Replace("-00000-", "-00001-", StringComparison.Ordinal), DeletedAt = h.Clock.GetUtcNow() }], h.Clock.GetUtcNow(), Ct);
         h.Clock.Advance(TimeSpan.FromDays(31));
-        var scheduler = new JobScheduler(database.App, h.Clock, new UuidV7IdGenerator(h.Clock)); Assert.True(await scheduler.TickAsync(Ct));
+        var scheduler = new JobScheduler(database.App, h.Clock, new UuidV7IdGenerator(h.Clock), h.Store, database.Recovery); Assert.True(await scheduler.TickAsync(Ct));
         var handler = new FailOnce(new SyncRetentionJob(h.Clock, new UuidV7IdGenerator(h.Clock)));
-        var processor = new QueueProcessor(database.App, h.Clock, [], [handler], new QueuePolicy(), NullLogger<QueueProcessor>.Instance);
+        var processor = new QueueProcessor(database.App, h.Clock, [], [handler], new QueuePolicy(), NullLogger<QueueProcessor>.Instance, h.Store, database.Recovery);
         Assert.True(await processor.RunJobAsync(Ct));
         Assert.Single((await store.PullAsync(user.UserId, 0, 500, true, Ct)).Changes);
         Assert.False(Assert.Single((await store.PullAsync(user.UserId, 0, 500, false, Ct)).Changes).Compacted);
@@ -60,7 +60,7 @@ public sealed class SyncRetentionTests(PostgresFixture database) : IAsyncLifetim
             await new QueueWriter(session, clock, new UuidV7IdGenerator(clock)).EnqueueAsync("userdata.cleanup", new { }, null, Ct); await session.CommitAsync(Ct);
         }
         var handler = new SyncRetentionJob(clock, new UuidV7IdGenerator(clock));
-        var processor = new QueueProcessor(database.App, clock, [], [handler], new QueuePolicy(), NullLogger<QueueProcessor>.Instance);
+        var processor = new QueueProcessor(database.App, clock, [], [handler], new QueuePolicy(), NullLogger<QueueProcessor>.Instance, new SyntheticLifecycle(), database.Recovery);
         Assert.True(await processor.RunJobAsync(Ct));
         Assert.Equal(1L, await Count(user, "row_history")); Assert.Equal(1000L, await Count(user, "version_receipts"));
         Assert.True(await processor.RunJobAsync(Ct)); Assert.Equal(0L, await Count(user, "row_history")); Assert.Equal(1001L, await Count(user, "version_receipts"));

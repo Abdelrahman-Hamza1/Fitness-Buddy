@@ -35,6 +35,7 @@ internal sealed class ProbeModule : IModule
     public const string ExceptionCanary = "CANARY-EXCEPTION secret message";
 
     public string Name => "Probe";
+    public FitnessBuddy.BuildingBlocks.Messaging.UserDataOwnership UserData => new([], [], null);
 
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
@@ -44,6 +45,7 @@ internal sealed class ProbeModule : IModule
 
     public void MapEndpoints(RouteGroupBuilder group)
     {
+        group.MapGet("/_probe/identity-required", () => TypedResults.NoContent()).RequireAuthorization("any-user");
         group.MapGet("/_probe/identity-forbidden", () => TypedResults.Problem(statusCode: 403, title: "Forbidden", type: ProblemTypes.Forbidden));
         group.MapGet("/_probe/identity-conflict", () => TypedResults.Problem(statusCode: 409, title: "Identity already linked", type: ProblemTypes.IdentityConflict));
         var probe = group.MapGroup("/_probe");

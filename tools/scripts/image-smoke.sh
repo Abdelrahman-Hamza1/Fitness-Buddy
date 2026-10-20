@@ -7,6 +7,7 @@ container=""
 worker=""
 postgres=""
 network=""
+recovery_volume=""
 work="$(mktemp -d)"
 cleanup() {
   local result=$?
@@ -17,6 +18,7 @@ cleanup() {
     fi
   done
   if [[ -n "$network" ]]; then docker network rm "$network" >/dev/null 2>&1 || true; fi
+  if [[ -n "$recovery_volume" ]]; then docker volume rm "$recovery_volume" >/dev/null 2>&1 || true; fi
   rm -rf -- "$work"
   exit "$result"
 }
@@ -67,15 +69,18 @@ for (( attempt=0; attempt<30; attempt++ )); do
   sleep 1
 done
 runtime_flags=(--read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges:true --network "$network")
+recovery_volume="$(docker volume create "fitness-buddy-smoke-recovery-$$")"
+docker run --rm --user 0 -v "$recovery_volume:/recovery" "$pg_image" sh -c 'chown 1654:1654 /recovery && chmod 700 /recovery'
+recovery_flags=(-v "$recovery_volume:/recovery:rw" -e Recovery__Directory=/recovery)
 app_connection='Host=postgres;Database=fitness_buddy;Username=fb_app;Password=local-app-only'
 migrator_connection='Host=postgres;Database=fitness_buddy;Username=fb_migrator;Password=local-migrator-only'
 for migration_run in 1 2; do
-  docker run --rm "${runtime_flags[@]}" -e "ConnectionStrings__Migrator=$migrator_connection" "$image" migrate >"$work/migrate-$migration_run"
+  docker run --rm "${runtime_flags[@]}" "${recovery_flags[@]}" -e "ConnectionStrings__Migrator=$migrator_connection" "$image" migrate --Recovery:Initialize=true >"$work/migrate-$migration_run"
 done
-container="$(docker run -d "${runtime_flags[@]}" \
+container="$(docker run -d "${runtime_flags[@]}" "${recovery_flags[@]}" \
   -e ASPNETCORE_ENVIRONMENT=Development -e Observability__ConsoleExporter=true \
   -e "ConnectionStrings__Application=$app_connection" -p 127.0.0.1::8080 "$image")"
-worker="$(docker run -d "${runtime_flags[@]}" -e "ConnectionStrings__Application=$app_connection" "$image" worker)"
+worker="$(docker run -d "${runtime_flags[@]}" -v "$recovery_volume:/recovery:ro" -e Recovery__Directory=/recovery -e "ConnectionStrings__Application=$app_connection" "$image" worker)"
 port="$(docker port "$container" 8080/tcp | sed -n 's/^127\.0\.0\.1://p')"
 [[ "$port" =~ ^[0-9]+$ ]]
 base_url="http://127.0.0.1:$port"

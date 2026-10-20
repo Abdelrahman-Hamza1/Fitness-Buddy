@@ -9,9 +9,11 @@ namespace FitnessBuddy.Modules.Buddy;
 public sealed class BuddyModule : IModule
 {
     public string Name => "Buddy";
+    public FitnessBuddy.BuildingBlocks.Messaging.UserDataOwnership UserData => new([], [], "buddy.erase");
 
     // Dark until B08: ordinary API/worker startup never loads an AI credential or creates a paid client.
-    public void AddServices(IServiceCollection services, IConfiguration configuration) { }
+    public void AddServices(IServiceCollection services, IConfiguration configuration) =>
+        services.AddScoped<FitnessBuddy.BuildingBlocks.Messaging.IOutboxHandler, Infrastructure.BuddyErasure>();
 
     public void MapEndpoints(RouteGroupBuilder group) { }
 }

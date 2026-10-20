@@ -6,7 +6,7 @@ using NpgsqlTypes;
 
 namespace FitnessBuddy.Modules.Identity.Infrastructure;
 
-internal sealed class PostgresIdentityStore(NpgsqlDataSource source, TimeProvider clock) : IIdentityStore
+internal sealed class PostgresIdentityStore(NpgsqlDataSource source, TimeProvider clock) : IIdentityStore, FitnessBuddy.BuildingBlocks.Auth.IUserLifecycle
 {
     public Task<IdentitySession?> CreateGuestAsync(Guid user, SessionMaterial m, CancellationToken ct) =>
         ReadAsync("SELECT * FROM identity.create_guest($1,$2,$3,$4,$5)", [user, m.SessionId, m.DeviceId, m.RefreshHash, Now], ct);
@@ -38,6 +38,15 @@ internal sealed class PostgresIdentityStore(NpgsqlDataSource source, TimeProvide
         await using var command = session.Command("SELECT identity.check_active($1,$2,$3,$4)");
         command.Parameters.AddWithValue(userId); command.Parameters.AddWithValue(sessionId);
         command.Parameters.AddWithValue(registeredOnly); command.Parameters.AddWithValue(Now);
+        return (bool)(await command.ExecuteScalarAsync(cancellationToken))!;
+    }
+
+    public async Task<bool> IsActiveAsync(DatabaseSession session, Guid? sessionId, CancellationToken cancellationToken)
+    {
+        if (session.UserId is not Guid user) { return false; }
+        if (sessionId is Guid principal) { return await CheckActiveAsync(session, user, principal, false, cancellationToken); }
+        await using var command = session.Command("SELECT identity.check_user_active($1)");
+        command.Parameters.AddWithValue(user);
         return (bool)(await command.ExecuteScalarAsync(cancellationToken))!;
     }
 

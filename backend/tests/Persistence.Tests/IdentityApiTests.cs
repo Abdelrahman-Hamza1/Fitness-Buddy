@@ -62,6 +62,7 @@ public sealed class IdentityApiTests(PostgresFixture postgres)
             builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["ConnectionStrings:Application"] = p.AppConnection,
+                ["Recovery:Directory"] = p.RecoveryDirectory,
                 ["Identity:Enabled"] = "true",
                 ["Identity:WrappingKeysDirectory"] = h.DirectoryPath,
                 ["Identity:PepperFile"] = h.Options.PepperFile,
@@ -78,6 +79,7 @@ public sealed class IdentityApiTests(PostgresFixture postgres)
     private sealed class RegisteredProbe : IModule
     {
         public string Name => "IdentityProbe";
+        public FitnessBuddy.BuildingBlocks.Messaging.UserDataOwnership UserData => new([], [], null);
         public void AddServices(IServiceCollection services, IConfiguration configuration) { }
         public void MapEndpoints(RouteGroupBuilder group) => group.MapGet("/_identity-registered", () => TypedResults.Ok()).RequireAuthorization("registered-user").ExcludeFromDescription();
     }

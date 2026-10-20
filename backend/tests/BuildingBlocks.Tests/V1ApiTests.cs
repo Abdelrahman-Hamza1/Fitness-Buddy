@@ -43,6 +43,7 @@ public sealed class V1ApiTests
     private sealed class SampleModule : IModule
     {
         public string Name => "Sample";
+        public FitnessBuddy.BuildingBlocks.Messaging.UserDataOwnership UserData => new([], [], null);
 
         public void AddServices(IServiceCollection services, IConfiguration configuration)
         {

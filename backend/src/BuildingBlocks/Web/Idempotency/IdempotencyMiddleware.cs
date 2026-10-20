@@ -11,7 +11,7 @@ using Npgsql;
 namespace FitnessBuddy.BuildingBlocks.Web.Idempotency;
 
 /// <summary>Buffers an opted-in POST until database effects and its 24-hour replay record commit atomically.
-/// No anonymous scope is guessed from client headers. Auth endpoints must define their policy in S24.</summary>
+/// No anonymous scope is guessed from client headers. Auth endpoints define their own policy in B04.</summary>
 public sealed class IdempotencyMiddleware(RequestDelegate next)
 {
     public const int MaxRequestBytes = 256 * 1024;
@@ -27,7 +27,7 @@ public sealed class IdempotencyMiddleware(RequestDelegate next)
         }
         if (!HttpMethods.IsPost(context.Request.Method)) { throw new InvalidOperationException("Idempotency is only supported on POST endpoints."); }
         var user = context.RequestServices.GetRequiredService<ICurrentUser>();
-        if (!user.IsAuthenticated || user.UserId is null)
+        if (!user.IsAuthenticated || user.UserId is null || user.SessionId is null)
         {
             await ProblemAsync(context, StatusCodes.Status401Unauthorized);
             return;
@@ -62,6 +62,12 @@ public sealed class IdempotencyMiddleware(RequestDelegate next)
             Convert.ToHexStringLower(SHA256.HashData(requestBody.GetBuffer().AsSpan(0, (int)requestBody.Length))) }));
         var session = context.RequestServices.GetRequiredService<DatabaseSession>();
         await session.BeginAsync(context.RequestServices.GetRequiredService<NpgsqlDataSource>(), user.UserId, ct);
+        await UserLifecycleLock.AcquireAsync(session, user.UserId.Value, ct);
+        if (!await context.RequestServices.GetRequiredService<IUserLifecycle>().IsActiveAsync(session, user.SessionId, ct))
+        {
+            await ProblemAsync(context, StatusCodes.Status401Unauthorized);
+            return;
+        }
         var store = new IdempotencyStore(session, context.RequestServices.GetRequiredService<TimeProvider>());
         await store.LockAsync(scope, keyHash, ct);
         var stored = await store.ReadAsync(scope, keyHash, ct);

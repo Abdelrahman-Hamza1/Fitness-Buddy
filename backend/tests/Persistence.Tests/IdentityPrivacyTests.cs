@@ -97,6 +97,10 @@ public sealed class IdentityPrivacyTests(PostgresFixture postgres)
             using var unmatched = await historyClient.GetAsync("/CANARY-UNMATCHED-PRIVATE?q=CANARY-PATH-QUERY", TestContext.Current.CancellationToken); Assert.Equal(404, (int)unmatched.StatusCode);
             await failingFactory.Services.GetRequiredService<IHub>().FlushAsync(TimeSpan.FromSeconds(5));
         }
+        using var erased = await client.DeleteAsync("/v1/me", TestContext.Current.CancellationToken);
+        Assert.Equal(204, (int)erased.StatusCode);
+        using var afterErasure = await client.GetAsync("/v1/me", TestContext.Current.CancellationToken);
+        Assert.Equal(401, (int)afterErasure.StatusCode);
         await factory.Services.GetRequiredService<IHub>().FlushAsync(TimeSpan.FromSeconds(5));
         meter.RecordObservableInstruments();
         // API cannot read even its own audit table directly. Inspect using the schema owner below.

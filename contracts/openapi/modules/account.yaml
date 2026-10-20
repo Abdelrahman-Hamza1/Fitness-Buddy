@@ -1,66 +1,259 @@
-# Account module (04 §4.3): /v1/config now; /v1/me (GET, DELETE) later.
-# Tag: Account. Every path here is listed in ../openapi.yaml under `paths`.
-paths:
-  /v1/config:
-    get:
-      tags: [Account]
-      operationId: getConfig
-      summary: Get the client configuration
-      description: >-
-        What the app needs to know about the server's expectations: the
-        minimum supported app version, feature flags and client thresholds.
-        The app fetches it in the background and caches it; it is never on the
-        startup path. Never answers 426: it is how an outdated app learns
-        `minimumAppVersion`.
-      parameters:
-        - $ref: '../components/headers.yaml#/components/parameters/AppVersion'
-        - $ref: '../components/headers.yaml#/components/parameters/Platform'
-        - $ref: '../components/headers.yaml#/components/parameters/DeviceId'
-      responses:
-        '200':
-          description: The current client configuration.
-          headers:
-            X-Request-Id:
-              $ref: '../components/headers.yaml#/components/headers/XRequestId'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ClientConfig'
-              example:
-                minimumAppVersion: 0.1.0
-                featureFlags: {}
-                thresholds: {}
-        '400':
-          $ref: '../components/problems.yaml#/components/responses/ValidationFailed'
-        '429':
-          $ref: '../components/problems.yaml#/components/responses/RateLimited'
-        '500':
-          $ref: '../components/problems.yaml#/components/responses/InternalError'
-
-components:
-  schemas:
-    ClientConfig:
-      type: object
-      description: Server-controlled settings for the app.
-      required: [minimumAppVersion, featureFlags, thresholds]
-      properties:
-        minimumAppVersion:
-          type: string
-          pattern: '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
-          description: >-
-            The oldest app version (`MAJOR.MINOR.PATCH`) the server still
-            serves. Older apps are asked to update (426).
-        featureFlags:
-          type: object
-          description: Feature flags by name. A flag the app doesn't know is ignored; a missing flag means off.
-          additionalProperties:
-            type: boolean
-        thresholds:
-          type: object
-          description: >-
-            Numeric client thresholds by name (for example the AI confidence
-            minimum, AI-060). A missing threshold means the app's built-in
-            default.
-          additionalProperties:
-            type: number
-            format: double
+# Account configuration and lifecycle contract.
+{
+  "paths": {
+    "/v1/config": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "getConfig",
+        "summary": "Get the client configuration",
+        "description": "What the app needs to know about the server's expectations: the minimum supported app version, feature flags and client thresholds. The app fetches it in the background and caches it; it is never on the startup path. Never answers 426: it is how an outdated app learns `minimumAppVersion`.",
+        "parameters": [
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/AppVersion"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/Platform"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/DeviceId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The current client configuration.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientConfig"
+                },
+                "example": {
+                  "minimumAppVersion": "0.1.0",
+                  "featureFlags": {},
+                  "thresholds": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "../components/problems.yaml#/components/responses/ValidationFailed"
+          },
+          "429": {
+            "$ref": "../components/problems.yaml#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "../components/problems.yaml#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/v1/me": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "getMe",
+        "summary": "Get the current account",
+        "parameters": [
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/AppVersion"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/Platform"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/DeviceId"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current account.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./identity.yaml#/components/schemas/CurrentAccount"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "../components/problems.yaml#/components/responses/ValidationFailed"
+          },
+          "401": {
+            "description": "Invalid credentials or inactive session.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "This account cannot perform this operation.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "426": {
+            "$ref": "../components/problems.yaml#/components/responses/UpgradeRequired"
+          },
+          "429": {
+            "$ref": "../components/problems.yaml#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "../components/problems.yaml#/components/responses/InternalError"
+          },
+          "501": {
+            "description": "Not implemented during the contract handoff.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "$ref": "../components/problems.yaml#/components/responses/ServiceUnavailable"
+          }
+        },
+        "description": "Returns the live authenticated account state, including anonymous guest status."
+      },
+      "delete": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "deleteAccount",
+        "summary": "Permanently delete the current server account",
+        "description": "Deletes the authenticated guest or registered account and all its user-owned server database records in one transaction. Returns 204 only after commit. A failed transaction leaves the account intact and retryable. After success all old access and refresh credentials are invalid; retrying with them returns 401, including after a lost 204 response. No user identifier or request body is accepted. This operation does not use the generic idempotency response cache. The app obtains confirmation before calling and wipes its local account data after confirmed completion. Existing backups expire within 30 days and cannot be used for direct restoration if they predate a deletion.",
+        "parameters": [
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/AppVersion"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/Platform"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/DeviceId"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "All user-owned server database data is durably erased and old credentials are invalid.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "../components/problems.yaml#/components/responses/ValidationFailed"
+          },
+          "401": {
+            "description": "Invalid credentials or inactive session.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "426": {
+            "$ref": "../components/problems.yaml#/components/responses/UpgradeRequired"
+          },
+          "429": {
+            "$ref": "../components/problems.yaml#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "../components/problems.yaml#/components/responses/InternalError"
+          },
+          "503": {
+            "$ref": "../components/problems.yaml#/components/responses/ServiceUnavailable"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ClientConfig": {
+        "type": "object",
+        "description": "Server-controlled settings for the app.",
+        "required": [
+          "minimumAppVersion",
+          "featureFlags",
+          "thresholds"
+        ],
+        "properties": {
+          "minimumAppVersion": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+            "description": "The oldest app version (`MAJOR.MINOR.PATCH`) the server still serves. Older apps are asked to update (426)."
+          },
+          "featureFlags": {
+            "type": "object",
+            "description": "Feature flags by name. A flag the app doesn't know is ignored; a missing flag means off.",
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          },
+          "thresholds": {
+            "type": "object",
+            "description": "Numeric client thresholds by name (for example the AI confidence minimum, AI-060). A missing threshold means the app's built-in default.",
+            "additionalProperties": {
+              "type": "number",
+              "format": "double"
+            }
+          }
+        }
+      }
+    }
+  }
+}

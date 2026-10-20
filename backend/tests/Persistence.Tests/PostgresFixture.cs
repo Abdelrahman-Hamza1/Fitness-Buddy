@@ -1,6 +1,7 @@
 using FitnessBuddy.BuildingBlocks.Persistence;
 using Npgsql;
 using FitnessBuddy.Modules.UserData.Infrastructure;
+using FitnessBuddy.Modules.Account.Infrastructure;
 using FitnessBuddy.Modules.Identity.Infrastructure;
 using Testcontainers.PostgreSql;
 
@@ -17,6 +18,8 @@ public sealed class PostgresFixture : IAsyncLifetime
             "-c", "log_statement=none", "-c", "log_parameter_max_length=0", "-c", "log_parameter_max_length_on_error=0")
         .WithDatabase("fitness_buddy").WithUsername("postgres").WithPassword("test-admin-only").Build();
 
+    public string RecoveryDirectory { get; } = Path.Combine(Path.GetTempPath(), "fb-recovery-db-" + Guid.NewGuid());
+    public FitnessBuddy.BuildingBlocks.Recovery.RecoveryBarrier Recovery { get; private set; } = null!;
     public NpgsqlDataSource App { get; private set; } = null!;
     public string MigratorConnection { get; private set; } = "";
     public string AppConnection { get; private set; } = "";
@@ -40,12 +43,22 @@ public sealed class PostgresFixture : IAsyncLifetime
         appSettings.Password = "local-migrator-only";
         MigratorConnection = appSettings.ConnectionString;
         Runner = new MigrationRunner([
+            new ModuleMigration("account", connection => new AccountContext(DatabaseConfiguration.ContextOptions<AccountContext>(connection, "account"))),
             new ModuleMigration("identity", connection => new IdentityContext(DatabaseConfiguration.ContextOptions<IdentityContext>(connection, "identity"))),
             new ModuleMigration("ops", connection => new OpsDbContext(DatabaseConfiguration.ContextOptions<OpsDbContext>(connection, "ops"))),
             new ModuleMigration("userdata", connection => new UserDataContext(DatabaseConfiguration.ContextOptions<UserDataContext>(connection, "userdata"))),
             new ModuleMigration("testdata", connection => new SampleContext(DatabaseConfiguration.ContextOptions<SampleContext>(connection, "testdata"))),
         ]);
         await Runner.RunAsync(MigratorConnection, TestContext.Current.CancellationToken);
+        Directory.CreateDirectory(RecoveryDirectory);
+        if (!OperatingSystem.IsWindows()) { File.SetUnixFileMode(RecoveryDirectory, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute); }
+        Recovery = new FitnessBuddy.BuildingBlocks.Recovery.RecoveryBarrier(Microsoft.Extensions.Options.Options.Create(
+            new FitnessBuddy.BuildingBlocks.Recovery.RecoveryOptions { Directory = RecoveryDirectory }));
+        var generation = Guid.NewGuid();
+        Recovery.File.Write(generation);
+        await using var initialize = admin.CreateCommand("UPDATE ops.recovery SET generation=$1 WHERE singleton");
+        initialize.Parameters.AddWithValue(generation);
+        await initialize.ExecuteNonQueryAsync(TestContext.Current.CancellationToken);
     }
 
     public async Task<string> CreateUpgradeDatabaseAsync(string name)
@@ -90,5 +103,6 @@ public sealed class PostgresFixture : IAsyncLifetime
     {
         await App.DisposeAsync();
         await container.DisposeAsync();
+        if (Directory.Exists(RecoveryDirectory)) { Directory.Delete(RecoveryDirectory, recursive: true); }
     }
 }

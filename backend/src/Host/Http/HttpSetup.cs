@@ -63,6 +63,7 @@ internal static class HttpSetup
         app.UseMiddleware<HttpPrivacyMiddleware>();
         app.UseRateLimiter();
         app.UseMiddleware<ClientHeadersMiddleware>();
+        app.UseMiddleware<RecoveryStateMiddleware>();
         app.UseAuthentication();
         app.UseMiddleware<UserRateLimiting>();
         app.UseAuthorization();

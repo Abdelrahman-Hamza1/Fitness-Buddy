@@ -24,10 +24,39 @@ public sealed class IdentitySecretTests(PostgresFixture postgres)
         var file = Path.Combine(h.DirectoryPath, challenge + ".json");
         Assert.True(File.Exists(file));
         if (!OperatingSystem.IsWindows()) { Assert.Equal(UnixFileMode.UserRead | UnixFileMode.UserWrite, File.GetUnixFileMode(file)); }
-        File.SetLastWriteTimeUtc(file, h.Clock.GetUtcNow().AddMinutes(-11).UtcDateTime);
+        File.SetLastWriteTimeUtc(file, h.Clock.GetUtcNow().AddDays(1).UtcDateTime);
+        h.Clock.Advance(TimeSpan.FromMinutes(11));
         EmailFileReaper.Prune(h.DirectoryPath, h.Clock);
         Assert.False(File.Exists(file));
     }
+    [Fact]
+    public async Task Local_delivery_startup_prunes_expired_files_and_refuses_unwritable_cleanup_before_start()
+    {
+        await using var h = new IdentityHarness(postgres); await h.InitializeAsync();
+        h.Options.PrivateLaptop = true; h.Options.Email.LocalFile.Enabled = true; h.Options.Email.LocalFile.Directory = h.DirectoryPath;
+        var challenge = Guid.NewGuid();
+        await new LocalFileEmailSender(Options.Create(h.Options), h.Clock).SendAsync(challenge, "private@example.invalid", "123456", h.Clock.GetUtcNow().AddMinutes(10), TestContext.Current.CancellationToken);
+        var file = Path.Combine(h.DirectoryPath, challenge + ".json");
+        File.SetLastWriteTimeUtc(file, h.Clock.GetUtcNow().AddDays(1).UtcDateTime);
+        h.Clock.Advance(TimeSpan.FromMinutes(11)); // A stopped process may miss every scheduled sweep.
+        using (var restarted = new EmailFileReaper(Options.Create(h.Options), h.Clock))
+        {
+            await restarted.StartAsync(TestContext.Current.CancellationToken);
+            Assert.False(File.Exists(file));
+            await restarted.StopAsync(TestContext.Current.CancellationToken);
+        }
+        if (!OperatingSystem.IsWindows())
+        {
+            File.SetUnixFileMode(h.DirectoryPath, UnixFileMode.UserRead | UnixFileMode.UserExecute);
+            try
+            {
+                using var blocked = new EmailFileReaper(Options.Create(h.Options), h.Clock);
+                await Assert.ThrowsAsync<InvalidOperationException>(() => blocked.StartAsync(TestContext.Current.CancellationToken));
+            }
+            finally { File.SetUnixFileMode(h.DirectoryPath, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute); }
+        }
+    }
+
     [Fact]
     public async Task Missing_wrong_and_public_wrapping_secrets_fail_without_replacing_material()
     {

@@ -9,7 +9,8 @@ public sealed class ErrorTests(ApiFactory factory) : IClassFixture<ApiFactory>
     [InlineData("/v1/config", 400)]
     [InlineData("/v1/does-not-exist", 404)]
     [InlineData("/v1/_probe/throw", 500)]
-    [InlineData("/v1/me", 401)]
+    [InlineData("/v1/me", 503)]
+    [InlineData("/v1/_probe/identity-required", 401)]
     [Trait("Rule", "04.4.2-errors")]
     public async Task Unsupported_accept_still_returns_contract_problem_json(string path, int status)
     {

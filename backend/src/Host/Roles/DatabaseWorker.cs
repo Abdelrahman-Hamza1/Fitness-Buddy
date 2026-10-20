@@ -2,7 +2,7 @@ using FitnessBuddy.BuildingBlocks.Jobs;
 
 namespace FitnessBuddy.Host.Roles;
 
-internal sealed partial class DatabaseWorker(IServiceScopeFactory scopes, JobScheduler scheduler, TimeProvider clock,
+internal sealed partial class DatabaseWorker(IServiceScopeFactory scopes, TimeProvider clock,
     ILogger<DatabaseWorker> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -13,13 +13,14 @@ internal sealed partial class DatabaseWorker(IServiceScopeFactory scopes, JobSch
             var work = false;
             try
             {
+                await using var scope = scopes.CreateAsyncScope();
+                var scheduler = scope.ServiceProvider.GetRequiredService<JobScheduler>();
                 if (!registered)
                 {
                     await scheduler.RegisterAsync(new JobSchedule("ops.cleanup", "*/5 * * * *", OpsCleanupJob.Type), stoppingToken);
                     registered = true;
                 }
                 work = await scheduler.TickAsync(stoppingToken);
-                await using var scope = scopes.CreateAsyncScope();
                 var processor = scope.ServiceProvider.GetRequiredService<QueueProcessor>();
                 work |= await processor.DispatchOutboxAsync(stoppingToken);
                 work |= await processor.RunJobAsync(stoppingToken);

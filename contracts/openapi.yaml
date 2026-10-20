@@ -13,9 +13,9 @@ tags:
   - name: Identity
     description: Guest accounts, sign-in and sessions.
   - name: Account
-    description: Client configuration, and later the user's account (`/v1/me`).
+    description: Client configuration and the current account lifecycle.
   - name: UserData
-    description: Experimental B01 sync prototype; synthetic data only, disabled by default.
+    description: Authenticated document sync, version history and dataset recovery.
 paths:
   /v1/auth/anonymous:
     post:
@@ -84,6 +84,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
   /v1/auth/google:
     post:
       tags:
@@ -151,6 +153,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
       requestBody:
         required: true
         content:
@@ -224,6 +228,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
       requestBody:
         required: true
         content:
@@ -297,6 +303,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
       requestBody:
         required: true
         content:
@@ -370,6 +378,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
       requestBody:
         required: true
         content:
@@ -439,6 +449,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
       security:
         - bearerAuth: []
   /v1/auth/link/{provider}:
@@ -514,6 +526,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
       requestBody:
         required: true
         content:
@@ -549,6 +563,8 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
       description: Only public ES256 verification material is returned; private signing keys are never exposed.
   /v1/me:
     get:
@@ -607,7 +623,46 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
       description: Returns the live authenticated account state, including anonymous guest status.
+    delete:
+      tags:
+        - Account
+      operationId: deleteAccount
+      summary: Permanently delete the current server account
+      description: Deletes the authenticated guest or registered account and all its user-owned server database records in one transaction. Returns 204 only after commit. A failed transaction leaves the account intact and retryable. After success all old access and refresh credentials are invalid; retrying with them returns 401, including after a lost 204 response. No user identifier or request body is accepted. This operation does not use the generic idempotency response cache. The app obtains confirmation before calling and wipes its local account data after confirmed completion. Existing backups expire within 30 days and cannot be used for direct restoration if they predate a deletion.
+      parameters:
+        - $ref: '#/components/parameters/AppVersion'
+        - $ref: '#/components/parameters/Platform'
+        - $ref: '#/components/parameters/DeviceId'
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: All user-owned server database data is durably erased and old credentials are invalid.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          description: Invalid credentials or inactive session.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '426':
+          $ref: '#/components/responses/UpgradeRequired'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
   /v1/sync/push:
     post:
       tags:
@@ -663,6 +718,8 @@ paths:
           $ref: '#/components/responses/RateLimited'
         '500':
           $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
       security:
         - bearerAuth: []
   /v1/sync/pull:
@@ -735,6 +792,8 @@ paths:
           $ref: '#/components/responses/RateLimited'
         '500':
           $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
       security:
         - bearerAuth: []
   /v1/sync/history:
@@ -807,6 +866,8 @@ paths:
           $ref: '#/components/responses/RateLimited'
         '500':
           $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
       security:
         - bearerAuth: []
   /v1/sync/history/{entity}/{id}:
@@ -892,6 +953,8 @@ paths:
           $ref: '#/components/responses/RateLimited'
         '500':
           $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
       security:
         - bearerAuth: []
   /v1/config:
@@ -1531,3 +1594,12 @@ components:
             title: An error occurred while processing your request.
             status: 500
             traceId: 4bf92f3577b34da6a3ce929d0e0e4736
+    ServiceUnavailable:
+      description: Service temporarily unavailable.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/XRequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'

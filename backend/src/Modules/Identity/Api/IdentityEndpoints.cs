@@ -41,13 +41,13 @@ internal static class IdentityEndpoints
         {
             var challenge = await service.StartEmailAsync(request.Email, request.Purpose, context.Features.Get<IdentitySession>(), Peer(context.Connection.RemoteIpAddress), ct);
             return TypedResults.Ok(new EmailChallenge(challenge.Id, challenge.Expires));
-        }).WithName("startEmailSignIn").Produces<EmailChallenge>().ProducesProblem(401).ProducesProblem(403).ProducesProblem(409).ProducesProblem(501);
+        }).WithName("startEmailSignIn").Produces<EmailChallenge>().ProducesProblem(401).ProducesProblem(403).ProducesProblem(409).ProducesProblem(501).ProducesProblem(503);
         auth.MapPost("/logout", async (HttpContext context, IIdentityStore store, CancellationToken ct) =>
         {
             var principal = context.Features.Get<IdentitySession>()!;
             await store.RevokeAsync(principal.UserId, principal.SessionId, ct);
             return TypedResults.NoContent();
-        }).RequireAuthorization("any-user").WithName("logoutSession").Produces(204).ProducesProblem(401).ProducesProblem(403).ProducesProblem(409).ProducesProblem(501);
+        }).RequireAuthorization("any-user").WithName("logoutSession").Produces(204).ProducesProblem(401).ProducesProblem(403).ProducesProblem(409).ProducesProblem(501).ProducesProblem(503);
     }
     public static void MapPublicEndpoints(IEndpointRouteBuilder app) =>
         app.MapGet("/.well-known/jwks.json", async (IIdentityTokens tokens, IdentityService service, CancellationToken ct) =>
@@ -55,10 +55,10 @@ internal static class IdentityEndpoints
             if (!service.Enabled) { return (IResult)Stub(); }
             var keys = await tokens.PublicKeysAsync(ct);
             return TypedResults.Ok(new JsonWebKeySet(keys.Select(key => new JsonWebKey(key.Kty, key.Crv, key.Kid, key.X, key.Y, key.Alg, key.Use)).ToArray()));
-        }).WithName("getJwks").WithTags("Identity").Produces<JsonWebKeySet>().ProducesProblem(500).ProducesProblem(501);
+        }).WithName("getJwks").WithTags("Identity").WithMetadata(new ModuleEndpointMetadata("Identity")).Produces<JsonWebKeySet>().ProducesProblem(500).ProducesProblem(501).ProducesProblem(503);
 
     private static void Configure(RouteHandlerBuilder endpoint, string name) => endpoint.WithName(name).Produces<AuthTokens>()
-        .ProducesProblem(401).ProducesProblem(403).ProducesProblem(409).ProducesProblem(501);
+        .ProducesProblem(401).ProducesProblem(403).ProducesProblem(409).ProducesProblem(501).ProducesProblem(503);
     private static IResult Result(IssuedTokens? tokens) => tokens is null ? Unauthorized() : TypedResults.Ok(new AuthTokens(tokens.UserId, tokens.IsAnonymous, tokens.AccessToken, tokens.RefreshToken, tokens.ExpiresAt, tokens.RefreshExpiresAt));
     private static ProblemHttpResult Unauthorized() => TypedResults.Problem(statusCode: 401, title: "Invalid credentials", type: "/errors/unauthorized");
     private static string Peer(System.Net.IPAddress? ip)

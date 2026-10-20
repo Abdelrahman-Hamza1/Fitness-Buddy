@@ -15,7 +15,7 @@ The Fitness Buddy API: an ASP.NET Core (.NET 10) modular monolith. Architecture,
 | `src/Host/Http/` | The HTTP pipeline (below): request id, problem details, client headers and the 426 gate, rate limiting, forwarded headers, health |
 | `src/Host/OpenApi/` | OpenAPI transformers that make the generated document match the contract's conventions (see below) |
 | `src/BuildingBlocks/` | The lowest shared layer. `FitnessBuddy.BuildingBlocks.*`: results/errors, ids, feature flags, current user, client info, no ASP.NET Core. `FitnessBuddy.BuildingBlocks.Web.*`: `IModule`, the `/v1` group (`V1Api`), problem types, `Error` → problem mapping. Never depends on Host or a module |
-| `src/Modules/<Module>/` | One project per module (`FitnessBuddy.Modules.<Module>`), with `Api/`, `Application/`, `Domain/`, `Infrastructure/` folders as needed. Today: `Account` |
+| `src/Modules/<Module>/` | One project per module (`FitnessBuddy.Modules.<Module>`), with `Api/`, `Application/`, `Domain/`, `Infrastructure/` folders as needed. Installed: `Identity`, `Account`, `UserData`, `Buddy` |
 | `tests/BuildingBlocks.Tests/` | Unit tests of BuildingBlocks |
 | `tests/Host.Tests/` | Tests of the Host: roles and the HTTP pipeline, through `ApiFactory` (the real api role in environment `Testing`) and a test-only `ProbeModule` under `/v1/_probe/…`; golden problem bodies |
 | `tests/Architecture.Tests/` | ArchUnitNET rules that keep the layers and module boundaries honest |
@@ -32,7 +32,7 @@ One executable, three roles, chosen by the first argument (`args[0]`, when it do
 |---|---|
 | `api` | Stateless HTTP (`WebApplication`) |
 | `worker` | Polls durable outbox/jobs and UTC schedules using fb_app; handles shutdown cancellation without consuming attempts |
-| `migrate` | Applies explicitly registered module migrations under one advisory lock with fb_migrator; exits 1 on failure or missing migrator configuration |
+| `migrate` | Applies registered schema migrations with fb_migrator; verifies/explicitly initializes recovery state and holds the global maintenance lock for seeds, keys and dataset rotation; exits1 on failure |
 
 `api` and `worker` share `PlatformSetup.AddFbPlatform` (options with validation on start, `TimeProvider`, ids, flags, the current user, every module's services). Shutdown waits up to 25 s for in-flight work (under Kamal's 30 s stop wait).
 
@@ -44,12 +44,13 @@ A module is a project under `src/Modules/<Name>/`. Its public surface is the `IM
 public interface IModule
 {
     string Name { get; }                                                     // = its OpenAPI tag
+    UserDataOwnership UserData { get; }                                      // table classification + eraser
     void AddServices(IServiceCollection services, IConfiguration configuration);
     void MapEndpoints(RouteGroupBuilder group);                              // routes relative to /v1
 }
 ```
 
-- **Add a module:** create the project (`Microsoft.NET.Sdk` + `<FrameworkReference Include="Microsoft.AspNetCore.App" />`, referencing BuildingBlocks), add it to the solution and as a reference of the Host, add one line to `ModuleCatalog.All`, and include its project in the Dockerfile restore-copy list. There is no assembly scanning.
+- **Add a module:** create the project (`Microsoft.NET.Sdk` + `<FrameworkReference Include="Microsoft.AspNetCore.App" />`, referencing BuildingBlocks), add it to the solution and as a reference of the Host, add one line to `ModuleCatalog.All`, and include its project in the Dockerfile restore-copy list. There is no assembly scanning. Declare every owned/global table and its deletion participant; the inventory and missing-eraser tests enforce B06 coverage.
 - **The `/v1` group is the one definition** of what every endpoint shares (`V1Api.MapV1`): the client-header requirement (`ClientHeadersMetadata`), the `per-ip` rate limit, and the shared error responses 400 (`ValidationProblem`), 429, 500, plus 426 for every endpoint that isn't `.AllowOutdatedClients()`. The Host maps each module into `V1Api.MapModuleGroup`, which tags the group with the module's name. Endpoints declare only their own success and domain-error responses.
 - **Layers** (`04` §3.2): `Api/` (endpoints + DTOs) → `Application/` (one handler per use case, ports as interfaces, options) → `Domain/` (pure). `Infrastructure/` implements ports. Application and Domain never use ASP.NET Core.
 - **Endpoints are thin:** bind, call the injected handler, map the result. A handler returns `Result<T>`/`Result` for expected failures, and the endpoint maps it with `result.ToHttpResult(TypedResults.Ok)`: Validation → 400 `validation-failed` with `errors`, VersionConflict → 412 `version-conflict`, NotFound/Conflict/Unauthorized/Forbidden → 404/409/401/403 with the framework's default `type`. `Error.Code` is for logs and tests and is never sent; `Error.Detail` is, so it must be English and free of user content.
@@ -279,3 +280,24 @@ See [identity operations](../docs/runbooks/identity.md) for private secret mount
 signing-key provisioning/rotation/rewrap, local email opt-in, and recovery. Normal API/worker startup
 never generates keys. Google token checks use offline signed fixtures in CI; never run live AI evals
 as part of identity testing. App integration is A20/A33; production sender/configuration is B14.
+
+## Account deletion (B06)
+
+`DELETE /v1/me` accepts only the validated guest/registered principal and no body. A204 follows
+one durable transaction containing every installed module's database-only outbox eraser and final
+Ops purge. Participant failure rolls back session revocation and data removal; old credentials
+return401 after a committed deletion. Shared installation secrets/global data and another account
+survive. No completed user mapping or generic response-cache record is retained.
+
+The coordinator requires all declared erasers and matching protected recovery state before effects.
+Its global generation is durably reserved outside the dump before erasure and committed in the DB
+with it. Missing/corrupt/mismatched state fails closed; an ambiguous commit never restores an older
+marker. Lifecycle locks also fence Identity mutation, sync, generic replay and worker scheduling/
+claims. See [account deletion operations](../docs/runbooks/account-deletion.md) and the B06 card.
+
+B06 recovery initialization is explicit: supply the existing private `Recovery:Directory` and use
+`migrate --Recovery:Initialize=true` only for a never-initialized database (or matching repeat).
+API/worker/readiness require file/DB generation equality; every installed module's HTTP routes
+except config hold a shared recovery lease before authentication. DELETE releases its preliminary
+lease before its own exclusive transaction. Worker/scheduler effects check the same fence before
+user/row locks. The Host uses a separate bounded gate pool to avoid exhausting business connections.
