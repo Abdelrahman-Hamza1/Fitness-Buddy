@@ -241,3 +241,82 @@ Property tests use `glados` with `propertyRuns` (1,000 runs, from
 fails if line coverage of `lib/` drops below 95%, and
 `test/structure_test.dart` checks that the barrel exports every `lib/src`
 file (coverage only sees files a test loads).
+
+## Targets engine (A12)
+
+`TargetProfile` accepts canonical kg/cm (use the existing `MassUnit` and
+`LengthUnit` factors for imperial input). `GoalExpression` preserves the four
+user expressions; `ResolvedGoal.resolve` checks direction. Monthly goals use
+the full named calendar month, including leap February. `TargetCalculator`
+returns numeric explanation fields and warning codes for A13's ARB strings:
+requested, rate-capped and calorie-implied achievable kg/week are distinct.
+Completion projections use the achievable rate and round required days upward.
+Age uses evaluation year minus birth year, the precision the profile stores.
+All spec13§8 defaults and four initial activity factors are in `TargetDefaults`.
+
+`WeeklyBudget.calculate` reserves planned calories for missing/incomplete past
+days, consumes actual calories only for known complete days (including explicit
+zero), and allocates the remainder inside the floor and ±25% bounds. Optional
+weekday weights share the same budget. `remainingWeights` represents an
+unplanned workout: it affects only future allocation, preserving past unknown
+day reservations. No exercise calories are added. Positive `carryKcal` means
+unallocated overage; negative means unused budget. The accounting identity is
+`accountedPastKcal + sum(targets) = budgetKcal + carryKcal`; past reservations
+are uncertain, exposed as `unknownDates`. Targets stay unrounded until display.
+Fixed mode has no weekly correction; rebalancing-off keeps the planned targets.
+
+`MacroPlan` resolves P/F/fiber once against **base** calories and goal weight
+(or current weight when no goal weight exists). Daily calories/carbs can flex;
+P/F/fiber stay fixed. Overrides accept grams or base-energy percentages for
+P/F/C, and grams for fiber. Fat keeps its g/kg floor. Incompatible overrides or
+low shifted days expose `energyDeficitKcal`/`energyDifferenceKcal` rather than
+silently rescaling fixed targets or producing negative carbs. Protein-only
+mode has no fat/carbs targets. The app renders these outcomes with ARB strings.
+
+`TargetSettingsHistory.at(date)` selects the effective revision for **each
+requested date**, including midweek revisions. `TargetPlan.day` recomputes that
+date's projection with the selected base and caller-supplied intake/weight.
+It does not apply the newest settings retroactively to the entire week.
+`TargetSettings.plan(ramadanActive: ...)` is a data hook; A41 controls activation.
+An acknowledged below-floor manual target is permitted only as a fixed explicit
+value. It cannot enter the weekly generator, even its fixed projection mode.
+
+A13 owns the persistence adapters, effective-version commands through
+`ChangeSetApplier`, providers, screens and warning acknowledgement UI. This
+package contains no writes, I/O, UI copy or stored derived daily targets.
+
+### A13 persistence and conflicting histories
+
+Persist enums by `name`; encode `GoalExpression` with a stable kind tag
+(`targetDate`, `targetRate`, `weekly`, `monthly`) and its fields. Encode
+`MacroOverride` as `{value, isPercent}`. Retain canonical UUIDv7 row IDs and
+per-row domain revisions across edits; integers are not globally unique. Domain
+revisions are content fields, separate from SQLite optimistic row versions and
+sync HLCs; they need their own contract schema fields when A13 adds syncing.
+A13 adds these codecs/tables and sync schemas through the contract-first path.
+
+**Never persist `TargetPlan.floorKcal`.** It is transient calculation input:
+when hydrating a plan, recompute it with `TargetCalculator` using the relevant
+profile/weight and evaluation date, including historical requests. Persist the
+user's base target, preferences and manual acknowledgement, not derived floors
+or `TargetDay`/weekly outputs. A weekly base that no longer meets a recomputed
+floor must be raised to that floor when constructing the generated projection;
+an acknowledged below-floor manual value remains fixed and explicitly manual.
+
+Read histories from the current LWW row for each ID, excluding tombstones.
+`TargetSettingsHistory` accepts concurrent dates/revisions; its order is
+`effectiveFrom`, then revision, then UUID, with the later row winning a date.
+`GoalHistory.records` preserves all current rows; `phases` is a nonoverlapping
+projection: same-start rows choose revision then UUID, and a later start ends
+the earlier phase on the preceding day. An earlier phase never resumes after
+its successor ends. Do not persist these synthetic end dates or discard losing
+rows as a side effect of reading. Sync still merges each row by its HLC; this
+cross-row selection rule is only the domain read projection.
+
+Before a local save, A13 can call `TargetSettingsHistory.validateForWrite` or
+`GoalHistory.validateForWrite` on the proposed local timeline in its command
+handler/preconditions, then use `ChangeSetApplier`. Never call these stricter
+checks while constructing providers or importing synced rows. Conflict-bearing
+existing timelines can be explicitly corrected by a user action, not silently
+rewritten on reads. `monthlyKgFromWeeklyRate` converts requested or achievable
+rates to the actual named month for TG-011 display.

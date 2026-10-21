@@ -154,7 +154,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A09](A09-personal-foods-quick-add.md) | Personal foods, saved meals & quick-add | Claude | A08 | M | S17 |  | ⬜ |
 | [A10](A10-settings-slots.md) | Settings & meal slots | Claude | A08 | M | S18 |  | ⬜ |
 | [A11](A11-dogfood-1-readiness.md) | Dogfood 1 readiness: export, crash reports, daily build | **Codex** | A09, A10 · soft: **B03** | M | S28 export part + new | **M1** | ⬜ |
-| [A12](A12-targets-engine.md) | Targets engine | **Codex** | A06 | M | S19 |  | ⬜ |
+| [A12](A12-targets-engine.md) | Targets engine | **Codex** | A06 | M | S19 |  | ✅ |
 | [A13](A13-targets-ui-onboarding.md) | Goals & targets UI, R1 onboarding | Claude | A10, A12 | M | S20 |  | ⬜ |
 | [A14](A14-weigh-ins-trend.md) | Weigh-ins & trend | Claude | A08 | M | S21 |  | ⬜ |
 | [A15](A15-weight-graph-measurements.md) | Weight graph & measurements | Claude | A12, A14 | L | S22 |  | ⬜ |
