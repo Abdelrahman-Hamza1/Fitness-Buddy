@@ -98,3 +98,27 @@ resolving by EN, AR or Arabizi name.
 | 0 | Ok. |
 | 1 | The data, the lock, the size or the schemas are wrong (the message says which). |
 | 64 | Bad usage. |
+
+## Exercise and city seeds (A05b)
+
+`validate`, `build` and `check` also read `data/exercises.yaml` and
+`data/cities.tsv`. Exercises have a strict source schema and unique normalized
+EN names/aliases across the catalog. All six WO-004 types are supported;
+equipment variants have separate IDs. Their names share the pack FTS index,
+while the app/server food readers resolve only food/dish IDs. A36 owns exercise
+runtime reads and workout rules.
+
+Cities require finite in-range coordinates, a pinned IANA Zone/Link name,
+unique positive GeoNames IDs and nonnegative population when known. Duplicate
+city names are valid. City names stay in the city table, for A41 to query.
+
+```sh
+make catalog-cities GEONAMES_DIR=/path/to/retained/dumps  # offline import
+make catalog-cities                                    # explicit download
+# Equivalent local-only command:
+dart run tools/catalog/bin/catalog.dart import-cities --geonames-dir /path/to/dumps
+```
+
+See `data/README.md` for the exact country/population filter, Arabic
+language selection, provenance, and checksum-pinned refresh procedure. No network
+runs on routine build/check paths, and there are no new package dependencies.

@@ -357,3 +357,57 @@ For B04, Google's backend guidance validates signature/audience/issuer/expiry an
 ## 2026-10-21 — B08 Responses boundary check
 
 Rechecked official [Structured Outputs documentation](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses) and [Responses migration documentation](https://developers.openai.com/api/docs/guides/migrate-to-responses) while promoting the B02 adapter. Retained native strict closed schemas and `store:false`; refusals/incomplete output still require separate handling. No tools or provider state are needed for this single-turn pipeline. These settings do not establish zero retention. B08 retains the pinned SDK and owner-selected GPT-6 Luna, with transport retries disabled and a separate durable application reservation before every permitted physical send. Current wire behavior is verified by offline SDK fixtures; the owner's live scope is capped at 10 physical sends, including repair.
+
+
+## 2026-10-22 — A05b GeoNames / IANA source verification
+
+GeoNames' [dump readme](https://download.geonames.org/export/dump/readme.txt)
+specifies UTF-8 TSV, 19 fields, stable geonameid, decimal coordinates, population
+and IANA timezone, with CC BY 4.0 attribution. Its cities1000/cities15000 dumps
+were pinned by archive and extracted-text SHA256 in `data/geonames/sources.yaml`.
+The A05 D16 filter gives 2,322 cities, including Hebron (285066), Amman,
+Ramallah and Nablus. PS/JO Arabic display names come from script heuristics over
+alternatenames, which carries no language tags; they are not certified Arabic
+translations. Exact reproduction requires retaining the matching raw downloads,
+because the daily URLs mutate; routine builds use committed TSV only.
+
+[IANA tzdata2026e](https://data.iana.org/time-zones/releases/tzdata2026e.tar.gz)
+was downloaded/pinned independently of the laptop OS. The Zone and Link names
+from its regional files, etcetera, backward and factory produce 598 accepted
+identifiers in `data/schema/iana_timezones.txt`. This public-domain snapshot
+keeps offline validation identical in CI and on laptops, including old aliases.
+
+
+## 2026-10-22 — A05b city-name review and settlement exclusions
+
+[GeoNames dump documentation](https://download.geonames.org/export/dump/readme.txt)
+and the [per-country alternate-name directory](https://download.geonames.org/export/dump/alternatenames/)
+provide language tags, preferred/historic flags and validity dates. Pinned all
+15 PS/JO/regional country archives and extracts; current Arabic-language names
+replace script inference. English uses preferred names then asciiname.
+Karak 250624 has Arabic الكرك but no preferred English (unlabeled Al Karak/Karak);
+6946409 has preferred English Karak but no Arabic. Reviewed fallbacks fill those
+gaps; Ramallah's released English spelling is preserved explicitly.
+
+All 38 PS/Asia-Jerusalem rows were reviewed individually and excluded under
+owner direction (2026-10-22). ID 284375 is misleadingly named Battir but has
+feature code STLMT and Beitar Illit aliases; Palestinian Battir 284376 stays.
+Six further settlements use Asia/Hebron and are excluded by ID as well plus Ariel and Modiin Ilit coded IL (46 total).
+Two genuinely ambiguous records, Atarut 284572 and Nayot 9204036, stay pending
+owner review of their conflicting names/coordinates/populations.
+[UNESCO's Battir entry](https://whc.unesco.org/en/list/1492) confirms the Palestinian
+village; time zone alone is unsuitable. Suseya 281711 (31.39116, 35.11368) is the
+settlement, distinct from Palestinian Khirbet Susiya; [OCHA's map/factsheet](https://www.ochaopt.org/content/susiya-community-imminent-risk-forced-displacement-june-2015)
+distinguishes the two. Classification and every ID are recorded in the A05b card.
+
+
+### 2026-10-22 — A05b follow-up source-quality audit
+
+The retained, pinned country alternate files contain Latin transliterations tagged
+`ar` and accented preferred `en` entries. Language tags alone do not guarantee a
+usable display script. Filter candidates through the same script validators used
+by committed-city checks: preferred valid EN then asciiname, current Arabic-script
+AR only then blank. Normalize simple apostrophe/dash variants. Regenerated audit:
+0 non-ASCII English, 0 Latin-in-Arabic, 1,234 Arabic names across the 15 local and
+regional countries; all 2,276 IDs retained unchanged. Full country counts are in
+the A05b card/evidence. No additional downloads or source repins required.

@@ -1,0 +1,164 @@
+{
+  "datasets": [
+    {
+      "name": "cities1000",
+      "url": "https://download.geonames.org/export/dump/cities1000.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "9d3916f7a9448bb4ea45e93c06c5413d2cceb1a89e03f75c2178bbb08af12018",
+      "text_sha256": "db45fbaae0eab7c88d2265fa179dd21dc7f7cfdb581fb60bb06379976262a074"
+    },
+    {
+      "name": "cities15000",
+      "url": "https://download.geonames.org/export/dump/cities15000.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "306220b96c4dc00fd3bd7b2427290afed492a05ad5111d071644d74c79eba707",
+      "text_sha256": "948dd572f9f389316a8536f88a7de6843dc9941350b84c46d5a0b1fc26462478"
+    },
+    {
+      "name": "PS",
+      "url": "https://download.geonames.org/export/dump/alternatenames/PS.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "8bfe900b48b1797579f04d5b8208792964f00390a555c40002791ef84ae30780",
+      "text_sha256": "aa0cfe009c1b97054b89fc9505c2fc7b48871d46551016b2b162caf13801aa0b"
+    },
+    {
+      "name": "JO",
+      "url": "https://download.geonames.org/export/dump/alternatenames/JO.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "d446db6cfc62a64e1a4c53828f65dc55731132cbaea1cc68fc352102ad0f47fc",
+      "text_sha256": "79fe6de797cdca1e2352b6f4e9bab9ed2aca0efb348b1d12f4ef4a423d680808"
+    },
+    {
+      "name": "IL",
+      "url": "https://download.geonames.org/export/dump/alternatenames/IL.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "b96006ee5dbfc6175a843e774c8eecfae634283e3a610d9f7575ab24edd24a30",
+      "text_sha256": "2bb95efe9463b291b2e6ae1705f4b96df4e14e94f11b3fe870118ce8c67bc1c8"
+    },
+    {
+      "name": "LB",
+      "url": "https://download.geonames.org/export/dump/alternatenames/LB.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "e6b607f5f7dff9255d58ede0c16aa6ff3d5a4704def6233947888afe92b645d1",
+      "text_sha256": "7dcb199aa6f012245548421089d08a95be686d816226226964329fa910e9cc09"
+    },
+    {
+      "name": "SY",
+      "url": "https://download.geonames.org/export/dump/alternatenames/SY.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "dfeeb1868b7da5a2ae7995f3f9ea8d9e431fb6378ac2beaef231880b13e07817",
+      "text_sha256": "a1c3e93657f6695b98c857c2f09c85647821ba94252ac0e0799c1d6b0c13e7a1"
+    },
+    {
+      "name": "EG",
+      "url": "https://download.geonames.org/export/dump/alternatenames/EG.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "45164321898aa58e3a950fd647a9433fa29de786de669ceba3f2dedb0d7df998",
+      "text_sha256": "d1ed94edcec33d612ccad523eb8dc747bb27c658cfb80563f90380e2819d5241"
+    },
+    {
+      "name": "SA",
+      "url": "https://download.geonames.org/export/dump/alternatenames/SA.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "3d3158f95b3857be611abdba4e537f8d505464fe1b498ac8f25adfae0b351764",
+      "text_sha256": "60e257077048613092b0c0185a1bf75d72b3d46816ef7c962a9b079330102933"
+    },
+    {
+      "name": "IQ",
+      "url": "https://download.geonames.org/export/dump/alternatenames/IQ.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "8d92fd242398bfa073b17d318e899b94a6e200fa22e2963ed27499e3016b1826",
+      "text_sha256": "d14c9be626794ce9e31c5bf7454d68053002715576e6139f1ea3e21483c66635"
+    },
+    {
+      "name": "AE",
+      "url": "https://download.geonames.org/export/dump/alternatenames/AE.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "8ccb3d0a2597e4c09a7faae81818f4bd0551765eb86320c42a1ca88b40dfc994",
+      "text_sha256": "0f1ceb5ce50e3c1874b599da0b6f6d8383571cf0a0edd05ccab3e23704605963"
+    },
+    {
+      "name": "BH",
+      "url": "https://download.geonames.org/export/dump/alternatenames/BH.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "52a6116c7def751be9500d1ef23a8369069c0a77f90b482ec0b705b53b1c493d",
+      "text_sha256": "777ea59502ee6a3dea1cef1789e2e628974f2b81a138886ea4796bbd1d7b6689"
+    },
+    {
+      "name": "KW",
+      "url": "https://download.geonames.org/export/dump/alternatenames/KW.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "ba0e0efc67bec2422738992b8e3dbb3e313accd8e29e23e241a368cffdf6f193",
+      "text_sha256": "c46f02421dcf516eadd6f9ab9b55d4afdd0ba6fadc8977e4b0f29b4bb05bc5cf"
+    },
+    {
+      "name": "OM",
+      "url": "https://download.geonames.org/export/dump/alternatenames/OM.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "5595fa376d8d436e3f8e77b7e6e6bd58841ba53b60e95ebe429842c1a0525007",
+      "text_sha256": "d95f640028c59ffeaca0514804db0dea12cc1d0be721e97ce41572ea92c28b0f"
+    },
+    {
+      "name": "QA",
+      "url": "https://download.geonames.org/export/dump/alternatenames/QA.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "3e3defa8f258fbbdbb832af2cd3269f98f649c8b1491b0db14ef10b7098ab654",
+      "text_sha256": "94e119aeece10323567b09ab1964e38801ea03dd59e1f0e93ba4ae60e3b22afd"
+    },
+    {
+      "name": "YE",
+      "url": "https://download.geonames.org/export/dump/alternatenames/YE.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "23a9bb94dd8a7d5de8765081b6d362f823cc4cca3fabbee72ead9744e474c762",
+      "text_sha256": "4789bcc2d8af7357ce27bb9138edeb1dd59aca6647226921f8646831b33639a3"
+    },
+    {
+      "name": "TR",
+      "url": "https://download.geonames.org/export/dump/alternatenames/TR.zip",
+      "downloaded": "2026-10-22",
+      "sha256": "afc465b00c95d4c85809ff60c84155811d8781d3ac94bd81d120f35fe8486082",
+      "text_sha256": "0ccbe5650a376b3fac192a5e99a05d4cb4ecad62b8f0f222aaba89f87a38bd9f"
+    }
+  ],
+  "selection": {
+    "local": [
+      "PS",
+      "JO"
+    ],
+    "regional": [
+      "IL",
+      "LB",
+      "SY",
+      "EG",
+      "SA",
+      "IQ",
+      "AE",
+      "BH",
+      "KW",
+      "OM",
+      "QA",
+      "YE",
+      "TR"
+    ],
+    "world_min_population": 1000000
+  },
+  "timezone_snapshot": {
+    "version": "2026e",
+    "url": "https://data.iana.org/time-zones/releases/tzdata2026e.tar.gz",
+    "sha256": "b26882805f26aac59d5b222978e6580484b834ccdc98be89df2f05a6dc53a652",
+    "output": "data/schema/iana_timezones.txt",
+    "includes": "Zone and Link entries from africa, antarctica, asia, australasia, europe, northamerica, southamerica, etcetera, backward, factory"
+  },
+  "name_overrides": {
+    "250624": {
+      "en": "Karak"
+    },
+    "6946409": {
+      "ar": "الكرك"
+    },
+    "282239": {
+      "en": "Ramallah"
+    }
+  },
+  "name_override_note": "Reviewed A05b 2026-10-22: 250624 has no preferred EN (GeoNames unlabeled Al Karak/Karak and Arabic الكرك); 6946409 has preferred EN Karak but no AR (same Karak city); preserve released Ramallah spelling as a retained explicit fallback (asciiname is Ramallah). Overrides only fill missing preferred EN/AR."
+}

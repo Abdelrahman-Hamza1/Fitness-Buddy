@@ -1,0 +1,2277 @@
+id	name_en	name_ar	country_code	admin1	lat	lon	timezone	population
+city:100077	Abu Ghurayb	أبو غريب	IQ	07	33.30563	44.18477	Asia/Baghdad	900000
+city:100425	Yanbu	ينبع	SA	05	24.08954	38.0618	Asia/Riyadh	200161
+city:1007311	Durban		ZA	02	-29.8579	31.0292	Africa/Johannesburg	3338026
+city:100926	Umluj	أملج	SA	19	25.02126	37.2685	Asia/Riyadh	33874
+city:101312	Turaif	طريف	SA	15	31.67252	38.66374	Asia/Riyadh	40819
+city:101313	Turayf		SA	15	31.672	38.663	Asia/Riyadh	66014
+city:101322	Turabah		SA	14	21.21406	41.6331	Asia/Riyadh	23235
+city:101516	Tayma'		SA	19	27.62233	38.53882	Asia/Riyadh	37579
+city:101554	Tarut	تاروت	SA	06	26.5733	50.04028	Asia/Riyadh	85371
+city:101628	Tabuk	تبوك	SA	19	28.3998	36.57151	Asia/Riyadh	667000
+city:101631	Tubarjal	طبرجل	SA	20	30.49987	38.21603	Asia/Riyadh	40019
+city:101732	Unaizah		SA	08	26.1	44.0	Asia/Riyadh	183319
+city:101760	Sultanah		SA	05	24.49258	39.58572	Asia/Riyadh	946697
+city:102170	Shaqra	شقراء	SA	10	25.24019	45.25104	Asia/Riyadh	32215
+city:10227184	Yehud-Monosson		IL	05	32.0284	34.8796	Asia/Jerusalem	29312
+city:102318	Sayhat	سيهات	SA	06	26.48345	50.04849	Asia/Riyadh	66702
+city:102451	Samitah		SA	17	16.59601	42.94435	Asia/Riyadh	26945
+city:102527	Sakakah	سكاكا	SA	20	29.96974	40.20641	Asia/Riyadh	128332
+city:102585	Safwa	صفوى	SA	06	26.6497	49.95522	Asia/Riyadh	45876
+city:102651	Sabya	صبيا	SA	17	17.1495	42.62537	Asia/Riyadh	228375
+city:102744	Rumah	رماح	SA	10	25.56395	47.16408	Asia/Riyadh	25031
+city:102891	Ras Tanura	رأس تنورة	SA	06	26.70742	50.06735	Asia/Riyadh	62314
+city:102985	Rahimah		SA	06	26.70791	50.06194	Asia/Riyadh	41188
+city:103035	Rabigh		SA	14	22.79856	39.03493	Asia/Riyadh	72928
+city:10303650	Simele		IQ	08	36.85833	42.8501	Asia/Baghdad	152512
+city:103369	Bishah	بيشة	SA	11	20.00054	42.6052	Asia/Riyadh	115537
+city:10346824	Niluefer		TR	16	40.21401	28.91567	Europe/Istanbul	536365
+city:103630	Najran	نجران	SA	16	17.49326	44.12766	Asia/Riyadh	505652
+city:1039854	Matola		MZ	04	-25.96222	32.45889	Africa/Maputo	1198988
+city:1040652	Maputo		MZ	11	-25.96553	32.58322	Africa/Maputo	1254837
+city:104515	Mecca	مكة المكرمة	SA	14	21.42664	39.82563	Asia/Riyadh	1578722
+city:104578	Mahd adh Dhahab		SA	05	23.49966	40.88408	Asia/Riyadh	20272
+city:104716	Layla		SA	10	22.29206	46.72376	Asia/Riyadh	29698
+city:104828	King Faisal Military City		SA	06	28.45	45.96667	Asia/Riyadh	65000
+city:104923	Khulays		SA	14	22.15553	39.32015	Asia/Riyadh	20139
+city:105072	Khamis Mushait	خميس مشيط	SA	11	18.3	42.73333	Asia/Riyadh	387553
+city:105299	Jizan	جازان	SA	17	16.88917	42.55111	Asia/Riyadh	105198
+city:105343	Jeddah	جدة	SA	14	21.49012	39.18624	Asia/Riyadh	4697000
+city:105586	'Irqah	عرقة	SA	10	24.68029	46.61109	Asia/Riyadh	42179
+city:106102	Haql		SA	20	29.28627	34.94687	Asia/Riyadh	25649
+city:106281	Ha'il	حائل	SA	13	27.52188	41.69073	Asia/Riyadh	605930
+city:106297	Hafar Al-Batin	حفر الباطن	SA	06	28.43279	45.97077	Asia/Riyadh	271642
+city:10630003	Xuzhou		CN	04	34.20442	117.28386	Asia/Shanghai	1253991
+city:10640344	Muthallath Sabha	مثلث صبحا	JO	15	32.26011	36.4678	Asia/Amman	0
+city:106667	Fayfa'	فيفاء	SA	17	17.2806	43.13735	Asia/Riyadh	29793
+city:106909	Duba	ضبا	SA	19	27.35134	35.69014	Asia/Riyadh	22000
+city:1070940	Antananarivo		MG	11	-18.91368	47.53613	Indian/Antananarivo	1349501
+city:107117	Damad	ضمد	SA	17	17.10426	42.78155	Asia/Riyadh	26079
+city:107304	Buraydah	بُرَيدَة	SA	08	26.32599	43.97497	Asia/Riyadh	745353
+city:107312	Abqaiq	بقيق	SA	06	25.93402	49.6688	Asia/Riyadh	29474
+city:107588	Baq'a'	بَقعاء	SA	13	27.90647	42.38898	Asia/Riyadh	19659
+city:107692	Baljurashi	بلجرشي	SA	02	19.85944	41.55722	Asia/Riyadh	51787
+city:107744	Badr Hunayn		SA	05	23.78292	38.79047	Asia/Riyadh	27257
+city:107781	Az Zulfi	الزُّلفِي	SA	10	26.29945	44.81542	Asia/Riyadh	125000
+city:107797	Dhahran	الظهران	SA	06	26.28864	50.11396	Asia/Riyadh	99540
+city:10793675	Tala Bay		JO	21	29.40842	34.97918	Asia/Amman	2000
+city:10794003	Panjin		CN	19	41.121	122.0739	Asia/Shanghai	1166481
+city:107959	At Taraf	الطرف	SA	06	25.36232	49.72757	Asia/Riyadh	21386
+city:107968	Ta'if	الطائف	SA	14	21.27028	40.41583	Asia/Riyadh	688693
+city:107991	Thuqbah	الثقبة	SA	06	26.26022	50.20486	Asia/Riyadh	248888
+city:108048	As Sulayyil		SA	10	20.46067	45.57792	Asia/Riyadh	24097
+city:108410	Riyadh	الرياض	SA	10	24.68773	46.72185	Asia/Riyadh	4205961
+city:108435	Ar Rass	الرس	SA	08	25.86944	43.4973	Asia/Riyadh	81728
+city:108512	Arar	عرعر	SA	15	30.97531	41.03808	Asia/Riyadh	148540
+city:10859300	Lianyungang		CN	04	34.59845	119.21556	Asia/Shanghai	2001009
+city:10861483	Muthallath Jami'at Al al Bayt	مثلث الجامعة	JO	15	32.34592	36.23352	Asia/Amman	0
+city:108617	An Nimas	النماص	SA	11	19.14547	42.12009	Asia/Riyadh	24153
+city:10861986	Az Zulayl	الضليل	JO	17	32.1208	36.28008	Asia/Amman	50931
+city:10862121	Al 'Abdalli	العبدلي	JO	16	31.96501	35.90821	Asia/Amman	0
+city:108648	Qurayyat	القريات	SA	20	31.33176	37.34282	Asia/Riyadh	102903
+city:108655	'Inak	عنك	SA	06	26.51959	50.02715	Asia/Riyadh	20038
+city:108773	Al Wajh	الوجه	SA	19	26.23094	36.46492	Asia/Riyadh	26636
+city:108782	'Uyun al Jiwa'	عُيُون الجِواء	SA	08	26.49829	43.6312	Asia/Riyadh	15619
+city:108841	Al-'Ula	العلا	SA	05	26.60853	37.92316	Asia/Riyadh	32413
+city:108918	Qaisumah	القيصومة	SA	06	28.31117	46.12729	Asia/Riyadh	20685
+city:108927	Al Qatif	القطيف	SA	06	26.56542	50.0089	Asia/Riyadh	98259
+city:109059	Al Munayzilah		SA	06	25.38333	49.66667	Asia/Riyadh	16296
+city:109101	Al Mubarraz	المبرز	SA	06	25.40768	49.59028	Asia/Riyadh	290802
+city:109131	Al Mithnab	المذنب	SA	08	25.86012	44.22228	Asia/Riyadh	33341
+city:109223	Madinah	المدينة	SA	05	24.46861	39.61417	Asia/Riyadh	1300000
+city:109253	Al Lith		SA	14	20.14804	40.27224	Asia/Riyadh	72000
+city:109306	Al Khurmah		SA	14	21.91149	42.03092	Asia/Riyadh	28491
+city:109323	Khobar	الخبر	SA	06	26.27944	50.20833	Asia/Riyadh	165799
+city:109353	Al Kharj	الخرج	SA	10	24.15541	47.33457	Asia/Riyadh	425300
+city:109380	Al Khafji		SA	06	28.43905	48.49132	Asia/Riyadh	54857
+city:109391	Al Khabra'	الخَبراء	SA	08	26.07179	43.62497	Asia/Riyadh	16906
+city:109417	Al Jumum	الجموم	SA	14	21.61951	39.69659	Asia/Riyadh	22207
+city:10942283	Jinzhong		CN	24	37.68403	112.75471	Asia/Shanghai	1226617
+city:10942359	Baoji		CN	26	34.36775	107.23705	Asia/Shanghai	1437802
+city:10943439	Dayr al Kahf	دير الكهف	JO	15	32.27535	36.83949	Asia/Amman	0
+city:109435	Jubail	الجبيل	SA	06	27.0174	49.62251	Asia/Riyadh	237274
+city:109571	Hofuf	الهفوف	SA	06	25.36467	49.58764	Asia/Riyadh	293179
+city:109878	Al Bukayriyah	البُكَيرِيَّة	SA	08	26.13915	43.65782	Asia/Riyadh	43229
+city:109915	Al Battaliyah		SA	06	25.43333	49.63333	Asia/Riyadh	16606
+city:109953	Al Bahah	الباحة	SA	02	20.01288	41.46767	Asia/Riyadh	88419
+city:109998	Al 'Awwamiyah	العوامية	SA	06	26.59144	49.97951	Asia/Riyadh	26276
+city:110059	Al 'Aqiq		SA	02	20.65	41.41667	Asia/Riyadh	19269
+city:110060	Al 'Aqiq	العقيق	SA	02	20.27358	41.66434	Asia/Riyadh	19269
+city:110250	Afif		SA	10	23.9065	42.91724	Asia/Riyadh	45525
+city:110312	Ad Dir'iyah	الدرعية	SA	10	24.75187	46.53874	Asia/Riyadh	61609
+city:110314	Ad Dilam	الدلم	SA	10	23.99104	47.16181	Asia/Riyadh	35371
+city:110325	Ad Dawadimi		SA	10	24.50772	44.39237	Asia/Riyadh	86861
+city:110336	Dammam	الدمام	SA	06	26.43442	50.10326	Asia/Riyadh	1252523
+city:11048853	Dubai Investments Park		AE	03	25.00827	55.15682	Asia/Dubai	160000
+city:110619	Abu 'Arish	ٲبو عريش	SA	17	16.96887	42.83251	Asia/Riyadh	69632
+city:110690	Abha	أبها	SA	11	18.21639	42.50528	Asia/Riyadh	210886
+city:11072148	Puxi		CN	23	31.24414	121.46592	Asia/Shanghai	6683712
+city:11207824	Umm Lakhba	أم لخبا	QA	01	25.34157	51.4706	Asia/Qatar	16993
+city:11238838	Merkezefendi		TR	20	37.80544	29.04236	Europe/Istanbul	280341
+city:112931	Tehran		IR	26	35.69439	51.42151	Asia/Tehran	7153309
+city:11352362	Ruwaished	الرويشد	JO	15	32.5041	38.2011	Asia/Amman	9805
+city:113646	Tabriz		IR	33	38.08	46.2919	Asia/Tehran	1424641
+city:1138958	Kabul		AF	13	34.52813	69.17233	Asia/Kabul	4434550
+city:11428685	Rukban	الرُّقبان	JO	15	33.31405	38.70342	Asia/Amman	85000
+city:115019	Shiraz		IR	07	29.61031	52.53113	Asia/Tehran	1249942
+city:11524601	Jebel Ali	جبل علي	AE	03	25.00255	55.10811	Asia/Dubai	210000
+city:11524864	Kadima Zoran		IL	02	32.27782	34.9194	Asia/Jerusalem	22490
+city:1166993	Rawalpindi		PK	04	33.59733	73.0479	Asia/Karachi	3357612
+city:11670045	Sabt Alalayah	سبت العلايا	SA	11	19.5773	41.96357	Asia/Riyadh	100000
+city:1167528	Quetta		PK	02	30.18414	67.00141	Asia/Karachi	1565546
+city:1168197	Peshawar		PK	03	34.008	71.57849	Asia/Karachi	4758762
+city:1169825	Multan		PK	04	30.19679	71.47824	Asia/Karachi	2169915
+city:1172451	Lahore		PK	04	31.558	74.35071	Asia/Karachi	13004135
+city:1174872	Karachi		PK	05	24.8608	67.0104	Asia/Karachi	11624219
+city:1176734	Hyderabad		PK	05	25.39689	68.37718	Asia/Karachi	1921275
+city:1177662	Gujranwala		PK	04	32.15567	74.18705	Asia/Karachi	2511118
+city:1179400	Faisalabad		PK	04	31.41554	73.08969	Asia/Karachi	3800193
+city:11814212	Masirah	مصيرة	OM	04	20.65063	58.87277	Asia/Muscat	15059
+city:1183460	Bannu		PK	03	32.98527	70.60403	Asia/Karachi	1357890
+city:11835536	Riyad al Khabra'	رِياض الخَبراء	SA	08	26.06672	43.55344	Asia/Riyadh	25588
+city:11838258	Bayan Nur		CN	20	40.74143	107.38599	Asia/Shanghai	1760000
+city:1185188	Rangpur		BD	87	25.74664	89.25166	Asia/Dhaka	1031388
+city:1185241	Dhaka		BD	81	23.7104	90.40744	Asia/Dhaka	10356500
+city:11995100	Bazhong		CN	32	31.8694	106.74432	Asia/Shanghai	2712894
+city:1200109	Gazipur		BD	81	23.99844	90.42234	Asia/Dhaka	2674697
+city:12031840	Kiryat Ono		IL	05	32.06124	34.85618	Asia/Jerusalem	39986
+city:12042052	Bani Yas City	مدينة بني ياس	AE	01	24.30978	54.62944	Asia/Dubai	80498
+city:12042053	Musaffah	مصفح	AE	01	24.35893	54.48267	Asia/Dubai	243341
+city:12047416	Al Shamkhah City	مدينة الشامخة	AE	01	24.39268	54.70779	Asia/Dubai	61710
+city:12047417	Reef Al Fujairah City	ريف الفجيرة	AE	04	25.14479	56.24764	Asia/Dubai	82310
+city:1205733	Chattogram		BD	84	22.3384	91.83168	Asia/Dhaka	3920222
+city:1214520	Medan		ID	26	3.58333	98.66667	Asia/Jakarta	2486283
+city:12156557	Binyamina-Giv'at Ada		IL	04	32.51824	34.95398	Asia/Jerusalem	15847
+city:12165956	Kallakurichi		IN	25	11.73379	78.95925	Asia/Kolkata	1682687
+city:12219798	Farij Kulayb	فريج كليب	QA	01	25.31313	51.4929	Asia/Qatar	33263
+city:12242643	Al Matar al 'Atiq	المطار العتيق	QA	01	25.25138	51.55569	Asia/Qatar	76774
+city:12242644	Ath Thumamah Sab'ah wa Arba'un		QA	01	25.23903	51.56333	Asia/Qatar	22284
+city:12242645	Ath Thumamah Sittah wa Arba'un		QA	01	25.23404	51.54053	Asia/Qatar	22284
+city:12242646	Ath Thumamah Khamsun		QA	01	25.21958	51.55323	Asia/Qatar	22284
+city:12242742	Farij al Amir	فريج الأمير	QA	06	25.28733	51.47136	Asia/Qatar	33263
+city:12358576	Wanzhou		CN	33	30.76451	108.39586	Asia/Shanghai	1545900
+city:12359313	Qingyang		CN	15	35.70976	107.64455	Asia/Shanghai	2125400
+city:12451089	Al-'Ubur	العبور	EG	12	30.22886	31.48149	Africa/Cairo	138987
+city:124665	Mashhad		IR	42	36.29807	59.60567	Asia/Tehran	2307177
+city:12495725	Bariq		SA	11	18.92966	41.92953	Asia/Riyadh	75351
+city:12500245	Sarat 'Abidah	سراة عبيدة	SA	11	18.089	43.132	Asia/Riyadh	19855
+city:12513572	Al Mash'iliyah	المشعلية	SA	16	17.75558	44.468	Asia/Riyadh	23252
+city:1253102	Visakhapatnam		IN	02	17.68009	83.20161	Asia/Kolkata	1063178
+city:1253133	Virar		IN	16	19.45591	72.81136	Asia/Kolkata	1222390
+city:1253184	Vijayawada		IN	02	16.50745	80.6466	Asia/Kolkata	1143232
+city:1253405	Varanasi		IN	36	25.31668	83.01041	Asia/Kolkata	1164404
+city:1253573	Vadodara		IN	09	22.29941	73.20812	Asia/Kolkata	1822221
+city:1254361	Tirunelveli		IN	25	8.72742	77.6838	Asia/Kolkata	1435844
+city:1254388	Tiruchirappalli		IN	25	10.8155	78.69651	Asia/Kolkata	1022518
+city:12546009	Ranyah	رنية	SA	11	21.2504	42.84751	Asia/Riyadh	45942
+city:1254661	Thane		IN	16	19.19704	72.96355	Asia/Kolkata	1841488
+city:1254745	Teni		IN	25	10.01115	77.47772	Asia/Kolkata	1034724
+city:1255364	Surat		IN	09	21.19594	72.83023	Asia/Kolkata	4591246
+city:1255634	Srinagar		IN	12	34.08565	74.80555	Asia/Kolkata	1206419
+city:1258393	Rasapudipalem		IN	02	17.73308	83.31622	Asia/Kolkata	1728128
+city:1258526	Ranchi		IN	38	23.34316	85.3094	Asia/Kolkata	1120374
+city:1258847	Rajkot		IN	09	22.29161	70.79322	Asia/Kolkata	1390640
+city:1258980	Raipur		IN	37	21.23333	81.63333	Asia/Kolkata	1027264
+city:1259229	Pune		IN	16	18.51957	73.85535	Asia/Kolkata	3124458
+city:1259652	Pimpri		IN	16	18.62292	73.80696	Asia/Kolkata	1284606
+city:1260086	Patna		IN	34	25.59408	85.13563	Asia/Kolkata	1684297
+city:1261162	Nowrangapur		IN	21	19.23114	82.54826	Asia/Kolkata	1220946
+city:1261731	Nashik		IN	16	19.99727	73.79096	Asia/Kolkata	1486053
+city:1262111	Najafgarh		IN	07	28.60922	76.97982	Asia/Kolkata	1365000
+city:1262180	Nagpur		IN	16	21.14631	79.08491	Asia/Kolkata	2405665
+city:1263214	Meerut		IN	36	28.98002	77.70636	Asia/Kolkata	1223184
+city:12640357	Al-Kharijah		EG	13	25.25	30.55	Africa/Cairo	83108
+city:12640359	Al-Minya al-Jadidah		EG	10	28.08639	30.81464	Africa/Cairo	17470
+city:12640361	An-Najaylah	النجيلة	EG	22	31.4071	26.5832	Africa/Cairo	19768
+city:12640363	Ar-Rawdah		EG	20	31.32336	31.76122	Africa/Cairo	31240
+city:12640364	Ash-Shaykh Zayid	الشيخ زايد	EG	08	30.02	31.0	Africa/Cairo	95854
+city:12640381	Yusuf as-Siddiq		EG	04	29.385	30.557	Africa/Cairo	23965
+city:1264521	Madurai		IN	25	9.919	78.11953	Asia/Kolkata	1465625
+city:1264527	Chennai		IN	25	13.08784	80.27847	Asia/Kolkata	4681087
+city:1264728	Ludhiana		IN	23	30.91204	75.85379	Asia/Kolkata	1618879
+city:1264733	Lucknow		IN	36	26.83928	80.92313	Asia/Kolkata	2472011
+city:1266049	Kota		IN	24	25.18254	75.83907	Asia/Kolkata	1001694
+city:1267995	Kanpur		IN	36	26.46523	80.34975	Asia/Kolkata	2823249
+city:1268295	Kalyan		IN	16	19.2437	73.13554	Asia/Kolkata	1262255
+city:1268865	Jodhpur		IN	24	26.26841	73.00594	Asia/Kolkata	1056191
+city:1269300	Jamshedpur		IN	38	22.80278	86.18545	Asia/Kolkata	1339438
+city:1269515	Jaipur		IN	24	26.91962	75.78781	Asia/Kolkata	3046163
+city:1269633	Jabalpur		IN	35	23.16697	79.95006	Asia/Kolkata	1081677
+city:1269743	Indore		IN	35	22.71792	75.8333	Asia/Kolkata	1994397
+city:1269843	Hyderabad		IN	40	17.38405	78.45636	Asia/Kolkata	6993262
+city:1270396	Howrah		IN	28	22.57688	88.31857	Asia/Kolkata	1027672
+city:1270583	Gwalior		IN	35	26.22983	78.17337	Asia/Kolkata	1054420
+city:1271308	Ghaziabad		IN	36	28.66535	77.43915	Asia/Kolkata	1199191
+city:1271951	Faridabad		IN	10	28.41124	77.31316	Asia/Kolkata	1414050
+city:1272423	Dombivali		IN	16	19.21667	73.08333	Asia/Kolkata	1247327
+city:1272979	Dhanbad		IN	38	23.79759	86.42992	Asia/Kolkata	1196214
+city:1273294	Delhi		IN	07	28.65195	77.23149	Asia/Kolkata	11034555
+city:1273865	Coimbatore		IN	25	11.00555	76.96612	Asia/Kolkata	2136916
+city:12747063	New Territories		HK	00	22.42441	114.11095	Asia/Hong_Kong	3984077
+city:12747064	Hong Kong Island		HK	00	22.26302	114.18419	Asia/Hong_Kong	1195529
+city:1275004	Kolkata		IN	28	22.56263	88.36304	Asia/Kolkata	4631392
+city:1275339	Mumbai		IN	16	19.07283	72.88261	Asia/Kolkata	12691836
+city:1275841	Bhopal		IN	35	23.25469	77.40289	Asia/Kolkata	1798218
+city:1277333	Bengaluru		IN	19	12.97194	77.59369	Asia/Kolkata	8495492
+city:1278149	Aurangabad		IN	16	19.87757	75.34226	Asia/Kolkata	1175116
+city:1278710	Amritsar		IN	23	31.62234	74.87534	Asia/Kolkata	1159227
+city:1278994	Prayagraj		IN	36	25.44478	81.84322	Asia/Kolkata	1073438
+city:1279233	Ahmedabad		IN	09	23.02579	72.58727	Asia/Kolkata	6357693
+city:1279259	Agra		IN	36	27.18333	78.01667	Asia/Kolkata	1430055
+city:1283240	Kathmandu		NP	3	27.70169	85.3206	Asia/Kathmandu	1442271
+city:128747	Karaj		IR	44	35.83266	50.99155	Asia/Tehran	1448075
+city:12908892	New Taipei City		TW	03	25.06199	121.45703	Asia/Taipei	4004367
+city:1298824	Yangon		MM	17	16.80528	96.15611	Asia/Yangon	4477638
+city:13118420	Al Bada'a	البدع	AE	03	25.22462	55.26888	Asia/Dubai	18816
+city:13118421	Al Muteena		AE	03	25.27375	55.32265	Asia/Dubai	48739
+city:13118422	Al Mizhar First		AE	03	25.24805	55.44128	Asia/Dubai	17498
+city:13118424	Dubai Silicon Oasis		AE	03	25.11985	55.38718	Asia/Dubai	90000
+city:13118431	Al Furjan		AE	03	25.02651	55.14565	Asia/Dubai	26000
+city:13118432	Business Bay		AE	03	25.18544	55.26969	Asia/Dubai	191000
+city:13118433	Al Qusais 1		AE	03	25.27925	55.36995	Asia/Dubai	48378
+city:13118437	Halwan		AE	06	25.34586	55.42165	Asia/Dubai	19389
+city:13118438	Al Sajaah		AE	06	25.31532	55.63211	Asia/Dubai	53079
+city:13118439	Lahbab	لهباب	AE	03	25.03763	55.59135	Asia/Dubai	53079
+city:13118447	Mohammed Bin Zayed City		AE	01	24.34794	54.55368	Asia/Dubai	85000
+city:1311874	Mandalay		MM	08	21.97473	96.08359	Asia/Yangon	1208099
+city:13118928	New Bani Sewif City		EG	18	29.03556	31.11792	Africa/Cairo	29117
+city:13286467	Suwaylih	صويلح	JO	02	32.0221	35.84394	Asia/Amman	151016
+city:13308287	Marj Al Hamam	مرج الحمام	JO	16	31.90274	35.84645	Asia/Amman	82788
+city:13308620	Bao'an		CN	30	22.55213	113.88288	Asia/Shanghai	4476554
+city:13353995	Ash-Shubak		JO	19	30.51909	35.55773	Asia/Amman	4275
+city:1336135	Khulna		BD	82	22.80979	89.56439	Asia/Dhaka	1500689
+city:13405906	Luohu District		CN	30	22.54721	114.13149	Asia/Shanghai	1143801
+city:13512505	Lueliang		CN	24	37.5192	111.14436	Asia/Shanghai	3346500
+city:13512674	Lusail		QA	13	25.4175	51.5075	Asia/Qatar	198600
+city:13591680	Altinsehir		TR	02	37.74121	38.22897	Europe/Istanbul	26153
+city:13608002	Fengxiang		CN	23	30.85841	121.46779	Asia/Shanghai	1140872
+city:13631406	Shurash	شورش	IQ	05	35.51562	44.84266	Asia/Baghdad	29960
+city:13631407	Abu al-Kahsib		IQ	02	30.4431	47.87802	Asia/Baghdad	357771
+city:13631408	Hawtah Bani Tamim		SA	10	23.49598	46.87801	Asia/Riyadh	30720
+city:13680148	Ad-Dawahy	الضواحي	EG	19	31.24408	32.27731	Africa/Cairo	148624
+city:13680149	Az-Zuhur	الزهور	EG	19	31.26504	32.26405	Africa/Cairo	266381
+city:13680586	Sheladiz		IQ	08	37.0326	43.77616	Asia/Baghdad	50000
+city:13697165	Baglar Mahallesi		TR	88	39.92775	44.04055	Europe/Istanbul	17505
+city:13713176	Sahindere		TR	84	40.14153	43.11934	Europe/Istanbul	15457
+city:13713184	Yenisehir		TR	84	40.58334	43.09487	Europe/Istanbul	20924
+city:13713185	Sehitler		TR	84	40.59332	43.08745	Europe/Istanbul	17325
+city:13715598	Firat		TR	04	39.71514	43.03404	Europe/Istanbul	29007
+city:1486209	Yekaterinburg		RU	71	56.85733	60.61529	Asia/Yekaterinburg	1495066
+city:1496153	Omsk		RU	54	54.99244	73.36859	Asia/Omsk	1172070
+city:1496747	Novosibirsk		RU	53	55.02259	82.93175	Asia/Novosibirsk	1612833
+city:1502026	Krasnoyarsk		RU	91	56.03742	92.93136	Asia/Krasnoyarsk	1090811
+city:1508291	Chelyabinsk		RU	13	55.1611	61.42877	Asia/Yekaterinburg	1202371
+city:1512569	Tashkent		UZ	13	41.26465	69.21627	Asia/Tashkent	1978028
+city:1518980	Shymkent		KZ	1537272	42.30988	69.60042	Asia/Almaty	1200000
+city:152224	Mwanza		TZ	12	-2.51667	32.9	Africa/Dar_es_Salaam	1104521
+city:1526273	Astana		KZ	05	51.1801	71.44598	Asia/Almaty	1544142
+city:1526384	Almaty		KZ	02	43.25249	76.9115	Asia/Almaty	1977011
+city:1529102	UEruemqi		CN	13	43.80096	87.60046	Asia/Urumqi	4054000
+city:1566083	Ho Chi Minh City		VN	79	10.82302	106.62965	Asia/Ho_Chi_Minh	14002598
+city:1580240	Hue		VN	46	16.4619	107.59546	Asia/Bangkok	1380000
+city:1581130	Hanoi		VN	01	21.0245	105.84117	Asia/Bangkok	8053663
+city:1581298	Haiphong		VN	31	20.86481	106.68345	Asia/Bangkok	2625200
+city:1583992	Da Nang		VN	48	16.06778	108.22083	Asia/Ho_Chi_Minh	1276000
+city:1586203	Can Tho		VN	92	10.03711	105.78825	Asia/Ho_Chi_Minh	1507187
+city:1587923	Bien Hoa		VN	75	10.94469	106.82432	Asia/Ho_Chi_Minh	1272235
+city:160263	Dar es Salaam		TZ	23	-6.82349	39.26951	Africa/Dar_es_Salaam	5383728
+city:1609350	Bangkok		TH	40	13.75398	100.50144	Asia/Bangkok	5104476
+city:162183	Ashgabat		TM	S	37.95	58.38333	Asia/Ashgabat	1030063
+city:1622786	Makassar		ID	38	-5.14861	119.43194	Asia/Makassar	1474393
+city:1624917	Bandar Lampung		ID	15	-5.42917	105.26111	Asia/Jakarta	1166066
+city:1625084	Tangerang		ID	33	-6.17806	106.63	Asia/Jakarta	1927815
+city:162560	Zakiyah	زاكية	SY	08	33.33406	36.1588	Asia/Damascus	18553
+city:1625822	Surabaya		ID	08	-7.24917	112.75083	Asia/Jakarta	3018022
+city:162627	Yabrud	يبرود	SY	08	33.96921	36.65729	Asia/Damascus	40502
+city:1627896	Semarang		ID	07	-6.99306	110.42083	Asia/Jakarta	1694740
+city:1631761	Pekanbaru		ID	37	0.51667	101.44167	Asia/Jakarta	1167599
+city:163270	Tayyibat al Imam	طيبة الامام	SY	10	35.26592	36.71219	Asia/Damascus	29259
+city:1633070	Palembang		ID	32	-2.91673	104.7458	Asia/Jakarta	1801367
+city:163345	Tartus	طرطوس	SY	14	34.88902	35.88659	Asia/Damascus	458327
+city:163476	Tall Rif'at	تل رفعت	SY	09	36.47229	37.09471	Asia/Damascus	25658
+city:163533	Tallkalakh	تل كلخ	SY	11	34.66842	36.25995	Asia/Damascus	29754
+city:163779	Tallbisah	تلبيسة	SY	11	34.84072	36.73092	Asia/Damascus	38491
+city:163806	Tafas	طفس	SY	06	32.73709	36.06654	Asia/Damascus	31249
+city:163808	Tadmur	تدمر	SY	11	34.5624	38.28402	Asia/Damascus	51015
+city:163811	Tadif	تادف	SY	09	36.34814	37.5309	Asia/Damascus	34670
+city:163915	Suran	صوران	SY	10	35.29193	36.74848	Asia/Damascus	30716
+city:164025	Subaykhan	سبيخان	SY	07	34.85305	40.59987	Asia/Damascus	25514
+city:1642548	Jepara		ID	07	-6.5924	110.671	Asia/Jakarta	1257912
+city:1642911	Jakarta		ID	04	-6.21462	106.84513	Asia/Jakarta	8540121
+city:164328	Shaykh Miskin	الشيخ مسكين	SY	06	32.82666	36.16052	Asia/Damascus	25920
+city:1645524	Depok		ID	30	-6.4	106.81861	Asia/Jakarta	2163635
+city:164816	Saraqib	سراقب	SY	12	35.86447	36.80591	Asia/Damascus	34231
+city:1648473	Bogor		ID	30	-6.59444	106.78917	Asia/Jakarta	1078351
+city:164898	Salqin	سلقين	SY	12	36.13865	36.45244	Asia/Damascus	31608
+city:1649378	Bekasi		ID	30	-6.2349	106.9896	Asia/Jakarta	2648272
+city:164947	As Salamiyah	السلمية	SY	10	35.01127	37.05324	Asia/Damascus	94887
+city:164994	Sahnaya	صحنايا	SY	08	33.42531	36.22552	Asia/Damascus	30519
+city:1650357	Bandung		ID	30	-6.92222	107.60694	Asia/Jakarta	2528163
+city:165060	Safita	برج صافيتا	SY	14	34.82099	36.11773	Asia/Damascus	27815
+city:165929	Qatana	قطنا	SY	08	33.43757	36.07888	Asia/Damascus	18511
+city:165997	Jasim	جاسم	SY	06	32.99125	36.06093	Asia/Damascus	30283
+city:166111	Qarah	قارة	SY	08	34.15558	36.74284	Asia/Damascus	20656
+city:166285	Kabbasin	قباسين	SY	09	36.43274	37.56857	Asia/Damascus	51230
+city:166331	Nubl	نبل	SY	09	36.37867	36.99294	Asia/Damascus	25546
+city:166365	Nawa	نوى	SY	06	32.88646	36.03905	Asia/Damascus	47066
+city:166716	Yarmouk	اليرموك	SY	13	33.4699	36.3018	Asia/Damascus	99999
+city:166742	Maharda	الكرمة	SY	10	35.2479	36.5725	Asia/Damascus	17578
+city:166833	Muadamiyat al-Sham	معضمية	SY	08	33.46466	36.20175	Asia/Damascus	52738
+city:1668341	Taipei		TW	04	25.05306	121.52639	Asia/Taipei	7871900
+city:1668355	Tainan		TW	04	22.99259	120.20507	Asia/Taipei	1856642
+city:1668399	Taichung		TW	04	24.1469	120.6839	Asia/Taipei	2850285
+city:167046	Masyaf	مصياف	SY	10	35.0653	36.3406	Asia/Damascus	32262
+city:167357	Manbij	منبج	SY	09	36.52815	37.95495	Asia/Damascus	99497
+city:1673820	Kaohsiung		TW	02	22.61626	120.31333	Asia/Taipei	2737660
+city:167605	Ma'arratmisrin	معرة مصرين	SY	12	36.01152	36.67183	Asia/Damascus	32163
+city:1679432	Zamboanga		PH	09	6.91028	122.07389	Asia/Manila	1018849
+city:168325	Khan Shaykhun	خان شيخون	SY	12	35.44208	36.65095	Asia/Damascus	48975
+city:1684308	Taguig		PH	NCR	14.5243	121.0792	Asia/Manila	1308085
+city:168620	Kafr Zayta	الزيتية	SY	10	35.37425	36.6033	Asia/Damascus	21845
+city:168629	Kafr Takharim	كفر تخاريم	SY	12	36.1168	36.51522	Asia/Damascus	22436
+city:168661	Kafranbel	كفر نبل	SY	12	35.61376	36.56449	Asia/Damascus	45652
+city:168668	Kafr Laha	الحولة	SY	11	34.89469	36.49582	Asia/Damascus	21819
+city:169023	Jisr ash Shughur	جسر الشغور	SY	12	35.81418	36.31983	Asia/Damascus	39311
+city:169113	Jayrud	جيرود	SY	08	33.80709	36.73861	Asia/Damascus	32352
+city:169174	Jaramana	جرمانا	SY	08	33.4862	36.34614	Asia/Damascus	99999
+city:169179	Jarabulus	جرابلس	SY	09	36.8175	38.01111	Asia/Damascus	24997
+city:1692192	Quezon City		PH	NCR	14.6488	121.0509	Asia/Manila	3084270
+city:169304	Jablah	جبلة	SY	02	35.36211	35.92759	Asia/Damascus	65915
+city:169372	'Irbin	عربين	SY	08	33.53719	36.36635	Asia/Damascus	42474
+city:169375	Inkhil	انخل	SY	06	33.01809	36.12828	Asia/Damascus	29076
+city:169389	Idlib	إدلب	SY	12	35.93062	36.63393	Asia/Damascus	128840
+city:169577	Homs	حمص	SY	11	34.72405	36.72559	Asia/Damascus	775404
+city:169897	Harasta	حرستا	SY	08	33.55869	36.36515	Asia/Damascus	37348
+city:170017	Hamah	حماة	SY	10	35.13179	36.75783	Asia/Damascus	460602
+city:170044	Halfaya	حلفايا	SY	10	35.26014	36.60581	Asia/Damascus	23403
+city:170063	Aleppo	حلب	SY	09	36.20124	37.16117	Asia/Damascus	2098210
+city:1701668	Manila		PH	NCR	14.6042	120.9822	Asia/Manila	1600000
+city:170592	Duma	دوما	SY	08	33.57175	36.4027	Asia/Damascus	111864
+city:170654	Damascus	دمشق	SY	13	33.5102	36.29128	Asia/Damascus	1569394
+city:170785	Dayr Hafir	دير حافر	SY	09	36.15694	37.70778	Asia/Damascus	28905
+city:170794	Dayr az Zawr	دير الزور	SY	07	35.33588	40.14084	Asia/Damascus	271800
+city:170887	Ad Darbasiyah	الدرباسية	SY	01	37.07279	40.65199	Asia/Damascus	21481
+city:170892	Darayya	داريا	SY	08	33.45835	36.23256	Asia/Damascus	71596
+city:170905	Daraa	درعا	SY	06	32.61889	36.10213	Asia/Damascus	97969
+city:170959	Da'il	داعل	SY	06	32.75355	36.13076	Asia/Damascus	29408
+city:171147	Burj Islam	برج إسلام	SY	02	35.67396	35.80259	Asia/Damascus	30000
+city:171451	Binnish	بنش	SY	12	35.95664	36.7138	Asia/Damascus	30354
+city:1715348	Davao		PH	11	7.07306	125.61278	Asia/Manila	1848947
+city:171694	Batabo	باتبو	SY	09	36.13447	36.73979	Asia/Damascus	25560
+city:171830	Baniyas	بانياس	SY	14	35.18188	35.94871	Asia/Damascus	39066
+city:171998	Babila	باب بيلا	SY	08	33.47101	36.33076	Asia/Damascus	50880
+city:1720151	Caloocan		PH	NCR	14.64953	120.96788	Asia/Manila	1712945
+city:172059	Az Zabadani	الزبداني	SY	08	33.72488	36.1005	Asia/Damascus	29549
+city:172082	I'zaz	أعزاز	SY	09	36.58662	37.04628	Asia/Damascus	66138
+city:172256	'Ayn al 'Arab	عرب بينار	SY	09	36.89095	38.35347	Asia/Damascus	50000
+city:172349	At Tall	التل	SY	08	33.61033	36.3107	Asia/Damascus	55561
+city:1723510	Budta		PH	14	7.20417	124.43972	Asia/Manila	1273715
+city:172374	Al-Tabqa	الثورة	SY	04	35.83758	38.54828	Asia/Damascus	87880
+city:172408	Suwayda	السويداء	SY	05	32.70896	36.56951	Asia/Damascus	59052
+city:172469	As Sanamayn	الصنمين	SY	06	33.07186	36.18316	Asia/Damascus	25702
+city:172503	As Safirah	السفيرة	SY	09	36.07696	37.37251	Asia/Damascus	63708
+city:172946	Ar Rastan	الرستن	SY	11	34.92667	36.73241	Asia/Damascus	53152
+city:172955	Raqqa	الرقة	SY	04	35.95283	39.00788	Asia/Damascus	531952
+city:173193	An Nabk	النبك	SY	08	34.02403	36.72848	Asia/Damascus	49372
+city:173230	'Amuda	عامودا	SY	01	37.10417	40.93	Asia/Damascus	26821
+city:173312	Al Qutayfah	القطيفة	SY	08	33.73848	36.60071	Asia/Damascus	16118
+city:173322	Al Qusayr	القصير	SY	11	34.5078	36.58029	Asia/Damascus	41062
+city:173334	Quneitra	القنيطرة	SY	03	33.12595	35.82461	Asia/Damascus	36143
+city:173361	Al Qaryatayn	القريتين	SY	11	34.22956	37.24066	Asia/Damascus	31748
+city:173377	Al Qamishli	القامشلي	SY	01	37.05215	41.23142	Asia/Damascus	184231
+city:173480	Al Mayadin	الميادين	SY	07	35.01982	40.45154	Asia/Damascus	54534
+city:1735161	Kuala Lumpur		MY	14	3.1412	101.68653	Asia/Kuala_Lumpur	1453975
+city:173530	Al Malikiyah	المالكية	SY	01	37.17701	42.14006	Asia/Damascus	26311
+city:173576	Latakia	اللاذقية	SY	02	35.53125	35.79088	Asia/Damascus	709000
+city:173598	Al Kiswah	الكسوة	SY	08	33.3581	36.2419	Asia/Damascus	23526
+city:173811	Al-Hasakah	الحسكة	SY	01	36.50237	40.74772	Asia/Damascus	422445
+city:173819	Al Hirak	الحراك	SY	06	32.74948	36.30582	Asia/Damascus	23784
+city:174018	Al Bab	الباب	SY	09	36.37051	37.5157	Asia/Damascus	130745
+city:174186	'Afrin	عفرين	SY	09	36.51194	36.86954	Asia/Damascus	48693
+city:174259	Ad Dana	الدانا	SY	12	36.21254	36.76998	Asia/Damascus	21987
+city:174448	Albu Kamal	أبو كمال	SY	07	34.45226	40.91854	Asia/Damascus	57572
+city:174506	Hajin	هجين	SY	07	34.69508	40.83138	Asia/Damascus	29237
+city:1783621	Zunyi		CN	18	27.68667	106.90722	Asia/Shanghai	2037775
+city:1783633	Zoucheng		CN	25	35.40056	116.96556	Asia/Shanghai	1116692
+city:1783745	Zigong		CN	32	29.34162	104.77689	Asia/Shanghai	1262064
+city:1783763	Zhuzhou		CN	11	27.83333	113.15	Asia/Shanghai	1129687
+city:1784285	Zhongwei		CN	21	37.51129	105.19067	Asia/Shanghai	1174600
+city:1784658	Zhengzhou		CN	09	34.75778	113.64861	Asia/Shanghai	6650532
+city:1784853	Zhaoqing		CN	30	23.04893	112.46091	Asia/Shanghai	1553109
+city:1784990	Zhanjiang		CN	30	21.23391	110.38749	Asia/Shanghai	1400709
+city:1785286	Zibo		CN	25	36.79056	118.06333	Asia/Shanghai	4704138
+city:1785294	Anyang		CN	09	36.096	114.38278	Asia/Shanghai	1146839
+city:1785453	Zaozhuang		CN	25	34.86472	117.55417	Asia/Shanghai	3855601
+city:1785623	Kunshan		CN	04	31.37762	120.95431	Asia/Shanghai	2092496
+city:1785725	Yunfu		CN	30	22.92787	112.03809	Asia/Shanghai	2612800
+city:1785781	Yulin		CN	16	22.6305	110.14686	Asia/Shanghai	1056743
+city:1786217	Yongzhou		CN	11	26.42389	111.61306	Asia/Shanghai	1020715
+city:1786455	Yishui		CN	25	35.78472	118.62806	Asia/Shanghai	1007100
+city:1786657	Yinchuan		CN	21	38.46806	106.27306	Asia/Shanghai	2859074
+city:1786746	Yichun		CN	03	27.83333	114.4	Asia/Shanghai	1045952
+city:1786760	Yixing		CN	04	31.36059	119.82016	Asia/Shanghai	1285785
+city:1786764	Yichang		CN	12	30.71444	111.28472	Asia/Shanghai	1350150
+city:1787093	Yantai		CN	25	37.47649	121.44081	Asia/Shanghai	7102100
+city:1787227	Yangzhou		CN	04	32.39722	119.43583	Asia/Shanghai	4559797
+city:1787331	Zhangjiagang		CN	04	31.865	120.53889	Asia/Shanghai	1432044
+city:1787375	Yangpu		CN	23	31.26193	121.51904	Asia/Shanghai	1210800
+city:1787746	Yancheng		CN	04	33.3575	120.1573	Asia/Shanghai	1615717
+city:1787858	Shangrao		CN	03	28.45179	117.94287	Asia/Shanghai	1116486
+city:1787957	Xuhui		CN	23	31.19594	121.44709	Asia/Shanghai	1109800
+city:1788046	Xuchang		CN	09	34.03189	113.86299	Asia/Shanghai	1265536
+city:1788534	Xinyang		CN	09	32.12278	114.06556	Asia/Shanghai	1416800
+city:1788572	Xinxiang		CN	09	35.19033	113.80151	Asia/Shanghai	1047088
+city:1788852	Xining		CN	06	36.62554	101.75739	Asia/Shanghai	2467965
+city:1790353	Xianyang		CN	26	34.33778	108.70261	Asia/Shanghai	1034081
+city:1790437	Zhuhai		CN	30	22.27694	113.56778	Asia/Shanghai	2207090
+city:1790587	Xiangyang		CN	12	32.0422	112.14479	Asia/Shanghai	1294733
+city:1790630	Xi'an		CN	26	34.25833	108.92861	Asia/Shanghai	12952907
+city:1790645	Xiamen		CN	07	24.47979	118.08187	Asia/Shanghai	4617251
+city:1790842	Wuzhong		CN	21	37.9867	106.201	Asia/Shanghai	7202654
+city:1790923	Wuxi		CN	04	31.56887	120.28857	Asia/Shanghai	4396835
+city:1791121	Changde		CN	11	29.03205	111.69844	Asia/Shanghai	1457419
+city:1791236	Wuhu		CN	01	31.35259	118.42947	Asia/Shanghai	1598165
+city:1791247	Wuhan		CN	12	30.58333	114.26667	Asia/Shanghai	13739000
+city:1791351	Wuchang		CN	12	30.54314	114.30068	Asia/Shanghai	1102188
+city:1791388	Wenzhou		CN	02	27.99942	120.66682	Asia/Shanghai	2650000
+city:1791636	Weinan		CN	26	34.50355	109.50891	Asia/Shanghai	1199290
+city:1791681	Weifang		CN	25	36.71	119.10194	Asia/Shanghai	9386705
+city:1792892	Tianshui		CN	15	34.57952	105.74238	Asia/Shanghai	1212791
+city:1792947	Tianjin		CN	28	39.14222	117.17667	Asia/Shanghai	13866009
+city:1793036	Chengtangcun		CN	25	35.08357	117.19071	Asia/Shanghai	1756300
+city:1793346	Tangshan		CN	10	39.64381	118.18319	Asia/Shanghai	3372102
+city:1793505	Taizhou		CN	04	32.49069	119.90812	Asia/Shanghai	1607108
+city:1793511	Taiyuan		CN	24	37.86944	112.56028	Asia/Shanghai	5305061
+city:1793724	Tai'an		CN	25	36.18528	117.12	Asia/Shanghai	1735425
+city:1793743	Suzhou		CN	01	33.63611	116.97889	Asia/Shanghai	1647642
+city:1793771	Suqian		CN	04	33.94917	118.29583	Asia/Shanghai	1437685
+city:1794035	Songjiang		CN	23	31.03443	121.22326	Asia/Shanghai	1973500
+city:1794903	Shiyan		CN	12	32.6475	110.77806	Asia/Shanghai	3460000
+city:1795270	Shijiazhuang		CN	10	38.04139	114.47861	Asia/Shanghai	5758403
+city:1795565	Shenzhen		CN	30	22.54554	114.0683	Asia/Shanghai	17494398
+city:1795855	Shaoxing		CN	02	30.00237	120.57864	Asia/Shanghai	2300000
+city:1795874	Shaoguan		CN	30	24.8	113.58333	Asia/Shanghai	1028460
+city:1795940	Shantou		CN	30	23.35489	116.67876	Asia/Shanghai	3838900
+city:1796134	Shangqiu		CN	09	34.4143	115.65613	Asia/Shanghai	1859723
+city:1796236	Shanghai		CN	23	31.22222	121.45806	Asia/Shanghai	24874500
+city:1796556	Sanya		CN	31	18.25435	109.50947	Asia/Shanghai	1031396
+city:1797063	Rui'an		CN	02	27.77605	120.65859	Asia/Shanghai	1125000
+city:1797121	Jieyang		CN	30	23.5418	116.36581	Asia/Shanghai	1899394
+city:1797318	Qujing		CN	29	25.48333	103.78333	Asia/Shanghai	1408500
+city:1797353	Quanzhou		CN	07	24.91389	118.58583	Asia/Shanghai	1469157
+city:1797551	Qinzhou		CN	16	21.98247	108.65061	Asia/Shanghai	1296300
+city:1797658	Jinjiang		CN	07	24.81978	118.57415	Asia/Shanghai	1416151
+city:1797798	Qingpu		CN	23	31.15394	121.11408	Asia/Shanghai	1271424
+city:1797873	Huai'an		CN	04	33.58861	119.01917	Asia/Shanghai	4556230
+city:1797929	Qingdao		CN	25	36.06488	120.38042	Asia/Shanghai	7172451
+city:1797945	Qingyuan		CN	30	23.7	113.03333	Asia/Shanghai	1738424
+city:1798425	Puyang		CN	02	29.45679	119.88872	Asia/Shanghai	3590000
+city:1798439	Putuo		CN	23	31.251	121.3897	Asia/Shanghai	1239100
+city:1798449	Putian		CN	07	25.43944	119.01028	Asia/Shanghai	1539389
+city:1798524	Pudong		CN	23	31.23995	121.50094	Asia/Shanghai	5681512
+city:1799397	Ningbo		CN	02	29.87819	121.54945	Asia/Shanghai	3731203
+city:1799491	Neijiang		CN	32	29.58354	105.06216	Asia/Shanghai	1251095
+city:1799629	Nanyang		CN	09	33.00524	112.54659	Asia/Shanghai	1811812
+city:1799722	Nantong		CN	04	32.03028	120.87472	Asia/Shanghai	2273326
+city:1799869	Nanning		CN	16	22.81667	108.31667	Asia/Shanghai	5977185
+city:1799962	Nanjing		CN	04	32.06167	118.77778	Asia/Shanghai	9314685
+city:1800146	Nanchong		CN	32	30.79508	106.08473	Asia/Shanghai	1858875
+city:1800163	Nanchang		CN	03	28.68396	115.85306	Asia/Shanghai	2357839
+city:1800480	Minhang		CN	23	31.10881	121.37471	Asia/Shanghai	2716600
+city:1800627	Mianyang		CN	32	31.46784	104.68168	Asia/Shanghai	1550000
+city:1800818	Meishan		CN	32	30.04392	103.83696	Asia/Shanghai	1107742
+city:1801180	Maoming		CN	30	21.66625	110.91364	Asia/Shanghai	1307802
+city:1801792	Luoyang		CN	09	34.67345	112.43684	Asia/Shanghai	1390581
+city:1801934	Luohe		CN	09	33.57424	114.03261	Asia/Shanghai	1294974
+city:1802206	Lu'an		CN	01	31.73561	116.51688	Asia/Shanghai	1644344
+city:1802276	Longyan		CN	07	25.07485	117.01775	Asia/Shanghai	1025087
+city:1802875	Guankou		CN	11	28.15861	113.62709	Asia/Shanghai	1380000
+city:1802940	Puning		CN	30	23.31072	116.16869	Asia/Shanghai	1998619
+city:1803300	Liuzhou		CN	16	24.32405	109.40698	Asia/Shanghai	1436599
+city:1803318	Linyi		CN	25	35.06306	118.34278	Asia/Shanghai	2743843
+city:1803834	Liaocheng		CN	25	36.45064	116.00247	Asia/Shanghai	1229768
+city:1803936	Wuwei		CN	15	37.92672	102.63202	Asia/Shanghai	1010295
+city:1804120	Lianjiang		CN	30	21.64673	110.28172	Asia/Shanghai	1363470
+city:1804430	Lanzhou		CN	15	36.05701	103.83987	Asia/Shanghai	4359446
+city:1804651	Kunming		CN	29	25.03889	102.71833	Asia/Shanghai	5950578
+city:1804879	Kaifeng		CN	09	34.7986	114.30742	Asia/Shanghai	1451741
+city:1805179	Jiujiang		CN	03	29.70475	116.00206	Asia/Shanghai	1164268
+city:1805518	Jining		CN	25	35.405	116.58139	Asia/Shanghai	1241012
+city:1805528	Jinhua		CN	02	29.10678	119.64421	Asia/Shanghai	1463990
+city:1805540	Jingzhou		CN	12	30.35028	112.19028	Asia/Shanghai	1052282
+city:1805753	Jinan		CN	25	36.66833	116.99722	Asia/Shanghai	8352574
+city:1805953	Jiaxing		CN	02	30.7522	120.75	Asia/Shanghai	1180000
+city:1806299	Jiangmen		CN	30	22.58333	113.08333	Asia/Shanghai	1795459
+city:1806408	Yangjiang		CN	30	21.85563	111.96272	Asia/Shanghai	1292987
+city:1806508	Jiading		CN	23	31.38575	121.24465	Asia/Shanghai	1886100
+city:1806535	Huzhou		CN	02	30.8703	120.0933	Asia/Shanghai	1015937
+city:1806602	Cixi		CN	02	30.1764	121.2457	Asia/Shanghai	1457510
+city:1806776	Huizhou		CN	30	23.11147	114.41523	Asia/Shanghai	2900113
+city:1807681	Huainan		CN	01	32.62639	116.99694	Asia/Shanghai	3033528
+city:1807700	Huaibei		CN	01	33.97444	116.79167	Asia/Shanghai	1113321
+city:1808198	Heze		CN	25	35.23929	115.47358	Asia/Shanghai	1346717
+city:1808316	Heshan		CN	11	28.56938	112.34733	Asia/Shanghai	1249807
+city:1808370	Hengyang		CN	11	26.88946	112.61888	Asia/Shanghai	1075516
+city:1808722	Hefei		CN	01	31.86389	117.28083	Asia/Shanghai	9465881
+city:1808857	Hanzhong		CN	26	33.07507	107.02214	Asia/Shanghai	1006557
+city:1808926	Hangzhou		CN	02	30.29365	120.16142	Asia/Shanghai	11936010
+city:1808956	Changzhi		CN	24	36.18389	113.10528	Asia/Shanghai	1214940
+city:1808963	Handan		CN	10	36.60999	114.48764	Asia/Shanghai	1358318
+city:1809078	Haikou		CN	31	20.03421	110.34651	Asia/Shanghai	3001600
+city:1809461	Guiyang		CN	18	26.58333	106.71667	Asia/Shanghai	4506134
+city:1809498	Guilin		CN	16	25.28022	110.29639	Asia/Shanghai	1572300
+city:1809532	Guigang		CN	16	23.11603	109.59472	Asia/Shanghai	1086327
+city:1809858	Guangzhou		CN	30	23.11667	113.25	Asia/Shanghai	18676605
+city:1810638	Ganzhou		CN	03	25.84664	114.9326	Asia/Shanghai	1977253
+city:1810820	Fuzhou		CN	03	27.95999	116.33333	Asia/Shanghai	1089888
+city:1810821	Fuzhou		CN	07	26.06139	119.30611	Asia/Shanghai	4094491
+city:1810845	Fuyang		CN	01	32.9	115.81667	Asia/Shanghai	1768947
+city:1811103	Foshan		CN	30	23.02677	113.13148	Asia/Shanghai	9042509
+city:1812057	Xinyi		CN	30	22.37303	110.94746	Asia/Shanghai	1014577
+city:1812545	Dongguan		CN	30	23.01797	113.74866	Asia/Shanghai	9644871
+city:1813325	Dazhou		CN	32	31.2106	107.46308	Asia/Shanghai	1589435
+city:1814087	Dalian		CN	19	38.91222	121.60222	Asia/Shanghai	7450785
+city:1814870	Yiwu		CN	02	29.31506	120.07676	Asia/Shanghai	1481384
+city:1814906	Chongqing		CN	33	29.56026	106.55771	Asia/Shanghai	22000000
+city:1815251	Jiangyin		CN	04	31.91102	120.26302	Asia/Shanghai	1779515
+city:1815286	Chengdu		CN	32	30.66667	104.06667	Asia/Shanghai	20937757
+city:1815395	Chaozhou		CN	30	23.65396	116.62262	Asia/Shanghai	1750945
+city:1815456	Changzhou		CN	04	31.77359	119.95401	Asia/Shanghai	3290918
+city:1815577	Changsha		CN	11	28.19874	112.97087	Asia/Shanghai	3093980
+city:1816234	Bozhou		CN	01	33.87722	115.77028	Asia/Shanghai	1409436
+city:1816373	Bijie		CN	18	27.30193	105.28627	Asia/Shanghai	1137383
+city:1816670	Beijing		CN	22	39.9075	116.39723	Asia/Shanghai	18960744
+city:1816917	Baoshan		CN	23	31.40845	121.48956	Asia/Shanghai	2265900
+city:1816971	Baoding		CN	10	38.87288	115.46246	Asia/Shanghai	2739887
+city:1819609	Kowloon		HK	00	22.31667	114.18333	Asia/Hong_Kong	2232339
+city:1819729	Hong Kong		HK		22.27832	114.17469	Asia/Hong_Kong	7396076
+city:1821306	Phnom Penh		KH	22	11.56245	104.91601	Asia/Phnom_Penh	1573544
+city:1833747	Ulsan		KR	21	35.53722	129.31667	Asia/Seoul	1098421
+city:1835235	Daejeon		KR	19	36.34913	127.38493	Asia/Seoul	1441203
+city:1835329	Daegu		KR	15	35.87028	128.59111	Asia/Seoul	2365523
+city:1835553	Suwon		KR	13	37.29111	127.00889	Asia/Seoul	1234582
+city:1835848	Seoul		KR	11	37.566	126.9784	Asia/Seoul	10349312
+city:1838524	Busan		KR	10	35.10168	129.03004	Asia/Seoul	3285147
+city:1841811	Gwangju		KR	18	35.15472	126.91556	Asia/Seoul	1401235
+city:1842485	Goyang-si		KR	13	37.65639	126.835	Asia/Seoul	1061752
+city:1843564	Incheon		KR	12	37.45646	126.70515	Asia/Seoul	3015482
+city:1846326	Changwon		KR	20	35.22806	128.68111	Asia/Seoul	1025702
+city:184745	Nairobi		KE	05	-1.28333	36.81667	Africa/Nairobi	4397073
+city:1848354	Yokohama		JP	19	35.43333	139.65	Asia/Tokyo	3777491
+city:1850147	Tokyo		JP	40	35.6895	139.69171	Asia/Tokyo	9733276
+city:1853909	Osaka		JP	32	34.69379	135.50107	Asia/Tokyo	2753862
+city:1856057	Nagoya		JP	01	35.18147	136.90641	Asia/Tokyo	2332176
+city:1857910	Kyoto		JP	22	35.02107	135.75385	Asia/Tokyo	1463723
+city:1859171	Kobe		JP	13	34.6913	135.183	Asia/Tokyo	1525152
+city:1859642	Kawasaki		JP	19	35.52056	139.71722	Asia/Tokyo	1538262
+city:1862415	Hiroshima		JP	11	34.4	132.45	Asia/Tokyo	1200754
+city:186301	Mombasa		KE	37	-4.05466	39.66359	Africa/Nairobi	1208333
+city:1863967	Fukuoka		JP	07	33.6	130.41667	Asia/Tokyo	1612392
+city:1871859	Pyongyang		KP	12	39.03385	125.75432	Asia/Pyongyang	3222000
+city:1880252	Singapore		SG		1.28967	103.85007	Asia/Singapore	5638700
+city:1886760	Suzhou		CN	04	31.30408	120.59538	Asia/Shanghai	6715559
+city:1912214	Nanhai		CN	30	23.02193	113.14278	Asia/Shanghai	3667247
+city:195272	Kakamega		KE	20	0.28422	34.75229	Africa/Nairobi	1867579
+city:1978681	Malingao		PH	12	7.16083	124.475	Asia/Manila	1121974
+city:202061	Kigali		RW	12	-1.94995	30.05885	Africa/Kigali	1132686
+city:2034937	Shenyang		CN	19	41.79222	123.43278	Asia/Shanghai	9070093
+city:2036427	Jinzhou		CN	19	41.10778	121.14167	Asia/Shanghai	1524362
+city:2036502	Jilin		CN	05	43.84652	126.5608	Asia/Shanghai	1895865
+city:2036892	Hohhot		CN	20	40.81056	111.65222	Asia/Shanghai	3446100
+city:2037013	Harbin		CN	08	45.75	126.65	Asia/Shanghai	10009854
+city:2037355	Fushun		CN	19	41.88669	123.94363	Asia/Shanghai	1400646
+city:2037799	Datong		CN	24	40.09361	113.29139	Asia/Shanghai	3105591
+city:2037860	Daqing		CN	08	46.58333	125.0	Asia/Shanghai	1604027
+city:2038180	Changchun		CN	05	43.88	125.32278	Asia/Shanghai	5691024
+city:2038432	Baotou		CN	20	40.6516	109.84389	Asia/Shanghai	2761700
+city:2038632	Anshan		CN	19	41.12361	122.99	Asia/Shanghai	3325372
+city:2063523	Perth		AU	08	-31.95224	115.8614	Australia/Perth	2384371
+city:2078025	Adelaide		AU	05	-34.92866	138.59863	Australia/Adelaide	1469163
+city:209228	Mbuji-Mayi		CD	04	-6.13603	23.58979	Africa/Lubumbashi	2101332
+city:2111149	Sendai		JP	24	38.26667	140.86667	Asia/Tokyo	1096704
+city:212730	Kisangani		CD	30	0.51528	25.19099	Africa/Lubumbashi	1602144
+city:2128295	Sapporo		JP	12	43.06667	141.35	Asia/Tokyo	1973832
+city:214481	Kananga		CD	23	-5.89624	22.41659	Africa/Lubumbashi	1271704
+city:2147714	Sydney		AU	02	-33.86785	151.20732	Australia/Sydney	5638830
+city:2158177	Melbourne		AU	07	-37.814	144.96332	Australia/Melbourne	5435590
+city:2174003	Brisbane		AU	04	-27.46794	153.02809	Australia/Brisbane	2780063
+city:2193733	Auckland		NZ	E7	-36.84853	174.76349	Pacific/Auckland	1547200
+city:2210247	Tripoli		LY	77	32.88743	13.18733	Africa/Tripoli	1302947
+city:2220957	Yaounde		CM	11	3.86667	11.51667	Africa/Douala	1299369
+city:2232593	Douala		CM	05	4.04827	9.70428	Africa/Douala	1338082
+city:2240449	Luanda		AO	20	-8.83682	13.23432	Africa/Luanda	2776168
+city:2244322	Touba		SN	03	14.86229	-15.87532	Africa/Dakar	1120824
+city:2246678	Pikine		SN	01	14.76457	-17.39071	Africa/Dakar	1170791
+city:2253354	Dakar		SN	01	14.6937	-17.44406	Africa/Dakar	2646503
+city:2255414	Pointe-Noire		CG	15	-4.77609	11.86352	Africa/Brazzaville	1032000
+city:2260535	Brazzaville		CG	12	-4.26613	15.28318	Africa/Brazzaville	1982000
+city:2274895	Monrovia		LR	14	6.30054	-10.7969	Africa/Monrovia	1542549
+city:2293521	Abobo		CI	93	5.41613	-4.0159	Africa/Abidjan	1340083
+city:2293538	Abidjan		CI	93	5.35444	-4.00167	Africa/Abidjan	6321017
+city:2298890	Kumasi		GH	02	6.68848	-1.62443	Africa/Accra	2544530
+city:2306104	Accra		GH	01	5.55602	-0.1969	Africa/Accra	1963264
+city:2314302	Kinshasa		CD	06	-4.32758	15.31357	Africa/Kinshasa	16000000
+city:2322911	Sokoto		NG	51	13.06269	5.24322	Africa/Lagos	1040000
+city:232422	Kampala		UG	C	0.31628	32.58219	Africa/Kampala	1680600
+city:2324774	Port Harcourt		NG	50	4.77742	7.0134	Africa/Lagos	2120000
+city:2326016	Onitsha		NG	25	6.14978	6.78569	Africa/Lagos	1553000
+city:2331447	Maiduguri		NG	27	11.84692	13.15712	Africa/Lagos	1110000
+city:2332459	Lagos		NG	05	6.45407	3.39467	Africa/Lagos	15388000
+city:2335204	Kano		NG	29	12.00012	8.51672	Africa/Lagos	4910000
+city:2335727	Kaduna		NG	23	10.52641	7.43879	Africa/Lagos	1850000
+city:2335953	Jos		NG	49	9.92849	8.89212	Africa/Lagos	1040000
+city:2337639	Ilorin		NG	30	8.49664	4.54214	Africa/Lagos	1080000
+city:2339354	Ibadan		NG	32	7.37756	3.90591	Africa/Lagos	3649000
+city:2347283	Benin City		NG	37	6.33815	5.62575	Africa/Lagos	1782000
+city:2352778	Abuja		NG	11	9.05785	7.49508	Africa/Lagos	2690000
+city:2353151	Aba		NG	45	5.10658	7.36667	Africa/Lagos	1160000
+city:2357048	Ouagadougou		BF	03	12.36566	-1.53388	Africa/Ouagadougou	2415266
+city:2365267	Lome		TG	24	6.12874	1.22154	Africa/Lome	2188376
+city:2377450	Nouakchott		MR		18.08581	-15.9785	Africa/Nouakchott	1184530
+city:2422465	Conakry		GN	04	9.53795	-13.67729	Africa/Conakry	1928389
+city:2422488	Camayenne		GN	04	9.535	-13.68778	Africa/Conakry	1871242
+city:2427123	N'Djamena		TD	21	12.10672	15.0444	Africa/Ndjamena	1359526
+city:2440485	Niamey		NE	08	13.51366	2.1098	Africa/Niamey	1323691
+city:245915	Zahar	زحر	JO	18	32.5667	35.77811	Asia/Amman	4150
+city:245939	Yarqa	يرقا	JO	02	31.97583	35.69638	Asia/Amman	4786
+city:245989	Waqqas		JO	18	32.54214	35.60508	Asia/Amman	5678
+city:246008	Petra	بترا	JO	19	30.32096	35.47895	Asia/Amman	14000
+city:246013	Wadi as Sir	وادي السير	JO	16	31.9545	35.81831	Asia/Amman	181212
+city:2460596	Bamako		ML	01	12.60915	-7.97522	Africa/Bamako	4227569
+city:246202	Umm Qays	أم قيس	JO	18	32.65348	35.68457	Asia/Amman	4294
+city:246314	Umm as Summaq	ام السمّاق	JO	16	31.88542	35.8543	Asia/Amman	18274
+city:246330	Umm ar Rasas	أم الرصاص	JO	16	31.51225	35.91837	Asia/Amman	0
+city:246345	Umm al Qittayn	أم القطين	JO	15	32.31449	36.62826	Asia/Amman	4225
+city:246371	Umm al Jimal	أم الجمال	JO	15	32.32863	36.36788	Asia/Amman	0
+city:246384	Umm al Basatin	أم البساتين	JO	16	31.82454	35.87795	Asia/Amman	0
+city:246474	Adhruh	أذرح	JO	19	30.3307	35.59659	Asia/Amman	0
+city:246522	Tibnah	تبنة	JO	18	32.47521	35.73056	Asia/Amman	5229
+city:246725	Suf	سوف	JO	22	32.31372	35.83713	Asia/Amman	12942
+city:246756	Sarfa	صرفا	JO	09	31.32964	35.65439	Asia/Amman	4873
+city:246816	Ash Shunah al Janubiyah	الشونة الجنوبية	JO	02	31.8915	35.6178	Asia/Amman	0
+city:247014	Samma ar Rawsan	سما	JO	18	32.63794	35.82661	Asia/Amman	0
+city:247015	Samma	صما	JO	18	32.57102	35.68984	Asia/Amman	8926
+city:247021	Sama as Sirhan	سما	JO	15	32.46859	36.24363	Asia/Amman	0
+city:247061	Sal	سال	JO	18	32.56897	35.91185	Asia/Amman	6896
+city:247068	Sakib	ساكب	JO	22	32.28431	35.80909	Asia/Amman	11586
+city:247074	Sakhrah	صخرة	JO	20	32.37087	35.84267	Asia/Amman	10616
+city:247103	Saham al Kaffarat	سحم	JO	18	32.69848	35.77438	Asia/Amman	6203
+city:247105	Sahab	سحاب	JO	16	31.87032	36.00479	Asia/Amman	40241
+city:247176	Sabha	صبحا	JO	15	32.32696	36.50159	Asia/Amman	5315
+city:247273	Rujm ash Shami al Gharbi	رجم الشامي	JO	16	31.83693	36.00492	Asia/Amman	0
+city:247336	Rehab	ارحاب	JO	15	32.32341	36.09087	Asia/Amman	10000
+city:247340	Raymun		JO	22	32.28202	35.82779	Asia/Amman	6082
+city:247363	Rasun	راسون	JO	20	32.39982	35.75971	Asia/Amman	2586
+city:247496	Qumaym	قميم	JO	18	32.57174	35.73452	Asia/Amman	5111
+city:247659	Qafqafa	قفقفا	JO	22	32.34851	35.93864	Asia/Amman	4402
+city:247724	Na'ur	ناعور	JO	16	31.87436	35.82467	Asia/Amman	0
+city:247916	Mulayh	مليح	JO	23	31.58517	35.80716	Asia/Amman	0
+city:247969	Al Mughayyir	المغير	JO	09	31.40634	35.77083	Asia/Amman	0
+city:248250	Malka	ملكا	JO	18	32.67645	35.74851	Asia/Amman	6856
+city:248293	Ma'in	ماعين	JO	23	31.68002	35.732	Asia/Amman	0
+city:248299	Mahis	ماحص	JO	02	31.98646	35.76987	Asia/Amman	17754
+city:248370	Madaba	مأدبا	JO	23	31.71599	35.79392	Asia/Amman	82335
+city:248382	Ma'an	معان	JO	19	30.19624	35.73405	Asia/Amman	50350
+city:248414	Kurayyimah	كريمة	JO	18	32.27639	35.59938	Asia/Amman	17837
+city:248420	Kufrinjah	كفرنجة	JO	20	32.29755	35.70212	Asia/Amman	0
+city:248424	Al Faysaliyah	الفيصلية	JO	23	31.74909	35.76922	Asia/Amman	0
+city:248434	Kitim	كتم	JO	18	32.43834	35.89677	Asia/Amman	5292
+city:248460	Khuraybat as Suq	خريبة السوق	JO	16	31.87913	35.92098	Asia/Amman	186158
+city:248525	Birayn	بيرين	JO	17	32.09943	35.95783	Asia/Amman	0
+city:248549	Al Murayghah	المريغة	JO	19	30.09526	35.52314	Asia/Amman	0
+city:248583	Hayy Khilda	حي خلدا	JO	16	31.99202	35.84002	Asia/Amman	251000
+city:248627	Kharja	خرجا	JO	18	32.65988	35.88782	Asia/Amman	5498
+city:248719	Kafr Sawm	كفر سوم	JO	18	32.68527	35.80102	Asia/Amman	7152
+city:248734	Kafr Asad	كفرأسد	JO	18	32.598	35.71266	Asia/Amman	8203
+city:248738	Kafr Abil	كفر آبيل	JO	18	32.41752	35.66305	Asia/Amman	6333
+city:248774	Juraynah	جرينة	JO	23	31.76	35.79466	Asia/Amman	0
+city:248803	Judita		JO	18	32.40792	35.70802	Asia/Amman	20000
+city:248843	Jawa	جاوا	JO	16	31.85247	35.93928	Asia/Amman	10628
+city:248875	Jarash	جرش	JO	22	32.28082	35.89929	Asia/Amman	27046
+city:248923	'Izra		JO	09	31.15889	35.69278	Asia/Amman	22756
+city:248940	'Irjan	عرجان	JO	20	32.39447	35.73345	Asia/Amman	0
+city:248946	Irbid	إربد	JO	18	32.55556	35.85	Asia/Amman	569068
+city:249095	Hisban	حسبان	JO	16	31.79819	35.80986	Asia/Amman	0
+city:249153	Hawsha	حوشا	JO	15	32.45144	36.09903	Asia/Amman	0
+city:249184	Hatim	حاتم	JO	18	32.64492	35.77771	Asia/Amman	5542
+city:249310	Halawah	حلاوة	JO	20	32.38433	35.66167	Asia/Amman	5376
+city:249318	Hakama	حكما	JO	18	32.59354	35.8832	Asia/Amman	7075
+city:249481	Fuqu'	فقوع	JO	09	31.36805	35.7022	Asia/Amman	0
+city:249664	Dhiban	ذيبان	JO	23	31.49889	35.78287	Asia/Amman	0
+city:249676	Dayr Yusuf	دير يوسف	JO	18	32.48701	35.79635	Asia/Amman	6223
+city:249693	Dayr 'Alla	دير علا	JO	02	32.19571	35.62161	Asia/Amman	0
+city:249699	Dayr Abu Sa'id	دير أبي سعيد	JO	18	32.49816	35.68671	Asia/Amman	0
+city:249842	Busayra	بصيرا	JO	12	30.73256	35.60943	Asia/Amman	7154
+city:249849	Burma	برما	JO	22	32.2193	35.78507	Asia/Amman	4735
+city:249930	Bayt Yafa	بيت يافا	JO	18	32.52253	35.78618	Asia/Amman	7788
+city:249933	Bayt Idis	بيت إيدس	JO	18	32.43775	35.69765	Asia/Amman	4723
+city:250052	Balila	بليلا	JO	22	32.39109	35.93832	Asia/Amman	5206
+city:250057	Bal'ama	بلعما	JO	15	32.23649	36.08811	Asia/Amman	0
+city:250090	Zarqa	الزرقاء	JO	17	32.07275	36.08796	Asia/Amman	792665
+city:250094	Muthallath al Azraq	مثلث الأزرق	JO	17	31.83269	36.81487	Asia/Amman	0
+city:250095	Al Azraq ash Shamali	الأزرق الشمالي	JO	17	31.88209	36.83017	Asia/Amman	14800
+city:250106	'Ayy	عي	JO	09	31.13371	35.64375	Asia/Amman	7340
+city:250124	Ain Janna	عين جنا	JO	20	32.33466	35.7637	Asia/Amman	9586
+city:250142	'Ayn al Basha	عين الباشا	JO	02	32.05726	35.83109	Asia/Amman	0
+city:250151	Ayl	ايل	JO	19	30.20588	35.53627	Asia/Amman	0
+city:250152	Aydun	ايدون	JO	18	32.50528	35.85809	Asia/Amman	18376
+city:250179	At Turrah	الطرة	JO	18	32.63979	35.98943	Asia/Amman	14619
+city:250186	At Tayyibah	الطيبة	JO	18	32.54304	35.71756	Asia/Amman	12615
+city:250187	Al Khinzirah	الخنزيرة	JO	09	31.05056	35.60606	Asia/Amman	5231
+city:250188	At-Taybeh	الطيبة	JO	19	30.25125	35.4657	Asia/Amman	4265
+city:250198	At Tafilah	الطفيلة	JO	12	30.83752	35.60442	Asia/Amman	25429
+city:250235	As Subayhi	الصبيحي	JO	02	32.14844	35.70535	Asia/Amman	0
+city:250258	As Salt	السلط	JO	02	32.03917	35.72722	Asia/Amman	107874
+city:250267	Safi	غورالصافي	JO	09	31.03608	35.46544	Asia/Amman	15200
+city:250278	Ash Shunah ash Shamaliyah	الشونة الشمالية	JO	18	32.62023	35.61451	Asia/Amman	0
+city:250290	Ash Shawbak	الشوبك	JO	19	30.52134	35.57135	Asia/Amman	50
+city:250294	Ash Shajarah	الشجرة	JO	18	32.64391	35.94175	Asia/Amman	11243
+city:250317	Ar Ruwayshid	الرويشد	JO	15	32.50152	38.20405	Asia/Amman	0
+city:250321	Ar Rusayfah	الرصيفة	JO	17	32.01727	36.03271	Asia/Amman	0
+city:250336	Ar Ramtha	الرمثا	JO	18	32.55873	36.00816	Asia/Amman	155693
+city:250345	Ar Rabbah	الربة	JO	09	31.26923	35.73829	Asia/Amman	4229
+city:250420	'Anjarah	عنجرة	JO	20	32.30667	35.75443	Asia/Amman	17634
+city:250441	Amman	عمّان	JO	16	31.95522	35.94503	Asia/Amman	1275857
+city:250461	Hayy al Quwaysimah	حي القويسمة	JO	16	31.91037	35.94975	Asia/Amman	32396
+city:250462	Al Quwayrah	القويرة	JO	19	29.80045	35.3116	Asia/Amman	7372
+city:250480	Al Qatranah	القطرانة	JO	09	31.25083	36.04932	Asia/Amman	7070
+city:250487	Al Qasr	القصر	JO	09	31.31407	35.74393	Asia/Amman	3840
+city:250534	Ghawr al Mazra'ah	غور المزرعة	JO	09	31.26586	35.51674	Asia/Amman	0
+city:250538	Al Mazar ash Shamali	المزار	JO	18	32.47041	35.79693	Asia/Amman	0
+city:250540	Al Mazar al Janubi	المزار	JO	09	31.06722	35.69486	Asia/Amman	9383
+city:250544	Al Mastabah	المصطبة	JO	22	32.18434	35.85588	Asia/Amman	0
+city:250567	Manshiyat Bani Hasan	المنشية	JO	15	32.37066	36.07933	Asia/Amman	0
+city:250582	Al Mafraq	المفرق	JO	15	32.34289	36.20804	Asia/Amman	57118
+city:250596	'Allan	علان	JO	02	32.11815	35.74351	Asia/Amman	0
+city:250603	Al Kittah	الكتة	JO	22	32.27685	35.84114	Asia/Amman	5626
+city:250623	Al Karamah	الكرامة	JO	02	31.95439	35.58033	Asia/Amman	9384
+city:250624	Karak	الكرك	JO	19	31.18248	35.69999	Asia/Amman	22581
+city:250628	Al Juwayyidah	الجويدة	JO	16	31.88715	35.93144	Asia/Amman	0
+city:250637	Al Jubayhah	الجبيهة	JO	16	32.01071	35.89802	Asia/Amman	46834
+city:250639	Al Jizah	الجيزة	JO	16	31.69893	35.9553	Asia/Amman	4397
+city:250649	Al Jafr	الجفر	JO	19	30.3184	36.17775	Asia/Amman	3557
+city:250662	Al Husayniyah	الحسينية	JO	09	31.02606	35.72294	Asia/Amman	0
+city:250675	Al Hisn	الحصن	JO	18	32.48454	35.88406	Asia/Amman	0
+city:250686	Al Hashimiyah	الهاشمية	JO	17	32.12901	36.1213	Asia/Amman	0
+city:250688	Al Hasa	الحسا	JO	12	30.82131	35.97499	Asia/Amman	0
+city:250697	Al Hamra'	الحمراء	JO	15	32.44017	36.15265	Asia/Amman	6211
+city:250718	Al Fuhays	الفحيص	JO	02	32.00468	35.78088	Asia/Amman	18916
+city:250738	Hayy al Bunayyat	حي البنيات	JO	16	31.89603	35.88465	Asia/Amman	5579
+city:2507480	Algiers		DZ	01	36.73225	3.08746	Africa/Algiers	2364230
+city:250767	Al 'Arid	العريض	JO	23	31.55839	35.65736	Asia/Amman	0
+city:250774	Aqaba	العقبة	JO	21	29.52667	35.00778	Asia/Amman	95048
+city:250799	Ajloun	عجلون	JO	20	32.33326	35.75279	Asia/Amman	125557
+city:250821	Adir	أدر	JO	09	31.20217	35.76155	Asia/Amman	4441
+city:251005	Al Khalidiyah	الخالدية	JO	15	32.179	36.30326	Asia/Amman	0
+city:2530335	Tangier		MA	01	35.76727	-5.79975	Africa/Casablanca	1035141
+city:2538475	Rabat		MA	04	34.01325	-6.83255	Africa/Casablanca	1655753
+city:2548885	Fes		MA	03	34.03313	-5.00028	Africa/Casablanca	1191905
+city:2553604	Casablanca		MA	06	33.58831	-7.61138	Africa/Casablanca	3665954
+city:2618425	Copenhagen		DK	17	55.67594	12.56553	Europe/Copenhagen	1153615
+city:2643743	London		GB	ENG	51.50853	-0.12574	Europe/London	8961989
+city:2655603	Birmingham		GB	ENG	52.48142	-1.89983	Europe/London	1157603
+city:266045	Zahle	زحلة	LB	08	33.84675	35.90203	Asia/Beirut	78145
+city:266826	Tripoli	طرابلس	LB	09	34.43352	35.84415	Asia/Beirut	229398
+city:267008	Tyre	الصور	LB	06	33.27333	35.19389	Asia/Beirut	135204
+city:267305	Chmistar	شمسطار	LB	11	33.96472	36.0175	Asia/Beirut	30000
+city:2673730	Stockholm		SE	26	59.32938	18.06871	Europe/Stockholm	1515017
+city:268064	Sidon	صيدا	LB	06	33.55751	35.37148	Asia/Beirut	163554
+city:268743	Ra's Bayrut		LB	04	33.9	35.48333	Asia/Beirut	1251739
+city:273140	Jounieh	جونيه	LB	05	33.98083	35.61778	Asia/Beirut	96315
+city:273203	Byblos	جبيل	LB	05	34.12111	35.64806	Asia/Beirut	20784
+city:273675	Aarsal	عرسال	LB	11	34.17944	36.42083	Asia/Beirut	50000
+city:274874	Habbouch	حبّوش	LB	07	33.40753	35.48177	Asia/Beirut	98433
+city:2761369	Vienna		AT	09	48.20849	16.37208	Europe/Vienna	1691468
+city:276359	Bsharri	بشري	LB	09	34.25083	36.01056	Asia/Beirut	20000
+city:276781	Beirut	بيروت	LB	04	33.89332	35.50157	Asia/Beirut	1916100
+city:277130	Baalbek	بعلبك	LB	11	34.00583	36.21806	Asia/Beirut	30916
+city:278832	En Naqoura	الناقورة	LB	06	33.11806	35.13972	Asia/Beirut	24910
+city:278913	Nabatiye et Tahta	النبطية والطهطا	LB	07	33.37889	35.48389	Asia/Beirut	120000
+city:279997	El Hermel	الهرمل	LB	11	34.39417	36.38472	Asia/Beirut	22250
+city:2800866	Brussels		BE	BRU	50.85045	4.34878	Europe/Brussels	1019022
+city:280155	Ghazieh	الغازية	LB	06	33.5175	35.36889	Asia/Beirut	50000
+city:280425	Aley	عاليه	LB	05	33.80528	35.6	Asia/Beirut	130000
+city:281093	Shukat as Sufi	شوكة الصوفي	PS	GZ	31.25997	34.2826	Asia/Gaza	10566
+city:281102	Rafah	رفح	PS	GZ	31.29722	34.24357	Asia/Gaza	126305
+city:281109	An Nusayrat	النصيرات	PS	GZ	31.44861	34.3925	Asia/Gaza	36123
+city:281119	Khuza'ah	خزاعة	PS	GZ	31.30675	34.3611	Asia/Gaza	9023
+city:281124	Khan Yunis	خان يونس	PS	GZ	31.34018	34.30627	Asia/Gaza	173183
+city:281129	Jabalya	جباليا	PS	GZ	31.5272	34.48347	Asia/Gaza	168568
+city:281133	Gaza	غزة	PS	GZ	31.50161	34.46672	Asia/Gaza	410000
+city:281141	Dayr al Balah	دير البلح	PS	GZ	31.41834	34.34933	Asia/Gaza	59504
+city:281145	Bayt Lahya	بيت لاهيا	PS	GZ	31.5464	34.49514	Asia/Gaza	56919
+city:281146	Bayt Hanun	بيت حانون	PS	GZ	31.5353	34.53579	Asia/Gaza	37392
+city:281148	Bani Suhayla	بني سهيلا	PS	GZ	31.34337	34.32337	Asia/Gaza	31272
+city:281152	An Nazlah		PS	GZ	31.53333	34.48333	Asia/Gaza	2284
+city:281160	Al Fukhkhari	الفخاري	PS	GZ	31.29278	34.33061	Asia/Gaza	5464
+city:281161	Al Burayj	البريج	PS	GZ	31.43944	34.40306	Asia/Gaza	34951
+city:281165	'Abasan al Kabirah	عبسان الكبيرة	PS	GZ	31.31913	34.34005	Asia/Gaza	18163
+city:281184	Jerusalem	القدس	IL	06	31.76904	35.21633	Asia/Jerusalem	971800
+city:281187	Giv'at Hananya		IL	06	31.76667	35.23333	Asia/Jerusalem	15500
+city:281207	Zububah	زبوبه	PS	WE	32.54346	35.22274	Asia/Hebron	2063
+city:281226	Zayta	زيتا	PS	WE	32.3856	35.05122	Asia/Hebron	3052
+city:281227	Zayta Jamma'in	زيتا جماعين	PS	WE	32.13698	35.18595	Asia/Hebron	2092
+city:281236	Zawata	زواتا	PS	WE	32.24611	35.2265	Asia/Hebron	1855
+city:281240	Za'tarah	زعترة	PS	WE	31.67361	35.25662	Asia/Hebron	6210
+city:281292	Yatta	يطا	PS	WE	31.4459	35.09443	Asia/Hebron	41425
+city:281293	Yatma	يتما	PS	WE	32.10889	35.26909	Asia/Hebron	2897
+city:281295	Yasuf	ياسوف	PS	WE	32.10841	35.23784	Asia/Hebron	1604
+city:281297	Yasid	ياصيد	PS	WE	32.29688	35.27757	Asia/Hebron	2226
+city:281318	Ya'bad	يعبد	PS	WE	32.44566	35.16822	Asia/Hebron	13477
+city:281356	Wadi Fukin	وادي فوكين	PS	WE	31.70701	35.10366	Asia/Hebron	1153
+city:281408	'Urif	عوريف	PS	WE	32.15949	35.22228	Asia/Hebron	2890
+city:281548	Udalah	أودلا	PS	WE	32.15363	35.27646	Asia/Hebron	1123
+city:281560	Turmus'ayya	ترمسعيا	PS	WE	32.03538	35.28564	Asia/Hebron	3686
+city:281577	Tulkarm	طولكرم	PS	WE	32.31156	35.0269	Asia/Hebron	44169
+city:281581	Tubas	طوباس	PS	WE	32.32091	35.36989	Asia/Hebron	15591
+city:281623	Tayasir	تياسير	PS	WE	32.34042	35.39604	Asia/Hebron	2323
+city:281637	Tarqumya	ترقوميا	PS	WE	31.57551	35.01223	Asia/Hebron	14202
+city:281657	Tammun	طمون	PS	WE	32.28347	35.38367	Asia/Hebron	10119
+city:281662	Talluzah	طلوزة	PS	WE	32.27056	35.29496	Asia/Hebron	2604
+city:281674	Till	تل	PS	WE	32.20068	35.21293	Asia/Hebron	4605
+city:281675	Talfit	تلفيت	PS	WE	32.08664	35.29094	Asia/Hebron	2906
+city:281690	Taffuh	تفوح	PS	WE	31.53855	35.04966	Asia/Hebron	9480
+city:281715	Surif City	صوريف	PS	WE	31.65078	35.06439	Asia/Hebron	25242
+city:281716	Surda	صردا	PS	WE	31.93709	35.20321	Asia/Hebron	1017
+city:281717	Sur Bahir	صور باهر	PS	WE	31.73678	35.23343	Asia/Hebron	15000
+city:281764	Siris	سيريس	PS	WE	32.32828	35.29134	Asia/Hebron	4898
+city:281778	Sinjil	سنجل	PS	WE	32.03334	35.26545	Asia/Hebron	5371
+city:281789	Silwad	سلواد	PS	WE	31.97625	35.2613	Asia/Hebron	7006
+city:281790	Silat az Zahr	سيلة الظهر	PS	WE	32.31934	35.18418	Asia/Hebron	6079
+city:281791	Silat al Harithiyah	سيلة الحارثية	PS	WE	32.50847	35.22752	Asia/Hebron	9557
+city:281793	Sa'ir	سعير	PS	WE	31.57855	35.14017	Asia/Hebron	17775
+city:281808	Shuqba	شقبا	PS	WE	31.98695	35.04012	Asia/Hebron	4188
+city:281818	Shu'fat		PS	WE	31.81651	35.22745	Asia/Hebron	35000
+city:281819	Shufah	شوفة	PS	WE	32.27551	35.08135	Asia/Hebron	2174
+city:281965	Sayda	صيدا	PS	WE	32.38489	35.11856	Asia/Hebron	2988
+city:281979	Sartah	صرطة	PS	WE	32.10447	35.09198	Asia/Hebron	2528
+city:281982	Sarrah	صرة	PS	WE	32.2097	35.19147	Asia/Hebron	2810
+city:281997	Sanur	صانور	PS	WE	32.35608	35.24537	Asia/Hebron	4141
+city:281998	Sannirya	سنيريا	PS	WE	32.12877	35.04652	Asia/Hebron	2887
+city:282034	Salim	سالم	PS	WE	32.20962	35.33034	Asia/Hebron	4940
+city:282039	Salfit	سلفيت	PS	WE	32.08371	35.18079	Asia/Hebron	11000
+city:282069	Saffa	صفا	PS	WE	31.90563	35.06094	Asia/Hebron	3904
+city:282108	Sabastiyah	سبسطية	PS	WE	32.27562	35.19873	Asia/Hebron	2823
+city:282119	Rummanah	رمنة	PS	WE	32.52451	35.2048	Asia/Hebron	3275
+city:282140	Rujayb	روجيب	PS	WE	32.19061	35.29332	Asia/Hebron	3805
+city:282185	Ras Karkar	راس كركر	PS	WE	31.9424	35.10773	Asia/Hebron	1641
+city:282230	Rantis	رنتيس	PS	WE	32.02797	35.01879	Asia/Hebron	2795
+city:282234	Rammun	رمون	PS	WE	31.93342	35.29821	Asia/Hebron	3101
+city:282237	Ramin	رامين	PS	WE	32.2852	35.14951	Asia/Hebron	2040
+city:282239	Ramallah	رام الله	PS	WE	31.89964	35.20422	Asia/Hebron	43880
+city:282264	Rafat	رافات	PS	WE	32.07806	35.04417	Asia/Hebron	1952
+city:282265	Rafat	رافات	PS	WE	31.87096	35.19182	Asia/Hebron	2061
+city:282278	Raba	رابا	PS	WE	32.38679	35.38298	Asia/Hebron	2951
+city:282283	Qusrah	قصرة	PS	WE	32.08543	35.33005	Asia/Hebron	4316
+city:282284	Qusin	قوصين	PS	WE	32.23829	35.18297	Asia/Hebron	1691
+city:282342	Qirah	قيرة	PS	WE	32.12214	35.17173	Asia/Hebron	1131
+city:282348	Qibyah	قبيه	PS	WE	31.97734	35.00984	Asia/Hebron	4761
+city:282376	Qatanah	قطنه	PS	WE	31.83366	35.11894	Asia/Hebron	7274
+city:282423	Qaryut	قريوت	PS	WE	32.07004	35.29432	Asia/Hebron	2399
+city:282438	Qarawat Bani Zayd	قراوة بني زيد	PS	WE	32.0547	35.12908	Asia/Hebron	2673
+city:282439	Qarawat Bani Hasan	قراوة بني حسان	PS	WE	32.12568	35.10061	Asia/Hebron	3761
+city:282457	Qalqilyah	قلقيلية	PS	WE	32.18966	34.97063	Asia/Hebron	43212
+city:282461	Qalandiya	قلنديا	PS	WE	31.86289	35.20815	Asia/Hebron	1169
+city:282463	Qaffin	فقين	PS	WE	32.43274	35.08266	Asia/Hebron	8489
+city:282476	Qabatiyah	قباطية	PS	WE	32.41035	35.28087	Asia/Hebron	19127
+city:282477	Qabalan	قبلان	PS	WE	32.10182	35.28938	Asia/Hebron	7043
+city:282510	Nuba	نوبا	PS	WE	31.609	35.03455	Asia/Hebron	4328
+city:282529	Ni'lin	نعلين	PS	WE	31.94746	35.02031	Asia/Hebron	4512
+city:282540	Nazlat 'Isa	نزلة عيسى	PS	WE	32.41562	35.05888	Asia/Hebron	2313
+city:282593	Nahhalin	نحالين	PS	WE	31.68559	35.12081	Asia/Hebron	6215
+city:282615	Nablus	نابلس	PS	WE	32.22111	35.25444	Asia/Hebron	130326
+city:282687	Mikhmas	مخماس	PS	WE	31.8721	35.27596	Asia/Hebron	1461
+city:282740	Misliyah	مسلية	PS	WE	32.38613	35.2878	Asia/Hebron	2187
+city:282746	Mirkah	مركة	PS	WE	32.39583	35.23807	Asia/Hebron	1592
+city:282783	Bani Zayd ash Sharqiyah	بني زيد الشرقية	PS	WE	32.04935	35.16593	Asia/Hebron	5015
+city:282793	Maythalun	ميثلون	PS	WE	32.34798	35.27446	Asia/Hebron	6804
+city:282837	Mashah	مسحة	PS	WE	32.10828	35.05096	Asia/Hebron	1982
+city:282872	Marda	مردا	PS	WE	32.11381	35.19536	Asia/Hebron	2142
+city:282926	Modiin		IL	02	31.89385	35.01504	Asia/Jerusalem	93277
+city:282941	Majdal Bani Fadil	مجدل بني فاضل	PS	WE	32.08357	35.36378	Asia/Hebron	2122
+city:282980	Madama	مادما	PS	WE	32.18588	35.23114	Asia/Hebron	1735
+city:282997	Al Lubban ash Sharqiyah	اللبن الشرقية	PS	WE	32.07011	35.2403	Asia/Hebron	2439
+city:283040	Kufayrit	كفيرت	PS	WE	32.4438	35.20184	Asia/Hebron	2376
+city:283055	Kifil Haris	كفل حارس	PS	WE	32.11827	35.15719	Asia/Hebron	3132
+city:283077	Ar Ramadin	الرماضين	PS	WE	31.37952	34.91246	Asia/Hebron	3232
+city:283092	Ras 'Atiyah	راس عطية	PS	WE	32.15847	34.99086	Asia/Hebron	2129
+city:283096	Qalqas	قلقس	PS	WE	31.49212	35.09535	Asia/Hebron	1132
+city:283099	Imrish	إمريش	PS	WE	31.46895	35.00819	Asia/Hebron	1640
+city:283101	Marah Rabbah	مراح رباح	PS	WE	31.63406	35.18688	Asia/Hebron	1303
+city:283120	Dayr al 'Asal al Fawqa	دير العسل الفوقا	PS	WE	31.46832	34.93832	Asia/Hebron	1859
+city:283123	Bayt Ta'mar	بيت تعمر	PS	WE	31.67927	35.23986	Asia/Hebron	1214
+city:283128	Bayt Hasan	بيت حسن	PS	WE	32.2376	35.40407	Asia/Hebron	1109
+city:283129	Bayt 'Awwa	بيت عوا	PS	WE	31.50911	34.94938	Asia/Hebron	7943
+city:283133	Jannatah	بيت فلوح	PS	WE	31.66959	35.21961	Asia/Hebron	5348
+city:283142	Ash Shaykh Sa'd	الشيخ سعد	PS	WE	31.73721	35.25742	Asia/Hebron	1932
+city:283155	An Nassariyah	النصارية	PS	WE	32.23647	35.38711	Asia/Hebron	1568
+city:283157	Kharbatha al Misbah	خربثا المصباح	PS	WE	31.88546	35.07185	Asia/Hebron	5141
+city:283159	Al Majd	المجد	PS	WE	31.48095	34.95063	Asia/Hebron	1896
+city:283165	Karmah	كرمة	PS	WE	31.45185	35.02714	Asia/Hebron	1365
+city:283176	Al Burj	البرج	PS	WE	31.43609	34.91697	Asia/Hebron	2381
+city:283180	Shuyukh al 'Arrub	شيوخ العروب	PS	WE	31.61735	35.14366	Asia/Hebron	1527
+city:283189	Khirbat Abu Falah	خربة أبو فلاح	PS	WE	32.01678	35.30135	Asia/Hebron	3961
+city:283245	Kharbatha Bani Harith	خربثا بني حارث	PS	WE	31.94508	35.07194	Asia/Hebron	2808
+city:283246	Kharas	خاراس	PS	WE	31.6148	35.04174	Asia/Hebron	6885
+city:283286	Khallat al Mayyah	خلة المية	PS	WE	31.44222	35.14286	Asia/Hebron	1391
+city:283316	Kubar	كوبر	PS	WE	31.98722	35.15788	Asia/Hebron	3546
+city:283348	Kafr Zibad	كفر زيباد	PS	WE	32.22583	35.07179	Asia/Hebron	1068
+city:283351	Kafr Thulth	كفر ثلث	PS	WE	32.1533	35.04698	Asia/Hebron	4218
+city:283353	Kafr Sur	كفر صور	PS	WE	32.24366	35.06394	Asia/Hebron	1107
+city:283361	Kafr Ra'i	كفر راعي	PS	WE	32.37398	35.15451	Asia/Hebron	7276
+city:283362	Kafr Qud	كفر قود	PS	WE	32.45661	35.22649	Asia/Hebron	1129
+city:283365	Kafr Qallil	كفر قليل	PS	WE	32.19351	35.28284	Asia/Hebron	2421
+city:283366	Kafr Qaddum	كفر قدوم	PS	WE	32.22162	35.14471	Asia/Hebron	3376
+city:283370	Kafr Malik	كفر مالك	PS	WE	31.9884	35.30932	Asia/Hebron	2903
+city:283373	Kafr Jammal	كفر جمال	PS	WE	32.22551	35.04337	Asia/Hebron	2481
+city:283378	Kafr Dan	كفر دان	PS	WE	32.47852	35.25425	Asia/Hebron	4967
+city:283379	Kafr 'Ayn	كفر عين	PS	WE	32.04758	35.12038	Asia/Hebron	1720
+city:283384	Kafr al Labad	كفر اللبد	PS	WE	32.29967	35.10955	Asia/Hebron	3915
+city:283385	Kafr ad Dik	كفر الديك	PS	WE	32.0671	35.08287	Asia/Hebron	4986
+city:283386	Kafr 'Abbush	كفر عبوش	PS	WE	32.22353	35.08504	Asia/Hebron	1444
+city:283408	Jurish	جوريش	PS	WE	32.10188	35.32188	Asia/Hebron	1385
+city:283419	Jurat ash Sham'ah	جورة الشمعة	PS	WE	31.65051	35.17001	Asia/Hebron	1472
+city:283444	Al Judayyidah	الجديدة	PS	WE	32.33541	35.30107	Asia/Hebron	4681
+city:283449	Jit	جيت	PS	WE	32.21431	35.17081	Asia/Hebron	2243
+city:283464	Jifna	جفنا	PS	WE	31.96192	35.21338	Asia/Hebron	1693
+city:283469	Jayyus	جيوس	PS	WE	32.20125	35.03416	Asia/Hebron	3196
+city:283506	Janin	جنين	PS	WE	32.45943	35.30086	Asia/Hebron	34730
+city:283520	Jammalah	جمالة	PS	WE	31.97212	35.09294	Asia/Hebron	1664
+city:283521	Jamma'in	جماعين	PS	WE	32.13164	35.20403	Asia/Hebron	6158
+city:283536	Jalqamus	جلقموس	PS	WE	32.42464	35.36421	Asia/Hebron	1968
+city:283540	Jalbun	جلبون	PS	WE	32.45957	35.41516	Asia/Hebron	2421
+city:283547	Al Jalamah	الجلمة	PS	WE	32.50821	35.31317	Asia/Hebron	2035
+city:283570	Jaba'	جبع	PS	WE	32.32409	35.22133	Asia/Hebron	8391
+city:283571	Jaba'	جبع	PS	WE	31.85727	35.25868	Asia/Hebron	3214
+city:283609	Immatin	إماتين	PS	WE	32.19164	35.15836	Asia/Hebron	2368
+city:283612	'Illar	علار	PS	WE	32.37024	35.10708	Asia/Hebron	6681
+city:283614	Iktabah	إكتابة	PS	WE	32.3266	35.05262	Asia/Hebron	1919
+city:283621	Idhna	إذنا	PS	WE	31.55874	34.97436	Asia/Hebron	18727
+city:283636	Huwwarah	حوارة	PS	WE	32.15224	35.25673	Asia/Hebron	5633
+city:283643	Husan	حوسان	PS	WE	31.70931	35.13475	Asia/Hebron	5535
+city:283676	Hizma	حزما	PS	WE	31.83337	35.26315	Asia/Hebron	5916
+city:283735	Haris	حارس	PS	WE	32.11424	35.14192	Asia/Hebron	2967
+city:283806	Halhul	حلحول	PS	WE	31.58029	35.10178	Asia/Hebron	21076
+city:283812	Hajjah	حجة	PS	WE	32.20427	35.13077	Asia/Hebron	2444
+city:283843	Hablah	حبلة	PS	WE	32.16523	34.97748	Asia/Hebron	5945
+city:283918	Far'un	فرعون	PS	WE	32.28613	35.02326	Asia/Hebron	3072
+city:283955	Farkhah	فرخة	PS	WE	32.06878	35.15286	Asia/Hebron	1351
+city:283971	Faqqu'ah	فقوعة	PS	WE	32.48998	35.40163	Asia/Hebron	3426
+city:283976	Fahmah	فحمة	PS	WE	32.38291	35.17912	Asia/Hebron	2369
+city:284010	Dura al Qar'	دورا قرع	PS	WE	31.95863	35.22714	Asia/Hebron	2858
+city:284011	Dura	دورا	PS	WE	31.50777	35.02929	Asia/Hebron	20835
+city:284013	Duma	دوما	PS	WE	32.05632	35.36705	Asia/Hebron	2157
+city:284046	Dhannabah		PS	WE	32.31341	35.04144	Asia/Hebron	8193
+city:284054	Dayr Sharaf	دير شرف	PS	WE	32.25326	35.18893	Asia/Hebron	2681
+city:284065	Dayr Qiddis	دير قديس	PS	WE	31.94862	35.04437	Asia/Hebron	1916
+city:284069	Dayr Jarir	دير جرير	PS	WE	31.96636	35.29261	Asia/Hebron	4156
+city:284071	Dayr Istiya	دير إستيا	PS	WE	32.13096	35.13963	Asia/Hebron	3730
+city:284072	Dayr Ibzi'	دير إبزيع	PS	WE	31.91727	35.12105	Asia/Hebron	2041
+city:284078	Dayr Dibwan	دير دبوان	PS	WE	31.91112	35.26661	Asia/Hebron	6692
+city:284081	Dayr Ballut	دير بلوط	PS	WE	32.06551	35.02451	Asia/Hebron	3566
+city:284085	Dayr as Sudan	دير السودان	PS	WE	32.03213	35.14845	Asia/Hebron	2104
+city:284099	Dayr al Hatab	دير الحطب	PS	WE	32.21734	35.32127	Asia/Hebron	2194
+city:284100	Dayr al Ghusun	دير الغصون	PS	WE	32.35244	35.07689	Asia/Hebron	9187
+city:284104	Dayr Abu Mash'al	دير أبو مشعل	PS	WE	31.99881	35.06844	Asia/Hebron	3475
+city:284105	Dayr Abu Da'if	دير أبو ضعيف	PS	WE	32.45601	35.36164	Asia/Hebron	5506
+city:284187	Bruqin	بروقين	PS	WE	32.07216	35.09943	Asia/Hebron	3538
+city:284194	Birqin	برقين	PS	WE	32.45461	35.26076	Asia/Hebron	5730
+city:284196	Burqah	برقة	PS	WE	32.30177	35.19263	Asia/Hebron	3631
+city:284197	Burqah	برقة	PS	WE	31.89682	35.2543	Asia/Hebron	2238
+city:284214	Burin	بورين	PS	WE	32.18452	35.25015	Asia/Hebron	2500
+city:284228	Budrus	بدرس	PS	WE	31.96687	34.99425	Asia/Hebron	1380
+city:284237	Bir Zayt	بير زيت	PS	WE	31.96959	35.19408	Asia/Hebron	6398
+city:284238	Bir Nabala	بير نبالا	PS	WE	31.8508	35.2036	Asia/Hebron	4776
+city:284269	Bil'in	بلعين	PS	WE	31.92835	35.07204	Asia/Hebron	1678
+city:284270	Biddu	بدو	PS	WE	31.83478	35.14947	Asia/Hebron	6180
+city:284271	Bidya	بديا	PS	WE	32.1146	35.08028	Asia/Hebron	8065
+city:284284	Bazzaryah	بزاريه	PS	WE	32.30798	35.16593	Asia/Hebron	2091
+city:284291	Bayt Wazan	بيت وزن	PS	WE	32.23105	35.21576	Asia/Hebron	1046
+city:284292	Bayt 'Ur at Tahta	بيت عور التحتا	PS	WE	31.89609	35.08178	Asia/Hebron	4313
+city:284294	Baytunya	بيتونيا	PS	WE	31.8966	35.17048	Asia/Hebron	12822
+city:284295	Bayt Imrin	بيت إمرين	PS	WE	32.29301	35.2161	Asia/Hebron	2794
+city:284297	Bayt Surik	بيت سوريك	PS	WE	31.82424	35.14936	Asia/Hebron	3705
+city:284298	Bayt Sira	بيت سيرا	PS	WE	31.8878	35.04623	Asia/Hebron	2744
+city:284304	Bayt Sahur	بيت ساحور	PS	WE	31.70095	35.22631	Asia/Hebron	14921
+city:284308	Bayt Qad	بيت قاد	PS	WE	32.46968	35.35626	Asia/Hebron	1430
+city:284312	Bayt Liqya	بيت لقيا	PS	WE	31.86958	35.0654	Asia/Hebron	7795
+city:284313	Bayt Lid	بيت ليد	PS	WE	32.26089	35.13169	Asia/Hebron	5740
+city:284315	Bethlehem	بيت لحم	PS	WE	31.70487	35.20376	Asia/Hebron	29019
+city:284320	Bayt Kahil	بيت كاحل	PS	WE	31.57011	35.06502	Asia/Hebron	5663
+city:284324	Bayt Jala	بيت جالا	PS	WE	31.71545	35.18788	Asia/Hebron	16183
+city:284326	Bayt 'Anan	بيت عنان	PS	WE	31.85069	35.11248	Asia/Hebron	3946
+city:284328	Baytin	بيتين	PS	WE	31.92674	35.24098	Asia/Hebron	2948
+city:284329	Bayt Ummar	بيت أومر	PS	WE	31.62329	35.10446	Asia/Hebron	12238
+city:284330	Al Ittihad	الاتحاد	PS	WE	31.97552	35.11595	Asia/Hebron	2978
+city:284331	Bayt Iksa	بيت إكسا	PS	WE	31.81732	35.17934	Asia/Hebron	1734
+city:284334	Bayt Iba	بيت إيبا	PS	WE	32.23719	35.20977	Asia/Hebron	3175
+city:284335	Beit Hanina	بيت حنينا	PS	WE	31.82999	35.22539	Asia/Hebron	27000
+city:284339	Bayt Furik	بيت فوريك	PS	WE	32.17689	35.33541	Asia/Hebron	10108
+city:284341	Bayt Fajjar	بيت فجار	PS	WE	31.62443	35.15457	Asia/Hebron	10579
+city:284342	Bayt Duqqu	بيت دقو	PS	WE	31.85911	35.13124	Asia/Hebron	1637
+city:284343	Bayt Dajan	بيت دجن	PS	WE	32.19303	35.37127	Asia/Hebron	3487
+city:284347	Bayt Ula	بيت أولا	PS	WE	31.59618	35.0296	Asia/Hebron	9159
+city:284362	Bayta al Fawqa		PS	WE	32.1426	35.28774	Asia/Hebron	8535
+city:284376	Battir	بتير	PS	WE	31.71945	35.14103	Asia/Hebron	4092
+city:284405	Barta'ah ash Sharqiyah	برطعة الشرقية	PS	WE	32.47304	35.0936	Asia/Hebron	4126
+city:284415	Bardalah	بردلة	PS	WE	32.38632	35.48084	Asia/Hebron	1612
+city:284426	Baqah ash Sharqiyah	باقة الشرقية	PS	WE	32.41032	35.07054	Asia/Hebron	4165
+city:284427	Baqat al Hatab	باقة الحطب	PS	WE	32.20434	35.11433	Asia/Hebron	1624
+city:284431	Bani Na'im	بني نعيم	PS	WE	31.51591	35.16416	Asia/Hebron	19783
+city:284446	Balatah		PS	WE	32.21207	35.28561	Asia/Hebron	17146
+city:284461	Bal'a	بلعا	PS	WE	32.33392	35.1116	Asia/Hebron	6545
+city:284480	'Azzun	عزون	PS	WE	32.17496	35.05752	Asia/Hebron	7727
+city:284485	Az Zawiyah	الزاوية	PS	WE	32.09627	35.03982	Asia/Hebron	4917
+city:284486	Az Zahiriyah	الظاهرية	PS	WE	31.40967	34.97329	Asia/Hebron	27616
+city:284487	Az Zababidah	الزبابدة	PS	WE	32.38665	35.32411	Asia/Hebron	3751
+city:284489	'Azmut	عزموط	PS	WE	32.22297	35.30989	Asia/Hebron	2622
+city:284495	'Ayn Yabrud	عين يبرود	PS	WE	31.94918	35.25122	Asia/Hebron	2959
+city:284515	'Ayn 'Arik	عين عريك	PS	WE	31.90613	35.14254	Asia/Hebron	1546
+city:284524	'Aynabus	عينبوس	PS	WE	32.14706	35.24513	Asia/Hebron	2315
+city:284540	Usarin	أوصرين	PS	WE	32.12499	35.30999	Asia/Hebron	1595
+city:284547	'Awarta	عورتا	PS	WE	32.16108	35.28388	Asia/Hebron	5563
+city:284556	At Tirah	الطيرة	PS	WE	31.87022	35.12682	Asia/Hebron	1340
+city:284557	'Attil	عتيل	PS	WE	32.36935	35.07189	Asia/Hebron	10100
+city:284558	At Taybah	الطيبة	PS	WE	32.51494	35.18574	Asia/Hebron	2129
+city:284559	At Taybah	الطيبة	PS	WE	31.95388	35.2998	Asia/Hebron	1433
+city:284563	'Atarah	عطارة	PS	WE	32.00058	35.20466	Asia/Hebron	2240
+city:284572	'Atarut		PS	WE	31.86667	35.21667	Asia/Hebron	25595
+city:284581	As Sawiyah	الساوية	PS	WE	32.08537	35.25782	Asia/Hebron	2236
+city:284583	As Samu'	السموع	PS	WE	31.39671	35.06611	Asia/Hebron	19355
+city:284593	'Asirah ash Shamaliyah	عصيرة الشمالية	PS	WE	32.25124	35.26716	Asia/Hebron	7475
+city:284594	'Asirah al Qibliyah	عصيرة القبلية	PS	WE	32.17842	35.21569	Asia/Hebron	2341
+city:284597	Ash Shuyukh	الشيوخ	PS	WE	31.57004	35.15606	Asia/Hebron	8151
+city:284598	Ash Shuhada'	الشهداء	PS	WE	32.42949	35.27112	Asia/Hebron	1727
+city:284868	Artas	أرطاس	PS	WE	31.68939	35.18681	Asia/Hebron	3552
+city:284881	Ar Rihiyah	الريحية	PS	WE	31.4695	35.07781	Asia/Hebron	3369
+city:284888	'Arranah	عرانة	PS	WE	32.4972	35.32271	Asia/Hebron	1972
+city:284890	Ar Ram wa Dahiyat al Barid	الرام وضاحية البريد	PS	WE	31.84945	35.2342	Asia/Hebron	24838
+city:284893	'Arrabah	عرابة	PS	WE	32.40517	35.20189	Asia/Hebron	9703
+city:284899	Jericho	أريحا	PS	WE	31.86667	35.45	Asia/Hebron	19783
+city:284904	Al 'Araqa	العرقة	PS	WE	32.47057	35.20027	Asia/Hebron	2135
+city:284922	'Aqraba	عقربا	PS	WE	32.12495	35.34547	Asia/Hebron	7707
+city:284933	'Anzah	عنزة	PS	WE	32.35916	35.22011	Asia/Hebron	1851
+city:284935	An Nuway'imah	النويعمة	PS	WE	31.89212	35.43549	Asia/Hebron	1229
+city:284936	An Nazlah ash Sharqiyah	النزلة الشرقية	PS	WE	32.41072	35.10916	Asia/Hebron	1500
+city:284939	An Naqurah	الناقورة	PS	WE	32.26506	35.20135	Asia/Hebron	1528
+city:284962	An Nabi Ilyas	النبي إلياس	PS	WE	32.18482	35.0176	Asia/Hebron	1157
+city:284972	'Anin	عنين	PS	WE	32.50259	35.16668	Asia/Hebron	3647
+city:284973	'Anata	عناتا	PS	WE	31.80924	35.25902	Asia/Hebron	11946
+city:284976	'Anabta	عنبتا	PS	WE	32.30792	35.11693	Asia/Hebron	7106
+city:284999	Al Yamun	اليامون	PS	WE	32.48563	35.23011	Asia/Hebron	16164
+city:285009	Al Qubaybah	القبيبة	PS	WE	31.83886	35.13678	Asia/Hebron	2008
+city:285023	Al Mughayyir	المغير	PS	WE	32.42228	35.38476	Asia/Hebron	2175
+city:285024	Al Mughayyir	المغير	PS	WE	32.0192	35.34783	Asia/Hebron	2328
+city:285032	Al Midyah	المدية	PS	WE	31.93592	35.005	Asia/Hebron	1284
+city:285033	Al Mazra'ah ash Sharqiyah	المزرعة الشرقية	PS	WE	32.00018	35.28152	Asia/Hebron	4435
+city:285034	Az Zaytuniyah	الزيتونية	PS	WE	31.95403	35.1624	Asia/Hebron	6107
+city:285049	Al Lubban al Gharbi	اللبن الغربي	PS	WE	32.03504	35.03928	Asia/Hebron	1456
+city:285061	Al Khadir	الخضر	PS	WE	31.69405	35.16685	Asia/Hebron	9003
+city:285066	Hebron	الخليل	PS	WE	31.52935	35.0938	Asia/Hebron	160470
+city:285069	Al Judayrah	الجديرة	PS	WE	31.85587	35.19706	Asia/Hebron	2059
+city:285070	Al Jib	الجيب	PS	WE	31.85203	35.18451	Asia/Hebron	4505
+city:285071	Al Janiyah	الجانية	PS	WE	31.93848	35.12142	Asia/Hebron	1147
+city:285091	Al Hashimiyah	الهاشمية	PS	WE	32.46392	35.21938	Asia/Hebron	1038
+city:285102	Al Fasayil	الفصايل	PS	WE	32.02509	35.44351	Asia/Hebron	1064
+city:285103	Al Fandaqumiyah	الفتدقومية	PS	WE	32.3206	35.20329	Asia/Hebron	3266
+city:285108	Al Birah	البيرة	PS	WE	31.91001	35.21645	Asia/Hebron	38192
+city:285111	Al 'Ayzariyah	العيزرية	PS	WE	31.77078	35.26917	Asia/Hebron	17455
+city:285112	Al 'Awja	العوجا	PS	WE	31.95069	35.46756	Asia/Hebron	4067
+city:285113	Al 'Attarah	العطارة	PS	WE	32.32571	35.16373	Asia/Hebron	1145
+city:285126	'Ajjul	عجول	PS	WE	32.02232	35.17969	Asia/Hebron	1220
+city:285127	'Ajjah	عجة	PS	WE	32.36074	35.1959	Asia/Hebron	4995
+city:285161	'Ibwayn	عبوين	PS	WE	32.03144	35.19992	Asia/Hebron	3077
+city:285220	Abu Qashsh	أبو قش	PS	WE	31.94883	35.18426	Asia/Hebron	1385
+city:285279	Abu Dis	أبو ديس	PS	WE	31.76215	35.26166	Asia/Hebron	11753
+city:285285	'Abud	عابود	PS	WE	32.01637	35.06833	Asia/Hebron	2056
+city:285603	Janub as Surrah	جَنُوب اَلسُّرَّة	KW	07	29.26917	47.97806	Asia/Kuwait	18496
+city:285629	Hawalli	حولي	KW	08	29.33278	48.02861	Asia/Kuwait	164212
+city:285663	Bayan	بيان	KW	08	29.3032	48.04881	Asia/Kuwait	30635
+city:285704	As Salimiyah	السالمية	KW	08	29.33389	48.07611	Asia/Kuwait	147649
+city:285726	Ar Rumaythiyah	الرميثية	KW	08	29.31167	48.07417	Asia/Kuwait	58135
+city:285728	Ar Riqqah	الرقة	KW	04	29.14583	48.09472	Asia/Kuwait	52068
+city:285778	Al Manqaf	المنقف	KW	04	29.09611	48.13278	Asia/Kuwait	39025
+city:285782	Al Mahbulah	المهبولة	KW	04	29.145	48.13028	Asia/Kuwait	18178
+city:285787	Kuwait City	اَلْكُوَيْت	KW	02	29.367	47.97429	Asia/Kuwait	60064
+city:285799	Al Jahra'	اَلْجَهْرَاء	KW	05	29.3375	47.65806	Asia/Kuwait	24281
+city:285811	Al Fahahil	الفحاحيل	KW	04	29.0825	48.13028	Asia/Kuwait	68290
+city:285812	Al Fintas	الفنطاس	KW	04	29.17389	48.12111	Asia/Kuwait	23071
+city:285815	Al Farwaniyah	اَلْفَرْوَانِيَّة	KW	07	29.2775	47.95861	Asia/Kuwait	86525
+city:285839	Al Ahmadi	الاحمدي	KW	04	29.07694	48.08389	Asia/Kuwait	637411
+city:285856	Ad Dasmah	اَلدَّسْمَة	KW	02	29.365	48.00139	Asia/Kuwait	17585
+city:286245	Sur	صور	OM	04	22.56667	59.52889	Asia/Muscat	71152
+city:286282	Sohar	صحار	OM	11	24.34745	56.70937	Asia/Muscat	108274
+city:286293	Sufalat Sama'il		OM	01	23.31667	58.01667	Asia/Muscat	47718
+city:286402	Shinas	شناص	OM	11	24.7426	56.46698	Asia/Muscat	48009
+city:286590	Sama'il	سمائل	OM	01	23.29838	57.9531	Asia/Muscat	80538
+city:286621	Salalah	صلالة	OM	08	17.01505	54.09237	Asia/Muscat	163140
+city:286647	Saham		OM	11	24.17222	56.88861	Asia/Muscat	140000
+city:2867714	Munich		DE	02	48.13743	11.57549	Europe/Berlin	1505005
+city:286839	Qurayyat	قريات	OM	06	23.26298	58.92014	Asia/Muscat	63133
+city:286987	Nizwa	نزوى	OM	01	22.93333	57.53333	Asia/Muscat	72076
+city:287286	Muscat	مسقط	OM	06	23.58413	58.40778	Asia/Muscat	797000
+city:287614	Khasab	خصب	OM	07	26.17993	56.24774	Asia/Muscat	17904
+city:287814	Izki	إزكي	OM	01	22.93333	57.76667	Asia/Muscat	36203
+city:287830	'Ibri		OM	09	23.22573	56.51572	Asia/Muscat	163473
+city:287832	Ibra'	إبراء	OM	12	22.69057	58.53337	Asia/Muscat	25265
+city:2886242	Koeln		DE	07	50.93333	6.95	Europe/Berlin	1024621
+city:288721	Bidbid		OM	01	23.40787	58.1283	Asia/Muscat	21188
+city:288764	Bawshar	بوشر	OM	06	23.57769	58.39982	Asia/Muscat	383257
+city:288789	Barka'	بركاء	OM	02	23.67872	57.88605	Asia/Muscat	81647
+city:288899	Bahla'	بهلاء	OM	01	22.97886	57.3047	Asia/Muscat	54338
+city:288902	Badiyah		OM	12	22.45	58.8	Asia/Muscat	18479
+city:288955	As Suwayq	السويق	OM	11	23.84944	57.43861	Asia/Muscat	107143
+city:288967	Seeb	السيب	OM	06	23.67027	58.18911	Asia/Muscat	470878
+city:289011	Rustaq	الرستاق	OM	02	23.39083	57.42444	Asia/Muscat	120000
+city:289174	Liwa	لوى	OM	11	24.53077	56.563	Asia/Muscat	26372
+city:289199	Al Khaburah	الخابورة	OM	11	23.97144	57.09313	Asia/Muscat	50223
+city:289317	Al Buraymi	البريمي	OM	10	24.25088	55.79312	Asia/Muscat	73670
+city:289433	Adam	أدم	OM	01	22.37934	57.52718	Asia/Muscat	17283
+city:289511	Al 'Unayzah	العنيزة	QA	01	25.33759	51.50953	Asia/Qatar	39761
+city:289523	Umm Salal Muhammad	أم صلال محمد	QA	09	25.41524	51.40647	Asia/Qatar	29391
+city:289545	Umm Ghuwaylinah	أُمّ غُوَيْلِينَة	QA	14	25.58716	51.14986	Asia/Qatar	39457
+city:289698	Nu'ayjah	نُعَيْجَة	QA	01	25.24617	51.53227	Asia/Qatar	19975
+city:289716	Mu'aydhir Rawdat Rashid	معيذر روضة راشد	QA	06	25.2617	51.39684	Asia/Qatar	27569
+city:289738	Madinat Khalifah	مَدِينَة خَلِيفَة	QA	01	25.32047	51.47787	Asia/Qatar	44459
+city:289847	Az Za'ayin	الضعاين	QA	13	25.57744	51.48306	Asia/Qatar	54339
+city:289888	Al Rayyan	الريان	QA	06	25.29194	51.42444	Asia/Qatar	272465
+city:289915	Al Wakrah	الوكرة	QA	10	25.17151	51.60337	Asia/Qatar	26436
+city:289962	Al Khawr	الخور	QA	04	25.68389	51.50583	Asia/Qatar	18923
+city:290030	Doha	الدوحة	QA	01	25.28545	51.53096	Asia/Qatar	344939
+city:290104	Sitrah	سترة	BH	16	26.15472	50.62056	Asia/Bahrain	72601
+city:290187	Madinat 'Isa	مَدِينَة عِيسَى	BH	17	26.17361	50.54778	Asia/Bahrain	38090
+city:290215	Jidd Hafs	جِدّ حَفْص	BH	16	26.21861	50.54778	Asia/Bahrain	66588
+city:290247	Madinat Hamad	مَدِينَة حَمَد	BH	19	26.11528	50.50694	Asia/Bahrain	133550
+city:290269	Dar Kulayb	دَار كُلَيْب	BH	17	26.06861	50.50389	Asia/Bahrain	65466
+city:290332	Al Muharraq	اَلْمُحَرَّق	BH	15	26.25722	50.61194	Asia/Bahrain	176583
+city:290340	Manama	المنامة	BH	16	26.22787	50.58565	Asia/Bahrain	147074
+city:290503	Warisan	ورسان	AE	03	25.16744	55.40708	Asia/Dubai	108759
+city:290581	Umm Suqeim	أم سقيم	AE	03	25.15491	55.21015	Asia/Dubai	16459
+city:290594	Umm Al Quwain City	أم القيوين	AE	07	25.56473	55.55517	Asia/Dubai	59098
+city:290680	Tarif Kalba		AE	04	25.0695	56.33115	Asia/Dubai	51000
+city:291061	Ar Rashidiyah	الراشدية	AE	03	25.22499	55.38947	Asia/Dubai	38425
+city:291074	Ras al-Khaimah	رَأْس ٱلْخَيْمَة	AE	05	25.78953	55.9432	Asia/Dubai	351943
+city:2911298	Hamburg		DE	04	53.55073	9.99302	Europe/Berlin	1973896
+city:291580	Zayed City	مدينة زايد	AE	01	23.65416	53.70522	Asia/Dubai	63482
+city:291696	Khawr Fakkan	مدينة خور فكان	AE	06	25.33132	56.34199	Asia/Dubai	40677
+city:291763	Kalba		AE	06	25.0513	56.35422	Asia/Dubai	37545
+city:291775	Jumayra	جميرا	AE	03	25.20795	55.24969	Asia/Dubai	39080
+city:292223	Dubai	دبي	AE	03	25.07725	55.30927	Asia/Dubai	3790000
+city:292231	Dibba Al-Fujairah	دبا الفجيرة	AE	04	25.59246	56.26176	Asia/Dubai	30000
+city:292239	Dibba Al-Hisn		AE	04	25.61955	56.27291	Asia/Dubai	26395
+city:292261	Deira	ديرة	AE	03	25.27143	55.30207	Asia/Dubai	400000
+city:292672	Sharjah city	إمارة الشارقة	AE	06	25.3342	55.41221	Asia/Dubai	1800000
+city:292688	Ar Ruways	الرويس	AE	01	24.11028	52.73056	Asia/Dubai	25000
+city:292862	Hatta	حتا	AE	03	24.80073	56.12726	Asia/Dubai	15324
+city:292878	Fujairah	الفجيرة	AE	04	25.11641	56.34141	Asia/Dubai	118933
+city:292913	Al Ain City	العين	AE	01	24.19167	55.76056	Asia/Dubai	846747
+city:292932	Ajman	عجمان	AE	02	25.40177	55.47878	Asia/Dubai	490035
+city:292953	Adh Dhayd	الذيد	AE	06	25.28812	55.88157	Asia/Dubai	20165
+city:292968	Abu Dhabi	أبوظبي	AE	01	24.45118	54.39696	Asia/Dubai	1807000
+city:292991	Abu Hayl		AE	03	25.28413	55.33153	Asia/Dubai	18043
+city:293067	Zikhron Ya'aqov		IL	04	32.56883	34.95427	Asia/Jerusalem	23206
+city:293100	Safed	صفد	IL	03	32.96465	35.496	Asia/Jerusalem	36094
+city:293153	Yokneam Illit		IL	03	32.64661	35.09202	Asia/Jerusalem	23796
+city:293181	Yirka	يركا	IL	03	32.95435	35.21197	Asia/Jerusalem	17171
+city:293207	Yehud	يهود	IL	02	32.03317	34.89091	Asia/Jerusalem	25600
+city:293222	Yavne		IL	02	31.87808	34.73983	Asia/Jerusalem	47585
+city:293253	Jaffa	يافا	IL	05	32.05043	34.75224	Asia/Jerusalem	100000
+city:293254	Yafa	يافة الناصرة	IL	03	32.68923	35.27832	Asia/Jerusalem	18905
+city:293286	Umm el Fahm	أم الفحم	IL	04	32.51758	35.15397	Asia/Jerusalem	56109
+city:293308	Tirat Carmel		IL	04	32.76025	34.96874	Asia/Jerusalem	27822
+city:293322	Tiberias	طبريا	IL	03	32.79396	35.53152	Asia/Jerusalem	44779
+city:293397	Tel Aviv	تل أبيب	IL	05	32.08088	34.78057	Asia/Jerusalem	432892
+city:293420	Ma'alot-Tarshiha	معالوت ترشيحا	IL	03	33.01667	35.26667	Asia/Jerusalem	21836
+city:293426	Tamra	طمرة	IL	03	32.85301	35.1987	Asia/Jerusalem	25917
+city:293539	Shefar'am	شفا عمرو	IL	03	32.80583	35.16895	Asia/Jerusalem	42137
+city:293619	Sderot		IL	01	31.525	34.59693	Asia/Jerusalem	27635
+city:293655	Sakhnin	سخنين	IL	03	32.86506	35.29771	Asia/Jerusalem	31702
+city:293690	Rosh HaAyin		IL	02	32.09547	34.95444	Asia/Jerusalem	72881
+city:293703	Rishon LeZiyyon		IL	02	31.97102	34.78939	Asia/Jerusalem	258535
+city:293725	Rehovot		IL	02	31.89421	34.81199	Asia/Jerusalem	149392
+city:293768	Ramla	الرملة	IL	02	31.92624	34.8635	Asia/Jerusalem	76246
+city:293783	Ramat HaSharon	رامات هاشارون	IL	05	32.1459	34.83859	Asia/Jerusalem	47245
+city:293788	Ramat Gan	رمات غان	IL	05	32.08227	34.81065	Asia/Jerusalem	170822
+city:293807	Raanana		IL	02	32.1836	34.87386	Asia/Jerusalem	75421
+city:293822	Qiryat Yam		IL	04	32.84966	35.06973	Asia/Jerusalem	39897
+city:293823	Qiryat Tiv'on		IL	04	32.71217	35.12505	Asia/Jerusalem	18130
+city:293825	Kiryat Shmona	كريات شمونة	IL	03	33.21204	35.57044	Asia/Jerusalem	22512
+city:293831	Kiryat Motzkin		IL	04	32.83706	35.0776	Asia/Jerusalem	43303
+city:293835	Qiryat Mal'akhi		IL	01	31.72888	34.74632	Asia/Jerusalem	25362
+city:293837	Qiryat HaYovel		IL	06	31.76667	35.16667	Asia/Jerusalem	25000
+city:293842	Kiryat Gat	كريات غات	IL	01	31.60998	34.76422	Asia/Jerusalem	61817
+city:293844	Kiryat Bialik		IL	04	32.8275	35.08583	Asia/Jerusalem	43955
+city:293845	Kiryat Ata		IL	04	32.81149	35.11323	Asia/Jerusalem	59030
+city:293896	Qalansuwa	قلنسوة	IL	02	32.28493	34.98106	Asia/Jerusalem	16898
+city:293918	Petah Tikva	بتاح تكفا	IL	02	32.0888	34.88666	Asia/Jerusalem	253529
+city:293943	Pardes Hanna Karkur		IL	04	32.47408	34.97781	Asia/Jerusalem	44840
+city:293962	Or Yehuda	أور يهودا	IL	05	32.02923	34.85788	Asia/Jerusalem	36813
+city:293969	Or Akiva		IL	04	32.5064	34.92087	Asia/Jerusalem	18972
+city:293992	Ofakim		IL	01	31.3141	34.62025	Asia/Jerusalem	34666
+city:294068	Netivot	نتيفوت	IL	01	31.42305	34.58911	Asia/Jerusalem	43732
+city:294071	Netanya	نتانيا	IL	02	32.33294	34.85917	Asia/Jerusalem	228204
+city:294074	Ness Ziona	نيس زيونا	IL	02	31.92933	34.79868	Asia/Jerusalem	50351
+city:294078	Nesher	نيشير	IL	04	32.76622	35.04425	Asia/Jerusalem	24148
+city:294097	Nazerat 'Illit	الناصرة العليا	IL	03	32.70816	35.32469	Asia/Jerusalem	43556
+city:294098	Nazareth	الناصرة	IL	03	32.70087	35.29719	Asia/Jerusalem	77445
+city:294117	Nahariya	نهاريا	IL	03	33.00892	35.09814	Asia/Jerusalem	58096
+city:294210	Migdal HaEmeq	مجدال هعيمق	IL	03	32.67788	35.24158	Asia/Jerusalem	25675
+city:294245	Mevaseret Zion	مفسيرت تصيون	IL	06	31.80186	35.15072	Asia/Jerusalem	24052
+city:294373	Majd el Kurum	مجد الكروم	IL	03	32.92094	35.25438	Asia/Jerusalem	15455
+city:294387	Maghar	المغار	IL	03	32.88888	35.40831	Asia/Jerusalem	22957
+city:294421	Lod	اللد	IL	02	31.9467	34.8903	Asia/Jerusalem	77223
+city:294492	Kfar Yona		IL	02	32.31517	34.9357	Asia/Jerusalem	24778
+city:294514	Kfar Saba	كفار سابا	IL	02	32.175	34.90694	Asia/Jerusalem	110456
+city:294577	Karmiel		IL	03	32.90951	35.29768	Asia/Jerusalem	46252
+city:294604	Kafr Qasim	كفر قاسم	IL	02	32.11443	34.9756	Asia/Jerusalem	23823
+city:294605	Kafr Qari'	كفر قرع	IL	04	32.50527	35.05215	Asia/Jerusalem	19018
+city:294608	Kafr Manda		IL	03	32.81095	35.26071	Asia/Jerusalem	20188
+city:294610	Kafr Kanna	كفر كنا	IL	03	32.7466	35.34242	Asia/Jerusalem	22751
+city:294622	Judeida Makr	مكر جديده	IL	03	32.9282	35.15705	Asia/Jerusalem	21163
+city:294751	Holon	حولون	IL	05	32.01034	34.77918	Asia/Jerusalem	196282
+city:294760	Hod HaSharon	هود هشارون	IL	02	32.15912	34.89277	Asia/Jerusalem	63175
+city:294778	Herzliya		IL	05	32.16627	34.82536	Asia/Jerusalem	97470
+city:294801	Haifa	حيفا	IL	04	32.81303	34.99928	Asia/Jerusalem	285316
+city:294946	Hadera		IL	04	32.44192	34.9039	Asia/Jerusalem	97335
+city:294981	Giv'at Shmuel		IL	05	32.07817	34.84858	Asia/Jerusalem	28628
+city:294999	Giv'atayim	غفعتايم	IL	05	32.07225	34.81253	Asia/Jerusalem	60644
+city:2950159	Berlin		DE	16	52.52437	13.41053	Europe/Berlin	3426354
+city:295064	Gedera	غديرا	IL	02	31.81456	34.77998	Asia/Jerusalem	30798
+city:295080	Gan Yavne		IL	02	31.78737	34.70659	Asia/Jerusalem	23869
+city:295089	Ganei Tikva		IL	02	32.05971	34.8732	Asia/Jerusalem	25093
+city:295127	Tirah		IL	02	32.2341	34.95023	Asia/Jerusalem	26552
+city:295130	Et Taiyiba	الطيبة	IL	02	32.26616	35.00893	Asia/Jerusalem	43957
+city:295174	Ar Rayna		IL	03	32.7222	35.3156	Asia/Jerusalem	15621
+city:295277	Eilat	إيلات	IL	01	29.55805	34.94821	Asia/Jerusalem	52299
+city:295328	Dimona	ديمونا	IL	01	31.07079	35.03269	Asia/Jerusalem	36192
+city:295365	Daliyat al Karmel	دالية الكرمل	IL	04	32.69383	35.04686	Asia/Jerusalem	25000
+city:295410	Binyamina-Giv'at 'Ada		IL	04	32.52305	34.94487	Asia/Jerusalem	15847
+city:295432	Bet Shemesh	بيت شيمش	IL	06	31.73072	34.99293	Asia/Jerusalem	124957
+city:295435	Bet Shean	بيسان	IL	03	32.49658	35.4965	Asia/Jerusalem	16800
+city:295514	Bnei Brak	بني براك	IL	05	32.08074	34.8338	Asia/Jerusalem	214444
+city:295525	Be'er Ya'aqov		IL	02	31.93864	34.83749	Asia/Jerusalem	27768
+city:295530	Beersheba	بئر السبع	IL	01	31.25181	34.7913	Asia/Jerusalem	186600
+city:295548	Bat Yam	بات يام	IL	05	32.02379	34.75185	Asia/Jerusalem	129012
+city:295571	Baqa el Gharbiya		IL	04	32.42061	35.04266	Asia/Jerusalem	29950
+city:295620	Ashkelon		IL	01	31.66926	34.57149	Asia/Jerusalem	144073
+city:295629	Ashdod	أشدود	IL	01	31.79213	34.64966	Asia/Jerusalem	226838
+city:295655	Ar'ara	عرعرة	IL	04	32.49565	35.09261	Asia/Jerusalem	24904
+city:295657	Arad		IL	01	31.25882	35.21282	Asia/Jerusalem	27967
+city:295721	Acre	عكا	IL	03	32.92814	35.07647	Asia/Jerusalem	51420
+city:295740	Afula	العفولة	IL	03	32.60907	35.2892	Asia/Jerusalem	44930
+city:296137	Yumurtalik		TR	81	36.76863	35.78938	Europe/Istanbul	17654
+city:296173	Yueksekova	يوكسكوفا	TR	70	37.57362	44.28716	Europe/Istanbul	71729
+city:2964574	Dublin		IE	L	53.33306	-6.24889	Europe/Dublin	1024027
+city:296562	Yozgat	يوزغات	TR	66	39.82	34.80444	Europe/Istanbul	87881
+city:296829	Yesilova		TR	81	38.15566	36.25758	Europe/Istanbul	15242
+city:296832	Yesilli		TR	72	37.33813	40.81739	Europe/Istanbul	32072
+city:296852	Erzin		TR	31	36.95348	36.19839	Europe/Istanbul	26316
+city:296895	Yerkoey		TR	66	39.63806	34.46722	Europe/Istanbul	35294
+city:297090	Didim		TR	09	37.38496	27.25643	Europe/Istanbul	26000
+city:297564	Yatagan		TR	48	37.34025	28.14279	Europe/Istanbul	19020
+city:297789	Yalvac		TR	33	38.29556	31.17778	Europe/Istanbul	39145
+city:297917	Yahyali		TR	38	38.10228	35.35704	Europe/Istanbul	25019
+city:298033	Viransehir		TR	63	37.22349	39.75519	Europe/Istanbul	154163
+city:298088	Varto		TR	49	39.17375	41.45402	Europe/Istanbul	18691
+city:298117	Van	وان	TR	65	38.49457	43.38323	Europe/Istanbul	525016
+city:298230	Cimin		TR	24	39.70947	39.70015	Europe/Istanbul	39591
+city:298299	Usak	أوشاك	TR	64	38.67351	29.4058	Europe/Istanbul	369433
+city:298316	Urla		TR	35	38.32292	26.76403	Europe/Istanbul	62989
+city:298326	UErguep		TR	50	38.6296	34.91199	Europe/Istanbul	16642
+city:298333	Sanliurfa	شانلي أورفة	TR	63	37.16708	38.79392	Europe/Istanbul	449549
+city:298435	Arsuz		TR	31	36.41305	35.89033	Europe/Istanbul	109550
+city:298806	Turgutlu		TR	45	38.49533	27.6997	Europe/Istanbul	103292
+city:298846	Tunceli	تونجلي	TR	62	39.09921	39.54351	Europe/Istanbul	35161
+city:2988507	Paris		FR	11	48.85341	2.3488	Europe/Paris	2138551
+city:298935	Torbali		TR	35	38.182	27.335	Europe/Istanbul	50303
+city:299137	Tire		TR	35	38.08877	27.73508	Europe/Istanbul	47220
+city:299545	Tavsanli		TR	43	39.54237	29.49866	Europe/Istanbul	52182
+city:299582	Tatvan		TR	13	38.49221	42.28269	Europe/Istanbul	73222
+city:299643	Tasucu		TR	32	36.3214	33.88165	Europe/Istanbul	15184
+city:299817	Tarsus	طرسوس	TR	32	36.91766	34.89277	Europe/Istanbul	350732
+city:299900	Talas		TR	38	38.6908	35.5538	Europe/Istanbul	36890
+city:300058	Susurluk		TR	10	39.91361	28.15778	Europe/Istanbul	24816
+city:300075	Suruc		TR	63	36.97612	38.42533	Europe/Istanbul	101178
+city:300352	Sorgun		TR	66	39.81012	35.18596	Europe/Istanbul	62862
+city:300371	Soma		TR	45	39.18554	27.60945	Europe/Istanbul	98714
+city:300377	Solhan		TR	12	38.96525	41.05443	Europe/Istanbul	15303
+city:300399	Soeke		TR	09	37.7482	27.40614	Europe/Istanbul	68230
+city:300614	Siverek		TR	63	37.75503	39.31667	Europe/Istanbul	175341
+city:300619	Sivas	سيواس	TR	58	39.74833	37.01611	Europe/Istanbul	264022
+city:300640	Sirnak		TR	80	37.51393	42.45432	Europe/Istanbul	67662
+city:300791	Simav		TR	43	39.0882	28.97767	Europe/Istanbul	34909
+city:300796	Silvan	ميافارقين	TR	21	38.13708	41.00817	Europe/Istanbul	65956
+city:300797	Silopi		TR	80	37.24379	42.46345	Europe/Istanbul	114645
+city:300808	Silifke	سيليفكى	TR	32	36.37778	33.93444	Europe/Istanbul	132665
+city:300822	Siirt	سعرد	TR	74	37.9293	41.94134	Europe/Istanbul	114034
+city:301010	Seydisehir		TR	71	37.41926	31.84527	Europe/Istanbul	51089
+city:301089	Serinyol		TR	31	36.36139	36.21361	Europe/Istanbul	16753
+city:301101	Serik		TR	07	36.91748	31.10463	Europe/Istanbul	36925
+city:301116	Sereflikochisar		TR	68	38.93925	33.5386	Europe/Istanbul	44101
+city:301172	Senirkent		TR	33	38.10444	30.54861	Europe/Istanbul	15919
+city:301209	Semdinli	شمدينلي	TR	70	37.30514	44.5742	Europe/Istanbul	18978
+city:301256	Selcuk		TR	35	37.95137	27.36849	Europe/Istanbul	29101
+city:301350	Seferihisar		TR	35	38.1975	26.83881	Europe/Istanbul	19596
+city:301537	Sarkisla		TR	58	39.35186	36.40976	Europe/Istanbul	23800
+city:301539	Sarkikaraagac		TR	33	38.07944	31.36639	Europe/Istanbul	32771
+city:301827	Saraykoey		TR	20	37.92448	28.92516	Europe/Istanbul	18937
+city:301911	Sandikli		TR	03	38.46472	30.26946	Europe/Istanbul	42981
+city:301975	Samandag		TR	31	36.08012	35.97603	Europe/Istanbul	123447
+city:302043	Salihli		TR	45	38.48258	28.14774	Europe/Istanbul	119311
+city:302355	Reyhanli	الريحانية	TR	31	36.26791	36.56747	Europe/Istanbul	56995
+city:302525	Polatli		TR	68	39.57715	32.14132	Europe/Istanbul	93262
+city:302800	Pazarcik		TR	46	37.48685	37.29961	Europe/Istanbul	23850
+city:302819	Patnos		TR	04	39.22493	42.85693	Europe/Istanbul	57933
+city:302824	Pasinler		TR	25	39.97975	41.66997	Europe/Istanbul	24553
+city:303195	Osmaniye	عثمانية	TR	91	37.07417	36.24778	Europe/Istanbul	202837
+city:303290	Ortakoey		TR	75	38.73728	34.03866	Europe/Istanbul	31144
+city:303354	Ortaca		TR	48	36.83915	28.76457	Europe/Istanbul	19741
+city:303700	OEdemis		TR	35	38.2278	27.96955	Europe/Istanbul	67153
+city:303750	Nusaybin	نصيبين	TR	72	37.07028	41.21465	Europe/Istanbul	88977
+city:303798	Nizip		TR	83	37.00972	37.79417	Europe/Istanbul	82308
+city:303827	Nigde	نيغدة	TR	73	37.96583	34.67935	Europe/Istanbul	91039
+city:303831	Nevsehir	نوشهر	TR	50	38.625	34.71222	Europe/Istanbul	75527
+city:303873	Nazilli		TR	09	37.91631	28.32225	Europe/Istanbul	119370
+city:304013	Mut		TR	32	36.64389	33.43885	Europe/Istanbul	49397
+city:304081	Mus	موش	TR	49	38.73163	41.48482	Europe/Istanbul	82536
+city:304184	Mugla	موغلا	TR	48	37.21807	28.3665	Europe/Istanbul	92328
+city:304196	Mucur		TR	40	39.06147	34.38286	Europe/Istanbul	16522
+city:304355	Milas		TR	48	37.31639	27.78389	Europe/Istanbul	43193
+city:304382	Midyat	مديات	TR	72	37.41908	41.33909	Europe/Istanbul	76268
+city:304531	Mersin		TR	32	36.81196	34.63886	Europe/Istanbul	537842
+city:304612	Menemen		TR	35	38.60754	27.06938	Europe/Istanbul	53489
+city:3046446	Pest		HU	05	47.5	19.08333	Europe/Budapest	1001748
+city:304782	Marmaris	مرماريس	TR	48	36.855	28.27417	Europe/Istanbul	33731
+city:304797	Mardin	ماردين	TR	72	37.31309	40.74357	Europe/Istanbul	129864
+city:304827	Manisa		TR	45	38.61202	27.42647	Europe/Istanbul	243971
+city:304854	Manavgat		TR	07	36.78672	31.44086	Europe/Istanbul	99254
+city:304916	Malazgirt		TR	49	39.1465	42.53536	Europe/Istanbul	26108
+city:304922	Malatya	ملطية	TR	44	38.35018	38.31667	Europe/Istanbul	750491
+city:304964	Mahmutlar		TR	07	36.49463	32.09085	Europe/Istanbul	24227
+city:305089	Lice		TR	21	38.45821	40.63888	Europe/Istanbul	16336
+city:305268	Kuetahya	كوتاهية	TR	43	39.42417	29.98333	Europe/Istanbul	185008
+city:305359	Kusadasi		TR	09	37.86014	27.25713	Europe/Istanbul	63177
+city:3054643	Budapest		HU	05	47.49835	19.04045	Europe/Budapest	1741041
+city:305532	Kurtalan		TR	74	37.92533	41.68493	Europe/Istanbul	32114
+city:305680	Beykonak		TR	07	36.32573	30.30302	Europe/Istanbul	30339
+city:305742	Kulu		TR	71	39.09513	33.07989	Europe/Istanbul	47037
+city:305750	Kulp		TR	21	38.49754	41.00668	Europe/Istanbul	26569
+city:305810	Kula		TR	45	38.54726	28.64976	Europe/Istanbul	31100
+city:305969	Kuecuekcigli		TR	35	38.502	27.053	Europe/Istanbul	21784
+city:306041	Kozluk		TR	76	38.19118	41.47775	Europe/Istanbul	29502
+city:306112	Kozan		TR	81	37.45517	35.81573	Europe/Istanbul	88115
+city:306207	Kovancilar		TR	23	38.71882	39.86268	Europe/Istanbul	22976
+city:306474	Korkuteli		TR	07	37.06498	30.19565	Europe/Istanbul	20465
+city:306571	Konya	قونية	TR	71	37.87135	32.48464	Europe/Istanbul	1433861
+city:306626	Konakli		TR	07	36.59251	31.89539	Europe/Istanbul	17966
+city:306641	Konak		TR	35	38.4	27.1	Europe/Istanbul	332277
+city:3067696	Prague		CZ	52	50.08804	14.42076	Europe/Prague	1165581
+city:307084	Kiziltepe		TR	72	37.18836	40.57723	Europe/Istanbul	150174
+city:307211	Serinhisar		TR	20	37.58105	29.26639	Europe/Istanbul	17169
+city:307515	Kirsehir	قرشهر	TR	40	39.14583	34.16389	Europe/Istanbul	150700
+city:307623	Kirkagac		TR	45	39.10638	27.66925	Europe/Istanbul	21789
+city:307654	Kirikkale	كيركالي	TR	79	39.84528	33.50639	Europe/Istanbul	186960
+city:307657	Kirikhan	قري خان	TR	31	36.49939	36.35755	Europe/Istanbul	60916
+city:307677	Kirecocagi		TR	81	37.05	35.23333	Europe/Istanbul	45476
+city:307864	Kilis	كلس	TR	90	36.71611	37.115	Europe/Istanbul	111648
+city:308024	Keskin		TR	79	39.67306	33.61361	Europe/Istanbul	49679
+city:308220	Kemer		TR	07	36.59778	30.56056	Europe/Istanbul	17300
+city:308224	Kemalpasa		TR	35	38.42621	27.41731	Europe/Istanbul	30411
+city:308464	Kayseri	قيصرية	TR	38	38.73222	35.48528	Europe/Istanbul	1452458
+city:308988	Karsiyaka		TR	35	38.45772	27.1142	Europe/Istanbul	339624
+city:309415	Karapinar		TR	71	37.71596	33.55064	Europe/Istanbul	49509
+city:309527	Karaman	كارامان	TR	78	37.18111	33.215	Europe/Istanbul	175390
+city:309647	Agri	أغري	TR	04	39.71467	43.04015	Europe/Istanbul	124483
+city:309663	Karakocan		TR	23	38.95178	40.02706	Europe/Istanbul	29735
+city:310004	Karacoban		TR	25	39.34364	42.09918	Europe/Istanbul	20467
+city:310641	Kaman		TR	40	39.3575	33.72389	Europe/Istanbul	28605
+city:310855	Kahta	كاهتا	TR	02	37.78552	38.6237	Europe/Istanbul	97875
+city:310859	Kahramanmaras	مرعش	TR	46	37.5847	36.92641	Europe/Istanbul	384953
+city:310892	Kadirli		TR	91	37.37389	36.09611	Europe/Istanbul	70248
+city:310907	Kadinhani		TR	71	38.23972	32.21139	Europe/Istanbul	15301
+city:311046	Izmir	إزمير	TR	35	38.41273	27.13838	Europe/Istanbul	2938292
+city:311073	Isparta	إسبرطة	TR	33	37.76444	30.55222	Europe/Istanbul	172334
+city:311111	Iskenderun	إسكندرونة	TR	31	36.58718	36.17347	Europe/Istanbul	251682
+city:311314	Incirliova		TR	09	37.85222	27.72361	Europe/Istanbul	18572
+city:311453	Imamoglu		TR	81	37.26506	35.65717	Europe/Istanbul	31916
+city:311553	Ilgin		TR	71	38.27917	31.91389	Europe/Istanbul	27423
+city:311665	Igdir	اغدير	TR	88	39.92371	44.045	Europe/Istanbul	101700
+city:311704	Idil	إيدل	TR	80	37.33481	41.88944	Europe/Istanbul	22960
+city:3117735	Madrid		ES	29	40.4165	-3.70256	Europe/Madrid	3255944
+city:312024	Hizan		TR	13	38.22498	42.4183	Europe/Istanbul	15302
+city:312114	Hinis		TR	25	39.35766	41.69253	Europe/Istanbul	35472
+city:312134	Hilvan		TR	63	37.58687	38.95505	Europe/Istanbul	16990
+city:312156	Hidirbey		TR	31	36.20802	36.12787	Europe/Istanbul	27057
+city:3128760	Barcelona		ES	56	41.38879	2.15899	Europe/Madrid	1686208
+city:312899	Hadim		TR	71	36.98776	32.45674	Europe/Istanbul	20110
+city:313013	Hacilar		TR	38	38.64631	35.44937	Europe/Istanbul	21167
+city:313331	Gueroymak		TR	13	38.5758	42.01558	Europe/Istanbul	25826
+city:314133	Goelbasi		TR	68	39.79043	32.80903	Europe/Istanbul	165201
+city:314136	Goelbasi		TR	02	37.78361	37.63667	Europe/Istanbul	28078
+city:314188	Goeksun		TR	46	38.02096	36.4973	Europe/Istanbul	34243
+city:3143244	Oslo		NO	12	59.91273	10.74609	Europe/Oslo	1082575
+city:314648	Genc		TR	12	38.74773	40.55343	Europe/Istanbul	22493
+city:314665	Gemerek		TR	58	39.18342	36.07189	Europe/Istanbul	16916
+city:314716	Gediz		TR	43	38.99389	29.39131	Europe/Istanbul	26253
+city:314812	Gazipasa		TR	07	36.26942	32.31792	Europe/Istanbul	18371
+city:314830	Gaziantep	عنتاب	TR	83	37.05944	37.3825	Europe/Istanbul	2222415
+city:314903	Foca		TR	35	38.6703	26.75656	Europe/Istanbul	28594
+city:314967	Fethiye	فتحية	TR	48	36.64038	29.12758	Europe/Istanbul	60437
+city:315061	Ezine		TR	17	39.78561	26.34083	Europe/Istanbul	15677
+city:315153	Etlik		TR	68	39.98205	32.82459	Europe/Istanbul	32156
+city:315202	Eskisehir	أسكي شهر	TR	26	39.77667	30.52056	Europe/Istanbul	921630
+city:315368	Erzurum	أرضروم	TR	25	39.90861	41.27694	Europe/Istanbul	767848
+city:315373	Erzincan	أرزينجان	TR	24	39.73919	39.49015	Europe/Istanbul	150714
+city:315401	Ermenek		TR	78	36.64043	32.89179	Europe/Istanbul	16986
+city:315468	Ergani		TR	21	38.26899	39.75446	Europe/Istanbul	52684
+city:315498	Eregli		TR	71	37.51333	34.04672	Europe/Istanbul	156253
+city:315515	Erdemli	إيرديملي	TR	32	36.60498	34.30836	Europe/Istanbul	46570
+city:315530	Ercis		TR	65	39.02587	43.35964	Europe/Istanbul	91915
+city:315621	Emirdag		TR	03	39.01972	31.15	Europe/Istanbul	20063
+city:315639	Emet		TR	43	39.343	29.25847	Europe/Istanbul	23812
+city:315697	Elmali		TR	07	36.73583	29.91775	Europe/Istanbul	16587
+city:315720	Elmadag		TR	68	39.92083	33.23083	Europe/Istanbul	25394
+city:315795	Elbistan		TR	46	38.20591	37.1983	Europe/Istanbul	80456
+city:315808	Elazig	معمورة العزيز	TR	23	38.67431	39.22321	Europe/Istanbul	443363
+city:315905	Egirdir		TR	33	37.87462	30.85042	Europe/Istanbul	16891
+city:315985	Edremit	إدرميت	TR	10	39.59611	27.02444	Europe/Istanbul	40777
+city:316102	Dursunbey		TR	10	39.58596	28.62568	Europe/Istanbul	17532
+city:316284	Doertyol		TR	31	36.83917	36.23025	Europe/Istanbul	56513
+city:316411	Dogubayazit		TR	04	39.54694	44.08417	Europe/Istanbul	81136
+city:316541	Diyarbakir	ديار بكر	TR	21	37.91363	40.21721	Europe/Istanbul	1833684
+city:316542	Diyadin		TR	04	39.54056	43.67135	Europe/Istanbul	18936
+city:316634	Dinar		TR	03	38.065	30.16557	Europe/Istanbul	35359
+city:316795	Develi		TR	38	38.39056	35.49222	Europe/Istanbul	35868
+city:3169070	Rome		IT	07	41.89193	12.51133	Europe/Rome	2318895
+city:317109	Denizli	دنيزلي	TR	20	37.77417	29.0875	Europe/Istanbul	313238
+city:317241	Demirci		TR	45	39.04607	28.65889	Europe/Istanbul	21378
+city:3173435	Milan		IT	09	45.46427	9.18951	Europe/Rome	1371498
+city:317587	Dargecit		TR	72	37.54616	41.71652	Europe/Istanbul	20793
+city:317588	Darende		TR	44	38.54583	37.50583	Europe/Istanbul	20388
+city:317844	Cumra		TR	71	37.5732	32.77446	Europe/Istanbul	45657
+city:317851	Menderes		TR	35	38.24963	27.13429	Europe/Istanbul	21965
+city:318137	Hakkari	هكاري	TR	70	37.57444	43.74083	Europe/Istanbul	77699
+city:318253	Cizre		TR	80	37.33024	42.18484	Europe/Istanbul	134041
+city:318372	Cine		TR	09	37.61266	28.05912	Europe/Istanbul	21327
+city:318668	Ceylanpinar		TR	63	36.84722	40.05	Europe/Istanbul	31488
+city:318675	Ceyhan	جيهان	TR	81	37.02472	35.8175	Europe/Istanbul	96303
+city:318755	Cesme		TR	35	38.32614	26.30574	Europe/Istanbul	33259
+city:318766	Cermik		TR	21	38.13538	39.445	Europe/Istanbul	20975
+city:319104	Cay		TR	03	38.59167	31.02861	Europe/Istanbul	34215
+city:319357	Cat		TR	25	39.60641	40.96844	Europe/Istanbul	15556
+city:319528	Kestel		TR	07	36.50861	32.08278	Europe/Istanbul	15445
+city:320004	Caglayancerit		TR	46	37.74523	37.28618	Europe/Istanbul	15530
+city:320257	Cigli		TR	35	38.49645	27.07029	Europe/Istanbul	214065
+city:320369	Burhaniye		TR	10	39.50041	26.97269	Europe/Istanbul	38083
+city:320392	Burdur	بوردور	TR	15	37.72028	30.29083	Europe/Istanbul	95436
+city:320448	Bulanik		TR	49	39.08656	42.27158	Europe/Istanbul	31430
+city:320533	Bucak		TR	15	37.45917	30.595	Europe/Istanbul	29234
+city:320552	Bozyazi		TR	32	36.1082	32.96113	Europe/Istanbul	28456
+city:320557	Bozueyuek		TR	11	39.90778	30.03667	Europe/Istanbul	55365
+city:320581	Bozova		TR	63	37.3625	38.52667	Europe/Istanbul	21502
+city:320857	Bornova		TR	35	38.47921	27.2399	Europe/Istanbul	452479
+city:320871	Bor		TR	73	37.89056	34.55889	Europe/Istanbul	32435
+city:320879	Bolvadin		TR	03	38.71111	31.04861	Europe/Istanbul	55870
+city:320995	Bodrum	بودروم	TR	48	37.03833	27.42917	Europe/Istanbul	39317
+city:321025	Bitlis	بدليس	TR	13	38.40115	42.10784	Europe/Istanbul	53023
+city:321031	Bismil		TR	21	37.84514	40.65931	Europe/Istanbul	74493
+city:321062	Birecik		TR	63	37.02577	37.97841	Europe/Istanbul	44284
+city:321082	Bingoel	بينغول	TR	12	38.88472	40.49389	Europe/Istanbul	128935
+city:321136	Bigadic		TR	10	39.3925	28.13111	Europe/Istanbul	15242
+city:321191	Beysehir		TR	71	37.67735	31.72458	Europe/Istanbul	44460
+city:321337	Besni		TR	02	37.69278	37.86111	Europe/Istanbul	41892
+city:321426	Bergama		TR	35	39.12074	27.18052	Europe/Istanbul	57200
+city:321572	Belen		TR	31	36.48866	36.19489	Europe/Istanbul	20113
+city:321580	Belek		TR	07	36.8631	31.06541	Europe/Istanbul	73260
+city:321786	Bayindir		TR	35	38.21741	27.64744	Europe/Istanbul	16850
+city:321836	Batman	بطمان	TR	76	37.88738	41.13221	Europe/Istanbul	452157
+city:321929	Baskil		TR	23	38.56866	38.81634	Europe/Istanbul	15922
+city:322051	Banaz		TR	64	38.73707	29.75194	Europe/Istanbul	17080
+city:322165	Balikesir	بالِق أسير	TR	10	39.64917	27.88611	Europe/Istanbul	238151
+city:322212	Balatcik		TR	35	38.51626	27.04752	Europe/Istanbul	19082
+city:322673	Ayvalik		TR	10	39.31927	26.69341	Europe/Istanbul	70002
+city:322830	Aydin	أيدين	TR	09	37.84501	27.83963	Europe/Istanbul	163022
+city:323094	Askale		TR	25	39.92083	40.695	Europe/Istanbul	15462
+city:323777	Antalya	أنطاليا	TR	07	36.90812	30.69556	Europe/Istanbul	1335002
+city:323779	Antakya	أنطاكية	TR	31	36.20655	36.15722	Europe/Istanbul	399045
+city:323786	Ankara	أنقرة	TR	68	39.91987	32.85427	Europe/Istanbul	3517182
+city:323828	Anamur	أنامور	TR	32	36.07508	32.83691	Europe/Istanbul	57128
+city:324106	Aliaga		TR	35	38.79975	26.97203	Europe/Istanbul	44883
+city:324172	Alasehir	آلاشهر	TR	45	38.35083	28.51718	Europe/Istanbul	48147
+city:324190	Alanya	ألانيا	TR	07	36.54375	31.99982	Europe/Istanbul	364180
+city:324490	Aksehir		TR	71	38.3575	31.41639	Europe/Istanbul	64446
+city:324496	Aksaray	آق سراي	TR	75	38.37255	34.02537	Europe/Istanbul	327575
+city:324698	Akhisar		TR	45	38.91852	27.84006	Europe/Istanbul	84659
+city:324768	Akdagmadeni		TR	66	39.66028	35.88361	Europe/Istanbul	23048
+city:324859	Akcapinar		TR	62	38.94728	38.9423	Europe/Istanbul	84366
+city:324944	Akcakale	أقجة قلعة	TR	63	36.71111	38.9475	Europe/Istanbul	32114
+city:325103	Ahlat		TR	13	38.7489	42.48007	Europe/Istanbul	64695
+city:325303	Afyonkarahisar	أفيون قره حصار	TR	03	38.75667	30.54333	Europe/Istanbul	251799
+city:325304	Afsin		TR	46	38.24769	36.91399	Europe/Istanbul	39613
+city:325330	Adiyaman	أديامان	TR	02	37.76441	38.27629	Europe/Istanbul	290883
+city:325336	Adilcevaz		TR	13	38.79911	42.73159	Europe/Istanbul	52781
+city:325363	Adana	أضنة	TR	81	36.98615	35.32531	Europe/Istanbul	1816750
+city:3369157	Cape Town		ZA	11	-33.92584	18.42322	Africa/Johannesburg	4772846
+city:3390760	Recife		BR	30	-8.05389	-34.88111	America/Recife	1653461
+city:3395981	Maceio		BR	02	-9.66583	-35.73528	America/Maceio	1031597
+city:3399415	Fortaleza		BR	06	-3.71722	-38.54306	America/Fortaleza	2400000
+city:3405870	Belem		BR	16	-1.45583	-48.50444	America/Belem	1499641
+city:3435910	Buenos Aires		AR	07	-34.61315	-58.37723	America/Argentina/Buenos_Aires	2891082
+city:3439389	Asuncion		PY	22	-25.28646	-57.647	America/Asuncion	1482200
+city:3441575	Montevideo		UY	10	-34.90328	-56.18816	America/Montevideo	1270737
+city:3448439	Sao Paulo		BR	27	-23.5475	-46.63611	America/Sao_Paulo	12400232
+city:344979	Addis Ababa		ET	44	9.02497	38.74689	Africa/Addis_Ababa	3860000
+city:3450554	Salvador		BR	05	-12.97563	-38.49096	America/Bahia	2711840
+city:3451190	Rio de Janeiro		BR	21	-22.90642	-43.18223	America/Sao_Paulo	6747815
+city:3452925	Porto Alegre		BR	23	-30.03283	-51.23019	America/Sao_Paulo	1488252
+city:346030	Zefta	زفتى	EG	05	30.7142	31.24425	Africa/Cairo	111700
+city:3461786	Guarulhos		BR	27	-23.46278	-46.53333	America/Sao_Paulo	1345364
+city:346201	Zaafarana		EG	02	29.11007	32.66012	Africa/Cairo	46993
+city:3462377	Goiania		BR	29	-16.67861	-49.25389	America/Sao_Paulo	1536097
+city:3464975	Curitiba		BR	18	-25.42778	-49.27306	America/Sao_Paulo	1948626
+city:3467865	Campinas		BR	27	-22.90556	-47.06083	America/Sao_Paulo	1031554
+city:3469058	Brasilia		BR	07	-15.77972	-47.92972	America/Sao_Paulo	2207718
+city:3470127	Belo Horizonte		BR	15	-19.92083	-43.93778	America/Sao_Paulo	2721564
+city:347196	Tunis	تونس	EG	24	26.61238	31.68748	Africa/Cairo	19495
+city:347236	Tukh	طوخ	EG	12	30.35487	31.20105	Africa/Cairo	52593
+city:347289	Timayy al Imdid	تمي الإمديد	EG	01	30.94384	31.52926	Africa/Cairo	20389
+city:347296	Tima	طما	EG	24	26.90843	31.43469	Africa/Cairo	101130
+city:347422	Tud	طود	EG	28	25.58278	32.5329	Africa/Cairo	30780
+city:347497	Tanta	طنطا	EG	05	30.78847	31.00192	Africa/Cairo	576648
+city:347542	Tamiyah		EG	04	29.47639	30.96119	Africa/Cairo	73070
+city:347591	Talkha	طلخا	EG	01	31.0539	31.37787	Africa/Cairo	112851
+city:347612	Tala	تلا	EG	09	30.6798	30.94364	Africa/Cairo	72536
+city:347634	Tahta	طهطا	EG	24	26.76866	31.50198	Africa/Cairo	134314
+city:347749	Sumusta as Sultani		EG	18	28.91667	30.85	Africa/Cairo	37260
+city:347751	Sumusta al Waqf	سمسطا الوقف	EG	18	28.92095	30.85367	Africa/Cairo	64965
+city:347796	Sohag	سوهاج	EG	24	26.55695	31.69478	Africa/Cairo	266944
+city:347863	Siwah	واحة سيوة	EG	22	29.2032	25.51965	Africa/Cairo	25031
+city:347883	Sirs al Layyanah	سرس الليانة	EG	09	30.4428	30.96975	Africa/Cairo	78168
+city:347907	Sinnuris		EG	04	29.41345	30.86579	Africa/Cairo	133532
+city:348112	Sidi Salim	سيدي سالم	EG	21	31.27133	30.78617	Africa/Cairo	44709
+city:348507	Sidi Ghazi	سيدي غازي	EG	21	31.21114	31.05119	Africa/Cairo	28136
+city:348548	Sidi Barani	سيدى برانى	EG	22	31.61166	25.92539	Africa/Cairo	38253
+city:348962	Sidfa	صدفا	EG	17	26.96637	31.37953	Africa/Cairo	30228
+city:349058	Shubrakhit	شبراخيت	EG	03	31.02795	30.71493	Africa/Cairo	41233
+city:349076	Shubra al Khaymah	شبرا الخيمة	EG	12	30.12511	31.25053	Africa/Cairo	1240289
+city:349114	Shirbin	شربين	EG	01	31.19688	31.5243	Africa/Cairo	76081
+city:349156	Shibin al Qanatir	شبين القناطر	EG	12	30.31269	31.32018	Africa/Cairo	73711
+city:349158	Shibin al Kawm	شبين الكوم	EG	09	30.55258	31.00904	Africa/Cairo	267945
+city:3492908	Santo Domingo		DO	34	18.47186	-69.89232	America/Santo_Domingo	2201941
+city:3492914	Santiago de los Caballeros		DO	25	19.45036	-70.69085	America/Santo_Domingo	1200000
+city:349340	Sharm el Sheikh	شرم الشيخ	EG	26	27.91582	34.32995	Africa/Cairo	38478
+city:349600	Saqultah	ساقلتة	EG	24	26.65817	31.67137	Africa/Cairo	34273
+city:349653	San al Hajar al Qibliyah	صان الحجر القبلية	EG	14	30.97478	31.87231	Africa/Cairo	30969
+city:349715	Samannud	سمنود	EG	05	30.9616	31.24069	Africa/Cairo	87921
+city:349717	Samalut	سمالوط	EG	10	28.31214	30.71007	Africa/Cairo	142009
+city:350203	Rosetta	رشيد	EG	03	31.39951	30.41718	Africa/Cairo	301795
+city:350207	Ras Gharib		EG	02	28.35831	33.07829	Africa/Cairo	44852
+city:350350	Rafah	رفح	EG	27	31.28204	34.23869	Africa/Cairo	44215
+city:350370	Quwaysina	قويسنا	EG	09	30.56482	31.15777	Africa/Cairo	65690
+city:350376	Qutur	قطور	EG	05	30.97225	30.95614	Africa/Cairo	32043
+city:350422	Qus	قوص	EG	23	25.91544	32.76287	Africa/Cairo	84386
+city:350550	Qina	قنا	EG	23	26.16418	32.72671	Africa/Cairo	252883
+city:350560	Qift	قفط	EG	23	25.99845	32.81808	Africa/Cairo	24010
+city:350789	Qalyub	قليوب	EG	12	30.17922	31.2056	Africa/Cairo	156363
+city:350797	Qillin	قلين	EG	21	31.0475	30.85487	Africa/Cairo	48233
+city:350831	Qaha	قها	EG	12	30.28011	31.20531	Africa/Cairo	36225
+city:351356	Naqadah	نقادة	EG	23	25.90107	32.72392	Africa/Cairo	26774
+city:351434	Nag Hammadi	نجع حمادى	EG	23	26.04949	32.24142	Africa/Cairo	59601
+city:3514674	Gustavo Adolfo Madero		MX	09	19.49392	-99.11075	America/Mexico_City	1185772
+city:351708	Nabaruh	نبروه	EG	01	31.09755	31.30312	Africa/Cairo	59202
+city:351748	Mutubas	مطوبس	EG	21	31.29443	30.52248	Africa/Cairo	43899
+city:351766	Mut		EG	13	25.48742	28.97918	Africa/Cairo	26820
+city:3521081	Puebla		MX	21	19.04778	-98.20723	America/Mexico_City	1692181
+city:352124	Mit Salsil	ميت سلسيل	EG	01	31.16757	31.80125	Africa/Cairo	48166
+city:352181	Mit Ghamr	ميت غمر	EG	01	30.71524	31.2592	Africa/Cairo	153754
+city:352250	Mit Abu Ghalib	ميت أبو غالب	EG	20	31.28837	31.67719	Africa/Cairo	20470
+city:3523349	Merida		MX	31	20.967	-89.62318	America/Merida	1201000
+city:352344	Minyat an Nasr	منية النصر	EG	01	31.12624	31.64313	Africa/Cairo	82429
+city:352352	Minya al Qamh	منيا القمح	EG	14	30.51552	31.34629	Africa/Cairo	99284
+city:352354	Munuf	منوف	EG	09	30.46597	30.93199	Africa/Cairo	125707
+city:352440	Munsha'at Abu 'Umar	منشأة أبو عمر	EG	14	30.90711	32.02341	Africa/Cairo	22543
+city:352628	Matay	مطاي	EG	10	28.41866	30.77861	Africa/Cairo	82328
+city:3526683	Iztapalapa		MX	09	19.35529	-99.06224	America/Mexico_City	1835486
+city:352679	Mashtul as Suq		EG	14	30.36056	31.3776	Africa/Cairo	75837
+city:352733	Marsa Matruh	مرسى مطروح	EG	22	31.3529	27.23725	Africa/Cairo	176498
+city:352878	Manshiyat al Qanatir	منشية القناطر	EG	08	30.18479	31.10649	Africa/Cairo	19185
+city:352913	Manfalut	منفلوط	EG	17	27.3126	30.96987	Africa/Cairo	117925
+city:352951	Mallawi	ملوي	EG	10	27.73264	30.84129	Africa/Cairo	212628
+city:3529612	Ecatepec de Morelos		MX	15	19.60492	-99.06064	America/Mexico_City	1645352
+city:3530589	Ciudad Nezahualcoyotl		MX	15	19.40061	-99.01483	America/Mexico_City	1077208
+city:3530597	Mexico City		MX	09	19.42847	-99.12766	America/Mexico_City	12294193
+city:353136	Mahallat Damanah	محلة دمنة	EG	01	31.07287	31.49503	Africa/Cairo	31921
+city:353183	Maghaghah	مغاغة	EG	10	28.64776	30.841	Africa/Cairo	118223
+city:353219	6th of October City		EG	08	29.81667	31.05	Africa/Cairo	368650
+city:353223	Madinat as Sadat		EG	03	30.36742	30.50871	Africa/Cairo	71501
+city:353225	Madinat an Nasr		EG	11	30.06667	31.3	Africa/Cairo	668413
+city:353229	Al 'Ashir min Ramadan	العاشر من رمضان	EG	14	30.29636	31.74633	Africa/Cairo	246148
+city:353471	Ash Shaykh Zuwayd	الشيخ زويد	EG	27	31.2163	34.11074	Africa/Cairo	26713
+city:353492	Kerdasa	كرداسة	EG	08	30.03103	31.11109	Africa/Cairo	137588
+city:353802	Kom Ombo		EG	16	24.47669	32.94626	Africa/Cairo	409311
+city:353828	Kawm Hamadah	كوم حماده	EG	03	30.76128	30.69972	Africa/Cairo	55652
+city:354076	Kafr Shukr		EG	09	30.54972	31.24444	Africa/Cairo	30948
+city:354105	Kafr Saqr	كفر صقر	EG	14	30.79336	31.62575	Africa/Cairo	44529
+city:354123	Kafr Sa'd	كفر سعد	EG	20	31.35573	31.68484	Africa/Cairo	18120
+city:354365	Kafr az Zayyat	كفر الزيات	EG	05	30.8248	30.81805	Africa/Cairo	83348
+city:354440	As Salahat	الصلاحات	EG	01	31.00205	31.62626	Africa/Cairo	45557
+city:354502	Kafr ash Shaykh	كفر الشيخ	EG	21	31.11174	30.93991	Africa/Cairo	194569
+city:354605	Kafr al Kurdi	الكردي	EG	01	31.16844	31.7655	Africa/Cairo	44905
+city:354699	Kafr al Battikh	كفر البطيخ	EG	20	31.40398	31.73778	Africa/Cairo	47198
+city:354775	Kafr ad Dawwar	كفر الدوار	EG	03	31.13379	30.12969	Africa/Cairo	128539
+city:354981	Juhaynah	جهينة	EG	24	26.67418	31.49686	Africa/Cairo	76555
+city:355026	Girga	جرجا	EG	24	26.33721	31.89295	Africa/Cairo	151256
+city:355174	Jarajus	جراجوس	EG	23	25.87198	32.75585	Africa/Cairo	20427
+city:3553478	Havana		CU	02	23.13302	-82.38304	America/Havana	2163824
+city:355392	'Izbat al Burj	عزبة البرج	EG	01	31.5084	31.84106	Africa/Cairo	37953
+city:355417	Itay al Barud	إيتاي البارود	EG	03	30.88697	30.66724	Africa/Cairo	77606
+city:355420	Itsa	أطسا	EG	04	29.2376	30.78944	Africa/Cairo	74357
+city:355449	Esna	إسنا	EG	23	25.29336	32.55402	Africa/Cairo	462787
+city:355595	Ihnasya al Madinah		EG	18	29.0895	30.94319	Africa/Cairo	68976
+city:355596	Ihnasiyah		EG	18	29.09285	31.02043	Africa/Cairo	64058
+city:355628	Idku		EG	03	31.3073	30.2981	Africa/Cairo	177152
+city:355635	Edfu	إدفو	EG	16	24.97916	32.87722	Africa/Cairo	79510
+city:355648	Ibshaway	إبشواي	EG	04	29.35896	30.68061	Africa/Cairo	86186
+city:355795	Halwan	حلوان	EG	11	29.84144	31.30084	Africa/Cairo	230000
+city:355939	Hihya	ههيا	EG	14	30.6713	31.58801	Africa/Cairo	74823
+city:356000	Hawsh 'Isa		EG	03	30.9128	30.29019	Africa/Cairo	82999
+city:356436	Hada'iq al Qubbah	حدائق القبة	EG	11	30.08843	31.28351	Africa/Cairo	339612
+city:356806	Fuwwah	فوة	EG	21	31.20365	30.54908	Africa/Cairo	93392
+city:356933	Farshut	فرشوط	EG	23	26.05501	32.16274	Africa/Cairo	71013
+city:356945	Faraskur	فارسكور	EG	20	31.32977	31.71507	Africa/Cairo	43400
+city:356989	Faqus	فاقوس	EG	14	30.72816	31.79697	Africa/Cairo	116945
+city:357039	Fayid		EG	07	30.31263	32.30935	Africa/Cairo	35066
+city:358048	Damietta	دمياط	EG	20	31.41648	31.81332	Africa/Cairo	305920
+city:358095	Diyarb Najm	ديرب نجم	EG	14	30.75438	31.44016	Africa/Cairo	80954
+city:358108	Disuq	دسوق	EG	21	31.13259	30.64784	Africa/Cairo	149291
+city:358115	Dishna	دشنا	EG	23	26.12242	32.46749	Africa/Cairo	64744
+city:358172	Dikirnis	دكرنس	EG	01	31.08898	31.59478	Africa/Cairo	101082
+city:358269	Dayrut	ديروط	EG	17	27.55642	30.81057	Africa/Cairo	102570
+city:358274	Dayr Mawas	دير مواس	EG	10	27.64148	30.85012	Africa/Cairo	60835
+city:358388	Daraw		EG	16	24.40796	32.92324	Africa/Cairo	61790
+city:358448	Damanhur	دمنهور	EG	03	31.03408	30.46823	Africa/Cairo	318207
+city:358600	Bush		EG	18	29.14816	31.12733	Africa/Cairo	136441
+city:358619	Port Said	بور سعيد	EG	19	31.26531	32.3019	Africa/Cairo	780515
+city:358620	Safaga	سفاجا	EG	02	26.74906	33.93891	Africa/Cairo	53639
+city:358631	Burj al 'Arab	برج العرب	EG	06	30.90316	29.55276	Africa/Cairo	22444
+city:358683	Bulaq Abu al 'Ila	بولاق	EG	11	30.06041	31.23147	Africa/Cairo	51741
+city:358726	Biyala	بيلا	EG	21	31.17419	31.2218	Africa/Cairo	89068
+city:358769	Birkat as Sab'	بركة السبح	EG	09	30.62914	31.08235	Africa/Cairo	50924
+city:358821	Bilqas	بلقاس	EG	01	31.21452	31.35798	Africa/Cairo	137080
+city:358840	Bilbeis	بلبيس	EG	14	30.42039	31.56223	Africa/Cairo	185237
+city:358870	Biba	ببا	EG	18	28.92406	30.98544	Africa/Cairo	94677
+city:358970	Basyun		EG	05	30.93976	30.81338	Africa/Cairo	75084
+city:359169	Bani 'Ubayd	بني عبيد	EG	10	27.95243	30.78082	Africa/Cairo	46060
+city:359173	Bani Suwayf	بني سويف	EG	18	29.07441	31.09785	Africa/Cairo	273151
+city:359212	Bani Mazar	بني مزار	EG	10	28.49456	30.80526	Africa/Cairo	115759
+city:359280	Banha	بنها	EG	12	30.45977	31.1842	Africa/Cairo	182254
+city:359304	Baltim	بلطيم	EG	21	31.55582	31.08918	Africa/Cairo	51280
+city:359480	Az Zayniyah Qibli	الزينية قبلي	EG	28	25.75089	32.6776	Africa/Cairo	20000
+city:359493	Zagazig	الزقازيق	EG	14	30.58768	31.502	Africa/Cairo	430445
+city:359541	Al 'Ayn as Sukhnah		EG	15	29.58902	32.33597	Africa/Cairo	45552
+city:359576	Awsim	أوسيم	EG	08	30.12303	31.13571	Africa/Cairo	94174
+city:359678	El-Tor	الطور	EG	26	28.24168	33.6222	Africa/Cairo	38285
+city:359710	At Tall al Kabir	التل الكبير	EG	14	30.54323	31.78504	Africa/Cairo	46962
+city:359749	Atfih		EG	08	29.4075	31.2525	Africa/Cairo	26943
+city:359783	Asyut	أسيوط	EG	17	27.18096	31.18368	Africa/Cairo	528669
+city:359792	Aswan	أسوان	EG	16	24.09082	32.89942	Africa/Cairo	379774
+city:359796	Suez	السويس	EG	15	29.97371	32.52627	Africa/Cairo	699541
+city:359815	As Sinbillawayn	السنبلاوين	EG	01	30.88251	31.46275	Africa/Cairo	124020
+city:359823	As Siba'iyah	السباعية	EG	16	25.19413	32.6771	Africa/Cairo	21610
+city:359841	As Sarw	السرو	EG	20	31.23867	31.65379	Africa/Cairo	29286
+city:359849	As Santah	السنطه	EG	05	30.74614	31.12964	Africa/Cairo	45813
+city:359867	As Sallum	السلوم	EG	22	31.55371	25.15793	Africa/Cairo	16545
+city:359892	As Sahil	الساحل	EG	17	27.06309	31.34425	Africa/Cairo	54094
+city:359900	As Saff	الصف	EG	08	29.56472	31.28111	Africa/Cairo	61531
+city:359953	Ash Shuhada'	الشهداء	EG	09	30.59683	30.89931	Africa/Cairo	76071
+city:360048	Ashmun	أشمون	EG	09	30.29735	30.97641	Africa/Cairo	124483
+city:360150	Ar Rahmaniyah	الرحمانية	EG	03	31.10483	30.64135	Africa/Cairo	44482
+city:360159	Ar Radisiyah Qibli		EG	02	24.90652	32.88563	Africa/Cairo	16190
+city:360170	Armant	أرمنت	EG	23	25.61988	32.54305	Africa/Cairo	78695
+city:360464	Al Wasitah		EG	04	29.33778	31.20556	Africa/Cairo	57870
+city:360471	Al Waqf	الوقف	EG	23	26.08657	32.42265	Africa/Cairo	34723
+city:360502	Luxor	الأقصر	EG	28	25.69893	32.6421	Africa/Cairo	422407
+city:360526	Al Qusiyah	القوصية	EG	17	27.44023	30.81712	Africa/Cairo	99598
+city:360531	Al Qusayr	القصير	EG	02	26.10611	34.27716	Africa/Cairo	24653
+city:360542	Al Qurayn	القرين	EG	14	30.61618	31.73514	Africa/Cairo	94632
+city:360577	Al Qassasin	القصاصين	EG	14	30.56412	31.93386	Africa/Cairo	24364
+city:360610	Al Qantarah	القنطرة	EG	07	30.85711	32.31183	Africa/Cairo	31808
+city:360612	Al Qanayat	القنايات	EG	14	30.61927	31.46165	Africa/Cairo	70687
+city:360615	Al Qanatir al Khayriyah	القناطر الخيرية	EG	12	30.19327	31.13703	Africa/Cairo	83568
+city:360630	Cairo	القاهرة	EG	11	30.06263	31.24967	Africa/Cairo	9606916
+city:360686	Minya	المنيا	EG	10	28.09193	30.75813	Africa/Cairo	283605
+city:360716	Al Matariyah	المطرية	EG	01	31.18287	32.03108	Africa/Cairo	162045
+city:360748	Al Maraghah	المراغة	EG	24	26.69981	31.60464	Africa/Cairo	53643
+city:360754	Al Manzalah	المنزلة	EG	01	31.15823	31.936	Africa/Cairo	127394
+city:360761	Al Mansurah	المنصورة	EG	01	31.03637	31.38069	Africa/Cairo	621953
+city:360773	Al Minshah	المنشاة	EG	24	26.4775	31.80394	Africa/Cairo	91149
+city:360819	Al Mahmudiyah	المحمودية	EG	03	31.18352	30.52448	Africa/Cairo	34660
+city:360829	Al Mahallah al Kubra	المحلة الكبرى	EG	05	30.97063	31.1669	Africa/Cairo	592573
+city:360890	Al Khusus		EG	12	30.15293	31.31501	Africa/Cairo	488904
+city:360923	Al Kharjah	الخارجة	EG	13	25.45101	30.54653	Africa/Cairo	83108
+city:360928	Al Khankah		EG	12	30.21035	31.36812	Africa/Cairo	81646
+city:360995	Giza	الجيزة	EG	08	30.00944	31.20861	Africa/Cairo	4367343
+city:361029	Al Jammaliyah	الجمالية	EG	01	31.18065	31.86497	Africa/Cairo	99641
+city:361055	Ismailia	الإسماعيلية	EG	07	30.60427	32.27225	Africa/Cairo	429465
+city:361058	Alexandria	الإسكندرية	EG	06	31.20176	29.91582	Africa/Cairo	5263542
+city:361098	Al 'Idwah	العدوة	EG	10	28.69919	30.7673	Africa/Cairo	26092
+city:361103	Al Ibrahimiyah	الإبراهيمية	EG	14	30.71877	31.56299	Africa/Cairo	53791
+city:361119	'Izbat 'Ali as Sayyid	عزبة علي السيد	EG	03	31.15671	30.14775	Africa/Cairo	53079
+city:361125	Al Husayniyah	الحسينية	EG	14	30.86163	31.91809	Africa/Cairo	50651
+city:361179	Al Hawamidiyah		EG	08	29.9	31.25	Africa/Cairo	155055
+city:361213	Al Hamul	الحامول	EG	21	31.31146	31.14766	Africa/Cairo	58430
+city:361219	Al Hammam	الحمام	EG	22	30.84532	29.38818	Africa/Cairo	18407
+city:361291	Hurghada	الغردقة	EG	02	27.25738	33.81291	Africa/Cairo	207132
+city:361301	Al Ghanayim	الغنايم	EG	17	26.87524	31.32963	Africa/Cairo	70884
+city:361320	Al Fayyum	الفيوم	EG	04	29.30995	30.8418	Africa/Cairo	519047
+city:361329	Al Fashn	الفشن	EG	18	28.82306	30.89903	Africa/Cairo	112999
+city:361360	Al Burj	البرج	EG	21	31.58229	30.98095	Africa/Cairo	60320
+city:361391	Al Bayadiyah	البياضية	EG	28	25.66477	32.63539	Africa/Cairo	23550
+city:361394	Al Bawiti	الباويطى	EG	08	28.34827	28.86936	Africa/Cairo	15653
+city:361405	Al Basaliyah Bahri		EG	16	25.15	32.71667	Africa/Cairo	32920
+city:361435	Al Balyana	البلينا	EG	24	26.23648	32.00387	Africa/Cairo	68413
+city:361457	Al Bajur	الباجور	EG	09	30.43046	31.03679	Africa/Cairo	62961
+city:361473	Al Badrashayn		EG	08	29.85	31.26667	Africa/Cairo	90833
+city:361478	Al Badari	البداري	EG	17	26.99306	31.41605	Africa/Cairo	56033
+city:361495	Al 'Ayyat		EG	08	29.61972	31.2575	Africa/Cairo	45793
+city:361546	Arish	العريش	EG	27	31.13159	33.79844	Africa/Cairo	199243
+city:361661	Akhmim	أخميم	EG	24	26.5622	31.74566	Africa/Cairo	151430
+city:361702	Aga	أجا	EG	01	30.94162	31.29039	Africa/Cairo	47013
+city:361827	Ad Dilinjat	الدلنجات	EG	03	30.82796	30.53552	Africa/Cairo	68901
+city:361871	El Dabaa	الضبعة	EG	22	31.02819	28.44498	Africa/Cairo	27697
+city:361995	Abu Tisht	أبو طشت	EG	23	26.12039	32.09543	Africa/Cairo	18194
+city:362004	Abu Tij	أبو تيج	EG	17	27.04514	31.31845	Africa/Cairo	105418
+city:362028	Abu Suweir-el-Mahatta		EG	14	30.56977	32.1146	Africa/Cairo	32763
+city:362277	Abu Qurqas	أبو قرقاص	EG	10	27.93043	30.83826	Africa/Cairo	90266
+city:362288	Abu Qir	أبو قير	EG	06	31.31104	30.06121	Africa/Cairo	37997
+city:362485	Abu Kabir	أبو كبير	EG	14	30.72508	31.67148	Africa/Cairo	154466
+city:362552	Abu Hummus	أبو حمص	EG	03	31.09311	30.31418	Africa/Cairo	61388
+city:3625549	Valencia		VE	07	10.16153	-68.00044	America/Caracas	1619470
+city:362615	Abu Hammad	أبو حماد	EG	14	30.53766	31.67875	Africa/Cairo	43001
+city:362865	Abu an Numrus		EG	08	29.95	31.2	Africa/Cairo	86601
+city:362882	Abu al Matamir		EG	03	30.91018	30.17438	Africa/Cairo	66946
+city:362973	Abnub	أبنوب	EG	17	27.26881	31.15232	Africa/Cairo	111785
+city:3633009	Maracaibo		VE	23	10.64232	-71.61089	America/Caracas	1752602
+city:3646738	Caracas		VE	25	10.48801	-66.87919	America/Caracas	3000000
+city:3648522	Barquisimeto		VE	13	10.0647	-69.35703	America/Caracas	1240714
+city:365137	Omdurman		SD	29	15.64453	32.47773	Africa/Khartoum	1849659
+city:3652462	Quito		EC	18	-0.22985	-78.52495	America/Guayaquil	2781641
+city:3657509	Guayaquil		EC	10	-2.19616	-79.88621	America/Guayaquil	2723665
+city:3663517	Manaus		BR	04	-3.10194	-60.025	America/Manaus	2219580
+city:3674962	Medellin		CO	02	6.245	-75.57151	America/Bogota	1999979
+city:3687925	Cali		CO	29	3.43054	-76.5199	America/Bogota	2392877
+city:3688689	Bogota		CO	34	4.60971	-74.08175	America/Bogota	7674366
+city:3689147	Barranquilla		CO	04	10.96854	-74.78132	America/Bogota	1206319
+city:3691175	Trujillo		PE	13	-8.11599	-79.02998	America/Lima	1067700
+city:3718426	Port-au-Prince		HT	11	18.54349	-72.33881	America/Port-au-Prince	1234742
+city:374290	Hala'ib		EG	02	22.22273	36.64679	Africa/Cairo	27000
+city:379251	Khartoum North		SD	29	15.64925	32.53458	Africa/Khartoum	1012211
+city:379252	Khartoum		SD	29	15.55177	32.53241	Africa/Khartoum	1974647
+city:384945	Derbendixan	دربندخان	IQ	05	35.11207	45.68663	Asia/Baghdad	54896
+city:385024	As Satwah	السطوه	AE	03	25.22192	55.27459	Asia/Dubai	40997
+city:385027	Ar Rishah	الريشة	JO	21	30.22435	35.21671	Asia/Amman	0
+city:385038	Ar Rifa'	اَلرِّفَاع	BH	17	26.13	50.555	Asia/Bahrain	115495
+city:3860259	Cordoba		AR	05	-31.40648	-64.18853	America/Argentina/Cordoba	2106734
+city:3871336	Santiago		CL	12	-33.45694	-70.64827	America/Santiago	4837295
+city:387345	Abu Gharaq		IQ	06	32.52711	44.34397	Asia/Baghdad	108212
+city:387958	Salwa	سلوى	KW	08	29.29583	48.07861	Asia/Kuwait	40945
+city:388065	Ar Rabiyah	اَلرَّابِيَة	KW	02	29.295	47.93306	Asia/Kuwait	36447
+city:3904906	Santa Cruz de la Sierra		BO	08	-17.78629	-63.18117	America/La_Paz	1831434
+city:3911925	La Paz		BO	04	-16.5	-68.15	America/La_Paz	2004652
+city:393275	Turubah	تربة	SA	13	28.25849	42.92457	Asia/Riyadh	28279
+city:3936456	Lima		PE	LMA	-12.04318	-77.02824	America/Lima	7737002
+city:3946083	Callao		PE	07	-12.05162	-77.13452	America/Lima	1226200
+city:3947322	Arequipa		PE	04	-16.39899	-71.53747	America/Lima	1195700
+city:397833	Al Bada'i' al Wusta	البَدائع	SA	08	25.98546	43.73659	Asia/Riyadh	48474
+city:3979770	Zapopan		MX	14	20.72111	-103.38742	America/Mexico_City	1476491
+city:3981609	Tijuana		MX	02	32.5027	-117.00371	America/Tijuana	1922523
+city:3991164	Santiago de Queretaro		MX	22	20.58806	-100.38806	America/Mexico_City	1594212
+city:3995465	Monterrey		MX	19	25.68435	-100.31721	America/Monterrey	1135512
+city:3996069	Mexicali		MX	02	32.62781	-115.45446	America/Tijuana	1032686
+city:3998655	Leon de los Aldama		MX	11	21.12183	-101.68253	America/Mexico_City	1579803
+city:4005539	Guadalajara		MX	14	20.67738	-103.34749	America/Mexico_City	1385629
+city:4013708	Ciudad Juarez		MX	06	31.72024	-106.46084	America/Ciudad_Juarez	1512450
+city:407169	Al Muwaqqar	الموقر	JO	16	31.81473	36.10879	Asia/Amman	0
+city:408919	An Nubariyah	النوبارية	EG	03	30.6687	30.07391	Africa/Cairo	23282
+city:409361	Awlad Saqr	أولاد صقر	EG	14	30.93055	31.69864	Africa/Cairo	32840
+city:409682	Thuwal		SA	14	22.28272	39.11245	Asia/Riyadh	26957
+city:410096	Ash Shafa	الشفا	SA	14	21.07268	40.31842	Asia/Riyadh	72190
+city:410142	Bi'r al 'Abd	بئر العبد	EG	27	31.01887	33.0098	Africa/Cairo	26330
+city:410366	Al-Manakh	المناخ	EG	19	31.26786	32.28464	Africa/Cairo	84679
+city:411752	As Sultah al Jadidah	اَلسّلطَة اَلْجَدِيدَة	QA	01	25.2604	51.51403	Asia/Qatar	27432
+city:411759	Al Mansurah	اَلْمَنْصُورَة	QA	01	25.26807	51.53219	Asia/Qatar	65493
+city:411760	An Najmah	اَلنَّجْمَة	QA	01	25.26704	51.54322	Asia/Qatar	43695
+city:411763	Al Hilal al Gharbiyah	اَلْهِلاَل اَلْغَرْبِيَّة	QA	01	25.2586	51.53098	Asia/Qatar	15461
+city:411768	Al Hilal ash Sharqiyah	اَلْهِلاَل اَلشَّرْقِيَّة	QA	01	25.26042	51.54632	Asia/Qatar	15461
+city:411803	Al Ghanim	اَلْغَانِم	QA	01	25.27987	51.54037	Asia/Qatar	19010
+city:411820	As Sadd	اَلسَّدّ	QA	01	25.28617	51.50074	Asia/Qatar	36077
+city:411849	Yanqul	ينقل	OM	09	23.58645	56.53969	Asia/Muscat	16599
+city:412800	Sabah Al Salem	صَبَاح اَلسَّالِم	KW	09	29.25722	48.05722	Asia/Kuwait	139163
+city:414901	Al Hamidiyah	الحميدية	AE	02	25.40001	55.52925	Asia/Dubai	27000
+city:415189	Aden	عدن	YE	02	12.77957	45.03852	Asia/Aden	1079670
+city:415561	Badr		EG	11	30.136	31.715	Africa/Cairo	32940
+city:4160021	Jacksonville		US	FL	30.33218	-81.65565	America/New_York	1009833
+city:416047	Ar Riyad	الرياض	EG	21	31.24193	30.94504	Africa/Cairo	24254
+city:418863	Isfahan		IR	28	32.65246	51.67462	Asia/Tehran	1547164
+city:419435	Az Zarqa	الزرقا	EG	20	31.20864	31.63528	Africa/Cairo	26955
+city:421251	Dumyat al Jadidah	دمياط الجديدة	EG	20	31.43482	31.67506	Africa/Cairo	54508
+city:421600	Badr		EG	03	30.575	30.71111	Africa/Cairo	28091
+city:433441	Bani Suwayf al Jadidah		EG	02	29.033	31.11408	Africa/Cairo	32278
+city:433774	As Salihiyah al Jadidah	الصالحية الجديدة	EG	14	30.63146	31.93927	Africa/Cairo	59320
+city:434129	Burj al 'Arab al Jadidah	برج العرب الجديدة	EG	06	30.88525	29.57721	Africa/Cairo	45865
+city:434170	Madinat Wadi an Natrun	مدينة وادي النطرون	EG	03	30.37746	30.35032	Africa/Cairo	41186
+city:434418	An Nasiriyah		EG	17	27.20583	31.19639	Africa/Cairo	22435
+city:438055	Narlica		TR	31	36.23533	36.21458	Europe/Istanbul	18445
+city:438400	Denizciler		TR	31	36.6411	36.21418	Europe/Istanbul	17495
+city:442301	Batikent		TR	68	39.96833	32.73083	Europe/Istanbul	300000
+city:444473	Dar as Salam	دار السلام	EG	24	26.27845	32.05608	Africa/Cairo	38008
+city:445694	'Akra	بيوك	IQ	15	36.73359	43.88038	Asia/Baghdad	105370
+city:446208	Khasnahzan	كسنزان	IQ	11	36.2009	44.14235	Asia/Baghdad	146639
+city:446732	Khalifan	خليفان	IQ	11	36.6087	44.4048	Asia/Baghdad	19891
+city:447022	Hajiawa		IQ	05	36.23579	44.79469	Asia/Baghdad	80000
+city:447273	Dalaman		TR	48	36.76591	28.8028	Europe/Istanbul	19292
+city:448149	Sinjar	سنجار	IQ	15	36.3209	41.87656	Asia/Baghdad	38294
+city:4560349	Philadelphia		US	PA	39.95238	-75.16362	America/New_York	1573916
+city:4684888	Dallas		US	TX	32.78306	-96.80667	America/Chicago	1326087
+city:4691930	Fort Worth		US	TX	32.72541	-97.32085	America/Chicago	1008106
+city:4699066	Houston		US	TX	29.76328	-95.36327	America/Chicago	2314157
+city:472045	Voronezh		RU	86	51.66833	39.19204	Europe/Moscow	1047549
+city:4726206	San Antonio		US	TX	29.42412	-98.49363	America/Chicago	1526656
+city:472757	Volgograd		RU	84	48.71378	44.4976	Europe/Volgograd	1013533
+city:479561	Ufa		RU	08	54.74306	55.96779	Asia/Yekaterinburg	1120547
+city:4887398	Chicago		US	IL	41.85003	-87.65005	America/Chicago	2664452
+city:498817	Saint Petersburg		RU	66	59.93863	30.31413	Europe/Moscow	5351935
+city:499099	Samara		RU	65	53.20767	50.13553	Europe/Samara	1163399
+city:501175	Rostov-on-Don		RU	61	47.21997	39.70769	Europe/Moscow	1130305
+city:5110266	The Bronx		US	NY	40.84985	-73.86641	America/New_York	1385108
+city:5110302	Brooklyn		US	NY	40.6501	-73.94958	America/New_York	2736074
+city:5125771	Manhattan		US	NY	40.78343	-73.96625	America/New_York	1487536
+city:5128581	New York City		US	NY	40.71427	-74.00597	America/New_York	8804190
+city:5133273	Queens		US	NY	40.68149	-73.83652	America/New_York	2316841
+city:520555	Nizhniy Novgorod		RU	51	56.32867	44.00205	Europe/Moscow	1259013
+city:524901	Moscow		RU	48	55.75204	37.61781	Europe/Moscow	10381222
+city:5308655	Phoenix		US	AZ	33.44838	-112.07404	America/Phoenix	1650070
+city:53654	Mogadishu		SO	02	2.03711	45.34375	Africa/Mogadishu	2587183
+city:5368361	Los Angeles		US	CA	34.05223	-118.24368	America/Los_Angeles	3820914
+city:5391811	San Diego		US	CA	32.71571	-117.16472	America/Los_Angeles	1404452
+city:551487	Kazan		RU	73	55.78874	49.12214	Europe/Moscow	1243500
+city:587084	Baku		AZ	09	40.37767	49.89201	Asia/Baku	2351300
+city:5913490	Calgary		CA	01	51.05011	-114.08529	America/Edmonton	1306784
+city:5946768	Edmonton		CA	01	53.55014	-113.46871	America/Edmonton	1010899
+city:6077243	Montreal		CA	10	45.50884	-73.58781	America/Toronto	1762949
+city:6094817	Ottawa		CA	08	45.41117	-75.69812	America/Toronto	1017449
+city:611717	Tbilisi		GE	51	41.69143	44.83412	Asia/Tbilisi	1049498
+city:616052	Yerevan		AM	11	40.17765	44.5126	Asia/Yerevan	1144700
+city:6167865	Toronto		CA	08	43.70643	-79.39864	America/Toronto	2794356
+city:625144	Minsk		BY	04	53.90019	27.56653	Europe/Minsk	1742124
+city:6295587	Batam		ID	37	1.14937	104.02491	Asia/Jakarta	1296960
+city:6354984	Merter Keresteciler		TR	34	41.01295	28.88593	Europe/Istanbul	50000
+city:6354985	Guengoeren Merter		TR	34	41.00711	28.88795	Europe/Istanbul	50000
+city:6619347	Navi Mumbai		IN	16	19.03681	73.01582	Asia/Kolkata	2600000
+city:6620290	Turgutreis		TR	48	37.01667	27.26667	Europe/Istanbul	16490
+city:6691079	Al Waheda		AE	03	25.29173	55.33822	Asia/Dubai	21608
+city:6691091	Al Karama		AE	03	25.24004	55.30106	Asia/Dubai	75560
+city:6691096	Al Wasl		AE	03	25.19881	55.25565	Asia/Dubai	22153
+city:6691113	The Palm Jumeirah	نخلة الجميرة	AE	03	25.11607	55.13506	Asia/Dubai	25500
+city:6692524	Sarigerme		TR	48	36.71549	28.70436	Europe/Istanbul	16000
+city:6765385	'Anah	الريحانة	IQ	01	34.36857	41.98194	Asia/Baghdad	27000
+city:683506	Bucharest		RO	10	44.43225	26.10626	Europe/Bucharest	1877155
+city:6871926	Al-'Alam	ناحية العلم	IQ	18	34.70896	43.6951	Asia/Baghdad	25662
+city:6940394	Saitama		JP	34	35.90807	139.65657	Asia/Tokyo	1324854
+city:69426	Zinjibar	زنجبار	YE	01	13.12871	45.38073	Asia/Aden	19879
+city:6943660	Shivaji Nagar		IN	16	18.53017	73.85263	Asia/Kolkata	1000000
+city:6945291	Old City	القدس القديمة	PS	WE	31.77667	35.23417	Asia/Hebron	36000
+city:6946409	Karak	الكرك	JO	09	31.16368	35.76204	Asia/Amman	21678
+city:6947637	Atasehir		TR	34	40.9833	29.1167	Europe/Istanbul	361615
+city:6947639	Basaksehir		TR	34	41.106	28.791	Europe/Istanbul	193750
+city:6947640	Beylikduezue		TR	34	40.982	28.6399	Europe/Istanbul	415290
+city:6947641	Bueyuekcekmece		TR	34	41.02072	28.58502	Europe/Istanbul	163140
+city:69500	Zabid	زبيد	YE	08	14.1951	43.31518	Asia/Aden	52590
+city:6955677	Cankaya		TR	68	39.9179	32.86268	Europe/Istanbul	792189
+city:69559	Yarim	يريم	YE	23	14.29804	44.37795	Asia/Aden	33050
+city:6967857	An Nasr	البيوك	PS	GZ	31.28137	34.30253	Asia/Gaza	6211
+city:6967863	'Abasan al Jadidah	عبسان الجديدة	PS	GZ	31.34158	34.34592	Asia/Gaza	5984
+city:6967865	Al Qararah	القرارة	PS	GZ	31.37389	34.34085	Asia/Gaza	19500
+city:6967877	Umm an Nasr	أم النصر	PS	GZ	31.56085	34.51863	Asia/Gaza	2763
+city:6967895	Juhr ad Dik	جحر الديك	PS	GZ	31.45571	34.43719	Asia/Gaza	2880
+city:6967990	Az Zuwaydah	الزوايدة	PS	GZ	31.43954	34.38053	Asia/Gaza	16688
+city:6968050	Al Musaddar	المصدر	PS	GZ	31.41052	34.37802	Asia/Gaza	1845
+city:6968055	Wadi as Salqa	وادي السلقا	PS	GZ	31.387	34.358	Asia/Gaza	4552
+city:6968063	Al Mughraqah	ابو مدين	PS	GZ	31.46587	34.41208	Asia/Gaza	6448
+city:6986104	Zhongshan		CN	30	22.52306	113.37912	Asia/Shanghai	3841873
+city:698740	Odesa		UA	17	46.48572	30.74383	Europe/Kyiv	1010537
+city:7015781	Al Husayniyah	الحسينية	JO	19	30.59545	35.79701	Asia/Amman	0
+city:70225	Taiz	تعز	YE	25	13.57952	44.02091	Asia/Aden	940600
+city:7031363	Ad Disah	الديسة	JO	21	29.65284	35.51123	Asia/Amman	0
+city:703448	Kyiv		UA	12	50.45466	30.5238	Europe/Kyiv	2952301
+city:706483	Kharkiv		UA	07	49.98177	36.25475	Europe/Kyiv	1421125
+city:70979	Sayyan	سيان	YE	16	15.17177	44.32442	Asia/Aden	69404
+city:71137	Sanaa	صنعاء	YE	26	15.35452	44.20646	Asia/Aden	1937451
+city:71273	Sahar	سحر	YE	16	15.31637	44.3088	Asia/Aden	31859
+city:71334	Sa'dah	صعده	YE	15	16.94021	43.76393	Asia/Aden	51870
+city:727011	Sofia		BG	42	42.69751	23.32415	Europe/Sofia	1152556
+city:7283386	Changshu		CN	04	31.64615	120.74221	Asia/Shanghai	1677050
+city:7289825	Bur Dubai	بر دبي	AE	03	25.26038	55.29891	Asia/Dubai	18698
+city:72968	Ma'rib	مأرب	YE	14	15.46253	45.32581	Asia/Aden	16794
+city:7303419	East Jerusalem	القدس الشرقية	PS	WE	31.78336	35.23388	Asia/Hebron	428304
+city:73560	Lahij	الحوطة	YE	24	13.05667	44.88194	Asia/Aden	23375
+city:737022	Zonguldak	زونغولداق	TR	85	41.45139	31.79305	Europe/Istanbul	101749
+city:737054	Zile		TR	60	40.30306	35.88639	Europe/Istanbul	55680
+city:737071	Zeytinburnu		TR	34	40.99441	28.90417	Europe/Istanbul	280896
+city:737081	Zekeriya		TR	34	41.19806	29.03028	Europe/Istanbul	22558
+city:737421	Yomra		TR	61	40.95326	39.85546	Europe/Istanbul	19770
+city:737611	Yenisehir		TR	16	40.26444	29.65306	Europe/Istanbul	28656
+city:737961	Koerfez		TR	41	40.76704	29.78275	Europe/Istanbul	90580
+city:738025	Yalova	يالوفا	TR	92	40.65501	29.27693	Europe/Istanbul	71289
+city:738064	Yakuplu		TR	34	40.98894	28.67582	Europe/Istanbul	28811
+city:738167	Vezirkoeprue		TR	55	41.14361	35.45472	Europe/Istanbul	25155
+city:738228	Vakfikebir		TR	61	41.04583	39.27639	Europe/Istanbul	37728
+city:738251	Uzunkoeprue		TR	22	41.26914	26.68598	Europe/Istanbul	36470
+city:738329	UEskuedar		TR	34	41.02274	29.01366	Europe/Istanbul	524452
+city:738349	UEnye		TR	52	41.14049	37.28851	Europe/Istanbul	77585
+city:738377	UEmraniye		TR	34	41.01643	29.12476	Europe/Istanbul	573265
+city:738618	Turhal		TR	60	40.3875	36.08111	Europe/Istanbul	110884
+city:738648	Trabzon	طرابزون	TR	61	41.005	39.72694	Europe/Istanbul	244083
+city:738662	Tosya		TR	37	41.01545	34.04013	Europe/Istanbul	24013
+city:738743	Tokat	توقات	TR	60	40.31389	36.55444	Europe/Istanbul	129702
+city:738753	Tirebolu		TR	28	41.00694	38.81389	Europe/Istanbul	17124
+city:738803	Terme		TR	55	41.20917	36.97389	Europe/Istanbul	28397
+city:738858	Tepecik		TR	34	41.02931	28.54978	Europe/Istanbul	21699
+city:738907	Tekkekoey		TR	55	41.21167	36.46	Europe/Istanbul	17226
+city:738927	Tekirdag	تكيرداغ	TR	59	40.9781	27.51101	Europe/Istanbul	122287
+city:739015	Tasova		TR	05	40.75972	36.3225	Europe/Istanbul	19253
+city:739061	Taskoeprue		TR	37	41.5098	34.21414	Europe/Istanbul	17491
+city:739110	Tarabya		TR	34	41.13361	29.04639	Europe/Istanbul	17852
+city:739209	Susehri		TR	58	40.16005	38.08413	Europe/Istanbul	25820
+city:739215	Suermene		TR	61	40.90588	40.12792	Europe/Istanbul	20039
+city:739236	Sungurlu		TR	19	40.1675	34.37389	Europe/Istanbul	37526
+city:739251	Suluova		TR	05	40.83129	35.64788	Europe/Istanbul	47572
+city:739549	Sisli		TR	34	41.06046	28.98717	Europe/Istanbul	314684
+city:739600	Sinop	سينوب	TR	57	42.02683	35.16253	Europe/Istanbul	34834
+city:739634	Silivri		TR	34	41.07393	28.24644	Europe/Istanbul	53167
+city:739636	Sile		TR	34	41.17891	29.61085	Europe/Istanbul	19778
+city:739914	Sebin Karahisar		TR	28	40.28833	38.42361	Europe/Istanbul	47360
+city:740088	Sarikamis		TR	84	40.32769	42.58705	Europe/Istanbul	15433
+city:740230	Sapanca		TR	54	40.69141	30.26738	Europe/Istanbul	25224
+city:740264	Samsun	سامسون	TR	55	41.27976	36.3361	Europe/Istanbul	394050
+city:740430	Safranbolu		TR	89	41.25083	32.69417	Europe/Istanbul	35242
+city:740483	Rize	ريزه	TR	53	41.02083	40.52194	Europe/Istanbul	119828
+city:740881	Osmaneli		TR	11	40.35722	30.01417	Europe/Istanbul	15708
+city:740883	Osmancik		TR	19	40.97818	34.8047	Europe/Istanbul	36443
+city:741045	Orhangazi		TR	16	40.48917	29.30889	Europe/Istanbul	51792
+city:741100	Ordu	أوردو	TR	52	40.97782	37.89047	Europe/Istanbul	229214
+city:741160	Oltu		TR	25	40.53945	41.98722	Europe/Istanbul	23504
+city:741240	Of		TR	61	40.94055	40.25918	Europe/Istanbul	31951
+city:741304	Niksar		TR	60	40.59167	36.95167	Europe/Istanbul	49865
+city:741347	Nallihan		TR	68	40.18593	31.35179	Europe/Istanbul	19106
+city:741385	Mustafakemalpasa		TR	16	40.03815	28.40866	Europe/Istanbul	101412
+city:741487	Mudanya		TR	16	40.37524	28.8838	Europe/Istanbul	23161
+city:741529	Mimarsinan		TR	34	41.01488	28.56085	Europe/Istanbul	31002
+city:741609	Merzifon		TR	05	40.87333	35.46306	Europe/Istanbul	50658
+city:741763	Maltepe		TR	34	40.93567	29.15507	Europe/Istanbul	427040
+city:741771	Malkara		TR	59	40.89105	26.90201	Europe/Istanbul	27427
+city:741855	Lueleburgaz		TR	39	41.40173	27.35746	Europe/Istanbul	90899
+city:742238	Kumru		TR	52	40.87444	37.26389	Europe/Istanbul	32174
+city:742394	Kuecuekcekmece		TR	34	40.99104	28.77123	Europe/Istanbul	792030
+city:742658	Korgan		TR	52	40.82472	37.34667	Europe/Istanbul	16733
+city:742902	Kocaali		TR	54	41.05336	30.85278	Europe/Istanbul	15076
+city:743051	Kizilcahamam		TR	68	40.46972	32.65056	Europe/Istanbul	17975
+city:743166	Kirklareli	قرقلر ايلي	TR	39	41.73508	27.22521	Europe/Istanbul	58223
+city:743404	Kestel		TR	16	40.19828	29.21237	Europe/Istanbul	36185
+city:743439	Kesan		TR	22	40.85525	26.63266	Europe/Istanbul	44644
+city:743537	Kelkit		TR	69	40.12682	39.43424	Europe/Istanbul	23870
+city:743615	Kazan		TR	68	40.23167	32.68389	Europe/Istanbul	23889
+city:743624	Kaynasli		TR	93	40.76917	31.32211	Europe/Istanbul	20379
+city:743818	Kavakli		TR	34	41.09258	28.33172	Europe/Istanbul	50502
+city:743882	Kastamonu	قسطموني	TR	37	41.37805	33.77528	Europe/Istanbul	125622
+city:743952	Kars	قارص	TR	84	40.59825	43.08548	Europe/Istanbul	96915
+city:744092	Karasu		TR	54	41.10442	30.69664	Europe/Istanbul	30746
+city:744093	Karasu Mahallesi		TR	54	41.07096	30.78543	Europe/Istanbul	39508
+city:744168	Karamuersel		TR	41	40.69129	29.61649	Europe/Istanbul	30525
+city:744537	Karacabey		TR	16	40.21323	28.3612	Europe/Istanbul	44256
+city:744562	Karabuek	كارابوك	TR	89	41.20488	32.62768	Europe/Istanbul	125403
+city:744716	Kandira		TR	41	41.07	30.15262	Europe/Istanbul	16264
+city:74477	Ibb	إب	YE	23	13.96667	44.18333	Asia/Aden	771514
+city:744873	Kagizman		TR	84	40.15669	43.13424	Europe/Istanbul	21666
+city:745026	Iznik		TR	16	40.42861	29.72111	Europe/Istanbul	22230
+city:745028	Izmit	إزميت	TR	41	40.76499	29.92928	Europe/Istanbul	196571
+city:745039	Istinye		TR	34	41.11008	29.05094	Europe/Istanbul	15721
+city:745044	Istanbul	اسطنبول	TR	34	41.01384	28.94966	Europe/Istanbul	15701602
+city:745076	Iskilip		TR	19	40.73528	34.47389	Europe/Istanbul	19829
+city:745169	Inegol		TR	16	40.07806	29.51333	Europe/Istanbul	133959
+city:745527	Horasan		TR	25	40.03885	42.16366	Europe/Istanbul	17067
+city:745530	Hopa		TR	08	41.39046	41.41966	Europe/Istanbul	17519
+city:745664	Hendek		TR	54	40.79944	30.74806	Europe/Istanbul	35257
+city:745697	Hayrabolu		TR	59	41.21311	27.10688	Europe/Istanbul	19793
+city:745714	Havza		TR	55	40.97056	35.66222	Europe/Istanbul	21500
+city:7458188	Yakinca		TR	44	38.30533	38.23828	Europe/Istanbul	23063
+city:746232	Guersu		TR	16	40.21876	29.19487	Europe/Istanbul	24510
+city:746234	Guerpinar		TR	34	40.992	28.603	Europe/Istanbul	29411
+city:746252	Guergentepe		TR	52	40.78995	37.60073	Europe/Istanbul	18771
+city:746425	Guemueshane	جوموشخانة	TR	69	40.46001	39.47176	Europe/Istanbul	39214
+city:746552	Goeruekle		TR	16	40.23114	28.84017	Europe/Istanbul	35882
+city:746565	Goerele		TR	28	41.03083	39.00306	Europe/Istanbul	30381
+city:746574	Goenen		TR	10	40.1049	27.65399	Europe/Istanbul	40763
+city:746666	Goelcuek		TR	41	40.71501	29.81824	Europe/Istanbul	56189
+city:746881	Giresun	غيرسون	TR	28	40.91698	38.38741	Europe/Istanbul	125682
+city:746898	Geyve		TR	54	40.5075	30.2925	Europe/Istanbul	20199
+city:746940	Gerede		TR	14	40.80083	32.19694	Europe/Istanbul	28582
+city:746958	Gemlik		TR	16	40.43094	29.15969	Europe/Istanbul	71063
+city:746983	Gelibolu		TR	17	40.40836	26.67174	Europe/Istanbul	25178
+city:747014	Gebze		TR	41	40.80276	29.43068	Europe/Istanbul	281436
+city:747135	Ferizli		TR	54	40.94082	30.48583	Europe/Istanbul	23740
+city:747155	Fatsa		TR	52	41.02886	37.49977	Europe/Istanbul	82160
+city:747158	Fatih		TR	34	41.0225	28.94083	Europe/Istanbul	356025
+city:747323	Esenyurt		TR	34	41.02697	28.67732	Europe/Istanbul	983571
+city:747340	Esenler		TR	34	41.0435	28.87619	Europe/Istanbul	520235
+city:747471	Eregli		TR	85	41.28261	31.41806	Europe/Istanbul	88848
+city:747482	Erdek		TR	10	40.3996	27.79348	Europe/Istanbul	22678
+city:747489	Erbaa		TR	60	40.66889	36.5675	Europe/Istanbul	52185
+city:747538	Eminoenue		TR	34	41.01754	28.97101	Europe/Istanbul	55548
+city:747712	Edirne	أدرنة	TR	22	41.67719	26.55597	Europe/Istanbul	180002
+city:747764	Duezce	دوزجة	TR	93	40.83889	31.16389	Europe/Istanbul	194097
+city:748167	Devrek		TR	85	41.21917	31.95583	Europe/Istanbul	24559
+city:748208	Derince		TR	41	40.75694	29.81472	Europe/Istanbul	125485
+city:748870	Cubuk		TR	68	40.23861	33.03222	Europe/Istanbul	62602
+city:748879	Corum	جوروم	TR	19	40.54889	34.95333	Europe/Istanbul	269595
+city:748893	Corlu	تشورلو	TR	59	41.16069	27.80093	Europe/Istanbul	202578
+city:749274	Cerkezkoey		TR	59	41.28629	27.99939	Europe/Istanbul	84234
+city:749279	Cerkes		TR	82	40.81164	32.89358	Europe/Istanbul	17802
+city:749502	Cayeli		TR	53	41.08609	40.72213	Europe/Istanbul	24556
+city:749508	Caycuma		TR	85	41.42639	32.07556	Europe/Istanbul	21773
+city:749644	Catalca		TR	34	41.14073	28.45967	Europe/Istanbul	39678
+city:749704	Carsamba		TR	55	41.19889	36.72194	Europe/Istanbul	50459
+city:749748	Cankiri	جانقري	TR	82	40.59995	33.6153	Europe/Istanbul	90564
+city:749780	Canakkale	جاناكالي	TR	17	40.15552	26.41271	Europe/Istanbul	143622
+city:749795	Can		TR	17	40.03328	27.05236	Europe/Istanbul	26201
+city:7498240	West Jerusalem		IL	06	31.78199	35.21961	Asia/Jerusalem	400000
+city:750269	Bursa	بورصة	TR	16	40.19559	29.06013	Europe/Istanbul	3101833
+city:750317	Bulancak		TR	28	40.93805	38.23148	Europe/Istanbul	43635
+city:750468	Boyabat		TR	57	41.46889	34.76667	Europe/Istanbul	27717
+city:750516	Bolu	بولو	TR	14	40.73583	31.60611	Europe/Istanbul	184682
+city:750598	Bilecik	بيله جك	TR	11	40.14192	29.97932	Europe/Istanbul	74457
+city:750605	Biga		TR	17	40.22806	27.24222	Europe/Istanbul	61066
+city:750637	Beypazari		TR	68	40.1675	31.92111	Europe/Istanbul	38769
+city:750735	Besikduezue		TR	61	41.05202	39.23294	Europe/Istanbul	36987
+city:750938	Bayburt	بايبورت	TR	77	40.25631	40.22289	Europe/Istanbul	48036
+city:751057	Bartin	بارتين	TR	87	41.63583	32.3375	Europe/Istanbul	81692
+city:751077	Bandirma		TR	10	40.35222	27.97667	Europe/Istanbul	107631
+city:751324	Bagcilar		TR	34	41.03903	28.85671	Europe/Istanbul	740069
+city:751335	Bafra		TR	55	41.56787	35.90311	Europe/Istanbul	92944
+city:751371	Babaeski		TR	39	41.42809	27.0966	Europe/Istanbul	26724
+city:751817	Artvin	أرتوين	TR	08	41.18161	41.82172	Europe/Istanbul	25841
+city:751838	Arsin		TR	61	40.95271	39.92674	Europe/Istanbul	16148
+city:751868	Arnavutkoey		TR	34	41.18355	28.7402	Europe/Istanbul	198165
+city:751931	Arhavi		TR	08	41.35121	41.30456	Europe/Istanbul	16217
+city:751949	Ardesen		TR	53	41.19064	40.97935	Europe/Istanbul	67965
+city:751952	Ardahan	أرداهان	TR	86	41.10871	42.70222	Europe/Istanbul	22927
+city:751971	Arakli		TR	61	40.93854	40.05842	Europe/Istanbul	29917
+city:752015	Amasya	أماصيا	TR	05	40.65333	35.83306	Europe/Istanbul	114921
+city:7521348	Ain Sukhna	العين السخنة	EG	15	29.60018	32.31671	Africa/Cairo	45552
+city:752184	Alapli		TR	85	41.1814	31.38514	Europe/Istanbul	20890
+city:752278	Alaca		TR	19	40.16833	34.8425	Europe/Istanbul	27019
+city:752284	Akyurt		TR	68	40.13512	33.08614	Europe/Istanbul	26572
+city:752288	Akyazi		TR	54	40.685	30.62222	Europe/Istanbul	25068
+city:752489	Akhisar		TR	16	40.11825	29.46623	Europe/Istanbul	15198
+city:752584	Akcakoca		TR	93	41.08935	31.12362	Europe/Istanbul	35151
+city:752627	Akcaabat		TR	61	41.02121	39.57146	Europe/Istanbul	45105
+city:752850	Adapazari	آدابازاري	TR	54	40.78056	30.40333	Europe/Istanbul	286787
+city:75337	Hajjah	حجة	YE	22	15.69425	43.60582	Asia/Aden	43549
+city:756135	Warsaw		PL	78	52.22977	21.01178	Europe/Warsaw	1702139
+city:75618	Ghayl Ba Wazir	غيل با وزير	YE	04	14.77611	49.36611	Asia/Aden	21259
+city:7576887	Hezhou		CN	16	24.40357	111.56675	Asia/Shanghai	1005490
+city:7602670	Zhu Cheng City		CN	25	35.99502	119.40259	Asia/Shanghai	1000000
+city:76154	Dhi as Sufal	ذي السفال	YE	23	13.83446	44.11469	Asia/Aden	37997
+city:76184	Dhamar	ذمار	YE	11	14.54274	44.40514	Asia/Aden	160114
+city:7626690	Pimpri-Chinchwad		IN	16	18.61867	73.80375	Asia/Kolkata	1727692
+city:7627067	Bahcelievler		TR	34	41.00231	28.8598	Europe/Istanbul	576799
+city:7628416	Sultangazi		TR	34	41.10652	28.86847	Europe/Istanbul	436935
+city:7628419	Sultanbeyli		TR	34	40.96072	29.27067	Europe/Istanbul	358201
+city:7628420	Sancaktepe		TR	34	41.00244	29.23187	Europe/Istanbul	489848
+city:76991	Bayt al Faqih	بيت الفقيه	YE	08	14.51635	43.32446	Asia/Aden	34204
+city:7701384	Karabaglar		TR	35	38.382	27.132	Europe/Istanbul	479338
+city:77408	Bajil	باجل	YE	08	15.05898	43.28731	Asia/Aden	48218
+city:77726	Ataq	عتق	YE	05	14.53767	46.83187	Asia/Aden	37315
+city:7799991	New Cairo	القاهرة الجديدة	EG	11	30.03	31.47	Africa/Cairo	313139
+city:7799998	El Shorouk	الشروق	EG	11	30.13806	31.61556	Africa/Cairo	91899
+city:7802746	Sadr City	مدينة الصدر	IQ	07	33.3889	44.4583	Asia/Baghdad	1211849
+city:7838895	Russeifa	الرصيفة	JO	17	32.01778	36.04639	Asia/Amman	268237
+city:78428	'Amran	عمران	YE	19	15.6594	43.94385	Asia/Aden	90792
+city:7870319	Huwara	حوارة	PS	WE	32.15242	35.25659	Asia/Hebron	5570
+city:7870523	Shokat as-Sufi		PS	GZ	31.25864	34.28244	Asia/Gaza	15000
+city:7870669	al-Kum		PS	WE	31.53123	34.96064	Asia/Hebron	2568
+city:7870676	Al Rashaydeh		PS	WE	31.75292	35.34736	Asia/Hebron	2060
+city:7871005	Azun Atme		PS	WE	32.12167	35.02036	Asia/Hebron	1746
+city:78751	Mocha		YE	25	13.31814	43.24991	Asia/Aden	16794
+city:78754	Mukalla	المكلا	YE	04	14.54248	49.12424	Asia/Aden	594951
+city:7889501	Jinsafut	جنصافوط	PS	WE	32.17916	35.13038	Asia/Hebron	2089
+city:7889665	Bani Zayd	بني زيد	PS	WE	32.03924	35.10316	Asia/Hebron	5441
+city:7890119	Az Za'ayyim	الزعيم	PS	WE	31.78852	35.26511	Asia/Hebron	3373
+city:7890300	Wadi al-Joz	وادي الجوز	PS	WE	31.78991	35.23664	Asia/Hebron	13000
+city:7890350	Al 'Ubaydiyah	العبيدية	PS	WE	31.71697	35.29007	Asia/Hebron	10618
+city:7890353	Khallat an Nu'man	خلة النعمان	PS	WE	31.71749	35.24227	Asia/Hebron	1397
+city:7890366	Khallat Hamamah	خلة حمامة	PS	WE	31.7216	35.19243	Asia/Hebron	1397
+city:7890368	Ad Dawhah	الدوحة	PS	WE	31.69948	35.18047	Asia/Hebron	9631
+city:7890385	Wadi Rahhal	وادي رحال	PS	WE	31.66516	35.16727	Asia/Hebron	1401
+city:7890393	'Arab ar Rashaydah	عرب الرشايدة	PS	WE	31.57112	35.23227	Asia/Hebron	1435
+city:7890813	Bayt 'Inun	بيت عينون	PS	WE	31.5587	35.1244	Asia/Hebron	1782
+city:7890843	Bayt Maqdum	بيت مقدوم	PS	WE	31.53537	34.97192	Asia/Hebron	2568
+city:7890844	Al Buq'ah	البقعة	PS	WE	31.54199	35.14279	Asia/Hebron	1200
+city:7890846	Khallat ad Dar	خلة الدار	PS	WE	31.49737	35.11362	Asia/Hebron	2153
+city:7890847	Dayr Samit	دير سامت	PS	WE	31.52057	34.97442	Asia/Hebron	6144
+city:7891142	Al Hilah	الحيلة	PS	WE	31.47454	35.10742	Asia/Hebron	1258
+city:7891144	As Surrah	الصورة	PS	WE	31.47097	34.99897	Asia/Hebron	1896
+city:7891283	Bayt 'Amrah	بيت عمرة	PS	WE	31.4502	35.04952	Asia/Hebron	2133
+city:7891506	Rabud	رابود	PS	WE	31.43909	35.0162	Asia/Hebron	2228
+city:7891511	Al Karmil	الكرمل	PS	WE	31.42301	35.13278	Asia/Hebron	3685
+city:7891512	Khallat Salih	خلة صالح	PS	WE	31.42013	35.11516	Asia/Hebron	1077
+city:7895292	Bir al Basha	بير الباشا	PS	WE	32.42022	35.23013	Asia/Hebron	1291
+city:7895641	Al Badhan	الباذان	PS	WE	32.25857	35.33247	Asia/Hebron	2458
+city:7896869	'Ayn al Bayda	عين البيضا	PS	WE	32.38051	35.50838	Asia/Hebron	1145
+city:7897890	Az Zubaydat	الزبيدات	PS	WE	32.1733	35.53005	Asia/Hebron	1403
+city:7898046	Al Jiftlik	الجفتلك	PS	WE	32.1407	35.48738	Asia/Hebron	3666
+city:7915400	Khursa	خرسا	PS	WE	31.48232	35.01742	Asia/Hebron	3388
+city:7926667	Incirli		TR	68	39.98431	32.84317	Europe/Istanbul	30440
+city:792680	Belgrade		RS	SE	44.80401	20.46513	Europe/Belgrade	1273651
+city:79415	Al Hudaydah	الحديدة	YE	08	14.79781	42.95452	Asia/Aden	734699
+city:79455	Al Hazm	الحزم	YE	21	16.16406	44.77692	Asia/Aden	18241
+city:79836	Al Bayda	البيضاء	YE	20	13.98523	45.57272	Asia/Aden	37821
+city:8057551	Khalifah A City	مدينة خليفة أ	AE	01	24.42588	54.605	Asia/Dubai	85374
+city:8068982	Oba		TR	07	36.55013	32.0596	Europe/Istanbul	28864
+city:8069036	Cikcilli		TR	07	36.55403	32.02962	Europe/Istanbul	21449
+city:8074174	Muratpasa		TR	07	36.89157	30.76498	Europe/Istanbul	450000
+city:8134081	Al Qahirah al Jadidah	القاهرة الجديدة	EG	00	30.04214	31.44446	Africa/Cairo	313139
+city:8184212	Rahat	رهط	IL	01	31.39547	34.75699	Asia/Jerusalem	19586
+city:8200824	Mirdif	مردف	AE	03	25.22443	55.41412	Asia/Dubai	60288
+city:8201275	Hawr al 'Anz	هور العنز	AE	03	25.27744	55.33675	Asia/Dubai	84661
+city:8225407	Mankhul	منخول	AE	03	25.24612	55.29222	Asia/Dubai	41244
+city:8226485	Nayf	نايف	AE	03	25.27139	55.30323	Asia/Dubai	53075
+city:8226590	Al Murar al Qadim	المرر القديم	AE	03	25.27576	55.30738	Asia/Dubai	19831
+city:8310136	Tel Sheva'	تل السبع	IL	01	31.24864	34.86007	Asia/Jerusalem	20204
+city:831432	Espiye		TR	28	40.94705	38.70299	Europe/Istanbul	15058
+city:8347664	Ordos		CN	20	39.6086	109.78157	Asia/Shanghai	2153638
+city:8374203	'Ar'ara BaNegev	عرعرة	IL	01	31.16046	35.02274	Asia/Jerusalem	17640
+city:8374209	Hura	حورة	IL	01	31.30084	34.93606	Asia/Jerusalem	21558
+city:8374220	Kuseifa	كسيفة	IL	01	31.24535	35.0931	Asia/Jerusalem	21079
+city:8400694	Taizhou		CN	02	28.66266	121.43312	Asia/Shanghai	1485502
+city:8428283	Shoham	شوهام	IL	02	31.99866	34.94559	Asia/Jerusalem	20740
+city:8428480	El'ad		IL	02	32.05108	34.95704	Asia/Jerusalem	48763
+city:8449855	King Khalid Military City	مدينة الملك خالد العسكرية	SA	06	27.90509	45.55326	Asia/Riyadh	25356
+city:8469658	Al Warqaa		AE	03	25.19272	55.42013	Asia/Dubai	59111
+city:8469668	International City		AE	03	25.16383	55.40987	Asia/Dubai	120000
+city:8469788	Dubai Marina	مرسى دبي	AE	03	25.08525	55.14646	Asia/Dubai	120000
+city:8469811	Dubai Internet City		AE	03	25.09538	55.16171	Asia/Dubai	24000
+city:8469819	Al Safa		AE	03	25.17047	55.23336	Asia/Dubai	15672
+city:8475866	Ar Rumaylah	الرميلة	AE	02	25.40338	55.4334	Asia/Dubai	86000
+city:8475923	Al Jurf	الجرف	AE	02	25.41814	55.50791	Asia/Dubai	18000
+city:8476509	Al Majaz		AE	06	25.32354	55.38774	Asia/Dubai	116503
+city:8533133	Liupanshui		CN	18	26.59444	104.83333	Asia/Shanghai	1320825
+city:8541937	Dubai Festival City		AE	03	25.22177	55.35733	Asia/Dubai	77000
+city:8541977	Dubai International Financial Centre		AE	03	25.2106	55.27787	Asia/Dubai	36000
+city:8581443	South Tangerang		ID	33	-6.28862	106.71789	Asia/Jakarta	1429529
+city:8623183	Cubuklu		TR	34	41.10419	29.08331	Europe/Istanbul	20698
+city:890299	Harare		ZW	10	-17.82772	31.05337	Africa/Harare	1542813
+city:89570	Zaxo	زاخو	IQ	08	37.14871	42.68591	Asia/Baghdad	95052
+city:89824	Umm Qasr	ام قصر	IQ	02	30.0362	47.91951	Asia/Baghdad	107620
+city:90026	Tuz Khurmatu	طوز	IQ	18	34.88808	44.63256	Asia/Baghdad	120712
+city:90150	Tikrit	تكريت	IQ	18	34.61581	43.67861	Asia/Baghdad	42477
+city:90199	Tazah Khurmatu	تازة خورماتو	IQ	13	35.30236	44.32637	Asia/Baghdad	21788
+city:90353	Tallkayf	تلكيف	IQ	15	36.49118	43.12114	Asia/Baghdad	23524
+city:90532	Sumayl	سميل	IQ	08	36.85823	42.8482	Asia/Baghdad	152512
+city:90708	Sinah	سينة	IQ	08	36.80851	43.03935	Asia/Baghdad	128776
+city:9073431	At Tarif	الطارف	EG	13	25.73826	32.63684	Africa/Cairo	38871
+city:9075170	Bur Fu'ad	بور فؤاد	EG	19	31.24408	32.31955	Africa/Cairo	81591
+city:909137	Lusaka		ZM	09	-15.40669	28.28713	Africa/Lusaka	2212301
+city:91057	Ash Sharqat	الشرقاط	IQ	18	35.51722	43.22806	Asia/Baghdad	160000
+city:91083	Shaqlawah	شقلاوة	IQ	11	36.40422	44.32563	Asia/Baghdad	32599
+city:91597	Samarra'	سامراء	IQ	18	34.1959	43.88568	Asia/Baghdad	158508
+city:91696	Pirmam	صلاح الدين	IQ	11	36.38522	44.19703	Asia/Baghdad	38686
+city:91772	Safwan	صفوان	IQ	02	30.11645	47.71635	Asia/Baghdad	22929
+city:91812	Saddat al Hindiyah		IQ	06	32.71557	44.27857	Asia/Baghdad	35720
+city:92002	Ruwandiz	راوندوز	IQ	11	36.6114	44.52194	Asia/Baghdad	22943
+city:9204036	Nayot		PS	WE	31.79589	35.24517	Asia/Hebron	2223
+city:92052	Ranyah	رانية	IQ	05	36.25511	44.88239	Asia/Baghdad	114173
+city:92138	Al Qa'im	القائم	IQ	01	34.39251	40.98945	Asia/Baghdad	74100
+city:922704	Lubumbashi		CD	14	-11.66089	27.47938	Africa/Lubumbashi	2221925
+city:92362	Habhab	هبهب	IQ	10	33.78406	44.50659	Asia/Baghdad	21373
+city:92430	Al-Hamdaniya	قضاء الحمدانية	IQ	15	36.27093	43.37758	Asia/Baghdad	50000
+city:92511	Qal'at Sukkar	قلعة سكر	IQ	09	31.8632	46.07321	Asia/Baghdad	110000
+city:9253107	Dereluk Devera Niheliya	ديرلوك منطقه نهيلي	IQ	08	37.05598	43.65188	Asia/Baghdad	44448
+city:92537	Qal'at Salih	قلعة صالح	IQ	14	31.52802	47.29362	Asia/Baghdad	39698
+city:92615	Qeladize	قلادزي	IQ	05	36.18254	45.13017	Asia/Baghdad	140688
+city:927967	Lilongwe		MW	C	-13.96692	33.78725	Africa/Blantyre	1115815
+city:93709	Mandali	مندلي	IQ	10	33.7481	45.55503	Asia/Baghdad	29785
+city:94220	Koysinceq	كوية	IQ	11	36.08289	44.62873	Asia/Baghdad	44987
+city:94298	Kifri	كفري	IQ	10	34.68963	44.96057	Asia/Baghdad	30143
+city:94591	Khanaqin	خانقين	IQ	10	34.3482	45.39065	Asia/Baghdad	175000
+city:94787	Kirkuk	كركوك	IQ	13	35.46806	44.39222	Asia/Baghdad	1031000
+city:94824	Karbala	كربلاء	IQ	12	32.61603	44.02488	Asia/Baghdad	1218732
+city:95005	Kelar	كلار	IQ	05	34.62805	45.31852	Asia/Baghdad	250000
+city:953781	Soweto		ZA	06	-26.26781	27.85849	Africa/Johannesburg	1695047
+city:95446	Erbil	أربيل	IQ	11	36.19117	44.00943	Asia/Baghdad	1612700
+city:95788	Hit	هيت	IQ	01	33.63664	42.82768	Asia/Baghdad	31901
+city:96046	Harir	حرير	IQ	11	36.55111	44.35258	Asia/Baghdad	32171
+city:96205	Halabja	حلبجة	IQ	19	35.17778	45.98611	Asia/Baghdad	57333
+city:96309	Hadithah	حديثة	IQ	01	34.13661	42.37727	Asia/Baghdad	30925
+city:964137	Pretoria		ZA	06	-25.74486	28.18783	Africa/Johannesburg	2112693
+city:964420	Gqeberha		ZA	05	-33.96109	25.61494	Africa/Johannesburg	1050078
+city:96833	Xebat	خبات	IQ	11	36.27798	43.67065	Asia/Baghdad	148047
+city:96961	Soran	ديانا	IQ	11	36.65558	44.54217	Asia/Baghdad	91589
+city:96994	Dihok	دهوك	IQ	08	36.86608	42.9879	Asia/Baghdad	340900
+city:97417	Jamjamal	جمجمال	IQ	05	35.53356	44.8343	Asia/Baghdad	42593
+city:97783	Bayji	بيجي	IQ	18	34.92915	43.48878	Asia/Baghdad	173677
+city:97825	Batifa	باتوفا	IQ	08	37.17454	43.01233	Asia/Baghdad	28000
+city:97990	Baqubah	بعقوبة	IQ	10	33.75403	44.60518	Asia/Baghdad	152550
+city:98012	Baynjiwayn	بينجوين	IQ	05	35.62054	45.94908	Asia/Baghdad	27116
+city:98112	Balad	بلد	IQ	18	34.01485	44.14574	Asia/Baghdad	42088
+city:98156	Baharkah	بحركة	IQ	11	36.31556	44.03533	Asia/Baghdad	130518
+city:98182	Baghdad	بغداد	IQ	07	33.34058	44.40088	Asia/Baghdad	7216000
+city:98245	Az Zubayr	الزبير	IQ	02	30.39213	47.70175	Asia/Baghdad	122676
+city:98459	As Suwayrah	الصويرة	IQ	16	32.92556	44.77583	Asia/Baghdad	77200
+city:98463	Sulaymaniyah	السليمانية	IQ	05	35.56496	45.4329	Asia/Baghdad	878146
+city:98530	As Samawah	السماوه	IQ	03	31.33198	45.2944	Asia/Baghdad	152890
+city:98589	Nahiyat ash Shinafiyah	ناحية الشنافية	IQ	04	31.58376	44.64675	Asia/Baghdad	22643
+city:98622	Ash Shatrah	الشطرة	IQ	09	31.40906	46.1727	Asia/Baghdad	182175
+city:98629	Ash Shamiyah	الشامية	IQ	04	31.96257	44.60075	Asia/Baghdad	57661
+city:98677	Ar Rutbah	الرطبة	IQ	01	33.03718	40.28586	Asia/Baghdad	22370
+city:98685	Ar Rumaythah	الرميثة	IQ	03	31.52845	45.20377	Asia/Baghdad	47248
+city:98717	Ramadi	الرمادي	IQ	01	33.42056	43.30778	Asia/Baghdad	223500
+city:98822	Akre	عقرة	IQ	15	36.76038	43.89428	Asia/Baghdad	23000
+city:98846	An Nu'maniyah	النعمانية	IQ	16	32.55621	45.41293	Asia/Baghdad	110000
+city:98854	Nasiriyah	الناصرية	IQ	09	31.05799	46.25726	Asia/Baghdad	558400
+city:98860	Najaf	النجف	IQ	17	32.02594	44.34625	Asia/Baghdad	482576
+city:98885	'Anat al Qadimah	عنة القديمة	IQ	01	34.46934	41.94223	Asia/Baghdad	19719
+city:9888776	Atasehir		TR	35	38.48855	27.06132	Europe/Istanbul	28864
+city:9888792	Bostanli		TR	35	38.45921	27.09732	Europe/Istanbul	29842
+city:9888806	Semikler		TR	35	38.47497	27.09591	Europe/Istanbul	29321
+city:98993	Al Qurnah	القرنة	IQ	02	31.01547	47.43362	Asia/Baghdad	134174
+city:99010	Al-Qasim	القاسم	IQ	06	32.29799	44.68282	Asia/Baghdad	93546
+city:99039	Al-Musayab	المسيب	IQ	06	32.77872	44.29005	Asia/Baghdad	101873
+city:99060	Al Mishkhab	المشخاب	IQ	17	31.80437	44.4893	Asia/Baghdad	23189
+city:99062	Al Miqdadiyah	المقدادية	IQ	10	33.97861	44.93694	Asia/Baghdad	155968
+city:99071	Al Mawsil al Jadidah	الموصل الجديدة	IQ	15	36.33271	43.10555	Asia/Baghdad	2065597
+city:99072	Mosul	الموصل	IQ	15	36.335	43.11889	Asia/Baghdad	1683000
+city:99100	Al Mahmudiyah	المحمودية	IQ	07	33.06221	44.36564	Asia/Baghdad	350000
+city:99103	Al Mahawil	المحاويل	IQ	06	32.66138	44.40854	Asia/Baghdad	31200
+city:99106	Al Madinah	المدينة	IQ	02	30.96324	47.26998	Asia/Baghdad	255000
+city:99131	Kut	الكوت	IQ	16	32.5128	45.81817	Asia/Baghdad	315162
+city:99135	Kufa	الكوفة	IQ	17	32.05114	44.44017	Asia/Baghdad	110000
+city:99169	Khalis	خالص	IQ	10	33.80809	44.53343	Asia/Baghdad	70046
+city:9921442	Evka-UEc		TR	35	38.47071	27.25094	Europe/Istanbul	20600
+city:99226	Nahiyat al Iskandariyah	ناحية الإسكندرية	IQ	06	32.8873	44.34619	Asia/Baghdad	100600
+city:99306	'Ali al Gharbi	علي الغربي	IQ	14	32.46186	46.68794	Asia/Baghdad	19711
+city:99344	Al Hindiyah	الهندية	IQ	12	32.54193	44.22469	Asia/Baghdad	139578
+city:99347	Hillah	الحلة	IQ	06	32.46367	44.41963	Asia/Baghdad	455700
+city:99350	Al Hayy	الحي	IQ	16	32.17419	46.04345	Asia/Baghdad	78272
+city:99369	Al Harithah	الهارثة	IQ	02	30.58481	47.76114	Asia/Baghdad	92395
+city:993800	Johannesburg		ZA	06	-26.20227	28.04363	Africa/Johannesburg	9418183
+city:99434	Nahiyat Ghammas	ناحية غماس	IQ	04	31.74311	44.6196	Asia/Baghdad	30909
+city:99439	Nahiyat al Fuhud		IQ	09	30.96972	46.72278	Asia/Baghdad	21551
+city:99446	Al Faw	الفاو	IQ	02	29.97421	48.47309	Asia/Baghdad	104569
+city:99454	Al Fallujah	الفلوجة	IQ	01	33.34913	43.78599	Asia/Baghdad	190159
+city:99532	Basra	البصرة	IQ	02	30.50852	47.7804	Asia/Baghdad	1326564
+city:99548	Al 'Aziziyah	العزيزية	IQ	16	32.90941	45.06359	Asia/Baghdad	44751
+city:99608	Amarah	العمارة	IQ	14	31.83561	47.14483	Asia/Baghdad	323302
+city:99738	'Afak	عفك	IQ	04	32.0643	45.24743	Asia/Baghdad	35536
+city:99759	Ad Dujayl		IQ	18	33.84667	44.23444	Asia/Baghdad	26362
+city:99762	Al Diwaniyah	الديوانية	IQ	04	31.99289	44.92552	Asia/Baghdad	318801

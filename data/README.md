@@ -12,6 +12,10 @@ bulk downloads are never committed. Tooling: `tools/catalog/` (`make catalog`).
 | `yields.yaml` | Cooking yield factors (FD-060): grams of `to` per gram of `from`, one row per group and pair (`yields.v1.schema.json`). The only owner of yield factors. |
 | `portion_words.yaml` | What one loaf, piece, glass, can, tbsp or tsp of a food weighs or holds (FD-003, `portion_words.v1.schema.json`). The only owner of household units: a `servings` entry in the selection with the same unit must agree (the validator checks). |
 | `attribution.yaml` | Data sources and licences for About and the pack's `meta.attribution` (A05 D18). Includes the open Matvaretabellen licence question (backlog #64). |
+| `exercises.yaml` | Authored built-in exercise library (WO-001/002/004): EN display names/aliases, separate equipment variants, six logging types and primary muscles. Names only, no coaching/media. |
+| `cities.tsv` | Generated GeoNames subset (LC-033), with stable IDs, coordinates and IANA zones. Import with `make catalog-cities`; never hand-edit. |
+| `geonames/sources.yaml` | JSON-compatible YAML pins (download date, archive/text SHA256), selection policy and IANA snapshot provenance. Daily URLs change; retain the matching raw files outside the repo. |
+| `schema/iana_timezones.txt` | IANA tzdata2026e Zone + Link names, including backward aliases, used for deterministic offline validation. Public-domain source archive/hash in the file and sources.yaml. To refresh: derive names from the listed source files, review the diff and provenance together. |
 | `catalog_ids.lock` | Append-only list of every released catalog ID (TD-071). Written by `make catalog` only; never edit or delete a line. Drafts are never in it. |
 | `catalog_release.yaml` | The current `catalog_version` and content hash. Written by `make catalog` only. |
 | `schema/` | JSON Schemas for the selection, the reference dishes, yields and portion words. |
@@ -50,3 +54,37 @@ groups:
 An item resolves in a language when a name in that language finds a matching
 catalog ID in the top 5. Status: `reviewed` or `draft` (a dish), `basic` (a
 USDA food), `missing`.
+
+## City refreshes (A05b)
+
+`make catalog-cities GEONAMES_DIR=/path/to/retained/dumps` verifies the pinned
+text checksums and regenerates the TSV without network access. Without
+`GEONAMES_DIR`, the target downloads the city and per-country alternate-name archives to an external temporary
+directory and verifies archive and text checksums. A changed daily download
+fails closed: refresh `geonames/sources.yaml` explicitly in a reviewed data
+change, retaining the exact downloaded archives/extracts for reproducibility.
+Normal `make catalog`, builds, tests and CI use only committed data.
+
+Selection: all PS/JO entries from cities1000; IL/LB/SY/EG/SA/IQ/AE/BH/KW/OM/QA/YE/TR
+from cities15000; other countries only at population >=1,000,000. Explicit IDs
+in `geonames/excluded_cities.tsv` exclude settlements under the owner's
+2026-10-22 decision; neither country nor time zone triggers exclusion. Their
+lock entries remain with status `retired` and may never be reused.
+
+For PS/JO and every regional country, pinned `alternatenames/<CC>.zip` supplies
+language-tagged names: preferred `en`, otherwise GeoNames asciiname;
+preferred `ar`, otherwise another current `ar` name, otherwise blank.
+Only display-valid names are eligible: English uses plain ASCII Latin letters,
+digits, spaces and simple punctuation (apostrophe, hyphen, dot, comma); Arabic
+uses Arabic letters, spaces and diacritics. Invalid tagged transliterations are
+skipped; no usable Arabic name means blank. Apostrophe/dash variants normalize
+to simple punctuation; invalid preferred English falls back to asciiname. These
+rules also validate the committed TSV during catalog checks. Historical
+and ended names are ignored; equal-rank ties use lexical name order. Untagged
+Arabic-script alternates are never used. Persian/Kurdish kaf, yeh and heh forms
+normalize to Arabic, retaining diacritics. Three reviewed, ID-specific missing-name
+fallbacks (both Karak records and the released Ramallah spelling) and their
+rationale live in `sources.yaml`. Original coordinates/zones are retained.
+GeoNames is CC BY 4.0; attribution is active in the pack/About metadata.
+A10 shows only the GeoNames `credit`, never the internal `note`; city ranking
+may sort by population but must not filter out zero-population rows.

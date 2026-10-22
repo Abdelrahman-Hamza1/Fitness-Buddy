@@ -1,6 +1,7 @@
 import 'package:fb_catalog/src/compute/dish_nutrients.dart';
 import 'package:fb_catalog/src/model/dish.dart';
 import 'package:fb_catalog/src/model/issue.dart';
+import 'package:fb_catalog/src/model/library_data.dart';
 import 'package:fb_catalog/src/model/yields.dart';
 import 'package:fb_catalog/src/validate/report.dart';
 import 'package:fb_catalog/src/validate/validate_yields.dart';
@@ -15,6 +16,7 @@ ValidationReport validateCatalog({
   required List<BasicFood> basics,
   required List<ReferenceDish> dishes,
   bool requireAr = false,
+  List<ExerciseSeed> exercises = const [],
   List<YieldRow>? yields,
   List<PortionWordRow>? portionWords,
   SanityCheck sanity = const SanityCheck(),
@@ -39,7 +41,7 @@ ValidationReport validateCatalog({
     }
     _dish(report, dish, known, sortedDishes, computer, sanity);
   }
-  _names(report, basics, sortedDishes);
+  _names(report, basics, sortedDishes, exercises);
   validateYieldsAndPortionWords(
     report,
     basics: basics,
@@ -237,6 +239,7 @@ void _names(
   ValidationReport report,
   List<BasicFood> basics,
   List<ReferenceDish> dishes,
+  List<ExerciseSeed> exercises,
 ) {
   final owners = <String, ({String owner, String name})>{};
   void add(
@@ -292,5 +295,8 @@ void _names(
         );
       }
     }
+  }
+  for (final e in exercises) {
+    add('exercises.yaml', '/${e.id}/names', e.id, 'en', e.names);
   }
 }

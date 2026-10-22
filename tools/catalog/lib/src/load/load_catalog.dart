@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:fb_catalog/src/load/load_basics.dart';
 import 'package:fb_catalog/src/load/load_dish.dart';
+import 'package:fb_catalog/src/load/load_library.dart';
 import 'package:fb_catalog/src/load/load_yields.dart';
 import 'package:fb_catalog/src/load/schema.dart';
 import 'package:fb_catalog/src/model/dish.dart';
 import 'package:fb_catalog/src/model/issue.dart';
+import 'package:fb_catalog/src/model/library_data.dart';
 import 'package:fb_catalog/src/model/yields.dart';
 import 'package:path/path.dart' as p;
 
@@ -17,7 +19,12 @@ class CatalogData {
     this.issues, {
     this.yields,
     this.portionWords,
+    this.exercises = const [],
+    this.cities = const [],
   });
+
+  final List<ExerciseSeed> exercises;
+  final List<CitySeed> cities;
 
   final List<BasicFood> basics;
   final List<ReferenceDish> dishes;
@@ -42,6 +49,8 @@ CatalogData loadCatalog({
   required Directory dishesDir,
   File? yields,
   File? portionWords,
+  File? exercises,
+  File? cities,
 }) {
   final issues = <CatalogIssue>[];
   final basics = loadBasics(
@@ -70,6 +79,20 @@ CatalogData loadCatalog({
     basics,
     dishes,
     issues,
+    exercises: exercises != null && exercises.existsSync()
+        ? loadExercises(
+            exercises,
+            loadSchema(schemaDir, 'exercises.v1.schema.json'),
+            issues,
+          )
+        : const [],
+    cities: cities != null && cities.existsSync()
+        ? loadCities(
+            cities,
+            loadTimezones(File(p.join(schemaDir, 'iana_timezones.txt'))),
+            issues,
+          )
+        : const [],
     yields: yields != null && yields.existsSync()
         ? loadYields(yields, loadSchema(schemaDir, yieldsSchemaFile), issues)
         : null,

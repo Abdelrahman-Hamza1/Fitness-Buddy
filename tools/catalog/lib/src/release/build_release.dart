@@ -31,6 +31,8 @@ class DataPaths {
   Directory get dishes => Directory(p.join(root, 'reference_dishes'));
   File get yields => File(p.join(root, 'yields.yaml'));
   File get portionWords => File(p.join(root, 'portion_words.yaml'));
+  File get exercises => File(p.join(root, 'exercises.yaml'));
+  File get cities => File(p.join(root, 'cities.tsv'));
   File get attribution => File(p.join(root, 'attribution.yaml'));
   File get mustCover => File(p.join(root, 'must_cover.yaml'));
   File get lock => File(p.join(root, 'catalog_ids.lock'));
@@ -109,6 +111,8 @@ loadAndValidate(DataPaths d, StringSink err) {
     dishesDir: d.dishes,
     yields: d.yields,
     portionWords: d.portionWords,
+    exercises: d.exercises,
+    cities: d.cities,
   );
   final attribution = loadAttribution(d.attribution, d.schemaDir, data.issues);
   final report = validateCatalog(
@@ -117,6 +121,7 @@ loadAndValidate(DataPaths d, StringSink err) {
     requireAr: true,
     yields: data.yields,
     portionWords: data.portionWords,
+    exercises: data.exercises,
   );
   final errors = [...data.issues, ...report.errors];
   if (errors.isEmpty) {
@@ -172,7 +177,8 @@ BuildResult runBuild(
   );
   final problems = <String>[
     for (final id in released.released.keys)
-      if (!isValidFoodId(id)) 'ID `$id` is not a valid catalog ID (see A05 D1)',
+      if (!isValidCatalogId(id))
+        'ID `$id` is not a valid catalog ID (see A05 D1)',
   ];
   final cmp = compareWithData(lock, released.released);
   problems.addAll(cmp.errors);

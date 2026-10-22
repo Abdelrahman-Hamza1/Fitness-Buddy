@@ -21,8 +21,9 @@ sources:
     licence: "CC BY 4.0"
     url: "https://www.geonames.org/"
     credit: "City data from GeoNames (geonames.org), licensed under CC BY 4.0."
-    used_for: "Cities with coordinates and time zones (arrives with A05b)"
-    status: reserved
+    used_for: "Offline city subset: coordinates and IANA time zones"
+    status: active
+    note: "Filtered from cities1000/cities15000; Language-tagged Arabic/preferred English alternates for PS/JO and regional countries, normalized Arabic letter forms and reviewed ID exclusions/name fallbacks. Sources are pinned in data/geonames/sources.yaml."
   - id: open_food_facts
     name: "Open Food Facts"
     licence: "ODbL 1.0 (database), DbCL (contents)"

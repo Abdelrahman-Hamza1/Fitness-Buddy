@@ -17,6 +17,8 @@ final String dataDir = p.join('..', '..', 'data');
     dishesDir: Directory(p.join(dataDir, 'reference_dishes')),
     yields: File(p.join(dataDir, 'yields.yaml')),
     portionWords: File(p.join(dataDir, 'portion_words.yaml')),
+    exercises: File(p.join(dataDir, 'exercises.yaml')),
+    cities: File(p.join(dataDir, 'cities.tsv')),
   );
   final report = validateCatalog(
     basics: data.basics,
@@ -24,6 +26,7 @@ final String dataDir = p.join('..', '..', 'data');
     requireAr: true,
     yields: data.yields,
     portionWords: data.portionWords,
+    exercises: data.exercises,
   );
   final out = p.join(dir.path, 'catalog.db');
   buildPack(data: data, report: report, out: out, includeDrafts: true);
@@ -100,4 +103,101 @@ void main() {
       }
     }
   });
+  test('WO-001 every built-in exercise and alias is searchable', () {
+    expect(real.data.exercises, hasLength(100));
+    expect(search.count('exercises'), 100);
+    for (final e in real.data.exercises) {
+      for (final name in e.names) {
+        expect(targets(search, name).first, e.id, reason: name);
+      }
+    }
+  });
+
+  test(
+    'WO-002 equipment variants stay distinct; WO-004 all six types ship',
+    () {
+      final byId = {for (final e in real.data.exercises) e.id: e};
+      expect(byId['ex:barbell_bench_press']!.equipment, 'barbell');
+      expect(byId['ex:dumbbell_bench_press']!.equipment, 'dumbbell');
+      expect(byId['ex:machine_chest_press']!.equipment, 'machine');
+      expect(real.data.exercises.map((e) => e.type).toSet(), {
+        'weight_reps',
+        'bodyweight_reps',
+        'assisted',
+        'reps_only',
+        'duration',
+        'distance_duration',
+      });
+    },
+  );
+
+  test(
+    'LC-033 real cities include Hebron and regional centres with valid zones',
+    () {
+      expect(real.data.cities, hasLength(2276));
+      expect(search.count('cities'), 2276);
+      final byId = {for (final c in real.data.cities) c.id: c};
+      expect(byId['city:285066']!.nameEn, 'Hebron');
+      expect(byId['city:285066']!.nameAr, 'الخليل');
+      expect(byId['city:285066']!.timezone, 'Asia/Hebron');
+      expect(byId['city:250441']!.nameEn, 'Amman');
+      expect(byId['city:282239']!.nameEn, 'Ramallah');
+      expect(byId['city:282615']!.nameEn, 'Nablus');
+      expect(byId['city:250441']!.nameAr, 'عمّان');
+      expect(byId['city:281577']!.nameAr, 'طولكرم');
+      expect(byId['city:281577']!.nameEn, 'Tulkarm');
+      expect(
+        real.data.cities.every((c) => isEnglishCityName(c.nameEn)),
+        isTrue,
+      );
+      expect(
+        real.data.cities.every(
+          (c) => c.nameAr == null || isArabicCityName(c.nameAr!),
+        ),
+        isTrue,
+      );
+      for (final id in ['101554', '102744', '107968', '110250']) {
+        final ar = byId['city:$id']!.nameAr;
+        expect(ar == null || isArabicCityName(ar), isTrue);
+      }
+      for (final id in ['city:250624', 'city:6946409']) {
+        expect(byId[id]!.nameEn, 'Karak');
+        expect(byId[id]!.nameAr, 'الكرك');
+      }
+      expect(byId['city:282239']!.toRow(), {
+        'id': 'city:282239',
+        'name_en': 'Ramallah',
+        'name_ar': 'رام الله',
+        'country_code': 'PS',
+        'admin1': 'WE',
+        'lat': 31.89964,
+        'lon': 35.20422,
+        'timezone': 'Asia/Hebron',
+        'population': 43880,
+      });
+      for (final id in loadCityExclusions(
+        File(p.join(dataDir, 'geonames/excluded_cities.tsv')),
+      )) {
+        expect(byId, isNot(contains('city:$id')));
+      }
+      for (final id in ['284376', '284335', '281818', '285111', '285279']) {
+        expect(byId, contains('city:$id'));
+      }
+      for (final id in [
+        '281184',
+        '360630',
+        '108410',
+        '292223',
+        '276781',
+        '170654',
+      ]) {
+        expect(byId['city:$id']!.nameAr, isNotEmpty);
+      }
+
+      expect(
+        real.data.cities.every((c) => c.lat.isFinite && c.lon.isFinite),
+        isTrue,
+      );
+    },
+  );
 }

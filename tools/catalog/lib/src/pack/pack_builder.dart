@@ -166,8 +166,8 @@ void writePack(
   }
 }
 
-/// The pack schema v1 (A05 D5). `exercises` and `cities` are empty until
-/// A05b; `barcodes` until FD-030.
+/// The pack schema v1 (A05 D5). A05b supplies exercises and cities;
+/// `barcodes` stays empty until FD-030.
 const packDdl = '''
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL) WITHOUT ROWID;
 CREATE TABLE foods (

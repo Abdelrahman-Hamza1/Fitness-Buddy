@@ -318,6 +318,16 @@ Release composeRelease({
       return f != 0 ? f : a.to.code.compareTo(b.to.code);
     });
 
+  final exercises = [...data.exercises]..sort((a, b) => a.id.compareTo(b.id));
+  final cities = [...data.cities]..sort((a, b) => a.id.compareTo(b.id));
+  for (final e in exercises) {
+    released[e.id] = 'exercise';
+    addNames(e.id, {'en': e.names});
+  }
+  for (final c in cities) {
+    released[c.id] = 'city';
+  }
+
   return Release(
     includesDrafts: includeDrafts,
     released: released,
@@ -341,8 +351,18 @@ Release composeRelease({
             'source': y.source,
           },
       ],
-      'exercises': const <Row>[],
-      'cities': const <Row>[],
+      'exercises': [
+        for (final e in exercises)
+          {
+            'id': e.id,
+            'name_en': e.names.first,
+            'type': e.type,
+            'equipment': e.equipment,
+            'primary_muscle': e.primaryMuscle,
+            'catalog_version': versionOf(e.id),
+          },
+      ],
+      'cities': [for (final c in cities) c.toRow()],
     },
   );
 }

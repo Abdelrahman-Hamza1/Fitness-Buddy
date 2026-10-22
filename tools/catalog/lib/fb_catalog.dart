@@ -3,13 +3,16 @@ library;
 
 export 'src/cli.dart';
 export 'src/compute/dish_nutrients.dart';
+export 'src/geonames/import_cities.dart';
 export 'src/load/load_basics.dart';
 export 'src/load/load_catalog.dart';
 export 'src/load/load_dish.dart';
+export 'src/load/load_library.dart';
 export 'src/load/load_yields.dart';
 export 'src/load/schema.dart';
 export 'src/model/dish.dart';
 export 'src/model/issue.dart';
+export 'src/model/library_data.dart';
 export 'src/model/yields.dart';
 export 'src/pack/commands.dart' show buildFixtureSql, fixtureIds;
 export 'src/pack/coverage.dart';

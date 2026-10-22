@@ -10,13 +10,20 @@ library;
 const lockKinds = {'food', 'dish', 'variant', 'exercise', 'city'};
 
 /// `usda:<slug>`, `ref:<slug>`, `ref:<slug>/<variant>` (A05 D1), at most 64
-/// ASCII characters. Exercises and cities are checked by A05b.
+/// ASCII characters. Exercise and city IDs use separate patterns below.
 final foodIdPattern = RegExp(
   r'^(usda|ref):[a-z0-9][a-z0-9_]*(/[a-z0-9][a-z0-9_]*)?$',
 );
 
 /// Whether [id] is a well-formed food, dish or variant ID.
 bool isValidFoodId(String id) => id.length <= 64 && foodIdPattern.hasMatch(id);
+
+/// Whether an ID belongs to any released catalog kind (A05 D1).
+bool isValidCatalogId(String id) =>
+    id.length <= 64 &&
+    (isValidFoodId(id) ||
+        RegExp(r'^ex:[a-z0-9_]+$').hasMatch(id) ||
+        RegExp(r'^city:[1-9][0-9]*$').hasMatch(id));
 
 /// One released ID.
 class LockEntry {

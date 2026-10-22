@@ -147,7 +147,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A03](A03-spike-food-data.md) | Spike: food data | Claude | S08 ✅ | M | S11 |  | ✅ |
 | [A04](dish-batches.md) | Dish batch 1: basics (breakfast & bread → A17, TD-074) | Claude | A03 | S | D1 |  | ✅ |
 | [A05](A05-catalog-pipeline.md) | Catalog pipeline & offline pack v1 | Claude | A01, A03, A04 | L | S13 |  | ✅ |
-| [A05b](A05b-exercises-cities-data.md) | Exercises & cities data | **Codex** | A05 | S | S13 part |  | ⬜ |
+| [A05b](A05b-exercises-cities-data.md) | Exercises & cities data | **Codex** | A05 | S | S13 part |  | ✅ |
 | [A06](A06-diary-domain.md) | Diary domain & storage | Claude | A01 | M | S14 |  | ✅ |
 | [A07](A07-food-search-add.md) | Food search & add flow | Claude | A02, A05, A06 | M | S15 |  | ⬜ |
 | [A08](A08-today-diary-ui.md) | Today screen & diary UI | Claude | A07 | L | S16 |  | ⬜ |

@@ -426,6 +426,13 @@ catalog-usda: ## Download the pinned USDA CSVs to a temp dir, then rewrite data/
 	  bash '$(REPO_ROOT)/tools/scripts/fetch-usda.sh' "$$tmp/raw"; dir="$$tmp/raw"; fi; \
 	cd '$(REPO_ROOT)' && '$(DART)' run tools/catalog/bin/catalog.dart import-usda --usda-dir "$$dir"
 
+.PHONY: catalog-cities
+catalog-cities: ## Download checksum-pinned GeoNames dumps and import the offline city subset; GEONAMES_DIR reuses retained extracts
+	@tmp=""; dir='$(GEONAMES_DIR)'; \
+	if [ -z "$$dir" ]; then tmp="$$(mktemp -d)"; trap 'rm -rf "$$tmp"' EXIT; \
+	  python3 tools/scripts/fetch-geonames.py "$$tmp/raw"; dir="$$tmp/raw"; fi; \
+	'$(DART)' run tools/catalog/bin/catalog.dart import-cities --geonames-dir "$$dir"
+
 CATALOG := cd '$(REPO_ROOT)' && '$(DART)' run tools/catalog/bin/catalog.dart
 CATALOG_ASSETS := apps/mobile/assets/catalog
 

@@ -20,6 +20,23 @@ void main() {
     expect(ruz, isNotEmpty, reason: 'short Arabizi query uses the exact key');
   });
 
+  test('WO-001 exercise aliases never become food search results', () async {
+    final (_, catalog) = fixtureCatalog(
+      extraSql: '''
+      INSERT INTO exercises VALUES
+        ('ex:barbell_bench_press', 'Barbell bench press', 'weight_reps',
+         'barbell', 'chest', 2);
+      INSERT INTO names (target_id, lang, name, key, is_display) VALUES
+        ('ex:barbell_bench_press', 'en', 'BB bench', 'b bench', 1);
+      INSERT INTO names_fts (rowid, key)
+        SELECT rowid, key FROM names WHERE target_id = 'ex:barbell_bench_press';
+    ''',
+    );
+    expect(await catalog.search('BB bench'), isEmpty);
+    expect(await catalog.byId('ex:barbell_bench_press'), isNull);
+    expect(await catalog.search('rice'), isNotEmpty);
+  });
+
   test('FD-023 search finds a fixture dish by EN, AR and Arabizi', () async {
     final (_, catalog) = fixtureCatalog();
     for (final q in ['mloukhiyeh', 'ملوخية', 'molokhia']) {

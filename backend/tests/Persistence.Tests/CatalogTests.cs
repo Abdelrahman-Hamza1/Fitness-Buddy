@@ -22,6 +22,7 @@ namespace FitnessBuddy.Persistence.Tests;
 [Trait("Rule", "07.5-catalog-parity")]
 public sealed class CatalogTests(PostgresFixture postgres)
 {
+    private static readonly string[] ExerciseTypes = ["assisted", "bodyweight_reps", "distance_duration", "duration", "reps_only", "weight_reps"];
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
     private static string Root => FindRoot();
     private static string FindRoot()
@@ -167,11 +168,18 @@ public sealed class CatalogTests(PostgresFixture postgres)
     }
 
     [Fact]
+    [Trait("Req", "WO-001")]
+    [Trait("Req", "WO-004")]
+    [Trait("Req", "LC-033")]
     public async Task Full_shipped_release_import_and_warmed_search_latency()
     {
         // `make test-dotnet` builds the non-mutating release first. CI and local tests use identical bytes.
         var path = Path.Combine(Root, "build/catalog");
         var release = await CatalogRelease.ReadAsync(path, Ct);
+        Assert.Equal(100, release.Rows["exercises"].Length);
+        Assert.Equal(2276, release.Rows["cities"].Length);
+        Assert.Equal(ExerciseTypes,
+            release.Rows["exercises"].Select(e => e.GetProperty("type").GetString()!).Distinct().Order(StringComparer.Ordinal));
         // Each case uses an isolated upgrade DB so the global synthetic releases never contaminate this proof.
         var database = "fb_upgrade_" + Guid.NewGuid().ToString("N");
         var connection = await postgres.CreateUpgradeDatabaseAsync(database);
@@ -182,6 +190,19 @@ public sealed class CatalogTests(PostgresFixture postgres)
             var appConnection = new NpgsqlConnectionStringBuilder(postgres.AppConnection) { Database = database }.ConnectionString;
             await using var source = DatabaseConfiguration.CreateSource(appConnection);
             var queries = new CatalogQueries(new PostgresCatalogStore(source));
+            foreach (var exerciseAlias in new[] { "BB bench", "OHP", "Assisted dip machine" })
+            {
+                var hits = await queries.SearchAsync(exerciseAlias, 50, null, Ct);
+                Assert.DoesNotContain(hits.Items, h => h.Food.Data.GetProperty("id").GetString()!.StartsWith("ex:", StringComparison.Ordinal));
+            }
+            await using (var count = source.CreateCommand("SELECT count(*) FROM catalog.exercises WHERE active"))
+            {
+                Assert.Equal(100L, await count.ExecuteScalarAsync(Ct));
+            }
+            await using (var aliases = source.CreateCommand("SELECT count(*) FROM catalog.names WHERE target_id LIKE 'ex:%' AND food_id IS NOT NULL"))
+            {
+                Assert.Equal(0L, await aliases.ExecuteScalarAsync(Ct));
+            }
             var samples = new List<double>();
             foreach (var query in new[] { "rice", "ارز", "roz", "chicken", "دجاج", "djaj", "chiken", "milk", "oil", "banana" })
             {

@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A05 | S | Codex (TD-078) | ⬜ Not started |
+| App | A05 | S | Codex (TD-078) | ✅ Done |
 
 _Split from A05 at the wave-1 plan review (architect, 2026-10-17, PA6). Needed before A36 (workout library) and A41 (Ramadan / city for prayer times)._
 
@@ -22,9 +22,9 @@ _Split from A05 at the wave-1 plan review (architect, 2026-10-17, PA6). Needed b
 - IDs are `ex:<slug>` and `city:<geonameid>`, stable forever (A05 D1–D2, TD-071). English names only (WO-001). GeoNames is CC BY 4.0 with attribution (A05 D18).
 
 ## Exit criteria
-- [ ] `data/exercises.yaml` (≈ 100 exercises, equipment variants separate, EN aliases) validates and is searchable in the pack (WO-001, WO-002).
-- [ ] `data/cities.tsv` has coordinates and a valid IANA zone per row, and the owner's city is present (LC-033). Counts in the Outcome.
-- [ ] `make catalog` and `make catalog-check` pass. The pack stays under the 10 MB budget.
+- [x] `data/exercises.yaml` (≈ 100 exercises, equipment variants separate, EN aliases) validates and is searchable in the pack (WO-001, WO-002).
+- [x] `data/cities.tsv` has coordinates and a valid IANA zone per row, and the owner's city is present (LC-033). Counts in the Outcome.
+- [x] `make catalog` and `make catalog-check` pass. The pack stays under the 10 MB budget.
 
 ## Read first
 `07-food-data.md` · A05 low-level plan (D15, D16, WP2) · A36 card (it may add exercise fields)
@@ -37,8 +37,191 @@ None (the owner's city is checked from the data).
 ## Low-level plan
 The low-level plan for A05b is **A05's WP2 section** (`A05-catalog-pipeline.md`: D15 exercises, D16 cities, WP2, and the tests tagged `(A05b)` in its §5). Re-check at the start of A05b: A36's plan (extra exercise fields), A05's Outcome (pack schema, loader helpers) and the GeoNames download date. Size S (~0.4 session).
 
+### Start-of-step detail (2026-10-22)
+
+**Tier:** Normal (code plus public data; no user data or network in app). Expected size: S, ~0.5–0.75 session, one implementer, one fresh plan review and one fresh code review; Claude app-architecture review before merge.
+
+- **D1 — Existing schema v1 and release path.** Extend `CatalogData`, loaders and `composeRelease`; exercise names join existing normalized `names`/FTS, cities remain in their dedicated table. Both kinds enter the stable ID lock, content hash and server load files. No app/runtime/backend changes.
+- **D2 — Types reconcile to WO-004.** A05 D15's four codes omit assisted and reps-only from the spec/A36 card. Add `assisted` and `reps_only` to the still-empty exercise load contract in a separate first commit, regenerate its embedded backend schema, then seed all six types. Additive values; no HTTP contract or SQLite DDL change. A36 has no extra-field plan yet.
+- **D3 — Exercise authoring.** Author ~100 common exercises with unambiguous EN aliases, equipment variants as separate IDs, one primary muscle. Strict source schema, normalized-name collisions checked across exercises and foods/dishes. No videos, coaching or calories.
+- **D4 — Cities/provenance (updated after app review).** Local-only `import-cities --geonames-dir` reads pinned cities1000/cities15000 text; all PS/JO from cities1000, IL/LB/SY/EG/SA/IQ/AE/BH/KW/OM/QA/YE/TR from cities15000, others >=1m. Deterministic ID sort; pinned per-country language-tagged alternates for PS/JO and all regional countries. Prefer current preferred Arabic and English; Arabic falls back to a current ar name, then blank, English to asciiname. Normalize Persian/Kurdish letter forms. Reviewed missing-name fallbacks preserve Ramallah and fix both Karak records. Explicit owner-approved settlement IDs are excluded and their lock entries retired (see 2026-10-22 review remediation below). Downloads/date/SHA256 committed in sources.yaml; bulk stays outside git. City coordinates, unique IDs, nonnegative populations and time zones validated. Validate zones against a committed IANA zone/link-name snapshot (tzdata 2026e, with provenance/hash); builds never depend on the host OS zone list. No new dependency. Verify Hebron (environment region) and major PS/JO towns; do not claim the owner's exact residence is known.
+- **D5 — Offline builds.** Only the explicit download/import target accesses GeoNames. Normal build/check/tests read committed TSV/YAML only. Activate GeoNames attribution and note filtering/Arabic derivation. Keep under 10MB; unchanged food-only fixture SQL.
+
+**Files:** `data/exercises.yaml`, `data/schema/exercises.v1.schema.json`, `data/cities.tsv`, `data/geonames/sources.yaml`, `data/attribution.yaml`, release lock/state; `tools/catalog/lib/src/{load,geonames,release}`, CLI/barrel, focused tests; `tools/scripts/fetch-geonames.*`, Makefile, data/tool READMEs; additive exercise contract + generated embedded schema only.
+
+**Tests:** WO-001 every seeded exercise/name searchable in real pack; WO-002 bench/squat equipment variants distinct; WO-004 all six types survive release; LC-033 regional inclusion, million threshold, deterministic Arabic/name selection, malformed/missing coordinates/invalid zone/duplicate IDs rejected, Hebron/Amman retained. Source-schema/normalized-name negatives, stable IDs and deterministic pack/load bytes exercised through A05 build/check. Existing full `make check test`, `make catalog`, `make catalog-check`; CI green. No paid API calls.
+
+**Work packages:**
+1. WP1: Review plan; additive exercise contract and embedded schema (before implementation).
+2. WP2: Exercise/city loaders, import tooling, validators and release integration with focused tests.
+3. WP3: Author exercise seed, import pinned cities, build release, document provenance/counts; full gates, independent review, push “ready for app review”. Resolve Claude review then CI-gated close/merge.
+
+**Risks:** GeoNames daily URLs mutate: checksum mismatch fails with explicit refresh instructions; no silent repin. Four-to-six exercise type mismatch resolved D2. City names can repeat legitimately, so enforce IDs, not unique city names. Exercise aliases must never pollute food resolution: audit consumers joining names to foods before publishing.
+
 ## Progress log
-_One dated line per event, newest last (process §8a)._
+- 2026-10-22: Oriented on clean, current main e47800b; A05 dependency done, A36 unplanned. Started branch step/A05b-exercises-cities-data. Rechecked inherited A05 WP2; detailed plan above adds strict validation and resolves WO-004's missing types. No owner gate or paid call required.
+
+- 2026-10-22: Independent GPT-6.1 Sol plan review: 0 blockers/majors; accepted two minors (exercise-food isolation coverage and all-six-type release validation; IANA Zone+Link/backward snapshot with alias regression). Plan self-approved under PROCESS A6. WP1 contract handoff: exercises.jsonl adds assisted/reps_only to match WO-004; generated backend embedded schema updated before loader/data code. HTTP API and pack DDL unchanged. Main CI verified green.
+
+- 2026-10-22: WP1 committed/pushed 6ae7879 after full make check test (361 backend tests plus all Dart suites green). WP2 adds typed source loaders, strict exercise schema/name checks, pinned IANA Zone+Link snapshot (598 names), city validation/import and checksum-verified local download helper; existing release/ID/hash/FTS pipeline now includes both kinds. Seven focused regression tests pass; full make check test green (361 backend, all Dart suites). Early independent code review: 0 blockers/majors, one malformed-source-metadata minor fixed with regression and rechecked; eight focused tests green.
+
+- 2026-10-22: WP2 committed/pushed 3705542. WP3 imported the pinned GeoNames subset and authored 100 exercises; release v2 has 2,322 cities, 1,429 names, pack 589,824 bytes (schema v1). GeoNames attribution active; raw source pins/selection/Arabic heuristic documented. Real-data search/type/city tests and app/backend food-isolation regressions added; full final checks/review next. Asked owner only to identify the exact chosen city for the exit check; Hebron and regional centres already verified from public data.
+
+- 2026-10-22: Final independent GPT-6.1 Sol whole-diff review: 0 blockers, 0 majors, 0 open minors; reviewer independently checked public rows/filter/zones, six exercise types/aliases, stable release IDs and actual pack/checksum/attribution. Initial final gate caught CA1861 in the extended backend test; fixed, full checks rerunning. City re-import is byte-identical; offline fetch smoke passes (matching pins, corrupt archive rejection, external output enforcement). Exact chosen city remains unverified pending owner's optional reply. Required Claude app review follows pushed “ready for app review”.
+
+- 2026-10-22: Owner selected Ramallah for the city exit check. Verified city:282239 in the committed subset and pack, with coordinates and valid IANA zone Asia/Hebron; no additional data needed.
+
+- 2026-10-22: WP3 complete. Final make check test catalog-check green (361 backend, all Dart suites; mobile 325 + one existing skip, catalog 133). All exit checks pass including Ramallah. **ready for app review**: branch step/A05b-exercises-cities-data, independent reviews resolved; evidence and Outcome recorded. GitHub checks accompany the pushed branch and are verified before handing over. Claude must add its short app-architecture review per AGENTS.md/TD-078 before merge; status remains in progress until then.
+
+- 2026-10-22 — **Claude app review (TD-078, Sonnet, read-only on e03d8f0; CI green): 0 blockers, 1 major, 3 minors, 1 owner question.** Fits the catalog pipeline (pack schema v1, pinned GeoNames SHA256, tzdata snapshot, CC BY attribution); 100 exercises cover all WO-004 types with separate equipment variants, stable `ex:` slugs and good aliases; Ramallah/Hebron/Nablus/Gaza/Amman time zones correct; pack size fine.
+  - **Major (fix before merge):** Arabic city names come from the first Arabic-script alternate, not Arabic-language ones. Confirmed: Amman = `ئاممان` (should be `عمّان`), Tulkarm = `تلکرم` (Persian kaf; `طولكرم`). Also check English names picked the same way (`city:250624` Karak shows `Qir Moav`; `Karak City` has no Arabic). A10's Arabic search would miss them. Fix: prefer `isolanguage=ar` alternates (GeoNames `alternateNamesV2`) or a committed override map for the main PS/JO cities, normalize ک→ك and ی→ي, and add tests for Amman, Tulkarm and Karak (EN and AR).
+  - Minor: no Arabic names outside PS/JO (Jerusalem/Al-Quds, Cairo, Riyadh, Dubai…). Extend to the regional set or record the gap in A10's card.
+  - Minor: `attribution.yaml` GeoNames `note` is internal; A10 shows only `credit`. One line in the README/card.
+  - Minor: many rows have population 0; A10 should sort by population, not filter on it (note for A10).
+  - **Owner question (don't change yet):** PS rows include 38 settlements tagged `PS` with `Asia/Jerusalem` (e.g. Alon Shvut, Otniel, Bruchin). The orchestrator is asking the owner whether the Palestine-first city picker keeps them; the answer will be added here.
+  - After the major is fixed with tests and CI is green, merge without another Claude round (the owner answer can land as a follow-up if it comes later).
+
+- 2026-10-22 — **Claude app-review remediation; owner decision applied.** Replaced Arabic-script inference with SHA256-pinned per-country alternate names for PS/JO and all 13 regional countries. Select current `isolanguage=ar` names, preferred first then lexical tie-break; never borrow Persian/Kurdish names. English uses current preferred `en`, otherwise GeoNames asciiname. Normalize Persian/Kurdish kaf/yeh/heh forms while retaining tashkeel. `sources.yaml` documents narrow missing-name fallbacks: Karak 250624 EN, Karak 6946409 AR, and the released Ramallah EN spelling. Amman `عمّان`, Tulkarm `طولكرم`, both Karak records `Karak` / `الكرك`; Ramallah's entire row unchanged. Jerusalem, Cairo, Riyadh, Dubai, Beirut and Damascus now have Arabic names with the same mechanism. A10 shows only GeoNames `credit`, never internal `note`, and sorts rather than filters on population.
+  - **Classification:** reviewed all 38 original PS + Asia/Jerusalem rows individually against the pinned record's identity, aliases, feature code and coordinates. All 38 represent settlements; importantly `284375` is misleadingly called Battir but has `STLMT`, Beitar Illit aliases, coordinates 31.7 / 35.11667 and population 56,746. Palestinian Battir is the separate `284376` (31.71945 / 35.14103, population 4,092) and stays. Explicit ID/name exclusions live in `data/geonames/excluded_cities.tsv` with the owner's 2026-10-22 decision; no time-zone/country heuristic. Per-row classification follows:
+
+  | GeoNames ID | Original name / disambiguation | Classification |
+  |---|---|---|
+  | 11979628 | Alon shvut | Settlement — remove |
+  | 11979645 | Bruchin | Settlement — remove |
+  | 11979646 | Geva Binyamin | Settlement — remove |
+  | 11979770 | Otniel | Settlement — remove |
+  | 281285 | Alei Zahav | Settlement — remove |
+  | 281286 | Yizhar | Settlement — remove |
+  | 281303 | Yaqqir | Settlement — remove |
+  | 281711 | Suseya | Settlement — remove |
+  | 282027 | Sal'it | Settlement — remove |
+  | 282154 | Rosh Zurim | Settlement — remove |
+  | 282353 | Qedumim | Settlement — remove |
+  | 282354 | Qedar | Settlement — remove |
+  | 282431 | Qarne Shomeron | Settlement — remove |
+  | 282482 | Pesagot | Settlement — remove |
+  | 282485 | Pedu'el | Settlement — remove |
+  | 282489 | Ofra | Settlement — remove |
+  | 282536 | Neve Daniel | Settlement — remove |
+  | 282595 | Bat A'in | Settlement — remove |
+  | 282772 | Mevo Horon | Settlement — remove |
+  | 282988 | Ma'ale Mikhmas | Settlement — remove |
+  | 282991 | Ma'ale Efrayim | Settlement — remove |
+  | 282993 | Ma'ale Adummim | Settlement — remove |
+  | 283046 | Kokhav Ya'aqov | Settlement — remove |
+  | 283313 | Kefar 'Ezyon | Settlement — remove |
+  | 283314 | Kefar Adummim | Settlement — remove |
+  | 283324 | Karme Zur | Settlement — remove |
+  | 283610 | 'Immanu'el | Settlement — remove |
+  | 283681 | Hinnanit | Settlement — remove |
+  | 283743 | Har Gillo | Settlement — remove |
+  | 283805 | Hallamish | Settlement — remove |
+  | 283978 | 'Ez Efrayim | Settlement — remove |
+  | 283986 | Elqana | Settlement — remove |
+  | 283991 | Efrata | Settlement — remove |
+  | 284279 | Bet Arye | Settlement — remove |
+  | 284375 | Battir / Beitar Illit (STLMT; not Palestinian Battir 284376) | Settlement — remove |
+  | 284408 | Barqan | Settlement — remove |
+  | 285026 | 'Almon | Settlement — remove |
+  | 285101 | Alfei Menasheh | Settlement — remove |
+
+  - Whole-subset scan found eight further settlements under other metadata; these are also explicitly excluded:
+
+  | GeoNames ID | Name | Original metadata / classification |
+  |---|---|---|
+  | 11778032 | Itamar | PS / Asia/Hebron — settlement, remove |
+  | 12156437 | Beit El | PS / Asia/Hebron — settlement, remove |
+  | 12156577 | Ganei Modi'in | PS / Asia/Hebron — settlement, remove |
+  | 7535657 | Karney Shomron | PS / Asia/Hebron — settlement, remove |
+  | 8199378 | Modiin Ilit | IL / Asia/Jerusalem — settlement, remove |
+  | 8199386 | Givat Zeev | PS / Asia/Hebron — settlement, remove |
+  | 8199394 | Ariel | IL / Asia/Jerusalem — settlement, remove |
+  | 8199420 | Oranit | PS / Asia/Hebron — settlement, remove |
+
+  - **Preserved Palestinian localities:** Beit Hanina 284335, Shu'fat 281818, al-Eizariya 285111, Abu Dis 285279, Sur Bahir 281717, East Jerusalem 7303419, Old City 6945291, Wadi al-Joz 7890300, Abu Tor/Giv'at Hananya 281187 and Palestinian Battir 284376. Silwan was absent from the original selected dumps/TSV and was not deleted. No Palestinian locality was excluded by time zone or country.
+  - **Owner questions (kept, recommended pending source correction):** `284572 ‘Atarut` has Kalandia aliases, population 25,595 and coordinates 31.86667 / 35.21667 near Palestinian Qalandia, so identity is unclear; `9204036 Nayot` has coordinates 31.79589 / 35.24517 in East Jerusalem, conflicting with the West Jerusalem neighbourhood's name. Confirm identities before excluding either. Neither belongs to the 38-row Asia/Jerusalem set.
+  - **Lock/release:** 46 rows removed, 2,276 cities remain. All 46 IDs retained in the lock with only `active → retired`; ID/kind/first-version and all other lock rows unchanged. Regenerated through `fb_catalog import-cities` and `make catalog`; same-input re-import byte-identical. Real-release backend expectation updated to 2,276 for Claude's Docker test run. Bulk review files retained outside git in `/tmp/a05b-city-review`; source checksums recorded in the working tree.
+  - **Gates:** `make check` PASS (format/analyzers, app rules, .NET build, contract checks and APK-hardening self-test); `make test-dart` PASS (10 packages, catalog 135, mobile 325 plus one existing skip); `make catalog` PASS; `make catalog-check` PASS. Follow-up `make check-dotnet` PASS after adjusting the backend count assertion. `make test-dotnet` deliberately skipped for Claude. Offline fetch smoke verifies all 17 archives/text pins and rejects corruption/repository output; city re-import byte-identical; lock diff independently verifies exactly 46 retirements. Working-tree-only handoff by explicit orchestrator instruction; no commit, branch, push or merge attempted.
+
+- 2026-10-22 — **Follow-up to Claude's script-regression check.** Corrected English fallback to GeoNames `asciiname` (never `name`); keep usable preferred `en`, normalize apostrophe/dash variants to simple punctuation, and skip invalid preferred forms in favour of asciiname. Tulkarm is `Tulkarm`. Arabic candidates must be Arabic-script letters/marks/spaces after letter normalization, including shadda; Latin transliterations incorrectly tagged `ar` are skipped before ranking, with blank output when no usable Arabic name exists. Shared row validators in `parseCity` enforce both rules on imported and committed data, so `make catalog-check` rejects either regression. Added malformed-script loader tests and source-selection/real-data regressions. No exclusions/lock changes; ‘Atarut 284572 and Nayot 9204036 remain included with the same identity/coordinates as owner questions. Re-imported the pinned inputs and rebuilt release v6 (2,276 cities; 598,016 bytes).
+  - **Corrected audit counts:** non-ASCII English names **0**, invalid English whitelist names **0**, Latin-in-Arabic names **0**; 1,234 Arabic names. Per-country counts (zero countries explicitly listed) follow.
+
+| Country | Cities with Arabic name | Total cities |
+|---|---:|---:|
+| AE | 39 | 63 |
+| BH | 8 | 8 |
+| EG | 199 | 242 |
+| IL | 62 | 104 |
+| IQ | 97 | 105 |
+| JO | 140 | 146 |
+| KW | 18 | 18 |
+| LB | 17 | 18 |
+| OM | 23 | 28 |
+| PS | 323 | 334 |
+| QA | 22 | 26 |
+| SA | 72 | 98 |
+| SY | 89 | 89 |
+| TR | 101 | 436 |
+| YE | 24 | 25 |
+
+Arabic names total: **1234 / 2276**. Each other represented country has **0** Arabic names: AF, AM, AO, AR, AT, AU, AZ, BD, BE, BF, BG, BO, BR, BY, CA, CD, CG, CI, CL, CM, CN, CO, CU, CZ, DE, DK, DO, DZ, EC, ES, ET, FR, GB, GE, GH, GN, HK, HT, HU, ID, IE, IN, IR, IT, JP, KE, KH, KP, KR, KZ, LR, LY, MA, MG, ML, MM, MR, MW, MX, MY, MZ, NE, NG, NO, NP, NZ, PE, PH, PK, PL, PY, RO, RS, RU, RW, SD, SE, SG, SN, SO, TD, TG, TH, TM, TW, TZ, UA, UG, US, UY, UZ, VE, VN, ZA, ZM, ZW.
+
+  - **Follow-up gates:** `make check` PASS; `make test-dart` PASS (10 packages, catalog 137; mobile 325 plus one existing skip); `make catalog` PASS; `make catalog-check` PASS. `make check-dotnet` PASS (zero warnings/errors). Same-input city re-import PASS (SHA256 `176c719469254fed049a765504625add8cfc9fe2ac373500abb6cedbe8d4c4a8`). `test-dotnet` skipped for Claude as instructed. No git writes.
+- 2026-10-22 — Claude verified the fixes (Arabic/English name counts, exclusions, lock retirements), reran `make check` + `make test-dotnet` (361 passed), committed, and merged via `merge-step.sh`.
 
 ## Outcome
-_Written in Phase E._
+
+**Done (2026-10-22).** Claude's app-review fixes were made by Codex through the Codex plugin (TD-079 pilot), in two rounds: the second fixed two regressions Claude's check found in the first (diacritics in 1,087 English names; Latin text in 44 Arabic names), now guarded by validators. Claude reran `make check` and `make test-dotnet` (361/361) before committing. Open owner question: keep or drop ‘Atarut (284572) and Nayot (9204036).
+
+**Built:** 100 exercises with 213 EN display names/aliases, separate equipment
+variants and all six WO-004 types; 2,276 pinned GeoNames cities with valid
+coordinates/IANA zones. Ramallah's full row is unchanged (`city:282239`,
+31.89964 / 35.20422, Asia/Hebron). Language-tagged preferred Arabic/English
+names now cover PS/JO and all 13 regional countries; deterministic fallbacks,
+letter normalization and explicit Karak/Ramallah exceptions are documented.
+English falls back to asciiname; both source selection and catalog checks reject
+invalid display scripts (0 non-ASCII English, 0 Latin-in-Arabic names).
+Owner-approved exclusions remove 46 settlement IDs, including the misleading
+Battir/Beitar Illit record; Palestinian Battir and East Jerusalem localities stay.
+All excluded IDs remain locked as retired. No pack-schema/runtime/API change.
+
+**Measurements:** release v6, pack schema v1, 598,016 bytes (<10 MB); 246 basics,
+0 released dishes/variants (existing drafts unchanged), 100 exercises, 2,276
+cities, 1,429 names, 198 servings and 12 yields. All 2,422 A05b-introduced IDs
+remain locked, including 46 retired cities. Re-import is byte-identical.
+
+**Validation:** remediation `make check`, `make test-dart` (10 packages; catalog
+137; mobile 325 + one existing skip), `make catalog`, `make catalog-check` and
+follow-up `make check-dotnet` all PASS. Tests cover corrected Amman/Tulkarm,
+both Karak records, the unchanged Ramallah row, regional Arabic, letter folding,
+preferred/current names and deterministic ties/fallbacks, every exclusion and
+retained Palestinian localities. Fetch smoke validates all 17 pinned archives
+and extracts, corruption rejection and external-only output. Lock comparison
+proves exactly 46 active-to-retired changes with all IDs/kinds/first-versions
+preserved. `test-dotnet` was skipped per instruction; Claude runs Docker tests.
+Prior pre-remediation backend suite passed 361 tests; this is historical evidence,
+not a claim that the revised data passed those tests. Fixture SQL unchanged.
+Evidence: `evidence/A05b-verification.md`.
+
+**Reviews:** fresh GPT-6.1 Sol plan and independent whole-step code reviews
+completed earlier. Claude's app review found one major, three minors and the
+settlement owner question. The major and naming/attribution minors are fixed;
+population sorting guidance is recorded for A10; the owner's 2026-10-22
+settlement decision is applied. Claude's review allows merge after fixes and
+green CI without a further app-review round. No separate security review is
+required for this Normal public-data/tooling change.
+
+**Deviations:** additive contract-first `assisted`/`reps_only` codes resolve A05's
+four-code omission; pinned IANA snapshot avoids host-specific validation.
+Language-tagged country archives supersede the inherited script heuristic.
+No new dependencies, spec/TD changes or paid calls. Planned S, actual S with
+one additional review-remediation pass.
+
+**Handoffs:** A36 owns exercise runtime/workout rules, A41 location/prayer times;
+A10 displays only GeoNames `credit` and must keep zero-population rows searchable.
+Two uncertain GeoNames identities (`284572 ‘Atarut`, `9204036 Nayot`) stay for
+owner review; details/recommendation are in the Progress log. Silwan was not in
+the original selected subset and was not removed. Matching review downloads
+remain at `/tmp/a05b-city-review`; retain them before temporary-file cleanup.
+Claude commits/pushes, runs `test-dotnet`, verifies final CI and merges through
+`merge-step.sh`; status remains in progress until then.

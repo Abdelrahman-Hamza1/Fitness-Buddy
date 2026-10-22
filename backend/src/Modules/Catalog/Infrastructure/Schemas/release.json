@@ -338,7 +338,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://fitnessbuddy.local/catalog/exercises.schema.json",
     "title": "Catalog load file: exercises.jsonl",
-    "description": "A catalogued exercise (A05b fills it; the file is empty until then). Equipment variants are separate entries.",
+    "description": "A catalogued exercise (WO-001/002/004). Equipment variants are separate entries; type selects the per-set fields.",
     "type": "object",
     "additionalProperties": false,
     "required": [
@@ -363,6 +363,8 @@
         "enum": [
           "weight_reps",
           "bodyweight_reps",
+          "assisted",
+          "reps_only",
           "duration",
           "distance_duration"
         ]

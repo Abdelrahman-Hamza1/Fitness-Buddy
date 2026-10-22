@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Built-in exercises (WO-001/002/004)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "exercises"
+  ],
+  "properties": {
+    "exercises": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "equipment",
+          "primary_muscle",
+          "names"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^ex:[a-z0-9_]+$",
+            "maxLength": 64
+          },
+          "type": {
+            "enum": [
+              "weight_reps",
+              "bodyweight_reps",
+              "assisted",
+              "reps_only",
+              "duration",
+              "distance_duration"
+            ]
+          },
+          "equipment": {
+            "enum": [
+              "barbell",
+              "dumbbell",
+              "machine",
+              "cable",
+              "bodyweight",
+              "kettlebell",
+              "band",
+              "other"
+            ]
+          },
+          "primary_muscle": {
+            "enum": [
+              "chest",
+              "back",
+              "shoulders",
+              "biceps",
+              "triceps",
+              "quadriceps",
+              "hamstrings",
+              "glutes",
+              "calves",
+              "core",
+              "full_body",
+              "adductors"
+            ]
+          },
+          "names": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "en"
+            ],
+            "properties": {
+              "en": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "pattern": "\\S",
+                  "maxLength": 120
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

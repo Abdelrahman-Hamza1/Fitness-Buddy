@@ -11,7 +11,7 @@ Nothing here is generated or committed output: the files below are the **contrac
 | `names.schema.json` | One line of `names.jsonl`: a searchable name (raw and normalized `key`) of a food, dish, variant or exercise. |
 | `servings.schema.json` | One line of `servings.jsonl`: grams or millilitres of one household unit of a food. |
 | `yields.schema.json` | One line of `yields.jsonl`: a cooking yield factor (FD-060). |
-| `exercises.schema.json`, `cities.schema.json` | Lines of `exercises.jsonl` and `cities.jsonl`. Both files are **empty** until A05b; the schemas are final. |
+| `exercises.schema.json`, `cities.schema.json` | Lines of `exercises.jsonl` and `cities.jsonl`. Filled by A05b. Exercises use six WO-004 type codes; equipment variants are separate IDs. |
 | `manifest.schema.json` | `manifest.json`: version, content hash, per-file checksums and counts, pack checksum. |
 
 ## The release
@@ -25,8 +25,8 @@ release/dishes.jsonl        keys in a fixed order, rows sorted by ID
 release/names.jsonl
 release/servings.jsonl
 release/yields.jsonl
-release/exercises.jsonl     empty until A05b
-release/cities.jsonl        empty until A05b
+release/exercises.jsonl
+release/cities.jsonl
 release/manifest.json
 ```
 
@@ -45,4 +45,4 @@ Every line is validated against its schema before it is written (a mismatch fail
 
 ## Attribution
 
-The pack's `meta.attribution` lists the data sources and licences (`data/attribution.yaml`): USDA FoodData Central (CC0). Open Food Facts data never enters a release.
+The pack's `meta.attribution` lists the data sources and licences (`data/attribution.yaml`): USDA FoodData Central (CC0) and GeoNames (CC BY 4.0), among the declared sources. Open Food Facts data never enters a release.

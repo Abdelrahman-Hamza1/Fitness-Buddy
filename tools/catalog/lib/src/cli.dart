@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:fb_catalog/src/geonames/import_cities.dart';
 import 'package:fb_catalog/src/load/load_catalog.dart';
+import 'package:fb_catalog/src/load/load_library.dart';
 import 'package:fb_catalog/src/pack/commands.dart';
 import 'package:fb_catalog/src/pack/coverage.dart';
 import 'package:fb_catalog/src/usda/importer.dart';
@@ -19,6 +21,7 @@ Future<int> runCatalog(
   final runner =
       CommandRunner<int>('catalog', 'Fitness Buddy food catalog tooling.')
         ..addCommand(ImportUsdaCommand(out))
+        ..addCommand(ImportCitiesCommand(out))
         ..addCommand(ValidateCommand(out, err))
         ..addCommand(BuildCommand(out, err))
         ..addCommand(CheckCommand(out, err))
@@ -38,6 +41,9 @@ Future<int> runCatalog(
     return 1;
   } on MustCoverException catch (e) {
     err.writeln('catalog: error: $e');
+    return 1;
+  } on FileSystemException catch (e) {
+    err.writeln('catalog: file error: ${e.message}: ${e.path}');
     return 1;
   } on FormatException catch (e) {
     err.writeln('catalog: error: ${e.message}');
@@ -133,6 +139,8 @@ class ValidateCommand extends Command<int> {
         help: 'The portion words (skipped when the file is absent).',
         defaultsTo: 'data/portion_words.yaml',
       )
+      ..addOption('exercises', defaultsTo: 'data/exercises.yaml')
+      ..addOption('cities', defaultsTo: 'data/cities.tsv')
       ..addOption(
         'schema-dir',
         help: 'Folder with the JSON Schemas.',
@@ -165,6 +173,8 @@ class ValidateCommand extends Command<int> {
       dishesDir: Directory(args.option('dishes')!),
       yields: File(args.option('yields')!),
       portionWords: File(args.option('portion-words')!),
+      exercises: File(args.option('exercises')!),
+      cities: File(args.option('cities')!),
     );
     final report = validateCatalog(
       basics: data.basics,
@@ -172,6 +182,7 @@ class ValidateCommand extends Command<int> {
       requireAr: args.flag('require-ar'),
       yields: data.yields,
       portionWords: data.portionWords,
+      exercises: data.exercises,
     );
     for (final id in report.computed.keys.toList()..sort()) {
       final t = report.computed[id]!.typical;
@@ -198,8 +209,42 @@ class ValidateCommand extends Command<int> {
       'catalog: ${data.basics.length} basics and ${data.dishes.length} '
       'dishes valid (${report.warnings.length} warnings); '
       '${data.yields?.length ?? 0} yield rows, '
-      '${data.portionWords?.length ?? 0} portion words',
+      '${data.portionWords?.length ?? 0} portion words, '
+      '${data.exercises.length} exercises, ${data.cities.length} cities',
     );
+    return 0;
+  }
+}
+
+/// Explicit local-only GeoNames import; routine builds use committed data.
+class ImportCitiesCommand extends Command<int> {
+  new(this._out) {
+    argParser
+      ..addOption('geonames-dir', mandatory: true)
+      ..addOption('sources', defaultsTo: 'data/geonames/sources.yaml')
+      ..addOption('zones', defaultsTo: 'data/schema/iana_timezones.txt')
+      ..addOption('out', defaultsTo: 'data/cities.tsv');
+  }
+
+  final StringSink _out;
+  @override
+  String get name => 'import-cities';
+  @override
+  String get description => 'Import the pinned GeoNames subset (no network).';
+  @override
+  Future<int> run() async {
+    final args = argResults!;
+    final rows = await importCities(
+      directory: Directory(args.option('geonames-dir')!),
+      sources: File(args.option('sources')!),
+      zones: loadTimezones(File(args.option('zones')!)),
+    );
+    final file = File(args.option('out')!);
+    file.parent.createSync(recursive: true);
+    File('${file.path}.tmp')
+      ..writeAsStringSync(encodeCities(rows))
+      ..renameSync(file.path);
+    _out.writeln('catalog: wrote ${rows.length} cities to ${file.path}');
     return 0;
   }
 }

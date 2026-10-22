@@ -1,0 +1,504 @@
+# Built-in common gym exercises (WO-001/002/004). Authored for Fitness Buddy.
+# First EN name is the display name; remaining names are unique search aliases.
+# Dumbbell weights are per dumbbell (WO-005, enforced by A36).
+exercises:
+  - id: ex:ab_wheel_rollout
+    names: {en: ["Ab wheel rollout", "Ab roller"]}
+    type: reps_only
+    equipment: other
+    primary_muscle: core
+  - id: ex:arnold_press
+    names: {en: ["Arnold press", "Arnold dumbbell press"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: shoulders
+  - id: ex:assisted_dip
+    names: {en: ["Assisted dip", "Assisted dip machine"]}
+    type: assisted
+    equipment: machine
+    primary_muscle: triceps
+  - id: ex:assisted_pull_up
+    names: {en: ["Assisted pull-up", "Assisted pull-up machine"]}
+    type: assisted
+    equipment: machine
+    primary_muscle: back
+  - id: ex:bar_triceps_pushdown
+    names: {en: ["Bar triceps pushdown", "Straight bar pushdown"]}
+    type: weight_reps
+    equipment: cable
+    primary_muscle: triceps
+  - id: ex:barbell_back_squat
+    names: {en: ["Barbell back squat", "Squat", "Back squat", "BB squat"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: quadriceps
+  - id: ex:barbell_bench_press
+    names: {en: ["Barbell bench press", "Bench", "Flat bench", "BB bench"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: chest
+  - id: ex:barbell_curl
+    names: {en: ["Barbell curl", "BB curl"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: biceps
+  - id: ex:barbell_deadlift
+    names: {en: ["Barbell deadlift", "Deadlift", "Conventional deadlift"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: back
+  - id: ex:barbell_front_squat
+    names: {en: ["Barbell front squat", "Front squat"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: quadriceps
+  - id: ex:barbell_glute_bridge
+    names: {en: ["Barbell glute bridge", "Weighted glute bridge"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: glutes
+  - id: ex:barbell_hip_thrust
+    names: {en: ["Barbell hip thrust", "Hip thrust"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: glutes
+  - id: ex:barbell_romanian_deadlift
+    names: {en: ["Barbell Romanian deadlift", "RDL", "BB RDL"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: hamstrings
+  - id: ex:barbell_row
+    names: {en: ["Barbell row", "Bent over row", "BB row"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: back
+  - id: ex:barbell_stiff_leg_deadlift
+    names: {en: ["Barbell stiff-leg deadlift", "Stiff leg pull"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: hamstrings
+  - id: ex:bench_dip
+    names: {en: ["Bench dip", "Bench triceps dip"]}
+    type: bodyweight_reps
+    equipment: bodyweight
+    primary_muscle: triceps
+  - id: ex:bicycle_crunch
+    names: {en: ["Bicycle crunch", "Bicycle abs"]}
+    type: reps_only
+    equipment: bodyweight
+    primary_muscle: core
+  - id: ex:cable_chest_fly
+    names: {en: ["Cable chest fly", "Cable crossover"]}
+    type: weight_reps
+    equipment: cable
+    primary_muscle: chest
+  - id: ex:cable_crunch
+    names: {en: ["Cable crunch", "Kneeling cable crunch"]}
+    type: weight_reps
+    equipment: cable
+    primary_muscle: core
+  - id: ex:cable_curl
+    names: {en: ["Cable curl", "Standing cable biceps curl"]}
+    type: weight_reps
+    equipment: cable
+    primary_muscle: biceps
+  - id: ex:cable_face_pull
+    names: {en: ["Cable face pull", "Face pull"]}
+    type: weight_reps
+    equipment: cable
+    primary_muscle: shoulders
+  - id: ex:cable_front_raise
+    names: {en: ["Cable front raise", "Front cable raise"]}
+    type: weight_reps
+    equipment: cable
+    primary_muscle: shoulders
+  - id: ex:cable_glute_kickback
+    names: {en: ["Cable glute kickback", "Cable kickback"]}
+    type: weight_reps
+    equipment: cable
+    primary_muscle: glutes
+  - id: ex:cable_lateral_raise
+    names: {en: ["Cable lateral raise", "Cable side raise"]}
+    type: weight_reps
+    equipment: cable
+    primary_muscle: shoulders
+  - id: ex:chest_dip
+    names: {en: ["Chest dip", "Dips", "Parallel bar dip"]}
+    type: bodyweight_reps
+    equipment: bodyweight
+    primary_muscle: chest
+  - id: ex:chest_supported_dumbbell_row
+    names: {en: ["Chest-supported dumbbell row", "Incline bench DB row"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: back
+  - id: ex:chin_up
+    names: {en: ["Chin-up", "Chinups", "Underhand pull-up"]}
+    type: bodyweight_reps
+    equipment: bodyweight
+    primary_muscle: back
+  - id: ex:close_grip_bench_press
+    names: {en: ["Close-grip bench press", "Close grip BB bench"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: triceps
+  - id: ex:close_grip_lat_pulldown
+    names: {en: ["Close-grip lat pulldown", "Neutral grip pulldown"]}
+    type: weight_reps
+    equipment: cable
+    primary_muscle: back
+  - id: ex:concentration_curl
+    names: {en: ["Concentration curl", "Seated single arm curl"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: biceps
+  - id: ex:crunch
+    names: {en: ["Crunch", "Ab crunch"]}
+    type: reps_only
+    equipment: bodyweight
+    primary_muscle: core
+  - id: ex:dead_bug
+    names: {en: ["Dead bug", "Alternating dead bug"]}
+    type: reps_only
+    equipment: bodyweight
+    primary_muscle: core
+  - id: ex:decline_barbell_bench_press
+    names: {en: ["Decline barbell bench press", "Decline bench"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: chest
+  - id: ex:diamond_push_up
+    names: {en: ["Diamond push-up", "Close grip push-up"]}
+    type: reps_only
+    equipment: bodyweight
+    primary_muscle: chest
+  - id: ex:dumbbell_bench_press
+    names: {en: ["Dumbbell bench press", "DB bench", "Flat dumbbell press"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: chest
+  - id: ex:dumbbell_bulgarian_split_squat
+    names: {en: ["Dumbbell Bulgarian split squat", "DB rear foot elevated split squat"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: quadriceps
+  - id: ex:dumbbell_chest_fly
+    names: {en: ["Dumbbell chest fly", "DB fly"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: chest
+  - id: ex:dumbbell_curl
+    names: {en: ["Dumbbell curl", "DB curl"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: biceps
+  - id: ex:dumbbell_front_raise
+    names: {en: ["Dumbbell front raise", "DB front raise"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: shoulders
+  - id: ex:dumbbell_goblet_squat
+    names: {en: ["Dumbbell goblet squat", "DB goblet squat"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: quadriceps
+  - id: ex:dumbbell_lateral_raise
+    names: {en: ["Dumbbell lateral raise", "DB side raise"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: shoulders
+  - id: ex:dumbbell_reverse_fly
+    names: {en: ["Dumbbell reverse fly", "Bent over DB rear delt fly"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: shoulders
+  - id: ex:dumbbell_reverse_lunge
+    names: {en: ["Dumbbell reverse lunge", "DB reverse lunge"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: quadriceps
+  - id: ex:dumbbell_romanian_deadlift
+    names: {en: ["Dumbbell Romanian deadlift", "DB RDL"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: hamstrings
+  - id: ex:dumbbell_russian_twist
+    names: {en: ["Dumbbell Russian twist", "Weighted Russian twist"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: core
+  - id: ex:dumbbell_step_up
+    names: {en: ["Dumbbell step-up", "DB step-up"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: quadriceps
+  - id: ex:dumbbell_walking_lunge
+    names: {en: ["Dumbbell walking lunge", "DB walking lunge"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: quadriceps
+  - id: ex:elliptical
+    names: {en: ["Elliptical", "Cross trainer"]}
+    type: distance_duration
+    equipment: machine
+    primary_muscle: full_body
+  - id: ex:ez_bar_curl
+    names: {en: ["EZ-bar curl", "EZ curl"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: biceps
+  - id: ex:ez_bar_skull_crusher
+    names: {en: ["EZ-bar skull crusher", "Lying triceps extension"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: triceps
+  - id: ex:hack_squat
+    names: {en: ["Hack squat", "Hack squat machine"]}
+    type: weight_reps
+    equipment: machine
+    primary_muscle: quadriceps
+  - id: ex:hammer_curl
+    names: {en: ["Hammer curl", "Neutral grip dumbbell curl"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: biceps
+  - id: ex:hanging_leg_raise
+    names: {en: ["Hanging leg raise", "Hanging straight-leg raise"]}
+    type: reps_only
+    equipment: bodyweight
+    primary_muscle: core
+  - id: ex:incline_barbell_bench_press
+    names: {en: ["Incline barbell bench press", "Incline BB bench"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: chest
+  - id: ex:incline_dumbbell_bench_press
+    names: {en: ["Incline dumbbell bench press", "Incline DB bench"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: chest
+  - id: ex:incline_dumbbell_curl
+    names: {en: ["Incline dumbbell curl", "Incline DB curl"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: biceps
+  - id: ex:inverted_row
+    names: {en: ["Inverted row", "Body row"]}
+    type: bodyweight_reps
+    equipment: bodyweight
+    primary_muscle: back
+  - id: ex:kettlebell_swing
+    names: {en: ["Kettlebell swing", "KB swing"]}
+    type: weight_reps
+    equipment: kettlebell
+    primary_muscle: full_body
+  - id: ex:lat_pulldown
+    names: {en: ["Lat pulldown", "Wide grip pulldown"]}
+    type: weight_reps
+    equipment: cable
+    primary_muscle: back
+  - id: ex:leg_extension
+    names: {en: ["Leg extension", "Quad extension machine"]}
+    type: weight_reps
+    equipment: machine
+    primary_muscle: quadriceps
+  - id: ex:leg_press
+    names: {en: ["Leg press", "Leg press machine"]}
+    type: weight_reps
+    equipment: machine
+    primary_muscle: quadriceps
+  - id: ex:leg_press_calf_raise
+    names: {en: ["Leg press calf raise", "Calf press"]}
+    type: weight_reps
+    equipment: machine
+    primary_muscle: calves
+  - id: ex:lying_leg_curl
+    names: {en: ["Lying leg curl", "Prone hamstring curl"]}
+    type: weight_reps
+    equipment: machine
+    primary_muscle: hamstrings
+  - id: ex:lying_leg_raise
+    names: {en: ["Lying leg raise", "Floor leg raise"]}
+    type: reps_only
+    equipment: bodyweight
+    primary_muscle: core
+  - id: ex:machine_chest_press
+    names: {en: ["Machine chest press", "Chest press machine"]}
+    type: weight_reps
+    equipment: machine
+    primary_muscle: chest
+  - id: ex:machine_hip_abduction
+    names: {en: ["Machine hip abduction", "Hip abductor machine"]}
+    type: weight_reps
+    equipment: machine
+    primary_muscle: glutes
+  - id: ex:machine_hip_adduction
+    names: {en: ["Machine hip adduction", "Hip adductor machine"]}
+    type: weight_reps
+    equipment: machine
+    primary_muscle: adductors
+  - id: ex:machine_row
+    names: {en: ["Machine row", "Seated row machine"]}
+    type: weight_reps
+    equipment: machine
+    primary_muscle: back
+  - id: ex:machine_shoulder_press
+    names: {en: ["Machine shoulder press", "Shoulder press machine"]}
+    type: weight_reps
+    equipment: machine
+    primary_muscle: shoulders
+  - id: ex:one_arm_dumbbell_row
+    names: {en: ["One-arm dumbbell row", "DB row", "Single arm dumbbell row"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: back
+  - id: ex:outdoor_cycling
+    names: {en: ["Outdoor cycling", "Bicycle ride"]}
+    type: distance_duration
+    equipment: other
+    primary_muscle: full_body
+  - id: ex:outdoor_run
+    names: {en: ["Outdoor run", "Running outdoors"]}
+    type: distance_duration
+    equipment: other
+    primary_muscle: full_body
+  - id: ex:outdoor_walk
+    names: {en: ["Outdoor walk", "Walking outdoors"]}
+    type: distance_duration
+    equipment: other
+    primary_muscle: full_body
+  - id: ex:overhead_cable_triceps_extension
+    names: {en: ["Overhead cable triceps extension", "Overhead rope extension"]}
+    type: weight_reps
+    equipment: cable
+    primary_muscle: triceps
+  - id: ex:overhead_dumbbell_triceps_extension
+    names: {en: ["Overhead dumbbell triceps extension", "DB overhead extension"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: triceps
+  - id: ex:pec_deck
+    names: {en: ["Pec deck", "Machine chest fly"]}
+    type: weight_reps
+    equipment: machine
+    primary_muscle: chest
+  - id: ex:pendlay_row
+    names: {en: ["Pendlay row", "Dead stop barbell row"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: back
+  - id: ex:plank
+    names: {en: ["Plank", "Front plank"]}
+    type: duration
+    equipment: bodyweight
+    primary_muscle: core
+  - id: ex:preacher_curl
+    names: {en: ["Preacher curl", "EZ-bar preacher curl"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: biceps
+  - id: ex:pull_up
+    names: {en: ["Pull-up", "Pullups", "Overhand pull-up"]}
+    type: bodyweight_reps
+    equipment: bodyweight
+    primary_muscle: back
+  - id: ex:push_up
+    names: {en: ["Push-up", "Press-up"]}
+    type: reps_only
+    equipment: bodyweight
+    primary_muscle: chest
+  - id: ex:rack_pull
+    names: {en: ["Rack pull", "Block pull"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: back
+  - id: ex:reverse_pec_deck
+    names: {en: ["Reverse pec deck", "Rear delt machine fly"]}
+    type: weight_reps
+    equipment: machine
+    primary_muscle: shoulders
+  - id: ex:rope_triceps_pushdown
+    names: {en: ["Rope triceps pushdown", "Rope pressdown"]}
+    type: weight_reps
+    equipment: cable
+    primary_muscle: triceps
+  - id: ex:rowing_machine
+    names: {en: ["Rowing machine", "Row ergometer"]}
+    type: distance_duration
+    equipment: machine
+    primary_muscle: full_body
+  - id: ex:seated_barbell_shoulder_press
+    names: {en: ["Seated barbell shoulder press", "Seated BB press"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: shoulders
+  - id: ex:seated_cable_row
+    names: {en: ["Seated cable row", "Cable row"]}
+    type: weight_reps
+    equipment: cable
+    primary_muscle: back
+  - id: ex:seated_calf_raise
+    names: {en: ["Seated calf raise", "Seated calf machine"]}
+    type: weight_reps
+    equipment: machine
+    primary_muscle: calves
+  - id: ex:seated_dumbbell_shoulder_press
+    names: {en: ["Seated dumbbell shoulder press", "DB shoulder press"]}
+    type: weight_reps
+    equipment: dumbbell
+    primary_muscle: shoulders
+  - id: ex:seated_leg_curl
+    names: {en: ["Seated leg curl", "Seated hamstring curl"]}
+    type: weight_reps
+    equipment: machine
+    primary_muscle: hamstrings
+  - id: ex:side_plank
+    names: {en: ["Side plank", "Lateral plank"]}
+    type: duration
+    equipment: bodyweight
+    primary_muscle: core
+  - id: ex:smith_machine_squat
+    names: {en: ["Smith machine squat", "Smith squat"]}
+    type: weight_reps
+    equipment: machine
+    primary_muscle: quadriceps
+  - id: ex:stair_climber
+    names: {en: ["Stair climber", "Stair machine"]}
+    type: distance_duration
+    equipment: machine
+    primary_muscle: full_body
+  - id: ex:standing_barbell_overhead_press
+    names: {en: ["Standing barbell overhead press", "OHP", "Military press"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: shoulders
+  - id: ex:standing_calf_raise
+    names: {en: ["Standing calf raise", "Standing calf machine"]}
+    type: weight_reps
+    equipment: machine
+    primary_muscle: calves
+  - id: ex:stationary_bike
+    names: {en: ["Stationary bike", "Exercise bike"]}
+    type: distance_duration
+    equipment: machine
+    primary_muscle: full_body
+  - id: ex:straight_arm_pulldown
+    names: {en: ["Straight-arm pulldown", "Cable pullover"]}
+    type: weight_reps
+    equipment: cable
+    primary_muscle: back
+  - id: ex:sumo_deadlift
+    names: {en: ["Sumo deadlift", "Sumo pull"]}
+    type: weight_reps
+    equipment: barbell
+    primary_muscle: back
+  - id: ex:treadmill_run
+    names: {en: ["Treadmill run", "Treadmill running"]}
+    type: distance_duration
+    equipment: machine
+    primary_muscle: full_body
+  - id: ex:treadmill_walk
+    names: {en: ["Treadmill walk", "Treadmill walking"]}
+    type: distance_duration
+    equipment: machine
+    primary_muscle: full_body
