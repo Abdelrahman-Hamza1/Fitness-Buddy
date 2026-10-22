@@ -595,5 +595,521 @@
         "type": "String"
       }
     }
-  }
+  },
+  "todayAddFood": "Add food",
+  "@todayAddFood": {
+    "description": "Today: button of the empty state that opens the add-food search (FD-020)."
+  },
+  "foodSearchTitle": "Add food",
+  "@foodSearchTitle": {
+    "description": "Title of the add-food search screen (FD-020)."
+  },
+  "foodSearchHint": "Search foods",
+  "@foodSearchHint": {
+    "description": "Hint of the search box on the add-food screen."
+  },
+  "foodSearchRecent": "Recent",
+  "@foodSearchRecent": {
+    "description": "Section title above the foods logged before, shown while the search box is empty (FD-023)."
+  },
+  "foodSearchEmptyTitle": "Find a food",
+  "@foodSearchEmptyTitle": {
+    "description": "Add-food screen: title shown while the search box is empty and nothing has been logged before."
+  },
+  "foodSearchEmptyMessage": "Search in English, Arabic or Arabizi",
+  "@foodSearchEmptyMessage": {
+    "description": "Add-food screen: hint under the title while the search box is empty and nothing has been logged before. Arabizi is Arabic written in Latin letters."
+  },
+  "foodSearchNoMatchTitle": "No match for \"{query}\"",
+  "@foodSearchNoMatchTitle": {
+    "description": "Add-food screen: title when the typed text finds no food. The text is quoted.",
+    "placeholders": {
+      "query": {"type": "String"}
+    }
+  },
+  "foodSearchNoMatchMessage": "Try another name or spelling.",
+  "@foodSearchNoMatchMessage": {
+    "description": "Add-food screen: help under the no-match title."
+  },
+  "foodSearchPackNotReady": "The food database isn't ready yet. Showing foods you've logged before.",
+  "@foodSearchPackNotReady": {
+    "description": "Add-food screen: banner shown while the offline food database is not available; only foods logged before can be found."
+  },
+  "foodSearchFailed": "Couldn't search just now. Try again.",
+  "@foodSearchFailed": {
+    "description": "Add-food screen: banner when a search failed unexpectedly."
+  },
+  "foodResultKcal": "{kcal} kcal",
+  "@foodResultKcal": {
+    "description": "Add-food result row: calories of the default serving, at the end of the row.",
+    "placeholders": {
+      "kcal": {"type": "int", "format": "decimalPattern"}
+    }
+  },
+  "unitG": "g",
+  "@unitG": {
+    "description": "Unit label: gram. Same for every count."
+  },
+  "unitKg": "kg",
+  "@unitKg": {
+    "description": "Unit label: kilogram. Same for every count."
+  },
+  "unitOz": "oz",
+  "@unitOz": {
+    "description": "Unit label: ounce. Same for every count."
+  },
+  "unitLb": "lb",
+  "@unitLb": {
+    "description": "Unit label: pound. Same for every count."
+  },
+  "unitMl": "ml",
+  "@unitMl": {
+    "description": "Unit label: millilitre. Same for every count."
+  },
+  "unitL": "l",
+  "@unitL": {
+    "description": "Unit label: litre. Same for every count."
+  },
+  "unitFlOz": "fl oz",
+  "@unitFlOz": {
+    "description": "Unit label: US fluid ounce. Same for every count."
+  },
+  "unitTbsp": "tbsp",
+  "@unitTbsp": {
+    "description": "Unit label: tablespoon. Same for every count."
+  },
+  "unitTsp": "tsp",
+  "@unitTsp": {
+    "description": "Unit label: teaspoon. Same for every count."
+  },
+  "unitCup": "{count, plural, =1{cup} other{cups}}",
+  "@unitCup": {
+    "description": "Unit label (cup), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitPiece": "{count, plural, =1{piece} other{pieces}}",
+  "@unitPiece": {
+    "description": "Unit label (piece), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitLoaf": "{count, plural, =1{loaf} other{loaves}}",
+  "@unitLoaf": {
+    "description": "Unit label (loaf of flat bread), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitPlate": "{count, plural, =1{plate} other{plates}}",
+  "@unitPlate": {
+    "description": "Unit label (plate), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitSmallPlate": "{count, plural, =1{small plate} other{small plates}}",
+  "@unitSmallPlate": {
+    "description": "Unit label (small plate), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitLargePlate": "{count, plural, =1{large plate} other{large plates}}",
+  "@unitLargePlate": {
+    "description": "Unit label (large plate), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitGlass": "{count, plural, =1{glass} other{glasses}}",
+  "@unitGlass": {
+    "description": "Unit label (glass), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitSandwich": "{count, plural, =1{sandwich} other{sandwiches}}",
+  "@unitSandwich": {
+    "description": "Unit label (sandwich), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitDisc": "{count, plural, =1{disc} other{discs}}",
+  "@unitDisc": {
+    "description": "Unit label (disc), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitServing": "{count, plural, =1{serving} other{servings}}",
+  "@unitServing": {
+    "description": "Unit label (serving), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitCan": "{count, plural, =1{can} other{cans}}",
+  "@unitCan": {
+    "description": "Unit label (can or tin), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitBowl": "{count, plural, =1{bowl} other{bowls}}",
+  "@unitBowl": {
+    "description": "Unit label (bowl), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitSlice": "{count, plural, =1{slice} other{slices}}",
+  "@unitSlice": {
+    "description": "Unit label (slice), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitWedge": "{count, plural, =1{wedge} other{wedges}}",
+  "@unitWedge": {
+    "description": "Unit label (wedge), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitContainer": "{count, plural, =1{container} other{containers}}",
+  "@unitContainer": {
+    "description": "Unit label (container or tub), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitLadle": "{count, plural, =1{ladle} other{ladles}}",
+  "@unitLadle": {
+    "description": "Unit label (ladle), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitPortion": "{count, plural, =1{portion} other{portions}}",
+  "@unitPortion": {
+    "description": "Unit label (portion; shown for a food-specific unit the app has no word for), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitPortionSized": "{count, plural, =1{portion} other{portions}} ({size} {unit})",
+  "@unitPortionSized": {
+    "description": "Unit label of a food-specific unit the app has no word for, with how much it holds, e.g. \"portion (60 g)\".",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      },
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "foodStateWord": "{state, select, raw{raw} cooked{cooked} dry{dry} drained{drained} fried{fried} as_sold{as sold} other{}}",
+  "@foodStateWord": {
+    "description": "The state a food's values refer to, in lower case (raw, cooked, dry, drained, fried, as sold).",
+    "placeholders": {
+      "state": {
+        "type": "String"
+      }
+    }
+  },
+  "foodResultServing": "{amount} {unit}",
+  "@foodResultServing": {
+    "description": "Add-food result row: the serving the calories are for, e.g. \"1 loaf\" or \"100 g\".",
+    "placeholders": {
+      "amount": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "foodResultSubtitle": "{name} · {serving}",
+  "@foodResultSubtitle": {
+    "description": "Add-food result row: second line with the Arabic name and the serving the calories are for, e.g. \"خبز عربي · 1 loaf\".",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "serving": {
+        "type": "String"
+      }
+    }
+  },
+  "foodSheetNames": "{en} · {ar}",
+  "@foodSheetNames": {
+    "description": "Food sheet title: the English name and the Arabic name of a food that has both.",
+    "placeholders": {
+      "en": {
+        "type": "String"
+      },
+      "ar": {
+        "type": "String"
+      }
+    }
+  },
+  "foodSheetState": "State: {state}",
+  "@foodSheetState": {
+    "description": "Food sheet: the state of the food, e.g. \"State: cooked\".",
+    "placeholders": {
+      "state": {
+        "type": "String"
+      }
+    }
+  },
+  "foodSheetSanityWarn": "This food's calories don't quite match its protein, carbs and fat.",
+  "@foodSheetSanityWarn": {
+    "description": "Food sheet: gentle note on a food whose calories do not match its protein, carbs and fat (FD-012)."
+  },
+  "foodSheetAmountLabel": "Amount, {amount} {unit}",
+  "@foodSheetAmountLabel": {
+    "description": "Food sheet: what a screen reader says for the amount box.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "foodSheetKcal": "{kcal} kcal",
+  "@foodSheetKcal": {
+    "description": "Food sheet: calories of the chosen amount.",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "foodSheetNoKcal": "—",
+  "@foodSheetNoKcal": {
+    "description": "Food sheet: calories shown while there is no valid amount."
+  },
+  "foodSheetMacros": "Protein {protein} g · Carbs {carbs} g · Fat {fat} g · Fiber {fiber} g",
+  "@foodSheetMacros": {
+    "description": "Food sheet: the four macros of the chosen amount, in grams.",
+    "placeholders": {
+      "protein": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "carbs": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "fat": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "fiber": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "foodSheetLogAs": "Log as {name}",
+  "@foodSheetLogAs": {
+    "description": "Food sheet: chip that switches to the same food in another state (raw, cooked, dry); {name} is that food.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "foodSheetYieldNote": "{from} g {fromState} ≈ {to} g {toState}",
+  "@foodSheetYieldNote": {
+    "description": "Food sheet: how much a weighed amount of a food becomes in another state, e.g. \"100 g dry ≈ 280 g cooked\". Display only.",
+    "placeholders": {
+      "from": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "fromState": {
+        "type": "String"
+      },
+      "to": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "toState": {
+        "type": "String"
+      }
+    }
+  },
+  "foodSheetSlot": "Meal: {slot}",
+  "@foodSheetSlot": {
+    "description": "Food sheet: chip with the meal the food is added to; tap to change.",
+    "placeholders": {
+      "slot": {
+        "type": "String"
+      }
+    }
+  },
+  "foodSheetSlotNone": "No meal",
+  "@foodSheetSlotNone": {
+    "description": "Food sheet: the meal chip when no meal is chosen."
+  },
+  "foodSheetSlotTitle": "Meal",
+  "@foodSheetSlotTitle": {
+    "description": "Food sheet: title of the list of meals."
+  },
+  "foodSheetAdd": "Add",
+  "@foodSheetAdd": {
+    "description": "Food sheet: the button that adds the food to the diary."
+  },
+  "foodSheetAddFailed": "Couldn't add this food. Try again.",
+  "@foodSheetAddFailed": {
+    "description": "Food sheet: shown when adding the food did not work."
+  },
+  "foodSheetLoadFailed": "Couldn't open this food. Try again.",
+  "@foodSheetLoadFailed": {
+    "description": "Food sheet: shown when the food could not be loaded."
+  },
+  "foodSheetPer100g": "Per 100 g",
+  "@foodSheetPer100g": {
+    "description": "Food sheet: heading of the values per 100 grams."
+  },
+  "foodSheetPer100ml": "Per 100 ml",
+  "@foodSheetPer100ml": {
+    "description": "Food sheet: heading of the values per 100 millilitres."
+  },
+  "foodSheetMore": "More",
+  "@foodSheetMore": {
+    "description": "Food sheet: button that shows the optional nutrients (sugar, sodium, ...)."
+  },
+  "foodSheetLess": "Less",
+  "@foodSheetLess": {
+    "description": "Food sheet: button that hides the optional nutrients."
+  },
+  "foodNutrientEnergy": "Calories",
+  "@foodNutrientEnergy": {
+    "description": "Nutrient name: energy."
+  },
+  "foodNutrientProtein": "Protein",
+  "@foodNutrientProtein": {
+    "description": "Nutrient name."
+  },
+  "foodNutrientCarbs": "Carbs",
+  "@foodNutrientCarbs": {
+    "description": "Nutrient name: total carbohydrate."
+  },
+  "foodNutrientFat": "Fat",
+  "@foodNutrientFat": {
+    "description": "Nutrient name."
+  },
+  "foodNutrientFiber": "Fiber",
+  "@foodNutrientFiber": {
+    "description": "Nutrient name."
+  },
+  "foodNutrientSugar": "Sugar",
+  "@foodNutrientSugar": {
+    "description": "Nutrient name."
+  },
+  "foodNutrientSaturatedFat": "Saturated fat",
+  "@foodNutrientSaturatedFat": {
+    "description": "Nutrient name."
+  },
+  "foodNutrientTransFat": "Trans fat",
+  "@foodNutrientTransFat": {
+    "description": "Nutrient name."
+  },
+  "foodNutrientSodium": "Sodium",
+  "@foodNutrientSodium": {
+    "description": "Nutrient name."
+  },
+  "foodNutrientCholesterol": "Cholesterol",
+  "@foodNutrientCholesterol": {
+    "description": "Nutrient name."
+  },
+  "foodNutrientAlcohol": "Alcohol",
+  "@foodNutrientAlcohol": {
+    "description": "Nutrient name."
+  },
+  "foodNutrientGrams": "{value} g",
+  "@foodNutrientGrams": {
+    "description": "A nutrient amount in grams.",
+    "placeholders": {
+      "value": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "foodNutrientMilligrams": "{value} mg",
+  "@foodNutrientMilligrams": {
+    "description": "A nutrient amount in milligrams.",
+    "placeholders": {
+      "value": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "foodLoggedMessage": "Added {name} to {meal}",
+  "@foodLoggedMessage": {
+    "description": "Undo snackbar after a food was added to the diary.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "meal": {
+        "type": "String"
+      }
+    }
+  },
+  "foodSearchNotReadyTitle": "Nothing to search yet",
+  "foodSearchNotReadyMessage": "The food database isn't ready yet. Foods you log will show up here.",
+  "foodTryAgain": "Try again",
+  "foodSheetClose": "Close"
 }

@@ -18,6 +18,9 @@ abstract final class FbIcons {
   /// Add (quick-add chips, add buttons).
   static const IconData add = Icons.add_rounded;
 
+  /// Edit an amount or value.
+  static const IconData edit = Icons.edit_rounded;
+
   /// Remove / clear.
   static const IconData close = Icons.close_rounded;
 
@@ -29,6 +32,9 @@ abstract final class FbIcons {
 
   /// Camera (photo input).
   static const IconData camera = Icons.photo_camera_outlined;
+
+  /// Search (the magnifier).
+  static const IconData search = Icons.search_rounded;
 
   /// Barcode scan.
   static const IconData barcode = Icons.qr_code_scanner_rounded;

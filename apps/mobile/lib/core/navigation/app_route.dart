@@ -1,3 +1,5 @@
+import 'package:fb_domain/fb_domain.dart' show LocalDate;
+
 /// The app's typed routes (S06 plan D2, A2).
 ///
 /// Hand-written and free of go_router, so features can navigate without
@@ -17,6 +19,9 @@
 ///   the tab keeps its stack;
 /// - `AppNavigator` has `push` and `pop` for it ([DesignPreviewRoute] is the
 ///   first, dev flavor only).
+///
+/// [FoodSearchRoute] is the first route with parameters: typed fields,
+/// carried in the query string (`/today/add-food?date=2026-10-22&slot=s1`).
 sealed class AppRoute {
   /// Creates a route.
   const new();
@@ -71,6 +76,40 @@ final class MeRoute extends AppRoute {
 
   @override
   String get location => path;
+}
+
+/// The add-food search (FD-020; A07 D11): a detail screen of the Today tab.
+///
+/// [date] is the diary day to add to and [slotId] the meal slot; both are
+/// optional (today, and the slot of the current time). Only simple values
+/// travel in the URL: the food itself never does.
+final class FoodSearchRoute extends AppRoute {
+  /// Creates the route.
+  const new({this.date, this.slotId});
+
+  /// The route's path pattern.
+  static const path = '/today/add-food';
+
+  /// The query parameter holding [date] (`YYYY-MM-DD`).
+  static const dateParam = 'date';
+
+  /// The query parameter holding [slotId].
+  static const slotParam = 'slot';
+
+  /// The diary day to add to; null for today.
+  final LocalDate? date;
+
+  /// The meal slot to add to; null to choose by the time of day.
+  final String? slotId;
+
+  @override
+  String get location {
+    final query = {dateParam: ?date?.toString(), slotParam: ?slotId};
+    return Uri(
+      path: path,
+      queryParameters: query.isEmpty ? null : query,
+    ).toString();
+  }
 }
 
 /// The "update needed" screen, outside the tabs (S06 plan D10).

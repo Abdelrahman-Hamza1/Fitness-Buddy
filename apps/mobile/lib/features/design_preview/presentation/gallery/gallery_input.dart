@@ -55,6 +55,36 @@ final List<GallerySection> gallerySectionsInput = [
     ],
   ),
   GallerySection(
+    name: 'FbSearchField',
+    covers: const [FbSearchField],
+    states: (_) => const [GalleryState('type to try it', _SearchFieldDemo())],
+  ),
+  GallerySection(
+    name: 'FbAmountDisplay',
+    covers: const [FbAmountDisplay],
+    states: (_) => [
+      GalleryState(
+        'idle',
+        FbAmountDisplay(
+          amount: _S.amountNumber,
+          unit: _S.amountUnit,
+          semanticLabel: _S.amountLabel,
+          onTap: () {},
+        ),
+      ),
+      GalleryState(
+        'editing',
+        FbAmountDisplay(
+          amount: _S.amountNumber,
+          unit: _S.amountUnit,
+          semanticLabel: _S.amountLabel,
+          active: true,
+          onTap: () {},
+        ),
+      ),
+    ],
+  ),
+  GallerySection(
     name: 'FbNumberPad',
     covers: const [
       FbNumberPad,
@@ -262,4 +292,26 @@ class _UnitPickerDemoState extends State<_UnitPickerDemo> {
       onSelected: (id) => setState(() => _selected = id),
     );
   }
+}
+
+/// A search field that keeps its text (the clear button shows with text).
+class _SearchFieldDemo extends StatefulWidget {
+  const new();
+
+  @override
+  State<_SearchFieldDemo> createState() => _SearchFieldDemoState();
+}
+
+class _SearchFieldDemoState extends State<_SearchFieldDemo> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      FbSearchField(controller: _controller, hint: _S.searchHint);
 }

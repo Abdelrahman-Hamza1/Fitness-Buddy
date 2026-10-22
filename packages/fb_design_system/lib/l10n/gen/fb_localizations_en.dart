@@ -83,6 +83,9 @@ class FbLocalizationsEn extends FbLocalizations {
   String get fbInputBarcode => 'Scan a barcode';
 
   @override
+  String get fbSearchClear => 'Clear search';
+
+  @override
   String get fbDatePrevious => 'Previous day';
 
   @override

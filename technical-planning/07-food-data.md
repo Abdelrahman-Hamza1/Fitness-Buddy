@@ -87,6 +87,8 @@ The single specification is `contracts/testdata/normalization_cases.yaml`. **Bot
 
 Order: **your foods & recent foods → verified catalog → reference dishes → OFF cached products**. Dedup by canonical identity (same catalog ID, or same normalized name + state + brand), so each distinct food appears once. Ties are broken by the user's usage count, then global popularity.
 
+**As built in A07 (D2, D4, PA1–PA3, PA10):** a candidate is `good` when every query word matches as a word prefix or better (exact, prefix, words, or a whole-word typo), else `weak` (mid-word substring, partial); all `good` rows come first. Within `good`: tier personal > history > database > reference, then match strength, then uses, last used, shorter name, ID; within `weak`: strength first. Duplicates are merged before ranking (same catalog ID, same dish across variants, same strict name key + state + brand; unknown state/brand dedups by reference only), and the group's representative is chosen by tier, so a personal food always represents its group. Exact name matches are never cut by candidate caps; history matches bypass the 60-target cap. The pack has no popularity data, so the shorter name stands in for it. 30 rows.
+
 ### 5.3 Where search runs
 
 | Path | Engine |

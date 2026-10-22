@@ -320,3 +320,43 @@ checks while constructing providers or importing synced rows. Conflict-bearing
 existing timelines can be explicitly corrected by a user action, not silently
 rewritten on reads. `monthlyKgFromWeeklyRate` converts requested or achievable
 rates to the actual named month for TG-011 display.
+
+## Food search and portions (A07 WP1)
+
+`NameMatcher` accepts normalized query/name keys and a `FuzzyIndex`. Strengths
+are ordered exact, prefix, words (good band), then fuzzy, substring, partial
+(weak band). Fuzzy corrections verify rune-based OSA distance, including adjacent
+transpositions. Prefixes and words under four runes skip fuzzy. The deletion
+index truncates words to 12 runes, enables distance two only for 7–12 runes,
+and drops distance two above 30,000 words or 400,000 deletion keys. If even
+distance one exceeds that key budget, fuzzy is disabled rather than returning
+an arbitrary vocabulary subset. `deletionKeyCount` and `distanceTwoEnabled`
+allow the app to report counts only. WP2 builds the index in an isolate and
+owns its readiness, rebuild scheduling, and retained-memory/time gates.
+
+`SearchCandidate<T>` takes precomputed duplicate keys and a stable unique ID.
+The adapter constructs `catalog:<id>` / `personal:<id>` / `dish:<dishId>` keys,
+plus strict English and Arabic `name:<identityKey>|<state>|<brand or ->` keys
+only when state is known. Normalize brand values consistently at that boundary.
+Snapshots without pack metadata have only their identity key. This package has
+no `fb_text` dependency: the app supplies `fb_text.identityKey` results.
+
+`FoodSearchRanker.rank` merges transitive key groups before limiting to 30 rows.
+The representative follows tier, recency, own match strength, default variant,
+ID. Group statistics use best strength, maximum uses and latest HLC. Good rows
+sort by personal, history, database, reference, then strength; weak rows sort
+by strength then tier. Both break ties by uses, recency, shorter representative
+name, ID. These are lexicographic priorities, not additive scores.
+
+`DefaultPortion.choose` prefers resolvable last input, then parsed input, then
+the first prioritized serving, else 100 g/ml. A parsed count without a unit uses
+the default unit. `UnitOptions.of` lists resolvable servings, basis and standard
+units once. `FoodHistoryItem` retains `EntryFood` (including ref version and full
+provenance), original `EntryAmount`, usage and nullable pack metadata. Its
+`derivedServing` reconstructs only portion units, preserving the g/ml basis.
+
+`StateSibling.choose` accepts strict English identity keys and offers only the
+requested state in the same yield group with the identical key after removing
+state words. Ratios, cuts, skin and other qualifiers remain significant (PA12).
+The app must also check that a yield factor is available. In particular, a
+skinless raw chicken row cannot replace an unqualified roasted breast row.

@@ -24,15 +24,17 @@ final Override tripped = upgradeSignalProvider.overrideWithBuild(
   (ref, notifier) => true,
 );
 
-/// Starts the app on [phone] (a fresh offline one by default) and settles
+/// Starts the app on [phone] (a fresh offline one by default), plus
+/// [overrides], and settles
 /// after the deferred startup work. Returns the provider container
 /// (disposed at the end of the test).
 Future<ProviderContainer> pumpApp(
   WidgetTester tester, {
   TestPhone? phone,
+  List<Override> overrides = const [],
 }) async {
   final container = ProviderContainer.test(
-    overrides: (phone ?? TestPhone()).overrides(),
+    overrides: [...(phone ?? TestPhone()).overrides(), ...overrides],
   );
   await tester.pumpWidget(
     UncontrolledProviderScope(

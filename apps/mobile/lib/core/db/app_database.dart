@@ -127,7 +127,13 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
         if (await isCatalogAttached()) {
           await customStatement('DETACH DATABASE $catalogSchema');
         }
-        if (packPath != null) await _attachCatalog(packPath);
+        try {
+          if (packPath != null) await _attachCatalog(packPath);
+        } finally {
+          // A read-model invalidation, not user data: A07 refreshes catalog
+          // vocabulary off the keystroke path after a swap or failed attach.
+          notifyUpdates({const TableUpdate('catalog_pack')});
+        }
       });
 
   /// Attaches [packPath] read-only and immutable (A01 D14). The connection

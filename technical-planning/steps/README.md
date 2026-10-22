@@ -149,7 +149,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A05](A05-catalog-pipeline.md) | Catalog pipeline & offline pack v1 | Claude | A01, A03, A04 | L | S13 |  | ✅ |
 | [A05b](A05b-exercises-cities-data.md) | Exercises & cities data | **Codex** | A05 | S | S13 part |  | ✅ |
 | [A06](A06-diary-domain.md) | Diary domain & storage | Claude | A01 | M | S14 |  | ✅ |
-| [A07](A07-food-search-add.md) | Food search & add flow | Claude | A02, A05, A06 | M | S15 |  | ⬜ |
+| [A07](A07-food-search-add.md) | Food search & add flow | Claude | A02, A05, A06 | M | S15 |  | ✅ |
 | [A08](A08-today-diary-ui.md) | Today screen & diary UI | Claude | A07 | L | S16 |  | ⬜ |
 | [A09](A09-personal-foods-quick-add.md) | Personal foods, saved meals & quick-add | Claude | A08 | M | S17 |  | ⬜ |
 | [A10](A10-settings-slots.md) | Settings & meal slots | Claude | A08 | M | S18 |  | ⬜ |

@@ -67,6 +67,14 @@ abstract final class GallerySamples {
   static const String emptyMessage =
       'Tell Buddy what you ate and it shows up here.';
   static const String hint = 'Tell Buddy what you ate';
+
+  /// Hint of the search field.
+  static const String searchHint = 'Search foods';
+
+  /// The amount display: number, unit and what a screen reader says.
+  static const String amountNumber = '100';
+  static const String amountUnit = 'g';
+  static const String amountLabel = 'Amount, 100 g';
   static const String longHint =
       'Tell Buddy what you ate, weighed or want to log later';
 

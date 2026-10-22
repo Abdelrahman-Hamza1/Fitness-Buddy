@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:fb_domain/fb_domain.dart' show LocalDate;
 import 'package:fb_mobile/app/shell/app_shell.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/config/update_gate.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/design_preview/design_preview.dart';
+import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:fb_mobile/features/today/today.dart';
@@ -70,6 +72,7 @@ final class AppRouter implements AppNavigator {
                   // Detail screens nest in their tab, so the tab bar stays
                   // and the tab keeps its stack.
                   children: [
+                    if (route is TodayRoute) _foodSearchRoute(),
                     if (route is MeRoute && designPreview)
                       _goRoute(const DesignPreviewRoute(), nested: true),
                   ],
@@ -115,6 +118,25 @@ final class AppRouter implements AppNavigator {
     routes: children,
   );
 
+  // The one route with parameters so far: it rebuilds its typed route from
+  // the query string (A07 D11), so the screen never parses a URL.
+  static GoRoute _foodSearchRoute() => GoRoute(
+    path: FoodSearchRoute.path.split('/').last,
+    builder: (_, state) => _screen(foodSearchRouteOf(state.uri)),
+  );
+
+  /// The [FoodSearchRoute] a location stands for. A missing or malformed
+  /// parameter is ignored (today, and the slot of the time of day).
+  @visibleForTesting
+  static FoodSearchRoute foodSearchRouteOf(Uri location) {
+    final date = location.queryParameters[FoodSearchRoute.dateParam];
+    final slot = location.queryParameters[FoodSearchRoute.slotParam];
+    return FoodSearchRoute(
+      date: date == null ? null : LocalDate.tryParse(date),
+      slotId: slot == null || slot.isEmpty ? null : slot,
+    );
+  }
+
   // Exhaustive: a new AppRoute without a screen doesn't compile.
   static Widget _screen(AppRoute route) => switch (route) {
     TodayRoute() => const TodayScreen(),
@@ -122,6 +144,10 @@ final class AppRouter implements AppNavigator {
     WorkoutsRoute() => const WorkoutsScreen(),
     MeRoute() => const MeScreen(),
     DesignPreviewRoute() => const DesignPreviewScreen(),
+    FoodSearchRoute(:final date, :final slotId) => FoodSearchScreen(
+      date: date,
+      slotId: slotId,
+    ),
     UpdateRequiredRoute() => const UpdateRequiredScreen(),
   };
 

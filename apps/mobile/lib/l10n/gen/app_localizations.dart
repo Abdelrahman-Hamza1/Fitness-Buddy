@@ -770,6 +770,479 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This month: {done} of {target} kg'**
   String progressGoalMonth(String done, String target);
+
+  /// Today: button of the empty state that opens the add-food search (FD-020).
+  ///
+  /// In en, this message translates to:
+  /// **'Add food'**
+  String get todayAddFood;
+
+  /// Title of the add-food search screen (FD-020).
+  ///
+  /// In en, this message translates to:
+  /// **'Add food'**
+  String get foodSearchTitle;
+
+  /// Hint of the search box on the add-food screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Search foods'**
+  String get foodSearchHint;
+
+  /// Section title above the foods logged before, shown while the search box is empty (FD-023).
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get foodSearchRecent;
+
+  /// Add-food screen: title shown while the search box is empty and nothing has been logged before.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a food'**
+  String get foodSearchEmptyTitle;
+
+  /// Add-food screen: hint under the title while the search box is empty and nothing has been logged before. Arabizi is Arabic written in Latin letters.
+  ///
+  /// In en, this message translates to:
+  /// **'Search in English, Arabic or Arabizi'**
+  String get foodSearchEmptyMessage;
+
+  /// Add-food screen: title when the typed text finds no food. The text is quoted.
+  ///
+  /// In en, this message translates to:
+  /// **'No match for \"{query}\"'**
+  String foodSearchNoMatchTitle(String query);
+
+  /// Add-food screen: help under the no-match title.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another name or spelling.'**
+  String get foodSearchNoMatchMessage;
+
+  /// Add-food screen: banner shown while the offline food database is not available; only foods logged before can be found.
+  ///
+  /// In en, this message translates to:
+  /// **'The food database isn\'t ready yet. Showing foods you\'ve logged before.'**
+  String get foodSearchPackNotReady;
+
+  /// Add-food screen: banner when a search failed unexpectedly.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t search just now. Try again.'**
+  String get foodSearchFailed;
+
+  /// Add-food result row: calories of the default serving, at the end of the row.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal'**
+  String foodResultKcal(int kcal);
+
+  /// Unit label: gram. Same for every count.
+  ///
+  /// In en, this message translates to:
+  /// **'g'**
+  String get unitG;
+
+  /// Unit label: kilogram. Same for every count.
+  ///
+  /// In en, this message translates to:
+  /// **'kg'**
+  String get unitKg;
+
+  /// Unit label: ounce. Same for every count.
+  ///
+  /// In en, this message translates to:
+  /// **'oz'**
+  String get unitOz;
+
+  /// Unit label: pound. Same for every count.
+  ///
+  /// In en, this message translates to:
+  /// **'lb'**
+  String get unitLb;
+
+  /// Unit label: millilitre. Same for every count.
+  ///
+  /// In en, this message translates to:
+  /// **'ml'**
+  String get unitMl;
+
+  /// Unit label: litre. Same for every count.
+  ///
+  /// In en, this message translates to:
+  /// **'l'**
+  String get unitL;
+
+  /// Unit label: US fluid ounce. Same for every count.
+  ///
+  /// In en, this message translates to:
+  /// **'fl oz'**
+  String get unitFlOz;
+
+  /// Unit label: tablespoon. Same for every count.
+  ///
+  /// In en, this message translates to:
+  /// **'tbsp'**
+  String get unitTbsp;
+
+  /// Unit label: teaspoon. Same for every count.
+  ///
+  /// In en, this message translates to:
+  /// **'tsp'**
+  String get unitTsp;
+
+  /// Unit label (cup), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{cup} other{cups}}'**
+  String unitCup(num count);
+
+  /// Unit label (piece), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{piece} other{pieces}}'**
+  String unitPiece(num count);
+
+  /// Unit label (loaf of flat bread), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{loaf} other{loaves}}'**
+  String unitLoaf(num count);
+
+  /// Unit label (plate), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{plate} other{plates}}'**
+  String unitPlate(num count);
+
+  /// Unit label (small plate), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{small plate} other{small plates}}'**
+  String unitSmallPlate(num count);
+
+  /// Unit label (large plate), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{large plate} other{large plates}}'**
+  String unitLargePlate(num count);
+
+  /// Unit label (glass), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{glass} other{glasses}}'**
+  String unitGlass(num count);
+
+  /// Unit label (sandwich), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{sandwich} other{sandwiches}}'**
+  String unitSandwich(num count);
+
+  /// Unit label (disc), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{disc} other{discs}}'**
+  String unitDisc(num count);
+
+  /// Unit label (serving), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{serving} other{servings}}'**
+  String unitServing(num count);
+
+  /// Unit label (can or tin), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{can} other{cans}}'**
+  String unitCan(num count);
+
+  /// Unit label (bowl), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{bowl} other{bowls}}'**
+  String unitBowl(num count);
+
+  /// Unit label (slice), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{slice} other{slices}}'**
+  String unitSlice(num count);
+
+  /// Unit label (wedge), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{wedge} other{wedges}}'**
+  String unitWedge(num count);
+
+  /// Unit label (container or tub), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{container} other{containers}}'**
+  String unitContainer(num count);
+
+  /// Unit label (ladle), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{ladle} other{ladles}}'**
+  String unitLadle(num count);
+
+  /// Unit label (portion; shown for a food-specific unit the app has no word for), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{portion} other{portions}}'**
+  String unitPortion(num count);
+
+  /// Unit label of a food-specific unit the app has no word for, with how much it holds, e.g. "portion (60 g)".
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{portion} other{portions}} ({size} {unit})'**
+  String unitPortionSized(num count, double size, String unit);
+
+  /// The state a food's values refer to, in lower case (raw, cooked, dry, drained, fried, as sold).
+  ///
+  /// In en, this message translates to:
+  /// **'{state, select, raw{raw} cooked{cooked} dry{dry} drained{drained} fried{fried} as_sold{as sold} other{}}'**
+  String foodStateWord(String state);
+
+  /// Add-food result row: the serving the calories are for, e.g. "1 loaf" or "100 g".
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} {unit}'**
+  String foodResultServing(double amount, String unit);
+
+  /// Add-food result row: second line with the Arabic name and the serving the calories are for, e.g. "خبز عربي · 1 loaf".
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · {serving}'**
+  String foodResultSubtitle(String name, String serving);
+
+  /// Food sheet title: the English name and the Arabic name of a food that has both.
+  ///
+  /// In en, this message translates to:
+  /// **'{en} · {ar}'**
+  String foodSheetNames(String en, String ar);
+
+  /// Food sheet: the state of the food, e.g. "State: cooked".
+  ///
+  /// In en, this message translates to:
+  /// **'State: {state}'**
+  String foodSheetState(String state);
+
+  /// Food sheet: gentle note on a food whose calories do not match its protein, carbs and fat (FD-012).
+  ///
+  /// In en, this message translates to:
+  /// **'This food\'s calories don\'t quite match its protein, carbs and fat.'**
+  String get foodSheetSanityWarn;
+
+  /// Food sheet: what a screen reader says for the amount box.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount, {amount} {unit}'**
+  String foodSheetAmountLabel(String amount, String unit);
+
+  /// Food sheet: calories of the chosen amount.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal'**
+  String foodSheetKcal(int kcal);
+
+  /// Food sheet: calories shown while there is no valid amount.
+  ///
+  /// In en, this message translates to:
+  /// **'—'**
+  String get foodSheetNoKcal;
+
+  /// Food sheet: the four macros of the chosen amount, in grams.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein {protein} g · Carbs {carbs} g · Fat {fat} g · Fiber {fiber} g'**
+  String foodSheetMacros(
+    double protein,
+    double carbs,
+    double fat,
+    double fiber,
+  );
+
+  /// Food sheet: chip that switches to the same food in another state (raw, cooked, dry); {name} is that food.
+  ///
+  /// In en, this message translates to:
+  /// **'Log as {name}'**
+  String foodSheetLogAs(String name);
+
+  /// Food sheet: how much a weighed amount of a food becomes in another state, e.g. "100 g dry ≈ 280 g cooked". Display only.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} g {fromState} ≈ {to} g {toState}'**
+  String foodSheetYieldNote(int from, String fromState, int to, String toState);
+
+  /// Food sheet: chip with the meal the food is added to; tap to change.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal: {slot}'**
+  String foodSheetSlot(String slot);
+
+  /// Food sheet: the meal chip when no meal is chosen.
+  ///
+  /// In en, this message translates to:
+  /// **'No meal'**
+  String get foodSheetSlotNone;
+
+  /// Food sheet: title of the list of meals.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal'**
+  String get foodSheetSlotTitle;
+
+  /// Food sheet: the button that adds the food to the diary.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get foodSheetAdd;
+
+  /// Food sheet: shown when adding the food did not work.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t add this food. Try again.'**
+  String get foodSheetAddFailed;
+
+  /// Food sheet: shown when the food could not be loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open this food. Try again.'**
+  String get foodSheetLoadFailed;
+
+  /// Food sheet: heading of the values per 100 grams.
+  ///
+  /// In en, this message translates to:
+  /// **'Per 100 g'**
+  String get foodSheetPer100g;
+
+  /// Food sheet: heading of the values per 100 millilitres.
+  ///
+  /// In en, this message translates to:
+  /// **'Per 100 ml'**
+  String get foodSheetPer100ml;
+
+  /// Food sheet: button that shows the optional nutrients (sugar, sodium, ...).
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get foodSheetMore;
+
+  /// Food sheet: button that hides the optional nutrients.
+  ///
+  /// In en, this message translates to:
+  /// **'Less'**
+  String get foodSheetLess;
+
+  /// Nutrient name: energy.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories'**
+  String get foodNutrientEnergy;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein'**
+  String get foodNutrientProtein;
+
+  /// Nutrient name: total carbohydrate.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbs'**
+  String get foodNutrientCarbs;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Fat'**
+  String get foodNutrientFat;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Fiber'**
+  String get foodNutrientFiber;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Sugar'**
+  String get foodNutrientSugar;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturated fat'**
+  String get foodNutrientSaturatedFat;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Trans fat'**
+  String get foodNutrientTransFat;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Sodium'**
+  String get foodNutrientSodium;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Cholesterol'**
+  String get foodNutrientCholesterol;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Alcohol'**
+  String get foodNutrientAlcohol;
+
+  /// A nutrient amount in grams.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} g'**
+  String foodNutrientGrams(double value);
+
+  /// A nutrient amount in milligrams.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} mg'**
+  String foodNutrientMilligrams(double value);
+
+  /// Undo snackbar after a food was added to the diary.
+  ///
+  /// In en, this message translates to:
+  /// **'Added {name} to {meal}'**
+  String foodLoggedMessage(String name, String meal);
+
+  /// No description provided for @foodSearchNotReadyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to search yet'**
+  String get foodSearchNotReadyTitle;
+
+  /// No description provided for @foodSearchNotReadyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The food database isn\'t ready yet. Foods you log will show up here.'**
+  String get foodSearchNotReadyMessage;
+
+  /// No description provided for @foodTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get foodTryAgain;
+
+  /// No description provided for @foodSheetClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get foodSheetClose;
 }
 
 class _AppLocalizationsDelegate

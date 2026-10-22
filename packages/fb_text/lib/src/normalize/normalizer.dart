@@ -19,7 +19,13 @@ import 'package:fb_text/src/normalize/tables.dart';
 ///
 /// The key is a fixed point: `normalizeKey(normalizeKey(s)) ==
 /// normalizeKey(s)` for every `s`.
-String normalizeKey(String input) {
+String normalizeKey(String input) => _key(input, latinRepeats: true);
+
+/// A strict food identity key (FD-021): search folding without collapsing
+/// Latin repeats, so coffee and cofe remain distinct.
+String identityKey(String input) => _key(input, latinRepeats: false);
+
+String _key(String input, {required bool latinRepeats}) {
   final folded = foldLatin(
     foldArabic(foldDigits(_deleteInvisibles(foldCompatibility(input)))),
   );
@@ -27,7 +33,7 @@ String normalizeKey(String input) {
     folded,
     (rune, out) => out.writeCharCode(isKeyCharacter(rune) ? rune : _space),
   );
-  return _collapseSpaces(collapseRepeats(allowed));
+  return _collapseSpaces(_collapseRepeats(allowed, latin: latinRepeats));
 }
 
 /// [text] with fullwidth ASCII forms (U+FF01–U+FF5E) replaced by ASCII and
@@ -92,7 +98,9 @@ String foldLatin(String text) => _map(text, (rune, out) {
 /// identical Latin letters `a`–`z` or Arabic long vowels ا و ي becomes one,
 /// a run of 3 or more of any other Arabic letter becomes one (a run of 2
 /// stays, so اللبن ≠ البن). Digits and every other character are kept.
-String collapseRepeats(String text) {
+String collapseRepeats(String text) => _collapseRepeats(text, latin: true);
+
+String _collapseRepeats(String text, {required bool latin}) {
   final out = StringBuffer();
   final runes = text.runes.toList();
   var start = 0;
@@ -104,7 +112,7 @@ String collapseRepeats(String text) {
     }
     final length = end - start;
     final collapse =
-        (rune >= _lowerA && rune <= _lowerZ) ||
+        (latin && rune >= _lowerA && rune <= _lowerZ) ||
         arabicLongVowels.contains(rune) ||
         (isKeyArabicLetter(rune) && length >= 3);
     for (var i = 0; i < (collapse ? 1 : length); i++) {

@@ -47,6 +47,8 @@ final class CatalogFood {
     required this.verified,
     required this.isDraft,
     required this.packVersion,
+    this.sanity = CatalogSanity.ok,
+    this.isDefaultVariant = false,
   });
 
   /// The catalog ID: `usda:...`, or `ref:<dish>/<variant>`.
@@ -93,6 +95,12 @@ final class CatalogFood {
 
   /// The `catalog_version` of the pack this was read from.
   final int packVersion;
+
+  /// Pack verdict, including reviewed waivers.
+  final CatalogSanity sanity;
+
+  /// Whether the dish selects this variant by default.
+  final bool isDefaultVariant;
 
   /// The food's measures for the amount resolver.
   FoodMeasures get measures => FoodMeasures(
@@ -152,4 +160,76 @@ final class CatalogInfo {
 
   /// The credited sources.
   final List<CatalogAttribution> attribution;
+}
+
+/// The pack's stored sanity verdict (a waiver is not a computed failure).
+/// The pack sanity verdict.
+enum CatalogSanity {
+  /// Passed the pack check.
+  ok,
+
+  /// Requires a displayed sanity note.
+  warn,
+
+  /// A reviewed override accepted the discrepancy.
+  waived,
+}
+
+/// Ordered retrieval pass. Exact rows are never capped (PA10).
+enum CandidatePass {
+  /// Uncapped full-key equality.
+  exact,
+
+  /// Up to 500 full-key prefixes.
+  prefix,
+
+  /// Up to 300 rows ordered by matched-word count.
+  token,
+}
+
+/// Already-normalized query and optional whole-word fuzzy corrections.
+final class CandidateQuery {
+  /// Creates this structured value.
+  const new(this.key, {this.corrections = const {}});
+
+  /// Normalized search key.
+  final String key;
+
+  /// Nearest whole-word corrections keyed by the original token.
+  final Map<String, List<String>> corrections;
+}
+
+/// A name matched by a bounded retrieval pass.
+final class CatalogNameRow {
+  /// Creates this structured value.
+  const new({
+    required this.rowid,
+    required this.targetId,
+    required this.lang,
+    required this.key,
+    required this.isDisplay,
+    required this.wordHits,
+    required this.pass,
+  });
+
+  /// Stable SQLite name-row identity within this pack.
+  final int rowid;
+
+  /// Catalog food or dish target; exercises are excluded.
+  final String targetId;
+
+  /// Pack name language code.
+  final String lang;
+
+  /// Normalized search key.
+  final String key;
+
+  /// Whether this is a display name rather than an alias.
+  final bool isDisplay;
+
+  /// Number of query tokens matching word prefixes or fuzzy corrections.
+  final int wordHits;
+
+  /// Earliest retrieval pass that selected this row.
+  final CandidatePass pass;
 }

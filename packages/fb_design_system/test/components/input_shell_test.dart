@@ -282,6 +282,109 @@ void main() {
     });
   });
 
+  group('search field', () {
+    testWidgets('FD-020 typing reports changes, the clear button appears with '
+        'text, empties the field and reports an empty string', (tester) async {
+      final controller = TextEditingController();
+      addTearDown(controller.dispose);
+      final changes = <String>[];
+      await pumpFb(
+        tester,
+        FbSearchField(
+          controller: controller,
+          hint: 'Search foods',
+          onChanged: changes.add,
+        ),
+      );
+      expect(find.text('Search foods'), findsOneWidget);
+      expect(find.byTooltip('Clear search'), findsNothing);
+
+      await tester.enterText(find.byType(TextField), 'rice');
+      await tester.pump();
+      expect(changes, ['rice']);
+      expect(find.byTooltip('Clear search'), findsOneWidget);
+
+      await tester.tap(find.byTooltip('Clear search'));
+      await tester.pump();
+      expect(controller.text, isEmpty);
+      expect(changes, ['rice', '']);
+      expect(find.byTooltip('Clear search'), findsNothing);
+    });
+
+    testWidgets('FD-020 the keyboard search action submits the text and '
+        'autocorrect is off', (tester) async {
+      final controller = TextEditingController(text: 'khubz');
+      addTearDown(controller.dispose);
+      String? submitted;
+      await pumpFb(
+        tester,
+        FbSearchField(
+          controller: controller,
+          hint: 'Search foods',
+          autofocus: true,
+          onSubmitted: (text) => submitted = text,
+        ),
+      );
+      final field = tester.widget<TextField>(find.byType(TextField));
+      expect(field.textInputAction, TextInputAction.search);
+      expect(field.autocorrect, isFalse);
+      expect(field.autofocus, isTrue);
+      await tester.testTextInput.receiveAction(TextInputAction.search);
+      expect(submitted, 'khubz');
+    });
+
+    testWidgets('UX-040 the clear button has a screen-reader label and the '
+        "hint is the field's semantics", (tester) async {
+      final handle = tester.ensureSemantics();
+      final controller = TextEditingController();
+      addTearDown(controller.dispose);
+      await pumpFb(
+        tester,
+        FbSearchField(controller: controller, hint: 'Search foods'),
+      );
+      // Empty: the hint names the field and there is nothing to clear.
+      expect(find.bySemanticsLabel('Search foods'), findsOneWidget);
+      expect(find.byType(IconButton), findsNothing);
+
+      controller.text = 'x';
+      await tester.pump();
+      final clear = tester.getSemantics(find.byType(IconButton));
+      expect(clear.tooltip, 'Clear search');
+      handle.dispose();
+    });
+
+    testWidgets("UX-040 typed text and hint use the theme's own colours in "
+        'dark', (tester) async {
+      final controller = TextEditingController(text: 'rice');
+      addTearDown(controller.dispose);
+      await pumpFb(
+        tester,
+        FbSearchField(controller: controller, hint: 'Search foods'),
+        brightness: Brightness.dark,
+      );
+      final scheme = FbTheme.dark().colorScheme;
+      final text = tester.widget<EditableText>(find.byType(EditableText));
+      expect(text.style.color, scheme.onSurface);
+      expect(text.cursorColor, isNot(scheme.surface));
+    });
+
+    for (final dir in TextDirection.values) {
+      testWidgets('UX-040 the magnifier is at the start and the clear button '
+          'at the end ($dir)', (tester) async {
+        final controller = TextEditingController(text: 'rice');
+        addTearDown(controller.dispose);
+        await pumpFb(
+          tester,
+          FbSearchField(controller: controller, hint: 'Search foods'),
+          direction: dir,
+        );
+        final search = tester.getCenter(find.byIcon(FbIcons.search)).dx;
+        final clear = tester.getCenter(find.byIcon(FbIcons.close)).dx;
+        expect(search < clear, dir == TextDirection.ltr);
+      });
+    }
+  });
+
   group('chart', () {
     testWidgets('IN-004 chart placeholder keeps its aspect ratio and accepts '
         'series, bands and a goal line', (tester) async {
@@ -317,6 +420,7 @@ void main() {
     test('barrel exports every public component', () {
       // A missing export fails to compile: every public type is named here.
       final types = <Type>[
+        FbAmountDisplay,
         FbBigNumber,
         FbButton,
         FbCard,
@@ -333,6 +437,7 @@ void main() {
         FbProgressBar,
         FbSource,
         FbMacroKind,
+        FbSearchField,
         FbSectionHeader,
         FbSheet,
         FbSkeleton,

@@ -50,7 +50,7 @@ DiaryEntry diaryEntryOf(DiaryEntryRow row) => DiaryEntry(
   slotId: row.slotId,
   dishGroupId: row.dishGroupId,
   food: EntryFood(
-    ref: _foodRef(row.foodKind, row.foodId, row.foodVersion),
+    ref: foodRefOf(row.foodKind, row.foodId, row.foodVersion),
     names: FoodNames(row.nameEn, ar: row.nameAr),
     per100: nutrientsOf(
       kcal: row.per100Kcal,
@@ -60,11 +60,11 @@ DiaryEntry diaryEntryOf(DiaryEntryRow row) => DiaryEntry(
       fiberG: row.per100FiberG,
       extrasJson: row.per100ExtrasJson,
     ),
-    provenance: _provenance(
+    provenance: provenanceOf(
       row.source,
-      row.isEstimate,
       row.estimateRangeJson,
       row.assumptionsJson,
+      isEstimate: row.isEstimate,
     ),
   ),
   amount: EntryAmount(
@@ -125,7 +125,8 @@ String? extrasToJson(Map<NutrientKey, double> extras) => extras.isEmpty
         for (final MapEntry(:key, :value) in extras.entries) key.code: value,
       });
 
-FoodRef _foodRef(String kind, String? id, String? version) {
+/// Stored food identity, shared by diary and history snapshots.
+FoodRef foodRefOf(String kind, String? id, String? version) {
   final known = FoodRefKind.fromCode(kind);
   if (known == null) {
     return FoodRef(FoodRefKind.estimate, id: id, version: version);
@@ -133,12 +134,13 @@ FoodRef _foodRef(String kind, String? id, String? version) {
   return FoodRef(known, id: id, version: version);
 }
 
-Provenance _provenance(
+/// Full stored provenance, shared by diary and history snapshots.
+Provenance provenanceOf(
   String source,
-  bool isEstimate,
   String? rangeJson,
-  String? assumptionsJson,
-) {
+  String? assumptionsJson, {
+  required bool isEstimate,
+}) {
   final known = FoodSource.fromCode(source);
   final estimate = known == null || known == FoodSource.estimate || isEstimate;
   EstimateRange? range;

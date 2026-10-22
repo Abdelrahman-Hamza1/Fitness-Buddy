@@ -8,6 +8,10 @@ Fitness Buddy (see `technical-planning/03-architecture.md` §3.1).
   pipeline and tables in `contracts/testdata/README.md`, which the C#
   Catalog module follows too (TD-030). The tables are in
   `lib/src/normalize/tables.dart`.
+- **`identityKey`**: strict food identity (A07 D4 / FD-021), using the same
+  folding pipeline but retaining Latin repeats (`coffee` differs from `cofe`).
+  Arabic repeat folding, tashkeel and alef folding remain the same. This is a
+  Dart-only identity policy, not a change to the shared search golden files.
 - **`parseNumber`, `parseQuantity`**: numbers, units and portion words at
   the start or end of food text (S08 D12). The word tables are in
   `lib/src/parse/`. **A split is a hypothesis**: some food names look like
@@ -23,3 +27,8 @@ Rules for this package:
   `test/dependencies_test.dart`, which fails the build otherwise.
 
 Run the tests with `make test-dart` from the repository root.
+
+A07 pins parser regressions #28/#29/#31: adjacent glued quantities
+(`2 x2 eggs`, `2 100g rice`) and `Coke 0` return null; an explicit suffix
+(`cup of tea 2 tbsp`) wins over an implicit prefix. A null parse means the
+caller searches the raw text.

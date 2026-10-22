@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:drift/drift.dart';
@@ -17,9 +18,20 @@ final class OfflineCatalog {
   /// Reads the `catalog` schema of [_db]. A pack SQLite can't read (a corrupt
   /// file) counts as absent; [onError] hears about it once, with the error
   /// only (no paths).
-  new(this._db, {this.onError});
+  new(this._db, {this.onError}) {
+    _packSub = packChanges.listen((_) => _readiness = null);
+  }
 
   final AppDatabase _db;
+  late final StreamSubscription<void> _packSub;
+  Future<bool>? _readiness;
+
+  // Initial attachment is awaited once. Swaps invalidate this before the
+  // search session refreshes, avoiding readiness SQL on every keystroke.
+  Future<bool> _isReady() => _readiness ??= _db.isCatalogAttached();
+
+  /// Releases the pack invalidation subscription.
+  void dispose() => unawaited(_packSub.cancel());
 
   /// Told once when a read fails (a pack SQLite can't read).
   final void Function(Object error)? onError;
@@ -39,12 +51,18 @@ final class OfflineCatalog {
 
   static const String _schema = AppDatabase.catalogSchema;
 
+  /// Pack swap invalidations; initial attachment is covered by the eager
+  /// search-session refresh after the database opens.
+  Stream<void> get packChanges => _db
+      .tableUpdates(const TableUpdateQuery.onTableName('catalog_pack'))
+      .map((_) {});
+
   /// The food with catalog ID [id], or `null`. A dish ID gives its default
   /// variant.
   Future<CatalogFood?> byId(String id) => _guard(() => _byId(id), null);
 
   Future<CatalogFood?> _byId(String id) async {
-    if (!await _db.isCatalogAttached()) return null;
+    if (!await _isReady()) return null;
     final foods = await _foodsWhere(
       'f.id = ? OR f.id = (SELECT default_variant_id FROM $_schema.dishes '
       'WHERE id = ?)',
@@ -58,7 +76,7 @@ final class OfflineCatalog {
       _guard(() => _byBarcode(code), null);
 
   Future<CatalogFood?> _byBarcode(String code) async {
-    if (code.isEmpty || !await _db.isCatalogAttached()) return null;
+    if (code.isEmpty || !await _isReady()) return null;
     final foods = await _foodsWhere(
       'f.id = (SELECT food_id FROM $_schema.barcodes WHERE code = ?)',
       [Variable.withString(code)],
@@ -66,80 +84,180 @@ final class OfflineCatalog {
     return foods.firstOrNull;
   }
 
-  /// Foods whose names match [text], best first (at most [limit]).
-  ///
-  /// The text is reduced with `normalizeKey`. Words of three or more
-  /// characters go through the trigram index; shorter ones (the Arabic `رز`)
-  /// match a name that is exactly that word. More matched words rank first,
-  /// then the better text match. A dish gives its default variant. A07 owns
-  /// the final ranking.
+  /// Foods whose names match all of [text]'s tokens, best first.
+  /// Uses the same ordered, batched path as A07, without fuzzy or history.
+  /// The legacy API returns at most [limit] rows and a dish's default variant;
+  /// the search service owns final merging, ranking and quantity handling.
   Future<List<CatalogFood>> search(String text, {int limit = 20}) =>
       _guard(() => _search(text, limit), const []);
 
   Future<List<CatalogFood>> _search(String text, int limit) async {
     final key = normalizeKey(text);
-    if (key.isEmpty || !await _db.isCatalogAttached()) return const [];
-    final tokens = key.split(' ').toSet();
-    final matched = <String, Set<String>>{};
-    final score = <String, double>{};
-
-    for (final token in tokens) {
-      final best = <String, double>{};
-      if (token.runes.length < 3) {
-        for (final id in await _targets(
-          'SELECT target_id AS t, 0.0 AS rank FROM $_schema.names '
-          'WHERE key = ?',
-          token,
-        )) {
-          best[id.$1] = 0;
-        }
-      } else {
-        for (final (id, rank) in await _targets(
-          'SELECT n.target_id AS t, f.rank AS rank FROM ( '
-              'SELECT rowid AS rid, bm25(names_fts) AS rank '
-              'FROM $_schema.names_fts WHERE names_fts MATCH ?) f '
-              'JOIN $_schema.names n ON n.rowid = f.rid',
-          '"${token.replaceAll('"', '""')}"',
-        )) {
-          if (!best.containsKey(id) || rank < best[id]!) best[id] = rank;
-        }
-      }
-      for (final MapEntry(:key, :value) in best.entries) {
-        matched.putIfAbsent(key, () => {}).add(token);
-        score[key] = (score[key] ?? 0) - value;
+    if (key.isEmpty || limit <= 0) return const [];
+    final names = await candidateNames(CandidateQuery(key));
+    final best = <String, MatchStrength>{};
+    for (final name in names) {
+      final strength = NameMatcher.match(key, key.split(' '), name.key);
+      if (strength != null &&
+          strength != MatchStrength.partial &&
+          (!best.containsKey(name.targetId) ||
+              strength.index > best[name.targetId]!.index)) {
+        best[name.targetId] = strength;
       }
     }
-    // A name equal to the whole query is the best match.
-    for (final (id, _) in await _targets(
-      'SELECT target_id AS t, 0.0 AS rank FROM $_schema.names WHERE key = ?',
-      key,
-    )) {
-      matched.putIfAbsent(id, () => {}).addAll(tokens);
-      score[id] = (score[id] ?? 0) + 1000;
-    }
-
-    final order = score.keys.toList()
+    final order = best.keys.toList()
       ..sort((a, b) {
-        final byTokens = matched[b]!.length.compareTo(matched[a]!.length);
-        if (byTokens != 0) return byTokens;
-        final byScore = score[b]!.compareTo(score[a]!);
-        return byScore != 0 ? byScore : a.compareTo(b);
+        final strength = best[b]!.index.compareTo(best[a]!.index);
+        return strength != 0 ? strength : a.compareTo(b);
       });
-    final result = <CatalogFood>[];
+    final foods = await foodsByIds(order);
     final seen = <String>{};
-    for (final target in order) {
-      if (result.length >= limit) break;
-      final food = await _byId(target);
-      if (food != null && seen.add(food.id)) result.add(food);
-    }
-    return result;
+    return [
+      for (final id in order)
+        if (foods[id] case final variants?)
+          for (final f in variants.where(
+            (f) => f.dishId == null || f.isDefaultVariant,
+          ))
+            if (seen.add(f.id)) f,
+    ].take(limit).toList();
   }
+
+  static String _quote(String value) => "'${value.replaceAll("'", "''")}'";
+  static String _like(String value) => value
+      .replaceAll(r'\', r'\\')
+      .replaceAll('%', r'\%')
+      .replaceAll('_', r'\_');
+  static const _foodTarget =
+      '(n.target_id IN (SELECT id FROM catalog.foods) '
+      'OR n.target_id IN (SELECT id FROM catalog.dishes))';
+
+  /// PA10: uncapped exact, then 500 prefixes, then the 300 best token rows.
+  /// One SQL batch; token phrases use FTS while short words use word prefixes.
+  Future<List<CatalogNameRow>> candidateNames(CandidateQuery query) => _guard(
+    () async {
+      if (query.key.isEmpty || !await _isReady()) return const [];
+      final tokens = query.key.split(' ').where((t) => t.isNotEmpty).take(6);
+      final conditions = <String>[];
+      final hits = <String>[];
+      for (final token in tokens) {
+        final words = [token, ...?query.corrections[token]];
+        final prefixes = [
+          for (final word in words)
+            "(' ' || n.key) LIKE ${_quote('% ${_like(word)}%')} ESCAPE '\\'",
+        ];
+        hits.add('(CASE WHEN (${prefixes.join(' OR ')}) THEN 1 ELSE 0 END)');
+        for (final word in words) {
+          conditions.add(
+            word.runes.length < 3
+                ? prefixes[words.indexOf(word)]
+                : 'n.rowid IN (SELECT rowid FROM $_schema.names_fts '
+                      'WHERE names_fts MATCH '
+                      '${_quote('"${word.replaceAll('"', '""')}"')})',
+          );
+        }
+      }
+      final score = hits.isEmpty ? '0' : hits.join(' + ');
+      final key = _quote(query.key);
+      final tokenWhere = conditions.isEmpty ? '0' : conditions.join(' OR ');
+      final rows = await _db
+          .customSelect(
+            'WITH exact AS ( '
+            'SELECT n.rowid AS rid, n.*, $score AS word_hits, '
+            '0 AS pass FROM $_schema.names n '
+            'WHERE $_foodTarget AND n.key = $key), prefix AS ( '
+            'SELECT n.rowid AS rid, n.*, $score AS word_hits, '
+            '1 AS pass FROM $_schema.names n '
+            'WHERE $_foodTarget AND n.key > $key AND n.key '
+            '< $key || char(1114111) '
+            'ORDER BY length(n.key), n.key, n.rowid LIMIT 500), token AS ( '
+            'SELECT n.rowid AS rid, n.*, $score AS word_hits, '
+            '2 AS pass FROM $_schema.names n '
+            'WHERE $_foodTarget AND ($tokenWhere) '
+            'ORDER BY word_hits DESC, length(n.key), n.key, n.rowid LIMIT 300) '
+            'SELECT * FROM exact UNION ALL SELECT * FROM prefix '
+            'UNION ALL SELECT * FROM token',
+          )
+          .get();
+      final seen = <int>{};
+      return [
+        for (final r in rows)
+          if (seen.add(r.read<int>('rid'))) _name(r),
+      ];
+    },
+    const [],
+  );
+
+  CatalogNameRow _name(QueryRow r) => CatalogNameRow(
+    rowid: r.read<int>('rid'),
+    targetId: r.read<String>('target_id'),
+    lang: r.read<String>('lang'),
+    key: r.read<String>('key'),
+    isDisplay: r.read<int>('is_display') == 1,
+    wordHits: r.read<int>('word_hits'),
+    pass: CandidatePass.values[r.read<int>('pass')],
+  );
+
+  /// History aliases, uncapped and indexed by target (PA1).
+  Future<List<CatalogNameRow>> namesForTargets(Iterable<String> ids) => _guard(
+    () async {
+      if (!await _isReady()) return const [];
+      final rows = await _db
+          .customSelect(
+            'SELECT rowid AS rid, *, 0 AS word_hits, 0 AS pass '
+            'FROM $_schema.names WHERE target_id IN (SELECT '
+            'value FROM json_each(?))',
+            variables: [Variable.withString(jsonEncode(ids.toSet().toList()))],
+          )
+          .get();
+      return rows.map(_name).toList();
+    },
+    const [],
+  );
+
+  /// Pack vocabulary is read only during refresh, never while typing.
+  Future<List<String>> vocabularyKeys() => _guard(() async {
+    if (!await _isReady()) return const [];
+    final rows = await _db
+        .customSelect(
+          'SELECT DISTINCT n.key FROM $_schema.names n WHERE $_foodTarget',
+        )
+        .get();
+    return [for (final r in rows) r.read<String>('key')];
+  }, const []);
+
+  /// Two batched reads, including every variant of a dish (PA5, backlog #70).
+  Future<Map<String, List<CatalogFood>>> foodsByIds(Iterable<String> ids) =>
+      _guard(() async {
+        final targets = ids.toSet();
+        if (targets.isEmpty || !await _isReady()) return const {};
+        final foods = await _foodsWhere(
+          'f.id IN (SELECT value FROM json_each(?)) OR f.dish_id '
+          'IN (SELECT value FROM json_each(?))',
+          [
+            Variable.withString(jsonEncode(targets.toList())),
+            Variable.withString(jsonEncode(targets.toList())),
+          ],
+        );
+        return {
+          for (final id in targets)
+            id: [
+              for (final f in foods)
+                if (f.id == id || f.dishId == id) f,
+            ],
+        };
+      }, const {});
+
+  /// All potential state siblings; compatibility is checked in the domain.
+  Future<List<CatalogFood>> foodsInYieldGroup(String group) => _guard(() async {
+    if (!await _isReady()) return const [];
+    return await _foodsWhere('f.yield_group = ?', [Variable.withString(group)]);
+  }, const []);
 
   /// The FD-060 yield factors of the pack (empty without a pack).
   Future<List<YieldFactor>> yieldFactors() => _guard(_yieldFactors, const []);
 
   Future<List<YieldFactor>> _yieldFactors() async {
-    if (!await _db.isCatalogAttached()) return const [];
+    if (!await _isReady()) return const [];
     final rows = await _db
         .customSelect(
           'SELECT yield_group, from_state, to_state, factor '
@@ -183,7 +301,7 @@ final class OfflineCatalog {
   }, null);
 
   Future<String?> _meta(String key) async {
-    if (!await _db.isCatalogAttached()) return null;
+    if (!await _isReady()) return null;
     final rows = await _db
         .customSelect(
           'SELECT value FROM $_schema.meta WHERE key = ?',
@@ -193,76 +311,83 @@ final class OfflineCatalog {
     return rows.isEmpty ? null : rows.first.read<String>('value');
   }
 
-  Future<List<(String, double)>> _targets(String sql, String arg) async {
-    final rows = await _db
-        .customSelect(sql, variables: [Variable.withString(arg)])
-        .get();
-    return [
-      for (final r in rows) (r.read<String>('t'), r.read<double>('rank')),
-    ];
-  }
-
   Future<List<CatalogFood>> _foodsWhere(
     String where,
     List<Variable<Object>> variables,
   ) async {
-    final version = await packVersion() ?? 0;
     final rows = await _db
         .customSelect(
-          'SELECT f.* FROM $_schema.foods f WHERE $where ORDER BY f.id',
+          'SELECT f.*, (f.id = d.default_variant_id) AS is_default '
+          'FROM $_schema.foods f '
+          'LEFT JOIN $_schema.dishes d ON d.id = f.dish_id '
+          'WHERE $where ORDER BY f.id',
           variables: variables,
         )
         .get();
-    return [for (final r in rows) await _food(r.data, version)];
-  }
-
-  Future<CatalogFood> _food(Map<String, Object?> row, int version) async {
-    final id = row['id']! as String;
-    final basis = row['basis'] == 'per_100ml'
-        ? NutrientBasis.per100ml
-        : NutrientBasis.per100g;
+    if (rows.isEmpty) return [];
     final servings = await _db
         .customSelect(
-          'SELECT unit_code, g, ml FROM $_schema.servings '
-          'WHERE food_id = ? ORDER BY unit_code',
-          variables: [Variable.withString(id)],
+          'SELECT food_id, unit_code, g, ml FROM $_schema.servings '
+          'WHERE food_id IN (SELECT value FROM json_each(?)) '
+          'ORDER BY unit_code',
+          variables: [
+            Variable.withString(
+              jsonEncode([for (final r in rows) r.read<String>('id')]),
+            ),
+          ],
         )
         .get();
-    return CatalogFood(
-      id: id,
-      kind: row['kind'] == 'basic'
-          ? CatalogFoodKind.basic
-          : CatalogFoodKind.variant,
-      nameEn: row['name_en']! as String,
-      nameAr: row['name_ar'] as String?,
-      dishId: row['dish_id'] as String?,
-      state: FoodState.fromCode(row['state']! as String) ?? FoodState.asSold,
-      basis: basis,
-      nutrients: Nutrients(
-        kcal: _num(row['kcal']),
-        protein: _num(row['protein_g']),
-        carbs: _num(row['carbs_g']),
-        fat: _num(row['fat_g']),
-        fiber: _num(row['fiber_g']),
-        extras: _extras(row['extras_json'] as String?),
-      ),
-      servingUnits: [
-        for (final s in servings)
-          if (s.read<double?>('g') case final g?)
-            ServingUnit.grams(s.read<String>('unit_code'), g)
-          else if (s.read<double?>('ml') case final ml?)
-            ServingUnit.milliliters(s.read<String>('unit_code'), ml),
-      ],
-      densityGramsPerMl: (row['density_g_per_ml'] as num?)?.toDouble(),
-      yieldGroup: row['yield_group'] as String?,
-      badge:
-          CatalogBadge.fromSource(row['source']! as String) ??
-          CatalogBadge.database,
-      verified: row['verified'] == 1,
-      isDraft: row['review_status'] == 'draft',
-      packVersion: version,
-    );
+    final units = <String, List<ServingUnit>>{};
+    for (final s in servings) {
+      final unit = s.read<double?>('g') != null
+          ? ServingUnit.grams(s.read<String>('unit_code'), s.read<double>('g'))
+          : ServingUnit.milliliters(
+              s.read<String>('unit_code'),
+              s.read<double>('ml'),
+            );
+      units.putIfAbsent(s.read<String>('food_id'), () => []).add(unit);
+    }
+    return [
+      for (final r in rows) _food(r.data, units[r.read<String>('id')] ?? []),
+    ];
   }
+
+  CatalogFood _food(Map<String, Object?> row, List<ServingUnit> units) =>
+      CatalogFood(
+        id: row['id']! as String,
+        kind: row['kind'] == 'basic'
+            ? CatalogFoodKind.basic
+            : CatalogFoodKind.variant,
+        nameEn: row['name_en']! as String,
+        nameAr: row['name_ar'] as String?,
+        dishId: row['dish_id'] as String?,
+        state: FoodState.fromCode(row['state']! as String) ?? FoodState.asSold,
+        basis: row['basis'] == 'per_100ml'
+            ? NutrientBasis.per100ml
+            : NutrientBasis.per100g,
+        nutrients: Nutrients(
+          kcal: _num(row['kcal']),
+          protein: _num(row['protein_g']),
+          carbs: _num(row['carbs_g']),
+          fat: _num(row['fat_g']),
+          fiber: _num(row['fiber_g']),
+          extras: _extras(row['extras_json'] as String?),
+        ),
+        servingUnits: units,
+        densityGramsPerMl: (row['density_g_per_ml'] as num?)?.toDouble(),
+        yieldGroup: row['yield_group'] as String?,
+        badge:
+            CatalogBadge.fromSource(row['source']! as String) ??
+            CatalogBadge.database,
+        verified: row['verified'] == 1,
+        isDraft: row['review_status'] == 'draft',
+        packVersion: row['catalog_version']! as int,
+        sanity: CatalogSanity.values.firstWhere(
+          (s) => s.name == row['sanity'],
+          orElse: () => CatalogSanity.ok,
+        ),
+        isDefaultVariant: row['is_default'] == 1,
+      );
 
   static double _num(Object? v) => (v! as num).toDouble();
 

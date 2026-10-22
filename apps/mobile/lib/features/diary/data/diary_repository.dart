@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:drift/drift.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/features/diary/data/diary_day.dart';
+import 'package:fb_mobile/features/diary/data/diary_mappers.dart';
 import 'package:fb_mobile/features/diary/data/diary_reads.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -22,6 +25,107 @@ final class DiaryRepository {
 
   /// The one-shot reads, for the same queries without a stream.
   DiaryReads get reads => _reads;
+
+  /// Latest live snapshot per food. SQLite's single MAX selects the bare
+  /// ID from that row (pinned by tests); HLCs are unique per write.
+  ///
+  /// Initial data is immediate. Later invalidations coalesce for one frame,
+  /// so a write burst does not queue a full history scan between every log.
+  /// One read runs at a time, with one dirty bit; stale results are discarded.
+  Stream<List<FoodHistoryItem>> watchFoodHistory() => Stream.multi((listener) {
+    var cancelled = false;
+    var running = false;
+    var dirty = false;
+    Timer? timer;
+    late void Function(Duration) schedule;
+    Future<void> read() async {
+      if (cancelled) return;
+      dirty = false;
+      running = true;
+      try {
+        final rows = await _foodHistoryQuery().get();
+        if (!cancelled && !dirty) {
+          listener.add([for (final row in rows) _history(row)]);
+        }
+      } on Object catch (error, stack) {
+        if (!cancelled) listener.addError(error, stack);
+      } finally {
+        running = false;
+        if (dirty && !cancelled) schedule(const Duration(milliseconds: 16));
+      }
+    }
+
+    schedule = (delay) {
+      dirty = true;
+      if (running) return;
+      timer?.cancel();
+      timer = Timer(delay, read);
+    };
+    final updates = _db
+        .tableUpdates(TableUpdateQuery.onTable(_db.diaryEntries))
+        .listen((_) => schedule(const Duration(milliseconds: 16)));
+    schedule(Duration.zero);
+    listener.onCancel = () {
+      cancelled = true;
+      timer?.cancel();
+      return updates.cancel();
+    };
+  });
+
+  Selectable<QueryRow> _foodHistoryQuery() => _db.customSelect(
+    'WITH latest AS (SELECT id, MAX(updated_hlc) AS last_hlc, COUNT(*) AS uses '
+    'FROM diary_entries WHERE deleted_at IS NULL AND food_id IS NOT NULL '
+    "AND food_kind IN ('catalog','personal') GROUP BY food_kind, food_id) "
+    'SELECT d.food_kind, d.food_id, d.food_version, d.name_en, d.name_ar, '
+    'd.input_amount, d.input_unit, d.amount, d.amount_basis, d.per100_kcal, '
+    'd.per100_protein_g, d.per100_carbs_g, d.per100_fat_g, d.per100_fiber_g, '
+    'd.per100_extras_json, d.source, d.is_estimate, d.estimate_range_json, '
+    'd.assumptions_json, d.edited_by_user, latest.last_hlc, latest.uses '
+    'FROM latest JOIN diary_entries d ON d.id = latest.id '
+    'ORDER BY latest.last_hlc DESC',
+    readsFrom: {_db.diaryEntries},
+  );
+
+  FoodHistoryItem _history(QueryRow row) {
+    return FoodHistoryItem(
+      food: EntryFood(
+        ref: foodRefOf(
+          row.read<String>('food_kind'),
+          row.read<String?>('food_id'),
+          row.read<String?>('food_version'),
+        ),
+        names: FoodNames(
+          row.read<String>('name_en'),
+          ar: row.read<String?>('name_ar'),
+        ),
+        per100: nutrientsOf(
+          kcal: row.read<double>('per100_kcal'),
+          proteinG: row.read<double>('per100_protein_g'),
+          carbsG: row.read<double>('per100_carbs_g'),
+          fatG: row.read<double>('per100_fat_g'),
+          fiberG: row.read<double>('per100_fiber_g'),
+          extrasJson: row.read<String?>('per100_extras_json'),
+        ),
+        provenance: provenanceOf(
+          row.read<String>('source'),
+          row.read<String?>('estimate_range_json'),
+          row.read<String?>('assumptions_json'),
+          isEstimate: row.read<bool>('is_estimate'),
+        ),
+      ),
+      amount: EntryAmount(
+        input: Quantity(
+          row.read<double>('input_amount'),
+          row.read<String>('input_unit'),
+        ),
+        amount: row.read<double>('amount'),
+        basis: basisOf(row.read<String>('amount_basis')),
+      ),
+      uses: row.read<int>('uses'),
+      lastUsedHlc: Hlc.parse(row.read<String>('last_hlc')),
+      editedByUser: row.read<bool>('edited_by_user'),
+    );
+  }
 
   /// The whole day [date]: slots, groups, entries and mark.
   Stream<DiaryDay> watchDay(LocalDate date) =>

@@ -344,7 +344,9 @@ final class _Reader {
   /// article).
   bool startsNumber(int i) =>
       i < chunks.length &&
-      (chunks[i].isNumeral || _baseNumber(i, atStart: false) != null);
+      (chunks[i].isNumeral ||
+          _glued(i) != null ||
+          _baseNumber(i, atStart: false) != null);
 
   _Number? _baseNumber(int i, {required bool atStart}) {
     if (i >= chunks.length) return null;

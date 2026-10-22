@@ -34,7 +34,7 @@ Future<void> main() => fbGoldenMatrix(
       FbInlineBanner(
         kind: FbInlineBannerKind.error,
         message: 'Could not save this entry, please try again later.',
-        actionLabel: 'Retry',
+        actionLabel: 'Try again',
         onAction: () {},
       ),
     ),

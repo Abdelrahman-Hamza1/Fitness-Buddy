@@ -1,0 +1,203 @@
+import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/features/foods/application/food_choice.dart';
+import 'package:fb_mobile/features/foods/application/foods_providers.dart';
+import 'package:fb_mobile/features/foods/application/log_food.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'food_amount_controller.g.dart';
+
+/// Immutable input and derived numbers for one amount sheet.
+final class FoodAmountState {
+  /// A sheet input; the initial portion is selected by the pure domain.
+  const new({
+    required this.food,
+    required this.date,
+    required this.amountBuffer,
+    required this.unit,
+    this.slotId,
+    this.submitting = false,
+  });
+
+  /// Selected pack food or retired snapshot.
+  final FoodChoice food;
+
+  /// Requested diary day, including past dates.
+  final LocalDate date;
+
+  /// Explicit route choice or automatically assigned slot.
+  final String? slotId;
+
+  /// Decimal text, retaining incomplete edits without inventing an amount.
+  final String amountBuffer;
+
+  /// Unit code retained across compatible state switches.
+  final String unit;
+
+  /// Prevents duplicate submissions while an apply is running.
+  final bool submitting;
+
+  /// Validated positive input, or null while incomplete/invalid.
+  Quantity? get input {
+    final amount = double.tryParse(amountBuffer);
+    return amount == null || !amount.isFinite || amount <= 0
+        ? null
+        : Quantity(amount, unit);
+  }
+
+  /// Resolves the typed input without a state conversion.
+  QuantityResolution? get resolution =>
+      input == null ? null : food.measures.resolve(input!);
+
+  /// Locally calculated nutrients at storage precision.
+  NutrientSnapshot? get snapshot => input == null
+      ? null
+      : switch (const NutritionCalculator().compute(
+          per100: food.per100,
+          measures: food.measures,
+          input: input!,
+        )) {
+          Computed(:final snapshot) => snapshot,
+          NotComputed() => null,
+        };
+
+  /// A positive resolvable amount and no apply already running.
+  bool get canAdd => snapshot != null && !submitting;
+
+  /// Food servings first, then every other resolvable unit.
+  List<String> get units => UnitOptions.of(food.measures);
+
+  /// Display-only yield conversion; never persisted.
+  YieldNote? get yieldNote {
+    final resolved = resolution;
+    final group = food.yieldGroup;
+    final from = food.state;
+    if (resolved is! Resolved ||
+        resolved.basis != NutrientBasis.per100g ||
+        group == null ||
+        from == null) {
+      return null;
+    }
+    for (final to in FoodState.values) {
+      if (to == from) continue;
+      final note = food.yields?.convert(
+        amount: Mass.grams(resolved.amount),
+        group: group,
+        from: from,
+        to: to,
+      );
+      if (note != null) return note;
+    }
+    return null;
+  }
+
+  /// Replaces edited fields while keeping all other sheet choices.
+  FoodAmountState copyWith({
+    FoodChoice? food,
+    String? amountBuffer,
+    String? unit,
+    String? slotId,
+    bool? submitting,
+  }) => FoodAmountState(
+    food: food ?? this.food,
+    date: date,
+    amountBuffer: amountBuffer ?? this.amountBuffer,
+    unit: unit ?? this.unit,
+    slotId: slotId ?? this.slotId,
+    submitting: submitting ?? this.submitting,
+  );
+}
+
+/// Per-sheet notifier exposing immutable input and derived nutrition state.
+@riverpod
+class FoodAmountController extends _$FoodAmountController {
+  @override
+  Future<FoodAmountState> build(
+    FoodChoiceRef choice,
+    LocalDate date, {
+    String? slotId,
+    ParsedAmount? carried,
+  }) async {
+    final food = await ref.watch(foodChoiceProvider(choice).future);
+    if (food == null) throw StateError('foodUnavailable');
+    final slots = await ref.watch(foodSlotsProvider.future);
+    final clock = ref.watch(clockProvider);
+    final initial = DefaultPortion.choose(
+      food.measures,
+      lastUsed: food.lastUsed?.amount.input,
+      parsed: carried,
+    );
+    return FoodAmountState(
+      food: food,
+      date: date,
+      amountBuffer: '${initial.amount}',
+      unit: initial.unitCode,
+      slotId:
+          slotId ??
+          const SlotAssigner().assign(
+            EntryTime.now(clock).localDateTime.time.minuteOfDay,
+            slots,
+            SlotMode.normal,
+          ),
+    );
+  }
+
+  /// Edits decimal text; invalid/zero input disables Add.
+  void setAmount(String text) =>
+      state = AsyncData(state.requireValue.copyWith(amountBuffer: text));
+
+  /// Selects a unit, including an unresolved one that disables Add.
+  void setUnit(String code) =>
+      state = AsyncData(state.requireValue.copyWith(unit: code));
+
+  /// An explicit route/user slot always wins over automatic assignment.
+  void setSlot(String slotId) =>
+      state = AsyncData(state.requireValue.copyWith(slotId: slotId));
+
+  /// Only loader-approved siblings may replace the weighed food. The typed
+  /// input stays intact; no conversion or assumption is stored (PA6/PA12).
+  bool switchState(String siblingId) {
+    final current = state.requireValue;
+    final food = current.food;
+    final sibling = food.siblings.where((f) => f.id == siblingId).firstOrNull;
+    if (sibling == null || current.submitting) return false;
+    final next = catalogChoice(
+      sibling,
+      siblings: [
+        ?food.catalogFood,
+        ...food.siblings.where((f) => f.id != siblingId),
+      ],
+      yields: food.yields,
+    );
+    // The typed input stays as typed. Only a unit the other food can't
+    // measure (a loaf it has no weight for) falls back to its basis unit,
+    // so Add is never left disabled with no chip to fix it.
+    final unit = UnitOptions.of(next.measures).contains(current.unit)
+        ? current.unit
+        : next.measures.basis.unitCode;
+    state = AsyncData(current.copyWith(food: next, unit: unit));
+    return true;
+  }
+
+  /// Submits the exact validated state and records the direct action's undo.
+  Future<LogFoodOutcome> submit() async {
+    final current = state.requireValue;
+    final typed = current.input;
+    if (!current.canAdd || typed == null) {
+      return const FoodLogFailed('invalidAmount');
+    }
+    state = AsyncData(current.copyWith(submitting: true));
+    try {
+      return await ref.read(logFoodProvider)(
+        choice: current.food,
+        input: typed,
+        date: current.date,
+        slotId: current.slotId,
+      );
+    } finally {
+      if (ref.mounted) {
+        state = AsyncData(state.requireValue.copyWith(submitting: false));
+      }
+    }
+  }
+}

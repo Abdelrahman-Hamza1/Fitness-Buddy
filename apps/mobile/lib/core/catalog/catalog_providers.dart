@@ -19,7 +19,11 @@ CatalogPackInstaller catalogPackInstaller(Ref ref) => CatalogPackInstaller(
 
 /// Reads the attached offline catalog.
 @Riverpod(keepAlive: true)
-OfflineCatalog offlineCatalog(Ref ref) => OfflineCatalog(
-  ref.watch(appDatabaseProvider),
-  onError: (error) => ref.read(errorReportingProvider).reportKind(error),
-);
+OfflineCatalog offlineCatalog(Ref ref) {
+  final catalog = OfflineCatalog(
+    ref.watch(appDatabaseProvider),
+    onError: (error) => ref.read(errorReportingProvider).reportKind(error),
+  );
+  ref.onDispose(catalog.dispose);
+  return catalog;
+}

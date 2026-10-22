@@ -111,4 +111,4 @@ final class OfflineCatalogProvider
   }
 }
 
-String _$offlineCatalogHash() => r'76f4d7baae07c71e4c997414cdbd9410a67da377';
+String _$offlineCatalogHash() => r'310c7133d869161501be996a18fd40178e93b275';

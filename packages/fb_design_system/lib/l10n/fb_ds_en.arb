@@ -38,6 +38,9 @@
   "fbInputCamera": "Take a photo",
   "fbInputBarcode": "Scan a barcode",
 
+  "fbSearchClear": "Clear search",
+  "@fbSearchClear": { "description": "Tooltip and screen-reader label of the button that empties a search field." },
+
   "fbDatePrevious": "Previous day",
   "fbDateNext": "Next day",
 

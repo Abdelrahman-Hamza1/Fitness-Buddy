@@ -232,6 +232,12 @@ abstract class FbLocalizations {
   /// **'Scan a barcode'**
   String get fbInputBarcode;
 
+  /// Tooltip and screen-reader label of the button that empties a search field.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get fbSearchClear;
+
   /// No description provided for @fbDatePrevious.
   ///
   /// In en, this message translates to:
