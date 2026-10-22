@@ -29,4 +29,20 @@ internal sealed class CatalogQueries(ICatalogStore store) : IFoodResolver
         return candidates.GroupBy(c => c.CatalogKey, StringComparer.Ordinal).Select(g => g.MaxBy(c => c.Score)!)
             .OrderByDescending(c => c.Score).ThenBy(c => c.CatalogKey, StringComparer.Ordinal).Take(10).ToArray();
     }
+    public async Task<FoodDetails?> DetailsAsync(string key, CancellationToken cancellationToken)
+    {
+        var row = await store.GetAsync(key, cancellationToken); if (row is null) { return null; }
+        var f = row.Data;
+        string Text(string name) => f.GetProperty(name).GetString()!;
+        double? Number(System.Text.Json.JsonElement element, string name) => element.GetProperty(name).ValueKind == System.Text.Json.JsonValueKind.Null ? null : element.GetProperty(name).GetDouble();
+        FoodNutrients Nutrients(string suffix) => new(f.GetProperty("kcal" + suffix).GetDouble(),
+            f.GetProperty(suffix.Length == 0 ? "protein_g" : "protein" + suffix).GetDouble(),
+            f.GetProperty(suffix.Length == 0 ? "carbs_g" : "carbs" + suffix).GetDouble(),
+            f.GetProperty(suffix.Length == 0 ? "fat_g" : "fat" + suffix).GetDouble(),
+            f.GetProperty(suffix.Length == 0 ? "fiber_g" : "fiber" + suffix).GetDouble());
+        return new(Text("id"), Text("name_en"), f.GetProperty("name_ar").GetString(), Text("state"), Text("source"), Nutrients(""),
+            f.GetProperty("kcal_low").ValueKind == System.Text.Json.JsonValueKind.Null ? null : new(Nutrients("_low"), Nutrients("_high")),
+            row.Servings.Select(s => new FoodPortion(s.GetProperty("unit_code").GetString()!, Number(s, "g"), Number(s, "ml"), Number(s, "range_lo"), Number(s, "range_hi"), s.GetProperty("source").GetString()!)).ToArray(),
+            Number(f, "density_g_per_ml"), f.GetProperty("yield_group").GetString());
+    }
 }

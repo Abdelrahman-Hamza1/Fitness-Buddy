@@ -13,5 +13,5 @@ namespace FitnessBuddy.Host;
 /// </summary>
 public static class ModuleCatalog
 {
-    public static IReadOnlyList<IModule> All { get; } = [new IdentityModule(), new AccountModule(), new UserDataModule(), new BuddyModule(), new CatalogModule()];
+    public static IReadOnlyList<IModule> All { get; } = [new IdentityModule(), new AccountModule(), new UserDataModule(), new BuddyModule(), new CatalogModule(), new FitnessBuddy.Modules.Usage.UsageModule()];
 }

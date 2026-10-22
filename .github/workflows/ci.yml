@@ -1,6 +1,6 @@
 # Fitness Buddy CI: the one workflow and the one required check.
 #
-# Jobs `catalog`, `dart`, `dotnet`, `contract`, `image`, `android` and
+# Jobs `catalog`, `dart`, `dotnet`, `eval`, `contract`, `image`, `android` and
 # `android-it` run the same `make` targets as a laptop does. The API contract checks (`make
 # check-contract`, TD-023) are spread over three jobs so that no toolchain is
 # set up or built twice (S02 D13):
@@ -229,11 +229,40 @@ jobs:
 
       # Reuses the Release build above. S04 Persistence.Tests starts one digest-pinned
       # Postgres Testcontainer; Docker is preinstalled, no hosted database/service credentials.
-      - name: Tests
+      - name: Tests, including offline public Buddy M3 eval (B08)
         run: make test-dotnet DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT" FLUTTER=flutter DART=dart
 
       - name: Offline Buddy SDK replay and parse grading (B02)
         run: make eval DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT" FLUTTER=flutter DART=dart
+
+      - name: Upload offline Buddy endpoint report
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: buddy-public-eval
+          path: backend/artifacts/buddy/B08-offline.json
+          if-no-files-found: error
+          retention-days: 7
+
+  # Reuse the real endpoint run from dotnet; no second build or paid provider call.
+  eval:
+    name: eval
+    needs: dotnet
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Download this run's offline report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: gh run download "$RUN_ID" --name buddy-public-eval --dir report
+      - name: Gate M3 parse and resolution regressions (no key)
+        run: python3 tools/scripts/check-buddy-eval.py report/B08-offline.json
 
   # The same hardened image; B01 also checks the Dart client against its real HTTP API.
   image:
@@ -631,7 +660,7 @@ jobs:
   ci:
     name: ci
     if: always()
-    needs: [changes, catalog, dart, dotnet, contract, image, android, android-it]
+    needs: [changes, catalog, dart, dotnet, eval, contract, image, android, android-it]
     runs-on: ubuntu-24.04
     permissions: {} # reads only `needs`; no token scopes at all
     timeout-minutes: 5

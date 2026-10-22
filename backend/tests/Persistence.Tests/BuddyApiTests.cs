@@ -1,0 +1,204 @@
+using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using FitnessBuddy.Modules.Buddy.Domain;
+using FitnessBuddy.Modules.Buddy.Infrastructure;
+using FitnessBuddy.Modules.Identity.Application;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace FitnessBuddy.Persistence.Tests;
+
+public sealed class BuddyApiTests(PostgresFixture postgres)
+{
+    private static CancellationToken Ct => TestContext.Current.CancellationToken;
+    [Fact]
+    [Trait("Req", "MN-005")]
+    [Trait("Req", "AI-150")]
+    [Trait("Req", "AI-153")]
+    public async Task Public_endpoint_repairs_once_replays_conflicts_and_preserves_ambiguous_attempts()
+    {
+        await using var h = new IdentityHarness(postgres); await h.InitializeAsync();
+        using var wire = new BuddyWire { InvalidCalls = 1 };
+        await using var api = new BuddyApi(postgres, h, wire); using var client = api.CreateClient(); Headers(client, h);
+        var id = Guid.CreateVersion7();
+        using (var denied = await Send(client, h, id)) { Assert.Equal(HttpStatusCode.Unauthorized, denied.StatusCode); Assert.Equal(0, wire.Calls); }
+        await SignIn(client, h);
+        using (var success = await Send(client, h, id))
+        {
+            Assert.Equal(HttpStatusCode.OK, success.StatusCode); Assert.True(success.Headers.CacheControl!.NoStore);
+            var body = await success.Content.ReadFromJsonAsync<JsonElement>(Ct); Assert.Equal("clarify", body.GetProperty("intents")[0].GetProperty("kind").GetString());
+        }
+        Assert.Equal(2, wire.Calls);
+        using (var replay = await Send(client, h, id)) { Assert.Equal(HttpStatusCode.OK, replay.StatusCode); Assert.Equal(2, wire.Calls); }
+        using (var conflict = await Send(client, h, id, "different-private-canary")) { Assert.Equal(HttpStatusCode.Conflict, conflict.StatusCode); Assert.Equal(2, wire.Calls); }
+        var twice = Guid.CreateVersion7(); wire.InvalidCalls = wire.Calls + 2;
+        using (var fallback = await Send(client, h, twice))
+        { Assert.Equal(HttpStatusCode.OK, fallback.StatusCode); var body = await fallback.Content.ReadFromJsonAsync<JsonElement>(Ct); Assert.Equal("invalidInterpretation", body.GetProperty("intents")[0].GetProperty("reason").GetString()); }
+        Assert.Equal(4, wire.Calls);
+        wire.Status = HttpStatusCode.ServiceUnavailable;
+        var pending = Guid.CreateVersion7();
+        using (var failure = await Send(client, h, pending)) { Assert.Equal(HttpStatusCode.ServiceUnavailable, failure.StatusCode); }
+        using (var replay = await Send(client, h, pending)) { Assert.Equal(HttpStatusCode.ServiceUnavailable, replay.StatusCode); Assert.Equal(5, wire.Calls); }
+        Assert.DoesNotContain("private-canary", string.Join("|", api.Logs.Messages), StringComparison.Ordinal);
+        Assert.DoesNotContain("different-private-canary", string.Join("|", api.Logs.Messages), StringComparison.Ordinal);
+        Assert.All(wire.Requests, body => { Assert.DoesNotContain(h.Device.ToString(), body, StringComparison.Ordinal); Assert.DoesNotContain(id.ToString(), body, StringComparison.Ordinal); });
+        var user = (await h.Tokens.ValidateAsync(client.DefaultRequestHeaders.Authorization!.Parameter!, Ct))!.FindFirst("sub")!.Value;
+        await using var inspect = await postgres.SessionAsync(Guid.Parse(user));
+        await using var count = inspect.Command("SELECT sum(calls),sum(input_tokens),sum(messages) FROM usage.daily WHERE user_id=$1"); count.Parameters.AddWithValue(Guid.Parse(user));
+        await using var reader = await count.ExecuteReaderAsync(Ct); Assert.True(await reader.ReadAsync(Ct)); Assert.Equal(5, reader.GetDecimal(0)); Assert.Equal(400, reader.GetDecimal(1)); Assert.Equal(3, reader.GetDecimal(2));
+    }
+
+    [Fact]
+    [Trait("Req", "MN-005")]
+    [Trait("Rule", "04.6-authz")]
+    public async Task Concurrent_keys_reserve_quota_before_send_and_crashed_claim_never_resends()
+    {
+        await using var h = new IdentityHarness(postgres); await h.InitializeAsync(); using var wire = new BuddyWire { Pause = true };
+        await using var api = new BuddyApi(postgres, h, wire, dailyLimit: 1); using var client = api.CreateClient(); Headers(client, h); await SignIn(client, h);
+        var id = Guid.CreateVersion7(); var first = Send(client, h, id);
+        await wire.Started.Task.WaitAsync(TimeSpan.FromSeconds(10), Ct);
+        using (var same = await Send(client, h, id)) { Assert.Equal(HttpStatusCode.ServiceUnavailable, same.StatusCode); Assert.Equal(1, wire.Calls); }
+        using (var other = await Send(client, h, Guid.CreateVersion7())) { Assert.Equal(HttpStatusCode.TooManyRequests, other.StatusCode); Assert.True(other.Headers.Contains("RateLimit")); Assert.Equal(1, wire.Calls); }
+        wire.Continue.TrySetResult(); using var completed = await first; Assert.Equal(HttpStatusCode.OK, completed.StatusCode);
+        using (var same = await Send(client, h, id)) { Assert.Equal(HttpStatusCode.OK, same.StatusCode); Assert.Equal(1, wire.Calls); }
+    }
+
+    [Fact]
+    [Trait("Req", "AC-031")]
+    [Trait("Req", "AC-041")]
+    public async Task Deletion_during_invalid_call_suppresses_repair_and_late_recreation()
+    {
+        await using var h = new IdentityHarness(postgres); await h.InitializeAsync(); using var wire = new BuddyWire { Pause = true, InvalidCalls = 1 };
+        await using var api = new BuddyApi(postgres, h, wire); using var client = api.CreateClient(); Headers(client, h); await SignIn(client, h);
+        var id = Guid.CreateVersion7(); var first = Send(client, h, id);
+        await wire.Started.Task.WaitAsync(TimeSpan.FromSeconds(10), Ct);
+        using (var erased = await client.DeleteAsync("/v1/me", Ct)) { Assert.Equal(HttpStatusCode.NoContent, erased.StatusCode); }
+        wire.Continue.TrySetResult(); using var result = await first; Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode); Assert.Equal(1, wire.Calls);
+        await using var admin = FitnessBuddy.BuildingBlocks.Persistence.DatabaseConfiguration.CreateSource(postgres.MigratorConnection);
+        await using var count = admin.CreateCommand("SELECT count(*) FROM buddy.attempts WHERE message_id=$1"); count.Parameters.AddWithValue(id);
+        Assert.Equal(0L, await count.ExecuteScalarAsync(Ct));
+    }
+
+    [Fact]
+    [Trait("Req", "AC-041")]
+    public async Task Invalid_context_and_missing_key_never_dispatch()
+    {
+        await using var h = new IdentityHarness(postgres); await h.InitializeAsync(); using var wire = new BuddyWire();
+        await using var api = new BuddyApi(postgres, h, wire); using var client = api.CreateClient(); Headers(client, h); await SignIn(client, h);
+        using (var invalid = await Send(client, h, Guid.CreateVersion7(), new string('a', 1001))) { Assert.Equal(HttpStatusCode.BadRequest, invalid.StatusCode); }
+        using var missing = await client.PostAsJsonAsync("/v1/buddy/interpret", Request(Guid.CreateVersion7(), h), Ct);
+        Assert.Equal(HttpStatusCode.BadRequest, missing.StatusCode); Assert.Equal(0, wire.Calls);
+    }
+    [Fact]
+    [Trait("Req", "AI-153")]
+    [Trait("Req", "MN-005")]
+    public async Task Provider_timeout_and_denied_repair_remain_pending_without_another_send()
+    {
+        await using var h = new IdentityHarness(postgres); await h.InitializeAsync(); using var wire = new BuddyWire { Hang = true };
+        await using var api = new BuddyApi(postgres, h, wire, configure: s => s.PostConfigure<FitnessBuddy.Modules.Buddy.Application.BuddyOptions>(o => o.TimeoutSeconds = 1));
+        using var client = api.CreateClient(); Headers(client, h); await SignIn(client, h); var id = Guid.CreateVersion7();
+        using (var timeout = await Send(client, h, id)) { Assert.Equal(HttpStatusCode.ServiceUnavailable, timeout.StatusCode); }
+        wire.Hang = false;
+        using (var replay = await Send(client, h, id)) { Assert.Equal(HttpStatusCode.ServiceUnavailable, replay.StatusCode); Assert.Equal(1, wire.Calls); }
+        await using var limitedH = new IdentityHarness(postgres); await limitedH.InitializeAsync(); using var limitedWire = new BuddyWire { InvalidCalls = 1 };
+        await using var limitedApi = new BuddyApi(postgres, limitedH, limitedWire, dailyLimit: 1);
+        using var limitedClient = limitedApi.CreateClient(); Headers(limitedClient, limitedH); await SignIn(limitedClient, limitedH); var key = Guid.CreateVersion7();
+        using (var deniedRepair = await Send(limitedClient, limitedH, key)) { Assert.Equal(HttpStatusCode.ServiceUnavailable, deniedRepair.StatusCode); Assert.Equal(1, limitedWire.Calls); }
+        using (var replay = await Send(limitedClient, limitedH, key)) { Assert.Equal(HttpStatusCode.ServiceUnavailable, replay.StatusCode); Assert.Equal(1, limitedWire.Calls); }
+    }
+
+    internal static object Request(Guid id, IdentityHarness h, string text = "private-canary") => new
+    {
+        requestId = id,
+        text,
+        now = h.Clock.GetUtcNow(),
+        tzOffsetMin = 180,
+        ramadan = new { active = false, fajr = (string?)null, maghrib = (string?)null },
+        slots = Array.Empty<object>(),
+        activeProposal = (Guid?)null,
+        context = new { personalFoods = Array.Empty<object>(), savedMeals = Array.Empty<object>(), openBatches = Array.Empty<object>(), memory = Array.Empty<object>(), recentEntries = Array.Empty<object>(), customExercises = Array.Empty<object>() },
+    };
+    internal static async Task<HttpResponseMessage> Send(HttpClient client, IdentityHarness h, Guid id, string text = "private-canary")
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/v1/buddy/interpret") { Content = JsonContent.Create(Request(id, h, text)) };
+        request.Headers.Add("Idempotency-Key", id.ToString()); return await client.SendAsync(request, Ct);
+    }
+    internal static void Headers(HttpClient client, IdentityHarness h)
+    { client.DefaultRequestHeaders.Add("X-App-Version", "0.1.0"); client.DefaultRequestHeaders.Add("X-Platform", "android"); client.DefaultRequestHeaders.Add("X-Device-Id", h.Device.ToString()); }
+    internal static async Task SignIn(HttpClient client, IdentityHarness h)
+    {
+        var tokens = (await h.Service.GuestAsync(h.Device, Ct))!;
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+    }
+    internal sealed class BuddyApi(PostgresFixture p, IdentityHarness h, HttpMessageHandler wire, int dailyLimit = 30, Action<IServiceCollection>? configure = null) : WebApplicationFactory<Program>
+    {
+        public CapturedLogs Logs { get; } = new();
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
+        {
+            builder.UseEnvironment("Testing");
+            builder.ConfigureAppConfiguration((_, c) => c.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:Application"] = p.AppConnection,
+                ["Recovery:Directory"] = p.RecoveryDirectory,
+                ["Identity:Enabled"] = "true",
+                ["Identity:WrappingKeysDirectory"] = h.DirectoryPath,
+                ["Identity:PepperFile"] = h.Options.PepperFile,
+                ["Buddy:Enabled"] = "true",
+                ["Buddy:ApiKeyFile"] = "/unused-synthetic",
+                ["Buddy:GuestDailyCalls"] = dailyLimit.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                ["Buddy:RegisteredDailyCalls"] = "100",
+                ["RateLimiting:PerIp:PermitLimit"] = "100000",
+            }));
+            builder.ConfigureTestServices(s =>
+            {
+                s.AddSingleton<Microsoft.Extensions.Logging.ILoggerProvider>(Logs);
+                s.AddSingleton<TimeProvider>(h.Clock); s.AddSingleton<IGoogleIdentityVerifier, IdentityHarness.FakeGoogle>(); s.AddSingleton<IEmailSender>(h.Email);
+                s.AddSingleton<IChatClient>(_ => OpenAIClientFactory.Create("offline-placeholder", new HttpClient(wire, disposeHandler: false)));
+                configure?.Invoke(s);
+            });
+        }
+    }
+    internal sealed class CapturedLogs : Microsoft.Extensions.Logging.ILoggerProvider
+    {
+        public System.Collections.Concurrent.ConcurrentQueue<string> Messages { get; } = new();
+        public Microsoft.Extensions.Logging.ILogger CreateLogger(string categoryName) => new Logger(Messages);
+        public void Dispose() { }
+        private sealed class Logger(System.Collections.Concurrent.ConcurrentQueue<string> messages) : Microsoft.Extensions.Logging.ILogger
+        {
+            public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+            public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
+            public void Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+                => messages.Enqueue(formatter(state, exception));
+        }
+    }
+    internal sealed class BuddyWire : HttpMessageHandler
+    {
+        public int Calls { get; private set; }
+        public int InvalidCalls { get; set; }
+        public bool Pause { get; set; }
+        public bool Hang { get; set; }
+        public HttpStatusCode Status { get; set; } = HttpStatusCode.OK;
+        public List<string> Requests { get; } = [];
+        public TaskCompletionSource Started { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public TaskCompletionSource Continue { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public Func<string, ParsedMessage>? Parse { get; set; }
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            Calls++; var text = await request.Content!.ReadAsStringAsync(cancellationToken); Requests.Add(text); Started.TrySetResult();
+            if (Pause) { await Continue.Task.WaitAsync(cancellationToken); }
+            if (Hang) { await Task.Delay(System.Threading.Timeout.InfiniteTimeSpan, cancellationToken); }
+            var fixture = JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "buddy-envelope.json"), cancellationToken))!;
+            var parsed = Parse?.Invoke(text) ?? new ParsedMessage(MessageLanguage.English, MessageScript.Latin, [new(ParsedKind.Clarify, null, null, null, [], null, DeclineReason.Unclear)]);
+            fixture["output"]![1]!["content"]![0]!["text"] = Calls <= InvalidCalls ? "{" : JsonSerializer.Serialize(parsed, InterpretProtocol.Json);
+            return new(Status) { Content = new StringContent(fixture.ToJsonString(), Encoding.UTF8, "application/json") };
+        }
+    }
+}

@@ -44,6 +44,8 @@ public sealed class PostgresFixture : IAsyncLifetime
         appSettings.Password = "local-migrator-only";
         MigratorConnection = appSettings.ConnectionString;
         Runner = new MigrationRunner([
+            new ModuleMigration("buddy", c => new FitnessBuddy.Modules.Buddy.Infrastructure.BuddyContext(DatabaseConfiguration.ContextOptions<FitnessBuddy.Modules.Buddy.Infrastructure.BuddyContext>(c, "buddy"))),
+            new ModuleMigration("usage", c => new FitnessBuddy.Modules.Usage.Infrastructure.UsageContext(DatabaseConfiguration.ContextOptions<FitnessBuddy.Modules.Usage.Infrastructure.UsageContext>(c, "usage"))),
             new ModuleMigration("catalog", connection => new CatalogContext(DatabaseConfiguration.ContextOptions<CatalogContext>(connection, "catalog"))),
             new ModuleMigration("account", connection => new AccountContext(DatabaseConfiguration.ContextOptions<AccountContext>(connection, "account"))),
             new ModuleMigration("identity", connection => new IdentityContext(DatabaseConfiguration.ContextOptions<IdentityContext>(connection, "identity"))),

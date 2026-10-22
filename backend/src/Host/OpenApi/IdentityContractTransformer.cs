@@ -10,7 +10,7 @@ internal sealed class IdentityContractTransformer : IOpenApiOperationTransformer
     public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
     {
         if (operation.OperationId is "getMe" or "deleteAccount" or "logoutSession" or "linkIdentity" or "pushSync" or "pullSync" or "getSyncHistory" or "getItemSyncHistory"
-            or "searchFoods" or "getFood" or "getLatestCatalogPack" or "downloadCatalogPack")
+            or "interpretMessage" or "searchFoods" or "getFood" or "getLatestCatalogPack" or "downloadCatalogPack")
         {
             context.Document!.Components ??= new OpenApiComponents();
             context.Document!.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>(StringComparer.Ordinal);

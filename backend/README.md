@@ -2,8 +2,8 @@
 
 The Fitness Buddy API: an ASP.NET Core (.NET 10) modular monolith. Architecture, modules and rules are in `technical-planning/04-backend.md`. Implemented: the three-role host/module system (S03), transactional Postgres/outbox/jobs/replay
 (S04), Identity sign-in/sessions (B04), registered document sync (B05), atomic account erasure and
-protected recovery (B06), and the global food catalog/search/offline pack service (B07). Buddy
-remains the isolated B02 interpretation spike until B08. OpenAPI conformance gates server changes.
+protected recovery (B06), and the global food catalog/search/offline pack service (B07). Buddy interpretation with durable paid-send replay and content-free Usage accounting (B08).
+The B02 CLI remains an isolated offline smoke. OpenAPI conformance gates server changes.
 
 ## Layout
 

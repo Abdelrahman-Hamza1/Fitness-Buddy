@@ -1,0 +1,2324 @@
+{
+  "description": "Synthetic B08 public-endpoint regression fixtures; not model-quality measurements. T41 exercises the resumed HTTP request and replay, not the app offline queue.",
+  "cases": [
+    {
+      "id": "T01",
+      "text": "fried egg w 1 tbsp olive oil",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "egg",
+                "canonicalNameEn": "egg",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": "fried",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "olive oil",
+                "canonicalNameEn": "olive oil",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "tbsp",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "egg",
+          "olive oil"
+        ],
+        "amounts": [
+          1,
+          1
+        ],
+        "units": [
+          "piece",
+          "tbsp"
+        ],
+        "states": [
+          "fried",
+          null
+        ],
+        "dimensions": [],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          null,
+          null
+        ],
+        "explicit": [
+          true,
+          true
+        ],
+        "itemDimensions": [
+          [],
+          []
+        ],
+        "statedVariants": [
+          null,
+          null
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "T02",
+      "text": "200g rice, 200g chicken breast raw, cooked with an onion",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": "rice with chicken",
+            "items": [
+              {
+                "mention": "rice",
+                "canonicalNameEn": "rice",
+                "nameAr": null,
+                "amount": 200,
+                "unit": "g",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [
+                  "state",
+                  "fat"
+                ],
+                "estimate": null
+              },
+              {
+                "mention": "chicken breast",
+                "canonicalNameEn": "chicken breast",
+                "nameAr": null,
+                "amount": 200,
+                "unit": "g",
+                "amountExplicit": true,
+                "state": "raw",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "onion",
+                "canonicalNameEn": "onion",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "rice",
+          "chicken breast",
+          "onion"
+        ],
+        "amounts": [
+          200,
+          200,
+          1
+        ],
+        "units": [
+          "g",
+          "g",
+          "piece"
+        ],
+        "states": [
+          null,
+          "raw",
+          null
+        ],
+        "dimensions": [
+          "state",
+          "fat"
+        ],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          "rice with chicken"
+        ],
+        "weighIns": [],
+        "shares": [
+          null,
+          null,
+          null
+        ],
+        "explicit": [
+          true,
+          true,
+          true
+        ],
+        "itemDimensions": [
+          [
+            "state",
+            "fat"
+          ],
+          [],
+          []
+        ],
+        "statedVariants": [
+          null,
+          null,
+          null
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "T03",
+      "text": "200g rice, 200g chicken breast raw, cooked with an onion",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": "rice with chicken",
+            "items": [
+              {
+                "mention": "rice",
+                "canonicalNameEn": "rice",
+                "nameAr": null,
+                "amount": 200,
+                "unit": "g",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [
+                  "state",
+                  "fat"
+                ],
+                "estimate": null
+              },
+              {
+                "mention": "chicken breast",
+                "canonicalNameEn": "chicken breast",
+                "nameAr": null,
+                "amount": 200,
+                "unit": "g",
+                "amountExplicit": true,
+                "state": "raw",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "onion",
+                "canonicalNameEn": "onion",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "rice",
+          "chicken breast",
+          "onion"
+        ],
+        "amounts": [
+          200,
+          200,
+          1
+        ],
+        "units": [
+          "g",
+          "g",
+          "piece"
+        ],
+        "states": [
+          null,
+          "raw",
+          null
+        ],
+        "dimensions": [
+          "state",
+          "fat"
+        ],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          "rice with chicken"
+        ],
+        "weighIns": [],
+        "shares": [
+          null,
+          null,
+          null
+        ],
+        "explicit": [
+          true,
+          true,
+          true
+        ],
+        "itemDimensions": [
+          [
+            "state",
+            "fat"
+          ],
+          [],
+          []
+        ],
+        "statedVariants": [
+          null,
+          null,
+          null
+        ]
+      },
+      "memory": [
+        {
+          "kind": "default",
+          "key": "rice state",
+          "value": "raw"
+        },
+        {
+          "kind": "default",
+          "key": "cooking oil",
+          "value": "1 tbsp olive oil"
+        }
+      ]
+    },
+    {
+      "id": "T04",
+      "text": "chiken brest 250 cookd",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "chicken breast",
+                "canonicalNameEn": "chicken breast",
+                "nameAr": null,
+                "amount": 250,
+                "unit": "g",
+                "amountExplicit": true,
+                "state": "cooked",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "chicken breast"
+        ],
+        "amounts": [
+          250
+        ],
+        "units": [
+          "g"
+        ],
+        "states": [
+          "cooked"
+        ],
+        "dimensions": [],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          null
+        ],
+        "explicit": [
+          true
+        ],
+        "itemDimensions": [
+          []
+        ],
+        "statedVariants": [
+          null
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "T05",
+      "text": "2 eggs omlette w some cheese",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": "omelette",
+            "items": [
+              {
+                "mention": "egg",
+                "canonicalNameEn": "egg",
+                "nameAr": null,
+                "amount": 2,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [
+                  "fat"
+                ],
+                "estimate": null
+              },
+              {
+                "mention": "white cheese",
+                "canonicalNameEn": "white cheese",
+                "nameAr": null,
+                "amount": null,
+                "unit": null,
+                "amountExplicit": false,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [
+                  "portion"
+                ],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "egg",
+          "white cheese"
+        ],
+        "amounts": [
+          2,
+          null
+        ],
+        "units": [
+          "piece",
+          null
+        ],
+        "states": [
+          null,
+          null
+        ],
+        "dimensions": [
+          "fat",
+          "portion"
+        ],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          "omelette"
+        ],
+        "weighIns": [],
+        "shares": [
+          null,
+          null
+        ],
+        "explicit": [
+          true,
+          false
+        ],
+        "itemDimensions": [
+          [
+            "fat"
+          ],
+          [
+            "portion"
+          ]
+        ],
+        "statedVariants": [
+          null,
+          null
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "T06",
+      "text": "500ml milk 3%",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "milk",
+                "canonicalNameEn": "milk",
+                "nameAr": null,
+                "amount": 500,
+                "unit": "ml",
+                "amountExplicit": true,
+                "state": null,
+                "variant": "3%",
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "milk 3%"
+        ],
+        "amounts": [
+          500
+        ],
+        "units": [
+          "ml"
+        ],
+        "states": [
+          null
+        ],
+        "dimensions": [
+          "variant"
+        ],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          null
+        ],
+        "explicit": [
+          true
+        ],
+        "itemDimensions": [
+          [
+            "variant"
+          ]
+        ],
+        "statedVariants": [
+          "3%"
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "T07",
+      "text": "akalt sahen maqlobe 3nd sitti",
+      "language": "arabic",
+      "script": "arabizi",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabizi",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "maqluba",
+                "canonicalNameEn": "maqluba",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "plate",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [
+                  "variant"
+                ],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "maqluba"
+        ],
+        "amounts": [
+          1
+        ],
+        "units": [
+          "plate"
+        ],
+        "states": [
+          null
+        ],
+        "dimensions": [
+          "variant"
+        ],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          null
+        ],
+        "explicit": [
+          true
+        ],
+        "itemDimensions": [
+          [
+            "variant"
+          ]
+        ],
+        "statedVariants": [
+          null
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "T08",
+      "text": "صحن ملوخية مع رز",
+      "language": "arabic",
+      "script": "arabic",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabic",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "mloukhiyeh with rice",
+                "canonicalNameEn": "mloukhiyeh with rice",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "plate",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [
+                  "portion"
+                ],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "mloukhiyeh with rice"
+        ],
+        "amounts": [
+          1
+        ],
+        "units": [
+          "plate"
+        ],
+        "states": [
+          null
+        ],
+        "dimensions": [
+          "portion"
+        ],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          null
+        ],
+        "explicit": [
+          true
+        ],
+        "itemDimensions": [
+          [
+            "portion"
+          ]
+        ],
+        "statedVariants": [
+          null
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "T09",
+      "text": "labaneh w zaatar w zeit w taboon",
+      "language": "arabic",
+      "script": "arabizi",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabizi",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "labaneh",
+                "canonicalNameEn": "labaneh",
+                "nameAr": null,
+                "amount": null,
+                "unit": null,
+                "amountExplicit": false,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [
+                  "portion"
+                ],
+                "estimate": null
+              },
+              {
+                "mention": "zaatar",
+                "canonicalNameEn": "zaatar",
+                "nameAr": null,
+                "amount": null,
+                "unit": null,
+                "amountExplicit": false,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [
+                  "portion"
+                ],
+                "estimate": null
+              },
+              {
+                "mention": "olive oil",
+                "canonicalNameEn": "olive oil",
+                "nameAr": null,
+                "amount": null,
+                "unit": null,
+                "amountExplicit": false,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [
+                  "portion"
+                ],
+                "estimate": null
+              },
+              {
+                "mention": "taboon bread",
+                "canonicalNameEn": "taboon bread",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "labaneh",
+          "zaatar",
+          "olive oil",
+          "taboon bread"
+        ],
+        "amounts": [
+          null,
+          null,
+          null,
+          1
+        ],
+        "units": [
+          null,
+          null,
+          null,
+          "piece"
+        ],
+        "states": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "dimensions": [
+          "portion"
+        ],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "explicit": [
+          false,
+          false,
+          false,
+          true
+        ],
+        "itemDimensions": [
+          [
+            "portion"
+          ],
+          [
+            "portion"
+          ],
+          [
+            "portion"
+          ],
+          []
+        ],
+        "statedVariants": [
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "T10",
+      "text": "i ate my share of the mansaf, big plate, we were 6",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "mansaf",
+                "canonicalNameEn": "mansaf",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "plate",
+                "amountExplicit": true,
+                "state": null,
+                "variant": "large",
+                "share": {
+                  "fraction": null,
+                  "people": 6
+                },
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "mansaf large"
+        ],
+        "amounts": [
+          1
+        ],
+        "units": [
+          "plate"
+        ],
+        "states": [
+          null
+        ],
+        "dimensions": [
+          "variant"
+        ],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          {
+            "fraction": null,
+            "people": 6
+          }
+        ],
+        "explicit": [
+          true
+        ],
+        "itemDimensions": [
+          [
+            "variant"
+          ]
+        ],
+        "statedVariants": [
+          "large"
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "T11",
+      "text": "ate a lot at the wedding",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "clarify",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": "unclear"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "clarify"
+        ],
+        "foods": [],
+        "amounts": [],
+        "units": [],
+        "states": [],
+        "dimensions": [],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [],
+        "explicit": [],
+        "itemDimensions": [],
+        "statedVariants": []
+      },
+      "memory": []
+    },
+    {
+      "id": "T12",
+      "text": "شاورما دجاج عربي وبيبسي",
+      "language": "arabic",
+      "script": "arabic",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabic",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "chicken shawarma arabi",
+                "canonicalNameEn": "chicken shawarma arabi",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "serving",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "Pepsi",
+                "canonicalNameEn": "Pepsi",
+                "nameAr": null,
+                "amount": 330,
+                "unit": "ml",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "chicken shawarma arabi",
+          "Pepsi"
+        ],
+        "amounts": [
+          1,
+          330
+        ],
+        "units": [
+          "serving",
+          "ml"
+        ],
+        "states": [
+          null,
+          null
+        ],
+        "dimensions": [],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          null,
+          null
+        ],
+        "explicit": [
+          true,
+          true
+        ],
+        "itemDimensions": [
+          [],
+          []
+        ],
+        "statedVariants": [
+          null,
+          null
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "T13",
+      "text": "falafel sandwich + small fries",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "falafel sandwich",
+                "canonicalNameEn": "falafel sandwich",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "fries",
+                "canonicalNameEn": "fries",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "serving",
+                "amountExplicit": true,
+                "state": null,
+                "variant": "small",
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "falafel sandwich",
+          "fries small"
+        ],
+        "amounts": [
+          1,
+          1
+        ],
+        "units": [
+          "piece",
+          "serving"
+        ],
+        "states": [
+          null,
+          null
+        ],
+        "dimensions": [
+          "variant"
+        ],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          null,
+          null
+        ],
+        "explicit": [
+          true,
+          true
+        ],
+        "itemDimensions": [
+          [],
+          [
+            "variant"
+          ]
+        ],
+        "statedVariants": [
+          null,
+          "small"
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "T14",
+      "text": "2 slices pizza yesterday dinner",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": "yesterday",
+            "slotHint": "dinner",
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "pizza",
+                "canonicalNameEn": "pizza",
+                "nameAr": null,
+                "amount": 2,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [
+                  "variant",
+                  "portion"
+                ],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "pizza"
+        ],
+        "amounts": [
+          2
+        ],
+        "units": [
+          "piece"
+        ],
+        "states": [
+          null
+        ],
+        "dimensions": [
+          "variant",
+          "portion"
+        ],
+        "timeHints": [
+          "yesterday"
+        ],
+        "slotHints": [
+          "dinner"
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          null
+        ],
+        "explicit": [
+          true
+        ],
+        "itemDimensions": [
+          [
+            "variant",
+            "portion"
+          ]
+        ],
+        "statedVariants": [
+          null
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "T15",
+      "text": "knafe piece",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "knafeh",
+                "canonicalNameEn": "knafeh",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "knafeh"
+        ],
+        "amounts": [
+          1
+        ],
+        "units": [
+          "piece"
+        ],
+        "states": [
+          null
+        ],
+        "dimensions": [],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          null
+        ],
+        "explicit": [
+          true
+        ],
+        "itemDimensions": [
+          []
+        ],
+        "statedVariants": [
+          null
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "T16",
+      "text": "zinger meal",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": "zinger meal",
+            "items": [
+              {
+                "mention": "zinger sandwich",
+                "canonicalNameEn": "zinger sandwich",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "fries",
+                "canonicalNameEn": "fries",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "serving",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "soft drink",
+                "canonicalNameEn": "soft drink",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "serving",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [
+                  "variant"
+                ],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "zinger sandwich",
+          "fries",
+          "soft drink"
+        ],
+        "amounts": [
+          1,
+          1,
+          1
+        ],
+        "units": [
+          "piece",
+          "serving",
+          "serving"
+        ],
+        "states": [
+          null,
+          null,
+          null
+        ],
+        "dimensions": [
+          "variant"
+        ],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          "zinger meal"
+        ],
+        "weighIns": [],
+        "shares": [
+          null,
+          null,
+          null
+        ],
+        "explicit": [
+          true,
+          true,
+          true
+        ],
+        "itemDimensions": [
+          [],
+          [],
+          [
+            "variant"
+          ]
+        ],
+        "statedVariants": [
+          null,
+          null,
+          null
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "T19",
+      "text": "1 snickers",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "Snickers",
+                "canonicalNameEn": "Snickers",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "Snickers"
+        ],
+        "amounts": [
+          1
+        ],
+        "units": [
+          "piece"
+        ],
+        "states": [
+          null
+        ],
+        "dimensions": [],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          null
+        ],
+        "explicit": [
+          true
+        ],
+        "itemDimensions": [
+          []
+        ],
+        "statedVariants": [
+          null
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "T39",
+      "text": "breakfast 2 eggs and labaneh, lunch shawarma, also weighed 97.2",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": "breakfast",
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "egg",
+                "canonicalNameEn": "egg",
+                "nameAr": null,
+                "amount": 2,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "labaneh",
+                "canonicalNameEn": "labaneh",
+                "nameAr": null,
+                "amount": null,
+                "unit": null,
+                "amountExplicit": false,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [
+                  "portion"
+                ],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          },
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": "lunch",
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "shawarma",
+                "canonicalNameEn": "shawarma",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "serving",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          },
+          {
+            "kind": "weighIn",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": {
+              "value": 97.2,
+              "unit": "kg"
+            },
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog",
+          "foodLog",
+          "weighIn"
+        ],
+        "foods": [
+          "egg",
+          "labaneh",
+          "shawarma"
+        ],
+        "amounts": [
+          2,
+          null,
+          1
+        ],
+        "units": [
+          "piece",
+          null,
+          "serving"
+        ],
+        "states": [
+          null,
+          null,
+          null
+        ],
+        "dimensions": [
+          "portion"
+        ],
+        "timeHints": [
+          null,
+          null,
+          null
+        ],
+        "slotHints": [
+          "breakfast",
+          "lunch",
+          null
+        ],
+        "dishGroups": [
+          null,
+          null,
+          null
+        ],
+        "weighIns": [
+          {
+            "value": 97.2,
+            "unit": "kg"
+          }
+        ],
+        "shares": [
+          null,
+          null,
+          null
+        ],
+        "explicit": [
+          true,
+          false,
+          true
+        ],
+        "itemDimensions": [
+          [],
+          [
+            "portion"
+          ],
+          []
+        ],
+        "statedVariants": [
+          null,
+          null,
+          null
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "T40",
+      "text": "what's the weather",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "outOfScope",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": "offTopic"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "outOfScope"
+        ],
+        "foods": [],
+        "amounts": [],
+        "units": [],
+        "states": [],
+        "dimensions": [],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [],
+        "explicit": [],
+        "itemDimensions": [],
+        "statedVariants": []
+      },
+      "memory": []
+    },
+    {
+      "id": "T41",
+      "text": "2 eggs after reconnect",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "egg",
+                "canonicalNameEn": "egg",
+                "nameAr": null,
+                "amount": 2,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "egg"
+        ],
+        "amounts": [
+          2
+        ],
+        "units": [
+          "piece"
+        ],
+        "states": [
+          null
+        ],
+        "dimensions": [],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          null
+        ],
+        "explicit": [
+          true
+        ],
+        "itemDimensions": [
+          []
+        ],
+        "statedVariants": [
+          null
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "AR-T04",
+      "text": "أكلت 250 غرام صدر دجاج مطبوخ",
+      "language": "arabic",
+      "script": "arabic",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabic",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "chicken breast",
+                "canonicalNameEn": "chicken breast",
+                "nameAr": null,
+                "amount": 250,
+                "unit": "g",
+                "amountExplicit": true,
+                "state": "cooked",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "chicken breast"
+        ],
+        "amounts": [
+          250
+        ],
+        "units": [
+          "g"
+        ],
+        "states": [
+          "cooked"
+        ],
+        "dimensions": [],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          null
+        ],
+        "explicit": [
+          true
+        ],
+        "itemDimensions": [
+          []
+        ],
+        "statedVariants": [
+          null
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "AZ-T04",
+      "text": "akalt 250g djej matbookh",
+      "language": "arabic",
+      "script": "arabizi",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabizi",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "chicken breast",
+                "canonicalNameEn": "chicken breast",
+                "nameAr": null,
+                "amount": 250,
+                "unit": "g",
+                "amountExplicit": true,
+                "state": "cooked",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "chicken breast"
+        ],
+        "amounts": [
+          250
+        ],
+        "units": [
+          "g"
+        ],
+        "states": [
+          "cooked"
+        ],
+        "dimensions": [],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          null
+        ],
+        "explicit": [
+          true
+        ],
+        "itemDimensions": [
+          []
+        ],
+        "statedVariants": [
+          null
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "AR-T06",
+      "text": "شربت 500 مل حليب 3%",
+      "language": "arabic",
+      "script": "arabic",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabic",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "milk",
+                "canonicalNameEn": "milk",
+                "nameAr": null,
+                "amount": 500,
+                "unit": "ml",
+                "amountExplicit": true,
+                "state": null,
+                "variant": "3%",
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "milk 3%"
+        ],
+        "amounts": [
+          500
+        ],
+        "units": [
+          "ml"
+        ],
+        "states": [
+          null
+        ],
+        "dimensions": [
+          "variant"
+        ],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          null
+        ],
+        "explicit": [
+          true
+        ],
+        "itemDimensions": [
+          [
+            "variant"
+          ]
+        ],
+        "statedVariants": [
+          "3%"
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "AZ-T06",
+      "text": "shrebt 500ml 7aleeb 3%",
+      "language": "arabic",
+      "script": "arabizi",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabizi",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "milk",
+                "canonicalNameEn": "milk",
+                "nameAr": null,
+                "amount": 500,
+                "unit": "ml",
+                "amountExplicit": true,
+                "state": null,
+                "variant": "3%",
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "foodLog"
+        ],
+        "foods": [
+          "milk 3%"
+        ],
+        "amounts": [
+          500
+        ],
+        "units": [
+          "ml"
+        ],
+        "states": [
+          null
+        ],
+        "dimensions": [
+          "variant"
+        ],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [
+          null
+        ],
+        "explicit": [
+          true
+        ],
+        "itemDimensions": [
+          [
+            "variant"
+          ]
+        ],
+        "statedVariants": [
+          "3%"
+        ]
+      },
+      "memory": []
+    },
+    {
+      "id": "AR-T40",
+      "text": "كيف الطقس اليوم",
+      "language": "arabic",
+      "script": "arabic",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabic",
+        "intents": [
+          {
+            "kind": "outOfScope",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": "offTopic"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "outOfScope"
+        ],
+        "foods": [],
+        "amounts": [],
+        "units": [],
+        "states": [],
+        "dimensions": [],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [],
+        "explicit": [],
+        "itemDimensions": [],
+        "statedVariants": []
+      },
+      "memory": []
+    },
+    {
+      "id": "AZ-T40",
+      "text": "keef el ta2s el yom",
+      "language": "arabic",
+      "script": "arabizi",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabizi",
+        "intents": [
+          {
+            "kind": "outOfScope",
+            "timeHint": null,
+            "slotHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": "offTopic"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "outOfScope"
+        ],
+        "foods": [],
+        "amounts": [],
+        "units": [],
+        "states": [],
+        "dimensions": [],
+        "timeHints": [
+          null
+        ],
+        "slotHints": [
+          null
+        ],
+        "dishGroups": [
+          null
+        ],
+        "weighIns": [],
+        "shares": [],
+        "explicit": [],
+        "itemDimensions": [],
+        "statedVariants": []
+      },
+      "memory": []
+    }
+  ]
+}

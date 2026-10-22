@@ -31,8 +31,13 @@ tags:
   - name: Catalog
     description: Published food search and offline packs.
 
+  - name: Buddy
+    description: Private, validated message interpretation.
+
 # Every path is defined in its module file and listed here.
 paths:
+  /v1/buddy/interpret:
+    $ref: './modules/buddy.yaml#/paths/~1v1~1buddy~1interpret'
   /v1/auth/anonymous:
     $ref: './modules/identity.yaml#/paths/~1v1~1auth~1anonymous'
   /v1/auth/google:

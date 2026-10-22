@@ -21,9 +21,9 @@ internal sealed class RecoveryStateMiddleware(RequestDelegate next)
             await TypedResults.Problem(statusCode: 503).ExecuteAsync(context);
             return;
         }
-        // Deletion acquires EXCLUSIVE in its own transaction. Never hold a shared lease on a
-        // different connection while calling it, or the request would wait on itself.
-        if (name == "deleteAccount")
+        // These handlers own short recovery/lifecycle transactions. A shared request lease would
+        // block deletion throughout external AI I/O; each Buddy dispatch/completion rechecks recovery.
+        if (name is "deleteAccount" or "interpretMessage")
         { await lease.DisposeAsync(); await next(context); return; }
         await using (lease) { await next(context); }
     }

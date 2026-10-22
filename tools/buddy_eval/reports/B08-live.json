@@ -1,0 +1,121 @@
+{
+  "scope": "Owner-authorized synthetic laptop HTTP smoke, real catalog and provider; not broad AQ acceptance",
+  "physicalSends": 10,
+  "p90Ms": 5007.1345,
+  "rows": [
+    {
+      "id": "T04",
+      "status": 200,
+      "elapsedMs": 5007.1345,
+      "kinds": [
+        "foodLog"
+      ],
+      "hasRealMatch": true,
+      "explicitCookedPass": true,
+      "physicalSends": 1
+    },
+    {
+      "id": "AR-T04",
+      "status": 200,
+      "elapsedMs": 3858.1631,
+      "kinds": [
+        "foodLog"
+      ],
+      "hasRealMatch": true,
+      "explicitCookedPass": true,
+      "physicalSends": 2
+    },
+    {
+      "id": "AZ-T04",
+      "status": 200,
+      "elapsedMs": 3688.1774,
+      "kinds": [
+        "foodLog"
+      ],
+      "hasRealMatch": true,
+      "explicitCookedPass": true,
+      "physicalSends": 3
+    },
+    {
+      "id": "T06",
+      "status": 200,
+      "elapsedMs": 3010.4081,
+      "kinds": [
+        "clarify"
+      ],
+      "hasRealMatch": false,
+      "explicitCookedPass": false,
+      "physicalSends": 4
+    },
+    {
+      "id": "T01",
+      "status": 200,
+      "elapsedMs": 3934.8337,
+      "kinds": [
+        "foodLog"
+      ],
+      "hasRealMatch": true,
+      "explicitCookedPass": false,
+      "physicalSends": 5
+    },
+    {
+      "id": "T07",
+      "status": 200,
+      "elapsedMs": 3508.7594,
+      "kinds": [
+        "clarify"
+      ],
+      "hasRealMatch": false,
+      "explicitCookedPass": false,
+      "physicalSends": 6
+    },
+    {
+      "id": "T39",
+      "status": 200,
+      "elapsedMs": 5194.1364,
+      "kinds": [
+        "foodLog",
+        "clarify",
+        "weighIn"
+      ],
+      "hasRealMatch": true,
+      "explicitCookedPass": false,
+      "physicalSends": 7
+    },
+    {
+      "id": "T40",
+      "status": 200,
+      "elapsedMs": 1577.0984,
+      "kinds": [
+        "outOfScope"
+      ],
+      "hasRealMatch": false,
+      "explicitCookedPass": false,
+      "physicalSends": 8
+    },
+    {
+      "id": "T06",
+      "status": 200,
+      "elapsedMs": 4917.5452,
+      "kinds": [
+        "clarify"
+      ],
+      "hasRealMatch": false,
+      "hasEstimate": false,
+      "explicitCookedPass": false,
+      "physicalSends": 9
+    },
+    {
+      "id": "T07",
+      "status": 200,
+      "elapsedMs": 3875.5459,
+      "kinds": [
+        "foodLog"
+      ],
+      "hasRealMatch": false,
+      "hasEstimate": true,
+      "explicitCookedPass": false,
+      "physicalSends": 10
+    }
+  ]
+}

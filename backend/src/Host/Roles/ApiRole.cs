@@ -33,6 +33,7 @@ internal static class ApiRole
 
         builder.Services.AddOpenApi("v1", options =>
         {
+            options.AddDocumentTransformer<BuddyContractTransformer>();
             options.AddSchemaTransformer<ProblemDetailsSchemaTransformer>();
             options.AddSchemaTransformer<IdentityContractTransformer>();
             options.AddSchemaTransformer<SyncContractTransformer>();

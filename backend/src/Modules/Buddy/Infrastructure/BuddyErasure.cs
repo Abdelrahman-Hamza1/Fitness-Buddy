@@ -3,14 +3,16 @@ using FitnessBuddy.BuildingBlocks.Persistence;
 
 namespace FitnessBuddy.Modules.Buddy.Infrastructure;
 
-/// <summary>B02 has no user database state. Adding storage requires an eraser and inventory update.</summary>
+/// <summary>Replay content and paid-attempt markers are erased atomically with the account.</summary>
 internal sealed class BuddyErasure : IOutboxHandler
 {
     public string EventType => UserErasure.EventType;
     public string Name => "buddy.erase";
-    public Task HandleAsync(QueueMessage message, DatabaseSession session, CancellationToken cancellationToken)
+    public async Task HandleAsync(QueueMessage message, DatabaseSession session, CancellationToken cancellationToken)
     {
         if (session.UserId is null || session.UserId != message.UserId) { throw new InvalidOperationException("Invalid erasure scope."); }
-        return Task.CompletedTask;
+        await using var command = session.Command("DELETE FROM buddy.attempts WHERE user_id=$1");
+        command.Parameters.AddWithValue(session.UserId.Value);
+        await command.ExecuteNonQueryAsync(cancellationToken);
     }
 }

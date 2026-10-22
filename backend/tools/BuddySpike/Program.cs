@@ -6,6 +6,12 @@ using FitnessBuddy.Modules.Buddy.Infrastructure;
 using Microsoft.Extensions.Logging.Abstractions;
 
 // A private JSONL pipe, not a public HTTP contract. No listener, database, app identity or telemetry sinks.
+if (args is ["--schema-v1"])
+{
+    Console.WriteLine(JsonSerializer.Serialize(ProductionProtocol.Schema, new JsonSerializerOptions { WriteIndented = true }));
+    return 0;
+}
+
 if (args is ["--schema"])
 {
     Console.WriteLine(JsonSerializer.Serialize(InterpretProtocol.Schema, new JsonSerializerOptions { WriteIndented = true }));
@@ -14,7 +20,7 @@ if (args is ["--schema"])
 
 if (args.Length > 1 || (args.Length == 1 && args[0] != "--live"))
 {
-    await Console.Error.WriteLineAsync("Usage: BuddySpike [--live | --schema]");
+    await Console.Error.WriteLineAsync("Usage: BuddySpike [--live | --schema | --schema-v1]");
     return 64;
 }
 

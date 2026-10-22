@@ -3,6 +3,7 @@
 // ignore_for_file: type=lint, unused_import, invalid_annotation_target, unnecessary_import
 
 // Clients
+export 'clients/buddy_client.dart';
 export 'clients/identity_client.dart';
 export 'clients/account_client.dart';
 export 'clients/user_data_client.dart';
@@ -20,6 +21,31 @@ export 'models/centimeters.dart';
 export 'models/next_cursor.dart';
 export 'models/problem_details.dart';
 export 'models/validation_problem_details.dart';
+export 'models/buddy_ramadan.dart';
+export 'models/buddy_slot.dart';
+export 'models/buddy_nutrients.dart';
+export 'models/buddy_serving.dart';
+export 'models/buddy_personal_food.dart';
+export 'models/buddy_named_reference.dart';
+export 'models/buddy_memory.dart';
+export 'models/buddy_recent_entry.dart';
+export 'models/buddy_context.dart';
+export 'models/interpret_request.dart';
+export 'models/buddy_range.dart';
+export 'models/buddy_candidate.dart';
+export 'models/buddy_amount.dart';
+export 'models/buddy_share.dart';
+export 'models/buddy_dimension_option.dart';
+export 'models/buddy_dimension.dart';
+export 'models/buddy_estimate.dart';
+export 'models/buddy_food_item.dart';
+export 'models/buddy_food_log.dart';
+export 'models/buddy_clarify.dart';
+export 'models/buddy_out_of_scope.dart';
+export 'models/buddy_medical.dart';
+export 'models/buddy_weigh_in.dart';
+export 'models/buddy_intent.dart';
+export 'models/buddy_interpretation.dart';
 export 'models/auth_tokens.dart';
 export 'models/google_sign_in_request.dart';
 export 'models/email_start_request.dart';
@@ -43,5 +69,10 @@ export 'models/catalog_food.dart';
 export 'models/catalog_search_page.dart';
 export 'models/catalog_pack.dart';
 export 'models/client_config.dart';
+export 'models/buddy_food_log_kind.dart';
+export 'models/buddy_clarify_kind.dart';
+export 'models/buddy_out_of_scope_kind.dart';
+export 'models/buddy_medical_kind.dart';
+export 'models/buddy_weigh_in_kind.dart';
 // Root client
 export 'fb_api.dart';

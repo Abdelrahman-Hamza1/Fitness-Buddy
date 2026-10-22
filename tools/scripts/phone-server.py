@@ -116,7 +116,7 @@ def compose_command(state, *args):
     private(state / 'compose.yml')
     private(state / 'init-roles.sh', public_read=True)
     return ['docker', 'compose', '--env-file', '/dev/null', '-p', PROJECT,
-            '-f', str(state / 'compose.yml'), *identity_compose_args(state), *recovery_compose_args(state), *args]
+            '-f', str(state / 'compose.yml'), *identity_compose_args(state), *recovery_compose_args(state), *buddy_compose_args(state), *args]
 
 
 def compose(state, *args, data=None, timeout=300):
@@ -142,6 +142,40 @@ def identity_compose_args(state):
         if len((state / 'identity' / name).read_bytes()) != 32:
             raise Failure('Invalid identity secret; recover original private material')
     return ['-f', str(overlay)]
+
+
+def buddy_overlay(state):
+    return {'services': {'api': {
+        'environment': {'Buddy__Enabled': 'true', 'Buddy__ApiKeyFile': '/buddy/openai-api-key'},
+        'volumes': [{'type': 'bind', 'source': str(state / 'buddy'), 'target': '/buddy', 'read_only': True}]}}}
+
+
+def buddy_compose_args(state):
+    overlay = state / 'buddy-compose.json'
+    if not overlay.exists():
+        return []
+    if read_json(overlay) != buddy_overlay(state):
+        raise Failure('Invalid API-only Buddy overlay')
+    safe_dir(state / 'buddy')
+    private(state / 'buddy' / 'openai-api-key')
+    return ['-f', str(overlay)]
+
+
+def configure_buddy(state, key_path):
+    init(state)
+    if not (state / 'identity-compose.json').exists():
+        raise Failure('Configure private identity before Buddy')
+    identity_compose_args(state)
+    key_path = key_path.expanduser().absolute()
+    private(key_path)
+    key = key_path.read_bytes().strip()
+    if not re.fullmatch(rb'[A-Za-z0-9_-]{20,512}', key):
+        raise Failure('Invalid OpenAI credential file')
+    safe_dir(state / 'buddy')
+    atomic(state / 'buddy' / 'openai-api-key', key)
+    json_write(state / 'buddy-compose.json', buddy_overlay(state))
+    buddy_compose_args(state)
+    print('Private API-only Buddy configuration prepared; takes effect on next main-image deployment')
 
 
 def recovery_compose_args(state):
@@ -682,7 +716,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--state', type=Path, default=DEFAULT_STATE)
     parser.add_argument('--google-clients', type=Path, default=Path.home() / '.local/share/fitness-buddy/identity/google-clients.json')
-    parser.add_argument('command', choices=['catalog-import', 'configure-identity', 'prepare', 'policy', 'confirm-policy', 'accept-unencrypted-storage', 'up', 'stop', 'backup', 'restore-check', 'install-timer', 'status'])
+    parser.add_argument('command', choices=['catalog-import', 'configure-buddy', 'configure-identity', 'prepare', 'policy', 'confirm-policy', 'accept-unencrypted-storage', 'up', 'stop', 'backup', 'restore-check', 'install-timer', 'status'])
+    parser.add_argument('--openai-key-file', type=Path, default=Path.home() / '.config/fitness-buddy/openai-api-key')
     parser.add_argument('--catalog-dir', type=Path, default=Path('build/catalog'))
     args = parser.parse_args()
     os.umask(0o077)
@@ -694,7 +729,7 @@ def main():
             private(lock)
         with lock.open('a') as handle:
             fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            {'catalog-import': lambda target: catalog_import(target, args.catalog_dir), 'configure-identity': lambda target: configure_identity(target, args.google_clients), 'prepare': prepare, 'policy': policy, 'confirm-policy': confirm_policy, 'up': up,
+            {'configure-buddy': lambda target: configure_buddy(target, args.openai_key_file), 'catalog-import': lambda target: catalog_import(target, args.catalog_dir), 'configure-identity': lambda target: configure_identity(target, args.google_clients), 'prepare': prepare, 'policy': policy, 'confirm-policy': confirm_policy, 'up': up,
              'accept-unencrypted-storage': accept_unencrypted_storage,
              'stop': stop, 'backup': backup, 'restore-check': restore_check,
              'install-timer': install_timer, 'status': status}[args.command](state)

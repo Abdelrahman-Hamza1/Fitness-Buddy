@@ -1,0 +1,279 @@
+{
+  "type": "object",
+  "properties": {
+    "language": {
+      "enum": [
+        "english",
+        "arabic",
+        "mixed"
+      ]
+    },
+    "script": {
+      "enum": [
+        "latin",
+        "arabic",
+        "arabizi",
+        "mixed"
+      ]
+    },
+    "intents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "enum": [
+              "foodLog",
+              "clarify",
+              "outOfScope",
+              "medical",
+              "weighIn"
+            ]
+          },
+          "timeHint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slotHint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "dishGroup": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "mention": {
+                  "type": "string"
+                },
+                "canonicalNameEn": {
+                  "type": "string"
+                },
+                "nameAr": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "amount": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "unit": {
+                  "enum": [
+                    "g",
+                    "kg",
+                    "ml",
+                    "l",
+                    "piece",
+                    "tsp",
+                    "tbsp",
+                    "cup",
+                    "plate",
+                    "loaf",
+                    "serving",
+                    null
+                  ]
+                },
+                "amountExplicit": {
+                  "type": "boolean"
+                },
+                "state": {
+                  "enum": [
+                    "raw",
+                    "cooked",
+                    "dry",
+                    "drained",
+                    "fried",
+                    null
+                  ]
+                },
+                "variant": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "share": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "fraction": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "people": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "fraction",
+                    "people"
+                  ],
+                  "additionalProperties": false
+                },
+                "ambiguities": {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "state",
+                      "fat",
+                      "variant",
+                      "portion"
+                    ]
+                  }
+                },
+                "estimate": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "low": {
+                      "type": "object",
+                      "properties": {
+                        "kcal": {
+                          "type": "number"
+                        },
+                        "proteinG": {
+                          "type": "number"
+                        },
+                        "carbsG": {
+                          "type": "number"
+                        },
+                        "fatG": {
+                          "type": "number"
+                        },
+                        "fiberG": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "kcal",
+                        "proteinG",
+                        "carbsG",
+                        "fatG",
+                        "fiberG"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "high": {
+                      "type": "object",
+                      "properties": {
+                        "kcal": {
+                          "type": "number"
+                        },
+                        "proteinG": {
+                          "type": "number"
+                        },
+                        "carbsG": {
+                          "type": "number"
+                        },
+                        "fatG": {
+                          "type": "number"
+                        },
+                        "fiberG": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "kcal",
+                        "proteinG",
+                        "carbsG",
+                        "fatG",
+                        "fiberG"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "low",
+                    "high"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "mention",
+                "canonicalNameEn",
+                "nameAr",
+                "amount",
+                "unit",
+                "amountExplicit",
+                "state",
+                "variant",
+                "share",
+                "ambiguities",
+                "estimate"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "weighIn": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "value": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "value",
+              "unit"
+            ],
+            "additionalProperties": false
+          },
+          "reason": {
+            "enum": [
+              "unclear",
+              "unsupported",
+              "medical",
+              "offTopic",
+              null
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "timeHint",
+          "slotHint",
+          "dishGroup",
+          "items",
+          "weighIn",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "language",
+    "script",
+    "intents"
+  ],
+  "additionalProperties": false
+}

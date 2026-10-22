@@ -4,6 +4,7 @@
 
 import 'package:dio/dio.dart';
 
+import 'clients/buddy_client.dart';
 import 'clients/identity_client.dart';
 import 'clients/account_client.dart';
 import 'clients/user_data_client.dart';
@@ -22,10 +23,13 @@ class FbApi {
 
   static String get version => '0.1.0';
 
+  BuddyClient? _buddy;
   IdentityClient? _identity;
   AccountClient? _account;
   UserDataClient? _userData;
   CatalogClient? _catalog;
+
+  BuddyClient get buddy => _buddy ??= BuddyClient(_dio, baseUrl: _baseUrl);
 
   IdentityClient get identity =>
       _identity ??= IdentityClient(_dio, baseUrl: _baseUrl);

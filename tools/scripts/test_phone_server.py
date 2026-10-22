@@ -22,6 +22,28 @@ REAL_POPEN = subprocess.Popen
 
 
 class PhoneServerTests(unittest.TestCase):
+    def test_buddy_key_is_private_api_only_and_not_in_overlay_or_identity_recovery(self):
+        self.configure_identity()
+        key = self.state / 'source-openai'
+        phone.atomic(key, b'sk-synthetic-' + b'a' * 40)
+        phone.configure_buddy(self.state, key)
+        overlay = phone.read_json(self.state / 'buddy-compose.json')
+        self.assertEqual({'api'}, set(overlay['services']))
+        self.assertNotIn('sk-synthetic', json.dumps(overlay))
+        self.assertTrue(overlay['services']['api']['volumes'][0]['read_only'])
+        self.assertEqual(0o600, stat.S_IMODE((self.state / 'buddy/openai-api-key').stat().st_mode))
+        self.assertIn(str(self.state / 'buddy-compose.json'), phone.buddy_compose_args(self.state))
+        phone.safe_dir(self.state / 'backups')
+        phone.identity_recovery(self.state)
+        self.assertNotIn('openai', str(phone.read_json(self.state / 'backups/identity-recovery.json')['files']))
+        (self.state / 'buddy/openai-api-key').chmod(0o644)
+        with self.assertRaises(phone.Failure):
+            phone.buddy_compose_args(self.state)
+        (self.state / 'buddy/openai-api-key').chmod(0o600)
+        key.chmod(0o644)
+        with self.assertRaises(phone.Failure):
+            phone.configure_buddy(self.state, key)
+
     def test_catalog_import_uses_read_only_mount_and_always_removes_overlay(self):
         release = self.state / 'public-release'
         release.mkdir()

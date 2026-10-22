@@ -1,4 +1,938 @@
-# Buddy module: interpret, suggest, review, label, import (04 §4.3 Buddy, 06).
-# No endpoints yet; a later step fills this file. Then list each path in
-# ../openapi.yaml under `paths` and add the `Buddy` tag there.
-paths: {}
+{
+  "paths": {
+    "/v1/buddy/interpret": {
+      "post": {
+        "tags": [
+          "Buddy"
+        ],
+        "operationId": "interpretMessage",
+        "summary": "Interpret a message into read-only typed intents",
+        "description": "Any authenticated user including guests. Idempotency-Key must equal the UUIDv7 requestId. Replay retention 24 hours. Conflicting input returns 409; an in-flight or ambiguous paid attempt returns 503 and is never automatically charged again for that key during retention. Context limits: 30 personal foods, 20 memory items, 30 recent entries, 20 each saved meals/open batches/custom exercises, 12 slots; names/values at most 200 characters. No images until the vision endpoint. Estimates are badged ranges only when no real match exists. Nutrition calculation and confirmation happen on the phone. Daily operational limits are tighter for guests; 429 never calls the provider.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/AppVersion"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/Platform"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/DeviceId"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterpretRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Validated interpretation; proposal input only.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuddyInterpretation"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "../components/problems.yaml#/components/responses/ValidationFailed"
+          },
+          "426": {
+            "$ref": "../components/problems.yaml#/components/responses/UpgradeRequired"
+          },
+          "429": {
+            "$ref": "../components/problems.yaml#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "../components/problems.yaml#/components/responses/InternalError"
+          },
+          "503": {
+            "$ref": "../components/problems.yaml#/components/responses/ServiceUnavailable"
+          },
+          "401": {
+            "description": "Invalid credentials or inactive session.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Message key already used with different input.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BuddyNutrients": {
+        "type": "object",
+        "required": [
+          "kcal",
+          "proteinG",
+          "carbsG",
+          "fatG",
+          "fiberG"
+        ],
+        "properties": {
+          "kcal": {
+            "type": "number",
+            "format": "double"
+          },
+          "proteinG": {
+            "type": "number",
+            "format": "double"
+          },
+          "carbsG": {
+            "type": "number",
+            "format": "double"
+          },
+          "fatG": {
+            "type": "number",
+            "format": "double"
+          },
+          "fiberG": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "BuddyServing": {
+        "type": "object",
+        "required": [
+          "unitCode",
+          "g",
+          "ml",
+          "rangeLo",
+          "rangeHi",
+          "source"
+        ],
+        "properties": {
+          "unitCode": {
+            "type": "string"
+          },
+          "g": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "ml": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "rangeLo": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "rangeHi": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "source": {
+            "type": "string"
+          }
+        }
+      },
+      "BuddyRange": {
+        "type": "object",
+        "required": [
+          "low",
+          "high"
+        ],
+        "properties": {
+          "low": {
+            "$ref": "#/components/schemas/BuddyNutrients"
+          },
+          "high": {
+            "$ref": "#/components/schemas/BuddyNutrients"
+          }
+        }
+      },
+      "BuddyCandidate": {
+        "type": "object",
+        "required": [
+          "key",
+          "nameEn",
+          "nameAr",
+          "state",
+          "source",
+          "nutrients",
+          "ranges",
+          "servings",
+          "densityGPerMl",
+          "yieldGroup"
+        ],
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "nameEn": {
+            "type": "string"
+          },
+          "nameAr": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "state": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "nutrients": {
+            "$ref": "#/components/schemas/BuddyNutrients"
+          },
+          "ranges": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyRange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "servings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuddyServing"
+            }
+          },
+          "densityGPerMl": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "yieldGroup": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "BuddyPersonalFood": {
+        "type": "object",
+        "required": [
+          "id",
+          "names",
+          "aliases",
+          "state",
+          "nutrients",
+          "servings"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "state": {
+            "type": "string"
+          },
+          "nutrients": {
+            "$ref": "#/components/schemas/BuddyNutrients"
+          },
+          "servings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuddyServing"
+            }
+          }
+        }
+      },
+      "BuddyNamedReference": {
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "BuddyMemory": {
+        "type": "object",
+        "required": [
+          "kind",
+          "key",
+          "value"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "BuddyRecentEntry": {
+        "type": "object",
+        "required": [
+          "id",
+          "date",
+          "slot",
+          "name",
+          "grams"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "slot": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "grams": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "BuddySlot": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "window"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "window": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "BuddyRamadan": {
+        "type": "object",
+        "required": [
+          "active",
+          "fajr",
+          "maghrib"
+        ],
+        "properties": {
+          "active": {
+            "type": "boolean"
+          },
+          "fajr": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "maghrib": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "BuddyContext": {
+        "type": "object",
+        "required": [
+          "personalFoods",
+          "savedMeals",
+          "openBatches",
+          "memory",
+          "recentEntries",
+          "customExercises"
+        ],
+        "properties": {
+          "personalFoods": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuddyPersonalFood"
+            }
+          },
+          "savedMeals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuddyNamedReference"
+            }
+          },
+          "openBatches": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuddyNamedReference"
+            }
+          },
+          "memory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuddyMemory"
+            }
+          },
+          "recentEntries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuddyRecentEntry"
+            }
+          },
+          "customExercises": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuddyNamedReference"
+            }
+          }
+        }
+      },
+      "InterpretRequest": {
+        "type": "object",
+        "required": [
+          "requestId",
+          "text",
+          "now",
+          "tzOffsetMin",
+          "ramadan",
+          "slots",
+          "activeProposal",
+          "context"
+        ],
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "now": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "tzOffsetMin": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": -840,
+            "maximum": 840
+          },
+          "ramadan": {
+            "$ref": "#/components/schemas/BuddyRamadan"
+          },
+          "slots": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuddySlot"
+            }
+          },
+          "activeProposal": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "context": {
+            "$ref": "#/components/schemas/BuddyContext"
+          }
+        }
+      },
+      "BuddyAmount": {
+        "type": "object",
+        "required": [
+          "value",
+          "unit",
+          "explicit"
+        ],
+        "properties": {
+          "value": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "unit": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "explicit": {
+            "type": "boolean"
+          }
+        }
+      },
+      "BuddyShare": {
+        "type": "object",
+        "required": [
+          "fraction",
+          "people"
+        ],
+        "properties": {
+          "fraction": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "people": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "BuddyDimensionOption": {
+        "type": "object",
+        "required": [
+          "value",
+          "candidateKey",
+          "amount",
+          "unit",
+          "candidate"
+        ],
+        "properties": {
+          "value": {
+            "type": "string"
+          },
+          "candidateKey": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "amount": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "unit": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "candidate": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyCandidate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "BuddyDimension": {
+        "type": "object",
+        "required": [
+          "kind",
+          "statedValue",
+          "options"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "statedValue": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuddyDimensionOption"
+            }
+          }
+        }
+      },
+      "BuddyEstimate": {
+        "type": "object",
+        "required": [
+          "range",
+          "reason"
+        ],
+        "properties": {
+          "range": {
+            "$ref": "#/components/schemas/BuddyRange",
+            "description": "AI-estimated nutrient range per 100 grams; never overrides a real food match."
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "BuddyFoodItem": {
+        "type": "object",
+        "required": [
+          "mention",
+          "match",
+          "alternatives",
+          "amount",
+          "share",
+          "dimensions",
+          "estimate"
+        ],
+        "properties": {
+          "mention": {
+            "type": "string"
+          },
+          "match": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyCandidate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "alternatives": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuddyCandidate"
+            }
+          },
+          "amount": {
+            "$ref": "#/components/schemas/BuddyAmount"
+          },
+          "share": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyShare"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dimensions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuddyDimension"
+            }
+          },
+          "estimate": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyEstimate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "BuddyFoodLog": {
+        "type": "object",
+        "required": [
+          "kind",
+          "language",
+          "script",
+          "timeHint",
+          "slotHint",
+          "dishGroup",
+          "items"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "foodLog"
+            ]
+          },
+          "language": {
+            "type": "string"
+          },
+          "script": {
+            "type": "string"
+          },
+          "timeHint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slotHint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "dishGroup": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuddyFoodItem"
+            }
+          }
+        }
+      },
+      "BuddyClarify": {
+        "type": "object",
+        "required": [
+          "kind",
+          "language",
+          "script",
+          "reason"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "clarify"
+            ]
+          },
+          "language": {
+            "type": "string"
+          },
+          "script": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "BuddyOutOfScope": {
+        "type": "object",
+        "required": [
+          "kind",
+          "language",
+          "script",
+          "reason"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "outOfScope"
+            ]
+          },
+          "language": {
+            "type": "string"
+          },
+          "script": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "BuddyMedical": {
+        "type": "object",
+        "required": [
+          "kind",
+          "language",
+          "script"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "medical"
+            ]
+          },
+          "language": {
+            "type": "string"
+          },
+          "script": {
+            "type": "string"
+          }
+        }
+      },
+      "BuddyWeighIn": {
+        "type": "object",
+        "required": [
+          "kind",
+          "language",
+          "script",
+          "value",
+          "unit",
+          "timeHint"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "weighIn"
+            ]
+          },
+          "language": {
+            "type": "string"
+          },
+          "script": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number",
+            "format": "double"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "timeHint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "BuddyIntent": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/BuddyFoodLog"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyClarify"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyOutOfScope"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyMedical"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyWeighIn"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "kind",
+          "mapping": {
+            "foodLog": "#/components/schemas/BuddyFoodLog",
+            "clarify": "#/components/schemas/BuddyClarify",
+            "outOfScope": "#/components/schemas/BuddyOutOfScope",
+            "medical": "#/components/schemas/BuddyMedical",
+            "weighIn": "#/components/schemas/BuddyWeighIn"
+          }
+        }
+      },
+      "BuddyInterpretation": {
+        "type": "object",
+        "required": [
+          "promptVersion",
+          "model",
+          "intents"
+        ],
+        "properties": {
+          "promptVersion": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "intents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuddyIntent"
+            }
+          }
+        }
+      }
+    }
+  }
+}

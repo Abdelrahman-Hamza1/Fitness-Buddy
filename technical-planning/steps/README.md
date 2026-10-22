@@ -200,7 +200,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [B05](B05-sync-backend.md) | Sync backend | B01, B04 | L | S26 |  | ✅ |
 | [B06](B06-account-deletion-backend.md) | Account deletion (backend) | B04, B05 | L | S28 server part |  | ✅ |
 | [B07](B07-catalog-service.md) | Catalog service & online search | B04, **A05** | M | S30 server part |  | ✅ |
-| [B08](B08-buddy-interpret-service.md) | Buddy interpret service | B02, B07 | L | S31 |  | ⬜ |
+| [B08](B08-buddy-interpret-service.md) | Buddy interpret service | B02, B07 | L | S31 |  | ✅ |
 | [B09](B09-buddy-intents-edits-memory-batches.md) | Buddy intents: edits, memory, batches & foods | B08, **A21** | M | S35–S37 server parts |  | ⬜ |
 | [B10](B10-barcode-vision-import.md) | Barcode lookup, label & meal photos, paste import | B07, B08 | L | S38–S39 server parts |  | ⬜ |
 | [B11](B11-buddy-qa-suggestions.md) | Buddy Q&A & suggestions | B08 | M | S40 server part |  | ⬜ |

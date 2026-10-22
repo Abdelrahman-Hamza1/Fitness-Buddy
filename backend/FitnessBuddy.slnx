@@ -4,6 +4,7 @@
     <Project Path="src/Host/FitnessBuddy.Host.csproj" />
   </Folder>
   <Folder Name="/src/Modules/">
+    <Project Path="src/Modules/Usage/FitnessBuddy.Modules.Usage.csproj" />
     <Project Path="src/Modules/Catalog/FitnessBuddy.Modules.Catalog.csproj" />
     <Project Path="src/Modules/Identity/FitnessBuddy.Modules.Identity.csproj" />
     <Project Path="src/Modules/Buddy/FitnessBuddy.Modules.Buddy.csproj" />

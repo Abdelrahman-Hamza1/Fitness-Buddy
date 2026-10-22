@@ -40,4 +40,5 @@
     <InternalsVisibleTo Include="FitnessBuddy.Host.Tests" />
     <InternalsVisibleTo Include="FitnessBuddy.Persistence.Tests" />
   </ItemGroup>
+  <ItemGroup><ProjectReference Include="../Modules/Usage/FitnessBuddy.Modules.Usage.csproj" /></ItemGroup>
 </Project>
