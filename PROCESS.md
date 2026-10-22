@@ -2,6 +2,10 @@
 
 _The one-page process for both implementers (TD-075, owner 2026-10-17). Part A is shared, Part B is Claude's, Part C is Codex's. Details and templates stay in `technical-planning/13-delivery-process.md`; where they differ, this page wins._
 
+## 0. Who runs what (TD-079, owner 2026-10-22)
+
+**Claude is the orchestrator of both tracks; the owner talks only to Claude.** Claude picks the next step on either track, plans or has it planned, and runs Codex as a worker through the Codex plugin (`codex-companion.mjs task --write --prompt-file <brief>`, read-only for reviews). Codex works in its sandbox and never touches git or Docker; Claude creates the branches, commits Codex's changes after checking the diff and the gates, runs the Docker-based tests, pushes and merges. Claude's agents build the steps with screens, flows or copy; Codex builds the B steps and the A steps marked Codex (TD-078). Parts A–C below still apply to the work itself.
+
 ## A. Shared rules (Claude and Codex)
 
 1. **Tracks.** Claude owns the app track `A01…`, Codex the backend track `B01…` (`technical-planning/steps/README.md` §4). App steps with no UI are marked **Codex** in the board's **By** column and are Codex's, as whole steps (TD-078); Claude reviews their app architecture before the merge (`13` §10). Each side plans, builds, reviews and merges its own steps. The API contract is the meeting point: contract changes go in their own commit with a Progress-log note; breaking changes need the owner.
@@ -30,10 +34,12 @@ _The one-page process for both implementers (TD-075, owner 2026-10-17). Part A i
 - `ux-reviewer` joins real screens and user-facing copy; the architect reviews code only for new foundations and seams.
 - The orchestrator (main session) briefs agents with self-contained briefs (`13` §6), checks their claims against diffs and CI, and writes the Outcome.
 
-## C. Codex (backend track)
+## C. Codex (backend track and the app steps marked Codex)
+
+- **Run by Claude (TD-079):** one self-contained prompt file per task (the step card, what to do, the gates to run, "no git writes; leave changes in the working tree", the reply format). Follow-ups resume the same Codex thread. Claude checks every claim against the diff and reruns the gates before committing.
 
 - **Model: GPT-6.1 Sol for everything** (planning, implementation, review), owner choice 2026-10-17.
-- **Independent review:** a fresh GPT-6.1 Sol session (or reviewer agent) that did not write the code reviews the whole diff and checks the exit criteria.
+- **Independent review:** a fresh read-only GPT-6.1 Sol session that did not write the code reviews the whole diff and checks the exit criteria. The same kind of fresh Codex session is also the independent reviewer of Claude's code steps (cross-model, TD-079); Claude's `ux-reviewer` still joins UI steps.
 - **Security review:** on every Risky step, plus any step touching auth, sync, RLS, secrets, logging/telemetry, AI context, deletion or infrastructure exposure, a **second, separate** fresh GPT-6.1 Sol session reviews the diff for security and privacy only (authorization and RLS, secrets, logging without user content, input handling, AI context minimisation, exposure). Its blockers and majors are fixed and re-checked like any review.
 - **Risky steps** also record the security findings in the Outcome and a verification file `technical-planning/steps/evidence/<ID>-verification.md`.
 - Working agreement, area and commands: `AGENTS.md`.

@@ -275,7 +275,7 @@ The only places one track waits for the other. The contract is the meeting point
 1. Take the **lowest-numbered step in your track** that isn't ✅.
 2. If it waits on the other track or on an owner input (§3), tell the owner and take the next step in your track whose dependencies are met. Never start a step whose dependencies aren't met.
 3. Steps marked 🟨 resume from their card's **Progress log**.
-4. **Codex's queue** (TD-078) mixes its B steps and the A steps marked Codex. Default order: a Codex A step that Claude's next steps wait on goes first (A12 before Claude reaches A13, A21 before A22, A34 before A35), then the backend critical path, then the lowest-numbered ready step. The owner can reorder it. Claude skips A steps marked Codex.
+4. **Claude orders both tracks (TD-079):** it runs one step at a time in the folder, Codex's or its own, choosing by the critical path (milestones first, then what unblocks the other track). **Codex's queue** (TD-078) mixes its B steps and the A steps marked Codex. Default order: a Codex A step that Claude's next steps wait on goes first (A12 before Claude reaches A13, A21 before A22, A34 before A35), then the backend critical path, then the lowest-numbered ready step. The owner can reorder it. Claude skips A steps marked Codex.
 
 One folder, one implementer at a time (owner, 2026-10-16): both work in `~/work/fitness_buddy`. Before starting, check that the folder is clean (`git status`), commit and push your branch before handing over, and start your step branch from the latest `main`. Whoever merges second rebases on the new `main` first (`../13-delivery-process.md` §10).
 
