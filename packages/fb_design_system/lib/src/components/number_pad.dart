@@ -181,7 +181,12 @@ class FbNumberPad extends StatelessWidget {
           const SizedBox(height: FbSpace.s2),
           SizedBox(
             width: double.infinity,
-            child: FilledButton(onPressed: onDone, child: Text(l10n.fbDone)),
+            // Tonal, not filled: the sheet's own primary button (Add, Save)
+            // stays the one dominant action (UX-021).
+            child: FilledButton.tonal(
+              onPressed: onDone,
+              child: Text(l10n.fbDone),
+            ),
           ),
         ],
       ),

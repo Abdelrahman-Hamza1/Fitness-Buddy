@@ -4,6 +4,7 @@ import 'package:fb_mobile/core/changes/apply_result.dart';
 import 'package:fb_mobile/core/changes/op_handler.dart';
 import 'package:fb_mobile/core/changes/row_ops.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
+import 'package:fb_mobile/core/db/tables/diary_tables.dart';
 import 'package:fb_mobile/features/diary/data/diary_food_columns.dart';
 import 'package:fb_mobile/features/diary/data/diary_tx_reads.dart';
 
@@ -26,16 +27,25 @@ Future<OpPlan> planCopyMeal(
   }
   if (op.toSlotId case final slotId?) await reads.requireSlot(slotId);
   final entries = await reads.source(op.source);
-  if (entries.isEmpty) throw const ChangeRejected(InvalidOp('emptySource'));
-  final groups = await reads.groups([
+  // Membership is checked even when the source became empty.
+  final referencedGroups = await reads.groups([
     for (final row in entries) ?row.dishGroupId,
   ], strict: false);
+  // Cross-day references are missing groups, just as in the day layout.
+  final groups = {
+    for (final row in entries)
+      if (referencedGroups[row.dishGroupId] case final group?)
+        if (group.localDate == row.localDate) group.id: group,
+  };
+  checkSourceVersions(op.expected, entries, groups);
   final copiedGroups = <String, DishGroupRow>{};
   if (op.source is MealSourceEntries) {
     final listed = {for (final row in entries) row.id};
     final outside = {
       for (final member in await reads.members(groups.keys))
-        if (!listed.contains(member.id)) member.dishGroupId!,
+        if (!listed.contains(member.id) &&
+            groups[member.dishGroupId]?.localDate == member.localDate)
+          member.dishGroupId!,
     };
     for (final MapEntry(:key, :value) in groups.entries) {
       if (!outside.contains(key)) copiedGroups[key] = value;
@@ -43,6 +53,16 @@ Future<OpPlan> planCopyMeal(
   } else {
     copiedGroups.addAll(groups);
   }
+
+  final entryIds = entries.map((e) => e.id).toSet();
+  final groupCopyIds = op.copyIds.keys
+      .where((id) => !entryIds.contains(id))
+      .toSet();
+  if (groupCopyIds.length != copiedGroups.length ||
+      !groupCopyIds.containsAll(copiedGroups.keys)) {
+    throw const ChangeRejected(InvalidOp('sourceChanged'));
+  }
+  if (entries.isEmpty) throw const ChangeRejected(InvalidOp('emptySource'));
 
   String copyId(String sourceId) =>
       op.copyIds[sourceId] ??
@@ -75,7 +95,7 @@ Future<OpPlan> planCopyMeal(
           localDate: '${time.localDate}',
           time: time,
           slotId: op.toSlotId ?? row.slotId,
-          dishGroupId: copiedGroups.containsKey(row.dishGroupId)
+          dishGroupId: copiedGroups[row.dishGroupId]?.localDate == row.localDate
               ? copyId(row.dishGroupId!)
               : null,
         ),
@@ -99,6 +119,7 @@ Future<OpPlan> planSaveMeal(
   ApplyContext context,
 ) async {
   final entries = await reads.source(op.source);
+  checkSourceVersions(op.expected, entries, const {});
   if (entries.isEmpty) throw const ChangeRejected(InvalidOp('emptySource'));
   return OpPlan([
     InsertRow(
@@ -115,4 +136,40 @@ Future<OpPlan> planSaveMeal(
         ),
       ),
   ]);
+}
+
+/// Checks the observed source inside the applier transaction (PA2/PA7).
+/// All referenced live groups pin observed missing-group state (PA8).
+void checkSourceVersions(
+  SourceVersions expected,
+  List<DiaryEntryRow> entries,
+  Map<String, DishGroupRow> groups,
+) {
+  bool sameIds(Iterable<String> actual, Iterable<String> wanted) {
+    final a = actual.toSet();
+    final b = wanted.toSet();
+    return a.length == b.length && a.containsAll(b);
+  }
+
+  if (!sameIds(entries.map((e) => e.id), expected.entries.map((e) => e.id)) ||
+      !sameIds(groups.keys, expected.groups.map((g) => g.id))) {
+    throw const ChangeRejected(InvalidOp('sourceChanged'));
+  }
+  final byId = {for (final entry in entries) entry.id: entry};
+  for (final entry in expected.entries) {
+    checkVersion(
+      diaryEntryEntity,
+      entry.id,
+      byId[entry.id]!.version,
+      entry.expectedVersion,
+    );
+  }
+  for (final group in expected.groups) {
+    checkVersion(
+      dishGroupEntity,
+      group.id,
+      groups[group.id]!.version,
+      group.expectedVersion,
+    );
+  }
 }

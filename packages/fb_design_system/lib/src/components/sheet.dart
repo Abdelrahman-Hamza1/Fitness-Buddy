@@ -78,6 +78,9 @@ Future<T?> showFbSheet<T>(
   String? title,
 }) => showModalBottomSheet<T>(
   context: context,
+  // Above the app shell (tabs, and the shell scaffold's snackbars): an Undo
+  // snackbar from the previous action must never cover the sheet's buttons.
+  useRootNavigator: true,
   isScrollControlled: true,
   useSafeArea: true,
   showDragHandle: false,

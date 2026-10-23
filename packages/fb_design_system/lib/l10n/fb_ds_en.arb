@@ -41,6 +41,9 @@
   "fbSearchClear": "Clear search",
   "@fbSearchClear": { "description": "Tooltip and screen-reader label of the button that empties a search field." },
 
+  "fbTextFieldClear": "Clear",
+  "@fbTextFieldClear": { "description": "Tooltip and screen-reader label of the button that empties a text field." },
+
   "fbDatePrevious": "Previous day",
   "fbDateNext": "Next day",
   "fbDateChoose": "Choose a date",

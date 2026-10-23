@@ -500,7 +500,7 @@ void main() {
     expect(row.foodVersion, 'old-pack');
     expect(row.origin, 'direct');
     expect(row.source, 'reference');
-    expect(row.assumptionsJson, anyOf(isNull, '[]'));
+    expect(row.assumptionsJson, '["old log"]');
     await Future<void>.delayed(const Duration(milliseconds: 50));
     expect(emissions.last.single.food.ref.id, 'retired');
     expect(await stack.undo(result.undoEntryId), UndoOutcome.undone);

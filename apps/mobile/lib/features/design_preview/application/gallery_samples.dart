@@ -70,6 +70,12 @@ abstract final class GallerySamples {
 
   /// Hint of the search field.
   static const String searchHint = 'Search foods';
+  static const String mealChipLabel = 'Meal';
+  static const String lunch = 'Lunch';
+  static const String timeChipLabel = 'Time';
+  static const String nameFieldLabel = 'Name';
+  static const String nameFieldHint = 'Breakfast bowl';
+  static const String nameFieldError = 'Give it a name';
 
   /// The amount display: number, unit and what a screen reader says.
   static const String amountNumber = '100';

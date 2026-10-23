@@ -38,6 +38,15 @@ Future<DiaryHarness> _grouped() async {
 int sourceNumber(String id) =>
     int.parse(id.substring(id.length - 4), radix: 16);
 
+SourceVersions _versions(Iterable<String> ids) => SourceVersions(
+  entries: ids
+      .where((id) => id != fixtureId(50))
+      .map((id) => VersionedId(id, 1)),
+  groups: ids
+      .where((id) => id == fixtureId(50))
+      .map((id) => VersionedId(id, 1)),
+);
+
 void main() {
   group('dish groups', () {
     test('DY-024 a group is created, with entries, in one change set and '
@@ -289,6 +298,14 @@ void main() {
             fixtureId(2): newId(2),
             fixtureId(3): newId(3),
           },
+          expected: _versions(
+            {
+              fixtureId(50): newId(50),
+              fixtureId(1): newId(1),
+              fixtureId(2): newId(2),
+              fixtureId(3): newId(3),
+            }.keys,
+          ),
         ),
       ]);
       final copies = await h.reads.entriesOn(today);
@@ -334,6 +351,14 @@ void main() {
             fixtureId(2): newId(2),
             fixtureId(3): newId(3),
           },
+          expected: _versions(
+            {
+              fixtureId(50): newId(50),
+              fixtureId(1): newId(1),
+              fixtureId(2): newId(2),
+              fixtureId(3): newId(3),
+            }.keys,
+          ),
         ),
       ]);
       expect(
@@ -361,6 +386,12 @@ void main() {
             fixtureId(50): newId(50),
             for (var n = 1; n <= 4; n++) fixtureId(n): newId(n),
           },
+          expected: _versions(
+            {
+              fixtureId(50): newId(50),
+              for (var n = 1; n <= 4; n++) fixtureId(n): newId(n),
+            }.keys,
+          ),
         ),
       ]);
       final copies = await h.reads.entriesOn(_past);
@@ -388,6 +419,7 @@ void main() {
           MealSource.entries([fixtureId(1), fixtureId(3)]),
           toDate: today,
           copyIds: {fixtureId(1): newId(1), fixtureId(3): newId(3)},
+          expected: _versions([fixtureId(1), fixtureId(3), fixtureId(50)]),
         ),
       ]);
       expect((await h.reads.entriesOn(today)).map((e) => e.dishGroupId), [
@@ -400,9 +432,12 @@ void main() {
             MealSource.entries([fixtureId(1), fixtureId(2)]),
             toDate: _past,
             copyIds: {fixtureId(1): newId(11), fixtureId(2): newId(12)},
+            expected: _versions(
+              {fixtureId(1): newId(11), fixtureId(2): newId(12)}.keys,
+            ),
           ),
         ]),
-        const InvalidOp('missingCopyId'),
+        const InvalidOp('sourceChanged'),
       );
     });
 
@@ -415,9 +450,12 @@ void main() {
             MealSource.slot(yesterday, _lunch),
             toDate: today,
             copyIds: {fixtureId(1): newId(1), fixtureId(2): newId(2)},
+            expected: _versions(
+              {fixtureId(1): newId(1), fixtureId(2): newId(2)}.keys,
+            ),
           ),
         ]),
-        const InvalidOp('missingCopyId'),
+        const InvalidOp('sourceChanged'),
       );
       expect(
         await h.reject([
@@ -425,9 +463,10 @@ void main() {
             MealSource.slot(yesterday, _dinner),
             toDate: today,
             copyIds: {fixtureId(1): newId(1)},
+            expected: _versions({fixtureId(1): newId(1)}.keys),
           ),
         ]),
-        const InvalidOp('emptySource'),
+        const InvalidOp('sourceChanged'),
       );
       expect(await h.reads.entriesOn(today), isEmpty);
     });
@@ -447,6 +486,7 @@ void main() {
               toDate: today,
               toSlotId: _dinner,
               copyIds: {fixtureId(3): newId(3)},
+              expected: _versions({fixtureId(3): newId(3)}.keys),
             ),
           ]),
           const InvalidOp('inactiveSlot'),
@@ -463,6 +503,7 @@ void main() {
             MealSource.entries([fixtureId(3)]),
             toDate: LocalDate(2026, 10, 18),
             copyIds: {fixtureId(3): newId(3)},
+            expected: _versions({fixtureId(3): newId(3)}.keys),
           ),
         ]),
         const InvalidOp('futureDate'),
@@ -473,6 +514,7 @@ void main() {
             MealSource.entries([fixtureId(99)]),
             toDate: today,
             copyIds: {fixtureId(99): newId(99)},
+            expected: _versions({fixtureId(99): newId(99)}.keys),
           ),
         ]),
         RowNotFound(entity: 'diaryEntry', id: fixtureId(99)),
@@ -490,6 +532,7 @@ void main() {
       final before = await h.state();
       final applied = await h.apply([
         SaveMeal(
+          expected: _versions([fixtureId(1), fixtureId(3)]),
           savedMealId: newId(1),
           name: 'Lunch box',
           source: MealSource.slot(today, _lunch),
@@ -536,6 +579,7 @@ void main() {
       expect(
         await h.reject([
           SaveMeal(
+            expected: SourceVersions(entries: []),
             savedMealId: newId(2),
             name: 'Nothing',
             source: MealSource.slot(today, _dinner),

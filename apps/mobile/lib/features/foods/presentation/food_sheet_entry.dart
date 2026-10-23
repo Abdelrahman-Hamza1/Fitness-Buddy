@@ -16,7 +16,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 @immutable
 final class FoodPick {
   /// Creates the pick.
-  const new({required this.row, this.date, this.slotId, this.carried});
+  const new({
+    required this.row,
+    this.date,
+    this.slotId,
+    this.carried,
+    this.replacing,
+  });
 
   /// The tapped result; its `choiceRef` is what the sheet loads.
   final FoodSearchRow row;
@@ -30,6 +36,10 @@ final class FoodPick {
   /// The quantity typed in the query ("2 khubz arabi" carries 2), if the
   /// search accepted that reading.
   final ParsedAmount? carried;
+
+  /// The logged item this pick replaces, at the version the user saw
+  /// (change-food mode, A08 D7); null to add a new item.
+  final VersionedId? replacing;
 }
 
 /// Opens the food sheet for [pick] (amount, unit, slot, Add).
@@ -51,15 +61,18 @@ Future<void> openFoodSheet(BuildContext context, FoodPick pick) async {
   container.read(appNavigatorProvider).pop();
   showUndoFeedback(
     host,
-    message: host.l10n.foodLoggedMessage(
-      logged.nameEn,
-      [
-            for (final slot
-                in container.read(foodSlotsProvider).value ?? <MealSlot>[])
-              if (slot.id == logged.slotId) slotLabel(host.l10n, slot),
-          ].firstOrNull ??
-          host.l10n.foodSheetSlotNone,
-    ),
+    message: pick.replacing != null
+        ? host.l10n.foodChangedMessage(logged.nameEn)
+        : host.l10n.foodLoggedMessage(
+            logged.nameEn,
+            [
+                  for (final slot
+                      in container.read(foodSlotsProvider).value ??
+                          <MealSlot>[])
+                    if (slot.id == logged.slotId) slotLabel(host.l10n, slot),
+                ].firstOrNull ??
+                host.l10n.foodSheetSlotNone,
+          ),
     undoEntryId: logged.undoEntryId,
   );
 }

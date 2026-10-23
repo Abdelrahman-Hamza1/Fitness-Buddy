@@ -141,6 +141,16 @@ final class DiaryRepository {
     );
   }
 
+  /// Authoritative row identity, independent of its current day or slot (PA4).
+  Stream<DiaryEntry?> watchEntry(String id) =>
+      _watch({_db.diaryEntries}, () async {
+        final row =
+            await (_db.select(_db.diaryEntries)
+                  ..where((t) => t.id.equals(id) & t.deletedAt.isNull()))
+                .getSingleOrNull();
+        return row == null ? null : diaryEntryOf(row);
+      });
+
   /// The whole day [date]: slots, groups, entries and mark.
   Stream<DiaryDay> watchDay(LocalDate date) =>
       _watch(_reads.dayTables, () => (readDay ?? _reads.day)(date));

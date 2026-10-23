@@ -290,8 +290,12 @@ void main() {
     // CI disables animations; record the frames the device actually renders.
     await frameTimings('day transition', () async {
       await tester.tap(find.byTooltip('Previous day'));
-      await finishMotion();
-      expect(showsLoadedDay(tester, yesterday), isTrue);
+      // The page animation can start a frame after the tap; wait (bounded)
+      // instead of asserting on the first idle frame.
+      await waitFor(
+        () => showsLoadedDay(tester, yesterday),
+        'yesterday after the measured day transition',
+      );
     });
     await tester.tap(find.byTooltip('Next day'));
     await rest();

@@ -151,7 +151,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A06](A06-diary-domain.md) | Diary domain & storage | Claude | A01 | M | S14 |  | ✅ |
 | [A07](A07-food-search-add.md) | Food search & add flow | Claude | A02, A05, A06 | M | S15 |  | ✅ |
 | [A08a](A08-today-diary-ui.md) | Today & diary view (split from A08, 2026-10-23) | Claude | A07 | L | S16 part |  | ✅ |
-| [A08b](A08-today-diary-ui.md) | Diary editing & meal actions (split from A08) | Claude | A08a | M | S16 part |  | ⬜ |
+| [A08b](A08-today-diary-ui.md) | Diary editing & meal actions (split from A08) | Claude | A08a | M | S16 part |  | ✅ |
 | [A09](A09-personal-foods-quick-add.md) | Personal foods, saved meals & quick-add | Claude | A08b | M | S17 |  | ⬜ |
 | [A10](A10-settings-slots.md) | Settings & meal slots | Claude | A08a | M | S18 |  | ⬜ |
 | [A11](A11-dogfood-1-readiness.md) | Dogfood 1 readiness: export, crash reports, daily build | **Codex** | A09, A10 · soft: **B03** | M | S28 export part + new | **M1** | ⬜ |

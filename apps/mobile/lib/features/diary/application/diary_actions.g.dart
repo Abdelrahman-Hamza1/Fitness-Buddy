@@ -61,15 +61,15 @@ final class DiaryApplyProvider
 
 String _$diaryApplyHash() => r'c0df1c226b5aa8232a767cb4b417696ead432eb0';
 
-/// Calls existing A06 ops only; survives eviction of the originating day.
+/// Direct commands survive eviction of the originating day.
 
 @ProviderFor(DiaryActionsController)
 final diaryActionsControllerProvider = DiaryActionsControllerProvider._();
 
-/// Calls existing A06 ops only; survives eviction of the originating day.
+/// Direct commands survive eviction of the originating day.
 final class DiaryActionsControllerProvider
     extends $NotifierProvider<DiaryActionsController, DiaryActionsState> {
-  /// Calls existing A06 ops only; survives eviction of the originating day.
+  /// Direct commands survive eviction of the originating day.
   DiaryActionsControllerProvider._()
     : super(
         from: null,
@@ -98,9 +98,9 @@ final class DiaryActionsControllerProvider
 }
 
 String _$diaryActionsControllerHash() =>
-    r'e3c9bca289fa0714d7328fbd86f7e48df580bf71';
+    r'2ff72cb91c0726c0e820e95952b520b4e3b27951';
 
-/// Calls existing A06 ops only; survives eviction of the originating day.
+/// Direct commands survive eviction of the originating day.
 
 abstract class _$DiaryActionsController extends $Notifier<DiaryActionsState> {
   DiaryActionsState build();

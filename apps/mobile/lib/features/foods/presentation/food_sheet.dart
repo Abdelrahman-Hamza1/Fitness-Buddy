@@ -4,14 +4,18 @@ import 'package:fb_mobile/core/catalog/catalog.dart' show CatalogSanity;
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/application/food_amount_controller.dart';
 import 'package:fb_mobile/features/foods/application/food_choice.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
 import 'package:fb_mobile/features/foods/application/log_food.dart';
 import 'package:fb_mobile/features/foods/presentation/food_sheet_entry.dart';
+import 'package:flutter/scheduler.dart' show SchedulerBinding;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show NumberFormat;
 import 'package:material_ui/material_ui.dart';
+
+void _noop() {}
 
 /// The most digits and decimals the amount pad takes (A07 D8).
 const NumberPadBuffer _emptyPad = NumberPadBuffer(maxDecimals: 2);
@@ -41,6 +45,7 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
         widget.pick.date ?? EntryTime.now(ref.read(clockProvider)).localDate,
         slotId: widget.pick.slotId,
         carried: widget.pick.carried,
+        replacing: widget.pick.replacing,
       );
 
   /// The number pad is shown while the amount is being edited.
@@ -54,6 +59,13 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
 
   /// Adding failed (the sheet stays open).
   bool _failed = false;
+
+  /// Why it failed (the outcome's code), to word change-food refusals.
+  String? _failCode;
+
+  /// Change-food mode: the item as it was when the sheet opened, to tell a
+  /// move from a real change (A08 D12(4)).
+  DiaryEntry? _opened;
 
   FoodAmountController get _controller => ref.read(_provider.notifier);
 
@@ -77,8 +89,11 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
     switch (outcome) {
       case FoodLogged():
         Navigator.of(context).pop(outcome);
-      case FoodLogFailed():
-        setState(() => _failed = true);
+      case FoodLogFailed(:final code):
+        setState(() {
+          _failed = true;
+          _failCode = code;
+        });
     }
   }
 
@@ -137,8 +152,47 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
     };
   }
 
+  /// How the item being changed stands now (change-food mode). A move only
+  /// rebases silently; a real change offers Reload; a deletion disables the
+  /// button.
+  ({EntryFreshness freshness, VoidCallback reload}) _liveItem(
+    VersionedId replacing,
+  ) {
+    const fresh = (freshness: EntryFreshness.fresh, reload: _noop);
+    final stored = ref.watch(entryProvider(replacing.id));
+    if (!stored.hasValue) return fresh;
+    final current = stored.requireValue;
+    if (current == null) {
+      return (freshness: EntryFreshness.removed, reload: _noop);
+    }
+    if (current.version == replacing.expectedVersion) {
+      _opened = current;
+      return fresh;
+    }
+    final opened = _opened;
+    if (opened != null && sameEditableContent(opened, current)) {
+      // Only the place or the time changed: carry on with the new version.
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _rebase(current);
+      });
+      return fresh;
+    }
+    return (
+      freshness: EntryFreshness.changed,
+      reload: () {
+        _opened = current;
+        _rebase(current);
+      },
+    );
+  }
+
+  void _rebase(DiaryEntry current) =>
+      _controller.rebase(VersionedId(current.id, current.version));
+
   Widget _body(BuildContext context, FoodAmountState state) {
     final l10n = context.l10n;
+    final replacing = state.replacing;
+    final live = replacing == null ? null : _liveItem(replacing);
     final food = state.food;
     final scheme = Theme.of(context).colorScheme;
     final text = _typed?.text ?? _plain(state.amountBuffer);
@@ -156,6 +210,8 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
       spacing: FbSpace.s3,
       children: [
         _Header(food: food),
+        if (live != null)
+          StaleEntryBanner(freshness: live.freshness, onReload: live.reload),
         if (food.sanity == CatalogSanity.warn)
           FbInlineBanner(
             kind: FbInlineBannerKind.info,
@@ -189,8 +245,9 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
             runSpacing: FbSpace.s2,
             children: [
               for (final sibling in food.siblings)
-                FbAnswerChip(
+                FbChoiceChip(
                   label: l10n.foodSheetLogAs(sibling.nameEn),
+                  dropdown: false,
                   onTap: () {
                     if (_controller.switchState(sibling.id)) {
                       setState(() => _failed = false);
@@ -209,15 +266,18 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
             ),
             style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
           ),
-        Align(
-          alignment: AlignmentDirectional.centerStart,
-          child: FbQuickAddChip(
-            label: l10n.foodSheetSlot(
-              slot == null ? l10n.foodSheetSlotNone : slotLabel(l10n, slot),
+        // Changing the food keeps the item's meal: nothing to choose.
+        if (replacing == null)
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: FbChoiceChip(
+              label: l10n.foodSheetSlotTitle,
+              value: slot == null
+                  ? l10n.foodSheetSlotNone
+                  : slotLabel(l10n, slot),
+              onTap: () => _chooseSlot(slots, state.slotId),
             ),
-            onTap: () => _chooseSlot(slots, state.slotId),
           ),
-        ),
         if (_padOpen)
           FbNumberPad(
             onKey: (key) => _onKey(key, state),
@@ -226,12 +286,22 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
         if (_failed)
           FbInlineBanner(
             kind: FbInlineBannerKind.error,
-            message: l10n.foodSheetAddFailed,
+            message: replacing == null
+                ? l10n.foodSheetAddFailed
+                : switch (_failCode) {
+                    'changed' => l10n.diaryItemChanged,
+                    'removed' => l10n.diaryActionRemoved,
+                    _ => l10n.diaryActionFailed,
+                  },
           ),
         FbButton.primary(
-          label: l10n.foodSheetAdd,
+          label: replacing == null ? l10n.foodSheetAdd : l10n.foodSheetUseThis,
           expand: true,
-          onPressed: state.canAdd ? _add : null,
+          onPressed:
+              state.canAdd &&
+                  (live == null || live.freshness == EntryFreshness.fresh)
+              ? _add
+              : null,
         ),
         _PerHundred(
           food: food,

@@ -38,6 +38,23 @@ String nutrientKeyLabel(AppLocalizations l10n, NutrientKey key) =>
       NutrientKey.alcohol => l10n.foodNutrientAlcohol,
     };
 
+/// The name of an editable nutrient (AI-072): the five core ones and the
+/// optional ones.
+String nutrientLabel(AppLocalizations l10n, NutrientField field) =>
+    switch (field) {
+      NutrientField.kcal => l10n.foodNutrientEnergy,
+      NutrientField.protein => l10n.foodNutrientProtein,
+      NutrientField.carbs => l10n.foodNutrientCarbs,
+      NutrientField.fat => l10n.foodNutrientFat,
+      NutrientField.fiber => l10n.foodNutrientFiber,
+      NutrientField.sugar => l10n.foodNutrientSugar,
+      NutrientField.saturatedFat => l10n.foodNutrientSaturatedFat,
+      NutrientField.transFat => l10n.foodNutrientTransFat,
+      NutrientField.sodium => l10n.foodNutrientSodium,
+      NutrientField.cholesterol => l10n.foodNutrientCholesterol,
+      NutrientField.alcohol => l10n.foodNutrientAlcohol,
+    };
+
 /// The words for unit codes (A07 D8, LC-011).
 ///
 /// Codes are free text in the data (`slice`, `wedge`, `small_plate`, ...), so

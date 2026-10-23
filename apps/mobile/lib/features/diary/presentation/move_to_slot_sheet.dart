@@ -19,6 +19,7 @@ class MoveToSlotList extends StatelessWidget {
     required this.slots,
     required this.currentSlotId,
     required this.onPick,
+    this.enabled = true,
     super.key,
   });
 
@@ -30,6 +31,10 @@ class MoveToSlotList extends StatelessWidget {
 
   /// Called with the picked meal.
   final ValueChanged<MealSlot> onPick;
+
+  /// Whether a meal can be picked (false while the item is gone or a move
+  /// runs).
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -47,25 +52,11 @@ class MoveToSlotList extends StatelessWidget {
                     child: const Icon(FbIcons.check),
                   )
                 : null,
-            onTap: slot.id == currentSlotId ? null : () => onPick(slot),
+            onTap: !enabled || slot.id == currentSlotId
+                ? null
+                : () => onPick(slot),
           ),
       ],
     );
   }
 }
-
-/// Shows the meals of [slots] and resolves to the picked one, or null when
-/// the sheet is dismissed.
-Future<MealSlot?> showMoveToSlotSheet(
-  BuildContext context, {
-  required List<MealSlot> slots,
-  required String currentSlotId,
-}) => showFbSheet<MealSlot>(
-  context,
-  title: context.l10n.diaryMoveTitle,
-  builder: (sheet) => MoveToSlotList(
-    slots: movableSlots(slots),
-    currentSlotId: currentSlotId,
-    onPick: (slot) => Navigator.of(sheet).pop(slot),
-  ),
-);

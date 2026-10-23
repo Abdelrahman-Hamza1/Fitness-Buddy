@@ -238,6 +238,12 @@ abstract class FbLocalizations {
   /// **'Clear search'**
   String get fbSearchClear;
 
+  /// Tooltip and screen-reader label of the button that empties a text field.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get fbTextFieldClear;
+
   /// No description provided for @fbDatePrevious.
   ///
   /// In en, this message translates to:

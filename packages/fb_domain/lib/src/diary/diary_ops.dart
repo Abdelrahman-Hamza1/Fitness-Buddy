@@ -1,5 +1,6 @@
 import 'package:fb_domain/src/changes/change_op.dart';
 import 'package:fb_domain/src/diary/diary_entry.dart';
+import 'package:fb_domain/src/nutrition/nutrient_field.dart';
 import 'package:fb_domain/src/time/local_date.dart';
 import 'package:fb_domain/src/time/local_time.dart';
 
@@ -30,6 +31,74 @@ final class VersionedId {
 
   @override
   String toString() => '$id@v$expectedVersion';
+}
+
+/// Versions of the shown source, with every referenced live group (PA8).
+final class SourceVersions {
+  /// No duplicate identities; an empty group list also pins absent groups.
+  new({
+    required Iterable<VersionedId> entries,
+    Iterable<VersionedId> groups = const [],
+  }) : entries = List.unmodifiable(entries),
+       groups = List.unmodifiable(groups) {
+    for (final list in [this.entries, this.groups]) {
+      if (list.map((v) => v.id).toSet().length != list.length) {
+        throw ArgumentError('duplicate source IDs');
+      }
+    }
+  }
+
+  /// Every shown entry.
+  final List<VersionedId> entries;
+
+  /// Every referenced live group, including groups only partly selected.
+  final List<VersionedId> groups;
+  @override
+  bool operator ==(Object other) =>
+      other is SourceVersions &&
+      _sameList(entries, other.entries) &&
+      _sameList(groups, other.groups);
+  @override
+  int get hashCode =>
+      Object.hash(Object.hashAll(entries), Object.hashAll(groups));
+}
+
+/// Override absolute nutrients for one logged amount (AI-072).
+final class OverrideNutrients extends DiaryOp {
+  /// The shown version and at least one finite, nonnegative nutrient value.
+  new(this.id, this.expectedVersion, Map<NutrientField, double> values)
+    : values = Map.unmodifiable(values),
+      super._() {
+    checkUuid(id, 'id');
+    checkRowVersion(expectedVersion);
+    NutrientOverride.checkValues(this.values);
+  }
+
+  /// Entry identity.
+  final String id;
+
+  /// Version shown in the sheet.
+  final int expectedVersion;
+
+  /// User content, never logged.
+  final Map<NutrientField, double> values;
+  @override
+  bool operator ==(Object other) =>
+      other is OverrideNutrients &&
+      other.id == id &&
+      other.expectedVersion == expectedVersion &&
+      values.length == other.values.length &&
+      values.entries.every((e) => other.values[e.key] == e.value);
+  @override
+  int get hashCode => Object.hash(
+    id,
+    expectedVersion,
+    Object.hashAllUnordered(
+      values.entries.map((e) => Object.hash(e.key, e.value)),
+    ),
+  );
+  @override
+  String toString() => 'OverrideNutrients($id@v$expectedVersion)';
 }
 
 /// When a new entry happened (A06 D6, D13).
@@ -571,7 +640,7 @@ final class CopyMeal extends DiaryOp {
   /// entry's own slot. A day copy keeps the slots, so it takes no
   /// [toSlotId].
   ///
-  /// [copyIds] maps the ID of every source entry and every source dish
+  /// [copyIds] maps every source entry and each eligible source dish
   /// group to its copy's new ID, assigned when the op is built from the
   /// entries the user saw. The handler rejects the op when a live source
   /// row has no copy ID. For an entries source, every listed ID needs one.
@@ -581,6 +650,7 @@ final class CopyMeal extends DiaryOp {
     this.source, {
     required this.toDate,
     required Map<String, String> copyIds,
+    required this.expected,
     this.toSlotId,
   }) : copyIds = Map.unmodifiable(copyIds),
        super._() {
@@ -597,9 +667,19 @@ final class CopyMeal extends DiaryOp {
       checkUuid(from, 'copyIds key');
       checkUuid(to, 'copyIds value');
     }
+    final sourceIds = {
+      ...expected.entries.map((v) => v.id),
+      ...expected.groups.map((v) => v.id),
+    };
+    if (!expected.entries.every((v) => this.copyIds.containsKey(v.id)) ||
+        !this.copyIds.keys.every(sourceIds.contains)) {
+      throw ArgumentError(
+        'copyIds must contain entries and only observed source IDs',
+      );
+    }
     final newIds = this.copyIds.values.toSet();
     if (newIds.length != this.copyIds.length ||
-        newIds.any(this.copyIds.containsKey)) {
+        newIds.any(sourceIds.contains)) {
       throw ArgumentError('copyIds values must be unique new IDs');
     }
     if (source case MealSourceEntries(:final ids)) {
@@ -618,12 +698,16 @@ final class CopyMeal extends DiaryOp {
   /// The target slot, or `null` to keep each entry's slot.
   final String? toSlotId;
 
+  /// Observed source versions.
+  final SourceVersions expected;
+
   /// Source row ID → the copy's ID. Unmodifiable.
   final Map<String, String> copyIds;
 
   @override
   bool operator ==(Object other) =>
       other is CopyMeal &&
+      other.expected == expected &&
       other.source == source &&
       other.toDate == toDate &&
       other.toSlotId == toSlotId &&
@@ -633,6 +717,7 @@ final class CopyMeal extends DiaryOp {
   @override
   int get hashCode => Object.hash(
     CopyMeal,
+    expected,
     source,
     toDate,
     toSlotId,
@@ -650,14 +735,27 @@ final class CopyMeal extends DiaryOp {
 /// Save a slot, a day or some entries as a saved meal (DY-023, A06 D10).
 /// One item per live source entry, with its snapshot.
 final class SaveMeal extends DiaryOp {
-  /// Save [source] as the new saved meal [savedMealId] named [name] (not
-  /// blank). Throws an `ArgumentError` otherwise. The items' IDs come from
-  /// the applier's generator (derived rows).
-  new({required this.savedMealId, required this.name, required this.source})
-    : super._() {
+  /// Save [source] as the new saved meal [savedMealId] named [name]
+  /// (1–60 characters after trimming). Throws an `ArgumentError` otherwise.
+  /// The items' IDs come from the applier's generator (derived rows).
+  new({
+    required this.savedMealId,
+    required String name,
+    required this.source,
+    required this.expected,
+  }) : name = name.trim(),
+       super._() {
     checkUuid(savedMealId, 'savedMealId');
-    checkNotBlank(name, 'name');
+    if (expected.groups.isNotEmpty) {
+      throw ArgumentError('save expects no groups');
+    }
+    if (this.name.isEmpty || this.name.length > 60) {
+      throw ArgumentError('name must have 1–60 characters');
+    }
   }
+
+  /// Observed entry versions.
+  final SourceVersions expected;
 
   /// The new saved meal's ID.
   final String savedMealId;
@@ -671,12 +769,14 @@ final class SaveMeal extends DiaryOp {
   @override
   bool operator ==(Object other) =>
       other is SaveMeal &&
+      other.expected == expected &&
       other.savedMealId == savedMealId &&
       other.name == name &&
       other.source == source;
 
   @override
-  int get hashCode => Object.hash(SaveMeal, savedMealId, name, source);
+  int get hashCode =>
+      Object.hash(SaveMeal, savedMealId, name, source, expected);
 
   /// Without the name.
   @override

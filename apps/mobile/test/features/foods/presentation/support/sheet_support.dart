@@ -5,6 +5,7 @@ import 'package:fb_mobile/core/changes/apply_result.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
+import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -205,6 +206,13 @@ final class SheetRig {
     clockProvider.overrideWithValue(diary.clock),
     undoStackProvider.overrideWithValue(stack),
     appNavigatorProvider.overrideWithValue(navigator),
+    diaryRepositoryProvider.overrideWithValue(DiaryRepository(diary.db)),
+    replaceEntryFoodProvider.overrideWith(
+      (ref) => ReplaceEntryFood(
+        apply: apply ?? diary.applier.apply,
+        undoStack: stack,
+      ),
+    ),
     logFoodProvider.overrideWith(
       (ref) => LogFood(
         apply: apply ?? diary.applier.apply,

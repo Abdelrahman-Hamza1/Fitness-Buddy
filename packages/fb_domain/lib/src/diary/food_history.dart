@@ -1,9 +1,9 @@
 import 'package:fb_domain/src/diary/diary_entry.dart';
+import 'package:fb_domain/src/diary/entry_measures.dart';
 import 'package:fb_domain/src/food/food_state.dart';
 import 'package:fb_domain/src/ids/hlc.dart';
 import 'package:fb_domain/src/nutrition/sanity.dart';
 import 'package:fb_domain/src/units/food_measures.dart';
-import 'package:fb_domain/src/units/units.dart';
 
 /// Latest snapshot and usage aggregate for a food (FD-023, A07 PA4).
 /// [food] retains the stored ref version and full provenance; nullable pack
@@ -50,19 +50,6 @@ final class FoodHistoryItem {
   final SanityLevel? sanity;
 
   /// A portion reconstructed from the snapshot in its original g/ml basis.
-  /// Standard mass/volume inputs and zero amounts do not create portions.
-  ServingUnit? get derivedServing {
-    final input = amount.input;
-    if (MassUnit.fromCode(input.unitCode) != null ||
-        VolumeUnit.fromCode(input.unitCode) != null ||
-        input.amount <= 0 ||
-        amount.amount <= 0) {
-      return null;
-    }
-    final size = amount.amount / input.amount;
-    if (!size.isFinite || size <= 0) return null;
-    return amount.basis == NutrientBasis.per100g
-        ? ServingUnit.grams(input.unitCode, size)
-        : ServingUnit.milliliters(input.unitCode, size);
-  }
+  /// Generic inputs matching the stored amount need no reconstructed portion.
+  ServingUnit? get derivedServing => reconstructedServingOf(amount);
 }

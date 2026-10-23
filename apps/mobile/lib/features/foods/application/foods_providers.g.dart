@@ -286,3 +286,54 @@ final class FoodSlotsProvider
 }
 
 String _$foodSlotsHash() => r'643277c2f250336ab8782998c5fb7a4fbdb84335';
+
+/// Replace-mode command with the same applier and undo history.
+
+@ProviderFor(replaceEntryFood)
+final replaceEntryFoodProvider = ReplaceEntryFoodProvider._();
+
+/// Replace-mode command with the same applier and undo history.
+
+final class ReplaceEntryFoodProvider
+    extends
+        $FunctionalProvider<
+          ReplaceEntryFood,
+          ReplaceEntryFood,
+          ReplaceEntryFood
+        >
+    with $Provider<ReplaceEntryFood> {
+  /// Replace-mode command with the same applier and undo history.
+  ReplaceEntryFoodProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'replaceEntryFoodProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$replaceEntryFoodHash();
+
+  @$internal
+  @override
+  $ProviderElement<ReplaceEntryFood> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  ReplaceEntryFood create(Ref ref) {
+    return replaceEntryFood(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ReplaceEntryFood value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ReplaceEntryFood>(value),
+    );
+  }
+}
+
+String _$replaceEntryFoodHash() => r'68bffbc4d040303e9e2ea48812dca97c3209c7bd';

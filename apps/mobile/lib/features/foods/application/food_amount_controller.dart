@@ -1,5 +1,6 @@
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/application/food_choice.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
 import 'package:fb_mobile/features/foods/application/log_food.dart';
@@ -16,6 +17,7 @@ final class FoodAmountState {
     required this.amountBuffer,
     required this.unit,
     this.slotId,
+    this.replacing,
     this.submitting = false,
   });
 
@@ -27,6 +29,9 @@ final class FoodAmountState {
 
   /// Explicit route choice or automatically assigned slot.
   final String? slotId;
+
+  /// Version captured when opening replace mode.
+  final VersionedId? replacing;
 
   /// Decimal text, retaining incomplete edits without inventing an amount.
   final String amountBuffer;
@@ -97,8 +102,10 @@ final class FoodAmountState {
     String? amountBuffer,
     String? unit,
     String? slotId,
+    VersionedId? replacing,
     bool? submitting,
   }) => FoodAmountState(
+    replacing: replacing ?? this.replacing,
     food: food ?? this.food,
     date: date,
     amountBuffer: amountBuffer ?? this.amountBuffer,
@@ -117,17 +124,27 @@ class FoodAmountController extends _$FoodAmountController {
     LocalDate date, {
     String? slotId,
     ParsedAmount? carried,
+    VersionedId? replacing,
   }) async {
     final food = await ref.watch(foodChoiceProvider(choice).future);
     if (food == null) throw StateError('foodUnavailable');
     final slots = await ref.watch(foodSlotsProvider.future);
     final clock = ref.watch(clockProvider);
+    final entry = replacing == null
+        ? null
+        : await ref
+              .read(diaryRepositoryProvider)
+              .watchEntry(replacing.id)
+              .first;
     final initial = DefaultPortion.choose(
       food.measures,
-      lastUsed: food.lastUsed?.amount.input,
+      lastUsed: replacing == null
+          ? food.lastUsed?.amount.input
+          : entry?.amount.input,
       parsed: carried,
     );
     return FoodAmountState(
+      replacing: replacing,
       food: food,
       date: date,
       amountBuffer: '${initial.amount}',
@@ -153,6 +170,12 @@ class FoodAmountController extends _$FoodAmountController {
   /// An explicit route/user slot always wins over automatic assignment.
   void setSlot(String slotId) =>
       state = AsyncData(state.requireValue.copyWith(slotId: slotId));
+
+  /// Change-food mode only: expects [entry]'s newer version from now on, once
+  /// the item moved or was reloaded under the open sheet (A08 D12(4)). What
+  /// was typed stays.
+  void rebase(VersionedId entry) =>
+      state = AsyncData(state.requireValue.copyWith(replacing: entry));
 
   /// Only loader-approved siblings may replace the weighed food. The typed
   /// input stays intact; no conversion or assumption is stored (PA6/PA12).
@@ -188,6 +211,13 @@ class FoodAmountController extends _$FoodAmountController {
     }
     state = AsyncData(current.copyWith(submitting: true));
     try {
+      if (current.replacing case final entry?) {
+        return await ref.read(replaceEntryFoodProvider)(
+          entry,
+          current.food,
+          typed,
+        );
+      }
       return await ref.read(logFoodProvider)(
         choice: current.food,
         input: typed,

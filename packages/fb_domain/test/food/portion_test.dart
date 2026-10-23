@@ -143,14 +143,25 @@ void main() {
     expect(enriched.brand, 'brand');
     expect(enriched.yieldGroup, 'rice');
     expect(enriched.sanity, SanityLevel.ok);
-    for (final code in ['g', 'ml', 'cup']) {
+    for (final basis in NutrientBasis.values) {
       expect(
         history(
-          EntryAmount(input: Quantity(1, code), amount: 100, basis: .per100ml),
+          EntryAmount(
+            input: Quantity(100, basis.unitCode),
+            amount: 100,
+            basis: basis,
+          ),
         ).derivedServing,
         isNull,
       );
     }
+    // PA3: a food cup must preserve its logged size over the generic cup.
+    expect(
+      history(
+        EntryAmount(input: Quantity(1, 'cup'), amount: 200, basis: .per100ml),
+      ).derivedServing!.amount,
+      200,
+    );
     for (final pair in [(0.0, 100.0), (1.0, 0.0), (1e-320, 1e300)]) {
       expect(
         history(

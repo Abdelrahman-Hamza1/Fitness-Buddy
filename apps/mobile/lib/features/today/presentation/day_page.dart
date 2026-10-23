@@ -84,6 +84,7 @@ class DayPage extends ConsumerWidget {
               EntryDetailsRow(:final entry) => EntryDetailsPanel(
                 key: key,
                 entry: entry,
+                slots: slots,
               ),
             };
           },

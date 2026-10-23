@@ -32,12 +32,17 @@ final class DayLayout {
     for (final slot in ordered) {
       final rows = bySlot.remove(slot.id) ?? [];
       if ((slot.active && slot.mode == mode) || rows.isNotEmpty) {
-        sections.add(SlotSection._(slot, rows, groupMap));
+        sections.add(SlotSection._(slot, rows, groupMap, all));
       }
     }
     if (bySlot.isNotEmpty) {
       sections.add(
-        SlotSection._(null, bySlot.values.expand((v) => v).toList(), groupMap),
+        SlotSection._(
+          null,
+          bySlot.values.expand((v) => v).toList(),
+          groupMap,
+          all,
+        ),
       );
     }
     return DayLayout._(
@@ -62,14 +67,31 @@ final class DayLayout {
 
 /// A slot's ordered food and totals; null slot means the orphan fallback.
 final class SlotSection {
-  new _(this.slot, List<DiaryEntry> entries, Map<String, DishGroup> groups)
-    : totals = DiaryTotals.day(entries) {
+  new _(
+    this.slot,
+    List<DiaryEntry> entries,
+    Map<String, DishGroup> groups,
+    List<DiaryEntry> all,
+  ) : totals = DiaryTotals.day(entries) {
+    final selectedIds = entries.map((e) => e.id).toSet();
+    final outsideGroups = {
+      for (final e in all)
+        if (!selectedIds.contains(e.id) &&
+            groups[e.dishGroupId]?.localDate == e.localDate)
+          e.dishGroupId,
+    };
+    entryCopyGroupIds = Set.unmodifiable({
+      for (final e in entries)
+        if (groups[e.dishGroupId]?.localDate == e.localDate &&
+            !outsideGroups.contains(e.dishGroupId))
+          e.dishGroupId!,
+    });
     entries.sort(_compareEntries);
     final grouped = <String, List<DiaryEntry>>{};
     final result = <DiaryItem>[];
     for (final entry in entries) {
       final group = groups[entry.dishGroupId];
-      if (group == null) {
+      if (group == null || group.localDate != entry.localDate) {
         result.add(EntryItem(entry));
       } else {
         (grouped[group.id] ??= []).add(entry);
@@ -92,6 +114,10 @@ final class SlotSection {
 
   /// Stable section identity, without display text.
   String get key => slot?.id ?? 'other';
+
+  /// Groups eligible for an entries-source copy in this shown layout (PA8).
+  /// Slot sources copy every observed group instead.
+  late final Set<String> entryCopyGroupIds;
 
   /// Ordered entries and dish groups.
   late final List<DiaryItem> items;

@@ -280,14 +280,18 @@ void main() {
 
       // One item open at a time; the estimate shows its range and
       // assumptions.
+      final scrollable = find.descendant(
+        of: find.byType(CustomScrollView),
+        matching: find.byType(Scrollable),
+      );
       await tester.scrollUntilVisible(
         find.widgetWithText(FbListRow, 'Falafel plate'),
         200,
-        scrollable: find.descendant(
-          of: find.byType(CustomScrollView),
-          matching: find.byType(Scrollable),
-        ),
+        scrollable: scrollable,
       );
+      // Clear of the input bar at the bottom.
+      await tester.drag(scrollable, const Offset(0, -120));
+      await tester.pump();
       await tester.tap(find.widgetWithText(FbListRow, 'Falafel plate'));
       await tester.pump();
       expect(find.byType(EntryDetailsPanel), findsOneWidget);
@@ -304,6 +308,11 @@ void main() {
       expect(find.text('Pita bread, white · خبز عربي'), findsNothing);
 
       // A second tap closes it.
+      await tester.scrollUntilVisible(
+        find.widgetWithText(FbListRow, 'Falafel plate'),
+        -100,
+        scrollable: scrollable,
+      );
       await tester.tap(find.widgetWithText(FbListRow, 'Falafel plate'));
       await tester.pump();
       expect(find.byType(EntryDetailsPanel), findsNothing);
@@ -320,7 +329,7 @@ void main() {
       await tester.tap(find.widgetWithText(FbListRow, 'Hummus'));
       await tester.pump();
 
-      expect(find.text('Food database, edited by you'), findsOneWidget);
+      expect(find.text('Your edit of food database values'), findsOneWidget);
     });
   });
 

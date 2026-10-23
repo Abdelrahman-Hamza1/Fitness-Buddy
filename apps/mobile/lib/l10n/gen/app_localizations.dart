@@ -1040,19 +1040,13 @@ abstract class AppLocalizations {
   /// **'{from} g {fromState} ≈ {to} g {toState}'**
   String foodSheetYieldNote(int from, String fromState, int to, String toState);
 
-  /// Food sheet: chip with the meal the food is added to; tap to change.
-  ///
-  /// In en, this message translates to:
-  /// **'Meal: {slot}'**
-  String foodSheetSlot(String slot);
-
   /// Food sheet: the meal chip when no meal is chosen.
   ///
   /// In en, this message translates to:
   /// **'No meal'**
   String get foodSheetSlotNone;
 
-  /// Food sheet: title of the list of meals.
+  /// Food sheet: title of the list of meals; also the name on the chip that shows the chosen meal (the chip reads "Meal", then the meal).
   ///
   /// In en, this message translates to:
   /// **'Meal'**
@@ -1431,7 +1425,7 @@ abstract class AppLocalizations {
   /// Item details: the numbers were changed by the user.
   ///
   /// In en, this message translates to:
-  /// **'{source}, edited by you'**
+  /// **'Your edit of {source} values'**
   String diarySourceEdited(String source);
 
   /// Snackbar when Undo is refused because the data changed afterwards.
@@ -1457,6 +1451,288 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Coming soon'**
   String get devComingSoon;
+
+  /// Item details and copy sheet: name of the chip that shows the meal (the chip reads "Meal", then the meal).
+  ///
+  /// In en, this message translates to:
+  /// **'Meal'**
+  String get diaryChipMeal;
+
+  /// Item details: the chip that opens the food search to replace the food of a logged item (DY-021).
+  ///
+  /// In en, this message translates to:
+  /// **'Change food'**
+  String get diaryChangeFood;
+
+  /// Item details: screen-reader hint of a nutrient row that opens the value editor (AI-072).
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to change this value'**
+  String get diaryNutrientEditHint;
+
+  /// Edit sheets: the button that saves the change.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get diarySave;
+
+  /// Edit sheets: the action that loads the item as it is now and keeps what was typed (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Reload'**
+  String get diaryReload;
+
+  /// Edit sheets: the item was deleted while the sheet was open; Save is disabled (D12).
+  ///
+  /// In en, this message translates to:
+  /// **'This item was removed.'**
+  String get diaryEntryRemoved;
+
+  /// Edit sheets: the item was edited while the sheet was open; Reload shows the current values.
+  ///
+  /// In en, this message translates to:
+  /// **'This item changed.'**
+  String get diaryEntryChangedStale;
+
+  /// Snackbar when the item was deleted elsewhere before the change was saved.
+  ///
+  /// In en, this message translates to:
+  /// **'That item was removed, so nothing was saved.'**
+  String get diaryActionRemoved;
+
+  /// Undo snackbar after the amount of an item was changed.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed {name} to {amount}'**
+  String diaryAmountChanged(String name, String amount);
+
+  /// Undo snackbar after the time of an item was changed.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed the time of {name} to {time}'**
+  String diaryTimeChanged(String name, String time);
+
+  /// Undo snackbar after a nutrient value of an item was edited (AI-072).
+  ///
+  /// In en, this message translates to:
+  /// **'Edited {nutrient} of {name}'**
+  String diaryNutrientEdited(String nutrient, String name);
+
+  /// Title of the sheet that edits one nutrient value of an item.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit {nutrient}'**
+  String diaryOverrideTitle(String nutrient);
+
+  /// Nutrient value sheet: what the number means and what saving does (AI-072).
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the value for this amount. The item is then marked as edited by you.'**
+  String get diaryOverrideNote;
+
+  /// Nutrient value sheet: the typed value is above the largest accepted value.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter {max} {unit} or less.'**
+  String diaryOverrideOutOfRange(String max, String unit);
+
+  /// Nutrient value sheet: the value was refused.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save that value. Check it and try again.'**
+  String get diaryOverrideInvalid;
+
+  /// Nutrient value sheet: screen-reader text of the typed value.
+  ///
+  /// In en, this message translates to:
+  /// **'{nutrient}, {value} {unit}'**
+  String diaryOverrideAmountLabel(String nutrient, String value, String unit);
+
+  /// Unit of energy next to a nutrient value.
+  ///
+  /// In en, this message translates to:
+  /// **'kcal'**
+  String get diaryUnitKcal;
+
+  /// Unit of milligrams next to a nutrient value.
+  ///
+  /// In en, this message translates to:
+  /// **'mg'**
+  String get diaryUnitMg;
+
+  /// Tooltip and screen-reader label of the menu button on a meal row.
+  ///
+  /// In en, this message translates to:
+  /// **'More for {meal}'**
+  String diaryMealMenuTooltip(String meal);
+
+  /// Meal menu: copies the meal to another day or meal (DY-023).
+  ///
+  /// In en, this message translates to:
+  /// **'Copy to…'**
+  String get diaryMealCopyAction;
+
+  /// Meal menu: saves the meal's items as a saved meal (DY-023).
+  ///
+  /// In en, this message translates to:
+  /// **'Save as meal…'**
+  String get diaryMealSaveAction;
+
+  /// Title of the sheet that copies a meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy {meal}'**
+  String diaryCopyTitle(String meal);
+
+  /// Copy sheet: name of the chip that shows the day to copy to.
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get diaryCopyDay;
+
+  /// Copy sheet: title of the list of meals to copy to.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy to meal'**
+  String get diaryCopySlotTitle;
+
+  /// Copy sheet: the button that copies the meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get diaryCopyButton;
+
+  /// Copy sheet: the target is the meal itself (same day and meal), so Copy is disabled until another is chosen.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose where to copy this meal.'**
+  String get diaryCopyChoose;
+
+  /// Copy and save sheets: the meal was edited while the sheet was open; Reload shows it as it is now.
+  ///
+  /// In en, this message translates to:
+  /// **'This meal changed.'**
+  String get diaryMealChanged;
+
+  /// Copy and save sheets: every item of the meal is gone.
+  ///
+  /// In en, this message translates to:
+  /// **'This meal is empty now.'**
+  String get diaryMealEmpty;
+
+  /// Copy sheet: the meal changed between opening the sheet and copying.
+  ///
+  /// In en, this message translates to:
+  /// **'That meal changed. Nothing was copied.'**
+  String get diaryMealChangedCopy;
+
+  /// Save sheet: the meal changed between opening the sheet and saving.
+  ///
+  /// In en, this message translates to:
+  /// **'That meal changed. Nothing was saved.'**
+  String get diaryMealChangedSave;
+
+  /// Undo snackbar after a meal was copied to another day or meal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Copied 1 item to {day}} other{Copied {count} items to {day}}}'**
+  String diaryMealCopied(int count, String day);
+
+  /// Title of the sheet that saves a meal's items as a saved meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Save as meal'**
+  String get diarySaveTitle;
+
+  /// Save sheet: label of the name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get diarySaveName;
+
+  /// Save sheet: the name is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Give the meal a name.'**
+  String get diarySaveNameEmpty;
+
+  /// Undo snackbar after a meal was saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved \"{name}\"'**
+  String diaryMealSaved(String name);
+
+  /// Title of the food search when it replaces the food of a logged item (DY-021).
+  ///
+  /// In en, this message translates to:
+  /// **'Change food'**
+  String get foodSearchChangeTitle;
+
+  /// Food sheet in change-food mode: the button that replaces the food.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this food'**
+  String get foodSheetUseThis;
+
+  /// Undo snackbar after the food of an item was replaced.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed to {name}'**
+  String foodChangedMessage(String name);
+
+  /// Item details: the food database as a noun inside "Your edit of … values".
+  ///
+  /// In en, this message translates to:
+  /// **'food database'**
+  String get diarySourceNounDatabase;
+
+  /// Item details: a reference dish as a noun inside "Your edit of … values".
+  ///
+  /// In en, this message translates to:
+  /// **'reference dish'**
+  String get diarySourceNounReference;
+
+  /// Item details: an estimate as a noun inside "Your edit of … values".
+  ///
+  /// In en, this message translates to:
+  /// **'estimate'**
+  String get diarySourceNounEstimate;
+
+  /// Item details: the user's own values, changed again by the user.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own values, edited'**
+  String get diarySourceYoursEdited;
+
+  /// Title of the sheet that edits the calories of an item.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit calories'**
+  String get diaryOverrideTitleEnergy;
+
+  /// Amount sheet: why Save is off while the amount is empty or 0.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount above 0.'**
+  String get diaryAmountNeeded;
+
+  /// Nutrient value sheet: why Save is off while the value is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a value.'**
+  String get diaryValueNeeded;
+
+  /// Copy and save sheets: how much the meal holds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 item · {kcal} kcal} other{{count} items · {kcal} kcal}}'**
+  String diaryMealSummary(int count, int kcal);
+
+  /// Change-food search: caption under the title naming the item being replaced.
+  ///
+  /// In en, this message translates to:
+  /// **'Replacing {name}'**
+  String foodSearchReplacing(String name);
 }
 
 class _AppLocalizationsDelegate

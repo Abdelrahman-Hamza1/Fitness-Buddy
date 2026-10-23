@@ -17,3 +17,9 @@ Stream<DiaryDay> day(Ref ref, LocalDate date) =>
 @riverpod
 Stream<Nutrients> dayTotals(Ref ref, LocalDate date) =>
     ref.watch(diaryRepositoryProvider).watchDay(date).map((day) => day.totals);
+
+/// The live entry [id] wherever it is now (any day or slot), or `null` once
+/// deleted. Open edit sheets watch it (A08 D12(4), PA4).
+@riverpod
+Stream<DiaryEntry?> entry(Ref ref, String id) =>
+    ref.watch(diaryRepositoryProvider).watchEntry(id);

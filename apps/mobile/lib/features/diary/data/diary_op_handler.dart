@@ -23,7 +23,8 @@ String dayMarkRowId(LocalDate date) => naturalId(dayMarkEntity, '$date');
 /// `unknownSlot`, `noSlot`, `groupMismatch`, `emptySource` and
 /// `missingCopyId`.
 ///
-/// Ops never set `edited_by_user` (A06 PA3). Undoing a log or a copy emits
+/// Overrides set `edited_by_user`; food changes use the chosen flag (AI-072).
+/// Undoing a log or a copy emits
 /// [EntryDeleted]; undoing a delete emits [EntriesLogged]; undoing a day
 /// mark emits the restored mark; the rest emit the same event both ways.
 final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
@@ -41,6 +42,7 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
     final reads = DiaryTxReads(db, tx);
     return switch (op) {
       LogEntries() => _log(op, reads, context),
+      OverrideNutrients() => _override(op, reads),
       UpdateDiaryEntry() => _updateEntry(op, reads, context),
       MoveEntries() => _moveEntries(op, reads, context),
       DeleteEntries() => _deleteEntries(op, reads),
@@ -116,6 +118,47 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
       rows,
       events: [EntriesLogged(ids, dates)],
       revertEvents: [EntryDeleted(ids, dates)],
+    );
+  }
+
+  Future<OpPlan> _override(OverrideNutrients op, DiaryTxReads reads) async {
+    final [row] = await reads.versionedEntries([
+      VersionedId(op.id, op.expectedVersion),
+    ]);
+    if (row.amount <= 0) throw const ChangeRejected(InvalidOp('zeroAmount'));
+    final entry = diaryEntryOf(row);
+    if (row.editedByUser &&
+        op.values.entries.every(
+          (e) =>
+              entry.snapshot.valueOf(e.key) == StoragePrecision.round(e.value),
+        )) {
+      return OpPlan(const []);
+    }
+    final Nutrients per100;
+    try {
+      per100 = NutrientOverride.apply(
+        entry.food.per100,
+        amount: row.amount,
+        values: op.values,
+      );
+      // Domain constructors validate user input with ArgumentError.
+      // ignore: avoid_catching_errors
+    } on ArgumentError {
+      throw const ChangeRejected(InvalidOp('outOfRange'));
+    }
+    final changes = FoodColumns.per100Changes(per100, entry.amount);
+    final event = EntryChanged([row.id], [entry.localDate]);
+    return OpPlan(
+      [
+        UpdateRow(
+          db.diaryEntries,
+          row.id,
+          changes,
+          expectedVersion: row.version,
+        ),
+      ],
+      events: [event],
+      revertEvents: [event],
     );
   }
 

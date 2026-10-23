@@ -1,6 +1,7 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/application/food_search_controller.dart';
 import 'package:fb_mobile/features/foods/application/food_search_row.dart';
 import 'package:fb_mobile/features/foods/presentation/food_result_row.dart';
@@ -21,6 +22,7 @@ class FoodSearchScreen extends ConsumerStatefulWidget {
   const new({
     this.date,
     this.slotId,
+    this.replace,
     this.onPick = openFoodSheet,
     @visibleForTesting this.initialQuery = '',
     super.key,
@@ -31,6 +33,10 @@ class FoodSearchScreen extends ConsumerStatefulWidget {
 
   /// The meal slot to add to; null to choose by the time of day.
   final String? slotId;
+
+  /// The logged item whose food is replaced (change-food mode, A08 D7); null
+  /// to add a new item.
+  final VersionedId? replace;
 
   /// Called with the tapped result.
   final FoodPicked onPick;
@@ -69,10 +75,37 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
     final l10n = context.l10n;
     final state = ref.watch(foodSearchControllerProvider);
     final results = state.results;
+    final replacing = widget.replace == null
+        ? null
+        : ref.watch(entryProvider(widget.replace!.id)).value;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.foodSearchTitle)),
+      appBar: AppBar(
+        title: Text(
+          widget.replace == null
+              ? l10n.foodSearchTitle
+              : l10n.foodSearchChangeTitle,
+        ),
+      ),
       body: Column(
         children: [
+          // Change-food mode: which item gets the new food.
+          if (replacing != null)
+            Padding(
+              padding: const EdgeInsetsDirectional.only(
+                start: FbSpace.s4,
+                end: FbSpace.s4,
+                top: FbSpace.s2,
+              ),
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(
+                  l10n.foodSearchReplacing(replacing.food.names.en),
+                  style: FbType.bodySmall.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ),
           Padding(
             padding: const EdgeInsetsDirectional.symmetric(
               horizontal: FbSpace.s4,
@@ -121,6 +154,7 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
                     rows: results.rows,
                     date: widget.date,
                     slotId: widget.slotId,
+                    replace: widget.replace,
                     onPick: widget.onPick,
                   ),
           ),
@@ -138,6 +172,7 @@ class _Results extends StatelessWidget {
     required this.rows,
     required this.date,
     required this.slotId,
+    required this.replace,
     required this.onPick,
   });
 
@@ -147,6 +182,7 @@ class _Results extends StatelessWidget {
   final List<FoodSearchRow> rows;
   final LocalDate? date;
   final String? slotId;
+  final VersionedId? replace;
   final FoodPicked onPick;
 
   @override
@@ -195,6 +231,7 @@ class _Results extends StatelessWidget {
                   date: date,
                   slotId: slotId,
                   carried: carried,
+                  replacing: replace,
                 ),
               );
             },

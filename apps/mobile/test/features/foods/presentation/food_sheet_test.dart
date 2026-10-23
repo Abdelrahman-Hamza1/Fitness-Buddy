@@ -69,6 +69,12 @@ Future<void> tapKeys(WidgetTester tester, String keys) async {
   }
 }
 
+/// The meal chip showing [value] (#85: an FbChoiceChip reading "Meal", then
+/// the meal).
+Finder _mealChip(String value) => find.byWidgetPredicate(
+  (w) => w is FbChoiceChip && w.label == 'Meal' && w.value == value,
+);
+
 void main() {
   testWidgets('FD-022 sheet load failure retries and offers Close', (
     tester,
@@ -363,15 +369,15 @@ void main() {
       'a route slot wins, and the chip changes it', (tester) async {
     // The harness clock is 12:00: lunch.
     await openSheet(tester, SheetRig(catalogChoice(pita)));
-    expect(find.text('Meal: Lunch'), findsOneWidget);
+    expect(_mealChip('Lunch'), findsOneWidget);
 
-    await tester.tap(find.text('Meal: Lunch'));
+    await tester.tap(_mealChip('Lunch'));
     await tester.pumpAndSettle();
     expect(find.text('Dinner'), findsOneWidget);
     await tester.tap(find.text('Dinner'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Meal: Dinner'), findsOneWidget);
+    expect(_mealChip('Dinner'), findsOneWidget);
   });
 
   testWidgets('DY-011 a slot given by the caller wins over the time of '
@@ -381,7 +387,7 @@ void main() {
       SheetRig(catalogChoice(pita)),
       slotId: DefaultSlots.breakfastId,
     );
-    expect(find.text('Meal: Breakfast'), findsOneWidget);
+    expect(_mealChip('Breakfast'), findsOneWidget);
   });
 
   testWidgets('AI-048 UX-006 a known food logs with one tap: the sheet '

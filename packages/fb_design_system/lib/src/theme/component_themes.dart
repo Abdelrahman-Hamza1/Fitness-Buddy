@@ -150,3 +150,21 @@ DatePickerThemeData fbDatePickerTheme(ColorScheme scheme) =>
       elevation: FbElevation.overlay,
       shape: const RoundedRectangleBorder(borderRadius: FbRadius.lgAll),
     );
+
+/// The time picker dialog: tonal like the date picker, with the dial and the
+/// hour and minute boxes on quieter tonal fills and the brand tint selected.
+TimePickerThemeData fbTimePickerTheme(ColorScheme scheme) =>
+    TimePickerThemeData(
+      backgroundColor: scheme.surfaceContainer,
+      elevation: FbElevation.overlay,
+      shape: const RoundedRectangleBorder(borderRadius: FbRadius.lgAll),
+      dialBackgroundColor: scheme.surfaceContainerHigh,
+      hourMinuteColor: scheme.surfaceContainerHigh,
+      hourMinuteTextColor: scheme.onSurface,
+      dayPeriodColor: scheme.surfaceContainerHigh,
+      dayPeriodTextColor: scheme.onSurface,
+      dayPeriodBorderSide: BorderSide(color: scheme.outline),
+      dialTextColor: scheme.onSurface,
+      entryModeIconColor: scheme.onSurfaceVariant,
+      helpTextStyle: FbType.label.copyWith(color: scheme.onSurfaceVariant),
+    );

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/changes/apply_result.dart';
 import 'package:fb_mobile/core/changes/change_providers.dart';
+import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/diary/data/diary_day.dart';
@@ -42,6 +43,21 @@ enum DiaryActionKind {
 
   /// Entry placed in another slot.
   entryMoved,
+
+  /// Logged amount edited.
+  amountChanged,
+
+  /// Local time edited.
+  timeChanged,
+
+  /// Absolute nutrients edited.
+  nutrientEdited,
+
+  /// Source meal copied.
+  mealCopied,
+
+  /// Source meal saved.
+  mealSaved,
 }
 
 /// Command result without display text.
@@ -95,7 +111,7 @@ final class DiaryActionsState {
   final Set<HiddenMark> hidden;
 }
 
-/// Calls existing A06 ops only; survives eviction of the originating day.
+/// Direct commands survive eviction of the originating day.
 @Riverpod(keepAlive: true)
 class DiaryActionsController extends _$DiaryActionsController {
   Timer? _sweep;
@@ -154,6 +170,190 @@ class DiaryActionsController extends _$DiaryActionsController {
       ? Future.value(const DiaryActionUnchanged())
       : _run(entry, toSlotId);
 
+  /// Recomputes from the entry's own per-100, retaining overrides.
+  Future<DiaryActionOutcome> changeAmount(DiaryEntry entry, Quantity input) {
+    final amount = EntryAmounts.resolve(entry, input);
+    if (amount == null) {
+      return Future.value(const DiaryActionFailed(DiaryActionFailure.invalid));
+    }
+    if (amount == entry.amount) {
+      return Future.value(const DiaryActionUnchanged());
+    }
+    return _command(
+      [entry.id],
+      UpdateDiaryEntry(entry.id, entry.version, EntryPatch(amount: amount)),
+      DiaryActionKind.amountChanged,
+      {'name': entry.food.names.en},
+    );
+  }
+
+  /// Changes only local time; stored date, offset and explicit slot survive.
+  Future<DiaryActionOutcome> changeTime(DiaryEntry entry, LocalTime time) {
+    if (time == entry.time.localDateTime.time) {
+      return Future.value(const DiaryActionUnchanged());
+    }
+    return _command(
+      [entry.id],
+      UpdateDiaryEntry(entry.id, entry.version, EntryPatch(localTime: time)),
+      DiaryActionKind.timeChanged,
+      {'name': entry.food.names.en},
+    );
+  }
+
+  /// Absolute values for the shown amount, validated without display text.
+  Future<DiaryActionOutcome> overrideNutrients(
+    DiaryEntry entry,
+    Map<NutrientField, double> values,
+  ) {
+    try {
+      NutrientOverride.checkValues(values);
+      // Domain constructors validate user input with ArgumentError.
+      // ignore: avoid_catching_errors
+    } on ArgumentError {
+      return Future.value(const DiaryActionFailed(DiaryActionFailure.invalid));
+    }
+    if (entry.amount.amount <= 0) {
+      return Future.value(const DiaryActionFailed(DiaryActionFailure.invalid));
+    }
+    if (entry.editedByUser &&
+        values.entries.every(
+          (e) =>
+              entry.snapshot.valueOf(e.key) == StoragePrecision.round(e.value),
+        )) {
+      return Future.value(const DiaryActionUnchanged());
+    }
+    return _command(
+      [entry.id],
+      OverrideNutrients(entry.id, entry.version, values),
+      DiaryActionKind.nutrientEdited,
+      {'name': entry.food.names.en, 'field': values.keys.first},
+    );
+  }
+
+  List<DiaryEntry> _entries(SlotSection section) => [
+    for (final item in section.items)
+      ...switch (item) {
+        EntryItem(:final entry) => [entry],
+        GroupItem(:final members) => members,
+      },
+  ];
+
+  /// Pins every shown entry and referenced live group (PA8).
+  Future<DiaryActionOutcome> copyMeal(
+    SlotSection section,
+    LocalDate toDate, {
+    String? toSlotId,
+  }) {
+    final entries = _entries(section);
+    if (entries.isEmpty) {
+      return Future.value(const DiaryActionFailed(DiaryActionFailure.invalid));
+    }
+    final date = entries.first.localDate;
+    final slot = section.slot?.id;
+    if (toDate == date && (toSlotId == null || toSlotId == slot)) {
+      return Future.value(const DiaryActionUnchanged());
+    }
+    final expected = SourceVersions(
+      entries: entries.map((e) => VersionedId(e.id, e.version)),
+      groups: [
+        for (final item in section.items)
+          if (item is GroupItem) VersionedId(item.group.id, item.group.version),
+      ],
+    );
+    final ids = ref.read(idGeneratorProvider);
+    return _command(
+      entries.map((e) => e.id),
+      CopyMeal(
+        slot == null
+            ? MealSource.entries(entries.map((e) => e.id))
+            : MealSource.slot(date, slot),
+        toDate: toDate,
+        toSlotId: toSlotId,
+        expected: expected,
+        copyIds: {
+          for (final e in expected.entries) e.id: ids.next(),
+          for (final group in expected.groups)
+            if (slot != null || section.entryCopyGroupIds.contains(group.id))
+              group.id: ids.next(),
+        },
+      ),
+      DiaryActionKind.mealCopied,
+      {'count': entries.length, 'toDate': toDate},
+    );
+  }
+
+  /// Saves exactly the entries shown; saved items carry no groups.
+  Future<DiaryActionOutcome> saveMeal(SlotSection section, String name) {
+    final trimmed = name.trim();
+    final entries = _entries(section);
+    if (trimmed.isEmpty || trimmed.length > 60 || entries.isEmpty) {
+      return Future.value(const DiaryActionFailed(DiaryActionFailure.invalid));
+    }
+    return _command(
+      entries.map((e) => e.id),
+      SaveMeal(
+        savedMealId: ref.read(idGeneratorProvider).next(),
+        name: trimmed,
+        source: MealSource.entries(entries.map((e) => e.id)),
+        expected: SourceVersions(
+          entries: entries.map((e) => VersionedId(e.id, e.version)),
+        ),
+      ),
+      DiaryActionKind.mealSaved,
+      {'name': trimmed},
+    );
+  }
+
+  DiaryActionFailed _failure(ChangeFailure failure, DiaryActionKind kind) =>
+      DiaryActionFailed(switch (failure) {
+        VersionConflict() ||
+        InvalidOp(code: 'sourceChanged') => DiaryActionFailure.changed,
+        RowNotFound() =>
+          kind == DiaryActionKind.mealCopied ||
+                  kind == DiaryActionKind.mealSaved
+              ? DiaryActionFailure.changed
+              : DiaryActionFailure.removed,
+        _ => DiaryActionFailure.invalid,
+      });
+
+  Future<DiaryActionOutcome> _command(
+    Iterable<String> identities,
+    DiaryOp op,
+    DiaryActionKind kind,
+    Map<String, Object> args,
+  ) async {
+    final ids = identities.toSet();
+    if (ids.any(state.pending.contains)) return const DiaryActionUnchanged();
+    state = DiaryActionsState(
+      pending: {...state.pending, ...ids},
+      hidden: state.hidden,
+    );
+    try {
+      final apply = ref.read(diaryApplyProvider);
+      final change = ChangeSet([op], origin: Origin.direct);
+      final ApplyResult result;
+      try {
+        result = await apply(change);
+      } on ChangeRejected catch (rejection) {
+        return _failure(rejection.failure, kind);
+      }
+      if (result is Rejected) {
+        return _failure(result.failure, kind);
+      }
+      final applied = result as Applied;
+      if (applied.inverse.rows.isEmpty) return const DiaryActionUnchanged();
+      final undo = ref
+          .read(undoStackProvider)
+          .record(applied, UndoLabel(kind.name, args: args));
+      return DiaryActionDone(undo.id, kind, Map.unmodifiable(args));
+    } finally {
+      state = DiaryActionsState(
+        pending: state.pending.difference(ids),
+        hidden: state.hidden,
+      );
+    }
+  }
+
   Future<DiaryActionOutcome> _run(DiaryEntry entry, String? slot) async {
     if (state.pending.contains(entry.id)) return const DiaryActionUnchanged();
     final clock = ref.read(clockProvider);
@@ -173,24 +373,22 @@ class DiaryActionsController extends _$DiaryActionsController {
     var succeeded = false;
     try {
       final vid = VersionedId(entry.id, entry.version);
-      final result = await apply(
-        ChangeSet([
-          if (slot == null)
-            DeleteEntries([vid])
-          else
-            MoveEntries([vid], toSlotId: slot),
-        ], origin: Origin.direct),
-      );
-      if (result is Rejected) {
-        return DiaryActionFailed(switch (result.failure) {
-          VersionConflict() => DiaryActionFailure.changed,
-          RowNotFound() => DiaryActionFailure.removed,
-          _ => DiaryActionFailure.invalid,
-        });
-      }
       final kind = slot == null
           ? DiaryActionKind.entryDeleted
           : DiaryActionKind.entryMoved;
+      final change = ChangeSet([
+        if (slot == null)
+          DeleteEntries([vid])
+        else
+          MoveEntries([vid], toSlotId: slot),
+      ], origin: Origin.direct);
+      final ApplyResult result;
+      try {
+        result = await apply(change);
+      } on ChangeRejected catch (rejection) {
+        return _failure(rejection.failure, kind);
+      }
+      if (result is Rejected) return _failure(result.failure, kind);
       final args = <String, Object>{
         'name': entry.food.names.en,
         'slotId': ?slot,

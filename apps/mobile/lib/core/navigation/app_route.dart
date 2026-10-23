@@ -1,4 +1,4 @@
-import 'package:fb_domain/fb_domain.dart' show LocalDate;
+import 'package:fb_domain/fb_domain.dart' show LocalDate, VersionedId;
 
 /// The app's typed routes (S06 plan D2, A2).
 ///
@@ -83,9 +83,14 @@ final class MeRoute extends AppRoute {
 /// [date] is the diary day to add to and [slotId] the meal slot; both are
 /// optional (today, and the slot of the current time). Only simple values
 /// travel in the URL: the food itself never does.
+///
+/// With [replace] the search changes the food of that logged item instead of
+/// adding one (DY-021, A08 D7): the item's ID and the version the user saw.
+/// A malformed pair never reaches the screen (the router sends it to Today),
+/// so a swap can't silently become an add.
 final class FoodSearchRoute extends AppRoute {
   /// Creates the route.
-  const new({this.date, this.slotId});
+  const new({this.date, this.slotId, this.replace});
 
   /// The route's path pattern.
   static const path = '/today/add-food';
@@ -96,15 +101,32 @@ final class FoodSearchRoute extends AppRoute {
   /// The query parameter holding [slotId].
   static const slotParam = 'slot';
 
+  /// The query parameter holding the ID of the item to replace.
+  static const replaceParam = 'replace';
+
+  /// The query parameter holding the version of the item to replace.
+  static const versionParam = 'version';
+
   /// The diary day to add to; null for today.
   final LocalDate? date;
 
   /// The meal slot to add to; null to choose by the time of day.
   final String? slotId;
 
+  /// The logged item whose food is replaced, at the version shown; null to
+  /// add a new item.
+  final VersionedId? replace;
+
   @override
   String get location {
-    final query = {dateParam: ?date?.toString(), slotParam: ?slotId};
+    final query = {
+      dateParam: ?date?.toString(),
+      slotParam: ?slotId,
+      if (replace case final item?) ...{
+        replaceParam: item.id,
+        versionParam: '${item.expectedVersion}',
+      },
+    };
     return Uri(
       path: path,
       queryParameters: query.isEmpty ? null : query,

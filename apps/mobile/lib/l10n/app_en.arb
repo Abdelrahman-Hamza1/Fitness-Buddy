@@ -963,22 +963,13 @@
       }
     }
   },
-  "foodSheetSlot": "Meal: {slot}",
-  "@foodSheetSlot": {
-    "description": "Food sheet: chip with the meal the food is added to; tap to change.",
-    "placeholders": {
-      "slot": {
-        "type": "String"
-      }
-    }
-  },
   "foodSheetSlotNone": "No meal",
   "@foodSheetSlotNone": {
     "description": "Food sheet: the meal chip when no meal is chosen."
   },
   "foodSheetSlotTitle": "Meal",
   "@foodSheetSlotTitle": {
-    "description": "Food sheet: title of the list of meals."
+    "description": "Food sheet: title of the list of meals; also the name on the chip that shows the chosen meal (the chip reads \"Meal\", then the meal)."
   },
   "foodSheetAdd": "Add",
   "@foodSheetAdd": {
@@ -1326,7 +1317,7 @@
   "@diarySourceEstimate": {
     "description": "Item details: the numbers are a rough guess."
   },
-  "diarySourceEdited": "{source}, edited by you",
+  "diarySourceEdited": "Your edit of {source} values",
   "@diarySourceEdited": {
     "description": "Item details: the numbers were changed by the user.",
     "placeholders": {
@@ -1350,5 +1341,283 @@
   "devComingSoon": "Coming soon",
   "@devComingSoon": {
     "description": "Dev builds only: the camera and barcode buttons do nothing yet."
+  },
+  "diaryChipMeal": "Meal",
+  "@diaryChipMeal": {
+    "description": "Item details and copy sheet: name of the chip that shows the meal (the chip reads \"Meal\", then the meal)."
+  },
+  "diaryChangeFood": "Change food",
+  "@diaryChangeFood": {
+    "description": "Item details: the chip that opens the food search to replace the food of a logged item (DY-021)."
+  },
+  "diaryNutrientEditHint": "Tap to change this value",
+  "@diaryNutrientEditHint": {
+    "description": "Item details: screen-reader hint of a nutrient row that opens the value editor (AI-072)."
+  },
+  "diarySave": "Save",
+  "@diarySave": {
+    "description": "Edit sheets: the button that saves the change."
+  },
+  "diaryReload": "Reload",
+  "@diaryReload": {
+    "description": "Edit sheets: the action that loads the item as it is now and keeps what was typed (UX-052)."
+  },
+  "diaryEntryRemoved": "This item was removed.",
+  "@diaryEntryRemoved": {
+    "description": "Edit sheets: the item was deleted while the sheet was open; Save is disabled (D12)."
+  },
+  "diaryEntryChangedStale": "This item changed.",
+  "@diaryEntryChangedStale": {
+    "description": "Edit sheets: the item was edited while the sheet was open; Reload shows the current values."
+  },
+  "diaryActionRemoved": "That item was removed, so nothing was saved.",
+  "@diaryActionRemoved": {
+    "description": "Snackbar when the item was deleted elsewhere before the change was saved."
+  },
+  "diaryAmountChanged": "Changed {name} to {amount}",
+  "@diaryAmountChanged": {
+    "description": "Undo snackbar after the amount of an item was changed.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "diaryTimeChanged": "Changed the time of {name} to {time}",
+  "@diaryTimeChanged": {
+    "description": "Undo snackbar after the time of an item was changed.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "diaryNutrientEdited": "Edited {nutrient} of {name}",
+  "@diaryNutrientEdited": {
+    "description": "Undo snackbar after a nutrient value of an item was edited (AI-072).",
+    "placeholders": {
+      "nutrient": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "diaryOverrideTitle": "Edit {nutrient}",
+  "@diaryOverrideTitle": {
+    "description": "Title of the sheet that edits one nutrient value of an item.",
+    "placeholders": {
+      "nutrient": {
+        "type": "String"
+      }
+    }
+  },
+  "diaryOverrideNote": "Enter the value for this amount. The item is then marked as edited by you.",
+  "@diaryOverrideNote": {
+    "description": "Nutrient value sheet: what the number means and what saving does (AI-072)."
+  },
+  "diaryOverrideOutOfRange": "Enter {max} {unit} or less.",
+  "@diaryOverrideOutOfRange": {
+    "description": "Nutrient value sheet: the typed value is above the largest accepted value.",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "diaryOverrideInvalid": "Couldn't save that value. Check it and try again.",
+  "@diaryOverrideInvalid": {
+    "description": "Nutrient value sheet: the value was refused."
+  },
+  "diaryOverrideAmountLabel": "{nutrient}, {value} {unit}",
+  "@diaryOverrideAmountLabel": {
+    "description": "Nutrient value sheet: screen-reader text of the typed value.",
+    "placeholders": {
+      "nutrient": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "diaryUnitKcal": "kcal",
+  "@diaryUnitKcal": {
+    "description": "Unit of energy next to a nutrient value."
+  },
+  "diaryUnitMg": "mg",
+  "@diaryUnitMg": {
+    "description": "Unit of milligrams next to a nutrient value."
+  },
+  "diaryMealMenuTooltip": "More for {meal}",
+  "@diaryMealMenuTooltip": {
+    "description": "Tooltip and screen-reader label of the menu button on a meal row.",
+    "placeholders": {
+      "meal": {
+        "type": "String"
+      }
+    }
+  },
+  "diaryMealCopyAction": "Copy to…",
+  "@diaryMealCopyAction": {
+    "description": "Meal menu: copies the meal to another day or meal (DY-023)."
+  },
+  "diaryMealSaveAction": "Save as meal…",
+  "@diaryMealSaveAction": {
+    "description": "Meal menu: saves the meal's items as a saved meal (DY-023)."
+  },
+  "diaryCopyTitle": "Copy {meal}",
+  "@diaryCopyTitle": {
+    "description": "Title of the sheet that copies a meal.",
+    "placeholders": {
+      "meal": {
+        "type": "String"
+      }
+    }
+  },
+  "diaryCopyDay": "Day",
+  "@diaryCopyDay": {
+    "description": "Copy sheet: name of the chip that shows the day to copy to."
+  },
+  "diaryCopySlotTitle": "Copy to meal",
+  "@diaryCopySlotTitle": {
+    "description": "Copy sheet: title of the list of meals to copy to."
+  },
+  "diaryCopyButton": "Copy",
+  "@diaryCopyButton": {
+    "description": "Copy sheet: the button that copies the meal."
+  },
+  "diaryCopyChoose": "Choose where to copy this meal.",
+  "@diaryCopyChoose": {
+    "description": "Copy sheet: the target is the meal itself (same day and meal), so Copy is disabled until another is chosen."
+  },
+  "diaryMealChanged": "This meal changed.",
+  "@diaryMealChanged": {
+    "description": "Copy and save sheets: the meal was edited while the sheet was open; Reload shows it as it is now."
+  },
+  "diaryMealEmpty": "This meal is empty now.",
+  "@diaryMealEmpty": {
+    "description": "Copy and save sheets: every item of the meal is gone."
+  },
+  "diaryMealChangedCopy": "That meal changed. Nothing was copied.",
+  "@diaryMealChangedCopy": {
+    "description": "Copy sheet: the meal changed between opening the sheet and copying."
+  },
+  "diaryMealChangedSave": "That meal changed. Nothing was saved.",
+  "@diaryMealChangedSave": {
+    "description": "Save sheet: the meal changed between opening the sheet and saving."
+  },
+  "diaryMealCopied": "{count, plural, =1{Copied 1 item to {day}} other{Copied {count} items to {day}}}",
+  "@diaryMealCopied": {
+    "description": "Undo snackbar after a meal was copied to another day or meal.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "diarySaveTitle": "Save as meal",
+  "@diarySaveTitle": {
+    "description": "Title of the sheet that saves a meal's items as a saved meal."
+  },
+  "diarySaveName": "Name",
+  "@diarySaveName": {
+    "description": "Save sheet: label of the name field."
+  },
+  "diarySaveNameEmpty": "Give the meal a name.",
+  "@diarySaveNameEmpty": {
+    "description": "Save sheet: the name is empty."
+  },
+  "diaryMealSaved": "Saved \"{name}\"",
+  "@diaryMealSaved": {
+    "description": "Undo snackbar after a meal was saved.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "foodSearchChangeTitle": "Change food",
+  "@foodSearchChangeTitle": {
+    "description": "Title of the food search when it replaces the food of a logged item (DY-021)."
+  },
+  "foodSheetUseThis": "Use this food",
+  "@foodSheetUseThis": {
+    "description": "Food sheet in change-food mode: the button that replaces the food."
+  },
+  "foodChangedMessage": "Changed to {name}",
+  "@foodChangedMessage": {
+    "description": "Undo snackbar after the food of an item was replaced.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "diarySourceNounDatabase": "food database",
+  "@diarySourceNounDatabase": {
+    "description": "Item details: the food database as a noun inside \"Your edit of … values\"."
+  },
+  "diarySourceNounReference": "reference dish",
+  "@diarySourceNounReference": {
+    "description": "Item details: a reference dish as a noun inside \"Your edit of … values\"."
+  },
+  "diarySourceNounEstimate": "estimate",
+  "@diarySourceNounEstimate": {
+    "description": "Item details: an estimate as a noun inside \"Your edit of … values\"."
+  },
+  "diarySourceYoursEdited": "Your own values, edited",
+  "@diarySourceYoursEdited": {
+    "description": "Item details: the user's own values, changed again by the user."
+  },
+  "diaryOverrideTitleEnergy": "Edit calories",
+  "@diaryOverrideTitleEnergy": {
+    "description": "Title of the sheet that edits the calories of an item."
+  },
+  "diaryAmountNeeded": "Enter an amount above 0.",
+  "@diaryAmountNeeded": {
+    "description": "Amount sheet: why Save is off while the amount is empty or 0."
+  },
+  "diaryValueNeeded": "Enter a value.",
+  "@diaryValueNeeded": {
+    "description": "Nutrient value sheet: why Save is off while the value is empty."
+  },
+  "diaryMealSummary": "{count, plural, =1{1 item · {kcal} kcal} other{{count} items · {kcal} kcal}}",
+  "@diaryMealSummary": {
+    "description": "Copy and save sheets: how much the meal holds.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "foodSearchReplacing": "Replacing {name}",
+  "@foodSearchReplacing": {
+    "description": "Change-food search: caption under the title naming the item being replaced.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

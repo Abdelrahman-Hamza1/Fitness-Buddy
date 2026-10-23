@@ -86,6 +86,9 @@ class FbLocalizationsEn extends FbLocalizations {
   String get fbSearchClear => 'Clear search';
 
   @override
+  String get fbTextFieldClear => 'Clear';
+
+  @override
   String get fbDatePrevious => 'Previous day';
 
   @override

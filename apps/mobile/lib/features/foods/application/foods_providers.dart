@@ -11,6 +11,7 @@ import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/application/food_choice.dart';
 import 'package:fb_mobile/features/foods/application/food_search_service.dart';
 import 'package:fb_mobile/features/foods/application/log_food.dart';
+import 'package:fb_mobile/features/foods/application/replace_entry_food.dart';
 import 'package:fb_mobile/features/foods/data/food_catalog_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -72,3 +73,10 @@ LogFood logFood(Ref ref) => LogFood(
 @riverpod
 Stream<List<MealSlot>> foodSlots(Ref ref) =>
     ref.watch(diaryRepositoryProvider).watchSlots();
+
+/// Replace-mode command with the same applier and undo history.
+@riverpod
+ReplaceEntryFood replaceEntryFood(Ref ref) => ReplaceEntryFood(
+  apply: ref.watch(changeSetApplierProvider).apply,
+  undoStack: ref.watch(undoStackProvider),
+);

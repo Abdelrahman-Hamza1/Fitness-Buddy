@@ -69,12 +69,7 @@ final class LogFood {
       id: ids.next(),
       when: now.localDate == date ? EntryWhen.at(now) : EntryWhen.onDay(date),
       slotId: slotId,
-      food: EntryFood(
-        ref: choice.ref,
-        names: choice.names,
-        per100: choice.per100,
-        provenance: Provenance(source: choice.badge),
-      ),
+      food: choice.foodForAmount(resolved),
       amount: EntryAmount(
         input: input,
         amount: resolved.amount,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
+import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
@@ -11,7 +12,6 @@ import 'package:fb_mobile/features/today/application/today_controller.dart';
 import 'package:fb_mobile/features/today/application/today_date.dart';
 import 'package:fb_mobile/features/today/presentation/day_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The Today tab (UX-010, HM-001, HM-007, HM-008, HM-009): the date header,
@@ -165,7 +165,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
         child: Column(
           children: [
             FbDateHeader(
-              label: _dateLabel(context, viewed, today),
+              label: dayLabel(context, viewed, today),
               onPrevious: controller.previous,
               onNext: pager.canGoNext(viewed) ? controller.next : null,
               onLabelTap: () => unawaited(_pickDate(viewed, today)),
@@ -214,17 +214,4 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       ),
     );
   }
-}
-
-/// "Today", "Yesterday", else the weekday and date ("Fri, Oct 17"; with the
-/// year for another year).
-String _dateLabel(BuildContext context, LocalDate date, LocalDate today) {
-  final l10n = context.l10n;
-  if (date == today) return l10n.diaryDateToday;
-  if (date == today.plusDays(-1)) return l10n.diaryDateYesterday;
-  final locale = Localizations.localeOf(context).toString();
-  final format = date.year == today.year
-      ? DateFormat.MMMEd(locale)
-      : DateFormat.yMMMEd(locale);
-  return format.format(DateTime(date.year, date.month, date.day));
 }

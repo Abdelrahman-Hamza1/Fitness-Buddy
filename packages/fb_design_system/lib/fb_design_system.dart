@@ -9,6 +9,7 @@ export 'src/components/big_number.dart';
 export 'src/components/button.dart';
 export 'src/components/card.dart';
 export 'src/components/chips.dart';
+export 'src/components/choice_chip.dart';
 export 'src/components/date_header.dart';
 export 'src/components/date_picker.dart';
 export 'src/components/disclosure_row.dart';
@@ -29,6 +30,8 @@ export 'src/components/snack_bar.dart';
 export 'src/components/source_badge.dart'
     show FbSource, FbSourceBadge, showFbSourceLegend;
 export 'src/components/swipe_actions.dart';
+export 'src/components/text_field.dart';
+export 'src/components/time_picker.dart';
 export 'src/theme/fb_theme.dart';
 export 'src/theme/licenses.dart';
 export 'src/tokens/colors.dart';

@@ -73,6 +73,7 @@ abstract final class FbTheme {
       inputDecorationTheme: fbInputDecorationTheme(scheme),
       listTileTheme: fbListTileTheme(scheme),
       datePickerTheme: fbDatePickerTheme(scheme),
+      timePickerTheme: fbTimePickerTheme(scheme),
       dividerTheme: DividerThemeData(
         color: scheme.outlineVariant,
         space: 1,

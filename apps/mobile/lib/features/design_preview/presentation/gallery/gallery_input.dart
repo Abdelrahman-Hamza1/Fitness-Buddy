@@ -82,6 +82,48 @@ final List<GallerySection> gallerySectionsInput = [
     states: (_) => const [GalleryState('type to try it', _SearchFieldDemo())],
   ),
   GallerySection(
+    name: 'FbChoiceChip',
+    covers: const [FbChoiceChip],
+    states: (_) => [
+      GalleryState(
+        'label and value',
+        _start(
+          FbChoiceChip(label: _S.mealChipLabel, value: _S.lunch, onTap: () {}),
+        ),
+      ),
+      GalleryState(
+        'selected',
+        _start(
+          FbChoiceChip(
+            label: _S.mealChipLabel,
+            value: _S.lunch,
+            selected: true,
+            onTap: () {},
+          ),
+        ),
+      ),
+      const GalleryState(
+        'disabled',
+        FbChoiceChip(label: _S.mealChipLabel, value: _S.lunch, onTap: null),
+      ),
+      GalleryState(
+        'label only, no arrow',
+        _start(
+          FbChoiceChip(label: _S.assumption, dropdown: false, onTap: () {}),
+        ),
+      ),
+      const GalleryState('tap to pick a time', _TimeChipDemo()),
+    ],
+  ),
+  GallerySection(
+    name: 'FbTextField',
+    covers: const [FbTextField],
+    states: (_) => const [
+      GalleryState('type to try it (60 characters)', _TextFieldDemo()),
+      GalleryState('error', _TextFieldDemo(errorText: _S.nameFieldError)),
+    ],
+  ),
+  GallerySection(
     name: 'FbAmountDisplay',
     covers: const [FbAmountDisplay],
     states: (_) => [
@@ -336,6 +378,60 @@ class _SearchFieldDemoState extends State<_SearchFieldDemo> {
   @override
   Widget build(BuildContext context) =>
       FbSearchField(controller: _controller, hint: _S.searchHint);
+}
+
+/// A text field with a counter and a clear button.
+class _TextFieldDemo extends StatefulWidget {
+  const new({this.errorText});
+
+  final String? errorText;
+
+  @override
+  State<_TextFieldDemo> createState() => _TextFieldDemoState();
+}
+
+class _TextFieldDemoState extends State<_TextFieldDemo> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => FbTextField(
+    controller: _controller,
+    label: _S.nameFieldLabel,
+    hint: _S.nameFieldHint,
+    maxLength: 60,
+    errorText: widget.errorText,
+    textInputAction: TextInputAction.done,
+  );
+}
+
+/// A time chip whose tap opens the time picker and shows the picked time.
+class _TimeChipDemo extends StatefulWidget {
+  const new();
+
+  @override
+  State<_TimeChipDemo> createState() => _TimeChipDemoState();
+}
+
+class _TimeChipDemoState extends State<_TimeChipDemo> {
+  TimeOfDay _time = const TimeOfDay(hour: 8, minute: 30);
+
+  @override
+  Widget build(BuildContext context) => _start(
+    FbChoiceChip(
+      label: _S.timeChipLabel,
+      value: MaterialLocalizations.of(context).formatTimeOfDay(_time),
+      onTap: () async {
+        final picked = await showFbTimePicker(context, initialTime: _time);
+        if (picked != null) setState(() => _time = picked);
+      },
+    ),
+  );
 }
 
 /// A date header whose date opens the picker and shows the picked day.

@@ -13,6 +13,8 @@ _Logical model. Exact columns are fixed in the migrations of A01/A06 and later s
 | Time | `occurred_at_utc` + `tz_offset_min` + `local_date` (YYYY-MM-DD) | DY-001/002: entries keep their local day and time across travel |
 | Snapshots | Logged items store a **nutrient snapshot** (kcal, P, C, F, fiber + optional extras) and the display name at log time | FD-073: editing a food never rewrites history |
 | Provenance | `source` (`yours` / `database` / `reference` / `estimate`), `is_estimate`, `estimate_range`, `assumptions` (JSON), `origin` (direct / proposal ID), `edited_by_user` | SC-4, AI-032/071/072, FD-010 |
+| Manual override (AI-072, A08b) | A nutrient edit stores the **per-100 equivalent** (`value × 100 / amount`) and the recomputed snapshot, and sets `edited_by_user`. An amount edit keeps the flag and scales the override; a food change clears it; copy, save and a history re-log of an edited snapshot carry it; `source` is never rewritten. Bounds: finite, ≥ 0, per-field caps, derived per-100 ≤ 1e12 (the wire maximum) | One calculation stays true after edits; the badge tells the truth |
+| Source versions (A08b PA2/PA8) | An op that copies or saves user rows carries the **versions of the rows the user saw** (entries and every live referenced group) and checks them, with exact membership, inside the applier transaction; any difference writes nothing | Copies and proposals (A25) write exactly what was shown, or nothing |
 | One calculation | Nutrients per 100 g/ml on foods. Entry nutrients = definition × grams / 100, in `fb_domain` with fixed rounding rules | One tested calculation, used by the app and the Dart tools |
 
 ## 2. Entities

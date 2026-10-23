@@ -174,8 +174,12 @@ void main() {
           MealSource.day(_yesterday),
           toDate: _day,
           copyIds: {entryA: copyA},
+          expected: SourceVersions(
+            entries: {entryA: copyA}.keys.map((id) => VersionedId(id, 1)),
+          ),
         ),
         SaveMeal(
+          expected: SourceVersions(entries: [VersionedId(entryA, 1)]),
           savedMealId: savedMeal,
           name: 'Usual breakfast',
           source: MealSource.entries([entryA]),
@@ -362,6 +366,9 @@ void main() {
         MealSource.slot(_yesterday, DefaultSlots.lunchId),
         toDate: _day,
         copyIds: ids,
+        expected: SourceVersions(
+          entries: ids.keys.map((id) => VersionedId(id, 1)),
+        ),
       );
       expect(op.toSlotId, isNull);
       expect(op.copyIds, ids);
@@ -374,6 +381,9 @@ void main() {
           toDate: _day,
           toSlotId: DefaultSlots.lunchId,
           copyIds: ids,
+          expected: SourceVersions(
+            entries: ids.keys.map((id) => VersionedId(id, 1)),
+          ),
         ),
         throwsArgumentError,
       );
@@ -386,8 +396,14 @@ void main() {
         {entryA: entryB, entryB: copyB},
       ]) {
         expect(
-          () =>
-              CopyMeal(MealSource.day(_yesterday), toDate: _day, copyIds: bad),
+          () => CopyMeal(
+            MealSource.day(_yesterday),
+            toDate: _day,
+            copyIds: bad,
+            expected: SourceVersions(
+              entries: bad.keys.map((id) => VersionedId(id, 1)),
+            ),
+          ),
           throwsArgumentError,
           reason: '$bad',
         );
@@ -398,6 +414,9 @@ void main() {
           MealSource.entries([entryA, entryB]),
           toDate: _day,
           copyIds: {entryA: copyA},
+          expected: SourceVersions(
+            entries: {entryA: copyA}.keys.map((id) => VersionedId(id, 1)),
+          ),
         ),
         throwsArgumentError,
       );
@@ -407,6 +426,9 @@ void main() {
           toDate: _day,
           toSlotId: 'x',
           copyIds: {entryA: copyA},
+          expected: SourceVersions(
+            entries: {entryA: copyA}.keys.map((id) => VersionedId(id, 1)),
+          ),
         ),
         throwsArgumentError,
       );
@@ -416,6 +438,9 @@ void main() {
         toDate: _day,
         toSlotId: DefaultSlots.dinnerId,
         copyIds: {entryA: copyA},
+        expected: SourceVersions(
+          entries: {entryA: copyA}.keys.map((id) => VersionedId(id, 1)),
+        ),
       );
       _expectValue(
         toDinner,
@@ -424,35 +449,56 @@ void main() {
           toDate: _day,
           toSlotId: DefaultSlots.dinnerId,
           copyIds: {entryA: copyA},
+          expected: SourceVersions(
+            entries: {entryA: copyA}.keys.map((id) => VersionedId(id, 1)),
+          ),
         ),
         [
           CopyMeal(
             MealSource.entries([entryA]),
             toDate: _day,
             copyIds: {entryA: copyA},
+            expected: SourceVersions(
+              entries: {entryA: copyA}.keys.map((id) => VersionedId(id, 1)),
+            ),
           ),
           CopyMeal(
             MealSource.entries([entryA]),
             toDate: _yesterday,
             toSlotId: DefaultSlots.dinnerId,
             copyIds: {entryA: copyA},
+            expected: SourceVersions(
+              entries: {entryA: copyA}.keys.map((id) => VersionedId(id, 1)),
+            ),
           ),
           CopyMeal(
             MealSource.entries([entryA]),
             toDate: _day,
             toSlotId: DefaultSlots.dinnerId,
             copyIds: {entryA: copyB},
+            expected: SourceVersions(
+              entries: {entryA: copyB}.keys.map((id) => VersionedId(id, 1)),
+            ),
           ),
           CopyMeal(
             MealSource.entries([entryA]),
             toDate: _day,
             toSlotId: DefaultSlots.dinnerId,
             copyIds: {entryA: copyA, groupG: copyG},
+            expected: SourceVersions(
+              entries: {
+                entryA: copyA,
+                groupG: copyG,
+              }.keys.map((id) => VersionedId(id, 1)),
+            ),
           ),
           CopyMeal(
             MealSource.day(_yesterday),
             toDate: _day,
             copyIds: {entryA: copyA},
+            expected: SourceVersions(
+              entries: {entryA: copyA}.keys.map((id) => VersionedId(id, 1)),
+            ),
           ),
         ],
       );
@@ -469,6 +515,7 @@ void main() {
         String name = 'Usual breakfast',
         MealSource? source,
       }) => SaveMeal(
+        expected: SourceVersions(entries: []),
         savedMealId: id,
         name: name,
         source: source ?? MealSource.day(_day),

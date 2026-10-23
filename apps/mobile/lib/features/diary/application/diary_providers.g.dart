@@ -169,3 +169,91 @@ final class DayTotalsFamily extends $Family
   @override
   String toString() => r'dayTotalsProvider';
 }
+
+/// The live entry [id] wherever it is now (any day or slot), or `null` once
+/// deleted. Open edit sheets watch it (A08 D12(4), PA4).
+
+@ProviderFor(entry)
+final entryProvider = EntryFamily._();
+
+/// The live entry [id] wherever it is now (any day or slot), or `null` once
+/// deleted. Open edit sheets watch it (A08 D12(4), PA4).
+
+final class EntryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<DiaryEntry?>,
+          DiaryEntry?,
+          Stream<DiaryEntry?>
+        >
+    with $FutureModifier<DiaryEntry?>, $StreamProvider<DiaryEntry?> {
+  /// The live entry [id] wherever it is now (any day or slot), or `null` once
+  /// deleted. Open edit sheets watch it (A08 D12(4), PA4).
+  EntryProvider._({
+    required EntryFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'entryProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$entryHash();
+
+  @override
+  String toString() {
+    return r'entryProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<DiaryEntry?> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<DiaryEntry?> create(Ref ref) {
+    final argument = this.argument as String;
+    return entry(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is EntryProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$entryHash() => r'f4a8da454e36e0ad88b5764185580b6c71e666b5';
+
+/// The live entry [id] wherever it is now (any day or slot), or `null` once
+/// deleted. Open edit sheets watch it (A08 D12(4), PA4).
+
+final class EntryFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<DiaryEntry?>, String> {
+  EntryFamily._()
+    : super(
+        retry: null,
+        name: r'entryProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The live entry [id] wherever it is now (any day or slot), or `null` once
+  /// deleted. Open edit sheets watch it (A08 D12(4), PA4).
+
+  EntryProvider call(String id) => EntryProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'entryProvider';
+}

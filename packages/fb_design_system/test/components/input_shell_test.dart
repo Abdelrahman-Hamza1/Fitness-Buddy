@@ -438,6 +438,8 @@ void main() {
         FbSource,
         FbMacroKind,
         FbSearchField,
+        FbChoiceChip,
+        FbTextField,
         FbSectionHeader,
         FbSheet,
         FbSkeleton,

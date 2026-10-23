@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
@@ -5,6 +7,7 @@ import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/diary/application/diary_view_state.dart';
 import 'package:fb_mobile/features/diary/presentation/large_text.dart';
+import 'package:fb_mobile/features/diary/presentation/meal_menu.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -69,24 +72,57 @@ class SlotHeaderTile extends ConsumerWidget {
                       .push(FoodSearchRoute(date: date, slotId: slot.id)),
                 )
               : null,
-          trailing: large && !empty
-              ? null
-              : MediaQuery.withClampedTextScaling(
-                  maxScaleFactor: 1.3,
-                  child: empty
-                      ? Semantics(
-                          label: l10n.todaySlotNoKcalSemantics,
-                          excludeSemantics: true,
-                          child: Text(kcal),
-                        )
-                      : Text(kcal),
-                ),
+          trailing: _trailing(
+            context,
+            section: section,
+            date: date,
+            name: name,
+            empty: empty,
+            large: large,
+            kcal: kcal,
+          ),
           onToggle: () =>
               ref.read(diaryViewStateProvider.notifier).toggleSlot(section.key),
         ),
       ],
     );
   }
+}
+
+/// The calories, then the "⋯" menu of a meal that has items (DY-023). At
+/// large text sizes the calories already moved into the subtitle.
+Widget? _trailing(
+  BuildContext context, {
+  required SlotSection section,
+  required LocalDate date,
+  required String name,
+  required bool empty,
+  required bool large,
+  required String kcal,
+}) {
+  final l10n = context.l10n;
+  final menu = empty
+      ? null
+      : IconButton(
+          tooltip: l10n.diaryMealMenuTooltip(name),
+          icon: const Icon(FbIcons.more),
+          onPressed: () =>
+              unawaited(showMealMenu(context, section: section, date: date)),
+        );
+  final amount = large && !empty
+      ? null
+      : MediaQuery.withClampedTextScaling(
+          maxScaleFactor: 1.3,
+          child: empty
+              ? Semantics(
+                  label: l10n.todaySlotNoKcalSemantics,
+                  excludeSemantics: true,
+                  child: Text(kcal),
+                )
+              : Text(kcal),
+        );
+  if (menu == null) return amount;
+  return Row(mainAxisSize: MainAxisSize.min, children: [?amount, menu]);
 }
 
 /// The compact macro line of an opened meal with full spoken nutrient names.

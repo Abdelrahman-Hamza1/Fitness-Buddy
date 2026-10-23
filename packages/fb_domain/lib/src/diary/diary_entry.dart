@@ -45,7 +45,11 @@ final class EntryFood {
     required this.names,
     required this.per100,
     required this.provenance,
+    this.editedByUser = false,
   });
+
+  /// Whether this chosen snapshot carries a user nutrient override (AI-072).
+  final bool editedByUser;
 
   /// Which food it came from.
   final FoodRef ref;
@@ -66,10 +70,11 @@ final class EntryFood {
       other.ref == ref &&
       other.names == names &&
       other.per100 == per100 &&
-      other.provenance == provenance;
+      other.provenance == provenance &&
+      other.editedByUser == editedByUser;
 
   @override
-  int get hashCode => Object.hash(ref, names, per100, provenance);
+  int get hashCode => Object.hash(ref, names, per100, provenance, editedByUser);
 
   /// Without the names, values or assumptions.
   @override
@@ -165,8 +170,9 @@ final class DiaryEntry {
   /// The entry's nutrients at storage precision (the snapshot).
   final Nutrients snapshot;
 
-  /// Whether the user overrode the values (shown as ⓨ). A06 ops never set
-  /// it.
+  /// Whether the user overrode the values (shown as ⓨ, AI-072). Food
+  /// replacement takes the chosen snapshot flag; amount edits and copies
+  /// retain it.
   final bool editedByUser;
 
   @override

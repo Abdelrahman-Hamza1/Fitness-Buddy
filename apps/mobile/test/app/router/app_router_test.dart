@@ -30,6 +30,9 @@ import '../../helpers/pump_app.dart';
   UpdateRequiredRoute() => (UpdateRequiredScreen, false),
 };
 
+/// An entry ID for the change-food routes.
+const _entryId = '01890abc-def0-7123-8abc-0123456789ab';
+
 const List<AppRoute> _allRoutes = [
   TodayRoute(),
   ProgressRoute(),
@@ -162,6 +165,99 @@ void main() {
       AppRouter.foodSearchRouteOf(Uri.parse('/today/add-food')).date,
       isNull,
     );
+  });
+
+  test('D7 the change-food route carries the item and its version in the '
+      'query, and the router rebuilds it', () {
+    final route = FoodSearchRoute(
+      date: LocalDate(2026, 10, 20),
+      slotId: 'slot-lunch',
+      replace: VersionedId(_entryId, 3),
+    );
+    expect(
+      route.location,
+      '/today/add-food?date=2026-10-20&slot=slot-lunch'
+      '&replace=$_entryId&version=3',
+    );
+    final back = AppRouter.foodSearchRouteOf(Uri.parse(route.location));
+    expect(back.replace, VersionedId(_entryId, 3));
+    expect(back.date, LocalDate(2026, 10, 20));
+    expect(AppRouter.isMalformedFoodSearch(Uri.parse(route.location)), isFalse);
+    expect(
+      AppRouter.isMalformedFoodSearch(Uri.parse('/today/add-food')),
+      isFalse,
+    );
+    expect(const FoodSearchRoute().replace, isNull);
+  });
+
+  test('D7 a replace without a valid UUID and a version of at least 1 is '
+      'malformed', () {
+    for (final query in [
+      'replace=$_entryId', // no version
+      'version=2', // no item
+      'replace=$_entryId&version=0',
+      'replace=$_entryId&version=-1',
+      'replace=$_entryId&version=two',
+      'replace=$_entryId&version=',
+      'replace=not-a-uuid&version=1',
+      'replace=${_entryId.toUpperCase()}&version=1',
+      'replace=&version=1',
+    ]) {
+      final location = Uri.parse('/today/add-food?$query');
+      expect(AppRouter.isMalformedFoodSearch(location), isTrue, reason: query);
+      expect(
+        AppRouter.foodSearchRouteOf(location).replace,
+        isNull,
+        reason: query,
+      );
+    }
+  });
+
+  testWidgets('D7 a malformed replace parameter goes to Today (router)', (
+    tester,
+  ) async {
+    final container = await pumpApp(
+      tester,
+      overrides: [searchOverride(FakeFoodSearch())],
+    );
+    final router = container.read(appRouterProvider);
+
+    for (final query in [
+      'replace=nope&version=1',
+      'replace=$_entryId&version=0',
+      'replace=$_entryId',
+      'version=2',
+    ]) {
+      router.config.go('/today/add-food?$query');
+      await tester.pumpAndSettle();
+      expect(find.byType(FoodSearchScreen), findsNothing, reason: query);
+      expect(find.byType(TodayScreen), findsOneWidget, reason: query);
+      expect(router.config.state.matchedLocation, TodayRoute.path);
+    }
+  });
+
+  testWidgets('D7 a valid replace parameter opens the search in change-food '
+      'mode', (tester) async {
+    final container = await pumpApp(
+      tester,
+      overrides: [searchOverride(FakeFoodSearch())],
+    );
+    container
+        .read(appRouterProvider)
+        .go(
+          FoodSearchRoute(
+            date: LocalDate(2026, 10, 20),
+            replace: VersionedId(_entryId, 2),
+          ),
+        );
+    await tester.pumpAndSettle();
+
+    final screen = tester.widget<FoodSearchScreen>(
+      find.byType(FoodSearchScreen),
+    );
+    expect(screen.replace, VersionedId(_entryId, 2));
+    expect(find.text('Change food'), findsOneWidget);
+    expect(find.byType(NavigationBar), findsOneWidget);
   });
 
   testWidgets('A07 D11 the add-food screen gets the day and the slot from '

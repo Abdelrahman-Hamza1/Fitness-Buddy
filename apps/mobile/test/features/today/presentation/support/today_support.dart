@@ -4,6 +4,7 @@ import 'package:fb_domain/testing.dart';
 import 'package:fb_mobile/core/changes/apply_result.dart';
 import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
+import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
@@ -261,6 +262,7 @@ final class TodayRig {
     changeSetApplierProvider.overrideWithValue(diary.applier),
     diaryApplyProvider.overrideWithValue(apply ?? diary.applier.apply),
     clockProvider.overrideWithValue(diary.clock),
+    idGeneratorProvider.overrideWithValue(diary.ids),
     undoStackProvider.overrideWithValue(stack),
     todayProvider.overrideWith((ref) => Stream.value(testToday)),
     appConfigProvider.overrideWithValue(config),

@@ -48,6 +48,27 @@ final class FoodChoice {
   /// Pack yield factors, used only for the displayed note.
   final YieldConverter? yields;
 
+  /// Absolute estimate ranges describe only the original history amount.
+  EntryFood foodForAmount(Resolved amount) {
+    final previous = lastUsed?.amount;
+    if (food.provenance.range == null ||
+        previous == null ||
+        (previous.amount == amount.amount && previous.basis == amount.basis)) {
+      return food;
+    }
+    return EntryFood(
+      ref: food.ref,
+      names: food.names,
+      per100: food.per100,
+      editedByUser: food.editedByUser,
+      provenance: Provenance(
+        source: food.provenance.source,
+        isEstimate: food.provenance.isEstimate,
+        assumptions: food.provenance.assumptions,
+      ),
+    );
+  }
+
   /// Versioned food identity for the next log.
   FoodRef get ref => food.ref;
 
@@ -67,7 +88,10 @@ final class FoodChoice {
   String? get yieldGroup => catalogFood?.yieldGroup;
 
   /// Stored source badge, retained for snapshot-only foods.
-  FoodSource get badge => food.provenance.source;
+  FoodSource get badge =>
+      catalogFood == null && (lastUsed?.editedByUser ?? false)
+      ? FoodSource.yours
+      : food.provenance.source;
 
   /// Stored pack sanity verdict, when available.
   CatalogSanity? get sanity => catalogFood?.sanity;
@@ -102,7 +126,13 @@ FoodChoice catalogChoice(
 
 /// Snapshot fallback with a basis-aware reconstructed serving (PA4).
 FoodChoice historyChoice(FoodHistoryItem item) => FoodChoice(
-  food: item.food,
+  food: EntryFood(
+    ref: item.food.ref,
+    names: item.food.names,
+    per100: item.food.per100,
+    provenance: item.food.provenance,
+    editedByUser: item.editedByUser,
+  ),
   measures: FoodMeasures(
     basis: item.amount.basis,
     servingUnits: [?item.derivedServing],

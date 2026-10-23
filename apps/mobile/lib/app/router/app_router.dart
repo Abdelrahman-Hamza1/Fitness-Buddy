@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:fb_domain/fb_domain.dart' show LocalDate;
+import 'package:fb_domain/fb_domain.dart' show LocalDate, VersionedId, isUuid;
 import 'package:fb_mobile/app/shell/app_shell.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
@@ -122,11 +122,41 @@ final class AppRouter implements AppNavigator {
   // the query string (A07 D11), so the screen never parses a URL.
   static GoRoute _foodSearchRoute() => GoRoute(
     path: FoodSearchRoute.path.split('/').last,
+    // A swap with a broken target must never become an add (A08 D7).
+    redirect: (_, state) =>
+        isMalformedFoodSearch(state.uri) ? TodayRoute.path : null,
     builder: (_, state) => _screen(foodSearchRouteOf(state.uri)),
   );
 
+  /// The change-food target in [location]: null when there is none or it is
+  /// malformed. See [isMalformedFoodSearch].
+  static VersionedId? _replaceOf(Uri location) {
+    final id = location.queryParameters[FoodSearchRoute.replaceParam];
+    final version = int.tryParse(
+      location.queryParameters[FoodSearchRoute.versionParam] ?? '',
+    );
+    if (id == null || version == null || version < 1 || !isUuid(id)) {
+      return null;
+    }
+    return VersionedId(id, version);
+  }
+
+  /// Whether [location] asks to change a food but names no valid item: a
+  /// `replace` or `version` parameter without a UUID and a version of at
+  /// least 1. Such a location goes to Today instead of the search.
+  @visibleForTesting
+  static bool isMalformedFoodSearch(Uri location) {
+    final params = location.queryParameters;
+    final asked =
+        params.containsKey(FoodSearchRoute.replaceParam) ||
+        params.containsKey(FoodSearchRoute.versionParam);
+    return asked && _replaceOf(location) == null;
+  }
+
   /// The [FoodSearchRoute] a location stands for. A missing or malformed
-  /// parameter is ignored (today, and the slot of the time of day).
+  /// parameter is ignored (today, and the slot of the time of day); a
+  /// malformed change-food target is turned away before this (see
+  /// [isMalformedFoodSearch]).
   @visibleForTesting
   static FoodSearchRoute foodSearchRouteOf(Uri location) {
     final date = location.queryParameters[FoodSearchRoute.dateParam];
@@ -134,6 +164,7 @@ final class AppRouter implements AppNavigator {
     return FoodSearchRoute(
       date: date == null ? null : LocalDate.tryParse(date),
       slotId: slot == null || slot.isEmpty ? null : slot,
+      replace: _replaceOf(location),
     );
   }
 
@@ -144,10 +175,8 @@ final class AppRouter implements AppNavigator {
     WorkoutsRoute() => const WorkoutsScreen(),
     MeRoute() => const MeScreen(),
     DesignPreviewRoute() => const DesignPreviewScreen(),
-    FoodSearchRoute(:final date, :final slotId) => FoodSearchScreen(
-      date: date,
-      slotId: slotId,
-    ),
+    FoodSearchRoute(:final date, :final slotId, :final replace) =>
+      FoodSearchScreen(date: date, slotId: slotId, replace: replace),
     UpdateRequiredRoute() => const UpdateRequiredScreen(),
   };
 

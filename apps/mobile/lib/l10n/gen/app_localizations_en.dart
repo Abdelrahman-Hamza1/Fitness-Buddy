@@ -763,11 +763,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String foodSheetSlot(String slot) {
-    return 'Meal: $slot';
-  }
-
-  @override
   String get foodSheetSlotNone => 'No meal';
 
   @override
@@ -1061,7 +1056,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String diarySourceEdited(String source) {
-    return '$source, edited by you';
+    return 'Your edit of $source values';
   }
 
   @override
@@ -1075,4 +1070,191 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get devComingSoon => 'Coming soon';
+
+  @override
+  String get diaryChipMeal => 'Meal';
+
+  @override
+  String get diaryChangeFood => 'Change food';
+
+  @override
+  String get diaryNutrientEditHint => 'Tap to change this value';
+
+  @override
+  String get diarySave => 'Save';
+
+  @override
+  String get diaryReload => 'Reload';
+
+  @override
+  String get diaryEntryRemoved => 'This item was removed.';
+
+  @override
+  String get diaryEntryChangedStale => 'This item changed.';
+
+  @override
+  String get diaryActionRemoved =>
+      'That item was removed, so nothing was saved.';
+
+  @override
+  String diaryAmountChanged(String name, String amount) {
+    return 'Changed $name to $amount';
+  }
+
+  @override
+  String diaryTimeChanged(String name, String time) {
+    return 'Changed the time of $name to $time';
+  }
+
+  @override
+  String diaryNutrientEdited(String nutrient, String name) {
+    return 'Edited $nutrient of $name';
+  }
+
+  @override
+  String diaryOverrideTitle(String nutrient) {
+    return 'Edit $nutrient';
+  }
+
+  @override
+  String get diaryOverrideNote =>
+      'Enter the value for this amount. The item is then marked as edited by you.';
+
+  @override
+  String diaryOverrideOutOfRange(String max, String unit) {
+    return 'Enter $max $unit or less.';
+  }
+
+  @override
+  String get diaryOverrideInvalid =>
+      'Couldn\'t save that value. Check it and try again.';
+
+  @override
+  String diaryOverrideAmountLabel(String nutrient, String value, String unit) {
+    return '$nutrient, $value $unit';
+  }
+
+  @override
+  String get diaryUnitKcal => 'kcal';
+
+  @override
+  String get diaryUnitMg => 'mg';
+
+  @override
+  String diaryMealMenuTooltip(String meal) {
+    return 'More for $meal';
+  }
+
+  @override
+  String get diaryMealCopyAction => 'Copy to…';
+
+  @override
+  String get diaryMealSaveAction => 'Save as meal…';
+
+  @override
+  String diaryCopyTitle(String meal) {
+    return 'Copy $meal';
+  }
+
+  @override
+  String get diaryCopyDay => 'Day';
+
+  @override
+  String get diaryCopySlotTitle => 'Copy to meal';
+
+  @override
+  String get diaryCopyButton => 'Copy';
+
+  @override
+  String get diaryCopyChoose => 'Choose where to copy this meal.';
+
+  @override
+  String get diaryMealChanged => 'This meal changed.';
+
+  @override
+  String get diaryMealEmpty => 'This meal is empty now.';
+
+  @override
+  String get diaryMealChangedCopy => 'That meal changed. Nothing was copied.';
+
+  @override
+  String get diaryMealChangedSave => 'That meal changed. Nothing was saved.';
+
+  @override
+  String diaryMealCopied(int count, String day) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Copied $count items to $day',
+      one: 'Copied 1 item to $day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get diarySaveTitle => 'Save as meal';
+
+  @override
+  String get diarySaveName => 'Name';
+
+  @override
+  String get diarySaveNameEmpty => 'Give the meal a name.';
+
+  @override
+  String diaryMealSaved(String name) {
+    return 'Saved \"$name\"';
+  }
+
+  @override
+  String get foodSearchChangeTitle => 'Change food';
+
+  @override
+  String get foodSheetUseThis => 'Use this food';
+
+  @override
+  String foodChangedMessage(String name) {
+    return 'Changed to $name';
+  }
+
+  @override
+  String get diarySourceNounDatabase => 'food database';
+
+  @override
+  String get diarySourceNounReference => 'reference dish';
+
+  @override
+  String get diarySourceNounEstimate => 'estimate';
+
+  @override
+  String get diarySourceYoursEdited => 'Your own values, edited';
+
+  @override
+  String get diaryOverrideTitleEnergy => 'Edit calories';
+
+  @override
+  String get diaryAmountNeeded => 'Enter an amount above 0.';
+
+  @override
+  String get diaryValueNeeded => 'Enter a value.';
+
+  @override
+  String diaryMealSummary(int count, int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items · $kcalString kcal',
+      one: '1 item · $kcalString kcal',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String foodSearchReplacing(String name) {
+    return 'Replacing $name';
+  }
 }

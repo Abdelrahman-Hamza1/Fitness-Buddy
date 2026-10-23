@@ -19,7 +19,13 @@ final class FoodAmountControllerProvider
   /// Per-sheet notifier exposing immutable input and derived nutrition state.
   FoodAmountControllerProvider._({
     required FoodAmountControllerFamily super.from,
-    required (FoodChoiceRef, LocalDate, {String? slotId, ParsedAmount? carried})
+    required (
+      FoodChoiceRef,
+      LocalDate, {
+      String? slotId,
+      ParsedAmount? carried,
+      VersionedId? replacing,
+    })
     super.argument,
   }) : super(
          retry: null,
@@ -55,7 +61,7 @@ final class FoodAmountControllerProvider
 }
 
 String _$foodAmountControllerHash() =>
-    r'5562cdc9c32168c7500bf735bd3ce4e0599fc3b2';
+    r'd6b028d6efe1616272db05e06d14e84a83b4d8cc';
 
 /// Per-sheet notifier exposing immutable input and derived nutrition state.
 
@@ -66,7 +72,13 @@ final class FoodAmountControllerFamily extends $Family
           AsyncValue<FoodAmountState>,
           FoodAmountState,
           FutureOr<FoodAmountState>,
-          (FoodChoiceRef, LocalDate, {String? slotId, ParsedAmount? carried})
+          (
+            FoodChoiceRef,
+            LocalDate, {
+            String? slotId,
+            ParsedAmount? carried,
+            VersionedId? replacing,
+          })
         > {
   FoodAmountControllerFamily._()
     : super(
@@ -84,8 +96,15 @@ final class FoodAmountControllerFamily extends $Family
     LocalDate date, {
     String? slotId,
     ParsedAmount? carried,
+    VersionedId? replacing,
   }) => FoodAmountControllerProvider._(
-    argument: (choice, date, slotId: slotId, carried: carried),
+    argument: (
+      choice,
+      date,
+      slotId: slotId,
+      carried: carried,
+      replacing: replacing,
+    ),
     from: this,
   );
 
@@ -103,17 +122,20 @@ abstract class _$FoodAmountController extends $AsyncNotifier<FoodAmountState> {
             LocalDate, {
             String? slotId,
             ParsedAmount? carried,
+            VersionedId? replacing,
           });
   FoodChoiceRef get choice => _$args.$1;
   LocalDate get date => _$args.$2;
   String? get slotId => _$args.slotId;
   ParsedAmount? get carried => _$args.carried;
+  VersionedId? get replacing => _$args.replacing;
 
   FutureOr<FoodAmountState> build(
     FoodChoiceRef choice,
     LocalDate date, {
     String? slotId,
     ParsedAmount? carried,
+    VersionedId? replacing,
   });
   @$mustCallSuper
   @override
@@ -134,6 +156,7 @@ abstract class _$FoodAmountController extends $AsyncNotifier<FoodAmountState> {
         _$args.$2,
         slotId: _$args.slotId,
         carried: _$args.carried,
+        replacing: _$args.replacing,
       ),
     );
   }

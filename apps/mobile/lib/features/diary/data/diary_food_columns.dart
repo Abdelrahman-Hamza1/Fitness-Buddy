@@ -12,6 +12,7 @@ import 'package:fb_mobile/features/diary/data/diary_mappers.dart';
 final class FoodColumns {
   const new _({
     required this.foodKind,
+    required this.editedByUser,
     required this.foodId,
     required this.foodVersion,
     required this.nameEn,
@@ -38,6 +39,7 @@ final class FoodColumns {
     );
     final provenance = food.provenance;
     return FoodColumns._(
+      editedByUser: food.editedByUser,
       foodKind: food.ref.kind.code,
       foodId: food.ref.id,
       foodVersion: food.ref.version,
@@ -65,6 +67,7 @@ final class FoodColumns {
 
   /// The columns of the stored [row], unchanged.
   factory fromEntry(DiaryEntryRow row) => FoodColumns._(
+    editedByUser: row.editedByUser,
     foodKind: row.foodKind,
     foodId: row.foodId,
     foodVersion: row.foodVersion,
@@ -123,6 +126,28 @@ final class FoodColumns {
     );
   }
 
+  /// Whether the snapshot was edited (AI-072); copies retain it.
+  final bool editedByUser;
+
+  /// Per-100 equivalent and recomputed snapshot for a nutrient override.
+  static DiaryEntriesCompanion per100Changes(
+    Nutrients per100,
+    EntryAmount amount,
+  ) {
+    final snapshot = amountChanges(per100, amount);
+    return snapshot.copyWith(
+      // Nutrient edits retain the exact stored canonical amount.
+      amount: const Value.absent(),
+      per100Kcal: Value(per100.kcal),
+      per100ProteinG: Value(per100.protein),
+      per100CarbsG: Value(per100.carbs),
+      per100FatG: Value(per100.fat),
+      per100FiberG: Value(per100.fiber),
+      per100ExtrasJson: Value(extrasToJson(per100.extras)),
+      editedByUser: const Value(true),
+    );
+  }
+
   /// The foodKind column(s).
   final String foodKind;
 
@@ -177,6 +202,7 @@ final class FoodColumns {
     required String? dishGroupId,
   }) => DiaryEntriesCompanion(
     id: Value(id),
+    editedByUser: Value(editedByUser),
     foodKind: Value(foodKind),
     foodId: Value(foodId),
     foodVersion: Value(foodVersion),
@@ -212,6 +238,7 @@ final class FoodColumns {
   /// An update of an entry row to these food columns (name, ref, input,
   /// amount, per-100, snapshot and provenance together).
   DiaryEntriesCompanion entryChanges() => DiaryEntriesCompanion(
+    editedByUser: Value(editedByUser),
     foodKind: Value(foodKind),
     foodId: Value(foodId),
     foodVersion: Value(foodVersion),
@@ -248,6 +275,7 @@ final class FoodColumns {
     id: Value(id),
     savedMealId: Value(savedMealId),
     sortOrder: Value(sortOrder),
+    editedByUser: Value(editedByUser),
     foodKind: Value(foodKind),
     foodId: Value(foodId),
     foodVersion: Value(foodVersion),
