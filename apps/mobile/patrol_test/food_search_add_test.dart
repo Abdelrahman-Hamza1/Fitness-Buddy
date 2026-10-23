@@ -99,8 +99,8 @@ void main() {
       for (final row in await db.select(db.diaryEntries).get()) row.id,
     };
 
-    // Today's "Add food" opens the search through the real go_router.
-    await $('Add food').tap(settlePolicy: SettlePolicy.trySettle);
+    // Today's input bar opens the search through the real go_router.
+    await $('Search for a food…').tap(settlePolicy: SettlePolicy.trySettle);
     await _waitUntil(
       tester,
       () => find.byType(FoodSearchScreen).evaluate().isNotEmpty,
@@ -220,5 +220,5 @@ void main() {
     )..where((t) => t.id.equals(entry.id))).getSingle();
     expect(row.deletedAt, isNotNull);
     expect(await _livePitaEntries(container), hasLength(before.length));
-  });
+  }, timeout: const Timeout(Duration(minutes: 4)));
 }

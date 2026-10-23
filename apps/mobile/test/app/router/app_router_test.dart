@@ -1,3 +1,4 @@
+import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/app/router/app_router.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
@@ -184,12 +185,12 @@ void main() {
     expect(find.byType(NavigationBar), findsOneWidget);
   });
 
-  testWidgets('A07 D11 Add food on Today opens the search, back returns', (
+  testWidgets('HM-008 input bar on an empty Today opens search, back returns', (
     tester,
   ) async {
     await pumpApp(tester, overrides: [searchOverride(FakeFoodSearch())]);
 
-    await tester.tap(find.text('Add food'));
+    await tester.tap(find.byType(FbInputBar));
     await tester.pumpAndSettle();
     expect(find.byType(FoodSearchScreen), findsOneWidget);
 

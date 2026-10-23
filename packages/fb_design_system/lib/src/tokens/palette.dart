@@ -1,17 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 
-/// The two palette variants of the design preview (A02 D3). A is the default;
-/// the owner picks, then the loser is deleted.
-enum FbPaletteVariant {
-  /// "Fresh": teal brand, cool slate neutrals.
-  a,
-
-  /// "Warm": deep indigo brand, warm stone neutrals.
-  b,
-}
-
-/// Every colour role of one variant in one brightness. Raw values: widgets
-/// read them through the theme (`Theme.of(context).colorScheme`,
+/// Every colour role of the palette in one brightness: "Warm", a deep indigo
+/// brand on warm stone neutrals (the owner's pick, backlog #59). Raw values:
+/// widgets read them through the theme (`Theme.of(context).colorScheme`,
 /// `context.fbColors`), not from here.
 final class FbPalette {
   /// Creates a palette.
@@ -42,14 +33,11 @@ final class FbPalette {
     required this.inversePrimary,
   });
 
-  /// The palette of [variant] in [brightness].
-  factory of(FbPaletteVariant variant, Brightness brightness) =>
-      switch ((variant, brightness)) {
-        (FbPaletteVariant.a, Brightness.light) => _aLight,
-        (FbPaletteVariant.a, Brightness.dark) => _aDark,
-        (FbPaletteVariant.b, Brightness.light) => _bLight,
-        (FbPaletteVariant.b, Brightness.dark) => _bDark,
-      };
+  /// The palette in [brightness].
+  factory of(Brightness brightness) => switch (brightness) {
+    Brightness.light => _light,
+    Brightness.dark => _dark,
+  };
 
   /// Light or dark.
   final Brightness brightness;
@@ -129,61 +117,7 @@ final class FbPalette {
 // contrast test (test/tokens/contrast_test.dart) passed; changes are listed
 // in the step card's Outcome.
 
-const _aLight = FbPalette(
-  brightness: Brightness.light,
-  brand: Color(0xFF0F766E),
-  onBrand: Color(0xFFFFFFFF),
-  brandContainer: Color(0xFFCCFBF1),
-  onBrandContainer: Color(0xFF134E4A),
-  surface: Color(0xFFF8FAFC),
-  surfaceContainer: Color(0xFFFFFFFF),
-  surfaceContainerHigh: Color(0xFFF1F5F9),
-  onSurface: Color(0xFF0F172A),
-  onSurfaceVariant: Color(0xFF475569),
-  outline: Color(0xFF7B8EA8),
-  outlineVariant: Color(0xFFE2E8F0),
-  protein: Color(0xFF4F46E5),
-  carbs: Color(0xFFB45309),
-  fat: Color(0xFFBE185D),
-  fiber: Color(0xFF4D7C0F),
-  overTarget: Color(0xFF617187),
-  success: Color(0xFF15803D),
-  info: Color(0xFF0369A1),
-  error: Color(0xFF9F3A2C),
-  errorContainer: Color(0xFFFBEAE7),
-  inverseSurface: Color(0xFF0F172A),
-  inverseOnSurface: Color(0xFFF8FAFC),
-  inversePrimary: Color(0xFF5EEAD4),
-);
-
-const _aDark = FbPalette(
-  brightness: Brightness.dark,
-  brand: Color(0xFF5EEAD4),
-  onBrand: Color(0xFF042F2E),
-  brandContainer: Color(0xFF134E4A),
-  onBrandContainer: Color(0xFFCCFBF1),
-  surface: Color(0xFF0B1220),
-  surfaceContainer: Color(0xFF111A2B),
-  surfaceContainerHigh: Color(0xFF1A2436),
-  onSurface: Color(0xFFE2E8F0),
-  onSurfaceVariant: Color(0xFF94A3B8),
-  outline: Color(0xFF5D6F89),
-  outlineVariant: Color(0xFF1E293B),
-  protein: Color(0xFFA5B4FC),
-  carbs: Color(0xFFFCD34D),
-  fat: Color(0xFFF9A8D4),
-  fiber: Color(0xFFBEF264),
-  overTarget: Color(0xFF94A3B8),
-  success: Color(0xFF86EFAC),
-  info: Color(0xFF7DD3FC),
-  error: Color(0xFFF2B8AE),
-  errorContainer: Color(0xFF3A1D18),
-  inverseSurface: Color(0xFFE2E8F0),
-  inverseOnSurface: Color(0xFF0B1220),
-  inversePrimary: Color(0xFF0F746C),
-);
-
-const _bLight = FbPalette(
+const _light = FbPalette(
   brightness: Brightness.light,
   brand: Color(0xFF3730A3),
   onBrand: Color(0xFFFFFFFF),
@@ -210,7 +144,7 @@ const _bLight = FbPalette(
   inversePrimary: Color(0xFFA5B4FC),
 );
 
-const _bDark = FbPalette(
+const _dark = FbPalette(
   brightness: Brightness.dark,
   brand: Color(0xFFA5B4FC),
   onBrand: Color(0xFF1E1B4B),

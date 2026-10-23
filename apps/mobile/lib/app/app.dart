@@ -43,14 +43,11 @@ class _FitnessBuddyAppState extends ConsumerState<FitnessBuddyApp> {
 
   @override
   Widget build(BuildContext context) {
-    // The variant and mode stay at A / system unless the design preview (dev
-    // flavor only) switches them (A02 D16).
-    final variant = ref.watch(themeVariantProvider);
     return MaterialApp.router(
       routerConfig: ref.watch(appRouterProvider).config,
       onGenerateTitle: (context) => context.l10n.appTitle,
-      theme: AppTheme.lightFor(variant),
-      darkTheme: AppTheme.darkFor(variant),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
       // ThemeMode.system by default: light/dark follows the system setting
       // (UX-040).
       themeMode: ref.watch(themeModeProvider),

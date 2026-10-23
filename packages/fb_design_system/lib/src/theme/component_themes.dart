@@ -139,3 +139,14 @@ ListTileThemeData fbListTileTheme(ColorScheme scheme) => ListTileThemeData(
   minVerticalPadding: FbSpace.s2,
   shape: _mdShape,
 );
+
+/// The date picker dialog: tonal, rounded, no surface tint.
+DatePickerThemeData fbDatePickerTheme(ColorScheme scheme) =>
+    DatePickerThemeData(
+      backgroundColor: scheme.surfaceContainer,
+      surfaceTintColor: _clear,
+      headerBackgroundColor: scheme.surfaceContainer,
+      headerForegroundColor: scheme.onSurface,
+      elevation: FbElevation.overlay,
+      shape: const RoundedRectangleBorder(borderRadius: FbRadius.lgAll),
+    );

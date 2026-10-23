@@ -25,10 +25,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabMe => 'Me';
 
   @override
-  String get todayPlaceholder =>
-      'Tell Buddy what you ate and it shows up here.';
-
-  @override
   String get progressPlaceholder =>
       'Charts appear after a few days of logging.';
 
@@ -59,9 +55,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updateRequiredCheckFailed => 'Couldn\'t check. Are you online?';
 
   @override
-  String get todayEmptyTitle => 'Nothing logged yet';
-
-  @override
   String get progressEmptyTitle => 'No data yet';
 
   @override
@@ -84,15 +77,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get previewTabTokens => 'Tokens';
-
-  @override
-  String get previewVariantLabel => 'Palette';
-
-  @override
-  String get previewVariantA => 'A';
-
-  @override
-  String get previewVariantB => 'B';
 
   @override
   String get previewModeLabel => 'Theme';
@@ -223,7 +207,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get todaySlotDinner => 'Dinner';
 
   @override
-  String get todaySlotEmpty => 'Nothing logged yet';
+  String get todaySlotEmpty => 'Nothing yet';
 
   @override
   String get todaySlotNoKcal => '—';
@@ -399,9 +383,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String progressGoalMonth(String done, String target) {
     return 'This month: $done of $target kg';
   }
-
-  @override
-  String get todayAddFood => 'Add food';
 
   @override
   String get foodSearchTitle => 'Add food';
@@ -881,4 +862,217 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get foodSheetClose => 'Close';
+
+  @override
+  String get diaryDateToday => 'Today';
+
+  @override
+  String get diaryDateYesterday => 'Yesterday';
+
+  @override
+  String get diaryKcalEaten => 'kcal eaten';
+
+  @override
+  String diaryBigKcal(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '$kcalString';
+  }
+
+  @override
+  String diaryMacroItem(String label, double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$label $valueString g';
+  }
+
+  @override
+  String diaryKcal(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '$kcalString kcal';
+  }
+
+  @override
+  String get diaryEmptyTodayHint =>
+      'A fresh day. Tap + on a meal to add your first food.';
+
+  @override
+  String get diaryEmptyPastHint =>
+      'Nothing logged on this day. Forgot something? Tap + on a meal.';
+
+  @override
+  String get diaryEmptySearch => 'Search foods';
+
+  @override
+  String get diarySlotOther => 'Other';
+
+  @override
+  String diarySlotAddTooltip(String meal) {
+    return 'Add food to $meal';
+  }
+
+  @override
+  String diarySlotMacrosSemantics(
+    double protein,
+    double carbs,
+    double fat,
+    double fiber,
+  ) {
+    final intl.NumberFormat proteinNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String proteinString = proteinNumberFormat.format(protein);
+    final intl.NumberFormat carbsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String carbsString = carbsNumberFormat.format(carbs);
+    final intl.NumberFormat fatNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fatString = fatNumberFormat.format(fat);
+    final intl.NumberFormat fiberNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String fiberString = fiberNumberFormat.format(fiber);
+
+    return 'Protein $proteinString g, carbs $carbsString g, fat $fatString g, fiber $fiberString g';
+  }
+
+  @override
+  String diarySlotMacros(
+    double protein,
+    double carbs,
+    double fat,
+    double fiber,
+  ) {
+    final intl.NumberFormat proteinNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String proteinString = proteinNumberFormat.format(protein);
+    final intl.NumberFormat carbsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String carbsString = carbsNumberFormat.format(carbs);
+    final intl.NumberFormat fatNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fatString = fatNumberFormat.format(fat);
+    final intl.NumberFormat fiberNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String fiberString = fiberNumberFormat.format(fiber);
+
+    return 'P $proteinString · C $carbsString · F $fatString · Fiber $fiberString';
+  }
+
+  @override
+  String diaryGroupItems(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get diaryDelete => 'Delete';
+
+  @override
+  String get diaryMoveToAnotherMeal => 'Move to another meal';
+
+  @override
+  String get diaryMoveTitle => 'Move to';
+
+  @override
+  String get diaryMoveCurrent => 'Current meal';
+
+  @override
+  String diaryEntryDeleted(String name) {
+    return 'Deleted $name';
+  }
+
+  @override
+  String diaryEntryMoved(String name, String meal) {
+    return 'Moved $name to $meal';
+  }
+
+  @override
+  String get diaryItemChanged => 'That item was changed, so nothing was saved.';
+
+  @override
+  String get diaryActionFailed => 'Couldn\'t save that. Try again.';
+
+  @override
+  String get diaryLoadFailed => 'Couldn\'t load this day.';
+
+  @override
+  String get diaryDetailsAmount => 'Amount';
+
+  @override
+  String diaryDetailsAmountResolved(String input, String amount) {
+    return '$input ($amount)';
+  }
+
+  @override
+  String get diaryDetailsTime => 'Time';
+
+  @override
+  String get diaryDetailsSource => 'Source';
+
+  @override
+  String get diaryDetailsEstimateRange => 'Estimate range';
+
+  @override
+  String diaryDetailsEstimateRangeValue(int low, int high) {
+    final intl.NumberFormat lowNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String lowString = lowNumberFormat.format(low);
+    final intl.NumberFormat highNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String highString = highNumberFormat.format(high);
+
+    return '$lowString–$highString kcal';
+  }
+
+  @override
+  String get diaryDetailsAssumptions => 'Assumptions';
+
+  @override
+  String get diaryDetailsNutrition => 'Nutrition for this amount';
+
+  @override
+  String get diarySourceYours => 'Your own values';
+
+  @override
+  String get diarySourceDatabase => 'Food database';
+
+  @override
+  String get diarySourceReference => 'Reference dish';
+
+  @override
+  String get diarySourceEstimate => 'Estimate';
+
+  @override
+  String diarySourceEdited(String source) {
+    return '$source, edited by you';
+  }
+
+  @override
+  String get diaryUndoConflict => 'Couldn\'t undo, it was changed since.';
+
+  @override
+  String get diaryUndoExpired => 'Too late to undo.';
+
+  @override
+  String get todayInputHintSearch => 'Search for a food…';
+
+  @override
+  String get devComingSoon => 'Coming soon';
 }

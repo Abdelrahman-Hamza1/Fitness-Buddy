@@ -1,8 +1,7 @@
 import 'package:fb_design_system/fb_design_system.dart';
+import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/foods/application/food_search_row.dart';
-import 'package:fb_mobile/features/foods/presentation/food_source_badge.dart';
-import 'package:fb_mobile/features/foods/presentation/unit_labels.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// One search result (FD-020, FD-023): the source badge first, the English

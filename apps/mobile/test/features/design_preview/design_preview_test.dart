@@ -93,6 +93,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(DesignPreviewScreen), findsNothing);
       expect(find.byType(TodayScreen), findsOneWidget, reason: flavor.name);
+      // Leaves this app's providers before the next one starts.
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(Duration.zero);
     }
   });
 
@@ -116,47 +119,25 @@ void main() {
     expect(find.byType(MeScreen), findsOneWidget);
   });
 
-  testWidgets('the preview switches change themeVariantProvider / '
-      'themeModeProvider and the app theme between variants A and B and '
-      'light/dark', (tester) async {
+  testWidgets('the preview switch changes themeModeProvider and the app '
+      'theme between light, dark and system; the palette is "Warm"', (
+    tester,
+  ) async {
     _phoneSize(tester);
     final container = await pumpApp(tester);
     showRoute(container, const DesignPreviewRoute());
     await tester.pumpAndSettle();
 
     ThemeData current() => Theme.of(tester.element(find.byType(Scaffold).last));
-    expect(container.read(themeVariantProvider), FbPaletteVariant.a);
     expect(container.read(themeModeProvider), ThemeMode.system);
     // The test platform is light.
-    expect(
-      current().colorScheme.primary,
-      FbPalette.of(FbPaletteVariant.a, Brightness.light).brand,
-    );
-
-    await tester.tap(find.text('B'));
-    await tester.pumpAndSettle();
-    expect(container.read(themeVariantProvider), FbPaletteVariant.b);
-    expect(
-      current().colorScheme.primary,
-      FbPalette.of(FbPaletteVariant.b, Brightness.light).brand,
-    );
+    expect(current().colorScheme.primary, FbPalette.of(Brightness.light).brand);
 
     await tester.tap(find.text('Dark'));
     await tester.pumpAndSettle();
     expect(container.read(themeModeProvider), ThemeMode.dark);
     expect(current().brightness, Brightness.dark);
-    expect(
-      current().colorScheme.primary,
-      FbPalette.of(FbPaletteVariant.b, Brightness.dark).brand,
-    );
-
-    await tester.tap(find.text('A'));
-    await tester.pumpAndSettle();
-    expect(container.read(themeVariantProvider), FbPaletteVariant.a);
-    expect(
-      current().colorScheme.primary,
-      FbPalette.of(FbPaletteVariant.a, Brightness.dark).brand,
-    );
+    expect(current().colorScheme.primary, FbPalette.of(Brightness.dark).brand);
 
     await tester.tap(find.text('Light'));
     await tester.pumpAndSettle();
@@ -167,13 +148,13 @@ void main() {
     expect(container.read(themeModeProvider), ThemeMode.system);
   });
 
+  // Today has the diary now: it has its own empty day (UX-050, A08).
   testWidgets('UX-050 tab placeholders use the design-system empty state', (
     tester,
   ) async {
     _phoneSize(tester);
     final container = await pumpApp(tester);
     final screens = {
-      const TodayRoute(): TodayScreen,
       const ProgressRoute(): ProgressScreen,
       const WorkoutsRoute(): WorkoutsScreen,
       const MeRoute(): MeScreen,
@@ -281,7 +262,7 @@ void main() {
 
         // The tokens page lists the contrast of the palette on screen.
         await _openTab(tester, 'Tokens');
-        final palette = FbPalette.of(FbPaletteVariant.a, mode);
+        final palette = FbPalette.of(mode);
         expect(find.text(fbContrastPairs(palette).first.name), findsOneWidget);
       });
     }

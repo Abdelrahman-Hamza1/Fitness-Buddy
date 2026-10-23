@@ -92,6 +92,9 @@ class FbLocalizationsEn extends FbLocalizations {
   String get fbDateNext => 'Next day';
 
   @override
+  String get fbDateChoose => 'Choose a date';
+
+  @override
   String get fbChartPlaceholder => 'Chart coming soon';
 
   @override

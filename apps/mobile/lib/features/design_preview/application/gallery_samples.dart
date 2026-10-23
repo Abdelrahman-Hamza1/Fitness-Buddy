@@ -91,6 +91,15 @@ abstract final class GallerySamples {
   static const String loggedOats = 'Logged Oats, 150 kcal';
   static const String weightSaved = 'Weight saved';
 
+  // Disclosure rows and swipe actions.
+  static const String chickenAndRiceDish = 'Chicken and rice';
+  static const String threeItems = '3 items';
+  static const String dishKcal = '520 kcal';
+  static const String swipeDelete = 'Delete';
+  static const String swipeMove = 'Move to another meal';
+  static const String deleted = 'Deleted';
+  static const String moveAsked = 'Pick a meal to move it to';
+
   // Units.
   static const String gram = 'g';
   static const String millilitre = 'ml';

@@ -15,6 +15,15 @@ abstract final class FbIcons {
   /// Points to the later thing.
   static const IconData next = Icons.chevron_right_rounded; // app-check: allow directional matchTextDirection mirrors it in RTL
 
+  /// Expand a collapsed row; rotated half a turn when it is open.
+  static const IconData expand = Icons.expand_more_rounded;
+
+  /// Delete (swipe action).
+  static const IconData delete = Icons.delete_outline_rounded;
+
+  /// Move to another place (swipe action). Vertical, so it needs no mirroring.
+  static const IconData move = Icons.swap_vert_rounded;
+
   /// Add (quick-add chips, add buttons).
   static const IconData add = Icons.add_rounded;
 

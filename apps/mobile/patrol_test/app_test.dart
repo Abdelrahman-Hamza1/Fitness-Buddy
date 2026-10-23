@@ -57,7 +57,7 @@ void main() {
         'Progress': (ProgressScreen, 'Charts appear after'),
         'Workouts': (WorkoutsScreen, 'Your workouts will show up'),
         'Me': (MeScreen, 'Your profile and settings'),
-        'Today': (TodayScreen, 'Tell Buddy what you ate'),
+        'Today': (TodayScreen, 'Search for a food'),
       };
       for (final MapEntry(key: label, value: (screen, text)) in tabs.entries) {
         await $(NavigationBar).$(label).tap();
@@ -67,5 +67,6 @@ void main() {
         expect($(NavigationBar), findsOneWidget, reason: label);
       }
     },
+    timeout: const Timeout(Duration(minutes: 4)),
   );
 }

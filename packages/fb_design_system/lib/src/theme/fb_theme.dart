@@ -7,13 +7,11 @@ import 'package:material_ui/material_ui.dart';
 /// The design system's themes (A02 D4): an explicit [ColorScheme] and text
 /// theme from the tokens plus an [FbColors] extension. No `fromSeed`.
 abstract final class FbTheme {
-  /// The light theme of [variant].
-  static ThemeData light([FbPaletteVariant variant = FbPaletteVariant.a]) =>
-      _build(FbPalette.of(variant, Brightness.light));
+  /// The light theme.
+  static ThemeData light() => _build(FbPalette.of(Brightness.light));
 
-  /// The dark theme of [variant].
-  static ThemeData dark([FbPaletteVariant variant = FbPaletteVariant.a]) =>
-      _build(FbPalette.of(variant, Brightness.dark));
+  /// The dark theme.
+  static ThemeData dark() => _build(FbPalette.of(Brightness.dark));
 
   static ThemeData _build(FbPalette p) {
     final scheme = ColorScheme(
@@ -74,6 +72,7 @@ abstract final class FbTheme {
       navigationBarTheme: fbNavigationBarTheme(scheme),
       inputDecorationTheme: fbInputDecorationTheme(scheme),
       listTileTheme: fbListTileTheme(scheme),
+      datePickerTheme: fbDatePickerTheme(scheme),
       dividerTheme: DividerThemeData(
         color: scheme.outlineVariant,
         space: 1,

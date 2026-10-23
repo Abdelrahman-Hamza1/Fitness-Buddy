@@ -20,10 +20,6 @@
   "@tabMe": {
     "description": "Bottom navigation tab: profile, goals, targets, memory and settings (UX-010)."
   },
-  "todayPlaceholder": "Tell Buddy what you ate and it shows up here.",
-  "@todayPlaceholder": {
-    "description": "Placeholder body of the Today tab until the diary is built."
-  },
   "progressPlaceholder": "Charts appear after a few days of logging.",
   "@progressPlaceholder": {
     "description": "Placeholder body of the Progress tab until charts are built."
@@ -60,10 +56,6 @@
   "@updateRequiredCheckFailed": {
     "description": "Shown after Check again when the server could not be reached (offline, timeout or error)."
   },
-  "todayEmptyTitle": "Nothing logged yet",
-  "@todayEmptyTitle": {
-    "description": "Title of the Today tab's empty state until the diary is built."
-  },
   "progressEmptyTitle": "No data yet",
   "@progressEmptyTitle": {
     "description": "Title of the Progress tab's empty state until charts are built."
@@ -95,18 +87,6 @@
   "previewTabTokens": "Tokens",
   "@previewTabTokens": {
     "description": "Design preview tab: colours, type and contrast ratios."
-  },
-  "previewVariantLabel": "Palette",
-  "@previewVariantLabel": {
-    "description": "Design preview: label (screen readers) of the A/B palette switch."
-  },
-  "previewVariantA": "A",
-  "@previewVariantA": {
-    "description": "Design preview: palette variant A, the first option of the A/B switch."
-  },
-  "previewVariantB": "B",
-  "@previewVariantB": {
-    "description": "Design preview: palette variant B, the second option of the A/B switch."
   },
   "previewModeLabel": "Theme",
   "@previewModeLabel": {
@@ -301,7 +281,7 @@
   "@todaySlotDinner": {
     "description": "Diary meal slot: dinner."
   },
-  "todaySlotEmpty": "Nothing logged yet",
+  "todaySlotEmpty": "Nothing yet",
   "@todaySlotEmpty": {
     "description": "Today: subtitle of a diary slot without entries."
   },
@@ -595,10 +575,6 @@
         "type": "String"
       }
     }
-  },
-  "todayAddFood": "Add food",
-  "@todayAddFood": {
-    "description": "Today: button of the empty state that opens the add-food search (FD-020)."
   },
   "foodSearchTitle": "Add food",
   "@foodSearchTitle": {
@@ -1111,5 +1087,268 @@
   "foodSearchNotReadyTitle": "Nothing to search yet",
   "foodSearchNotReadyMessage": "The food database isn't ready yet. Foods you log will show up here.",
   "foodTryAgain": "Try again",
-  "foodSheetClose": "Close"
+  "foodSheetClose": "Close",
+  "diaryDateToday": "Today",
+  "@diaryDateToday": {
+    "description": "Day header: the label of the current day (HM-009)."
+  },
+  "diaryDateYesterday": "Yesterday",
+  "@diaryDateYesterday": {
+    "description": "Day header: the label of the day before today (HM-009)."
+  },
+  "diaryKcalEaten": "kcal eaten",
+  "@diaryKcalEaten": {
+    "description": "Today: caption under the big number while there is no target yet (HM-001)."
+  },
+  "diaryBigKcal": "{kcal}",
+  "@diaryBigKcal": {
+    "description": "Today: the big number, the day's calories eaten.",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "diaryMacroItem": "{label} {value} g",
+  "@diaryMacroItem": {
+    "description": "Today: one macro of the day's total, e.g. Protein 110 g.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "value": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "diaryKcal": "{kcal} kcal",
+  "@diaryKcal": {
+    "description": "Diary: calories of a slot, a dish or an item.",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "diaryEmptyTodayHint": "A fresh day. Tap + on a meal to add your first food.",
+  "@diaryEmptyTodayHint": {
+    "description": "Today: hint card above the meals while the day has no entries (UX-050)."
+  },
+  "diaryEmptyPastHint": "Nothing logged on this day. Forgot something? Tap + on a meal.",
+  "@diaryEmptyPastHint": {
+    "description": "A past day without entries (UX-050)."
+  },
+  "diaryEmptySearch": "Search foods",
+  "@diaryEmptySearch": {
+    "description": "Button of the empty-day hint: opens the food search."
+  },
+  "diarySlotOther": "Other",
+  "@diarySlotOther": {
+    "description": "Diary: heading for entries whose meal no longer exists."
+  },
+  "diarySlotAddTooltip": "Add food to {meal}",
+  "@diarySlotAddTooltip": {
+    "description": "Tooltip and screen-reader label of the + button of a meal.",
+    "placeholders": {
+      "meal": {
+        "type": "String"
+      }
+    }
+  },
+  "diarySlotMacrosSemantics": "Protein {protein} g, carbs {carbs} g, fat {fat} g, fiber {fiber} g",
+  "@diarySlotMacrosSemantics": {
+    "description": "Full nutrient names spoken for an expanded meal.",
+    "placeholders": {
+      "protein": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "carbs": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "fat": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "fiber": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "diarySlotMacros": "P {protein} · C {carbs} · F {fat} · Fiber {fiber}",
+  "@diarySlotMacros": {
+    "description": "Diary: compact macro line of an opened meal (grams).",
+    "placeholders": {
+      "protein": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "carbs": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "fat": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "fiber": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "diaryGroupItems": "{count, plural, =1{1 item} other{{count} items}}",
+  "@diaryGroupItems": {
+    "description": "Diary: how many items a dish holds.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "diaryDelete": "Delete",
+  "@diaryDelete": {
+    "description": "Swipe action and screen-reader action: removes a diary item (undoable)."
+  },
+  "diaryMoveToAnotherMeal": "Move to another meal",
+  "@diaryMoveToAnotherMeal": {
+    "description": "Swipe action and screen-reader action: opens the list of meals."
+  },
+  "diaryMoveTitle": "Move to",
+  "@diaryMoveTitle": {
+    "description": "Title of the sheet that lists the meals to move an item to."
+  },
+  "diaryMoveCurrent": "Current meal",
+  "@diaryMoveCurrent": {
+    "description": "Screen-reader text of the meal the item is already in."
+  },
+  "diaryEntryDeleted": "Deleted {name}",
+  "@diaryEntryDeleted": {
+    "description": "Undo snackbar after an item was deleted.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "diaryEntryMoved": "Moved {name} to {meal}",
+  "@diaryEntryMoved": {
+    "description": "Undo snackbar after an item was moved to another meal.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "meal": {
+        "type": "String"
+      }
+    }
+  },
+  "diaryItemChanged": "That item was changed, so nothing was saved.",
+  "@diaryItemChanged": {
+    "description": "Snackbar when the item was edited elsewhere since it was shown (UX-052)."
+  },
+  "diaryActionFailed": "Couldn't save that. Try again.",
+  "@diaryActionFailed": {
+    "description": "Snackbar when a diary change could not be made."
+  },
+  "diaryLoadFailed": "Couldn't load this day.",
+  "@diaryLoadFailed": {
+    "description": "Banner when a day's diary cannot be read."
+  },
+  "diaryDetailsAmount": "Amount",
+  "@diaryDetailsAmount": {
+    "description": "Item details: row label of the logged amount."
+  },
+  "diaryDetailsAmountResolved": "{input} ({amount})",
+  "@diaryDetailsAmountResolved": {
+    "description": "Item details: the logged amount and its size in grams or ml.",
+    "placeholders": {
+      "input": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "diaryDetailsTime": "Time",
+  "@diaryDetailsTime": {
+    "description": "Item details: row label of the time the item was logged for."
+  },
+  "diaryDetailsSource": "Source",
+  "@diaryDetailsSource": {
+    "description": "Item details: row label of where the numbers come from."
+  },
+  "diaryDetailsEstimateRange": "Estimate range",
+  "@diaryDetailsEstimateRange": {
+    "description": "Item details: row label of the calorie range of an estimate."
+  },
+  "diaryDetailsEstimateRangeValue": "{low}–{high} kcal",
+  "@diaryDetailsEstimateRangeValue": {
+    "description": "Item details: the calorie range of an estimate.",
+    "placeholders": {
+      "low": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "high": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "diaryDetailsAssumptions": "Assumptions",
+  "@diaryDetailsAssumptions": {
+    "description": "Item details: heading of the assumptions behind an estimate."
+  },
+  "diaryDetailsNutrition": "Nutrition for this amount",
+  "@diaryDetailsNutrition": {
+    "description": "Item details: heading of the nutrient list."
+  },
+  "diarySourceYours": "Your own values",
+  "@diarySourceYours": {
+    "description": "Item details: the numbers were entered by the user."
+  },
+  "diarySourceDatabase": "Food database",
+  "@diarySourceDatabase": {
+    "description": "Item details: the numbers come from the food database."
+  },
+  "diarySourceReference": "Reference dish",
+  "@diarySourceReference": {
+    "description": "Item details: the numbers are typical for a dish."
+  },
+  "diarySourceEstimate": "Estimate",
+  "@diarySourceEstimate": {
+    "description": "Item details: the numbers are a rough guess."
+  },
+  "diarySourceEdited": "{source}, edited by you",
+  "@diarySourceEdited": {
+    "description": "Item details: the numbers were changed by the user.",
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "diaryUndoConflict": "Couldn't undo, it was changed since.",
+  "@diaryUndoConflict": {
+    "description": "Snackbar when Undo is refused because the data changed afterwards."
+  },
+  "diaryUndoExpired": "Too late to undo.",
+  "@diaryUndoExpired": {
+    "description": "Snackbar when the undo window has passed."
+  },
+  "todayInputHintSearch": "Search for a food…",
+  "@todayInputHintSearch": {
+    "description": "Hint of the bar at the bottom of Today until Buddy takes it over: it opens the food search (HM-008)."
+  },
+  "devComingSoon": "Coming soon",
+  "@devComingSoon": {
+    "description": "Dev builds only: the camera and barcode buttons do nothing yet."
+  }
 }

@@ -16,9 +16,10 @@ part 'diary_repository.g.dart';
 /// read. Writes are change sets through the applier (WP3).
 final class DiaryRepository {
   /// A repository over [db].
-  new(AppDatabase db) : this._(db, DiaryReads(db));
+  new(AppDatabase db, {this.readDay}) : _db = db, _reads = DiaryReads(db);
 
-  new _(this._db, this._reads);
+  /// Optional read port for instrumentation; defaults to [DiaryReads.day].
+  final Future<DiaryDay> Function(LocalDate)? readDay;
 
   final AppDatabase _db;
   final DiaryReads _reads;
@@ -32,7 +33,20 @@ final class DiaryRepository {
   /// Initial data is immediate. Later invalidations coalesce for one frame,
   /// so a write burst does not queue a full history scan between every log.
   /// One read runs at a time, with one dirty bit; stale results are discarded.
-  Stream<List<FoodHistoryItem>> watchFoodHistory() => Stream.multi((listener) {
+  Stream<List<FoodHistoryItem>> watchFoodHistory() => _watch(
+    {_db.diaryEntries},
+    () async => [
+      for (final row in await _foodHistoryQuery().get()) _history(row),
+    ],
+    delay: const Duration(milliseconds: 16),
+  );
+
+  // One in-flight read and one dirty bit bound burst work (A08 D12(6)).
+  Stream<T> _watch<T>(
+    Set<TableInfo<Table, Object?>> tables,
+    Future<T> Function() load, {
+    Duration delay = Duration.zero,
+  }) => Stream.multi((listener) {
     var cancelled = false;
     var running = false;
     var dirty = false;
@@ -43,15 +57,15 @@ final class DiaryRepository {
       dirty = false;
       running = true;
       try {
-        final rows = await _foodHistoryQuery().get();
+        final value = await load();
         if (!cancelled && !dirty) {
-          listener.add([for (final row in rows) _history(row)]);
+          listener.add(value);
         }
       } on Object catch (error, stack) {
-        if (!cancelled) listener.addError(error, stack);
+        if (!cancelled && !dirty) listener.addError(error, stack);
       } finally {
         running = false;
-        if (dirty && !cancelled) schedule(const Duration(milliseconds: 16));
+        if (dirty && !cancelled) schedule(delay);
       }
     }
 
@@ -62,8 +76,8 @@ final class DiaryRepository {
       timer = Timer(delay, read);
     };
     final updates = _db
-        .tableUpdates(TableUpdateQuery.onTable(_db.diaryEntries))
-        .listen((_) => schedule(const Duration(milliseconds: 16)));
+        .tableUpdates(TableUpdateQuery.onAllTables(tables))
+        .listen((_) => schedule(delay));
     schedule(Duration.zero);
     listener.onCancel = () {
       cancelled = true;
@@ -129,7 +143,7 @@ final class DiaryRepository {
 
   /// The whole day [date]: slots, groups, entries and mark.
   Stream<DiaryDay> watchDay(LocalDate date) =>
-      _watch(_reads.dayTables, () => _reads.day(date));
+      _watch(_reads.dayTables, () => (readDay ?? _reads.day)(date));
 
   /// The live entries of slot [slotId] on [date].
   Stream<List<DiaryEntry>> watchSlot(LocalDate date, String slotId) =>
@@ -156,17 +170,6 @@ final class DiaryRepository {
   /// The day marks from [from] to [to] (inclusive).
   Stream<List<DayMark>> watchDayMarks(LocalDate from, LocalDate to) =>
       _watch({_db.dayMarks}, () => _reads.marksBetween(from, to));
-
-  /// Runs [read] now and again after each write to [tables]. drift's custom
-  /// query streams re-run on table updates and don't compare results, so
-  /// every change re-emits.
-  Stream<T> _watch<T>(
-    Set<TableInfo<Table, Object?>> tables,
-    Future<T> Function() read,
-  ) => _db
-      .customSelect('SELECT 1', readsFrom: tables)
-      .watch()
-      .asyncMap((_) => read());
 }
 
 /// The diary repository over the open profile's database. Here, not in

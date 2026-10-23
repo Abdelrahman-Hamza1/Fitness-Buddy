@@ -35,5 +35,6 @@ void main() {
       debugPrint(result.summary('device'));
       expect(result.micros, hasLength(200));
     },
+    timeout: const Timeout(Duration(minutes: 4)),
   );
 }

@@ -43,6 +43,8 @@
 
   "fbDatePrevious": "Previous day",
   "fbDateNext": "Next day",
+  "fbDateChoose": "Choose a date",
+  "@fbDateChoose": { "description": "Screen-reader hint on the tappable date in the day header: what a tap does (opens the date picker)." },
 
   "fbChartPlaceholder": "Chart coming soon",
   "fbSheetDragHandle": "Drag handle",

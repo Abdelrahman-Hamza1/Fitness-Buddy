@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:fb_domain/fb_domain.dart';
-import 'package:fb_mobile/features/foods/presentation/unit_labels.dart';
+import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/l10n/gen/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart';

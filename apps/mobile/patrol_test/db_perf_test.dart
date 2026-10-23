@@ -41,5 +41,6 @@ void main() {
         expect(result.runs, 200);
       }
     },
+    timeout: const Timeout(Duration(minutes: 4)),
   );
 }

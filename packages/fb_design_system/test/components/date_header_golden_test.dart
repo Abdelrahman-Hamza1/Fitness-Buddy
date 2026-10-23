@@ -9,6 +9,12 @@ Future<void> main() => fbGoldenMatrix(
     'both enabled': (_) =>
         FbDateHeader(label: 'Yesterday', onPrevious: () {}, onNext: () {}),
     'next disabled': (_) => FbDateHeader(label: 'Today', onPrevious: () {}),
+    'tappable label': (_) => FbDateHeader(
+      label: 'Yesterday',
+      onPrevious: () {},
+      onNext: () {},
+      onLabelTap: () {},
+    ),
     'long label': (_) => FbDateHeader(
       label: 'Wednesday, 30 September 2026',
       onPrevious: () {},

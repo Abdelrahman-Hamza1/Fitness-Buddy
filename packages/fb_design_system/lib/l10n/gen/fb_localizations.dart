@@ -250,6 +250,12 @@ abstract class FbLocalizations {
   /// **'Next day'**
   String get fbDateNext;
 
+  /// Screen-reader hint on the tappable date in the day header: what a tap does (opens the date picker).
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a date'**
+  String get fbDateChoose;
+
   /// No description provided for @fbChartPlaceholder.
   ///
   /// In en, this message translates to:

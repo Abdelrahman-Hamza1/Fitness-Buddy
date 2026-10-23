@@ -31,7 +31,9 @@ void main() {
   testWidgets('UX-001 nothing is requested before the first frame; '
       '/v1/config is requested after it', (tester) async {
     final phone = TestPhone()..adapter.respond = config('0.0.0');
-    final container = ProviderContainer.test(overrides: phone.overrides());
+    final container = ProviderContainer.test(
+      overrides: [...phone.overrides(), ...todayOverrides()],
+    );
     // Registered before the app's own callback, so it runs first: at the end
     // of the first frame, before any deferred work.
     tester.binding.addPostFrameCallback(

@@ -16,7 +16,7 @@ const List<(String, Brightness, TextDirection)> fbGoldenColumns = [
   ('dark RTL', Brightness.dark, TextDirection.rtl),
 ];
 
-/// Wraps [child] as a screen cell: [brightness] theme of [variant],
+/// Wraps [child] as a screen cell: [brightness] theme,
 /// [direction], [textScale], animations off, the phone width and the theme's
 /// surface behind it.
 Widget fbGoldenCell({
@@ -24,12 +24,11 @@ Widget fbGoldenCell({
   required Brightness brightness,
   TextDirection direction = TextDirection.ltr,
   double textScale = 1,
-  FbPaletteVariant variant = FbPaletteVariant.a,
   double width = fbGoldenCellWidth,
 }) {
   final theme = brightness == Brightness.light
-      ? FbTheme.light(variant)
-      : FbTheme.dark(variant);
+      ? FbTheme.light()
+      : FbTheme.dark();
   return Theme(
     data: theme,
     child: Localizations(
@@ -71,10 +70,11 @@ Future<void> fbGoldenMatrix(
   required String fileName,
   required Map<String, WidgetBuilder> states,
   List<double> textScales = fbGoldenTextScales,
-  FbPaletteVariant variant = FbPaletteVariant.a,
+  Interaction? whilePerforming,
 }) => goldenTest(
   description,
   fileName: fileName,
+  whilePerforming: whilePerforming,
   // Nothing animates, but settle anyway so sheets and routes are complete.
   pumpBeforeTest: precacheImages,
   builder: () => GoldenTestGroup(
@@ -89,7 +89,6 @@ Future<void> fbGoldenMatrix(
                 brightness: brightness,
                 direction: direction,
                 textScale: scale,
-                variant: variant,
                 child: Builder(builder: build),
               ),
             ),

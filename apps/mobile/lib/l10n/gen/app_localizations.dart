@@ -124,12 +124,6 @@ abstract class AppLocalizations {
   /// **'Me'**
   String get tabMe;
 
-  /// Placeholder body of the Today tab until the diary is built.
-  ///
-  /// In en, this message translates to:
-  /// **'Tell Buddy what you ate and it shows up here.'**
-  String get todayPlaceholder;
-
   /// Placeholder body of the Progress tab until charts are built.
   ///
   /// In en, this message translates to:
@@ -184,12 +178,6 @@ abstract class AppLocalizations {
   /// **'Couldn\'t check. Are you online?'**
   String get updateRequiredCheckFailed;
 
-  /// Title of the Today tab's empty state until the diary is built.
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing logged yet'**
-  String get todayEmptyTitle;
-
   /// Title of the Progress tab's empty state until charts are built.
   ///
   /// In en, this message translates to:
@@ -237,24 +225,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tokens'**
   String get previewTabTokens;
-
-  /// Design preview: label (screen readers) of the A/B palette switch.
-  ///
-  /// In en, this message translates to:
-  /// **'Palette'**
-  String get previewVariantLabel;
-
-  /// Design preview: palette variant A, the first option of the A/B switch.
-  ///
-  /// In en, this message translates to:
-  /// **'A'**
-  String get previewVariantA;
-
-  /// Design preview: palette variant B, the second option of the A/B switch.
-  ///
-  /// In en, this message translates to:
-  /// **'B'**
-  String get previewVariantB;
 
   /// Design preview: label (screen readers) of the light/dark/system switch.
   ///
@@ -487,7 +457,7 @@ abstract class AppLocalizations {
   /// Today: subtitle of a diary slot without entries.
   ///
   /// In en, this message translates to:
-  /// **'Nothing logged yet'**
+  /// **'Nothing yet'**
   String get todaySlotEmpty;
 
   /// Today: calories column of a diary slot without entries.
@@ -770,12 +740,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This month: {done} of {target} kg'**
   String progressGoalMonth(String done, String target);
-
-  /// Today: button of the empty state that opens the add-food search (FD-020).
-  ///
-  /// In en, this message translates to:
-  /// **'Add food'**
-  String get todayAddFood;
 
   /// Title of the add-food search screen (FD-020).
   ///
@@ -1243,6 +1207,256 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get foodSheetClose;
+
+  /// Day header: the label of the current day (HM-009).
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get diaryDateToday;
+
+  /// Day header: the label of the day before today (HM-009).
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get diaryDateYesterday;
+
+  /// Today: caption under the big number while there is no target yet (HM-001).
+  ///
+  /// In en, this message translates to:
+  /// **'kcal eaten'**
+  String get diaryKcalEaten;
+
+  /// Today: the big number, the day's calories eaten.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal}'**
+  String diaryBigKcal(int kcal);
+
+  /// Today: one macro of the day's total, e.g. Protein 110 g.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} {value} g'**
+  String diaryMacroItem(String label, double value);
+
+  /// Diary: calories of a slot, a dish or an item.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal'**
+  String diaryKcal(int kcal);
+
+  /// Today: hint card above the meals while the day has no entries (UX-050).
+  ///
+  /// In en, this message translates to:
+  /// **'A fresh day. Tap + on a meal to add your first food.'**
+  String get diaryEmptyTodayHint;
+
+  /// A past day without entries (UX-050).
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing logged on this day. Forgot something? Tap + on a meal.'**
+  String get diaryEmptyPastHint;
+
+  /// Button of the empty-day hint: opens the food search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search foods'**
+  String get diaryEmptySearch;
+
+  /// Diary: heading for entries whose meal no longer exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get diarySlotOther;
+
+  /// Tooltip and screen-reader label of the + button of a meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Add food to {meal}'**
+  String diarySlotAddTooltip(String meal);
+
+  /// Full nutrient names spoken for an expanded meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein {protein} g, carbs {carbs} g, fat {fat} g, fiber {fiber} g'**
+  String diarySlotMacrosSemantics(
+    double protein,
+    double carbs,
+    double fat,
+    double fiber,
+  );
+
+  /// Diary: compact macro line of an opened meal (grams).
+  ///
+  /// In en, this message translates to:
+  /// **'P {protein} · C {carbs} · F {fat} · Fiber {fiber}'**
+  String diarySlotMacros(
+    double protein,
+    double carbs,
+    double fat,
+    double fiber,
+  );
+
+  /// Diary: how many items a dish holds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 item} other{{count} items}}'**
+  String diaryGroupItems(int count);
+
+  /// Swipe action and screen-reader action: removes a diary item (undoable).
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get diaryDelete;
+
+  /// Swipe action and screen-reader action: opens the list of meals.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to another meal'**
+  String get diaryMoveToAnotherMeal;
+
+  /// Title of the sheet that lists the meals to move an item to.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to'**
+  String get diaryMoveTitle;
+
+  /// Screen-reader text of the meal the item is already in.
+  ///
+  /// In en, this message translates to:
+  /// **'Current meal'**
+  String get diaryMoveCurrent;
+
+  /// Undo snackbar after an item was deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted {name}'**
+  String diaryEntryDeleted(String name);
+
+  /// Undo snackbar after an item was moved to another meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Moved {name} to {meal}'**
+  String diaryEntryMoved(String name, String meal);
+
+  /// Snackbar when the item was edited elsewhere since it was shown (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'That item was changed, so nothing was saved.'**
+  String get diaryItemChanged;
+
+  /// Snackbar when a diary change could not be made.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save that. Try again.'**
+  String get diaryActionFailed;
+
+  /// Banner when a day's diary cannot be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this day.'**
+  String get diaryLoadFailed;
+
+  /// Item details: row label of the logged amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get diaryDetailsAmount;
+
+  /// Item details: the logged amount and its size in grams or ml.
+  ///
+  /// In en, this message translates to:
+  /// **'{input} ({amount})'**
+  String diaryDetailsAmountResolved(String input, String amount);
+
+  /// Item details: row label of the time the item was logged for.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get diaryDetailsTime;
+
+  /// Item details: row label of where the numbers come from.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get diaryDetailsSource;
+
+  /// Item details: row label of the calorie range of an estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate range'**
+  String get diaryDetailsEstimateRange;
+
+  /// Item details: the calorie range of an estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'{low}–{high} kcal'**
+  String diaryDetailsEstimateRangeValue(int low, int high);
+
+  /// Item details: heading of the assumptions behind an estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Assumptions'**
+  String get diaryDetailsAssumptions;
+
+  /// Item details: heading of the nutrient list.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition for this amount'**
+  String get diaryDetailsNutrition;
+
+  /// Item details: the numbers were entered by the user.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own values'**
+  String get diarySourceYours;
+
+  /// Item details: the numbers come from the food database.
+  ///
+  /// In en, this message translates to:
+  /// **'Food database'**
+  String get diarySourceDatabase;
+
+  /// Item details: the numbers are typical for a dish.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference dish'**
+  String get diarySourceReference;
+
+  /// Item details: the numbers are a rough guess.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate'**
+  String get diarySourceEstimate;
+
+  /// Item details: the numbers were changed by the user.
+  ///
+  /// In en, this message translates to:
+  /// **'{source}, edited by you'**
+  String diarySourceEdited(String source);
+
+  /// Snackbar when Undo is refused because the data changed afterwards.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t undo, it was changed since.'**
+  String get diaryUndoConflict;
+
+  /// Snackbar when the undo window has passed.
+  ///
+  /// In en, this message translates to:
+  /// **'Too late to undo.'**
+  String get diaryUndoExpired;
+
+  /// Hint of the bar at the bottom of Today until Buddy takes it over: it opens the food search (HM-008).
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a food…'**
+  String get todayInputHintSearch;
+
+  /// Dev builds only: the camera and barcode buttons do nothing yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get devComingSoon;
 }
 
 class _AppLocalizationsDelegate

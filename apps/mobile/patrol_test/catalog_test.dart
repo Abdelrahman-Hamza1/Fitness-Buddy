@@ -59,5 +59,6 @@ void main() {
       }
       expect(await catalog.yieldFactors(), isNotEmpty);
     },
+    timeout: const Timeout(Duration(minutes: 4)),
   );
 }

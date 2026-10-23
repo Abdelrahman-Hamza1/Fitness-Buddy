@@ -150,13 +150,14 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A05b](A05b-exercises-cities-data.md) | Exercises & cities data | **Codex** | A05 | S | S13 part |  | ✅ |
 | [A06](A06-diary-domain.md) | Diary domain & storage | Claude | A01 | M | S14 |  | ✅ |
 | [A07](A07-food-search-add.md) | Food search & add flow | Claude | A02, A05, A06 | M | S15 |  | ✅ |
-| [A08](A08-today-diary-ui.md) | Today screen & diary UI | Claude | A07 | L | S16 |  | ⬜ |
-| [A09](A09-personal-foods-quick-add.md) | Personal foods, saved meals & quick-add | Claude | A08 | M | S17 |  | ⬜ |
-| [A10](A10-settings-slots.md) | Settings & meal slots | Claude | A08 | M | S18 |  | ⬜ |
+| [A08a](A08-today-diary-ui.md) | Today & diary view (split from A08, 2026-10-23) | Claude | A07 | L | S16 part |  | ✅ |
+| [A08b](A08-today-diary-ui.md) | Diary editing & meal actions (split from A08) | Claude | A08a | M | S16 part |  | ⬜ |
+| [A09](A09-personal-foods-quick-add.md) | Personal foods, saved meals & quick-add | Claude | A08b | M | S17 |  | ⬜ |
+| [A10](A10-settings-slots.md) | Settings & meal slots | Claude | A08a | M | S18 |  | ⬜ |
 | [A11](A11-dogfood-1-readiness.md) | Dogfood 1 readiness: export, crash reports, daily build | **Codex** | A09, A10 · soft: **B03** | M | S28 export part + new | **M1** | ⬜ |
 | [A12](A12-targets-engine.md) | Targets engine | **Codex** | A06 | M | S19 |  | ✅ |
 | [A13](A13-targets-ui-onboarding.md) | Goals & targets UI, R1 onboarding | Claude | A10, A12 | M | S20 |  | ⬜ |
-| [A14](A14-weigh-ins-trend.md) | Weigh-ins & trend | Claude | A08 | M | S21 |  | ⬜ |
+| [A14](A14-weigh-ins-trend.md) | Weigh-ins & trend | Claude | A08a | M | S21 |  | ⬜ |
 | [A15](A15-weight-graph-measurements.md) | Weight graph & measurements | Claude | A12, A14 | L | S22 |  | ⬜ |
 | [A16](A16-progress-tab.md) | Progress tab v1 | Claude | A13, A15 | M | S23 | **M2** | ⬜ |
 | [A17](dish-batches.md) | Dish batch 2: main dishes A | Claude | A04 | S | D2 |  | ⏸ deferred (TD-074): after A41 |
@@ -164,7 +165,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A19](dish-batches.md) | Dish batch 4: main dishes B, salads & sides | Claude | A18 | S | D4 |  | ⏸ deferred (TD-074): after A41 |
 | [A20](A20-api-session.md) | API session: anonymous identity & auth interceptor | **Codex** | **B04** (contract) | S | S25 part |  | ⬜ |
 | [A21](A21-proposal-engine.md) | ProposalEngine | **Codex** | A07, A12, **B02** | L | S32 |  | ⬜ |
-| [A22](A22-chat-proposal-card.md) | Chat sheet & proposal card | Claude | A08, A20, A21, **B08** | L | S33 |  | ⬜ |
+| [A22](A22-chat-proposal-card.md) | Chat sheet & proposal card | Claude | A08b, A20, A21, **B08** | L | S33 |  | ⬜ |
 | [A23](A23-message-lifecycle.md) | Message lifecycle, pending & failures | Claude | A22 | M | S34 | **M3** | ⬜ |
 | [A24](A24-online-search-pack-updates.md) | Online search & pack updates (app) | **Codex** | A07, **B07** | M | S30 app part |  | ⬜ |
 | [A25](A25-diary-edits-by-chat.md) | Diary edits by chat (app) | Claude | A23, **B09** (contract) | M | S35 app part |  | ⬜ |

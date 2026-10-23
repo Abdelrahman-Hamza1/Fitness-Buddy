@@ -2,11 +2,9 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
-const _palettes = <(String, FbPaletteVariant, Brightness)>[
-  ('variant A light', FbPaletteVariant.a, Brightness.light),
-  ('variant A dark', FbPaletteVariant.a, Brightness.dark),
-  ('variant B light', FbPaletteVariant.b, Brightness.light),
-  ('variant B dark', FbPaletteVariant.b, Brightness.dark),
+const _palettes = <(String, Brightness)>[
+  ('light', Brightness.light),
+  ('dark', Brightness.dark),
 ];
 
 void main() {
@@ -26,8 +24,8 @@ void main() {
     );
   });
 
-  for (final (name, variant, brightness) in _palettes) {
-    final pairs = fbContrastPairs(FbPalette.of(variant, brightness));
+  for (final (name, brightness) in _palettes) {
+    final pairs = fbContrastPairs(FbPalette.of(brightness));
 
     test('UX-071 every text/background token pair meets WCAG AA ($name)', () {
       final failing = [

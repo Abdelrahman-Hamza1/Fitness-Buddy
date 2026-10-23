@@ -27,6 +27,28 @@ final List<GallerySection> gallerySectionsInput = [
         'long label',
         FbDateHeader(label: _S.longDate, onPrevious: () {}, onNext: () {}),
       ),
+      const GalleryState('tap the date to pick one', _DatePickerDemo()),
+    ],
+  ),
+  GallerySection(
+    name: 'FbDisclosureRow',
+    covers: const [FbDisclosureRow],
+    states: (_) => const [
+      GalleryState('tap to open and close', _DisclosureDemo()),
+      GalleryState('title only', _DisclosureDemo(withDetails: false)),
+    ],
+  ),
+  GallerySection(
+    name: 'FbSwipeActions',
+    covers: const [FbSwipeActions, FbSwipeAction],
+    states: (context) => [
+      GalleryState(
+        'swipe either way (delete leaves, move snaps back)',
+        _SwipeDemo(
+          onDelete: () => showFbSnackBar(context, _S.deleted),
+          onMove: () => showFbSnackBar(context, _S.moveAsked),
+        ),
+      ),
     ],
   ),
   GallerySection(
@@ -314,4 +336,108 @@ class _SearchFieldDemoState extends State<_SearchFieldDemo> {
   @override
   Widget build(BuildContext context) =>
       FbSearchField(controller: _controller, hint: _S.searchHint);
+}
+
+/// A date header whose date opens the picker and shows the picked day.
+class _DatePickerDemo extends StatefulWidget {
+  const new();
+
+  @override
+  State<_DatePickerDemo> createState() => _DatePickerDemoState();
+}
+
+class _DatePickerDemoState extends State<_DatePickerDemo> {
+  // Sample days, not "today": the gallery shows a fixed calendar.
+  static final _last = DateTime(2026, 10, 20);
+  DateTime _day = DateTime(2026, 10, 15);
+
+  @override
+  Widget build(BuildContext context) => FbDateHeader(
+    label: MaterialLocalizations.of(context).formatMediumDate(_day),
+    onPrevious: () =>
+        setState(() => _day = _day.subtract(const Duration(days: 1))),
+    onNext: _day.isBefore(_last)
+        ? () => setState(() => _day = _day.add(const Duration(days: 1)))
+        : null,
+    onLabelTap: () async {
+      final picked = await showFbDatePicker(
+        context,
+        initialDate: _day,
+        lastDate: _last,
+      );
+      if (picked != null) setState(() => _day = picked);
+    },
+  );
+}
+
+/// A disclosure row that opens and closes a few rows below it.
+class _DisclosureDemo extends StatefulWidget {
+  const new({this.withDetails = true});
+
+  final bool withDetails;
+
+  @override
+  State<_DisclosureDemo> createState() => _DisclosureDemoState();
+}
+
+class _DisclosureDemoState extends State<_DisclosureDemo> {
+  bool _open = false;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      FbDisclosureRow(
+        title: _S.chickenAndRiceDish,
+        subtitle: widget.withDetails ? _S.threeItems : null,
+        leading: widget.withDetails ? const Icon(FbIcons.diary) : null,
+        trailing: widget.withDetails ? const Text(_S.dishKcal) : null,
+        expanded: _open,
+        onToggle: () => setState(() => _open = !_open),
+      ),
+      if (_open) ...const [
+        FbListRow(title: _S.oats, trailing: Text(_S.oatsKcal)),
+        FbListRow(title: _S.banana, trailing: Text(_S.oatsKcal)),
+      ],
+    ],
+  );
+}
+
+/// A row with both swipe actions; the callbacks come from the section.
+class _SwipeDemo extends StatefulWidget {
+  const new({required this.onDelete, required this.onMove});
+
+  final VoidCallback onDelete;
+  final VoidCallback onMove;
+
+  @override
+  State<_SwipeDemo> createState() => _SwipeDemoState();
+}
+
+class _SwipeDemoState extends State<_SwipeDemo> {
+  bool _deleted = false;
+
+  @override
+  Widget build(BuildContext context) {
+    if (_deleted) return const SizedBox.shrink();
+    return FbSwipeActions(
+      dismissAction: FbSwipeAction(
+        label: _S.swipeDelete,
+        icon: FbIcons.delete,
+        onTriggered: () {
+          widget.onDelete();
+          setState(() => _deleted = true);
+        },
+      ),
+      confirmAction: FbSwipeAction(
+        label: _S.swipeMove,
+        icon: FbIcons.move,
+        onTriggered: widget.onMove,
+      ),
+      child: const FbListRow(
+        title: _S.oats,
+        subtitle: _S.oatsAmount,
+        trailing: Text(_S.oatsKcal),
+      ),
+    );
+  }
 }

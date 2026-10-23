@@ -10,6 +10,8 @@ export 'src/components/button.dart';
 export 'src/components/card.dart';
 export 'src/components/chips.dart';
 export 'src/components/date_header.dart';
+export 'src/components/date_picker.dart';
+export 'src/components/disclosure_row.dart';
 export 'src/components/empty_state.dart';
 export 'src/components/estimate_marker.dart'
     show FbEstimateMarker, showFbEstimateRange;
@@ -26,6 +28,7 @@ export 'src/components/skeleton.dart';
 export 'src/components/snack_bar.dart';
 export 'src/components/source_badge.dart'
     show FbSource, FbSourceBadge, showFbSourceLegend;
+export 'src/components/swipe_actions.dart';
 export 'src/theme/fb_theme.dart';
 export 'src/theme/licenses.dart';
 export 'src/tokens/colors.dart';

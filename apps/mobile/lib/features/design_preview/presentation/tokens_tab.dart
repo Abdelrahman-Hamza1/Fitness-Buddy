@@ -1,25 +1,20 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
-import 'package:fb_mobile/core/theme/theme_providers.dart';
 import 'package:fb_mobile/features/design_preview/application/gallery_samples.dart';
 import 'package:fb_mobile/features/design_preview/application/token_roles.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The Tokens tab: the colour swatches, the type scale and the live contrast
 /// ratio of every text/background pair of the palette on screen (UX-071).
-class TokensTab extends ConsumerWidget {
+class TokensTab extends StatelessWidget {
   /// Creates the tab.
   const new({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final palette = FbPalette.of(
-      ref.watch(themeVariantProvider),
-      theme.brightness,
-    );
+    final palette = FbPalette.of(theme.brightness);
     final pairs = fbContrastPairs(palette);
     return SingleChildScrollView(
       padding: const EdgeInsetsDirectional.only(bottom: FbSpace.s6),

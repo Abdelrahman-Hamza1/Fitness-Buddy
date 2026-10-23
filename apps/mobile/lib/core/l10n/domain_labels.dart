@@ -1,5 +1,42 @@
+import 'package:fb_design_system/fb_design_system.dart' show FbSource;
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/l10n/gen/app_localizations.dart';
+
+// Words for domain values, shared by every feature that shows them (A08 D18):
+// moved out of `features/foods/presentation/` so `diary`, `today` and `foods`
+// need no feature-to-feature import.
+
+/// The name of [slot]: its own name when the user gave one, else the word
+/// for its default key.
+String slotLabel(AppLocalizations l10n, MealSlot slot) =>
+    slot.name ??
+    switch (slot.defaultKey) {
+      'breakfast' => l10n.todaySlotBreakfast,
+      'lunch' => l10n.todaySlotLunch,
+      'snacks' => l10n.todaySlotSnacks,
+      'dinner' => l10n.todaySlotDinner,
+      final key? => key,
+      null => '',
+    };
+
+/// The design system's badge for a food's [source] (FD-010).
+FbSource fbSourceOf(FoodSource source) => switch (source) {
+  FoodSource.yours => FbSource.yours,
+  FoodSource.database => FbSource.database,
+  FoodSource.reference => FbSource.referenceDish,
+  FoodSource.estimate => FbSource.estimate,
+};
+
+/// The name of an optional nutrient (FD-002).
+String nutrientKeyLabel(AppLocalizations l10n, NutrientKey key) =>
+    switch (key) {
+      NutrientKey.sugar => l10n.foodNutrientSugar,
+      NutrientKey.saturatedFat => l10n.foodNutrientSaturatedFat,
+      NutrientKey.transFat => l10n.foodNutrientTransFat,
+      NutrientKey.sodium => l10n.foodNutrientSodium,
+      NutrientKey.cholesterol => l10n.foodNutrientCholesterol,
+      NutrientKey.alcohol => l10n.foodNutrientAlcohol,
+    };
 
 /// The words for unit codes (A07 D8, LC-011).
 ///

@@ -4,8 +4,7 @@ import 'package:fb_mobile/core/theme/theme_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// The A/B palette switch and the light/dark/system switch of the design
-/// preview (A02 D16). They set `themeVariantProvider` and
+/// The light/dark/system switch of the design preview (A02 D16). It sets
 /// `themeModeProvider`, so the whole app changes, not just this screen.
 class PreviewSwitches extends ConsumerWidget {
   /// Creates the switches.
@@ -14,7 +13,6 @@ class PreviewSwitches extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final variant = ref.watch(themeVariantProvider);
     final mode = ref.watch(themeModeProvider);
     return Padding(
       padding: const EdgeInsetsDirectional.symmetric(
@@ -25,27 +23,6 @@ class PreviewSwitches extends ConsumerWidget {
         spacing: FbSpace.s3,
         runSpacing: FbSpace.s2,
         children: [
-          Semantics(
-            label: l10n.previewVariantLabel,
-            container: true,
-            child: SegmentedButton<FbPaletteVariant>(
-              showSelectedIcon: false,
-              segments: [
-                ButtonSegment(
-                  value: FbPaletteVariant.a,
-                  label: Text(l10n.previewVariantA),
-                ),
-                ButtonSegment(
-                  value: FbPaletteVariant.b,
-                  label: Text(l10n.previewVariantB),
-                ),
-              ],
-              selected: {variant},
-              onSelectionChanged: (selection) => ref
-                  .read(themeVariantProvider.notifier)
-                  .select(selection.single),
-            ),
-          ),
           Semantics(
             label: l10n.previewModeLabel,
             container: true,

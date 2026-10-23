@@ -1,6 +1,7 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/catalog/catalog.dart' show CatalogSanity;
+import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/foods/application/food_amount_controller.dart';
@@ -8,9 +9,6 @@ import 'package:fb_mobile/features/foods/application/food_choice.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
 import 'package:fb_mobile/features/foods/application/log_food.dart';
 import 'package:fb_mobile/features/foods/presentation/food_sheet_entry.dart';
-import 'package:fb_mobile/features/foods/presentation/food_source_badge.dart';
-import 'package:fb_mobile/features/foods/presentation/slot_labels.dart';
-import 'package:fb_mobile/features/foods/presentation/unit_labels.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show NumberFormat;
 import 'package:material_ui/material_ui.dart';
@@ -397,7 +395,7 @@ class _PerHundred extends StatelessWidget {
           if (showMore)
             for (final (key, value) in extras)
               _NutrientRow(
-                _extraName(l10n, key),
+                nutrientKeyLabel(l10n, key),
                 key.unit == NutrientUnit.milligram
                     ? l10n.foodNutrientMilligrams(
                         DisplayRounding.milligrams(value).toDouble(),
@@ -416,15 +414,6 @@ class _PerHundred extends StatelessWidget {
     );
   }
 }
-
-String _extraName(AppLocalizations l10n, NutrientKey key) => switch (key) {
-  NutrientKey.sugar => l10n.foodNutrientSugar,
-  NutrientKey.saturatedFat => l10n.foodNutrientSaturatedFat,
-  NutrientKey.transFat => l10n.foodNutrientTransFat,
-  NutrientKey.sodium => l10n.foodNutrientSodium,
-  NutrientKey.cholesterol => l10n.foodNutrientCholesterol,
-  NutrientKey.alcohol => l10n.foodNutrientAlcohol,
-};
 
 class _NutrientRow extends StatelessWidget {
   const new(this.label, this.value);
