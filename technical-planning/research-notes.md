@@ -411,3 +411,46 @@ AR only then blank. Normalize simple apostrophe/dash variants. Regenerated audit
 0 non-ASCII English, 0 Latin-in-Arabic, 1,234 Arabic names across the 15 local and
 regional countries; all 2,276 IDs retained unchanged. Full country counts are in
 the A05b card/evidence. No additional downloads or source repins required.
+
+## 2026-10-23 — A20 secure-storage dependency check (Codex)
+
+The app currently has `shared_preferences` for nonsecrets and no secure-storage plugin. The publisher's [flutter_secure_storage documentation](https://pub.dev/packages/flutter_secure_storage) lists 11.2.0, default Android RSA-OAEP key wrapping/AES-GCM storage, minimum Android API 23, and backup exclusions to avoid restoring ciphertext without its key. A20 plans this plugin for `09` §4 token storage, with non-biometric defaults; WP1 must verify compatibility and pin the selected exact version/lockfile. Existing Android rules exclude all shared preferences; verify the selected plugin's actual files against both cloud-backup/device-transfer rule sets before claiming coverage. No dependency or runtime code changed during planning.
+
+
+## 2026-10-23 — A20 plan-review storage recovery and durability (Codex)
+
+The inspected [upstream Android options](https://github.com/juliansteenbakker/flutter_secure_storage/blob/develop/flutter_secure_storage/lib/options/android_options.dart) default `resetOnError` to true; [native implementation](https://github.com/juliansteenbakker/flutter_secure_storage/blob/develop/flutter_secure_storage/android/src/main/java/com/it_nomads/fluttersecurestorage/FlutterSecureStorage.java) has deletion/recovery branches and acknowledges writes after `SharedPreferences.Editor.apply()`. These moving development sources establish the review concern, not behavior of the still-unselected pinned release. PA1 requires explicit non-destructive options and exact-release source/native checks.
+
+Android's [Editor documentation](https://developer.android.com/reference/android/content/SharedPreferences.Editor#apply()) distinguishes asynchronous `apply()` from synchronous `commit()` and states that a commit on the same preferences waits for outstanding applies; [commit return semantics](https://developer.android.com/reference/android/content/SharedPreferences.Editor#commit()) report persistent-storage success. A20 PA2 therefore selects a small native same-preferences commit barrier, with a reserved nonsecret counter, before any refresh send and before publishing pair/pointer changes. This is an application design derived from the platform guarantee; compatibility with the exact plugin storage path remains a mandatory WP1 selection gate. Native failure and externally controlled process-kill/server-count evidence are required; no native execution or dependency pin happened in this documentation revision. PA3 specifies a shared monotonic auth retry deadline; reachability events cannot bypass exponential or Retry-After floors.
+
+## 2026-10-23 — A20 WP1 exact-release selection (Codex)
+
+Inspected the publisher's [11.2.0 source archive](https://pub.dev/api/archives/flutter_secure_storage-11.2.0.tar.gz), independently verified SHA-256 against [release metadata](https://pub.dev/api/packages/flutter_secure_storage/versions/11.2.0) and the workspace lockfile (`d4e1fb6b2cb524868929e78dc0282fa000554b22060fb53789dc481c9fc95bb8`). Actual Android Gradle minSdk is **24**, correcting the older README's 23; Java 17 matches the app (minSdk 26, Java/JVM 17). Non-biometric RSA-OAEP/AES-GCM storage supports PA1 with explicit `resetOnError=false`, `migrateOnAlgorithmChange=false`, `migrateWithBackup=false`. Initialization/key mismatch and decryption errors preserve envelopes/pointers with these options. Namespace-key recovery can copy a verified wrapped key without deleting source data.
+
+With fixed `storageNamespace=fb.session.secure.v1`, PA2 must commit **three** MODE_PRIVATE preference files: `FlutterSecureKeyStorage:fb.session.secure.v1` (wrapped AES key), `FlutterSecureStorageConfiguration:fb.session.secure.v1` (algorithm metadata), then `fb.session.secure.v1` (ciphertext). Plugin write/delete and initialization metadata/key writes use `apply()`; Dart acknowledgement precedes guaranteed persistence. The app-owned barrier commits all three with a changed nonsecret counter. Existing `sharedpref/.` backup/transfer exclusions cover them. Exact source hashes and automated mapping gate, ordering/failure tests and unexecuted Android evidence are recorded in [A20 verification](steps/evidence/A20-verification.md). Host ordering tests passed; the Android build stopped before app compilation (“The settings are not yet available for build”), so native build/runtime compatibility remains Claude's gate. Crash/corruption device evidence belongs to WP5.
+
+## 2026-10-23 — A20 failed PA1 cold-start source audit (Codex)
+
+Rechecked the locally pinned 11.2.0 archive already hash-gated in
+`session_storage_release_test.dart`; no moving upstream source substituted.
+`FlutterSecureStorage.initialize` initializes the storage cipher before the
+plugin read/contains-key dispatch; with reset/migration disabled, missing RSA
+key/retained wrapped AES key fails initialization without deleting entries.
+Ciphertext corruption instead fails the subsequent read/decrypt path without
+reset. Cipher keys are cached, decrypted entry values are not. The debug hook
+already uses synchronous ciphertext commit and AndroidKeyStore deletion; it
+replaces the native plugin before assertions. Added reopened-provider deletion
+verification and fsync for the retention snapshot. The reported CI restart FAIL
+is still unclassified pending a run with the new fixed diagnostic codes; see
+[A20 evidence](steps/evidence/A20-verification.md#native-restart-failure-diagnostics-2026-10-23)
+for exact source locations and conditional production raw-presence mitigation.
+
+## 2026-10-23 — A20 explicit task replacement
+
+Android's [Intent reference](https://developer.android.com/reference/android/content/Intent#FLAG_ACTIVITY_CLEAR_TASK)
+defines `CLEAR_TASK` (`0x00008000`) with `NEW_TASK` (`0x10000000`) as clearing the
+associated existing task before starting a fresh root activity. The native
+evidence harness uses their combined flags to make requested phase intents
+explicit across process restarts without clearing persisted app data. This is
+launch hardening; source review alone does not establish the cause of the
+reported pending-1 timeout at `34ae53b`.

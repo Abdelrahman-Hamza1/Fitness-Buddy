@@ -8,16 +8,30 @@ import 'package:fb_mobile/core/config/client_config.dart';
 import 'package:fb_mobile/core/config/package_info.dart';
 import 'package:fb_mobile/core/config/update_gate.dart';
 import 'package:fb_mobile/core/config/upgrade_signal.dart';
+import 'package:fb_mobile/core/session/session_providers.dart';
 import 'package:fb_mobile/core/storage/preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/fake_http.dart';
 import '../../helpers/test_phone.dart';
+import '../session/session_fakes.dart';
 
 /// One app start on [phone] (disposed after the test).
 ProviderContainer _start(TestPhone phone) =>
     ProviderContainer.test(overrides: phone.overrides());
+
+// Resource-response tests need a ready session now that the API is protected.
+Future<ProviderContainer> _startAuthenticated(TestPhone phone) async {
+  final f = Fixture();
+  await f.service.startAfterFirstFrame();
+  return ProviderContainer.test(
+    overrides: [
+      ...phone.overrides(),
+      sessionServiceProvider.overrideWithValue(f.service),
+    ],
+  );
+}
 
 /// The update gate once the installed version is known.
 Future<bool> _updateRequired(ProviderContainer app) => app
@@ -205,7 +219,7 @@ void main() {
         phone.adapter.respond = (request) => request.path == '/v1/config'
             ? config('0.2.0')(request)
             : problem(ProblemTypes.upgradeRequired, 426)(request);
-        final app = _start(phone);
+        final app = await _startAuthenticated(phone);
 
         await expectLater(
           app.read(dioProvider).get<void>('/v1/anything'),
@@ -227,7 +241,8 @@ void main() {
         'it); clearing the signal fetches nothing', () async {
       final phone = TestPhone()..adapter.respond = config('0.0.0');
       // The config is alive before the trip, as in the app.
-      final app = _start(phone)..read(clientConfigProvider);
+      final app = (await _startAuthenticated(phone))
+        ..read(clientConfigProvider);
 
       phone.adapter.respond = (request) => request.path == '/v1/config'
           ? config('0.3.0')(request)
@@ -251,7 +266,7 @@ void main() {
     test('a 426 without a problem body trips the gate', () async {
       final phone = TestPhone()
         ..adapter.respond = (_) => ResponseBody.fromString('', 426);
-      final app = _start(phone);
+      final app = await _startAuthenticated(phone);
 
       await expectLater(
         app.read(dioProvider).get<void>('/v1/anything'),
@@ -264,7 +279,7 @@ void main() {
       final phone = TestPhone()
         // The type decides, whatever the status.
         ..adapter.respond = problem(ProblemTypes.upgradeRequired, 400);
-      final app = _start(phone);
+      final app = await _startAuthenticated(phone);
 
       await expectLater(
         app.read(dioProvider).get<void>('/v1/anything'),
@@ -296,7 +311,7 @@ void main() {
         json({'error': 'x'}, status: 500),
       ]) {
         final phone = TestPhone()..adapter.respond = failure;
-        final app = _start(phone);
+        final app = await _startAuthenticated(phone);
 
         await expectLater(
           app.read(dioProvider).get<void>('/v1/anything'),

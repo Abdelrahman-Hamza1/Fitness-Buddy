@@ -10,12 +10,14 @@
        gets them again). -->
 <data-extraction-rules>
     <cloud-backup>
+        <!-- A20: plugin ciphertext, wrapped key, cipher config and commit counters. -->
         <exclude domain="sharedpref" path="." />
         <exclude domain="file" path="datastore/" />
         <exclude domain="file" path="profiles/" />
         <exclude domain="file" path="catalog/" />
     </cloud-backup>
     <device-transfer>
+        <!-- A20: plugin ciphertext, wrapped key, cipher config and commit counters. -->
         <exclude domain="sharedpref" path="." />
         <exclude domain="file" path="datastore/" />
         <exclude domain="file" path="profiles/" />
@@ -26,6 +28,7 @@
          explicit anyway, so adding the params later can't send the databases
          along by accident. -->
     <cross-platform-transfer platform="ios">
+        <!-- A20: plugin ciphertext, wrapped key, cipher config and commit counters. -->
         <exclude domain="sharedpref" path="." />
         <exclude domain="file" path="datastore/" />
         <exclude domain="file" path="profiles/" />

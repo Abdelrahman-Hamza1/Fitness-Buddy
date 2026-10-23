@@ -5,12 +5,14 @@ import 'package:fb_mobile/core/api/api_providers.dart';
 import 'package:fb_mobile/core/api/client_config_repository.dart';
 import 'package:fb_mobile/core/api/problem_types.dart';
 import 'package:fb_mobile/core/config/client_config.dart';
+import 'package:fb_mobile/core/session/session_providers.dart';
 import 'package:fb_mobile/core/storage/preferences.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../core/session/session_fakes.dart';
 import '../helpers/fake_http.dart';
 import '../helpers/pump_app.dart';
 
@@ -137,7 +139,13 @@ void main() {
     tester,
   ) async {
     final phone = TestPhone()..adapter.respond = config('0.0.0');
-    final container = await pumpApp(tester, phone: phone);
+    final session = Fixture();
+    await session.service.startAfterFirstFrame();
+    final container = await pumpApp(
+      tester,
+      phone: phone,
+      overrides: [sessionServiceProvider.overrideWithValue(session.service)],
+    );
     _expectShell();
 
     phone.adapter.respond = problem(ProblemTypes.upgradeRequired, 426);

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:fb_mobile/core/api/api_origin.dart' as origin;
 import 'package:flutter/foundation.dart';
 
 /// The client headers every `/v1/` request carries (`contracts/README.md`,
@@ -49,10 +50,7 @@ final class ClientHeadersInterceptor extends Interceptor {
   final Future<String> Function() _deviceId;
 
   /// Whether [uri] is on the API's origin (scheme, host and port).
-  bool isApiOrigin(Uri uri) =>
-      uri.scheme.toLowerCase() == _api.scheme.toLowerCase() &&
-      uri.host.toLowerCase() == _api.host.toLowerCase() &&
-      uri.port == _api.port;
+  bool isApiOrigin(Uri uri) => origin.isApiOrigin(uri, _api);
 
   @override
   Future<void> onRequest(

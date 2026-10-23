@@ -4,6 +4,7 @@
      backups. Why, and where they are stored: AndroidManifest.xml. Same rules as
      data_extraction_rules.xml. -->
 <full-backup-content>
+    <!-- A20: plugin ciphertext, wrapped key, cipher config and commit counters. -->
     <exclude domain="sharedpref" path="." />
     <exclude domain="file" path="datastore/" />
     <exclude domain="file" path="profiles/" />

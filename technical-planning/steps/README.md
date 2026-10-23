@@ -163,7 +163,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A17](dish-batches.md) | Dish batch 2: main dishes A | Claude | A04 | S | D2 |  | ⏸ deferred (TD-074): after A41 |
 | [A18](dish-batches.md) | Dish batch 3: out & street food | Claude | A17 | S | D3 |  | ⏸ deferred (TD-074): after A41 |
 | [A19](dish-batches.md) | Dish batch 4: main dishes B, salads & sides | Claude | A18 | S | D4 |  | ⏸ deferred (TD-074): after A41 |
-| [A20](A20-api-session.md) | API session: anonymous identity & auth interceptor | **Codex** | **B04** (contract) | S | S25 part |  | ⬜ |
+| [A20](A20-api-session.md) | API session: anonymous identity & auth interceptor | **Codex** | **B04** (contract) | S | S25 part |  | ✅ |
 | [A21](A21-proposal-engine.md) | ProposalEngine | **Codex** | A07, A12, **B02** | L | S32 |  | ⬜ |
 | [A22](A22-chat-proposal-card.md) | Chat sheet & proposal card | Claude | A08b, A20, A21, **B08** | L | S33 |  | ⬜ |
 | [A23](A23-message-lifecycle.md) | Message lifecycle, pending & failures | Claude | A22 | M | S34 | **M3** | ⬜ |

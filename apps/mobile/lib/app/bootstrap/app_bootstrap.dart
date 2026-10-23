@@ -4,13 +4,14 @@ import 'package:fb_mobile/core/catalog/catalog.dart';
 import 'package:fb_mobile/core/config/client_config.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/errors/error_reporting.dart';
+import 'package:fb_mobile/core/session/session_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_bootstrap.g.dart';
 
 /// The work deferred until the first frame is on screen (UX-001, S06 plan
-/// D9, D12, A1): error reporting, the catalog pack install (A05 D9), then
-/// the `/v1/config` refresh.
+/// D9, D12, A1): independent error reporting, catalog pack install (A05 D9),
+/// public `/v1/config` refresh and API session startup (A20 D9).
 ///
 /// The app widget (`FitnessBuddyApp`) calls [afterFirstFrame] from a
 /// post-frame callback; nothing awaits it, so the UI never waits for the
@@ -35,27 +36,31 @@ final class AppBootstrap {
     }
   }
 
-  /// Starts error reporting (when the flavor has a DSN), then refreshes the
-  /// client config (cache first, then the API). Runs once; failures are
-  /// absorbed (the app works without both).
+  Future<void> _contained(FutureOr<void> Function() work) async {
+    try {
+      if (_ref.mounted) await work();
+    } on Object {
+      // Optional work must never escape to Flutter/global reporting sinks.
+    }
+  }
+
+  /// Launches independent optional tasks once, after the first visible frame.
+  /// A hung SDK, storage or network operation cannot hold up another task.
   Future<void> afterFirstFrame() async {
-    if (_started) return;
+    if (_started || !_ref.mounted) return;
     _started = true;
-    try {
-      await _ref.read(errorReportingProvider).start();
-    } on Object {
-      // Reporting is optional; the app must start regardless.
-    }
-    if (!_ref.mounted) return;
-    // In the background: it is local file work and must not wait for, or
-    // hold up, the config refresh.
+    unawaited(
+      _contained(() async {
+        await _ref.read(errorReportingProvider).start();
+      }),
+    );
     unawaited(_installCatalog());
-    if (!_ref.mounted) return;
-    try {
-      await _ref.read(clientConfigProvider.notifier).refresh();
-    } on Object {
-      // The app runs on the cached or default config without it.
-    }
+    unawaited(
+      _contained(() async {
+        await _ref.read(clientConfigProvider.notifier).refresh();
+      }),
+    );
+    unawaited(_contained(() => _ref.read(sessionLifecycleProvider).start()));
   }
 }
 

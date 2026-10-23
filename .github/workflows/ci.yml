@@ -73,7 +73,7 @@ jobs:
           android=true
           if [[ "$EVENT" == push && "$REF" != refs/heads/main && "$REF" != refs/heads/merge/* ]] \
             && base="$(git merge-base origin/main HEAD 2>/dev/null)"; then
-            relevant='^(apps/mobile/|packages/|contracts/|data/|tools/catalog/|pubspec\.(yaml|lock)$|analysis_options\.yaml$|\.fvmrc$|Makefile$|\.github/workflows/ci\.yml$|tools/scripts/(build-android|setup-android|patrol-android|android-|apk_hardening|apk-hardening|testdata/apk-hardening/))'
+            relevant='^(apps/mobile/|packages/|contracts/|data/|tools/catalog/|pubspec\.(yaml|lock)$|analysis_options\.yaml$|\.fvmrc$|Makefile$|\.github/workflows/ci\.yml$|tools/scripts/(build-android|setup-android|patrol-android|android-|session-|test_session_|apk_hardening|apk-hardening|testdata/apk-hardening/))'
             if ! git diff --name-only "$base" HEAD | grep -Eq "$relevant"; then
               android=false
             fi
@@ -431,9 +431,22 @@ jobs:
           make build-android FLAVOR=staging BUILD_NUMBER="$GITHUB_RUN_NUMBER" FB_RELEASE_ENV= \
             FLUTTER=flutter DART=dart
 
+      - name: A20 release session safety on the built APK
+        run: |
+          python3 -m unittest discover -s tools/scripts -p test_session_release_check.py
+          build_tools="$(sed -n 's/^build-tools;\([^|]*\)|.*/\1/p' tools/scripts/android-sdk-packages.txt)"
+          for apk in apps/mobile/build/app/outputs/flutter-apk/app-staging-release*.apk; do
+            python3 tools/scripts/session-release-check.py \
+              --aapt2 "$ANDROID_HOME/build-tools/$build_tools/aapt2" "$apk"
+          done
+
       - name: Delete the release keystore
         if: always()
         run: rm -f -- "$RUNNER_TEMP/fb-release.jks"
+
+      # Flutter's build above creates android/local.properties for Gradle.
+      - name: Android host unit tests
+        run: make test-android-unit FLUTTER=flutter DART=dart
 
       # Only a build signed with the release key reaches the owner: build-android
       # failed above if the certificate wasn't the pinned one, and a debug-key
@@ -609,6 +622,25 @@ jobs:
           emulator-options: -no-snapshot-save ${{ env.EMULATOR_OPTIONS }}
           disable-animations: true
           script: bash -o pipefail -c 'make test-it FLUTTER=flutter DART=dart 2>&1 | tee "$RUNNER_TEMP/patrol-attempt-2.log"'
+
+      # Separate synthetic entrypoint, after Patrol so its APK cannot replace the
+      # instrumentation target. One incremental debug build; no catalog rebuild.
+      - name: Build A20 dev debug durability probe
+        timeout-minutes: 4
+        working-directory: apps/mobile
+        run: flutter build apk --debug --flavor dev --target-platform android-x64 --target tool/session_durability_probe.dart --dart-define-from-file=config/dev.json
+
+      - name: A20 native restart and process kill evidence
+        timeout-minutes: 8
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save ${{ env.EMULATOR_OPTIONS }}
+          disable-animations: true
+          script: bash -o pipefail -c 'adb install -r apps/mobile/build/app/outputs/flutter-apk/app-dev-debug.apk && timeout 420s python3 -u tools/scripts/session-native-evidence.py || { echo "::error title=A20 native evidence::probe install or harness failed or exceeded seven minutes"; exit 1; }'
 
       # Job logs need a token, check-run annotations don't: the orchestrator reads
       # failures through ci-status/annotations (no gh, A07 backlog #87). Test

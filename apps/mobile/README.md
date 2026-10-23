@@ -7,7 +7,7 @@ Flutter app, Android in R1 (D-081), cross-platform code only. Architecture: `tec
 | Path | What it is |
 |---|---|
 | `lib/main.dart` | Entry point: reads the compiled-in flavor config, starts the app. No I/O before the first frame (UX-001). |
-| `lib/app/` | Composition root: `app.dart` (MaterialApp, themes, localization; starts `bootstrap/` after the first frame), `app_scope.dart` (provider overrides), `bootstrap/` (deferred startup: error reporting, then the `/v1/config` refresh), `router/` (go_router; the only place that imports it; the update-gate redirect), `shell/` (the four tabs), `theme/`, `update/` (update screen + "Check again"). |
+| `lib/app/` | Composition root: `app.dart` (MaterialApp, themes, localization; starts `bootstrap/` after the first frame), `app_scope.dart` (provider overrides), `bootstrap/` (independent deferred startup: error reporting, catalog install, public `/v1/config` refresh and API session), `router/` (go_router; the only place that imports it; the update-gate redirect), `shell/` (the four tabs), `theme/`, `update/` (update screen + "Check again"). |
 | `lib/core/` | Shared plumbing: `api/` (dio + the generated `FbApi`, client headers, 426 → update gate), `config/` (flavor config, `/v1/config` cache + refresh, app version, update gate), `errors/` (`Failure` + mapping from problem types, Sentry + PII scrubber), `storage/` (shared_preferences: device id, config cache), `ids/` (ID generator port), `navigation/` (typed `AppRoute`s + the `AppNavigator` port features use), `l10n/` (`context.l10n`). Screens never import `core/api/` (plan A3). |
 | `lib/features/<feature>/` | One folder per feature. Others import only its barrel `<feature>.dart`; features never import `app/`. |
 | `lib/l10n/app_en.arb` | Every user-facing string. `gen/` is generated. |
@@ -27,6 +27,22 @@ make goldens    # after an intended UI change: rewrite the golden images, then r
 Tests against the running local API are tagged `live` and skipped by default: start the Host (`dotnet run --project src/Host --urls http://localhost:5198` from `backend/`, see `backend/README.md`), then `flutter test --tags live --run-skipped` here.
 
 The flavor config is passed with `--dart-define-from-file=config/<flavor>.json`; without it the app stops at start with an `AppConfigException`. The Make targets below pass it for you.
+
+## API session (A20)
+
+Bootstrap activates `sessionLifecycleProvider` only after the first frame. The
+session coordinator restores secure credentials or acquires a guest identity;
+public config, catalog and Sentry do not await it. `sessionStateProvider` exposes
+only token-free status/readiness. Protected API calls use the origin-bound auth
+interceptor; transport/plugin errors never reach logs with request material.
+
+`SessionRetryScheduler` owns one foreground timer and listens for coordinator
+completion, resume and successful same-origin responses. Every wake uses the
+coordinator's single monotonic deadline (including uncapped Retry-After); only
+auth success resets backoff. Background/disposal cancels the timer. Storage,
+validation and registered-session expiry failures never schedule automatic retries.
+Tests in `test/app/session_bootstrap_test.dart` and `test/core/session/` exercise
+first-frame isolation, offline navigation, retry bursts and lifecycle disposal.
 
 ## Android
 

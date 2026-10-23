@@ -144,6 +144,8 @@ flutter {
 }
 
 dependencies {
+    // PA2 same-store barrier ordering on the host JVM; no device required.
+    testImplementation("junit:junit:4.13.2")
     // The test orchestrator above (Patrol's documented version; patrol_cli
     // warns about 1.5.0). Only in the androidTest APK, never in the app.
     androidTestUtil("androidx.test:orchestrator:1.5.1")

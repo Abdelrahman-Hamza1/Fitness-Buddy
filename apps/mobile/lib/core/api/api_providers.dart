@@ -1,11 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:fb_api_client/fb_api_client.dart';
+import 'package:fb_mobile/core/api/auth_interceptor.dart';
 import 'package:fb_mobile/core/api/client_headers_interceptor.dart';
 import 'package:fb_mobile/core/api/dio_factory.dart';
+import 'package:fb_mobile/core/api/session_reachability_interceptor.dart';
 import 'package:fb_mobile/core/api/upgrade_required_interceptor.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/config/package_info.dart';
 import 'package:fb_mobile/core/config/upgrade_signal.dart';
+import 'package:fb_mobile/core/session/session_providers.dart';
 import 'package:fb_mobile/core/storage/device_id_store.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -40,6 +43,19 @@ Dio dio(Ref ref) {
             ref.read(upgradeSignalProvider.notifier).trip(),
       ),
     ],
+  );
+  dio.interceptors.add(
+    AuthInterceptor(
+      apiBaseUrl: baseUrl,
+      dio: dio,
+      session: () => ref.read(sessionServiceProvider),
+    ),
+  );
+  dio.interceptors.add(
+    SessionReachabilityInterceptor(
+      apiBaseUrl: baseUrl,
+      onSuccess: ref.read(sessionTransportSucceededProvider),
+    ),
   );
   ref.onDispose(dio.close);
   return dio;

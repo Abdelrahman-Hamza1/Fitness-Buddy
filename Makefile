@@ -321,6 +321,10 @@ PATROL_ANDROID = @DART='$(DART)' FLUTTER='$(FLUTTER)' REPO_ROOT='$(REPO_ROOT)' \
 test-it: catalog-pack ## Run the Patrol integration tests (patrol_test/, dev flavor) on the one connected emulator or phone
 	$(PATROL_ANDROID) test
 
+.PHONY: test-android-unit
+test-android-unit: ## Run Android host JVM unit tests (including the PA2 commit barrier)
+	@cd '$(REPO_ROOT)/apps/mobile/android' && ./gradlew :app:testDevDebugUnitTest --no-daemon
+
 .PHONY: build-it
 build-it: catalog-pack ## Build the Patrol test APKs (dev debug app + instrumentation APK), no device needed
 	$(PATROL_ANDROID) build

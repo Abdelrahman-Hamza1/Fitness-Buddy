@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:fb_mobile/core/api/api_origin.dart';
 
 /// Timeouts of API requests (S06 plan D8). Buddy requests will override the
 /// receive timeout per request.
@@ -40,4 +41,4 @@ Dio createApiDio({
         ),
       )
       ..httpClientAdapter = adapter
-      ..interceptors.addAll(interceptors);
+      ..interceptors.addAll([...interceptors, ApiBoundaryInterceptor(baseUrl)]);
