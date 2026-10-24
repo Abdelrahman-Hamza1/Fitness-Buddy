@@ -1,5 +1,6 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/catalog/catalog_models.dart';
 import 'package:fb_mobile/core/changes/apply_result.dart';
 import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
@@ -73,11 +74,17 @@ Future<void> _seedHistory(
   required String slotId,
   required LocalDate today,
 }) async {
-  final found = await container.read(foodCatalogRepositoryProvider).foodsByIds([
-    foodId,
-  ]);
-  final food = found[foodId]?.firstOrNull;
-  if (food == null) fail('The pack has no food $foodId');
+  // The pack installs in the background after the app boots: wait (bounded,
+  // 30 s) until it can answer, instead of failing on the first empty read.
+  final catalog = container.read(foodCatalogRepositoryProvider);
+  CatalogFood? food;
+  for (var attempt = 0; attempt < 60 && food == null; attempt++) {
+    food = (await catalog.foodsByIds([foodId]))[foodId]?.firstOrNull;
+    if (food == null) {
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+    }
+  }
+  if (food == null) fail('The pack has no food $foodId after 30 s');
   final choice = catalogChoice(food);
   for (final ago in daysAgo) {
     final result = await container.read(logFoodProvider)(
