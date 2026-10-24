@@ -18,15 +18,24 @@ import 'package:fb_domain/src/nutrition/calculator.dart';
 import 'package:fb_domain/src/nutrition/nutrients.dart';
 import 'package:fb_domain/src/nutrition/yield.dart';
 import 'package:fb_domain/src/proposals/proposal_policy_constants.dart';
+import 'package:fb_domain/src/targets/target_settings.dart';
+import 'package:fb_domain/src/targets/weekly_budget.dart';
+import 'package:fb_domain/src/time/local_date.dart';
 import 'package:fb_domain/src/time/local_time.dart';
+import 'package:fb_domain/src/time/week_calendar.dart';
 import 'package:fb_domain/src/units/amounts.dart';
 import 'package:fb_domain/src/units/food_measures.dart';
 
 part 'interpretation_decoder.dart';
+part 'proposal_adjustment.dart';
+part 'proposal_diff.dart';
 part 'proposal_dimension.dart';
-part 'proposal_models.dart';
-part 'question_policy.dart';
 part 'proposal_engine.dart';
+part 'proposal_models.dart';
+part 'proposal_targets.dart';
+part 'proposal_codec.dart';
+part 'proposal_evaluation.dart';
+part 'question_policy.dart';
 
 /// Value equality for normalized immutable values; diagnostics omit all data.
 abstract class ProposalValue {
@@ -78,6 +87,18 @@ enum ProposalIssue {
 
   /// A missing unit, yield, density or active slot prevents a valid draft.
   needsConversion,
+
+  /// Required assistant budget or current card rows have not arrived.
+  sessionIncomplete,
+
+  /// Message/card bindings, revisions or ownership disagree.
+  budgetConflict,
+
+  /// Unsupported stored codec version.
+  unsupportedCodecVersion,
+
+  /// Local pending draft must be reduced before syncing this projection.
+  syncPayloadTooLarge,
 }
 
 /// Typed outcome, with exactly one of a value or a fixed issue.

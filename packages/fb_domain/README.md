@@ -391,3 +391,45 @@ no persistence, network calls, confirmation controller or user-facing copy.
 Diagnostics redact content; response JSON, food data and assumption codes are
 user content and must never be logged. Synthetic public-response fixtures live
 in `test/proposals/fixtures/`; properties use the existing 1,000-run helper.
+
+### A21 proposal/evaluation and persistence seams
+
+`ProposalEngine.build(ProposalRequest(...))` consumes the B08 v1 JSON and frozen
+`ProposalFacts`, `ProposalContext`, `ProposalPolicy` and an injected UUIDv7 source.
+`recompute(session, absoluteAdjustment, context: refreshedContext)` returns a
+replacement session and typed `ProposalDiff`; only build/add/unmatched rebuild
+allocate IDs. `rebuild(card, newRequest)` preserves matched identities and binds
+the updated card to the follow-up message. The engine has no I/O or writer.
+
+`ProposalEvaluation.evaluate(request)` calls that exact production build path.
+Its result exposes the complete typed production cards/lines (FoodRef, source,
+fact origin, canonical amounts, snapshots, ranges, estimate flags, assumptions,
+lifecycle, preview and readiness) and the message-wide `questionCount`. B09 owns
+reference scoring and population metrics. Run the minimal plain Dart entry
+example with `dart run example/proposal_evaluation.dart`; inject recorded pack
+facts for food evaluations. Personal rows always win; an attached pack's missing
+key blocks, and embedded per-100g facts apply only when the whole pack is absent.
+
+`ProposalDraftCodec.encodeCard(session, cardId)` returns canonical per-card state;
+`encodeMessageBudget(session)` returns the one assistant-message budget. Neither
+stores derived ops/totals or performs persistence. `restore(message, cards,
+context: context)` accepts only current members selected by `budgetMessageId`,
+checks revisions/ownership/lifecycle and recomputes. Frozen time/slots/yields and
+fact tables survive restoration; the caller supplies refreshed confirmed/target
+context and the same normalization function. Missing rows return
+`sessionIncomplete`; conflicting budgets return `budgetConflict`.
+
+On M1→M2 follow-up, persist the changed card and M2 budget together. Also project
+M1 with `encodeMessageBudget(oldSession, movedCardIds: [card.id])`: its issued
+history remains, but its current membership/open questions omit the moved card.
+A23 owns that transaction and recovery; A21 writes no rows. Confirm wraps only
+one active card's draft ops with `Origin.proposal(card.id)`; A23 adds its resolve
+op in the same ChangeSet. Personal versions are checked by the existing guard.
+
+`syncProjection` separately encodes normalized card intents, compact draft facts
+and message budget, each at most 32768 UTF-16 units (including surrogate pairs).
+Its typed `syncPayloadTooLarge` leaves the local session intact. At restore,
+join the decoded interpretation field back under the draft map's
+`interpretation` key. Never put a second budget copy in a proposal row. A22 owns
+assistant-message storage/UI; A23 owns proposal storage, migrations, atomic
+resolution and B18 consumption. Superseded rows restore as historical only.

@@ -357,23 +357,29 @@ ProposalRange _range(Map<String, Object?> m) =>
     ProposalRange(_nutrients(_map(m['low'])), _nutrients(_map(m['high'])));
 
 // Bound traversal before encoding, including deeply nested malformed input.
-int _bound(Object? value, int depth) {
+int _bound(Object? value, int depth, {int collectionLimit = 64}) {
   if (depth > 32) throw const _Invalid(ProposalIssue.inputTooLarge);
   var work = 1;
   if (value is String) {
     work += value.length;
   } else if (value is Map<String, Object?>) {
-    if (value.length > 64) throw const _Invalid(ProposalIssue.inputTooLarge);
+    if (value.length > collectionLimit) {
+      throw const _Invalid(ProposalIssue.inputTooLarge);
+    }
     for (final e in value.entries) {
-      work += _bound(e.key, depth + 1) + _bound(e.value, depth + 1);
+      work +=
+          _bound(e.key, depth + 1, collectionLimit: collectionLimit) +
+          _bound(e.value, depth + 1, collectionLimit: collectionLimit);
       if (work > ProposalPolicyConstants.maxInputBytes) {
         throw const _Invalid(ProposalIssue.inputTooLarge);
       }
     }
   } else if (value is List<Object?>) {
-    if (value.length > 64) throw const _Invalid(ProposalIssue.inputTooLarge);
+    if (value.length > collectionLimit) {
+      throw const _Invalid(ProposalIssue.inputTooLarge);
+    }
     for (final v in value) {
-      work += _bound(v, depth + 1);
+      work += _bound(v, depth + 1, collectionLimit: collectionLimit);
       if (work > ProposalPolicyConstants.maxInputBytes) {
         throw const _Invalid(ProposalIssue.inputTooLarge);
       }

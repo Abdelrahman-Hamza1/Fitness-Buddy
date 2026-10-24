@@ -1,6 +1,6 @@
 part of 'proposal_input.dart';
 
-/// Frozen local inputs. Targets/rebalancing are extended by WP3, never guessed.
+/// Frozen local inputs, including optional confirmed-only A12 projections.
 final class ProposalContext {
   /// No clock inside the engine; reference time and every slot are supplied.
   new({
@@ -10,6 +10,8 @@ final class ProposalContext {
     Map<String, String> savedDefaults = const {},
     Map<String, String> choices = const {},
     this.mode = SlotMode.normal,
+    this.dayContext,
+    this.normalize = _normalizeHint,
   }) : slots = List.unmodifiable(slots),
        yields = List.unmodifiable(yields),
        savedDefaults = Map.unmodifiable(savedDefaults),
@@ -32,6 +34,12 @@ final class ProposalContext {
 
   /// Active normal/Ramadan slot mode.
   final SlotMode mode;
+
+  /// Confirmed intake and optional A12 inputs, supplied by the caller.
+  final ProposalDayContext? dayContext;
+
+  /// App supplies fb_text.normalizeKey; pure callers can inject the same seam.
+  final String Function(String) normalize;
   @override
   String toString() => 'ProposalContext(redacted)';
 }
@@ -42,12 +50,22 @@ final class ProposalRequest {
   new({
     required Map<String, Object?> interpretation,
     required this.messageId,
-    required this.idSource,
+    required ProposalIdSource this.idSource,
     required this.context,
     required this.facts,
     ProposalPolicy? policy,
   }) : interpretation = InterpretationDecoder.decode(interpretation, facts),
        policy = policy ?? ProposalPolicy.fromThresholds({});
+
+  new _(
+    ProposalInterpretation value,
+    this.messageId,
+    this.context,
+    this.facts,
+    this.policy,
+    ProposalIdSource? source,
+  ) : interpretation = ProposalResult.success(value),
+      idSource = source;
 
   /// Creating/current assistant-message ID, not identity/account context.
   final String messageId;
@@ -56,7 +74,7 @@ final class ProposalRequest {
   final ProposalResult<ProposalInterpretation> interpretation;
 
   /// Only build/add/unmatched rebuild may allocate identities.
-  final ProposalIdSource idSource;
+  final ProposalIdSource? idSource;
 
   /// Frozen local inputs.
   final ProposalContext context;
@@ -127,6 +145,9 @@ final class ProposalCard extends ProposalValue {
     required Iterable<ProposalLine> lines,
     required Iterable<ChangeOp> draftOps,
     required Iterable<ProposalIssue> issues,
+    required this.lifecycle,
+    required this.preview,
+    required this._state,
   }) : lines = List.unmodifiable(lines),
        draftOps = List.unmodifiable(draftOps),
        issues = List.unmodifiable(issues);
@@ -149,8 +170,16 @@ final class ProposalCard extends ProposalValue {
   /// Blocking fixed-code issues.
   final List<ProposalIssue> issues;
 
+  /// Application-reported state after a successful transaction.
+  final ProposalLifecycle lifecycle;
+
+  /// Confirmed intake plus this card only.
+  final ProposalDayPreview preview;
+  final _EngineState _state;
+
   /// Empty/all-invalid cards cannot be confirmed.
-  bool get canConfirm => draftOps.isNotEmpty && issues.isEmpty;
+  bool get canConfirm =>
+      lifecycle == .active && draftOps.isNotEmpty && issues.isEmpty;
 
   /// Totals at storage precision: no accumulating into an earlier draft.
   Nutrients get totals => _sum(lines.map((l) => l.snapshot));
@@ -176,6 +205,8 @@ final class ProposalCard extends ProposalValue {
     lines,
     draftOps,
     issues,
+    lifecycle,
+    preview,
   ];
 }
 
@@ -185,6 +216,7 @@ final class ProposalSession extends ProposalValue {
     Iterable<ProposalCard> cards,
     this.budget,
     Iterable<ProposalIntent> routing,
+    this._state,
   ) : cards = List.unmodifiable(cards),
       routing = List.unmodifiable(routing);
 
@@ -196,6 +228,7 @@ final class ProposalSession extends ProposalValue {
 
   /// Non-food v1 intents remain typed routing data.
   final List<ProposalIntent> routing;
+  final _EngineState _state;
   @override
   List<Object?> get _values => [cards, budget, routing];
 }
@@ -206,11 +239,18 @@ typedef ProposalBuildResult = ProposalResult<ProposalSession>;
 /// Deterministic numeric construction only. No confirmation or storage access.
 abstract final class ProposalEngine {
   /// Compute a message once from frozen facts and explicit environment.
-  static ProposalBuildResult build(ProposalRequest request) {
+  static ProposalBuildResult build(ProposalRequest request) =>
+      _build(request, _EngineState());
+
+  static ProposalBuildResult _build(
+    ProposalRequest request,
+    _EngineState state,
+  ) {
     final decoded = request.interpretation;
     if (decoded.issue case final issue?) return ProposalResult.failure(issue);
     try {
       if (!isUuidV7(request.messageId)) throw const _Invalid();
+      state.request = request;
       final context = request.context;
       final converter = YieldConverter(context.yields);
       final questions = <ProposalQuestion>[];
@@ -230,8 +270,9 @@ abstract final class ProposalEngine {
       for (final intent in decoded.value!.intents.where(
         (i) => i.kind == 'foodLog',
       )) {
-        var time = context.referenceTime;
-        if (intent.timeHint == 'yesterday') {
+        var time = state.times[intent.index] ?? context.referenceTime;
+        if (!state.times.containsKey(intent.index) &&
+            context.normalize(intent.timeHint ?? '') == 'yesterday') {
           time = time.onDate(time.localDate.plusDays(-1));
         }
         final active = context.slots.where(
@@ -240,12 +281,17 @@ abstract final class ProposalEngine {
         final explicit = active
             .where(
               (s) =>
-                  s.id == intent.slotHint ||
-                  s.defaultKey == intent.slotHint ||
-                  s.name == intent.slotHint,
+                  intent.slotHint != null &&
+                  (context.normalize(s.id) ==
+                          context.normalize(intent.slotHint!) ||
+                      context.normalize(s.defaultKey ?? '') ==
+                          context.normalize(intent.slotHint ?? '') ||
+                      context.normalize(s.name ?? '') ==
+                          context.normalize(intent.slotHint!)),
             )
             .firstOrNull;
         final slot =
+            state.slots[intent.index] ??
             explicit?.id ??
             const SlotAssigner().assign(
               time.localDateTime.time.minuteOfDay,
@@ -254,11 +300,20 @@ abstract final class ProposalEngine {
             );
         if (slot == null) throw const _Invalid(ProposalIssue.needsConversion);
         final key = '${time.localDate}:$slot';
-        final card = cards.putIfAbsent(
-          key,
-          () => _CardBuilder(_id(request.idSource)),
+        final cardId = state.intentCards.putIfAbsent(
+          intent.index,
+          () => state.identity('card:$key', request.idSource),
         );
-        final group = intent.dishGroup == null ? null : _id(request.idSource);
+        final card = cards.putIfAbsent(
+          cardId,
+          () => _CardBuilder(cardId, time.localDate, slot),
+        );
+        if (card.date != time.localDate || card.slotId != slot) {
+          throw const _Invalid();
+        }
+        final group = intent.dishGroup == null
+            ? null
+            : state.identity('group:${intent.index}', request.idSource);
         if (group != null) {
           card.groups.add(
             CreateDishGroup(
@@ -272,20 +327,26 @@ abstract final class ProposalEngine {
         // Explicit classified cooking fats already present in this meal must
         // not be synthesized again from an unstated-fat dimension.
         final hasExplicitFat = intent.items.any(
-          (i) => i.explicit && cookingFatIds.contains(i.match?.key),
+          (i) =>
+              !state.removed.contains(i.id) &&
+              (state.items[i.id] ?? i).explicit &&
+              cookingFatIds.contains((state.items[i.id] ?? i).match?.key),
         );
-        for (final item in intent.items) {
-          final id = _id(request.idSource);
-          final oilId = _id(
-            request.idSource,
-          ); // Reserved even when not used yet.
+        for (final original in intent.items) {
+          final id = state.identity('item:${original.id}', request.idSource);
+          final oilId = state.identity('oil:${original.id}', request.idSource);
+          if (state.removed.contains(original.id)) continue;
+          final item = state.items[original.id] ?? original;
           try {
             final selections = <String, ProposalOption>{};
             final origins = <String, ProposalChoiceOrigin>{};
             for (final d in item.dimensions) {
               if (d.options.isEmpty) continue;
               final explicitChoice = d.options
-                  .where((o) => o.id == context.choices[d.id])
+                  .where(
+                    (o) =>
+                        o.id == (state.choices[d.id] ?? context.choices[d.id]),
+                  )
                   .firstOrNull;
               final stated = d.options
                   .where((o) => o.value == d.stated)
@@ -332,14 +393,45 @@ abstract final class ProposalEngine {
                   converter,
                   cookingFatIds,
                   hasExplicitFat,
-                  context.choices,
+                  {...context.choices, ...state.choices},
+                  state.components[item.id],
                 );
             final lines = calculate(selections);
             final cookingFat =
                 item.explicit &&
                 cookingFatIds.contains(lines.first.entry.food.ref.id);
             card.lines.addAll(lines);
-            if (!cookingFat) {
+            if ((!state.times.containsKey(intent.index) &&
+                    intent.timeHint != null &&
+                    ![
+                      'today',
+                      'yesterday',
+                    ].contains(context.normalize(intent.timeHint!))) ||
+                (!state.slots.containsKey(intent.index) &&
+                    intent.slotHint != null &&
+                    explicit == null)) {
+              card.fallback = true;
+            }
+            if (card.fallback && lines.isNotEmpty) {
+              final line = card.lines.removeLast();
+              card.lines.add(
+                ProposalLine(
+                  entry: line.entry,
+                  snapshot: line.snapshot,
+                  factOrigin: line.factOrigin,
+                  chips: [
+                    ...line.chips,
+                    ProposalChip('${item.id}/timeSlot', 'reference', .fallback),
+                  ],
+                  dimensions: line.dimensions,
+                  range: line.range,
+                  yieldNote: line.yieldNote,
+                ),
+              );
+            }
+            if (!cookingFat &&
+                (state.lifecycles[card.id] ?? ProposalLifecycle.active) ==
+                    ProposalLifecycle.active) {
               for (final d in item.dimensions) {
                 if (origins[d.id] != ProposalChoiceOrigin.fallback ||
                     d.options.length < 2 ||
@@ -382,13 +474,33 @@ abstract final class ProposalEngine {
           }
         }
       }
+      final eligible = {for (final q in questions) q.dimensionId: q};
+      final open = <ProposalQuestion>[
+        for (final id in state.issued) ?eligible[id],
+      ];
+      final available = QuestionBudget.select(
+        questions.where((q) => !state.issued.contains(q.dimensionId)),
+      );
+      for (final q in available.questions) {
+        if (state.issued.length >= ProposalPolicyConstants.questionCap) break;
+        state.issued.add(q.dimensionId);
+        state.questionOwners[q.dimensionId] = cards.values
+            .firstWhere(
+              (c) => c.lines.any(
+                (l) => l.dimensions.any((d) => d.id == q.dimensionId),
+              ),
+            )
+            .id;
+        open.add(q);
+      }
       final built = <ProposalCard>[];
       for (final card in cards.values) {
         final ops = <ChangeOp>[];
         if (card.issues.isEmpty && card.lines.isNotEmpty) {
           for (final line in card.lines) {
             if (line.entry.food.ref.kind == FoodRefKind.personal) {
-              final local = request.facts.personal[line.entry.food.ref.id]!;
+              final local = _foods(state)
+                  .firstWhere((f) => f.key == line.entry.food.ref.id);
               ops.add(
                 RequirePersonalFood(
                   VersionedId(local.key, local.personalVersion!),
@@ -400,22 +512,35 @@ abstract final class ProposalEngine {
             ..addAll(card.groups)
             ..add(LogEntries(card.lines.map((l) => l.entry)));
         }
+        final lifecycle = state.lifecycles[card.id] ?? ProposalLifecycle.active;
+        if (lifecycle != .active) ops.clear();
+        final date = card.date;
         built.add(
           ProposalCard._(
             id: card.id,
-            originMessageId: request.messageId,
+            originMessageId: state.origins[card.id] ?? request.messageId,
             budgetMessageId: request.messageId,
-            lines: card.lines,
+            lines: lifecycle == .active ? card.lines : [],
             draftOps: ops,
             issues: card.issues,
+            lifecycle: lifecycle,
+            preview: _preview(
+              context,
+              date,
+              lifecycle == .active
+                  ? _sum(card.lines.map((l) => l.snapshot))
+                  : Nutrients.zero,
+            ),
+            state: state,
           ),
         );
       }
       return ProposalResult.success(
         ProposalSession._(
           built,
-          QuestionBudget.select(questions),
+          QuestionBudget._(open),
           decoded.value!.intents.where((i) => i.kind != 'foodLog'),
+          state,
         ),
       );
     } on _Invalid catch (e) {
@@ -428,18 +553,45 @@ abstract final class ProposalEngine {
       return const ProposalResult.failure(ProposalIssue.invalidInput);
     }
   }
+
+  /// Apply an absolute edit and recompute without reading or allocating IDs.
+  static ProposalUpdateResult recompute(
+    ProposalSession session,
+    ProposalAdjustment adjustment, {
+    ProposalContext? context,
+  }) => _recompute(session, adjustment, context);
+
+  /// Replace an open card using a follow-up interpretation and new budget.
+  static ProposalUpdateResult rebuild(
+    ProposalCard previousCard,
+    ProposalRequest newRequest,
+  ) {
+    try {
+      return _rebuild(previousCard, newRequest);
+    } on _Invalid catch (e) {
+      return ProposalResult.failure(e.issue);
+    }
+    // ID/unit constructors may reject supplied facts; never expose their text.
+    // ignore: avoid_catching_errors
+    on ArgumentError {
+      return const ProposalResult.failure(ProposalIssue.invalidInput);
+    }
+  }
 }
 
 final class _CardBuilder {
-  new(this.id);
+  new(this.id, this.date, this.slotId);
   final String id;
+  final LocalDate date;
+  final String slotId;
   final lines = <ProposalLine>[];
   final groups = <CreateDishGroup>[];
   final issues = <ProposalIssue>[];
+  bool fallback = false;
 }
 
-String _id(ProposalIdSource source) {
-  final id = source.next();
+String _id(ProposalIdSource? source) {
+  final id = source?.next() ?? '';
   if (!isUuidV7(id)) throw const _Invalid();
   return id;
 }
@@ -467,6 +619,7 @@ List<ProposalLine> _calculate(
   Set<String> cookingFatIds,
   bool hasExplicitFat,
   Map<String, String> directChoices,
+  ProposalComponentEffect? componentOverride,
 ) {
   var food = item.match;
   var quantity = item.quantity;
@@ -487,7 +640,7 @@ List<ProposalLine> _calculate(
       case ProposalFoodEffect(food: final f):
         food = f;
       case ProposalQuantityEffect(quantity: final q):
-        quantity = q;
+        if (!item.explicit) quantity = q;
       case final ProposalComponentEffect c:
         component = c;
       case ProposalRetentionEffect(fraction: final f):
@@ -623,6 +776,7 @@ List<ProposalLine> _calculate(
     ),
   ];
   if (!hasExplicitFat && component?.food != null) {
+    component = componentOverride ?? component;
     final oilFood = component!.food!;
     final q = component.quantity!;
     final resolved = oilFood.measures.resolve(q);

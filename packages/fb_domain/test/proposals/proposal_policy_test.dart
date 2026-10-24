@@ -201,4 +201,44 @@ void main() {
       expect(localFood().hashCode, localFood().hashCode);
     },
   );
+  // rule: A21 id-source
+  test(
+    'A21 ID source allocates at build add and unmatched rebuild lines only',
+    () {
+      final ids = FixedIds();
+      final initial = session(message(), ids: ids);
+      expect(ids.calls, 3);
+      final itemValue = InterpretationDecoder.decode(
+        message(),
+        ProposalFacts(),
+      ).value!.intents.single.items.single;
+      final add = ProposalAdd(initial.cards.single.id, 'token', itemValue, ids);
+      final added = ProposalEngine.recompute(initial, add).value!.session;
+      expect(ids.calls, 5);
+      expect(ProposalEngine.recompute(added, add).value!.diff.isEmpty, isTrue);
+      expect(ids.calls, 5);
+      final rebuilt = ProposalEngine.rebuild(
+        added.cards.single,
+        ProposalRequest(
+          interpretation: message([
+            intent([item(), item(), item(match: oilFood())]),
+          ]),
+          messageId: '019a1b2c-0000-7000-8000-000000008888',
+          idSource: ids,
+          context: context(),
+          facts: ProposalFacts(),
+        ),
+      ).value!.session;
+      expect(ids.calls, 7);
+      expect(
+        ProposalDraftCodec.restore(
+          ProposalDraftCodec.encodeMessageBudget(rebuilt),
+          [ProposalDraftCodec.encodeCard(rebuilt, rebuilt.cards.single.id)],
+          context: context(),
+        ).issue,
+        isNull,
+      );
+      expect(ids.calls, 7);
+    },
+  );
 }

@@ -1,9 +1,16 @@
+import 'dart:convert';
+
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/api/client_config_repository.dart';
 import 'package:fb_mobile/core/changes/apply_result.dart';
+import 'package:fb_mobile/features/buddy/data/proposal_input_loader.dart';
+import 'package:fb_mobile/features/diary/data/diary_mappers.dart'
+    show provenanceOf;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../../packages/fb_domain/test/proposals/proposal_fixtures.dart';
 import '../diary/support/diary_harness.dart';
+import '../foods/data/personal_food_harness.dart' show PersonalHarness, draft;
 
 void main() {
   test('AI-031 T01 draft ops through real applier match preview', () async {
@@ -36,4 +43,231 @@ void main() {
       closeTo(card.totals.kcal, 1e-9),
     );
   });
+  // rule: A21 read-only-adapter
+  test(
+    'A21 building and adjusting proposals write no rows or outbox',
+    () async {
+      final h = PersonalHarness();
+      final before = await h.raw();
+      final input =
+          await ProposalInputLoader(
+            h.db,
+            config: () => ClientConfigRepository.defaults,
+          ).load(
+            interpretation: t01(),
+            messageId: '019a1b2c-0000-7000-8000-000000009999',
+            idSource: FixedIds(),
+            referenceTime: context().referenceTime,
+            today: context().referenceTime.localDate,
+          );
+      final s = ProposalEngine.build(input.value!).value!;
+      final adjusted = ProposalEngine.recompute(
+        s,
+        ProposalSetAmount(
+          s.cards.single.lines.first.entry.id,
+          Quantity(2, 'piece'),
+        ),
+      );
+      expect(adjusted.issue, isNull);
+      expect(await h.raw(), before);
+    },
+  );
+  test(
+    'AI-031 confirmed applier snapshots equal every preview line and total',
+    () async {
+      const personalKey = '019a1b2c-0000-7000-8000-000000001234';
+      final plate = serving('plate', 350)
+        ..['rangeLo'] = 250.0
+        ..['rangeHi'] = 450.0;
+      final reference = food(
+        key: 'ref:dish',
+        source: 'reference',
+        servings: [plate],
+      )..['ranges'] = {'low': n(100), 'high': n(200)};
+      final estimate = item(amount: 100, unit: 'g')
+        ..['match'] = null
+        ..['estimate'] = {
+          'range': {'low': n(100), 'high': n(200)},
+        };
+      final fat = fatDimension()..['statedValue'] = 'oil';
+      for (final raw in [
+        t01(),
+        message([
+          intent([
+            item(match: reference, explicit: false, unit: 'plate'),
+            estimate,
+            item(
+              dimensions: [fat],
+              explicit: false,
+              share: {'fraction': .5, 'people': 2},
+            ),
+          ], group: 'dish'),
+        ]),
+        message([
+          intent([
+            item(
+              match: food(key: personalKey, source: 'personal'),
+              amount: 100,
+              unit: 'ml',
+            ),
+          ]),
+        ]),
+      ]) {
+        final h = PersonalHarness();
+        await h.apply([
+          CreatePersonalFood(
+            personalKey,
+            PersonalFoodDraft(
+              names: FoodNames('Personal milk'),
+              per100: nutrients(60),
+              basis: .per100ml,
+            ),
+          ),
+        ]);
+        final request =
+            (await ProposalInputLoader(
+                  h.db,
+                  config: () => ClientConfigRepository.defaults,
+                ).load(
+                  interpretation: raw,
+                  messageId: '019a1b2c-0000-7000-8000-000000009999',
+                  idSource: FixedIds(),
+                  referenceTime: context().referenceTime,
+                  today: context().referenceTime.localDate,
+                ))
+                .value!;
+        final card = ProposalEngine.build(request).value!.cards.single;
+        expect(
+          await h.applier.apply(
+            ChangeSet(card.draftOps, origin: Origin.proposal(card.id)),
+          ),
+          isA<Applied>(),
+        );
+        final entries = await h.db.select(h.db.diaryEntries).get();
+        for (final line in card.lines) {
+          final r = entries.singleWhere((r) => r.id == line.entry.id);
+          expect(
+            [r.kcal, r.proteinG, r.carbsG, r.fatG, r.fiberG],
+            [
+              line.snapshot.kcal,
+              line.snapshot.protein,
+              line.snapshot.carbs,
+              line.snapshot.fat,
+              line.snapshot.fiber,
+            ],
+          );
+          expect(r.nameEn, line.entry.food.names.en);
+          expect(r.foodKind, line.entry.food.ref.kind.code);
+          expect(r.foodId, line.entry.food.ref.id);
+          expect(r.foodVersion, line.entry.food.ref.version);
+          expect(r.source, line.entry.food.provenance.source.code);
+          expect(r.isEstimate, line.entry.food.provenance.isEstimate);
+          expect(r.amount, line.entry.amount.amount);
+          expect(r.inputAmount, line.entry.amount.input.amount);
+          expect(r.inputUnit, line.entry.amount.input.unitCode);
+          expect(
+            r.assumptionsJson == null
+                ? <Object?>[]
+                : jsonDecode(r.assumptionsJson!),
+            line.entry.food.provenance.assumptions,
+          );
+          expect(
+            provenanceOf(
+              r.source,
+              r.estimateRangeJson,
+              r.assumptionsJson,
+              isEstimate: r.isEstimate,
+            ),
+            line.entry.food.provenance,
+          );
+          expect(r.origin, 'proposal:${card.id}');
+        }
+        expect(
+          entries.fold<double>(0, (s, r) => s + r.kcal),
+          closeTo(card.totals.kcal, 1e-9),
+        );
+      }
+    },
+  );
+  test(
+    'AI-020 confirmation creates group before its ingredient entries',
+    () async {
+      final h = PersonalHarness();
+      final card = session(t01()).cards.single;
+      expect(card.draftOps.first, isA<CreateDishGroup>());
+      expect(card.draftOps.last, isA<LogEntries>());
+      expect(
+        await h.applier.apply(
+          ChangeSet(card.draftOps, origin: Origin.proposal(card.id)),
+        ),
+        isA<Applied>(),
+      );
+      final group = (await h.db.select(h.db.dishGroups).get()).single;
+      final entries = await h.db.select(h.db.diaryEntries).get();
+      expect(
+        entries.every(
+          (e) =>
+              e.dishGroupId == group.id &&
+              e.localDate == group.localDate &&
+              e.slotId == group.slotId,
+        ),
+        isTrue,
+      );
+    },
+  );
+  // rule: A21 duplicate-confirmation
+  test('A21 duplicate confirmation cannot log entries twice', () async {
+    final h = PersonalHarness();
+    final card = session(t01()).cards.single;
+    final set = ChangeSet(card.draftOps, origin: Origin.proposal(card.id));
+    expect(await h.applier.apply(set), isA<Applied>());
+    final before = await h.raw();
+    expect(await h.applier.apply(set), isA<Rejected>());
+    expect(await h.raw(), before);
+  });
+  // rule: A21 version-guard
+  test(
+    'A21 personal food changed since preview rejects confirmation atomically',
+    () async {
+      final h = PersonalHarness();
+      const key = '019a1b2c-0000-7000-8000-000000001234';
+      await h.apply([CreatePersonalFood(key, draft('Private'))]);
+      final input =
+          (await ProposalInputLoader(
+                h.db,
+                config: () => ClientConfigRepository.defaults,
+              ).load(
+                interpretation: message([
+                  intent([
+                    item(),
+                    item(
+                      match: food(key: key, source: 'personal'),
+                      amount: 100,
+                      unit: 'g',
+                    ),
+                  ], group: 'dish'),
+                ]),
+                messageId: '019a1b2c-0000-7000-8000-000000009999',
+                idSource: FixedIds(),
+                referenceTime: context().referenceTime,
+                today: context().referenceTime.localDate,
+              ))
+              .value!;
+      final card = ProposalEngine.build(input).value!.cards.single;
+      await h.apply([UpdatePersonalFood(key, 1, draft('Changed'))]);
+      final before = await h.raw();
+      final result = await h.applier.apply(
+        ChangeSet(card.draftOps, origin: Origin.proposal(card.id)),
+      );
+      expect(
+        result,
+        isA<Rejected>().having(
+          (r) => r.failure,
+          'failure',
+          isA<VersionConflict>(),
+        ),
+      );
+      expect(await h.raw(), before);
+    },
+  );
 }

@@ -12,6 +12,7 @@ export 'application/new_food_prefill.dart';
 export 'application/personal_food_actions.dart';
 export 'application/personal_food_form.dart';
 export 'application/replace_entry_food.dart';
+export 'data/personal_food_mappers.dart' show personalFoodOf;
 export 'data/personal_food_op_handler.dart';
 export 'data/personal_food_repository.dart';
 export 'presentation/food_result_row.dart';
