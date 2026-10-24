@@ -16,3 +16,26 @@ String dayLabel(BuildContext context, LocalDate date, LocalDate today) {
       : DateFormat.yMMMEd(locale);
   return format.format(DateTime(date.year, date.month, date.day));
 }
+
+/// Like [dayLabel] but for use inside a sentence: "today" and "yesterday" in
+/// lower case; a date stays as it is ("Fri, Oct 17").
+String dayLabelInline(BuildContext context, LocalDate date, LocalDate today) {
+  final l10n = context.l10n;
+  if (date == today) return l10n.diaryDateTodayInline;
+  if (date == today.plusDays(-1)) return l10n.diaryDateYesterdayInline;
+  return dayLabel(context, date, today);
+}
+
+/// Adds the day to a snackbar [message] when it isn't today: "{message} for
+/// yesterday". One ARB string, so a translation can reorder the parts.
+String withDayClause(
+  BuildContext context,
+  String message,
+  LocalDate date,
+  LocalDate today,
+) => date == today
+    ? message
+    : context.l10n.quickAddLoggedOn(
+        message,
+        dayLabelInline(context, date, today),
+      );

@@ -26,9 +26,24 @@ Future<void> main() => fbGoldenMatrix(
         runSpacing: FbSpace.s2,
         children: [
           FbQuickAddChip(label: 'Coffee', onTap: () {}),
+          FbQuickAddChip(
+            label: 'Usual breakfast',
+            icon: FbIcons.meal,
+            semanticLabel: 'Log Usual breakfast',
+            onTap: () {},
+          ),
           FbQuickAddChip.add(label: 'Banana', onTap: () {}),
           FbQuickAddChip.add(label: 'Greek yoghurt with honey', onTap: () {}),
         ],
+      ),
+    ),
+    'long name': (_) => fbGoldenPad(
+      FbQuickAddChip(
+        label:
+            'Grilled chicken breast with roasted vegetables and tahini sauce '
+            'and a very long extra name',
+        icon: FbIcons.meal,
+        onTap: () {},
       ),
     ),
   },

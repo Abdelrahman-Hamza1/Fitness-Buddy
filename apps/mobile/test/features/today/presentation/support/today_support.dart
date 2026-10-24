@@ -9,6 +9,8 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
+import 'package:fb_mobile/features/foods/foods.dart';
+import 'package:fb_mobile/features/quick_add/quick_add.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:fb_mobile/l10n/gen/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +18,7 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../helpers/quick_add_context.dart';
 import '../../../diary/support/diary_fixtures.dart' show fixtureId;
 import '../../../diary/support/diary_harness.dart';
 
@@ -227,6 +230,8 @@ List<Override> fakeToday({
   ManualClock? clock,
   bool liveToday = false,
   bool fakeDays = true,
+  List<QuickAddChip> chips = const [],
+  Override? chipsOverride,
 }) => [
   clockProvider.overrideWithValue(
     clock ?? ManualClock(DateTime.utc(2026, 10, 17, 12)),
@@ -240,31 +245,48 @@ List<Override> fakeToday({
     dayViewProvider.overrideWith(
       (ref, date) => AsyncData(fakeView(days[date] ?? fakeDay(date))),
     ),
+  // The quick-add suggestions are their own tests' business (A09 WP8): the
+  // Today tests see none unless they pass [chips].
+  chipsOverride ??
+      quickAddChipsProvider.overrideWith((ref, date) => AsyncData(chips)),
 ];
 
 /// The providers of a Today screen on a real in-memory diary, with a real
 /// applier and undo stack.
 final class TodayRig {
   /// Creates the rig; [apply] replaces the applier (to make commands fail).
-  new({this.apply, AppConfig? config}) : config = config ?? prodConfig {
+  new({this.apply, AppConfig? config, this.realChips = false})
+    : config = config ?? prodConfig {
     stack = UndoStack(revert: diary.applier.revert, clock: diary.clock);
     addTearDown(stack.dispose);
   }
 
   final Future<ApplyResult> Function(ChangeSet)? apply;
   final AppConfig config;
+
+  /// Whether the quick-add row reads the real diary. Off, it shows nothing,
+  /// so the A08 tests keep one row per logged item.
+  final bool realChips;
   final DiaryHarness diary = DiaryHarness();
   final RecordingNavigator navigator = RecordingNavigator();
   late final UndoStack stack;
 
   List<Override> get overrides => [
     diaryRepositoryProvider.overrideWithValue(DiaryRepository(diary.db)),
+    personalFoodRepositoryProvider.overrideWithValue(
+      PersonalFoodRepository(diary.db),
+    ),
     changeSetApplierProvider.overrideWithValue(diary.applier),
     diaryApplyProvider.overrideWithValue(apply ?? diary.applier.apply),
     clockProvider.overrideWithValue(diary.clock),
     idGeneratorProvider.overrideWithValue(diary.ids),
     undoStackProvider.overrideWithValue(stack),
     todayProvider.overrideWith((ref) => Stream.value(testToday)),
+    quickAddContextWithoutTimer(),
+    if (!realChips)
+      quickAddChipsProvider.overrideWith(
+        (ref, date) => const AsyncData(<QuickAddChip>[]),
+      ),
     appConfigProvider.overrideWithValue(config),
     appNavigatorProvider.overrideWithValue(navigator),
   ];

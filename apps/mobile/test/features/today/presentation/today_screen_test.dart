@@ -182,7 +182,7 @@ void main() {
         greaterThan(tester.getBottomLeft(find.byType(PageView)).dy),
       );
       expect(find.text('Search for a food…'), findsOneWidget);
-      // The chip row is empty until A09.
+      // No suggestions, so no chip row (A09 D14).
       expect(find.byType(FbQuickAddChip), findsNothing);
 
       await tester.tap(bar);

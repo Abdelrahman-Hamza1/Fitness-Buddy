@@ -4,6 +4,7 @@ import 'package:fb_mobile/app/router/app_router.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/design_preview/design_preview.dart';
+import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
@@ -30,6 +31,8 @@ import '../../helpers/pump_app.dart';
   NewFoodFromSearchRoute() => (PersonalFoodFormScreen, true),
   PersonalFoodsRoute() => (PersonalFoodsScreen, true),
   PersonalFoodRoute() => (PersonalFoodFormScreen, true),
+  SavedMealsRoute() => (SavedMealsScreen, true),
+  SavedMealRoute() => (SavedMealScreen, true),
   UpdateRequiredRoute() => (UpdateRequiredScreen, false),
 };
 
@@ -46,6 +49,8 @@ const List<AppRoute> _allRoutes = [
   NewFoodFromSearchRoute(),
   PersonalFoodsRoute(),
   PersonalFoodRoute(),
+  SavedMealsRoute(),
+  SavedMealRoute(id: _entryId),
   UpdateRequiredRoute(),
 ];
 
@@ -70,6 +75,8 @@ void main() {
         const NewFoodFromSearchRoute(),
         const PersonalFoodsRoute(),
         const PersonalFoodRoute(),
+        const SavedMealsRoute(),
+        const SavedMealRoute(id: _entryId),
       ].map((r) => r.location),
       unorderedEquals(_allRoutes.map((r) => r.location)),
     );
@@ -100,6 +107,21 @@ void main() {
         reason: '$route',
       );
     }
+  });
+
+  testWidgets('D10 a malformed saved meal ID goes to the list', (tester) async {
+    final container = await pumpApp(
+      tester,
+      overrides: [searchOverride(FakeFoodSearch())],
+    );
+    final router = container.read(appRouterProvider);
+
+    router.config.go('/me/meals/not-an-id');
+    await tester.pumpAndSettle();
+
+    expect(router.config.state.matchedLocation, SavedMealsRoute.path);
+    expect(find.byType(SavedMealsScreen), findsOneWidget);
+    expect(find.byType(SavedMealScreen), findsNothing);
   });
 
   test('update gate redirect: up sends every location to the update screen, '

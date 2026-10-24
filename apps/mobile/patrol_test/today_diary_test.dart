@@ -189,7 +189,7 @@ Future<void> _openSlot(WidgetTester tester, LocalDate date, String name) async {
   final row = _slotRow(date, name);
   await revealDayWidget(tester, row, date);
   if (tester.widget<FbDisclosureRow>(row).expanded) return;
-  await tester.tap(row);
+  await tapExactly(tester, row, 'the $name meal row');
   await waitUntil(
     tester,
     () => tester.widget<FbDisclosureRow>(row).expanded,
@@ -209,7 +209,7 @@ Future<Finder> _openDetails(
   final panel = find.byKey(ValueKey<String>('details:$id'));
   if (panel.evaluate().isNotEmpty) return panel;
   await revealDayWidget(tester, _rowOf(id), date);
-  await tester.tap(_rowOf(id));
+  await tapExactly(tester, _rowOf(id), 'the item row to open its details');
   await waitUntil(
     tester,
     () => panel.evaluate().length == 1,
@@ -221,7 +221,7 @@ Future<Finder> _openDetails(
 /// Taps [target] (revealed first) inside the day's page of [date].
 Future<void> _tapIn(WidgetTester tester, Finder target, LocalDate date) async {
   await revealDayWidget(tester, target, date);
-  await tester.tap(target);
+  await tapExactly(tester, target, 'a control on the day of $date');
 }
 
 void main() {
@@ -262,7 +262,7 @@ void main() {
       matching: find.byTooltip('Add food to Breakfast'),
     );
     await revealDayWidget(tester, addBreakfast, yesterday);
-    await tester.tap(addBreakfast);
+    await tapExactly(tester, addBreakfast, 'the Breakfast plus');
     await _addFood(
       tester,
       query: 'pita',
@@ -289,7 +289,7 @@ void main() {
       matching: find.byTooltip('Add food to Lunch'),
     );
     await revealDayWidget(tester, addLunch, yesterday);
-    await tester.tap(addLunch);
+    await tapExactly(tester, addLunch, 'the Lunch plus');
     await _addFood(
       tester,
       query: 'banana',
@@ -312,9 +312,13 @@ void main() {
 
     // Details: open Breakfast, tap the item, see the panel.
     await revealDayWidget(tester, _slotRow(yesterday, 'Breakfast'), yesterday);
-    await tester.tap(_slotRow(yesterday, 'Breakfast'));
+    await tapExactly(
+      tester,
+      _slotRow(yesterday, 'Breakfast'),
+      'the Breakfast meal row',
+    );
     await revealDayWidget(tester, _rowOf(pita.id), yesterday);
-    await tester.tap(_rowOf(pita.id));
+    await tapExactly(tester, _rowOf(pita.id), 'the pita row (open details)');
     final panel = find.byKey(ValueKey<String>('details:${pita.id}'));
     await waitUntil(
       tester,
@@ -335,7 +339,7 @@ void main() {
     );
     await expectStored('details open', yesterday);
     await revealDayWidget(tester, _rowOf(pita.id), yesterday);
-    await tester.tap(_rowOf(pita.id));
+    await tapExactly(tester, _rowOf(pita.id), 'the pita row (close details)');
     await waitUntil(
       tester,
       () => panel.evaluate().isEmpty,
@@ -344,7 +348,11 @@ void main() {
 
     // Move: open Lunch, swipe the banana toward the end edge, pick Dinner.
     await revealDayWidget(tester, _slotRow(yesterday, 'Lunch'), yesterday);
-    await tester.tap(_slotRow(yesterday, 'Lunch'));
+    await tapExactly(
+      tester,
+      _slotRow(yesterday, 'Lunch'),
+      'the Lunch meal row',
+    );
     await revealDayWidget(tester, _rowOf(banana.id), yesterday);
     await _swipe(tester, _rowOf(banana.id), 0.7);
     await waitUntil(
@@ -695,19 +703,24 @@ void main() {
 /// Drags [row] by [fraction] of its width (positive toward the end edge in
 /// LTR) and lets the swipe finish.
 Future<void> _swipe(WidgetTester tester, Finder row, double fraction) async {
+  // The quick-add row may still be growing in above the input bar (A09b):
+  // swipe on a settled layout, and prove the finger starts on the row.
+  await settleQuickAddRow(tester);
+  await tester.ensureVisible(row);
+  await pumpFor(tester, const Duration(milliseconds: 300));
   final width = tester.getSize(row).width;
-  expect(
-    row.hitTestable(),
-    findsOneWidget,
-    reason: 'swipe row must be visible',
-  );
   final rect = tester.getRect(row);
-  await tester.dragFrom(
-    Offset(
-      fraction > 0 ? rect.left + width * .1 : rect.right - width * .1,
-      rect.center.dy,
-    ),
-    Offset(width * fraction, 0),
+  final start = Offset(
+    fraction > 0 ? rect.left + width * .1 : rect.right - width * .1,
+    rect.center.dy,
   );
+  expect(
+    hitsTarget(tester, row, start),
+    isTrue,
+    reason:
+        'swipe start $start must be on the row $rect; '
+        'on screen: ${screenSummary()}',
+  );
+  await tester.dragFrom(start, Offset(width * fraction, 0));
   await pumpFor(tester, const Duration(milliseconds: 600));
 }

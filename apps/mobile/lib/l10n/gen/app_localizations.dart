@@ -1202,6 +1202,18 @@ abstract class AppLocalizations {
   /// **'Yesterday'**
   String get diaryDateYesterday;
 
+  /// The current day inside a sentence, lower case (for example 'Logged Oats, 100 g for today').
+  ///
+  /// In en, this message translates to:
+  /// **'today'**
+  String get diaryDateTodayInline;
+
+  /// The day before today inside a sentence, lower case (for example 'Logged Oats, 100 g for yesterday').
+  ///
+  /// In en, this message translates to:
+  /// **'yesterday'**
+  String get diaryDateYesterdayInline;
+
   /// Today: caption under the big number while there is no target yet (HM-001).
   ///
   /// In en, this message translates to:
@@ -2261,6 +2273,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This food changed, so nothing was changed. Pick it again.'**
   String get foodSheetReplaceChanged;
+
+  /// Me tab: the row that opens the list of saved meals (DY-031).
+  ///
+  /// In en, this message translates to:
+  /// **'Saved meals'**
+  String get meSavedMeals;
+
+  /// Title of the list of saved meals.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved meals'**
+  String get savedMealsTitle;
+
+  /// Saved meals: title of the empty state (UX-050).
+  ///
+  /// In en, this message translates to:
+  /// **'No saved meals yet'**
+  String get savedMealsEmptyTitle;
+
+  /// Saved meals: one line of help in the empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a meal\'s menu on Today and choose Save as meal.'**
+  String get savedMealsEmptyMessage;
+
+  /// Saved meals: banner when the list can't be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your saved meals. Try again.'**
+  String get savedMealsLoadFailed;
+
+  /// Saved meal screen: title while the meal's name is not loaded yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved meal'**
+  String get savedMealDefaultTitle;
+
+  /// Saved meal screen: heading above the meal's items.
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get savedMealItemsHeader;
+
+  /// Saved meal screen: title of the sheet that picks which meal the saved meal is logged into.
+  ///
+  /// In en, this message translates to:
+  /// **'Log to meal'**
+  String get savedMealPickMealTitle;
+
+  /// Saved meal detail at large text: an item's amount and calories on one wrapping line (for example '150 g · 120 kcal').
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} · {kcal}'**
+  String savedMealItemSubtitle(String amount, String kcal);
+
+  /// Saved meal screen: button that logs the saved meal into the chosen meal and day (DY-031).
+  ///
+  /// In en, this message translates to:
+  /// **'Log'**
+  String get savedMealLogButton;
+
+  /// Saved meal screen: why Log is off for a meal without items.
+  ///
+  /// In en, this message translates to:
+  /// **'This meal has no items.'**
+  String get savedMealNoItems;
+
+  /// Saved meal screen: tooltip and screen-reader label of the pencil button.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename meal'**
+  String get savedMealRenameTooltip;
+
+  /// Title of the sheet that renames a saved meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename meal'**
+  String get savedMealRenameTitle;
+
+  /// Saved meal screen: tooltip and screen-reader label of the overflow button.
+  ///
+  /// In en, this message translates to:
+  /// **'More for this meal'**
+  String get savedMealMenuTooltip;
+
+  /// Saved meal screen: overflow action that deletes the saved meal (with Undo).
+  ///
+  /// In en, this message translates to:
+  /// **'Delete meal'**
+  String get savedMealDeleteAction;
+
+  /// Snackbar (with Undo) after a saved meal was renamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Renamed to \"{name}\"'**
+  String savedMealRenamedMessage(String name);
+
+  /// Snackbar (with Undo) after a saved meal was deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted \"{name}\"'**
+  String savedMealDeletedMessage(String name);
+
+  /// Saved meal screen: shown when the meal on screen was deleted elsewhere.
+  ///
+  /// In en, this message translates to:
+  /// **'This saved meal was deleted.'**
+  String get savedMealGone;
+
+  /// Rename sheet: shown when the meal was deleted while the sheet was open.
+  ///
+  /// In en, this message translates to:
+  /// **'This meal was deleted, so it can\'t be renamed.'**
+  String get savedMealRenameGone;
+
+  /// Rename sheet: shown, with Reload, when the meal was renamed while the sheet was open.
+  ///
+  /// In en, this message translates to:
+  /// **'This meal was renamed. Reload to see its new name.'**
+  String get savedMealRenameChanged;
+
+  /// Snackbar or sheet note when a rename was refused because the meal changed.
+  ///
+  /// In en, this message translates to:
+  /// **'That meal changed. Nothing was renamed.'**
+  String get savedMealChangedRename;
+
+  /// Snackbar when a delete was refused because the meal changed.
+  ///
+  /// In en, this message translates to:
+  /// **'That meal changed. Nothing was deleted.'**
+  String get savedMealChangedDelete;
+
+  /// Snackbar (with Undo) after a quick-add chip logged a food: its name and the amount that was logged (the last-used amount).
+  ///
+  /// In en, this message translates to:
+  /// **'Logged {name}, {amount}'**
+  String quickAddLoggedAmount(String name, String amount);
+
+  /// Snackbar (with Undo) after a saved meal logged: its name and how many items it added.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged {name}, {count, plural, =1{1 item} other{{count} items}}'**
+  String quickAddLoggedItems(String name, int count);
+
+  /// Snackbar (with Undo) when a quick-add chip or a saved meal logged on another day: the message above, then the day. The day is 'yesterday' (lower case) or a date such as 'Fri, Oct 17'.
+  ///
+  /// In en, this message translates to:
+  /// **'{message} for {day}'**
+  String quickAddLoggedOn(String message, String day);
+
+  /// Snackbar when a chip or saved meal was refused because what it shows changed meanwhile (PA1).
+  ///
+  /// In en, this message translates to:
+  /// **'That changed. Nothing was logged.'**
+  String get quickAddChanged;
+
+  /// Screen-reader label of a quick-add chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Log {name}'**
+  String quickAddChipSemantics(String name);
+
+  /// Screen-reader label of a quick-add chip that logs a saved meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Log saved meal {name}'**
+  String quickAddSavedMealChipSemantics(String name);
+
+  /// Screen-reader label of the row of quick-add chips above the input bar on Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick add'**
+  String get quickAddRowSemantics;
 }
 
 class _AppLocalizationsDelegate

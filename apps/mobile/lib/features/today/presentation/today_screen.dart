@@ -8,6 +8,7 @@ import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
+import 'package:fb_mobile/features/quick_add/quick_add.dart';
 import 'package:fb_mobile/features/today/application/today_controller.dart';
 import 'package:fb_mobile/features/today/application/today_date.dart';
 import 'package:fb_mobile/features/today/presentation/day_page.dart';
@@ -192,6 +193,8 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
                 },
               ),
             ),
+            // What you most likely eat now, above the input bar (DY-030, D14).
+            QuickAddBar(date: viewed),
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(
                 FbSpace.s4,

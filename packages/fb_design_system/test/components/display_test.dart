@@ -397,6 +397,140 @@ void main() {
       expect(taps, 2);
       expect(find.byIcon(FbIcons.add), findsOneWidget);
     });
+
+    testWidgets('DY-030 a quick-add chip shows its icon and says its '
+        'semantic label instead of the bare name', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpFb(
+        tester,
+        FbQuickAddChip(
+          label: 'Usual breakfast',
+          icon: FbIcons.meal,
+          semanticLabel: 'Log Usual breakfast',
+          onTap: () {},
+        ),
+      );
+      expect(find.byIcon(FbIcons.meal), findsOneWidget);
+      expect(
+        tester.getSemantics(find.byType(FbQuickAddChip)),
+        isSemantics(
+          label: 'Log Usual breakfast',
+          isButton: true,
+          hasTapAction: true,
+        ),
+      );
+      handle.dispose();
+    });
+
+    testWidgets('UX-070 a long quick-add label is cut with an ellipsis and '
+        'never wider than the screen, also at text scale 2.0', (tester) async {
+      for (final scale in [1.0, 2.0]) {
+        await pumpFb(
+          tester,
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: FbQuickAddChip(
+              label: 'x' * 200,
+              icon: FbIcons.meal,
+              onTap: () {},
+            ),
+          ),
+          textScale: scale,
+        );
+        expect(tester.takeException(), isNull);
+        expect(
+          tester.getSize(find.byType(FbQuickAddChip)).width,
+          lessThanOrEqualTo(360 * 0.7 + 120),
+        );
+        expect(
+          tester.widget<Text>(find.text('x' * 200)).overflow,
+          TextOverflow.ellipsis,
+        );
+      }
+    });
+
+    testWidgets('DY-030 HM-008 the quick-add row puts the chips first and '
+        'the plus chip last, and mirrors in RTL', (tester) async {
+      var added = 0;
+      Widget row() => FbQuickAddRow(
+        chips: [
+          FbQuickAddChip(label: 'Labaneh', onTap: () {}),
+          FbQuickAddChip(label: 'Coffee', onTap: () {}),
+        ],
+        addLabel: 'Add food',
+        onAdd: () => added++,
+      );
+      await pumpFb(tester, row());
+      final labaneh = tester.getCenter(find.text('Labaneh')).dx;
+      final coffee = tester.getCenter(find.text('Coffee')).dx;
+      final plus = tester.getCenter(find.text('Add food')).dx;
+      expect(labaneh, lessThan(coffee));
+      expect(coffee, lessThan(plus));
+      // Starts one screen padding from the start edge.
+      expect(
+        tester.getTopLeft(find.byType(FbQuickAddChip).first).dx,
+        FbSpace.s4,
+      );
+      await tester.tap(find.byType(FbQuickAddChip).last);
+      expect(added, 1);
+
+      await pumpFb(tester, row(), direction: TextDirection.rtl);
+      expect(
+        tester.getCenter(find.text('Labaneh')).dx,
+        greaterThan(tester.getCenter(find.text('Coffee')).dx),
+      );
+      expect(
+        tester.getCenter(find.text('Add food')).dx,
+        lessThan(tester.getCenter(find.text('Coffee')).dx),
+      );
+    });
+
+    testWidgets('DY-030 the quick-add row scrolls sideways instead of '
+        'overflowing', (tester) async {
+      await pumpFb(
+        tester,
+        FbQuickAddRow(
+          chips: [
+            for (var i = 0; i < 6; i++)
+              FbQuickAddChip(label: 'Food number $i', onTap: () {}),
+          ],
+          addLabel: 'Add food',
+          onAdd: () {},
+        ),
+        textScale: 2,
+      );
+      expect(tester.takeException(), isNull);
+      await tester.drag(find.byType(FbQuickAddRow), const Offset(-2000, 0));
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+      expect(find.text('Add food'), findsOneWidget);
+    });
+
+    testWidgets('UX-040 an icon button is labelled by its tooltip and is '
+        'disabled without a handler', (tester) async {
+      var pressed = 0;
+      await pumpFb(
+        tester,
+        Row(
+          children: [
+            FbIconButton(
+              icon: FbIcons.edit,
+              tooltip: 'Rename',
+              onPressed: () => pressed++,
+            ),
+            const FbIconButton(
+              icon: FbIcons.delete,
+              tooltip: 'Delete',
+              onPressed: null,
+            ),
+          ],
+        ),
+      );
+      await tester.tap(find.byTooltip('Rename'));
+      await tester.tap(find.byTooltip('Delete'));
+      expect(pressed, 1);
+      expect(find.byTooltip('Delete'), findsOneWidget);
+    });
   });
 
   group('states', () {

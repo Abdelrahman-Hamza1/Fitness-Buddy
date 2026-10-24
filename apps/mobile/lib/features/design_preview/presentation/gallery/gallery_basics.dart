@@ -264,7 +264,13 @@ final List<GallerySection> gallerySectionsBasics = [
   ),
   GallerySection(
     name: 'FbChips',
-    covers: const [FbAssumptionChip, FbAnswerChip, FbQuickAddChip],
+    covers: const [
+      FbAssumptionChip,
+      FbAnswerChip,
+      FbQuickAddChip,
+      FbQuickAddRow,
+      FbIconButton,
+    ],
     states: (_) => [
       GalleryState(
         'assumption',
@@ -293,6 +299,40 @@ final List<GallerySection> gallerySectionsBasics = [
             FbQuickAddChip(label: _S.coffee, onTap: () {}),
             FbQuickAddChip.add(label: _S.banana, onTap: () {}),
             FbQuickAddChip.add(label: _S.yoghurt, onTap: () {}),
+          ],
+        ),
+      ),
+      GalleryState(
+        'quick add row, with a meal chip and a plus',
+        FbQuickAddRow(
+          chips: [
+            FbQuickAddChip(label: _S.coffee, onTap: () {}),
+            FbQuickAddChip(label: _S.banana, icon: FbIcons.meal, onTap: () {}),
+            FbQuickAddChip(label: _S.yoghurt, onTap: () {}),
+          ],
+          addLabel: _S.addFood,
+          onAdd: () {},
+        ),
+      ),
+      GalleryState(
+        'icon button: enabled, disabled',
+        Row(
+          children: [
+            FbIconButton(
+              icon: FbIcons.edit,
+              tooltip: _S.rename,
+              onPressed: () {},
+            ),
+            FbIconButton(
+              icon: FbIcons.more,
+              tooltip: _S.more,
+              onPressed: () {},
+            ),
+            const FbIconButton(
+              icon: FbIcons.delete,
+              tooltip: _S.delete,
+              onPressed: null,
+            ),
           ],
         ),
       ),

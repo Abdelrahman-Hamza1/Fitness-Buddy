@@ -147,6 +147,105 @@ final class DiaryReads {
     ];
   }
 
+  /// Consistent parent/item snapshot, ordered for list and guarded logging.
+  Future<List<SavedMeal>> savedMeals({String? id}) async {
+    final query =
+        db.select(db.savedMeals).join([
+            leftOuterJoin(
+              db.savedMealItems,
+              db.savedMealItems.savedMealId.equalsExp(db.savedMeals.id) &
+                  db.savedMealItems.deletedAt.isNull(),
+            ),
+          ])
+          ..where(
+            db.savedMeals.deletedAt.isNull() &
+                (id == null
+                    ? const Constant(true)
+                    : db.savedMeals.id.equals(id)),
+          )
+          ..orderBy([
+            OrderingTerm(expression: db.savedMeals.name),
+            OrderingTerm(expression: db.savedMeals.id),
+            OrderingTerm(expression: db.savedMealItems.sortOrder),
+            OrderingTerm(expression: db.savedMealItems.id),
+          ]);
+    // One SELECT gives a consistent source snapshot without a write boundary.
+    final joined = await query.get();
+    final parents = <String, SavedMealRow>{};
+    final rows = <SavedMealItemRow>[];
+    for (final result in joined) {
+      final parent = result.readTable(db.savedMeals);
+      parents[parent.id] = parent;
+      final item = result.readTableOrNull(db.savedMealItems);
+      if (item != null) rows.add(item);
+    }
+    final items = <String, List<SavedMealItem>>{};
+    try {
+      for (final row in rows) {
+        (items[row.savedMealId] ??= []).add(
+          SavedMealItem(
+            id: row.id,
+            version: row.version,
+            sortOrder: row.sortOrder,
+            food: EntryFood(
+              ref: foodRefOf(row.foodKind, row.foodId, row.foodVersion),
+              names: FoodNames(row.nameEn, ar: row.nameAr),
+              per100: nutrientsOf(
+                kcal: row.per100Kcal,
+                proteinG: row.per100ProteinG,
+                carbsG: row.per100CarbsG,
+                fatG: row.per100FatG,
+                fiberG: row.per100FiberG,
+                extrasJson: row.per100ExtrasJson,
+              ),
+              provenance: provenanceOf(
+                row.source,
+                row.estimateRangeJson,
+                row.assumptionsJson,
+                isEstimate: row.isEstimate,
+              ),
+              editedByUser: row.editedByUser,
+            ),
+            amount: EntryAmount(
+              input: Quantity(row.inputAmount, row.inputUnit),
+              amount: row.amount,
+              basis: basisOf(row.amountBasis),
+            ),
+            snapshot: nutrientsOf(
+              kcal: row.kcal,
+              proteinG: row.proteinG,
+              carbsG: row.carbsG,
+              fatG: row.fatG,
+              fiberG: row.fiberG,
+              extrasJson: row.extrasJson,
+            ),
+          ),
+        );
+      }
+      return [
+        for (final row in parents.values)
+          SavedMeal(
+            id: row.id,
+            version: row.version,
+            name: row.name,
+            items: items[row.id] ?? [],
+          ),
+      ];
+    } on FormatException {
+      throw const SavedMealReadFailure();
+      // Constructors may include private values in their errors.
+      // ignore: avoid_catching_errors
+    } on ArgumentError {
+      throw const SavedMealReadFailure();
+    }
+  }
+
+  /// One live saved snapshot, including an empty live parent.
+  Future<SavedMeal?> savedMeal(String id) async {
+    final meals = await savedMeals(id: id);
+    return meals.isEmpty ? null : meals.single;
+  }
+
   Future<List<DiaryEntry>> _entries(String sql, List<String> args) async {
     final rows = await db
         .customSelect(
@@ -158,4 +257,12 @@ final class DiaryReads {
         .get();
     return rows;
   }
+}
+
+/// Redacted typed failure for an unreadable saved snapshot.
+final class SavedMealReadFailure implements Exception {
+  /// No row content is carried into diagnostics.
+  const new();
+  @override
+  String toString() => 'SavedMealReadFailure';
 }

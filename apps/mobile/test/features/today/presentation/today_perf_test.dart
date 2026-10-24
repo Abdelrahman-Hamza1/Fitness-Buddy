@@ -5,12 +5,14 @@ import 'dart:math';
 
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
+import 'package:fb_mobile/features/quick_add/quick_add.dart';
 import 'package:fb_mobile/features/today/presentation/day_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../quick_add/presentation/quick_add_support.dart';
 import 'support/today_support.dart';
 
 /// 30 entries: eight in each of three meals, six in the last, with a dish of
@@ -140,4 +142,106 @@ void main() {
       expect(ms, lessThan(budgetMs * load));
     });
   }
+
+  // The quick-add chips start only after the day's first data frame has been
+  // drawn (D14), so the day's own frame must cost the same with the chip-row
+  // model present as without it: the same budget as the collapsed day above.
+  // The model answers "loading" until [arrived] flips, like the real one.
+  List<Override> chipOverrides(
+    LocalDate day,
+    ValueNotifier<bool> arrived,
+    List<QuickAddChip> chips,
+  ) => [
+    ...fakeToday(
+      days: {testToday: thirtyEntryDay(day)},
+      chipsOverride: quickAddChipsProvider.overrideWith((ref, date) {
+        void onChange() => ref.invalidateSelf();
+        arrived.addListener(onChange);
+        ref.onDispose(() => arrived.removeListener(onChange));
+        return arrived.value ? AsyncData(chips) : const AsyncLoading();
+      }),
+    ),
+  ];
+  final chips = [
+    for (var n = 1; n <= 6; n++) fakeFoodChip(n, 'Chip food number $n'),
+  ];
+
+  testWidgets('A08 perf W1 still within budget with the chip-row model '
+      'present: first frame of a 30-entry page with the row still loading, '
+      'p95 < 60 ms x load', (tester) async {
+    usePhone(tester);
+    final arrived = ValueNotifier(false);
+    addTearDown(arrived.dispose);
+    await firstFrames(tester, referencePage);
+    final reference = p95(await firstFrames(tester, referencePage));
+    final load = max(1, reference / _referenceQuietMs);
+    final times = await firstFrames(
+      tester,
+      Column(
+        children: [
+          Expanded(child: DayPage(date: testToday, isToday: true)),
+          QuickAddBar(date: testToday),
+        ],
+      ),
+      overrides: chipOverrides(testToday, arrived, chips),
+    );
+    final ms = p95(times);
+    debugPrint(
+      'A08 perf W1 with the chip-row model present: p95 '
+      '${ms.toStringAsFixed(1)} ms (20 runs after 5 warm-ups); budget 60 ms x '
+      'load ${load.toStringAsFixed(2)} (reference '
+      '${reference.toStringAsFixed(1)} ms)',
+    );
+    expect(ms, lessThan(60 * load));
+  });
+
+  testWidgets('A09 perf W1 chip arrival: the frame in which six quick-add '
+      'chips arrive under a built 30-entry page, p95 < '
+      '$_chipArrivalBudgetMs ms x load', (tester) async {
+    usePhone(tester);
+    final arrived = ValueNotifier(false);
+    addTearDown(arrived.dispose);
+    await firstFrames(tester, referencePage);
+    final reference = p95(await firstFrames(tester, referencePage));
+    final load = max(1, reference / _referenceQuietMs);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: chipOverrides(testToday, arrived, chips),
+        child: phoneApp(
+          Scaffold(
+            body: Column(
+              children: [
+                Expanded(child: DayPage(date: testToday, isToday: true)),
+                QuickAddBar(date: testToday),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    final micros = <int>[];
+    for (var i = 0; i < 25; i++) {
+      arrived.value = false;
+      await tester.pump();
+      final timer = Stopwatch()..start();
+      arrived.value = true;
+      await tester.pump();
+      timer.stop();
+      expect(find.text('Chip food number 1'), findsOneWidget);
+      if (i >= 5) micros.add(timer.elapsedMicroseconds);
+    }
+    final ms = p95(micros);
+    debugPrint(
+      'A09 perf W1 chip arrival: p95 ${ms.toStringAsFixed(1)} ms (20 runs '
+      'after 5 warm-ups); budget $_chipArrivalBudgetMs ms x load '
+      '${load.toStringAsFixed(2)} (reference ${reference.toStringAsFixed(1)} '
+      'ms)',
+    );
+    expect(ms, lessThan(_chipArrivalBudgetMs * load));
+  });
 }
+
+/// The budget of the frame in which the chips arrive, in ms on a quiet
+/// machine (A09 D14). Printed numbers decide it; see the test's output.
+const int _chipArrivalBudgetMs = 40;

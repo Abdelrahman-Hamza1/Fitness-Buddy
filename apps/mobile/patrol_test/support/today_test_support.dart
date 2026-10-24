@@ -1,6 +1,12 @@
+// Test support: RenderAnimatedSize.state is exposed for tests only.
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
+import 'package:fb_mobile/features/quick_add/quick_add.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -42,6 +48,74 @@ Future<void> waitForToday(
   }
 }
 
+/// Waits until the quick-add chip row (A09b) has settled, or is absent.
+///
+/// The row grows in (an `AnimatedSize`) once history exists and chips are
+/// ranked, which is right after a journey logs its first foods. The day's
+/// viewport ends at the row's top, so while it grows the viewport shrinks
+/// and a row at the bottom edge ends up under the chip row: a tap there lands
+/// on a chip (and logs an extra entry) or on nothing. So a tap on a day row
+/// must come after this. "Settled" is: no `AnimatedSize` of the bar still
+/// animating, its suggestions loaded, and the sizes of the bar and of the day
+/// pager unchanged for [stableFrames] frames in a row. Bounded: fails with the
+/// sizes it saw.
+Future<void> settleQuickAddRow(
+  WidgetTester tester, {
+  int stableFrames = 3,
+  Duration timeout = const Duration(seconds: 5),
+}) async {
+  final bar = find.byType(QuickAddBar);
+  final pager = find.byType(PageView);
+  String sizes() => [
+    for (final finder in [bar, pager])
+      if (finder.evaluate().length == 1)
+        '${tester.getSize(finder)}'
+      else
+        'absent',
+  ].join(' / ');
+  bool animating() => find
+      .descendant(of: bar, matching: find.byType(AnimatedSize))
+      .evaluate()
+      .any(
+        (e) =>
+            (e.renderObject! as RenderAnimatedSize).state !=
+            RenderAnimatedSizeState.stable,
+      );
+  // Suggestions that are still being worked out show no row yet, but will in
+  // a moment: wait for them too, at most [timeout] (a row that never loads
+  // is not this helper's failure; the sizes below still have to be stable).
+  bool loading() {
+    final found = bar.evaluate();
+    if (found.length != 1) return false;
+    final date = (found.single.widget as QuickAddBar).date;
+    return ProviderScope.containerOf(found.single)
+        .read(quickAddChipsProvider(date))
+        .isLoading;
+  }
+
+  final watch = Stopwatch()..start();
+  while (loading() && watch.elapsed < timeout) {
+    await tester.pump(const Duration(milliseconds: 50));
+  }
+  watch
+    ..reset()
+    ..start();
+  var last = sizes();
+  var stable = 0;
+  while (stable < stableFrames) {
+    if (watch.elapsed > timeout) {
+      fail(
+        'Timed out waiting for the quick-add row to settle; '
+        'sizes (bar / pager) $last, still animating: ${animating()}',
+      );
+    }
+    await tester.pump(const Duration(milliseconds: 50));
+    final now = sizes();
+    stable = (now == last && !animating()) ? stable + 1 : 0;
+    last = now;
+  }
+}
+
 /// Reveal lazy rows in the day's vertical list, never the horizontal pager.
 /// Start at the top because a previous check may have scrolled past the row.
 Future<void> revealDayWidget(
@@ -63,6 +137,9 @@ Future<void> revealDayWidget(
     'the pager to reach $date',
   );
   await tester.pump();
+  // A chip row that is still growing in changes the day's viewport under the
+  // check below (A09b): look only at a settled layout.
+  await settleQuickAddRow(tester);
   bool visible() {
     if (target.evaluate().isEmpty) return false;
     // Display-only widgets can have blank space at their centre. Hit testing
@@ -91,6 +168,7 @@ Future<void> revealDayWidget(
   tester.state<ScrollableState>(scrollable).position.jumpTo(0);
   await tester.pump();
   for (var attempt = 0; attempt < 20; attempt++) {
+    await settleQuickAddRow(tester);
     if (target.evaluate().isNotEmpty) {
       await tester.ensureVisible(target);
       await tester.pump(const Duration(milliseconds: 50));

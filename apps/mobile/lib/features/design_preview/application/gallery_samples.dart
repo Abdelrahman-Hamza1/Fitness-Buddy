@@ -15,6 +15,8 @@ abstract final class GallerySamples {
   static const String addFood = 'Add food';
   static const String scan = 'Scan';
   static const String more = 'More';
+  static const String rename = 'Rename';
+  static const String delete = 'Delete';
   static const String longButton = 'Add this meal to the diary for dinner';
   static const String assumption = 'Assumed 1 cup of rice';
   static const String small = 'Small';

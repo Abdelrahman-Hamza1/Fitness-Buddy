@@ -12,18 +12,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../core/db/support/db_support.dart' show memoryDatabase;
+import 'quick_add_context.dart';
 import 'test_phone.dart';
 
 export 'test_phone.dart' show TestPhone, testConfig;
 
 /// What the app's Today needs in a widget test: an empty in-memory profile
 /// (no platform channel for the app-support folder), and today without the
-/// midnight timer, which a widget test would find pending at its end.
+/// midnight timer (and the quick-add context's 30-minute one), which a widget
+/// test would find pending at its end.
 List<Override> todayOverrides() => [
   appDatabaseProvider.overrideWith((ref) => memoryDatabase()),
   todayProvider.overrideWith(
     (ref) => Stream.value(EntryTime.now(ref.watch(clockProvider)).localDate),
   ),
+  quickAddContextWithoutTimer(),
 ];
 
 /// The whole app, wired like `main` does, on a fresh offline [TestPhone],

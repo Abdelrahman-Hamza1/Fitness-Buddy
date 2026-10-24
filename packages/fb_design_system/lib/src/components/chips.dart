@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:fb_design_system/l10n/gen/fb_localizations.dart';
 import 'package:fb_design_system/src/tokens/icons.dart';
 import 'package:fb_design_system/src/tokens/spacing.dart';
@@ -86,14 +88,29 @@ class FbAnswerChip extends StatelessWidget {
 }
 
 /// A shortcut that logs a recent or frequent item in one tap (DY-030).
+///
+/// A food shows its name only. A saved meal passes an [icon] so it reads
+/// differently from a food; the "add" chip carries a plus. [semanticLabel]
+/// is what a screen reader says instead of the bare name ("Log Labaneh"): the
+/// app supplies the words. A long name is cut with an ellipsis, so one chip
+/// never fills the row.
 class FbQuickAddChip extends StatelessWidget {
-  /// A chip with only a label.
-  const new({required this.label, required this.onTap, super.key})
-    : _add = false;
+  /// A chip with a label and an optional leading [icon].
+  const new({
+    required this.label,
+    required this.onTap,
+    this.icon,
+    this.semanticLabel,
+    super.key,
+  });
 
   /// A chip with a leading plus: "add this".
-  const new add({required this.label, required this.onTap, super.key})
-    : _add = true;
+  const new add({
+    required this.label,
+    required this.onTap,
+    this.semanticLabel,
+    super.key,
+  }) : icon = FbIcons.add;
 
   /// The item name.
   final String label;
@@ -101,12 +118,37 @@ class FbQuickAddChip extends StatelessWidget {
   /// Called on tap.
   final VoidCallback onTap;
 
-  final bool _add;
+  /// A leading icon; null for a plain food chip.
+  final IconData? icon;
+
+  /// What a screen reader says for the chip; the label when null.
+  final String? semanticLabel;
+
+  /// The widest a label may be: 180 dp at the normal text size, growing with
+  /// the text size, and never more than 70% of the screen.
+  double _maxLabelWidth(BuildContext context) {
+    final scaled = MediaQuery.textScalerOf(context).scale(180);
+    return math.min(scaled, MediaQuery.sizeOf(context).width * 0.7);
+  }
 
   @override
-  Widget build(BuildContext context) => ActionChip(
-    label: Text(label),
-    onPressed: onTap,
-    avatar: _add ? const Icon(FbIcons.add, size: 18) : null,
-  );
+  Widget build(BuildContext context) {
+    final chip = ActionChip(
+      label: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: _maxLabelWidth(context)),
+        child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+      ),
+      onPressed: onTap,
+      avatar: icon == null ? null : Icon(icon, size: 18),
+    );
+    final semantics = semanticLabel;
+    if (semantics == null) return chip;
+    return Semantics(
+      label: semantics,
+      button: true,
+      excludeSemantics: true,
+      onTap: onTap,
+      child: chip,
+    );
+  }
 }

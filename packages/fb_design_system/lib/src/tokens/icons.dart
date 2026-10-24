@@ -27,6 +27,9 @@ abstract final class FbIcons {
   /// Add (quick-add chips, add buttons).
   static const IconData add = Icons.add_rounded;
 
+  /// A saved meal (the quick-add chip of a saved meal, the saved meals list).
+  static const IconData meal = Icons.restaurant_rounded;
+
   /// Edit an amount or value.
   static const IconData edit = Icons.edit_rounded;
 

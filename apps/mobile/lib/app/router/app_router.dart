@@ -7,6 +7,7 @@ import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/config/update_gate.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/design_preview/design_preview.dart';
+import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
@@ -75,6 +76,7 @@ final class AppRouter implements AppNavigator {
                     if (route is TodayRoute) _foodSearchRoute(),
                     if (route is MeRoute) ...[
                       _personalFoodsRoute(),
+                      _savedMealsRoute(),
                       if (designPreview)
                         _goRoute(const DesignPreviewRoute(), nested: true),
                     ],
@@ -159,6 +161,22 @@ final class AppRouter implements AppNavigator {
     ],
   );
 
+  // Saved meals (A09 D10): a malformed ID goes to the list.
+  static GoRoute _savedMealsRoute() => GoRoute(
+    path: SavedMealsRoute.path.split('/').last,
+    builder: (_, _) => _screen(const SavedMealsRoute()),
+    routes: [
+      GoRoute(
+        path: ':id',
+        redirect: (_, state) => isUuid(state.pathParameters['id'] ?? '')
+            ? null
+            : SavedMealsRoute.path,
+        builder: (_, state) =>
+            _screen(SavedMealRoute(id: state.pathParameters['id']!)),
+      ),
+    ],
+  );
+
   /// The change-food target in [location]: null when there is none or it is
   /// malformed. See [isMalformedFoodSearch].
   static VersionedId? _replaceOf(Uri location) {
@@ -220,6 +238,8 @@ final class AppRouter implements AppNavigator {
       PersonalFoodFormScreen(addTo: (date: date, slotId: slotId)),
     PersonalFoodsRoute() => const PersonalFoodsScreen(),
     PersonalFoodRoute(:final id) => PersonalFoodFormScreen(id: id),
+    SavedMealsRoute() => const SavedMealsScreen(),
+    SavedMealRoute(:final id) => SavedMealScreen(id: id),
     UpdateRequiredRoute() => const UpdateRequiredScreen(),
   };
 

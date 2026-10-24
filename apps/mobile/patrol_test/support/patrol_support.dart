@@ -6,6 +6,7 @@ import 'package:fb_mobile/app/app_scope.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/db/database_location.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
+import 'package:fb_mobile/features/quick_add/quick_add.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -63,50 +64,67 @@ Future<void> pumpFor(WidgetTester tester, Duration duration) async {
   }
 }
 
-/// Taps [target] after proving the tap point really hits it; otherwise fails
-/// with what is there instead (a tap that misses is otherwise silent).
-Future<void> tapExactly(WidgetTester tester, Finder target, String what) async {
-  await tester.ensureVisible(target);
-  await pumpFor(tester, const Duration(milliseconds: 300));
+/// Whether a tap at [point] would reach [target] (or something inside it).
+bool hitsTarget(WidgetTester tester, Finder target, Offset point) {
   final box = tester.renderObject<RenderBox>(target);
-  final center = tester.getCenter(target);
-  final result = tester.hitTestOnBinding(center);
-  final hits =
-      result.path.any((entry) => entry.target == box) ||
-      result.path.any(
+  return tester
+      .hitTestOnBinding(point)
+      .path
+      .any(
         (entry) =>
             entry.target is RenderObject &&
             _isDescendant(entry.target as RenderObject, box),
       );
-  if (!hits) {
-    final size = tester.view.physicalSize / tester.view.devicePixelRatio;
-    String describe(Iterable<Object> targets) =>
-        targets.take(40).map((t) => t.runtimeType.toString()).join(' > ');
-    final route = ModalRoute.of(tester.element(target));
-    final sheets = find.byType(BottomSheet);
-    final sheetRect = sheets.evaluate().isEmpty
-        ? 'none'
-        : '${tester.getRect(sheets.last)}';
-    final first = describe(result.path.map((e) => e.target));
-    // Is it transient (an animation) or structural? Look again after 2 s.
-    await pumpFor(tester, const Duration(seconds: 2));
-    final later = tester.hitTestOnBinding(tester.getCenter(target));
-    final hitsLater = later.path.any(
-      (e) =>
-          e.target is RenderObject &&
-          _isDescendant(e.target as RenderObject, box),
-    );
-    fail(
-      'Tap on $what would miss: center=$center, '
-      'rect=${tester.getRect(target)}, screen=$size, sheet=$sheetRect, '
-      'route current=${route?.isCurrent} active=${route?.isActive} '
-      'animation=${route?.animation?.status} '
-      'secondary=${route?.secondaryAnimation?.status}; '
-      'hits after 2 s=$hitsLater; path=[$first]; '
-      'on screen: ${screenSummary()}',
-    );
+}
+
+/// Taps [target] after proving the tap point really hits it; otherwise fails
+/// with what is there instead (a tap that misses is otherwise silent).
+///
+/// A layout that is still moving (a sheet sliding in, the quick-add row
+/// growing in above the input bar, A09b) can cover the target for a moment, so
+/// a miss is looked at again, up to [attempts] times, before it fails.
+Future<void> tapExactly(
+  WidgetTester tester,
+  Finder target,
+  String what, {
+  int attempts = 3,
+}) async {
+  for (var attempt = 1; attempt <= attempts; attempt++) {
+    await tester.ensureVisible(target);
+    await pumpFor(tester, const Duration(milliseconds: 300));
+    if (hitsTarget(tester, target, tester.getCenter(target))) {
+      await tester.tap(target);
+      return;
+    }
+    if (attempt < attempts) await pumpFor(tester, const Duration(seconds: 1));
   }
-  await tester.tap(target);
+  final box = tester.renderObject<RenderBox>(target);
+  final center = tester.getCenter(target);
+  final result = tester.hitTestOnBinding(center);
+  final size = tester.view.physicalSize / tester.view.devicePixelRatio;
+  String describe(Iterable<Object> targets) =>
+      targets.take(40).map((t) => t.runtimeType.toString()).join(' > ');
+  final route = ModalRoute.of(tester.element(target));
+  final sheets = find.byType(BottomSheet);
+  final sheetRect = sheets.evaluate().isEmpty
+      ? 'none'
+      : '${tester.getRect(sheets.last)}';
+  final first = describe(result.path.map((e) => e.target));
+  // Is it transient (an animation) or structural? Look again after 2 s.
+  await pumpFor(tester, const Duration(seconds: 2));
+  final hitsLater =
+      target.evaluate().isNotEmpty &&
+      hitsTarget(tester, target, tester.getCenter(target));
+  fail(
+    'Tap on $what would miss after $attempts attempts: center=$center, '
+    'rect=${tester.getRect(target)}, screen=$size, sheet=$sheetRect, '
+    'route current=${route?.isCurrent} active=${route?.isActive} '
+    'animation=${route?.animation?.status} '
+    'secondary=${route?.secondaryAnimation?.status}; '
+    'hits after 2 s=$hitsLater; path=[$first]; '
+    'target box=${box.runtimeType}; '
+    'on screen: ${screenSummary()}',
+  );
 }
 
 bool _isDescendant(RenderObject child, RenderObject ancestor) {
@@ -136,9 +154,29 @@ String screenSummary() {
       .map((e) => e.widget as FbButton)
       .map((b) => '${b.label}:${b.onPressed == null ? 'off' : 'on'}')
       .join(' ');
+  // The quick-add chip row can cover the bottom of the day's list (A09b), so a
+  // missed tap on Today needs its chips and the pager's and bar's rects.
+  final chips = find
+      .byType(FbQuickAddChip)
+      .evaluate()
+      .map((e) => (e.widget as FbQuickAddChip).label)
+      .join(' | ');
+  String rectOf(Finder finder) {
+    final found = finder.evaluate();
+    if (found.length != 1) return 'x${found.length}';
+    final box = found.single.renderObject;
+    if (box is! RenderBox || !box.attached || !box.hasSize) return 'unlaid';
+    final top = box.localToGlobal(Offset.zero);
+    return '${top.dy.toStringAsFixed(0)}-'
+        '${(top.dy + box.size.height).toStringAsFixed(0)}';
+  }
+
   return 'sheets=${sheets.evaluate().length} [${texts(sheets)}]; '
       'snackbars=${snacks.evaluate().length} [${texts(snacks)}]; '
-      'buttons [$buttons]';
+      'buttons [$buttons]; '
+      'quick-add chips [$chips]; '
+      'y-ranges pager ${rectOf(find.byType(PageView))} '
+      'chip row ${rectOf(find.byType(QuickAddBar))}';
 }
 
 /// drift opens the database in a background isolate and sends the location's

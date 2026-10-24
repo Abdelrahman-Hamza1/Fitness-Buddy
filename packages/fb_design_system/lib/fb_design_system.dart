@@ -16,6 +16,7 @@ export 'src/components/disclosure_row.dart';
 export 'src/components/empty_state.dart';
 export 'src/components/estimate_marker.dart'
     show FbEstimateMarker, showFbEstimateRange;
+export 'src/components/icon_button.dart';
 export 'src/components/inline_banner.dart';
 export 'src/components/input_bar.dart';
 export 'src/components/list_row.dart';
@@ -23,6 +24,7 @@ export 'src/components/macro_bars.dart';
 export 'src/components/number_field.dart';
 export 'src/components/number_pad.dart';
 export 'src/components/progress_bar.dart' show FbProgressBar;
+export 'src/components/quick_add_row.dart';
 export 'src/components/search_field.dart';
 export 'src/components/section_header.dart';
 export 'src/components/sheet.dart';

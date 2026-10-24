@@ -859,6 +859,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diaryDateYesterday => 'Yesterday';
 
   @override
+  String get diaryDateTodayInline => 'today';
+
+  @override
+  String get diaryDateYesterdayInline => 'yesterday';
+
+  @override
   String get diaryKcalEaten => 'kcal eaten';
 
   @override
@@ -1598,4 +1604,119 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get foodSheetReplaceChanged =>
       'This food changed, so nothing was changed. Pick it again.';
+
+  @override
+  String get meSavedMeals => 'Saved meals';
+
+  @override
+  String get savedMealsTitle => 'Saved meals';
+
+  @override
+  String get savedMealsEmptyTitle => 'No saved meals yet';
+
+  @override
+  String get savedMealsEmptyMessage =>
+      'Open a meal\'s menu on Today and choose Save as meal.';
+
+  @override
+  String get savedMealsLoadFailed =>
+      'Couldn\'t load your saved meals. Try again.';
+
+  @override
+  String get savedMealDefaultTitle => 'Saved meal';
+
+  @override
+  String get savedMealItemsHeader => 'Items';
+
+  @override
+  String get savedMealPickMealTitle => 'Log to meal';
+
+  @override
+  String savedMealItemSubtitle(String amount, String kcal) {
+    return '$amount · $kcal';
+  }
+
+  @override
+  String get savedMealLogButton => 'Log';
+
+  @override
+  String get savedMealNoItems => 'This meal has no items.';
+
+  @override
+  String get savedMealRenameTooltip => 'Rename meal';
+
+  @override
+  String get savedMealRenameTitle => 'Rename meal';
+
+  @override
+  String get savedMealMenuTooltip => 'More for this meal';
+
+  @override
+  String get savedMealDeleteAction => 'Delete meal';
+
+  @override
+  String savedMealRenamedMessage(String name) {
+    return 'Renamed to \"$name\"';
+  }
+
+  @override
+  String savedMealDeletedMessage(String name) {
+    return 'Deleted \"$name\"';
+  }
+
+  @override
+  String get savedMealGone => 'This saved meal was deleted.';
+
+  @override
+  String get savedMealRenameGone =>
+      'This meal was deleted, so it can\'t be renamed.';
+
+  @override
+  String get savedMealRenameChanged =>
+      'This meal was renamed. Reload to see its new name.';
+
+  @override
+  String get savedMealChangedRename =>
+      'That meal changed. Nothing was renamed.';
+
+  @override
+  String get savedMealChangedDelete =>
+      'That meal changed. Nothing was deleted.';
+
+  @override
+  String quickAddLoggedAmount(String name, String amount) {
+    return 'Logged $name, $amount';
+  }
+
+  @override
+  String quickAddLoggedItems(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+    );
+    return 'Logged $name, $_temp0';
+  }
+
+  @override
+  String quickAddLoggedOn(String message, String day) {
+    return '$message for $day';
+  }
+
+  @override
+  String get quickAddChanged => 'That changed. Nothing was logged.';
+
+  @override
+  String quickAddChipSemantics(String name) {
+    return 'Log $name';
+  }
+
+  @override
+  String quickAddSavedMealChipSemantics(String name) {
+    return 'Log saved meal $name';
+  }
+
+  @override
+  String get quickAddRowSemantics => 'Quick add';
 }

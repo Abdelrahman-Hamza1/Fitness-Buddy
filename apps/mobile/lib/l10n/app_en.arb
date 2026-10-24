@@ -1079,6 +1079,14 @@
   "@diaryDateYesterday": {
     "description": "Day header: the label of the day before today (HM-009)."
   },
+  "diaryDateTodayInline": "today",
+  "@diaryDateTodayInline": {
+    "description": "The current day inside a sentence, lower case (for example 'Logged Oats, 100 g for today')."
+  },
+  "diaryDateYesterdayInline": "yesterday",
+  "@diaryDateYesterdayInline": {
+    "description": "The day before today inside a sentence, lower case (for example 'Logged Oats, 100 g for yesterday')."
+  },
   "diaryKcalEaten": "kcal eaten",
   "@diaryKcalEaten": {
     "description": "Today: caption under the big number while there is no target yet (HM-001)."
@@ -2067,5 +2075,173 @@
   "foodSheetReplaceChanged": "This food changed, so nothing was changed. Pick it again.",
   "@foodSheetReplaceChanged": {
     "description": "Change-food sheet: shown, with a Close action, when the new food changed or was deleted before it could be used."
+  },
+  "meSavedMeals": "Saved meals",
+  "@meSavedMeals": {
+    "description": "Me tab: the row that opens the list of saved meals (DY-031)."
+  },
+  "savedMealsTitle": "Saved meals",
+  "@savedMealsTitle": {
+    "description": "Title of the list of saved meals."
+  },
+  "savedMealsEmptyTitle": "No saved meals yet",
+  "@savedMealsEmptyTitle": {
+    "description": "Saved meals: title of the empty state (UX-050)."
+  },
+  "savedMealsEmptyMessage": "Open a meal's menu on Today and choose Save as meal.",
+  "@savedMealsEmptyMessage": {
+    "description": "Saved meals: one line of help in the empty state."
+  },
+  "savedMealsLoadFailed": "Couldn't load your saved meals. Try again.",
+  "@savedMealsLoadFailed": {
+    "description": "Saved meals: banner when the list can't be read."
+  },
+  "savedMealDefaultTitle": "Saved meal",
+  "@savedMealDefaultTitle": {
+    "description": "Saved meal screen: title while the meal's name is not loaded yet."
+  },
+  "savedMealItemsHeader": "Items",
+  "@savedMealItemsHeader": {
+    "description": "Saved meal screen: heading above the meal's items."
+  },
+  "savedMealPickMealTitle": "Log to meal",
+  "@savedMealPickMealTitle": {
+    "description": "Saved meal screen: title of the sheet that picks which meal the saved meal is logged into."
+  },
+  "savedMealItemSubtitle": "{amount} · {kcal}",
+  "@savedMealItemSubtitle": {
+    "description": "Saved meal detail at large text: an item's amount and calories on one wrapping line (for example '150 g · 120 kcal').",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "kcal": {
+        "type": "String"
+      }
+    }
+  },
+  "savedMealLogButton": "Log",
+  "@savedMealLogButton": {
+    "description": "Saved meal screen: button that logs the saved meal into the chosen meal and day (DY-031)."
+  },
+  "savedMealNoItems": "This meal has no items.",
+  "@savedMealNoItems": {
+    "description": "Saved meal screen: why Log is off for a meal without items."
+  },
+  "savedMealRenameTooltip": "Rename meal",
+  "@savedMealRenameTooltip": {
+    "description": "Saved meal screen: tooltip and screen-reader label of the pencil button."
+  },
+  "savedMealRenameTitle": "Rename meal",
+  "@savedMealRenameTitle": {
+    "description": "Title of the sheet that renames a saved meal."
+  },
+  "savedMealMenuTooltip": "More for this meal",
+  "@savedMealMenuTooltip": {
+    "description": "Saved meal screen: tooltip and screen-reader label of the overflow button."
+  },
+  "savedMealDeleteAction": "Delete meal",
+  "@savedMealDeleteAction": {
+    "description": "Saved meal screen: overflow action that deletes the saved meal (with Undo)."
+  },
+  "savedMealRenamedMessage": "Renamed to \"{name}\"",
+  "@savedMealRenamedMessage": {
+    "description": "Snackbar (with Undo) after a saved meal was renamed.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "savedMealDeletedMessage": "Deleted \"{name}\"",
+  "@savedMealDeletedMessage": {
+    "description": "Snackbar (with Undo) after a saved meal was deleted.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "savedMealGone": "This saved meal was deleted.",
+  "@savedMealGone": {
+    "description": "Saved meal screen: shown when the meal on screen was deleted elsewhere."
+  },
+  "savedMealRenameGone": "This meal was deleted, so it can't be renamed.",
+  "@savedMealRenameGone": {
+    "description": "Rename sheet: shown when the meal was deleted while the sheet was open."
+  },
+  "savedMealRenameChanged": "This meal was renamed. Reload to see its new name.",
+  "@savedMealRenameChanged": {
+    "description": "Rename sheet: shown, with Reload, when the meal was renamed while the sheet was open."
+  },
+  "savedMealChangedRename": "That meal changed. Nothing was renamed.",
+  "@savedMealChangedRename": {
+    "description": "Snackbar or sheet note when a rename was refused because the meal changed."
+  },
+  "savedMealChangedDelete": "That meal changed. Nothing was deleted.",
+  "@savedMealChangedDelete": {
+    "description": "Snackbar when a delete was refused because the meal changed."
+  },
+  "quickAddLoggedAmount": "Logged {name}, {amount}",
+  "@quickAddLoggedAmount": {
+    "description": "Snackbar (with Undo) after a quick-add chip logged a food: its name and the amount that was logged (the last-used amount).",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "quickAddLoggedItems": "Logged {name}, {count, plural, =1{1 item} other{{count} items}}",
+  "@quickAddLoggedItems": {
+    "description": "Snackbar (with Undo) after a saved meal logged: its name and how many items it added.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "quickAddLoggedOn": "{message} for {day}",
+  "@quickAddLoggedOn": {
+    "description": "Snackbar (with Undo) when a quick-add chip or a saved meal logged on another day: the message above, then the day. The day is 'yesterday' (lower case) or a date such as 'Fri, Oct 17'.",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      },
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "quickAddChanged": "That changed. Nothing was logged.",
+  "@quickAddChanged": {
+    "description": "Snackbar when a chip or saved meal was refused because what it shows changed meanwhile (PA1)."
+  },
+  "quickAddChipSemantics": "Log {name}",
+  "@quickAddChipSemantics": {
+    "description": "Screen-reader label of a quick-add chip.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "quickAddSavedMealChipSemantics": "Log saved meal {name}",
+  "@quickAddSavedMealChipSemantics": {
+    "description": "Screen-reader label of a quick-add chip that logs a saved meal.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "quickAddRowSemantics": "Quick add",
+  "@quickAddRowSemantics": {
+    "description": "Screen-reader label of the row of quick-add chips above the input bar on Today."
   }
 }

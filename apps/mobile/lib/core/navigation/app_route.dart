@@ -200,6 +200,35 @@ final class PersonalFoodRoute extends AppRoute {
   String get location => id == null ? newPath : '/me/foods/$id';
 }
 
+/// Saved meals (A09 D10): the list of the user's saved meals, a detail screen
+/// of the Me tab.
+final class SavedMealsRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/meals';
+
+  @override
+  String get location => path;
+}
+
+/// One saved meal (A09 D10, D11): its items, and Log with a meal and a day.
+/// Only the ID travels in the URL (backlog #42).
+final class SavedMealRoute extends AppRoute {
+  /// Creates the route for the saved meal [id].
+  const new({required this.id});
+
+  /// The route's path pattern.
+  static const path = '/me/meals/:id';
+
+  /// The saved meal to show.
+  final String id;
+
+  @override
+  String get location => '/me/meals/$id';
+}
+
 /// The "update needed" screen, outside the tabs (S06 plan D10).
 ///
 /// Only the router targets it (its update-gate redirect); features never

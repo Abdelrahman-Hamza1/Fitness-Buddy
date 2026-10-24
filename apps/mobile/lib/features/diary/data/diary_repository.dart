@@ -151,6 +151,14 @@ final class DiaryRepository {
         return row == null ? null : diaryEntryOf(row);
       });
 
+  /// Live saved snapshots, by name and ID. Both tables invalidate one read.
+  Stream<List<SavedMeal>> watchSavedMeals() =>
+      _watch({_db.savedMeals, _db.savedMealItems}, _reads.savedMeals);
+
+  /// Authoritative live snapshot; null after deletion or when absent.
+  Stream<SavedMeal?> watchSavedMeal(String id) =>
+      _watch({_db.savedMeals, _db.savedMealItems}, () => _reads.savedMeal(id));
+
   /// The whole day [date]: slots, groups, entries and mark.
   Stream<DiaryDay> watchDay(LocalDate date) =>
       _watch(_reads.dayTables, () => (readDay ?? _reads.day)(date));
