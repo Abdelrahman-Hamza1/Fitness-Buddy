@@ -99,3 +99,13 @@ Cheap now, expensive later, so from the **first screen**:
 - **Remote config:** `GET /v1/config` returns the minimum app version, feature flags (e.g. `buddy.photo_enabled`) and client thresholds (AI-060 values, so tuning needs no release). Cached locally, with safe defaults offline.
 - **API configuration:** standard .NET configuration (appsettings + environment variables + secrets). Feature flags in config, read through an `IFeatureFlags` port.
 - Unfinished features ship dark behind flags rather than living on long branches.
+
+
+**Proposal thresholds (A21 PA14, TD-081 Proposed).** `ClientConfig.thresholds` / `GET /v1/config` uses these exact numeric keys; a missing key means the built-in default:
+
+| Key | Built-in default | Accepted client range | Meaning |
+|---|---|---|---|
+| `proposalQuestionRelativeDelta` | `0.20` | finite `0..1` inclusive | Ask only when `(highestKcal - lowestKcal) / lowestKcal` is strictly greater; zero→positive is infinite, zero→zero is 0. |
+| `proposalQuestionKcalDelta` | `50` | finite `0..10000` inclusive | Absolute kcal spread must also be strictly greater than this value. |
+
+Invalid/nonfinite/out-of-range values fall back independently to the built-in default. Snapshot effective values for a proposal message session; cached/offline config works without a fetch and refresh affects new sessions only. Rank eligible dimensions by absolute kcal spread, stable input-order ties. The message-wide budget is **2 question IDs ever issued**, answers do not free slots, and the cap is **code, never configurable**. Follow-up rebuild first reserves carried open questions against the new message’s budget. A21 WP1 updates `contracts/openapi/modules/account.yaml`’s thresholds **description text only**, naming these keys/defaults; no schema shape change or assertion that server defaults currently emit these keys.

@@ -167,7 +167,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A20](A20-api-session.md) | API session: anonymous identity & auth interceptor | **Codex** | **B04** (contract) | S | S25 part |  | ✅ |
 | [A21](A21-proposal-engine.md) | ProposalEngine | **Codex** | A07, A12, **B02** | L | S32 |  | ⬜ |
 | [A22](A22-chat-proposal-card.md) | Chat sheet & proposal card | Claude | A08b, A20, A21, **B08** | L | S33 |  | ⬜ |
-| [A23](A23-message-lifecycle.md) | Message lifecycle, pending & failures | Claude | A22 | M | S34 | **M3** | ⬜ |
+| [A23](A23-message-lifecycle.md) | Message lifecycle, pending & failures | Claude | A22, **B18** (contract) | L | S34 | **M3** | ⬜ |
 | [A24](A24-online-search-pack-updates.md) | Online search & pack updates (app) | **Codex** | A07, **B07** | M | S30 app part |  | ⬜ |
 | [A25](A25-diary-edits-by-chat.md) | Diary edits by chat (app) | Claude | A23, **B09** (contract) | M | S35 app part |  | ⬜ |
 | [A26](A26-memory-user-model.md) | Memory & user model (app) | Claude | A23, **B09** (contract) | M | S36 app part |  | ⬜ |
@@ -178,7 +178,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A31](A31-qa-suggestions-halal.md) | Q&A, suggestions & halal (app) | Claude | A26, **B11** (contract) | M | S40 app part |  | ⬜ |
 | [A32](dish-batches.md) | Dish batch 6: gap fill from dogfooding | Claude | A30 | S | D6 |  | ⏸ deferred (TD-074): after A41 |
 | [A33](A33-sign-in-guest-app.md) | Sign-in & guest upgrade | Claude | A20, **B04** | M | S25 |  | ⬜ |
-| [A34](A34-sync-engine-app.md) | Sync engine (app) | **Codex** | A33, **B05**, **B17** | L | S27 |  | ⬜ |
+| [A34](A34-sync-engine-app.md) | Sync engine (app) | **Codex** | A33, **B05**, **B17**, **B18** | L | S27 |  | ⬜ |
 | [A35](A35-account-deletion-app.md) | Account deletion (app) | Claude | A34, **B06** | S | S28 deletion part | **M5** | ⬜ |
 | [A36](A36-workout-domain.md) | Workout domain, library & templates | **Codex** | A05b, A06, A12 | M | S41 |  | ⬜ |
 | [A37](A37-workout-logging.md) | Workout logging, history & PRs (app) | Claude | A23, A36, **B12** (contract) | L | S42 app part |  | ⬜ |
@@ -212,6 +212,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [B15](B15-eval-expansion.md) | AI eval expansion & tuning | B09–B12, B14, **A41** | M | S47 | **R1** | ⬜ |
 | [B16](B16-security-restore-drill.md) | Security review & restore drill | B14, **A42** | M | S49 | **R1** | ⬜ |
 | [B17](B17-personal-food-sync.md) | personalFood sync entity (server) | B05, **A09a** (contract) | M | new (A09 split) |  | ✅ |
+| [B18](B18-chat-proposal-sync.md) | chatMessage & proposal sync entities (server) | B05, **A21** (session codec) | M | new (A21 plan review) |  | ⬜ |
 
 ```mermaid
 flowchart LR
