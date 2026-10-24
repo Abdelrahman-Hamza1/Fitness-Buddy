@@ -7,7 +7,7 @@ namespace FitnessBuddy.Modules.Account.Api;
 /// <summary>Server-controlled settings for the app (contract schema <c>ClientConfig</c>).</summary>
 /// <param name="MinimumAppVersion">The oldest app version (<c>MAJOR.MINOR.PATCH</c>) the server still serves.</param>
 /// <param name="FeatureFlags">Feature flags by name. A missing flag means off.</param>
-/// <param name="Thresholds">Numeric client thresholds by name. A missing threshold means the app's built-in default.</param>
+/// <param name="Thresholds">Numeric client thresholds by name. A missing threshold means the app's built-in default. Proposal question thresholds (AI-060): proposalQuestionRelativeDelta defaults to 0.20 and proposalQuestionKcalDelta defaults to 50 kcal; both strict thresholds must be exceeded. Effective thresholds are snapshotted per proposal message session. The two-question message budget is fixed in client code, never configurable.</param>
 internal sealed record ClientConfig(
     // Documents the contract's `pattern` in the generated OpenAPI document.
     [property: RegularExpression(AppVersion.Pattern)] string MinimumAppVersion,

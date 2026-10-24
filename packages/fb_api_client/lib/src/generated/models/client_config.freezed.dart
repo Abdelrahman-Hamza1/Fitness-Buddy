@@ -18,7 +18,7 @@ mixin _$ClientConfig {
 
 /// The oldest app version (`MAJOR.MINOR.PATCH`) the server still serves. Older apps are asked to update (426).
  String get minimumAppVersion;/// Feature flags by name. A flag the app doesn't know is ignored; a missing flag means off.
- Map<String, bool> get featureFlags;/// Numeric client thresholds by name (for example the AI confidence minimum, AI-060). A missing threshold means the app's built-in default.
+ Map<String, bool> get featureFlags;/// Numeric client thresholds by name. A missing threshold means the app's built-in default. Proposal question thresholds (AI-060): proposalQuestionRelativeDelta defaults to 0.20 and proposalQuestionKcalDelta defaults to 50 kcal; both strict thresholds must be exceeded. Effective thresholds are snapshotted per proposal message session. The two-question message budget is fixed in client code, never configurable.
  Map<String, double> get thresholds;
 /// Create a copy of ClientConfig
 /// with the given fields replaced by the non-null parameter values.
@@ -234,9 +234,9 @@ class _ClientConfig implements ClientConfig {
   return EqualUnmodifiableMapView(_featureFlags);
 }
 
-/// Numeric client thresholds by name (for example the AI confidence minimum, AI-060). A missing threshold means the app's built-in default.
+/// Numeric client thresholds by name. A missing threshold means the app's built-in default. Proposal question thresholds (AI-060): proposalQuestionRelativeDelta defaults to 0.20 and proposalQuestionKcalDelta defaults to 50 kcal; both strict thresholds must be exceeded. Effective thresholds are snapshotted per proposal message session. The two-question message budget is fixed in client code, never configurable.
  final  Map<String, double> _thresholds;
-/// Numeric client thresholds by name (for example the AI confidence minimum, AI-060). A missing threshold means the app's built-in default.
+/// Numeric client thresholds by name. A missing threshold means the app's built-in default. Proposal question thresholds (AI-060): proposalQuestionRelativeDelta defaults to 0.20 and proposalQuestionKcalDelta defaults to 50 kcal; both strict thresholds must be exceeded. Effective thresholds are snapshotted per proposal message session. The two-question message budget is fixed in client code, never configurable.
 @override Map<String, double> get thresholds {
   if (_thresholds is EqualUnmodifiableMapView) return _thresholds;
   // ignore: implicit_dynamic_type

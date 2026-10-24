@@ -214,5 +214,7 @@ Re-check at `bd430bf`: PA16 B18 envelope-only admission/dependency; PA17 assista
 
 - 2026-10-24 · Architect re-check at `bd430bf`: accepted PA16–PA22/PA24–PA26 and PA3 leftover applied across allowed planning docs. Single assistant-message budget, current-message restore binding, unmatched rebuild ID allocation, bounded opaque B18 admission and A22 contract ordering recorded. Planning only; diff/structure checks, no code gates or git writes.
 
+- 2026-10-24 · Run A/WP1 started at `fb47aba`, initial tree clean. Prepared description-only `account.yaml` thresholds text and matching `ClientConfig.cs` XML documentation; no schema/behavior change. Stopped at WP1’s explicit Docker boundary: Claude must run `make gen-contract` before Codex runs `make gen-dart` against the updated bundle and reviews generated comment-only diffs. No domain implementation or WP2 started; WP1 gates/full run suite not executed. Docker/git writes not attempted; no .NET session started. JSON-shape/comment-only and diff-whitespace checks passed. Resume after Claude supplies the regenerated bundle (and contract-first commit per working agreement).
+
 ## Outcome
 _Written in Phase E._
