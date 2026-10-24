@@ -9,7 +9,6 @@ export 'application/diary_providers.dart';
 export 'application/diary_view_state.dart';
 export 'application/saved_meal_actions.dart';
 export 'application/saved_meals.dart';
-export 'data/diary_mappers.dart' show nutrientsOf;
 export 'data/diary_op_handler.dart' show DiaryOpHandler;
 export 'data/diary_reads.dart' show DiaryReads;
 export 'data/diary_repository.dart';

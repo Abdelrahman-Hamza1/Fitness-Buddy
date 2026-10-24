@@ -66,6 +66,7 @@ final class ProposalWorkload {
       ],
       dayContext: ProposalDayContext(
         today: date,
+        weightKg: 70,
         calendar: const WeekCalendar(weekStart: DayOfWeek.monday),
         confirmed: {date: fixture.nutrients(500)},
         earlierIntake: [

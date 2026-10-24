@@ -56,7 +56,7 @@ abstract final class ProposalDraftCodec {
       'originMessageId': card.originMessageId,
       'budgetMessageId': card.budgetMessageId,
       'revision': s.revision,
-      'environment': _writeEnvironment(s.request.context),
+      'environment': _writeEnvironment(s.request.context, intents, s, foods),
       'status': card.lifecycle == .active ? 'pending' : card.lifecycle.name,
       'owned': [
         for (final id in s.issued)
@@ -82,7 +82,9 @@ abstract final class ProposalDraftCodec {
           if (s.times[i.index] case final time?) '${i.index}': _writeTime(time),
       },
       'slots': {for (final i in intents) '${i.index}': ?s.slots[i.index]},
-      'cookingFatIds': s.request.facts.cookingFatIds.toList(),
+      'cookingFatIds': s.request.facts.cookingFatIds
+          .where((id) => foods.any((f) => f.key == id))
+          .toList(),
     };
   }
 
@@ -150,6 +152,7 @@ abstract final class ProposalDraftCodec {
     Map<String, Object?> message,
     Iterable<Map<String, Object?>> cards, {
     required ProposalContext context,
+    required TrustedFoodFacts trustedFacts,
   }) {
     try {
       if (message.isEmpty) {
@@ -243,12 +246,11 @@ abstract final class ProposalDraftCodec {
           'cookingFatIds',
           'environment',
         ]);
-        if (environment != null &&
-            jsonEncode(environment) != jsonEncode(row['environment'])) {
-          throw const _Invalid(ProposalIssue.budgetConflict);
-        }
         environment = row['environment'];
-        frozen ??= _readEnvironment(environment, context);
+        final cardEnvironment = _readEnvironment(environment, context);
+        frozen = frozen == null
+            ? cardEnvironment
+            : _mergeEnvironment(frozen, cardEnvironment);
         final id = _text(row, 'id');
         if (!expected.contains(id) ||
             !seen.add(id) ||
@@ -273,6 +275,33 @@ abstract final class ProposalDraftCodec {
           owned[q] = id;
         }
         final foods = [for (final f in _array(row['foods'])) _readFood(f)];
+        for (final food in foods) {
+          final trusted = trustedFacts.foods[food.key];
+          final issue =
+              trusted == null ||
+                  trusted.source != food.source ||
+                  trusted.version != food.version ||
+                  trusted.personalVersion != food.personalVersion
+              ? ProposalIssue.staleFacts
+              : trusted != food
+              ? ProposalIssue.factsMismatch
+              : null;
+          if (issue != null) {
+            state.restoreIssues[id] = issue;
+            state.untrustedRestoreFoods.add(food);
+          }
+        }
+        for (final y in cardEnvironment.yields) {
+          if (!trustedFacts.yields.any(
+            (t) =>
+                t.group == y.group &&
+                t.from == y.from &&
+                t.to == y.to &&
+                t.factor == y.factor,
+          )) {
+            state.restoreIssues[id] = ProposalIssue.factsMismatch;
+          }
+        }
         final current = [
           for (final i in _array(row['interpretation'])) _readIntent(i, foods),
         ];
@@ -363,8 +392,8 @@ abstract final class ProposalDraftCodec {
           intents.fold<int>(0, (n, i) => n + i.items.length) > 50) {
         throw const _Invalid(ProposalIssue.inputTooLarge);
       }
-      // Restore freezes source facts and identities. Only confirmed intake
-      // and target context refresh; a newer pack cannot change a saved draft.
+      // Preserve serialized previews as history; only independently verified
+      // source facts permit executable ops. A newer pack requires rebuild.
       final facts = ProposalFacts(cookingFatIds: fats);
       final request = ProposalRequest._(
         ProposalInterpretation(intents),
@@ -742,28 +771,54 @@ ProposalIntent _readIntent(Object? value, List<ProposalFood> foods) {
   );
 }
 
-List<Object?> _writeEnvironment(ProposalContext c) => [
-  _writeTime(c.referenceTime),
-  c.mode.index,
-  [
-    for (final s in c.slots)
-      [
-        s.id,
-        s.sortOrder,
-        s.defaultKey,
-        s.name,
-        s.window?.startMin,
-        s.window?.endMin,
-        s.mode.index,
-        s.active,
-      ],
-  ],
-  [
-    for (final y in c.yields) [y.group, y.from.index, y.to.index, y.factor],
-  ],
-  c.savedDefaults,
-  c.choices,
-];
+List<Object?> _writeEnvironment(
+  ProposalContext c,
+  List<ProposalIntent> intents,
+  _EngineState state,
+  List<ProposalFood> foods,
+) {
+  final slots = {for (final i in intents) _meal(i, c, state).$2};
+  final items = [
+    for (final i in intents)
+      for (final original in i.items) state.items[original.id] ?? original,
+  ];
+  final questionKinds = {
+    for (final i in items)
+      for (final d in i.dimensions) _questionKind(d.kind, i.match),
+  };
+  return [
+    _writeTime(c.referenceTime),
+    c.mode.index,
+    [
+      for (final s in c.slots.where((s) => slots.contains(s.id)))
+        [
+          s.id,
+          s.sortOrder,
+          s.defaultKey,
+          s.name,
+          s.window?.startMin,
+          s.window?.endMin,
+          s.mode.index,
+          s.active,
+        ],
+    ],
+    [
+      for (final y in c.yields.where(
+        (y) => foods.any((f) => f.yieldGroup == y.group),
+      ))
+        [y.group, y.from.index, y.to.index, y.factor],
+    ],
+    {
+      for (final e in c.savedDefaults.entries)
+        if (questionKinds.contains(e.key)) e.key: e.value,
+    },
+    {
+      for (final e in c.choices.entries)
+        if (items.any((i) => e.key.startsWith('${i.id}/'))) e.key: e.value,
+    },
+  ];
+}
+
 ProposalContext _readEnvironment(Object? raw, ProposalContext current) {
   final v = _array(raw, 6);
   return ProposalContext(
@@ -829,4 +884,42 @@ void _validateChoices(_EngineState state) {
   )) {
     throw const _Invalid();
   }
+}
+
+ProposalContext _mergeEnvironment(ProposalContext a, ProposalContext b) {
+  if (a.referenceTime != b.referenceTime || a.mode != b.mode) {
+    throw const _Invalid(ProposalIssue.budgetConflict);
+  }
+  Map<String, T> merge<T>(
+    Map<String, T> left,
+    Map<String, T> right, {
+    bool Function(T, T)? equal,
+  }) {
+    for (final e in right.entries) {
+      if (left.containsKey(e.key) &&
+          !(equal?.call(left[e.key] as T, e.value) ??
+              (left[e.key] == e.value))) {
+        throw const _Invalid(ProposalIssue.budgetConflict);
+      }
+    }
+    return {...left, ...right};
+  }
+
+  return ProposalContext(
+    referenceTime: a.referenceTime,
+    mode: a.mode,
+    dayContext: a.dayContext,
+    normalize: a.normalize,
+    slots: merge(
+      {for (final s in a.slots) s.id: s},
+      {for (final s in b.slots) s.id: s},
+    ).values,
+    yields: merge(
+      {for (final y in a.yields) '${y.group}/${y.from}/${y.to}': y},
+      {for (final y in b.yields) '${y.group}/${y.from}/${y.to}': y},
+      equal: (a, b) => a.factor == b.factor,
+    ).values,
+    savedDefaults: merge(a.savedDefaults, b.savedDefaults),
+    choices: merge(a.choices, b.choices),
+  );
 }

@@ -1,4 +1,6 @@
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_domain/src/proposals/proposal_input.dart'
+    show ProposalIntent, ProposalInterpretation, ProposalValue;
 import 'package:test/test.dart';
 
 import 'proposal_fixtures.dart';
@@ -144,7 +146,7 @@ void main() {
         const ProposalResult<int>.success(123),
         const ProposalResult<int>.failure(ProposalIssue.invalidInput),
         ProposalRange(nutrients(100), nutrients(200)),
-        const ProposalServing('private', 10, NutrientBasis.per100ml, 8, 12),
+        ProposalServing('private', 10, NutrientBasis.per100ml, 8, 12),
         localFood(),
         ProposalFoodEffect(localFood()),
         ProposalQuantityEffect(Quantity(1, 'g')),
@@ -232,6 +234,7 @@ void main() {
       expect(ids.calls, 7);
       expect(
         ProposalDraftCodec.restore(
+          trustedFacts: trustedSession(rebuilt, ctx: context()),
           ProposalDraftCodec.encodeMessageBudget(rebuilt),
           [ProposalDraftCodec.encodeCard(rebuilt, rebuilt.cards.single.id)],
           context: context(),

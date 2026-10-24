@@ -79,8 +79,11 @@ enum ProposalIssue {
   /// Local personal food or attached catalog key is unavailable.
   missingFoodFacts,
 
-  /// Embedded option identity contradicts its reference.
+  /// Serialized facts or embedded identity contradict trusted definitions.
   factsMismatch,
+
+  /// No trusted definition exists at the serialized source/version.
+  staleFacts,
 
   /// An unmatched estimated food needs a user-provided amount.
   needsAmount,
@@ -151,7 +154,20 @@ List<double> _core(Nutrients n) => [n.kcal, n.protein, n.carbs, n.fat, n.fiber];
 /// Serving-specific canonical amount bounds, not nutrient ranges.
 final class ProposalServing extends ProposalValue {
   /// A strictly positive amount on one canonical basis.
-  const new(this.code, this.amount, this.basis, this.low, this.high);
+  new(this.code, this.amount, this.basis, this.low, this.high) {
+    if (code.trim().isEmpty ||
+        !amount.isFinite ||
+        amount <= 0 ||
+        (low == null) != (high == null) ||
+        (low != null &&
+            (!low!.isFinite ||
+                !high!.isFinite ||
+                low! <= 0 ||
+                low! > amount ||
+                high! < amount))) {
+      throw const _Invalid();
+    }
+  }
 
   /// Serving unit code.
   final String code;
@@ -284,10 +300,12 @@ final class ProposalFacts {
   new({
     Map<String, ProposalFood> personal = const {},
     Map<String, ProposalFood> catalog = const {},
+    Map<String, String> catalogAliases = const {},
     this.packAvailable = false,
     Iterable<String> cookingFatIds = const {},
   }) : personal = Map.unmodifiable(personal),
        catalog = Map.unmodifiable(catalog),
+       catalogAliases = Map.unmodifiable(catalogAliases),
        cookingFatIds = Set.unmodifiable(cookingFatIds);
 
   /// Current personal definitions and versions.
@@ -295,6 +313,9 @@ final class ProposalFacts {
 
   /// Current catalog definitions with pack versions.
   final Map<String, ProposalFood> catalog;
+
+  /// Trusted dish ID to default variant ID bindings from the local pack.
+  final Map<String, String> catalogAliases;
 
   /// Verified cooking-fat IDs; never inferred from names or nutrient values.
   final Set<String> cookingFatIds;
@@ -306,7 +327,32 @@ final class ProposalFacts {
   String toString() => 'ProposalFacts(redacted)';
 }
 
-final class _Invalid implements Exception {
+/// Invalid public proposal value; diagnostics contain only a fixed code.
+final class ProposalInputException implements Exception {
+  /// Never retains the rejected value.
   const new([this.issue = ProposalIssue.invalidInput]);
+
+  /// Machine-readable failure.
   final ProposalIssue issue;
+  @override
+  String toString() => 'ProposalInputException(${issue.name})';
+}
+
+typedef _Invalid = ProposalInputException;
+
+/// Independently loaded current definitions for restoring persisted drafts.
+/// Serialized origin/version claims must never be used to construct this input.
+final class TrustedFoodFacts {
+  /// Copies the caller's local database/pack snapshot, including yield facts.
+  new({
+    Map<String, ProposalFood> foods = const {},
+    Iterable<YieldFactor> yields = const [],
+  }) : foods = Map.unmodifiable(foods),
+       yields = List.unmodifiable(yields);
+
+  /// Food key to current trusted source, version, nutrients and measures.
+  final Map<String, ProposalFood> foods;
+
+  /// Current pack's conversion facts.
+  final List<YieldFactor> yields;
 }

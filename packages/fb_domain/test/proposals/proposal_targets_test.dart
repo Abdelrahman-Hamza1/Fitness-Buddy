@@ -16,6 +16,7 @@ ProposalContext dayContext({
   slots: context().slots,
   dayContext: ProposalDayContext(
     today: date,
+    weightKg: 70,
     calendar: const WeekCalendar(weekStart: DayOfWeek.monday),
     confirmed: confirmed,
     revision: revision,
@@ -59,7 +60,7 @@ void main() {
       ]),
       ctx: dayContext(confirmed: {date: nutrients(500)}),
     );
-    expect(s.cards.map((c) => c.preview.eaten.kcal), [572, 644]);
+    expect(s.cards.map((c) => c.preview.eaten!.kcal), [572, 644]);
   });
   test('AI-031 sibling card confirmed is not double counted', () {
     final s = session(
@@ -74,8 +75,8 @@ void main() {
       ProposalSetLifecycle(s.cards.first.id, .confirmed),
       ctx: dayContext(confirmed: {date: nutrients(572)}, revision: 1),
     );
-    expect(u.session.cards.first.preview.eaten.kcal, 572);
-    expect(u.session.cards.last.preview.eaten.kcal, 716);
+    expect(u.session.cards.first.preview.eaten!.kcal, 572);
+    expect(u.session.cards.last.preview.eaten!.kcal, 716);
     expect(u.session.cards.first.draftOps, isEmpty);
     expect(u.session.cards.last.preview.revision, 1);
   });
@@ -163,8 +164,8 @@ void main() {
       ctx: dayContext(confirmed: {date: nutrients(500)}),
     );
     expect(s.cards.first.preview.date, date.plusDays(-1));
-    expect(s.cards.first.preview.eaten.kcal, 72);
-    expect(s.cards.last.preview.eaten.kcal, 644);
+    expect(s.cards.first.preview.eaten, isNull);
+    expect(s.cards.last.preview.eaten!.kcal, 644);
   });
   test(
     'AI-031 missing targets is unavailable and negative remaining is retained',
@@ -198,7 +199,7 @@ void main() {
       ).session;
       expect(c.cards.single.canConfirm, isFalse);
       expect(c.cards.single.totals, Nutrients.zero);
-      expect(c.cards.single.preview.eaten, Nutrients.zero);
+      expect(c.cards.single.preview.eaten, isNull);
       expect(
         ProposalEngine.recompute(
           c,

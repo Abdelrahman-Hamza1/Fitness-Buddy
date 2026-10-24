@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 /// Exports in the barrel, e.g. `export 'src/units/units.dart';`.
 final _export = RegExp(
-  r'''^export\s+'(src/[^']+\.dart)'\s*;''',
+  r'''^export\s+'(src/[^']+\.dart)'(?:\s+show\s+[^;]+)?\s*;''',
   multiLine: true,
 );
 

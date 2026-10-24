@@ -116,6 +116,8 @@ final class _EngineState {
   late ProposalRequest request;
   bool allocationsAllowed = true;
   int revision = 0;
+  final untrustedRestoreFoods = <ProposalFood>{};
+  final restoreIssues = <String, ProposalIssue>{};
   final components = <String, ProposalComponentEffect>{};
   final departedCards = <String>{};
   final questionOwners = <String, String>{};
@@ -137,6 +139,8 @@ final class _EngineState {
         return _id(source);
       });
   _EngineState copy() => _EngineState()
+    ..untrustedRestoreFoods.addAll(untrustedRestoreFoods)
+    ..restoreIssues.addAll(restoreIssues)
     ..departedCards.addAll(departedCards)
     ..components.addAll(components)
     ..revision = revision
@@ -238,6 +242,14 @@ ProposalUpdateResult _recompute(
         if (d == null || !d.options.any((o) => o.id == optionId)) {
           throw const _Invalid();
         }
+        if (d.kind == .fat) {
+          for (final original in originals) {
+            final item = state.items[original.id] ?? original;
+            if (item.dimensions.any((d) => d.id == dimensionId)) {
+              state.components.remove(item.id);
+            }
+          }
+        }
         state.choices[dimensionId] = optionId;
       case ProposalSetAmount(:final lineId, :final quantity):
         final i = find(lineId);
@@ -245,8 +257,7 @@ ProposalUpdateResult _recompute(
           final line = session.cards
               .expand((c) => c.lines)
               .firstWhere((l) => l.entry.id == lineId);
-          final food = _foods(state)
-              .firstWhere((f) => f.key == line.entry.food.ref.id);
+          final food = line.selectedFood!;
           state.components[i.id] = ProposalComponentEffect(food, quantity);
           break;
         }
@@ -389,11 +400,24 @@ ProposalUpdateResult _rebuild(ProposalCard previous, ProposalRequest fresh) {
   }
   final old = previous._state;
   final state = old.copy()
+    ..untrustedRestoreFoods.clear()
+    ..restoreIssues.clear()
     ..allocationsAllowed = true
     ..departedCards.clear()
     ..revision = old.revision + 1
     ..issued.clear()
-    ..intentCards.clear();
+    ..intentCards.clear()
+    ..times.clear()
+    ..slots.clear()
+    ..ids.removeWhere((key, _) => key.startsWith('group:'));
+  // Rebuild of unverified history must not carry serialized food overrides
+  // into the newly trusted request, including generated components/additions.
+  if (old.restoreIssues.containsKey(previous.id)) {
+    state.items.clear();
+    state.components.clear();
+    state.adds.clear();
+    state.addOwners.clear();
+  }
   final oldItems = [
     for (final i in old.request.interpretation.value!.intents)
       if (old.intentCards[i.index] == previous.id) ...i.items,
@@ -415,11 +439,21 @@ ProposalUpdateResult _rebuild(ProposalCard previous, ProposalRequest fresh) {
         continue;
       }
       used.add(match.id);
-      if (old.ids['group:${intent.index}'] == null) {
-        final priorIntent = old.request.interpretation.value!.intents
-            .firstWhere((i) => i.items.contains(match));
-        final group = old.ids['group:${priorIntent.index}'];
-        if (group != null) state.ids['group:${intent.index}'] = group;
+      final priorIntent = old.request.interpretation.value!.intents.firstWhere(
+        (i) => i.items.contains(match),
+      );
+      if (intent.timeHint == null && old.times[priorIntent.index] != null) {
+        state.times[intent.index] = old.times[priorIntent.index]!;
+      }
+      if (intent.slotHint == null && old.slots[priorIntent.index] != null) {
+        state.slots[intent.index] = old.slots[priorIntent.index]!;
+      }
+      final group = old.ids['group:${priorIntent.index}'];
+      if (group != null && intent.dishGroup != null) {
+        state.ids.putIfAbsent('group:${intent.index}', () => group);
+      }
+      if (item.dimensions.any((d) => d.kind == .fat && d.stated != null)) {
+        state.components.remove(match.id);
       }
       final adjusted = state.items.remove(match.id);
       final next = _copyItem(

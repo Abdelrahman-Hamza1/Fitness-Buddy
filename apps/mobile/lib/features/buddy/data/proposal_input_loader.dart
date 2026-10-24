@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 import 'package:fb_api_client/fb_api_client.dart' show ClientConfig;
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/catalog/catalog.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
-import 'package:fb_mobile/features/diary/diary.dart'
-    show DiaryReads, nutrientsOf;
+import 'package:fb_mobile/features/diary/diary.dart' show DiaryReads;
 import 'package:fb_mobile/features/foods/foods.dart' show personalFoodOf;
 import 'package:fb_text/fb_text.dart';
 
@@ -13,9 +13,57 @@ import 'package:fb_text/fb_text.dart';
 /// recompute has no reference to this loader, database or configuration port.
 final class ProposalInputLoader {
   /// Config is a synchronous snapshot of the already-loaded ClientConfig.
-  const new(this._db, {required this._config});
+  const new(this._db, {required this._catalog, required this._config});
   final AppDatabase _db;
+  final OfflineCatalog _catalog;
   final ClientConfig Function() _config;
+
+  /// Restore with facts read from the current personal rows and installed pack.
+  /// Draft keys only select reads; serialized facts never verify themselves.
+  Future<ProposalBuildResult> restore({
+    required Map<String, Object?> message,
+    required Iterable<Map<String, Object?>> cards,
+    required EntryTime referenceTime,
+  }) async {
+    try {
+      final rows = [
+        for (final row in cards)
+          jsonDecode(jsonEncode(row)) as Map<String, Object?>,
+      ];
+      final budget = jsonDecode(jsonEncode(message)) as Map<String, Object?>;
+      final keys = <String>{};
+      for (final row in rows) {
+        if (row['foods'] case final List<Object?> foods) {
+          for (final food in foods) {
+            if (food is List<Object?> &&
+                food.isNotEmpty &&
+                food.first is String) {
+              keys.add(food.first! as String);
+            }
+          }
+        }
+      }
+      return await _loadSnapshot(
+        interpretation: const {},
+        restoreKeys: keys,
+        referenceTime: referenceTime,
+        build: (facts, context, config, json) => ProposalDraftCodec.restore(
+          budget,
+          rows,
+          context: context,
+          trustedFacts: TrustedFoodFacts(
+            foods: {...facts.catalog, ...facts.personal},
+            yields: context.yields,
+          ),
+        ),
+      );
+    }
+    // JSON rejects malformed stored values with an Error subtype.
+    // ignore: avoid_catching_errors
+    on JsonUnsupportedObjectError {
+      return const ProposalResult.failure(ProposalIssue.invalidInput);
+    }
+  }
 
   /// Load before computation; never refresh config, contact a server or write.
   Future<ProposalResult<ProposalRequest>> load({
@@ -23,13 +71,46 @@ final class ProposalInputLoader {
     required String messageId,
     required ProposalIdSource idSource,
     required EntryTime referenceTime,
-    required LocalDate today,
+    SlotMode mode = SlotMode.normal,
+    int confirmedRevision = 0,
+  }) => _loadSnapshot(
+    interpretation: interpretation,
+    referenceTime: referenceTime,
+    mode: mode,
+    confirmedRevision: confirmedRevision,
+    build: (facts, context, config, json) {
+      final request = ProposalRequest(
+        interpretation: json,
+        messageId: messageId,
+        idSource: idSource,
+        context: context,
+        facts: facts,
+        policy: ProposalPolicy.fromThresholds(config.thresholds),
+      );
+      if (request.interpretation.issue case final issue?) {
+        return ProposalResult.failure(issue);
+      }
+      return ProposalResult.success(request);
+    },
+  );
+
+  Future<ProposalResult<T>> _loadSnapshot<T>({
+    required Map<String, Object?> interpretation,
+    required EntryTime referenceTime,
+    required ProposalResult<T> Function(
+      ProposalFacts,
+      ProposalContext,
+      ClientConfig,
+      Map<String, Object?>,
+    )
+    build,
+    Set<String> restoreKeys = const {},
     SlotMode mode = SlotMode.normal,
     int confirmedRevision = 0,
   }) async {
     try {
       final config = _config();
-      final keys = <String>{};
+      final keys = {...restoreKeys};
       var work = 0;
       void collect(Object? value, int depth) {
         if (depth > 32 || ++work > 524288) throw const _LoadFailure();
@@ -86,116 +167,33 @@ final class ProposalInputLoader {
         final attached = await _db.isCatalogAttached();
         final catalog = <String, ProposalFood>{};
         final fats = <String>{};
+        final aliases = <String, String>{};
         final yields = <YieldFactor>[];
         if (attached) {
-          final meta = await _db
-              .customSelect(
-                'SELECT value FROM catalog.meta WHERE key = ?',
-                variables: [Variable.withString('cooking_fat_ids')],
-              )
-              .get();
-          if (meta.isNotEmpty) {
-            final text = meta.single.read<String>('value');
-            if (text.length > 32768) throw const _LoadFailure();
-            final value = jsonDecode(text);
-            if (value is! List || value.any((v) => v is! String || v.isEmpty)) {
-              throw const _LoadFailure();
+          fats.addAll(await _catalog.cookingFatIds());
+          final found = await _catalog.foodsByIds(keys);
+          final all = <String, CatalogFood>{
+            for (final variants in found.values)
+              for (final f in variants) f.id: f,
+          };
+          final groups = {for (final f in all.values) ?f.yieldGroup};
+          for (final group in groups) {
+            for (final f in await _catalog.foodsInYieldGroup(group)) {
+              all[f.id] = f;
             }
-            fats.addAll(value.cast<String>());
           }
-          final rows = await _db
-              .customSelect(
-                'SELECT * FROM catalog.foods WHERE id IN '
-                '(SELECT value FROM json_each(?))',
-                variables: [Variable.withString(jsonEncode(keys.toList()))],
-              )
-              .get();
-          final servings = await _db
-              .customSelect(
-                'SELECT * FROM catalog.servings WHERE food_id IN '
-                '(SELECT value FROM json_each(?)) ORDER BY food_id, unit_code',
-                variables: [Variable.withString(jsonEncode(keys.toList()))],
-              )
-              .get();
-          for (final r in rows) {
-            final id = r.read<String>('id');
-            final state = FoodState.fromCode(r.read<String>('state'));
-            final source = switch (r.read<String>('source')) {
-              'usda' => FoodSource.database,
-              'reference' => FoodSource.reference,
-              _ => throw const _LoadFailure(),
-            };
-            final basis = switch (r.read<String>('basis')) {
-              'per_100g' => NutrientBasis.per100g,
-              'per_100ml' => NutrientBasis.per100ml,
-              _ => throw const _LoadFailure(),
-            };
-            if (state == null) throw const _LoadFailure();
-            Nutrients nutrients(String suffix) => Nutrients(
-              kcal: r.read<double>('kcal$suffix'),
-              protein: r.read<double>(
-                suffix.isEmpty ? 'protein_g' : 'protein$suffix',
-              ),
-              carbs: r.read<double>(
-                suffix.isEmpty ? 'carbs_g' : 'carbs$suffix',
-              ),
-              fat: r.read<double>(suffix.isEmpty ? 'fat_g' : 'fat$suffix'),
-              fiber: r.read<double>(
-                suffix.isEmpty ? 'fiber_g' : 'fiber$suffix',
-              ),
-            );
-            catalog[id] = ProposalFood(
-              key: id,
-              names: FoodNames(
-                r.read<String>('name_en'),
-                ar: r.read<String?>('name_ar'),
-              ),
-              state: state,
-              source: source,
-              per100: nutrientsOf(
-                kcal: r.read<double>('kcal'),
-                proteinG: r.read<double>('protein_g'),
-                carbsG: r.read<double>('carbs_g'),
-                fatG: r.read<double>('fat_g'),
-                fiberG: r.read<double>('fiber_g'),
-                extrasJson: r.read<String?>('extras_json'),
-              ),
-              basis: basis,
-              origin: .localCatalog,
-              version: '${r.read<int>('catalog_version')}',
-              density: r.read<double?>('density_g_per_ml'),
-              yieldGroup: r.read<String?>('yield_group'),
-              range: r.read<double?>('kcal_low') == null
-                  ? null
-                  : ProposalRange(nutrients('_low'), nutrients('_high')),
-              servings: [
-                for (final s in servings.where(
-                  (s) => s.read<String>('food_id') == id,
-                ))
-                  ProposalServing(
-                    s.read<String>('unit_code'),
-                    s.read<double?>('g') ?? s.read<double>('ml'),
-                    s.read<double?>('g') == null ? .per100ml : .per100g,
-                    s.read<double?>('range_lo'),
-                    s.read<double?>('range_hi'),
-                  ),
-              ],
-            );
+          for (final f in all.values) {
+            catalog[f.id] = _proposalFood(f);
           }
-          for (final r
-              in await _db.customSelect('SELECT * FROM catalog.yields').get()) {
-            final from = FoodState.fromCode(r.read<String>('from_state'));
-            final to = FoodState.fromCode(r.read<String>('to_state'));
-            if (from == null || to == null) throw const _LoadFailure();
-            yields.add(
-              YieldFactor(
-                group: r.read<String>('yield_group'),
-                from: from,
-                to: to,
-                factor: r.read<double>('factor'),
-              ),
-            );
+          // Dish IDs address their default variant; keep every concrete
+          // variant available to subsequent offline substitutions.
+          for (final e in found.entries) {
+            if (!catalog.containsKey(e.key) && e.value.isNotEmpty) {
+              final f = e.value.where((f) => f.isDefaultVariant).firstOrNull;
+              if (f != null) aliases[e.key] = f.id;
+            }
           }
+          yields.addAll(await _catalog.yieldFactors());
         }
         final reads = DiaryReads(_db);
         // Only today/yesterday are resolved by v1; explicit later date edits
@@ -211,30 +209,29 @@ final class ProposalInputLoader {
           mode: mode,
           normalize: normalizeKey,
           dayContext: ProposalDayContext(
-            today: today,
+            today: referenceTime.localDate,
             revision: confirmedRevision,
-            confirmed: {for (final t in totals) t.date: t.totals},
+            confirmed: {
+              referenceTime.localDate: Nutrients.zero,
+              referenceTime.localDate.plusDays(-1): Nutrients.zero,
+              for (final t in totals) t.date: t.totals,
+            },
           ),
         );
-        final request = ProposalRequest(
-          interpretation: json,
-          messageId: messageId,
-          idSource: idSource,
-          context: context,
-          facts: ProposalFacts(
+        return build(
+          ProposalFacts(
             personal: personal,
             catalog: catalog,
+            catalogAliases: aliases,
             packAvailable: attached,
             cookingFatIds: fats,
           ),
-          policy: ProposalPolicy.fromThresholds(config.thresholds),
+          context,
+          config,
+          json,
         );
-        if (request.interpretation.issue case final issue?) {
-          return ProposalResult<ProposalRequest>.failure(issue);
-        }
-        return ProposalResult.success(request);
       });
-    } on Object {
+    } on Exception {
       // Parser/SQL/row exceptions can contain user values or paths. They never
       // escape this adapter and no diagnostic callback receives their content.
       return const ProposalResult.failure(ProposalIssue.invalidInput);
@@ -248,3 +245,29 @@ final class ProposalInputLoader {
 final class _LoadFailure implements Exception {
   const new();
 }
+
+ProposalFood _proposalFood(CatalogFood f) => ProposalFood(
+  key: f.id,
+  names: FoodNames(f.nameEn, ar: f.nameAr),
+  state: f.state,
+  source: f.badge == CatalogBadge.reference ? .reference : .database,
+  per100: f.nutrients,
+  basis: f.basis,
+  origin: .localCatalog,
+  version: '${f.packVersion}',
+  density: f.densityGramsPerMl,
+  yieldGroup: f.yieldGroup,
+  range: f.nutrientsLow == null
+      ? null
+      : ProposalRange(f.nutrientsLow!, f.nutrientsHigh!),
+  servings: [
+    for (final s in f.servingUnits)
+      ProposalServing(
+        s.code,
+        s.amount,
+        s.basis,
+        f.servingRanges[s.code]?.$1,
+        f.servingRanges[s.code]?.$2,
+      ),
+  ],
+);

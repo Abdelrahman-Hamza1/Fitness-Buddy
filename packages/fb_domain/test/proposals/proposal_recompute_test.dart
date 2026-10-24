@@ -181,6 +181,14 @@ void main() {
       message([
         intent([item(), riceItem()]),
       ]),
+      ctx: ProposalContext(
+        referenceTime: context().referenceTime,
+        slots: context().slots,
+        dayContext: ProposalDayContext(
+          today: context().referenceTime.localDate,
+          confirmed: {context().referenceTime.localDate: Nutrients.zero},
+        ),
+      ),
     );
     final id = s.cards.single.lines.first.entry.id;
     final u = update(s, ProposalSetAmount(id, Quantity(2, 'piece')));

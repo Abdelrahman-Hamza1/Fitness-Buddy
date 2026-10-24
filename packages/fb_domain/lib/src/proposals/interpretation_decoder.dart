@@ -147,7 +147,8 @@ ProposalItem _item(Map<String, Object?> m, String id, ProposalFacts facts) {
       final embedded = o['candidate'] == null
           ? null
           : _candidate(_map(o['candidate']), facts);
-      if (embedded != null && embedded.key != key) {
+      if (embedded != null &&
+          embedded.key != (facts.catalogAliases[key] ?? key)) {
         throw const _Invalid(ProposalIssue.factsMismatch);
       }
       final food = embedded ?? available[key];
@@ -210,7 +211,10 @@ ProposalItem _item(Map<String, Object?> m, String id, ProposalFacts facts) {
 }
 
 ProposalFood _candidate(Map<String, Object?> m, ProposalFacts facts) {
-  final key = _text(m, 'key');
+  final inputKey = _text(m, 'key');
+  final key = m['source'] == 'personal'
+      ? inputKey
+      : facts.catalogAliases[inputKey] ?? inputKey;
   final code = _text(m, 'source');
   final source = switch (code) {
     'personal' => FoodSource.yours,
@@ -265,7 +269,7 @@ ProposalFood _candidate(Map<String, Object?> m, ProposalFacts facts) {
       throw const _Invalid(ProposalIssue.factsMismatch);
     }
     return ProposalFood(
-      key: key,
+      key: local.key,
       names: local.names,
       state: local.state,
       source: local.source,

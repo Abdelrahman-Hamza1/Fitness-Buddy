@@ -1,4 +1,6 @@
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_domain/src/proposals/proposal_input.dart'
+    show ProposalInterpretation;
 import 'package:test/test.dart';
 
 import 'proposal_fixtures.dart';

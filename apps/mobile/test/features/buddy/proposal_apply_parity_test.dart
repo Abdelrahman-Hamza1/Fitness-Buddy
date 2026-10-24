@@ -2,17 +2,162 @@ import 'dart:convert';
 
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/api/client_config_repository.dart';
+import 'package:fb_mobile/core/catalog/catalog.dart';
 import 'package:fb_mobile/core/changes/apply_result.dart';
+import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_input_loader.dart';
 import 'package:fb_mobile/features/diary/data/diary_mappers.dart'
     show provenanceOf;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../../packages/fb_domain/test/proposals/proposal_fixtures.dart';
+import '../../../../../packages/fb_domain/test/proposals/proposal_rebuild_test.dart'
+    show follow;
+import '../../../../../packages/fb_domain/test/proposals/proposal_recompute_test.dart'
+    show update;
 import '../diary/support/diary_harness.dart';
 import '../foods/data/personal_food_harness.dart' show PersonalHarness, draft;
 
 void main() {
+  // rule: A21 restore-trust-boundary
+  test(
+    'A21 legitimate trusted restore confirms through real applier',
+    () async {
+      final h = PersonalHarness();
+      const key = '019a1b2c-0000-7000-8000-000000001234';
+      await h.apply([CreatePersonalFood(key, draft('Private'))]);
+      final loader = ProposalInputLoader(
+        h.db,
+        catalog: ownedCatalog(h.db),
+        config: () => ClientConfigRepository.defaults,
+      );
+      final request = (await loader.load(
+        interpretation: message([
+          intent([
+            item(
+              match: food(key: key, source: 'personal'),
+              amount: 100,
+              unit: 'g',
+            ),
+          ]),
+        ]),
+        messageId: '019a1b2c-0000-7000-8000-000000009999',
+        idSource: FixedIds(),
+        referenceTime: context().referenceTime,
+      )).value!;
+      final s = ProposalEngine.build(request).value!;
+      final restored = await loader.restore(
+        message: ProposalDraftCodec.encodeMessageBudget(s),
+        cards: [ProposalDraftCodec.encodeCard(s, s.cards.single.id)],
+        referenceTime: context().referenceTime,
+      );
+      final card = restored.value!.cards.single;
+      expect(card.issues, isEmpty);
+      expect(card.canConfirm, isTrue);
+      expect(
+        await h.applier.apply(
+          ChangeSet(card.draftOps, origin: Origin.proposal(card.id)),
+        ),
+        isA<Applied>(),
+      );
+      final stored = (await h.db.select(h.db.diaryEntries).get()).single;
+      expect(stored.kcal, card.lines.single.snapshot.kcal);
+    },
+  );
+
+  // rule: A21 exact-personal-snapshot
+  test('A21 mixed personal versions through restore reject '
+      'real applier confirmation atomically', () async {
+    final h = PersonalHarness();
+    const key = '019a1b2c-0000-7000-8000-000000001234';
+    await h.apply([CreatePersonalFood(key, draft('Private'))]);
+    var s = session(
+      message([
+        intent([
+          item(
+            match: food(key: key, source: 'personal'),
+          ),
+          item(
+            match: food(key: key, source: 'personal'),
+          ),
+        ]),
+      ]),
+      facts: ProposalFacts(
+        personal: {
+          key: localFood(key: key, source: .yours, personalVersion: 1),
+        },
+      ),
+    );
+    s = update(
+      s,
+      ProposalSwap(
+        s.cards.single.lines.last.entry.id,
+        localFood(key: key, source: .yours, personalVersion: 2, kcal: 300),
+      ),
+    ).session;
+    final card = ProposalDraftCodec.restore(
+      trustedFacts: trustedSession(s, ctx: context()),
+      ProposalDraftCodec.encodeMessageBudget(s),
+      [ProposalDraftCodec.encodeCard(s, s.cards.single.id)],
+      context: context(),
+    ).value!.cards.single;
+    final before = await h.raw();
+    // Keep the live mixed-version guard regression as well: only restore
+    // gains the stronger independent-fact rejection in this amendment.
+    expect(
+      await h.applier.apply(
+        ChangeSet(s.cards.single.draftOps, origin: Origin.proposal(card.id)),
+      ),
+      isA<Rejected>().having(
+        (r) => r.failure,
+        'failure',
+        isA<VersionConflict>(),
+      ),
+    );
+    expect(card.canConfirm, isFalse);
+    expect(card.draftOps, isEmpty);
+    expect(card.issues, contains(ProposalIssue.staleFacts));
+    expect(await h.raw(), before);
+  });
+  test(
+    'AI-044 rebuilt second dish confirms after sibling without group collision',
+    () async {
+      final h = PersonalHarness();
+      final ids = FixedIds();
+      var s = session(
+        message([
+          intent([item()], slot: 'breakfast', group: 'first'),
+          intent([item()], slot: 'dinner', group: 'second'),
+        ]),
+        ids: ids,
+      );
+      final first = s.cards.first;
+      expect(
+        await h.applier.apply(
+          ChangeSet(first.draftOps, origin: Origin.proposal(first.id)),
+        ),
+        isA<Applied>(),
+      );
+      s = update(s, ProposalSetLifecycle(first.id, .confirmed)).session;
+      final second = ProposalEngine.rebuild(
+        s.cards.last,
+        follow(
+          message([
+            intent([item()], slot: 'dinner', group: 'second'),
+          ]),
+          ids,
+        ),
+      ).value!.session.cards.single;
+      expect(
+        await h.applier.apply(
+          ChangeSet(second.draftOps, origin: Origin.proposal(second.id)),
+        ),
+        isA<Applied>(),
+      );
+      expect(await h.db.select(h.db.dishGroups).get(), hasLength(2));
+    },
+  );
+
   test('AI-031 T01 draft ops through real applier match preview', () async {
     final harness = DiaryHarness();
     final card = session(
@@ -52,13 +197,13 @@ void main() {
       final input =
           await ProposalInputLoader(
             h.db,
+            catalog: ownedCatalog(h.db),
             config: () => ClientConfigRepository.defaults,
           ).load(
             interpretation: t01(),
             messageId: '019a1b2c-0000-7000-8000-000000009999',
             idSource: FixedIds(),
             referenceTime: context().referenceTime,
-            today: context().referenceTime.localDate,
           );
       final s = ProposalEngine.build(input.value!).value!;
       final adjusted = ProposalEngine.recompute(
@@ -127,13 +272,13 @@ void main() {
         final request =
             (await ProposalInputLoader(
                   h.db,
+                  catalog: ownedCatalog(h.db),
                   config: () => ClientConfigRepository.defaults,
                 ).load(
                   interpretation: raw,
                   messageId: '019a1b2c-0000-7000-8000-000000009999',
                   idSource: FixedIds(),
                   referenceTime: context().referenceTime,
-                  today: context().referenceTime.localDate,
                 ))
                 .value!;
         final card = ProposalEngine.build(request).value!.cards.single;
@@ -235,6 +380,7 @@ void main() {
       final input =
           (await ProposalInputLoader(
                 h.db,
+                catalog: ownedCatalog(h.db),
                 config: () => ClientConfigRepository.defaults,
               ).load(
                 interpretation: message([
@@ -250,7 +396,6 @@ void main() {
                 messageId: '019a1b2c-0000-7000-8000-000000009999',
                 idSource: FixedIds(),
                 referenceTime: context().referenceTime,
-                today: context().referenceTime.localDate,
               ))
               .value!;
       final card = ProposalEngine.build(input).value!.cards.single;
@@ -270,4 +415,10 @@ void main() {
       expect(await h.raw(), before);
     },
   );
+}
+
+OfflineCatalog ownedCatalog(AppDatabase db) {
+  final catalog = OfflineCatalog(db);
+  addTearDown(catalog.dispose);
+  return catalog;
 }

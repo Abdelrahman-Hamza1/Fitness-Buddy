@@ -13,6 +13,7 @@ List<Map<String, Object?>> cardRows(ProposalSession s) => [
 ];
 ProposalSession roundTrip(ProposalSession s, {ProposalContext? ctx}) {
   final r = ProposalDraftCodec.restore(
+    trustedFacts: trustedSession(s, ctx: ctx),
     copyJson(ProposalDraftCodec.encodeMessageBudget(s)),
     cardRows(s).map(copyJson),
     context: ctx ?? context(),
@@ -101,13 +102,23 @@ void main() {
       copyJson(budget)..['revision'] = 99,
     ]) {
       expect(
-        ProposalDraftCodec.restore(broken, rows, context: context()).issue,
+        ProposalDraftCodec.restore(
+          trustedFacts: trustedSession(s, ctx: context()),
+          broken,
+          rows,
+          context: context(),
+        ).issue,
         ProposalIssue.budgetConflict,
       );
     }
     final row = copyJson(rows.single)..['owned'] = <Object?>[];
     expect(
-      ProposalDraftCodec.restore(budget, [row], context: context()).issue,
+      ProposalDraftCodec.restore(
+        trustedFacts: trustedSession(s, ctx: context()),
+        budget,
+        [row],
+        context: context(),
+      ).issue,
       ProposalIssue.budgetConflict,
     );
   });
@@ -116,11 +127,17 @@ void main() {
       'without resetting budget', () {
     final s = session(message());
     expect(
-      ProposalDraftCodec.restore({}, cardRows(s), context: context()).issue,
+      ProposalDraftCodec.restore(
+        trustedFacts: trustedSession(s, ctx: context()),
+        {},
+        cardRows(s),
+        context: context(),
+      ).issue,
       ProposalIssue.sessionIncomplete,
     );
     expect(
       ProposalDraftCodec.restore(
+        trustedFacts: trustedSession(s, ctx: context()),
         ProposalDraftCodec.encodeMessageBudget(s),
         [],
         context: context(),
@@ -135,14 +152,24 @@ void main() {
     for (final key in ['totals', 'draftOps']) {
       final row = copyJson(cardRows(s).single)..[key] = [];
       expect(
-        ProposalDraftCodec.restore(budget, [row], context: context()).issue,
+        ProposalDraftCodec.restore(
+          trustedFacts: trustedSession(s, ctx: context()),
+          budget,
+          [row],
+          context: context(),
+        ).issue,
         ProposalIssue.invalidInput,
       );
     }
     final row = copyJson(cardRows(s).single);
     (row['ids']! as Map<String, Object?>).remove('item:0/0');
     expect(
-      ProposalDraftCodec.restore(budget, [row], context: context()).issue,
+      ProposalDraftCodec.restore(
+        trustedFacts: trustedSession(s, ctx: context()),
+        budget,
+        [row],
+        context: context(),
+      ).issue,
       ProposalIssue.invalidInput,
     );
     expect(roundTrip(s).cards.single.totals, s.cards.single.totals);
@@ -207,6 +234,7 @@ void main() {
     final budget = ProposalDraftCodec.encodeMessageBudget(s);
     expect(
       ProposalDraftCodec.restore(
+        trustedFacts: trustedSession(s, ctx: context()),
         copyJson(budget)..['codecVersion'] = 2,
         cardRows(s),
         context: context(),
@@ -220,7 +248,12 @@ void main() {
       double.nan,
     ]) {
       final row = copyJson(cardRows(s).single)..['foods'] = value;
-      final r = ProposalDraftCodec.restore(budget, [row], context: context());
+      final r = ProposalDraftCodec.restore(
+        trustedFacts: trustedSession(s, ctx: context()),
+        budget,
+        [row],
+        context: context(),
+      );
       expect(r.issue, isNotNull);
       expect(r.toString(), isNot(contains('private')));
     }
@@ -315,9 +348,12 @@ void main() {
         } else {
           (parent! as Map<String, Object?>)[key as String] = invalid;
         }
-        final result = ProposalDraftCodec.restore(budget, [
-          changed,
-        ], context: context());
+        final result = ProposalDraftCodec.restore(
+          trustedFacts: trustedSession(s, ctx: context()),
+          budget,
+          [changed],
+          context: context(),
+        );
         expect(result.toString(), isNot(contains('private')));
         if (result.value case final session?) {
           expect(session.budget.questions.length, lessThanOrEqualTo(2));
@@ -348,7 +384,7 @@ void main() {
         origin: .localPersonal,
         density: 1,
         range: ProposalRange(nutrients(100), nutrients(200)),
-        servings: [const ProposalServing('cup', 250, .per100ml, 200, 300)],
+        servings: [ProposalServing('cup', 250, .per100ml, 200, 300)],
       );
       final raw = item(
         match: food(key: key, source: 'personal'),
@@ -393,18 +429,24 @@ void main() {
       final f = (corrupt['foods']! as List<Object?>).first! as List<Object?>;
       f[9] = 0;
       expect(
-        ProposalDraftCodec.restore(ProposalDraftCodec.encodeMessageBudget(s), [
-          corrupt,
-        ], context: ctx).issue,
+        ProposalDraftCodec.restore(
+          trustedFacts: trustedSession(s, ctx: ctx),
+          ProposalDraftCodec.encodeMessageBudget(s),
+          [corrupt],
+          context: ctx,
+        ).issue,
         ProposalIssue.invalidInput,
       );
       expect(fields, isNotEmpty);
       final superseded = copyJson(encoded)..['status'] = 'superseded';
       final budget = copyJson(ProposalDraftCodec.encodeMessageBudget(s))
         ..['open'] = [];
-      final historical = ProposalDraftCodec.restore(budget, [
-        superseded,
-      ], context: ctx);
+      final historical = ProposalDraftCodec.restore(
+        trustedFacts: trustedSession(s, ctx: ctx),
+        budget,
+        [superseded],
+        context: ctx,
+      );
       expect(historical.issue, isNull);
       expect(historical.value!.cards.single.canConfirm, isFalse);
     },

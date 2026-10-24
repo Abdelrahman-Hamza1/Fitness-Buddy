@@ -319,6 +319,7 @@ void main() {
         ),
       ).value!.session;
       final restored = ProposalDraftCodec.restore(
+        trustedFacts: trustedSession(rebuilt, ctx: context()),
         ProposalDraftCodec.encodeMessageBudget(rebuilt),
         [ProposalDraftCodec.encodeCard(rebuilt, rebuilt.cards.single.id)],
         context: context(),
@@ -339,6 +340,7 @@ void main() {
         movedCardIds: [s.cards.single.id],
       );
       final oldRestored = ProposalDraftCodec.restore(
+        trustedFacts: trustedSession(s, ctx: context()),
         oldBudget,
         [],
         context: context(),

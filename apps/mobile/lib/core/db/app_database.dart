@@ -122,7 +122,8 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
   );
 
   /// Consistent multi-query reads without granting the writer's zone token.
-  /// The existing WriteGuard still rejects every write in this callback.
+  /// WriteGuard rejects writes unless the caller is already inside
+  /// runAuthorizedWrite: the transaction's forked zone inherits that token.
   Future<T> readSnapshot<T>(Future<T> Function() read) => transaction(read);
 
   /// Whether a catalog pack is attached as [catalogSchema].

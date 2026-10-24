@@ -23,7 +23,7 @@ final class ProposalDayContext {
     Map<LocalDate, Nutrients> confirmed = const {},
     this.revision = 0,
     this.history,
-    this.weightKg = 70,
+    this.weightKg,
     Iterable<WeekIntake> earlierIntake = const [],
     Map<DayOfWeek, double> workoutWeights = const {},
     this.calendar = const WeekCalendar(),
@@ -45,7 +45,7 @@ final class ProposalDayContext {
   final TargetSettingsHistory? history;
 
   /// Effective body weight for A12 macros.
-  final double weightKg;
+  final double? weightKg;
 
   /// Confirmed earlier days with explicit completeness.
   final List<WeekIntake> earlierIntake;
@@ -69,8 +69,8 @@ final class ProposalDayPreview extends ProposalValue {
   /// The card's diary date, including past cards.
   final LocalDate date;
 
-  /// Confirmed intake plus this active card.
-  final Nutrients eaten;
+  /// Confirmed intake plus this active card; absent if its date was not loaded.
+  final Nutrients? eaten;
 
   /// A12 projection, absent when targets are unavailable.
   final double? targetKcal;
@@ -83,7 +83,7 @@ final class ProposalDayPreview extends ProposalValue {
 
   /// Over-target intake remains negative.
   double? get remainingKcal =>
-      targetKcal == null ? null : targetKcal! - eaten.kcal;
+      targetKcal == null || eaten == null ? null : targetKcal! - eaten!.kcal;
   @override
   List<Object?> get _values => [date, eaten, targetKcal, revision];
 }
@@ -94,12 +94,12 @@ ProposalDayPreview _preview(
   Nutrients own,
 ) {
   final day = context.dayContext;
-  final settings = day?.history?.at(date);
+  final settings = day?.weightKg == null ? null : day?.history?.at(date);
   final target = settings
       ?.plan(ramadanActive: day!.ramadan)
       .day(
         date: date,
-        weightKg: day.weightKg,
+        weightKg: day.weightKg!,
         earlierIntake: day.earlierIntake.where(
           (i) =>
               i.date.isBefore(date) &&
@@ -110,7 +110,7 @@ ProposalDayPreview _preview(
       );
   return ProposalDayPreview._(
     date,
-    _sum([day?.confirmed[date] ?? Nutrients.zero, own]),
+    day?.confirmed[date] == null ? null : _sum([day!.confirmed[date]!, own]),
     target?.kcal,
     day?.revision ?? 0,
   );

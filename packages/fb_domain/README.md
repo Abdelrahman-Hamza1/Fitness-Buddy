@@ -433,3 +433,14 @@ join the decoded interpretation field back under the draft map's
 `interpretation` key. Never put a second budget copy in a proposal row. A22 owns
 assistant-message storage/UI; A23 owns proposal storage, migrations, atomic
 resolution and B18 consumption. Superseded rows restore as historical only.
+
+A21 public barrel surface (explicit `show`; normalized interpreter constructors
+and the equality base remain internal):
+
+`InterpretationDecoder`, `ProposalAdd`, `ProposalAdjustment`, `ProposalBuildResult`, `ProposalCard`, `ProposalChip`, `ProposalChoiceOrigin`, `ProposalComponentEffect`, `ProposalContext`, `ProposalDayContext`, `ProposalDayPreview`, `ProposalDiff`, `ProposalDimension`, `ProposalDimensionKind`, `ProposalDraftCodec`, `TrustedFoodFacts`, `ProposalEffect`, `ProposalEngine`, `ProposalEvaluation`, `ProposalEvaluationResult`, `ProposalFactOrigin`, `ProposalFacts`, `ProposalField`, `ProposalFood`, `ProposalFoodEffect`, `ProposalIdSource`, `ProposalInputException`, `ProposalIssue`, `ProposalItem`, `ProposalLifecycle`, `ProposalLine`, `ProposalOption`, `ProposalPolicy`, `ProposalQuantityEffect`, `ProposalQuestion`, `ProposalRange`, `ProposalRequest`, `ProposalResult`, `ProposalRetentionEffect`, `ProposalSelect`, `ProposalServing`, `ProposalSession`, `ProposalSetAmount`, `ProposalSetLifecycle`, `ProposalSetRemoved`, `ProposalSetWhen`, `ProposalShareEffect`, `ProposalSwap`, `ProposalSyncProjection`, `ProposalUpdate`, `ProposalUpdateResult`, `QuestionBudget`.
+
+Intake preview `eaten` is unavailable (`null`) unless confirmed totals include
+the card date. A known empty date must be supplied as `Nutrients.zero`. Target
+preview also requires explicit weight; no body weight is invented.
+
+Restore requires independently loaded `TrustedFoodFacts` (current food source/version, nutrients/measures and yield factors). Missing versions block the affected card with `staleFacts`; same-version differences use `factsMismatch`. Its preview remains read-only until rebuild; serialized claims never establish trust.

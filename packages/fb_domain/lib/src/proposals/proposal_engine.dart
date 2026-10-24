@@ -98,6 +98,7 @@ final class ProposalLine extends ProposalValue {
     required Iterable<ProposalChip> chips,
     this.range,
     this.yieldNote,
+    this.selectedFood,
     Iterable<ProposalDimension> dimensions = const [],
   }) : chips = List.unmodifiable(chips),
        dimensions = List.unmodifiable(dimensions);
@@ -107,6 +108,9 @@ final class ProposalLine extends ProposalValue {
 
   /// Storage-rounded nutrients, computed once from the canonical amount.
   final Nutrients snapshot;
+
+  /// Exact selected snapshot, including the optimistic personal-food version.
+  final ProposalFood? selectedFood;
 
   /// Which actual food facts were used.
   final ProposalFactOrigin factOrigin;
@@ -127,6 +131,7 @@ final class ProposalLine extends ProposalValue {
     entry,
     snapshot,
     factOrigin,
+    selectedFood,
     chips,
     dimensions,
     range,
@@ -251,6 +256,20 @@ abstract final class ProposalEngine {
     try {
       if (!isUuidV7(request.messageId)) throw const _Invalid();
       state.request = request;
+      // Identity namespaces must agree even when the selected snapshots have
+      // different versions. Never let a catalog claim shadow a personal row.
+      final sources = <String, FoodSource>{};
+      for (final food in _foods(state)) {
+        // Unverified restore snapshots are isolated to blocked history cards;
+        // their forged identities cannot invalidate a verified sibling.
+        if (state.untrustedRestoreFoods.contains(food)) continue;
+        final previous = sources[food.key];
+        if ((previous != null && previous != food.source) ||
+            (food.source == .yours && (food.personalVersion ?? 0) < 1)) {
+          throw const _Invalid(ProposalIssue.factsMismatch);
+        }
+        sources[food.key] = food.source;
+      }
       final context = request.context;
       final converter = YieldConverter(context.yields);
       final questions = <ProposalQuestion>[];
@@ -270,35 +289,21 @@ abstract final class ProposalEngine {
       for (final intent in decoded.value!.intents.where(
         (i) => i.kind == 'foodLog',
       )) {
-        var time = state.times[intent.index] ?? context.referenceTime;
-        if (!state.times.containsKey(intent.index) &&
-            context.normalize(intent.timeHint ?? '') == 'yesterday') {
-          time = time.onDate(time.localDate.plusDays(-1));
-        }
-        final active = context.slots.where(
-          (s) => s.active && s.mode == context.mode,
-        );
-        final explicit = active
+        final (time, slot) = _meal(intent, context, state);
+        final explicit = context.slots
             .where(
               (s) =>
+                  s.active &&
+                  s.mode == context.mode &&
                   intent.slotHint != null &&
                   (context.normalize(s.id) ==
                           context.normalize(intent.slotHint!) ||
                       context.normalize(s.defaultKey ?? '') ==
-                          context.normalize(intent.slotHint ?? '') ||
+                          context.normalize(intent.slotHint!) ||
                       context.normalize(s.name ?? '') ==
                           context.normalize(intent.slotHint!)),
             )
             .firstOrNull;
-        final slot =
-            state.slots[intent.index] ??
-            explicit?.id ??
-            const SlotAssigner().assign(
-              time.localDateTime.time.minuteOfDay,
-              context.slots,
-              context.mode,
-            );
-        if (slot == null) throw const _Invalid(ProposalIssue.needsConversion);
         final key = '${time.localDate}:$slot';
         final cardId = state.intentCards.putIfAbsent(
           intent.index,
@@ -326,12 +331,19 @@ abstract final class ProposalEngine {
         }
         // Explicit classified cooking fats already present in this meal must
         // not be synthesized again from an unstated-fat dimension.
-        final hasExplicitFat = intent.items.any(
-          (i) =>
-              !state.removed.contains(i.id) &&
-              (state.items[i.id] ?? i).explicit &&
-              cookingFatIds.contains((state.items[i.id] ?? i).match?.key),
-        );
+        final hasExplicitFat = decoded.value!.intents.any((other) {
+          if (other.kind != 'foodLog') return false;
+          final (otherTime, otherSlot) = _meal(other, context, state);
+          if (otherTime.localDate != time.localDate || otherSlot != slot) {
+            return false;
+          }
+          return other.items.any((original) {
+            final item = state.items[original.id] ?? original;
+            return !state.removed.contains(item.id) &&
+                item.explicit &&
+                cookingFatIds.contains(item.match?.key);
+          });
+        });
         for (final original in intent.items) {
           final id = state.identity('item:${original.id}', request.idSource);
           final oilId = state.identity('oil:${original.id}', request.idSource);
@@ -419,6 +431,7 @@ abstract final class ProposalEngine {
                   entry: line.entry,
                   snapshot: line.snapshot,
                   factOrigin: line.factOrigin,
+                  selectedFood: line.selectedFood,
                   chips: [
                     ...line.chips,
                     ProposalChip('${item.id}/timeSlot', 'reference', .fallback),
@@ -495,12 +508,14 @@ abstract final class ProposalEngine {
       }
       final built = <ProposalCard>[];
       for (final card in cards.values) {
+        if (state.restoreIssues[card.id] case final issue?) {
+          card.issues.add(issue);
+        }
         final ops = <ChangeOp>[];
         if (card.issues.isEmpty && card.lines.isNotEmpty) {
           for (final line in card.lines) {
             if (line.entry.food.ref.kind == FoodRefKind.personal) {
-              final local = _foods(state)
-                  .firstWhere((f) => f.key == line.entry.food.ref.id);
+              final local = line.selectedFood!;
               ops.add(
                 RequirePersonalFood(
                   VersionedId(local.key, local.personalVersion!),
@@ -631,8 +646,11 @@ List<ProposalLine> _calculate(
   final chips = <ProposalChip>[];
   for (final d in item.dimensions) {
     final selected = choices[d.id];
-    if (d.kind == .state && d.stated != null) {
-      statedState = FoodState.fromCode(d.stated!);
+    if (d.kind == .state) {
+      final effective = origins[d.id] == ProposalChoiceOrigin.userAdjusted
+          ? selected?.value
+          : d.stated;
+      statedState = effective == null ? null : FoodState.fromCode(effective);
     }
     if (selected == null) continue;
     chips.add(ProposalChip(d.id, selected.id, origins[d.id]!));
@@ -769,6 +787,7 @@ List<ProposalLine> _calculate(
       entry: entry,
       snapshot: snapshot.nutrients,
       factOrigin: food?.origin ?? .embeddedServer,
+      selectedFood: food,
       chips: List.unmodifiable(chips),
       range: absoluteRange,
       yieldNote: yieldNote,
@@ -820,6 +839,7 @@ List<ProposalLine> _calculate(
         ),
         snapshot: oilSnapshot.nutrients,
         factOrigin: oilFood.origin,
+        selectedFood: oilFood,
         chips: oilChips,
         dimensions: [retentionDimension],
       ),
@@ -844,3 +864,37 @@ Nutrients _sum(Iterable<Nutrients> values) {
 String _yieldCode(YieldNote note) =>
     'a1:yield:${note.fromState.code}:${note.toState.code}:'
     '${note.fromAmount.grams}:${note.toAmount.grams}';
+
+(EntryTime, String) _meal(
+  ProposalIntent intent,
+  ProposalContext context,
+  _EngineState state,
+) {
+  var time = state.times[intent.index] ?? context.referenceTime;
+  if (!state.times.containsKey(intent.index) &&
+      context.normalize(intent.timeHint ?? '') == 'yesterday') {
+    time = time.onDate(time.localDate.plusDays(-1));
+  }
+  final active = context.slots.where((s) => s.active && s.mode == context.mode);
+  final explicit = active
+      .where(
+        (s) =>
+            intent.slotHint != null &&
+            (context.normalize(s.id) == context.normalize(intent.slotHint!) ||
+                context.normalize(s.defaultKey ?? '') ==
+                    context.normalize(intent.slotHint ?? '') ||
+                context.normalize(s.name ?? '') ==
+                    context.normalize(intent.slotHint!)),
+      )
+      .firstOrNull;
+  final slot =
+      state.slots[intent.index] ??
+      explicit?.id ??
+      const SlotAssigner().assign(
+        time.localDateTime.time.minuteOfDay,
+        context.slots,
+        context.mode,
+      );
+  if (slot == null) throw const _Invalid(ProposalIssue.needsConversion);
+  return (time, slot);
+}

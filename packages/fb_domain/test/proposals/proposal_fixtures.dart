@@ -105,6 +105,7 @@ ProposalFood localFood({
   NutrientBasis basis = .per100g,
   int? personalVersion,
   String? version = '1',
+  ProposalFactOrigin origin = .embeddedServer,
   double kcal = 200,
 }) => ProposalFood(
   key: key,
@@ -115,6 +116,7 @@ ProposalFood localFood({
   basis: basis,
   version: version,
   personalVersion: personalVersion,
+  origin: origin,
   servings: [ProposalServing('piece', 50, basis, null, null)],
 );
 
@@ -212,3 +214,59 @@ Map<String, Object?> riceItem({double amount = 200}) => item(
 Map<String, Object?> t01() => message([
   intent([item(), item(match: oilFood(), unit: 'tbsp')], group: 'Egg with oil'),
 ]);
+
+// Test-only baseline snapshot captured before storage mutation. Production uses
+// ProposalInputLoader's independent database reads, never this fixture adapter.
+TrustedFoodFacts trustedSession(ProposalSession s, {ProposalContext? ctx}) {
+  final foods = <String, ProposalFood>{};
+  for (final card in s.cards) {
+    final row = ProposalDraftCodec.encodeCard(s, card.id);
+    for (final raw in row['foods']! as List) {
+      final f = raw as List;
+      Nutrients nutrientsAt(Object? raw) {
+        final n = raw! as List;
+        return Nutrients(
+          kcal: (n[0] as num).toDouble(),
+          protein: (n[1] as num).toDouble(),
+          carbs: (n[2] as num).toDouble(),
+          fat: (n[3] as num).toDouble(),
+          fiber: (n[4] as num).toDouble(),
+          extras: {
+            for (final e in (n[5] as Map).entries)
+              NutrientKey.fromCode(e.key as String)!: (e.value as num)
+                  .toDouble(),
+          },
+        );
+      }
+
+      final range = f[12] as List?;
+      foods[f[0] as String] = ProposalFood(
+        key: f[0] as String,
+        names: FoodNames(f[1] as String, ar: f[2] as String?),
+        state: FoodState.values[f[3] as int],
+        source: FoodSource.values[f[4] as int],
+        per100: nutrientsAt(f[5]),
+        basis: NutrientBasis.values[f[6] as int],
+        origin: ProposalFactOrigin.values[f[7] as int],
+        version: f[8] as String?,
+        personalVersion: f[9] as int?,
+        density: f[10] as double?,
+        yieldGroup: f[11] as String?,
+        range: range == null
+            ? null
+            : ProposalRange(nutrientsAt(range[0]), nutrientsAt(range[1])),
+        servings: [
+          for (final v in (f[13] as List).cast<List<Object?>>())
+            ProposalServing(
+              v[0]! as String,
+              v[1]! as double,
+              NutrientBasis.values[v[2]! as int],
+              v[3] as double?,
+              v[4] as double?,
+            ),
+        ],
+      );
+    }
+  }
+  return TrustedFoodFacts(foods: foods, yields: ctx?.yields ?? const []);
+}

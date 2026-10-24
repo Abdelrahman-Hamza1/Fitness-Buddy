@@ -9,7 +9,7 @@ import 'proposal_fixtures.dart';
 void main() {
   // covers: AI-022, AQ-04, AQ-07
   test(
-    'T01 AI-022 explicit tablespoon oil makes a separate line with no question',
+    'AI-022 T01 explicit tablespoon oil makes a separate line with no question',
     () {
       final s = session(
         jsonDecode(
@@ -24,11 +24,11 @@ void main() {
     },
   );
   // covers: AQ-06, AQ-08
-  test('T02 AQ-06 raw rice and cooking fat compete within two questions', () {
+  test('AQ-06 T02 raw rice and cooking fat compete within two questions', () {
     expect(session(_t02()).budget.questions.length, 2);
   });
   // covers: AQ-07
-  test('T03 AQ-07 saved rice and oil defaults suppress questions', () {
+  test('AQ-07 T03 saved rice and oil defaults suppress questions', () {
     final s = session(
       _t02(),
       ctx: context(
@@ -47,7 +47,7 @@ void main() {
     );
   });
   // covers: AQ-04, AQ-07
-  test('T04 AQ-04 cooked chicken grams use database math without question', () {
+  test('AQ-04 T04 cooked chicken grams use database math without question', () {
     final s = session(
       message([
         intent([
@@ -64,7 +64,7 @@ void main() {
     expect(s.budget.questions, isEmpty);
   });
   // covers: AQ-10, AI-064
-  test('T05 AQ-10 cheese guessed amount is badged and fat remains visible', () {
+  test('AQ-10 T05 cheese guessed amount is badged and fat remains visible', () {
     final s = session(
       message([
         intent([
@@ -88,7 +88,7 @@ void main() {
   });
   // covers: AQ-07, AQ-04
   test(
-    'T06 AQ-07 explicit milk with verified variant and ml facts asks nothing',
+    'AQ-07 T06 explicit milk with verified variant and ml facts asks nothing',
     () {
       final s = session(
         message([
@@ -135,7 +135,7 @@ void main() {
   );
   // covers: AQ-05, AQ-06
   test(
-    'T07 AQ-05 reference plate has range and conditional variant question',
+    'AQ-05 T07 reference plate has range and conditional variant question',
     () {
       final plate = serving('plate', 350)
         ..['rangeLo'] = 250.0
@@ -163,7 +163,7 @@ void main() {
     },
   );
   // covers: AQ-10
-  test('T08 AQ-10 Arabic mloukhiyeh reference stays estimated', () {
+  test('AQ-10 T08 Arabic mloukhiyeh reference stays estimated', () {
     final i =
         intent([
             item(
@@ -187,7 +187,7 @@ void main() {
     );
   });
   // covers: AQ-10, AI-020
-  test('T09 AQ-10 four guessed portions keep badges and one dish group', () {
+  test('AQ-10 T09 four guessed portions keep badges and one dish group', () {
     final s = session(
       message([
         intent([
@@ -209,7 +209,7 @@ void main() {
     expect(s.cards.single.draftOps.whereType<CreateDishGroup>().length, 1);
   });
   // covers: AI-101, AQ-10
-  test('T10 AI-101 large mansaf plate wins over six people', () {
+  test('AI-101 T10 large mansaf plate wins over six people', () {
     final s = session(
       message([
         intent([
