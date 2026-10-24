@@ -17,7 +17,7 @@ abstract class ClientConfig with _$ClientConfig {
     /// Feature flags by name. A flag the app doesn't know is ignored; a missing flag means off.
     required Map<String, bool> featureFlags,
 
-    /// Numeric client thresholds by name (for example the AI confidence minimum, AI-060). A missing threshold means the app's built-in default.
+    /// Numeric client thresholds by name. A missing threshold means the app's built-in default. Proposal question thresholds (AI-060): proposalQuestionRelativeDelta defaults to 0.20 and proposalQuestionKcalDelta defaults to 50 kcal; both strict thresholds must be exceeded. Effective thresholds are snapshotted per proposal message session. The two-question message budget is fixed in client code, never configurable.
     required Map<String, double> thresholds,
   }) = _ClientConfig;
 

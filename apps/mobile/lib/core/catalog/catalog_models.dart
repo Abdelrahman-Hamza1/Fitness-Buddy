@@ -51,6 +51,9 @@ final class CatalogFood {
     required this.packVersion,
     this.sanity = CatalogSanity.ok,
     this.isDefaultVariant = false,
+    this.nutrientsLow,
+    this.nutrientsHigh,
+    this.servingRanges = const {},
   });
 
   /// The catalog ID: `usda:...`, or `ref:<dish>/<variant>`.
@@ -103,6 +106,15 @@ final class CatalogFood {
 
   /// Whether the dish selects this variant by default.
   final bool isDefaultVariant;
+
+  /// Reviewed per-100 bounds, when supplied by the pack.
+  final Nutrients? nutrientsLow;
+
+  /// Reviewed upper per-100 bounds.
+  final Nutrients? nutrientsHigh;
+
+  /// Reviewed canonical serving bounds, keyed by unit code.
+  final Map<String, (double, double)> servingRanges;
 
   /// The food's measures for the amount resolver.
   FoodMeasures get measures => FoodMeasures(

@@ -362,3 +362,86 @@ The app must also check that a yield factor is available. In particular, a
 skinless raw chicken row cannot replace an unqualified roasted breast row.
 
 `tool/` and `test/` may use `dart:io`; `lib/` may not.
+
+
+## Proposal boundary and initial food drafts (A21 WP1/WP2)
+
+`ProposalRequest` normalizes public `interpret-v1` JSON with
+`InterpretationDecoder` immediately, freezing local food facts, policy and
+context before `ProposalEngine.build`. Inject a `ProposalIdSource` (UUIDv7),
+reference `EntryTime`, active slots and yield factors. Build returns a typed
+`ProposalResult<ProposalSession>`; each meal card has rounded ingredient lines,
+provenance/ranges, visible dimensions/chips, totals and **draft ops**.
+Only an explicit confirm use case wraps one card’s ops in
+`ChangeSet(..., origin: Origin.proposal(card.id))` and calls the app applier.
+A missing/invalid input never produces executable ops.
+
+The message shares one bounded question collection, ranked by absolute kcal
+impact with stable input-order ties. Both config thresholds must be strictly
+exceeded. The question cap and oil-retention policy are code constants.
+`ProposalFacts.cookingFatIds` contains verified IDs; an interpretation’s own
+fat-option candidates also classify cooking fats. No classification comes from
+names, ID spelling or nutrient values. Local personal rows always win; an
+attached pack wins for catalog keys, and an absent pack permits embedded
+per-100g server facts. A missing key in an attached pack is a typed failure.
+
+Recompute/follow-up/target projections are WP3; compact card/message-budget
+restore, the read-only app loader and the evaluation facade are WP4. A21 adds
+no persistence, network calls, confirmation controller or user-facing copy.
+Diagnostics redact content; response JSON, food data and assumption codes are
+user content and must never be logged. Synthetic public-response fixtures live
+in `test/proposals/fixtures/`; properties use the existing 1,000-run helper.
+
+### A21 proposal/evaluation and persistence seams
+
+`ProposalEngine.build(ProposalRequest(...))` consumes the B08 v1 JSON and frozen
+`ProposalFacts`, `ProposalContext`, `ProposalPolicy` and an injected UUIDv7 source.
+`recompute(session, absoluteAdjustment, context: refreshedContext)` returns a
+replacement session and typed `ProposalDiff`; only build/add/unmatched rebuild
+allocate IDs. `rebuild(card, newRequest)` preserves matched identities and binds
+the updated card to the follow-up message. The engine has no I/O or writer.
+
+`ProposalEvaluation.evaluate(request)` calls that exact production build path.
+Its result exposes the complete typed production cards/lines (FoodRef, source,
+fact origin, canonical amounts, snapshots, ranges, estimate flags, assumptions,
+lifecycle, preview and readiness) and the message-wide `questionCount`. B09 owns
+reference scoring and population metrics. Run the minimal plain Dart entry
+example with `dart run example/proposal_evaluation.dart`; inject recorded pack
+facts for food evaluations. Personal rows always win; an attached pack's missing
+key blocks, and embedded per-100g facts apply only when the whole pack is absent.
+
+`ProposalDraftCodec.encodeCard(session, cardId)` returns canonical per-card state;
+`encodeMessageBudget(session)` returns the one assistant-message budget. Neither
+stores derived ops/totals or performs persistence. `restore(message, cards,
+context: context, trustedFacts: trustedFacts)` accepts only current members
+selected by `budgetMessageId`, checks revisions/ownership/lifecycle and recomputes.
+Frozen time/slots/yields and
+fact tables survive restoration; the caller supplies refreshed confirmed/target
+context and the same normalization function. Missing rows return
+`sessionIncomplete`; conflicting budgets return `budgetConflict`.
+
+On M1→M2 follow-up, persist the changed card and M2 budget together. Also project
+M1 with `encodeMessageBudget(oldSession, movedCardIds: [card.id])`: its issued
+history remains, but its current membership/open questions omit the moved card.
+A23 owns that transaction and recovery; A21 writes no rows. Confirm wraps only
+one active card's draft ops with `Origin.proposal(card.id)`; A23 adds its resolve
+op in the same ChangeSet. Personal versions are checked by the existing guard.
+
+`syncProjection` separately encodes normalized card intents, compact draft facts
+and message budget, each at most 32768 UTF-16 units (including surrogate pairs).
+Its typed `syncPayloadTooLarge` leaves the local session intact. At restore,
+join the decoded interpretation field back under the draft map's
+`interpretation` key. Never put a second budget copy in a proposal row. A22 owns
+assistant-message storage/UI; A23 owns proposal storage, migrations, atomic
+resolution and B18 consumption. Superseded rows restore as historical only.
+
+A21 public barrel surface (explicit `show`; normalized interpreter constructors
+and the equality base remain internal):
+
+`InterpretationDecoder`, `ProposalAdd`, `ProposalAdjustment`, `ProposalBuildResult`, `ProposalCard`, `ProposalChip`, `ProposalChoiceOrigin`, `ProposalComponentEffect`, `ProposalContext`, `ProposalDayContext`, `ProposalDayPreview`, `ProposalDiff`, `ProposalDimension`, `ProposalDimensionKind`, `ProposalDraftCodec`, `TrustedFoodFacts`, `ProposalEffect`, `ProposalEngine`, `ProposalEvaluation`, `ProposalEvaluationResult`, `ProposalFactOrigin`, `ProposalFacts`, `ProposalField`, `ProposalFood`, `ProposalFoodEffect`, `ProposalIdSource`, `ProposalInputException`, `ProposalIssue`, `ProposalItem`, `ProposalLifecycle`, `ProposalLine`, `ProposalOption`, `ProposalPolicy`, `ProposalQuantityEffect`, `ProposalQuestion`, `ProposalRange`, `ProposalRequest`, `ProposalResult`, `ProposalRetentionEffect`, `ProposalSelect`, `ProposalServing`, `ProposalSession`, `ProposalSetAmount`, `ProposalSetLifecycle`, `ProposalSetRemoved`, `ProposalSetWhen`, `ProposalShareEffect`, `ProposalSwap`, `ProposalSyncProjection`, `ProposalUpdate`, `ProposalUpdateResult`, `QuestionBudget`.
+
+Intake preview `eaten` is unavailable (`null`) unless confirmed totals include
+the card date. A known empty date must be supplied as `Nutrients.zero`. Target
+preview also requires explicit weight; no body weight is invented.
+
+Restore requires independently loaded `TrustedFoodFacts` (current food source/version, nutrients/measures and yield factors). Missing versions block the affected card with `staleFacts`; same-version differences use `factsMismatch`. Its preview remains read-only until rebuild; serialized claims never establish trust.

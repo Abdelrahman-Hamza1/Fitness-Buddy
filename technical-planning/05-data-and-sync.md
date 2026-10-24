@@ -17,6 +17,8 @@ _Logical model. Exact columns are fixed in the migrations of A01/A06 and later s
 | Source versions (A08b PA2/PA8) | An op that copies or saves user rows carries the **versions of the rows the user saw** (entries and every live referenced group) and checks them, with exact membership, inside the applier transaction; any difference writes nothing | Copies and proposals (A25) write exactly what was shown, or nothing |
 | One calculation | Nutrients per 100 g/ml on foods. Entry nutrients = definition × grams / 100, in `fb_domain` with fixed rounding rules | One tested calculation, used by the app and the Dart tools |
 
+`Provenance.assumptions` stores versioned `a1:` assumption codes (TD-084) in the open `diaryEntry.assumptionsJson` string list; clients localize known codes and show a generic localized assumption for unknown versions/codes or legacy text, while the server validates only the existing JSON/string bounds, not the code vocabulary.
+
 ## 2. Entities
 
 ### 2.1 Food & diary

@@ -246,7 +246,7 @@
           },
           "thresholds": {
             "type": "object",
-            "description": "Numeric client thresholds by name (for example the AI confidence minimum, AI-060). A missing threshold means the app's built-in default.",
+            "description": "Numeric client thresholds by name. A missing threshold means the app's built-in default. Proposal question thresholds (AI-060): proposalQuestionRelativeDelta defaults to 0.20 and proposalQuestionKcalDelta defaults to 50 kcal; both strict thresholds must be exceeded. Effective thresholds are snapshotted per proposal message session. The two-question message budget is fixed in client code, never configurable.",
             "additionalProperties": {
               "type": "number",
               "format": "double"

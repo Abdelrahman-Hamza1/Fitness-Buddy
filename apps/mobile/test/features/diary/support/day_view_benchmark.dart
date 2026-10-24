@@ -8,7 +8,6 @@ import 'package:fb_mobile/core/changes/change_set_applier.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/db/write_guard.dart';
 import 'package:fb_mobile/core/events/domain_event_bus.dart';
-import 'package:fb_mobile/features/diary/data/diary_reads.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

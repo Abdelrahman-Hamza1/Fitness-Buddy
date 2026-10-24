@@ -121,6 +121,11 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
     },
   );
 
+  /// Consistent multi-query reads without granting the writer's zone token.
+  /// WriteGuard rejects writes unless the caller is already inside
+  /// runAuthorizedWrite: the transaction's forked zone inherits that token.
+  Future<T> readSnapshot<T>(Future<T> Function() read) => transaction(read);
+
   /// Whether a catalog pack is attached as [catalogSchema].
   Future<bool> isCatalogAttached() async {
     final rows = await customSelect(

@@ -64,6 +64,9 @@ dev_dependencies:
   drift_dev: 2.35.1
   flutter_test:
     sdk: flutter
+  # A21 engine-only profile gate: Flutter SDK device test runner.
+  integration_test:
+    sdk: flutter
   # Integration tests in patrol_test/ (S06 plan D18). Exact pin: its Android
   # runner is wired into android/app/build.gradle.kts and must match the
   # patrol_cli the Makefile activates (PATROL_CLI_VERSION, compatibility table

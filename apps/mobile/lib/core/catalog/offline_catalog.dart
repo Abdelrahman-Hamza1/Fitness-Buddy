@@ -309,6 +309,18 @@ final class OfflineCatalog {
     ];
   }
 
+  /// Optional reviewed cooking-fat classification; absence never infers roles.
+  Future<Set<String>> cookingFatIds() => _guard(() async {
+    final raw = await _meta('cooking_fat_ids');
+    if (raw == null) return const <String>{};
+    if (raw.length > 32768) throw const FormatException();
+    final value = jsonDecode(raw);
+    if (value is! List || value.any((v) => v is! String || v.isEmpty)) {
+      throw const FormatException();
+    }
+    return Set.unmodifiable(value.cast<String>());
+  }, const <String>{});
+
   /// The pack's `catalog_version`, or `null` without a pack.
   Future<int?> packVersion() => _guard(() async {
     final v = await _meta('catalog_version');
@@ -359,7 +371,8 @@ final class OfflineCatalog {
     if (rows.isEmpty) return [];
     final servings = await _db
         .customSelect(
-          'SELECT food_id, unit_code, g, ml FROM $_schema.servings '
+          'SELECT food_id, unit_code, g, ml, range_lo, range_hi '
+          'FROM $_schema.servings '
           'WHERE food_id IN (SELECT value FROM json_each(?)) '
           'ORDER BY unit_code',
           variables: [
@@ -380,46 +393,70 @@ final class OfflineCatalog {
       units.putIfAbsent(s.read<String>('food_id'), () => []).add(unit);
     }
     return [
-      for (final r in rows) _food(r.data, units[r.read<String>('id')] ?? []),
+      for (final r in rows)
+        _food(r.data, units[r.read<String>('id')] ?? [], {
+          for (final s in servings.where(
+            (s) => s.read<String>('food_id') == r.read<String>('id'),
+          ))
+            if (s.read<double?>('range_lo') case final low?)
+              s.read<String>('unit_code'): (low, s.read<double>('range_hi')),
+        }),
     ];
   }
 
-  CatalogFood _food(Map<String, Object?> row, List<ServingUnit> units) =>
-      CatalogFood(
-        id: row['id']! as String,
-        kind: row['kind'] == 'basic'
-            ? CatalogFoodKind.basic
-            : CatalogFoodKind.variant,
-        nameEn: row['name_en']! as String,
-        nameAr: row['name_ar'] as String?,
-        dishId: row['dish_id'] as String?,
-        state: FoodState.fromCode(row['state']! as String) ?? FoodState.asSold,
-        basis: row['basis'] == 'per_100ml'
-            ? NutrientBasis.per100ml
-            : NutrientBasis.per100g,
-        nutrients: Nutrients(
-          kcal: _num(row['kcal']),
-          protein: _num(row['protein_g']),
-          carbs: _num(row['carbs_g']),
-          fat: _num(row['fat_g']),
-          fiber: _num(row['fiber_g']),
-          extras: _extras(row['extras_json'] as String?),
-        ),
-        servingUnits: units,
-        densityGramsPerMl: (row['density_g_per_ml'] as num?)?.toDouble(),
-        yieldGroup: row['yield_group'] as String?,
-        badge:
-            CatalogBadge.fromSource(row['source']! as String) ??
-            CatalogBadge.database,
-        verified: row['verified'] == 1,
-        isDraft: row['review_status'] == 'draft',
-        packVersion: row['catalog_version']! as int,
-        sanity: CatalogSanity.values.firstWhere(
-          (s) => s.name == row['sanity'],
-          orElse: () => CatalogSanity.ok,
-        ),
-        isDefaultVariant: row['is_default'] == 1,
-      );
+  CatalogFood _food(
+    Map<String, Object?> row,
+    List<ServingUnit> units,
+    Map<String, (double, double)> ranges,
+  ) => CatalogFood(
+    id: row['id']! as String,
+    kind: row['kind'] == 'basic'
+        ? CatalogFoodKind.basic
+        : CatalogFoodKind.variant,
+    nameEn: row['name_en']! as String,
+    nameAr: row['name_ar'] as String?,
+    dishId: row['dish_id'] as String?,
+    state: FoodState.fromCode(row['state']! as String) ?? FoodState.asSold,
+    basis: row['basis'] == 'per_100ml'
+        ? NutrientBasis.per100ml
+        : NutrientBasis.per100g,
+    nutrients: Nutrients(
+      kcal: _num(row['kcal']),
+      protein: _num(row['protein_g']),
+      carbs: _num(row['carbs_g']),
+      fat: _num(row['fat_g']),
+      fiber: _num(row['fiber_g']),
+      extras: _extras(row['extras_json'] as String?),
+    ),
+    servingUnits: units,
+    servingRanges: Map.unmodifiable(ranges),
+    nutrientsLow: _bounds(row, 'low'),
+    nutrientsHigh: _bounds(row, 'high'),
+    densityGramsPerMl: (row['density_g_per_ml'] as num?)?.toDouble(),
+    yieldGroup: row['yield_group'] as String?,
+    badge:
+        CatalogBadge.fromSource(row['source']! as String) ??
+        CatalogBadge.database,
+    verified: row['verified'] == 1,
+    isDraft: row['review_status'] == 'draft',
+    packVersion: row['catalog_version']! as int,
+    sanity: CatalogSanity.values.firstWhere(
+      (s) => s.name == row['sanity'],
+      orElse: () => CatalogSanity.ok,
+    ),
+    isDefaultVariant: row['is_default'] == 1,
+  );
+
+  static Nutrients? _bounds(Map<String, Object?> row, String suffix) =>
+      row['kcal_$suffix'] == null
+      ? null
+      : Nutrients(
+          kcal: _num(row['kcal_$suffix']),
+          protein: _num(row['protein_$suffix']),
+          carbs: _num(row['carbs_$suffix']),
+          fat: _num(row['fat_$suffix']),
+          fiber: _num(row['fiber_$suffix']),
+        );
 
   static double _num(Object? v) => (v! as num).toDouble();
 

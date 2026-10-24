@@ -1,0 +1,102 @@
+{
+  "promptVersion": "interpret-v1",
+  "model": "synthetic-offline",
+  "intents": [
+    {
+      "kind": "foodLog",
+      "language": "english",
+      "script": "latin",
+      "timeHint": null,
+      "slotHint": null,
+      "dishGroup": "Egg with oil",
+      "items": [
+        {
+          "mention": "Synthetic meal",
+          "match": {
+            "key": "usda:egg",
+            "nameEn": "Synthetic food",
+            "nameAr": "طعام",
+            "state": "cooked",
+            "source": "usda",
+            "nutrients": {
+              "kcal": 144,
+              "proteinG": 7.2,
+              "carbsG": 14.4,
+              "fatG": 4.8,
+              "fiberG": 1.44
+            },
+            "ranges": null,
+            "servings": [
+              {
+                "unitCode": "piece",
+                "g": 50,
+                "ml": null,
+                "rangeLo": null,
+                "rangeHi": null,
+                "source": "reviewed"
+              }
+            ],
+            "densityGPerMl": 1.0,
+            "yieldGroup": null
+          },
+          "alternatives": [],
+          "amount": {
+            "value": 1.0,
+            "unit": "piece",
+            "explicit": true
+          },
+          "share": null,
+          "dimensions": [],
+          "estimate": null
+        },
+        {
+          "mention": "Synthetic meal",
+          "match": {
+            "key": "usda:oil",
+            "nameEn": "Synthetic food",
+            "nameAr": "طعام",
+            "state": "raw",
+            "source": "usda",
+            "nutrients": {
+              "kcal": 884,
+              "proteinG": 44.2,
+              "carbsG": 88.4,
+              "fatG": 29.466666666666665,
+              "fiberG": 8.84
+            },
+            "ranges": null,
+            "servings": [
+              {
+                "unitCode": "tbsp",
+                "g": 13.5,
+                "ml": null,
+                "rangeLo": null,
+                "rangeHi": null,
+                "source": "reviewed"
+              },
+              {
+                "unitCode": "tsp",
+                "g": 4.5,
+                "ml": null,
+                "rangeLo": null,
+                "rangeHi": null,
+                "source": "reviewed"
+              }
+            ],
+            "densityGPerMl": 1.0,
+            "yieldGroup": null
+          },
+          "alternatives": [],
+          "amount": {
+            "value": 1.0,
+            "unit": "tbsp",
+            "explicit": true
+          },
+          "share": null,
+          "dimensions": [],
+          "estimate": null
+        }
+      ]
+    }
+  ]
+}
