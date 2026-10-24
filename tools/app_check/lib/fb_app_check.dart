@@ -15,5 +15,6 @@ export 'src/checker.dart'
         opensConnection,
         textArguments;
 export 'src/cli.dart';
+export 'src/patrol_names.dart';
 export 'src/rules.dart';
 export 'src/source_scanner.dart';

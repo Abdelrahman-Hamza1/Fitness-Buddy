@@ -11,6 +11,7 @@ import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter/foundation.dart';
@@ -77,6 +78,8 @@ final class AppRouter implements AppNavigator {
                     if (route is MeRoute) ...[
                       _personalFoodsRoute(),
                       _savedMealsRoute(),
+                      _goRoute(const CityPickerRoute(), nested: true),
+                      _goRoute(const AboutRoute(), nested: true),
                       if (designPreview)
                         _goRoute(const DesignPreviewRoute(), nested: true),
                     ],
@@ -240,6 +243,8 @@ final class AppRouter implements AppNavigator {
     PersonalFoodRoute(:final id) => PersonalFoodFormScreen(id: id),
     SavedMealsRoute() => const SavedMealsScreen(),
     SavedMealRoute(:final id) => SavedMealScreen(id: id),
+    CityPickerRoute() => const CityPickerScreen(),
+    AboutRoute() => const AboutScreen(),
     UpdateRequiredRoute() => const UpdateRequiredScreen(),
   };
 

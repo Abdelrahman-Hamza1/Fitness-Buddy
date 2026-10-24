@@ -8,6 +8,7 @@ import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -33,6 +34,8 @@ import '../../helpers/pump_app.dart';
   PersonalFoodRoute() => (PersonalFoodFormScreen, true),
   SavedMealsRoute() => (SavedMealsScreen, true),
   SavedMealRoute() => (SavedMealScreen, true),
+  CityPickerRoute() => (CityPickerScreen, true),
+  AboutRoute() => (AboutScreen, true),
   UpdateRequiredRoute() => (UpdateRequiredScreen, false),
 };
 
@@ -51,6 +54,8 @@ const List<AppRoute> _allRoutes = [
   PersonalFoodRoute(),
   SavedMealsRoute(),
   SavedMealRoute(id: _entryId),
+  CityPickerRoute(),
+  AboutRoute(),
   UpdateRequiredRoute(),
 ];
 
@@ -77,6 +82,8 @@ void main() {
         const PersonalFoodRoute(),
         const SavedMealsRoute(),
         const SavedMealRoute(id: _entryId),
+        const CityPickerRoute(),
+        const AboutRoute(),
       ].map((r) => r.location),
       unorderedEquals(_allRoutes.map((r) => r.location)),
     );
@@ -107,6 +114,7 @@ void main() {
         reason: '$route',
       );
     }
+    await unmountApp(tester, container);
   });
 
   testWidgets('D10 a malformed saved meal ID goes to the list', (tester) async {

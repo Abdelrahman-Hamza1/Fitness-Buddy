@@ -230,31 +230,46 @@ final class FoodSearchService {
   }
 
   /// Finds offline foods, preserving numeric names before quantity splitting.
-  Future<FoodSearchResults> search(String text) async {
+  /// [system] picks the default portion shown on each row, the same one the
+  /// amount sheet opens with.
+  Future<FoodSearchResults> search(
+    String text, {
+    UnitSystem system = UnitSystem.metric,
+  }) async {
     await _initializing;
     await _refreshing;
     final parsed = parseQuantity(text);
     if (parsed != null && parsed.hasQuantity) {
-      final original = await _searchKey(normalizeKey(text));
+      final original = await _searchKey(normalizeKey(text), system: system);
       if (original.hasGood) return original;
       final carried = ParsedAmount(parsed.amount, parsed.unitCode);
-      return await _searchKey(normalizeKey(parsed.rest), carried: carried);
+      return await _searchKey(
+        normalizeKey(parsed.rest),
+        carried: carried,
+        system: system,
+      );
     }
-    return await _searchKey(normalizeKey(text));
+    return await _searchKey(normalizeKey(text), system: system);
   }
 
   /// Whether the query requests recent foods.
-  Future<FoodSearchResults> recent() => search('');
+  Future<FoodSearchResults> recent({UnitSystem system = UnitSystem.metric}) =>
+      search('', system: system);
 
   Future<FoodSearchResults> _searchKey(
     String key, {
+    required UnitSystem system,
     ParsedAmount? carried,
   }) async {
     if (key.isEmpty) {
       final candidates = <SearchCandidate<FoodSearchRow>>[];
       for (final h in _history) {
         final choice = _choice(h);
-        final row = FoodSearchRow(choice: choice, tier: _tier(h));
+        final row = FoodSearchRow(
+          choice: choice,
+          tier: _tier(h),
+          system: system,
+        );
         candidates.add(
           SearchCandidate(
             keys: _keys(choice),
@@ -336,7 +351,12 @@ final class FoodSearchService {
     void add(FoodChoice choice, MatchStrength strength, SourceTier tier) {
       final f = choice.catalogFood;
       final h = choice.lastUsed;
-      final row = FoodSearchRow(choice: choice, tier: tier, parsed: carried);
+      final row = FoodSearchRow(
+        choice: choice,
+        tier: tier,
+        parsed: carried,
+        system: system,
+      );
       candidates.add(
         SearchCandidate(
           keys: _keys(choice),

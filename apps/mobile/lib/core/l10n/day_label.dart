@@ -39,3 +39,12 @@ String withDayClause(
         message,
         dayLabelInline(context, date, today),
       );
+
+/// The full name of [day] in the app's language ("Saturday"); the settings
+/// show it for the first day of the week.
+String weekdayName(BuildContext context, DayOfWeek day) {
+  final locale = Localizations.localeOf(context).toString();
+  // 2026-10-19 is a Monday, so the ISO number counts days from there.
+  return DateFormat.EEEE(locale)
+      .format(DateTime(2026, 10, 19 + day.isoNumber - 1));
+}

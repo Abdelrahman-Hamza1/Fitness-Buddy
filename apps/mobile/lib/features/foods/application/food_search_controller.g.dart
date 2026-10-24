@@ -45,7 +45,7 @@ final class FoodSearchControllerProvider
 }
 
 String _$foodSearchControllerHash() =>
-    r'872d3d4bc8721dbdcbfdc671aadbd9df5be90691';
+    r'496bb72cc3330e97449a32326568fde2e328c8ef';
 
 /// One running search + one replaceable pending request, without debounce.
 

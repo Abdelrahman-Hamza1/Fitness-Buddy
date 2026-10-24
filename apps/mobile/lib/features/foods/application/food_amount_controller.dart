@@ -4,6 +4,7 @@ import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/application/food_choice.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
 import 'package:fb_mobile/features/foods/application/log_food.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'food_amount_controller.g.dart';
@@ -16,6 +17,7 @@ final class FoodAmountState {
     required this.date,
     required this.amountBuffer,
     required this.unit,
+    this.system = UnitSystem.metric,
     this.slotId,
     this.replacing,
     this.submitting = false,
@@ -26,6 +28,9 @@ final class FoodAmountState {
 
   /// Requested diary day, including past dates.
   final LocalDate date;
+
+  /// Display preference; changing it never replaces typed input.
+  final UnitSystem system;
 
   /// Explicit route choice or automatically assigned slot.
   final String? slotId;
@@ -70,7 +75,7 @@ final class FoodAmountState {
   bool get canAdd => snapshot != null && !submitting;
 
   /// Food servings first, then every other resolvable unit.
-  List<String> get units => UnitOptions.of(food.measures);
+  List<String> get units => UnitOptions.of(food.measures, system: system);
 
   /// Display-only yield conversion; never persisted.
   YieldNote? get yieldNote {
@@ -98,6 +103,7 @@ final class FoodAmountState {
 
   /// Replaces edited fields while keeping all other sheet choices.
   FoodAmountState copyWith({
+    UnitSystem? system,
     FoodChoice? food,
     String? amountBuffer,
     String? unit,
@@ -105,6 +111,7 @@ final class FoodAmountState {
     VersionedId? replacing,
     bool? submitting,
   }) => FoodAmountState(
+    system: system ?? this.system,
     replacing: replacing ?? this.replacing,
     food: food ?? this.food,
     date: date,
@@ -136,13 +143,22 @@ class FoodAmountController extends _$FoodAmountController {
               .read(diaryRepositoryProvider)
               .watchEntry(replacing.id)
               .first;
+    ref.listen(unitSystemProvider, (previous, next) {
+      final current = state.value;
+      if (current != null && next.value != null) {
+        state = AsyncData(current.copyWith(system: next.value));
+      }
+    });
+    final system = await ref.read(unitSystemProvider.future);
     final initial = food.defaultPortion(
+      system: system,
       lastUsed: replacing == null
           ? food.lastUsed?.amount.input
           : entry?.amount.input,
       parsed: carried,
     );
     return FoodAmountState(
+      system: system,
       replacing: replacing,
       food: food,
       date: date,
@@ -194,7 +210,11 @@ class FoodAmountController extends _$FoodAmountController {
     // The typed input stays as typed. Only a unit the other food can't
     // measure (a loaf it has no weight for) falls back to its basis unit,
     // so Add is never left disabled with no chip to fix it.
-    final unit = UnitOptions.of(next.measures).contains(current.unit)
+    final unit =
+        UnitOptions.of(
+          next.measures,
+          system: current.system,
+        ).contains(current.unit)
         ? current.unit
         : next.measures.basis.unitCode;
     state = AsyncData(current.copyWith(food: next, unit: unit));

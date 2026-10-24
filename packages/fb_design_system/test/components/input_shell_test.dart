@@ -457,6 +457,9 @@ void main() {
         FbSnackBarHandle,
         FbDateHeader,
         FbDisclosureRow,
+        FbSwitchRow,
+        FbOption,
+        FbOptionList,
         FbSwipeActions,
         FbSwipeAction,
         FbTimeSeriesChart,
@@ -477,7 +480,8 @@ void main() {
         FbLocalizations,
       ];
       // Every public class in lib/src/components and charts is in the list.
-      final names = types.map((t) => t.toString()).toSet();
+      // A generic component prints as `FbOption<dynamic>`.
+      final names = types.map((t) => t.toString().split('<').first).toSet();
       final declared = <String>{};
       for (final dir in ['lib/src/components', 'lib/src/charts']) {
         for (final f in Directory(dir).listSync().whereType<File>()) {

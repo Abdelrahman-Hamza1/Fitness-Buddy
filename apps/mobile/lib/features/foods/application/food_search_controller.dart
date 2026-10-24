@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/features/foods/application/food_search_service.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'food_search_controller.g.dart';
@@ -49,6 +51,11 @@ class FoodSearchController extends _$FoodSearchController {
     _pending = null;
     _service = ref.watch(foodSearchServiceProvider);
     final sub = _service.changes.listen((_) => setQuery(state.query));
+    // Row previews use the unit system's default portion, so a change of the
+    // setting re-runs the visible query.
+    ref.listen(unitSystemProvider, (previous, next) {
+      if (previous?.value != next.value) setQuery(state.query);
+    });
     ref.onDispose(() {
       _disposed = true;
       unawaited(sub.cancel());
@@ -75,7 +82,10 @@ class FoodSearchController extends _$FoodSearchController {
       _pending = null;
       final revision = _revision;
       try {
-        final result = await _service.search(text);
+        final result = await _service.search(
+          text,
+          system: ref.read(unitSystemProvider).value ?? UnitSystem.metric,
+        );
         if (!_disposed && revision == _revision) {
           state = FoodSearchState(
             query: text,

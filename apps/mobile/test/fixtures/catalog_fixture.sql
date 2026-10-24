@@ -161,6 +161,16 @@ INSERT INTO yields (yield_group, from_state, to_state, factor, source) VALUES ('
 INSERT INTO yields (yield_group, from_state, to_state, factor, source) VALUES ('pasta', 'dry', 'cooked', 2.4, 'USDA SR Legacy FDC 169736 (dry, water 9.9%) vs 169737 (cooked, 62.13%): 2.38; whole wheat 169738/168910: 2.40');
 INSERT INTO yields (yield_group, from_state, to_state, factor, source) VALUES ('potatoes', 'raw', 'cooked', 0.92, 'USDA SR Legacy FDC 170026 (raw, water 79.25%) vs 170440 (boiled, 77.46%): 0.92');
 INSERT INTO yields (yield_group, from_state, to_state, factor, source) VALUES ('rice', 'dry', 'cooked', 2.8, 'USDA SR Legacy FDC 168877 (white long grain, raw, water 11.62%) vs 168878 (cooked, 68.44%): 2.80');
+INSERT INTO cities (id, name_en, name_ar, country_code, admin1, lat, lon, timezone, population) VALUES ('city:246330', 'Umm ar Rasas', 'أم الرصاص', 'JO', '16', 31.51225, 35.91837, 'Asia/Amman', 0);
+INSERT INTO cities (id, name_en, name_ar, country_code, admin1, lat, lon, timezone, population) VALUES ('city:250441', 'Amman', 'عمّان', 'JO', '16', 31.95522, 35.94503, 'Asia/Amman', 1275857);
+INSERT INTO cities (id, name_en, name_ar, country_code, admin1, lat, lon, timezone, population) VALUES ('city:250624', 'Karak', 'الكرك', 'JO', '19', 31.18248, 35.69999, 'Asia/Amman', 22581);
+INSERT INTO cities (id, name_en, name_ar, country_code, admin1, lat, lon, timezone, population) VALUES ('city:281577', 'Tulkarm', 'طولكرم', 'PS', 'WE', 32.31156, 35.0269, 'Asia/Hebron', 44169);
+INSERT INTO cities (id, name_en, name_ar, country_code, admin1, lat, lon, timezone, population) VALUES ('city:282239', 'Ramallah', 'رام الله', 'PS', 'WE', 31.89964, 35.20422, 'Asia/Hebron', 43880);
+INSERT INTO cities (id, name_en, name_ar, country_code, admin1, lat, lon, timezone, population) VALUES ('city:282615', 'Nablus', 'نابلس', 'PS', 'WE', 32.22111, 35.25444, 'Asia/Hebron', 130326);
+INSERT INTO cities (id, name_en, name_ar, country_code, admin1, lat, lon, timezone, population) VALUES ('city:285066', 'Hebron', 'الخليل', 'PS', 'WE', 31.52935, 35.0938, 'Asia/Hebron', 160470);
+INSERT INTO cities (id, name_en, name_ar, country_code, admin1, lat, lon, timezone, population) VALUES ('city:360630', 'Cairo', 'القاهرة', 'EG', '11', 30.06263, 31.24967, 'Africa/Cairo', 9606916);
+INSERT INTO cities (id, name_en, name_ar, country_code, admin1, lat, lon, timezone, population) VALUES ('city:6946409', 'Karak', 'الكرك', 'JO', '09', 31.16368, 35.76204, 'Asia/Amman', 21678);
+INSERT INTO cities (id, name_en, name_ar, country_code, admin1, lat, lon, timezone, population) VALUES ('city:7303419', 'East Jerusalem', 'القدس الشرقية', 'PS', 'WE', 31.78336, 35.23388, 'Asia/Hebron', 428304);
 INSERT INTO names_fts (rowid, key) SELECT rowid, key FROM names;
 INSERT INTO meta VALUES ('attribution', '[]'), ('catalog_version', '1'), ('content_sha256', 'fixture'), ('includes_drafts', '1'), ('schema_version', '1');
 COMMIT;

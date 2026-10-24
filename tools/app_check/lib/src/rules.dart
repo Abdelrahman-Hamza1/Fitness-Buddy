@@ -45,6 +45,10 @@ enum Rule {
   /// 13. Presentation code never imports `core/changes/` (A01 D12).
   presentationChanges('presentation-changes'),
 
+  /// 14. A `patrolTest(` name is ASCII with no `;` or `/` (backlog #87: the
+  /// test runner mangles such names). Checked in `patrol_test/`.
+  patrolName('patrol-name'),
+
   /// An `// app-check: allow` comment without a rule id or a reason, or
   /// naming a rule that can't be allowed (every rule but the lexical
   /// `raw-string` and `directional`).

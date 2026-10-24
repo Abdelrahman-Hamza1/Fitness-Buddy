@@ -8,6 +8,7 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/foods/presentation/personal_foods/personal_food_form_sections.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/l10n/gen/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -640,4 +641,31 @@ void main() {
     );
     await finish(tester, container);
   });
+
+  for (final (basisChip, typed, shown) in [
+    ('g', '30', 'Shown in your diary as 1 serving (1.1 oz)'),
+    ('ml', '250', 'Shown in your diary as 1 serving (8.5 fl oz)'),
+  ]) {
+    testWidgets('LC-010 PA2 the serving preview follows the imperial setting '
+        'for $basisChip; the size field keeps what was typed', (tester) async {
+      final container = await pumpPersonal(
+        tester,
+        at: const PersonalFoodRoute(),
+        overrides: [
+          unitSystemProvider.overrideWith(
+            (ref) => Stream.value(UnitSystem.imperial),
+          ),
+        ],
+      );
+      await type(tester, 'Name', 'Label');
+      await tapVisible(tester, find.text('One serving'));
+      await tapVisible(tester, find.widgetWithText(FbChoiceChip, basisChip));
+      await type(tester, 'Serving size', typed);
+
+      await settle(tester);
+      expect(find.text(shown), findsOneWidget);
+      expect(textOf(tester, 'Serving size'), typed);
+      await finish(tester, container);
+    });
+  }
 }

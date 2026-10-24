@@ -229,6 +229,31 @@ final class SavedMealRoute extends AppRoute {
   String get location => '/me/meals/$id';
 }
 
+/// The city picker (A10 D7, LC-033): a detail screen of the Me tab. No
+/// parameters: the chosen city is read from, and written to, the settings.
+final class CityPickerRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/city';
+
+  @override
+  String get location => path;
+}
+
+/// About (A10 D14, SF-040): a detail screen of the Me tab.
+final class AboutRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/about';
+
+  @override
+  String get location => path;
+}
+
 /// The "update needed" screen, outside the tabs (S06 plan D10).
 ///
 /// Only the router targets it (its update-gate redirect); features never

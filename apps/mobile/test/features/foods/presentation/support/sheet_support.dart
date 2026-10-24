@@ -7,11 +7,13 @@ import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/db/support/db_support.dart';
+import '../../../../helpers/unit_feed.dart';
 import '../../../diary/support/diary_harness.dart';
 
 /// A catalog food as the pack would give it.
@@ -175,6 +177,7 @@ final class PopNavigator implements AppNavigator {
 List<Override> displayOverrides(FoodChoice choice) => [
   foodChoiceProvider(rowFor(choice).choiceRef)
       .overrideWith((ref) async => choice),
+  unitSystemProvider.overrideWith((ref) => Stream.value(UnitSystem.metric)),
   foodSlotsProvider.overrideWith((ref) => Stream.value(DefaultSlots.all)),
   clockProvider.overrideWithValue(ManualClock(DateTime.utc(2026, 10, 17, 12))),
 ];
@@ -195,6 +198,9 @@ final class SheetRig {
   final Future<ApplyResult> Function(ChangeSet)? apply;
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final DiaryHarness diary = DiaryHarness();
+
+  /// The unit system; switch it with `units.set`.
+  final UnitFeed units = UnitFeed();
   late final UndoStack stack;
   late final PopNavigator navigator;
 
@@ -202,6 +208,7 @@ final class SheetRig {
 
   List<Override> get overrides => [
     foodChoiceProvider(row.choiceRef).overrideWith((ref) async => choice),
+    units.override,
     foodSlotsProvider.overrideWith((ref) => Stream.value(DefaultSlots.all)),
     clockProvider.overrideWithValue(diary.clock),
     undoStackProvider.overrideWithValue(stack),

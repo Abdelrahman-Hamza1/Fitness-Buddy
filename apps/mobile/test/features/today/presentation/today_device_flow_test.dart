@@ -12,6 +12,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../patrol_test/support/today_test_support.dart';
 import '../../../core/db/support/db_support.dart';
+import '../../../helpers/pump_app.dart' show unmountApp;
 import '../../../helpers/test_phone.dart';
 import '../../diary/support/diary_fixtures.dart';
 
@@ -57,8 +58,9 @@ void main() {
       interactive: false,
     );
     expect(tester.widget<FbBigNumber>(dayNumber(yesterday)).value, '0');
-    await tester.pumpWidget(const SizedBox());
+    await unmountApp(tester);
     container.dispose();
+    await tester.pump(const Duration(seconds: 1));
   });
 
   testWidgets(
@@ -133,8 +135,9 @@ void main() {
         ),
       );
       await loaded(today);
-      await tester.pumpWidget(const SizedBox());
+      await unmountApp(tester);
       container.dispose();
+      await tester.pump(const Duration(seconds: 1));
     },
   );
 }

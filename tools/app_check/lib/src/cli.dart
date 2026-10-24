@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:fb_app_check/src/checker.dart';
+import 'package:fb_app_check/src/patrol_names.dart';
 import 'package:fb_app_check/src/rules.dart';
 
 /// Exit code: no violations.
@@ -21,7 +22,8 @@ Usage: app_check [<app-dir>]
        app_check --package <package-dir>
 
 Checks the Flutter app's lib/ folder: import boundaries, the single-writer
-write path, raw user-facing strings, left/right layout. <app-dir> holds pubspec.yaml and lib/
+write path, raw user-facing strings, left/right layout; and the names of the
+patrolTest calls in <app-dir>/patrol_test/ (ASCII, no ';' or '/'). <app-dir> holds pubspec.yaml and lib/
 (default: $defaultAppDir). Rules: tools/app_check/README.md.
 
 --package checks a UI package (e.g. packages/fb_design_system) instead: only
@@ -104,11 +106,38 @@ int runAppCheck(
     allows += allowCount(path: relative, source: source);
   }
 
+  // The device tests' names (backlog #87), in app mode only.
+  final patrol = Directory('$appDir/patrol_test');
+  var patrolFiles = 0;
+  if (!packageMode && patrol.existsSync()) {
+    final patrolPaths =
+        patrol
+            .listSync(recursive: true, followLinks: false)
+            .whereType<File>()
+            .map((f) => f.path.replaceAll(r'\', '/'))
+            .where((path) => path.endsWith('.dart'))
+            .toList()
+          ..sort();
+    for (final file in patrolPaths) {
+      patrolFiles++;
+      final relative = file.substring(
+        file.indexOf('/patrol_test/', appDir.length) + 1,
+      );
+      violations.addAll(
+        checkPatrolNames(
+          path: '$shown$relative',
+          source: File(file).readAsStringSync(),
+        ),
+      );
+    }
+  }
+
   if (violations.isEmpty) {
     out.writeln(
       'app-check: OK, ${files.length} Dart files under ${shown}lib '
       '(${packageMode ? 'package mode: raw-string and directional only, ' : ''}'
-      'generated files skipped), $allows allow comment(s)',
+      'generated files skipped), $allows allow comment(s)'
+      '${patrolFiles > 0 ? ', $patrolFiles patrol_test file(s) checked' : ''}',
     );
     return exitOk;
   }

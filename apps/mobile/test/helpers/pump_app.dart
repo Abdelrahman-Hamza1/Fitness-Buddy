@@ -5,6 +5,8 @@ import 'package:fb_mobile/core/config/upgrade_signal.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/core/undo/undo_stack.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
@@ -29,10 +31,21 @@ List<Override> todayOverrides() => [
   quickAddContextWithoutTimer(),
 ];
 
+/// This app's scope closes with the widget tree, inside fake async: no
+/// database stream for the theme (a test of the theme uses `pumpApp`).
+final Override _systemTheme = themePreferenceProvider.overrideWith(
+  (ref) => Stream.value(ThemePreference.system),
+);
+
 /// The whole app, wired like `main` does, on a fresh offline [TestPhone],
 /// plus [overrides].
 Widget testApp({List<Override> overrides = const []}) => ProviderScope(
-  overrides: [...TestPhone().overrides(), ...todayOverrides(), ...overrides],
+  overrides: [
+    ...TestPhone().overrides(),
+    ...todayOverrides(),
+    _systemTheme,
+    ...overrides,
+  ],
   child: const FitnessBuddyApp(),
 );
 
@@ -67,7 +80,41 @@ Future<ProviderContainer> pumpApp(
     ),
   );
   await tester.pumpAndSettle();
+  // The database is closed by a teardown registered while the app first read
+  // it; closing it waits for every open query stream, so the container (and
+  // with it every provider's stream) goes first. Teardowns run in reverse.
+  addTearDown(container.dispose);
   return container;
+}
+
+/// Lets the database and the undo stack finish what a tap started (the
+/// writes run on the real event loop), then settles the frames.
+Future<void> settleWrites(WidgetTester tester) async {
+  await tester.runAsync(
+    () => Future<void>.delayed(const Duration(milliseconds: 100)),
+  );
+  await tester.pumpAndSettle();
+}
+
+/// Takes the app down at the end of a test, and lets the providers that were
+/// only watched by its screens close their database streams (drift closes a
+/// stream on a timer, which a widget test must not leave pending).
+Future<void> unmountApp(
+  WidgetTester tester, [
+  ProviderContainer? container,
+]) async {
+  // The undo stack runs its expiry timers off the app clock, which a widget
+  // test does not advance: stop it, as the rigs do.
+  container?.read(undoStackProvider).dispose();
+  // Undo entries and snackbars expire first (5 s each, one after the other):
+  // their timers must not outlive the app.
+  for (var i = 0; i < 5; i++) {
+    await tester.pump(const Duration(seconds: 6));
+  }
+  await tester.pumpWidget(const SizedBox());
+  // Two rounds: the first closes the streams, the second runs their timers.
+  await tester.pump(const Duration(seconds: 1));
+  await tester.pump(const Duration(seconds: 1));
 }
 
 /// Shows [route] in the app of [container] (pump to see it). The update

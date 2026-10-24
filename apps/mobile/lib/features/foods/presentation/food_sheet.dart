@@ -1,6 +1,7 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/catalog/catalog.dart' show CatalogSanity;
+import 'package:fb_mobile/core/l10n/amount_text.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
@@ -197,8 +198,13 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
     final scheme = Theme.of(context).colorScheme;
     final text = _typed?.text ?? _plain(state.amountBuffer);
     final count = double.tryParse(text) ?? 1;
-    String unitName(String code) =>
-        unitLabel(l10n, code, count, serving: food.measures.servingUnits[code]);
+    String unitName(String code) => unitLabel(
+      l10n,
+      code,
+      count,
+      serving: food.measures.servingUnits[code],
+      system: state.system,
+    );
     final slots = [
       for (final slot in ref.watch(foodSlotsProvider).value ?? <MealSlot>[])
         if (slot.active) slot,
@@ -263,9 +269,17 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
         if (yieldNote != null)
           Text(
             l10n.foodSheetYieldNote(
-              DisplayRounding.foodAmount(yieldNote.fromAmount.grams),
+              foodMassText(
+                l10n,
+                yieldNote.fromAmount.grams,
+                system: state.system,
+              ),
               l10n.foodStateWord(yieldNote.fromState.code),
-              yieldNote.toGramsForNote,
+              foodMassText(
+                l10n,
+                yieldNote.toGramsForNote.toDouble(),
+                system: state.system,
+              ),
               l10n.foodStateWord(yieldNote.toState.code),
             ),
             style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),

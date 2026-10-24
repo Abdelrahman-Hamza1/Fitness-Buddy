@@ -61,7 +61,7 @@ final class FoodAmountControllerProvider
 }
 
 String _$foodAmountControllerHash() =>
-    r'e6434c639cc864bb139005a5238ff2210adcbf7d';
+    r'7507b31b0fc106fb29bd12b2fa7e5bf404ce1155';
 
 /// Per-sheet notifier exposing immutable input and derived nutrition state.
 

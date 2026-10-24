@@ -4,8 +4,12 @@ import 'package:fb_mobile/features/foods/application/food_choice.dart';
 /// Search row with calculated preview and structured navigation identity.
 final class FoodSearchRow {
   /// Creates this structured value.
-  new({required this.choice, required this.tier, ParsedAmount? parsed})
-    : defaultPortion = choice.defaultPortion(parsed: parsed);
+  new({
+    required this.choice,
+    required this.tier,
+    ParsedAmount? parsed,
+    UnitSystem system = UnitSystem.metric,
+  }) : defaultPortion = choice.defaultPortion(parsed: parsed, system: system);
 
   /// Food and units used by the preview and sheet.
   final FoodChoice choice;

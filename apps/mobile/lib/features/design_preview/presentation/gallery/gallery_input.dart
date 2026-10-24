@@ -39,6 +39,26 @@ final List<GallerySection> gallerySectionsInput = [
     ],
   ),
   GallerySection(
+    name: 'FbSwitchRow',
+    covers: const [FbSwitchRow],
+    states: (_) => const [
+      GalleryState('tap to switch', _SwitchDemo()),
+      GalleryState('with a subtitle', _SwitchDemo(withSubtitle: true)),
+      GalleryState(
+        'disabled',
+        FbSwitchRow(title: _S.halalTitle, value: true, onChanged: null),
+      ),
+    ],
+  ),
+  GallerySection(
+    name: 'FbOptionList',
+    covers: const [FbOptionList, FbOption],
+    states: (_) => const [
+      GalleryState('tap an option', _OptionsDemo()),
+      GalleryState('with hints', _OptionsDemo(withHints: true)),
+    ],
+  ),
+  GallerySection(
     name: 'FbSwipeActions',
     covers: const [FbSwipeActions, FbSwipeAction],
     states: (context) => [
@@ -537,6 +557,60 @@ class _DisclosureDemoState extends State<_DisclosureDemo> {
         FbListRow(title: _S.banana, trailing: Text(_S.oatsKcal)),
       ],
     ],
+  );
+}
+
+/// A switch row that flips when tapped.
+class _SwitchDemo extends StatefulWidget {
+  const new({this.withSubtitle = false});
+
+  final bool withSubtitle;
+
+  @override
+  State<_SwitchDemo> createState() => _SwitchDemoState();
+}
+
+class _SwitchDemoState extends State<_SwitchDemo> {
+  bool _on = true;
+
+  @override
+  Widget build(BuildContext context) => FbSwitchRow(
+    title: _S.halalTitle,
+    subtitle: widget.withSubtitle ? _S.halalSubtitle : null,
+    value: _on,
+    onChanged: (value) => setState(() => _on = value),
+  );
+}
+
+/// The rows of an option sheet; the tapped one is checked.
+class _OptionsDemo extends StatefulWidget {
+  const new({this.withHints = false});
+
+  final bool withHints;
+
+  @override
+  State<_OptionsDemo> createState() => _OptionsDemoState();
+}
+
+class _OptionsDemoState extends State<_OptionsDemo> {
+  bool _metric = true;
+
+  @override
+  Widget build(BuildContext context) => FbOptionList<bool>(
+    options: [
+      FbOption(
+        value: true,
+        label: _S.optionMetric,
+        subtitle: widget.withHints ? _S.optionMetricHint : null,
+      ),
+      FbOption(
+        value: false,
+        label: _S.optionImperial,
+        subtitle: widget.withHints ? _S.optionImperialHint : null,
+      ),
+    ],
+    selected: _metric,
+    onSelected: (value) => setState(() => _metric = value),
   );
 }
 

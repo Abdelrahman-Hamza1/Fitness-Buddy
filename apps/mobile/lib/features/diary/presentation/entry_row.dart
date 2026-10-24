@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/amount_text.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/diary/application/diary_actions.dart';
@@ -9,16 +10,19 @@ import 'package:fb_mobile/features/diary/application/diary_view_state.dart';
 import 'package:fb_mobile/features/diary/presentation/entry_actions.dart';
 import 'package:fb_mobile/features/diary/presentation/large_text.dart';
 import 'package:fb_mobile/features/diary/presentation/move_entry_sheet.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// "150 g", "2 loaves": the amount as the user logged it (DY-021).
-String entryAmountText(AppLocalizations l10n, EntryAmount amount) =>
-    l10n.foodResultServing(
-      amount.input.amount,
-      unitLabel(l10n, amount.input.unitCode, amount.input.amount),
-    );
+/// "150 g", "2 loaves": the amount as the user logged it (DY-021), in the
+/// unit system's words (LC-010): a logged "8 oz" reads "227 g" in metric.
+String entryAmountText(
+  AppLocalizations l10n,
+  EntryAmount amount,
+  UnitSystem system,
+) =>
+    servingText(l10n, input: amount.input, basis: amount.basis, system: system);
 
 /// The badge of [entry]: "yours" once the user changed its numbers (AI-072),
 /// else where they come from (FD-010).
@@ -64,7 +68,8 @@ class DiaryEntryTile extends ConsumerWidget {
       ),
     );
     final kcal = l10n.diaryKcal(DisplayRounding.kcal(entry.snapshot.kcal));
-    final amount = entryAmountText(l10n, entry.amount);
+    final system = ref.watch(unitSystemProvider).value ?? UnitSystem.metric;
+    final amount = entryAmountText(l10n, entry.amount, system);
     final large = usesLargeText(context);
     Widget row = Semantics(
       expanded: expanded,

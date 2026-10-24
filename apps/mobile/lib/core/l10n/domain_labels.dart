@@ -1,5 +1,6 @@
 import 'package:fb_design_system/fb_design_system.dart' show FbSource;
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/catalog/catalog_models.dart' show CatalogCity;
 import 'package:fb_mobile/l10n/gen/app_localizations.dart';
 
 // Words for domain values, shared by every feature that shows them (A08 D18):
@@ -93,18 +94,58 @@ String? knownUnitLabel(AppLocalizations l10n, String code, num count) =>
     };
 
 /// The label of unit [code] for [count] of it. A code with no word shows
-/// "portion", with the size of [serving] when the food gives one.
+/// "portion", with the size of [serving] when the food gives one. That size is
+/// shown in [system]'s unit ("portion (2.1 oz)", A10 D4); a [serving] needs a
+/// [system].
 String unitLabel(
   AppLocalizations l10n,
   String code,
   num count, {
   ServingUnit? serving,
-}) =>
-    knownUnitLabel(l10n, code, count) ??
-    (serving == null
-        ? l10n.unitPortion(count)
-        : l10n.unitPortionSized(
-            count,
-            serving.amount,
-            serving.basis == NutrientBasis.per100g ? l10n.unitG : l10n.unitMl,
-          ));
+  UnitSystem? system,
+}) {
+  final known = knownUnitLabel(l10n, code, count);
+  if (known != null) return known;
+  if (serving == null) return l10n.unitPortion(count);
+  assert(system != null, 'a sized portion label needs the unit system');
+  final unitSystem = system ?? UnitSystem.metric;
+  final size = serving.basis == NutrientBasis.per100g
+      ? unitSystem.showFoodMass(Mass.grams(serving.amount))
+      : unitSystem.showVolume(Volume.milliliters(serving.amount));
+  return l10n.unitPortionSized(
+    count,
+    size.value,
+    knownUnitLabel(l10n, size.unitCode, size.value) ?? size.unitCode,
+  );
+}
+
+/// A city's name (LC-033): the English name first, then the Arabic one when
+/// the pack has it, e.g. "Nablus · نابلس". One place for the picker rows, the
+/// City row on Me and the "City set" message.
+String cityLabel(AppLocalizations l10n, CatalogCity city) {
+  final arabic = city.nameAr;
+  return arabic == null || arabic.isEmpty
+      ? city.nameEn
+      : l10n.cityName(city.nameEn, arabic);
+}
+
+/// The country shown under a city's name (LC-033): the name for Palestine,
+/// Jordan and the region the owner's cities come from, else the ISO code.
+String countryLabel(AppLocalizations l10n, String code) => switch (code) {
+  'PS' => l10n.countryPS,
+  'JO' => l10n.countryJO,
+  'EG' => l10n.countryEG,
+  'TR' => l10n.countryTR,
+  'IQ' => l10n.countryIQ,
+  'SA' => l10n.countrySA,
+  'SY' => l10n.countrySY,
+  'AE' => l10n.countryAE,
+  'OM' => l10n.countryOM,
+  'QA' => l10n.countryQA,
+  'YE' => l10n.countryYE,
+  'LB' => l10n.countryLB,
+  'KW' => l10n.countryKW,
+  'BH' => l10n.countryBH,
+  'MA' => l10n.countryMA,
+  _ => code,
+};

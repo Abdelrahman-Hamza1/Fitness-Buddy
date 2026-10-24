@@ -58,9 +58,7 @@ class MergePickerSheet extends ConsumerWidget {
     ];
     if (candidates.isEmpty) {
       return Text(
-        l10n.personalFoodMergeNone(
-          food.basis == NutrientBasis.per100g ? 'g' : 'ml',
-        ),
+        l10n.personalFoodMergeNone(food.basis.unitCode),
         style: FbType.body.copyWith(
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),

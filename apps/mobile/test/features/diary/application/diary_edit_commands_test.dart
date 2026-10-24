@@ -15,6 +15,7 @@ import 'package:fb_mobile/features/foods/application/food_choice.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
 import 'package:fb_mobile/features/foods/application/log_food.dart';
 import 'package:fb_mobile/features/foods/application/replace_entry_food.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -402,6 +403,9 @@ void main() {
         overrides: [
           diaryRepositoryProvider.overrideWithValue(DiaryRepository(h.db)),
           foodChoiceProvider(foodRef).overrideWith((ref) async => food),
+          unitSystemProvider.overrideWith(
+            (ref) => Stream.value(UnitSystem.metric),
+          ),
           foodSlotsProvider.overrideWith(
             (ref) => Stream.value(DefaultSlots.all),
           ),

@@ -1,10 +1,12 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/amount_text.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/diary/application/diary_actions.dart';
 import 'package:fb_mobile/features/diary/presentation/entry_actions.dart';
 import 'package:fb_mobile/features/diary/presentation/live_entry.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show NumberFormat;
 import 'package:material_ui/material_ui.dart';
@@ -64,6 +66,7 @@ class _EntryAmountSheetState extends ConsumerState<EntryAmountSheet> {
   Future<void> _save(DiaryEntry entry, Quantity input) async {
     final host = Navigator.of(context, rootNavigator: true).context;
     final nav = Navigator.of(context);
+    final system = ref.read(unitSystemProvider).value ?? UnitSystem.metric;
     setState(() => _saving = true);
     final outcome = await ref
         .read(diaryActionsControllerProvider.notifier)
@@ -83,14 +86,12 @@ class _EntryAmountSheetState extends ConsumerState<EntryAmountSheet> {
             outcome,
             () => host.l10n.diaryAmountChanged(
               entry.food.names.en,
-              host.l10n.foodResultServing(
-                input.amount,
-                unitLabel(
-                  host.l10n,
-                  input.unitCode,
-                  input.amount,
-                  serving: EntryMeasures.of(entry).servingUnits[input.unitCode],
-                ),
+              servingText(
+                host.l10n,
+                input: input,
+                basis: entry.amount.basis,
+                system: system,
+                serving: EntryMeasures.of(entry).servingUnits[input.unitCode],
               ),
             ),
           );
@@ -106,7 +107,10 @@ class _EntryAmountSheetState extends ConsumerState<EntryAmountSheet> {
     final l10n = context.l10n;
     final entry = live.entry;
     final measures = EntryMeasures.of(entry);
-    final units = UnitOptions.of(measures);
+    // The unit chips follow the display setting; the amount and unit on
+    // screen stay as stored/typed (PA2: display never rewrites an editor).
+    final system = ref.watch(unitSystemProvider).value ?? UnitSystem.metric;
+    final units = UnitOptions.of(measures, system: system);
     // A reload may take away the unit that was chosen: fall back to the
     // basis, keep the number.
     final chosen = _unit ?? entry.amount.input.unitCode;
@@ -132,6 +136,7 @@ class _EntryAmountSheetState extends ConsumerState<EntryAmountSheet> {
       code,
       typedAmount ?? 1,
       serving: measures.servingUnits[code],
+      system: system,
     );
     final pending = ref.watch(
       diaryActionsControllerProvider.select(

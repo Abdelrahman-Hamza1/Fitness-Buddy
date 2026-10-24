@@ -19,10 +19,12 @@ export 'src/components/estimate_marker.dart'
 export 'src/components/icon_button.dart';
 export 'src/components/inline_banner.dart';
 export 'src/components/input_bar.dart';
+export 'src/components/license_page.dart';
 export 'src/components/list_row.dart';
 export 'src/components/macro_bars.dart';
 export 'src/components/number_field.dart';
 export 'src/components/number_pad.dart';
+export 'src/components/option_sheet.dart';
 export 'src/components/progress_bar.dart' show FbProgressBar;
 export 'src/components/quick_add_row.dart';
 export 'src/components/search_field.dart';
@@ -33,6 +35,7 @@ export 'src/components/snack_bar.dart';
 export 'src/components/source_badge.dart'
     show FbSource, FbSourceBadge, showFbSourceLegend;
 export 'src/components/swipe_actions.dart';
+export 'src/components/switch_row.dart';
 export 'src/components/text_field.dart';
 export 'src/components/time_picker.dart';
 export 'src/theme/fb_theme.dart';

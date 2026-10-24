@@ -111,6 +111,15 @@ abstract final class GallerySamples {
   static const String deleted = 'Deleted';
   static const String moveAsked = 'Pick a meal to move it to';
 
+  // Switch rows and option sheets.
+  static const String halalTitle = 'Halal food';
+  static const String halalSubtitle = 'Only halal foods';
+  static const String optionsTitle = 'Units';
+  static const String optionMetric = 'Metric';
+  static const String optionMetricHint = 'Grams, millilitres';
+  static const String optionImperial = 'Imperial';
+  static const String optionImperialHint = 'Ounces, fluid ounces';
+
   // Units.
   static const String gram = 'g';
   static const String millilitre = 'ml';

@@ -323,6 +323,21 @@ const fixtureIds = {
   'ref:mloukhiyeh_rice',
 };
 
+/// Real GeoNames examples for A10: regional cities, duplicate names, a
+/// zero-population village and an outside-region city. IDs never synthesized.
+const fixtureCityIds = {
+  'city:282615', // Nablus
+  'city:282239', // Ramallah
+  'city:285066', // Hebron
+  'city:7303419', // East Jerusalem
+  'city:281577', // Tulkarm
+  'city:250441', // Amman (عمّان)
+  'city:250624', // Karak
+  'city:6946409', // Karak
+  'city:246330', // Umm ar Rasas (population zero)
+  'city:360630', // Cairo
+};
+
 /// The fixture script for the current `data/` (drafts included, so a dish is
 /// in it).
 String? buildFixtureSql(String dataDir, StringSink err) {
@@ -335,7 +350,7 @@ String? buildFixtureSql(String dataDir, StringSink err) {
     attribution: const [],
     includeDrafts: true,
   );
-  return packFixtureSql(release, fixtureIds);
+  return packFixtureSql(release, fixtureIds, cityIds: fixtureCityIds);
 }
 
 /// `catalog emit-sql`: writes the app's catalog fixture (A05 D7). With

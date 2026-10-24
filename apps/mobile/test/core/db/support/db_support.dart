@@ -17,10 +17,17 @@ String hlcAt(int wall) =>
     '${wall.toString().padLeft(13, '0')}-00000-$testDevice';
 
 /// An in-memory database (main isolate), closed after the test.
+///
+/// Closing waits for every open query stream to finish. A widget test can
+/// leave one open (a provider's subscription made in fake async, whose done
+/// event nobody pumps), and the close would hang the test, so the wait is
+/// bounded.
 AppDatabase memoryDatabase() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
   final db = AppDatabase(NativeDatabase.memory());
-  addTearDown(db.close);
+  addTearDown(
+    () => db.close().timeout(const Duration(seconds: 1), onTimeout: () {}),
+  );
   return db;
 }
 
@@ -75,7 +82,9 @@ AppDatabase fileDatabase(
     catalog: catalog,
     onCatalogError: onCatalogError,
   );
-  addTearDown(db.close);
+  addTearDown(
+    () => db.close().timeout(const Duration(seconds: 1), onTimeout: () {}),
+  );
   return db;
 }
 

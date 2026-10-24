@@ -11,6 +11,7 @@ import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/quick_add/quick_add.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:fb_mobile/l10n/gen/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +20,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../helpers/quick_add_context.dart';
+import '../../../../helpers/unit_feed.dart';
 import '../../../diary/support/diary_fixtures.dart' show fixtureId;
 import '../../../diary/support/diary_harness.dart';
 
@@ -230,6 +232,7 @@ List<Override> fakeToday({
   ManualClock? clock,
   bool liveToday = false,
   bool fakeDays = true,
+  UnitSystem units = UnitSystem.metric,
   List<QuickAddChip> chips = const [],
   Override? chipsOverride,
 }) => [
@@ -241,6 +244,8 @@ List<Override> fakeToday({
   if (!liveToday) todayProvider.overrideWith((ref) => Stream.value(testToday)),
   appConfigProvider.overrideWithValue(config ?? prodConfig),
   appNavigatorProvider.overrideWithValue(navigator ?? RecordingNavigator()),
+  // No database stream to close at the end of a widget test.
+  unitSystemProvider.overrideWith((ref) => Stream.value(units)),
   if (fakeDays)
     dayViewProvider.overrideWith(
       (ref, date) => AsyncData(fakeView(days[date] ?? fakeDay(date))),
@@ -268,6 +273,9 @@ final class TodayRig {
   /// so the A08 tests keep one row per logged item.
   final bool realChips;
   final DiaryHarness diary = DiaryHarness();
+
+  /// The unit system; switch it with `units.set`.
+  final UnitFeed units = UnitFeed();
   final RecordingNavigator navigator = RecordingNavigator();
   late final UndoStack stack;
 
@@ -289,6 +297,7 @@ final class TodayRig {
       ),
     appConfigProvider.overrideWithValue(config),
     appNavigatorProvider.overrideWithValue(navigator),
+    units.override,
   ];
 }
 

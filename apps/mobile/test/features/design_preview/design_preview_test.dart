@@ -4,12 +4,12 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/app/router/app_router.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
-import 'package:fb_mobile/core/theme/theme_providers.dart';
 import 'package:fb_mobile/features/design_preview/application/mockup_entry.dart';
 import 'package:fb_mobile/features/design_preview/design_preview.dart';
 import 'package:fb_mobile/features/design_preview/presentation/gallery/gallery_registry.dart';
 import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -57,6 +57,15 @@ void main() {
     await tester.tap(_meTab());
     await tester.pumpAndSettle();
     expect(find.byType(MeScreen), findsOneWidget);
+    // The Developer section is the last on the long Me list.
+    await tester.scrollUntilVisible(
+      find.text('Design preview'),
+      200,
+      scrollable: find.descendant(
+        of: find.byType(MeScreen),
+        matching: find.byType(Scrollable),
+      ),
+    );
     await tester.tap(find.text('Design preview'));
     await tester.pumpAndSettle();
 
@@ -119,7 +128,7 @@ void main() {
     expect(find.byType(MeScreen), findsOneWidget);
   });
 
-  testWidgets('the preview switch changes themeModeProvider and the app '
+  testWidgets('the preview switch changes the theme setting and the app '
       'theme between light, dark and system; the palette is "Warm"', (
     tester,
   ) async {
@@ -129,23 +138,37 @@ void main() {
     await tester.pumpAndSettle();
 
     ThemeData current() => Theme.of(tester.element(find.byType(Scaffold).last));
-    expect(container.read(themeModeProvider), ThemeMode.system);
+    expect(
+      container.read(themePreferenceProvider).value,
+      anyOf(isNull, ThemePreference.system),
+    );
     // The test platform is light.
     expect(current().colorScheme.primary, FbPalette.of(Brightness.light).brand);
 
     await tester.tap(find.text('Dark'));
-    await tester.pumpAndSettle();
-    expect(container.read(themeModeProvider), ThemeMode.dark);
+    await settleWrites(tester);
+    expect(
+      await tester.runAsync(
+        () => container.read(themePreferenceProvider.future),
+      ),
+      ThemePreference.dark,
+    );
     expect(current().brightness, Brightness.dark);
     expect(current().colorScheme.primary, FbPalette.of(Brightness.dark).brand);
 
     await tester.tap(find.text('Light'));
-    await tester.pumpAndSettle();
+    await settleWrites(tester);
     expect(current().brightness, Brightness.light);
 
     await tester.tap(find.text('System'));
-    await tester.pumpAndSettle();
-    expect(container.read(themeModeProvider), ThemeMode.system);
+    await settleWrites(tester);
+    expect(
+      await tester.runAsync(
+        () => container.read(themePreferenceProvider.future),
+      ),
+      ThemePreference.system,
+    );
+    await unmountApp(tester, container);
   });
 
   // Today has a diary and Me has foods; the other tabs still have placeholders.
@@ -226,7 +249,8 @@ void main() {
       };
       final covered = {
         for (final section in gallerySections)
-          for (final type in section.covers) type.toString(),
+          // A generic component prints as `FbOption<dynamic>`.
+          for (final type in section.covers) type.toString().split('<').first,
       };
       expect(declared.difference(internal).difference(covered), isEmpty);
       final names = gallerySections.map((s) => s.name).toList();

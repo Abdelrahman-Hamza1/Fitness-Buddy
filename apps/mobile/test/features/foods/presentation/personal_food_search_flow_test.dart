@@ -217,6 +217,9 @@ void main() {
       findsOneWidget,
     );
     expect(await liveEntries(tester, container), isEmpty);
+    // Release the open sheet's settings watch before database teardown.
+    await tester.binding.handlePopRoute();
+    await settle(tester);
     await finish(tester, container);
   });
   testWidgets(
@@ -332,6 +335,9 @@ void main() {
     await tester.tap(find.text('Close'));
     await settle(tester);
     expect(find.byType(FoodSheet), findsNothing);
+    // Release the open sheet's settings watch before database teardown.
+    await tester.binding.handlePopRoute();
+    await settle(tester);
     await finish(tester, container);
   });
 }

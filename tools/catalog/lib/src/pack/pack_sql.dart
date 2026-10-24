@@ -9,7 +9,15 @@ import 'package:fb_catalog/src/release/release.dart';
 /// [ids] (basics, or dishes with their variants), their names and servings,
 /// and all yields. A test regenerates it from `data/` and compares, so the
 /// fixture can't drift from the real pack.
-String packFixtureSql(Release release, Set<String> ids) {
+String packFixtureSql(
+  Release release,
+  Set<String> ids, {
+  Set<String> cityIds = const {},
+}) {
+  final knownCities = release.table('cities').map((r) => r['id']).toSet();
+  if (!knownCities.containsAll(cityIds)) {
+    throw ArgumentError('fixture city absent from release');
+  }
   final dishIds = {
     for (final r in release.table('dishes'))
       if (ids.contains(r['id'])) r['id']! as String,
@@ -30,6 +38,7 @@ String packFixtureSql(Release release, Set<String> ids) {
       foodIds.contains(row['target_id']) || dishIds.contains(row['target_id']),
     'servings' => foodIds.contains(row['food_id']),
     'yields' => true,
+    'cities' => cityIds.contains(row['id']),
     _ => false,
   };
   final b = StringBuffer()

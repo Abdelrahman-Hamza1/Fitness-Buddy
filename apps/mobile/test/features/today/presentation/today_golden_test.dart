@@ -26,12 +26,13 @@ Widget _phone(
   double scale, {
   DiaryViewChoices? choices,
   double height = _height,
+  UnitSystem units = UnitSystem.metric,
 }) => SizedBox(
   width: _width,
   height: height,
   child: ProviderScope(
     overrides: <Override>[
-      ...fakeToday(days: days),
+      ...fakeToday(days: days, units: units),
       if (choices != null)
         diaryViewStateProvider.overrideWithBuild((ref, notifier) => choices),
     ],
@@ -128,6 +129,18 @@ Future<void> main() async {
     'HM-007 DY-020 today: full day, lunch expanded',
     'today_full_day_lunch_expanded',
     (b, s) => _phone(full, b, s, choices: lunch, height: _tall),
+  );
+  await _screenGolden(
+    'LC-010 DY-020 today: full day, imperial',
+    'today_full_day_imperial',
+    (b, s) => _phone(
+      full,
+      b,
+      s,
+      choices: lunch,
+      height: _tall,
+      units: UnitSystem.imperial,
+    ),
   );
   await _screenGolden(
     'DY-021 today: expanded item (editable)',

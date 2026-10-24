@@ -535,6 +535,7 @@ void main() {
           'handful',
           1,
           serving: ServingUnit.grams('handful', 60),
+          system: UnitSystem.metric,
         ),
         'portion (60 g)',
       );
@@ -544,8 +545,19 @@ void main() {
           'handful',
           3,
           serving: ServingUnit.milliliters('handful', 125),
+          system: UnitSystem.metric,
         ),
         'portions (125 ml)',
+      );
+      expect(
+        unitLabel(
+          l10n,
+          'handful',
+          3,
+          serving: ServingUnit.milliliters('handful', 125),
+          system: UnitSystem.imperial,
+        ),
+        'portions (4.2 fl oz)',
       );
     });
   });

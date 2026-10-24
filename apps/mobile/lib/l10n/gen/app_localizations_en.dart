@@ -739,21 +739,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String foodSheetYieldNote(
-    int from,
+    String from,
     String fromState,
-    int to,
+    String to,
     String toState,
   ) {
-    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
-    final String fromString = fromNumberFormat.format(from);
-    final intl.NumberFormat toNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
-    final String toString = toNumberFormat.format(to);
-
-    return '$fromString g $fromState ≈ $toString g $toState';
+    return '$from $fromState ≈ $to $toState';
   }
 
   @override
@@ -1009,8 +1000,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diaryDetailsAmount => 'Amount';
 
   @override
-  String diaryDetailsAmountResolved(String input, String amount) {
-    return '$input ($amount)';
+  String foodAmountWithCanonical(String amount, String canonical) {
+    return '$amount ($canonical)';
   }
 
   @override
@@ -1402,13 +1393,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get personalFoodNumbersStay => 'Numbers stay as typed.';
 
   @override
-  String personalFoodServingShownAs(String serving, double size, String unit) {
-    final intl.NumberFormat sizeNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
-    final String sizeString = sizeNumberFormat.format(size);
-
-    return 'Shown in your diary as 1 $serving ($sizeString $unit)';
+  String personalFoodServingShownAs(String serving, String size) {
+    return 'Shown in your diary as 1 $serving ($size)';
   }
 
   @override
@@ -1719,4 +1705,207 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get quickAddRowSemantics => 'Quick add';
+
+  @override
+  String get meSectionSettings => 'Settings';
+
+  @override
+  String get meSectionAbout => 'About';
+
+  @override
+  String get meSectionDeveloper => 'Developer';
+
+  @override
+  String get meAbout => 'About Fitness Buddy';
+
+  @override
+  String get settingsUnits => 'Units';
+
+  @override
+  String get settingsUnitsMetric => 'Metric';
+
+  @override
+  String get settingsUnitsMetricHint => 'Grams, millilitres, kilograms';
+
+  @override
+  String get settingsUnitsImperial => 'Imperial';
+
+  @override
+  String get settingsUnitsImperialHint => 'Ounces, fluid ounces, pounds';
+
+  @override
+  String get settingsWeekStart => 'Week starts on';
+
+  @override
+  String get settingsHalal => 'Halal food';
+
+  @override
+  String get settingsTheme => 'Theme';
+
+  @override
+  String get settingsThemeSystem => 'System';
+
+  @override
+  String get settingsThemeLight => 'Light';
+
+  @override
+  String get settingsThemeDark => 'Dark';
+
+  @override
+  String get settingsCity => 'City';
+
+  @override
+  String get settingsCityNotSet => 'Not set';
+
+  @override
+  String get settingsEnergy => 'Energy';
+
+  @override
+  String get settingsUnitsSetMetric => 'Units set to metric';
+
+  @override
+  String get settingsUnitsSetImperial => 'Units set to imperial';
+
+  @override
+  String settingsWeekStartSet(String day) {
+    return 'Week now starts on $day';
+  }
+
+  @override
+  String get settingsHalalSetOn => 'Halal food turned on';
+
+  @override
+  String get settingsHalalSetOff => 'Halal food turned off';
+
+  @override
+  String settingsThemeSet(String theme) {
+    return 'Theme set to $theme';
+  }
+
+  @override
+  String settingsCitySet(String city) {
+    return 'City set to $city';
+  }
+
+  @override
+  String get settingsSaveFailed => 'Couldn\'t save that setting. Try again.';
+
+  @override
+  String get cityPickerTitle => 'City';
+
+  @override
+  String get cityPickerSearchHint => 'Search for a city';
+
+  @override
+  String get cityPickerSuggested => 'Suggested cities';
+
+  @override
+  String get cityPickerLoadFailed => 'Couldn\'t load the city list.';
+
+  @override
+  String get cityPickerTryAgain => 'Try again';
+
+  @override
+  String get cityPickerUnavailable =>
+      'The city list isn\'t available right now.';
+
+  @override
+  String get cityPickerNoMatch =>
+      'No city found. Try the English or Arabic name.';
+
+  @override
+  String get cityPickerUseLocation => 'Use my location';
+
+  @override
+  String get cityPickerComingSoon => 'Coming soon';
+
+  @override
+  String cityName(String english, String arabic) {
+    return '$english · $arabic';
+  }
+
+  @override
+  String get countryPS => 'Palestine';
+
+  @override
+  String get countryJO => 'Jordan';
+
+  @override
+  String get countryEG => 'Egypt';
+
+  @override
+  String get countryTR => 'Türkiye';
+
+  @override
+  String get countryIQ => 'Iraq';
+
+  @override
+  String get countrySA => 'Saudi Arabia';
+
+  @override
+  String get countrySY => 'Syria';
+
+  @override
+  String get countryAE => 'United Arab Emirates';
+
+  @override
+  String get countryOM => 'Oman';
+
+  @override
+  String get countryQA => 'Qatar';
+
+  @override
+  String get countryYE => 'Yemen';
+
+  @override
+  String get countryLB => 'Lebanon';
+
+  @override
+  String get countryKW => 'Kuwait';
+
+  @override
+  String get countryBH => 'Bahrain';
+
+  @override
+  String get countryMA => 'Morocco';
+
+  @override
+  String get aboutTitle => 'About';
+
+  @override
+  String aboutVersion(String version, String build) {
+    return 'Version $version ($build)';
+  }
+
+  @override
+  String aboutVersionFlavor(String version, String build, String flavor) {
+    return 'Version $version ($build) · $flavor';
+  }
+
+  @override
+  String aboutFoodDataVersion(int version) {
+    return 'Food data version $version';
+  }
+
+  @override
+  String get aboutCreditsTitle => 'Data credits';
+
+  @override
+  String get aboutCreditsUnavailable =>
+      'Data credits aren\'t available right now.';
+
+  @override
+  String get aboutInfoUnavailable => 'Version isn\'t available right now.';
+
+  @override
+  String aboutCredit(String name, String credit) {
+    return '$name: $credit';
+  }
+
+  @override
+  String get aboutLicenses => 'Open-source licences';
+
+  @override
+  String get aboutNotMedical =>
+      'Fitness Buddy gives estimates for tracking, not medical advice.';
 }

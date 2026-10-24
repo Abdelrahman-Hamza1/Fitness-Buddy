@@ -37,6 +37,12 @@ final class SettingCodec<T> {
     fromJson: _string,
   );
 
+  /// A JSON string or null; malformed values fall back through SettingKey.
+  static const SettingCodec<String?> optionalString = SettingCodec(
+    toJson: _same,
+    fromJson: _optionalString,
+  );
+
   /// One of [values], stored by its `name` (so renaming a value is a
   /// migration, reordering isn't).
   static SettingCodec<E> enumeration<E extends Enum>(List<E> values) {
@@ -55,6 +61,8 @@ final class SettingCodec<T> {
   /// or not a value of this codec.
   T decode(String valueJson) => _fromJson(jsonDecode(valueJson));
 }
+
+String? _optionalString(Object? json) => json == null ? null : _string(json);
 
 Object? _same(Object? value) => value;
 
@@ -112,6 +120,10 @@ final class SettingKey<T> {
     required String defaultValue,
   }) =>
       SettingKey(name, codec: SettingCodec.string, defaultValue: defaultValue);
+
+  /// An optional string; reset restores the unset value.
+  static SettingKey<String?> optionalString(String name) =>
+      SettingKey(name, codec: SettingCodec.optionalString, defaultValue: null);
 
   /// A setting holding one of [values].
   static SettingKey<E> enumeration<E extends Enum>(

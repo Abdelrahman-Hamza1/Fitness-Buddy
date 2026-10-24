@@ -96,11 +96,16 @@ final class FoodChoice {
   String? get yieldGroup => catalogFood?.yieldGroup;
 
   /// FD-022: prefer last input, then parsed amount, then the entry serving.
-  Quantity defaultPortion({ParsedAmount? parsed, Quantity? lastUsed}) {
+  Quantity defaultPortion({
+    ParsedAmount? parsed,
+    Quantity? lastUsed,
+    UnitSystem system = UnitSystem.metric,
+  }) {
     final personal = personalFood;
     if (personal == null) {
       return DefaultPortion.choose(
         measures,
+        system: system,
         lastUsed: lastUsed ?? this.lastUsed?.amount.input,
         parsed: parsed,
       );
@@ -116,7 +121,9 @@ final class FoodChoice {
         fallback = Quantity(entry.amount, basis.unitCode);
       }
     }
-    final defaultUnit = fallback?.unitCode ?? basis.unitCode;
+    final defaultUnit =
+        fallback?.unitCode ??
+        DefaultPortion.choose(measures, system: system).unitCode;
     final parsedInput = parsed == null
         ? null
         : Quantity(parsed.amount, parsed.unitCode ?? defaultUnit);
@@ -124,6 +131,7 @@ final class FoodChoice {
         parsedInput != null && measures.resolve(parsedInput) is Resolved;
     return DefaultPortion.choose(
       measures,
+      system: system,
       lastUsed: lastUsed ?? this.lastUsed?.amount.input,
       parsed: usableParse
           ? ParsedAmount(parsedInput.amount, parsedInput.unitCode)

@@ -10,6 +10,7 @@ import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/quick_add/application/quick_add_controller.dart';
 import 'package:fb_mobile/features/quick_add/application/quick_add_model.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -40,6 +41,11 @@ class QuickAddBar extends ConsumerWidget {
     final today = EntryTime.now(ref.read(clockProvider)).localDate;
     final outcome = await controller.logChip(chip, date);
     if (!host.mounted) return;
+    // Read when the message is made, so the first frame never reads settings.
+    final system = await ref
+        .read(unitSystemProvider.future)
+        .then<UnitSystem>((value) => value, onError: (_) => UnitSystem.metric);
+    if (!host.mounted) return;
     switch (outcome) {
       case QuickAddLogged(
         :final undoEntryId,
@@ -53,7 +59,10 @@ class QuickAddBar extends ConsumerWidget {
           message: withDayClause(
             host,
             amount != null
-                ? l10n.quickAddLoggedAmount(name, entryAmountText(l10n, amount))
+                ? l10n.quickAddLoggedAmount(
+                    name,
+                    entryAmountText(l10n, amount, system),
+                  )
                 : l10n.quickAddLoggedItems(name, itemCount ?? 0),
             date,
             today,

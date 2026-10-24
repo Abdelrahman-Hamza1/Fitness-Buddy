@@ -1,5 +1,7 @@
 import 'package:fb_domain/fb_domain.dart';
 
+export 'catalog_city.dart';
+
 /// What a catalog food is (pack schema v1, A05 D5).
 enum CatalogFoodKind {
   /// A USDA basic ingredient.
@@ -120,6 +122,7 @@ final class CatalogAttribution {
     required this.url,
     required this.credit,
     required this.usedFor,
+    this.status = 'active',
   });
 
   /// Reads one `data/attribution.yaml` source entry.
@@ -129,7 +132,8 @@ final class CatalogAttribution {
       licence = '${json['licence']}',
       url = '${json['url']}',
       credit = '${json['credit']}',
-      usedFor = '${json['used_for']}';
+      usedFor = '${json['used_for']}',
+      status = json['status'] as String? ?? 'inactive';
 
   /// Stable source ID.
   final String id;
@@ -145,6 +149,9 @@ final class CatalogAttribution {
 
   /// The credit line.
   final String credit;
+
+  /// Pack source lifecycle; About includes only active sources.
+  final String status;
 
   /// What the source is used for.
   final String usedFor;

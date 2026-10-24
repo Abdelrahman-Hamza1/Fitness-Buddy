@@ -57,6 +57,38 @@ final class OfflineCatalog {
       .tableUpdates(const TableUpdateQuery.onTableName('catalog_pack'))
       .map((_) {});
 
+  /// Every city in one query. Read failures propagate for UX-051 retry states.
+  Future<List<CatalogCity>> cities() async {
+    if (!await _isReady()) return const [];
+    final rows = await _db
+        .customSelect('SELECT * FROM $_schema.cities ORDER BY id')
+        .get();
+    return rows.map(_city).toList();
+  }
+
+  /// One known city, or null for an unset/retired identity or absent pack.
+  Future<CatalogCity?> city(String id) async {
+    if (!await _isReady()) return null;
+    final rows = await _db
+        .customSelect(
+          'SELECT * FROM $_schema.cities WHERE id = ?',
+          variables: [Variable.withString(id)],
+        )
+        .get();
+    return rows.isEmpty ? null : _city(rows.single);
+  }
+
+  CatalogCity _city(QueryRow row) => CatalogCity(
+    id: row.read<String>('id'),
+    nameEn: row.read<String>('name_en'),
+    nameAr: row.read<String?>('name_ar'),
+    countryCode: row.read<String>('country_code'),
+    population: row.read<int?>('population') ?? 0,
+    timezone: row.read<String>('timezone'),
+    latitude: row.read<double>('lat'),
+    longitude: row.read<double>('lon'),
+  );
+
   /// The food with catalog ID [id], or `null`. A dish ID gives its default
   /// variant.
   Future<CatalogFood?> byId(String id) => _guard(() => _byId(id), null);

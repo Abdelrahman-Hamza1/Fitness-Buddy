@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/amount_text.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/diary/application/diary_actions.dart';
@@ -10,6 +11,7 @@ import 'package:fb_mobile/features/diary/presentation/entry_amount_sheet.dart';
 import 'package:fb_mobile/features/diary/presentation/entry_row.dart';
 import 'package:fb_mobile/features/diary/presentation/move_entry_sheet.dart';
 import 'package:fb_mobile/features/diary/presentation/nutrient_override_sheet.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -39,7 +41,13 @@ class EntryDetailsPanel extends ConsumerWidget {
     final n = entry.snapshot;
     final ar = food.names.ar;
     final time = entry.time.localDateTime;
-    final resolved = _resolvedAmount(l10n, entry.amount);
+    final amount = foodAmountText(
+      l10n,
+      input: entry.amount.input,
+      amount: entry.amount.amount,
+      basis: entry.amount.basis,
+      system: ref.watch(unitSystemProvider).value ?? UnitSystem.metric,
+    );
     final pending = ref.watch(
       diaryActionsControllerProvider.select(
         (s) => s.pending.contains(entry.id),
@@ -93,12 +101,7 @@ class EntryDetailsPanel extends ConsumerWidget {
               children: [
                 FbChoiceChip(
                   label: l10n.diaryDetailsAmount,
-                  value: resolved == null
-                      ? entryAmountText(l10n, entry.amount)
-                      : l10n.diaryDetailsAmountResolved(
-                          entryAmountText(l10n, entry.amount),
-                          resolved,
-                        ),
+                  value: amount,
                   onTap: pending
                       ? null
                       : () => unawaited(showEntryAmountSheet(context, entry)),
@@ -226,16 +229,6 @@ class EntryDetailsPanel extends ConsumerWidget {
       ),
     );
   }
-}
-
-/// The canonical amount ("60 g") when the logged unit isn't already it.
-String? _resolvedAmount(AppLocalizations l10n, EntryAmount amount) {
-  final unit = amount.basis == NutrientBasis.per100g ? 'g' : 'ml';
-  if (amount.input.unitCode == unit) return null;
-  return l10n.foodResultServing(
-    DisplayRounding.foodAmount(amount.amount).toDouble(),
-    unitLabel(l10n, unit, amount.amount),
-  );
 }
 
 String _sourceText(AppLocalizations l10n, DiaryEntry entry) {

@@ -14,7 +14,8 @@ export 'src/model/dish.dart';
 export 'src/model/issue.dart';
 export 'src/model/library_data.dart';
 export 'src/model/yields.dart';
-export 'src/pack/commands.dart' show buildFixtureSql, fixtureIds;
+export 'src/pack/commands.dart'
+    show buildFixtureSql, fixtureCityIds, fixtureIds;
 export 'src/pack/coverage.dart';
 export 'src/pack/pack_builder.dart';
 export 'src/pack/pack_query.dart';

@@ -1,11 +1,14 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/amount_text.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/foods/application/personal_food_form.dart';
 import 'package:fb_mobile/features/foods/presentation/personal_foods/personal_food_inputs.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter/services.dart' show TextInputAction;
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart' show Divider, IconButton, Theme;
 
 /// The optional nutrients under "More nutrients", in the order shown (FD-002).
@@ -205,7 +208,7 @@ class OtherNamesSection extends StatelessWidget {
 /// "The label's numbers are for" (100 g, 100 ml or one serving), the
 /// serving they are for, the five main nutrients, the [notes] about them
 /// and "More nutrients" (FD-002, FD-070, D7).
-class ValuesSection extends StatelessWidget {
+class ValuesSection extends ConsumerWidget {
   /// Creates the section.
   const new({
     required this.binding,
@@ -238,7 +241,7 @@ class ValuesSection extends StatelessWidget {
   final bool autofocusKcal;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final b = binding;
     final form = b.form;
@@ -388,10 +391,18 @@ class ValuesSection extends StatelessWidget {
           if (size != null && size > 0)
             formPad(
               Text(
+                // A read-only preview, so it follows the unit setting; the
+                // size field above keeps the grams or millilitres typed.
                 l10n.personalFoodServingShownAs(
                   unitLabel(l10n, form.servingUnit, 1),
-                  size,
-                  b.basisUnit(l10n),
+                  servingText(
+                    l10n,
+                    input: Quantity(size, form.basis.unitCode),
+                    basis: form.basis,
+                    system:
+                        ref.watch(unitSystemProvider).value ??
+                        UnitSystem.metric,
+                  ),
                 ),
                 style: FbType.bodySmall.copyWith(color: muted),
               ),

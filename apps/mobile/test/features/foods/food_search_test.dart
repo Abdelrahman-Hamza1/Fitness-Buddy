@@ -12,6 +12,7 @@ import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/data/food_catalog_repository.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -140,6 +141,22 @@ void main() {
     await db.reattachCatalog(null);
     await service.updateHistory([historyOf(riceId, uses: 10)]);
     expect(service.packReady, isFalse);
+  });
+
+  test('FD-022 LC-010 imperial search rows open on the sheet default '
+      'portion', () async {
+    final service = fixtureService();
+    await ready(service, [historyOf(riceId)]);
+    final metric = (await service.search('rice')).rows.first;
+    final imperial = (await service.search(
+      'rice',
+      system: UnitSystem.imperial,
+    )).rows.first;
+    expect(
+      imperial.defaultPortion,
+      imperial.choice.defaultPortion(system: UnitSystem.imperial),
+    );
+    expect(metric.defaultPortion, metric.choice.defaultPortion());
   });
 
   test('FD-023 recent merges dish variants and sorts by latest use', () async {
@@ -527,6 +544,9 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         foodChoiceProvider(choiceRef).overrideWith((ref) async => choice),
+        unitSystemProvider.overrideWith(
+          (ref) => Stream.value(UnitSystem.metric),
+        ),
         foodSlotsProvider.overrideWith((ref) => Stream.value(DefaultSlots.all)),
         clockProvider.overrideWithValue(harness.clock),
         logFoodProvider.overrideWith(

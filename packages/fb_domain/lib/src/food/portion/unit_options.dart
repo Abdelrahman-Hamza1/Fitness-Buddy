@@ -1,4 +1,5 @@
 import 'package:fb_domain/src/units/food_measures.dart';
+import 'package:fb_domain/src/units/units.dart';
 
 /// Resolvable unit chips in FD-022/LC-011 order, without duplicate codes.
 abstract final class UnitOptions {
@@ -24,8 +25,11 @@ abstract final class UnitOptions {
     'tsp',
   ];
 
-  /// Servings first, canonical basis next, then other accepted standard units.
-  static List<String> of(FoodMeasures measures) {
+  /// Servings lead, then system units; every resolvable input stays available.
+  static List<String> of(
+    FoodMeasures measures, {
+    UnitSystem system = UnitSystem.metric,
+  }) {
     final servings = measures.servingUnits.keys.toList()
       ..sort((a, b) {
         final ai = servingPriority.indexOf(a);
@@ -37,6 +41,31 @@ abstract final class UnitOptions {
       });
     return {
       ...servings,
+      if (system == UnitSystem.imperial) ...[
+        if (measures.basis == NutrientBasis.per100g) ...[
+          'oz',
+          'lb',
+          'g',
+          'kg',
+          'fl_oz',
+          'cup',
+          'tbsp',
+          'tsp',
+          'ml',
+          'l',
+        ] else ...[
+          'fl_oz',
+          'cup',
+          'tbsp',
+          'tsp',
+          'ml',
+          'l',
+          'oz',
+          'lb',
+          'g',
+          'kg',
+        ],
+      ],
       measures.basis.unitCode,
       'g',
       'oz',

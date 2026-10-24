@@ -935,20 +935,18 @@
       }
     }
   },
-  "foodSheetYieldNote": "{from} g {fromState} ≈ {to} g {toState}",
+  "foodSheetYieldNote": "{from} {fromState} ≈ {to} {toState}",
   "@foodSheetYieldNote": {
-    "description": "Food sheet: how much a weighed amount of a food becomes in another state, e.g. \"100 g dry ≈ 280 g cooked\". Display only.",
+    "description": "Food sheet: how much a weighed amount of a food becomes in another state, e.g. \"100 g dry ≈ 280 g cooked\" (or \"3.5 oz dry ≈ 9.9 oz cooked\" with imperial units). The amounts arrive already formatted with their unit. Display only.",
     "placeholders": {
       "from": {
-        "type": "int",
-        "format": "decimalPattern"
+        "type": "String"
       },
       "fromState": {
         "type": "String"
       },
       "to": {
-        "type": "int",
-        "format": "decimalPattern"
+        "type": "String"
       },
       "toState": {
         "type": "String"
@@ -1255,14 +1253,14 @@
   "@diaryDetailsAmount": {
     "description": "Item details: row label of the logged amount."
   },
-  "diaryDetailsAmountResolved": "{input} ({amount})",
-  "@diaryDetailsAmountResolved": {
-    "description": "Item details: the logged amount and its size in grams or ml.",
+  "foodAmountWithCanonical": "{amount} ({canonical})",
+  "@foodAmountWithCanonical": {
+    "description": "A logged amount followed by its stored size in the food's own unit, where that adds information, e.g. \"1 loaf (60 g)\" or \"250 ml (258 g)\". Both parts arrive formatted with their unit.",
     "placeholders": {
-      "input": {
+      "amount": {
         "type": "String"
       },
-      "amount": {
+      "canonical": {
         "type": "String"
       }
     }
@@ -1817,18 +1815,14 @@
   "@personalFoodNumbersStay": {
     "description": "Personal food form: note under the choice of what the numbers are for, after it was changed: the typed numbers are not converted."
   },
-  "personalFoodServingShownAs": "Shown in your diary as 1 {serving} ({size} {unit})",
+  "personalFoodServingShownAs": "Shown in your diary as 1 {serving} ({size})",
   "@personalFoodServingShownAs": {
-    "description": "Personal food form: helper under the serving size of a label typed per serving, e.g. \"Shown in your diary as 1 serving (30 g)\".",
+    "description": "Personal food form: helper under the serving size of a label typed per serving, e.g. \"Shown in your diary as 1 serving (30 g)\". The size arrives formatted in the unit system, e.g. \"1.1 oz\".",
     "placeholders": {
       "serving": {
         "type": "String"
       },
       "size": {
-        "type": "double",
-        "format": "decimalPattern"
-      },
-      "unit": {
         "type": "String"
       }
     }
@@ -2243,5 +2237,304 @@
   "quickAddRowSemantics": "Quick add",
   "@quickAddRowSemantics": {
     "description": "Screen-reader label of the row of quick-add chips above the input bar on Today."
+  },
+  "meSectionSettings": "Settings",
+  "@meSectionSettings": {
+    "description": "Me tab: heading of the settings rows (units, week start, halal, theme, city)."
+  },
+  "meSectionAbout": "About",
+  "@meSectionAbout": {
+    "description": "Me tab: heading of the About section."
+  },
+  "meSectionDeveloper": "Developer",
+  "@meSectionDeveloper": {
+    "description": "Me tab: heading of the developer-only rows (dev flavor)."
+  },
+  "meAbout": "About Fitness Buddy",
+  "@meAbout": {
+    "description": "Me tab: row that opens the About screen."
+  },
+  "settingsUnits": "Units",
+  "@settingsUnits": {
+    "description": "Settings row and sheet title: metric or imperial display units."
+  },
+  "settingsUnitsMetric": "Metric",
+  "@settingsUnitsMetric": {
+    "description": "Units choice: metric."
+  },
+  "settingsUnitsMetricHint": "Grams, millilitres, kilograms",
+  "@settingsUnitsMetricHint": {
+    "description": "Units choice: what metric shows, under \"Metric\"."
+  },
+  "settingsUnitsImperial": "Imperial",
+  "@settingsUnitsImperial": {
+    "description": "Units choice: imperial."
+  },
+  "settingsUnitsImperialHint": "Ounces, fluid ounces, pounds",
+  "@settingsUnitsImperialHint": {
+    "description": "Units choice: what imperial shows, under \"Imperial\"."
+  },
+  "settingsWeekStart": "Week starts on",
+  "@settingsWeekStart": {
+    "description": "Settings row and sheet title: the first day of the week."
+  },
+  "settingsHalal": "Halal food",
+  "@settingsHalal": {
+    "description": "Settings row: switch for showing halal food only."
+  },
+  "settingsTheme": "Theme",
+  "@settingsTheme": {
+    "description": "Settings row and sheet title: light, dark or the phone's setting."
+  },
+  "settingsThemeSystem": "System",
+  "@settingsThemeSystem": {
+    "description": "Theme choice: follow the phone's light or dark setting."
+  },
+  "settingsThemeLight": "Light",
+  "@settingsThemeLight": {
+    "description": "Theme choice: always light."
+  },
+  "settingsThemeDark": "Dark",
+  "@settingsThemeDark": {
+    "description": "Theme choice: always dark."
+  },
+  "settingsCity": "City",
+  "@settingsCity": {
+    "description": "Settings row: the city used for prayer times and local suggestions."
+  },
+  "settingsCityNotSet": "Not set",
+  "@settingsCityNotSet": {
+    "description": "Settings row: shown when no city is chosen."
+  },
+  "settingsEnergy": "Energy",
+  "@settingsEnergy": {
+    "description": "Settings info row: what energy is shown in."
+  },
+  "settingsUnitsSetMetric": "Units set to metric",
+  "@settingsUnitsSetMetric": {
+    "description": "Undo snackbar after the units were changed to metric."
+  },
+  "settingsUnitsSetImperial": "Units set to imperial",
+  "@settingsUnitsSetImperial": {
+    "description": "Undo snackbar after the units were changed to imperial."
+  },
+  "settingsWeekStartSet": "Week now starts on {day}",
+  "@settingsWeekStartSet": {
+    "description": "Undo snackbar after the first day of the week was changed. day is a weekday name.",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsHalalSetOn": "Halal food turned on",
+  "@settingsHalalSetOn": {
+    "description": "Undo snackbar after the halal switch was turned on."
+  },
+  "settingsHalalSetOff": "Halal food turned off",
+  "@settingsHalalSetOff": {
+    "description": "Undo snackbar after the halal switch was turned off."
+  },
+  "settingsThemeSet": "Theme set to {theme}",
+  "@settingsThemeSet": {
+    "description": "Undo snackbar after the theme was changed. theme is the name of the choice (System, Light, Dark).",
+    "placeholders": {
+      "theme": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsCitySet": "City set to {city}",
+  "@settingsCitySet": {
+    "description": "Undo snackbar after a city was chosen. city is the English city name.",
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSaveFailed": "Couldn't save that setting. Try again.",
+  "@settingsSaveFailed": {
+    "description": "Snackbar when a setting could not be saved."
+  },
+  "cityPickerTitle": "City",
+  "@cityPickerTitle": {
+    "description": "Title of the city picker screen."
+  },
+  "cityPickerSearchHint": "Search for a city",
+  "@cityPickerSearchHint": {
+    "description": "City picker: hint of the search field."
+  },
+  "cityPickerSuggested": "Suggested cities",
+  "@cityPickerSuggested": {
+    "description": "City picker: heading above the suggested cities shown before anything is typed."
+  },
+  "cityPickerLoadFailed": "Couldn't load the city list.",
+  "@cityPickerLoadFailed": {
+    "description": "City picker: shown when the list of cities could not be read."
+  },
+  "cityPickerTryAgain": "Try again",
+  "@cityPickerTryAgain": {
+    "description": "City picker: button that reads the list of cities again."
+  },
+  "cityPickerUnavailable": "The city list isn't available right now.",
+  "@cityPickerUnavailable": {
+    "description": "City picker: shown when the app has no city list."
+  },
+  "cityPickerNoMatch": "No city found. Try the English or Arabic name.",
+  "@cityPickerNoMatch": {
+    "description": "City picker: shown when the typed text matches no city."
+  },
+  "cityPickerUseLocation": "Use my location",
+  "@cityPickerUseLocation": {
+    "description": "City picker (dev flavor only): row for choosing the city from the phone's location."
+  },
+  "cityPickerComingSoon": "Coming soon",
+  "@cityPickerComingSoon": {
+    "description": "City picker (dev flavor only): says the location row does nothing yet."
+  },
+  "cityName": "{english} · {arabic}",
+  "@cityName": {
+    "description": "City picker row: the English and the Arabic name of a city, e.g. \"Nablus · نابلس\".",
+    "placeholders": {
+      "english": {
+        "type": "String"
+      },
+      "arabic": {
+        "type": "String"
+      }
+    }
+  },
+  "countryPS": "Palestine",
+  "@countryPS": {
+    "description": "City picker: the country name for ISO code PS, under a city's name."
+  },
+  "countryJO": "Jordan",
+  "@countryJO": {
+    "description": "City picker: the country name for ISO code JO, under a city's name."
+  },
+  "countryEG": "Egypt",
+  "@countryEG": {
+    "description": "City picker: the country name for ISO code EG, under a city's name."
+  },
+  "countryTR": "Türkiye",
+  "@countryTR": {
+    "description": "City picker: the country name for ISO code TR, under a city's name."
+  },
+  "countryIQ": "Iraq",
+  "@countryIQ": {
+    "description": "City picker: the country name for ISO code IQ, under a city's name."
+  },
+  "countrySA": "Saudi Arabia",
+  "@countrySA": {
+    "description": "City picker: the country name for ISO code SA, under a city's name."
+  },
+  "countrySY": "Syria",
+  "@countrySY": {
+    "description": "City picker: the country name for ISO code SY, under a city's name."
+  },
+  "countryAE": "United Arab Emirates",
+  "@countryAE": {
+    "description": "City picker: the country name for ISO code AE, under a city's name."
+  },
+  "countryOM": "Oman",
+  "@countryOM": {
+    "description": "City picker: the country name for ISO code OM, under a city's name."
+  },
+  "countryQA": "Qatar",
+  "@countryQA": {
+    "description": "City picker: the country name for ISO code QA, under a city's name."
+  },
+  "countryYE": "Yemen",
+  "@countryYE": {
+    "description": "City picker: the country name for ISO code YE, under a city's name."
+  },
+  "countryLB": "Lebanon",
+  "@countryLB": {
+    "description": "City picker: the country name for ISO code LB, under a city's name."
+  },
+  "countryKW": "Kuwait",
+  "@countryKW": {
+    "description": "City picker: the country name for ISO code KW, under a city's name."
+  },
+  "countryBH": "Bahrain",
+  "@countryBH": {
+    "description": "City picker: the country name for ISO code BH, under a city's name."
+  },
+  "countryMA": "Morocco",
+  "@countryMA": {
+    "description": "City picker: the country name for ISO code MA, under a city's name."
+  },
+  "aboutTitle": "About",
+  "@aboutTitle": {
+    "description": "Title of the About screen."
+  },
+  "aboutVersion": "Version {version} ({build})",
+  "@aboutVersion": {
+    "description": "About: the app version and build number.",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutVersionFlavor": "Version {version} ({build}) · {flavor}",
+  "@aboutVersionFlavor": {
+    "description": "About: the app version and build number of a non-production build, with the build's name (dev or staging).",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      },
+      "flavor": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutFoodDataVersion": "Food data version {version}",
+  "@aboutFoodDataVersion": {
+    "description": "About: the version of the food data on the phone.",
+    "placeholders": {
+      "version": {
+        "type": "int"
+      }
+    }
+  },
+  "aboutCreditsTitle": "Data credits",
+  "@aboutCreditsTitle": {
+    "description": "About: heading of the sources the food and city data come from."
+  },
+  "aboutCreditsUnavailable": "Data credits aren't available right now.",
+  "@aboutCreditsUnavailable": {
+    "description": "About: shown when the food data can't be read, so its credits can't be shown."
+  },
+  "aboutInfoUnavailable": "Version isn't available right now.",
+  "@aboutInfoUnavailable": {
+    "description": "About: shown in place of the app and food data versions when they can't be read."
+  },
+  "aboutCredit": "{name}: {credit}",
+  "@aboutCredit": {
+    "description": "About: one data source and the credit line it requires, e.g. \"USDA FoodData Central: ...\".",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "credit": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutLicenses": "Open-source licences",
+  "@aboutLicenses": {
+    "description": "About: row that opens the list of open-source licences."
+  },
+  "aboutNotMedical": "Fitness Buddy gives estimates for tracking, not medical advice.",
+  "@aboutNotMedical": {
+    "description": "About: the line saying the app is not medical advice (SF-040)."
   }
 }

@@ -1022,11 +1022,16 @@ abstract class AppLocalizations {
   /// **'Log as {name}'**
   String foodSheetLogAs(String name);
 
-  /// Food sheet: how much a weighed amount of a food becomes in another state, e.g. "100 g dry ≈ 280 g cooked". Display only.
+  /// Food sheet: how much a weighed amount of a food becomes in another state, e.g. "100 g dry ≈ 280 g cooked" (or "3.5 oz dry ≈ 9.9 oz cooked" with imperial units). The amounts arrive already formatted with their unit. Display only.
   ///
   /// In en, this message translates to:
-  /// **'{from} g {fromState} ≈ {to} g {toState}'**
-  String foodSheetYieldNote(int from, String fromState, int to, String toState);
+  /// **'{from} {fromState} ≈ {to} {toState}'**
+  String foodSheetYieldNote(
+    String from,
+    String fromState,
+    String to,
+    String toState,
+  );
 
   /// Food sheet: the meal chip when no meal is chosen.
   ///
@@ -1356,11 +1361,11 @@ abstract class AppLocalizations {
   /// **'Amount'**
   String get diaryDetailsAmount;
 
-  /// Item details: the logged amount and its size in grams or ml.
+  /// A logged amount followed by its stored size in the food's own unit, where that adds information, e.g. "1 loaf (60 g)" or "250 ml (258 g)". Both parts arrive formatted with their unit.
   ///
   /// In en, this message translates to:
-  /// **'{input} ({amount})'**
-  String diaryDetailsAmountResolved(String input, String amount);
+  /// **'{amount} ({canonical})'**
+  String foodAmountWithCanonical(String amount, String canonical);
 
   /// Item details: row label of the time the item was logged for.
   ///
@@ -1974,11 +1979,11 @@ abstract class AppLocalizations {
   /// **'Numbers stay as typed.'**
   String get personalFoodNumbersStay;
 
-  /// Personal food form: helper under the serving size of a label typed per serving, e.g. "Shown in your diary as 1 serving (30 g)".
+  /// Personal food form: helper under the serving size of a label typed per serving, e.g. "Shown in your diary as 1 serving (30 g)". The size arrives formatted in the unit system, e.g. "1.1 oz".
   ///
   /// In en, this message translates to:
-  /// **'Shown in your diary as 1 {serving} ({size} {unit})'**
-  String personalFoodServingShownAs(String serving, double size, String unit);
+  /// **'Shown in your diary as 1 {serving} ({size})'**
+  String personalFoodServingShownAs(String serving, String size);
 
   /// Personal food form, screen reader only: the serving size field of a label typed per serving.
   ///
@@ -2447,6 +2452,372 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Quick add'**
   String get quickAddRowSemantics;
+
+  /// Me tab: heading of the settings rows (units, week start, halal, theme, city).
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get meSectionSettings;
+
+  /// Me tab: heading of the About section.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get meSectionAbout;
+
+  /// Me tab: heading of the developer-only rows (dev flavor).
+  ///
+  /// In en, this message translates to:
+  /// **'Developer'**
+  String get meSectionDeveloper;
+
+  /// Me tab: row that opens the About screen.
+  ///
+  /// In en, this message translates to:
+  /// **'About Fitness Buddy'**
+  String get meAbout;
+
+  /// Settings row and sheet title: metric or imperial display units.
+  ///
+  /// In en, this message translates to:
+  /// **'Units'**
+  String get settingsUnits;
+
+  /// Units choice: metric.
+  ///
+  /// In en, this message translates to:
+  /// **'Metric'**
+  String get settingsUnitsMetric;
+
+  /// Units choice: what metric shows, under "Metric".
+  ///
+  /// In en, this message translates to:
+  /// **'Grams, millilitres, kilograms'**
+  String get settingsUnitsMetricHint;
+
+  /// Units choice: imperial.
+  ///
+  /// In en, this message translates to:
+  /// **'Imperial'**
+  String get settingsUnitsImperial;
+
+  /// Units choice: what imperial shows, under "Imperial".
+  ///
+  /// In en, this message translates to:
+  /// **'Ounces, fluid ounces, pounds'**
+  String get settingsUnitsImperialHint;
+
+  /// Settings row and sheet title: the first day of the week.
+  ///
+  /// In en, this message translates to:
+  /// **'Week starts on'**
+  String get settingsWeekStart;
+
+  /// Settings row: switch for showing halal food only.
+  ///
+  /// In en, this message translates to:
+  /// **'Halal food'**
+  String get settingsHalal;
+
+  /// Settings row and sheet title: light, dark or the phone's setting.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get settingsTheme;
+
+  /// Theme choice: follow the phone's light or dark setting.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get settingsThemeSystem;
+
+  /// Theme choice: always light.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get settingsThemeLight;
+
+  /// Theme choice: always dark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get settingsThemeDark;
+
+  /// Settings row: the city used for prayer times and local suggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get settingsCity;
+
+  /// Settings row: shown when no city is chosen.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get settingsCityNotSet;
+
+  /// Settings info row: what energy is shown in.
+  ///
+  /// In en, this message translates to:
+  /// **'Energy'**
+  String get settingsEnergy;
+
+  /// Undo snackbar after the units were changed to metric.
+  ///
+  /// In en, this message translates to:
+  /// **'Units set to metric'**
+  String get settingsUnitsSetMetric;
+
+  /// Undo snackbar after the units were changed to imperial.
+  ///
+  /// In en, this message translates to:
+  /// **'Units set to imperial'**
+  String get settingsUnitsSetImperial;
+
+  /// Undo snackbar after the first day of the week was changed. day is a weekday name.
+  ///
+  /// In en, this message translates to:
+  /// **'Week now starts on {day}'**
+  String settingsWeekStartSet(String day);
+
+  /// Undo snackbar after the halal switch was turned on.
+  ///
+  /// In en, this message translates to:
+  /// **'Halal food turned on'**
+  String get settingsHalalSetOn;
+
+  /// Undo snackbar after the halal switch was turned off.
+  ///
+  /// In en, this message translates to:
+  /// **'Halal food turned off'**
+  String get settingsHalalSetOff;
+
+  /// Undo snackbar after the theme was changed. theme is the name of the choice (System, Light, Dark).
+  ///
+  /// In en, this message translates to:
+  /// **'Theme set to {theme}'**
+  String settingsThemeSet(String theme);
+
+  /// Undo snackbar after a city was chosen. city is the English city name.
+  ///
+  /// In en, this message translates to:
+  /// **'City set to {city}'**
+  String settingsCitySet(String city);
+
+  /// Snackbar when a setting could not be saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save that setting. Try again.'**
+  String get settingsSaveFailed;
+
+  /// Title of the city picker screen.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get cityPickerTitle;
+
+  /// City picker: hint of the search field.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a city'**
+  String get cityPickerSearchHint;
+
+  /// City picker: heading above the suggested cities shown before anything is typed.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested cities'**
+  String get cityPickerSuggested;
+
+  /// City picker: shown when the list of cities could not be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the city list.'**
+  String get cityPickerLoadFailed;
+
+  /// City picker: button that reads the list of cities again.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get cityPickerTryAgain;
+
+  /// City picker: shown when the app has no city list.
+  ///
+  /// In en, this message translates to:
+  /// **'The city list isn\'t available right now.'**
+  String get cityPickerUnavailable;
+
+  /// City picker: shown when the typed text matches no city.
+  ///
+  /// In en, this message translates to:
+  /// **'No city found. Try the English or Arabic name.'**
+  String get cityPickerNoMatch;
+
+  /// City picker (dev flavor only): row for choosing the city from the phone's location.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my location'**
+  String get cityPickerUseLocation;
+
+  /// City picker (dev flavor only): says the location row does nothing yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get cityPickerComingSoon;
+
+  /// City picker row: the English and the Arabic name of a city, e.g. "Nablus · نابلس".
+  ///
+  /// In en, this message translates to:
+  /// **'{english} · {arabic}'**
+  String cityName(String english, String arabic);
+
+  /// City picker: the country name for ISO code PS, under a city's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Palestine'**
+  String get countryPS;
+
+  /// City picker: the country name for ISO code JO, under a city's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Jordan'**
+  String get countryJO;
+
+  /// City picker: the country name for ISO code EG, under a city's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Egypt'**
+  String get countryEG;
+
+  /// City picker: the country name for ISO code TR, under a city's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Türkiye'**
+  String get countryTR;
+
+  /// City picker: the country name for ISO code IQ, under a city's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Iraq'**
+  String get countryIQ;
+
+  /// City picker: the country name for ISO code SA, under a city's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Saudi Arabia'**
+  String get countrySA;
+
+  /// City picker: the country name for ISO code SY, under a city's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Syria'**
+  String get countrySY;
+
+  /// City picker: the country name for ISO code AE, under a city's name.
+  ///
+  /// In en, this message translates to:
+  /// **'United Arab Emirates'**
+  String get countryAE;
+
+  /// City picker: the country name for ISO code OM, under a city's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Oman'**
+  String get countryOM;
+
+  /// City picker: the country name for ISO code QA, under a city's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Qatar'**
+  String get countryQA;
+
+  /// City picker: the country name for ISO code YE, under a city's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Yemen'**
+  String get countryYE;
+
+  /// City picker: the country name for ISO code LB, under a city's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Lebanon'**
+  String get countryLB;
+
+  /// City picker: the country name for ISO code KW, under a city's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Kuwait'**
+  String get countryKW;
+
+  /// City picker: the country name for ISO code BH, under a city's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Bahrain'**
+  String get countryBH;
+
+  /// City picker: the country name for ISO code MA, under a city's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Morocco'**
+  String get countryMA;
+
+  /// Title of the About screen.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get aboutTitle;
+
+  /// About: the app version and build number.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version} ({build})'**
+  String aboutVersion(String version, String build);
+
+  /// About: the app version and build number of a non-production build, with the build's name (dev or staging).
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version} ({build}) · {flavor}'**
+  String aboutVersionFlavor(String version, String build, String flavor);
+
+  /// About: the version of the food data on the phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Food data version {version}'**
+  String aboutFoodDataVersion(int version);
+
+  /// About: heading of the sources the food and city data come from.
+  ///
+  /// In en, this message translates to:
+  /// **'Data credits'**
+  String get aboutCreditsTitle;
+
+  /// About: shown when the food data can't be read, so its credits can't be shown.
+  ///
+  /// In en, this message translates to:
+  /// **'Data credits aren\'t available right now.'**
+  String get aboutCreditsUnavailable;
+
+  /// About: shown in place of the app and food data versions when they can't be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Version isn\'t available right now.'**
+  String get aboutInfoUnavailable;
+
+  /// About: one data source and the credit line it requires, e.g. "USDA FoodData Central: ...".
+  ///
+  /// In en, this message translates to:
+  /// **'{name}: {credit}'**
+  String aboutCredit(String name, String credit);
+
+  /// About: row that opens the list of open-source licences.
+  ///
+  /// In en, this message translates to:
+  /// **'Open-source licences'**
+  String get aboutLicenses;
+
+  /// About: the line saying the app is not medical advice (SF-040).
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness Buddy gives estimates for tracking, not medical advice.'**
+  String get aboutNotMedical;
 }
 
 class _AppLocalizationsDelegate

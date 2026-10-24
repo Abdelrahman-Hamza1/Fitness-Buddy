@@ -14,6 +14,7 @@ import 'package:fb_mobile/features/diary/presentation/entry_row.dart';
 import 'package:fb_mobile/features/diary/presentation/large_text.dart';
 import 'package:fb_mobile/features/diary/presentation/move_to_slot_sheet.dart';
 import 'package:fb_mobile/features/diary/presentation/saved_meals/rename_saved_meal_sheet.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -315,14 +316,19 @@ class _SavedMealScreenState extends ConsumerState<SavedMealScreen> {
 }
 
 /// One saved item: its own badge, name, amount and calories (FD-010).
-class _ItemRow extends StatelessWidget {
+class _ItemRow extends ConsumerWidget {
   const new({required this.item, super.key});
 
   final SavedMealItem item;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final amount = entryAmountText(
+      l10n,
+      item.amount,
+      ref.watch(unitSystemProvider).value ?? UnitSystem.metric,
+    );
     final kcal = l10n.diaryKcal(DisplayRounding.kcal(item.snapshot.kcal));
     final large = usesLargeText(context);
     final source = item.food.editedByUser
@@ -330,9 +336,7 @@ class _ItemRow extends StatelessWidget {
         : fbSourceOf(item.food.provenance.source);
     return FbListRow(
       title: item.food.names.en,
-      subtitle: large
-          ? l10n.savedMealItemSubtitle(entryAmountText(l10n, item.amount), kcal)
-          : entryAmountText(l10n, item.amount),
+      subtitle: large ? l10n.savedMealItemSubtitle(amount, kcal) : amount,
       leading: FbSourceBadge(source: source),
       trailing: large
           ? null
