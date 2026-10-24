@@ -1,0 +1,2373 @@
+{
+  "formatVersion": 1,
+  "dartSdkVersion": "3.13.5",
+  "provenance": "Synthetic only; generated with the repository-pinned Dart SDK. Run make gen-personal-food-vectors. App outcomes are declared, verified by personal_food_sync_vectors_test.dart.",
+  "constants": {
+    "name": 80,
+    "brand": 60,
+    "aliases": 30,
+    "barcodes": 10,
+    "servings": 10,
+    "kcal": 920.0,
+    "grams": 1000.0,
+    "milligrams": 100000.0,
+    "minServing": 0.1,
+    "maxServing": 5000.0,
+    "createdFrom": 32,
+    "jsonLength": 16384
+  },
+  "vocabularies": {
+    "nutrients": {
+      "sugar": "g",
+      "saturated_fat": "g",
+      "trans_fat": "g",
+      "sodium": "mg",
+      "cholesterol": "mg",
+      "alcohol": "g"
+    },
+    "units": [
+      "piece",
+      "loaf",
+      "plate",
+      "glass",
+      "sandwich",
+      "disc",
+      "serving",
+      "can",
+      "cup",
+      "tbsp",
+      "tsp"
+    ],
+    "states": [
+      "raw",
+      "cooked",
+      "dry",
+      "drained",
+      "fried",
+      "as_sold"
+    ],
+    "bases": [
+      "g",
+      "ml"
+    ]
+  },
+  "trimCodeUnits": [
+    9,
+    10,
+    11,
+    12,
+    13,
+    32,
+    133,
+    160,
+    5760,
+    8192,
+    8193,
+    8194,
+    8195,
+    8196,
+    8197,
+    8198,
+    8199,
+    8200,
+    8201,
+    8202,
+    8232,
+    8233,
+    8239,
+    8287,
+    12288,
+    65279
+  ],
+  "strings": [
+    {
+      "input": "﻿ x ",
+      "length": 5,
+      "trimmed": "x"
+    },
+    {
+      "input": "x​x",
+      "length": 3,
+      "trimmed": "x​x"
+    },
+    {
+      "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx🍎",
+      "length": 80,
+      "trimmed": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx🍎"
+    }
+  ],
+  "payloads": [
+    {
+      "id": "minimal",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "tombstone-full",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": true
+    },
+    {
+      "id": "tombstone-empty",
+      "rawPayload": "{}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": true
+    },
+    {
+      "id": "state-raw",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"raw\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "state-cooked",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"cooked\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "state-dry",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"dry\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "state-drained",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"drained\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "state-fried",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"fried\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "state-as_sold",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "basis-ml",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"ml\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "unknown-state",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"future\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "unknown-basis",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"future\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "nameEn-ascii-1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "nameEn-ascii-79",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "nameEn-ascii-80",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "nameEn-ascii-81",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "nameEn-supplementary-79",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx🍎\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "nameEn-supplementary-80",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx🍎\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "nameEn-supplementary-81",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx🍎\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "nameEn-empty",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "nameEn-nul",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x\\u0000\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "nameEn-raw-over-trimmed-limit",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "nameAr-ascii-1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":\"x\",\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "nameAr-ascii-79",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "nameAr-ascii-80",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "nameAr-ascii-81",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "nameAr-supplementary-79",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx🍎\",\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "nameAr-supplementary-80",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx🍎\",\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "nameAr-supplementary-81",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx🍎\",\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "nameAr-empty",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":\"\",\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "nameAr-nul",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":\"x\\u0000\",\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "nameAr-raw-over-trimmed-limit",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":\" xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "brand-ascii-1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":\"x\",\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "brand-ascii-59",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "brand-ascii-60",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "brand-ascii-61",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "brand-supplementary-59",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx🍎\",\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "brand-supplementary-60",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx🍎\",\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "brand-supplementary-61",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx🍎\",\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "brand-empty",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":\"\",\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "brand-nul",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":\"x\\u0000\",\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "brand-raw-over-trimmed-limit",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":\" xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-9-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\t\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-9-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\tx\\t\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-9-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x\\tx\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-10-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\n\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-10-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\nx\\n\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-10-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x\\nx\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-11-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\u000b\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-11-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\u000bx\\u000b\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-11-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x\\u000bx\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-12-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\f\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-12-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\fx\\f\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-12-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x\\fx\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-13-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\r\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-13-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\rx\\r\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-13-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x\\rx\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-32-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-32-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-32-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-133-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-133-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-133-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"xx\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-160-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-160-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-160-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-5760-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-5760-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-5760-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8192-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-8192-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8192-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8193-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-8193-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8193-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8194-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-8194-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8194-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8195-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-8195-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8195-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8196-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-8196-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8196-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8197-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-8197-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8197-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8198-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-8198-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8198-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8199-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-8199-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8199-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8200-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-8200-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8200-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8201-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-8201-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8201-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8202-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-8202-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8202-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8232-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-8232-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8232-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8233-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-8233-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8233-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8239-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-8239-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8239-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8287-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-8287-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\" x \",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8287-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-12288-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"　\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-12288-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"　x　\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-12288-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x　x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-65279-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"﻿\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "trim-65279-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"﻿x﻿\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-65279-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x﻿x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-28-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\u001c\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-28-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\u001cx\\u001c\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-28-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x\\u001cx\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-29-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\u001d\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-29-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\u001dx\\u001d\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-29-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x\\u001dx\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-30-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\u001e\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-30-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\u001ex\\u001e\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-30-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x\\u001ex\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-31-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\u001f\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-31-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\u001fx\\u001f\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-31-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x\\u001fx\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-6158-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"᠎\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-6158-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"᠎x᠎\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-6158-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x᠎x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8203-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"​\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8203-edges",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"​x​\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "trim-8203-embedded",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"x​x\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "aliasesJson-empty-list",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"[]\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "aliasesJson-json-null",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"null\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "aliasesJson-wrong-\"{}\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"{}\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "aliasesJson-wrong-\"\\\"text\\\"\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"\\\"text\\\"\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "aliasesJson-wrong-\"42\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"42\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "aliasesJson-wrong-\"[null]\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"[null]\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "aliasesJson-wrong-\"[true]\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"[true]\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "aliasesJson-wrong-\"[1]\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"[1]\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "barcodesJson-empty-list",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"[]\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "barcodesJson-json-null",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"null\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "barcodesJson-wrong-\"{}\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"{}\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "barcodesJson-wrong-\"\\\"text\\\"\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"\\\"text\\\"\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "barcodesJson-wrong-\"42\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"42\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "barcodesJson-wrong-\"[null]\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"[null]\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "barcodesJson-wrong-\"[true]\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"[true]\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "barcodesJson-wrong-\"[1]\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"[1]\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "servingsJson-empty-list",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[]\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "servingsJson-json-null",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"null\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "servingsJson-wrong-\"{}\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"{}\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "servingsJson-wrong-\"\\\"text\\\"\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"\\\"text\\\"\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "servingsJson-wrong-\"42\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"42\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "servingsJson-wrong-\"[null]\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[null]\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "servingsJson-wrong-\"[true]\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[true]\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "servingsJson-wrong-\"[1]\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[1]\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extras-empty",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extras-json-null",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"null\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extras-wrong-\"[]\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"[]\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extras-wrong-\"\\\"text\\\"\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"\\\"text\\\"\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extras-wrong-\"42\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"42\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extras-wrong-\"{bad\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{bad\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extras-wrong-\"{\\\"sodium\\\":null}\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"sodium\\\":null}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "unknown-extra",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"future\\\":1}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "duplicate-extra",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"sodium\\\":1,\\\"sodium\\\":2}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "escaped-duplicate-extra",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"sodium\\\":1,\\\"\\\\u0073odium\\\":2}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "duplicate-payload-name",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"old\",\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "name-lone-\\ud800",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\ud800\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "alias-lone-\\ud800",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"[\\\"\\\\ud800\\\"]\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "name-lone-\\udc00",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"\\udc00\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "alias-lone-\\udc00",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"[\\\"\\\\udc00\\\"]\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "aliases-count-30",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"[\\\"alias0\\\",\\\"alias1\\\",\\\"alias2\\\",\\\"alias3\\\",\\\"alias4\\\",\\\"alias5\\\",\\\"alias6\\\",\\\"alias7\\\",\\\"alias8\\\",\\\"alias9\\\",\\\"alias10\\\",\\\"alias11\\\",\\\"alias12\\\",\\\"alias13\\\",\\\"alias14\\\",\\\"alias15\\\",\\\"alias16\\\",\\\"alias17\\\",\\\"alias18\\\",\\\"alias19\\\",\\\"alias20\\\",\\\"alias21\\\",\\\"alias22\\\",\\\"alias23\\\",\\\"alias24\\\",\\\"alias25\\\",\\\"alias26\\\",\\\"alias27\\\",\\\"alias28\\\",\\\"alias29\\\"]\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "aliases-count-31",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"[\\\"alias0\\\",\\\"alias1\\\",\\\"alias2\\\",\\\"alias3\\\",\\\"alias4\\\",\\\"alias5\\\",\\\"alias6\\\",\\\"alias7\\\",\\\"alias8\\\",\\\"alias9\\\",\\\"alias10\\\",\\\"alias11\\\",\\\"alias12\\\",\\\"alias13\\\",\\\"alias14\\\",\\\"alias15\\\",\\\"alias16\\\",\\\"alias17\\\",\\\"alias18\\\",\\\"alias19\\\",\\\"alias20\\\",\\\"alias21\\\",\\\"alias22\\\",\\\"alias23\\\",\\\"alias24\\\",\\\"alias25\\\",\\\"alias26\\\",\\\"alias27\\\",\\\"alias28\\\",\\\"alias29\\\",\\\"alias30\\\"]\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "alias-supplementary-1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"[\\\"x\\\"]\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "alias-supplementary-79",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"[\\\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx🍎\\\"]\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "alias-supplementary-80",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"[\\\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx🍎\\\"]\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "alias-supplementary-81",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"[\\\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx🍎\\\"]\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "aliases-trim-duplicate",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"[\\\"alias\\\",\\\" alias \\\"]\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "aliases-case-distinct",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":\"[\\\"alias\\\",\\\"Alias\\\"]\",\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "gtin-96385074",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"[\\\"96385074\\\"]\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "gtin-036000291452",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"[\\\"036000291452\\\"]\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "gtin-4006381333931",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"[\\\"4006381333931\\\"]\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "gtin-00012345600012",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"[\\\"00012345600012\\\"]\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "gtin-96385075",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"[\\\"96385075\\\"]\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "gtin-１２３４５６７８",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"[\\\"１２３４５６７８\\\"]\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "gtin- 96385074",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"[\\\" 96385074\\\"]\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "duplicate-gtin",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"[\\\"96385074\\\",\\\"96385074\\\"]\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "gtin-count-10",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"[\\\"00000000\\\",\\\"00000017\\\",\\\"00000024\\\",\\\"00000031\\\",\\\"00000048\\\",\\\"00000055\\\",\\\"00000062\\\",\\\"00000079\\\",\\\"00000086\\\",\\\"00000093\\\"]\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "gtin-count-11",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":\"[\\\"00000000\\\",\\\"00000017\\\",\\\"00000024\\\",\\\"00000031\\\",\\\"00000048\\\",\\\"00000055\\\",\\\"00000062\\\",\\\"00000079\\\",\\\"00000086\\\",\\\"00000093\\\",\\\"00000109\\\"]\",\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "per100Kcal-0.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "per100Kcal-920.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":920.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "per100Kcal-921.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":921.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "per100Kcal--0.1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":-0.1,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "per100Kcal-1e-28",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":1e-28,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "per100Kcal-1e-29",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":1e-29,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "per100ProteinG-0.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "per100ProteinG-1000.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":1000.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "per100ProteinG-1001.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":1001.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "per100ProteinG--0.1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":-0.1,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "per100ProteinG-1e-28",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":1e-28,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "per100ProteinG-1e-29",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":1e-29,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "per100CarbsG-0.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "per100CarbsG-1000.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":1000.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "per100CarbsG-1001.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":1001.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "per100CarbsG--0.1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":-0.1,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "per100CarbsG-1e-28",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":1e-28,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "per100CarbsG-1e-29",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":1e-29,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "per100FatG-0.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "per100FatG-1000.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":1000.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "per100FatG-1001.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":1001.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "per100FatG--0.1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":-0.1,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "per100FatG-1e-28",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":1e-28,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "per100FatG-1e-29",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":1e-29,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "per100FiberG-0.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "per100FiberG-1000.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":1000.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "per100FiberG-1001.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":1001.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "per100FiberG--0.1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":-0.1,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "per100FiberG-1e-28",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":1e-28,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "per100FiberG-1e-29",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":1e-29,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-sugar-0.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"sugar\\\":0.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-sugar-1000.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"sugar\\\":1000.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-sugar-1001.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"sugar\\\":1001.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-sugar--0.1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"sugar\\\":-0.1}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-sugar-1e-28",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"sugar\\\":1e-28}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-sugar-1e-29",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"sugar\\\":1e-29}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-saturated_fat-0.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"saturated_fat\\\":0.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-saturated_fat-1000.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"saturated_fat\\\":1000.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-saturated_fat-1001.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"saturated_fat\\\":1001.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-saturated_fat--0.1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"saturated_fat\\\":-0.1}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-saturated_fat-1e-28",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"saturated_fat\\\":1e-28}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-saturated_fat-1e-29",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"saturated_fat\\\":1e-29}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-trans_fat-0.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"trans_fat\\\":0.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-trans_fat-1000.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"trans_fat\\\":1000.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-trans_fat-1001.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"trans_fat\\\":1001.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-trans_fat--0.1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"trans_fat\\\":-0.1}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-trans_fat-1e-28",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"trans_fat\\\":1e-28}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-trans_fat-1e-29",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"trans_fat\\\":1e-29}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-sodium-0.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"sodium\\\":0.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-sodium-100000.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"sodium\\\":100000.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-sodium-100001.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"sodium\\\":100001.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-sodium--0.1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"sodium\\\":-0.1}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-sodium-1e-28",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"sodium\\\":1e-28}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-sodium-1e-29",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"sodium\\\":1e-29}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-cholesterol-0.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"cholesterol\\\":0.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-cholesterol-100000.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"cholesterol\\\":100000.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-cholesterol-100001.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"cholesterol\\\":100001.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-cholesterol--0.1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"cholesterol\\\":-0.1}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-cholesterol-1e-28",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"cholesterol\\\":1e-28}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-cholesterol-1e-29",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"cholesterol\\\":1e-29}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-alcohol-0.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"alcohol\\\":0.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-alcohol-1000.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"alcohol\\\":1000.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-alcohol-1001.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"alcohol\\\":1001.0}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-alcohol--0.1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"alcohol\\\":-0.1}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "extra-alcohol-1e-28",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"alcohol\\\":1e-28}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "extra-alcohol-1e-29",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"alcohol\\\":1e-29}\",\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "unit-piece",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"piece\\\",\\\"amount\\\":1}]\",\"entryServingUnit\":\"piece\",\"entryServingAmount\":1,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "unit-loaf",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"loaf\\\",\\\"amount\\\":1}]\",\"entryServingUnit\":\"loaf\",\"entryServingAmount\":1,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "unit-plate",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"plate\\\",\\\"amount\\\":1}]\",\"entryServingUnit\":\"plate\",\"entryServingAmount\":1,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "unit-glass",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"glass\\\",\\\"amount\\\":1}]\",\"entryServingUnit\":\"glass\",\"entryServingAmount\":1,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "unit-sandwich",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"sandwich\\\",\\\"amount\\\":1}]\",\"entryServingUnit\":\"sandwich\",\"entryServingAmount\":1,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "unit-disc",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"disc\\\",\\\"amount\\\":1}]\",\"entryServingUnit\":\"disc\",\"entryServingAmount\":1,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "unit-serving",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"serving\\\",\\\"amount\\\":1}]\",\"entryServingUnit\":\"serving\",\"entryServingAmount\":1,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "unit-can",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"can\\\",\\\"amount\\\":1}]\",\"entryServingUnit\":\"can\",\"entryServingAmount\":1,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "unit-cup",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"cup\\\",\\\"amount\\\":1}]\",\"entryServingUnit\":\"cup\",\"entryServingAmount\":1,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "unit-tbsp",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"tbsp\\\",\\\"amount\\\":1}]\",\"entryServingUnit\":\"tbsp\",\"entryServingAmount\":1,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "unit-tsp",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"tsp\\\",\\\"amount\\\":1}]\",\"entryServingUnit\":\"tsp\",\"entryServingAmount\":1,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "serving-amount-0.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"piece\\\",\\\"amount\\\":0.0}]\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "entry-amount-0.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":\"piece\",\"entryServingAmount\":0.0,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "serving-amount-0.09",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"piece\\\",\\\"amount\\\":0.09}]\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "entry-amount-0.09",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":\"piece\",\"entryServingAmount\":0.09,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "serving-amount-0.1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"piece\\\",\\\"amount\\\":0.1}]\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "entry-amount-0.1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":\"piece\",\"entryServingAmount\":0.1,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "serving-amount-5000.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"piece\\\",\\\"amount\\\":5000.0}]\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "entry-amount-5000.0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":\"piece\",\"entryServingAmount\":5000.0,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "serving-amount-5000.1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"piece\\\",\\\"amount\\\":5000.1}]\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "entry-amount-5000.1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":\"piece\",\"entryServingAmount\":5000.1,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "servings-invalid-[{\"unit\":\"future\",\"amount\":1}]",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"future\\\",\\\"amount\\\":1}]\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "servings-invalid-[{\"unit\":\"piece\"}]",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"piece\\\"}]\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "servings-invalid-[{\"unit\":\"piece\",\"amount\":1,\"other\":1}]",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"piece\\\",\\\"amount\\\":1,\\\"other\\\":1}]\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "servings-invalid-[{\"unit\":\"piece\",\"amount\":1},{\"unit\":\"piece\",\"amount\":2}]",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"piece\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"piece\\\",\\\"amount\\\":2}]\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "duplicate-serving-key",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"piece\\\",\\\"amount\\\":1,\\\"amount\\\":2}]\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "servings-count-10",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"piece\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"loaf\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"plate\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"glass\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"sandwich\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"disc\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"serving\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"can\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"cup\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"tbsp\\\",\\\"amount\\\":1}]\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "servings-count-11",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":\"[{\\\"unit\\\":\\\"piece\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"loaf\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"plate\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"glass\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"sandwich\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"disc\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"serving\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"can\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"cup\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"tbsp\\\",\\\"amount\\\":1},{\\\"unit\\\":\\\"tsp\\\",\\\"amount\\\":1}]\",\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "entry-unit-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":\"piece\",\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "entry-amount-only",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":1,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "entry-unknown-unit",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":\"future\",\"entryServingAmount\":1,\"createdFrom\":\"form\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "createdFrom-\"f\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"f\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "createdFrom-\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "createdFrom-\"\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "createdFrom-\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "createdFrom-\"form1\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form1\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "createdFrom-\"form\\n\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\\n\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "createdFrom-\"ع\"",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"ع\"}",
+      "serverAccepts": false,
+      "appReads": false,
+      "deleted": false
+    },
+    {
+      "id": "sanity-macrosTooHeavy",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":106.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "sanity-kcalMismatch",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":900.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "writer-0",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":null,\"aliasesJson\":null,\"brand\":null,\"barcodesJson\":null,\"state\":\"as_sold\",\"basis\":\"g\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":null,\"servingsJson\":null,\"entryServingUnit\":null,\"entryServingAmount\":null,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    },
+    {
+      "id": "writer-1",
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"direct\",\"editedByUser\":true,\"nameEn\":\"Synthetic food\",\"nameAr\":\"طعام تجريبي\",\"aliasesJson\":\"[\\\"Alias\\\"]\",\"brand\":\"Brand\",\"barcodesJson\":\"[\\\"96385074\\\",\\\"036000291452\\\",\\\"4006381333931\\\",\\\"00012345600012\\\"]\",\"state\":\"as_sold\",\"basis\":\"ml\",\"per100Kcal\":0.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"per100ExtrasJson\":\"{\\\"sugar\\\":1.0,\\\"saturated_fat\\\":1.0,\\\"trans_fat\\\":1.0,\\\"sodium\\\":1.0,\\\"cholesterol\\\":1.0,\\\"alcohol\\\":1.0}\",\"servingsJson\":\"[{\\\"unit\\\":\\\"piece\\\",\\\"amount\\\":30.0}]\",\"entryServingUnit\":\"cup\",\"entryServingAmount\":0.1,\"createdFrom\":\"form\"}",
+      "serverAccepts": true,
+      "appReads": true,
+      "deleted": false
+    }
+  ],
+  "serverRejectsAppTolerates": [
+    "unknown-state",
+    "nameEn-raw-over-trimmed-limit",
+    "nameAr-raw-over-trimmed-limit",
+    "brand-raw-over-trimmed-limit",
+    "aliasesJson-json-null",
+    "barcodesJson-json-null",
+    "servingsJson-json-null",
+    "extras-json-null",
+    "unknown-extra",
+    "duplicate-extra",
+    "escaped-duplicate-extra",
+    "duplicate-payload-name",
+    "name-lone-\\ud800",
+    "alias-lone-\\ud800",
+    "name-lone-\\udc00",
+    "alias-lone-\\udc00",
+    "duplicate-serving-key"
+  ],
+  "writers": [
+    {
+      "payloadId": "writer-0",
+      "draft": {
+        "createdAtMs": 0,
+        "origin": "direct",
+        "editedByUser": true,
+        "nameEn": "Synthetic food",
+        "nameAr": null,
+        "aliasesJson": null,
+        "brand": null,
+        "barcodesJson": null,
+        "state": "as_sold",
+        "basis": "g",
+        "per100Kcal": 0.0,
+        "per100ProteinG": 0.0,
+        "per100CarbsG": 0.0,
+        "per100FatG": 0.0,
+        "per100FiberG": 0.0,
+        "per100ExtrasJson": null,
+        "servingsJson": null,
+        "entryServingUnit": null,
+        "entryServingAmount": null,
+        "createdFrom": "form"
+      }
+    },
+    {
+      "payloadId": "writer-1",
+      "draft": {
+        "createdAtMs": 0,
+        "origin": "direct",
+        "editedByUser": true,
+        "nameEn": "  Synthetic food  ",
+        "nameAr": " طعام تجريبي ",
+        "aliasesJson": "[\" Alias \"]",
+        "brand": " Brand ",
+        "barcodesJson": "[\"96385074\",\"036000291452\",\"4006381333931\",\"00012345600012\"]",
+        "state": "as_sold",
+        "basis": "ml",
+        "per100Kcal": 0.0,
+        "per100ProteinG": 0.0,
+        "per100CarbsG": 0.0,
+        "per100FatG": 0.0,
+        "per100FiberG": 0.0,
+        "per100ExtrasJson": "{\"sugar\":1.0,\"saturated_fat\":1.0,\"trans_fat\":1.0,\"sodium\":1.0,\"cholesterol\":1.0,\"alcohol\":1.0}",
+        "servingsJson": "[{\"unit\":\"piece\",\"amount\":30.0}]",
+        "entryServingUnit": "cup",
+        "entryServingAmount": 0.1,
+        "createdFrom": "form"
+      }
+    }
+  ],
+  "domain": [
+    {
+      "input": {
+        "createdAtMs": 0,
+        "origin": "direct",
+        "editedByUser": true,
+        "nameEn": "Synthetic food",
+        "nameAr": null,
+        "aliasesJson": null,
+        "brand": null,
+        "barcodesJson": null,
+        "state": "as_sold",
+        "basis": "g",
+        "per100Kcal": 0.0,
+        "per100ProteinG": 0.0,
+        "per100CarbsG": 0.0,
+        "per100FatG": 0.0,
+        "per100FiberG": 0.0,
+        "per100ExtrasJson": null,
+        "servingsJson": null,
+        "entryServingUnit": null,
+        "entryServingAmount": null,
+        "createdFrom": "form"
+      },
+      "wireFailure": null,
+      "formFailure": null
+    },
+    {
+      "input": {
+        "createdAtMs": 0,
+        "origin": "direct",
+        "editedByUser": true,
+        "nameEn": "Synthetic food",
+        "nameAr": null,
+        "aliasesJson": null,
+        "brand": null,
+        "barcodesJson": null,
+        "state": "as_sold",
+        "basis": "g",
+        "per100Kcal": 0.0,
+        "per100ProteinG": 106.0,
+        "per100CarbsG": 0.0,
+        "per100FatG": 0.0,
+        "per100FiberG": 0.0,
+        "per100ExtrasJson": null,
+        "servingsJson": null,
+        "entryServingUnit": null,
+        "entryServingAmount": null,
+        "createdFrom": "form"
+      },
+      "wireFailure": null,
+      "formFailure": "sanity"
+    },
+    {
+      "input": {
+        "createdAtMs": 0,
+        "origin": "direct",
+        "editedByUser": true,
+        "nameEn": "Synthetic food",
+        "nameAr": null,
+        "aliasesJson": null,
+        "brand": null,
+        "barcodesJson": null,
+        "state": "as_sold",
+        "basis": "g",
+        "per100Kcal": 900.0,
+        "per100ProteinG": 0.0,
+        "per100CarbsG": 0.0,
+        "per100FatG": 0.0,
+        "per100FiberG": 0.0,
+        "per100ExtrasJson": null,
+        "servingsJson": null,
+        "entryServingUnit": null,
+        "entryServingAmount": null,
+        "createdFrom": "form"
+      },
+      "wireFailure": null,
+      "formFailure": null
+    }
+  ]
+}

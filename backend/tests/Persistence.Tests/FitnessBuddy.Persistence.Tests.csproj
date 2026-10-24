@@ -5,6 +5,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Using Include="Xunit" />
+    <Compile Include="../UserData.Tests/PersonalFoodCases.cs" Link="PersonalFoodCases.cs" />
+    <None Include="../../../contracts/testdata/sync/personal-food-validation-vectors.json" Link="personal-food-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../../contracts/openapi/sync-entities.json" Link="sync-entities.json" CopyToOutputDirectory="PreserveNewest" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="Testcontainers.PostgreSql" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />

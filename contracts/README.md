@@ -96,3 +96,5 @@ The server writes its own OpenAPI document at build time (`backend/artifacts/ope
 ## personalFood semantic rules
 
 The `personalFood` v1 payload in `openapi/sync-entities.json` carries the types, enums, top-level numeric bounds and string length limits supported by the sync schema exporter. The shared semantic rules are in [A09 §3.0: Shared personalFood rules](../technical-planning/steps/A09-personal-foods-quick-add.md#3-design): trimmed minimum lengths, JSON list contents and limits, GTIN check digits, nutrient extras, serving units and amounts, and the entry-serving both-or-neither rule. A09a implements the app validation; B17 adds server semantic validation before A34 enables uploads.
+
+Adding a `NutrientKey`, serving unit or `FoodState` code is a contract change: the server validator and shared corpus ship first, before any app emits the code (or it goes in a new `schemaVersion`); the app never emits unknown codes.

@@ -4,4 +4,5 @@
   <ItemGroup><InternalsVisibleTo Include="FitnessBuddy.Persistence.Tests" /></ItemGroup>
   <ItemGroup><EmbeddedResource Include="Infrastructure/Schemas/entities.json" /></ItemGroup>
   <ItemGroup><ProjectReference Include="../Identity/FitnessBuddy.Modules.Identity.csproj" /></ItemGroup>
+  <ItemGroup><InternalsVisibleTo Include="FitnessBuddy.UserData.Tests" /></ItemGroup>
 </Project>

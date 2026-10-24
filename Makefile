@@ -527,3 +527,7 @@ serve-phone-catalog-import: ## Import the built public catalog into the private 
 .PHONY: catalog-client-smoke
 catalog-client-smoke: ## Offline generated-client check: binary pack bytes survive without UTF8 decoding
 	cd '$(REPO_ROOT)/tools/sync_sim' && '$(DART)' test test/catalog_client_test.dart
+
+.PHONY: gen-personal-food-vectors
+gen-personal-food-vectors: ## Regenerate the shared synthetic personalFood validation corpus (B17)
+	cd '$(REPO_ROOT)/packages/fb_domain' && '$(DART)' run tool/generate_personal_food_vectors.dart

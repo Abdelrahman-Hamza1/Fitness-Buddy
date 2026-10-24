@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><IsPackable>false</IsPackable><UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner></PropertyGroup>
+  <ItemGroup><Using Include="Xunit" /></ItemGroup>
+  <ItemGroup><PackageReference Include="xunit.v3" /></ItemGroup>
+  <ItemGroup><ProjectReference Include="../../src/Modules/UserData/FitnessBuddy.Modules.UserData.csproj" /></ItemGroup>
+  <ItemGroup>
+    <Content Include="../../../contracts/testdata/sync/personal-food-validation-vectors.json" Link="personal-food-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../contracts/openapi/sync-entities.json" Link="sync-entities.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../contracts/testdata/sync/entity-payloads.json" Link="entity-payloads.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../technical-planning/steps/A09-personal-foods-quick-add.md" Link="A09-personal-foods-quick-add.md" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

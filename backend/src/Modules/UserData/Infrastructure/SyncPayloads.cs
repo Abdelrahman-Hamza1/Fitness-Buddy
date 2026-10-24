@@ -25,12 +25,14 @@ internal static class SyncPayloads
                 if ((start.ValueKind == JsonValueKind.Null) != (end.ValueKind == JsonValueKind.Null) ||
                     (start.ValueKind != JsonValueKind.Null && start.GetInt32() == end.GetInt32())) { return "invalidPayload"; }
             }
+            var personalFood = version.Entity == "personalFood" && version.SchemaVersion == 1;
+            if (personalFood && !PersonalFoodPayloadValidator.Matches(version.Payload)) { return "invalidPayload"; }
             foreach (var property in version.Payload.EnumerateObject())
             {
                 if (property.Name.EndsWith("Json", StringComparison.Ordinal) && property.Value.ValueKind == JsonValueKind.String)
                 {
                     using var nested = JsonDocument.Parse(property.Value.GetString()!, new JsonDocumentOptions { MaxDepth = 24 });
-                    if (!Representable(nested.RootElement, 0)) { return "invalidPayload"; }
+                    if (!Representable(nested.RootElement, 0) || personalFood && !PersonalFoodPayloadValidator.MatchesNested(property.Name, nested.RootElement)) { return "invalidPayload"; }
                 }
             }
             return null;

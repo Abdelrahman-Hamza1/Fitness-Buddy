@@ -360,3 +360,5 @@ requested state in the same yield group with the identical key after removing
 state words. Ratios, cuts, skin and other qualifiers remain significant (PA12).
 The app must also check that a yield factor is available. In particular, a
 skinless raw chicken row cannot replace an unqualified roasted breast row.
+
+`tool/` and `test/` may use `dart:io`; `lib/` may not.

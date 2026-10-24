@@ -3,6 +3,9 @@ using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Net;
 using FitnessBuddy.Host.Observability;
 using FitnessBuddy.Modules.Identity.Application;
 using Microsoft.AspNetCore.TestHost;
@@ -16,6 +19,7 @@ using Sentry.Protocol.Envelopes;
 namespace FitnessBuddy.Persistence.Tests;
 
 [Trait("Req", "AC-041")]
+[Trait("Req", "AC-040")]
 [Trait("Rule", "09.4-privacy")]
 public sealed class IdentityPrivacyTests(PostgresFixture postgres)
 {
@@ -33,11 +37,7 @@ public sealed class IdentityPrivacyTests(PostgresFixture postgres)
             ActivityStopped = activity => activities.Enqueue(activity.DisplayName + string.Join('|', activity.TagObjects.Select(t => $"{t.Key}={t.Value}")) + activity.StatusDescription + string.Join('|', activity.Events.Select(e => e.Name + string.Join('|', e.Tags)))),
         };
         ActivitySource.AddActivityListener(listener);
-        using var meter = new MeterListener { InstrumentPublished = (instrument, receiver) => receiver.EnableMeasurementEvents(instrument) };
-        meter.SetMeasurementEventCallback<long>((_, _, tags, _) => { foreach (var tag in tags) { metrics.Enqueue($"{tag.Key}={tag.Value}"); } });
-        meter.SetMeasurementEventCallback<double>((_, _, tags, _) => { foreach (var tag in tags) { metrics.Enqueue($"{tag.Key}={tag.Value}"); } });
-        meter.SetMeasurementEventCallback<int>((_, _, tags, _) => { foreach (var tag in tags) { metrics.Enqueue($"{tag.Key}={tag.Value}"); } });
-        meter.Start();
+        using var meter = CaptureMetrics(metrics);
         await using var factory = new IdentityApiTests.IdentityApi(postgres, h).WithWebHostBuilder(builder =>
         {
             builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string?> { ["Sentry:Dsn"] = "https://public@localhost/1" }));
@@ -81,6 +81,59 @@ public sealed class IdentityPrivacyTests(PostgresFixture postgres)
             var result = await push.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>(TestContext.Current.CancellationToken);
             Assert.Equal(invalid ? "invalid" : "accepted", result.GetProperty("results")[0].GetProperty("status").GetString());
         }
+        // B17: real success/rejection/read traffic, with a unique canary in every
+        // private field class. Only owner pull/history may return this content.
+        var foodCanaries = new[] { "CANARY-PERSONAL-NAME", "طعام-سري-خاص", "CANARY-PERSONAL-ALIAS", "CANARY-PERSONAL-BRAND", "96385074", "817.26491", "732.83419", "30.91827" };
+        canaries.AddRange(foodCanaries);
+        var foodPayload = JsonNode.Parse(PersonalFoodHttp.Fixture())!.AsObject();
+        foodPayload["nameEn"] = foodCanaries[0]; foodPayload["nameAr"] = foodCanaries[1];
+        foodPayload["aliasesJson"] = JsonSerializer.Serialize(new[] { foodCanaries[2] }); foodPayload["brand"] = foodCanaries[3];
+        foodPayload["barcodesJson"] = "[\"96385074\"]"; foodPayload["per100Kcal"] = 817.26491m;
+        foodPayload["per100ExtrasJson"] = "{\"sodium\":732.83419}"; foodPayload["entryServingAmount"] = 30.91827m;
+        var privateRow = PersonalFoodHttp.NewRow(h, foodPayload.ToJsonString());
+        var dataset = syncPage.GetProperty("datasetId").GetGuid();
+        foreach (var invalid in new[] { false, true })
+        {
+            var raw = invalid ? privateRow.Raw.Replace("CANARY-PERSONAL-NAME", "", StringComparison.Ordinal) : privateRow.Raw;
+            using var response = await PersonalFoodHttp.Push(client, h, dataset, [privateRow with { Id = invalid ? Guid.NewGuid() : privateRow.Id, Raw = raw }]);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var ack = await PersonalFoodHttp.Json(response);
+            Assert.Equal(invalid ? "invalidPayload" : null, ack.GetProperty("results")[0].GetProperty("reason").GetString());
+            foreach (var canary in foodCanaries) { Assert.DoesNotContain(canary, ack.GetRawText(), StringComparison.Ordinal); }
+        }
+        using (var update = await PersonalFoodHttp.Push(client, h, dataset, [privateRow with { Hlc = PersonalFoodHttp.Hlc(h, 1) }]))
+        { Assert.Equal(HttpStatusCode.OK, update.StatusCode); }
+        var pulled = (await PersonalFoodHttp.Page(client, dataset)).GetProperty("changes").EnumerateArray().Single(c => c.GetProperty("id").GetGuid() == privateRow.Id);
+        using (var expected = JsonDocument.Parse(privateRow.Raw)) { Assert.True(JsonElement.DeepEquals(expected.RootElement, pulled.GetProperty("payload"))); }
+        Assert.Single((await PersonalFoodHttp.Page(client, dataset, privateRow.Id)).GetProperty("changes").EnumerateArray());
+        // Unreadable outer JSON is a fixed 400, not a semantic per-row failure.
+        using (var malformedBody = new StringContent(PersonalFoodHttp.Body(h, dataset, [privateRow]).Replace("817.26491", "NaN", StringComparison.Ordinal), Encoding.UTF8, "application/json"))
+        using (var malformed = await client.PostAsync("/v1/sync/push", malformedBody, TestContext.Current.CancellationToken))
+        {
+            Assert.Equal(HttpStatusCode.BadRequest, malformed.StatusCode);
+            var problem = await malformed.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            foreach (var canary in foodCanaries) { Assert.DoesNotContain(canary, problem, StringComparison.Ordinal); }
+        }
+        using (var guestClient = await PersonalFoodHttp.Client(factory, h, await h.GuestAsync()))
+        using (var denied = await PersonalFoodHttp.Push(guestClient, h, dataset, [privateRow]))
+        {
+            Assert.Equal(HttpStatusCode.Forbidden, denied.StatusCode);
+            foreach (var canary in foodCanaries) { Assert.DoesNotContain(canary, await denied.Content.ReadAsStringAsync(TestContext.Current.CancellationToken), StringComparison.Ordinal); }
+        }
+        // TestServer has no body limit: this request must reach actual Kestrel.
+        await using (var kestrelFactory = factory.WithWebHostBuilder(_ => { }))
+        {
+            kestrelFactory.UseKestrel(0);
+            using var limited = kestrelFactory.CreateClient();
+            limited.DefaultRequestHeaders.Add("X-App-Version", "0.1.0"); limited.DefaultRequestHeaders.Add("X-Platform", "android"); limited.DefaultRequestHeaders.Add("X-Device-Id", h.Device.ToString());
+            limited.DefaultRequestHeaders.Authorization = client.DefaultRequestHeaders.Authorization;
+            foodPayload["nameEn"] = foodCanaries[0] + new string('x', 300 * 1024);
+            using var oversized = await PersonalFoodHttp.Push(limited, h, dataset, [privateRow with { Raw = foodPayload.ToJsonString() }]);
+            Assert.Equal(HttpStatusCode.RequestEntityTooLarge, oversized.StatusCode);
+            var problem = await oversized.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            foreach (var canary in foodCanaries) { Assert.DoesNotContain(canary, problem, StringComparison.Ordinal); }
+            await kestrelFactory.Services.GetRequiredService<IHub>().FlushAsync(TimeSpan.FromSeconds(5));
+        }
         using var provider = await client.PostAsJsonAsync("/v1/auth/google", new { idToken = canaries[1] }, TestContext.Current.CancellationToken);
         Assert.Equal(500, (int)provider.StatusCode);
         using var delivery = await client.PostAsJsonAsync("/v1/auth/email/start", new { email = canaries[2], purpose = "signIn" }, TestContext.Current.CancellationToken);
@@ -94,6 +147,10 @@ public sealed class IdentityPrivacyTests(PostgresFixture postgres)
             historyClient.DefaultRequestHeaders.Authorization = client.DefaultRequestHeaders.Authorization;
             using var failed = await historyClient.GetAsync("/v1/sync/history/CANARY-PATH-PRIVATE/cafebabe-0000-7000-8000-000000000777?cursor=0&limit=1&q=CANARY-PATH-QUERY", TestContext.Current.CancellationToken);
             Assert.Equal(500, (int)failed.StatusCode);
+            using var failedPush = await PersonalFoodHttp.Push(historyClient, h, dataset, [privateRow]);
+            Assert.Equal(HttpStatusCode.InternalServerError, failedPush.StatusCode);
+            var failedBody = await failedPush.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            foreach (var canary in foodCanaries) { Assert.DoesNotContain(canary, failedBody, StringComparison.Ordinal); }
             using var unmatched = await historyClient.GetAsync("/CANARY-UNMATCHED-PRIVATE?q=CANARY-PATH-QUERY", TestContext.Current.CancellationToken); Assert.Equal(404, (int)unmatched.StatusCode);
             await failingFactory.Services.GetRequiredService<IHub>().FlushAsync(TimeSpan.FromSeconds(5));
         }
@@ -114,7 +171,7 @@ public sealed class IdentityPrivacyTests(PostgresFixture postgres)
         Assert.Contains("operation=push", metrics);
         Assert.NotEmpty(logs.Lines); Assert.NotEmpty(activities); Assert.NotEmpty(metrics); Assert.NotEmpty(auditLines);
         Assert.Contains(transport.Envelopes, envelope => envelope.Contains("\"exception\"", StringComparison.Ordinal));
-        foreach (var canary in canaries)
+        foreach (var canary in canaries.SelectMany(c => new[] { c, JsonSerializer.Serialize(c)[1..^1] }).Distinct(StringComparer.Ordinal))
         {
             Assert.DoesNotContain(canary, string.Join('\n', logs.Lines), StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain(canary, string.Join('\n', activities), StringComparison.OrdinalIgnoreCase);
@@ -124,6 +181,52 @@ public sealed class IdentityPrivacyTests(PostgresFixture postgres)
             Assert.DoesNotContain(canary, await postgres.LogsAsync(), StringComparison.OrdinalIgnoreCase);
         }
     }
+    [Fact]
+    public void Privacy_capture_detects_numeric_measurements_scopes_and_unformatted_structured_fields()
+    {
+        var metrics = new ConcurrentQueue<string>();
+        using var listener = CaptureMetrics(metrics);
+        using var source = new Meter("B17.PrivacyCapture.PositiveControl");
+        source.CreateCounter<byte>("byte").Add(197);
+        source.CreateCounter<short>("short").Add(29173);
+        source.CreateCounter<int>("int").Add(917264931);
+        source.CreateCounter<long>("long").Add(8172649312345L);
+        source.CreateHistogram<float>("float").Record(713.25f);
+        source.CreateHistogram<double>("double").Record(613.125);
+        source.CreateHistogram<decimal>("decimal").Record(513.0625m);
+        foreach (var marker in new[] { "197", "29173", "917264931", "8172649312345", "713.25", "613.125", "513.0625" })
+        { Assert.Contains(marker, metrics); }
+
+        using var logs = new CaptureLogs();
+        var logger = logs.CreateLogger("B17.PositiveControl");
+        using (logger.BeginScope(new Dictionary<string, object?> { ["ScopeKeyMarker"] = "ScopeValueMarker" }))
+        {
+            // Neither the formatter nor Dictionary.ToString reveals these fields.
+            if (logger.IsEnabled(LogLevel.Information))
+            {
+                logger.Log(LogLevel.Information, new EventId(1),
+                    new Dictionary<string, object?> { ["FieldKeyMarker"] = "FieldValueMarker" }, null, (_, _) => "fixed message");
+            }
+        }
+        var captured = string.Join('\n', logs.Lines);
+        foreach (var marker in new[] { "ScopeKeyMarker", "ScopeValueMarker", "FieldKeyMarker", "FieldValueMarker" })
+        { Assert.Contains(marker, captured, StringComparison.Ordinal); }
+    }
+
+    private static MeterListener CaptureMetrics(ConcurrentQueue<string> metrics)
+    {
+        var listener = new MeterListener { InstrumentPublished = (instrument, receiver) => receiver.EnableMeasurementEvents(instrument) };
+        Capture<byte>(); Capture<short>(); Capture<int>(); Capture<long>(); Capture<float>(); Capture<double>(); Capture<decimal>();
+        listener.Start();
+        return listener;
+
+        void Capture<T>() where T : struct, IFormattable => listener.SetMeasurementEventCallback<T>((_, value, tags, _) =>
+        {
+            metrics.Enqueue(value.ToString(value is double or float ? "R" : null, System.Globalization.CultureInfo.InvariantCulture));
+            foreach (var tag in tags) { metrics.Enqueue($"{tag.Key}={tag.Value}"); }
+        });
+    }
+
     private sealed class FailingHistory : FitnessBuddy.Modules.UserData.Application.ISyncStore
     {
         public Task<FitnessBuddy.Modules.UserData.Domain.PushOutcome?> PushForSessionAsync(FitnessBuddy.Modules.Identity.Contracts.IdentitySession principal, Guid? dataset, IReadOnlyList<FitnessBuddy.Modules.UserData.Domain.SyncVersion> versions, DateTimeOffset now, CancellationToken cancellationToken) => throw new InvalidOperationException("CANARY-PATH-PRIVATE");
@@ -155,16 +258,31 @@ public sealed class IdentityPrivacyTests(PostgresFixture postgres)
             Envelopes.Enqueue(Encoding.UTF8.GetString(stream.ToArray()));
         }
     }
-    private sealed class CaptureLogs : ILoggerProvider
+    private sealed class CaptureLogs : ILoggerProvider, ISupportExternalScope
     {
         public ConcurrentQueue<string> Lines { get; } = new();
+        private IExternalScopeProvider scopes = new LoggerExternalScopeProvider();
+        public void SetScopeProvider(IExternalScopeProvider scopeProvider) => scopes = scopeProvider;
         public ILogger CreateLogger(string categoryName) => new Logger(this);
+        private void CaptureState(object? state)
+        {
+            Lines.Enqueue(state?.ToString() ?? "");
+            if (state is IEnumerable<KeyValuePair<string, object?>> fields)
+            {
+                foreach (var field in fields) { Lines.Enqueue($"{field.Key}={field.Value}"); }
+            }
+        }
         public void Dispose() { }
         private sealed class Logger(CaptureLogs owner) : ILogger
         {
-            public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+            public IDisposable? BeginScope<TState>(TState state) where TState : notnull => owner.scopes.Push(state);
             public bool IsEnabled(LogLevel logLevel) => true;
-            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) => owner.Lines.Enqueue(formatter(state, exception) + " " + exception + " " + state);
+            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+            {
+                owner.Lines.Enqueue(formatter(state, exception) + " " + exception);
+                owner.CaptureState(state);
+                owner.scopes.ForEachScope((scope, capture) => capture.CaptureState(scope), owner);
+            }
         }
     }
 }

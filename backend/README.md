@@ -252,6 +252,15 @@ RLS. The experimental key/environment bypass has been removed. The HTTP contract
 closed payload registry are the authority; `make gen-sync-schemas` / `make check-sync-schemas`
 export/check it without network or a runtime file dependency.
 
+B17 adds `personalFood` v1 admission after the shared schema/representability checks. The
+entity-specific validator enforces A09 §3.0 text, GTIN, nested JSON, nutrient and serving rules
+for both live rows and full-payload tombstones; failures return only `invalidPayload`. UTF-16
+lengths and explicit Dart trimming match the shared generated corpus. App-only nutrition sanity
+is not a sync admission rule. New nutrient, serving-unit or state codes must ship in the server
+validator and corpus before an app emits them (or use a new schema version); see proposed TD-080.
+The Docker-free `UserData.Tests` project pins bounds/vocabularies and checks semantic parity;
+`Persistence.Tests` proves authenticated HTTP, retention, erasure and diagnostic privacy via Docker.
+
 Unbound/mismatched pushes never write or acknowledge an immutable version. Discover the dataset
 at pull cursor0, bind writes, merge a changed dataset before re-upload, and never advance a pull
 cursor from a push acknowledgement. Sequences are commit ordered per user. History expires after
