@@ -208,6 +208,12 @@ abstract class FbLocalizations {
   /// **'Why it is an estimate'**
   String get fbEstimateReasonLabel;
 
+  /// Screen-reader text of a number field: its name, then what it holds, which is the number typed so far and its unit, or only the unit while it is empty (for example: Protein, 12 g).
+  ///
+  /// In en, this message translates to:
+  /// **'{label}, {reading}'**
+  String fbNumberFieldSemantics(String label, String reading);
+
   /// No description provided for @fbNumberPadBackspace.
   ///
   /// In en, this message translates to:

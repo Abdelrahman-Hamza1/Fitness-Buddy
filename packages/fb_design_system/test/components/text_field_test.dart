@@ -113,4 +113,33 @@ void main() {
     final style = tester.widget<Text>(find.text('Oops')).style;
     expect(style?.color, FbTheme.light().colorScheme.error);
   });
+
+  testWidgets(
+    'UX-040 D18 FbTextField: textDirection sets the direction of the typed '
+    'text; by default it follows the layout',
+    (tester) async {
+      final controller = TextEditingController(text: 'لبنة');
+      addTearDown(controller.dispose);
+      await pumpFb(
+        tester,
+        FbTextField(
+          controller: controller,
+          label: 'Arabic name',
+          textDirection: TextDirection.rtl,
+        ),
+      );
+      expect(
+        tester.widget<EditableText>(find.byType(EditableText)).textDirection,
+        TextDirection.rtl,
+      );
+      await pumpFb(tester, FbTextField(controller: controller, label: 'Name'));
+      expect(
+        tester
+            .state<EditableTextState>(find.byType(EditableText))
+            .renderEditable
+            .textDirection,
+        TextDirection.ltr,
+      );
+    },
+  );
 }

@@ -1,12 +1,5 @@
-import 'dart:io';
-
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
-import 'package:fb_mobile/app/app.dart';
-import 'package:fb_mobile/app/app_scope.dart';
-import 'package:fb_mobile/core/config/app_config.dart';
-import 'package:fb_mobile/core/db/database_location.dart';
-import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
@@ -15,9 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:patrol/patrol.dart';
 
+import 'support/patrol_support.dart';
 import 'support/today_test_support.dart';
 
 const _pita = 'usda:pita_white';
@@ -29,132 +22,6 @@ const List<(String, String)> _slots = [
   (DefaultSlots.snacksId, 'Snacks'),
   (DefaultSlots.dinnerId, 'Dinner'),
 ];
-
-/// Pumps in real time until [done] holds; fails with [reason] after
-/// [timeout]. Local work only (database, pack), so the bounds are generous
-/// for a slow emulator but nothing waits on a network.
-Future<void> _waitUntil(
-  WidgetTester tester,
-  bool Function() done,
-  String reason, {
-  Duration timeout = const Duration(seconds: 30),
-}) async {
-  final watch = Stopwatch()..start();
-  while (!done()) {
-    if (watch.elapsed > timeout) {
-      fail('Timed out waiting for $reason; on screen: ${_screenSummary()}');
-    }
-    await tester.pump(const Duration(milliseconds: 100));
-  }
-  // One more frame so the widgets reflect the state that satisfied [done].
-  await tester.pump(const Duration(milliseconds: 100));
-}
-
-/// Taps [target] after proving the tap point really hits it; otherwise fails
-/// with what is there instead (a tap that misses is otherwise silent).
-Future<void> _tapExactly(
-  WidgetTester tester,
-  Finder target,
-  String what,
-) async {
-  await tester.ensureVisible(target);
-  await _pumpFor(tester, const Duration(milliseconds: 300));
-  final box = tester.renderObject<RenderBox>(target);
-  final center = tester.getCenter(target);
-  final result = tester.hitTestOnBinding(center);
-  final hits =
-      result.path.any((entry) => entry.target == box) ||
-      result.path.any(
-        (entry) =>
-            entry.target is RenderObject &&
-            _isDescendant(entry.target as RenderObject, box),
-      );
-  if (!hits) {
-    final size = tester.view.physicalSize / tester.view.devicePixelRatio;
-    String describe(Iterable<Object> targets) =>
-        targets.take(40).map((t) => t.runtimeType.toString()).join(' > ');
-    final route = ModalRoute.of(tester.element(target));
-    final sheets = find.byType(BottomSheet);
-    final sheetRect = sheets.evaluate().isEmpty
-        ? 'none'
-        : '${tester.getRect(sheets.last)}';
-    final first = describe(result.path.map((e) => e.target));
-    // Is it transient (an animation) or structural? Look again after 2 s.
-    await _pumpFor(tester, const Duration(seconds: 2));
-    final later = tester.hitTestOnBinding(tester.getCenter(target));
-    final hitsLater = later.path.any(
-      (e) =>
-          e.target is RenderObject &&
-          _isDescendant(e.target as RenderObject, box),
-    );
-    fail(
-      'Tap on $what would miss: center=$center, '
-      'rect=${tester.getRect(target)}, screen=$size, sheet=$sheetRect, '
-      'route current=${route?.isCurrent} active=${route?.isActive} '
-      'animation=${route?.animation?.status} '
-      'secondary=${route?.secondaryAnimation?.status}; '
-      'hits after 2 s=$hitsLater; path=[$first]',
-    );
-  }
-  await tester.tap(target);
-}
-
-bool _isDescendant(RenderObject child, RenderObject ancestor) {
-  RenderObject? node = child;
-  while (node != null) {
-    if (identical(node, ancestor)) return true;
-    node = node.parent;
-  }
-  return false;
-}
-
-/// What a failed wait saw: open sheets and the texts in sheets and
-/// snackbars (synthetic test data only), so CI annotations explain a timeout.
-String _screenSummary() {
-  String texts(Finder of) => find
-      .descendant(of: of, matching: find.byType(Text))
-      .evaluate()
-      .map((e) => (e.widget as Text).data ?? '')
-      .where((t) => t.isNotEmpty)
-      .take(40)
-      .join(' | ');
-  final sheets = find.byType(BottomSheet);
-  final snacks = find.byType(SnackBar);
-  final buttons = find
-      .byType(FbButton)
-      .evaluate()
-      .map((e) => e.widget as FbButton)
-      .map((b) => '${b.label}:${b.onPressed == null ? 'off' : 'on'}')
-      .join(' ');
-  return 'sheets=${sheets.evaluate().length} [${texts(sheets)}]; '
-      'snackbars=${snacks.evaluate().length} [${texts(snacks)}]; '
-      'buttons [$buttons]';
-}
-
-/// The same, for a condition that needs an `await` (the database).
-Future<void> _waitUntilAsync(
-  WidgetTester tester,
-  Future<bool> Function() done,
-  String reason, {
-  Duration timeout = const Duration(seconds: 30),
-}) async {
-  final watch = Stopwatch()..start();
-  while (!await done().timeout(
-    timeout,
-    onTimeout: () => throw TestFailure('Timed out awaiting $reason'),
-  )) {
-    if (watch.elapsed > timeout) fail('Timed out waiting for $reason');
-    await tester.pump(const Duration(milliseconds: 100));
-  }
-}
-
-/// Lets animations and queued frames finish, in real time.
-Future<void> _pumpFor(WidgetTester tester, Duration duration) async {
-  final watch = Stopwatch()..start();
-  while (watch.elapsed < duration) {
-    await tester.pump(const Duration(milliseconds: 50));
-  }
-}
 
 /// The item row of the entry [id] (the tile, whatever its meal).
 Finder _tile(String id) => find.byKey(ValueKey<String>('entry:$id'));
@@ -179,31 +46,31 @@ Future<void> _addFood(
   required String digit,
   required String addedName,
 }) async {
-  await _waitUntil(
+  await waitUntil(
     tester,
     () => find.byType(FoodSearchScreen).evaluate().isNotEmpty,
     'the food search screen',
   );
-  await _pumpFor(tester, const Duration(milliseconds: 400));
+  await pumpFor(tester, const Duration(milliseconds: 400));
   await tester.enterText(find.byType(TextField), query);
   final result = find.byWidgetPredicate(
     (w) => w is FoodResultRow && w.row.choice.ref.id == foodId,
   );
-  await _waitUntil(
+  await waitUntil(
     tester,
     () => result.evaluate().isNotEmpty,
     'the result $foodId for "$query"',
   );
   await tester.ensureVisible(result.first);
   await tester.tap(result.first);
-  await _waitUntil(
+  await waitUntil(
     tester,
     () =>
         find.byType(FoodSheet).evaluate().isNotEmpty &&
         find.text('Add').evaluate().isNotEmpty,
     'the food sheet to load',
   );
-  await _pumpFor(tester, const Duration(milliseconds: 400));
+  await pumpFor(tester, const Duration(milliseconds: 400));
   final picker = tester.widget<FbUnitPicker>(find.byType(FbUnitPicker));
   final unitLabel = picker.units.singleWhere((u) => u.id == unitId).label;
   await tester.tap(
@@ -230,7 +97,7 @@ Future<void> _addFood(
   await tester.ensureVisible(add);
   await tester.pump(const Duration(milliseconds: 100));
   await tester.tap(add);
-  await _waitUntil(
+  await waitUntil(
     tester,
     () =>
         find.byType(FoodSearchScreen).evaluate().isEmpty &&
@@ -246,66 +113,7 @@ Future<void> _addFood(
 /// faked and no API is reachable (as in `app_test`), so this is the offline
 /// diary. The profile is a throw-away database in the cache directory, so
 /// a phone's real diary is never touched.
-
-/// drift opens the database in a background isolate and sends the location's
-/// resolvers there, so they must capture only the path (a closure written in
-/// the test body would capture the WidgetTester and can't be sent).
-DatabaseLocation isolatedLocation(String profileKey, String path) =>
-    DatabaseLocation(
-      profileKey: profileKey,
-      root: () async => path,
-      temporary: () async => path,
-    );
-
-/// Starts the real app on a throw-away profile database in the cache
-/// directory (a phone's real diary is never touched), waits for the pack,
-/// and returns the container.
-Future<ProviderContainer> _boot(
-  PatrolIntegrationTester $,
-  String profileKey,
-) async {
-  final config = AppConfig.fromEnvironment();
-  final cache = await getTemporaryDirectory();
-  final root = await cache.createTemp('fb_today_it');
-  addTearDown(() {
-    try {
-      root.deleteSync(recursive: true);
-    } on FileSystemException {
-      // The cache directory is cleaned by the system anyway.
-    }
-  });
-  final container = ProviderContainer(
-    overrides: [
-      ...appOverrides(config),
-      databaseLocationProvider.overrideWithValue(
-        isolatedLocation(profileKey, root.path),
-      ),
-    ],
-  );
-  addTearDown(container.dispose);
-  final tester = $.tester;
-
-  // Loading skeletons pulse continuously; wait for data below, not settle.
-  await tester.pumpWidget(
-    UncontrolledProviderScope(
-      container: container,
-      child: const FitnessBuddyApp(),
-    ),
-  );
-  expect($(TodayScreen), findsOneWidget);
-
-  // The pack installs in the background after the first frame; wait for it
-  // before searching.
-  final db = container.read(appDatabaseProvider);
-  await _waitUntilAsync(
-    tester,
-    db.isCatalogAttached,
-    'the catalog pack to attach',
-    timeout: const Duration(seconds: 60),
-  );
-  return container;
-}
-
+///
 /// What the journeys read: the stored diary, and the header and every meal
 /// row of a day checked against it.
 class _Diary {
@@ -332,7 +140,7 @@ class _Diary {
     // Verify each total after revealing its row, then restore the top.
     final numberFinder = dayNumber(date);
     await revealDayWidget(tester, numberFinder, date, interactive: false);
-    await _waitUntil(
+    await waitUntil(
       tester,
       () =>
           tester.widget<FbBigNumber>(numberFinder).value ==
@@ -347,7 +155,7 @@ class _Diary {
         DisplayRounding.kcal(DiaryTotals.day(rows).kcal),
       );
       final text = rows.isEmpty ? '—' : '$kcal kcal';
-      await _waitUntil(
+      await waitUntil(
         tester,
         () =>
             find
@@ -365,7 +173,7 @@ class _Diary {
 /// Taps the header button [tooltip] and waits until it says [label].
 Future<void> _goToDay(WidgetTester tester, String tooltip, String label) async {
   await tester.tap(find.byTooltip(tooltip));
-  await _waitUntil(
+  await waitUntil(
     tester,
     () => find
         .descendant(of: find.byType(FbDateHeader), matching: find.text(label))
@@ -373,7 +181,7 @@ Future<void> _goToDay(WidgetTester tester, String tooltip, String label) async {
         .isNotEmpty,
     'the header to say $label',
   );
-  await _pumpFor(tester, const Duration(milliseconds: 600));
+  await pumpFor(tester, const Duration(milliseconds: 600));
 }
 
 /// Opens the meal [name] of [date] if it is closed.
@@ -382,7 +190,7 @@ Future<void> _openSlot(WidgetTester tester, LocalDate date, String name) async {
   await revealDayWidget(tester, row, date);
   if (tester.widget<FbDisclosureRow>(row).expanded) return;
   await tester.tap(row);
-  await _waitUntil(
+  await waitUntil(
     tester,
     () => tester.widget<FbDisclosureRow>(row).expanded,
     'the $name meal to open',
@@ -402,7 +210,7 @@ Future<Finder> _openDetails(
   if (panel.evaluate().isNotEmpty) return panel;
   await revealDayWidget(tester, _rowOf(id), date);
   await tester.tap(_rowOf(id));
-  await _waitUntil(
+  await waitUntil(
     tester,
     () => panel.evaluate().length == 1,
     'the item details to open',
@@ -420,7 +228,7 @@ void main() {
   patrolTest('OF-01 HM-009 DY-022 offline diary part a on yesterday', (
     $,
   ) async {
-    final container = await _boot($, 'it-today');
+    final container = await bootApp($, 'it-today', rootName: 'fb_today_it');
     final tester = $.tester;
     final diary = _Diary(tester, container);
     final stored = diary.stored;
@@ -432,7 +240,7 @@ void main() {
 
     // Yesterday, via the header's previous-day button.
     await tester.tap(find.byTooltip('Previous day'));
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => find
           .descendant(
@@ -443,7 +251,7 @@ void main() {
           .isNotEmpty,
       'the header to say Yesterday',
     );
-    await _pumpFor(tester, const Duration(milliseconds: 600));
+    await pumpFor(tester, const Duration(milliseconds: 600));
     await expectStored('empty yesterday', yesterday);
     expect(await stored(yesterday), isEmpty);
 
@@ -463,7 +271,7 @@ void main() {
       digit: '1',
       addedName: 'Pita bread, white',
     );
-    await _waitUntilAsync(
+    await waitUntilAsync(
       tester,
       () async => (await stored(yesterday)).length == 1,
       'the pita in the diary',
@@ -490,7 +298,7 @@ void main() {
       digit: '1',
       addedName: 'Banana, raw',
     );
-    await _waitUntilAsync(
+    await waitUntilAsync(
       tester,
       () async => (await stored(yesterday)).length == 2,
       'the banana in the diary',
@@ -508,7 +316,7 @@ void main() {
     await revealDayWidget(tester, _rowOf(pita.id), yesterday);
     await tester.tap(_rowOf(pita.id));
     final panel = find.byKey(ValueKey<String>('details:${pita.id}'));
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => panel.evaluate().length == 1,
       'the item details to open',
@@ -528,7 +336,7 @@ void main() {
     await expectStored('details open', yesterday);
     await revealDayWidget(tester, _rowOf(pita.id), yesterday);
     await tester.tap(_rowOf(pita.id));
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => panel.evaluate().isEmpty,
       'the item details to close',
@@ -539,7 +347,7 @@ void main() {
     await tester.tap(_slotRow(yesterday, 'Lunch'));
     await revealDayWidget(tester, _rowOf(banana.id), yesterday);
     await _swipe(tester, _rowOf(banana.id), 0.7);
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => find.text('Move to').evaluate().isNotEmpty,
       'the move sheet',
@@ -549,9 +357,9 @@ void main() {
       matching: find.widgetWithText(FbListRow, 'Dinner'),
     );
     await tester.ensureVisible(dinner);
-    await _pumpFor(tester, const Duration(milliseconds: 400));
+    await pumpFor(tester, const Duration(milliseconds: 400));
     await tester.tap(dinner);
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => find.text('Moved Banana, raw to Dinner').evaluate().isNotEmpty,
       'the move confirmation',
@@ -565,7 +373,7 @@ void main() {
     // Delete: swipe the pita toward the start edge.
     await revealDayWidget(tester, _rowOf(pita.id), yesterday);
     await _swipe(tester, _rowOf(pita.id), -0.7);
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => find.text('Deleted Pita bread, white').evaluate().isNotEmpty,
       'the delete confirmation',
@@ -576,7 +384,7 @@ void main() {
 
     // Undo brings it back, with its meal.
     await tester.tap(find.text('Undo'));
-    await _waitUntilAsync(
+    await waitUntilAsync(
       tester,
       () async => (await stored(yesterday)).any((e) => e.id == pita.id),
       'Undo to restore the pita',
@@ -590,7 +398,7 @@ void main() {
     // Day navigation: the day before is empty; coming back shows the same
     // entries; then on to today (nothing logged there).
     await tester.tap(find.byTooltip('Previous day'));
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => find
           .text(
@@ -600,10 +408,10 @@ void main() {
           .isNotEmpty,
       'the empty day before',
     );
-    await _pumpFor(tester, const Duration(milliseconds: 600));
+    await pumpFor(tester, const Duration(milliseconds: 600));
     await expectStored('day before', dayBefore);
     await tester.tap(find.byTooltip('Next day'));
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => find
           .descendant(
@@ -614,11 +422,11 @@ void main() {
           .isNotEmpty,
       'the header to say Yesterday again',
     );
-    await _pumpFor(tester, const Duration(milliseconds: 600));
+    await pumpFor(tester, const Duration(milliseconds: 600));
     await expectStored('yesterday again', yesterday);
     expect(await stored(yesterday), hasLength(2));
     await tester.tap(find.byTooltip('Next day'));
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => find
           .descendant(
@@ -629,7 +437,7 @@ void main() {
           .isNotEmpty,
       'the header to say Today',
     );
-    await _pumpFor(tester, const Duration(milliseconds: 600));
+    await pumpFor(tester, const Duration(milliseconds: 600));
     await expectStored('today', today);
     expect(await stored(today), isEmpty);
   }, timeout: const Timeout(Duration(minutes: 4)));
@@ -643,7 +451,7 @@ void main() {
   patrolTest('OF-01 DY-021 DY-022 DY-023 UX-030 offline diary journey', (
     $,
   ) async {
-    final container = await _boot($, 'it-journey');
+    final container = await bootApp($, 'it-journey', rootName: 'fb_today_it');
     final tester = $.tester;
     final diary = _Diary(tester, container);
     final stored = diary.stored;
@@ -680,7 +488,7 @@ void main() {
         digit: '1',
         addedName: name,
       );
-      await _waitUntilAsync(
+      await waitUntilAsync(
         tester,
         () async => (await stored(yesterday)).length == count,
         'the $query in the diary',
@@ -714,7 +522,7 @@ void main() {
       ),
       yesterday,
     );
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => find.byType(EntryAmountSheet).evaluate().isNotEmpty,
       'the amount sheet',
@@ -734,15 +542,15 @@ void main() {
         matching: find.text('Done'),
       ),
     );
-    await _pumpFor(tester, const Duration(milliseconds: 400));
+    await pumpFor(tester, const Duration(milliseconds: 400));
     final save = find.widgetWithText(FbButton, 'Save');
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => tester.widget<FbButton>(save).onPressed != null,
       'Save to be enabled',
     );
-    await _tapExactly(tester, save, 'Save');
-    await _waitUntil(
+    await tapExactly(tester, save, 'Save');
+    await waitUntil(
       tester,
       // The unit's label comes from the real pack (it may differ from the
       // host fixture's "loaves"), so match the message by its prefix.
@@ -776,7 +584,7 @@ void main() {
       ),
       yesterday,
     );
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => find.byType(MoveEntrySheet).evaluate().isNotEmpty,
       'the move sheet',
@@ -786,9 +594,9 @@ void main() {
       matching: find.widgetWithText(FbListRow, 'Dinner'),
     );
     await tester.ensureVisible(dinner);
-    await _pumpFor(tester, const Duration(milliseconds: 400));
+    await pumpFor(tester, const Duration(milliseconds: 400));
     await tester.tap(dinner);
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => find.text('Moved Banana, raw to Dinner').evaluate().isNotEmpty,
       'the move confirmation',
@@ -814,7 +622,7 @@ void main() {
       ),
       yesterday,
     );
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => find.text('Deleted Banana, raw').evaluate().isNotEmpty,
       'the delete confirmation',
@@ -822,7 +630,7 @@ void main() {
     expect((await stored(yesterday)).map((e) => e.id), [pita.id]);
     await expectStored('banana deleted', yesterday);
     await tester.tap(find.text('Undo'));
-    await _waitUntilAsync(
+    await waitUntilAsync(
       tester,
       () async => (await stored(yesterday)).any((e) => e.id == banana.id),
       'Undo to restore the banana',
@@ -842,13 +650,13 @@ void main() {
       ),
       yesterday,
     );
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => find.text('Copy to…').evaluate().isNotEmpty,
       'the meal menu',
     );
     await tester.tap(find.text('Copy to…'));
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => find.byType(CopyMealSheet).evaluate().isNotEmpty,
       'the copy sheet',
@@ -858,13 +666,13 @@ void main() {
       matching: find.widgetWithText(FbButton, 'Copy'),
     );
     await tester.ensureVisible(copy);
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => tester.widget<FbButton>(copy).onPressed != null,
       'Copy to be enabled',
     );
     await tester.tap(copy);
-    await _waitUntil(
+    await waitUntil(
       tester,
       () => find.text('Copied 1 item to Today').evaluate().isNotEmpty,
       'the copy confirmation',
@@ -901,5 +709,5 @@ Future<void> _swipe(WidgetTester tester, Finder row, double fraction) async {
     ),
     Offset(width * fraction, 0),
   );
-  await _pumpFor(tester, const Duration(milliseconds: 600));
+  await pumpFor(tester, const Duration(milliseconds: 600));
 }

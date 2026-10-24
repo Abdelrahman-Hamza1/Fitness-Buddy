@@ -5,8 +5,10 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// The Me tab (UX-010). An empty state until profile, goals and settings
-/// land; in the dev flavor it also has the "Design preview" row (A02 D15).
+/// The Me tab (UX-010). Its Food section opens Your foods (A09 D10); profile,
+/// goals and settings arrive later (A10), so the tab no longer shows an
+/// empty state. In the dev flavor it also has the "Design preview" row (A02
+/// D15).
 class MeScreen extends ConsumerWidget {
   /// Creates the screen.
   const new({super.key});
@@ -17,22 +19,27 @@ class MeScreen extends ConsumerWidget {
     final isDev = ref.watch(appConfigProvider).flavor == AppFlavor.dev;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.tabMe)),
-      body: Column(
-        children: [
-          if (isDev)
-            FbListRow(
-              title: l10n.meDesignPreview,
-              trailing: const Icon(FbIcons.next),
-              onTap: () => ref
-                  .read(appNavigatorProvider)
-                  .push(const DesignPreviewRoute()),
-            ),
-          Expanded(
-            child: FbEmptyState(
-              icon: FbIcons.me,
-              title: l10n.meEmptyTitle,
-              message: l10n.mePlaceholder,
-            ),
+      body: CustomScrollView(
+        slivers: [
+          SliverList.list(
+            children: [
+              FbSectionHeader(title: l10n.meSectionFood),
+              FbListRow(
+                title: l10n.meYourFoods,
+                trailing: const Icon(FbIcons.next),
+                onTap: () => ref
+                    .read(appNavigatorProvider)
+                    .push(const PersonalFoodsRoute()),
+              ),
+              if (isDev)
+                FbListRow(
+                  title: l10n.meDesignPreview,
+                  trailing: const Icon(FbIcons.next),
+                  onTap: () => ref
+                      .read(appNavigatorProvider)
+                      .push(const DesignPreviewRoute()),
+                ),
+            ],
           ),
         ],
       ),

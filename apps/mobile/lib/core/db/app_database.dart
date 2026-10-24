@@ -5,9 +5,11 @@ import 'package:fb_mobile/core/db/app_database.steps.dart';
 import 'package:fb_mobile/core/db/catalog/catalog_pack_source.dart';
 import 'package:fb_mobile/core/db/migrations/from_1_to_2.dart';
 import 'package:fb_mobile/core/db/migrations/from_2_to_3.dart';
+import 'package:fb_mobile/core/db/migrations/from_3_to_4.dart';
 import 'package:fb_mobile/core/db/seeds/default_slots_seed.dart';
 import 'package:fb_mobile/core/db/synced_tables.dart';
 import 'package:fb_mobile/core/db/tables/diary_tables.dart';
+import 'package:fb_mobile/core/db/tables/food_tables.dart';
 import 'package:fb_mobile/core/db/tables/settings_tables.dart';
 import 'package:fb_mobile/core/db/tables/sync_tables.dart';
 import 'package:fb_mobile/core/db/write_guard.dart';
@@ -39,6 +41,7 @@ typedef CatalogErrorHandler = void Function(Object error, StackTrace stack);
     DayMarks,
     SavedMeals,
     SavedMealItems,
+    PersonalFoods,
   ],
   include: {'sync_triggers.drift', 'diary.drift'},
 )
@@ -63,6 +66,10 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
 
   /// The tables that sync, with their entity wire names (A01 D16).
   late final List<SyncedTable<Table, Object?>> syncedTables = [
+    SyncedTable<$PersonalFoodsTable, PersonalFoodRow>(
+      personalFoods,
+      personalFoodEntity,
+    ),
     SyncedTable<$SettingsKvTable, SettingRow>(settingsKv, settingEntity),
     SyncedTable<$MealSlotsTable, MealSlotRow>(mealSlots, mealSlotEntity),
     SyncedTable<$DishGroupsTable, DishGroupRow>(dishGroups, dishGroupEntity),
@@ -79,7 +86,7 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
   ];
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -87,7 +94,11 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
       await m.createAll();
       await seedDefaultSlots(this, mealSlots);
     },
-    onUpgrade: stepByStep(from1To2: from1To2, from2To3: from2To3),
+    onUpgrade: stepByStep(
+      from1To2: from1To2,
+      from2To3: from2To3,
+      from3To4: from3To4,
+    ),
     beforeOpen: (details) async {
       // drift runs this on the executor it's opening, below the guard (the
       // token is set anyway, so it never depends on that).

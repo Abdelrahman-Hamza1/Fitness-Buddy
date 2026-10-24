@@ -166,4 +166,34 @@ void main() {
     );
     handle.dispose();
   });
+
+  testWidgets(
+    'UX-040 D18 FbChoiceChip: a semanticLabel replaces the label for a '
+    'screen reader; the chip still shows the label',
+    (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpFb(
+        tester,
+        FbChoiceChip(
+          label: 'g',
+          semanticLabel: 'Serving size in grams',
+          dropdown: false,
+          onTap: () {},
+        ),
+      );
+      expect(find.text('g'), findsOneWidget);
+      expect(
+        tester.getSemantics(find.byType(FbChoiceChip)),
+        matchesSemantics(
+          label: 'Serving size in grams',
+          isButton: true,
+          hasTapAction: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasSelectedState: true,
+        ),
+      );
+      handle.dispose();
+    },
+  );
 }

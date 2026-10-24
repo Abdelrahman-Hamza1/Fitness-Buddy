@@ -1,5 +1,6 @@
 import 'package:fb_domain/src/changes/change_op.dart';
 import 'package:fb_domain/src/diary/diary_entry.dart';
+import 'package:fb_domain/src/diary/food_ref.dart';
 import 'package:fb_domain/src/nutrition/nutrient_field.dart';
 import 'package:fb_domain/src/time/local_date.dart';
 import 'package:fb_domain/src/time/local_time.dart';
@@ -835,4 +836,175 @@ bool _sameList<T>(List<T> a, List<T> b) {
     if (a[i] != b[i]) return false;
   }
   return true;
+}
+
+/// Observed saved-meal membership and versions (A09 D19).
+final class SavedMealVersions {
+  /// A nonempty exact set of item identities.
+  new({required this.meal, required Iterable<VersionedId> items})
+    : items = List.unmodifiable(items) {
+    if (this.items.isEmpty ||
+        this.items.map((v) => v.id).toSet().length != this.items.length) {
+      throw ArgumentError('invalid saved meal source');
+    }
+  }
+
+  /// Shown parent row.
+  final VersionedId meal;
+
+  /// Shown item rows.
+  final List<VersionedId> items;
+  @override
+  String toString() => 'SavedMealVersions';
+  @override
+  bool operator ==(Object other) =>
+      other is SavedMealVersions &&
+      other.meal == meal &&
+      _sameList(items, other.items);
+  @override
+  int get hashCode =>
+      Object.hash(SavedMealVersions, meal, Object.hashAll(items));
+}
+
+/// Copies the exact shown saved snapshots, without recalculation (DY-031).
+final class LogSavedMeal extends DiaryOp {
+  /// New IDs correspond exactly to the shown item set.
+  new({
+    required this.expected,
+    required Map<String, String> entryIds,
+    required this.when,
+    this.slotId,
+  }) : entryIds = Map.unmodifiable(entryIds),
+       super._() {
+    final sources = {expected.meal.id, ...expected.items.map((v) => v.id)};
+    final items = expected.items.map((v) => v.id).toSet();
+    if (this.entryIds.length != items.length ||
+        !this.entryIds.keys.every(items.contains) ||
+        this.entryIds.values.toSet().length != this.entryIds.length ||
+        this.entryIds.values.any(sources.contains)) {
+      throw ArgumentError('invalid saved meal entry IDs');
+    }
+    for (final id in this.entryIds.values) {
+      checkUuid(id, 'entryId');
+    }
+    if (slotId != null) checkUuid(slotId!, 'slotId');
+  }
+
+  /// Observed source.
+  final SavedMealVersions expected;
+
+  /// Item to new entry ID.
+  final Map<String, String> entryIds;
+
+  /// Target day/time.
+  final EntryWhen when;
+
+  /// Target slot, or inferred from time.
+  final String? slotId;
+  @override
+  String toString() => 'LogSavedMeal';
+  @override
+  bool operator ==(Object other) =>
+      other is LogSavedMeal &&
+      other.expected == expected &&
+      other.when == when &&
+      other.slotId == slotId &&
+      entryIds.length == other.entryIds.length &&
+      entryIds.entries.every((e) => other.entryIds[e.key] == e.value);
+  @override
+  int get hashCode => Object.hash(
+    LogSavedMeal,
+    expected,
+    when,
+    slotId,
+    Object.hashAllUnordered(
+      entryIds.entries.map((e) => Object.hash(e.key, e.value)),
+    ),
+  );
+}
+
+/// Repoints live diary and saved-item references, preserving all snapshots.
+final class RelinkFoodRefs extends DiaryOp {
+  /// Source and destination references.
+  new({required this.from, required this.to}) : super._() {
+    if (from.kind != FoodRefKind.personal ||
+        to.kind != FoodRefKind.personal ||
+        from.id == null ||
+        to.id == null ||
+        from.id == to.id) {
+      throw ArgumentError('invalid personal relink');
+    }
+  }
+
+  /// Match by kind and ID; catalog version is not part of the selector.
+  final FoodRef from;
+
+  /// Replacement reference, including its version.
+  final FoodRef to;
+  @override
+  String toString() => 'RelinkFoodRefs';
+  @override
+  bool operator ==(Object other) =>
+      other is RelinkFoodRefs && other.from == from && other.to == to;
+  @override
+  int get hashCode => Object.hash(RelinkFoodRefs, from, to);
+}
+
+/// Rename a saved meal at the shown version.
+final class RenameSavedMeal extends DiaryOp {
+  /// Trimmed name, 1–60 characters.
+  new(this.id, this.expectedVersion, String name)
+    : name = name.trim(),
+      super._() {
+    checkUuid(id, 'id');
+    checkRowVersion(expectedVersion);
+    if (this.name.isEmpty ||
+        this.name.length > 60 ||
+        this.name.contains('\u0000')) {
+      throw ArgumentError('invalid meal name');
+    }
+  }
+
+  /// Parent ID.
+  final String id;
+
+  /// Shown version.
+  final int expectedVersion;
+
+  /// Private name.
+  final String name;
+  @override
+  String toString() => 'RenameSavedMeal';
+  @override
+  bool operator ==(Object other) =>
+      other is RenameSavedMeal &&
+      other.id == id &&
+      other.expectedVersion == expectedVersion &&
+      other.name == name;
+  @override
+  int get hashCode => Object.hash(RenameSavedMeal, id, expectedVersion, name);
+}
+
+/// Tombstones a saved meal and all its live items atomically.
+final class DeleteSavedMeal extends DiaryOp {
+  /// Parent identity and shown version.
+  new(this.id, this.expectedVersion) : super._() {
+    checkUuid(id, 'id');
+    checkRowVersion(expectedVersion);
+  }
+
+  /// Parent ID.
+  final String id;
+
+  /// Shown version.
+  final int expectedVersion;
+  @override
+  String toString() => 'DeleteSavedMeal';
+  @override
+  bool operator ==(Object other) =>
+      other is DeleteSavedMeal &&
+      other.id == id &&
+      other.expectedVersion == expectedVersion;
+  @override
+  int get hashCode => Object.hash(DeleteSavedMeal, id, expectedVersion);
 }

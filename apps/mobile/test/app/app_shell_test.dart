@@ -33,7 +33,7 @@ void main() {
   );
 
   testWidgets(
-    "UX-010 tapping a tab shows its placeholder and keeps the other branches' "
+    "UX-010 tapping a tab shows its content and keeps the other branches' "
     'state',
     (tester) async {
       await pumpApp(tester);
@@ -42,7 +42,7 @@ void main() {
       final tabs = {
         'Progress': (1, ProgressScreen, 'Charts appear after'),
         'Workouts': (2, WorkoutsScreen, 'Your workouts will'),
-        'Me': (3, MeScreen, 'Your profile and settings'),
+        'Me': (3, MeScreen, 'Your foods'),
         'Today': (0, TodayScreen, 'Search for a food'),
       };
       for (final MapEntry(key: label, value: (index, screen, text))

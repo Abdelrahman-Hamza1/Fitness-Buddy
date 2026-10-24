@@ -50,8 +50,10 @@ Future<ProviderContainer> pumpApp(
 }) async {
   final container = ProviderContainer.test(
     overrides: [
-      ...(phone ?? TestPhone()).overrides(),
-      ...todayOverrides(),
+      ...[
+        ...(phone ?? TestPhone()).overrides(),
+        ...todayOverrides(),
+      ].where((base) => !overrides.any((o) => o.origin == base.origin)),
       ...overrides,
     ],
   );

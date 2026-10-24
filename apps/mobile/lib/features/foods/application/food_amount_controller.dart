@@ -136,8 +136,7 @@ class FoodAmountController extends _$FoodAmountController {
               .read(diaryRepositoryProvider)
               .watchEntry(replacing.id)
               .first;
-    final initial = DefaultPortion.choose(
-      food.measures,
+    final initial = food.defaultPortion(
       lastUsed: replacing == null
           ? food.lastUsed?.amount.input
           : entry?.amount.input,

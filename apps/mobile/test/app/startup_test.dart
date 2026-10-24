@@ -88,10 +88,7 @@ void main() {
       _expectShell();
       await tester.tap(find.text('Me'));
       await tester.pumpAndSettle();
-      expect(
-        find.text('Your profile and settings will live here.'),
-        findsOneWidget,
-      );
+      expect(find.text('Your foods'), findsOneWidget);
     });
   }
 

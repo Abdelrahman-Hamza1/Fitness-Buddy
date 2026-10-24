@@ -31,6 +31,7 @@ _The one-page process for both implementers (TD-075, owner 2026-10-17). Part A i
 | Data/docs | Sonnet | Sonnet | validators + CI |
 
 - A failed Sonnet work package or review round is retried on Opus.
+- **Security review on Claude's Risky steps** is Claude's `security-reviewer` agent, also when Codex built some of the WPs (it is independent of them); Part C's separate GPT security session applies to the steps marked Codex.
 - `ux-reviewer` joins real screens and user-facing copy; the architect reviews code only for new foundations and seams.
 - The orchestrator (main session) briefs agents with self-contained briefs (`13` §6), checks their claims against diffs and CI, and writes the Outcome.
 

@@ -1,9 +1,11 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/application/food_search_controller.dart';
 import 'package:fb_mobile/features/foods/application/food_search_row.dart';
+import 'package:fb_mobile/features/foods/application/new_food_prefill.dart';
 import 'package:fb_mobile/features/foods/presentation/food_result_row.dart';
 import 'package:fb_mobile/features/foods/presentation/food_sheet_entry.dart';
 import 'package:flutter/scheduler.dart';
@@ -12,6 +14,18 @@ import 'package:material_ui/material_ui.dart';
 
 /// Opens the amount flow for a tapped result; see [openFoodSheet].
 typedef FoodPicked = void Function(BuildContext context, FoodPick pick);
+
+/// The most characters of a query the "Create …" label quotes.
+const int _createQuoteMax = 24;
+
+/// [query] as the "Create …" label quotes it: whole when short, else its
+/// first characters and "…" (the form gets the whole query).
+String createQuote(String query) {
+  final chars = query.characters;
+  return chars.length <= _createQuoteMax
+      ? query
+      : '${chars.take(_createQuoteMax - 1).toString().trimRight()}…';
+}
 
 /// The add-food search (FD-020, FD-021, FD-023): one box, results as you
 /// type from the offline pack and your own history, recent foods while the
@@ -69,6 +83,16 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
 
   void _search(String text) =>
       ref.read(foodSearchControllerProvider.notifier).setQuery(text);
+
+  /// "Create … as your own food" (A09 D9): the query goes to the form
+  /// through a one-shot provider, never through the URL (backlog #42).
+  void _createFood(String query) {
+    FocusScope.of(context).unfocus();
+    ref.read(newFoodPrefillProvider.notifier).put(query);
+    ref
+        .read(appNavigatorProvider)
+        .push(NewFoodFromSearchRoute(date: widget.date, slotId: widget.slotId));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +180,8 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
                     slotId: widget.slotId,
                     replace: widget.replace,
                     onPick: widget.onPick,
+                    // Changing a logged item's food picks an existing food.
+                    onCreate: widget.replace == null ? _createFood : null,
                   ),
           ),
         ],
@@ -174,6 +200,7 @@ class _Results extends StatelessWidget {
     required this.slotId,
     required this.replace,
     required this.onPick,
+    required this.onCreate,
   });
 
   final String query;
@@ -185,9 +212,14 @@ class _Results extends StatelessWidget {
   final VersionedId? replace;
   final FoodPicked onPick;
 
+  /// Starts a new personal food named [query]; null where it isn't offered.
+  final ValueChanged<String>? onCreate;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final create = query.isEmpty ? null : onCreate;
+    final createLabel = l10n.foodSearchCreate(createQuote(query));
     if (rows.isEmpty) {
       return CustomScrollView(
         slivers: [
@@ -198,6 +230,13 @@ class _Results extends StatelessWidget {
                     icon: FbIcons.search,
                     title: l10n.foodSearchNotReadyTitle,
                     message: l10n.foodSearchNotReadyMessage,
+                    action: create == null
+                        ? null
+                        : FbButton.secondary(
+                            label: createLabel,
+                            icon: FbIcons.add,
+                            onPressed: () => create(query),
+                          ),
                   )
                 : query.isEmpty
                 ? FbEmptyState(
@@ -209,6 +248,13 @@ class _Results extends StatelessWidget {
                     icon: FbIcons.search,
                     title: l10n.foodSearchNoMatchTitle(query),
                     message: l10n.foodSearchNoMatchMessage,
+                    action: create == null
+                        ? null
+                        : FbButton.secondary(
+                            label: createLabel,
+                            icon: FbIcons.add,
+                            onPressed: () => create(query),
+                          ),
                   ),
           ),
         ],
@@ -235,6 +281,13 @@ class _Results extends StatelessWidget {
                 ),
               );
             },
+          ),
+        if (create != null)
+          FbListRow(
+            key: const ValueKey('create-personal-food'),
+            title: createLabel,
+            leading: const Icon(FbIcons.add),
+            onTap: () => create(query),
           ),
       ],
     );

@@ -32,6 +32,15 @@
   "fbEstimateRangeLabel": "Likely range",
   "fbEstimateReasonLabel": "Why it is an estimate",
 
+  "fbNumberFieldSemantics": "{label}, {reading}",
+  "@fbNumberFieldSemantics": {
+    "description": "Screen-reader text of a number field: its name, then what it holds, which is the number typed so far and its unit, or only the unit while it is empty (for example: Protein, 12 g).",
+    "placeholders": {
+      "label": { "type": "String" },
+      "reading": { "type": "String" }
+    }
+  },
+
   "fbNumberPadBackspace": "Delete last digit",
   "fbNumberPadDecimal": "Decimal point",
 

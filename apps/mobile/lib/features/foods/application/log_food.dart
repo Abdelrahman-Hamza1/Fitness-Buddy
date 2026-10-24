@@ -62,6 +62,10 @@ final class LogFood {
     String? slotId,
   }) async {
     if (input.amount <= 0) return const FoodLogFailed('invalidAmount');
+    if (choice.ref.kind == FoodRefKind.personal &&
+        (choice.guard == null || choice.guard!.id != choice.ref.id)) {
+      return const FoodLogFailed('removed');
+    }
     final resolved = choice.measures.resolve(input);
     if (resolved is! Resolved) return const FoodLogFailed('unresolvedAmount');
     final now = EntryTime.now(clock);
@@ -76,12 +80,19 @@ final class LogFood {
         basis: resolved.basis,
       ),
     );
-    final result = await apply(
-      ChangeSet([
-        LogEntries([entry]),
-      ], origin: Origin.direct),
-    );
-    if (result is Rejected) return const FoodLogFailed('rejected');
+    final ApplyResult result;
+    try {
+      result = await apply(
+        ChangeSet([
+          if (choice.ref.kind == FoodRefKind.personal)
+            RequirePersonalFood(choice.guard!),
+          LogEntries([entry]),
+        ], origin: Origin.direct),
+      );
+    } on ChangeRejected catch (rejection) {
+      return foodLogFailure(rejection.failure);
+    }
+    if (result is Rejected) return foodLogFailure(result.failure);
     final undo = undoStack.record(
       result as Applied,
       UndoLabel('foodLogged', args: {'name': choice.names.en}),
@@ -89,3 +100,12 @@ final class LogFood {
     return FoodLogged(undo.id, choice.names.en, slotId);
   }
 }
+
+/// Maps only known single-writer rejections; unexpected errors propagate.
+FoodLogFailed foodLogFailure(ChangeFailure failure) =>
+    FoodLogFailed(switch (failure) {
+      VersionConflict() => 'changed',
+      RowNotFound(entity: 'personalFood') => 'changed',
+      RowNotFound() => 'removed',
+      _ => 'invalid',
+    });

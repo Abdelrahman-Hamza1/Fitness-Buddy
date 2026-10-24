@@ -71,6 +71,11 @@ class FbLocalizationsEn extends FbLocalizations {
   String get fbEstimateReasonLabel => 'Why it is an estimate';
 
   @override
+  String fbNumberFieldSemantics(String label, String reading) {
+    return '$label, $reading';
+  }
+
+  @override
   String get fbNumberPadBackspace => 'Delete last digit';
 
   @override

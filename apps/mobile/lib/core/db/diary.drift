@@ -17,3 +17,10 @@ CREATE INDEX ix_saved_meal_items_meal ON saved_meal_items (saved_meal_id)
 
 CREATE INDEX ix_day_marks_date ON day_marks (local_date)
   WHERE deleted_at IS NULL;
+
+-- Personal-food merge relinks, without scanning unrelated history.
+CREATE INDEX ix_diary_entries_food ON diary_entries (food_kind, food_id)
+  WHERE deleted_at IS NULL;
+
+CREATE INDEX ix_saved_meal_items_food ON saved_meal_items (food_kind, food_id)
+  WHERE deleted_at IS NULL;

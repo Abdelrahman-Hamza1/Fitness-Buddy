@@ -111,7 +111,7 @@ final class FoodSearchServiceProvider
   }
 }
 
-String _$foodSearchServiceHash() => r'5e58926fbe13bba7570be33a04e3dde5e26e293b';
+String _$foodSearchServiceHash() => r'fc73d7dcd8c6342829753e309dff5281b35630fc';
 
 /// Loads the selected food using fresh history and current metadata.
 
@@ -173,7 +173,7 @@ final class FoodChoiceProvider
   }
 }
 
-String _$foodChoiceHash() => r'8eb8b86bb05b62e8f8325924f7f8240169da5984';
+String _$foodChoiceHash() => r'79e3d5c405a6ae383f8db048146edefcf020516d';
 
 /// Loads the selected food using fresh history and current metadata.
 
@@ -337,3 +337,186 @@ final class ReplaceEntryFoodProvider
 }
 
 String _$replaceEntryFoodHash() => r'68bffbc4d040303e9e2ea48812dca97c3209c7bd';
+
+/// Live search/form definitions.
+
+@ProviderFor(personalFoods)
+final personalFoodsProvider = PersonalFoodsProvider._();
+
+/// Live search/form definitions.
+
+final class PersonalFoodsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<PersonalFood>>,
+          List<PersonalFood>,
+          Stream<List<PersonalFood>>
+        >
+    with
+        $FutureModifier<List<PersonalFood>>,
+        $StreamProvider<List<PersonalFood>> {
+  /// Live search/form definitions.
+  PersonalFoodsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'personalFoodsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$personalFoodsHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<List<PersonalFood>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<PersonalFood>> create(Ref ref) {
+    return personalFoods(ref);
+  }
+}
+
+String _$personalFoodsHash() => r'fcd79add619889c61fa10008ab4b7a4a11c92cb6';
+
+/// Row observed by a disposable edit form.
+
+@ProviderFor(personalFood)
+final personalFoodProvider = PersonalFoodFamily._();
+
+/// Row observed by a disposable edit form.
+
+final class PersonalFoodProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<PersonalFood?>,
+          PersonalFood?,
+          Stream<PersonalFood?>
+        >
+    with $FutureModifier<PersonalFood?>, $StreamProvider<PersonalFood?> {
+  /// Row observed by a disposable edit form.
+  PersonalFoodProvider._({
+    required PersonalFoodFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'personalFoodProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$personalFoodHash();
+
+  @override
+  String toString() {
+    return r'personalFoodProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<PersonalFood?> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<PersonalFood?> create(Ref ref) {
+    final argument = this.argument as String;
+    return personalFood(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PersonalFoodProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$personalFoodHash() => r'f1eb644ab89eca51de079e66b26ea173cecdd2a4';
+
+/// Row observed by a disposable edit form.
+
+final class PersonalFoodFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<PersonalFood?>, String> {
+  PersonalFoodFamily._()
+    : super(
+        retry: null,
+        name: r'personalFoodProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Row observed by a disposable edit form.
+
+  PersonalFoodProvider call(String id) =>
+      PersonalFoodProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'personalFoodProvider';
+}
+
+/// Commands retain pending keys across route changes.
+
+@ProviderFor(personalFoodActions)
+final personalFoodActionsProvider = PersonalFoodActionsProvider._();
+
+/// Commands retain pending keys across route changes.
+
+final class PersonalFoodActionsProvider
+    extends
+        $FunctionalProvider<
+          PersonalFoodActions,
+          PersonalFoodActions,
+          PersonalFoodActions
+        >
+    with $Provider<PersonalFoodActions> {
+  /// Commands retain pending keys across route changes.
+  PersonalFoodActionsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'personalFoodActionsProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$personalFoodActionsHash();
+
+  @$internal
+  @override
+  $ProviderElement<PersonalFoodActions> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  PersonalFoodActions create(Ref ref) {
+    return personalFoodActions(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(PersonalFoodActions value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<PersonalFoodActions>(value),
+    );
+  }
+}
+
+String _$personalFoodActionsHash() =>
+    r'1dfc2b4cc4d9af6fa991832d1944cfaf065f5ced';

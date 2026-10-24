@@ -122,10 +122,7 @@ void main() {
       expect(f.auth.creates, 1);
       await tester.tap(find.text('Me'));
       await tester.pumpAndSettle();
-      expect(
-        find.text('Your profile and settings will live here.'),
-        findsOneWidget,
-      );
+      expect(find.text('Your foods'), findsOneWidget);
       await tester.tap(find.text('Today'));
       await tester.pumpAndSettle();
       expect(find.byType(TodayScreen), findsOneWidget);
@@ -164,10 +161,7 @@ void main() {
     expect(find.byType(TodayScreen), findsOneWidget);
     await tester.tap(find.text('Me'));
     await tester.pumpAndSettle();
-    expect(
-      find.text('Your profile and settings will live here.'),
-      findsOneWidget,
-    );
+    expect(find.text('Your foods'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

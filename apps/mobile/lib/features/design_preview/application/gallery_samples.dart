@@ -76,6 +76,9 @@ abstract final class GallerySamples {
   static const String nameFieldLabel = 'Name';
   static const String nameFieldHint = 'Breakfast bowl';
   static const String nameFieldError = 'Give it a name';
+  static const String numberFieldLabel = 'Protein';
+  static const String numberFieldUnit = 'g';
+  static const String numberFieldError = 'More than 100 g in 100 g';
 
   /// The amount display: number, unit and what a screen reader says.
   static const String amountNumber = '100';

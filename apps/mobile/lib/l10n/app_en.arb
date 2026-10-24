@@ -28,10 +28,6 @@
   "@workoutsPlaceholder": {
     "description": "Placeholder body of the Workouts tab until workouts are built."
   },
-  "mePlaceholder": "Your profile and settings will live here.",
-  "@mePlaceholder": {
-    "description": "Placeholder body of the Me tab until profile and settings are built."
-  },
   "updateRequiredTitle": "Update needed",
   "@updateRequiredTitle": {
     "description": "Title of the screen shown when this app version is too old to talk to the server."
@@ -63,10 +59,6 @@
   "workoutsEmptyTitle": "No workouts yet",
   "@workoutsEmptyTitle": {
     "description": "Title of the Workouts tab's empty state until workouts are built."
-  },
-  "meEmptyTitle": "Nothing to set up yet",
-  "@meEmptyTitle": {
-    "description": "Title of the Me tab's empty state until profile and settings are built."
   },
   "meDesignPreview": "Design preview",
   "@meDesignPreview": {
@@ -1619,5 +1611,461 @@
         "type": "String"
       }
     }
+  },
+  "meSectionFood": "Food",
+  "@meSectionFood": {
+    "description": "Me tab: the heading of the section with the food lists (Your foods)."
+  },
+  "meYourFoods": "Your foods",
+  "@meYourFoods": {
+    "description": "Me tab: the row that opens the list of foods the user made."
+  },
+  "yourFoodsTitle": "Your foods",
+  "@yourFoodsTitle": {
+    "description": "Title of the list of foods the user made."
+  },
+  "yourFoodsNew": "New food",
+  "@yourFoodsNew": {
+    "description": "Tooltip and button: starts a new food of your own."
+  },
+  "yourFoodsEmptyTitle": "No foods of your own yet",
+  "@yourFoodsEmptyTitle": {
+    "description": "Your foods: title of the empty state."
+  },
+  "yourFoodsEmptyMessage": "Add a food you eat often with the numbers from its label. It shows up first in search.",
+  "@yourFoodsEmptyMessage": {
+    "description": "Your foods: one line of help in the empty state."
+  },
+  "yourFoodsLoadFailed": "Couldn't load your foods. Try again.",
+  "@yourFoodsLoadFailed": {
+    "description": "Your foods: shown when the list could not be read."
+  },
+  "yourFoodsKcalPer": "{kcal} kcal per {basis}",
+  "@yourFoodsKcalPer": {
+    "description": "Your foods and merge list: the calories of a food, for example 250 kcal per 100 g.",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "basis": {
+        "type": "String"
+      }
+    }
+  },
+  "personalFoodBasis100g": "100 g",
+  "@personalFoodBasis100g": {
+    "description": "Personal food form: choice for values given per 100 grams. Also names the basis in lists."
+  },
+  "personalFoodBasis100ml": "100 ml",
+  "@personalFoodBasis100ml": {
+    "description": "Personal food form: choice for values given per 100 millilitres. Also names the basis in lists."
+  },
+  "personalFoodBasisServing": "One serving",
+  "@personalFoodBasisServing": {
+    "description": "Personal food form: choice for values given for one serving, as printed on a label."
+  },
+  "personalFoodNewTitle": "New food",
+  "@personalFoodNewTitle": {
+    "description": "Title of the form that creates a food."
+  },
+  "personalFoodEditTitle": "Edit food",
+  "@personalFoodEditTitle": {
+    "description": "Title of the form that edits a food."
+  },
+  "personalFoodMenuTooltip": "More options",
+  "@personalFoodMenuTooltip": {
+    "description": "Tooltip of the form menu button (merge a duplicate, delete)."
+  },
+  "personalFoodLoadFailed": "Couldn't open this food. Try again.",
+  "@personalFoodLoadFailed": {
+    "description": "Personal food form: shown when the food could not be read."
+  },
+  "personalFoodDeletedBanner": "This food was deleted.",
+  "@personalFoodDeletedBanner": {
+    "description": "Personal food form: shown when the food being edited no longer exists. Save is off."
+  },
+  "personalFoodChangedBanner": "This food changed.",
+  "@personalFoodChangedBanner": {
+    "description": "Personal food form: shown when the food was changed elsewhere while it is open."
+  },
+  "personalFoodReload": "Reload",
+  "@personalFoodReload": {
+    "description": "Personal food form and merge sheet: takes over the changed food and keeps what was typed."
+  },
+  "personalFoodSave": "Save",
+  "@personalFoodSave": {
+    "description": "Personal food form: the button that saves the food."
+  },
+  "personalFoodSaveChanged": "This food changed elsewhere. Reload to see the latest. What you typed stays.",
+  "@personalFoodSaveChanged": {
+    "description": "Personal food form: shown under the form, with a Reload action, when saving was refused because the food changed."
+  },
+  "personalFoodSaveRemoved": "This food was deleted, so nothing was saved.",
+  "@personalFoodSaveRemoved": {
+    "description": "Personal food form: shown when saving was refused because the food was deleted."
+  },
+  "personalFoodSaveFailed": "Couldn't save that. Check the numbers and try again.",
+  "@personalFoodSaveFailed": {
+    "description": "Personal food form: shown when saving did not work."
+  },
+  "personalFoodFixFields": "Some fields need a look. They're marked below.",
+  "@personalFoodFixFields": {
+    "description": "Personal food form: shown when Save was pressed with fields that are not valid yet."
+  },
+  "personalFoodSavedMessage": "Saved {name}",
+  "@personalFoodSavedMessage": {
+    "description": "Snackbar after a personal food was saved, with Undo.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "personalFoodDeletedMessage": "Deleted {name}",
+  "@personalFoodDeletedMessage": {
+    "description": "Snackbar after a personal food was deleted, with Undo.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "personalFoodsMergedMessage": "Merged {merged} into {survivor}",
+  "@personalFoodsMergedMessage": {
+    "description": "Snackbar after two personal foods were merged, with Undo.",
+    "placeholders": {
+      "merged": {
+        "type": "String"
+      },
+      "survivor": {
+        "type": "String"
+      }
+    }
+  },
+  "personalFoodsMergedSameName": "Merged into {survivor}",
+  "@personalFoodsMergedSameName": {
+    "description": "Snackbar after two personal foods with the same name were merged, with Undo.",
+    "placeholders": {
+      "survivor": {
+        "type": "String"
+      }
+    }
+  },
+  "personalFoodMenuMerge": "Merge a duplicate into this food…",
+  "@personalFoodMenuMerge": {
+    "description": "Form menu: starts merging another food into this one."
+  },
+  "personalFoodMenuDelete": "Delete food",
+  "@personalFoodMenuDelete": {
+    "description": "Form menu: deletes this food. What was logged with it stays."
+  },
+  "personalFoodNameLabel": "Name",
+  "@personalFoodNameLabel": {
+    "description": "Personal food form: label of the food name."
+  },
+  "personalFoodNameArLabel": "Arabic name (optional)",
+  "@personalFoodNameArLabel": {
+    "description": "Personal food form: label of the Arabic name."
+  },
+  "personalFoodAliasesLabel": "Other names (optional)",
+  "@personalFoodAliasesLabel": {
+    "description": "Personal food form: label of the other names the food is found by."
+  },
+  "personalFoodAliasesHint": "Separate with commas, like labne, lab6a",
+  "@personalFoodAliasesHint": {
+    "description": "Personal food form: hint under the other names field."
+  },
+  "personalFoodBrandLabel": "Brand (optional)",
+  "@personalFoodBrandLabel": {
+    "description": "Personal food form: label of the brand."
+  },
+  "personalFoodBarcodesLabel": "Barcodes (optional)",
+  "@personalFoodBarcodesLabel": {
+    "description": "Personal food form: label of the barcodes field."
+  },
+  "personalFoodBarcodesHint": "Digits, separated by commas",
+  "@personalFoodBarcodesHint": {
+    "description": "Personal food form: hint of the barcodes field."
+  },
+  "personalFoodDuplicate": "You already have {name}",
+  "@personalFoodDuplicate": {
+    "description": "Personal food form: a note under the name when another food of yours has the same name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "personalFoodSectionServings": "Servings",
+  "@personalFoodSectionServings": {
+    "description": "Personal food form: heading of the food-specific servings."
+  },
+  "personalFoodValuesPer": "The label's numbers are for",
+  "@personalFoodValuesPer": {
+    "description": "Personal food form: caption above the choice of what the typed values are for."
+  },
+  "personalFoodNumbersStay": "Numbers stay as typed.",
+  "@personalFoodNumbersStay": {
+    "description": "Personal food form: note under the choice of what the numbers are for, after it was changed: the typed numbers are not converted."
+  },
+  "personalFoodServingShownAs": "Shown in your diary as 1 {serving} ({size} {unit})",
+  "@personalFoodServingShownAs": {
+    "description": "Personal food form: helper under the serving size of a label typed per serving, e.g. \"Shown in your diary as 1 serving (30 g)\".",
+    "placeholders": {
+      "serving": {
+        "type": "String"
+      },
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "personalFoodServingSizeSemantics": "Size of the serving on the label",
+  "@personalFoodServingSizeSemantics": {
+    "description": "Personal food form, screen reader only: the serving size field of a label typed per serving."
+  },
+  "personalFoodServingRowSemantics": "Size of one {serving}",
+  "@personalFoodServingRowSemantics": {
+    "description": "Personal food form, screen reader only: the size field of one of the food's own servings, e.g. \"Size of one piece\".",
+    "placeholders": {
+      "serving": {
+        "type": "String"
+      }
+    }
+  },
+  "personalFoodServingInGrams": "Serving size in grams",
+  "@personalFoodServingInGrams": {
+    "description": "Personal food form, screen reader only: the g choice next to the serving size."
+  },
+  "personalFoodServingInMl": "Serving size in millilitres",
+  "@personalFoodServingInMl": {
+    "description": "Personal food form, screen reader only: the ml choice next to the serving size."
+  },
+  "personalFoodMoreDetails": "More details",
+  "@personalFoodMoreDetails": {
+    "description": "Personal food form: the row that shows the Arabic name, other names, brand, state, servings and barcodes."
+  },
+  "personalFoodServingSize": "Serving size",
+  "@personalFoodServingSize": {
+    "description": "Personal food form: label of the size of a serving."
+  },
+  "personalFoodServingCalled": "Serving called",
+  "@personalFoodServingCalled": {
+    "description": "Personal food form: label of the chip that names a serving (cup, piece)."
+  },
+  "personalFoodServingUnitTitle": "Serving name",
+  "@personalFoodServingUnitTitle": {
+    "description": "Personal food form: title of the list of serving names."
+  },
+  "personalFoodUnitKcal": "kcal",
+  "@personalFoodUnitKcal": {
+    "description": "Unit shown after the calories value."
+  },
+  "personalFoodUnitMg": "mg",
+  "@personalFoodUnitMg": {
+    "description": "Unit shown after a milligram value."
+  },
+  "personalFoodFiberHint": "Blank counts as 0",
+  "@personalFoodFiberHint": {
+    "description": "Personal food form: hint of the fibre field."
+  },
+  "personalFoodExtraHint": "Leave blank if you don't know",
+  "@personalFoodExtraHint": {
+    "description": "Personal food form: one line above the optional nutrients under More nutrients."
+  },
+  "personalFoodMoreNutrients": "More nutrients",
+  "@personalFoodMoreNutrients": {
+    "description": "Personal food form: opens the optional nutrients (sugar, sodium, ...)."
+  },
+  "personalFoodStateLabel": "State",
+  "@personalFoodStateLabel": {
+    "description": "Personal food form: caption of the choice of how the food is prepared."
+  },
+  "personalFoodStateChoice": "{state, select, raw{Raw} cooked{Cooked} dry{Dry} drained{Drained} fried{Fried} as_sold{As sold} other{}}",
+  "@personalFoodStateChoice": {
+    "description": "Personal food form: a choice of how the food is prepared.",
+    "placeholders": {
+      "state": {
+        "type": "String"
+      }
+    }
+  },
+  "personalFoodServingsHint": "Add the portions you use, like a piece or a cup, with their size.",
+  "@personalFoodServingsHint": {
+    "description": "Personal food form: help above the servings."
+  },
+  "personalFoodAddServing": "Add serving",
+  "@personalFoodAddServing": {
+    "description": "Personal food form: adds a serving row."
+  },
+  "personalFoodRemoveServing": "Remove serving",
+  "@personalFoodRemoveServing": {
+    "description": "Tooltip of the button that removes a serving row."
+  },
+  "personalFoodErrorRequired": "Fill this in.",
+  "@personalFoodErrorRequired": {
+    "description": "Personal food form: a required field is empty."
+  },
+  "personalFoodErrorNumber": "Use a number like 12.5.",
+  "@personalFoodErrorNumber": {
+    "description": "Personal food form: the typed text is not a number."
+  },
+  "personalFoodErrorBounds": "That's more than a food can hold.",
+  "@personalFoodErrorBounds": {
+    "description": "Personal food form: a number is higher than a food can hold."
+  },
+  "personalFoodErrorTooSmall": "That's too small to save. Use 0 or a bigger number.",
+  "@personalFoodErrorTooSmall": {
+    "description": "Personal food form: a nonzero number too small to store (it would round to nothing)."
+  },
+  "personalFoodErrorText": "That's too long. Shorten it.",
+  "@personalFoodErrorText": {
+    "description": "Personal food form: a text is too long or has too many items."
+  },
+  "personalFoodErrorBarcode": "Check this barcode. It should have 8, 12, 13 or 14 digits.",
+  "@personalFoodErrorBarcode": {
+    "description": "Personal food form: a barcode is not valid."
+  },
+  "personalFoodErrorServing": "Give each serving a different name and a size from 0.1 to 5,000.",
+  "@personalFoodErrorServing": {
+    "description": "Personal food form: a serving is not valid."
+  },
+  "personalFoodErrorImpossible": "Those numbers are higher than any food can have. Check them against the label.",
+  "@personalFoodErrorImpossible": {
+    "description": "Personal food form: the calories or the macros are impossible. Save is refused."
+  },
+  "personalFoodSanityWarn": "These numbers don't quite add up: protein, carbs and fat give about {expected} kcal. Check the label, or save anyway.",
+  "@personalFoodSanityWarn": {
+    "description": "Personal food form: a calm warning when the calories do not match the macros. Saving stays possible.",
+    "placeholders": {
+      "expected": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "personalFoodDiscardTitle": "Discard changes?",
+  "@personalFoodDiscardTitle": {
+    "description": "Title of the sheet asking before a form with unsaved changes is closed."
+  },
+  "personalFoodDiscardMessage": "You've changed this food but haven't saved it.",
+  "@personalFoodDiscardMessage": {
+    "description": "Discard sheet: what is at stake."
+  },
+  "personalFoodDiscardKeep": "Keep editing",
+  "@personalFoodDiscardKeep": {
+    "description": "Discard sheet: goes back to the form."
+  },
+  "personalFoodDiscardConfirm": "Discard",
+  "@personalFoodDiscardConfirm": {
+    "description": "Discard sheet: closes the form without saving."
+  },
+  "personalFoodMergeTitle": "Merge a duplicate",
+  "@personalFoodMergeTitle": {
+    "description": "Title of the list of foods that can be merged into this one."
+  },
+  "personalFoodMergePickMessage": "Choose the duplicate. It goes into {name}.",
+  "@personalFoodMergePickMessage": {
+    "description": "Merge list: help above the foods.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "personalFoodMergeNone": "{unit, select, ml{You have no other food in millilitres to merge.} other{You have no other food in grams to merge.}}",
+  "@personalFoodMergeNone": {
+    "description": "Merge list: shown when no other food measured the same way can be merged. unit is g or ml.",
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "personalFoodMergeConfirmTitle": "Merge these foods?",
+  "@personalFoodMergeConfirmTitle": {
+    "description": "Title of the merge confirmation."
+  },
+  "personalFoodMergeConfirmMessage": "{keep} stays, with its numbers. {other} is removed. Its names are added to {keep}, and anything you logged with it now uses {keep}. Numbers already logged don't change.",
+  "@personalFoodMergeConfirmMessage": {
+    "description": "Merge confirmation: what happens.",
+    "placeholders": {
+      "keep": {
+        "type": "String"
+      },
+      "other": {
+        "type": "String"
+      }
+    }
+  },
+  "personalFoodMergeStays": "Stays",
+  "@personalFoodMergeStays": {
+    "description": "Merge confirmation: caption of the food that is kept."
+  },
+  "personalFoodMergeGoes": "Merged in and removed",
+  "@personalFoodMergeGoes": {
+    "description": "Merge confirmation: caption of the food that is merged into the other and removed."
+  },
+  "personalFoodMergeRowSubtitle": "{role} · {kcal}",
+  "@personalFoodMergeRowSubtitle": {
+    "description": "Merge confirmation: the second line of a food row, its role then its calories, e.g. \"Stays · 180 kcal per 100 g\".",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      },
+      "kcal": {
+        "type": "String"
+      }
+    }
+  },
+  "personalFoodMergeSwap": "Keep the other one instead",
+  "@personalFoodMergeSwap": {
+    "description": "Merge confirmation: swaps which of the two foods is kept."
+  },
+  "personalFoodMergeConfirm": "Merge",
+  "@personalFoodMergeConfirm": {
+    "description": "Merge confirmation: the button that merges."
+  },
+  "personalFoodMergeChanged": "One of these foods changed, so nothing was merged. Reload to see the latest.",
+  "@personalFoodMergeChanged": {
+    "description": "Merge confirmation: shown when a food changed after it was chosen."
+  },
+  "personalFoodMergeRemoved": "One of these foods was deleted, so nothing was merged.",
+  "@personalFoodMergeRemoved": {
+    "description": "Merge confirmation: shown when a food was deleted after it was chosen."
+  },
+  "personalFoodMergeTooMany": "Together they'd have too many names, barcodes or servings. Remove some first.",
+  "@personalFoodMergeTooMany": {
+    "description": "Merge confirmation: shown when the merged food would be over its limits."
+  },
+  "personalFoodMergeBasis": "These foods are measured differently (grams and millilitres).",
+  "@personalFoodMergeBasis": {
+    "description": "Merge confirmation: shown when the two foods use different units."
+  },
+  "personalFoodMergeFailed": "Couldn't merge these foods. Try again.",
+  "@personalFoodMergeFailed": {
+    "description": "Merge confirmation: shown when merging did not work."
+  },
+  "foodSearchCreate": "Create \"{query}\" as your own food",
+  "@foodSearchCreate": {
+    "description": "Add-food search: the row and button that start a food of your own named like the search.",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "foodSheetAddChanged": "This food changed, so nothing was logged. Pick it again.",
+  "@foodSheetAddChanged": {
+    "description": "Food sheet: shown, with a Close action, when the food changed or was deleted before it could be added."
+  },
+  "foodSheetReplaceChanged": "This food changed, so nothing was changed. Pick it again.",
+  "@foodSheetReplaceChanged": {
+    "description": "Change-food sheet: shown, with a Close action, when the new food changed or was deleted before it could be used."
   }
 }

@@ -52,6 +52,18 @@ final class FoodSearchService {
   onIndexCounts;
   late final Future<void> _initializing;
   late final StreamSubscription<void> _packSub;
+  List<PersonalFood> _latestPersonal = [];
+  Map<String, PersonalFood> _personal = {};
+
+  /// Latest fully prepared live definitions.
+  List<PersonalFood> get personalFoods => List.unmodifiable(_personal.values);
+
+  /// Shares the history refresh queue, so neither input can publish stale work.
+  Future<void> updatePersonalFoods(List<PersonalFood> foods) {
+    _latestPersonal = List.of(foods);
+    return updateHistory(_latestHistory);
+  }
+
   List<FoodHistoryItem> _latestHistory = [];
   List<FoodHistoryItem> _history = [];
 
@@ -97,7 +109,14 @@ final class FoodSearchService {
 
   Future<void> _refreshLoop() async {
     while (_pendingHistory != null) {
-      final next = _pendingHistory!;
+      final personal = {for (final f in _latestPersonal) f.id: f};
+      final next = _pendingHistory!
+          .where(
+            (h) =>
+                h.food.ref.kind != FoodRefKind.personal ||
+                personal.containsKey(h.food.ref.id),
+          )
+          .toList();
       _pendingHistory = null;
       final version = await repository.packVersion();
       final packChanged = !_prepared || version != _version;
@@ -136,14 +155,21 @@ final class FoodSearchService {
       }
       if (_pendingHistory != null || _disposed) continue;
       var vocabularyChanged =
-          metadataChanged || next.length != _snapshotNames.length;
+          personal.length != _personal.length ||
+          personal.entries.any((e) => _personal[e.key] != e.value);
+      vocabularyChanged =
+          vocabularyChanged ||
+          metadataChanged ||
+          next.length != _snapshotNames.length;
       final keys = <String, List<String>>{};
       final snapshots = <String, FoodNames>{};
       for (final h in next) {
         final id = _identity(h.food.ref);
-        final names = h.food.names;
+        final names = personal[h.food.ref.id]?.names ?? h.food.names;
         snapshots[id] = names;
-        if (!metadataChanged && _snapshotNames[id] == names) {
+        if (h.food.ref.kind == FoodRefKind.personal) {
+          keys[id] = _personalKeys(personal[h.food.ref.id]!);
+        } else if (!metadataChanged && _snapshotNames[id] == names) {
           keys[id] = _historyKeys[id]!;
         } else {
           vocabularyChanged = true;
@@ -157,6 +183,7 @@ final class FoodSearchService {
       }
       // Publish the pack identity with all derived metadata, only after the
       // last await and supersession check. A queued history emission retries.
+      _personal = personal;
       _version = version;
       _packKeys = packKeys;
       _historyFoods = historyFoods;
@@ -170,6 +197,7 @@ final class FoodSearchService {
         final words = {
           for (final key in [
             ..._packKeys,
+            for (final f in _personal.values) ..._personalKeys(f),
             ..._historyKeys.values.expand((k) => k),
           ])
             ...key.split(' ').where((w) => w.isNotEmpty),
@@ -324,6 +352,16 @@ final class FoodSearchService {
       );
     }
 
+    for (final f in _personal.values) {
+      final strength = match(_personalKeys(f));
+      if (strength != null) {
+        add(
+          personalChoice(f, history: historyById['personal:${f.id}']),
+          strength,
+          SourceTier.personal,
+        );
+      }
+    }
     final seen = <String>{};
     for (final id in selected) {
       for (final f in foods[id] ?? <CatalogFood>[]) {
@@ -344,6 +382,7 @@ final class FoodSearchService {
     for (final h in _history) {
       final strength = matchedHistory[_identity(h.food.ref)];
       if (strength != null &&
+          h.food.ref.kind != FoodRefKind.personal &&
           (h.food.ref.kind != FoodRefKind.catalog ||
               !seen.contains(h.food.ref.id))) {
         add(_choice(h), strength, _tier(h));
@@ -355,13 +394,21 @@ final class FoodSearchService {
       rows: FoodSearchRanker.rank(candidates),
       hasGood:
           best.values.any((s) => s.isGood) ||
-          matchedHistory.values.any((s) => s.isGood),
+          matchedHistory.values.any((s) => s.isGood) ||
+          _personal.values.any((f) => match(_personalKeys(f))?.isGood ?? false),
     );
   }
 
   Set<String> _keys(FoodChoice choice) {
     final f = choice.catalogFood;
+    final p = choice.personalFood;
+    final brand = p?.brand == null ? '-' : identityKey(p!.brand!);
     return {
+      if (p != null) ...[
+        'name:${identityKey(p.names.en)}|${p.state.code}|$brand',
+        if (p.names.ar case final ar?)
+          'name:${identityKey(ar)}|${p.state.code}|$brand',
+      ],
       _identity(choice.ref),
       if (f?.dishId case final dish?) 'dish:$dish',
       if (f != null) ...[
@@ -372,7 +419,16 @@ final class FoodSearchService {
     };
   }
 
+  List<String> _personalKeys(PersonalFood f) => [
+    normalizeKey(f.names.en),
+    if (f.names.ar case final ar?) normalizeKey(ar),
+    ...f.aliases.map(normalizeKey),
+  ];
+
   FoodChoice _choice(FoodHistoryItem h) {
+    if (h.food.ref.kind == FoodRefKind.personal) {
+      return personalChoice(_personal[h.food.ref.id]!, history: h);
+    }
     final food = h.food.ref.kind == FoodRefKind.catalog
         ? _historyFoods[h.food.ref.id]
         : null;

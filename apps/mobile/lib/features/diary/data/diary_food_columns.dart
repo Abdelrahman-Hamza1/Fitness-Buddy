@@ -27,6 +27,8 @@ final class FoodColumns {
     required this.isEstimate,
     required this.estimateRangeJson,
     required this.assumptionsJson,
+    this.rawPer100ExtrasJson,
+    this.rawExtrasJson,
   });
 
   /// [food] logged as [amount]: the snapshot is computed from the per-100
@@ -67,6 +69,42 @@ final class FoodColumns {
 
   /// The columns of the stored [row], unchanged.
   factory fromEntry(DiaryEntryRow row) => FoodColumns._(
+    editedByUser: row.editedByUser,
+    foodKind: row.foodKind,
+    foodId: row.foodId,
+    foodVersion: row.foodVersion,
+    nameEn: row.nameEn,
+    nameAr: row.nameAr,
+    inputAmount: row.inputAmount,
+    inputUnit: row.inputUnit,
+    amount: row.amount,
+    amountBasis: row.amountBasis,
+    per100: nutrientsOf(
+      kcal: row.per100Kcal,
+      proteinG: row.per100ProteinG,
+      carbsG: row.per100CarbsG,
+      fatG: row.per100FatG,
+      fiberG: row.per100FiberG,
+      extrasJson: row.per100ExtrasJson,
+    ),
+    snapshot: nutrientsOf(
+      kcal: row.kcal,
+      proteinG: row.proteinG,
+      carbsG: row.carbsG,
+      fatG: row.fatG,
+      fiberG: row.fiberG,
+      extrasJson: row.extrasJson,
+    ),
+    source: row.source,
+    isEstimate: row.isEstimate,
+    estimateRangeJson: row.estimateRangeJson,
+    assumptionsJson: row.assumptionsJson,
+  );
+
+  /// Copies saved snapshots without recalculation or JSON rewriting (DY-031).
+  factory fromSavedItem(SavedMealItemRow row) => FoodColumns._(
+    rawPer100ExtrasJson: row.per100ExtrasJson,
+    rawExtrasJson: row.extrasJson,
     editedByUser: row.editedByUser,
     foodKind: row.foodKind,
     foodId: row.foodId,
@@ -148,6 +186,12 @@ final class FoodColumns {
     );
   }
 
+  /// Original JSON spelling when copying a saved snapshot.
+  final String? rawPer100ExtrasJson;
+
+  /// Original snapshot extras JSON when copying a saved item.
+  final String? rawExtrasJson;
+
   /// The foodKind column(s).
   final String foodKind;
 
@@ -217,13 +261,13 @@ final class FoodColumns {
     per100CarbsG: Value(per100.carbs),
     per100FatG: Value(per100.fat),
     per100FiberG: Value(per100.fiber),
-    per100ExtrasJson: Value(extrasToJson(per100.extras)),
+    per100ExtrasJson: Value(rawPer100ExtrasJson ?? extrasToJson(per100.extras)),
     kcal: Value(snapshot.kcal),
     proteinG: Value(snapshot.protein),
     carbsG: Value(snapshot.carbs),
     fatG: Value(snapshot.fat),
     fiberG: Value(snapshot.fiber),
-    extrasJson: Value(extrasToJson(snapshot.extras)),
+    extrasJson: Value(rawExtrasJson ?? extrasToJson(snapshot.extras)),
     source: Value(source),
     isEstimate: Value(isEstimate),
     estimateRangeJson: Value(estimateRangeJson),
@@ -253,13 +297,13 @@ final class FoodColumns {
     per100CarbsG: Value(per100.carbs),
     per100FatG: Value(per100.fat),
     per100FiberG: Value(per100.fiber),
-    per100ExtrasJson: Value(extrasToJson(per100.extras)),
+    per100ExtrasJson: Value(rawPer100ExtrasJson ?? extrasToJson(per100.extras)),
     kcal: Value(snapshot.kcal),
     proteinG: Value(snapshot.protein),
     carbsG: Value(snapshot.carbs),
     fatG: Value(snapshot.fat),
     fiberG: Value(snapshot.fiber),
-    extrasJson: Value(extrasToJson(snapshot.extras)),
+    extrasJson: Value(rawExtrasJson ?? extrasToJson(snapshot.extras)),
     source: Value(source),
     isEstimate: Value(isEstimate),
     estimateRangeJson: Value(estimateRangeJson),
@@ -290,13 +334,13 @@ final class FoodColumns {
     per100CarbsG: Value(per100.carbs),
     per100FatG: Value(per100.fat),
     per100FiberG: Value(per100.fiber),
-    per100ExtrasJson: Value(extrasToJson(per100.extras)),
+    per100ExtrasJson: Value(rawPer100ExtrasJson ?? extrasToJson(per100.extras)),
     kcal: Value(snapshot.kcal),
     proteinG: Value(snapshot.protein),
     carbsG: Value(snapshot.carbs),
     fatG: Value(snapshot.fat),
     fiberG: Value(snapshot.fiber),
-    extrasJson: Value(extrasToJson(snapshot.extras)),
+    extrasJson: Value(rawExtrasJson ?? extrasToJson(snapshot.extras)),
     source: Value(source),
     isEstimate: Value(isEstimate),
     estimateRangeJson: Value(estimateRangeJson),

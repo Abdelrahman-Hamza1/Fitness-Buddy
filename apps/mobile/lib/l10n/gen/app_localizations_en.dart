@@ -32,9 +32,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get workoutsPlaceholder => 'Your workouts will show up here.';
 
   @override
-  String get mePlaceholder => 'Your profile and settings will live here.';
-
-  @override
   String get updateRequiredTitle => 'Update needed';
 
   @override
@@ -59,9 +56,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workoutsEmptyTitle => 'No workouts yet';
-
-  @override
-  String get meEmptyTitle => 'Nothing to set up yet';
 
   @override
   String get meDesignPreview => 'Design preview';
@@ -1257,4 +1251,351 @@ class AppLocalizationsEn extends AppLocalizations {
   String foodSearchReplacing(String name) {
     return 'Replacing $name';
   }
+
+  @override
+  String get meSectionFood => 'Food';
+
+  @override
+  String get meYourFoods => 'Your foods';
+
+  @override
+  String get yourFoodsTitle => 'Your foods';
+
+  @override
+  String get yourFoodsNew => 'New food';
+
+  @override
+  String get yourFoodsEmptyTitle => 'No foods of your own yet';
+
+  @override
+  String get yourFoodsEmptyMessage =>
+      'Add a food you eat often with the numbers from its label. It shows up first in search.';
+
+  @override
+  String get yourFoodsLoadFailed => 'Couldn\'t load your foods. Try again.';
+
+  @override
+  String yourFoodsKcalPer(int kcal, String basis) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '$kcalString kcal per $basis';
+  }
+
+  @override
+  String get personalFoodBasis100g => '100 g';
+
+  @override
+  String get personalFoodBasis100ml => '100 ml';
+
+  @override
+  String get personalFoodBasisServing => 'One serving';
+
+  @override
+  String get personalFoodNewTitle => 'New food';
+
+  @override
+  String get personalFoodEditTitle => 'Edit food';
+
+  @override
+  String get personalFoodMenuTooltip => 'More options';
+
+  @override
+  String get personalFoodLoadFailed => 'Couldn\'t open this food. Try again.';
+
+  @override
+  String get personalFoodDeletedBanner => 'This food was deleted.';
+
+  @override
+  String get personalFoodChangedBanner => 'This food changed.';
+
+  @override
+  String get personalFoodReload => 'Reload';
+
+  @override
+  String get personalFoodSave => 'Save';
+
+  @override
+  String get personalFoodSaveChanged =>
+      'This food changed elsewhere. Reload to see the latest. What you typed stays.';
+
+  @override
+  String get personalFoodSaveRemoved =>
+      'This food was deleted, so nothing was saved.';
+
+  @override
+  String get personalFoodSaveFailed =>
+      'Couldn\'t save that. Check the numbers and try again.';
+
+  @override
+  String get personalFoodFixFields =>
+      'Some fields need a look. They\'re marked below.';
+
+  @override
+  String personalFoodSavedMessage(String name) {
+    return 'Saved $name';
+  }
+
+  @override
+  String personalFoodDeletedMessage(String name) {
+    return 'Deleted $name';
+  }
+
+  @override
+  String personalFoodsMergedMessage(String merged, String survivor) {
+    return 'Merged $merged into $survivor';
+  }
+
+  @override
+  String personalFoodsMergedSameName(String survivor) {
+    return 'Merged into $survivor';
+  }
+
+  @override
+  String get personalFoodMenuMerge => 'Merge a duplicate into this food…';
+
+  @override
+  String get personalFoodMenuDelete => 'Delete food';
+
+  @override
+  String get personalFoodNameLabel => 'Name';
+
+  @override
+  String get personalFoodNameArLabel => 'Arabic name (optional)';
+
+  @override
+  String get personalFoodAliasesLabel => 'Other names (optional)';
+
+  @override
+  String get personalFoodAliasesHint =>
+      'Separate with commas, like labne, lab6a';
+
+  @override
+  String get personalFoodBrandLabel => 'Brand (optional)';
+
+  @override
+  String get personalFoodBarcodesLabel => 'Barcodes (optional)';
+
+  @override
+  String get personalFoodBarcodesHint => 'Digits, separated by commas';
+
+  @override
+  String personalFoodDuplicate(String name) {
+    return 'You already have $name';
+  }
+
+  @override
+  String get personalFoodSectionServings => 'Servings';
+
+  @override
+  String get personalFoodValuesPer => 'The label\'s numbers are for';
+
+  @override
+  String get personalFoodNumbersStay => 'Numbers stay as typed.';
+
+  @override
+  String personalFoodServingShownAs(String serving, double size, String unit) {
+    final intl.NumberFormat sizeNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String sizeString = sizeNumberFormat.format(size);
+
+    return 'Shown in your diary as 1 $serving ($sizeString $unit)';
+  }
+
+  @override
+  String get personalFoodServingSizeSemantics =>
+      'Size of the serving on the label';
+
+  @override
+  String personalFoodServingRowSemantics(String serving) {
+    return 'Size of one $serving';
+  }
+
+  @override
+  String get personalFoodServingInGrams => 'Serving size in grams';
+
+  @override
+  String get personalFoodServingInMl => 'Serving size in millilitres';
+
+  @override
+  String get personalFoodMoreDetails => 'More details';
+
+  @override
+  String get personalFoodServingSize => 'Serving size';
+
+  @override
+  String get personalFoodServingCalled => 'Serving called';
+
+  @override
+  String get personalFoodServingUnitTitle => 'Serving name';
+
+  @override
+  String get personalFoodUnitKcal => 'kcal';
+
+  @override
+  String get personalFoodUnitMg => 'mg';
+
+  @override
+  String get personalFoodFiberHint => 'Blank counts as 0';
+
+  @override
+  String get personalFoodExtraHint => 'Leave blank if you don\'t know';
+
+  @override
+  String get personalFoodMoreNutrients => 'More nutrients';
+
+  @override
+  String get personalFoodStateLabel => 'State';
+
+  @override
+  String personalFoodStateChoice(String state) {
+    String _temp0 = intl.Intl.selectLogic(state, {
+      'raw': 'Raw',
+      'cooked': 'Cooked',
+      'dry': 'Dry',
+      'drained': 'Drained',
+      'fried': 'Fried',
+      'as_sold': 'As sold',
+      'other': '',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get personalFoodServingsHint =>
+      'Add the portions you use, like a piece or a cup, with their size.';
+
+  @override
+  String get personalFoodAddServing => 'Add serving';
+
+  @override
+  String get personalFoodRemoveServing => 'Remove serving';
+
+  @override
+  String get personalFoodErrorRequired => 'Fill this in.';
+
+  @override
+  String get personalFoodErrorNumber => 'Use a number like 12.5.';
+
+  @override
+  String get personalFoodErrorBounds => 'That\'s more than a food can hold.';
+
+  @override
+  String get personalFoodErrorTooSmall =>
+      'That\'s too small to save. Use 0 or a bigger number.';
+
+  @override
+  String get personalFoodErrorText => 'That\'s too long. Shorten it.';
+
+  @override
+  String get personalFoodErrorBarcode =>
+      'Check this barcode. It should have 8, 12, 13 or 14 digits.';
+
+  @override
+  String get personalFoodErrorServing =>
+      'Give each serving a different name and a size from 0.1 to 5,000.';
+
+  @override
+  String get personalFoodErrorImpossible =>
+      'Those numbers are higher than any food can have. Check them against the label.';
+
+  @override
+  String personalFoodSanityWarn(int expected) {
+    final intl.NumberFormat expectedNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String expectedString = expectedNumberFormat.format(expected);
+
+    return 'These numbers don\'t quite add up: protein, carbs and fat give about $expectedString kcal. Check the label, or save anyway.';
+  }
+
+  @override
+  String get personalFoodDiscardTitle => 'Discard changes?';
+
+  @override
+  String get personalFoodDiscardMessage =>
+      'You\'ve changed this food but haven\'t saved it.';
+
+  @override
+  String get personalFoodDiscardKeep => 'Keep editing';
+
+  @override
+  String get personalFoodDiscardConfirm => 'Discard';
+
+  @override
+  String get personalFoodMergeTitle => 'Merge a duplicate';
+
+  @override
+  String personalFoodMergePickMessage(String name) {
+    return 'Choose the duplicate. It goes into $name.';
+  }
+
+  @override
+  String personalFoodMergeNone(String unit) {
+    String _temp0 = intl.Intl.selectLogic(unit, {
+      'ml': 'You have no other food in millilitres to merge.',
+      'other': 'You have no other food in grams to merge.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get personalFoodMergeConfirmTitle => 'Merge these foods?';
+
+  @override
+  String personalFoodMergeConfirmMessage(String keep, String other) {
+    return '$keep stays, with its numbers. $other is removed. Its names are added to $keep, and anything you logged with it now uses $keep. Numbers already logged don\'t change.';
+  }
+
+  @override
+  String get personalFoodMergeStays => 'Stays';
+
+  @override
+  String get personalFoodMergeGoes => 'Merged in and removed';
+
+  @override
+  String personalFoodMergeRowSubtitle(String role, String kcal) {
+    return '$role · $kcal';
+  }
+
+  @override
+  String get personalFoodMergeSwap => 'Keep the other one instead';
+
+  @override
+  String get personalFoodMergeConfirm => 'Merge';
+
+  @override
+  String get personalFoodMergeChanged =>
+      'One of these foods changed, so nothing was merged. Reload to see the latest.';
+
+  @override
+  String get personalFoodMergeRemoved =>
+      'One of these foods was deleted, so nothing was merged.';
+
+  @override
+  String get personalFoodMergeTooMany =>
+      'Together they\'d have too many names, barcodes or servings. Remove some first.';
+
+  @override
+  String get personalFoodMergeBasis =>
+      'These foods are measured differently (grams and millilitres).';
+
+  @override
+  String get personalFoodMergeFailed =>
+      'Couldn\'t merge these foods. Try again.';
+
+  @override
+  String foodSearchCreate(String query) {
+    return 'Create \"$query\" as your own food';
+  }
+
+  @override
+  String get foodSheetAddChanged =>
+      'This food changed, so nothing was logged. Pick it again.';
+
+  @override
+  String get foodSheetReplaceChanged =>
+      'This food changed, so nothing was changed. Pick it again.';
 }

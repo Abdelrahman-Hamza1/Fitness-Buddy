@@ -73,8 +73,11 @@ final class AppRouter implements AppNavigator {
                   // and the tab keeps its stack.
                   children: [
                     if (route is TodayRoute) _foodSearchRoute(),
-                    if (route is MeRoute && designPreview)
-                      _goRoute(const DesignPreviewRoute(), nested: true),
+                    if (route is MeRoute) ...[
+                      _personalFoodsRoute(),
+                      if (designPreview)
+                        _goRoute(const DesignPreviewRoute(), nested: true),
+                    ],
                   ],
                 ),
               ],
@@ -126,6 +129,34 @@ final class AppRouter implements AppNavigator {
     redirect: (_, state) =>
         isMalformedFoodSearch(state.uri) ? TodayRoute.path : null,
     builder: (_, state) => _screen(foodSearchRouteOf(state.uri)),
+    routes: [
+      // "Create … as your own food" (A09 D9): nested under the search.
+      GoRoute(
+        path: NewFoodFromSearchRoute.path.split('/').last,
+        builder: (_, state) => _screen(newFoodRouteOf(state.uri)),
+      ),
+    ],
+  );
+
+  // Your foods (A09 D10). `new` comes before `:id`, so it is never read as
+  // an ID; a malformed ID goes to the list (A08 D7 pattern).
+  static GoRoute _personalFoodsRoute() => GoRoute(
+    path: PersonalFoodsRoute.path.split('/').last,
+    builder: (_, _) => _screen(const PersonalFoodsRoute()),
+    routes: [
+      GoRoute(
+        path: PersonalFoodRoute.newPath.split('/').last,
+        builder: (_, _) => _screen(const PersonalFoodRoute()),
+      ),
+      GoRoute(
+        path: ':id',
+        redirect: (_, state) => isUuid(state.pathParameters['id'] ?? '')
+            ? null
+            : PersonalFoodsRoute.path,
+        builder: (_, state) =>
+            _screen(PersonalFoodRoute(id: state.pathParameters['id'])),
+      ),
+    ],
   );
 
   /// The change-food target in [location]: null when there is none or it is
@@ -168,6 +199,14 @@ final class AppRouter implements AppNavigator {
     );
   }
 
+  /// The [NewFoodFromSearchRoute] a location stands for; a missing or
+  /// malformed parameter is ignored, as for [foodSearchRouteOf].
+  @visibleForTesting
+  static NewFoodFromSearchRoute newFoodRouteOf(Uri location) {
+    final search = foodSearchRouteOf(location);
+    return NewFoodFromSearchRoute(date: search.date, slotId: search.slotId);
+  }
+
   // Exhaustive: a new AppRoute without a screen doesn't compile.
   static Widget _screen(AppRoute route) => switch (route) {
     TodayRoute() => const TodayScreen(),
@@ -177,6 +216,10 @@ final class AppRouter implements AppNavigator {
     DesignPreviewRoute() => const DesignPreviewScreen(),
     FoodSearchRoute(:final date, :final slotId, :final replace) =>
       FoodSearchScreen(date: date, slotId: slotId, replace: replace),
+    NewFoodFromSearchRoute(:final date, :final slotId) =>
+      PersonalFoodFormScreen(addTo: (date: date, slotId: slotId)),
+    PersonalFoodsRoute() => const PersonalFoodsScreen(),
+    PersonalFoodRoute(:final id) => PersonalFoodFormScreen(id: id),
     UpdateRequiredRoute() => const UpdateRequiredScreen(),
   };
 

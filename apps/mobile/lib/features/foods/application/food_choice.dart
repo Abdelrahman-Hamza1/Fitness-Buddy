@@ -25,6 +25,8 @@ final class FoodChoice {
     required this.food,
     required this.measures,
     this.catalogFood,
+    this.personalFood,
+    this.guard,
     this.lastUsed,
     this.siblings = const [],
     this.yields,
@@ -38,6 +40,12 @@ final class FoodChoice {
 
   /// Current pack metadata, absent for retired or personal IDs.
   final CatalogFood? catalogFood;
+
+  /// Live personal definition observed by the loader.
+  final PersonalFood? personalFood;
+
+  /// Version checked inside the write transaction (A09 F2).
+  final VersionedId? guard;
 
   /// Latest snapshot/input for FD-022 defaults.
   final FoodHistoryItem? lastUsed;
@@ -82,10 +90,48 @@ final class FoodChoice {
   NutrientBasis get basis => measures.basis;
 
   /// Known pack state; never inferred for a retired snapshot.
-  FoodState? get state => catalogFood?.state;
+  FoodState? get state => personalFood?.state ?? catalogFood?.state;
 
   /// Pack yield group when known.
   String? get yieldGroup => catalogFood?.yieldGroup;
+
+  /// FD-022: prefer last input, then parsed amount, then the entry serving.
+  Quantity defaultPortion({ParsedAmount? parsed, Quantity? lastUsed}) {
+    final personal = personalFood;
+    if (personal == null) {
+      return DefaultPortion.choose(
+        measures,
+        lastUsed: lastUsed ?? this.lastUsed?.amount.input,
+        parsed: parsed,
+      );
+    }
+    final entry = personal.entryServing;
+    final unit = entry?.unit ?? personal.servings.firstOrNull?.unit;
+    var fallback = unit == null ? null : Quantity(1, unit);
+    if (entry != null) {
+      final resolved = measures.resolve(Quantity(1, entry.unit));
+      if (resolved is! Resolved || resolved.amount != entry.amount) {
+        // Entry metadata describes the values originally typed. It must not
+        // replace a separately defined serving with the same code.
+        fallback = Quantity(entry.amount, basis.unitCode);
+      }
+    }
+    final defaultUnit = fallback?.unitCode ?? basis.unitCode;
+    final parsedInput = parsed == null
+        ? null
+        : Quantity(parsed.amount, parsed.unitCode ?? defaultUnit);
+    final usableParse =
+        parsedInput != null && measures.resolve(parsedInput) is Resolved;
+    return DefaultPortion.choose(
+      measures,
+      lastUsed: lastUsed ?? this.lastUsed?.amount.input,
+      parsed: usableParse
+          ? ParsedAmount(parsedInput.amount, parsedInput.unitCode)
+          : fallback == null
+          ? null
+          : ParsedAmount(fallback.amount, fallback.unitCode),
+    );
+  }
 
   /// Stored source badge, retained for snapshot-only foods.
   FoodSource get badge =>
@@ -125,25 +171,30 @@ FoodChoice catalogChoice(
 );
 
 /// Snapshot fallback with a basis-aware reconstructed serving (PA4).
-FoodChoice historyChoice(FoodHistoryItem item) => FoodChoice(
-  food: EntryFood(
-    ref: item.food.ref,
-    names: item.food.names,
-    per100: item.food.per100,
-    provenance: item.food.provenance,
-    editedByUser: item.editedByUser,
-  ),
-  measures: FoodMeasures(
-    basis: item.amount.basis,
-    servingUnits: [?item.derivedServing],
-  ),
-  lastUsed: item,
-);
+FoodChoice historyChoice(FoodHistoryItem item, {VersionedId? guard}) =>
+    FoodChoice(
+      guard: guard,
+      food: EntryFood(
+        ref: item.food.ref,
+        names: item.food.names,
+        per100: item.food.per100,
+        provenance: item.food.provenance,
+        editedByUser: item.editedByUser,
+      ),
+      measures: FoodMeasures(
+        basis: item.amount.basis,
+        servingUnits: [?item.derivedServing],
+      ),
+      lastUsed: item,
+    );
 
 /// Loader expands only compatible state siblings with an actual yield factor.
 final class FoodChoiceLoader {
   /// Creates this structured value.
-  new(this.repository, this.history);
+  new(this.repository, this.history, {this.personalFoods});
+
+  /// Latest live personal rows; an absent row must never fall back unguarded.
+  final List<PersonalFood> Function()? personalFoods;
 
   /// Offline catalog read port.
   final FoodCatalogRepository repository;
@@ -159,6 +210,13 @@ final class FoodChoiceLoader {
               h.food.ref.kind == ref.food.kind && h.food.ref.id == ref.food.id,
         )
         .firstOrNull;
+    if (ref.food.kind == FoodRefKind.personal) {
+      final personal = personalFoods
+          ?.call()
+          .where((f) => f.id == ref.food.id)
+          .firstOrNull;
+      return personal == null ? null : personalChoice(personal, history: used);
+    }
     final food = ref.food.kind == FoodRefKind.catalog
         ? (await repository.foodsByIds([
             ref.food.id!,
@@ -204,3 +262,31 @@ final class FoodChoiceLoader {
     );
   }
 }
+
+/// Current personal values and units, guarded by the observed row version.
+FoodChoice personalChoice(PersonalFood food, {FoodHistoryItem? history}) =>
+    FoodChoice(
+      food: EntryFood(
+        ref: FoodRef.personal(food.id),
+        names: food.names,
+        per100: food.per100,
+        provenance: Provenance(source: FoodSource.yours),
+      ),
+      measures: FoodMeasures(
+        basis: food.basis,
+        servingUnits: [
+          for (final s in [
+            ...food.servings,
+            if (food.entryServing case final entry?)
+              if (!food.servings.any((s) => s.unit == entry.unit)) entry,
+          ])
+            if (food.basis == NutrientBasis.per100g)
+              ServingUnit.grams(s.unit, s.amount)
+            else
+              ServingUnit.milliliters(s.unit, s.amount),
+        ],
+      ),
+      personalFood: food,
+      guard: VersionedId(food.id, food.version),
+      lastUsed: history,
+    );

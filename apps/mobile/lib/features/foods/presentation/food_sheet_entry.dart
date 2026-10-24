@@ -47,8 +47,9 @@ final class FoodPick {
 /// The seam between the search screen and the amount flow. When the food is
 /// added (AI-048), the sheet closes, then the search screen closes (back to
 /// the caller), and the undo snackbar shows on the root messenger (UX-030),
-/// where it survives the screen that started it.
-Future<void> openFoodSheet(BuildContext context, FoodPick pick) async {
+/// where it survives the screen that started it. Resolves to whether the
+/// food was logged.
+Future<bool> openFoodSheet(BuildContext context, FoodPick pick) async {
   FocusScope.of(context).unfocus();
   final container = ProviderScope.containerOf(context);
   // The root navigator's context outlives the search screen.
@@ -57,7 +58,7 @@ Future<void> openFoodSheet(BuildContext context, FoodPick pick) async {
     context,
     builder: (_) => FoodSheet(pick: pick),
   );
-  if (logged == null || !host.mounted) return;
+  if (logged == null || !host.mounted) return logged != null;
   container.read(appNavigatorProvider).pop();
   showUndoFeedback(
     host,
@@ -75,4 +76,5 @@ Future<void> openFoodSheet(BuildContext context, FoodPick pick) async {
           ),
     undoEntryId: logged.undoEntryId,
   );
+  return true;
 }

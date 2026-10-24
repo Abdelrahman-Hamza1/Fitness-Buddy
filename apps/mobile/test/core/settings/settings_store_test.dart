@@ -213,7 +213,7 @@ void main() {
       );
       expect(
         container.read(changeOpHandlersProvider)(db).map((h) => h.family),
-        [SettingsOp.familyName, DiaryOp.familyName],
+        [SettingsOp.familyName, DiaryOp.familyName, PersonalFoodOp.familyName],
       );
       final store = container.read(settingsStoreProvider);
       await _applied(store.put(_goal, 1600, origin: Origin.direct));

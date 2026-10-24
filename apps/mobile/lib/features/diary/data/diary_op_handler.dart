@@ -9,6 +9,7 @@ import 'package:fb_mobile/core/db/tables/diary_tables.dart';
 import 'package:fb_mobile/features/diary/data/diary_copy.dart';
 import 'package:fb_mobile/features/diary/data/diary_food_columns.dart';
 import 'package:fb_mobile/features/diary/data/diary_mappers.dart';
+import 'package:fb_mobile/features/diary/data/diary_saved_meals.dart';
 import 'package:fb_mobile/features/diary/data/diary_tx_reads.dart';
 
 /// The row ID of the day mark of [date]: the natural ID `dayMark:<date>`
@@ -41,6 +42,10 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
   Future<OpPlan> plan(DiaryOp op, TxReader tx, ApplyContext context) {
     final reads = DiaryTxReads(db, tx);
     return switch (op) {
+      LogSavedMeal() => planLogSavedMeal(db, op, reads, context),
+      RelinkFoodRefs() => planRelink(db, op, tx),
+      RenameSavedMeal() => planRenameSavedMeal(db, op, tx),
+      DeleteSavedMeal() => planDeleteSavedMeal(db, op, tx),
       LogEntries() => _log(op, reads, context),
       OverrideNutrients() => _override(op, reads),
       UpdateDiaryEntry() => _updateEntry(op, reads, context),

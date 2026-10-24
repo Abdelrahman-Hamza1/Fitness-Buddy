@@ -93,3 +93,6 @@ To check against a specific version at any time (it then blocks): `CONTRACT_BASE
 
 The server writes its own OpenAPI document at build time (`backend/artifacts/openapi/server.json`, gitignored). `make contract-conformance` runs `oasdiff changelog <contract> <server doc> --fail-on INFO`: any API difference fails (paths, parameters, status codes, media types, fields, types, formats, required/nullable, operationId, tags). Documentation differences (descriptions, examples, servers, ordering, component names, `$ref` vs inline) don't. The failure message reads from the contract's side: "removed" = the contract has it and the server doesn't.
 
+## personalFood semantic rules
+
+The `personalFood` v1 payload in `openapi/sync-entities.json` carries the types, enums, top-level numeric bounds and string length limits supported by the sync schema exporter. The shared semantic rules are in [A09 §3.0: Shared personalFood rules](../technical-planning/steps/A09-personal-foods-quick-add.md#3-design): trimmed minimum lengths, JSON list contents and limits, GTIN check digits, nutrient extras, serving units and amounts, and the entry-serving both-or-neither rule. A09a implements the app validation; B17 adds server semantic validation before A34 enables uploads.

@@ -114,5 +114,27 @@
     "localDate": "2026-10-18",
     "kg": 1.0,
     "note": null
+  },
+  "personalFood": {
+    "createdAtMs": 0,
+    "origin": "synthetic",
+    "editedByUser": false,
+    "nameEn": "Synthetic food",
+    "nameAr": null,
+    "aliasesJson": "[\"Synthetic alias\"]",
+    "brand": null,
+    "barcodesJson": "[\"96385074\"]",
+    "state": "as_sold",
+    "basis": "g",
+    "per100Kcal": 400.0,
+    "per100ProteinG": 10.0,
+    "per100CarbsG": 45.0,
+    "per100FatG": 20.0,
+    "per100FiberG": 5.0,
+    "per100ExtrasJson": "{\"sodium\":100}",
+    "servingsJson": "[{\"unit\":\"piece\",\"amount\":30}]",
+    "entryServingUnit": "piece",
+    "entryServingAmount": 30.0,
+    "createdFrom": "form"
   }
 }

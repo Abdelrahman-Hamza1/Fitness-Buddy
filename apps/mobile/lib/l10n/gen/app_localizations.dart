@@ -136,12 +136,6 @@ abstract class AppLocalizations {
   /// **'Your workouts will show up here.'**
   String get workoutsPlaceholder;
 
-  /// Placeholder body of the Me tab until profile and settings are built.
-  ///
-  /// In en, this message translates to:
-  /// **'Your profile and settings will live here.'**
-  String get mePlaceholder;
-
   /// Title of the screen shown when this app version is too old to talk to the server.
   ///
   /// In en, this message translates to:
@@ -189,12 +183,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No workouts yet'**
   String get workoutsEmptyTitle;
-
-  /// Title of the Me tab's empty state until profile and settings are built.
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing to set up yet'**
-  String get meEmptyTitle;
 
   /// Row on the Me tab that opens the design preview. Only in the dev flavor.
   ///
@@ -1733,6 +1721,546 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Replacing {name}'**
   String foodSearchReplacing(String name);
+
+  /// Me tab: the heading of the section with the food lists (Your foods).
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get meSectionFood;
+
+  /// Me tab: the row that opens the list of foods the user made.
+  ///
+  /// In en, this message translates to:
+  /// **'Your foods'**
+  String get meYourFoods;
+
+  /// Title of the list of foods the user made.
+  ///
+  /// In en, this message translates to:
+  /// **'Your foods'**
+  String get yourFoodsTitle;
+
+  /// Tooltip and button: starts a new food of your own.
+  ///
+  /// In en, this message translates to:
+  /// **'New food'**
+  String get yourFoodsNew;
+
+  /// Your foods: title of the empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'No foods of your own yet'**
+  String get yourFoodsEmptyTitle;
+
+  /// Your foods: one line of help in the empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a food you eat often with the numbers from its label. It shows up first in search.'**
+  String get yourFoodsEmptyMessage;
+
+  /// Your foods: shown when the list could not be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your foods. Try again.'**
+  String get yourFoodsLoadFailed;
+
+  /// Your foods and merge list: the calories of a food, for example 250 kcal per 100 g.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal per {basis}'**
+  String yourFoodsKcalPer(int kcal, String basis);
+
+  /// Personal food form: choice for values given per 100 grams. Also names the basis in lists.
+  ///
+  /// In en, this message translates to:
+  /// **'100 g'**
+  String get personalFoodBasis100g;
+
+  /// Personal food form: choice for values given per 100 millilitres. Also names the basis in lists.
+  ///
+  /// In en, this message translates to:
+  /// **'100 ml'**
+  String get personalFoodBasis100ml;
+
+  /// Personal food form: choice for values given for one serving, as printed on a label.
+  ///
+  /// In en, this message translates to:
+  /// **'One serving'**
+  String get personalFoodBasisServing;
+
+  /// Title of the form that creates a food.
+  ///
+  /// In en, this message translates to:
+  /// **'New food'**
+  String get personalFoodNewTitle;
+
+  /// Title of the form that edits a food.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit food'**
+  String get personalFoodEditTitle;
+
+  /// Tooltip of the form menu button (merge a duplicate, delete).
+  ///
+  /// In en, this message translates to:
+  /// **'More options'**
+  String get personalFoodMenuTooltip;
+
+  /// Personal food form: shown when the food could not be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open this food. Try again.'**
+  String get personalFoodLoadFailed;
+
+  /// Personal food form: shown when the food being edited no longer exists. Save is off.
+  ///
+  /// In en, this message translates to:
+  /// **'This food was deleted.'**
+  String get personalFoodDeletedBanner;
+
+  /// Personal food form: shown when the food was changed elsewhere while it is open.
+  ///
+  /// In en, this message translates to:
+  /// **'This food changed.'**
+  String get personalFoodChangedBanner;
+
+  /// Personal food form and merge sheet: takes over the changed food and keeps what was typed.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload'**
+  String get personalFoodReload;
+
+  /// Personal food form: the button that saves the food.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get personalFoodSave;
+
+  /// Personal food form: shown under the form, with a Reload action, when saving was refused because the food changed.
+  ///
+  /// In en, this message translates to:
+  /// **'This food changed elsewhere. Reload to see the latest. What you typed stays.'**
+  String get personalFoodSaveChanged;
+
+  /// Personal food form: shown when saving was refused because the food was deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'This food was deleted, so nothing was saved.'**
+  String get personalFoodSaveRemoved;
+
+  /// Personal food form: shown when saving did not work.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save that. Check the numbers and try again.'**
+  String get personalFoodSaveFailed;
+
+  /// Personal food form: shown when Save was pressed with fields that are not valid yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Some fields need a look. They\'re marked below.'**
+  String get personalFoodFixFields;
+
+  /// Snackbar after a personal food was saved, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {name}'**
+  String personalFoodSavedMessage(String name);
+
+  /// Snackbar after a personal food was deleted, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted {name}'**
+  String personalFoodDeletedMessage(String name);
+
+  /// Snackbar after two personal foods were merged, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged {merged} into {survivor}'**
+  String personalFoodsMergedMessage(String merged, String survivor);
+
+  /// Snackbar after two personal foods with the same name were merged, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged into {survivor}'**
+  String personalFoodsMergedSameName(String survivor);
+
+  /// Form menu: starts merging another food into this one.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge a duplicate into this food…'**
+  String get personalFoodMenuMerge;
+
+  /// Form menu: deletes this food. What was logged with it stays.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete food'**
+  String get personalFoodMenuDelete;
+
+  /// Personal food form: label of the food name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get personalFoodNameLabel;
+
+  /// Personal food form: label of the Arabic name.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic name (optional)'**
+  String get personalFoodNameArLabel;
+
+  /// Personal food form: label of the other names the food is found by.
+  ///
+  /// In en, this message translates to:
+  /// **'Other names (optional)'**
+  String get personalFoodAliasesLabel;
+
+  /// Personal food form: hint under the other names field.
+  ///
+  /// In en, this message translates to:
+  /// **'Separate with commas, like labne, lab6a'**
+  String get personalFoodAliasesHint;
+
+  /// Personal food form: label of the brand.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand (optional)'**
+  String get personalFoodBrandLabel;
+
+  /// Personal food form: label of the barcodes field.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcodes (optional)'**
+  String get personalFoodBarcodesLabel;
+
+  /// Personal food form: hint of the barcodes field.
+  ///
+  /// In en, this message translates to:
+  /// **'Digits, separated by commas'**
+  String get personalFoodBarcodesHint;
+
+  /// Personal food form: a note under the name when another food of yours has the same name.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have {name}'**
+  String personalFoodDuplicate(String name);
+
+  /// Personal food form: heading of the food-specific servings.
+  ///
+  /// In en, this message translates to:
+  /// **'Servings'**
+  String get personalFoodSectionServings;
+
+  /// Personal food form: caption above the choice of what the typed values are for.
+  ///
+  /// In en, this message translates to:
+  /// **'The label\'s numbers are for'**
+  String get personalFoodValuesPer;
+
+  /// Personal food form: note under the choice of what the numbers are for, after it was changed: the typed numbers are not converted.
+  ///
+  /// In en, this message translates to:
+  /// **'Numbers stay as typed.'**
+  String get personalFoodNumbersStay;
+
+  /// Personal food form: helper under the serving size of a label typed per serving, e.g. "Shown in your diary as 1 serving (30 g)".
+  ///
+  /// In en, this message translates to:
+  /// **'Shown in your diary as 1 {serving} ({size} {unit})'**
+  String personalFoodServingShownAs(String serving, double size, String unit);
+
+  /// Personal food form, screen reader only: the serving size field of a label typed per serving.
+  ///
+  /// In en, this message translates to:
+  /// **'Size of the serving on the label'**
+  String get personalFoodServingSizeSemantics;
+
+  /// Personal food form, screen reader only: the size field of one of the food's own servings, e.g. "Size of one piece".
+  ///
+  /// In en, this message translates to:
+  /// **'Size of one {serving}'**
+  String personalFoodServingRowSemantics(String serving);
+
+  /// Personal food form, screen reader only: the g choice next to the serving size.
+  ///
+  /// In en, this message translates to:
+  /// **'Serving size in grams'**
+  String get personalFoodServingInGrams;
+
+  /// Personal food form, screen reader only: the ml choice next to the serving size.
+  ///
+  /// In en, this message translates to:
+  /// **'Serving size in millilitres'**
+  String get personalFoodServingInMl;
+
+  /// Personal food form: the row that shows the Arabic name, other names, brand, state, servings and barcodes.
+  ///
+  /// In en, this message translates to:
+  /// **'More details'**
+  String get personalFoodMoreDetails;
+
+  /// Personal food form: label of the size of a serving.
+  ///
+  /// In en, this message translates to:
+  /// **'Serving size'**
+  String get personalFoodServingSize;
+
+  /// Personal food form: label of the chip that names a serving (cup, piece).
+  ///
+  /// In en, this message translates to:
+  /// **'Serving called'**
+  String get personalFoodServingCalled;
+
+  /// Personal food form: title of the list of serving names.
+  ///
+  /// In en, this message translates to:
+  /// **'Serving name'**
+  String get personalFoodServingUnitTitle;
+
+  /// Unit shown after the calories value.
+  ///
+  /// In en, this message translates to:
+  /// **'kcal'**
+  String get personalFoodUnitKcal;
+
+  /// Unit shown after a milligram value.
+  ///
+  /// In en, this message translates to:
+  /// **'mg'**
+  String get personalFoodUnitMg;
+
+  /// Personal food form: hint of the fibre field.
+  ///
+  /// In en, this message translates to:
+  /// **'Blank counts as 0'**
+  String get personalFoodFiberHint;
+
+  /// Personal food form: one line above the optional nutrients under More nutrients.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave blank if you don\'t know'**
+  String get personalFoodExtraHint;
+
+  /// Personal food form: opens the optional nutrients (sugar, sodium, ...).
+  ///
+  /// In en, this message translates to:
+  /// **'More nutrients'**
+  String get personalFoodMoreNutrients;
+
+  /// Personal food form: caption of the choice of how the food is prepared.
+  ///
+  /// In en, this message translates to:
+  /// **'State'**
+  String get personalFoodStateLabel;
+
+  /// Personal food form: a choice of how the food is prepared.
+  ///
+  /// In en, this message translates to:
+  /// **'{state, select, raw{Raw} cooked{Cooked} dry{Dry} drained{Drained} fried{Fried} as_sold{As sold} other{}}'**
+  String personalFoodStateChoice(String state);
+
+  /// Personal food form: help above the servings.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the portions you use, like a piece or a cup, with their size.'**
+  String get personalFoodServingsHint;
+
+  /// Personal food form: adds a serving row.
+  ///
+  /// In en, this message translates to:
+  /// **'Add serving'**
+  String get personalFoodAddServing;
+
+  /// Tooltip of the button that removes a serving row.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove serving'**
+  String get personalFoodRemoveServing;
+
+  /// Personal food form: a required field is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill this in.'**
+  String get personalFoodErrorRequired;
+
+  /// Personal food form: the typed text is not a number.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a number like 12.5.'**
+  String get personalFoodErrorNumber;
+
+  /// Personal food form: a number is higher than a food can hold.
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s more than a food can hold.'**
+  String get personalFoodErrorBounds;
+
+  /// Personal food form: a nonzero number too small to store (it would round to nothing).
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s too small to save. Use 0 or a bigger number.'**
+  String get personalFoodErrorTooSmall;
+
+  /// Personal food form: a text is too long or has too many items.
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s too long. Shorten it.'**
+  String get personalFoodErrorText;
+
+  /// Personal food form: a barcode is not valid.
+  ///
+  /// In en, this message translates to:
+  /// **'Check this barcode. It should have 8, 12, 13 or 14 digits.'**
+  String get personalFoodErrorBarcode;
+
+  /// Personal food form: a serving is not valid.
+  ///
+  /// In en, this message translates to:
+  /// **'Give each serving a different name and a size from 0.1 to 5,000.'**
+  String get personalFoodErrorServing;
+
+  /// Personal food form: the calories or the macros are impossible. Save is refused.
+  ///
+  /// In en, this message translates to:
+  /// **'Those numbers are higher than any food can have. Check them against the label.'**
+  String get personalFoodErrorImpossible;
+
+  /// Personal food form: a calm warning when the calories do not match the macros. Saving stays possible.
+  ///
+  /// In en, this message translates to:
+  /// **'These numbers don\'t quite add up: protein, carbs and fat give about {expected} kcal. Check the label, or save anyway.'**
+  String personalFoodSanityWarn(int expected);
+
+  /// Title of the sheet asking before a form with unsaved changes is closed.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get personalFoodDiscardTitle;
+
+  /// Discard sheet: what is at stake.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve changed this food but haven\'t saved it.'**
+  String get personalFoodDiscardMessage;
+
+  /// Discard sheet: goes back to the form.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get personalFoodDiscardKeep;
+
+  /// Discard sheet: closes the form without saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get personalFoodDiscardConfirm;
+
+  /// Title of the list of foods that can be merged into this one.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge a duplicate'**
+  String get personalFoodMergeTitle;
+
+  /// Merge list: help above the foods.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the duplicate. It goes into {name}.'**
+  String personalFoodMergePickMessage(String name);
+
+  /// Merge list: shown when no other food measured the same way can be merged. unit is g or ml.
+  ///
+  /// In en, this message translates to:
+  /// **'{unit, select, ml{You have no other food in millilitres to merge.} other{You have no other food in grams to merge.}}'**
+  String personalFoodMergeNone(String unit);
+
+  /// Title of the merge confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge these foods?'**
+  String get personalFoodMergeConfirmTitle;
+
+  /// Merge confirmation: what happens.
+  ///
+  /// In en, this message translates to:
+  /// **'{keep} stays, with its numbers. {other} is removed. Its names are added to {keep}, and anything you logged with it now uses {keep}. Numbers already logged don\'t change.'**
+  String personalFoodMergeConfirmMessage(String keep, String other);
+
+  /// Merge confirmation: caption of the food that is kept.
+  ///
+  /// In en, this message translates to:
+  /// **'Stays'**
+  String get personalFoodMergeStays;
+
+  /// Merge confirmation: caption of the food that is merged into the other and removed.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged in and removed'**
+  String get personalFoodMergeGoes;
+
+  /// Merge confirmation: the second line of a food row, its role then its calories, e.g. "Stays · 180 kcal per 100 g".
+  ///
+  /// In en, this message translates to:
+  /// **'{role} · {kcal}'**
+  String personalFoodMergeRowSubtitle(String role, String kcal);
+
+  /// Merge confirmation: swaps which of the two foods is kept.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the other one instead'**
+  String get personalFoodMergeSwap;
+
+  /// Merge confirmation: the button that merges.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge'**
+  String get personalFoodMergeConfirm;
+
+  /// Merge confirmation: shown when a food changed after it was chosen.
+  ///
+  /// In en, this message translates to:
+  /// **'One of these foods changed, so nothing was merged. Reload to see the latest.'**
+  String get personalFoodMergeChanged;
+
+  /// Merge confirmation: shown when a food was deleted after it was chosen.
+  ///
+  /// In en, this message translates to:
+  /// **'One of these foods was deleted, so nothing was merged.'**
+  String get personalFoodMergeRemoved;
+
+  /// Merge confirmation: shown when the merged food would be over its limits.
+  ///
+  /// In en, this message translates to:
+  /// **'Together they\'d have too many names, barcodes or servings. Remove some first.'**
+  String get personalFoodMergeTooMany;
+
+  /// Merge confirmation: shown when the two foods use different units.
+  ///
+  /// In en, this message translates to:
+  /// **'These foods are measured differently (grams and millilitres).'**
+  String get personalFoodMergeBasis;
+
+  /// Merge confirmation: shown when merging did not work.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t merge these foods. Try again.'**
+  String get personalFoodMergeFailed;
+
+  /// Add-food search: the row and button that start a food of your own named like the search.
+  ///
+  /// In en, this message translates to:
+  /// **'Create \"{query}\" as your own food'**
+  String foodSearchCreate(String query);
+
+  /// Food sheet: shown, with a Close action, when the food changed or was deleted before it could be added.
+  ///
+  /// In en, this message translates to:
+  /// **'This food changed, so nothing was logged. Pick it again.'**
+  String get foodSheetAddChanged;
+
+  /// Change-food sheet: shown, with a Close action, when the new food changed or was deleted before it could be used.
+  ///
+  /// In en, this message translates to:
+  /// **'This food changed, so nothing was changed. Pick it again.'**
+  String get foodSheetReplaceChanged;
 }
 
 class _AppLocalizationsDelegate

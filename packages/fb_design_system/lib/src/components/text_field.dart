@@ -25,6 +25,7 @@ class FbTextField extends StatelessWidget {
     this.autofocus = false,
     this.focusNode,
     this.enabled = true,
+    this.textDirection,
     super.key,
   });
 
@@ -67,6 +68,11 @@ class FbTextField extends StatelessWidget {
   /// Whether the text can be edited.
   final bool enabled;
 
+  /// The direction of the typed text, for a field that always holds one
+  /// script (an Arabic name is right-to-left in an English screen). Null
+  /// follows the surrounding layout.
+  final TextDirection? textDirection;
+
   @override
   Widget build(BuildContext context) {
     final l10n = FbLocalizations.of(context);
@@ -75,6 +81,7 @@ class FbTextField extends StatelessWidget {
       focusNode: focusNode,
       autofocus: autofocus,
       enabled: enabled,
+      textDirection: textDirection,
       maxLength: maxLength,
       keyboardType: keyboardType,
       textInputAction: textInputAction,

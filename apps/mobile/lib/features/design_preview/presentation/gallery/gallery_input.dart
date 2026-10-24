@@ -124,6 +124,17 @@ final List<GallerySection> gallerySectionsInput = [
     ],
   ),
   GallerySection(
+    name: 'FbNumberField',
+    covers: const [FbNumberField, FbDecimalInputFormatter],
+    states: (_) => const [
+      GalleryState('type to try it (1 decimal)', _NumberFieldDemo()),
+      GalleryState(
+        'error',
+        _NumberFieldDemo(text: '120', errorText: _S.numberFieldError),
+      ),
+    ],
+  ),
+  GallerySection(
     name: 'FbAmountDisplay',
     covers: const [FbAmountDisplay],
     states: (_) => [
@@ -405,6 +416,37 @@ class _TextFieldDemoState extends State<_TextFieldDemo> {
     label: _S.nameFieldLabel,
     hint: _S.nameFieldHint,
     maxLength: 60,
+    errorText: widget.errorText,
+    textInputAction: TextInputAction.done,
+  );
+}
+
+/// A number field with a unit and one decimal.
+class _NumberFieldDemo extends StatefulWidget {
+  const new({this.text = '', this.errorText});
+
+  final String text;
+  final String? errorText;
+
+  @override
+  State<_NumberFieldDemo> createState() => _NumberFieldDemoState();
+}
+
+class _NumberFieldDemoState extends State<_NumberFieldDemo> {
+  late final _controller = TextEditingController(text: widget.text);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => FbNumberField(
+    controller: _controller,
+    label: _S.numberFieldLabel,
+    unit: _S.numberFieldUnit,
+    maxDecimals: 1,
     errorText: widget.errorText,
     textInputAction: TextInputAction.done,
   );

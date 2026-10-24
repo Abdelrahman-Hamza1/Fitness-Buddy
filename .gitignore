@@ -5,6 +5,8 @@ build/
 .flutter-plugins-dependencies
 pubspec_overrides.yaml
 *.iml
+# Golden test failure output (alchemist/flutter_test write it next to the test)
+**/test/**/failures/
 
 # --- .NET (scoped to backend/: Dart packages have real bin/ folders) ----------
 backend/**/bin/

@@ -205,6 +205,10 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
     ];
     final slot = slots.where((s) => s.id == state.slotId).firstOrNull;
     final yieldNote = state.yieldNote;
+    // The personal food's guard refused the write (A09 D19).
+    final guardRefused =
+        (_failCode == 'changed' || _failCode == 'removed') &&
+        food.guard != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: FbSpace.s3,
@@ -286,9 +290,16 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
         if (_failed)
           FbInlineBanner(
             kind: FbInlineBannerKind.error,
+            // The food changed under the sheet: nothing here can fix that,
+            // so the way out is offered (pick it again from the search).
+            actionLabel: guardRefused ? l10n.foodSheetClose : null,
+            onAction: guardRefused ? () => Navigator.of(context).pop() : null,
             message: replacing == null
-                ? l10n.foodSheetAddFailed
+                ? guardRefused
+                      ? l10n.foodSheetAddChanged
+                      : l10n.foodSheetAddFailed
                 : switch (_failCode) {
+                    _ when guardRefused => l10n.foodSheetReplaceChanged,
                     'changed' => l10n.diaryItemChanged,
                     'removed' => l10n.diaryActionRemoved,
                     _ => l10n.diaryActionFailed,

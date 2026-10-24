@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
+import 'package:fb_mobile/features/foods/presentation/personal_foods/personal_food_form_sections.dart';
 import 'package:fb_mobile/l10n/gen/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart';
@@ -24,6 +25,19 @@ Set<String> packUnitCodes(String path) {
 
 void main() {
   final l10n = AppLocalizationsEn();
+
+  test('FD-003 D2 the form lists exactly the closed serving vocabulary, and '
+      'every name has its own label', () {
+    expect(servingUnitOrder.toSet(), PersonalFoodBounds.units);
+    expect(servingUnitOrder, hasLength(PersonalFoodBounds.units.length));
+    for (final code in PersonalFoodBounds.units) {
+      expect(
+        knownUnitLabel(l10n, code, 1),
+        isNotNull,
+        reason: 'serving name "$code" has no ARB label',
+      );
+    }
+  });
 
   void expectWords(Iterable<String> codes) {
     for (final code in codes) {

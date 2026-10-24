@@ -704,6 +704,169 @@
         },
         "additionalProperties": false
       }
+    },
+    "personalFood": {
+      "1": {
+        "type": "object",
+        "required": [
+          "createdAtMs",
+          "origin",
+          "editedByUser",
+          "nameEn",
+          "nameAr",
+          "aliasesJson",
+          "brand",
+          "barcodesJson",
+          "state",
+          "basis",
+          "per100Kcal",
+          "per100ProteinG",
+          "per100CarbsG",
+          "per100FatG",
+          "per100FiberG",
+          "per100ExtrasJson",
+          "servingsJson",
+          "entryServingUnit",
+          "entryServingAmount",
+          "createdFrom"
+        ],
+        "properties": {
+          "createdAtMs": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "origin": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "editedByUser": {
+            "type": "boolean"
+          },
+          "nameEn": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "nameAr": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 80
+          },
+          "aliasesJson": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 16384
+          },
+          "brand": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 60
+          },
+          "barcodesJson": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 16384
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "raw",
+              "cooked",
+              "dry",
+              "drained",
+              "fried",
+              "as_sold"
+            ]
+          },
+          "basis": {
+            "type": "string",
+            "enum": [
+              "g",
+              "ml"
+            ]
+          },
+          "per100Kcal": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 920
+          },
+          "per100ProteinG": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "per100CarbsG": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "per100FatG": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "per100FiberG": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "per100ExtrasJson": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 16384
+          },
+          "servingsJson": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 16384
+          },
+          "entryServingUnit": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "piece",
+              "loaf",
+              "plate",
+              "glass",
+              "sandwich",
+              "disc",
+              "serving",
+              "can",
+              "cup",
+              "tbsp",
+              "tsp",
+              null
+            ]
+          },
+          "entryServingAmount": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0.1,
+            "maximum": 5000
+          },
+          "createdFrom": {
+            "type": "string",
+            "maxLength": 32
+          }
+        },
+        "additionalProperties": false
+      }
     }
   }
 }

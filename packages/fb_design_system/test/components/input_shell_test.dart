@@ -440,6 +440,8 @@ void main() {
         FbSearchField,
         FbChoiceChip,
         FbTextField,
+        FbNumberField,
+        FbDecimalInputFormatter,
         FbSectionHeader,
         FbSheet,
         FbSkeleton,

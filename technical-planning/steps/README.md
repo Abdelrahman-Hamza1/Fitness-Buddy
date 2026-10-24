@@ -152,9 +152,10 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A07](A07-food-search-add.md) | Food search & add flow | Claude | A02, A05, A06 | M | S15 |  | ✅ |
 | [A08a](A08-today-diary-ui.md) | Today & diary view (split from A08, 2026-10-23) | Claude | A07 | L | S16 part |  | ✅ |
 | [A08b](A08-today-diary-ui.md) | Diary editing & meal actions (split from A08) | Claude | A08a | M | S16 part |  | ✅ |
-| [A09](A09-personal-foods-quick-add.md) | Personal foods, saved meals & quick-add | Claude | A08b | M | S17 |  | ⬜ |
+| [A09a](A09-personal-foods-quick-add.md) | Personal foods & guarded repeat-log ops (split from A09) | Claude | A08b | L | S17 part |  | ✅ |
+| [A09b](A09-personal-foods-quick-add.md) | Saved meals & quick-add (split from A09) | Claude | A09a | M | S17 part |  | ⬜ |
 | [A10](A10-settings-slots.md) | Settings & meal slots | Claude | A08a | M | S18 |  | ⬜ |
-| [A11](A11-dogfood-1-readiness.md) | Dogfood 1 readiness: export, crash reports, daily build | **Codex** | A09, A10 · soft: **B03** | M | S28 export part + new | **M1** | ⬜ |
+| [A11](A11-dogfood-1-readiness.md) | Dogfood 1 readiness: export, crash reports, daily build | **Codex** | A09b, A10 · soft: **B03** | M | S28 export part + new | **M1** | ⬜ |
 | [A12](A12-targets-engine.md) | Targets engine | **Codex** | A06 | M | S19 |  | ✅ |
 | [A13](A13-targets-ui-onboarding.md) | Goals & targets UI, R1 onboarding | Claude | A10, A12 | M | S20 |  | ⬜ |
 | [A14](A14-weigh-ins-trend.md) | Weigh-ins & trend | Claude | A08a | M | S21 |  | ⬜ |
@@ -170,14 +171,14 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A24](A24-online-search-pack-updates.md) | Online search & pack updates (app) | **Codex** | A07, **B07** | M | S30 app part |  | ⬜ |
 | [A25](A25-diary-edits-by-chat.md) | Diary edits by chat (app) | Claude | A23, **B09** (contract) | M | S35 app part |  | ⬜ |
 | [A26](A26-memory-user-model.md) | Memory & user model (app) | Claude | A23, **B09** (contract) | M | S36 app part |  | ⬜ |
-| [A27](A27-batches-chat-foods.md) | Batches, personal foods & saved meals by chat (app) | Claude | A09, A23, **B09** (contract) | L | S37 app part |  | ⬜ |
+| [A27](A27-batches-chat-foods.md) | Batches, personal foods & saved meals by chat (app) | Claude | A09b, A23, **B09** (contract) | L | S37 app part |  | ⬜ |
 | [A28](A28-barcode-label-scan.md) | Barcode & label scan (app) | Claude | A23, **B10** (contract) | L | S38 app part |  | ⬜ |
 | [A29](A29-photo-body-import.md) | Photo logging, body data by chat & paste import (app) | Claude | A15, A23, **B10** (contract) | M | S39 app part |  | ⬜ |
 | [A30](dish-batches.md) | Dish batch 5: sweets, drinks & Ramadan staples | Claude | A19 | S | D5 |  | ⏸ deferred (TD-074): after A41 |
 | [A31](A31-qa-suggestions-halal.md) | Q&A, suggestions & halal (app) | Claude | A26, **B11** (contract) | M | S40 app part |  | ⬜ |
 | [A32](dish-batches.md) | Dish batch 6: gap fill from dogfooding | Claude | A30 | S | D6 |  | ⏸ deferred (TD-074): after A41 |
 | [A33](A33-sign-in-guest-app.md) | Sign-in & guest upgrade | Claude | A20, **B04** | M | S25 |  | ⬜ |
-| [A34](A34-sync-engine-app.md) | Sync engine (app) | **Codex** | A33, **B05** | L | S27 |  | ⬜ |
+| [A34](A34-sync-engine-app.md) | Sync engine (app) | **Codex** | A33, **B05**, **B17** | L | S27 |  | ⬜ |
 | [A35](A35-account-deletion-app.md) | Account deletion (app) | Claude | A34, **B06** | S | S28 deletion part | **M5** | ⬜ |
 | [A36](A36-workout-domain.md) | Workout domain, library & templates | **Codex** | A05b, A06, A12 | M | S41 |  | ⬜ |
 | [A37](A37-workout-logging.md) | Workout logging, history & PRs (app) | Claude | A23, A36, **B12** (contract) | L | S42 app part |  | ⬜ |
@@ -210,6 +211,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [B14](B14-production.md) | Production, backups & go-live | B13 | L | S29 server part | **M7** | ⬜ |
 | [B15](B15-eval-expansion.md) | AI eval expansion & tuning | B09–B12, B14, **A41** | M | S47 | **R1** | ⬜ |
 | [B16](B16-security-restore-drill.md) | Security review & restore drill | B14, **A42** | M | S49 | **R1** | ⬜ |
+| [B17](B17-personal-food-sync.md) | personalFood sync entity (server) | B05, **A09a** (contract) | S | new (A09 split) |  | ⬜ |
 
 ```mermaid
 flowchart LR

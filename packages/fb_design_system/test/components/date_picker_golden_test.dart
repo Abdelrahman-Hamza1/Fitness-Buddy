@@ -13,6 +13,8 @@ Future<void> main() => fbGoldenMatrix(
         initialDate: DateTime(2026, 10, 15),
         firstDate: DateTime(2026),
         lastDate: DateTime(2026, 10, 20),
+        // Pinned: by default the "today" ring follows the real clock.
+        currentDate: DateTime(2026, 10, 20),
       ),
     ),
   },

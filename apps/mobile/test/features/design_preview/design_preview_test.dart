@@ -148,7 +148,7 @@ void main() {
     expect(container.read(themeModeProvider), ThemeMode.system);
   });
 
-  // Today has the diary now: it has its own empty day (UX-050, A08).
+  // Today has a diary and Me has foods; the other tabs still have placeholders.
   testWidgets('UX-050 tab placeholders use the design-system empty state', (
     tester,
   ) async {
@@ -157,7 +157,6 @@ void main() {
     final screens = {
       const ProgressRoute(): ProgressScreen,
       const WorkoutsRoute(): WorkoutsScreen,
-      const MeRoute(): MeScreen,
     };
     for (final MapEntry(key: route, value: screen) in screens.entries) {
       showRoute(container, route);

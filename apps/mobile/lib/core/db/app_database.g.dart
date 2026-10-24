@@ -8086,6 +8086,1462 @@ class SyncOutboxCompanion extends UpdateCompanion<SyncOutboxRow> {
   }
 }
 
+class $PersonalFoodsTable extends PersonalFoods
+    with TableInfo<$PersonalFoodsTable, PersonalFoodRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PersonalFoodsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+    'origin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedByUserMeta = const VerificationMeta(
+    'editedByUser',
+  );
+  @override
+  late final GeneratedColumn<bool> editedByUser = GeneratedColumn<bool>(
+    'edited_by_user',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_by_user" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _nameEnMeta = const VerificationMeta('nameEn');
+  @override
+  late final GeneratedColumn<String> nameEn = GeneratedColumn<String>(
+    'name_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
+  @override
+  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
+    'name_ar',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _aliasesJsonMeta = const VerificationMeta(
+    'aliasesJson',
+  );
+  @override
+  late final GeneratedColumn<String> aliasesJson = GeneratedColumn<String>(
+    'aliases_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _brandMeta = const VerificationMeta('brand');
+  @override
+  late final GeneratedColumn<String> brand = GeneratedColumn<String>(
+    'brand',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _barcodesJsonMeta = const VerificationMeta(
+    'barcodesJson',
+  );
+  @override
+  late final GeneratedColumn<String> barcodesJson = GeneratedColumn<String>(
+    'barcodes_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _per100ExtrasJsonMeta = const VerificationMeta(
+    'per100ExtrasJson',
+  );
+  @override
+  late final GeneratedColumn<String> per100ExtrasJson = GeneratedColumn<String>(
+    'per100_extras_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _servingsJsonMeta = const VerificationMeta(
+    'servingsJson',
+  );
+  @override
+  late final GeneratedColumn<String> servingsJson = GeneratedColumn<String>(
+    'servings_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _entryServingUnitMeta = const VerificationMeta(
+    'entryServingUnit',
+  );
+  @override
+  late final GeneratedColumn<String> entryServingUnit = GeneratedColumn<String>(
+    'entry_serving_unit',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdFromMeta = const VerificationMeta(
+    'createdFrom',
+  );
+  @override
+  late final GeneratedColumn<String> createdFrom = GeneratedColumn<String>(
+    'created_from',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+    'state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _basisMeta = const VerificationMeta('basis');
+  @override
+  late final GeneratedColumn<String> basis = GeneratedColumn<String>(
+    'basis',
+    aliasedName,
+    false,
+    check: () => basis.isIn(const ['g', 'ml']),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _per100KcalMeta = const VerificationMeta(
+    'per100Kcal',
+  );
+  @override
+  late final GeneratedColumn<double> per100Kcal = GeneratedColumn<double>(
+    'per100_kcal',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(per100Kcal).isBiggerOrEqualValue(0),
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _per100ProteinGMeta = const VerificationMeta(
+    'per100ProteinG',
+  );
+  @override
+  late final GeneratedColumn<double> per100ProteinG = GeneratedColumn<double>(
+    'per100_protein_g',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(per100ProteinG).isBiggerOrEqualValue(0),
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _per100CarbsGMeta = const VerificationMeta(
+    'per100CarbsG',
+  );
+  @override
+  late final GeneratedColumn<double> per100CarbsG = GeneratedColumn<double>(
+    'per100_carbs_g',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(per100CarbsG).isBiggerOrEqualValue(0),
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _per100FatGMeta = const VerificationMeta(
+    'per100FatG',
+  );
+  @override
+  late final GeneratedColumn<double> per100FatG = GeneratedColumn<double>(
+    'per100_fat_g',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(per100FatG).isBiggerOrEqualValue(0),
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _per100FiberGMeta = const VerificationMeta(
+    'per100FiberG',
+  );
+  @override
+  late final GeneratedColumn<double> per100FiberG = GeneratedColumn<double>(
+    'per100_fiber_g',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(per100FiberG).isBiggerOrEqualValue(0),
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entryServingAmountMeta =
+      const VerificationMeta('entryServingAmount');
+  @override
+  late final GeneratedColumn<double> entryServingAmount =
+      GeneratedColumn<double>(
+        'entry_serving_amount',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    nameEn,
+    nameAr,
+    aliasesJson,
+    brand,
+    barcodesJson,
+    per100ExtrasJson,
+    servingsJson,
+    entryServingUnit,
+    createdFrom,
+    state,
+    basis,
+    per100Kcal,
+    per100ProteinG,
+    per100CarbsG,
+    per100FatG,
+    per100FiberG,
+    entryServingAmount,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'personal_foods';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PersonalFoodRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedHlcMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('origin')) {
+      context.handle(
+        _originMeta,
+        origin.isAcceptableOrUnknown(data['origin']!, _originMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originMeta);
+    }
+    if (data.containsKey('edited_by_user')) {
+      context.handle(
+        _editedByUserMeta,
+        editedByUser.isAcceptableOrUnknown(
+          data['edited_by_user']!,
+          _editedByUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('name_en')) {
+      context.handle(
+        _nameEnMeta,
+        nameEn.isAcceptableOrUnknown(data['name_en']!, _nameEnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameEnMeta);
+    }
+    if (data.containsKey('name_ar')) {
+      context.handle(
+        _nameArMeta,
+        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
+      );
+    }
+    if (data.containsKey('aliases_json')) {
+      context.handle(
+        _aliasesJsonMeta,
+        aliasesJson.isAcceptableOrUnknown(
+          data['aliases_json']!,
+          _aliasesJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('brand')) {
+      context.handle(
+        _brandMeta,
+        brand.isAcceptableOrUnknown(data['brand']!, _brandMeta),
+      );
+    }
+    if (data.containsKey('barcodes_json')) {
+      context.handle(
+        _barcodesJsonMeta,
+        barcodesJson.isAcceptableOrUnknown(
+          data['barcodes_json']!,
+          _barcodesJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('per100_extras_json')) {
+      context.handle(
+        _per100ExtrasJsonMeta,
+        per100ExtrasJson.isAcceptableOrUnknown(
+          data['per100_extras_json']!,
+          _per100ExtrasJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('servings_json')) {
+      context.handle(
+        _servingsJsonMeta,
+        servingsJson.isAcceptableOrUnknown(
+          data['servings_json']!,
+          _servingsJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('entry_serving_unit')) {
+      context.handle(
+        _entryServingUnitMeta,
+        entryServingUnit.isAcceptableOrUnknown(
+          data['entry_serving_unit']!,
+          _entryServingUnitMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_from')) {
+      context.handle(
+        _createdFromMeta,
+        createdFrom.isAcceptableOrUnknown(
+          data['created_from']!,
+          _createdFromMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdFromMeta);
+    }
+    if (data.containsKey('state')) {
+      context.handle(
+        _stateMeta,
+        state.isAcceptableOrUnknown(data['state']!, _stateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_stateMeta);
+    }
+    if (data.containsKey('basis')) {
+      context.handle(
+        _basisMeta,
+        basis.isAcceptableOrUnknown(data['basis']!, _basisMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_basisMeta);
+    }
+    if (data.containsKey('per100_kcal')) {
+      context.handle(
+        _per100KcalMeta,
+        per100Kcal.isAcceptableOrUnknown(data['per100_kcal']!, _per100KcalMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_per100KcalMeta);
+    }
+    if (data.containsKey('per100_protein_g')) {
+      context.handle(
+        _per100ProteinGMeta,
+        per100ProteinG.isAcceptableOrUnknown(
+          data['per100_protein_g']!,
+          _per100ProteinGMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_per100ProteinGMeta);
+    }
+    if (data.containsKey('per100_carbs_g')) {
+      context.handle(
+        _per100CarbsGMeta,
+        per100CarbsG.isAcceptableOrUnknown(
+          data['per100_carbs_g']!,
+          _per100CarbsGMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_per100CarbsGMeta);
+    }
+    if (data.containsKey('per100_fat_g')) {
+      context.handle(
+        _per100FatGMeta,
+        per100FatG.isAcceptableOrUnknown(
+          data['per100_fat_g']!,
+          _per100FatGMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_per100FatGMeta);
+    }
+    if (data.containsKey('per100_fiber_g')) {
+      context.handle(
+        _per100FiberGMeta,
+        per100FiberG.isAcceptableOrUnknown(
+          data['per100_fiber_g']!,
+          _per100FiberGMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_per100FiberGMeta);
+    }
+    if (data.containsKey('entry_serving_amount')) {
+      context.handle(
+        _entryServingAmountMeta,
+        entryServingAmount.isAcceptableOrUnknown(
+          data['entry_serving_amount']!,
+          _entryServingAmountMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PersonalFoodRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PersonalFoodRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      origin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin'],
+      )!,
+      editedByUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited_by_user'],
+      )!,
+      nameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_en'],
+      )!,
+      nameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_ar'],
+      ),
+      aliasesJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}aliases_json'],
+      ),
+      brand: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}brand'],
+      ),
+      barcodesJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}barcodes_json'],
+      ),
+      per100ExtrasJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}per100_extras_json'],
+      ),
+      servingsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}servings_json'],
+      ),
+      entryServingUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entry_serving_unit'],
+      ),
+      createdFrom: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_from'],
+      )!,
+      state: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}state'],
+      )!,
+      basis: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}basis'],
+      )!,
+      per100Kcal: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}per100_kcal'],
+      )!,
+      per100ProteinG: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}per100_protein_g'],
+      )!,
+      per100CarbsG: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}per100_carbs_g'],
+      )!,
+      per100FatG: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}per100_fat_g'],
+      )!,
+      per100FiberG: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}per100_fiber_g'],
+      )!,
+      entryServingAmount: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}entry_serving_amount'],
+      ),
+    );
+  }
+
+  @override
+  $PersonalFoodsTable createAlias(String alias) {
+    return $PersonalFoodsTable(attachedDatabase, alias);
+  }
+}
+
+class PersonalFoodRow extends DataClass implements Insertable<PersonalFoodRow> {
+  /// UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys
+  /// (`core/db/natural_id.dart`). Lowercase canonical text.
+  final String id;
+
+  /// When the row was first written, UTC ms (0 for seeds).
+  final int createdAt;
+
+  /// The hybrid logical clock of the last write (`fb_domain` `Hlc` text).
+  final String updatedHlc;
+
+  /// 1 on insert, +1 per write: the local optimistic concurrency check.
+  final int version;
+
+  /// The tombstone, UTC ms. Synced rows are never hard-deleted.
+  final int? deletedAt;
+
+  /// The install that made the last write (the HLC's node id, TD-053).
+  final String deviceId;
+
+  /// `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`.
+  final String origin;
+
+  /// Provenance: the user overrode a value that came from another source
+  /// (AI-072, the "edited by you" badge). Set only by ops.
+  final bool editedByUser;
+
+  /// English name.
+  final String nameEn;
+
+  /// Optional Arabic name.
+  final String? nameAr;
+
+  /// Optional JSON alias list.
+  final String? aliasesJson;
+
+  /// Optional brand.
+  final String? brand;
+
+  /// Optional JSON GTIN list.
+  final String? barcodesJson;
+
+  /// Optional JSON nutrient extras.
+  final String? per100ExtrasJson;
+
+  /// Optional JSON serving definitions.
+  final String? servingsJson;
+
+  /// Original entry serving code.
+  final String? entryServingUnit;
+
+  /// Creation method, open for later steps.
+  final String createdFrom;
+
+  /// Nutrient state code.
+  final String state;
+
+  /// Grams or ml.
+  final String basis;
+
+  /// Stored per-100 value.
+  final double per100Kcal;
+
+  /// Stored per-100 value.
+  final double per100ProteinG;
+
+  /// Stored per-100 value.
+  final double per100CarbsG;
+
+  /// Stored per-100 value.
+  final double per100FatG;
+
+  /// Stored per-100 value.
+  final double per100FiberG;
+
+  /// Original entry serving amount on this basis.
+  final double? entryServingAmount;
+  const PersonalFoodRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedHlc,
+    required this.version,
+    this.deletedAt,
+    required this.deviceId,
+    required this.origin,
+    required this.editedByUser,
+    required this.nameEn,
+    this.nameAr,
+    this.aliasesJson,
+    this.brand,
+    this.barcodesJson,
+    this.per100ExtrasJson,
+    this.servingsJson,
+    this.entryServingUnit,
+    required this.createdFrom,
+    required this.state,
+    required this.basis,
+    required this.per100Kcal,
+    required this.per100ProteinG,
+    required this.per100CarbsG,
+    required this.per100FatG,
+    required this.per100FiberG,
+    this.entryServingAmount,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
+    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['device_id'] = Variable<String>(deviceId);
+    map['origin'] = Variable<String>(origin);
+    map['edited_by_user'] = Variable<bool>(editedByUser);
+    map['name_en'] = Variable<String>(nameEn);
+    if (!nullToAbsent || nameAr != null) {
+      map['name_ar'] = Variable<String>(nameAr);
+    }
+    if (!nullToAbsent || aliasesJson != null) {
+      map['aliases_json'] = Variable<String>(aliasesJson);
+    }
+    if (!nullToAbsent || brand != null) {
+      map['brand'] = Variable<String>(brand);
+    }
+    if (!nullToAbsent || barcodesJson != null) {
+      map['barcodes_json'] = Variable<String>(barcodesJson);
+    }
+    if (!nullToAbsent || per100ExtrasJson != null) {
+      map['per100_extras_json'] = Variable<String>(per100ExtrasJson);
+    }
+    if (!nullToAbsent || servingsJson != null) {
+      map['servings_json'] = Variable<String>(servingsJson);
+    }
+    if (!nullToAbsent || entryServingUnit != null) {
+      map['entry_serving_unit'] = Variable<String>(entryServingUnit);
+    }
+    map['created_from'] = Variable<String>(createdFrom);
+    map['state'] = Variable<String>(state);
+    map['basis'] = Variable<String>(basis);
+    map['per100_kcal'] = Variable<double>(per100Kcal);
+    map['per100_protein_g'] = Variable<double>(per100ProteinG);
+    map['per100_carbs_g'] = Variable<double>(per100CarbsG);
+    map['per100_fat_g'] = Variable<double>(per100FatG);
+    map['per100_fiber_g'] = Variable<double>(per100FiberG);
+    if (!nullToAbsent || entryServingAmount != null) {
+      map['entry_serving_amount'] = Variable<double>(entryServingAmount);
+    }
+    return map;
+  }
+
+  PersonalFoodsCompanion toCompanion(bool nullToAbsent) {
+    return PersonalFoodsCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
+      version: Value(version),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deviceId: Value(deviceId),
+      origin: Value(origin),
+      editedByUser: Value(editedByUser),
+      nameEn: Value(nameEn),
+      nameAr: nameAr == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nameAr),
+      aliasesJson: aliasesJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(aliasesJson),
+      brand: brand == null && nullToAbsent
+          ? const Value.absent()
+          : Value(brand),
+      barcodesJson: barcodesJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(barcodesJson),
+      per100ExtrasJson: per100ExtrasJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(per100ExtrasJson),
+      servingsJson: servingsJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(servingsJson),
+      entryServingUnit: entryServingUnit == null && nullToAbsent
+          ? const Value.absent()
+          : Value(entryServingUnit),
+      createdFrom: Value(createdFrom),
+      state: Value(state),
+      basis: Value(basis),
+      per100Kcal: Value(per100Kcal),
+      per100ProteinG: Value(per100ProteinG),
+      per100CarbsG: Value(per100CarbsG),
+      per100FatG: Value(per100FatG),
+      per100FiberG: Value(per100FiberG),
+      entryServingAmount: entryServingAmount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(entryServingAmount),
+    );
+  }
+
+  factory PersonalFoodRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PersonalFoodRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
+      version: serializer.fromJson<int>(json['version']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      origin: serializer.fromJson<String>(json['origin']),
+      editedByUser: serializer.fromJson<bool>(json['editedByUser']),
+      nameEn: serializer.fromJson<String>(json['nameEn']),
+      nameAr: serializer.fromJson<String?>(json['nameAr']),
+      aliasesJson: serializer.fromJson<String?>(json['aliasesJson']),
+      brand: serializer.fromJson<String?>(json['brand']),
+      barcodesJson: serializer.fromJson<String?>(json['barcodesJson']),
+      per100ExtrasJson: serializer.fromJson<String?>(json['per100ExtrasJson']),
+      servingsJson: serializer.fromJson<String?>(json['servingsJson']),
+      entryServingUnit: serializer.fromJson<String?>(json['entryServingUnit']),
+      createdFrom: serializer.fromJson<String>(json['createdFrom']),
+      state: serializer.fromJson<String>(json['state']),
+      basis: serializer.fromJson<String>(json['basis']),
+      per100Kcal: serializer.fromJson<double>(json['per100Kcal']),
+      per100ProteinG: serializer.fromJson<double>(json['per100ProteinG']),
+      per100CarbsG: serializer.fromJson<double>(json['per100CarbsG']),
+      per100FatG: serializer.fromJson<double>(json['per100FatG']),
+      per100FiberG: serializer.fromJson<double>(json['per100FiberG']),
+      entryServingAmount: serializer.fromJson<double?>(
+        json['entryServingAmount'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
+      'version': serializer.toJson<int>(version),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'origin': serializer.toJson<String>(origin),
+      'editedByUser': serializer.toJson<bool>(editedByUser),
+      'nameEn': serializer.toJson<String>(nameEn),
+      'nameAr': serializer.toJson<String?>(nameAr),
+      'aliasesJson': serializer.toJson<String?>(aliasesJson),
+      'brand': serializer.toJson<String?>(brand),
+      'barcodesJson': serializer.toJson<String?>(barcodesJson),
+      'per100ExtrasJson': serializer.toJson<String?>(per100ExtrasJson),
+      'servingsJson': serializer.toJson<String?>(servingsJson),
+      'entryServingUnit': serializer.toJson<String?>(entryServingUnit),
+      'createdFrom': serializer.toJson<String>(createdFrom),
+      'state': serializer.toJson<String>(state),
+      'basis': serializer.toJson<String>(basis),
+      'per100Kcal': serializer.toJson<double>(per100Kcal),
+      'per100ProteinG': serializer.toJson<double>(per100ProteinG),
+      'per100CarbsG': serializer.toJson<double>(per100CarbsG),
+      'per100FatG': serializer.toJson<double>(per100FatG),
+      'per100FiberG': serializer.toJson<double>(per100FiberG),
+      'entryServingAmount': serializer.toJson<double?>(entryServingAmount),
+    };
+  }
+
+  PersonalFoodRow copyWith({
+    String? id,
+    int? createdAt,
+    String? updatedHlc,
+    int? version,
+    Value<int?> deletedAt = const Value.absent(),
+    String? deviceId,
+    String? origin,
+    bool? editedByUser,
+    String? nameEn,
+    Value<String?> nameAr = const Value.absent(),
+    Value<String?> aliasesJson = const Value.absent(),
+    Value<String?> brand = const Value.absent(),
+    Value<String?> barcodesJson = const Value.absent(),
+    Value<String?> per100ExtrasJson = const Value.absent(),
+    Value<String?> servingsJson = const Value.absent(),
+    Value<String?> entryServingUnit = const Value.absent(),
+    String? createdFrom,
+    String? state,
+    String? basis,
+    double? per100Kcal,
+    double? per100ProteinG,
+    double? per100CarbsG,
+    double? per100FatG,
+    double? per100FiberG,
+    Value<double?> entryServingAmount = const Value.absent(),
+  }) => PersonalFoodRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+    version: version ?? this.version,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deviceId: deviceId ?? this.deviceId,
+    origin: origin ?? this.origin,
+    editedByUser: editedByUser ?? this.editedByUser,
+    nameEn: nameEn ?? this.nameEn,
+    nameAr: nameAr.present ? nameAr.value : this.nameAr,
+    aliasesJson: aliasesJson.present ? aliasesJson.value : this.aliasesJson,
+    brand: brand.present ? brand.value : this.brand,
+    barcodesJson: barcodesJson.present ? barcodesJson.value : this.barcodesJson,
+    per100ExtrasJson: per100ExtrasJson.present
+        ? per100ExtrasJson.value
+        : this.per100ExtrasJson,
+    servingsJson: servingsJson.present ? servingsJson.value : this.servingsJson,
+    entryServingUnit: entryServingUnit.present
+        ? entryServingUnit.value
+        : this.entryServingUnit,
+    createdFrom: createdFrom ?? this.createdFrom,
+    state: state ?? this.state,
+    basis: basis ?? this.basis,
+    per100Kcal: per100Kcal ?? this.per100Kcal,
+    per100ProteinG: per100ProteinG ?? this.per100ProteinG,
+    per100CarbsG: per100CarbsG ?? this.per100CarbsG,
+    per100FatG: per100FatG ?? this.per100FatG,
+    per100FiberG: per100FiberG ?? this.per100FiberG,
+    entryServingAmount: entryServingAmount.present
+        ? entryServingAmount.value
+        : this.entryServingAmount,
+  );
+  PersonalFoodRow copyWithCompanion(PersonalFoodsCompanion data) {
+    return PersonalFoodRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
+      version: data.version.present ? data.version.value : this.version,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      editedByUser: data.editedByUser.present
+          ? data.editedByUser.value
+          : this.editedByUser,
+      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
+      aliasesJson: data.aliasesJson.present
+          ? data.aliasesJson.value
+          : this.aliasesJson,
+      brand: data.brand.present ? data.brand.value : this.brand,
+      barcodesJson: data.barcodesJson.present
+          ? data.barcodesJson.value
+          : this.barcodesJson,
+      per100ExtrasJson: data.per100ExtrasJson.present
+          ? data.per100ExtrasJson.value
+          : this.per100ExtrasJson,
+      servingsJson: data.servingsJson.present
+          ? data.servingsJson.value
+          : this.servingsJson,
+      entryServingUnit: data.entryServingUnit.present
+          ? data.entryServingUnit.value
+          : this.entryServingUnit,
+      createdFrom: data.createdFrom.present
+          ? data.createdFrom.value
+          : this.createdFrom,
+      state: data.state.present ? data.state.value : this.state,
+      basis: data.basis.present ? data.basis.value : this.basis,
+      per100Kcal: data.per100Kcal.present
+          ? data.per100Kcal.value
+          : this.per100Kcal,
+      per100ProteinG: data.per100ProteinG.present
+          ? data.per100ProteinG.value
+          : this.per100ProteinG,
+      per100CarbsG: data.per100CarbsG.present
+          ? data.per100CarbsG.value
+          : this.per100CarbsG,
+      per100FatG: data.per100FatG.present
+          ? data.per100FatG.value
+          : this.per100FatG,
+      per100FiberG: data.per100FiberG.present
+          ? data.per100FiberG.value
+          : this.per100FiberG,
+      entryServingAmount: data.entryServingAmount.present
+          ? data.entryServingAmount.value
+          : this.entryServingAmount,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PersonalFoodRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('nameEn: $nameEn, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('aliasesJson: $aliasesJson, ')
+          ..write('brand: $brand, ')
+          ..write('barcodesJson: $barcodesJson, ')
+          ..write('per100ExtrasJson: $per100ExtrasJson, ')
+          ..write('servingsJson: $servingsJson, ')
+          ..write('entryServingUnit: $entryServingUnit, ')
+          ..write('createdFrom: $createdFrom, ')
+          ..write('state: $state, ')
+          ..write('basis: $basis, ')
+          ..write('per100Kcal: $per100Kcal, ')
+          ..write('per100ProteinG: $per100ProteinG, ')
+          ..write('per100CarbsG: $per100CarbsG, ')
+          ..write('per100FatG: $per100FatG, ')
+          ..write('per100FiberG: $per100FiberG, ')
+          ..write('entryServingAmount: $entryServingAmount')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    nameEn,
+    nameAr,
+    aliasesJson,
+    brand,
+    barcodesJson,
+    per100ExtrasJson,
+    servingsJson,
+    entryServingUnit,
+    createdFrom,
+    state,
+    basis,
+    per100Kcal,
+    per100ProteinG,
+    per100CarbsG,
+    per100FatG,
+    per100FiberG,
+    entryServingAmount,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PersonalFoodRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc &&
+          other.version == this.version &&
+          other.deletedAt == this.deletedAt &&
+          other.deviceId == this.deviceId &&
+          other.origin == this.origin &&
+          other.editedByUser == this.editedByUser &&
+          other.nameEn == this.nameEn &&
+          other.nameAr == this.nameAr &&
+          other.aliasesJson == this.aliasesJson &&
+          other.brand == this.brand &&
+          other.barcodesJson == this.barcodesJson &&
+          other.per100ExtrasJson == this.per100ExtrasJson &&
+          other.servingsJson == this.servingsJson &&
+          other.entryServingUnit == this.entryServingUnit &&
+          other.createdFrom == this.createdFrom &&
+          other.state == this.state &&
+          other.basis == this.basis &&
+          other.per100Kcal == this.per100Kcal &&
+          other.per100ProteinG == this.per100ProteinG &&
+          other.per100CarbsG == this.per100CarbsG &&
+          other.per100FatG == this.per100FatG &&
+          other.per100FiberG == this.per100FiberG &&
+          other.entryServingAmount == this.entryServingAmount);
+}
+
+class PersonalFoodsCompanion extends UpdateCompanion<PersonalFoodRow> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<String> updatedHlc;
+  final Value<int> version;
+  final Value<int?> deletedAt;
+  final Value<String> deviceId;
+  final Value<String> origin;
+  final Value<bool> editedByUser;
+  final Value<String> nameEn;
+  final Value<String?> nameAr;
+  final Value<String?> aliasesJson;
+  final Value<String?> brand;
+  final Value<String?> barcodesJson;
+  final Value<String?> per100ExtrasJson;
+  final Value<String?> servingsJson;
+  final Value<String?> entryServingUnit;
+  final Value<String> createdFrom;
+  final Value<String> state;
+  final Value<String> basis;
+  final Value<double> per100Kcal;
+  final Value<double> per100ProteinG;
+  final Value<double> per100CarbsG;
+  final Value<double> per100FatG;
+  final Value<double> per100FiberG;
+  final Value<double?> entryServingAmount;
+  final Value<int> rowid;
+  const PersonalFoodsCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
+    this.version = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.editedByUser = const Value.absent(),
+    this.nameEn = const Value.absent(),
+    this.nameAr = const Value.absent(),
+    this.aliasesJson = const Value.absent(),
+    this.brand = const Value.absent(),
+    this.barcodesJson = const Value.absent(),
+    this.per100ExtrasJson = const Value.absent(),
+    this.servingsJson = const Value.absent(),
+    this.entryServingUnit = const Value.absent(),
+    this.createdFrom = const Value.absent(),
+    this.state = const Value.absent(),
+    this.basis = const Value.absent(),
+    this.per100Kcal = const Value.absent(),
+    this.per100ProteinG = const Value.absent(),
+    this.per100CarbsG = const Value.absent(),
+    this.per100FatG = const Value.absent(),
+    this.per100FiberG = const Value.absent(),
+    this.entryServingAmount = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PersonalFoodsCompanion.insert({
+    required String id,
+    required int createdAt,
+    required String updatedHlc,
+    required int version,
+    this.deletedAt = const Value.absent(),
+    required String deviceId,
+    required String origin,
+    this.editedByUser = const Value.absent(),
+    required String nameEn,
+    this.nameAr = const Value.absent(),
+    this.aliasesJson = const Value.absent(),
+    this.brand = const Value.absent(),
+    this.barcodesJson = const Value.absent(),
+    this.per100ExtrasJson = const Value.absent(),
+    this.servingsJson = const Value.absent(),
+    this.entryServingUnit = const Value.absent(),
+    required String createdFrom,
+    required String state,
+    required String basis,
+    required double per100Kcal,
+    required double per100ProteinG,
+    required double per100CarbsG,
+    required double per100FatG,
+    required double per100FiberG,
+    this.entryServingAmount = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedHlc = Value(updatedHlc),
+       version = Value(version),
+       deviceId = Value(deviceId),
+       origin = Value(origin),
+       nameEn = Value(nameEn),
+       createdFrom = Value(createdFrom),
+       state = Value(state),
+       basis = Value(basis),
+       per100Kcal = Value(per100Kcal),
+       per100ProteinG = Value(per100ProteinG),
+       per100CarbsG = Value(per100CarbsG),
+       per100FatG = Value(per100FatG),
+       per100FiberG = Value(per100FiberG);
+  static Insertable<PersonalFoodRow> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<String>? updatedHlc,
+    Expression<int>? version,
+    Expression<int>? deletedAt,
+    Expression<String>? deviceId,
+    Expression<String>? origin,
+    Expression<bool>? editedByUser,
+    Expression<String>? nameEn,
+    Expression<String>? nameAr,
+    Expression<String>? aliasesJson,
+    Expression<String>? brand,
+    Expression<String>? barcodesJson,
+    Expression<String>? per100ExtrasJson,
+    Expression<String>? servingsJson,
+    Expression<String>? entryServingUnit,
+    Expression<String>? createdFrom,
+    Expression<String>? state,
+    Expression<String>? basis,
+    Expression<double>? per100Kcal,
+    Expression<double>? per100ProteinG,
+    Expression<double>? per100CarbsG,
+    Expression<double>? per100FatG,
+    Expression<double>? per100FiberG,
+    Expression<double>? entryServingAmount,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
+      if (version != null) 'version': version,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deviceId != null) 'device_id': deviceId,
+      if (origin != null) 'origin': origin,
+      if (editedByUser != null) 'edited_by_user': editedByUser,
+      if (nameEn != null) 'name_en': nameEn,
+      if (nameAr != null) 'name_ar': nameAr,
+      if (aliasesJson != null) 'aliases_json': aliasesJson,
+      if (brand != null) 'brand': brand,
+      if (barcodesJson != null) 'barcodes_json': barcodesJson,
+      if (per100ExtrasJson != null) 'per100_extras_json': per100ExtrasJson,
+      if (servingsJson != null) 'servings_json': servingsJson,
+      if (entryServingUnit != null) 'entry_serving_unit': entryServingUnit,
+      if (createdFrom != null) 'created_from': createdFrom,
+      if (state != null) 'state': state,
+      if (basis != null) 'basis': basis,
+      if (per100Kcal != null) 'per100_kcal': per100Kcal,
+      if (per100ProteinG != null) 'per100_protein_g': per100ProteinG,
+      if (per100CarbsG != null) 'per100_carbs_g': per100CarbsG,
+      if (per100FatG != null) 'per100_fat_g': per100FatG,
+      if (per100FiberG != null) 'per100_fiber_g': per100FiberG,
+      if (entryServingAmount != null)
+        'entry_serving_amount': entryServingAmount,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PersonalFoodsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<String>? updatedHlc,
+    Value<int>? version,
+    Value<int?>? deletedAt,
+    Value<String>? deviceId,
+    Value<String>? origin,
+    Value<bool>? editedByUser,
+    Value<String>? nameEn,
+    Value<String?>? nameAr,
+    Value<String?>? aliasesJson,
+    Value<String?>? brand,
+    Value<String?>? barcodesJson,
+    Value<String?>? per100ExtrasJson,
+    Value<String?>? servingsJson,
+    Value<String?>? entryServingUnit,
+    Value<String>? createdFrom,
+    Value<String>? state,
+    Value<String>? basis,
+    Value<double>? per100Kcal,
+    Value<double>? per100ProteinG,
+    Value<double>? per100CarbsG,
+    Value<double>? per100FatG,
+    Value<double>? per100FiberG,
+    Value<double?>? entryServingAmount,
+    Value<int>? rowid,
+  }) {
+    return PersonalFoodsCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
+      version: version ?? this.version,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deviceId: deviceId ?? this.deviceId,
+      origin: origin ?? this.origin,
+      editedByUser: editedByUser ?? this.editedByUser,
+      nameEn: nameEn ?? this.nameEn,
+      nameAr: nameAr ?? this.nameAr,
+      aliasesJson: aliasesJson ?? this.aliasesJson,
+      brand: brand ?? this.brand,
+      barcodesJson: barcodesJson ?? this.barcodesJson,
+      per100ExtrasJson: per100ExtrasJson ?? this.per100ExtrasJson,
+      servingsJson: servingsJson ?? this.servingsJson,
+      entryServingUnit: entryServingUnit ?? this.entryServingUnit,
+      createdFrom: createdFrom ?? this.createdFrom,
+      state: state ?? this.state,
+      basis: basis ?? this.basis,
+      per100Kcal: per100Kcal ?? this.per100Kcal,
+      per100ProteinG: per100ProteinG ?? this.per100ProteinG,
+      per100CarbsG: per100CarbsG ?? this.per100CarbsG,
+      per100FatG: per100FatG ?? this.per100FatG,
+      per100FiberG: per100FiberG ?? this.per100FiberG,
+      entryServingAmount: entryServingAmount ?? this.entryServingAmount,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (editedByUser.present) {
+      map['edited_by_user'] = Variable<bool>(editedByUser.value);
+    }
+    if (nameEn.present) {
+      map['name_en'] = Variable<String>(nameEn.value);
+    }
+    if (nameAr.present) {
+      map['name_ar'] = Variable<String>(nameAr.value);
+    }
+    if (aliasesJson.present) {
+      map['aliases_json'] = Variable<String>(aliasesJson.value);
+    }
+    if (brand.present) {
+      map['brand'] = Variable<String>(brand.value);
+    }
+    if (barcodesJson.present) {
+      map['barcodes_json'] = Variable<String>(barcodesJson.value);
+    }
+    if (per100ExtrasJson.present) {
+      map['per100_extras_json'] = Variable<String>(per100ExtrasJson.value);
+    }
+    if (servingsJson.present) {
+      map['servings_json'] = Variable<String>(servingsJson.value);
+    }
+    if (entryServingUnit.present) {
+      map['entry_serving_unit'] = Variable<String>(entryServingUnit.value);
+    }
+    if (createdFrom.present) {
+      map['created_from'] = Variable<String>(createdFrom.value);
+    }
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
+    }
+    if (basis.present) {
+      map['basis'] = Variable<String>(basis.value);
+    }
+    if (per100Kcal.present) {
+      map['per100_kcal'] = Variable<double>(per100Kcal.value);
+    }
+    if (per100ProteinG.present) {
+      map['per100_protein_g'] = Variable<double>(per100ProteinG.value);
+    }
+    if (per100CarbsG.present) {
+      map['per100_carbs_g'] = Variable<double>(per100CarbsG.value);
+    }
+    if (per100FatG.present) {
+      map['per100_fat_g'] = Variable<double>(per100FatG.value);
+    }
+    if (per100FiberG.present) {
+      map['per100_fiber_g'] = Variable<double>(per100FiberG.value);
+    }
+    if (entryServingAmount.present) {
+      map['entry_serving_amount'] = Variable<double>(entryServingAmount.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PersonalFoodsCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('nameEn: $nameEn, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('aliasesJson: $aliasesJson, ')
+          ..write('brand: $brand, ')
+          ..write('barcodesJson: $barcodesJson, ')
+          ..write('per100ExtrasJson: $per100ExtrasJson, ')
+          ..write('servingsJson: $servingsJson, ')
+          ..write('entryServingUnit: $entryServingUnit, ')
+          ..write('createdFrom: $createdFrom, ')
+          ..write('state: $state, ')
+          ..write('basis: $basis, ')
+          ..write('per100Kcal: $per100Kcal, ')
+          ..write('per100ProteinG: $per100ProteinG, ')
+          ..write('per100CarbsG: $per100CarbsG, ')
+          ..write('per100FatG: $per100FatG, ')
+          ..write('per100FiberG: $per100FiberG, ')
+          ..write('entryServingAmount: $entryServingAmount, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   late final $DiaryEntriesTable diaryEntries = $DiaryEntriesTable(this);
@@ -8111,6 +9567,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final Index ixDayMarksDate = Index(
     'ix_day_marks_date',
     'CREATE INDEX ix_day_marks_date ON day_marks (local_date) WHERE deleted_at IS NULL',
+  );
+  late final Index ixDiaryEntriesFood = Index(
+    'ix_diary_entries_food',
+    'CREATE INDEX ix_diary_entries_food ON diary_entries (food_kind, food_id) WHERE deleted_at IS NULL',
+  );
+  late final Index ixSavedMealItemsFood = Index(
+    'ix_saved_meal_items_food',
+    'CREATE INDEX ix_saved_meal_items_food ON saved_meal_items (food_kind, food_id) WHERE deleted_at IS NULL',
   );
   late final $MealSlotsTable mealSlots = $MealSlotsTable(this);
   late final $SavedMealsTable savedMeals = $SavedMealsTable(this);
@@ -8201,6 +9665,19 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'CREATE TRIGGER saved_meal_items_no_delete BEFORE DELETE ON saved_meal_items BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
     'saved_meal_items_no_delete',
   );
+  late final $PersonalFoodsTable personalFoods = $PersonalFoodsTable(this);
+  late final Trigger personalFoodsOutboxAi = Trigger(
+    'CREATE TRIGGER personal_foods_outbox_ai AFTER INSERT ON personal_foods WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'personalFood\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'personal_foods_outbox_ai',
+  );
+  late final Trigger personalFoodsOutboxAu = Trigger(
+    'CREATE TRIGGER personal_foods_outbox_au AFTER UPDATE ON personal_foods WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'personalFood\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'personal_foods_outbox_au',
+  );
+  late final Trigger personalFoodsNoDelete = Trigger(
+    'CREATE TRIGGER personal_foods_no_delete BEFORE DELETE ON personal_foods BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'personal_foods_no_delete',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -8215,6 +9692,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     ixSavedMealItemsMeal,
     dayMarks,
     ixDayMarksDate,
+    ixDiaryEntriesFood,
+    ixSavedMealItemsFood,
     mealSlots,
     savedMeals,
     settingsKv,
@@ -8241,6 +9720,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     savedMealItemsOutboxAi,
     savedMealItemsOutboxAu,
     savedMealItemsNoDelete,
+    personalFoods,
+    personalFoodsOutboxAi,
+    personalFoodsOutboxAu,
+    personalFoodsNoDelete,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -8387,6 +9870,27 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'saved_meal_items',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'personal_foods',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'personal_foods',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'personal_foods',
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [],

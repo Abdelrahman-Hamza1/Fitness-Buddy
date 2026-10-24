@@ -23,6 +23,7 @@ class FbChoiceChip extends StatelessWidget {
     this.selected = false,
     this.dropdown = true,
     this.icon,
+    this.semanticLabel,
     super.key,
   });
 
@@ -47,6 +48,11 @@ class FbChoiceChip extends StatelessWidget {
   /// label is what a screen reader reads.
   final IconData? icon;
 
+  /// What a screen reader reads instead of [label], for a chip whose text
+  /// needs its context to make sense on its own (a bare "g" next to a
+  /// field reads "Serving size in grams"). The value is still read after.
+  final String? semanticLabel;
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -66,7 +72,7 @@ class FbChoiceChip extends StatelessWidget {
       button: true,
       enabled: enabled,
       selected: selected,
-      label: label,
+      label: semanticLabel ?? label,
       value: hasValue ? value : null,
       onTap: onTap,
       excludeSemantics: true,

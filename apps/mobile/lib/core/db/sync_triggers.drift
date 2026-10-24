@@ -11,6 +11,7 @@
 import 'tables/sync_tables.dart';
 import 'tables/settings_tables.dart';
 import 'tables/diary_tables.dart';
+import 'tables/food_tables.dart';
 
 -- settings_kv (entity 'setting', A01 D16)
 CREATE TRIGGER settings_kv_outbox_ai AFTER INSERT ON settings_kv
@@ -155,6 +156,27 @@ BEGIN
 END;
 
 CREATE TRIGGER saved_meal_items_no_delete BEFORE DELETE ON saved_meal_items
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;
+
+-- personal_foods (entity 'personalFood', A09)
+CREATE TRIGGER personal_foods_outbox_ai AFTER INSERT ON personal_foods
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('personalFood', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER personal_foods_outbox_au AFTER UPDATE ON personal_foods
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('personalFood', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER personal_foods_no_delete BEFORE DELETE ON personal_foods
 BEGIN
   SELECT RAISE(ABORT, 'tombstone, never delete');
 END;

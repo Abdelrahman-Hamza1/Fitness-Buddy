@@ -27,6 +27,9 @@ import '../../helpers/pump_app.dart';
   MeRoute() => (MeScreen, true),
   DesignPreviewRoute() => (DesignPreviewScreen, true),
   FoodSearchRoute() => (FoodSearchScreen, true),
+  NewFoodFromSearchRoute() => (PersonalFoodFormScreen, true),
+  PersonalFoodsRoute() => (PersonalFoodsScreen, true),
+  PersonalFoodRoute() => (PersonalFoodFormScreen, true),
   UpdateRequiredRoute() => (UpdateRequiredScreen, false),
 };
 
@@ -40,12 +43,18 @@ const List<AppRoute> _allRoutes = [
   MeRoute(),
   DesignPreviewRoute(),
   FoodSearchRoute(),
+  NewFoodFromSearchRoute(),
+  PersonalFoodsRoute(),
+  PersonalFoodRoute(),
   UpdateRequiredRoute(),
 ];
 
 void main() {
   test('typed routes: locations are unique and tabs are in UX-010 order', () {
-    expect(_allRoutes.map((r) => r.location).toSet(), hasLength(7));
+    expect(
+      _allRoutes.map((r) => r.location).toSet(),
+      hasLength(_allRoutes.length),
+    );
     expect(AppRouter.tabs.map((r) => r.location), [
       '/today',
       '/progress',
@@ -58,6 +67,9 @@ void main() {
         ...AppRouter.outsideTabs,
         const DesignPreviewRoute(),
         const FoodSearchRoute(),
+        const NewFoodFromSearchRoute(),
+        const PersonalFoodsRoute(),
+        const PersonalFoodRoute(),
       ].map((r) => r.location),
       unorderedEquals(_allRoutes.map((r) => r.location)),
     );

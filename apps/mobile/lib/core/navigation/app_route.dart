@@ -134,6 +134,72 @@ final class FoodSearchRoute extends AppRoute {
   }
 }
 
+/// The add-food search's "Create … as your own food" (A09 D9, D10): the form
+/// for a new personal food, nested under the search so the stack and the tab
+/// bar stay.
+///
+/// [date] and [slotId] are the search's, so that once the food is saved the
+/// food sheet can open for the same day and meal. The name the user searched
+/// for never travels in the URL (backlog #42): it is handed over through a
+/// one-shot provider.
+final class NewFoodFromSearchRoute extends AppRoute {
+  /// Creates the route.
+  const new({this.date, this.slotId});
+
+  /// The route's path pattern.
+  static const path = '/today/add-food/new-food';
+
+  /// The diary day the search was adding to; null for today.
+  final LocalDate? date;
+
+  /// The meal slot the search was adding to; null for the time of day.
+  final String? slotId;
+
+  @override
+  String get location {
+    final query = {
+      FoodSearchRoute.dateParam: ?date?.toString(),
+      FoodSearchRoute.slotParam: ?slotId,
+    };
+    return Uri(
+      path: path,
+      queryParameters: query.isEmpty ? null : query,
+    ).toString();
+  }
+}
+
+/// Your foods (A09 D10): the list of the user's own foods, a detail screen of
+/// the Me tab.
+final class PersonalFoodsRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/foods';
+
+  @override
+  String get location => path;
+}
+
+/// One personal food's form (A09 D10): the new-food form without an [id], the
+/// edit form with one. Only the ID travels in the URL.
+final class PersonalFoodRoute extends AppRoute {
+  /// Creates the route; [id] is null for a new food.
+  const new({this.id});
+
+  /// The path of the new-food form.
+  static const newPath = '/me/foods/new';
+
+  /// The route's path pattern for an existing food.
+  static const path = '/me/foods/:id';
+
+  /// The food to edit; null for a new food.
+  final String? id;
+
+  @override
+  String get location => id == null ? newPath : '/me/foods/$id';
+}
+
 /// The "update needed" screen, outside the tabs (S06 plan D10).
 ///
 /// Only the router targets it (its update-gate redirect); features never

@@ -9,6 +9,7 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/settings/settings_op_handler.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
+import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:flutter_riverpod/misc.dart';
 
 /// The provider overrides that wire the app together: the compile-time
@@ -28,6 +29,10 @@ List<Override> appOverrides(AppConfig config) => [
   clockProvider.overrideWithValue(const SystemClock()),
   idGeneratorProvider.overrideWithValue(systemUuidV7Generator()),
   changeOpHandlersProvider.overrideWithValue(
-    (db) => [SettingsOpHandler(db.settingsKv), DiaryOpHandler(db)],
+    (db) => [
+      SettingsOpHandler(db.settingsKv),
+      DiaryOpHandler(db),
+      PersonalFoodOpHandler(db),
+    ],
   ),
 ];
