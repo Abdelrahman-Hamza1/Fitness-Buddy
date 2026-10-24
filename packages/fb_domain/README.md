@@ -362,3 +362,32 @@ The app must also check that a yield factor is available. In particular, a
 skinless raw chicken row cannot replace an unqualified roasted breast row.
 
 `tool/` and `test/` may use `dart:io`; `lib/` may not.
+
+
+## Proposal boundary and initial food drafts (A21 WP1/WP2)
+
+`ProposalRequest` normalizes public `interpret-v1` JSON with
+`InterpretationDecoder` immediately, freezing local food facts, policy and
+context before `ProposalEngine.build`. Inject a `ProposalIdSource` (UUIDv7),
+reference `EntryTime`, active slots and yield factors. Build returns a typed
+`ProposalResult<ProposalSession>`; each meal card has rounded ingredient lines,
+provenance/ranges, visible dimensions/chips, totals and **draft ops**.
+Only an explicit confirm use case wraps one card’s ops in
+`ChangeSet(..., origin: Origin.proposal(card.id))` and calls the app applier.
+A missing/invalid input never produces executable ops.
+
+The message shares one bounded question collection, ranked by absolute kcal
+impact with stable input-order ties. Both config thresholds must be strictly
+exceeded. The question cap and oil-retention policy are code constants.
+`ProposalFacts.cookingFatIds` contains verified IDs; an interpretation’s own
+fat-option candidates also classify cooking fats. No classification comes from
+names, ID spelling or nutrient values. Local personal rows always win; an
+attached pack wins for catalog keys, and an absent pack permits embedded
+per-100g server facts. A missing key in an attached pack is a typed failure.
+
+Recompute/follow-up/target projections are WP3; compact card/message-budget
+restore, the read-only app loader and the evaluation facade are WP4. A21 adds
+no persistence, network calls, confirmation controller or user-facing copy.
+Diagnostics redact content; response JSON, food data and assumption codes are
+user content and must never be logged. Synthetic public-response fixtures live
+in `test/proposals/fixtures/`; properties use the existing 1,000-run helper.

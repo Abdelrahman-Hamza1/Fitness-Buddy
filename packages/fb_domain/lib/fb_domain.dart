@@ -42,6 +42,8 @@ export 'src/nutrition/nutrient_field.dart';
 export 'src/nutrition/nutrients.dart';
 export 'src/nutrition/sanity.dart';
 export 'src/nutrition/yield.dart';
+export 'src/proposals/proposal_input.dart';
+export 'src/proposals/proposal_policy_constants.dart';
 export 'src/quick_add/food_key.dart';
 export 'src/quick_add/quick_add_ranker.dart';
 export 'src/quick_add/saved_meal_matcher.dart';

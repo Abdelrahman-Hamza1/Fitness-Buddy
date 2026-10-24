@@ -18,6 +18,18 @@ void main() {
       final exported = {
         for (final match in _export.allMatches(barrel)) match[1]!,
       };
+      // Declared parts are loaded with their exported owning library; include
+      // them rather than weakening the coverage guard with file exclusions.
+      final parts = RegExp(r"^part '([^']+\.dart)';", multiLine: true);
+      for (final library in exported.toList()) {
+        final source = File('lib/$library').readAsStringSync();
+        for (final part in parts.allMatches(source)) {
+          final path = Uri.parse(library).resolve(part[1]!).toString();
+          final body = File('lib/$path').readAsStringSync();
+          expect(body, contains("part of '${library.split('/').last}';"));
+          exported.add(path);
+        }
+      }
       final sources = {
         for (final file in Directory('lib/src').listSync(recursive: true))
           if (file is File && file.path.endsWith('.dart'))
