@@ -16,6 +16,7 @@ const Set<String> ioPackages = {
   'package_info_plus',
   'path_provider',
   'sentry*',
+  'share_plus',
   'shared_preferences',
   'sqlite3*',
 };

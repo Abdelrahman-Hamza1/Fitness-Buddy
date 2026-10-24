@@ -52,6 +52,15 @@ abstract final class AppSettings {
     defaultValue: null,
   );
 
+  /// Complete setting vocabulary for export's natural-id reverse lookup.
+  static final List<SettingKey<Object?>> all = [
+    unitSystem,
+    weekStart,
+    halal,
+    theme,
+    cityId,
+  ];
+
   /// Accepted GeoNames identity format, without including input in errors.
   static bool isCityId(String value) =>
       RegExp(r'^city:[0-9]+$').hasMatch(value);

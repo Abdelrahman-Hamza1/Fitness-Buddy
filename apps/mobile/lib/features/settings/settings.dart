@@ -6,6 +6,7 @@ library;
 export 'application/about_info.dart';
 export 'application/app_settings.dart';
 export 'application/city_search.dart';
+export 'application/data_export.dart';
 export 'application/settings_actions.dart';
 export 'application/settings_providers.dart';
 export 'presentation/about_screen.dart';

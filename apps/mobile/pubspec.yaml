@@ -50,6 +50,8 @@ dependencies:
   # Error reporting, after the first frame, off while the DSN is empty.
   sentry_flutter: ^10.0.0
   # The device id and the cached /v1/config (not secret, not user data).
+  # BSD-3 OS multi-file sharing; no permissions or network (A11).
+  share_plus: 13.3.1
   shared_preferences: ^2.5.6
   # Direct: drift's `setup` callback gets a sqlite3 Database (pragmas). sqlite3
   # 3.x bundles SQLite through build hooks (sqlite3_flutter_libs is EOL). Hook

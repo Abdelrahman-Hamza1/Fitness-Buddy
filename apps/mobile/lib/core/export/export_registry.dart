@@ -1,0 +1,214 @@
+/// Stable v1 column types; timestamps are UTC milliseconds in snapshots.
+enum ExportKind {
+  /// Exact stored text.
+  text,
+
+  /// Whole number.
+  integer,
+
+  /// Floating-point number.
+  real,
+
+  /// Boolean, converted from SQLite 0/1.
+  boolean,
+
+  /// UTC millisecond timestamp; created_at renders as ISO text.
+  utcMs,
+
+  /// Stored JSON text, parsed for the JSON export.
+  json,
+
+  /// Readability column without a SQL source.
+  derived,
+}
+
+/// A public column; derived columns have no SQL source.
+final class ExportColumn {
+  /// Declares a stable column name and encoding.
+  /// Declares a stable column name and value encoding.
+  const new(this.name, this.kind);
+
+  /// Stable SQL name, or the documented derived name.
+  final String name;
+
+  /// Value encoding, including JSON parsing and boolean conversion.
+  final ExportKind kind;
+}
+
+/// Complete, explicit coverage of one synced table.
+final class ExportTableSpec {
+  /// Declares the complete export for a synced SQL table.
+  const new(this.entity, this.fileStem, this.table, this.columns);
+
+  /// Sync wire name used by JSON data and counts.
+  final String entity;
+
+  /// CSV type suffix after the local date.
+  final String fileStem;
+
+  /// SQL table name; registry literals only.
+  final String table;
+
+  /// Stable column order; version and origin are JSON-only.
+  final List<ExportColumn> columns;
+
+  /// Intentionally omitted SQL columns with privacy/scope reasons.
+  Map<String, String> get excluded => const {
+    'device_id': 'Install identity (TD-053).',
+    'updated_hlc': 'Embeds install identity (TD-053).',
+    'deleted_at': 'Only live rows are exported.',
+  };
+}
+
+/// Explicit v1 registry: additions require coverage and documentation.
+const exportRegistryV1 = <ExportTableSpec>[
+  ExportTableSpec('diaryEntry', 'diary-entries', 'diary_entries', [
+    ExportColumn('id', ExportKind.text),
+    ExportColumn('food_kind', ExportKind.text),
+    ExportColumn('food_id', ExportKind.text),
+    ExportColumn('food_version', ExportKind.text),
+    ExportColumn('name_en', ExportKind.text),
+    ExportColumn('name_ar', ExportKind.text),
+    ExportColumn('input_amount', ExportKind.real),
+    ExportColumn('input_unit', ExportKind.text),
+    ExportColumn('amount', ExportKind.real),
+    ExportColumn('amount_basis', ExportKind.text),
+    ExportColumn('per100_kcal', ExportKind.real),
+    ExportColumn('per100_protein_g', ExportKind.real),
+    ExportColumn('per100_carbs_g', ExportKind.real),
+    ExportColumn('per100_fat_g', ExportKind.real),
+    ExportColumn('per100_fiber_g', ExportKind.real),
+    ExportColumn('per100_extras_json', ExportKind.json),
+    ExportColumn('kcal', ExportKind.real),
+    ExportColumn('protein_g', ExportKind.real),
+    ExportColumn('carbs_g', ExportKind.real),
+    ExportColumn('fat_g', ExportKind.real),
+    ExportColumn('fiber_g', ExportKind.real),
+    ExportColumn('extras_json', ExportKind.json),
+    ExportColumn('source', ExportKind.text),
+    ExportColumn('is_estimate', ExportKind.boolean),
+    ExportColumn('estimate_range_json', ExportKind.json),
+    ExportColumn('assumptions_json', ExportKind.json),
+    ExportColumn('local_date', ExportKind.text),
+    ExportColumn('occurred_at_utc', ExportKind.utcMs),
+    ExportColumn('tz_offset_min', ExportKind.integer),
+    ExportColumn('slot_id', ExportKind.text),
+    ExportColumn('dish_group_id', ExportKind.text),
+    ExportColumn('occurred_at', ExportKind.derived),
+    ExportColumn('meal', ExportKind.derived),
+    ExportColumn('created_at', ExportKind.utcMs),
+    ExportColumn('edited_by_user', ExportKind.boolean),
+    ExportColumn('version', ExportKind.integer),
+    ExportColumn('origin', ExportKind.text),
+  ]),
+  ExportTableSpec('dishGroup', 'dish-groups', 'dish_groups', [
+    ExportColumn('id', ExportKind.text),
+    ExportColumn('name', ExportKind.text),
+    ExportColumn('local_date', ExportKind.text),
+    ExportColumn('slot_id', ExportKind.text),
+    ExportColumn('created_at', ExportKind.utcMs),
+    ExportColumn('edited_by_user', ExportKind.boolean),
+    ExportColumn('version', ExportKind.integer),
+    ExportColumn('origin', ExportKind.text),
+  ]),
+  ExportTableSpec('dayMark', 'day-marks', 'day_marks', [
+    ExportColumn('id', ExportKind.text),
+    ExportColumn('local_date', ExportKind.text),
+    ExportColumn('incomplete', ExportKind.boolean),
+    ExportColumn('not_fasting', ExportKind.boolean),
+    ExportColumn('created_at', ExportKind.utcMs),
+    ExportColumn('edited_by_user', ExportKind.boolean),
+    ExportColumn('version', ExportKind.integer),
+    ExportColumn('origin', ExportKind.text),
+  ]),
+  ExportTableSpec('mealSlot', 'meal-slots', 'meal_slots', [
+    ExportColumn('id', ExportKind.text),
+    ExportColumn('default_key', ExportKind.text),
+    ExportColumn('name', ExportKind.text),
+    ExportColumn('sort_order', ExportKind.integer),
+    ExportColumn('window_start_min', ExportKind.integer),
+    ExportColumn('window_end_min', ExportKind.integer),
+    ExportColumn('mode', ExportKind.text),
+    ExportColumn('active', ExportKind.boolean),
+    ExportColumn('created_at', ExportKind.utcMs),
+    ExportColumn('edited_by_user', ExportKind.boolean),
+    ExportColumn('version', ExportKind.integer),
+    ExportColumn('origin', ExportKind.text),
+  ]),
+  ExportTableSpec('personalFood', 'personal-foods', 'personal_foods', [
+    ExportColumn('id', ExportKind.text),
+    ExportColumn('name_en', ExportKind.text),
+    ExportColumn('name_ar', ExportKind.text),
+    ExportColumn('aliases_json', ExportKind.json),
+    ExportColumn('brand', ExportKind.text),
+    ExportColumn('barcodes_json', ExportKind.json),
+    ExportColumn('per100_extras_json', ExportKind.json),
+    ExportColumn('servings_json', ExportKind.json),
+    ExportColumn('entry_serving_unit', ExportKind.text),
+    ExportColumn('created_from', ExportKind.text),
+    ExportColumn('state', ExportKind.text),
+    ExportColumn('basis', ExportKind.text),
+    ExportColumn('per100_kcal', ExportKind.real),
+    ExportColumn('per100_protein_g', ExportKind.real),
+    ExportColumn('per100_carbs_g', ExportKind.real),
+    ExportColumn('per100_fat_g', ExportKind.real),
+    ExportColumn('per100_fiber_g', ExportKind.real),
+    ExportColumn('entry_serving_amount', ExportKind.real),
+    ExportColumn('created_at', ExportKind.utcMs),
+    ExportColumn('edited_by_user', ExportKind.boolean),
+    ExportColumn('version', ExportKind.integer),
+    ExportColumn('origin', ExportKind.text),
+  ]),
+  ExportTableSpec('savedMeal', 'saved-meals', 'saved_meals', [
+    ExportColumn('id', ExportKind.text),
+    ExportColumn('name', ExportKind.text),
+    ExportColumn('created_at', ExportKind.utcMs),
+    ExportColumn('edited_by_user', ExportKind.boolean),
+    ExportColumn('version', ExportKind.integer),
+    ExportColumn('origin', ExportKind.text),
+  ]),
+  ExportTableSpec('savedMealItem', 'saved-meal-items', 'saved_meal_items', [
+    ExportColumn('id', ExportKind.text),
+    ExportColumn('food_kind', ExportKind.text),
+    ExportColumn('food_id', ExportKind.text),
+    ExportColumn('food_version', ExportKind.text),
+    ExportColumn('name_en', ExportKind.text),
+    ExportColumn('name_ar', ExportKind.text),
+    ExportColumn('input_amount', ExportKind.real),
+    ExportColumn('input_unit', ExportKind.text),
+    ExportColumn('amount', ExportKind.real),
+    ExportColumn('amount_basis', ExportKind.text),
+    ExportColumn('per100_kcal', ExportKind.real),
+    ExportColumn('per100_protein_g', ExportKind.real),
+    ExportColumn('per100_carbs_g', ExportKind.real),
+    ExportColumn('per100_fat_g', ExportKind.real),
+    ExportColumn('per100_fiber_g', ExportKind.real),
+    ExportColumn('per100_extras_json', ExportKind.json),
+    ExportColumn('kcal', ExportKind.real),
+    ExportColumn('protein_g', ExportKind.real),
+    ExportColumn('carbs_g', ExportKind.real),
+    ExportColumn('fat_g', ExportKind.real),
+    ExportColumn('fiber_g', ExportKind.real),
+    ExportColumn('extras_json', ExportKind.json),
+    ExportColumn('source', ExportKind.text),
+    ExportColumn('is_estimate', ExportKind.boolean),
+    ExportColumn('estimate_range_json', ExportKind.json),
+    ExportColumn('assumptions_json', ExportKind.json),
+    ExportColumn('saved_meal_id', ExportKind.text),
+    ExportColumn('sort_order', ExportKind.integer),
+    ExportColumn('saved_meal_name', ExportKind.derived),
+    ExportColumn('created_at', ExportKind.utcMs),
+    ExportColumn('edited_by_user', ExportKind.boolean),
+    ExportColumn('version', ExportKind.integer),
+    ExportColumn('origin', ExportKind.text),
+  ]),
+  ExportTableSpec('setting', 'settings', 'settings_kv', [
+    ExportColumn('id', ExportKind.text),
+    ExportColumn('value_json', ExportKind.json),
+    ExportColumn('key', ExportKind.derived),
+    ExportColumn('created_at', ExportKind.utcMs),
+    ExportColumn('edited_by_user', ExportKind.boolean),
+    ExportColumn('version', ExportKind.integer),
+    ExportColumn('origin', ExportKind.text),
+  ]),
+];
