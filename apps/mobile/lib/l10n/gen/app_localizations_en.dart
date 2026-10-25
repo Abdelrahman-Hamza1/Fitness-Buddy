@@ -1990,4 +1990,183 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get aboutTestReportOffNoDsn =>
       'Crash reports aren\'t set up in this build, so nothing was sent.';
+
+  @override
+  String get settingsMealTimes => 'Meal times';
+
+  @override
+  String get mealTimesTitle => 'Meal times';
+
+  @override
+  String get mealTimesFootnote =>
+      'Times decide which meal new food goes into. Food you\'ve already logged stays where it is.';
+
+  @override
+  String get mealTimesAdd => 'Add meal';
+
+  @override
+  String mealTimesAddLimit(int max) {
+    return 'You can have up to $max meals.';
+  }
+
+  @override
+  String get mealTimesAnyTime => 'Any time';
+
+  @override
+  String mealTimesWindow(String start, String end) {
+    return '$start – $end';
+  }
+
+  @override
+  String mealTimesWindowOvernight(String start, String end) {
+    return '$start – $end, overnight';
+  }
+
+  @override
+  String mealTimesRowSubtitle(String window, String items) {
+    return '$window · $items';
+  }
+
+  @override
+  String get mealTimesLoadFailed => 'Couldn\'t load your meals.';
+
+  @override
+  String get mealTimesTryAgain => 'Try again';
+
+  @override
+  String get mealTimesReorderFailed =>
+      'Couldn\'t change the order. It was left as it was.';
+
+  @override
+  String get mealTimesReordered => 'Meals reordered';
+
+  @override
+  String slotItemsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+      zero: 'no items',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String slotDaysCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get slotEditTitle => 'Edit meal';
+
+  @override
+  String get slotAddTitle => 'Add meal';
+
+  @override
+  String get slotNameLabel => 'Name';
+
+  @override
+  String slotNameHintDefault(String name) {
+    return 'Leave empty to use $name';
+  }
+
+  @override
+  String get slotNameTaken => 'Another meal already has this name.';
+
+  @override
+  String get slotNameInvalid => 'Use 1 to 30 characters for the name.';
+
+  @override
+  String get slotSetTimes => 'Set times';
+
+  @override
+  String get slotSetTimesHint =>
+      'New food logged in this window goes into this meal.';
+
+  @override
+  String get slotFrom => 'From';
+
+  @override
+  String get slotTo => 'To';
+
+  @override
+  String get slotTimesSame => 'From and To can\'t be the same time.';
+
+  @override
+  String get slotSave => 'Save';
+
+  @override
+  String get slotAddButton => 'Add';
+
+  @override
+  String get slotRemoveAction => 'Remove meal';
+
+  @override
+  String get slotKeepOne => 'Keep at least one meal.';
+
+  @override
+  String get slotStaleRemoved => 'This meal was removed.';
+
+  @override
+  String get slotStaleChanged => 'This meal changed.';
+
+  @override
+  String get slotSaveChanged => 'That meal changed. Nothing was saved.';
+
+  @override
+  String slotAddedMessage(String name) {
+    return 'Added $name';
+  }
+
+  @override
+  String slotUpdatedMessage(String name) {
+    return '$name updated';
+  }
+
+  @override
+  String slotRemoveTitle(String name) {
+    return 'Remove $name';
+  }
+
+  @override
+  String slotRemoveEmpty(String name) {
+    return '$name has nothing logged. It will leave your day.';
+  }
+
+  @override
+  String slotRemoveHasItems(String name, String items, String days) {
+    return '$name has $items on $days. Move them to:';
+  }
+
+  @override
+  String get slotRemoveButton => 'Remove';
+
+  @override
+  String get slotRemoveMoveButton => 'Remove and move';
+
+  @override
+  String get slotRemoveChanged => 'That meal changed. Nothing was removed.';
+
+  @override
+  String slotRemovedMessage(String name) {
+    return 'Removed $name';
+  }
+
+  @override
+  String slotRemovedMovedMessage(String name, String items, String target) {
+    return 'Removed $name, moved $items to $target';
+  }
+
+  @override
+  String get diarySlotRemoved => 'That meal was removed. Choose another.';
+
+  @override
+  String get foodSheetSlotChoose => 'Choose a meal';
 }

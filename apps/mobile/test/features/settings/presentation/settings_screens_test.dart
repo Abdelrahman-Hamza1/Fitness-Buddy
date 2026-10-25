@@ -4,6 +4,7 @@ import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/settings/setting_key.dart';
 import 'package:fb_mobile/core/settings/settings_store.dart';
+import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -105,6 +106,17 @@ void main() {
       );
       await tester.pumpAndSettle();
     }
+    await unmountApp(tester, container);
+  });
+
+  testWidgets('DY-010 UX-013 Meal times opens from the Settings row', (
+    tester,
+  ) async {
+    final container = await pumpAt(tester);
+    await openMe(tester);
+    await tester.tap(_rowOf('Meal times'));
+    await tester.pumpAndSettle();
+    expect(find.byType(MealSlotsScreen), findsOneWidget);
     await unmountApp(tester, container);
   });
 

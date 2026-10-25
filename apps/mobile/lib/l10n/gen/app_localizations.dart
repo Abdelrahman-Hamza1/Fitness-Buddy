@@ -2944,6 +2944,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Crash reports aren\'t set up in this build, so nothing was sent.'**
   String get aboutTestReportOffNoDsn;
+
+  /// Me > Settings: row that opens the screen where meals are renamed, added, removed, reordered and given time windows (DY-010).
+  ///
+  /// In en, this message translates to:
+  /// **'Meal times'**
+  String get settingsMealTimes;
+
+  /// Title of the Meal times screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal times'**
+  String get mealTimesTitle;
+
+  /// Meal times: note under the list.
+  ///
+  /// In en, this message translates to:
+  /// **'Times decide which meal new food goes into. Food you\'ve already logged stays where it is.'**
+  String get mealTimesFootnote;
+
+  /// Meal times: button that opens the sheet to add a meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Add meal'**
+  String get mealTimesAdd;
+
+  /// Meal times: shown instead of the add hint when the limit is reached.
+  ///
+  /// In en, this message translates to:
+  /// **'You can have up to {max} meals.'**
+  String mealTimesAddLimit(int max);
+
+  /// Meal times: a meal without a time window catches any time.
+  ///
+  /// In en, this message translates to:
+  /// **'Any time'**
+  String get mealTimesAnyTime;
+
+  /// Meal times: a time window, from one clock time to another.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} – {end}'**
+  String mealTimesWindow(String start, String end);
+
+  /// Meal times: a time window that runs past midnight.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} – {end}, overnight'**
+  String mealTimesWindowOvernight(String start, String end);
+
+  /// Meal times: second line of a meal row, its time window and how many items it holds.
+  ///
+  /// In en, this message translates to:
+  /// **'{window} · {items}'**
+  String mealTimesRowSubtitle(String window, String items);
+
+  /// Meal times: banner when the meals can't be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your meals.'**
+  String get mealTimesLoadFailed;
+
+  /// Meal times: action of the load-failed banner.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get mealTimesTryAgain;
+
+  /// Meal times: snackbar when a reorder was refused.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t change the order. It was left as it was.'**
+  String get mealTimesReorderFailed;
+
+  /// Meal times: Undo snackbar after the order changed.
+  ///
+  /// In en, this message translates to:
+  /// **'Meals reordered'**
+  String get mealTimesReordered;
+
+  /// How many logged items a meal holds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{no items} =1{1 item} other{{count} items}}'**
+  String slotItemsCount(int count);
+
+  /// On how many days a meal has items.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String slotDaysCount(int count);
+
+  /// Title of the sheet that edits a meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit meal'**
+  String get slotEditTitle;
+
+  /// Title of the sheet that adds a meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Add meal'**
+  String get slotAddTitle;
+
+  /// Meal sheet: label of the name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get slotNameLabel;
+
+  /// Meal sheet: hint under the name of a built-in meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to use {name}'**
+  String slotNameHintDefault(String name);
+
+  /// Meal sheet: the typed name is another meal's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Another meal already has this name.'**
+  String get slotNameTaken;
+
+  /// Meal sheet: the name was refused.
+  ///
+  /// In en, this message translates to:
+  /// **'Use 1 to 30 characters for the name.'**
+  String get slotNameInvalid;
+
+  /// Meal sheet: switch that gives the meal a time window.
+  ///
+  /// In en, this message translates to:
+  /// **'Set times'**
+  String get slotSetTimes;
+
+  /// Meal sheet: explains what the time window does.
+  ///
+  /// In en, this message translates to:
+  /// **'New food logged in this window goes into this meal.'**
+  String get slotSetTimesHint;
+
+  /// Meal sheet: chip for the start of the window.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get slotFrom;
+
+  /// Meal sheet: chip for the end of the window.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get slotTo;
+
+  /// Meal sheet: the window is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'From and To can\'t be the same time.'**
+  String get slotTimesSame;
+
+  /// Meal sheet: saves the changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get slotSave;
+
+  /// Meal sheet: adds the new meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get slotAddButton;
+
+  /// Meal sheet: opens the remove sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove meal'**
+  String get slotRemoveAction;
+
+  /// Meal sheet: shown instead of Remove when this is the only meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep at least one meal.'**
+  String get slotKeepOne;
+
+  /// Meal sheet: the meal was removed while the sheet was open.
+  ///
+  /// In en, this message translates to:
+  /// **'This meal was removed.'**
+  String get slotStaleRemoved;
+
+  /// Meal sheet: the meal was changed while the sheet was open.
+  ///
+  /// In en, this message translates to:
+  /// **'This meal changed.'**
+  String get slotStaleChanged;
+
+  /// Meal sheet: the save was refused because the meal changed.
+  ///
+  /// In en, this message translates to:
+  /// **'That meal changed. Nothing was saved.'**
+  String get slotSaveChanged;
+
+  /// Undo snackbar after a meal was added.
+  ///
+  /// In en, this message translates to:
+  /// **'Added {name}'**
+  String slotAddedMessage(String name);
+
+  /// Undo snackbar after a meal was changed.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} updated'**
+  String slotUpdatedMessage(String name);
+
+  /// Title of the remove sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name}'**
+  String slotRemoveTitle(String name);
+
+  /// Remove sheet: a meal without items.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} has nothing logged. It will leave your day.'**
+  String slotRemoveEmpty(String name);
+
+  /// Remove sheet: a meal with items, followed by the choice of where to move them.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} has {items} on {days}. Move them to:'**
+  String slotRemoveHasItems(String name, String items, String days);
+
+  /// Remove sheet: removes an empty meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get slotRemoveButton;
+
+  /// Remove sheet: removes the meal and moves its items.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove and move'**
+  String get slotRemoveMoveButton;
+
+  /// Remove sheet: refused because the meal, its items or the destination changed.
+  ///
+  /// In en, this message translates to:
+  /// **'That meal changed. Nothing was removed.'**
+  String get slotRemoveChanged;
+
+  /// Undo snackbar after an empty meal was removed.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed {name}'**
+  String slotRemovedMessage(String name);
+
+  /// Undo snackbar after a meal was removed and its items moved.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed {name}, moved {items} to {target}'**
+  String slotRemovedMovedMessage(String name, String items, String target);
+
+  /// Shown when a meal was removed before an action could use it.
+  ///
+  /// In en, this message translates to:
+  /// **'That meal was removed. Choose another.'**
+  String get diarySlotRemoved;
+
+  /// Food sheet: meal chip when the chosen meal was removed.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a meal'**
+  String get foodSheetSlotChoose;
 }
 
 class _AppLocalizationsDelegate

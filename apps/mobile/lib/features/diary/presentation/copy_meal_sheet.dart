@@ -5,6 +5,7 @@ import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/diary/application/diary_actions.dart';
+import 'package:fb_mobile/features/diary/application/slot_providers.dart';
 import 'package:fb_mobile/features/diary/presentation/entry_actions.dart';
 import 'package:fb_mobile/features/diary/presentation/live_meal.dart';
 import 'package:fb_mobile/features/diary/presentation/move_to_slot_sheet.dart';
@@ -50,6 +51,7 @@ class _CopyMealSheetState extends ConsumerState<CopyMealSheet> {
 
   /// The meal to copy to; null while it is the source meal itself.
   String? _toSlotId;
+  bool _targetInitialised = false;
 
   bool _saving = false;
   DiaryActionFailure? _failure;
@@ -68,18 +70,23 @@ class _CopyMealSheetState extends ConsumerState<CopyMealSheet> {
   /// meal, on the next day. A source without a meal (the "Other" section)
   /// starts on the first meal.
   String? _targetSlot(LiveMeal live) {
-    final chosen = _toSlotId;
-    if (chosen != null) return chosen;
-    final source = widget.section.slot;
     final slots = movableSlots(live.slots);
-    if (source == null) return slots.firstOrNull?.id;
-    if (widget.date == _today) {
-      final next = slots
-          .where((s) => s.sortOrder > source.sortOrder)
-          .firstOrNull;
-      if (next != null) return next.id;
+    // Pick the default once; later removal requires an explicit new choice.
+    if (!_targetInitialised && live.slots.isNotEmpty) {
+      _targetInitialised = true;
+      final source = widget.section.slot;
+      _toSlotId = source == null
+          ? slots.firstOrNull?.id
+          : widget.date == _today
+          ? slots
+                    .where((s) => s.sortOrder > source.sortOrder)
+                    .firstOrNull
+                    ?.id ??
+                source.id
+          : source.id;
     }
-    return source.id;
+    if (!slots.any((s) => s.id == _toSlotId)) _toSlotId = null;
+    return _toSlotId;
   }
 
   Future<void> _pickDay() async {
@@ -102,10 +109,12 @@ class _CopyMealSheetState extends ConsumerState<CopyMealSheet> {
     final chosen = await showFbSheet<MealSlot>(
       context,
       title: l10n.diaryCopySlotTitle,
-      builder: (sheet) => MoveToSlotList(
-        slots: movableSlots(live.slots),
-        currentSlotId: target ?? '',
-        onPick: (slot) => Navigator.of(sheet).pop(slot),
+      builder: (sheet) => Consumer(
+        builder: (context, ref, _) => MoveToSlotList(
+          slots: movableSlots(ref.watch(liveSlotsProvider).value ?? live.slots),
+          currentSlotId: target ?? '',
+          onPick: (slot) => Navigator.of(sheet).pop(slot),
+        ),
       ),
     );
     if (chosen == null || !mounted) return;
@@ -194,12 +203,17 @@ class _CopyMealSheetState extends ConsumerState<CopyMealSheet> {
             ),
           ],
         ),
-        if (same)
+        if (same || slotId == null)
           Text(
             l10n.diaryCopyChoose,
             style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
           ),
-        if (_failure == DiaryActionFailure.invalid)
+        if (_failure == DiaryActionFailure.slotRemoved)
+          FbInlineBanner(
+            kind: FbInlineBannerKind.info,
+            message: l10n.diarySlotRemoved,
+          )
+        else if (_failure == DiaryActionFailure.invalid)
           FbInlineBanner(
             kind: FbInlineBannerKind.error,
             message: l10n.diaryActionFailed,

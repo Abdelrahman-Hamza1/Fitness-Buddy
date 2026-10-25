@@ -394,9 +394,15 @@
   "@proposalChangeSemantics": {
     "description": "Edit proposal card: screen-reader text of one before and after row.",
     "placeholders": {
-      "label": { "type": "String" },
-      "before": { "type": "String" },
-      "after": { "type": "String" }
+      "label": {
+        "type": "String"
+      },
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
     }
   },
   "weightTitle": "Weight",
@@ -592,7 +598,9 @@
   "@foodSearchNoMatchTitle": {
     "description": "Add-food screen: title when the typed text finds no food. The text is quoted.",
     "placeholders": {
-      "query": {"type": "String"}
+      "query": {
+        "type": "String"
+      }
     }
   },
   "foodSearchNoMatchMessage": "Try another name or spelling.",
@@ -611,7 +619,10 @@
   "@foodResultKcal": {
     "description": "Add-food result row: calories of the default serving, at the end of the row.",
     "placeholders": {
-      "kcal": {"type": "int", "format": "decimalPattern"}
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
     }
   },
   "unitG": "g",
@@ -2628,5 +2639,276 @@
   "aboutTestReportOffNoDsn": "Crash reports aren't set up in this build, so nothing was sent.",
   "@aboutTestReportOffNoDsn": {
     "description": "About: snackbar when the test report can't be sent because this staging or prod build has no crash-report address."
+  },
+  "settingsMealTimes": "Meal times",
+  "@settingsMealTimes": {
+    "description": "Me > Settings: row that opens the screen where meals are renamed, added, removed, reordered and given time windows (DY-010)."
+  },
+  "mealTimesTitle": "Meal times",
+  "@mealTimesTitle": {
+    "description": "Title of the Meal times screen."
+  },
+  "mealTimesFootnote": "Times decide which meal new food goes into. Food you've already logged stays where it is.",
+  "@mealTimesFootnote": {
+    "description": "Meal times: note under the list."
+  },
+  "mealTimesAdd": "Add meal",
+  "@mealTimesAdd": {
+    "description": "Meal times: button that opens the sheet to add a meal."
+  },
+  "mealTimesAddLimit": "You can have up to {max} meals.",
+  "@mealTimesAddLimit": {
+    "description": "Meal times: shown instead of the add hint when the limit is reached.",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "mealTimesAnyTime": "Any time",
+  "@mealTimesAnyTime": {
+    "description": "Meal times: a meal without a time window catches any time."
+  },
+  "mealTimesWindow": "{start} – {end}",
+  "@mealTimesWindow": {
+    "description": "Meal times: a time window, from one clock time to another.",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mealTimesWindowOvernight": "{start} – {end}, overnight",
+  "@mealTimesWindowOvernight": {
+    "description": "Meal times: a time window that runs past midnight.",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mealTimesRowSubtitle": "{window} · {items}",
+  "@mealTimesRowSubtitle": {
+    "description": "Meal times: second line of a meal row, its time window and how many items it holds.",
+    "placeholders": {
+      "window": {
+        "type": "String"
+      },
+      "items": {
+        "type": "String"
+      }
+    }
+  },
+  "mealTimesLoadFailed": "Couldn't load your meals.",
+  "@mealTimesLoadFailed": {
+    "description": "Meal times: banner when the meals can't be read."
+  },
+  "mealTimesTryAgain": "Try again",
+  "@mealTimesTryAgain": {
+    "description": "Meal times: action of the load-failed banner."
+  },
+  "mealTimesReorderFailed": "Couldn't change the order. It was left as it was.",
+  "@mealTimesReorderFailed": {
+    "description": "Meal times: snackbar when a reorder was refused."
+  },
+  "mealTimesReordered": "Meals reordered",
+  "@mealTimesReordered": {
+    "description": "Meal times: Undo snackbar after the order changed."
+  },
+  "slotItemsCount": "{count, plural, =0{no items} =1{1 item} other{{count} items}}",
+  "@slotItemsCount": {
+    "description": "How many logged items a meal holds.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "slotDaysCount": "{count, plural, =1{1 day} other{{count} days}}",
+  "@slotDaysCount": {
+    "description": "On how many days a meal has items.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "slotEditTitle": "Edit meal",
+  "@slotEditTitle": {
+    "description": "Title of the sheet that edits a meal."
+  },
+  "slotAddTitle": "Add meal",
+  "@slotAddTitle": {
+    "description": "Title of the sheet that adds a meal."
+  },
+  "slotNameLabel": "Name",
+  "@slotNameLabel": {
+    "description": "Meal sheet: label of the name field."
+  },
+  "slotNameHintDefault": "Leave empty to use {name}",
+  "@slotNameHintDefault": {
+    "description": "Meal sheet: hint under the name of a built-in meal.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "slotNameTaken": "Another meal already has this name.",
+  "@slotNameTaken": {
+    "description": "Meal sheet: the typed name is another meal's name."
+  },
+  "slotNameInvalid": "Use 1 to 30 characters for the name.",
+  "@slotNameInvalid": {
+    "description": "Meal sheet: the name was refused."
+  },
+  "slotSetTimes": "Set times",
+  "@slotSetTimes": {
+    "description": "Meal sheet: switch that gives the meal a time window."
+  },
+  "slotSetTimesHint": "New food logged in this window goes into this meal.",
+  "@slotSetTimesHint": {
+    "description": "Meal sheet: explains what the time window does."
+  },
+  "slotFrom": "From",
+  "@slotFrom": {
+    "description": "Meal sheet: chip for the start of the window."
+  },
+  "slotTo": "To",
+  "@slotTo": {
+    "description": "Meal sheet: chip for the end of the window."
+  },
+  "slotTimesSame": "From and To can't be the same time.",
+  "@slotTimesSame": {
+    "description": "Meal sheet: the window is empty."
+  },
+  "slotSave": "Save",
+  "@slotSave": {
+    "description": "Meal sheet: saves the changes."
+  },
+  "slotAddButton": "Add",
+  "@slotAddButton": {
+    "description": "Meal sheet: adds the new meal."
+  },
+  "slotRemoveAction": "Remove meal",
+  "@slotRemoveAction": {
+    "description": "Meal sheet: opens the remove sheet."
+  },
+  "slotKeepOne": "Keep at least one meal.",
+  "@slotKeepOne": {
+    "description": "Meal sheet: shown instead of Remove when this is the only meal."
+  },
+  "slotStaleRemoved": "This meal was removed.",
+  "@slotStaleRemoved": {
+    "description": "Meal sheet: the meal was removed while the sheet was open."
+  },
+  "slotStaleChanged": "This meal changed.",
+  "@slotStaleChanged": {
+    "description": "Meal sheet: the meal was changed while the sheet was open."
+  },
+  "slotSaveChanged": "That meal changed. Nothing was saved.",
+  "@slotSaveChanged": {
+    "description": "Meal sheet: the save was refused because the meal changed."
+  },
+  "slotAddedMessage": "Added {name}",
+  "@slotAddedMessage": {
+    "description": "Undo snackbar after a meal was added.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "slotUpdatedMessage": "{name} updated",
+  "@slotUpdatedMessage": {
+    "description": "Undo snackbar after a meal was changed.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "slotRemoveTitle": "Remove {name}",
+  "@slotRemoveTitle": {
+    "description": "Title of the remove sheet.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "slotRemoveEmpty": "{name} has nothing logged. It will leave your day.",
+  "@slotRemoveEmpty": {
+    "description": "Remove sheet: a meal without items.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "slotRemoveHasItems": "{name} has {items} on {days}. Move them to:",
+  "@slotRemoveHasItems": {
+    "description": "Remove sheet: a meal with items, followed by the choice of where to move them.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "items": {
+        "type": "String"
+      },
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "slotRemoveButton": "Remove",
+  "@slotRemoveButton": {
+    "description": "Remove sheet: removes an empty meal."
+  },
+  "slotRemoveMoveButton": "Remove and move",
+  "@slotRemoveMoveButton": {
+    "description": "Remove sheet: removes the meal and moves its items."
+  },
+  "slotRemoveChanged": "That meal changed. Nothing was removed.",
+  "@slotRemoveChanged": {
+    "description": "Remove sheet: refused because the meal, its items or the destination changed."
+  },
+  "slotRemovedMessage": "Removed {name}",
+  "@slotRemovedMessage": {
+    "description": "Undo snackbar after an empty meal was removed.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "slotRemovedMovedMessage": "Removed {name}, moved {items} to {target}",
+  "@slotRemovedMovedMessage": {
+    "description": "Undo snackbar after a meal was removed and its items moved.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "items": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "diarySlotRemoved": "That meal was removed. Choose another.",
+  "@diarySlotRemoved": {
+    "description": "Shown when a meal was removed before an action could use it."
+  },
+  "foodSheetSlotChoose": "Choose a meal",
+  "@foodSheetSlotChoose": {
+    "description": "Food sheet: meal chip when the chosen meal was removed."
   }
 }

@@ -104,3 +104,19 @@ Future<T?> showFbSheet<T>(
     child: builder(context),
   ),
 );
+
+/// Shows a modal bottom sheet whose [builder] returns the whole [FbSheet]
+/// itself, for a sheet that has state: its title, content and pinned
+/// [FbSheet.actions] then follow that state (a Save that is disabled until
+/// the form is valid). Opens on the root navigator like [showFbSheet].
+Future<T?> showFbStatefulSheet<T>(
+  BuildContext context, {
+  required WidgetBuilder builder,
+}) => showModalBottomSheet<T>(
+  context: context,
+  useRootNavigator: true,
+  isScrollControlled: true,
+  useSafeArea: true,
+  showDragHandle: false,
+  builder: builder,
+);

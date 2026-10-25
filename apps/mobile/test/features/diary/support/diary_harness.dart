@@ -10,6 +10,7 @@ import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/events/domain_event_bus.dart';
 import 'package:fb_mobile/features/diary/data/diary_op_handler.dart';
 import 'package:fb_mobile/features/diary/data/diary_reads.dart';
+import 'package:fb_mobile/features/diary/data/meal_slot_op_handler.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../core/changes/support/test_db.dart'
@@ -30,7 +31,7 @@ const _tables = [
   'saved_meal_items',
 ];
 
-/// A profile database with the real applier and the diary op handler, a
+/// A profile database with the real applier and diary/slot handlers, a
 /// manual clock (2026-10-17 12:00 UTC) and a sequence ID generator.
 final class DiaryHarness {
   new({int offsetMinutes = 0})
@@ -42,7 +43,11 @@ final class DiaryHarness {
     applier = ChangeSetApplier(
       db: db,
       tables: db.syncedTables,
-      handlers: (db) => [DiaryOpHandler(db), const ScriptHandler()],
+      handlers: (db) => [
+        DiaryOpHandler(db),
+        MealSlotOpHandler(db),
+        const ScriptHandler(),
+      ],
       clock: clock,
       ids: ids,
       deviceId: () async => testDevice,
@@ -58,13 +63,13 @@ final class DiaryHarness {
   late final DiaryReads reads = DiaryReads(db);
 
   /// Applies [ops] as one direct change set; fails the test unless applied.
-  Future<Applied> apply(List<DiaryOp> ops) async {
+  Future<Applied> apply(List<ChangeOp> ops) async {
     final result = await applier.apply(ChangeSet(ops, origin: Origin.direct));
     if (result is! Applied) fail('expected Applied, got $result');
     return result;
   }
 
-  /// Edits the slot [id] through the applier (there is no slot op yet).
+  /// Simulates an external slot edit through the applier for race tests.
   Future<void> editSlot(String id, MealSlotsCompanion changes) async {
     final result = await applier.apply(
       ChangeSet([
@@ -96,7 +101,7 @@ final class DiaryHarness {
   }
 
   /// Applies [ops] and returns why they were rejected.
-  Future<ChangeFailure> reject(List<DiaryOp> ops) async {
+  Future<ChangeFailure> reject(List<ChangeOp> ops) async {
     final result = await applier.apply(ChangeSet(ops, origin: Origin.direct));
     if (result is! Rejected) fail('expected Rejected, got $result');
     return result.failure;

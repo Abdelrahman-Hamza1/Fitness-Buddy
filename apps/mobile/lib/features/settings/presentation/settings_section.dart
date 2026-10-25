@@ -35,6 +35,12 @@ class SettingsSection extends ConsumerWidget {
       children: [
         FbSectionHeader(title: l10n.meSectionSettings),
         FbListRow(
+          title: l10n.settingsMealTimes,
+          trailing: const Icon(FbIcons.next),
+          onTap: () =>
+              ref.read(appNavigatorProvider).push(const MealSlotsRoute()),
+        ),
+        FbListRow(
           title: l10n.settingsUnits,
           subtitle: _unitsName(context, system),
           trailing: const Icon(FbIcons.next),

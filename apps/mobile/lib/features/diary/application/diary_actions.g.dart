@@ -98,7 +98,7 @@ final class DiaryActionsControllerProvider
 }
 
 String _$diaryActionsControllerHash() =>
-    r'2ff72cb91c0726c0e820e95952b520b4e3b27951';
+    r'dd5886bfe8d19756e8bd68f516cf56fb265a3b98';
 
 /// Direct commands survive eviction of the originating day.
 

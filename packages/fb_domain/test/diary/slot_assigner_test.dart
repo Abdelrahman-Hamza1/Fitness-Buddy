@@ -59,16 +59,15 @@ void main() {
       expect(_assign(_at(2), slots), _ids[1]);
     });
 
-    test('DY-011 overlapping windows → the lower sort_order, then the lower '
-        'ID', () {
+    test('DY-011 overlapping windows → shortest, then sort_order and ID', () {
       final slots = [
         _slot(0, window: TimeWindow(_at(10), _at(14)), sortOrder: 5),
         _slot(1, window: TimeWindow(_at(12), _at(16)), sortOrder: 2),
         _slot(2, window: TimeWindow(_at(12), _at(13)), sortOrder: 2),
       ];
       expect(_assign(_at(11), slots), _ids[0]);
-      expect(_assign(_at(12, 30), slots), _ids[1]);
-      expect(_assign(_at(12, 30), slots.reversed.toList()), _ids[1]);
+      expect(_assign(_at(12, 30), slots), _ids[2]);
+      expect(_assign(_at(12, 30), slots.reversed.toList()), _ids[2]);
       expect(_assign(_at(13, 30), slots), _ids[1]);
     });
 

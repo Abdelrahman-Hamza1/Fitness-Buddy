@@ -478,6 +478,8 @@ void main() {
         FbMotion,
         FbIcons,
         FbLocalizations,
+        FbReorderableList,
+        FbDragHandle,
       ];
       // Every public class in lib/src/components and charts is in the list.
       // A generic component prints as `FbOption<dynamic>`.

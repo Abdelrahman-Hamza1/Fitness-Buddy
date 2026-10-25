@@ -26,6 +26,9 @@ typedef HiddenMark = ({
 
 /// Typed command failures; presentation owns text.
 enum DiaryActionFailure {
+  /// The selected destination is no longer usable.
+  slotRemoved,
+
   /// The rendered version is stale.
   changed,
 
@@ -306,6 +309,8 @@ class DiaryActionsController extends _$DiaryActionsController {
 
   DiaryActionFailed _failure(ChangeFailure failure, DiaryActionKind kind) =>
       DiaryActionFailed(switch (failure) {
+        InvalidOp(code: 'inactiveSlot' || 'unknownSlot') =>
+          DiaryActionFailure.slotRemoved,
         VersionConflict() ||
         InvalidOp(code: 'sourceChanged') => DiaryActionFailure.changed,
         RowNotFound() =>

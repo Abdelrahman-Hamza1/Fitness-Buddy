@@ -3,6 +3,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/diary/application/diary_actions.dart';
+import 'package:fb_mobile/features/diary/application/slot_providers.dart';
 import 'package:fb_mobile/features/diary/presentation/entry_actions.dart';
 import 'package:fb_mobile/features/diary/presentation/live_entry.dart';
 import 'package:fb_mobile/features/diary/presentation/move_to_slot_sheet.dart';
@@ -84,13 +85,21 @@ class _MoveEntrySheetState extends ConsumerState<MoveEntrySheet> {
         ),
       );
       final usable = live.canSave && !_moving && !pending;
+      // The live meals, so a meal removed while the sheet is open leaves the
+      // list (A10 D12a); the meals it was opened with until they load.
+      final slots = ref.watch(liveSlotsProvider).value ?? widget.slots;
       return Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: FbSpace.s3,
         children: [
           StaleEntryBanner(freshness: live.freshness, onReload: live.reload),
-          if (_failure == DiaryActionFailure.invalid)
+          if (_failure == DiaryActionFailure.slotRemoved)
+            FbInlineBanner(
+              kind: FbInlineBannerKind.info,
+              message: l10n.diarySlotRemoved,
+            )
+          else if (_failure == DiaryActionFailure.invalid)
             FbInlineBanner(
               kind: FbInlineBannerKind.error,
               message: l10n.diaryActionFailed,
@@ -102,7 +111,7 @@ class _MoveEntrySheetState extends ConsumerState<MoveEntrySheet> {
               message: l10n.diaryItemChanged,
             ),
           MoveToSlotList(
-            slots: movableSlots(widget.slots),
+            slots: movableSlots(slots),
             currentSlotId: live.entry.slotId,
             enabled: usable,
             onPick: (slot) => _pick(live, slot),

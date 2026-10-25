@@ -71,8 +71,9 @@ final class FoodAmountState {
           NotComputed() => null,
         };
 
-  /// A positive resolvable amount and no apply already running.
-  bool get canAdd => snapshot != null && !submitting;
+  /// A valid amount, no apply in flight, and a meal chosen for a new log.
+  bool get canAdd =>
+      snapshot != null && !submitting && (replacing != null || slotId != null);
 
   /// Food servings first, then every other resolvable unit.
   List<String> get units => UnitOptions.of(food.measures, system: system);
@@ -108,6 +109,7 @@ final class FoodAmountState {
     String? amountBuffer,
     String? unit,
     String? slotId,
+    bool clearSlot = false,
     VersionedId? replacing,
     bool? submitting,
   }) => FoodAmountState(
@@ -117,7 +119,7 @@ final class FoodAmountState {
     date: date,
     amountBuffer: amountBuffer ?? this.amountBuffer,
     unit: unit ?? this.unit,
-    slotId: slotId ?? this.slotId,
+    slotId: clearSlot ? null : slotId ?? this.slotId,
     submitting: submitting ?? this.submitting,
   );
 }
@@ -135,7 +137,22 @@ class FoodAmountController extends _$FoodAmountController {
   }) async {
     final food = await ref.watch(foodChoiceProvider(choice).future);
     if (food == null) throw StateError('foodUnavailable');
-    final slots = await ref.watch(foodSlotsProvider.future);
+    // Read once: slot edits must not rebuild the sheet or reset its input.
+    ref.listen(foodSlotsProvider, (previous, next) {
+      final current = state.value;
+      final slots = next.value;
+      if (current != null &&
+          current.replacing == null &&
+          current.slotId != null &&
+          slots != null &&
+          !slots.any(
+            (s) =>
+                s.id == current.slotId && s.active && s.mode == SlotMode.normal,
+          )) {
+        state = AsyncData(current.copyWith(clearSlot: true));
+      }
+    });
+    final slots = await ref.read(foodSlotsProvider.future);
     final clock = ref.watch(clockProvider);
     final entry = replacing == null
         ? null
@@ -157,6 +174,14 @@ class FoodAmountController extends _$FoodAmountController {
           : entry?.amount.input,
       parsed: carried,
     );
+    final liveSlots = ref.read(foodSlotsProvider).value ?? slots;
+    final chosenSlot =
+        slotId ??
+        const SlotAssigner().assign(
+          EntryTime.now(clock).localDateTime.time.minuteOfDay,
+          slots,
+          SlotMode.normal,
+        );
     return FoodAmountState(
       system: system,
       replacing: replacing,
@@ -165,12 +190,13 @@ class FoodAmountController extends _$FoodAmountController {
       amountBuffer: '${initial.amount}',
       unit: initial.unitCode,
       slotId:
-          slotId ??
-          const SlotAssigner().assign(
-            EntryTime.now(clock).localDateTime.time.minuteOfDay,
-            slots,
-            SlotMode.normal,
-          ),
+          replacing != null ||
+              liveSlots.any(
+                (s) =>
+                    s.id == chosenSlot && s.active && s.mode == SlotMode.normal,
+              )
+          ? chosenSlot
+          : null,
     );
   }
 
@@ -224,6 +250,9 @@ class FoodAmountController extends _$FoodAmountController {
   /// Submits the exact validated state and records the direct action's undo.
   Future<LogFoodOutcome> submit() async {
     final current = state.requireValue;
+    if (current.replacing == null && current.slotId == null) {
+      return const FoodLogFailed('noMeal');
+    }
     final typed = current.input;
     if (!current.canAdd || typed == null) {
       return const FoodLogFailed('invalidAmount');

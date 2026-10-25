@@ -85,3 +85,21 @@ final class DayMarked extends DomainEvent {
   @override
   String toString() => 'DayMarked($date, incomplete: $incomplete)';
 }
+
+/// Slot identities affected by a customization; no private labels.
+final class MealSlotsChanged extends DomainEvent {
+  /// Immutable affected identity set.
+  new(Iterable<String> slotIds) : slotIds = Set.unmodifiable(slotIds);
+
+  /// Changed meals.
+  final Set<String> slotIds;
+  @override
+  bool operator ==(Object other) =>
+      other is MealSlotsChanged &&
+      slotIds.length == other.slotIds.length &&
+      slotIds.containsAll(other.slotIds);
+  @override
+  int get hashCode => Object.hashAllUnordered(slotIds);
+  @override
+  String toString() => 'MealSlotsChanged(${slotIds.length})';
+}

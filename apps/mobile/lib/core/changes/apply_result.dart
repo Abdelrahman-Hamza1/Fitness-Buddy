@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show DatabaseConnectionUser;
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/changes/row_ops.dart';
 import 'package:flutter/foundation.dart' show immutable;
@@ -195,6 +196,13 @@ final class DatabaseWriteException implements Exception {
   String toString() => 'DatabaseWriteException(sqlite $extendedResultCode)';
 }
 
+/// A read-only precondition, checked inside the undo transaction before writes.
+/// Throw [ChangeRejected] when a semantic invariant changed without a row edit.
+typedef RevertGuard = Future<void> Function(
+  DatabaseConnectionUser db,
+  List<RowOp> inverseRows,
+);
+
 /// The change set that undoes the change set [changeSetId] (A01 D2, D3):
 /// its row writes, in apply order (the original's in reverse), and the
 /// events to emit when it's applied.
@@ -207,7 +215,9 @@ final class InverseChangeSet {
     required this.changeSetId,
     required Iterable<RowOp> rows,
     Iterable<DomainEvent> events = const [],
-  }) : rows = List.unmodifiable(rows),
+    Iterable<RevertGuard> guards = const [],
+  }) : guards = List.unmodifiable(guards),
+       rows = List.unmodifiable(rows),
        events = List.unmodifiable(events);
 
   /// The change set this undoes.
@@ -219,6 +229,9 @@ final class InverseChangeSet {
   /// The events the handlers asked for on revert (`OpPlan.revertEvents`).
   /// Unmodifiable.
   final List<DomainEvent> events;
+
+  /// Transactional preconditions supplied by the handlers.
+  final List<RevertGuard> guards;
 
   /// Whether reverting writes nothing.
   bool get isEmpty => rows.isEmpty;

@@ -32,6 +32,7 @@ List<Override> appOverrides(AppConfig config) => [
     (db) => [
       SettingsOpHandler(db.settingsKv),
       DiaryOpHandler(db),
+      MealSlotOpHandler(db),
       PersonalFoodOpHandler(db),
     ],
   ),

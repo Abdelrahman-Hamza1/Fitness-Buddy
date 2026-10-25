@@ -19,6 +19,18 @@ final class DiaryTxReads {
   /// The change set's reader.
   final TxReader tx;
 
+  /// Every live entry and group in the source, across all dates (PA1).
+  Future<({List<DiaryEntryRow> entries, List<DishGroupRow> groups})> liveInSlot(
+    String slotId,
+  ) async => (
+    entries: await (tx.db.select(
+      db.diaryEntries,
+    )..where((t) => t.slotId.equals(slotId) & t.deletedAt.isNull())).get(),
+    groups: await (tx.db.select(
+      db.dishGroups,
+    )..where((t) => t.slotId.equals(slotId) & t.deletedAt.isNull())).get(),
+  );
+
   /// Every live slot.
   Future<List<MealSlot>> slots() async {
     final rows = await (tx.db.select(

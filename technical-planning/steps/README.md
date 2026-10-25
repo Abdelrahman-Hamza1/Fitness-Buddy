@@ -155,7 +155,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A09a](A09-personal-foods-quick-add.md) | Personal foods & guarded repeat-log ops (split from A09) | Claude | A08b | L | S17 part |  | ✅ |
 | [A09b](A09-personal-foods-quick-add.md) | Saved meals & quick-add (split from A09) | Claude | A09a | M | S17 part |  | ✅ |
 | [A10a](A10-settings-slots.md) | Settings, units & About (split from A10) | Claude | A08a | M | S18 part |  | ✅ |
-| [A10b](A10-settings-slots.md) | Meal slot editor (split from A10) | Claude | A10a | M | S18 part |  | ⬜ |
+| [A10b](A10-settings-slots.md) | Meal slot editor (split from A10) | Claude | A10a | M | S18 part |  | ✅ |
 | [A11](A11-dogfood-1-readiness.md) | Dogfood 1 readiness: export, crash reports, daily build | **Codex** | A09b, A10a · soft: **B03** | M | S28 export part + new | **M1** | ✅ |
 | [A12](A12-targets-engine.md) | Targets engine | **Codex** | A06 | M | S19 |  | ✅ |
 | [A13](A13-targets-ui-onboarding.md) | Goals & targets UI, R1 onboarding | Claude | A10a, A10b, A12 | M | S20 |  | ⬜ |

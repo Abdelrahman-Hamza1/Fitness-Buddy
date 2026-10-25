@@ -80,6 +80,7 @@ final class AppRouter implements AppNavigator {
                     if (route is MeRoute) ...[
                       _personalFoodsRoute(),
                       _savedMealsRoute(),
+                      _goRoute(const MealSlotsRoute(), nested: true),
                       _goRoute(const CityPickerRoute(), nested: true),
                       _goRoute(const AboutRoute(), nested: true),
                       if (designPreview)
@@ -253,6 +254,7 @@ final class AppRouter implements AppNavigator {
     PersonalFoodRoute(:final id) => PersonalFoodFormScreen(id: id),
     SavedMealsRoute() => const SavedMealsScreen(),
     SavedMealRoute(:final id) => SavedMealScreen(id: id),
+    MealSlotsRoute() => const MealSlotsScreen(),
     CityPickerRoute() => const CityPickerScreen(),
     AboutRoute() => const AboutScreen(),
     UpdateRequiredRoute() => const UpdateRequiredScreen(),

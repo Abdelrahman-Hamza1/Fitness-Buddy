@@ -175,6 +175,67 @@ final class DiaryRepository {
   Stream<List<DailyTotals>> watchDailyTotals(LocalDate from, LocalDate to) =>
       _watch({_db.diaryEntries}, () => _reads.dailyTotals(from, to));
 
+  /// Live row versions for guarded editing, in deterministic order.
+  Stream<List<SlotRecord>> watchSlotRecords([
+    SlotMode mode = SlotMode.normal,
+  ]) => _watch({_db.mealSlots}, () async {
+    final rows =
+        await (_db.select(_db.mealSlots)
+              ..where((t) => t.deletedAt.isNull() & t.mode.equals(mode.code))
+              ..orderBy([
+                (t) => OrderingTerm(expression: t.sortOrder),
+                (t) => OrderingTerm(expression: t.id),
+              ]))
+            .get();
+    return [for (final row in rows) SlotRecord(mealSlotOf(row), row.version)];
+  });
+
+  /// One grouped read counts live entries only, across all diary dates.
+  Stream<Map<String, int>> watchSlotEntryCounts() => _watch(
+    {_db.diaryEntries},
+    () async {
+      final rows = await _db
+          .customSelect(
+            'SELECT slot_id, COUNT(*) AS n FROM diary_entries '
+            'WHERE deleted_at IS NULL GROUP BY slot_id',
+            readsFrom: {_db.diaryEntries},
+          )
+          .get();
+      return {
+        for (final row in rows) row.read<String>('slot_id'): row.read<int>('n'),
+      };
+    },
+  );
+
+  /// Exact removal source shown by the sheet, including empty groups.
+  Stream<SlotContents> watchSlotContents(
+    String slotId,
+  ) => _watch({_db.diaryEntries, _db.dishGroups}, () async {
+    // One SQLite statement observes both tables at the same snapshot (PA1).
+    final rows = await _db
+        .customSelect(
+          "SELECT 'entry' AS kind, id, version, local_date FROM diary_entries "
+          'WHERE slot_id = ? AND deleted_at IS NULL '
+          "UNION ALL SELECT 'group' AS kind, id, version, local_date "
+          'FROM dish_groups WHERE slot_id = ? AND deleted_at IS NULL '
+          'ORDER BY kind, id',
+          variables: [Variable.withString(slotId), Variable.withString(slotId)],
+          readsFrom: {_db.diaryEntries, _db.dishGroups},
+        )
+        .get();
+    VersionedId identity(QueryRow row) =>
+        VersionedId(row.read<String>('id'), row.read<int>('version'));
+    return SlotContents(
+      entries: rows
+          .where((r) => r.read<String>('kind') == 'entry')
+          .map(identity),
+      groups: rows
+          .where((r) => r.read<String>('kind') == 'group')
+          .map(identity),
+      dates: rows.map((r) => r.read<String>('local_date')),
+    );
+  });
+
   /// The live slots of [mode], by `sort_order`.
   Stream<List<MealSlot>> watchSlots([SlotMode mode = SlotMode.normal]) =>
       _watch({_db.mealSlots}, () async {
@@ -195,3 +256,18 @@ final class DiaryRepository {
 @Riverpod(keepAlive: true)
 DiaryRepository diaryRepository(Ref ref) =>
     DiaryRepository(ref.watch(appDatabaseProvider));
+
+/// A meal and the version actually rendered by its editor.
+final class SlotRecord {
+  /// Immutable versioned read.
+  const new(this.slot, this.version);
+
+  /// Meal content.
+  final MealSlot slot;
+
+  /// Observed row version.
+  final int version;
+
+  /// Guard passed to a command.
+  VersionedId get versionedId => VersionedId(slot.id, version);
+}

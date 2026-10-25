@@ -73,4 +73,43 @@ void main() {
 
     expect(saved, ['save']);
   });
+
+  testWidgets('UX-070 FbSheet: pinned actions stay on screen while tall '
+      'content scrolls, at text scale 2.0', (tester) async {
+    final saved = <String>[];
+    await pumpFb(
+      tester,
+      Builder(
+        builder: (context) => Center(
+          child: TextButton(
+            onPressed: () => showFbStatefulSheet<void>(
+              context,
+              builder: (_) => FbSheet(
+                title: 'Edit meal',
+                actions: FbButton.primary(
+                  label: 'Save',
+                  expand: true,
+                  onPressed: () => saved.add('save'),
+                ),
+                child: const SizedBox(height: 1200, child: Text('Tall')),
+              ),
+            ),
+            child: const Text('open'),
+          ),
+        ),
+      ),
+      textScale: 2,
+      width: 320,
+      height: 640,
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    final save = find.widgetWithText(FbButton, 'Save');
+    expect(tester.getRect(save).bottom, lessThanOrEqualTo(640));
+    expect(tester.getRect(save).top, greaterThan(0));
+    await tester.tap(save);
+    expect(saved, ['save']);
+    expect(tester.takeException(), isNull);
+  });
 }

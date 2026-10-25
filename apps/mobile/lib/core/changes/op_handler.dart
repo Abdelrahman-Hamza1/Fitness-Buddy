@@ -48,9 +48,14 @@ final class OpPlan {
     Iterable<RowOp> rows, {
     Iterable<DomainEvent> events = const [],
     Iterable<DomainEvent> revertEvents = const [],
-  }) : rows = List.unmodifiable(rows),
+    Iterable<RevertGuard> revertGuards = const [],
+  }) : revertGuards = List.unmodifiable(revertGuards),
+       rows = List.unmodifiable(rows),
        events = List.unmodifiable(events),
        revertEvents = List.unmodifiable(revertEvents);
+
+  /// Read-only preconditions for the inverse, checked before any undo writes.
+  final List<RevertGuard> revertGuards;
 
   /// The row writes, in order. Unmodifiable.
   final List<RowOp> rows;

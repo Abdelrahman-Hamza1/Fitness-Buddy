@@ -76,28 +76,36 @@ void main() {
     expect((await db.select(db.settingsKv).getSingle()).deletedAt, isNotNull);
   });
 
-  test('appOverrides wires the clock and composes the handlers (settings '
-      'from WP4); without it the handler list is unset', () async {
-    final container = ProviderContainer.test(
-      overrides: [
-        ...TestPhone().overrides(),
-        appDatabaseProvider.overrideWithValue(memoryDatabase()),
-      ],
-    );
-    expect(
-      container
-          .read(changeOpHandlersProvider)(container.read(appDatabaseProvider))
-          .map((h) => h.family),
-      [SettingsOp.familyName, DiaryOp.familyName, PersonalFoodOp.familyName],
-    );
-    expect(container.read(clockProvider), isA<SystemClock>());
-    final result = await container
-        .read(changeSetApplierProvider)
-        .apply(ChangeSet([ScriptOp.rows([])], origin: Origin.direct));
-    expect((result as Rejected).failure, const InvalidOp('unknownFamily'));
+  test(
+    'DY-010 appOverrides wires the clock and composes the handlers (settings '
+    'from WP4); without it the handler list is unset',
+    () async {
+      final container = ProviderContainer.test(
+        overrides: [
+          ...TestPhone().overrides(),
+          appDatabaseProvider.overrideWithValue(memoryDatabase()),
+        ],
+      );
+      expect(
+        container
+            .read(changeOpHandlersProvider)(container.read(appDatabaseProvider))
+            .map((h) => h.family),
+        [
+          SettingsOp.familyName,
+          DiaryOp.familyName,
+          MealSlotOp.familyName,
+          PersonalFoodOp.familyName,
+        ],
+      );
+      expect(container.read(clockProvider), isA<SystemClock>());
+      final result = await container
+          .read(changeSetApplierProvider)
+          .apply(ChangeSet([ScriptOp.rows([])], origin: Origin.direct));
+      expect((result as Rejected).failure, const InvalidOp('unknownFamily'));
 
-    final bare = ProviderContainer.test();
-    expect(() => bare.read(changeOpHandlersProvider), throwsA(anything));
-    expect(() => bare.read(clockProvider), throwsA(anything));
-  });
+      final bare = ProviderContainer.test();
+      expect(() => bare.read(changeOpHandlersProvider), throwsA(anything));
+      expect(() => bare.read(clockProvider), throwsA(anything));
+    },
+  );
 }

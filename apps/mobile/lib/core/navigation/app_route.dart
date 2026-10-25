@@ -242,6 +242,20 @@ final class CityPickerRoute extends AppRoute {
   String get location => path;
 }
 
+/// Meal times (A10 D13, DY-010): rename, add, remove, reorder and set the
+/// time windows of the day's meals. A detail screen of the Me tab (A09 owns
+/// `/me/meals`, the saved meals). No parameters.
+final class MealSlotsRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/meal-times';
+
+  @override
+  String get location => path;
+}
+
 /// About (A10 D14, SF-040): a detail screen of the Me tab.
 final class AboutRoute extends AppRoute {
   /// Creates the route.

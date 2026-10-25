@@ -103,15 +103,20 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
     final chosen = await showFbSheet<String>(
       context,
       title: l10n.foodSheetSlotTitle,
-      builder: (sheet) => Column(
-        children: [
-          for (final slot in slots)
-            FbListRow(
-              title: slotLabel(l10n, slot),
-              trailing: slot.id == current ? const Icon(FbIcons.check) : null,
-              onTap: () => Navigator.of(sheet).pop(slot.id),
-            ),
-        ],
+      builder: (sheet) => Consumer(
+        builder: (context, ref, _) => Column(
+          children: [
+            for (final slot
+                in (ref.watch(foodSlotsProvider).value ?? slots).where(
+                  (s) => s.active,
+                ))
+              FbListRow(
+                title: slotLabel(l10n, slot),
+                trailing: slot.id == current ? const Icon(FbIcons.check) : null,
+                onTap: () => Navigator.of(sheet).pop(slot.id),
+              ),
+          ],
+        ),
       ),
     );
     if (chosen != null && mounted) _controller.setSlot(chosen);
@@ -211,6 +216,8 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
     ];
     final slot = slots.where((s) => s.id == state.slotId).firstOrNull;
     final yieldNote = state.yieldNote;
+    final mealRemoved = _failCode == 'slotRemoved';
+    final mealRequired = _failCode == 'noMeal';
     // The personal food's guard refused the write (A09 D19).
     final guardRefused =
         (_failCode == 'changed' || _failCode == 'removed') &&
@@ -291,7 +298,7 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
             child: FbChoiceChip(
               label: l10n.foodSheetSlotTitle,
               value: slot == null
-                  ? l10n.foodSheetSlotNone
+                  ? l10n.foodSheetSlotChoose
                   : slotLabel(l10n, slot),
               onTap: () => _chooseSlot(slots, state.slotId),
             ),
@@ -311,9 +318,14 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
             message: replacing == null
                 ? guardRefused
                       ? l10n.foodSheetAddChanged
+                      : mealRemoved
+                      ? l10n.diarySlotRemoved
+                      : mealRequired
+                      ? l10n.foodSheetSlotChoose
                       : l10n.foodSheetAddFailed
                 : switch (_failCode) {
                     _ when guardRefused => l10n.foodSheetReplaceChanged,
+                    'slotRemoved' => l10n.diarySlotRemoved,
                     'changed' => l10n.diaryItemChanged,
                     'removed' => l10n.diaryActionRemoved,
                     _ => l10n.diaryActionFailed,

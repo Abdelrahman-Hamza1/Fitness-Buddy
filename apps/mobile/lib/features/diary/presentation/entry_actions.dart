@@ -92,6 +92,7 @@ void reportDiaryOutcome(
       break;
     case DiaryActionFailed(:final reason):
       showFbSnackBar(host, switch (reason) {
+        DiaryActionFailure.slotRemoved => host.l10n.diarySlotRemoved,
         DiaryActionFailure.invalid => host.l10n.diaryActionFailed,
         DiaryActionFailure.removed => host.l10n.diaryActionRemoved,
         DiaryActionFailure.changed =>

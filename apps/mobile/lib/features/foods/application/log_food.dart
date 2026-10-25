@@ -104,6 +104,7 @@ final class LogFood {
 /// Maps only known single-writer rejections; unexpected errors propagate.
 FoodLogFailed foodLogFailure(ChangeFailure failure) =>
     FoodLogFailed(switch (failure) {
+      InvalidOp(code: 'inactiveSlot' || 'unknownSlot') => 'slotRemoved',
       VersionConflict() => 'changed',
       RowNotFound(entity: 'personalFood') => 'changed',
       RowNotFound() => 'removed',

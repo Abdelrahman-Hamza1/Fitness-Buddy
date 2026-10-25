@@ -66,6 +66,7 @@ final class ChangeSetApplier<D extends WriteGuarded> {
       final reader = TxReader(_db);
       final events = <DomainEvent>[];
       final revertEvents = <DomainEvent>[];
+      final revertGuards = <RevertGuard>[];
       for (final op in changeSet.ops) {
         try {
           final handler =
@@ -82,6 +83,7 @@ final class ChangeSetApplier<D extends WriteGuarded> {
           }
           events.addAll(plan.events);
           revertEvents.addAll(plan.revertEvents);
+          revertGuards.addAll(plan.revertGuards);
         } on Object {
           // The writes queued before the failure run first, so a failure of
           // theirs wins, as if each had run when it was planned.
@@ -89,7 +91,7 @@ final class ChangeSetApplier<D extends WriteGuarded> {
           rethrow;
         }
       }
-      return (events, revertEvents);
+      return (events, revertEvents, revertGuards);
     }),
   );
 
@@ -97,16 +99,20 @@ final class ChangeSetApplier<D extends WriteGuarded> {
   /// `undo:<changeSetId>`. A row changed since gives
   /// [Rejected]([VersionConflict]) and nothing is written. An inverse holds
   /// only restores and tombstones (what [apply] makes): any other row write
-  /// gives [Rejected]([InvalidOp]) `notInverse`.
+  /// gives [Rejected]([InvalidOp]) `notInverse`. Semantic guards run read-only
+  /// inside the same transaction before any inverse writes.
   Future<ApplyResult> revert(InverseChangeSet inverse) => _serial(
     () => _transact(Origin.undo(inverse.changeSetId), (writes, _) async {
+      for (final guard in inverse.guards) {
+        await writes.planning(() => guard(_db, inverse.rows));
+      }
       for (final row in inverse.rows) {
         if (row is! RestoreRow && row is! TombstoneRow) {
           throw const ChangeRejected(InvalidOp('notInverse'));
         }
         writes.write(row);
       }
-      return (inverse.events, const <DomainEvent>[]);
+      return (inverse.events, const <DomainEvent>[], const <RevertGuard>[]);
     }),
   );
 
@@ -119,7 +125,7 @@ final class ChangeSetApplier<D extends WriteGuarded> {
 
   Future<ApplyResult> _transact(
     Origin origin,
-    Future<(List<DomainEvent>, List<DomainEvent>)> Function(
+    Future<(List<DomainEvent>, List<DomainEvent>, List<RevertGuard>)> Function(
       RowWriteSession writes,
       ApplyContext context,
     )
@@ -140,7 +146,7 @@ final class ChangeSetApplier<D extends WriteGuarded> {
       clock: _clock,
       ids: _ids,
     );
-    final (List<DomainEvent>, List<DomainEvent>) planned;
+    final (List<DomainEvent>, List<DomainEvent>, List<RevertGuard>) planned;
     try {
       planned = await _db.transaction(() async {
         final result = await body(writes, context);
@@ -155,7 +161,7 @@ final class ChangeSetApplier<D extends WriteGuarded> {
       // doesn't see.
       _db.notifyUpdates({const TableUpdate('sync_outbox')});
     }
-    final (events, revertEvents) = planned;
+    final (events, revertEvents, revertGuards) = planned;
     // After the commit, in op order (A01 D4).
     final emitted = [
       ...events,
@@ -171,6 +177,7 @@ final class ChangeSetApplier<D extends WriteGuarded> {
         changeSetId: changeSetId,
         rows: writes.inverseRows(),
         events: revertEvents,
+        guards: revertGuards,
       ),
       events: emitted,
     );

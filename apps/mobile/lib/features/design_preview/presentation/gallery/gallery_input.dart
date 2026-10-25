@@ -59,6 +59,13 @@ final List<GallerySection> gallerySectionsInput = [
     ],
   ),
   GallerySection(
+    name: 'FbReorderableList',
+    covers: const [FbReorderableList, FbDragHandle],
+    states: (_) => const [
+      GalleryState('drag the grip, or use the move actions', _ReorderDemo()),
+    ],
+  ),
+  GallerySection(
     name: 'FbSwipeActions',
     covers: const [FbSwipeActions, FbSwipeAction],
     states: (context) => [
@@ -611,6 +618,34 @@ class _OptionsDemoState extends State<_OptionsDemo> {
     ],
     selected: _metric,
     onSelected: (value) => setState(() => _metric = value),
+  );
+}
+
+/// A short list of meals that can be dragged into another order.
+class _ReorderDemo extends StatefulWidget {
+  const new();
+
+  @override
+  State<_ReorderDemo> createState() => _ReorderDemoState();
+}
+
+class _ReorderDemoState extends State<_ReorderDemo> {
+  List<String> _meals = _S.meals;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    height: 240,
+    child: FbReorderableList<String>(
+      items: _meals,
+      idOf: (meal) => meal,
+      itemBuilder: (context, meal, handle) =>
+          FbListRow(title: meal, trailing: handle),
+      onReorder: (oldIndex, newIndex) => setState(() {
+        final next = [..._meals];
+        next.insert(newIndex, next.removeAt(oldIndex));
+        _meals = next;
+      }),
+    ),
   );
 }
 

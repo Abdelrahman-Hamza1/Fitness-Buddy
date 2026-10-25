@@ -17,6 +17,8 @@ export 'src/diary/entry_measures.dart';
 export 'src/diary/food_history.dart';
 export 'src/diary/food_ref.dart';
 export 'src/diary/meal_slot.dart';
+export 'src/diary/meal_slot_ops.dart';
+export 'src/diary/meal_slot_rules.dart';
 export 'src/diary/provenance.dart';
 export 'src/diary/saved_meal.dart';
 export 'src/diary/slot_assigner.dart';

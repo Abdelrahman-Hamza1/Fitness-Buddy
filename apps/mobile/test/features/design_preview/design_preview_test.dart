@@ -66,6 +66,15 @@ void main() {
         matching: find.byType(Scrollable),
       ),
     );
+    // Past the bottom bar that overlaps the end of the list.
+    await tester.drag(
+      find.descendant(
+        of: find.byType(MeScreen),
+        matching: find.byType(Scrollable),
+      ),
+      const Offset(0, -150),
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Design preview'));
     await tester.pumpAndSettle();
 

@@ -24,6 +24,9 @@ abstract final class FbIcons {
   /// Move to another place (swipe action). Vertical, so it needs no mirroring.
   static const IconData move = Icons.swap_vert_rounded;
 
+  /// The grip of a row that can be dragged to reorder a list.
+  static const IconData dragHandle = Icons.drag_handle_rounded;
+
   /// Add (quick-add chips, add buttons).
   static const IconData add = Icons.add_rounded;
 

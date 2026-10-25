@@ -120,6 +120,9 @@ abstract final class GallerySamples {
   static const String optionImperial = 'Imperial';
   static const String optionImperialHint = 'Ounces, fluid ounces';
 
+  // Reorderable list.
+  static const List<String> meals = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
+
   // Units.
   static const String gram = 'g';
   static const String millilitre = 'ml';

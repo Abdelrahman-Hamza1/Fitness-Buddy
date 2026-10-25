@@ -27,6 +27,7 @@ export 'src/components/number_pad.dart';
 export 'src/components/option_sheet.dart';
 export 'src/components/progress_bar.dart' show FbProgressBar;
 export 'src/components/quick_add_row.dart';
+export 'src/components/reorderable_list.dart';
 export 'src/components/search_field.dart';
 export 'src/components/section_header.dart';
 export 'src/components/sheet.dart';

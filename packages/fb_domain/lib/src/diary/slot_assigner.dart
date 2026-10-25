@@ -1,4 +1,5 @@
 import 'package:fb_domain/src/diary/meal_slot.dart';
+import 'package:fb_domain/src/diary/meal_slot_rules.dart';
 import 'package:fb_domain/src/time/local_time.dart';
 
 /// Picks the slot a new entry goes into from its local time (DY-011,
@@ -6,7 +7,8 @@ import 'package:fb_domain/src/time/local_time.dart';
 /// empty: an explicit slot always wins.
 ///
 /// Among the active slots of the mode:
-/// 1. the slots whose window contains the time: lowest `sortOrder`, then
+/// 1. the slots whose window contains the time: shortest window (A10 D9),
+///    then lowest `sortOrder`, then
 ///    lowest ID;
 /// 2. else the slots with no window (the default Snacks): the same order;
 /// 3. else the slot whose window started most recently before the time,
@@ -35,7 +37,14 @@ final class SlotAssigner {
       for (final slot in candidates)
         if (slot.window?.contains(minuteOfDay) ?? false) slot,
     ];
-    if (containing.isNotEmpty) return _first(containing).id;
+    if (containing.isNotEmpty) {
+      containing.sort((a, b) {
+        final length = MealSlotRules.windowMinutes(a.window!)
+            .compareTo(MealSlotRules.windowMinutes(b.window!));
+        return length != 0 ? length : _bySortOrderThenId(a, b);
+      });
+      return containing.first.id;
+    }
     final windowless = [
       for (final slot in candidates)
         if (slot.window == null) slot,
