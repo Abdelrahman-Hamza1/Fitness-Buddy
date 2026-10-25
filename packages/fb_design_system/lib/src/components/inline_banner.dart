@@ -28,6 +28,7 @@ class FbInlineBanner extends StatelessWidget {
     required this.message,
     this.actionLabel,
     this.onAction,
+    this.actionBelow = false,
     super.key,
   }) : assert(
          (actionLabel == null) == (onAction == null),
@@ -45,6 +46,9 @@ class FbInlineBanner extends StatelessWidget {
 
   /// Called when the action is tapped.
   final VoidCallback? onAction;
+
+  /// Places the action below the message for narrow, large-text footers.
+  final bool actionBelow;
 
   @override
   Widget build(BuildContext context) {
@@ -78,20 +82,36 @@ class FbInlineBanner extends StatelessWidget {
             horizontal: FbSpace.s4,
             vertical: FbSpace.s3,
           ),
-          child: Row(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ExcludeSemantics(child: Icon(icon, size: 20, color: iconColor)),
-              const SizedBox(width: FbSpace.s3),
-              Expanded(
-                child: Text(
-                  message,
-                  style: FbType.bodySmall.copyWith(color: scheme.onSurface),
-                ),
+              Row(
+                children: [
+                  ExcludeSemantics(
+                    child: Icon(icon, size: 20, color: iconColor),
+                  ),
+                  const SizedBox(width: FbSpace.s3),
+                  Expanded(
+                    child: Text(
+                      message,
+                      style: FbType.bodySmall.copyWith(color: scheme.onSurface),
+                    ),
+                  ),
+                  if (actionLabel != null && !actionBelow) ...[
+                    const SizedBox(width: FbSpace.s2),
+                    TextButton(onPressed: onAction, child: Text(actionLabel!)),
+                  ],
+                ],
               ),
-              if (actionLabel != null) ...[
-                const SizedBox(width: FbSpace.s2),
-                TextButton(onPressed: onAction, child: Text(actionLabel!)),
-              ],
+              if (actionLabel != null && actionBelow)
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: TextButton(
+                    onPressed: onAction,
+                    child: Text(actionLabel!),
+                  ),
+                ),
             ],
           ),
         ),

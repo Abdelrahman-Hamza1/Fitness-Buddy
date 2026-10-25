@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
@@ -9,8 +11,9 @@ import 'package:material_ui/material_ui.dart';
 /// The Me tab (UX-010, A10 D8): one scrolling list of sections in a fixed
 /// order, each shown once its step exists. Today that is Food (Your foods and
 /// Saved meals, A09 D10), Settings (units, week start, halal, theme, city and
-/// the energy unit) and About; Profile and Targets (A13), Buddy remembers
-/// (A26) and Account (A33) add their own sections. A section with no rows is
+/// the energy unit), Your data (Export your data, A11 D9) and About; Profile
+/// and Targets (A13), Buddy remembers (A26) and Account (A33) add their own
+/// sections. A section with no rows is
 /// not shown. In the dev flavor a Developer section has the "Design preview"
 /// row (A02 D15).
 class MeScreen extends ConsumerWidget {
@@ -33,6 +36,12 @@ class MeScreen extends ConsumerWidget {
                 _Row(l10n.meSavedMeals, const SavedMealsRoute()),
               ]),
               const SettingsSection(),
+              FbSectionHeader(title: l10n.meSectionYourData),
+              FbListRow(
+                title: l10n.meExportData,
+                trailing: const Icon(FbIcons.next),
+                onTap: () => unawaited(showExportSheet(context)),
+              ),
               ..._group(l10n.meSectionAbout, open, [
                 _Row(l10n.meAbout, const AboutRoute()),
               ]),

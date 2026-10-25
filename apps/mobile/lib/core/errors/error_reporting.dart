@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/config/package_info.dart';
 import 'package:fb_mobile/core/errors/pii_scrubber.dart';
+import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -56,8 +57,50 @@ final class ErrorReporting {
   /// content), when reporting has started. For failures that are absorbed.
   void reportKind(Object error) {
     if (config.sentryDsn.isEmpty) return;
-    unawaited(Sentry.captureMessage('absorbed: ${error.runtimeType}'));
+    unawaited(
+      Sentry.captureEvent(
+        SentryEvent(
+          exceptions: [
+            SentryException(
+              type: error.runtimeType.toString(),
+              value: null,
+              mechanism: Mechanism(type: 'absorbed', handled: true),
+            ),
+          ],
+        ),
+      ),
+    );
   }
+
+  /// Sends synthetic handled and framework-unhandled errors (A11 D17).
+  /// The second path runs on a later event-loop turn, through the installed
+  /// FlutterError handler, exercising the SDK's details processing.
+  Future<void> sendTestReport() async {
+    if (config.sentryDsn.isEmpty) return;
+    await Sentry.captureException(
+      ThrowableMechanism(
+        Mechanism(type: 'handled', handled: true),
+        TestErrorReport(),
+      ),
+    );
+    await Future<void>(() {
+      try {
+        throw TestErrorReport();
+      } on TestErrorReport catch (error, stack) {
+        FlutterError.reportError(
+          FlutterErrorDetails(
+            exception: error,
+            stack: stack,
+            context: ErrorDescription(testReportCanary),
+            informationCollector: () => [ErrorDescription(testReportCanary)],
+          ),
+        );
+      }
+    });
+  }
+
+  /// Synthetic food text: must be absent from every captured envelope.
+  static const testReportCanary = 'FB_A11_CANARY_shawarma_250g';
 
   /// Sets the privacy-first [options] (S06 plan D12, A5).
   static void configure(
@@ -85,8 +128,18 @@ final class ErrorReporting {
       // every one, so nothing the app or a package logs is sent.
       ..beforeSendLog = dropLog
       ..beforeSendMetric = dropMetric
-      // Performance tracing is tuned in A11.
-      ..tracesSampleRate = 0;
+      // A11: errors only in R1; no release health. Performance spans and
+      // on-device measurements are deferred to A42 (09 §5).
+      ..enableAutoSessionTracking = false
+      ..enableNativeCrashHandling = false
+      ..anrEnabled = false
+      ..enableNdkScopeSync = false
+      ..enableScopeSync = false
+      // Dart envelopes still use the native transport (A11 WP0).
+      ..autoInitializeNativeSdk = true
+      ..sendClientReports = false
+      ..debug = false
+      ..tracesSampleRate = null;
     // Session replay records the screen, i.e. user content: never.
     options.replay
       ..sessionSampleRate = 0
@@ -98,6 +151,16 @@ final class ErrorReporting {
 
   /// `beforeSendMetric`: drops every Sentry metric.
   static SentryMetric? dropMetric(SentryMetric metric, Hint hint) => null;
+}
+
+/// Synthetic exception for the About test report; no real user data.
+final class TestErrorReport implements Exception {
+  /// Creates the fixed synthetic error.
+  // Distinct objects: SDK deduplication drops a repeated identical throwable.
+  new();
+
+  @override
+  String toString() => ErrorReporting.testReportCanary;
 }
 
 /// The app's [ErrorReporting]; `AppBootstrap` starts it after the first

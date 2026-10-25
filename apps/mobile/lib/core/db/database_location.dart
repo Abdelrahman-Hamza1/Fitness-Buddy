@@ -24,8 +24,8 @@ final class DatabaseLocation {
     }
   }
 
-  /// The app's location: the application support directory (not backed up
-  /// as documents, A01 D21) and the cache directory for temporary files.
+  /// The app's location: application support and temporary cache. A11 PA5
+  /// allows encrypted Android 12+ backup of local user.db and sidecars only.
   factory appSupport(String profileKey) => DatabaseLocation(
     profileKey: profileKey,
     root: () async => (await getApplicationSupportDirectory()).path,

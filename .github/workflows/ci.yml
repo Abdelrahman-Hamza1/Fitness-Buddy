@@ -73,7 +73,7 @@ jobs:
           android=true
           if [[ "$EVENT" == push && "$REF" != refs/heads/main && "$REF" != refs/heads/merge/* ]] \
             && base="$(git merge-base origin/main HEAD 2>/dev/null)"; then
-            relevant='^(apps/mobile/|packages/|contracts/|data/|tools/catalog/|pubspec\.(yaml|lock)$|analysis_options\.yaml$|\.fvmrc$|Makefile$|\.github/workflows/ci\.yml$|tools/scripts/(build-android|setup-android|patrol-android|android-|session-|test_session_|apk_hardening|apk-hardening|testdata/apk-hardening/))'
+            relevant='^(apps/mobile/|packages/|contracts/|data/|tools/catalog/|pubspec\.(yaml|lock)$|analysis_options\.yaml$|\.fvmrc$|Makefile$|\.github/workflows/ci\.yml$|tools/scripts/(build-android|android-defines|setup-android|patrol-android|android-|session-|test_session_|apk_hardening|apk-hardening|testdata/apk-hardening/))'
             if ! git diff --name-only "$base" HEAD | grep -Eq "$relevant"; then
               android=false
             fi
@@ -162,6 +162,15 @@ jobs:
       # puts flutter and dart on PATH, so toolchain-flutter doesn't run in CI.
       - name: Dependencies, format + analyze, tests
         run: make deps-dart catalog-pack check-dart test-dart FLUTTER=flutter DART=dart
+
+      - name: Sentry envelope sink self-test (A11 PR-11)
+        run: PYTHONDONTWRITEBYTECODE=1 python3 -I -m unittest discover -s tools/scripts -p test_sentry_envelope_sink.py
+
+      - name: Android build overrides, backup key and CI policy self-tests (A11 T16-T18)
+        run: |
+          bash tools/scripts/build-android-selftest.sh
+          bash tools/scripts/verify-key-backup-selftest.sh
+          PYTHONDONTWRITEBYTECODE=1 python3 -I -m unittest discover -s tools/scripts -p test_android_ci.py
 
       # Regenerates packages/fb_api_client from contracts/openapi.yaml (S02 D2)
       # and the app's l10n + Riverpod code in apps/mobile (S06 D14), and fails
@@ -421,21 +430,33 @@ jobs:
       # `make build-android` first runs catalog-pack (the non-mutating release
       # pack into the app assets, A05 D7), and build-android.sh refuses a pack
       # with drafts (D8).
-      - name: Build the staging release APK (arm64) + AAB
+      - name: Select the release flavor (A11 D14)
+        id: flavor
+        run: |
+          flavor=staging
+          if [[ "$GITHUB_REF" == refs/heads/main || "$GITHUB_REF" == refs/heads/merge/* ]]; then
+            flavor=prod
+          fi
+          echo "name=$flavor" >>"$GITHUB_OUTPUT"
+
+      - name: Build the selected release APK (arm64) + AAB
         env:
+          FLAVOR: ${{ steps.flavor.outputs.name }}
+          FB_API_BASE_URL: ${{ secrets.FB_API_BASE_URL }}
+          FB_SENTRY_DSN: ${{ secrets.FB_SENTRY_DSN }}
           FB_KEYSTORE_PATH: ${{ steps.key.outputs.keystore }}
           FB_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.FB_ANDROID_KEYSTORE_PASSWORD }}
           FB_ANDROID_KEY_ALIAS: fitnessbuddy
           FB_ANDROID_KEY_PASSWORD: ${{ secrets.FB_ANDROID_KEY_PASSWORD }}
         run: |
-          make build-android FLAVOR=staging BUILD_NUMBER="$GITHUB_RUN_NUMBER" FB_RELEASE_ENV= \
+          make build-android FLAVOR="$FLAVOR" BUILD_NUMBER="$GITHUB_RUN_NUMBER" FB_RELEASE_ENV= \
             FLUTTER=flutter DART=dart
 
       - name: A20 release session safety on the built APK
         run: |
           python3 -m unittest discover -s tools/scripts -p test_session_release_check.py
           build_tools="$(sed -n 's/^build-tools;\([^|]*\)|.*/\1/p' tools/scripts/android-sdk-packages.txt)"
-          for apk in apps/mobile/build/app/outputs/flutter-apk/app-staging-release*.apk; do
+          for apk in apps/mobile/build/app/outputs/flutter-apk/app-*-release*.apk; do
             python3 tools/scripts/session-release-check.py \
               --aapt2 "$ANDROID_HOME/build-tools/$build_tools/aapt2" "$apk"
           done
@@ -452,7 +473,7 @@ jobs:
       # failed above if the certificate wasn't the pinned one, and a debug-key
       # build is named *-debugkey.apk, which this exact path never matches.
       - name: Upload the signed staging APK (unzipped, 30 days)
-        if: steps.key.outputs.signed == 'true'
+        if: steps.key.outputs.signed == 'true' && steps.flavor.outputs.name == 'staging'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           path: apps/mobile/build/app/outputs/flutter-apk/app-staging-release.apk
@@ -460,33 +481,48 @@ jobs:
           retention-days: 30
           if-no-files-found: error
 
+      - name: Upload the signed prod APK (unzipped, 30 days)
+        if: steps.key.outputs.signed == 'true' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          path: apps/mobile/build/app/outputs/flutter-apk/app-prod-release.apk
+          archive: false
+          retention-days: 30
+          if-no-files-found: error
+
       - name: Job summary (signing, outputs, time)
         if: always()
         env:
+          FLAVOR: ${{ steps.flavor.outputs.name }}
           SIGNED: ${{ steps.key.outputs.signed }}
           START: ${{ steps.start.outputs.epoch }}
         run: |
           outputs=apps/mobile/build/app/outputs
           {
-            echo "### Android staging build (run ${GITHUB_RUN_NUMBER})"
+            echo "### Android $FLAVOR build (run ${GITHUB_RUN_NUMBER})"
             if [[ "$SIGNED" == true ]]; then
-              echo "- Signing: **release key** (secrets present); APK uploaded as \`app-staging-release.apk\`"
+              echo "- Signing: **release key** (pinned certificate); artifact uploads on main (prod) or staging runs"
+              pin="$(sed -n 's/^readonly RELEASE_CERT_SHA256="\([a-f0-9]*\)"$/\1/p' tools/scripts/build-android.sh)"
+              echo "- Signer certificate SHA-256: \`$pin\`"
             else
               echo "- Signing: **debug key** (no release-key secrets in this run); nothing uploaded"
             fi
             shopt -s nullglob
-            for f in "$outputs"/flutter-apk/app-staging-release*.apk "$outputs"/bundle/stagingRelease/*.aab; do
+            for f in "$outputs"/flutter-apk/app-"$FLAVOR"-release*.apk "$outputs"/bundle/"${FLAVOR}Release"/*.aab; do
               echo "- \`${f##*/}\` $(du -h "$f" | cut -f1), sha256 \`$(sha256sum "$f" | cut -d' ' -f1)\`"
             done
             echo "- Job time: $(( $(date +%s) - START )) s"
             echo "- Disk free: $(df -h --output=avail / | tail -n 1 | tr -d ' ')"
           } >>"$GITHUB_STEP_SUMMARY"
           # Also as an annotation: readable through the API without a login.
-          apk="$outputs/flutter-apk/app-staging-release.apk"
-          if [[ "$SIGNED" == true && -f "$apk" ]]; then
-            echo "::notice title=android signing::signed=true: app-staging-release.apk uploaded, sha256 $(sha256sum "$apk" | cut -d' ' -f1)"
-          else
-            echo "::notice title=android signing::signed=false: no release-key secrets in this run, debug-key build, nothing uploaded"
+          apk="$outputs/flutter-apk/app-$FLAVOR-release.apk"
+          eligible=false
+          if [[ "$SIGNED" == true && -f "$apk" && ( "$FLAVOR" == staging || "$GITHUB_REF" == refs/heads/main ) ]]; then
+            eligible=true
+          fi
+          echo "::notice title=android signing::signed=${SIGNED:-false}; upload-eligible=$eligible; ${apk##*/}"
+          if [[ -f "$apk" ]]; then
+            echo "::notice title=android output::sha256 $(sha256sum "$apk" | cut -d' ' -f1)"
           fi
 
   # Integration tests (S06 plan D18, A7): `make test-it` runs the Patrol tests in

@@ -2242,6 +2242,14 @@
   "@meSectionSettings": {
     "description": "Me tab: heading of the settings rows (units, week start, halal, theme, city)."
   },
+  "meSectionYourData": "Your data",
+  "@meSectionYourData": {
+    "description": "Me tab: heading of the section for the user's own data (export)."
+  },
+  "meExportData": "Export your data",
+  "@meExportData": {
+    "description": "Me tab: row that opens the export sheet (AC-030). Also the sheet's title."
+  },
   "meSectionAbout": "About",
   "@meSectionAbout": {
     "description": "Me tab: heading of the About section."
@@ -2536,5 +2544,89 @@
   "aboutNotMedical": "Fitness Buddy gives estimates for tracking, not medical advice.",
   "@aboutNotMedical": {
     "description": "About: the line saying the app is not medical advice (SF-040)."
+  },
+  "exportWhat": "Your diary, foods, saved meals and settings as CSV spreadsheet files and one JSON file.",
+  "@exportWhat": {
+    "description": "Export sheet: what the export contains and where it is made (AC-030)."
+  },
+  "exportLiveOnly": "Deleted items and Buddy chats are left out.",
+  "@exportLiveOnly": {
+    "description": "Export sheet: the export holds live rows only, not deleted ones."
+  },
+  "exportPrivacy": "Fitness Buddy uploads nothing. Files are not encrypted; whichever app you share them with can read them. Nothing that identifies this phone is included.",
+  "@exportPrivacy": {
+    "description": "Export sheet: privacy line. The files leave the app through the system share sheet; no install identity is in them."
+  },
+  "exportAction": "Export",
+  "@exportAction": {
+    "description": "Export sheet: button that builds the files and opens the share sheet."
+  },
+  "exportWorking": "Preparing your files…",
+  "@exportWorking": {
+    "description": "Export sheet: shown while the files are being made."
+  },
+  "exportDone": "Handed to the share sheet: {entries, plural, =1{1 entry} other{{entries} entries}} in {files, plural, =1{1 file} other{{files} files}}.",
+  "@exportDone": {
+    "description": "Export sheet: shown after the share sheet was opened with the files. entries is the number of rows across all files; files the number of files.",
+    "placeholders": {
+      "entries": {
+        "type": "int"
+      },
+      "files": {
+        "type": "int"
+      }
+    }
+  },
+  "exportDismissed": "Sharing was cancelled. Nothing was sent.",
+  "@exportDismissed": {
+    "description": "Export sheet: shown when the user closed the share sheet without choosing a target."
+  },
+  "exportFailed": "Couldn't create the export. Try again.",
+  "@exportFailed": {
+    "description": "Export sheet: error banner when the files could not be made or shared (UX-052)."
+  },
+  "exportTryAgain": "Try again",
+  "@exportTryAgain": {
+    "description": "Export sheet: banner action that repeats a failed export."
+  },
+  "exportExportAgain": "Export again",
+  "@exportExportAgain": {
+    "description": "Export sheet: button that repeats a finished export."
+  },
+  "exportClose": "Close",
+  "@exportClose": {
+    "description": "Export sheet: button that closes the sheet."
+  },
+  "exportDoneButton": "Done",
+  "@exportDoneButton": {
+    "description": "Export sheet: button that closes the sheet after a finished export."
+  },
+  "aboutTestReportTitle": "Send a test error report?",
+  "@aboutTestReportTitle": {
+    "description": "About: title of the confirm sheet shown after a long press on the version line (A11 D17)."
+  },
+  "aboutTestReportBody": "This queues two made-up test errors for the crash-report service, with app and device information. Your diary and other personal content are not included.",
+  "@aboutTestReportBody": {
+    "description": "About: what the test error report does."
+  },
+  "aboutTestReportSend": "Send",
+  "@aboutTestReportSend": {
+    "description": "About: confirm button of the test error report sheet."
+  },
+  "aboutTestReportCancel": "Cancel",
+  "@aboutTestReportCancel": {
+    "description": "About: cancel button of the test error report sheet."
+  },
+  "aboutTestReportSent": "Test report queued",
+  "@aboutTestReportSent": {
+    "description": "About: snackbar after the test error report was sent."
+  },
+  "aboutTestReportOffDev": "Crash reports are off in dev builds, so nothing was sent.",
+  "@aboutTestReportOffDev": {
+    "description": "About: snackbar when the test report can't be sent because this is a dev build."
+  },
+  "aboutTestReportOffNoDsn": "Crash reports aren't set up in this build, so nothing was sent.",
+  "@aboutTestReportOffNoDsn": {
+    "description": "About: snackbar when the test report can't be sent because this staging or prod build has no crash-report address."
   }
 }

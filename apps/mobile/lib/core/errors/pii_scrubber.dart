@@ -4,7 +4,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 /// Sentry events and breadcrumbs (CLAUDE.md rule 6, `09` §4, S06 plan D12,
 /// A5). Allow-list style: only what is known to be safe is kept.
 ///
-/// Kept: exception types and stack traces, the level, tags, the release and
+/// Kept: exception types and stack traces, level, safe tags, release and
 /// environment, the allow-listed fields of the device, OS, runtime, app,
 /// culture, GPU and trace contexts, breadcrumb categories, and route names on
 /// navigation breadcrumbs.
@@ -17,8 +17,8 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 /// `device_unique_identifier`, `device_app_hash`, a native device `id`) and
 /// any field the SDK doesn't model (its `unknown` map) never leave.
 ///
-/// Native (Java/NDK) events don't pass through Dart's `beforeSend`; A11
-/// decides how they are scrubbed before a DSN is set (A5).
+/// Native (Java/NDK) capture is disabled (A11 D12); Dart envelopes use
+/// the native transport after this scrubber.
 abstract final class PiiScrubber {
   /// What an exception message is replaced with.
   static const scrubbed = '[scrubbed]';
@@ -39,20 +39,29 @@ abstract final class PiiScrubber {
   /// navigation kind, never route arguments.
   static const Set<String> keptNavigationData = {'state', 'from', 'to'};
 
+  /// Only app-controlled, enumerated tag values may survive native enrichment.
+  static const Map<String, Set<String>> keptTags = {
+    'flavor': {'dev', 'staging', 'prod'},
+  };
+
   /// `beforeSend`: scrubs [event] in place and returns it.
   static SentryEvent scrubEvent(SentryEvent event, Hint hint) {
     event
       ..user = null
       ..request = null
       ..serverName = null
+      ..tags = {
+        for (final entry in (event.tags ?? <String, String>{}).entries)
+          if (keptTags[entry.key]?.contains(entry.value) ?? false)
+            entry.key: entry.value,
+      }
       // `extra` is deprecated but still sent; it must stay empty.
       // ignore: deprecated_member_use
       ..extra = null;
     final message = event.message;
     if (message != null) {
-      // The text is ours (no user content is ever captured as a message);
-      // parameters could carry values.
-      message.params = null;
+      // Packages may also capture messages: free text is never trusted.
+      event.message = SentryMessage(scrubbed);
     }
     for (final exception in event.exceptions ?? const <SentryException>[]) {
       if (exception.value != null) exception.value = scrubbed;

@@ -65,7 +65,7 @@ Cheap now, expensive later, so from the **first screen**:
 
 ## 5. Observability
 
-- **App:** Sentry crashes and errors (scrubbed), release health, performance spans for **cold start** (UX-001), the **Buddy round trip** (AQ-12) and slow frames.
+- **App:** Sentry Dart errors only, scrubbed (A11 D11–D12). Native crash/ANR capture, sessions and release health are off in R1; logs, metrics and replay are dropped. Performance spans for **cold start** (UX-001), the **Buddy round trip** (AQ-12) and slow frames are deferred to **A42**, with on-device measurements there.
 - **API:** OpenTelemetry traces, metrics and logs (`08` §7). Per-request: request ID, user hash, endpoint, status, latency. Buddy calls add task, model, prompt version, tokens, cost and outcome code. **No content.**
 - **Product-quality signals stay with the user:** proposal outcomes (confirmed unchanged / adjusted chips / discarded) are stored in the user's own data. They feed the user model, the owner's "how good is Buddy" view and, by choice, eval cases. **No product analytics in R1** (TQ-16).
 

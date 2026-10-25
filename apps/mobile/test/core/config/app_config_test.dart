@@ -15,7 +15,7 @@ Map<String, Map<String, String>> _configFiles() => {
 const Map<String, String> _valid = {
   AppConfig.flavorKey: 'staging',
   AppConfig.apiBaseUrlKey: 'https://api.example.test',
-  AppConfig.sentryDsnKey: 'https://key@sentry.example.test/1',
+  AppConfig.sentryDsnKey: 'https://key@o123.ingest.de.sentry.io/1',
 };
 
 void main() {
@@ -26,7 +26,7 @@ void main() {
 
       expect(config.flavor, AppFlavor.staging);
       expect(config.apiBaseUrl, Uri.parse('https://api.example.test'));
-      expect(config.sentryDsn, 'https://key@sentry.example.test/1');
+      expect(config.sentryDsn, 'https://key@o123.ingest.de.sentry.io/1');
       expect(AppConfig.keys, _valid.keys.toSet());
     });
 
@@ -53,6 +53,61 @@ void main() {
     });
   });
 
+  test('PR-11 DSN shape: EU ingest accepted, US/http/garbage rejected in '
+      'staging/prod, empty = off', () {
+    for (final flavor in ['staging', 'prod']) {
+      for (final dsn in ['', 'https://key@o123.ingest.de.sentry.io/1']) {
+        expect(
+          AppConfig.fromDefines({
+            ..._valid,
+            AppConfig.flavorKey: flavor,
+            AppConfig.sentryDsnKey: dsn,
+          }).sentryDsn,
+          dsn,
+        );
+      }
+      for (final dsn in [
+        'https://key@o123.ingest.us.sentry.io/1',
+        'http://key@o123.ingest.de.sentry.io/1',
+        'garbage',
+        'https://key:password@o123.ingest.de.sentry.io/1',
+        'https://key@o123.ingest.de.sentry.io/1?x=1',
+      ]) {
+        expect(
+          () => AppConfig.fromDefines({
+            ..._valid,
+            AppConfig.flavorKey: flavor,
+            AppConfig.sentryDsnKey: dsn,
+          }),
+          throwsA(isA<AppConfigException>()),
+        );
+      }
+    }
+  });
+
+  test(
+    'AC-041-style privacy: AppConfig/DSN errors never contain the value',
+    () {
+      for (final key in AppConfig.keys) {
+        for (final value in [
+          'PRIVATE_CANARY',
+          'https://u:PRIVATE_CANARY@host/path',
+          'https://host/?q=PRIVATE_CANARY',
+          'https://host/#PRIVATE_CANARY',
+        ]) {
+          try {
+            AppConfig.fromDefines({..._valid, key: value});
+            fail('invalid configuration accepted');
+          } on AppConfigException catch (error) {
+            expect(error.toString(), contains(key));
+            expect(error.toString(), isNot(contains(value)));
+            expect(error.toString(), isNot(contains('PRIVATE_CANARY')));
+          }
+        }
+      }
+    },
+  );
+
   group('AppConfig rejects', () {
     void expectRejected(Map<String, String> defines, String mentions) => expect(
       () => AppConfig.fromDefines(defines),
@@ -73,7 +128,10 @@ void main() {
     });
 
     test('an unknown flavor', () {
-      expectRejected({..._valid, AppConfig.flavorKey: 'qa'}, '"qa"');
+      expectRejected({
+        ..._valid,
+        AppConfig.flavorKey: 'qa',
+      }, AppConfig.flavorKey);
     });
 
     test('a URL that is not absolute http(s)', () {

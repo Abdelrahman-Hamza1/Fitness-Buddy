@@ -38,12 +38,21 @@ def check(aapt2, apk):
                    c.attrs.get('domain') == '"sharedpref" (Raw: "sharedpref")' and
                    c.attrs.get('path') == '"." (Raw: ".")' for c in node.children)
 
+    def allow_listed(node):
+        # A11: Android lint rejects an exclude that no include covers, so the
+        # database-only allow-list leaves shared preferences out by omission.
+        # It counts only if it has includes and every one is in the file domain.
+        includes = [c for c in node.children if c.name == 'include']
+        return bool(includes) and all(
+            c.attrs.get('domain') == '"file" (Raw: "file")' for c in includes)
+
     for tree in rules('fullBackupContent', 'full-backup-content'):
         require(excluded(tree), 'legacy backup does not exclude all shared preferences')
     for tree in rules('dataExtractionRules', 'data-extraction-rules'):
         for name in ('cloud-backup', 'device-transfer', 'cross-platform-transfer'):
             nodes = [c for c in tree.children if c.name == name]
-            require(nodes and all(excluded(n) for n in nodes), f'{name}: preferences not excluded')
+            require(nodes and all(excluded(n) or (name != 'cross-platform-transfer' and allow_listed(n))
+                                  for n in nodes), f'{name}: preferences not excluded')
     with zipfile.ZipFile(apk) as archive:
         require(any(n.endswith(".dex") for n in archive.namelist()), "release has no DEX")
         require(any(n.endswith("/libapp.so") for n in archive.namelist()), "release has no Dart AOT library")

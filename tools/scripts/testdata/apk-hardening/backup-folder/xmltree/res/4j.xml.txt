@@ -1,0 +1,51 @@
+E: data-extraction-rules
+  E: cloud-backup
+    A: disableIfNoEncryptionCapabilities=true
+    E: include
+      A: domain="file" (Raw: "file")
+      A: path="profiles/" (Raw: "profiles/")
+    E: include
+      A: domain="file" (Raw: "file")
+      A: path="profiles/local/user.db-wal" (Raw: "profiles/local/user.db-wal")
+    E: include
+      A: domain="file" (Raw: "file")
+      A: path="profiles/local/user.db-shm" (Raw: "profiles/local/user.db-shm")
+  E: device-transfer
+    E: include
+      A: domain="file" (Raw: "file")
+      A: path="profiles/" (Raw: "profiles/")
+    E: include
+      A: domain="file" (Raw: "file")
+      A: path="profiles/local/user.db-wal" (Raw: "profiles/local/user.db-wal")
+    E: include
+      A: domain="file" (Raw: "file")
+      A: path="profiles/local/user.db-shm" (Raw: "profiles/local/user.db-shm")
+  E: cross-platform-transfer
+    A: platform="ios" (Raw: "ios")
+    E: exclude
+      A: domain="root" (Raw: "root")
+      A: path="." (Raw: ".")
+    E: exclude
+      A: domain="file" (Raw: "file")
+      A: path="." (Raw: ".")
+    E: exclude
+      A: domain="database" (Raw: "database")
+      A: path="." (Raw: ".")
+    E: exclude
+      A: domain="sharedpref" (Raw: "sharedpref")
+      A: path="." (Raw: ".")
+    E: exclude
+      A: domain="external" (Raw: "external")
+      A: path="." (Raw: ".")
+    E: exclude
+      A: domain="device_root" (Raw: "device_root")
+      A: path="." (Raw: ".")
+    E: exclude
+      A: domain="device_file" (Raw: "device_file")
+      A: path="." (Raw: ".")
+    E: exclude
+      A: domain="device_database" (Raw: "device_database")
+      A: path="." (Raw: ".")
+    E: exclude
+      A: domain="device_sharedpref" (Raw: "device_sharedpref")
+      A: path="." (Raw: ".")

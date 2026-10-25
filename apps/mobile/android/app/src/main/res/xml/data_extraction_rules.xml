@@ -1,37 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Android 12+: what leaves the device in cloud backup, device-to-device
-     transfer and (Android 16 QPR2+) transfer to iOS. Why, and where each file
-     is stored: AndroidManifest.xml. Same rules as backup_rules.xml.
-     - sharedpref, datastore/: the install's device id (S06b).
-     - profiles/: the local databases, user.db with its -wal and -shm files,
-       excluded together (A01 D21, backlog #45: the owner decides before A11
-       whether they're backed up).
-     - catalog/: the read-only food catalog packs (not user data; the app
-       gets them again). -->
+<!-- A11 PA5: include rules form an allow-list across domains. Only the current
+     local profile database and its SQLite sidecars may leave the device.
+     The raw DB includes historical install IDs and sync bookkeeping.
+     Active install-id preferences and credentials are excluded; a new install
+     creates a fresh active ID while retaining historical authorship (Q2).
+     Never include profiles/ (future photos).
+     A33 must explicitly review any new profile path. Lint rejects excludes of
+     paths that no include covers (an include list already leaves everything
+     else out), so none are written. -->
 <data-extraction-rules>
-    <cloud-backup>
-        <!-- A20: plugin ciphertext, wrapped key, cipher config and commit counters. -->
-        <exclude domain="sharedpref" path="." />
-        <exclude domain="file" path="datastore/" />
-        <exclude domain="file" path="profiles/" />
-        <exclude domain="file" path="catalog/" />
+    <cloud-backup disableIfNoEncryptionCapabilities="true">
+        <include domain="file" path="profiles/local/user.db" />
+        <include domain="file" path="profiles/local/user.db-wal" />
+        <include domain="file" path="profiles/local/user.db-shm" />
     </cloud-backup>
     <device-transfer>
-        <!-- A20: plugin ciphertext, wrapped key, cipher config and commit counters. -->
-        <exclude domain="sharedpref" path="." />
-        <exclude domain="file" path="datastore/" />
-        <exclude domain="file" path="profiles/" />
-        <exclude domain="file" path="catalog/" />
+        <include domain="file" path="profiles/local/user.db" />
+        <include domain="file" path="profiles/local/user.db-wal" />
+        <include domain="file" path="profiles/local/user.db-shm" />
     </device-transfer>
-    <!-- No <platform-specific-params> yet: there is no iOS app to pair with
-         (D-081), so nothing can be matched for transfer. The exclusions are
-         explicit anyway, so adding the params later can't send the databases
-         along by accident. -->
     <cross-platform-transfer platform="ios">
-        <!-- A20: plugin ciphertext, wrapped key, cipher config and commit counters. -->
+        <exclude domain="root" path="." />
+        <exclude domain="file" path="." />
+        <exclude domain="database" path="." />
         <exclude domain="sharedpref" path="." />
-        <exclude domain="file" path="datastore/" />
-        <exclude domain="file" path="profiles/" />
-        <exclude domain="file" path="catalog/" />
+        <exclude domain="external" path="." />
+        <exclude domain="device_root" path="." />
+        <exclude domain="device_file" path="." />
+        <exclude domain="device_database" path="." />
+        <exclude domain="device_sharedpref" path="." />
     </cross-platform-transfer>
 </data-extraction-rules>

@@ -5,6 +5,7 @@ import 'package:fb_mobile/app/shell/app_shell.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/config/update_gate.dart';
+import 'package:fb_mobile/core/errors/navigation_observer.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/design_preview/design_preview.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
@@ -46,6 +47,7 @@ final class AppRouter implements AppNavigator {
     required bool designPreview,
   }) => GoRouter(
     navigatorKey: GlobalKey<NavigatorState>(debugLabel: 'root'),
+    observers: [createErrorNavigationObserver()],
     initialLocation: TodayRoute.path,
     refreshListenable: gate,
     redirect: (_, state) =>
@@ -122,6 +124,7 @@ final class AppRouter implements AppNavigator {
   }) => GoRoute(
     // A nested route's path is relative to its parent's.
     path: nested ? route.location.split('/').last : route.location,
+    name: route.location,
     builder: (_, _) => _screen(route),
     routes: children,
   );
@@ -130,6 +133,7 @@ final class AppRouter implements AppNavigator {
   // the query string (A07 D11), so the screen never parses a URL.
   static GoRoute _foodSearchRoute() => GoRoute(
     path: FoodSearchRoute.path.split('/').last,
+    name: FoodSearchRoute.path,
     // A swap with a broken target must never become an add (A08 D7).
     redirect: (_, state) =>
         isMalformedFoodSearch(state.uri) ? TodayRoute.path : null,
@@ -138,6 +142,7 @@ final class AppRouter implements AppNavigator {
       // "Create … as your own food" (A09 D9): nested under the search.
       GoRoute(
         path: NewFoodFromSearchRoute.path.split('/').last,
+        name: NewFoodFromSearchRoute.path,
         builder: (_, state) => _screen(newFoodRouteOf(state.uri)),
       ),
     ],
@@ -147,14 +152,17 @@ final class AppRouter implements AppNavigator {
   // an ID; a malformed ID goes to the list (A08 D7 pattern).
   static GoRoute _personalFoodsRoute() => GoRoute(
     path: PersonalFoodsRoute.path.split('/').last,
+    name: PersonalFoodsRoute.path,
     builder: (_, _) => _screen(const PersonalFoodsRoute()),
     routes: [
       GoRoute(
         path: PersonalFoodRoute.newPath.split('/').last,
+        name: PersonalFoodRoute.newPath,
         builder: (_, _) => _screen(const PersonalFoodRoute()),
       ),
       GoRoute(
         path: ':id',
+        name: '/me/foods/:id',
         redirect: (_, state) => isUuid(state.pathParameters['id'] ?? '')
             ? null
             : PersonalFoodsRoute.path,
@@ -167,10 +175,12 @@ final class AppRouter implements AppNavigator {
   // Saved meals (A09 D10): a malformed ID goes to the list.
   static GoRoute _savedMealsRoute() => GoRoute(
     path: SavedMealsRoute.path.split('/').last,
+    name: SavedMealsRoute.path,
     builder: (_, _) => _screen(const SavedMealsRoute()),
     routes: [
       GoRoute(
         path: ':id',
+        name: '/me/meals/:id',
         redirect: (_, state) => isUuid(state.pathParameters['id'] ?? '')
             ? null
             : SavedMealsRoute.path,

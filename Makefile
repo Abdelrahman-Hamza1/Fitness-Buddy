@@ -268,7 +268,7 @@ COLD_START_APP ?= io.github.abdelrahmanhamza1.fitnessbuddy.staging
 RUNS ?= 10
 
 .PHONY: build-android
-build-android: catalog-pack ## Build FLAVOR=staging|prod|dev: release APK (arm64) + AAB, checked (no cleartext, signer); MODE=debug for a debug APK; BUILD_NUMBER=n
+build-android: catalog-pack ## FB_API_BASE_URL/FB_SENTRY_DSN env overrides (staging/prod); build FLAVOR=staging|prod|dev: release APK (arm64) + AAB, checked (no cleartext, signer); MODE=debug for a debug APK; BUILD_NUMBER=n
 	@FLUTTER='$(FLUTTER)' REPO_ROOT='$(REPO_ROOT)' FLAVOR='$(FLAVOR)' MODE='$(MODE)' \
 	  BUILD_NUMBER='$(BUILD_NUMBER)' FB_RELEASE_ENV='$(FB_RELEASE_ENV)' \
 	  bash '$(REPO_ROOT)/tools/scripts/build-android.sh'

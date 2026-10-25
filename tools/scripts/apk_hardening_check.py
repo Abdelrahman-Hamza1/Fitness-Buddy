@@ -13,6 +13,8 @@ Rules, for a release build of FLAVOR:
     trust anchors only <certificates src="system">; no other elements.
     staging/prod: no <domain-config>. dev: <domain-config> only for 127.0.0.1
     and localhost (the local API over adb reverse, plan D6), no subdomains.
+  - A11 PA5: packaged backup XML allows only local user.db/-wal/-shm for
+    Android 12+ encrypted cloud/device transfer; legacy/cross-platform exclude all.
 
 Usage (python3 -I, stdlib only):
   apk_hardening_check.py --flavor F --aapt2 AAPT2 APK       check an APK
@@ -140,7 +142,10 @@ def parse_xmltree(text, what):
             m = ATTR_RE.match(rest)
             if not m:
                 raise DumpError(f"{what}: unreadable attribute: {line}")
-            stack[-1].attrs[prefix + m.group("name")] = m.group("value")
+            key = prefix + m.group("name")
+            if key in stack[-1].attrs:
+                raise DumpError(f"{what}: duplicate attribute")
+            stack[-1].attrs[key] = m.group("value")
         else:
             raise DumpError(f"{what}: unknown line: {line}")
     return roots
@@ -211,7 +216,63 @@ def check(dumps, flavor):
     path = files[0][1]
     facts.append(f"{res_name} -> {path}")
     problems += check_network_config(parse_xmltree(dumps.xmltree(path), path), flavor, facts)
+    problems += check_backup_rules(dumps, app)
     return problems, facts
+
+
+# A11 PA5: compare the packaged rules, including shrinking/variants, fail closed.
+BACKUP_DOMAINS = ('root', 'file', 'database', 'sharedpref', 'external',
+                  'device_root', 'device_file', 'device_database', 'device_sharedpref')
+
+
+def check_backup_rules(dumps, app):
+    def leaf(name, **attrs):
+        return (name, tuple(sorted(attrs.items())), ())
+
+    excluded = tuple(sorted(leaf('exclude', domain=d, path='.') for d in BACKUP_DOMAINS))
+    # Includes already exclude every other path; redundant excludes fail Android lint.
+    allowed = tuple(sorted(
+        leaf('include', domain='file', path='profiles/local/user.db' + suffix)
+        for suffix in ('', '-wal', '-shm')))
+    expected = {
+        'fullBackupContent': ('full-backup-content', (), excluded),
+        'dataExtractionRules': ('data-extraction-rules', (), tuple(sorted([
+            ('cloud-backup', (('disableIfNoEncryptionCapabilities', True),), allowed),
+            ('device-transfer', (), allowed),
+            ('cross-platform-transfer', (('platform', 'ios'),), excluded),
+        ]))),
+    }
+
+    def canonical(el):
+        if el.texts:
+            raise DumpError('backup rules contain unexpected text')
+        attrs = []
+        for key, raw in el.attrs.items():
+            value = boolean(raw)
+            if value is None:
+                match = re.fullmatch(r'"([^"\\]*)"(?: \(Raw: "\1"\))?', raw)
+                if not match:
+                    raise DumpError('backup rules contain unreadable attributes')
+                value = match.group(1)
+            attrs.append((key, value))
+        return (el.name, tuple(sorted(attrs)), tuple(sorted(canonical(c) for c in el.children)))
+
+    problems = []
+    if boolean(app.get('android:allowBackup')) is not True:
+        problems.append('android:allowBackup must be explicitly true for the pinned backup policy')
+    for attr, policy in expected.items():
+        match = re.fullmatch(r'@(0x7f[0-9a-f]{6})', app.get('android:' + attr, ''))
+        if not match:
+            problems.append(attr + ': expected one explicit XML resource')
+            continue
+        name, files = resource_files(dumps.resources(), match.group(1))
+        if not name or not name.startswith('xml/') or len(files) != 1 or files[0][0] or not files[0][2]:
+            problems.append(attr + ': expected one XML file without variants')
+            continue
+        roots = parse_xmltree(dumps.xmltree(files[0][1]), attr)
+        if len(roots) != 1 or canonical(roots[0]) != policy:
+            problems.append(attr + ': does not match A11 database-only encrypted backup policy')
+    return problems
 
 
 def check_network_config(roots, flavor, facts):
@@ -307,11 +368,12 @@ def capture(dumps, out):
     manifest = parse_xmltree(dumps.xmltree(MANIFEST), MANIFEST)
     for root in manifest:
         for app in (c for c in root.children if c.name == "application"):
-            m = re.fullmatch(r"@(0x7f[0-9a-f]{6})", app.attrs.get("android:networkSecurityConfig", ""))
-            if m:
-                for _, path, is_file in resource_files(resources, m.group(1))[1]:
-                    if is_file:
-                        write(f"xmltree/{safe_path(path)}.txt", dumps.xmltree(path))
+            for attr in ('networkSecurityConfig', 'fullBackupContent', 'dataExtractionRules'):
+                m = re.fullmatch(r"@(0x7f[0-9a-f]{6})", app.attrs.get('android:' + attr, ''))
+                if m:
+                    for _, path, is_file in resource_files(resources, m.group(1))[1]:
+                        if is_file:
+                            write(f"xmltree/{safe_path(path)}.txt", dumps.xmltree(path))
 
 
 def main():

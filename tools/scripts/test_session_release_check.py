@@ -19,8 +19,19 @@ EXCLUSION = '''        E: exclude
 '''
 
 
+INCLUDE = '''        E: include
+          A: domain="file" (Raw: "file")
+          A: path="profiles/local/user.db" (Raw: "profiles/local/user.db")
+'''
+INCLUDE_PREFS = '''        E: include
+          A: domain="sharedpref" (Raw: "sharedpref")
+          A: path="." (Raw: ".")
+'''
+
+
 class SyntheticDumps:
     omit = None
+    prefs_included = False
 
     def __init__(self, *args):
         pass
@@ -47,7 +58,10 @@ resource 0x7f010002 xml/data_extraction_rules
             for mode in ('cloud-backup', 'device-transfer', 'cross-platform-transfer'):
                 text += '    E: ' + mode + '\n'
                 if self.omit != mode:
-                    text += EXCLUSION
+                    if mode == 'cross-platform-transfer':
+                        text += EXCLUSION
+                    else:
+                        text += INCLUDE + (INCLUDE_PREFS if self.prefs_included else '')
             return text
         raise AssertionError('gate did not resolve the packaged resource')
 
@@ -64,6 +78,7 @@ class ReleaseGateTest(unittest.TestCase):
 
     def tearDown(self):
         SyntheticDumps.omit = None
+        SyntheticDumps.prefs_included = False
 
     def test_packaged_resource_references_and_all_exclusions_pass(self):
         self.check()
@@ -74,6 +89,11 @@ class ReleaseGateTest(unittest.TestCase):
                 SyntheticDumps.omit = mode
                 with self.assertRaises(DumpError):
                     self.check()
+
+    def test_allow_list_that_includes_shared_preferences_fails(self):
+        SyntheticDumps.prefs_included = True
+        with self.assertRaises(DumpError):
+            self.check()
 
     def test_packaged_debug_channel_and_probe_fail(self):
         for marker in (b'fitness_buddy/session_test', b'a20-status', b'debug_probe_only'):

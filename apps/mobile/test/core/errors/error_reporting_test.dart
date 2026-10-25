@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/errors/error_reporting.dart';
 import 'package:fb_mobile/core/errors/pii_scrubber.dart';
@@ -40,7 +42,8 @@ void main() {
     expect(Sentry.isEnabled, isFalse);
   });
 
-  test('with a DSN, Sentry starts with the privacy-first options', () async {
+  test('PR-11 Sentry options: no sessions, no traces, no replay, '
+      'debug == false, native per D12', () async {
     final options = SentryFlutterOptions();
     final reporting = ErrorReporting(
       config: _config('https://key@sentry.example.test/1'),
@@ -63,7 +66,23 @@ void main() {
     expect(options.enableUserInteractionBreadcrumbs, isFalse);
     expect(options.enablePrintBreadcrumbs, isFalse);
     expect(options.enableAutoNativeBreadcrumbs, isFalse);
-    expect(options.tracesSampleRate, 0);
+    expect(options.tracesSampleRate, isNull);
+    expect(options.tracesSampler, isNull);
+    expect(options.debug, isFalse);
+    expect(PiiScrubber.keptTags, {
+      'flavor': {'dev', 'staging', 'prod'},
+    });
+    expect(
+      File('android/app/src/main/AndroidManifest.xml').readAsStringSync(),
+      contains('android:name="io.sentry.ndk.enable" android:value="false"'),
+    );
+    expect(options.enableAutoSessionTracking, isFalse);
+    expect(options.enableNativeCrashHandling, isFalse);
+    expect(options.anrEnabled, isFalse);
+    expect(options.enableNdkScopeSync, isFalse);
+    expect(options.enableScopeSync, isFalse);
+    expect(options.autoInitializeNativeSdk, isTrue);
+    expect(options.sendClientReports, isFalse);
     expect(options.beforeSend, PiiScrubber.scrubEvent);
     expect(options.beforeBreadcrumb, PiiScrubber.scrubBreadcrumb);
     // No session replay, no Sentry logs or metrics.

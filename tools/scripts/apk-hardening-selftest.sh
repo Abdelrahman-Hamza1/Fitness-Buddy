@@ -9,7 +9,9 @@
 #            replace them (so a bad case holds only what it breaks)
 #   badging.txt, resources.txt, xmltree/<path in the APK>.txt   the dumps
 # staging-good and prod-good are real dumps (aapt2 36.0.0 on S06b builds); the
-# others are derived from them. To recapture after a build:
+# others are derived from them. A11 adds synthetic backup XML dumps to these
+# historic good baselines (network/manifest stay captured); backup-* are negative
+# PA5/T25 fixtures. To recapture after a build:
 #   python3 -I tools/scripts/apk_hardening_check.py --capture <dir> \
 #     --aapt2 "$ANDROID_HOME/build-tools/36.0.0/aapt2" <apk>
 #

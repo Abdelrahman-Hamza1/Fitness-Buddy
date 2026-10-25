@@ -71,12 +71,18 @@ void main() {
     }
     final rules = File('android/app/src/main/res/xml/data_extraction_rules.xml')
         .readAsStringSync();
+    // A11: cloud backup and device transfer are include-only allow-lists of
+    // the database files (lint forbids excludes outside an include), so shared
+    // preferences stay out by omission; only the iOS transfer keeps an exclude.
     expect(
       RegExp(r'<exclude domain="sharedpref" path="\." />')
           .allMatches(rules)
           .length,
-      3,
+      1,
     );
+    expect(RegExp('<include domain="file"').allMatches(rules).length, 6);
+    expect(rules, isNot(contains('<include domain="sharedpref"')));
+    expect(rules, isNot(contains('<include domain="root"')));
     expect(
       File('android/app/src/main/res/xml/backup_rules.xml').readAsStringSync(),
       contains('<exclude domain="sharedpref" path="." />'),

@@ -2459,6 +2459,18 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get meSectionSettings;
 
+  /// Me tab: heading of the section for the user's own data (export).
+  ///
+  /// In en, this message translates to:
+  /// **'Your data'**
+  String get meSectionYourData;
+
+  /// Me tab: row that opens the export sheet (AC-030). Also the sheet's title.
+  ///
+  /// In en, this message translates to:
+  /// **'Export your data'**
+  String get meExportData;
+
   /// Me tab: heading of the About section.
   ///
   /// In en, this message translates to:
@@ -2818,6 +2830,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fitness Buddy gives estimates for tracking, not medical advice.'**
   String get aboutNotMedical;
+
+  /// Export sheet: what the export contains and where it is made (AC-030).
+  ///
+  /// In en, this message translates to:
+  /// **'Your diary, foods, saved meals and settings as CSV spreadsheet files and one JSON file.'**
+  String get exportWhat;
+
+  /// Export sheet: the export holds live rows only, not deleted ones.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted items and Buddy chats are left out.'**
+  String get exportLiveOnly;
+
+  /// Export sheet: privacy line. The files leave the app through the system share sheet; no install identity is in them.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness Buddy uploads nothing. Files are not encrypted; whichever app you share them with can read them. Nothing that identifies this phone is included.'**
+  String get exportPrivacy;
+
+  /// Export sheet: button that builds the files and opens the share sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get exportAction;
+
+  /// Export sheet: shown while the files are being made.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing your files…'**
+  String get exportWorking;
+
+  /// Export sheet: shown after the share sheet was opened with the files. entries is the number of rows across all files; files the number of files.
+  ///
+  /// In en, this message translates to:
+  /// **'Handed to the share sheet: {entries, plural, =1{1 entry} other{{entries} entries}} in {files, plural, =1{1 file} other{{files} files}}.'**
+  String exportDone(int entries, int files);
+
+  /// Export sheet: shown when the user closed the share sheet without choosing a target.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing was cancelled. Nothing was sent.'**
+  String get exportDismissed;
+
+  /// Export sheet: error banner when the files could not be made or shared (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t create the export. Try again.'**
+  String get exportFailed;
+
+  /// Export sheet: banner action that repeats a failed export.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get exportTryAgain;
+
+  /// Export sheet: button that repeats a finished export.
+  ///
+  /// In en, this message translates to:
+  /// **'Export again'**
+  String get exportExportAgain;
+
+  /// Export sheet: button that closes the sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get exportClose;
+
+  /// Export sheet: button that closes the sheet after a finished export.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get exportDoneButton;
+
+  /// About: title of the confirm sheet shown after a long press on the version line (A11 D17).
+  ///
+  /// In en, this message translates to:
+  /// **'Send a test error report?'**
+  String get aboutTestReportTitle;
+
+  /// About: what the test error report does.
+  ///
+  /// In en, this message translates to:
+  /// **'This queues two made-up test errors for the crash-report service, with app and device information. Your diary and other personal content are not included.'**
+  String get aboutTestReportBody;
+
+  /// About: confirm button of the test error report sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get aboutTestReportSend;
+
+  /// About: cancel button of the test error report sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get aboutTestReportCancel;
+
+  /// About: snackbar after the test error report was sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Test report queued'**
+  String get aboutTestReportSent;
+
+  /// About: snackbar when the test report can't be sent because this is a dev build.
+  ///
+  /// In en, this message translates to:
+  /// **'Crash reports are off in dev builds, so nothing was sent.'**
+  String get aboutTestReportOffDev;
+
+  /// About: snackbar when the test report can't be sent because this staging or prod build has no crash-report address.
+  ///
+  /// In en, this message translates to:
+  /// **'Crash reports aren\'t set up in this build, so nothing was sent.'**
+  String get aboutTestReportOffNoDsn;
 }
 
 class _AppLocalizationsDelegate

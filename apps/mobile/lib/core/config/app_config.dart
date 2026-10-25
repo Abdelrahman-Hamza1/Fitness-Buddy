@@ -79,7 +79,7 @@ final class AppConfig {
     final flavor = AppFlavor.values.asNameMap()[flavorName];
     if (flavor == null) {
       throw AppConfigException(
-        '$flavorKey "$flavorName" is not one of '
+        '$flavorKey is not one of '
         '${AppFlavor.values.map((f) => f.name).join(', ')}.',
       );
     }
@@ -87,22 +87,39 @@ final class AppConfig {
     if (apiBaseUrl == null ||
         (!apiBaseUrl.isScheme('http') && !apiBaseUrl.isScheme('https')) ||
         apiBaseUrl.host.isEmpty) {
-      throw AppConfigException(
+      throw const AppConfigException(
         '$apiBaseUrlKey must be an absolute http(s) URL, '
-        'got "${defines[apiBaseUrlKey]}".',
+        'with a host.',
       );
     }
     if (flavor != AppFlavor.dev && !apiBaseUrl.isScheme('https')) {
       throw AppConfigException(
         '$apiBaseUrlKey must be https in the ${flavor.name} flavor '
-        '(cleartext http is only for the local API in dev), '
-        'got "$apiBaseUrl".',
+        '(cleartext http is only for the local API in dev).',
+      );
+    }
+    if (flavor != AppFlavor.dev &&
+        (apiBaseUrl.userInfo.isNotEmpty ||
+            apiBaseUrl.path.isNotEmpty ||
+            apiBaseUrl.hasQuery ||
+            apiBaseUrl.hasFragment)) {
+      throw const AppConfigException(
+        '$apiBaseUrlKey must be https://host[:port] only.',
       );
     }
     final sentryDsn = defines[sentryDsnKey];
     if (sentryDsn == null) {
       throw const AppConfigException(
         '$sentryDsnKey is missing (use "" to turn error reporting off).',
+      );
+    }
+    if (flavor != AppFlavor.dev &&
+        sentryDsn.isNotEmpty &&
+        !RegExp(
+          r'^https://[A-Za-z0-9]+@o[0-9]+\.ingest\.de\.sentry\.io/[0-9]+$',
+        ).hasMatch(sentryDsn)) {
+      throw const AppConfigException(
+        '$sentryDsnKey must be an HTTPS EU ingest DSN.',
       );
     }
     return AppConfig(

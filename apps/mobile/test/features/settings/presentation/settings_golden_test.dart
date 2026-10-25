@@ -2,6 +2,7 @@ import 'package:alchemist/alchemist.dart';
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
+import 'package:fb_mobile/core/export/export_service.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
@@ -87,6 +88,31 @@ class _UnitsSheet extends StatelessWidget {
   }
 }
 
+/// The export sheet's content as the sheet shows it, under a dimmed screen.
+class _ExportSheet extends StatelessWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context) => Align(
+    alignment: AlignmentDirectional.bottomCenter,
+    child: FbSheet(
+      title: context.l10n.meExportData,
+      actions: const ExportSheetActions(),
+      child: const ExportSheetBody(),
+    ),
+  );
+}
+
+/// A controller stuck in [state]: a golden shows one state.
+class _FixedExport extends DataExportController {
+  new(this.fixed);
+
+  final DataExportState fixed;
+
+  @override
+  DataExportState build() => fixed;
+}
+
 Future<void> main() async {
   final nablus = sampleCities.first;
   final base = [
@@ -108,6 +134,30 @@ Future<void> main() async {
     'units_option_sheet',
     const Scaffold(body: _UnitsSheet()),
     fakeToday(),
+  );
+  await _golden(
+    'AC-030 UX-011 UX-070 export sheet: idle',
+    'export_sheet',
+    const Scaffold(body: _ExportSheet()),
+    [
+      ...fakeToday(),
+      dataExportControllerProvider.overrideWith(
+        () => _FixedExport(const ExportIdle()),
+      ),
+    ],
+    height: 900,
+  );
+  await _golden(
+    'AC-030 UX-052 UX-070 export sheet: failure with Try again',
+    'export_sheet_failed',
+    const Scaffold(body: _ExportSheet()),
+    [
+      ...fakeToday(),
+      dataExportControllerProvider.overrideWith(
+        () => _FixedExport(const ExportFailed(ExportFailureKind.sharing)),
+      ),
+    ],
+    height: 900,
   );
   await _golden(
     'LC-033 UX-070 city picker: suggestions',

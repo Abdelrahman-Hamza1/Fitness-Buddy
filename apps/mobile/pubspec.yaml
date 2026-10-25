@@ -49,6 +49,8 @@ dependencies:
   riverpod_annotation: 4.0.7
   # Error reporting, after the first frame, off while the DSN is empty.
   sentry_flutter: ^10.0.0
+  # BSD-3 OS multi-file sharing; no permissions or network (A11).
+  share_plus: 13.3.1
   # The device id and the cached /v1/config (not secret, not user data).
   shared_preferences: ^2.5.6
   # Direct: drift's `setup` callback gets a sqlite3 Database (pragmas). sqlite3

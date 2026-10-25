@@ -17,14 +17,10 @@
            in shared_prefs/. Both are excluded from cloud backup and device
            transfer (Android 12+: data_extraction_rules; Android 8-11:
            backup_rules; keep the two files in sync).
-         - Backup of the local data (A01 D21, backlog #45): the profile databases
-           (files/profiles/<profile>/user.db with its -wal and -shm, the
-           application support directory) and the food catalog packs
-           (files/catalog/) are excluded too, from cloud backup, device transfer,
-           the Android 16 cross-platform transfer and Android 8-11 Auto Backup.
-           Until sync ships the phone holds the only copy; the owner decides
-           before A11 whether the database is backed up (end-to-end encrypted
-           only). -->
+         - A11 PA5: Android 12+ backs up only files/profiles/local/user.db
+           and its -wal/-shm, with E2EE cloud capability required. Other files,
+           photos, credentials, device identity and catalog remain excluded.
+           Android 8-11 and cross-platform transfers exclude every domain. -->
     <application
         android:label="@string/app_name"
         android:name="${applicationName}"
@@ -33,6 +29,8 @@
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_rules"
         android:dataExtractionRules="@xml/data_extraction_rules">
+        <!-- Dart's enableNativeCrashHandling does not disable the NDK handler. -->
+        <meta-data android:name="io.sentry.ndk.enable" android:value="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

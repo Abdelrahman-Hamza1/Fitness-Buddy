@@ -1710,6 +1710,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get meSectionSettings => 'Settings';
 
   @override
+  String get meSectionYourData => 'Your data';
+
+  @override
+  String get meExportData => 'Export your data';
+
+  @override
   String get meSectionAbout => 'About';
 
   @override
@@ -1908,4 +1914,80 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get aboutNotMedical =>
       'Fitness Buddy gives estimates for tracking, not medical advice.';
+
+  @override
+  String get exportWhat =>
+      'Your diary, foods, saved meals and settings as CSV spreadsheet files and one JSON file.';
+
+  @override
+  String get exportLiveOnly => 'Deleted items and Buddy chats are left out.';
+
+  @override
+  String get exportPrivacy =>
+      'Fitness Buddy uploads nothing. Files are not encrypted; whichever app you share them with can read them. Nothing that identifies this phone is included.';
+
+  @override
+  String get exportAction => 'Export';
+
+  @override
+  String get exportWorking => 'Preparing your files…';
+
+  @override
+  String exportDone(int entries, int files) {
+    String _temp0 = intl.Intl.pluralLogic(
+      entries,
+      locale: localeName,
+      other: '$entries entries',
+      one: '1 entry',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      files,
+      locale: localeName,
+      other: '$files files',
+      one: '1 file',
+    );
+    return 'Handed to the share sheet: $_temp0 in $_temp1.';
+  }
+
+  @override
+  String get exportDismissed => 'Sharing was cancelled. Nothing was sent.';
+
+  @override
+  String get exportFailed => 'Couldn\'t create the export. Try again.';
+
+  @override
+  String get exportTryAgain => 'Try again';
+
+  @override
+  String get exportExportAgain => 'Export again';
+
+  @override
+  String get exportClose => 'Close';
+
+  @override
+  String get exportDoneButton => 'Done';
+
+  @override
+  String get aboutTestReportTitle => 'Send a test error report?';
+
+  @override
+  String get aboutTestReportBody =>
+      'This queues two made-up test errors for the crash-report service, with app and device information. Your diary and other personal content are not included.';
+
+  @override
+  String get aboutTestReportSend => 'Send';
+
+  @override
+  String get aboutTestReportCancel => 'Cancel';
+
+  @override
+  String get aboutTestReportSent => 'Test report queued';
+
+  @override
+  String get aboutTestReportOffDev =>
+      'Crash reports are off in dev builds, so nothing was sent.';
+
+  @override
+  String get aboutTestReportOffNoDsn =>
+      'Crash reports aren\'t set up in this build, so nothing was sent.';
 }

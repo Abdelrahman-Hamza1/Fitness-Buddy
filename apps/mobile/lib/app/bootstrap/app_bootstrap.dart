@@ -4,6 +4,7 @@ import 'package:fb_mobile/core/catalog/catalog.dart';
 import 'package:fb_mobile/core/config/client_config.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/errors/error_reporting.dart';
+import 'package:fb_mobile/core/export/export_providers.dart';
 import 'package:fb_mobile/core/session/session_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -55,6 +56,7 @@ final class AppBootstrap {
       }),
     );
     unawaited(_installCatalog());
+    unawaited(_contained(() => _ref.read(exportCacheSweeperProvider).sweep()));
     unawaited(
       _contained(() async {
         await _ref.read(clientConfigProvider.notifier).refresh();

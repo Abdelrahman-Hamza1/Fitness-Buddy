@@ -6,6 +6,7 @@
 #   FLAVOR        dev | staging | prod            (default staging)
 #   MODE          release | debug                 (default release)
 #   BUILD_NUMBER  versionCode; empty = pubspec's  (CI: the run number)
+#   FB_API_BASE_URL, FB_SENTRY_DSN  private environment overrides (staging/prod)
 #   FB_RELEASE_ENV  file with the release signing variables (default
 #                 ~/.fitness-buddy/keys/release.env; empty = don't read one)
 #
@@ -86,6 +87,12 @@ load_release_env() {
   log "release key: from $FB_RELEASE_ENV"
 }
 
+defines_file=""
+cleanup() {
+  [[ -z "$defines_file" ]] || rm -f -- "$defines_file"
+  stop_gradle
+}
+
 stop_gradle() {
   if [[ -x "$app/android/gradlew" ]]; then
     (cd "$app/android" && ./gradlew --stop -q >/dev/null 2>&1) || true
@@ -155,7 +162,15 @@ main() {
   local apk="$apk_dir/app-$FLAVOR-$MODE.apk"
   local aab="$app/build/app/outputs/bundle/${FLAVOR}Release/app-$FLAVOR-release.aab"
 
-  trap stop_gradle EXIT
+  trap cleanup EXIT
+  trap 'exit 130' INT
+  trap 'exit 143' TERM
+  if [[ "$FLAVOR" != dev ]]; then
+    defines_file="$(umask 077 && mktemp "${TMPDIR:-/tmp}/fb-android-defines.XXXXXXXX.json")"
+    python3 -I "$REPO_ROOT/tools/scripts/android-defines.py" \
+      "$app/config/$FLAVOR.json" "$defines_file" "$FLAVOR"
+    define="--dart-define-from-file=$defines_file"
+  fi
   cd "$app"
 
   if [[ "$MODE" == debug ]]; then

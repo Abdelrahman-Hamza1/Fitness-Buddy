@@ -7,13 +7,16 @@ import 'package:material_ui/material_ui.dart';
 /// title, scrollable content, safe area. Shown with [showFbSheet].
 class FbSheet extends StatelessWidget {
   /// Creates a sheet body.
-  const new({required this.child, this.title, super.key});
+  const new({required this.child, this.title, this.actions, super.key});
 
   /// The (already translated) title.
   final String? title;
 
   /// The content.
   final Widget child;
+
+  /// Optional footer kept visible while content scrolls (UX-070).
+  final Widget? actions;
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +68,16 @@ class FbSheet extends StatelessWidget {
               child: child,
             ),
           ),
+          if (actions != null)
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                FbSpace.s5,
+                FbSpace.s2,
+                FbSpace.s5,
+                FbSpace.s5,
+              ),
+              child: actions,
+            ),
         ],
       ),
     );
@@ -76,6 +89,7 @@ Future<T?> showFbSheet<T>(
   BuildContext context, {
   required WidgetBuilder builder,
   String? title,
+  WidgetBuilder? actionsBuilder,
 }) => showModalBottomSheet<T>(
   context: context,
   // Above the app shell (tabs, and the shell scaffold's snackbars): an Undo
@@ -84,5 +98,9 @@ Future<T?> showFbSheet<T>(
   isScrollControlled: true,
   useSafeArea: true,
   showDragHandle: false,
-  builder: (context) => FbSheet(title: title, child: builder(context)),
+  builder: (context) => FbSheet(
+    title: title,
+    actions: actionsBuilder?.call(context),
+    child: builder(context),
+  ),
 );

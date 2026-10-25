@@ -31,18 +31,30 @@ Losing the key is the same as losing the phone's data on the next install. Keep 
 1. In the password manager, create an item "Fitness Buddy Android release key".
 2. Attach the file `~/.fitness-buddy/keys/fitnessbuddy-release.jks` to the item.
 3. Paste the whole content of `~/.fitness-buddy/keys/release.env` into the item's notes. Open it with a text editor (`gedit ~/.fitness-buddy/keys/release.env`) and don't paste it anywhere else.
-4. Save the item. Check that the attachment opens.
+4. Save the item. Download its attachment to a private directory outside the repo.
+5. The verifier requires the CI-pinned `fitnessbuddy` alias, its `PrivateKeyEntry`,
+   the pinned certificate and a CSR signed using the backed-up password. A public
+   certificate alone is not a key backup. Run `JAVA_HOME=~/development/jdk-21.0.12.1+1 bash tools/scripts/verify-key-backup.sh /private/path/copy.jks`.
+   Enter the password from the off-laptop copy at the hidden prompt. The script
+   uses `keytool -storepass:env`, never a password argument, and prints only the
+   matching certificate SHA-256. A mismatch/unreadable store fails. Verify the
+   restored copy, not the original laptop file. Delete the temporary copy after
+   verification. Record pass/date/fingerprint in A11 evidence, never the password.
+   **This must pass before real daily logging on prod.** GitHub secrets cannot
+   be read back and are not a backup.
 
 To restore on a new laptop: put both files back in `~/.fitness-buddy/keys/`, fix the `FB_KEYSTORE_PATH=` line if your home directory differs, then run `chmod 700 ~/.fitness-buddy/keys` and `chmod 600 ~/.fitness-buddy/keys/*`.
 
-## 3. Put the 3 secrets in GitHub (owner, ~5 min, on the laptop)
+## 3. Put the build secrets in GitHub (owner, ~5 min, on the laptop)
 
-GitHub repo → **Settings** → **Secrets and variables** → **Actions** → **Repository secrets** → **New repository secret**. Create these three. Names must match exactly.
+GitHub repo → **Settings** → **Secrets and variables** → **Actions** → **Repository secrets** → **New repository secret**. Create these five. Names must match exactly.
 
 | Secret name | Value |
 |---|---|
 | `FB_ANDROID_KEYSTORE_BASE64` | The keystore as one line of base64. Run `base64 -w0 ~/.fitness-buddy/keys/fitnessbuddy-release.jks > ~/.fitness-buddy/keys/fitnessbuddy-release.jks.base64`, open that file in a text editor, select all, copy, paste. Then delete it: `shred -u ~/.fitness-buddy/keys/fitnessbuddy-release.jks.base64` |
 | `FB_ANDROID_KEYSTORE_PASSWORD` | The text after `FB_ANDROID_KEYSTORE_PASSWORD=` in `release.env` |
+| `FB_API_BASE_URL` | Laptop API HTTPS origin only (host and optional port, no path, query, fragment or credentials). Set as an Actions secret, never a variable; keep the value out of logs and the repo. |
+| `FB_SENTRY_DSN` | EU ingest client DSN. Add **only after WP2 emulator sink evidence passes**; see [crash-reports.md](crash-reports.md). Unset means reporting off. |
 | `FB_ANDROID_KEY_PASSWORD` | The text after `FB_ANDROID_KEY_PASSWORD=` in `release.env` (the same password) |
 
 Paste without a trailing space or newline. GitHub never shows a secret again; to change one, overwrite it.
@@ -86,3 +98,18 @@ Record the choice in A43's card and update this runbook and the pin.
 - **CI build fails with "signed with certificate …, not the Fitness Buddy release key":** the secrets hold another keystore. Redo section 3 from the backup.
 - **CI build is `*-debugkey.apk` on a branch of this repo:** a secret is missing or misnamed. Check the three names in section 3.
 - **`flutter build apk --release` fails with "Release build without the release key":** build with `make build-android` (it reads `release.env`), or export the signing variables. Don't set `FB_ALLOW_DEBUG_SIGNING=1` for a build you mean to install.
+
+## A11 build configuration
+
+Staging/prod merge nonempty `FB_API_BASE_URL` and `FB_SENTRY_DSN` environment
+values over the committed placeholders using a mode-0600 temporary JSON file,
+deleted on exit (including failure). Never pass values as make command-line
+assignments: export them privately in the shell first. Dev and android-it do
+not consume these overrides. Empty/unavailable CI secrets use the placeholders.
+These values are kept private in source/logs but can be extracted from an APK;
+the owner accepted the public-artifact exposure (A11 Q1).
+
+CI builds **one flavor**: prod on main/merge branches, staging elsewhere. Only
+main uploads signed prod APKs (30 days); merge branches only verify. Signed
+staging uploads remain available. The certificate pin is unchanged. See
+[install-a-build.md](install-a-build.md) for safe A55 updates and backups.

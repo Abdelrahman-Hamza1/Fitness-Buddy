@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:fb_mobile/app/app.dart';
@@ -9,6 +10,8 @@ import 'package:fb_mobile/core/catalog/catalog.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/config/client_config.dart';
 import 'package:fb_mobile/core/errors/error_reporting.dart';
+import 'package:fb_mobile/core/export/export_cache_sweeper.dart';
+import 'package:fb_mobile/core/export/export_providers.dart';
 import 'package:fb_mobile/core/session/session_providers.dart';
 import 'package:fb_mobile/core/session/session_state.dart';
 import 'package:fb_mobile/features/today/today.dart';
@@ -22,7 +25,7 @@ import '../helpers/fake_http.dart';
 import '../helpers/pump_app.dart';
 
 void main() {
-  for (final hung in ['Sentry', 'config', 'auth', 'all']) {
+  for (final hung in ['Sentry', 'config', 'auth', 'cleanup', 'all']) {
     testWidgets('UX-001 AC-002 post-frame isolation: hung $hung leaves '
         'Today and independent startup usable', (tester) async {
       final f = Fixture();
@@ -33,6 +36,8 @@ void main() {
       final catalog = Completer<List<int>>();
       var sentryStarts = 0;
       var catalogStarts = 0;
+      var sweepStarts = 0;
+      final cache = Completer<Directory>();
       f.auth.create = () async {
         if (hung == 'auth' || hung == 'all') await auth.future;
         return tokens();
@@ -45,6 +50,15 @@ void main() {
         overrides: [
           ...phone.overrides(),
           ...todayOverrides(),
+          exportCacheSweeperProvider.overrideWithValue(
+            ExportCacheSweeper(
+              temporaryDirectory: () {
+                sweepStarts++;
+                return cache.future;
+              },
+              now: DateTime.now,
+            ),
+          ),
           secureSessionStoreProvider.overrideWithValue(f.store),
           authTransportProvider.overrideWithValue(f.auth),
           sessionClockProvider.overrideWithValue(f.clock),
@@ -89,6 +103,7 @@ void main() {
         expect(phone.events, isEmpty);
         expect(sentryStarts, 0);
         expect(catalogStarts, 0);
+        expect(sweepStarts, 0);
         expect(container.exists(sessionServiceProvider), isFalse);
         expect(container.exists(sessionLifecycleProvider), isFalse);
       });
@@ -102,6 +117,7 @@ void main() {
       expect(firstFrame, isTrue);
       expect(sentryStarts, 1);
       expect(catalogStarts, 1);
+      expect(sweepStarts, 1);
       expect(f.secrets.reads, greaterThan(0));
       expect(f.auth.creates, 1);
       expect(phone.adapter.requests.single.path, '/v1/config');
@@ -119,6 +135,7 @@ void main() {
       await container.read(appBootstrapProvider).afterFirstFrame();
       expect(sentryStarts, 1);
       expect(catalogStarts, 1);
+      expect(sweepStarts, 1);
       expect(f.auth.creates, 1);
       await tester.tap(find.text('Me'));
       await tester.pumpAndSettle();
@@ -132,6 +149,7 @@ void main() {
       sentry.complete();
       auth.complete();
       configResponse.complete(await config('0.0.0')(RequestOptions()));
+      cache.completeError(StateError('private canary'));
       // Leave the optional catalog asset held: disposal must not await it.
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
@@ -155,9 +173,13 @@ void main() {
         catalogPackInstallerProvider.overrideWith((_) => fail('catalog')),
         clientConfigRepositoryProvider.overrideWith((_) => fail('config')),
         authTransportProvider.overrideWith((_) => fail('auth')),
+        exportCacheSweeperProvider.overrideWith((_) => fail('cleanup')),
       ],
     );
-    expect(started, containsAll(['Sentry', 'catalog', 'config', 'auth']));
+    expect(
+      started,
+      containsAll(['Sentry', 'catalog', 'config', 'auth', 'cleanup']),
+    );
     expect(find.byType(TodayScreen), findsOneWidget);
     await tester.tap(find.text('Me'));
     await tester.pumpAndSettle();

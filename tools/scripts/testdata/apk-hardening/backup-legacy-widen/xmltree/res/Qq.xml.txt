@@ -1,0 +1,28 @@
+E: full-backup-content
+  E: include
+    A: domain="root" (Raw: "root")
+    A: path="." (Raw: ".")
+  E: exclude
+    A: domain="file" (Raw: "file")
+    A: path="." (Raw: ".")
+  E: exclude
+    A: domain="database" (Raw: "database")
+    A: path="." (Raw: ".")
+  E: exclude
+    A: domain="sharedpref" (Raw: "sharedpref")
+    A: path="." (Raw: ".")
+  E: exclude
+    A: domain="external" (Raw: "external")
+    A: path="." (Raw: ".")
+  E: exclude
+    A: domain="device_root" (Raw: "device_root")
+    A: path="." (Raw: ".")
+  E: exclude
+    A: domain="device_file" (Raw: "device_file")
+    A: path="." (Raw: ".")
+  E: exclude
+    A: domain="device_database" (Raw: "device_database")
+    A: path="." (Raw: ".")
+  E: exclude
+    A: domain="device_sharedpref" (Raw: "device_sharedpref")
+    A: path="." (Raw: ".")
