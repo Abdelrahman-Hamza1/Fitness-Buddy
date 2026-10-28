@@ -1,3 +1,6 @@
+@Tags(['perf'])
+library;
+
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/db/write_guard.dart';

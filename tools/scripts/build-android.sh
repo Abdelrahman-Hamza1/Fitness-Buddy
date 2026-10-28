@@ -9,6 +9,9 @@
 #   FB_API_BASE_URL, FB_SENTRY_DSN  private environment overrides (staging/prod)
 #   FB_RELEASE_ENV  file with the release signing variables (default
 #                 ~/.fitness-buddy/keys/release.env; empty = don't read one)
+#   FB_BUILD_AAB  1 (default) builds the AAB too; 0 builds the APK only. CI
+#                 sets 0 on step and merge branches: the AAB compiles every ABI
+#                 and is only needed for Play (TD-086); main and nightly build it.
 #
 # release: an arm64 APK for the phone + an AAB (all ABIs, for Play from A43).
 #   - hardening: tools/scripts/apk_hardening_check.py on the built APK (not
@@ -198,18 +201,28 @@ main() {
   SECONDS=0
   "$FLUTTER" build apk --release --flavor "$FLAVOR" --target-platform android-arm64 "$define" "${number[@]}"
   local apk_time=$SECONDS
-  log "flutter build appbundle --release --flavor $FLAVOR${number:+ ${number[*]}}"
-  SECONDS=0
-  "$FLUTTER" build appbundle --release --flavor "$FLAVOR" "$define" "${number[@]}"
-  local aab_time=$SECONDS
-  [[ -f "$apk" && -f "$aab" ]] || die "expected outputs not found: $apk, $aab"
+  local with_aab=true
+  [[ "${FB_BUILD_AAB:-1}" == 0 ]] && with_aab=false
+  local aab_time=0
+  if [[ "$with_aab" == true ]]; then
+    log "flutter build appbundle --release --flavor $FLAVOR${number:+ ${number[*]}}"
+    SECONDS=0
+    "$FLUTTER" build appbundle --release --flavor "$FLAVOR" "$define" "${number[@]}"
+    aab_time=$SECONDS
+    [[ -f "$apk" && -f "$aab" ]] || die "expected outputs not found: $apk, $aab"
+  else
+    log "FB_BUILD_AAB=0: APK only, no AAB"
+    [[ -f "$apk" ]] || die "expected output not found: $apk"
+  fi
 
   check_hardening "$apk" "$aab"
 
-  local apk_cert aab_cert
+  local apk_cert aab_cert=""
   apk_cert="$(apk_cert_sha256 "$apk")"
-  aab_cert="$(aab_cert_sha256 "$aab")"
-  [[ "$apk_cert" == "$aab_cert" ]] || die "the APK and AAB are signed with different certificates"
+  if [[ "$with_aab" == true ]]; then
+    aab_cert="$(aab_cert_sha256 "$aab")"
+    [[ "$apk_cert" == "$aab_cert" ]] || die "the APK and AAB are signed with different certificates"
+  fi
   if [[ "$signed" == true ]]; then
     [[ "$apk_cert" == "$RELEASE_CERT_SHA256" ]] \
       || die "signed with certificate $apk_cert, not the Fitness Buddy release key $RELEASE_CERT_SHA256 (wrong keystore? see docs/runbooks/android-signing.md)"
@@ -219,13 +232,18 @@ main() {
     # Flutter's sidecar checksum (used by `flutter install`) would name the wrong file.
     rm -f -- "$apk.sha1"
     mv -- "$apk" "${apk%.apk}-debugkey.apk"
-    mv -- "$aab" "${aab%.aab}-debugkey.aab"
+    [[ "$with_aab" == true ]] && mv -- "$aab" "${aab%.aab}-debugkey.aab"
     apk="${apk%.apk}-debugkey.apk" aab="${aab%.aab}-debugkey.aab"
     warn "no release key (FB_KEYSTORE_PATH unset): signed with this machine's DEBUG key, outputs renamed *-debugkey.*; never hand them out (docs/runbooks/android-signing.md)."
   fi
-  log "built in ${apk_time}s (APK) + ${aab_time}s (AAB):"
-  describe "$apk" "$apk_cert"
-  describe "$aab" "$aab_cert"
+  if [[ "$with_aab" == true ]]; then
+    log "built in ${apk_time}s (APK) + ${aab_time}s (AAB):"
+    describe "$apk" "$apk_cert"
+    describe "$aab" "$aab_cert"
+  else
+    log "built in ${apk_time}s (APK):"
+    describe "$apk" "$apk_cert"
+  fi
 }
 
 main "$@"

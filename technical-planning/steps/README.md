@@ -252,6 +252,8 @@ flowchart LR
 | **M7 Production** | B14 + A43 | The restore drill is done. AT-006 passes on production. The app installs from Play. The laptop's data has moved in | Hetzner (B13, B14) |
 | **R1 done** | A42, A43 (M7), B15, B16, the dish batches (AT-003 green, TD-074) | AT-001 to AT-007 met. Every AQ threshold met on ≥ 150 cases. The owner uses it as the only tracker for 2 weeks. SC-1 checked at 4 weeks | Production |
 
+**Emulator tests at milestones (TD-086):** the Patrol emulator job runs nightly on `main`, not on every push. A milestone step's last commit carries `[it]`, so its merge run includes the emulator tests, and the nightly after it must be green before the milestone counts as reached.
+
 **While the laptop is the server:** everything except Buddy, online search, sign-in and sync works with the laptop off (local-first). Online features work whenever the laptop runs the test-server stack + the Tailscale mapping (B03 runbook).
 
 ## 6. Cross-track handoffs

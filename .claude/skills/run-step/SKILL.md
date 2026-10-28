@@ -16,7 +16,7 @@ Track progress with a todo list mirroring the phases below. Keep the owner infor
 
 ## A. Orient: Definition of Ready
 1. Read the card, its **Read first** docs, and the **Outcomes** of its dependencies.
-2. Check: dependencies ✅ · owner prerequisites available (`steps/README.md` §3) · blocking questions answered (`12` §2.1) · `main` green (`git pull`, `make check test` once tooling exists).
+2. Check: dependencies ✅ · owner prerequisites available (`steps/README.md` §3) · blocking questions answered (`12` §2.1) · `main` green (`git pull`) · last night's emulator run green (`tools/scripts/ci-nightly.sh`; red = fix it first, TD-086).
 3. Not ready → tell the owner exactly what's missing, with a recommendation, and offer another ready step.
 4. Ready → set the board status to 🟦, create the branch `step/<ID>-short-name` from `main`, and send a **session-start message** (step, goal, what you'll need from the owner).
 
@@ -45,9 +45,9 @@ Track progress with a todo list mirroring the phases below. Keep the owner infor
 ## E. Close
 1. Write the card's **Outcome**: built · deviations (and why) · follow-ups · new TDs · measurements · metrics (planned vs actual size, WPs, review rounds, findings by severity, tests added).
 2. Update the status board (✅ after the owner's OK; until then keep 🟨 with a note "awaiting owner"), any planning docs the step changed, and `technical-planning/steps/backlog.md` (follow-ups, minor findings).
-3. Commit (`docs(<ID>): outcome`) and **push the branch** (`git push -u origin step/<ID>-…`, retry on network errors with backoff).
+3. Commit (`docs(<ID>): outcome`). On a milestone step, or when the step changed Patrol tests or native Android code, put `[it]` in this commit's message so the merge run includes the emulator tests (TD-086). Push the branch only when the owner will review it on GitHub (step 4); otherwise `merge-step.sh` carries it, and a separate push just starts a redundant CI run.
 4. **Owner gate:** send the **close summary** (template in process §5.2) with demo steps for the A55 when relevant, and the GitHub branch name for reviewing the diff. **Wait for the owner's OK.**
-5. On OK: commit the Outcome and board ✅ on the step branch, then `tools/scripts/merge-step.sh <ID> "<step name>" step/<ID>-…` with `MERGE_TRAILER` set to the attribution line. It squashes onto `merge/<ID>`, waits for `ci` and moves `main` only when green (TD-036, TD-039, `PROCESS.md` A5). Never push to `main` by hand.
+5. On OK: commit the Outcome and board ✅ on the step branch, then run `tools/scripts/merge-step.sh <ID> "<step name>" step/<ID>-…` in the background with `MERGE_TRAILER` set to the attribution line. It builds the squash commit without touching the folder, pushes `merge/<ID>`, waits for `ci` and moves `main` only when green (TD-036, TD-039, TD-086, `PROCESS.md` A5). Never push to `main` by hand. While it waits, start the next step's Orient and Plan (new branch from `origin/main`; if it depends on the step being merged, rebase it once the merge lands).
 6. Propose the next step.
 
 ## Always

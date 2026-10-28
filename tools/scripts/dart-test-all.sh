@@ -6,6 +6,15 @@
 # same single test run writes lcov, and the script fails below the minimum.
 # Called by `make test-dart`, which passes the tool paths through the
 # environment (DART, FLUTTER). Usage: DART=... FLUTTER=... dart-test-all.sh
+# Optional environment (CI's parallel test shards, TD-086):
+#   DART_TEST_SHARD  empty = every member (default); `packages` = every member
+#                    except apps/mobile; `app:<i>/<n>` = only apps/mobile,
+#                    shard i of n (1-based) via flutter test's --shard-index,
+#                    without the `perf` tag; `app:perf` = only apps/mobile's
+#                    `perf` tests, one at a time (their host budgets are
+#                    load-sensitive, backlog #116).
+#   DART_TEST_JOBS   test concurrency per member (default 2 for the 7 GB
+#                    laptop; CI's 4-core runners use 4).
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -13,6 +22,20 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 : "${FLUTTER:?dart-test-all: error: FLUTTER is not set (the Makefile passes it)}"
 
 cd "$repo_root"
+
+shard="${DART_TEST_SHARD:-}"
+jobs="${DART_TEST_JOBS:-2}"
+[[ $jobs =~ ^[1-9][0-9]*$ ]] || { echo "dart-test-all: error: DART_TEST_JOBS must be a positive integer" >&2; exit 64; }
+app_shard=()
+case "$shard" in
+  '' | packages) ;;
+  app:perf) app_shard=(--tags perf); jobs=1 ;;
+  app:*)
+    [[ $shard =~ ^app:([1-9][0-9]*)/([1-9][0-9]*)$ ]] && (( BASH_REMATCH[1] <= BASH_REMATCH[2] )) \
+      || { echo "dart-test-all: error: bad DART_TEST_SHARD '$shard' (app:<i>/<n>, 1 <= i <= n)" >&2; exit 64; }
+    app_shard=(--total-shards "${BASH_REMATCH[2]}" --shard-index "$((BASH_REMATCH[1] - 1))" --exclude-tags perf) ;;
+  *) echo "dart-test-all: error: bad DART_TEST_SHARD '$shard' (empty, packages, app:perf or app:<i>/<n>)" >&2; exit 64 ;;
+esac
 
 # Minimum line coverage of lib/ in percent, per package name (S08 D15).
 declare -A COVERAGE_MIN=([fb_domain]=95 [fb_text]=95)
@@ -71,18 +94,23 @@ ran=0
 while IFS= read -r dir; do
   [[ -d "$dir/test" ]] || { echo "-- skip $(basename "$dir"): no test/ folder"; continue; }
   name="$(basename "$dir")"
+  is_app=false
+  [[ $dir == apps/mobile || $dir == */apps/mobile ]] && is_app=true
+  if [[ $shard == packages && $is_app == true ]] || [[ $shard == app:* && $is_app == false ]]; then
+    echo "-- skip $name: not in shard $shard"; continue
+  fi
   if grep -Eq '^[[:space:]]+sdk:[[:space:]]*flutter[[:space:]]*$' "$dir/pubspec.yaml"; then
-    echo "== $name: flutter test"
-    (cd "$dir" && "$FLUTTER" test -j 2)
+    echo "== $name: flutter test${shard:+ ($shard)}"
+    (cd "$dir" && "$FLUTTER" test -j "$jobs" "${app_shard[@]}")
   elif [[ -n "${COVERAGE_MIN[$name]:-}" ]]; then
     echo "== $name: dart test (coverage >= ${COVERAGE_MIN[$name]}%)"
     lcov="$dir/build/coverage/$name.lcov"
     rm -f "$lcov"
-    (cd "$dir" && "$DART" test -j 2 --coverage-path="$lcov")
+    (cd "$dir" && "$DART" test -j "$jobs" --coverage-path="$lcov")
     check_coverage "$dir" "$lcov" "${COVERAGE_MIN[$name]}"
   else
     echo "== $name: dart test"
-    (cd "$dir" && "$DART" test -j 2)
+    (cd "$dir" && "$DART" test -j "$jobs")
   fi
   ran=$((ran + 1))
 done <<<"$members"

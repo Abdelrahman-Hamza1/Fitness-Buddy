@@ -1,7 +1,7 @@
 # Fitness Buddy CI: the one workflow and the one required check.
 #
-# Jobs `catalog`, `dart`, `dotnet`, `eval`, `contract`, `image`, `android` and
-# `android-it` run the same `make` targets as a laptop does. The API contract checks (`make
+# Jobs `catalog`, `dart`, `dart-test`, `dotnet`, `eval`, `contract`, `image`,
+# `android` and `android-it` run the same `make` targets as a laptop does. The API contract checks (`make
 # check-contract`, TD-023) are spread over three jobs so that no toolchain is
 # set up or built twice (S02 D13):
 #   contract  bundle fresh, Spectral lint, self-test, breaking-change report
@@ -16,11 +16,16 @@
 # (S01 A1). New gates (eval) are added as jobs here and to
 # `ci.needs`, so the ruleset never changes.
 #
-# Every job runs on every push, with one exception (TD-060, supersedes S01 A2
-# for these two jobs): on step branches that change nothing the Android build
-# can depend on (`changes` job), `android` and `android-it` are skipped, so a
-# backend-only branch doesn't wait for them. main, merge/*, pull requests,
-# schedule and manual runs always run everything, so nothing reaches main untested.
+# Fast CI (TD-086): a regular run aims at 5-10 minutes. The Dart tests run in
+# parallel shards (`dart-test`), the AAB (all ABIs, only needed for Play) is
+# built on main and nightly only, and the emulator job `android-it` runs
+# nightly on main (schedule), on manual runs, and on a push whose head commit
+# message contains `[it]` (milestone steps, Patrol or native changes). A red
+# nightly is stop-the-line: fixed before the next merge.
+# Every other job runs on every push, with one exception (TD-060, supersedes
+# S01 A2): on step branches that change nothing the Android build can depend on
+# (`changes` job), `android` is skipped, so a backend-only branch doesn't wait
+# for it. main, merge/*, pull requests, schedule and manual runs always run it.
 # Actions are pinned to full commit SHAs; Dependabot (github-actions) bumps them.
 name: CI
 
@@ -30,9 +35,10 @@ on:
   pull_request:
   workflow_dispatch:
   schedule:
-    # Weekly run on main (Mon 04:00 UTC): new NuGet advisories (NuGetAudit) and
-    # toolchain drift surface without a commit.
-    - cron: '0 4 * * 1'
+    # Nightly full run on main (01:30 UTC), including the emulator job
+    # `android-it` (TD-086); new NuGet advisories (NuGetAudit) and toolchain
+    # drift also surface without a commit.
+    - cron: '30 1 * * *'
 
 permissions:
   contents: read
@@ -160,8 +166,9 @@ jobs:
 
       # Tool paths are overridden on the command line (S01 D3): flutter-action
       # puts flutter and dart on PATH, so toolchain-flutter doesn't run in CI.
-      - name: Dependencies, format + analyze, tests
-        run: make deps-dart catalog-pack check-dart test-dart FLUTTER=flutter DART=dart
+      # The tests run in the parallel `dart-test` job (TD-086).
+      - name: Dependencies, format + analyze, app-check
+        run: make deps-dart catalog-pack check-dart FLUTTER=flutter DART=dart
 
       - name: Sentry envelope sink self-test (A11 PR-11)
         run: PYTHONDONTWRITEBYTECODE=1 python3 -I -m unittest discover -s tools/scripts -p test_sentry_envelope_sink.py
@@ -182,6 +189,47 @@ jobs:
 
       - name: Traceability report (into the job summary)
         run: make trace FLUTTER=flutter DART=dart | tee -a "$GITHUB_STEP_SUMMARY"
+
+  # The Dart tests in parallel shards (TD-086): apps/mobile split in three by
+  # flutter test's --shard-index (without `perf` tests), apps/mobile's `perf`
+  # tests alone and one at a time (load-sensitive budgets), every other
+  # workspace member in one. The same
+  # script as `make test-dart` on a laptop; DART_TEST_SHARD picks the slice and
+  # the 4-core runner gets 4 test workers.
+  dart-test:
+    name: dart-test (${{ matrix.shard }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ['app:1/3', 'app:2/3', 'app:3/3', 'app:perf', 'packages']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # tools/catalog's tests compare with the merge base on origin/main
+          persist-credentials: false
+
+      - name: Set up Flutter (version from .fvmrc)
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+          pub-cache-key: 'flutter-pub-:os:-:version:-:arch:'
+
+      - name: Dependencies and tests (${{ matrix.shard }})
+        env:
+          DART_TEST_SHARD: ${{ matrix.shard }}
+          DART_TEST_JOBS: '4'
+        run: make deps-dart catalog-pack test-dart FLUTTER=flutter DART=dart 2>&1 | tee "$RUNNER_TEMP/dart-tests.log"
+
+      # Failing tests as annotations (readable through the API without a token).
+      - name: Failed tests as annotations
+        if: failure()
+        run: |
+          grep -E '❌|\[E\]$|^dart-test-all: error' "$RUNNER_TEMP/dart-tests.log" | sed 's/^::group:://' | head -n 40 |
+            while IFS= read -r line; do echo "::error title=dart test::${line:0:300}"; done || true
 
   dotnet:
     name: dotnet
@@ -239,7 +287,17 @@ jobs:
       # Reuses the Release build above. S04 Persistence.Tests starts one digest-pinned
       # Postgres Testcontainer; Docker is preinstalled, no hosted database/service credentials.
       - name: Tests, including offline public Buddy M3 eval (B08)
-        run: make test-dotnet DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT" FLUTTER=flutter DART=dart
+        run: |
+          make test-dotnet DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT" FLUTTER=flutter DART=dart \
+            2>&1 | tee "$RUNNER_TEMP/dotnet-tests.log"
+
+      # Failing test names and their first assertion lines as annotations, which
+      # the API serves without a token (log text needs one). Synthetic test data only.
+      - name: Failed tests as annotations
+        if: failure()
+        run: |
+          grep -A4 -E '^failed ' "$RUNNER_TEMP/dotnet-tests.log" | grep -v -E '^\s+at |^--$' | head -n 40 |
+            while IFS= read -r line; do echo "::error title=dotnet test::${line:0:300}"; done || true
 
       - name: Offline Buddy SDK replay and parse grading (B02)
         run: make eval DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT" FLUTTER=flutter DART=dart
@@ -439,8 +497,11 @@ jobs:
           fi
           echo "name=$flavor" >>"$GITHUB_OUTPUT"
 
-      - name: Build the selected release APK (arm64) + AAB
+      # The AAB (every ABI, for Play) only on main, nightly and manual runs
+      # (TD-086); step and merge branches build the arm64 APK the checks need.
+      - name: Build the selected release APK (arm64), + AAB on main and nightly
         env:
+          FB_BUILD_AAB: ${{ (github.ref == 'refs/heads/main' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && '1' || '0' }}
           FLAVOR: ${{ steps.flavor.outputs.name }}
           FB_API_BASE_URL: ${{ secrets.FB_API_BASE_URL }}
           FB_SENTRY_DSN: ${{ secrets.FB_SENTRY_DSN }}
@@ -533,8 +594,9 @@ jobs:
   # warning and in the job summary; a second failure fails the job.
   android-it:
     name: android-it
-    needs: changes
-    if: needs.changes.outputs.android == 'true'
+    # Nightly, manual, or on request with `[it]` in the head commit message
+    # (TD-086); the gate below treats a skipped android-it as passed.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[it]')
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
@@ -739,7 +801,7 @@ jobs:
   ci:
     name: ci
     if: always()
-    needs: [changes, catalog, dart, dotnet, eval, contract, image, android, android-it]
+    needs: [changes, catalog, dart, dart-test, dotnet, eval, contract, image, android, android-it]
     runs-on: ubuntu-24.04
     permissions: {} # reads only `needs`; no token scopes at all
     timeout-minutes: 5
@@ -754,7 +816,11 @@ jobs:
             while IFS=$'\t' read -r job result; do
               printf '%-10s %s\n' "$job" "$result"
               seen=$((seen + 1))
-              if [[ "$result" == skipped && "$ANDROID" == false && ( "$job" == android || "$job" == android-it ) ]]; then
+              if [[ "$result" == skipped && "$ANDROID" == false && "$job" == android ]]; then
+                continue
+              fi
+              # Runs only nightly, manually or on `[it]` (TD-086); when it runs it must pass.
+              if [[ "$result" == skipped && "$job" == android-it ]]; then
                 continue
               fi
               [[ "$result" == success ]] || failed=1

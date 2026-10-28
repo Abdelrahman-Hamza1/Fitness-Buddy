@@ -208,7 +208,7 @@ Until 2026-10-28 the work was split between Claude (app) and Codex (backend and 
 
 | Track | Steps | Main engineers | CI jobs |
 |---|---|---|---|
-| **App** | `A01…` (`steps/README.md` §4.1) | `flutter-engineer`, `data-curator`, `ai-engineer` (app side) | `dart`, `android`, `android-it` |
+| **App** | `A01…` (`steps/README.md` §4.1) | `flutter-engineer`, `data-curator`, `ai-engineer` (app side) | `dart`, `dart-test`, `android`; `android-it` nightly (TD-086) |
 | **Backend** | `B01…` (§4.2) | `dotnet-engineer`, `platform-engineer`, `ai-engineer` (Buddy server, `buddy_eval`) | `dotnet`, `contract`, `image` |
 
 **Rules**
