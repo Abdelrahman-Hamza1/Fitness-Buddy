@@ -1,6 +1,6 @@
 # 11 — Roadmap: Tracks, Milestones & Steps
 
-_Two implementers build R1 in parallel on two tracks (TD-059, TD-063): the **app track** (Claude, `A01–A43`) and the **backend track** (Codex, `B01–B16`). Within a track the step number is the order; the only waits are the cross-track handoffs. Work is done in **steps** (`steps/`), each with a card. The **status board, milestones and handoffs live in `steps/README.md` §4–6**, the single place that tracks them._
+_R1 is built on two tracks (TD-063), both by Claude since TD-085 (Codex built the early backend steps): the **app track** (`A01–A43`) and the **backend track** (`B01–B18`). Within a track the step number is the order; the only waits are the cross-track handoffs. Work is done in **steps** (`steps/`), each with a card. The **status board, milestones and handoffs live in `steps/README.md` §4–6**, the single place that tracks them._
 
 ## 1. Overview
 

@@ -13,8 +13,8 @@ _Status: **Plan v2** · 2026-10-11 · Based on spec D-001 to D-081. R1 is Androi
 | Research (versions, prices, licences, hosting) | ✅ rounds 1–2, `research-notes.md` |
 | Technical decisions | 34 TDs: backend/infra **accepted**, spikes pending, others Proposed (accepted when implemented) (`12`) |
 | Open owner questions | 6 (`12` §2.1), none blocking. TQ-22 answered: Android-first R1 (D-081) |
-| Delivery plan | Two tracks, each step with a card: app `A01–A43` (Claude), backend `B01–B16` (Codex), milestones M1–M7 + R1 (`steps/README.md`, TD-063) |
-| Code | Foundation done (S01–S04, S06a/b, S08). Two tracks (TD-059/061/063): Codex on the backend track (`AGENTS.md`, B01–B07 done, B08 Buddy interpret next), Claude on the app track (`CLAUDE.md`, A01 next). Hetzner last; the laptop is the test server until then (TD-064). See `steps/README.md` §4 |
+| Delivery plan | Two tracks, each step with a card: app `A01–A43` and backend `B01–B18`, both built by Claude (TD-085), milestones M1–M7 + R1 (`steps/README.md`, TD-063) |
+| Code | Foundation done (S01–S04, S06a/b, S08). Two tracks (TD-063), both built by Claude since TD-085 (Codex built B01–B08, B17 and some no-UI app steps); `PROCESS.md` is the process. Hetzner last; the laptop is the test server until then (TD-064). See `steps/README.md` §4 |
 
 ## The plan in one page
 

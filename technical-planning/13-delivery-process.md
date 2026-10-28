@@ -9,8 +9,7 @@ _How the work in `steps/` actually gets done: who does what, which specialist ag
 | Role | Who | Owns | Never does |
 |---|---|---|---|
 | **Owner** | You | Product direction, the spec, architecture approval, plan approval, step acceptance, accounts and prerequisites | — |
-| **Orchestrator** (product owner + tech lead) | The main Claude session (app steps, the planning docs' structure, the board) | Runs the step lifecycle. Briefs agents, integrates their work, guards scope and quality, keeps the owner informed, writes Outcomes, commits, pushes, merges after approval | Changes the spec or an accepted TD without the owner. Skips a gate. Lets an agent's claim stand without evidence |
-| **Codex** (backend & integration implementer, TD-059) | Codex sessions, working from `AGENTS.md` | Plans, builds, verifies and closes the steps marked Codex on the board, and the server work packages of shared steps (§10) | Edits Claude's area (`apps/mobile/`, `packages/`, Dart `tools/`, `data/`). Breaks the contract without the owner |
+| **Orchestrator** (product owner + tech lead) | The main Claude session on Opus (both tracks, the planning docs, the board; TD-085) | Runs the step lifecycle. Briefs agents, integrates their work, guards scope and quality, keeps the owner informed, writes Outcomes, commits, pushes, merges after approval | Changes the spec or an accepted TD without the owner. Skips a gate. Lets an agent's claim stand without evidence |
 | **Specialist agents** | `.claude/agents/*.md` | One job each (§2), with a self-contained brief from the orchestrator | Talk to the owner directly, push, merge, or widen scope |
 
 Subagents can't spawn other agents. **All orchestration happens in the main session**, using the `run-step` skill.
@@ -25,25 +24,23 @@ Subagents can't spawn other agents. **All orchestration happens in the main sess
 | `flutter-engineer` | Implements app work: Flutter, Riverpod, drift, `fb_domain`, `fb_text`, `fb_design_system`, Dart tools | Phase C, app work packages | Yes |
 | `dotnet-engineer` | Implements backend work: ASP.NET Core modules, EF Core, Postgres, contract conformance | Phase C, backend work packages | Yes |
 | `platform-engineer` | CI/CD, OpenTofu, cloud-init, Kamal, Docker, backups, observability, Makefile | Phase C, infra/tooling work packages | Yes |
-| `ai-engineer` | Prompts, model routing, `ILlmClient` adapters, `buddy_eval` cases and graders, eval reports | App-side AI work (e.g. A21's engine fixtures). The Buddy server and `buddy_eval` are Codex's (B02, B08–B12, B15) | Yes |
+| `ai-engineer` | Prompts, model routing, `ILlmClient` adapters, `buddy_eval` cases and graders, eval reports | App-side AI work (e.g. A21's engine fixtures) and the Buddy server's AI work and `buddy_eval` (B09–B12, B15) | Yes |
 | `data-curator` | Reference dishes, basics data, portion words, exercises (`data/`) with cited sources | The dish batches (A04, A17–A19, A30, A32), A03, A05 data work | Data files only |
 | `code-reviewer` | Reviews the diff for correctness, design, tests, spec/DoD compliance | Phase D of **every** step | No |
 | `security-reviewer` | Reviews auth, authorization, secrets, logging/privacy, infra exposure, AI context | Phase D when the diff touches identity, sync, user data, infra, secrets, logging, AI requests | No |
 | `ux-reviewer` | Reviews UI against the spec's UX rules (states, copy, colour, taps, accessibility) | Phase D when the diff touches screens or user-facing copy | No |
 | `verifier` | Independently checks every exit criterion with evidence (runs tests, measurements) | End of Phase D, before close | No (may add evidence notes) |
 
-### 2.1 Model policy (TD-038, amended by TD-073)
+### 2.1 Model policy (TD-085; replaces TD-038/TD-073)
 
-| Default model | Agents | Why |
-|---|---|---|
-| **Opus** | `step-planner`, `architect`, `code-reviewer`, `security-reviewer`, `dotnet-engineer`, `platform-engineer`, `ai-engineer` | Judgment-heavy, or mistakes are expensive (design, review, production code, infra, prompts) |
-| **Sonnet** | `flutter-engineer` (TD-073), `tech-researcher`, `verifier`, `data-curator`, `ux-reviewer` | Structured fact-finding or checklist work, each backed by hard checks (cited sources, executed tests, CI validation, owner skim) |
+**Every agent defaults to Opus**, and so does the orchestrator. The step tier (`PROCESS.md` A2) picks the reviewers, not the model.
 
-Per-brief overrides by the orchestrator (the Agent tool's `model` parameter):
-- **Down to Sonnet** for small mechanical WPs: boilerplate, renames, config files, doc updates, test fixtures, applying already-specified review fixes.
-- **Up to Opus** for any Sonnet-default agent when the task needs judgment: a research question with a hard trade-off, the R1 verification, a dish batch that needs nutritional reasoning beyond the template.
-- **Never Sonnet** for: security-sensitive code (auth, sync, RLS), production infrastructure, architecture reviews, or a WP that already failed once. On the app track that means **Opus** for the write path (`core/db`, `core/changes`), sync (A34), sign-in and sessions (A20, A33, A35), the ProposalEngine (A21) and backups or data leaving the phone (TD-073).
-- If a Sonnet result fails review or verification, the retry runs on Opus.
+Per-brief override **down to Sonnet** (the Agent tool's `model` parameter) only for mechanical work with a checkable result:
+- reproducing a failing test, reading CI logs, re-running flaky jobs;
+- repo searches and inventories;
+- fully specified chores: ARB/codegen merges, renames, regenerating files, applying a review fix already written out word for word.
+
+A Sonnet task that fails, or turns out to need judgment, is redone on Opus. If the owner's weekly limit runs low, Normal-step implementation may move to Sonnet, with the owner told (`PROCESS.md` A9).
 
 ## 3. Step lifecycle (what runs when)
 
@@ -74,10 +71,10 @@ A step is **ready** when: its dependencies are ✅ on the board, the owner prere
 5. **API changes are contract-first:** contract WP → client regeneration → server WP → app WP.
 
 ### D. Review & verify (the `review-changes` skill)
-1. Pick reviewers by what changed (§2, TD-073): `code-reviewer` always; it also checks each exit criterion against the tests and CI evidence. `architect` only for **new foundations and seams** (new modules or packages, public interfaces other steps build on, cross-cutting mechanisms), not for feature steps that build on existing seams; its plan review per wave is unchanged. `security-reviewer` only for sync, sign-in and sessions, backups or data leaving the phone, logging/telemetry and AI requests. `ux-reviewer` for real screens or user-facing copy (not placeholders). Run them in parallel.
+1. Pick reviewers by what changed (§2, TD-073): `code-reviewer` always; it also checks each exit criterion against the tests and CI evidence. `architect` only for **new foundations and seams** (new modules or packages, public interfaces other steps build on, cross-cutting mechanisms), not for feature steps that build on existing seams; its plan review per wave is unchanged (Risky steps get their own plan review, TD-085). `security-reviewer` on every Risky step (TD-085) and otherwise only for sync, sign-in and sessions, backups or data leaving the phone, logging/telemetry and AI requests. `ux-reviewer` for real screens or user-facing copy (not placeholders). Run them in parallel.
 2. Findings have a severity: **blocker** / **major** / **minor** / **nit**. Blockers and majors must be fixed. Minors are fixed or logged in `steps/backlog.md`. Nits are optional.
 3. Fixes go back to the engineer who wrote the code. **Re-review only when the round had a blocker or major** (by the same reviewer, scoped to those findings + regressions); fixes of minors and nits are checked by the orchestrator (diff + `make check test`) without another reviewer round (TD-054). **At most 3 rounds**, then the architect arbitrates, then the owner decides.
-4. **`verifier`** only at milestone steps (A11 M1, A16 M2, A23 M3, A31/A32 M4, A35 M5, A41 M6, A42/A43 M7 and R1) and when the orchestrator doubts the evidence (TD-073). It checks every exit criterion with evidence (test names, outputs, measurements, screenshots), marking each ✅ / ❌ / ⚠️ (needs the owner, e.g. on-device checks). Any ❌ returns to C. Other steps: the code reviewer's exit-criteria check plus green CI.
+4. **`verifier`** on Risky steps (TD-085), at milestone steps (A11 M1, A16 M2, A23 M3, A31/A32 M4, A35 M5, A41 M6, A42/A43 M7 and R1) and when the orchestrator doubts the evidence (TD-073). It checks every exit criterion with evidence (test names, outputs, measurements, screenshots), marking each ✅ / ❌ / ⚠️ (needs the owner, e.g. on-device checks). Any ❌ returns to C. Other steps: the code reviewer's exit-criteria check plus green CI.
 
 ### E. Close
 1. The orchestrator writes the card's **Outcome** (built, deviations, follow-ups, new TDs, measurements, review rounds).
@@ -91,7 +88,7 @@ The owner delegated both gates (2026-10-11). For a step with **no ⚠️ OWNER i
 
 ## 3b. Waves (TD-068)
 
-Several ready steps of the app track can run as one **wave**:
+Several ready steps (of either track) can run as one **wave**:
 1. **Group plan:** the orchestrator groups the wave's steps into **lanes** of related steps (e.g. local data A01+A06, food data A03–A05, design A02) and briefs one `step-planner` per lane, in parallel. Each step's plan still goes into its own card. Plans may rely on an earlier step's plan in the same lane.
 2. **Group plan review:** one `architect` pass over every plan in the wave, checking cross-step seams too. Plans are committed together on a `plan/wave-N` branch and merged to `main` as `docs: wave N low-level plans`.
 3. **Implement lane by lane:** each step on its own `step/<ID>-…` branch, in dependency order, sequentially in the one folder.
@@ -205,28 +202,19 @@ Every step card has a **Progress log** section above the Outcome: one dated line
 | Reviewers disagree | Architect arbitrates. If it's still unresolved, the owner decides |
 | A prerequisite is missing | Tell the owner immediately. Pick another ready step meanwhile |
 
-## 10. Two implementers: Claude and Codex (TD-059, TD-063)
+## 10. One implementer, two tracks (TD-085, 2026-10-28)
 
-The owner splits the work between two AI implementers (2026-10-16):
+Until 2026-10-28 the work was split between Claude (app) and Codex (backend and the no-UI app steps; TD-059, TD-061, TD-078, TD-079). **Codex is retired; Claude builds both tracks.** Finished cards, evidence and research notes keep their Codex history; `AGENTS.md` is dormant.
 
-| | **Claude** (`CLAUDE.md`) | **Codex** (`AGENTS.md`) |
-|---|---|---|
-| Code it owns | `apps/mobile/`, `packages/` (Dart), Dart `tools/` except `buddy_eval` and `sync_sim`, `data/` | `backend/`, `infra/`, Docker/compose, deploys, backups, observability, `tools/buddy_eval`, `tools/sync_sim` |
-| Contract | Consumes `packages/fb_api_client` (generated) | Keeps the server conformant |
-| CI jobs | `dart`, `android`, `android-it` | `dotnet`, `contract`, `image` |
-| Steps | the **app track** `A01…` (`steps/README.md` §4.1), except the steps marked Codex | the **backend track** `B01…` (§4.2) + the app steps marked Codex (TD-078) |
-| Working folder | `~/work/fitness_buddy`, one implementer at a time | the same |
+| Track | Steps | Main engineers | CI jobs |
+|---|---|---|---|
+| **App** | `A01…` (`steps/README.md` §4.1) | `flutter-engineer`, `data-curator`, `ai-engineer` (app side) | `dart`, `android`, `android-it` |
+| **Backend** | `B01…` (§4.2) | `dotnet-engineer`, `platform-engineer`, `ai-engineer` (Buddy server, `buddy_eval`) | `dotnet`, `contract`, `image` |
 
 **Rules**
-- **Each side plans its own code** and owns its track's cards. There are no shared steps: a feature that needs both sides is two steps, one per track, joined by an explicit dependency (`steps/README.md` §6). Both follow §3's phases and §7's gates. Codex uses its own tooling instead of `.claude/agents/`, with the same evidence standard: self-review, verification evidence in `steps/evidence/`, and the Outcome.
-- **Gates:** TD-037 applies to both sides: self-approve and self-merge when there's no ⚠️ OWNER item and every gate passes.
-- **Contract:** changes go in their own commit before any code (`10` §6), with a Progress-log line naming what changed. Additive changes don't wait for the other side. Breaking changes need the owner (TD-061).
-- **Reviews:** each side is fully in charge of reviewing its own area (TD-061). Claude uses its reviewer agents (§3.D). Codex runs an independent review (a separate reviewer agent or a fresh session) with a security pass for sensitive areas (`AGENTS.md`). Neither side waits for the other's review.
-- **No overlap:** one owner per branch. Don't edit the other side's area; ask through the card's Progress log or the owner. Shared files (`Makefile`, `ci.yml`, `contracts/`, `technical-planning/`, `steps/backlog.md`, the board) get small commits, rebased on `main` often. Each side edits only its own rows and sections. TD numbers come from the latest `main`.
-- **Parallel tracks:** each side takes the lowest-numbered open step in its track (`steps/README.md` §7). A step can start once its dependencies are ✅ on `main`; "(contract)" dependencies need only the B step's contract handoff merge (`Bxx (contract): …`, TD-065).
-- **One folder, separate branches:** One folder, one implementer at a time (owner, 2026-10-16): both work in `~/work/fitness_buddy`. Before starting, check that the folder is clean (`git status`), commit and push your branch before handing over, and start your step branch from the latest `main`. Whoever merges second rebases on the new `main` and re-runs CI first.
-- **Shared Dart seams:** `fb_domain`'s entry points used by `buddy_eval` (A21) and the sync engine interfaces used by `tools/sync_sim` are public APIs pinned by tests in their package; `buddy_eval`/`sync_sim` run in the `dart` CI job and Codex fixes their failures. The pub workspace lockfile is shared.
-- **Claude runs Codex (TD-079, 2026-10-22):** the owner talks only to Claude, which orders both tracks and runs Codex through the Codex plugin (`PROCESS.md` §0). Codex never writes git or uses Docker; Claude commits, tests with Docker and merges. A fresh read-only Codex session is the independent reviewer of Claude's code steps. The hand-offs below ("ready for app review", Progress-log questions) become Claude's own checks inside one session.
-- **App steps marked Codex (TD-078):** whole app steps with no screens, flows or copy, marked **Codex** in the board's **By** column. Codex owns that card and branch and may edit Claude's area on it, following the app's rules (`03`, `05`, `06`, `10`, `app_check`, the `fb_domain` boundaries, ARB strings). Codex plans, builds, reviews (with the security review on Risky steps) and merges as for a B step. **Before the merge** Codex pushes the branch and writes "ready for app review" in the Progress log; Claude, at its next session, runs a Sonnet `code-reviewer` pass over the branch diff (read from the pushed branch with `git diff`/`git show`, no checkout or worktree; app architecture and conventions only) and writes the findings in the Progress log; Codex fixes blockers and majors, then merges. Claude doesn't edit an open Codex step's branch, and a Claude step that needs it waits for its merge.
-- Claude no longer briefs `dotnet-engineer`, nor `platform-engineer` for server infrastructure. `platform-engineer` stays for the app's build and CI.
-
+- **Tracks stay separate:** a feature that needs both sides is two steps, one per track, joined by an explicit dependency (`steps/README.md` §6). Both follow §3's phases and §7's gates with the same agents and evidence standard.
+- **Contract:** changes go in their own commit before any code (`10` §6), with a Progress-log line naming what changed; the dependent A step adapts the app. "(contract)" dependencies need only the B step's contract handoff merge (`Bxx (contract): …`, TD-065). Breaking changes need the owner.
+- **Order:** the orchestrator picks across both tracks by the critical path (`steps/README.md` §7).
+- **Reviews:** every code step gets a fresh Opus `code-reviewer`; Risky steps add `security-reviewer` and `verifier` (`PROCESS.md` B).
+- **One folder:** `~/work/fitness_buddy`, one step branch at a time, from a clean `git status` on the latest `main`. No worktrees or second clone unless the owner asks. The laptop has 7 GB: one heavy build at a time (`make test-dotnet` and the Android builds don't run together).
+- **Shared Dart seams:** `fb_domain`'s entry points used by `buddy_eval` (A21) and the sync engine interfaces used by `tools/sync_sim` are public APIs pinned by tests in their package; both tools run in the `dart` CI job. The pub workspace lockfile is shared.

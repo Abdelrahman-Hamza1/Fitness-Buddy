@@ -1,6 +1,6 @@
 # Sync feasibility harness (B01)
 
-Codex owns this package (TD-063). It is kept for B05/A34. It uses the generated
+Claude owns this package (TD-085; Codex wrote it). It is kept for B05/A34. It uses the generated
 API models and `fb_domain` HLC, with a transport port shared by an independent
 in-memory fake and the real container API. It contains synthetic data only.
 

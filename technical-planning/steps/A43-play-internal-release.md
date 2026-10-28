@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A42, **B14** | S | Codex (TD-078) | ⬜ Not started |
+| App | A42, **B14** | S | Claude (TD-085; was Codex, TD-078) | ⬜ Not started |
 
 _Old ID: S29 app part (renumbered by TD-063, 2026-10-16). The server side is B14._
 
@@ -14,7 +14,7 @@ _Old ID: S29 app part (renumbered by TD-063, 2026-10-16). The server side is B14
 - **Play Console app** for `io.github.abdelrahmanhamza1.fitnessbuddy`. **Enrol Play App Signing with our existing release key (PEPK) when the app is created, before the first upload** (enrolment is one-way), so a Play build updates the sideloaded prod build in place. Uploads use a **separate upload key** (backlog #51). After enrolment Google holds the app-signing key, which ends the key-loss risk. Fallback if in-place update fails: sync to production first (B14), reinstall from Play, restore by sign-in (AT-006).
 - **One monotonic versionCode scheme** across CI sideload builds and Play builds (Play can't update an app whose installed versionCode is higher).
 - **`mobile-release` workflow:** tag `app-v*` → signed AAB → internal testing track.
-- **Contract tag (TD-044):** with the first `app-v*` release, set `info.version` to 1.0.0 and create `contracts-v1.0.0` (with Codex, who owns the server gates); add the `contracts-v*` tag ruleset (backlog #19).
+- **Contract tag (TD-044):** with the first `app-v*` release, set `info.version` to 1.0.0 and create `contracts-v1.0.0`; add the `contracts-v*` tag ruleset (backlog #19).
 
 ## Out of scope
 - Production servers (B14). Closed testing and store listings (R2/R3).

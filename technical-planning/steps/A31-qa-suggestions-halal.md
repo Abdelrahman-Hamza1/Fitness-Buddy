@@ -16,7 +16,7 @@ _Old ID: S40 app part (renumbered by TD-063, 2026-10-16)._
 - **Suggestions** (AI-120–122): the `SuggestRequest` intent → `POST /v1/buddy/suggest` (B11) with remaining kcal/protein, halal flag, time/Ramadan phase, habitual foods (user model), open batches → 2–4 options → the API resolves names to catalog items → the client computes real numbers and **drops options that don't fit** → tappable suggestions → tapping creates a normal proposal.
 - **Halal in suggestions** (FD-082): halal-only options when the setting is on (catalog flags + instruction + a client check).
 - **Multi-intent check** (T39): one message → several proposals and/or answers in one reply.
-- **Milestone M4 run** (with Codex): E2E for T17–T29, T33, T36–T38 and OF-02 on the A55; Codex runs the eval half. AT-003 green (with A32).
+- **Milestone M4 run:** E2E for T17–T29, T33, T36–T38 and OF-02 on the A55, plus the eval half with `buddy_eval`. AT-003 green (with A32).
 
 ## Out of scope
 - The weekly review (A39). Workout questions need workout data (A36/A37). The grammar includes them now and they're tested again after A37.

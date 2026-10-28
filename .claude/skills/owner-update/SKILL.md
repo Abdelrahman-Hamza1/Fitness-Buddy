@@ -16,7 +16,7 @@ description: Produce a short, mobile-friendly status report for the Fitness Budd
 ## Write (≤ 25 lines, plain language, no jargon without a gloss)
 ```
 Status: <date>
-Where we are: app A<nn>/A43 · backend B<nn>/B16 · next milestone: <M1–M7 / R1> (<n> app steps away)
+Where we are: app A<nn>/A43 · backend B<nn>/B18 · next milestone: <M1–M7 / R1> (<n> app steps away)
 Since last update:
 - <step>: <one-line outcome>
 Highlights / numbers: <e.g. cold start 1.1 s on A55, eval AQ-02 96%>

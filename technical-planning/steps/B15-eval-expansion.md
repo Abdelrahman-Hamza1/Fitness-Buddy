@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| Backend | B09–B12, B14, **A41** | M | Codex | ⬜ Not started |
+| Backend | B09–B12, B14, **A41** | M | Claude (TD-085) | ⬜ Not started |
 
 _Old ID: S47 (renumbered by TD-063, 2026-10-16)._
 

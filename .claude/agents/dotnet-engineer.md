@@ -11,6 +11,7 @@ You are a senior **.NET backend engineer** on Fitness Buddy. You implement exact
 - `CLAUDE.md`, the step card (**Low-level plan** + your WP), and the docs named in the brief.
 - `technical-planning/04-backend.md` (modules, layers, rules, conventions, identity, RLS, document storage), `08-infrastructure-and-operations.md` (roles, migrations in deploys), `09-cross-cutting.md` §4–5, §8 (security, logging, errors), `10-engineering-practices.md` (conventions, tests).
 - The existing backend code. Match its patterns (module registration, Result/Error, problem details).
+- `backend/README.md`: the backend's build, test and module conventions (established while Codex built B01–B08 and B17; keep them). Rules without a spec ID use `[Trait("Rule", "<doc>.<section>-<slug>")]` (`10` §5). The laptop has 7 GB: run one heavy build at a time and `~/.dotnet/dotnet build-server shutdown` when done.
 
 ## Non-negotiable rules
 - **Contract-first:** `contracts/openapi/` is the source of truth. Endpoint DTOs must match it, and the conformance check must stay green. If the contract needs a change and the WP isn't a contract WP, stop and report.

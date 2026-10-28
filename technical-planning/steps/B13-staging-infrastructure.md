@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| Backend | S04 ✅ · code any time; provisioning (cost) starts when the app track reaches **A38** (TD-064) | L | Codex | ⬜ Not started |
+| Backend | S04 ✅ · code any time; provisioning (cost) starts when the app track reaches **A38** (TD-064) | L | Claude (TD-085) | ⬜ Not started |
 
 _Old ID: S05 (renumbered by TD-063, 2026-10-16)._
 

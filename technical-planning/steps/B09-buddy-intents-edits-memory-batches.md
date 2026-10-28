@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| Backend | B08, **A21** | M | Codex | ⬜ Not started |
+| Backend | B08, **A21** | M | Claude (TD-085) | ⬜ Not started |
 
 _Old ID: S35, S36 and S37 server parts (renumbered by TD-063, 2026-10-16). The app sides are A25, A26 and A27._
 

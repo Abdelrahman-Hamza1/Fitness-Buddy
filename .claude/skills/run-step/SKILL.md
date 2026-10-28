@@ -1,6 +1,6 @@
 ---
 name: run-step
-description: Orchestrator playbook for executing one Fitness Buddy app-track step (A01–A43, TD-063) end to end: readiness check, research, planning, owner plan approval, work packages with specialist agents, reviews, verification, close-out and owner acceptance. Use when the owner says "run A06", "next step", "continue the plan", or similar.
+description: Orchestrator playbook for executing one Fitness Buddy step on either track (app A01–A43, backend B01–B18; TD-063, TD-085) end to end: readiness check, research, planning, owner plan approval, work packages with specialist agents, reviews, verification, close-out and owner acceptance. Use when the owner says "run A06", "next step", "continue the plan", or similar.
 ---
 
 # Run a step (orchestrator playbook)
@@ -10,8 +10,8 @@ You are the **orchestrator**: product owner + tech lead. You delegate to special
 Track progress with a todo list mirroring the phases below. Keep the owner informed per §5 of the process doc, with short, mobile-friendly messages.
 
 ## 0. Pick the step
-- If the owner named a step, use it. Otherwise open `technical-planning/steps/README.md` §4.1 (the app track) and pick per §7: the lowest-numbered open `A` step whose dependencies are met (bold = the backend track; "(contract)" = its contract commit is on `main`).
-- Work in `~/work/fitness_buddy`, one implementer at a time: start only with a clean `git status`, and push your branch before handing over (`13` §10).
+- If the owner named a step, use it. Otherwise open `technical-planning/steps/README.md` §4 (app track §4.1, backend track §4.2) and pick per §7: by the critical path across both tracks (milestones first, then what unblocks the other track), else the lowest-numbered ready step (bold = the other track; "(contract)" = its contract commit is on `main`).
+- Work in `~/work/fitness_buddy`, one step branch at a time: start only with a clean `git status` on an up-to-date `main` (`PROCESS.md` A7).
 - If a step is 🟨 in progress (from an earlier session), **resume it**: read its card (plan + partial outcome), `git log` on its branch, and continue from the first unfinished phase.
 
 ## A. Orient: Definition of Ready
@@ -30,8 +30,8 @@ Track progress with a todo list mirroring the phases below. Keep the owner infor
 
 ## C. Implement
 1. Set the board to 🟨. Work through the plan's WPs in order. For each WP:
-   - Brief the right specialist (`flutter-engineer`, `dotnet-engineer`, `platform-engineer`, `ai-engineer`, `data-curator`) with the **self-contained brief** template (process §6). One WP per brief.
-   - Independent WPs in different areas may run in parallel with `isolation: "worktree"`. Then merge their branches into the step branch yourself.
+   - Brief the right specialist (`flutter-engineer`, `dotnet-engineer`, `platform-engineer`, `ai-engineer`, `data-curator`) with the **self-contained brief** template (process §6). One WP per brief. Agents run on Opus; pass `model: sonnet` only for mechanical WPs (`PROCESS.md` B).
+   - Independent WPs touching disjoint files may run in parallel in the same folder (no worktrees); each agent commits only its own files by explicit path. One heavy build at a time (7 GB laptop).
    - When it returns: inspect the diff (`git diff`), run `make check` + the relevant tests, fix small issues or re-brief once with specifics. Commit with a Conventional Commit message referencing the step.
    - No per-WP ping to the owner (TD-054); message them only for owner actions or blockers.
 2. Contract changes go first: contract WP → `make gen` → server WP → app WP.
@@ -40,7 +40,7 @@ Track progress with a todo list mirroring the phases below. Keep the owner infor
 
 ## D. Review & verify
 1. Run the `review-changes` skill (it picks reviewers by what changed, runs them in parallel, and manages the fix loop).
-2. At milestone steps (or when the evidence is in doubt, TD-073), launch `verifier` on the branch; otherwise the code reviewer's exit-criteria check plus green CI is the evidence. Any ❌ → back to C for the fix (then re-verify). ⚠️ items → prepare exact owner instructions.
+2. On Risky steps, at milestone steps, or when the evidence is in doubt (TD-085), launch `verifier` on the branch; otherwise the code reviewer's exit-criteria check plus green CI is the evidence. Any ❌ → back to C for the fix (then re-verify). ⚠️ items → prepare exact owner instructions.
 
 ## E. Close
 1. Write the card's **Outcome**: built · deviations (and why) · follow-ups · new TDs · measurements · metrics (planned vs actual size, WPs, review rounds, findings by severity, tests added).

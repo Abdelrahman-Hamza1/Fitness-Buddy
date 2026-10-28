@@ -11,7 +11,7 @@ _Old ID: S34 (renumbered by TD-063, 2026-10-16)._
 **Spec:** AI-003, AI-045, AI-046, AI-047, AI-142, AI-150, AI-152, AI-153, AC-020, AC-033, DY-025, HM-004, SF-020, SF-030, UX-052, UX-053, G2, G3, T11, T40, T41 · **Decisions:** TD-011, TD-083 (Proposed)
 
 ## Scope
-- **Ownership fixed 2026-10-24 (A21 PA1):** A22 creates/owns `chat_messages` and saves the message first. A23 creates/owns the drift **`proposals` table + migration (Risky)**, resolve-proposal op, status/outcome recording and consumes B18’s `chatMessage` / `proposal` sync entities. **B18 “chatMessage & proposal sync entities (server)”** is a new Codex backend step like B17: its contract commit comes first; A23 builds against that contract (orchestrator adds board row).
+- **Ownership fixed 2026-10-24 (A21 PA1):** A22 creates/owns `chat_messages` and saves the message first. A23 creates/owns the drift **`proposals` table + migration (Risky)**, resolve-proposal op, status/outcome recording and consumes B18’s `chatMessage` / `proposal` sync entities. **B18 “chatMessage & proposal sync entities (server)”** is a new backend step like B17: its contract commit comes first; A23 builds against that contract (orchestrator adds board row).
 - **`chat_messages` lifecycle** (`03` §6): saved as `queued` before sending → `processing` → `done` / `pending_offline` / `failed`. The **`BuddyMessageQueue`**: idempotency key = message ID, retries with backoff, processes on reconnect and app foreground (TQ-03).
 - **Offline:** a message sent offline shows as "will process when you're online" (AI-047). Once processed it becomes a normal proposal.
 - **Atomic per-card resolution/outcomes:** one row per meal card with immutable `originMessageId` and current `budgetMessageId`; metadata plus kind, `codecVersion`, versioned interpretation/draft JSON (interpretation holds **only this card’s normalized intents**, referring to facts/options stored once in compact card JSON), status pending/confirmed/discarded/superseded, outcome unchanged/adjusted chips/discarded and resolved_at (`05` §2.3). A21 supplies draft ops only. The confirm use case appends the version-checked resolve-proposal op to those ops in **one `ChangeSet` / `ChangeSetApplier` transaction**, with `Origin.proposal(card.id)`; include the owning assistant-message budget update in that same ChangeSet; failure rolls back diary/card-status/outcome/message-budget together. Discard resolves status/outcome without food writes. Outcomes feed `06` §5/A26 from confirmed/resolved records, never unconfirmed learning.
@@ -20,7 +20,7 @@ _Old ID: S34 (renumbered by TD-063, 2026-10-16)._
 - **Out of scope / medical:** templated, kind declines (AI-003, SF-030, T40).
 - **Language check:** a banned-word filter on all model-written text (SF-020, AI-142).
 - **Chat history:** scrollback in the sheet, and **clear chat history** in settings without touching the diary (AC-033).
-- **Milestone M3 run** (with Codex): E2E on the M3 case set (T01–T16, T19, T39–T41) from the owner's phone; Codex runs the eval half (`README.md` §5).
+- **Milestone M3 run:** E2E on the M3 case set (T01–T16, T19, T39–T41) from the owner's phone, plus the eval half with `buddy_eval` (`README.md` §5).
 
 ## Out of scope
 - The pending-proposal notification (A40). Creating the `chat_messages` table/save-first operation (A22); deterministic proposal math and local session codec (A21).

@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| Backend | B13 | L | Codex | ⬜ Not started |
+| Backend | B13 | L | Claude (TD-085) | ⬜ Not started |
 
 _Old ID: S29 server part (renumbered by TD-063, 2026-10-16)._
 
@@ -33,7 +33,7 @@ _Old ID: S29 server part (renumbered by TD-063, 2026-10-16)._
 - The second backup provider. VM sizes. The alert delivery channel.
 
 ## Notes from earlier steps
-- **From S02 (TD-044):** the first contract tag comes with the first `app-v*` release, in A43 (with Codex for the server gates).
+- **From S02 (TD-044):** the first contract tag comes with the first `app-v*` release, in A43.
 
 ## Exit criteria
 - [ ] The restore drill is done: recovery to a chosen point in time within the target (≤ 1 h). Timings are in the runbook.

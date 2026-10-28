@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| Backend | B08 | M | Codex | ⬜ Not started |
+| Backend | B08 | M | Claude (TD-085) | ⬜ Not started |
 
 _Old ID: S40 server part (renumbered by TD-063, 2026-10-16). The app side is A31._
 

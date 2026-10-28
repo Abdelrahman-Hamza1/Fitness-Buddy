@@ -1,5 +1,7 @@
 # Fitness Buddy: working agreement for Codex sessions
 
+> **Dormant since 2026-10-28 (TD-085).** Codex is retired; Claude builds both tracks from `CLAUDE.md` and `PROCESS.md`. This file is kept as the record of how Codex worked on B01–B08, B17 and the no-UI app steps. Don't follow it for new work.
+
 Fitness Buddy is a local-first nutrition & weight tracking app (Flutter, Android-first) with an AI assistant ("Buddy"), backed by an ASP.NET Core API on Hetzner VMs, joined by an OpenAPI contract. Built for the owner first (R1), then friends (R2), then possibly the public (R3).
 
 Two AI implementers share this repo (TD-059, TD-061). **Codex is fully in charge of the backend, infra and integration, including their reviews. Claude owns the app.** Claude works from `CLAUDE.md`; this file is yours. The engineering rules are the same for both.

@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| Backend | B14, **A42** | M | Codex | ⬜ Not started |
+| Backend | B14, **A42** | M | Claude (TD-085) | ⬜ Not started |
 
 _Old ID: S49 (renumbered by TD-063, 2026-10-16)._
 
@@ -23,7 +23,7 @@ _Old ID: S49 (renumbered by TD-063, 2026-10-16)._
 - **Traceability report** (AT-001): every R1 ID implemented and tested, or moved by a recorded decision.
 - **AT-006:** reinstall + new-phone restore + export completeness, re-verified on production.
 - **AT-007:** the owner uses it as the **only tracker for 2 weeks** with no blocking issue. SC-1 is checked at 4 weeks.
-- App-side findings go to Claude as backlog items or a fix step; Codex reviews the app code read-only.
+- App-side findings become backlog items or a fix step; the review covers the app code too, read-only.
 - Release notes for R1. Update `technical-planning/` to reflect what was built (Outcomes → docs).
 
 ## Out of scope

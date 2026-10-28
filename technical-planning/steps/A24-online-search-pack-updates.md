@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A07, **B07** | M | Codex (TD-078) | ⬜ Not started |
+| App | A07, **B07** | M | Claude (TD-085; was Codex, TD-078) | ⬜ Not started |
 
 _Old ID: S30 app part (renumbered by TD-063, 2026-10-16). The server side is B07._
 

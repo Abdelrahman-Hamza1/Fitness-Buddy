@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A05b, A06, A12 | M | Codex (TD-078) | ⬜ Not started |
+| App | A05b, A06, A12 | M | Claude (TD-085; was Codex, TD-078) | ⬜ Not started |
 
 _Old ID: S41 (renumbered by TD-063, 2026-10-16)._
 

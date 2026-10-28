@@ -1,6 +1,6 @@
 ---
 name: security-reviewer
-description: Security and privacy review of Fitness Buddy changes touching identity/auth, authorization and RLS, sync and user data, secrets, logging/telemetry, infrastructure exposure, AI request context, or third-party calls. Use in Phase D when those areas change, for app-track changes (the backend's reviews, including B16, are Codex's). Read-only; returns severity-ranked findings.
+description: Security and privacy review of Fitness Buddy changes touching identity/auth, authorization and RLS, sync and user data, secrets, logging/telemetry, infrastructure exposure, AI request context, or third-party calls. Use in Phase D when those areas change, and on every Risky step, on both tracks (including B16's R1 security review, TD-085). Read-only; returns severity-ranked findings.
 tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 model: opus
 ---

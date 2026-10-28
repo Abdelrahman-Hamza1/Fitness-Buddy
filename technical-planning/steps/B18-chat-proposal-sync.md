@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| Backend | A21 (WP4 codec shape and size budget) | M | Codex | ⬜ Not started |
+| Backend | A21 (WP4 codec shape and size budget) | M | Claude (TD-085) | ⬜ Not started |
 
 _New step (orchestrator, 2026-10-24, A21 plan review PA1): the persistence of chat messages and pending proposals moved out of A21 to A22 (`chat_messages`) and A23 (`proposals`), and both sync like any row (G3). Like B17 for `personalFood`, the server side is its own step. The app builds against its **contract commit first**._
 
@@ -19,7 +19,7 @@ _New step (orchestrator, 2026-10-24, A21 plan review PA1): the persistence of ch
 - **Behaviour:** prove new entities on generic owner-authorized pull/history, LWW/history, tombstones/compaction fences, guest 403 and RLS paths; B05 already supplies this storage machinery.
 - **Erasure:** account deletion removes both entities, history and fences.
 - **Privacy:** no message text or proposal content in **error responses**, logs or telemetry (B17 canary pattern). Owner-authorized pull/history intentionally returns the stored content exactly; do not mistake that for an error-response leak.
-- Fresh independent code review and a separate Codex security review (`PROCESS.md` Part C).
+- Fresh independent `code-reviewer` review, `security-reviewer` and `verifier` (Risky; `PROCESS.md` B).
 
 ## Out of scope
 - The app tables, ops and UI (A22, A23). Uploading (A34). Cross-row consistency, question-budget/engine validation (A21 restore). Local attachment paths/images and their transfer.
@@ -46,6 +46,7 @@ _Full plan written in Phase B by Codex; binding scope amendments PA16–PA18/PA2
 
 ## Progress log
 - 2026-10-24 · A21 re-check `bd430bf` findings PA16–PA18/PA24/PA25 applied: dependency on A21 WP4 shape/size; bounded opaque engine JSON with envelope/vocabulary admission only; assistant-row budget and origin/current proposal binding; 32768 UTF-16 units; authorized reads retain content, errors/logs/telemetry do not; attachment paths excluded. Planning only.
+- 2026-10-28 · Moved to Claude (TD-085, Codex retired). The Codex-drafted plan stands; as a Risky step it gets an `architect` plan review before WP1.
 
 ## Outcome
 _Written in Phase E._

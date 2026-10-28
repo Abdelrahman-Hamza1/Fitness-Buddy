@@ -31,7 +31,9 @@ public sealed class SyncUpgradeTests(PostgresFixture database)
                 command.CommandText = "INSERT INTO userdata.__ef_migrations_history(\"MigrationId\",\"ProductVersion\") VALUES('202610160001_InitialUserData','10.0.13')";
                 await command.ExecuteNonQueryAsync(ct);
             }
-            var user = Guid.NewGuid(); var device = Guid.NewGuid(); var clock = new TestClock();
+            // The upgrade stamps legacy rows with the database's real now (accepted_at DEFAULT CURRENT_TIMESTAMP),
+            // so the job's clock starts at real now too; the fixed default date failed once 2026-10-26 passed.
+            var user = Guid.NewGuid(); var device = Guid.NewGuid(); var clock = new TestClock(DateTimeOffset.UtcNow);
             // Initial FORCE RLS has no owner policy; the fixture administrator seeds exactly the old data shape.
             await using (var disable = owner.CreateCommand("ALTER TABLE userdata.documents NO FORCE ROW LEVEL SECURITY; ALTER TABLE userdata.row_history NO FORCE ROW LEVEL SECURITY")) { await disable.ExecuteNonQueryAsync(ct); }
             await using (var seed = owner.CreateCommand("""

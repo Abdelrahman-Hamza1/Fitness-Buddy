@@ -1,9 +1,9 @@
 # Steps — How R1 Gets Built
 
-R1 is built on **two tracks** that run in parallel (TD-059, TD-063):
+R1 is built on **two tracks** (TD-063), both built by Claude since TD-085 (2026-10-28; Codex retired):
 
-- **App track `A01–A43`** (Claude): the Flutter app, the Dart packages and tools, the food data. Steps with no UI marked **Codex** in the board's **By** column are built by Codex (TD-078).
-- **Backend track `B01–B18`** (Codex): the API, the Buddy server, infrastructure and deploys.
+- **App track `A01–A43`**: the Flutter app, the Dart packages and tools, the food data. The **By** column records who built each finished step (Codex built some no-UI steps under TD-078).
+- **Backend track `B01–B18`**: the API, the Buddy server, infrastructure and deploys (B01–B08 and B17 built by Codex; the rest by Claude).
 
 **Within a track the number is the order.** The only waits are the dependencies on the other track, shown in **bold** on the board (§4) and listed in §6. The finished foundation steps keep their old IDs (`S01`–`S04`, `S06a/b`, `S08`); old `Sxx` IDs are never reused, so a commit called `S04: …` is always the old plan and `A01: …` / `B01: …` the new one (§8).
 
@@ -15,7 +15,7 @@ Each step is one focused session (or a few): **low-level plan → implementation
 
 Every step session follows these phases. The owner can stop the session at the end of any phase.
 
-> **Who does what:** each track has its own implementer (§4, TD-059/061). On the app track the main Claude session is the **orchestrator** and runs this protocol with the **`run-step`** skill. It delegates to specialist agents (`.claude/agents/`): `tech-researcher` and `step-planner` + `architect` in Phase B, the engineers per work package in Phase C, the reviewers and `verifier` in Phase D. Owner gates: **plan approval** (end of B) and **step acceptance** (end of E). Codex runs the same phases for the backend track from `AGENTS.md`. The full process (roles, decision rights, communication, quality gates) is in **`../13-delivery-process.md`**.
+> **Who does what:** Claude runs both tracks (TD-085). The main Claude session is the **orchestrator** and runs this protocol with the **`run-step`** skill. It delegates to specialist agents (`.claude/agents/`): `tech-researcher` and `step-planner` + `architect` in Phase B, the engineers per work package in Phase C, the reviewers and `verifier` in Phase D. Owner gates: **plan approval** (end of B) and **step acceptance** (end of E). The same phases apply to both tracks. The full process (roles, decision rights, communication, quality gates) is in **`../13-delivery-process.md`**.
 
 ### Phase A: Orient (≈ 10 min)
 1. Read this README's **status board** (§4) and pick the step per §7. Confirm its dependencies are ✅ (or, for "(contract)", that the contract commit is on `main`) and that `main` is green.
@@ -59,7 +59,7 @@ Fill the card's **Low-level plan** section:
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App / Backend | A05, **B07** (contract) | S / M / L | Claude / Codex | ⬜ Not started |
+| App / Backend | A05, **B07** (contract) | S / M / L | Claude | ⬜ Not started |
 
 **Goal.** One paragraph: what exists after this step that didn't before, and why it matters.
 
@@ -118,9 +118,9 @@ In the order they're needed:
 
 ## 4. Status board
 
-**Owner** (TD-059, TD-061): **Codex** owns `backend/`, `infra/`, the server side of `contracts/`, the server CI jobs, deploys, `tools/buddy_eval` and the backend track. **Claude** owns `apps/mobile/`, `packages/`, the other Dart `tools/`, `data/`, the planning docs' structure and the app track.
+**Owner** (TD-085, 2026-10-28): **Claude** builds both tracks and owns the whole repo. Codex owned the backend and the no-UI app steps until then (TD-059, TD-061, TD-078, TD-079); it is retired, and its finished steps keep their history.
 
-**App steps marked Codex** (TD-078, owner 2026-10-20): app steps with no screens, flows or user-facing copy (logic, data, plumbing) are built by Codex, as **whole steps**, so Claude's longer track and Codex's shorter one even out. Such a step keeps its A ID, card and the app's rules (`apps/mobile/`, `packages/` conventions, `app_check`, the `fb_domain` boundaries); Codex plans, builds, reviews (with the security review on Risky steps) and merges it, and Claude adds a short app-architecture review before the merge (`../13-delivery-process.md` §10). The **By** column shows who builds each app step.
+**By column:** who built (✅) or builds (open) each app step. The open steps once marked Codex (A24, A34, A36, A43; TD-078) moved to Claude with TD-085.
 
 **Depends on:** same-track IDs are plain, other-track IDs are **bold**. "**B09** (contract)" means the app step can start once B09's **contract handoff merge** is on `main` (`B09 (contract): …`: the contract, the regenerated client and `501` server stubs, TD-065), using the generated client + fakes; its end-to-end checks wait for the finished B step.
 
@@ -138,7 +138,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [S06b](S06-app-shell.md) | App shell: Android builds & device | Claude | ✅ |
 | [S08](S08-domain-primitives.md) | Domain primitives & text normalization | Claude | ✅ |
 
-### 4.1 App track (Claude, plus the steps marked Codex, TD-078)
+### 4.1 App track
 
 | ID | Step | By | Depends on | Size | Was | Milestone | Status |
 |---|---|---|---|---|---|---|---|
@@ -169,7 +169,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A21](A21-proposal-engine.md) | ProposalEngine | **Codex** | A07, A12, **B08** | L | S32 |  | ✅ |
 | [A22](A22-chat-proposal-card.md) | Chat sheet & proposal card | Claude | A08b, A20, A21, **B08**, **B18** (contract) | L | S33 |  | ⬜ |
 | [A23](A23-message-lifecycle.md) | Message lifecycle, pending & failures | Claude | A22, **B18** (contract) | L | S34 | **M3** | ⬜ |
-| [A24](A24-online-search-pack-updates.md) | Online search & pack updates (app) | **Codex** | A07, **B07** | M | S30 app part |  | ⬜ |
+| [A24](A24-online-search-pack-updates.md) | Online search & pack updates (app) | Claude | A07, **B07** | M | S30 app part |  | ⬜ |
 | [A25](A25-diary-edits-by-chat.md) | Diary edits by chat (app) | Claude | A23, **B09** (contract) | M | S35 app part |  | ⬜ |
 | [A26](A26-memory-user-model.md) | Memory & user model (app) | Claude | A23, **B09** (contract) | M | S36 app part |  | ⬜ |
 | [A27](A27-batches-chat-foods.md) | Batches, personal foods & saved meals by chat (app) | Claude | A09b, A23, **B09** (contract) | L | S37 app part |  | ⬜ |
@@ -179,20 +179,20 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A31](A31-qa-suggestions-halal.md) | Q&A, suggestions & halal (app) | Claude | A26, **B11** (contract) | M | S40 app part |  | ⬜ |
 | [A32](dish-batches.md) | Dish batch 6: gap fill from dogfooding | Claude | A30 | S | D6 |  | ⏸ deferred (TD-074): after A41 |
 | [A33](A33-sign-in-guest-app.md) | Sign-in & guest upgrade | Claude | A20, **B04** | M | S25 |  | ⬜ |
-| [A34](A34-sync-engine-app.md) | Sync engine (app) | **Codex** | A33, **B05**, **B17**, **B18** | L | S27 |  | ⬜ |
+| [A34](A34-sync-engine-app.md) | Sync engine (app) | Claude | A33, **B05**, **B17**, **B18** | L | S27 |  | ⬜ |
 | [A35](A35-account-deletion-app.md) | Account deletion (app) | Claude | A34, **B06** | S | S28 deletion part | **M5** | ⬜ |
-| [A36](A36-workout-domain.md) | Workout domain, library & templates | **Codex** | A05b, A06, A12 | M | S41 |  | ⬜ |
+| [A36](A36-workout-domain.md) | Workout domain, library & templates | Claude | A05b, A06, A12 | M | S41 |  | ⬜ |
 | [A37](A37-workout-logging.md) | Workout logging, history & PRs (app) | Claude | A23, A36, **B12** (contract) | L | S42 app part |  | ⬜ |
 | [A38](A38-adaptive-targets.md) | Adaptive targets & weekly check-in | Claude | A16, A23 | M | S43 |  | ⬜ |
 | [A39](A39-weekly-review.md) | Weekly summary & Buddy review (app) | Claude | A37, A38, **B12** (contract) | M | S44 app part |  | ⬜ |
 | [A40](A40-notifications.md) | Notifications | Claude | A27, A37, A39 | M | S45 |  | ⬜ |
 | [A41](A41-ramadan.md) | Ramadan mode (app) | Claude | A05b, A15, A38, A40, **B12** (contract) | L | S46 app part | **M6** | ⬜ |
 | [A42](A42-performance-a11y-offline.md) | Performance, accessibility & offline acceptance | Claude | A41 | M | S48 | **R1** | ⬜ |
-| [A43](A43-play-internal-release.md) | Play internal testing release | **Codex** | A42, **B14** | S | S29 app part | **M7** | ⬜ |
+| [A43](A43-play-internal-release.md) | Play internal testing release | Claude | A42, **B14** | S | S29 app part | **M7** | ⬜ |
 
 **Dish batches deferred (TD-074, owner 2026-10-17):** A17–A19, A30 and A32 keep their IDs but run after A41, before A42, an exception to "the number is the order". Until then local dishes are logged as `~ estimate` from the basics; the reference-dish pipeline (A03, A05) stays, so batches can be added any time.
 
-### 4.2 Backend track (Codex)
+### 4.2 Backend track (Claude since TD-085; B01–B08, B17 built by Codex)
 
 | ID | Step | Depends on | Size | Was | Milestone | Status |
 |---|---|---|---|---|---|---|
@@ -222,7 +222,7 @@ flowchart LR
     M2 --> a3["A20–A23 Buddy core"] --> M3{{"M3 Buddy<br/>on the laptop"}} --> a4["A24–A32<br/>Buddy breadth"] --> M4{{"M4 Dogfood 2"}}
     M4 --> a5["A33–A35<br/>sign-in & sync"] --> M5{{"M5"}} --> a6["A36–A41 workouts,<br/>insights, Ramadan"] --> M6{{"M6"}} --> a7["A42 performance<br/>A43 Play release"]
   end
-  subgraph Backend["Backend track · Codex"]
+  subgraph Backend["Backend track · Claude"]
     b1["B01 sync spike<br/>B02 AI bake-off<br/>B03 laptop server"] --> b2["B04 identity<br/>B05 sync<br/>B06 deletion"] --> b3["B07 catalog<br/>B08 Buddy interpret"] --> b4["B09–B12<br/>Buddy intents & vision"] --> b5["B13 staging<br/>B14 production<br/>(Hetzner, last)"] --> b6["B15 eval<br/>B16 security"]
   end
   b1 -. B03 .-> M1
@@ -280,12 +280,12 @@ The only places one track waits for the other. The contract is the meeting point
 
 ## 7. How to pick the next step
 
-1. Take the **lowest-numbered step in your track** that isn't ✅.
-2. If it waits on the other track or on an owner input (§3), tell the owner and take the next step in your track whose dependencies are met. Never start a step whose dependencies aren't met.
+1. Take the **lowest-numbered open step of a track** (rule 4 says which track goes first).
+2. If it waits on the other track, run that dependency first; if it waits on an owner input (§3), tell the owner and take the next ready step. Never start a step whose dependencies aren't met.
 3. Steps marked 🟨 resume from their card's **Progress log**.
-4. **Claude orders both tracks (TD-079):** it runs one step at a time in the folder, Codex's or its own, choosing by the critical path (milestones first, then what unblocks the other track). **Codex's queue** (TD-078) mixes its B steps and the A steps marked Codex. Default order: a Codex A step that Claude's next steps wait on goes first (A12 before Claude reaches A13, A21 before A22, A34 before A35), then the backend critical path, then the lowest-numbered ready step. The owner can reorder it. Claude skips A steps marked Codex.
+4. **Claude orders both tracks (TD-085):** one step at a time in the folder, chosen by the critical path: milestones first, then a step the other track waits on (e.g. B18's contract before A22/A23, A33 before A34, B12's contract before A37), then the lowest-numbered ready step. The owner can reorder it.
 
-One folder, one implementer at a time (owner, 2026-10-16): both work in `~/work/fitness_buddy`. Before starting, check that the folder is clean (`git status`), commit and push your branch before handing over, and start your step branch from the latest `main`. Whoever merges second rebases on the new `main` first (`../13-delivery-process.md` §10).
+One folder (`~/work/fitness_buddy`), one step branch at a time: start from a clean `git status` on the latest `main`, push the branch at every phase change (`../13-delivery-process.md` §10).
 
 ## 8. Old → new IDs (TD-063)
 
