@@ -100,6 +100,7 @@ export 'src/proposals/proposal_input.dart'
         QuestionBudget,
         TrustedFoodFacts;
 export 'src/proposals/proposal_policy_constants.dart';
+export 'src/proposals/proposal_sync_codes.dart';
 export 'src/quick_add/food_key.dart';
 export 'src/quick_add/quick_add_ranker.dart';
 export 'src/quick_add/saved_meal_matcher.dart';

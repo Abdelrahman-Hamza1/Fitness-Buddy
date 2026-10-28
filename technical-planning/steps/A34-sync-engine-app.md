@@ -49,5 +49,11 @@ Test with the A55 + a second device or emulator.
 ## Low-level plan
 _Written in Phase B._
 
+**B18 handoff (2026-10-28, B18 WP1 §8):** `chatMessage` and `proposal` rows upload only after the full B18 merge (the contract merge alone admits them, but A34 depends on all of B18).
+- Send push bodies as unescaped UTF-8 (Dart `jsonEncode`'s default). The largest valid `proposal` row is about 197 KB that way and fits the 256 KiB push cap; `\u`-escaping non-ASCII would not (B18 D14).
+- Read integers as `num` → `int`: the server admits whole-number `1.0` for integer fields (B18 D15).
+- Rows the server rejects permanently (`invalidPayload`, e.g. an unpaired surrogate) must not be retried endlessly (backlog #111).
+- Use smaller pull pages when rows are large (500 × ~197 KB worst case).
+
 ## Outcome
 _Written in Phase E._

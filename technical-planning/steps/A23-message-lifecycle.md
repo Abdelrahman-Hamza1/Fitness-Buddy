@@ -36,6 +36,7 @@ _Old ID: S34 (renumbered by TD-063, 2026-10-16)._
 - [ ] Killing the app mid-request loses nothing and doesn't double-bill (idempotency) (test).
 - [ ] The pending strip shows the correct count and kcal, and reopens the cards (widget test).
 - [ ] **M3 (app part):** the M3 journeys pass E2E on the A55 against the laptop server; proposal p90 ≤ 5 s measured from the owner's location. (The AQ thresholds are B09's eval run.)
+- [ ] `apps/mobile/test/features/buddy/data/proposal_sync_vectors_test.dart`: `A23 proposal row mapper matches the sync corpus in both directions` (B18 D10; corpus `contracts/testdata/sync/chat-proposal-validation-vectors.json`).
 
 ## Read first
 `03-architecture.md` §6 · `spec/10-ai-assistant.md` §4.4, §14 · `spec/21-safety-and-wellbeing.md` §3–4
@@ -59,6 +60,17 @@ _Full plan written in Phase B; binding persistence handoff accepted by the orche
 **Exact tests to assign in that plan:** `A23 migration adds proposals and preserves every prior schema`; `A23 confirm commits diary proposal status outcome and message budget atomically`; `A23 failing resolve op rolls back diary and outbox`; `A23 duplicate or concurrent confirm cannot log twice`; `A23 discard records outcome without diary writes`; `AI-045 pending cards restore after restart without entering totals`; `A23 assistant row budget and current message cards restore at most two issued question IDs`; `A23 confirmed sibling is counted only through confirmed intake`; `A23 compact proposal JSON respects B18 32768 UTF-16 unit bounds`; `A23 oversized proposal remains local pending with recoverable sync size issue`; `A23 confirmed adjusted and discarded outcomes remain available to A26`; `A23 follow-up restores carried questions by budgetMessageId with immutable origin`; `A23 proposal interpretation contains only card intents without duplicate facts`; `A23 stored pending maps to active and superseded stays nonconfirmable`. Use A23 rule comments for engineering checks and only A23 Spec IDs for requirement tags.
 
 **Gates:** serial `make gen-app`, `make catalog-pack`, `make check-dart`, focused generated migration/applier/codec/sync/queue/widget tests, `make trace`, final full `make test-dart`. B18 provides contract-first schema/admission tests; Claude runs Docker/conformance/CI. Independent code + separate security review and app architecture check before merge. No direct repository writes or two-transaction confirm/status shortcut. Account cleanup, outbox and migration checks cannot be replaced by pure codec tests.
+
+**B18 contract handoff (2026-10-28, B18 WP1 §8):** build the `proposals` table and mapper against `proposal` v1 in `contracts/openapi/sync-entities.json` and the codes in `fb_domain` `proposal_sync_codes.dart` (`ProposalStatus` with `ofLifecycle`, `ProposalOutcome`, `ChatProposalSyncBounds`); admission rules in `contracts/README.md` §chatMessage and proposal admission.
+- Top-level columns (`status`, IDs, `codecVersion`) are authoritative over the copies inside `draftJson`; the server never cross-checks them.
+- The mapper turns synced fields back into restore input with `ProposalDraftCodec.cardFromSync` / `messageFromSync`. Unknown `kind`/`codecVersion` or null refs mean "not restorable" (a generic card), never a crash; a `foodLog` row with null refs or interpretation fails with a fixed issue.
+- A pulled non-terminal message (`queued` / `pending_offline` / `processing`) is processed only by its last-writer `device_id`, or after an A23-chosen timeout.
+- Dedupe assistant replies by `replyToMessageId` (a crash-retried interpret response stays idempotent).
+- Clear history (AC-033): tombstoning an assistant row orphans its pending cards (`sessionIncomplete`), so keep or resolve them deliberately. Tombstones **must** carry a scrubbed valid payload: `chatMessage` with `text: ""` and `budgetJson: null`; `proposal` keeping `codecVersion` with `draftJson: "{}"` and `interpretationJson: null`. Cleared chats can still remain in server history for up to 30 days (displaced versions, AC-012, `05` §7); the privacy policy must say so (backlog item added at B18 close).
+- Mapper `ProposalResult`s are never logged or interpolated (a success's `toString` contains the decoded draft); only `issue` may be logged.
+- Outcome wire codes are `unchanged` / `adjusted` / `discarded` (null until resolved). Failure codes and reply chips (AI-150/152) aren't in v1: they become local-only columns or an additive v2.
+- Read integers as `num` → `int` (B18 D15).
+- New exit criterion: `proposal_sync_vectors_test.dart` (B18 D10, below).
 
 ## Progress log
 

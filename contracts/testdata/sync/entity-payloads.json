@@ -136,5 +136,31 @@
     "entryServingUnit": "piece",
     "entryServingAmount": 30.0,
     "createdFrom": "form"
+  },
+  "chatMessage": {
+    "createdAtMs": 0,
+    "origin": "synthetic",
+    "editedByUser": false,
+    "role": "assistant",
+    "text": "Synthetic reply",
+    "status": "done",
+    "language": "en",
+    "replyToMessageId": "0199e3c2-5b1a-7c3d-8e4f-0123456789ad",
+    "codecVersion": 1,
+    "budgetJson": "{\"codecVersion\":1,\"messageId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ac\",\"revision\":0,\"policy\":[0.1,50],\"cards\":[\"0199e3c2-5b1a-7c3d-8e4f-0123456789ae\"],\"departed\":[],\"issued\":{},\"open\":[]}"
+  },
+  "proposal": {
+    "createdAtMs": 0,
+    "origin": "synthetic",
+    "editedByUser": false,
+    "kind": "foodLog",
+    "status": "pending",
+    "outcome": null,
+    "resolvedAtMs": null,
+    "originMessageId": "0199e3c2-5b1a-7c3d-8e4f-0123456789ac",
+    "budgetMessageId": "0199e3c2-5b1a-7c3d-8e4f-0123456789ac",
+    "codecVersion": 1,
+    "interpretationJson": "[]",
+    "draftJson": "{\"codecVersion\":1,\"id\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ae\",\"originMessageId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ac\",\"budgetMessageId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ac\",\"revision\":0,\"status\":\"pending\",\"owned\":[]}"
   }
 }

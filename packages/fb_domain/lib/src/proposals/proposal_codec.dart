@@ -1,6 +1,7 @@
 part of 'proposal_input.dart';
 
-/// Compact JSON fields ready for the future B18 opaque envelopes.
+/// Compact JSON for the B18 sync fields: `proposal` v1 `interpretationJson`
+/// and `draftJson`, and `chatMessage` v1 `budgetJson` (assistant row).
 final class ProposalSyncProjection extends ProposalValue {
   /// Three separately bounded UTF-16 JSON fields; never truncates a draft.
   const new(this.interpretation, this.draft, this.messageBudget);
@@ -57,7 +58,7 @@ abstract final class ProposalDraftCodec {
       'budgetMessageId': card.budgetMessageId,
       'revision': s.revision,
       'environment': _writeEnvironment(s.request.context, intents, s, foods),
-      'status': card.lifecycle == .active ? 'pending' : card.lifecycle.name,
+      'status': ProposalStatus.ofLifecycle(card.lifecycle).code,
       'owned': [
         for (final id in s.issued)
           if (s.questionOwners[id] == cardId) id,
@@ -145,6 +146,64 @@ abstract final class ProposalDraftCodec {
 
   /// Public boundary helper pins supplementary characters to UTF-16 units.
   static bool fitsSyncString(String value) => value.length <= syncStringLimit;
+
+  /// Inverse of [syncProjection] for one synced `proposal` row: the card map
+  /// [restore] takes. Any failure is a fixed issue and never throws: an
+  /// oversized field is `inputTooLarge`; malformed JSON, a non-object draft, a
+  /// draft that already has an `interpretation` or a `null`
+  /// [interpretationJson] (a proposal not created from chat) is
+  /// `invalidInput`. Engine content is left for [restore] to check.
+  static ProposalResult<Map<String, Object?>> cardFromSync({
+    required String? interpretationJson,
+    required String draftJson,
+  }) {
+    if (interpretationJson == null) {
+      return const ProposalResult.failure(ProposalIssue.invalidInput);
+    }
+    if (!fitsSyncString(interpretationJson) || !fitsSyncString(draftJson)) {
+      return const ProposalResult.failure(ProposalIssue.inputTooLarge);
+    }
+    final draft = _decodeSyncObject(draftJson);
+    final (decoded, interpretation) = _decodeSync(interpretationJson);
+    if (draft == null || draft.containsKey('interpretation') || !decoded) {
+      return const ProposalResult.failure(ProposalIssue.invalidInput);
+    }
+    return ProposalResult.success({...draft, 'interpretation': interpretation});
+  }
+
+  /// Inverse of [syncProjection]'s message budget for one synced
+  /// `chatMessage.budgetJson`: the message map [restore] takes. A `null`,
+  /// malformed or non-object budget is `invalidInput` and an oversized one
+  /// `inputTooLarge`; never throws.
+  static ProposalResult<Map<String, Object?>> messageFromSync(
+    String? budgetJson,
+  ) {
+    if (budgetJson == null) {
+      return const ProposalResult.failure(ProposalIssue.invalidInput);
+    }
+    if (!fitsSyncString(budgetJson)) {
+      return const ProposalResult.failure(ProposalIssue.inputTooLarge);
+    }
+    final budget = _decodeSyncObject(budgetJson);
+    return budget == null
+        ? const ProposalResult.failure(ProposalIssue.invalidInput)
+        : ProposalResult.success(budget);
+  }
+
+  /// `(false, null)` for malformed JSON; a decoded JSON `null` is valid.
+  static (bool, Object?) _decodeSync(String json) {
+    try {
+      return (true, jsonDecode(json));
+    } on FormatException {
+      return (false, null);
+    }
+  }
+
+  static Map<String, Object?>? _decodeSyncObject(String json) =>
+      switch (_decodeSync(json)) {
+        (true, final Map<String, Object?> object) => object,
+        _ => null,
+      };
 
   /// Bound untrusted stored JSON before adapters copy it or read source facts.
   /// Enumeration stops at the first excess card, including lazy iterables.

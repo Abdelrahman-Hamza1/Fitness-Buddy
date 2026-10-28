@@ -38,6 +38,7 @@ _Old ID: S33 (renumbered by TD-063, 2026-10-16)._
 - [ ] Goldens for the card states: loading skeleton, with question, with estimate, after confirm (light/dark, scale 2.0).
 - [ ] On the A55 against the laptop server (B03): message → card p90 ≤ 5 s over 20 real messages (recorded).
 - [ ] The owner logs real meals for 2–3 days and gives feedback.
+- [ ] `apps/mobile/test/features/buddy/data/chat_message_sync_vectors_test.dart`: `A22 chat message row mapper matches the sync corpus in both directions` (B18 D10; corpus `contracts/testdata/sync/chat-proposal-validation-vectors.json`).
 
 ## Read first
 `spec/10-ai-assistant.md` §4 · `spec/30-ux-principles.md` §2–3 · `spec/01-personas-and-journeys.md` J1–J3 · `03-architecture.md` §5–6
@@ -57,6 +58,17 @@ _Full plan written in Phase B; binding handoffs below accepted by the orchestrat
 **Exact tests to include in A22’s full plan:** `A22 message is saved before interpret dispatch`; `A22 chat message migration preserves existing user rows`; `A22 widget preview excludes already confirmed sibling draft lines`; `AI-044 follow-up updates existing card and highlights changed amount`; `A22 known assumption codes render localized text`; `A22 unknown assumption code or legacy text renders generic assumption`; `A22 confirm use case composes only selected card ops and origin`; `A22 assistant message alone stores the shared question budget`; `A22 chatMessage sync omits local attachment paths`. Use rule annotations for A22 engineering tests; the full plan assigns migration/golden paths and required gates. Add actual migration tests from every previous schema version, not only a fresh DB test.
 
 **Gates/handoff:** `make gen-app`, `make catalog-pack`, `make check-dart`, focused migration/applier/widget tests, `make trace`, then full `make test-dart` at close, serially. Independent code/security reviews for the new write path; no spec/TD acceptance implied. A21 owns `apps/mobile/integration_test/proposal_recompute_benchmark_test.dart` (profile, adb, engine p95 ≤50 ms). A22 owns the UI harness (≥100 taps, same fixture, median/p95/max and jank; check engine+render ≤50 ms separately). If the A55 is unavailable, record owner check; never claim device performance from the host p95 ≤10 ms gate. M3 live round trips still require explicit paid scope.
+
+**B18 contract handoff (2026-10-28, B18 WP1 §8):** build the drift table and mapper against `chatMessage` v1 in `contracts/openapi/sync-entities.json` and the codes in `fb_domain` `proposal_sync_codes.dart` (`ChatMessageRole`, `ChatMessageStatus`, `ChatProposalSyncBounds`); admission rules in `contracts/README.md` §chatMessage and proposal admission.
+- Composer cap 1000 UTF-16 units (`contracts/openapi/modules/buddy.yaml` `text.maxLength`).
+- Stored assistant text ≤ 8192 UTF-16 units, cut without splitting a surrogate pair; strip U+0000 (the server rejects both an unpaired surrogate and U+0000).
+- `language` is a normalized short tag from a fixed app list (`en` / `ar` / `ar-Latn`) or null, never the raw model `intent.language`.
+- No attachment paths in the sync projection (the schema has no such field and rejects extras).
+- `chatMessage` and `proposal` row IDs are random UUIDv7, never UUIDv5 derived from content.
+- Mapper `ProposalResult`s are never logged or interpolated (a success's `toString` contains the decoded draft); only `issue` may be logged.
+- Display order is `createdAtMs` then `id`; replies are grouped by `replyToMessageId`.
+- User rows send `codecVersion`/`budgetJson` as null; the assistant row carries the one shared budget. Read integers as `num` → `int` (B18 D15).
+- New exit criterion: `chat_message_sync_vectors_test.dart` (B18 D10, below).
 
 ## Progress log
 

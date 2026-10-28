@@ -4,6 +4,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:test/test.dart';
 
 import 'proposal_fixtures.dart';
+import 'proposal_rebuild_test.dart' show follow;
 import 'proposal_recompute_test.dart' show decodedItem, update, valueChecks;
 
 Map<String, Object?> copyJson(Map<String, Object?> m) =>
@@ -519,4 +520,167 @@ void main() {
       expect(historical.value!.cards.single.canConfirm, isFalse);
     },
   );
+
+  // rule: B18 contract-handoff
+  test('B18 encodeCard status equals ProposalStatus.ofLifecycle for every '
+      'lifecycle', () {
+    final s = session(message());
+    final id = s.cards.single.id;
+    for (final lifecycle in ProposalLifecycle.values) {
+      final observed = lifecycle == .active
+          ? s
+          : update(s, ProposalSetLifecycle(id, lifecycle)).session;
+      expect(observed.cards.single.lifecycle, lifecycle);
+      expect(
+        ProposalDraftCodec.encodeCard(observed, id)['status'],
+        ProposalStatus.ofLifecycle(lifecycle).code,
+      );
+    }
+  });
+
+  // rule: B18 contract-handoff
+  test('B18 cardFromSync and messageFromSync invert syncProjection', () {
+    final ids = FixedIds();
+    final first = session(
+      message([
+        intent([riceItem(), riceItem()]),
+      ]),
+      ids: ids,
+    );
+    final followUp = ProposalEngine.rebuild(
+      first.cards.single,
+      follow(
+        message([
+          intent([riceItem(), riceItem(), riceItem()]),
+        ]),
+        ids,
+      ),
+    ).value!.session;
+    final three = session(
+      message([
+        intent([riceItem()]),
+        intent([item()], slot: 'dinner'),
+        intent([item(match: oilFood(), unit: 'tbsp')], slot: 'lunch'),
+      ]),
+    );
+    expect(three.cards.length, 3);
+    final multi = update(
+      three,
+      ProposalSetLifecycle(three.cards.first.id, .confirmed),
+    ).session;
+    expect(multi.cards.first.lifecycle, ProposalLifecycle.confirmed);
+    expect(
+      followUp.cards.single.originMessageId,
+      isNot(followUp.cards.single.budgetMessageId),
+    );
+    for (final s in [first, followUp, multi]) {
+      final cards = <Map<String, Object?>>[];
+      Map<String, Object?>? budget;
+      for (final card in s.cards) {
+        final p = ProposalDraftCodec.syncProjection(s, card.id).value!;
+        final row = ProposalDraftCodec.cardFromSync(
+          interpretationJson: p.interpretation,
+          draftJson: p.draft,
+        );
+        expect(row.issue, isNull);
+        expect(row.value, copyJson(ProposalDraftCodec.encodeCard(s, card.id)));
+        cards.add(row.value!);
+        final message = ProposalDraftCodec.messageFromSync(p.messageBudget);
+        expect(
+          message.value,
+          copyJson(ProposalDraftCodec.encodeMessageBudget(s)),
+        );
+        budget = message.value;
+      }
+      final restored = ProposalDraftCodec.restore(
+        budget!,
+        cards,
+        context: context(),
+        trustedFacts: trustedSession(s, ctx: context()),
+      );
+      expect(restored.issue, isNull);
+      expect(restored.value, s);
+    }
+  });
+
+  // rule: B18 contract-handoff
+  test('B18 malformed non-object or null sync fields return a fixed issue '
+      'without throwing', () {
+    const private = 'private طعام 😀';
+    final over = '{"p":"${'😀' * 16380}"}a';
+    final limit = '{"p":"${'😀' * 16380}"}';
+    expect(limit.length, ProposalDraftCodec.syncStringLimit);
+    expect(over.length, ProposalDraftCodec.syncStringLimit + 1);
+    final cards = <(String?, String, ProposalIssue)>[
+      (null, '{}', .invalidInput),
+      ('[]', '{', .invalidInput),
+      ('[]', '[]', .invalidInput),
+      ('[]', 'null', .invalidInput),
+      ('[]', '1', .invalidInput),
+      ('[]', '"$private"', .invalidInput),
+      ('[]', '{"interpretation":[]}', .invalidInput),
+      ('[$private', '{}', .invalidInput),
+      ('', '{}', .invalidInput),
+      ('[]', over, .inputTooLarge),
+      (over, '{}', .inputTooLarge),
+    ];
+    for (final (interpretation, draft, issue) in cards) {
+      final r = ProposalDraftCodec.cardFromSync(
+        interpretationJson: interpretation,
+        draftJson: draft,
+      );
+      expect(r.issue, issue);
+      expect(r.value, isNull);
+      expect(r.toString(), isNot(contains('private')));
+    }
+    final messages = <(String?, ProposalIssue)>[
+      (null, .invalidInput),
+      ('', .invalidInput),
+      ('{', .invalidInput),
+      ('[]', .invalidInput),
+      ('null', .invalidInput),
+      ('"$private"', .invalidInput),
+      ('{"$private":', .invalidInput),
+      (over, .inputTooLarge),
+    ];
+    for (final (budget, issue) in messages) {
+      final r = ProposalDraftCodec.messageFromSync(budget);
+      expect(r.issue, issue);
+      expect(r.toString(), isNot(contains('private')));
+    }
+    // Opaque JSON at the limit decodes; restore diagnoses engine content.
+    expect(ProposalDraftCodec.messageFromSync(limit).value, {
+      'p': '😀' * 16380,
+    });
+    expect(
+      ProposalDraftCodec.cardFromSync(
+        interpretationJson: limit,
+        draftJson: limit,
+      ).value,
+      {
+        'p': '😀' * 16380,
+        'interpretation': {'p': '😀' * 16380},
+      },
+    );
+    for (final interpretation in ['null', '{}', '1', r'"\ud800"']) {
+      final card = ProposalDraftCodec.cardFromSync(
+        interpretationJson: interpretation,
+        draftJson: '{}',
+      );
+      expect(card.issue, isNull);
+      expect(card.value!.keys, ['interpretation']);
+    }
+    final empty = ProposalDraftCodec.restore(
+      ProposalDraftCodec.messageFromSync('{}').value!,
+      [
+        ProposalDraftCodec.cardFromSync(
+          interpretationJson: 'null',
+          draftJson: '{}',
+        ).value!,
+      ],
+      context: context(),
+      trustedFacts: TrustedFoodFacts(),
+    );
+    expect(empty.issue, ProposalIssue.sessionIncomplete);
+  });
 }
