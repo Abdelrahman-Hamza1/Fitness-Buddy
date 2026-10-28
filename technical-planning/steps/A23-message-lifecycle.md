@@ -70,6 +70,7 @@ _Full plan written in Phase B; binding persistence handoff accepted by the orche
 - Mapper `ProposalResult`s are never logged or interpolated (a success's `toString` contains the decoded draft); only `issue` may be logged.
 - Outcome wire codes are `unchanged` / `adjusted` / `discarded` (null until resolved). Failure codes and reply chips (AI-150/152) aren't in v1: they become local-only columns or an additive v2.
 - Read integers as `num` → `int` (B18 D15).
+- `syncProjection` returns success for two shapes the server rejects (B18 corpus `codecServerRejects`): a card with more than 128 chip taps (`choices` exceeds 128 members) and an amount below decimal range (e.g. `1e-30` g). Both are pathological; add a precheck in `syncProjection` (`syncPayloadTooLarge`, or reject the amount) or keep such rows local, so A34 never queues an unpushable row.
 - New exit criterion: `proposal_sync_vectors_test.dart` (B18 D10, below).
 
 ## Progress log

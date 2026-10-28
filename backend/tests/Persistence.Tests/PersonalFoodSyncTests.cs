@@ -239,17 +239,18 @@ public sealed class PersonalFoodSyncTests(PostgresFixture database)
 
 internal static class PersonalFoodHttp
 {
-    internal sealed record Row(Guid Id, string Hlc, string Raw, DateTimeOffset? DeletedAt = null);
+    // B18 D12: Entity defaults to personalFood, so B17 call sites are unchanged.
+    internal sealed record Row(Guid Id, string Hlc, string Raw, DateTimeOffset? DeletedAt = null, string Entity = "personalFood");
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
     public static async Task<IdentitySession> Register(IdentityHarness h) =>
         (await h.Store.GoogleSignInAsync(new("valid-" + Guid.NewGuid(), Guid.NewGuid() + "@example.invalid"), Guid.NewGuid(), h.Material(), Ct))!;
     public static string Hlc(IdentityHarness h, int counter = 0) => $"{h.Clock.GetUtcNow().ToUnixTimeMilliseconds():D13}-{counter:D5}-{h.Device}";
-    public static Row NewRow(IdentityHarness h, string? raw = null, DateTimeOffset? deleted = null) =>
-        new(Guid.NewGuid(), Hlc(h), raw ?? Fixture(), deleted);
-    public static string Fixture()
+    public static Row NewRow(IdentityHarness h, string? raw = null, DateTimeOffset? deleted = null, string entity = "personalFood") =>
+        new(Guid.NewGuid(), Hlc(h), raw ?? Fixture(entity), deleted, entity);
+    public static string Fixture(string entity = "personalFood")
     {
         using var fixture = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "entity-payloads.json")));
-        return fixture.RootElement.GetProperty("personalFood").GetRawText();
+        return fixture.RootElement.GetProperty(entity).GetRawText();
     }
     public static async Task<HttpClient> Client(WebApplicationFactory<Program> factory, IdentityHarness h, IdentitySession user)
     {
@@ -260,7 +261,7 @@ internal static class PersonalFoodHttp
     }
     public static string Body(IdentityHarness h, Guid dataset, IReadOnlyList<Row> rows)
     {
-        var changes = rows.Select(row => JsonSerializer.Serialize(new { entity = "personalFood", row.Id, schemaVersion = 1, row.Hlc, deviceId = h.Device, row.DeletedAt }, JsonSerializerOptions.Web)[..^1] + ",\"payload\":" + row.Raw + "}");
+        var changes = rows.Select(row => JsonSerializer.Serialize(new { entity = row.Entity, row.Id, schemaVersion = 1, row.Hlc, deviceId = h.Device, row.DeletedAt }, JsonSerializerOptions.Web)[..^1] + ",\"payload\":" + row.Raw + "}");
         return "{\"datasetId\":\"" + dataset + "\",\"changes\":[" + string.Join(',', changes) + "]}";
     }
     public static async Task<HttpResponseMessage> Push(HttpClient client, IdentityHarness h, Guid dataset, IReadOnlyList<Row> rows)
@@ -277,9 +278,9 @@ internal static class PersonalFoodHttp
         using var response = await client.GetAsync("/v1/sync/pull?cursor=0&limit=500", Ct);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode); return (await Json(response)).GetProperty("datasetId").GetGuid();
     }
-    public static async Task<JsonElement> Page(HttpClient client, Guid dataset, Guid? historyId = null)
+    public static async Task<JsonElement> Page(HttpClient client, Guid dataset, Guid? historyId = null, string entity = "personalFood")
     {
-        var path = historyId.HasValue ? $"/v1/sync/history/personalFood/{historyId.Value}" : "/v1/sync/pull";
+        var path = historyId.HasValue ? $"/v1/sync/history/{entity}/{historyId.Value}" : "/v1/sync/pull";
         using var response = await client.GetAsync($"{path}?cursor=0&limit=500&datasetId={dataset}", Ct);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode); return await Json(response);
     }

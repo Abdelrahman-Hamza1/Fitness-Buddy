@@ -5,6 +5,7 @@
   <ItemGroup><ProjectReference Include="../../src/Modules/UserData/FitnessBuddy.Modules.UserData.csproj" /></ItemGroup>
   <ItemGroup>
     <Content Include="../../../contracts/testdata/sync/personal-food-validation-vectors.json" Link="personal-food-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../contracts/testdata/sync/chat-proposal-validation-vectors.json" Link="chat-proposal-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../contracts/openapi/sync-entities.json" Link="sync-entities.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../contracts/testdata/sync/entity-payloads.json" Link="entity-payloads.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../technical-planning/steps/A09-personal-foods-quick-add.md" Link="A09-personal-foods-quick-add.md" CopyToOutputDirectory="PreserveNewest" />

@@ -10,6 +10,17 @@ Files (present and planned):
 | `normalization_cases.yaml` | Text normalization cases (input → normalized key), at least 100 | `fb_text` (Dart), Catalog module (C#) | S08 (Dart) ✅, B07 (C#) |
 | `sync/*.json` | Sync push/pull payload examples | the app's sync code (Dart), UserData module (C#) | the sync steps |
 
+## `sync/chat-proposal-validation-vectors.json`
+
+The B18 corpus for the `chatMessage` and `proposal` v1 sync entities. Generated, never hand-edited: `make gen-chat-proposal-vectors` runs `packages/fb_domain/tool/generate_chat_proposal_vectors.dart`, and the Dart test `chat_proposal_sync_vectors_test.dart` fails if the committed bytes differ. Synthetic content only.
+
+- `version` (`1`), `constants` (`ChatProposalSyncBounds`: UTF-16 limits and the `codecVersion` range) and `vocabularies` (the four closed code lists, in contract order).
+- `payloads`: `{id, entity, rawPayload, deleted, serverAccepts, appReads, source, probe?}`. `rawPayload` is the exact payload JSON text (unpaired surrogates appear as `\ud800`-style escapes, so the file stays valid UTF-8). `source` is `codec` for real A21 `syncProjection` output and `synthetic` otherwise. `probe` names the field a UTF-16 boundary case measures; the case ID ends in its length in units.
+- **A payload passes** on the server when `SyncPayloads` admits it exactly when `serverAccepts` is true, both live and as a full tombstone (`deleted` only says which way the case was written). It passes in Dart when a reader of the v1 fields accepts it exactly when `appReads` is true: the contract's fields, types, UTF-16 bounds, ranges and UUID shape, the closed codes through the fb_domain enums, and JSON fields that decode. The generic nested pass (unpaired surrogates, U+0000, depth, members, items, key length, duplicate keys, decimal numbers) is server-only.
+- `serverRejectsAppTolerates`: exactly the payloads with `serverAccepts` false and `appReads` true. The app must not produce them, and A34 must not retry them endlessly.
+- `codecServerRejects`: real codec projections that `syncProjection` accepts but the server rejects (a card with more than 128 chip taps, an amount below decimal range). Pathological shapes, handed to A23.
+- `restoreScenarios`: `{id, messagePayloadId, cardPayloadIds, expect}`. The Dart test decodes the named payloads with `ProposalDraftCodec.messageFromSync` / `cardFromSync`, restores them with the fixture context, and expects `ok` or that fixed `ProposalIssue` name, never an exception.
+
 ## Rules
 
 - **One concern per file or folder**, named after it (`snake_case`). The README of a new file's folder (or this one) documents its format: fields, units, what counts as a pass.

@@ -6,7 +6,9 @@
   <ItemGroup>
     <Using Include="Xunit" />
     <Compile Include="../UserData.Tests/PersonalFoodCases.cs" Link="PersonalFoodCases.cs" />
+    <Compile Include="../UserData.Tests/ChatProposalCases.cs" Link="ChatProposalCases.cs" />
     <None Include="../../../contracts/testdata/sync/personal-food-validation-vectors.json" Link="personal-food-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../../contracts/testdata/sync/chat-proposal-validation-vectors.json" Link="chat-proposal-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../../contracts/openapi/sync-entities.json" Link="sync-entities.json" CopyToOutputDirectory="PreserveNewest" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="Testcontainers.PostgreSql" />

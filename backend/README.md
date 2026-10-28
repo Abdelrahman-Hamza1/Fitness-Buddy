@@ -261,6 +261,8 @@ validator and corpus before an app emits them (or use a new schema version); see
 The Docker-free `UserData.Tests` project pins bounds/vocabularies and checks semantic parity;
 `Persistence.Tests` proves authenticated HTTP, retention, erasure and diagnostic privacy via Docker.
 
+B18 adds `chatMessage` v1 and `proposal` v1 with **no entity-specific validator**: the shared schema/representability checks are the whole admission (closed role/status/outcome vocabularies, bounded text and opaque `...Json` engine strings ≤ 32768 UTF-16 units with the generic nested-JSON limits, UUID-shaped references, nullable message refs on proposals not created from chat). The server never loads sibling rows and never validates engine JSON; the app's A21 restore diagnoses cross-row issues. Ill-formed UTF-16 is already rejected as `invalidPayload` by `System.Text.Json` (pinned by tests for every entity). The shared corpus is `contracts/testdata/sync/chat-proposal-validation-vectors.json` (`make gen-chat-proposal-vectors`, manual).
+
 Unbound/mismatched pushes never write or acknowledge an immutable version. Discover the dataset
 at pull cursor0, bind writes, merge a changed dataset before re-upload, and never advance a pull
 cursor from a push acknowledgement. Sequences are commit ordered per user. History expires after

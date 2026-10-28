@@ -53,7 +53,11 @@ _Written in Phase B._
 - Send push bodies as unescaped UTF-8 (Dart `jsonEncode`'s default). The largest valid `proposal` row is about 197 KB that way and fits the 256 KiB push cap; `\u`-escaping non-ASCII would not (B18 D14).
 - Read integers as `num` → `int`: the server admits whole-number `1.0` for integer fields (B18 D15).
 - Rows the server rejects permanently (`invalidPayload`, e.g. an unpaired surrogate) must not be retried endlessly (backlog #111).
-- Use smaller pull pages when rows are large (500 × ~197 KB worst case).
+- Size push batches by encoded UTF-8 bytes (with margin under 256 KiB), not just by the 500-change cap; send a near-cap row in a push of its own.
+- On 413, split the batch and retry the halves; a single row that still gets 413 is parked like a permanent rejection (#111) so it never blocks the queue.
+- Pull until a page comes back **empty**; never stop because `changes` < `limit`.
+- Pulled rows can be about 2× larger on the wire than pushed ones: the server `\u`-escapes non-ASCII, so the largest `proposal` row is about 393 KB in a pull page. Use small pull pages (`limit`) when rows are large; 500 such rows would be ~200 MB.
+- Tombstones carry a scrubbed valid payload (`chatMessage`: `text: ""`, `budgetJson: null`; `proposal`: keep `codecVersion`, `draftJson: "{}"`, `interpretationJson: null`), as A23's clear history writes them (B18 handoff).
 
 ## Outcome
 _Written in Phase E._

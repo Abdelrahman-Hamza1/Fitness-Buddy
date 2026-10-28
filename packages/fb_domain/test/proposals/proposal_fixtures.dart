@@ -217,10 +217,20 @@ Map<String, Object?> t01() => message([
 
 // Test-only baseline snapshot captured before storage mutation. Production uses
 // ProposalInputLoader's independent database reads, never this fixture adapter.
-TrustedFoodFacts trustedSession(ProposalSession s, {ProposalContext? ctx}) {
+TrustedFoodFacts trustedSession(ProposalSession s, {ProposalContext? ctx}) =>
+    trustedRows([
+      for (final card in s.cards) ProposalDraftCodec.encodeCard(s, card.id),
+    ], ctx: ctx);
+
+// The same baseline from card rows (for example decoded sync fields); a row
+// without a food table contributes nothing and is left for restore to reject.
+TrustedFoodFacts trustedRows(
+  Iterable<Map<String, Object?>> rows, {
+  ProposalContext? ctx,
+}) {
   final foods = <String, ProposalFood>{};
-  for (final card in s.cards) {
-    final row = ProposalDraftCodec.encodeCard(s, card.id);
+  for (final row in rows) {
+    if (row['foods'] is! List) continue;
     for (final raw in row['foods']! as List) {
       final f = raw as List;
       Nutrients nutrientsAt(Object? raw) {
