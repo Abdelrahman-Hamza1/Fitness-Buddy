@@ -287,7 +287,7 @@ The only places one track waits for the other. The contract is the meeting point
 3. Steps marked 🟨 resume from their card's **Progress log**.
 4. **Claude orders both tracks (TD-085):** one step at a time in the folder, chosen by the critical path: milestones first, then a step the other track waits on (e.g. B18's contract before A22/A23, A33 before A34, B12's contract before A37), then the lowest-numbered ready step. The owner can reorder it.
 
-One folder (`~/work/fitness_buddy`), one step branch at a time: start from a clean `git status` on the latest `main`, push the branch at every phase change (`../13-delivery-process.md` §10).
+Up to three lanes (TD-087: `~/work/fitness_buddy`, `_2`, `_3`), one step branch per lane: start from a clean `git status` on the latest `origin/main`, push the branch at every phase change (`../13-delivery-process.md` §10).
 
 ## 8. Old → new IDs (TD-063)
 

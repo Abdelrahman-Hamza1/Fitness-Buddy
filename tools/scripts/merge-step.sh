@@ -80,7 +80,8 @@ if ! "$root/tools/scripts/ci-status.sh" "$sha" "${MERGE_CI_TIMEOUT_MIN:-25}"; th
   die "ci is not green on $sha; main untouched, $merge and $branch kept"
 fi
 
-git push origin "$sha:main"
+git push origin "$sha:main" \
+  || die "could not move main (another lane merged while ci ran?); main untouched: rerun merge-step to rebuild on the new main (TD-087)"
 git push -q origin --delete "$merge"
 if git ls-remote -q --exit-code --heads origin "$branch" >/dev/null; then
   git push -q origin --delete "$branch"

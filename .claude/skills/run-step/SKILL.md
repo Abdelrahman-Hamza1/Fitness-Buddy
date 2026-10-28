@@ -11,7 +11,7 @@ Track progress with a todo list mirroring the phases below. Keep the owner infor
 
 ## 0. Pick the step
 - If the owner named a step, use it. Otherwise open `technical-planning/steps/README.md` §4 (app track §4.1, backend track §4.2) and pick per §7: by the critical path across both tracks (milestones first, then what unblocks the other track), else the lowest-numbered ready step (bold = the other track; "(contract)" = its contract commit is on `main`).
-- Work in `~/work/fitness_buddy`, one step branch at a time: start only with a clean `git status` on an up-to-date `main` (`PROCESS.md` A7).
+- Up to three lanes in parallel (TD-087, `PROCESS.md` A7): clones `~/work/fitness_buddy`, `~/work/fitness_buddy_2`, `~/work/fitness_buddy_3`, one step branch per lane, each started from a clean `git status` on the current `origin/main`. Give every agent brief its lane folder (absolute paths) and the rule that heavy commands go through `tools/scripts/heavy.sh`. Pick lanes with disjoint areas.
 - If a step is 🟨 in progress (from an earlier session), **resume it**: read its card (plan + partial outcome), `git log` on its branch, and continue from the first unfinished phase.
 
 ## A. Orient: Definition of Ready
@@ -31,7 +31,7 @@ Track progress with a todo list mirroring the phases below. Keep the owner infor
 ## C. Implement
 1. Set the board to 🟨. Work through the plan's WPs in order. For each WP:
    - Brief the right specialist (`flutter-engineer`, `dotnet-engineer`, `platform-engineer`, `ai-engineer`, `data-curator`) with the **self-contained brief** template (process §6). One WP per brief. Agents run on Opus; pass `model: sonnet` only for mechanical WPs (`PROCESS.md` B).
-   - Independent WPs touching disjoint files may run in parallel in the same folder (no worktrees); each agent commits only its own files by explicit path. One heavy build at a time (7 GB laptop).
+   - Independent WPs touching disjoint files may run in parallel in the same folder (no worktrees); each agent commits only its own files by explicit path. Heavy commands through `tools/scripts/heavy.sh`, one at a time machine-wide (7 GB laptop).
    - When it returns: inspect the diff (`git diff`), run `make check` + the relevant tests, fix small issues or re-brief once with specifics. Commit with a Conventional Commit message referencing the step.
    - No per-WP ping to the owner (TD-054); message them only for owner actions or blockers.
 2. Contract changes go first: contract WP → `make gen` → server WP → app WP.
