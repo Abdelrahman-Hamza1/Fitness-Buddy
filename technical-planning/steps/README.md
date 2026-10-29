@@ -172,9 +172,9 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A22](A22-chat-proposal-card.md) | Chat sheet & proposal card | Claude | A08b, A20, A21, **B08**, **B18** (contract) | L | S33 |  | ⬜ |
 | [A23](A23-message-lifecycle.md) | Message lifecycle, pending & failures | Claude | A22, **B18** (contract) | L | S34 | **M3** | ⬜ |
 | [A24](A24-online-search-pack-updates.md) | Online search & pack updates (app) | Claude | A07, **B07** | M | S30 app part |  | ⬜ |
-| [A25](A25-diary-edits-by-chat.md) | Diary edits by chat (app) | Claude | A23, **B09** (contract) | M | S35 app part |  | ⬜ |
-| [A26](A26-memory-user-model.md) | Memory & user model (app) | Claude | A23, **B09** (contract) | M | S36 app part |  | ⬜ |
-| [A27](A27-batches-chat-foods.md) | Batches, personal foods & saved meals by chat (app) | Claude | A09b, A23, **B09** (contract) | L | S37 app part |  | ⬜ |
+| [A25](A25-diary-edits-by-chat.md) | Diary edits by chat (app) | Claude | A23, **B09a** (contract) | M | S35 app part |  | ⬜ |
+| [A26](A26-memory-user-model.md) | Memory & user model (app) | Claude | A23, **B09a** (contract) | M | S36 app part |  | ⬜ |
+| [A27](A27-batches-chat-foods.md) | Batches, personal foods & saved meals by chat (app) | Claude | A09b, A23, **B09a** (contract) | L | S37 app part |  | ⬜ |
 | [A28](A28-barcode-label-scan.md) | Barcode & label scan (app) | Claude | A23, **B10** (contract) | L | S38 app part |  | ⬜ |
 | [A29](A29-photo-body-import.md) | Photo logging, body data by chat & paste import (app) | Claude | A15, A23, **B10** (contract) | M | S39 app part |  | ⬜ |
 | [A30](dish-batches.md) | Dish batch 5: sweets, drinks & Ramadan staples | Claude | A19 | S | D5 |  | ⏸ deferred (TD-074): after A41 |
@@ -206,7 +206,8 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [B06](B06-account-deletion-backend.md) | Account deletion (backend) | B04, B05 | L | S28 server part |  | ✅ |
 | [B07](B07-catalog-service.md) | Catalog service & online search | B04, **A05** | M | S30 server part |  | ✅ |
 | [B08](B08-buddy-interpret-service.md) | Buddy interpret service | B02, B07 | L | S31 |  | ✅ |
-| [B09](B09-buddy-intents-edits-memory-batches.md) | Buddy intents: edits, memory, batches & foods | B08, **A21** | M | S35–S37 server parts |  | ⬜ |
+| [B09a](B09-buddy-intents-edits-memory-batches.md) | Buddy intents server: contract, v2 grammar & resolver (split from B09) | B08, **A21** | L | S35–S37 server parts |  | 🟨 |
+| [B09b](B09-buddy-intents-edits-memory-batches.md) | Full AQ metrics with the real ProposalEngine (M3 eval half; split from B09) | B09a | M | S35–S37 server parts | **M3** eval | ⬜ |
 | [B10](B10-barcode-vision-import.md) | Barcode lookup, label & meal photos, paste import | B07, B08 | L | S38–S39 server parts |  | ⬜ |
 | [B11](B11-buddy-qa-suggestions.md) | Buddy Q&A & suggestions | B08 | M | S40 server part |  | ⬜ |
 | [B12](B12-buddy-workouts-review-ramadan.md) | Buddy workouts, weekly review & Ramadan | B08 | M | S42, S44, S46 server parts |  | ⬜ |
@@ -276,7 +277,7 @@ The only places one track waits for the other. The contract is the meeting point
 | **A13a** targets storage (contract), **A14** weigh-ins | B19 | The `profile`, `goalPhase`, `targetSettings` v1 entities and their wire rules; A14's deferred `weighIn` v2 fields |
 | **B19** body & targets sync | A34 | Server admission of those entities before the app uploads them |
 | **B07** catalog service | A24 | Online search and pack releases |
-| **B09** intents (contract) | A25, A26, A27 | Edits, memory, batches, personal foods, saved meals |
+| **B09a** intents (contract) | A25, A26, A27 | Edits, memory, batches, personal foods, saved meals |
 | **B10** barcode & vision (contract) | A28, A29 | Barcode lookup, label extraction, photos, import |
 | **B11** Q&A & suggestions (contract) | A31 | QueryPlans and suggestions |
 | **B05** sync, **B06** deletion | A34, A35 | Push/pull/history; `DELETE /v1/me` |

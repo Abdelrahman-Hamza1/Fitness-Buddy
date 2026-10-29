@@ -14,6 +14,54 @@ List<PublicJson> loadPublicCases(String source) {
   return cases;
 }
 
+/// The phone's default meal slots (fb_domain `DefaultSlots`, TD-070): UUIDv5
+/// natural IDs, so the eval exercises the same slot IDs as a real request.
+const List<PublicJson> publicDefaultSlots = [
+  {
+    'id': '4c5aed24-f404-506e-a925-f0ff33099753',
+    'name': 'Breakfast',
+    'window': '04:00-11:00',
+  },
+  {
+    'id': 'ca0daf21-3d15-53c5-b4ec-ee09a5e0c674',
+    'name': 'Lunch',
+    'window': '11:00-16:00',
+  },
+  {
+    'id': '260cb3fe-def5-53e5-9f5c-d64f61a4ec3e',
+    'name': 'Dinner',
+    'window': '16:00-22:00',
+  },
+  {
+    'id': '9c906ed8-064d-52d3-b116-803e12ee5630',
+    'name': 'Snacks',
+    'window': null,
+  },
+];
+
+/// The `/v1/buddy/interpret` body for one public case.
+PublicJson publicInterpretBody({
+  required String id,
+  required PublicJson test,
+  required Object? now,
+}) => {
+  'requestId': id,
+  'text': test['text'],
+  'now': now,
+  'tzOffsetMin': 180,
+  'ramadan': {'active': false, 'fajr': null, 'maghrib': null},
+  'slots': publicDefaultSlots,
+  'activeProposal': null,
+  'context': {
+    'personalFoods': <dynamic>[],
+    'savedMeals': <dynamic>[],
+    'openBatches': <dynamic>[],
+    'memory': test['memory'],
+    'recentEntries': <dynamic>[],
+    'customExercises': <dynamic>[],
+  },
+};
+
 /// Parse/resolution checks only. Full proposal quantities/questions await A21.
 PublicJson gradePublic(PublicJson test, PublicJson response) {
   final expected = test['expected'] as PublicJson;

@@ -76,7 +76,8 @@ final class ProposalIntent extends ProposalValue {
   /// Original message position.
   final int index;
 
-  /// Closed v1 intent discriminator.
+  /// Known intent discriminator, or `unrecognized` for a kind this version
+  /// can't handle yet (B09 D4).
   final String kind;
 
   /// Foods; empty for routing outcomes.

@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A23, **B09** (contract) | M | Claude | ⬜ Not started |
+| App | A23, **B09a** (contract) | M | Claude | ⬜ Not started |
 
 _Old ID: S36 app part (renumbered by TD-063, 2026-10-16)._
 
@@ -18,6 +18,13 @@ _Old ID: S36 app part (renumbered by TD-063, 2026-10-16)._
 - **Weighing nudge** (AI-084): at most once per food per month, for estimated foods logged weekly or more.
 - **"Buddy remembers" screen** (AI-082, AC-032): plain-language list grouped by kind. Edit, delete, and see where each item came from. Learned habits are shown as "Buddy noticed…" and are used as defaults **only after the user accepts** them.
 - **Eval export** (TQ-07): an action exporting discarded/edited proposals as anonymised eval case drafts (user-initiated only).
+
+## Handoff from B09a (contract)
+Contract: `memoryChange` (`BuddyMemoryChange`: `operation`, `memoryKind`, `subject`, `dimension`, `value`, `amount`, `food`; B09 card D11, §3.1).
+- Map the fields to `memory_items` / `savedDefaults` (`state:<yieldGroup>`). `amount` is authoritative; `food.amount` is ignored. `memoryKind: portion` (a usual amount) differs from `dimension: portion` (a default size variant). A specific cooking-fat food isn't carried yet.
+- **Forget/overwrite matching:** match locally on (`memoryKind`, `food.match.key` or its yield group). Use the exact normalized `subject` only for alias, brand and nickname; otherwise clarify.
+- The request `memory.kind` stays an open string. **If `memory_items` sync uses `memoryKind` as a closed vocabulary, TD-080 applies** (server validator + corpus first, B09 PA16). An optional `BuddyMemory.id` / `BuddyMemoryChange.targets` can be added later, additively.
+- Exit criterion to add (B09 PA11): engine-level T25 (and T03 via defaults).
 
 ## Out of scope
 - Q&A and suggestions (A31), which consume the model.

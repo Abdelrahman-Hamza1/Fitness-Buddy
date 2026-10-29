@@ -118,6 +118,24 @@ void main() {
     expect(gradePublic(test, response)['shares'], isFalse);
     expect(gradePublic(test, response)['explicit'], isFalse);
   });
+  test('TD-070 public request sends the default slots with natural ids', () {
+    final body = publicInterpretBody(
+      id: '019a0000-0000-7000-8000-000000000001',
+      test: {'text': 'two eggs', 'memory': <dynamic>[]},
+      now: '2026-10-29T08:00:00Z',
+    );
+    final slots = (body['slots'] as List<dynamic>).cast<PublicJson>();
+    expect(slots.map((s) => s['id']), [
+      '4c5aed24-f404-506e-a925-f0ff33099753',
+      'ca0daf21-3d15-53c5-b4ec-ee09a5e0c674',
+      '260cb3fe-def5-53e5-9f5c-d64f61a4ec3e',
+      '9c906ed8-064d-52d3-b116-803e12ee5630',
+    ]);
+    // UUIDv5, not v7: the server must accept natural context IDs.
+    expect(slots.every((s) => (s['id'] as String)[14] == '5'), isTrue);
+    expect((body['context'] as PublicJson)['memory'], isEmpty);
+    expect(body['requestId'], '019a0000-0000-7000-8000-000000000001');
+  });
 }
 
 // Build a sample from expected facts, then corrupt individual fields.

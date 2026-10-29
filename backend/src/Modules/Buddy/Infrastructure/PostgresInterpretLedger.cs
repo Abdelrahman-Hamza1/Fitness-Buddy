@@ -30,7 +30,7 @@ internal sealed class PostgresInterpretLedger(NpgsqlDataSource source, ICurrentU
             if (await row.ReadAsync(cancellationToken))
             {
                 if (!string.Equals(fingerprint, row.GetString(0), StringComparison.Ordinal)) { return new(InterpretStatus.Conflict); }
-                return row.IsDBNull(1) ? new(InterpretStatus.Pending) : new(InterpretStatus.Success, JsonSerializer.Deserialize<BuddyInterpretation>(row.GetString(1), InterpretProtocol.Json));
+                return row.IsDBNull(1) ? new(InterpretStatus.Pending) : new(InterpretStatus.Success, JsonSerializer.Deserialize<BuddyInterpretation>(row.GetString(1), InterpretProtocol.Stored));
             }
         }
         var dispatchTime = clock.GetUtcNow();

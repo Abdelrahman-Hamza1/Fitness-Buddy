@@ -1,0 +1,38 @@
+// coverage:ignore-file
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, unused_import, invalid_annotation_target, unnecessary_import
+
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+import 'buddy_intent.dart';
+import 'buddy_saved_meal_log_kind.dart';
+import 'buddy_share.dart';
+
+part 'buddy_saved_meal_log.freezed.dart';
+part 'buddy_saved_meal_log.g.dart';
+
+/// Log a saved meal by name (DY-031).
+@Freezed()
+abstract class BuddySavedMealLog with _$BuddySavedMealLog {
+  const factory BuddySavedMealLog({
+    required BuddySavedMealLogKind kind,
+    required String language,
+    required String script,
+
+    /// A request savedMeals ID.
+    required String savedMealId,
+
+    /// Literal time phrase as the user said it (B08); the app resolves it.
+    required String? timeHint,
+
+    /// The exact provided slot name when one matches, else a canonical English slot word: breakfast, lunch, dinner, snack, suhoor, iftar. No match: null (no hint).
+    required String? slotHint,
+
+    /// Closed day grammar the app resolves locally: today, yesterday, daysAgo:N (N is 2-999; 0 and 1 are today and yesterday), lastWeekday:mon..sun (the most recent such day strictly before today), date:[YYYY-]MM-DD (a date the user stated). The server guarantees a valid month/day, and a valid calendar date when a year is given. A missing year is the most recent past occurrence (02-29 resolves up to 4 years back); the app rejects future dates. A value the app can't parse routes the intent as unrecognized.
+    required String? dateHint,
+    required BuddyShare? share,
+  }) = _BuddySavedMealLog;
+
+  factory BuddySavedMealLog.fromJson(Map<String, Object?> json) =>
+      _$BuddySavedMealLogFromJson(json);
+}

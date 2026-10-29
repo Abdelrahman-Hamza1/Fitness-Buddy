@@ -23,6 +23,10 @@ internal static class InterpretProtocol
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false) },
     };
 
+    // Replays read stored responses: one written before an additive nullable member existed reads it as null,
+    // and jsonb reorders keys, so the "kind" discriminator may not come first (e.g. after "food").
+    public static JsonSerializerOptions Stored { get; } = new(Json) { RespectRequiredConstructorParameters = false, AllowOutOfOrderMetadataProperties = true };
+
     public static string Prompt { get; } = ReadPrompt();
     public static JsonElement Schema { get; } = GenerateSchema();
 

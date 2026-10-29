@@ -17,8 +17,15 @@ abstract class BuddyFoodLog with _$BuddyFoodLog {
     required BuddyFoodLogKind kind,
     required String language,
     required String script,
+
+    /// Literal time phrase as the user said it (B08); the app resolves it.
     required String? timeHint,
+
+    /// The exact provided slot name when one matches, else a canonical English slot word: breakfast, lunch, dinner, snack, suhoor, iftar. No match: null (no hint).
     required String? slotHint,
+
+    /// Closed day grammar the app resolves locally: today, yesterday, daysAgo:N (N is 2-999; 0 and 1 are today and yesterday), lastWeekday:mon..sun (the most recent such day strictly before today), date:[YYYY-]MM-DD (a date the user stated). The server guarantees a valid month/day, and a valid calendar date when a year is given. A missing year is the most recent past occurrence (02-29 resolves up to 4 years back); the app rejects future dates. A value the app can't parse routes the intent as unrecognized.
+    required String? dateHint,
     required String? dishGroup,
     required List<BuddyFoodItem> items,
   }) = _BuddyFoodLog;

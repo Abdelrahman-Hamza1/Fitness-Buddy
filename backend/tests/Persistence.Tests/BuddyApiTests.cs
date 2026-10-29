@@ -49,7 +49,11 @@ public sealed class BuddyApiTests(PostgresFixture postgres)
         using (var replay = await Send(client, h, pending)) { Assert.Equal(HttpStatusCode.ServiceUnavailable, replay.StatusCode); Assert.Equal(5, wire.Calls); }
         Assert.DoesNotContain("private-canary", string.Join("|", api.Logs.Messages), StringComparison.Ordinal);
         Assert.DoesNotContain("different-private-canary", string.Join("|", api.Logs.Messages), StringComparison.Ordinal);
-        Assert.All(wire.Requests, body => { Assert.DoesNotContain(h.Device.ToString(), body, StringComparison.Ordinal); Assert.DoesNotContain(id.ToString(), body, StringComparison.Ordinal); });
+        Assert.All(wire.Requests, body =>
+        {
+            Assert.DoesNotContain(h.Device.ToString(), body, StringComparison.Ordinal); Assert.DoesNotContain(id.ToString(), body, StringComparison.Ordinal);
+            Assert.All(DefaultSlotIds, slot => Assert.DoesNotContain(slot, body, StringComparison.OrdinalIgnoreCase));
+        });
         var user = (await h.Tokens.ValidateAsync(client.DefaultRequestHeaders.Authorization!.Parameter!, Ct))!.FindFirst("sub")!.Value;
         await using var inspect = await postgres.SessionAsync(Guid.Parse(user));
         await using var count = inspect.Command("SELECT sum(calls),sum(input_tokens),sum(messages) FROM usage.daily WHERE user_id=$1"); count.Parameters.AddWithValue(Guid.Parse(user));
@@ -115,20 +119,81 @@ public sealed class BuddyApiTests(PostgresFixture postgres)
         using (var replay = await Send(limitedClient, limitedH, key)) { Assert.Equal(HttpStatusCode.ServiceUnavailable, replay.StatusCode); Assert.Equal(1, limitedWire.Calls); }
     }
 
-    internal static object Request(Guid id, IdentityHarness h, string text = "private-canary") => new
+    // The phone's default meal slots carry UUIDv5 natural IDs (TD-070, fb_domain DefaultSlots), not UUIDv7.
+    internal static readonly string[] DefaultSlotIds =
+        ["4c5aed24-f404-506e-a925-f0ff33099753", "ca0daf21-3d15-53c5-b4ec-ee09a5e0c674", "260cb3fe-def5-53e5-9f5c-d64f61a4ec3e", "9c906ed8-064d-52d3-b116-803e12ee5630"];
+    internal static object[] DefaultSlots() =>
+    [
+        new { id = DefaultSlotIds[0], name = "Breakfast", window = "04:00-11:00" }, new { id = DefaultSlotIds[1], name = "Lunch", window = "11:00-16:00" },
+        new { id = DefaultSlotIds[2], name = "Dinner", window = "16:00-22:00" }, new { id = DefaultSlotIds[3], name = "Snacks", window = (string?)null },
+    ];
+    [Fact]
+    [Trait("Rule", "05.1-natural-ids")]
+    public async Task Natural_slot_ids_are_accepted_while_nil_slot_ids_and_non_v7_request_ids_are_rejected()
+    {
+        await using var h = new IdentityHarness(postgres); await h.InitializeAsync(); using var wire = new BuddyWire();
+        await using var api = new BuddyApi(postgres, h, wire); using var client = api.CreateClient(); Headers(client, h); await SignIn(client, h);
+        using (var natural = await Send(client, h, Guid.CreateVersion7())) { Assert.Equal(HttpStatusCode.OK, natural.StatusCode); Assert.Equal(1, wire.Calls); }
+        using (var nil = await Send(client, h, Guid.CreateVersion7(), slots: [new { id = Guid.Empty, name = "Breakfast", window = (string?)null }]))
+        { Assert.Equal(HttpStatusCode.BadRequest, nil.StatusCode); }
+        using (var compact = await Send(client, h, Guid.CreateVersion7(), slots: [new { id = DefaultSlotIds[0].Replace("-", "", StringComparison.Ordinal), name = "Breakfast", window = (string?)null }]))
+        { Assert.Equal(HttpStatusCode.BadRequest, compact.StatusCode); }
+        using (var v5Request = await Send(client, h, Guid.Parse(DefaultSlotIds[0]))) { Assert.Equal(HttpStatusCode.BadRequest, v5Request.StatusCode); }
+        using (var v4Request = await Send(client, h, Guid.NewGuid())) { Assert.Equal(HttpStatusCode.BadRequest, v4Request.StatusCode); }
+        Assert.Equal(1, wire.Calls);
+    }
+
+    [Fact]
+    [Trait("Rule", "04.8-additive-contract")]
+    [Trait("Req", "MN-005")]
+    public async Task Active_card_is_optional_null_equals_absent_for_replay_and_a_card_changes_the_fingerprint()
+    {
+        await using var h = new IdentityHarness(postgres); await h.InitializeAsync(); using var wire = new BuddyWire();
+        await using var api = new BuddyApi(postgres, h, wire); using var client = api.CreateClient(); Headers(client, h); await SignIn(client, h);
+        var id = Guid.CreateVersion7();
+        using (var absent = await Send(client, h, id)) { Assert.Equal(HttpStatusCode.OK, absent.StatusCode); Assert.Equal(1, wire.Calls); }
+        using (var explicitNull = await SendBody(client, id, WithCard(Request(id, h), null))) { Assert.Equal(HttpStatusCode.OK, explicitNull.StatusCode); Assert.Equal(1, wire.Calls); }
+        var card = JsonNode.Parse("""{"slot":"Breakfast","time":"08:00","lines":[{"name":"private-card-canary","amount":2,"unitCode":"piece","state":"cooked"}]}""");
+        using (var changed = await SendBody(client, id, WithCard(Request(id, h), card))) { Assert.Equal(HttpStatusCode.Conflict, changed.StatusCode); Assert.Equal(1, wire.Calls); }
+        var fresh = Guid.CreateVersion7();
+        using (var withCard = await SendBody(client, fresh, WithCard(Request(fresh, h), card))) { Assert.Equal(HttpStatusCode.OK, withCard.StatusCode); Assert.Equal(2, wire.Calls); }
+        var lines = new JsonArray([.. Enumerable.Range(0, 31).Select(_ => JsonNode.Parse("""{"name":"private-over-canary","amount":1,"unitCode":"piece","state":null}"""))]);
+        var over = Guid.CreateVersion7();
+        using (var tooMany = await SendBody(client, over, WithCard(Request(over, h), new JsonObject { ["slot"] = null, ["time"] = null, ["lines"] = lines })))
+        { Assert.Equal(HttpStatusCode.BadRequest, tooMany.StatusCode); Assert.Equal(2, wire.Calls); }
+        var orphan = Guid.CreateVersion7(); var noProposal = WithCard(Request(orphan, h), card); noProposal["activeProposal"] = null;
+        using (var missingProposal = await SendBody(client, orphan, noProposal)) { Assert.Equal(HttpStatusCode.BadRequest, missingProposal.StatusCode); Assert.Equal(2, wire.Calls); }
+        var logs = string.Join("|", api.Logs.Messages);
+        Assert.DoesNotContain("private-card-canary", logs, StringComparison.Ordinal); Assert.DoesNotContain("private-over-canary", logs, StringComparison.Ordinal);
+    }
+
+    private static JsonNode WithCard(object request, JsonNode? card)
+    {
+        // A card is sent with its active proposal (AI-044).
+        var node = JsonSerializer.SerializeToNode(request)!; node["context"]!["activeCard"] = card?.DeepClone();
+        if (card is not null) { node["activeProposal"] = "019a0000-0000-7000-8000-0000000000a1"; }
+        return node;
+    }
+    private static async Task<HttpResponseMessage> SendBody(HttpClient client, Guid id, JsonNode body)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/v1/buddy/interpret") { Content = new StringContent(body.ToJsonString(), Encoding.UTF8, "application/json") };
+        request.Headers.Add("Idempotency-Key", id.ToString()); return await client.SendAsync(request, Ct);
+    }
+
+    internal static object Request(Guid id, IdentityHarness h, string text = "private-canary", object[]? slots = null) => new
     {
         requestId = id,
         text,
         now = h.Clock.GetUtcNow(),
         tzOffsetMin = 180,
         ramadan = new { active = false, fajr = (string?)null, maghrib = (string?)null },
-        slots = Array.Empty<object>(),
+        slots = slots ?? DefaultSlots(),
         activeProposal = (Guid?)null,
         context = new { personalFoods = Array.Empty<object>(), savedMeals = Array.Empty<object>(), openBatches = Array.Empty<object>(), memory = Array.Empty<object>(), recentEntries = Array.Empty<object>(), customExercises = Array.Empty<object>() },
     };
-    internal static async Task<HttpResponseMessage> Send(HttpClient client, IdentityHarness h, Guid id, string text = "private-canary")
+    internal static async Task<HttpResponseMessage> Send(HttpClient client, IdentityHarness h, Guid id, string text = "private-canary", object[]? slots = null)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Post, "/v1/buddy/interpret") { Content = JsonContent.Create(Request(id, h, text)) };
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/v1/buddy/interpret") { Content = JsonContent.Create(Request(id, h, text, slots)) };
         request.Headers.Add("Idempotency-Key", id.ToString()); return await client.SendAsync(request, Ct);
     }
     internal static void Headers(HttpClient client, IdentityHarness h)

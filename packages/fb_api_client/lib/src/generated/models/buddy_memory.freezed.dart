@@ -16,6 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BuddyMemory {
 
+/// Open string; the memoryKind codes are recommended: default, portion, alias, brand, nickname.
  String get kind; String get key; String get value;
 /// Create a copy of BuddyMemory
 /// with the given fields replaced by the non-null parameter values.
@@ -220,6 +221,7 @@ class _BuddyMemory implements BuddyMemory {
   const _BuddyMemory({required this.kind, required this.key, required this.value});
   factory _BuddyMemory.fromJson(Map<String, dynamic> json) => _$BuddyMemoryFromJson(json);
 
+/// Open string; the memoryKind codes are recommended: default, portion, alias, brand, nickname.
 @override final  String kind;
 @override final  String key;
 @override final  String value;

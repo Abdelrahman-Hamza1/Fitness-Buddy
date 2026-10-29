@@ -1,6 +1,13 @@
 part of 'proposal_input.dart';
 
-/// Maps B08's actual public v1 JSON directly into normalized domain values.
+/// Any `interpret-vN` prompt version; provenance only (B09 D4).
+final _promptVersion = RegExp(r'^interpret-v[1-9][0-9]*$');
+
+/// Kinds this version understands; any other non-empty kind is routed as
+/// `unrecognized` instead of failing the message (`04` §4.2, B09 D4).
+const _knownKinds = {'foodLog', 'clarify', 'medical', 'outOfScope', 'weighIn'};
+
+/// Maps the public interpret JSON directly into normalized domain values.
 abstract final class InterpretationDecoder {
   /// No transport DTOs, I/O, guesses from names, or content-bearing failures.
   static ProposalResult<ProposalInterpretation> decode(
@@ -13,7 +20,7 @@ abstract final class InterpretationDecoder {
           ProposalPolicyConstants.maxInputBytes) {
         throw const _Invalid(ProposalIssue.inputTooLarge);
       }
-      if (_text(json, 'promptVersion') != 'interpret-v1') {
+      if (!_promptVersion.hasMatch(_text(json, 'promptVersion'))) {
         throw const _Invalid();
       }
       _text(json, 'model');
@@ -25,17 +32,13 @@ abstract final class InterpretationDecoder {
         ProposalPolicyConstants.maxIntents,
       ).indexed) {
         final intent = _map(raw);
-        final kind = _text(intent, 'kind');
-        _text(intent, 'language');
-        _text(intent, 'script');
-        if (!const [
-          'foodLog',
-          'clarify',
-          'medical',
-          'outOfScope',
-          'weighIn',
-        ].contains(kind)) {
-          throw const _Invalid();
+        final code = _text(intent, 'kind');
+        final kind = _knownKinds.contains(code) ? code : 'unrecognized';
+        // An unknown kind needs only a non-empty kind (bounds checked above);
+        // its other members belong to a newer contract.
+        if (kind != 'unrecognized') {
+          _text(intent, 'language');
+          _text(intent, 'script');
         }
         final items = <ProposalItem>[];
         String? time;
@@ -61,7 +64,7 @@ abstract final class InterpretationDecoder {
           _number(intent, 'value', positive: true);
           _text(intent, 'unit');
           time = _nullableText(intent, 'timeHint');
-        } else if (kind != 'medical') {
+        } else if (kind == 'clarify' || kind == 'outOfScope') {
           _text(intent, 'reason');
         }
         intents.add(

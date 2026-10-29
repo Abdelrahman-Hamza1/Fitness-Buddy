@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A23, **B09** (contract) | M | Claude | ⬜ Not started |
+| App | A23, **B09a** (contract) | M | Claude | ⬜ Not started |
 
 _Old ID: S35 app part (renumbered by TD-063, 2026-10-16)._
 
@@ -16,6 +16,14 @@ _Old ID: S35 app part (renumbered by TD-063, 2026-10-16)._
 - **Reference resolution** (AI-091): the model links mentions to entry IDs. **Ambiguity → chips** showing the candidates (T29).
 - **Proposal kinds** in the engine + card: **before → after** for edits (with new day totals), "will be removed" for deletes (UX-026), a copy preview for copies.
 - **Conflict safety:** ops carry `expectedVersion`. If the entry changed meanwhile, the proposal is regenerated against current data (`03` §5.3).
+
+## Handoff from B09a (contract)
+Contract: `diaryEdit`, `diaryDelete`, `ambiguousReference`, `diaryCopy` and the shared `BuddyDayHint`, `BuddyEntryReference`, `BuddyDiaryPatch` (`contracts/openapi/modules/buddy.yaml`; design in the B09 card, D6–D8, §3.1).
+- **Null semantics:** in `patch.move`, a null member keeps the entry's day, slot or time, and a move with all three null is invalid. With `replacement` set, `patch.amount` is null. A `replacement.amount` with `explicit: false` and a null value keeps the entry's amount. A state or variant change is a `replacement`. In `diaryCopy`, null `target` members mean today, the source's slot and now. A null `source.slotHint` is clarified in R1 (no whole-day copy).
+- **Day hints:** resolve the D8 grammar locally. `lastWeekday:X` is the most recent X strictly before today. A year-less `date:MM-DD` is the most recent past occurrence (`date:02-29` resolves up to 4 years back). Reject future dates. Parse defensively: a `dateHint` you can't parse routes the intent as `unrecognized`.
+- **Allow-lists (forward compatibility, `contracts/README.md`):** decode the raw map with an explicit allow-list per kind. An unknown enum value routes `unrecognized`; never default to a destructive operation.
+- **`targets: []` + hints → show that day's/slot's entries as chips.** Never auto-pick without a before→after, and no fuzzy NLP on the phone (B09 PA16). The ambiguous chip tap applies the carried `patch`. AI-044 open-card precedence. Send `recentEntries` newest first.
+- Exit criterion to add (B09 PA11): engine-level T23, T26–T29 through `buddy_eval`'s adapter.
 
 ## Out of scope
 - Edits to weigh-ins/workouts by chat (their own steps).

@@ -223,7 +223,13 @@ void main() {
         message()..['model'] = null,
         message()..['intents'] = {},
         message([
-          {'kind': 'unknown', 'language': 'en', 'script': 'latin'},
+          {'kind': '', 'language': 'en', 'script': 'latin'},
+        ]),
+        message([
+          {'kind': 'medical', 'language': 'en'},
+        ]),
+        message([
+          {'kind': 'weighIn', 'script': 'latin', 'value': 80, 'unit': 'kg'},
         ]),
         message([null]),
         message()..['extra'] = Object(),
@@ -415,6 +421,109 @@ void main() {
     }
     expect(
       decode(message()..['extra'] = deep).issue,
+      ProposalIssue.inputTooLarge,
+    );
+  });
+  // rule: B09 decoder forward-compat
+  test('B09 decoder routes unknown intent kinds as unrecognized '
+      'without failing the message', () {
+    final result = decode(
+      message([
+        intent([item()]),
+        {
+          'kind': 'diaryEdit',
+          'language': 'ar',
+          'script': 'arabic',
+          'reference': {'ref': 0, 'mention': 'Synthetic lunch'},
+          'items': [
+            {'whatever': true},
+          ],
+        },
+        {'kind': 'medical', 'language': 'en', 'script': 'latin'},
+        {'kind': 'unrecognized', 'language': 'en', 'script': 'latin'},
+        {'kind': 'diaryEdit', 'language': 'en'},
+        {'kind': 'memoryChange'},
+      ]),
+    );
+    expect(result.issue, isNull);
+    final intents = result.value!.intents;
+    expect(intents.map((i) => i.kind), [
+      'foodLog',
+      'unrecognized',
+      'medical',
+      'unrecognized',
+      'unrecognized',
+      'unrecognized',
+    ]);
+    expect(intents.map((i) => i.index), [0, 1, 2, 3, 4, 5]);
+    final unknown = intents[1];
+    expect(unknown.items, isEmpty);
+    expect(unknown.timeHint, isNull);
+    expect(unknown.slotHint, isNull);
+    expect(unknown.dishGroup, isNull);
+    expect(unknown.toString(), isNot(contains('Synthetic')));
+    expect(intents.first.items.single.match!.key, 'usda:egg');
+  });
+  // rule: B09 decoder forward-compat
+  test('B09 decoder accepts interpret-vN as provenance '
+      'and still rejects malformed versions', () {
+    for (final version in ['interpret-v1', 'interpret-v2', 'interpret-v10']) {
+      expect(
+        decode(message()..['promptVersion'] = version).issue,
+        isNull,
+        reason: version,
+      );
+    }
+    for (final version in [
+      'v2',
+      'interpret-v0',
+      'interpret-v',
+      'interpret-v02',
+      'interpret-v2-beta',
+      'interpret-v2 ',
+      ' interpret-v2',
+      'Interpret-v2',
+      '',
+      null,
+      2,
+    ]) {
+      expect(
+        decode(message()..['promptVersion'] = version).issue,
+        ProposalIssue.invalidInput,
+        reason: '$version',
+      );
+    }
+  });
+  // rule: B09 decoder forward-compat
+  test('B09 oversized unknown kind is rejected as inputTooLarge', () {
+    Map<String, Object?> unknown(Object? payload) => {
+      'kind': 'batch',
+      'language': 'en',
+      'script': 'latin',
+      'payload': payload,
+    };
+    Object? deep;
+    for (var i = 0; i < 34; i++) {
+      deep = [deep];
+    }
+    for (final payload in [
+      'x' * 524289,
+      List.filled(65, null),
+      {for (var i = 0; i < 65; i++) '$i': null},
+      deep,
+    ]) {
+      expect(
+        decode(
+          message([
+            intent([item()]),
+            unknown(payload),
+          ]),
+        ).issue,
+        ProposalIssue.inputTooLarge,
+      );
+    }
+    expect(
+      decode(message(List.filled(21, unknown(null)))).issue,
       ProposalIssue.inputTooLarge,
     );
   });

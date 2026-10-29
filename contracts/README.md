@@ -63,6 +63,10 @@ There are no "absent means unchanged" (merge-patch) semantics. An update is a fu
 
 **Forward compatibility.** Clients ignore unknown fields, map unknown enum values to the generator's `$unknown` enum member (swagger_parser `unknown_enum_value`), and unknown union kinds to the `…Unrecognized` variant (`fallback_union: unrecognized`). So adding a response field, an enum value or a union variant is not breaking (`oasdiff/breaking-levels.txt`).
 
+- **Buddy intents (B09a).** The app decodes the raw interpret response map with explicit allow-lists per kind (A21's `InterpretationDecoder`, A25–A27), never a round-tripped generated `BuddyIntent`. An unknown kind, a known kind with an unknown enum value, or a `dateHint` the app can't parse is routed as `unrecognized` ("Buddy can't do that in this version yet", `04` §4.2). A decoder never falls back to a destructive operation (an unknown `operation` is never read as `delete`). `lastWeekday:X` means the most recent X strictly before today.
+
+**Buddy intent kinds (B09a).** A kind is permanent once published. It is its schema name minus `Buddy`, in lowerCamel, prefixed by its domain: `diary*` (`diaryEdit`, `diaryDelete`, `diaryCopy`), `batch*`, `savedMeal*`, `personalFood*` (`personalFoodCreate`), `memory*` (`memoryChange`), `workout*`. B08's first kinds (`foodLog`, `weighIn`, `clarify`, `outOfScope`, `medical`) and the server-produced `ambiguousReference` predate the rule and keep their names. Hints follow one convention: an intent that logs something carries flat `timeHint`, `slotHint` and `dateHint`; a field that locates other entries (a copy's source and target, a move, a saved meal's source) is a `BuddyDayHint`.
+
 ### Error type catalogue
 
 `ProblemDetails.type` identifies the kind of problem. Ours are relative URI references `/errors/<kebab-slug>`. The app compares the string exactly and never dereferences it. An entry is never renamed or removed within an API version; adding one is fine. Problems we don't map (for example a framework 404) carry the framework's default `type` (an RFC link or `about:blank`), which is why `type` is a free string and not an enum.

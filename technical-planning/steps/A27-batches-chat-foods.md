@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A09, A23, **B09** (contract) | L | Claude | ⬜ Not started |
+| App | A09, A23, **B09a** (contract) | L | Claude | ⬜ Not started |
 
 _Old ID: S37 app part (renumbered by TD-063, 2026-10-16)._
 
@@ -19,6 +19,14 @@ _Old ID: S37 app part (renumbered by TD-063, 2026-10-16)._
 - **`PersonalFood` intent** (AI-054, T24-style creation): "my shake is 40g whey + 300ml milk" → a personal-food proposal.
 - **Saved meal by chat** (DY-031): "the usual breakfast" → a proposal from the saved meal. "Save this as …" → a saved-meal proposal.
 - Distinguish a family-cooked dish with unknown ingredients → reference dish, not a batch (DY-045).
+
+## Handoff from B09a (contract)
+Contract: `batch`, `batchPortion`, `batchClose`, `personalFoodCreate`, `savedMealLog`, `savedMealCreate` and the shared `BuddyPortion`, `BuddyStatedNutrients` (B09 card D9, D12, §3.1).
+- **Portions:** `share.fraction` is a fraction of the whole batch (for `eatenNow` and `batchPortion`). `batchPortion` carries exactly one of a non-null `portion` or `rest: true` ("ate the rest"). `batchClose` closes the batch without logging anything (thrown away, DY-044). The app owns the remaining arithmetic.
+- **Stated values (TD-092):** `stated` prefills the personal-food review form with FD-012 highlighting and the ⓨ "from your message" source; never a one-tap confirm. The server never fills kcal. `basis` is `per100g`, `per100ml` or `perServing`.
+- **Estimates** inside `personalFoodCreate.components` or batch `ingredients` keep their badge and are review-only.
+- `savedMealCreate.name` is never null (a nameless "save this" is clarified); exactly one source: `activeProposal`, `targets` or `source`.
+- Exit criteria to add (B09 PA11): engine-level T20–T22, T24 creation.
 
 ## Out of scope
 - The batch-closing notification (A40). Recipes (R2).

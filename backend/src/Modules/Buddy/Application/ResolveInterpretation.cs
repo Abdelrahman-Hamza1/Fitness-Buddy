@@ -17,10 +17,10 @@ internal sealed class ResolveInterpretation(IFoodResolver catalog)
                     var items = new List<BuddyFoodItem>();
                     foreach (var food in intent.Items) { items.Add(await ResolveAsync(food, input.Context.PersonalFoods, ct)); }
                     if (items.Any(f => f.Match is null && f.Estimate is null)) { intents.Add(new BuddyClarify(language, script, "unmatchedFood")); }
-                    else { intents.Add(new BuddyFoodLog(language, script, intent.TimeHint, intent.SlotHint, intent.DishGroup, items.ToArray())); }
+                    else { intents.Add(new BuddyFoodLog(language, script, intent.TimeHint, intent.SlotHint, null, intent.DishGroup, items.ToArray())); }
                     break;
                 case ParsedKind.WeighIn:
-                    intents.Add(new BuddyWeighIn(language, script, (double)intent.WeighIn!.Value, intent.WeighIn.Unit, intent.TimeHint)); break;
+                    intents.Add(new BuddyWeighIn(language, script, (double)intent.WeighIn!.Value, intent.WeighIn.Unit, intent.TimeHint, null)); break;
                 case ParsedKind.Medical: intents.Add(new BuddyMedical(language, script)); break;
                 case ParsedKind.OutOfScope when intent.Reason == DeclineReason.Medical: intents.Add(new BuddyMedical(language, script)); break;
                 case ParsedKind.OutOfScope: intents.Add(new BuddyOutOfScope(language, script, Name(intent.Reason!.Value))); break;

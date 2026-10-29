@@ -46,23 +46,9 @@ Future<void> main() async {
         ..set('Idempotency-Key', id);
       request.add(
         utf8.encode(
-          jsonEncode({
-            'requestId': id,
-            'text': test['text'],
-            'now': config['now'],
-            'tzOffsetMin': 180,
-            'ramadan': {'active': false, 'fajr': null, 'maghrib': null},
-            'slots': <dynamic>[],
-            'activeProposal': null,
-            'context': {
-              'personalFoods': <dynamic>[],
-              'savedMeals': <dynamic>[],
-              'openBatches': <dynamic>[],
-              'memory': test['memory'],
-              'recentEntries': <dynamic>[],
-              'customExercises': <dynamic>[],
-            },
-          }),
+          jsonEncode(
+            publicInterpretBody(id: id, test: test, now: config['now']),
+          ),
         ),
       );
       final watch = Stopwatch()..start();

@@ -13,6 +13,7 @@ _BuddyFoodLog _$BuddyFoodLogFromJson(Map<String, dynamic> json) =>
       script: json['script'] as String,
       timeHint: json['timeHint'] as String?,
       slotHint: json['slotHint'] as String?,
+      dateHint: json['dateHint'] as String?,
       dishGroup: json['dishGroup'] as String?,
       items: (json['items'] as List<dynamic>)
           .map((e) => BuddyFoodItem.fromJson(e as Map<String, dynamic>))
@@ -26,6 +27,7 @@ Map<String, dynamic> _$BuddyFoodLogToJson(_BuddyFoodLog instance) =>
       'script': instance.script,
       'timeHint': instance.timeHint,
       'slotHint': instance.slotHint,
+      'dateHint': instance.dateHint,
       'dishGroup': instance.dishGroup,
       'items': instance.items.map((e) => e.toJson()).toList(),
     };

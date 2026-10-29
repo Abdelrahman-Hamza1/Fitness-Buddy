@@ -27,7 +27,7 @@ paths:
         - Buddy
       operationId: interpretMessage
       summary: Interpret a message into read-only typed intents
-      description: 'Any authenticated user including guests. Idempotency-Key must equal the UUIDv7 requestId. Replay retention 24 hours. Conflicting input returns 409; an in-flight or ambiguous paid attempt returns 503 and is never automatically charged again for that key during retention. Context limits: 30 personal foods, 20 memory items, 30 recent entries, 20 each saved meals/open batches/custom exercises, 12 slots; names/values at most 200 characters. No images until the vision endpoint. Estimates are badged ranges only when no real match exists. Nutrition calculation and confirmation happen on the phone. Daily operational limits are tighter for guests; 429 never calls the provider.'
+      description: 'Any authenticated user including guests. Idempotency-Key must equal the UUIDv7 requestId. Replay retention 24 hours. Conflicting input returns 409; an in-flight or ambiguous paid attempt returns 503 and is never automatically charged again for that key during retention. Forward compatibility (04 §4.2): new intent kinds and enum values are added without a version bump. The client routes an unknown kind, a known kind with an unknown enum value, or a dateHint it can''t parse as unrecognized, and never defaults to a destructive operation. Clarify reasons: unclear, unsupported, offTopic, invalidInterpretation, unmatchedFood, referenceNotFound, medical. context.activeCard requires activeProposal (else 400). Context limits: 30 personal foods, 20 memory items, 30 recent entries, 20 each saved meals/open batches/custom exercises, 12 slots, 30 active-card lines; names/values at most 200 characters. No images until the vision endpoint. Estimates are badged ranges only when no real match exists. Nutrition calculation and confirmation happen on the phone. Daily operational limits are tighter for guests; 429 never calls the provider.'
       security:
         - bearerAuth: []
       parameters:
@@ -1543,6 +1543,7 @@ components:
       properties:
         kind:
           type: string
+          description: 'Open string; the memoryKind codes are recommended: default, portion, alias, brand, nickname.'
         key:
           type: string
         value:
@@ -1571,6 +1572,57 @@ components:
             - number
             - 'null'
           format: double
+    BuddyActiveCardLine:
+      type: object
+      required:
+        - name
+        - amount
+        - unitCode
+        - state
+      properties:
+        name:
+          type: string
+          description: At most 200 characters.
+        amount:
+          type:
+            - number
+            - 'null'
+          format: double
+          description: Greater than 0, or null.
+        unitCode:
+          type:
+            - string
+            - 'null'
+          description: 'A unit code: g, ml or a serving unit (piece, loaf, plate, glass, sandwich, disc, serving, can, cup, tbsp, tsp).'
+        state:
+          type:
+            - string
+            - 'null'
+          description: 'A FoodState code: raw, cooked, dry, drained, fried, as_sold.'
+    BuddyActiveCard:
+      type: object
+      description: 'Bounded summary of the open proposal card: names and amounts only, no IDs, no nutrients.'
+      required:
+        - slot
+        - time
+        - lines
+      properties:
+        slot:
+          type:
+            - string
+            - 'null'
+          description: The card's slot name.
+        time:
+          type:
+            - string
+            - 'null'
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+          description: The card's local time, HH:mm.
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/BuddyActiveCardLine'
+          description: At most 30 lines.
     BuddyContext:
       type: object
       required:
@@ -1601,10 +1653,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/BuddyRecentEntry'
+          description: Ordered newest first; at most 30, about 3 days. Only date, slot and name are forwarded to the model.
         customExercises:
           type: array
           items:
             $ref: '#/components/schemas/BuddyNamedReference'
+        activeCard:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyActiveCard'
+            - type: 'null'
+          description: 'The open proposal card a follow-up refers to (AI-044). Requires activeProposal (else 400). Optional: older apps omit it; absent and null are the same. Its slot, time and line name/amount/unitCode/state are forwarded to the model.'
     InterpretRequest:
       type: object
       required:
@@ -1833,6 +1891,7 @@ components:
         - script
         - timeHint
         - slotHint
+        - dateHint
         - dishGroup
         - items
       properties:
@@ -1848,10 +1907,18 @@ components:
           type:
             - string
             - 'null'
+          description: Literal time phrase as the user said it (B08); the app resolves it.
         slotHint:
           type:
             - string
             - 'null'
+          description: 'The exact provided slot name when one matches, else a canonical English slot word: breakfast, lunch, dinner, snack, suhoor, iftar. No match: null (no hint).'
+        dateHint:
+          type:
+            - string
+            - 'null'
+          pattern: ^(today|yesterday|daysAgo:([2-9]|[1-9][0-9]{1,2})|lastWeekday:(mon|tue|wed|thu|fri|sat|sun)|date:([0-9]{4}-)?(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$
+          description: 'Closed day grammar the app resolves locally: today, yesterday, daysAgo:N (N is 2-999; 0 and 1 are today and yesterday), lastWeekday:mon..sun (the most recent such day strictly before today), date:[YYYY-]MM-DD (a date the user stated). The server guarantees a valid month/day, and a valid calendar date when a year is given. A missing year is the most recent past occurrence (02-29 resolves up to 4 years back); the app rejects future dates. A value the app can''t parse routes the intent as unrecognized.'
         dishGroup:
           type:
             - string
@@ -1920,6 +1987,7 @@ components:
         - value
         - unit
         - timeHint
+        - dateHint
       properties:
         kind:
           type: string
@@ -1938,6 +2006,634 @@ components:
           type:
             - string
             - 'null'
+          description: Literal time phrase as the user said it (B08); the app resolves it.
+        dateHint:
+          type:
+            - string
+            - 'null'
+          pattern: ^(today|yesterday|daysAgo:([2-9]|[1-9][0-9]{1,2})|lastWeekday:(mon|tue|wed|thu|fri|sat|sun)|date:([0-9]{4}-)?(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$
+          description: 'Closed day grammar the app resolves locally: today, yesterday, daysAgo:N (N is 2-999; 0 and 1 are today and yesterday), lastWeekday:mon..sun (the most recent such day strictly before today), date:[YYYY-]MM-DD (a date the user stated). The server guarantees a valid month/day, and a valid calendar date when a year is given. A missing year is the most recent past occurrence (02-29 resolves up to 4 years back); the app rejects future dates. A value the app can''t parse routes the intent as unrecognized.'
+    BuddyReferenceScope:
+      type: string
+      enum:
+        - one
+        - all
+      description: 'one: a single entry (newest when unqualified); all: every linked entry.'
+    BuddyEntryReference:
+      type: object
+      description: How the message referred to diary entries; the server maps it to request entry IDs (AI-091).
+      required:
+        - mention
+        - dateHint
+        - slotHint
+        - scope
+      properties:
+        mention:
+          type: string
+          description: The user's words for the entry.
+        dateHint:
+          type:
+            - string
+            - 'null'
+          pattern: ^(today|yesterday|daysAgo:([2-9]|[1-9][0-9]{1,2})|lastWeekday:(mon|tue|wed|thu|fri|sat|sun)|date:([0-9]{4}-)?(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$
+          description: 'Closed day grammar the app resolves locally: today, yesterday, daysAgo:N (N is 2-999; 0 and 1 are today and yesterday), lastWeekday:mon..sun (the most recent such day strictly before today), date:[YYYY-]MM-DD (a date the user stated). The server guarantees a valid month/day, and a valid calendar date when a year is given. A missing year is the most recent past occurrence (02-29 resolves up to 4 years back); the app rejects future dates. A value the app can''t parse routes the intent as unrecognized.'
+        slotHint:
+          type:
+            - string
+            - 'null'
+          description: 'The exact provided slot name when one matches, else a canonical English slot word: breakfast, lunch, dinner, snack, suhoor, iftar. No match: null (no hint).'
+        scope:
+          $ref: '#/components/schemas/BuddyReferenceScope'
+    BuddyDayHint:
+      type: object
+      required:
+        - dateHint
+        - slotHint
+        - timeHint
+      properties:
+        dateHint:
+          type:
+            - string
+            - 'null'
+          pattern: ^(today|yesterday|daysAgo:([2-9]|[1-9][0-9]{1,2})|lastWeekday:(mon|tue|wed|thu|fri|sat|sun)|date:([0-9]{4}-)?(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$
+          description: 'Closed day grammar the app resolves locally: today, yesterday, daysAgo:N (N is 2-999; 0 and 1 are today and yesterday), lastWeekday:mon..sun (the most recent such day strictly before today), date:[YYYY-]MM-DD (a date the user stated). The server guarantees a valid month/day, and a valid calendar date when a year is given. A missing year is the most recent past occurrence (02-29 resolves up to 4 years back); the app rejects future dates. A value the app can''t parse routes the intent as unrecognized.'
+        slotHint:
+          type:
+            - string
+            - 'null'
+          description: 'The exact provided slot name when one matches, else a canonical English slot word: breakfast, lunch, dinner, snack, suhoor, iftar. No match: null (no hint).'
+        timeHint:
+          type:
+            - string
+            - 'null'
+          description: Literal time phrase as the user said it (B08); the app resolves it.
+    BuddyDiaryPatch:
+      type: object
+      description: 'At least one member is non-null. amount is the new absolute amount (relative edits are clarified as unsupported); it is null when replacement is set. replacement swaps the food, including a state or variant change; its amount with explicit false and a null value keeps the entry''s amount. move: a null member keeps the entry''s day, slot or time; a move with all three null is invalid.'
+      required:
+        - amount
+        - replacement
+        - move
+      properties:
+        amount:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyAmount'
+            - type: 'null'
+        replacement:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyFoodItem'
+            - type: 'null'
+        move:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyDayHint'
+            - type: 'null'
+    BuddyDiaryEdit:
+      type: object
+      required:
+        - kind
+        - language
+        - script
+        - targets
+        - reference
+        - patch
+      properties:
+        kind:
+          type: string
+          enum:
+            - diaryEdit
+        language:
+          type: string
+        script:
+          type: string
+        targets:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 30
+          description: 'Request recentEntries IDs to change. Empty: the app looks the entries up from reference''s day/slot hints and asks.'
+          uniqueItems: true
+        reference:
+          $ref: '#/components/schemas/BuddyEntryReference'
+        patch:
+          $ref: '#/components/schemas/BuddyDiaryPatch'
+    BuddyDiaryDelete:
+      type: object
+      required:
+        - kind
+        - language
+        - script
+        - targets
+        - reference
+      properties:
+        kind:
+          type: string
+          enum:
+            - diaryDelete
+        language:
+          type: string
+        script:
+          type: string
+        targets:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 30
+          description: 'Request recentEntries IDs to delete. Empty: the app looks the entries up from reference''s day/slot hints and asks.'
+          uniqueItems: true
+        reference:
+          $ref: '#/components/schemas/BuddyEntryReference'
+    BuddyReferenceOperation:
+      type: string
+      enum:
+        - edit
+        - delete
+    BuddyAmbiguousReference:
+      type: object
+      description: Produced by server policy, never by the model.
+      required:
+        - kind
+        - language
+        - script
+        - operation
+        - candidates
+        - reference
+        - patch
+      properties:
+        kind:
+          type: string
+          enum:
+            - ambiguousReference
+        language:
+          type: string
+        script:
+          type: string
+        operation:
+          $ref: '#/components/schemas/BuddyReferenceOperation'
+        candidates:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 2
+          maxItems: 30
+          description: Request recentEntries IDs the message could mean; the app asks which (AI-091).
+          uniqueItems: true
+        reference:
+          $ref: '#/components/schemas/BuddyEntryReference'
+        patch:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyDiaryPatch'
+            - type: 'null'
+          description: The edit to apply to the chosen entry; null for delete.
+    BuddyDiaryCopy:
+      type: object
+      required:
+        - kind
+        - language
+        - script
+        - source
+        - target
+      properties:
+        kind:
+          type: string
+          enum:
+            - diaryCopy
+        language:
+          type: string
+        script:
+          type: string
+        source:
+          $ref: '#/components/schemas/BuddyDayHint'
+          description: Where to copy from.
+        target:
+          $ref: '#/components/schemas/BuddyDayHint'
+          description: Where to copy to.
+      description: Copy entries from source to target. A null target member means today, the source's slot, or now. A null source.slotHint is clarified in R1 (no whole-day copy).
+    BuddyMemoryOperation:
+      type: string
+      enum:
+        - remember
+        - forget
+    BuddyMemoryKind:
+      type: string
+      enum:
+        - default
+        - portion
+        - alias
+        - brand
+        - nickname
+    BuddyMemoryDimension:
+      type: string
+      enum:
+        - state
+        - fat
+        - variant
+        - portion
+      description: What a default sets (memoryKind default only).
+    BuddyMemoryChange:
+      type: object
+      description: An explicit memory statement (AI-055). The app confirms it; the server never applies defaults. Forget and overwrite match local memory on memoryKind plus food.match.key (or its yield group); the normalized subject matches exactly only for alias, brand and nickname; anything else is clarified. memoryKind portion (a usual amount) differs from dimension portion (a default size variant of memoryKind default). A specific cooking-fat food isn't carried yet.
+      required:
+        - kind
+        - language
+        - script
+        - operation
+        - memoryKind
+        - subject
+        - dimension
+        - value
+        - amount
+        - food
+      properties:
+        kind:
+          type: string
+          enum:
+            - memoryChange
+        language:
+          type: string
+        script:
+          type: string
+        operation:
+          $ref: '#/components/schemas/BuddyMemoryOperation'
+        memoryKind:
+          $ref: '#/components/schemas/BuddyMemoryKind'
+        subject:
+          type:
+            - string
+            - 'null'
+          description: The food or name the statement is about, as the user said it.
+        dimension:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyMemoryDimension'
+            - type: 'null'
+        value:
+          type:
+            - string
+            - 'null'
+          description: Closed for state (raw, cooked, dry, drained, fried) and fat (none, oil); literal otherwise (alias, brand, nickname, variant).
+        amount:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyAmount'
+            - type: 'null'
+          description: The portion, or the fat quantity. Authoritative; food.amount is ignored.
+        food:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyFoodItem'
+            - type: 'null'
+          description: The subject food when it matches a real food; never an estimate.
+    BuddyBatchPath:
+      type: string
+      enum:
+        - quick
+        - leftovers
+      description: A hint only; the app offers the choice (AI-100).
+    BuddyPortion:
+      type: object
+      description: 'At least one member is non-null: grams, plates, or a share. share.fraction is a fraction of the whole batch (for eatenNow and batchPortion).'
+      required:
+        - amount
+        - share
+      properties:
+        amount:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyAmount'
+            - type: 'null'
+        share:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyShare'
+            - type: 'null'
+    BuddyBatch:
+      type: object
+      description: A home-cooked batch (AI-100). The app owns the remaining-amount arithmetic.
+      required:
+        - kind
+        - language
+        - script
+        - name
+        - ingredients
+        - cookedWeight
+        - path
+        - eatenNow
+        - timeHint
+        - slotHint
+        - dateHint
+      properties:
+        kind:
+          type: string
+          enum:
+            - batch
+        language:
+          type: string
+        script:
+          type: string
+        name:
+          type:
+            - string
+            - 'null'
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/BuddyFoodItem'
+          minItems: 1
+          maxItems: 30
+          description: An estimate inside it keeps its badge and is review-only (WP4 may restrict these to real matches, D10).
+        cookedWeight:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyAmount'
+            - type: 'null'
+          description: The cooked weight the user stated.
+        path:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyBatchPath'
+            - type: 'null'
+        eatenNow:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyPortion'
+            - type: 'null'
+          description: The portion eaten now (AI-101).
+        timeHint:
+          type:
+            - string
+            - 'null'
+          description: Literal time phrase as the user said it (B08); the app resolves it.
+        slotHint:
+          type:
+            - string
+            - 'null'
+          description: 'The exact provided slot name when one matches, else a canonical English slot word: breakfast, lunch, dinner, snack, suhoor, iftar. No match: null (no hint).'
+        dateHint:
+          type:
+            - string
+            - 'null'
+          pattern: ^(today|yesterday|daysAgo:([2-9]|[1-9][0-9]{1,2})|lastWeekday:(mon|tue|wed|thu|fri|sat|sun)|date:([0-9]{4}-)?(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$
+          description: 'Closed day grammar the app resolves locally: today, yesterday, daysAgo:N (N is 2-999; 0 and 1 are today and yesterday), lastWeekday:mon..sun (the most recent such day strictly before today), date:[YYYY-]MM-DD (a date the user stated). The server guarantees a valid month/day, and a valid calendar date when a year is given. A missing year is the most recent past occurrence (02-29 resolves up to 4 years back); the app rejects future dates. A value the app can''t parse routes the intent as unrecognized.'
+    BuddyBatchPortion:
+      type: object
+      description: A portion of an open batch (AI-102). Exactly one of a non-null portion or rest true.
+      required:
+        - kind
+        - language
+        - script
+        - batchId
+        - portion
+        - rest
+        - timeHint
+        - slotHint
+        - dateHint
+      properties:
+        kind:
+          type: string
+          enum:
+            - batchPortion
+        language:
+          type: string
+        script:
+          type: string
+        batchId:
+          type: string
+          format: uuid
+          description: A request openBatches ID.
+        portion:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyPortion'
+            - type: 'null'
+          description: The portion eaten; null when rest is true.
+        rest:
+          type: boolean
+          description: The user ate the rest of the batch.
+        timeHint:
+          type:
+            - string
+            - 'null'
+          description: Literal time phrase as the user said it (B08); the app resolves it.
+        slotHint:
+          type:
+            - string
+            - 'null'
+          description: 'The exact provided slot name when one matches, else a canonical English slot word: breakfast, lunch, dinner, snack, suhoor, iftar. No match: null (no hint).'
+        dateHint:
+          type:
+            - string
+            - 'null'
+          pattern: ^(today|yesterday|daysAgo:([2-9]|[1-9][0-9]{1,2})|lastWeekday:(mon|tue|wed|thu|fri|sat|sun)|date:([0-9]{4}-)?(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$
+          description: 'Closed day grammar the app resolves locally: today, yesterday, daysAgo:N (N is 2-999; 0 and 1 are today and yesterday), lastWeekday:mon..sun (the most recent such day strictly before today), date:[YYYY-]MM-DD (a date the user stated). The server guarantees a valid month/day, and a valid calendar date when a year is given. A missing year is the most recent past occurrence (02-29 resolves up to 4 years back); the app rejects future dates. A value the app can''t parse routes the intent as unrecognized.'
+    BuddyBatchClose:
+      type: object
+      description: Closes an open batch without logging anything (the rest was thrown away, DY-044).
+      required:
+        - kind
+        - language
+        - script
+        - batchId
+      properties:
+        kind:
+          type: string
+          enum:
+            - batchClose
+        language:
+          type: string
+        script:
+          type: string
+        batchId:
+          type: string
+          format: uuid
+          description: A request openBatches ID.
+    BuddyNutrientBasis:
+      type: string
+      enum:
+        - per100g
+        - per100ml
+        - perServing
+    BuddyStatedNutrients:
+      type: object
+      description: 'Transcribed user figures (TD-092): each non-null value appears literally in the message. Never computed or filled by the server; the app reviews them in the personal-food form. Bounds match the request side (nutrients 0-10000, serving sizes up to 100000).'
+      required:
+        - basis
+        - servingG
+        - servingMl
+        - kcal
+        - proteinG
+        - carbsG
+        - fatG
+        - fiberG
+      properties:
+        basis:
+          $ref: '#/components/schemas/BuddyNutrientBasis'
+        servingG:
+          type:
+            - number
+            - 'null'
+          format: double
+          minimum: 0
+          maximum: 100000
+        servingMl:
+          type:
+            - number
+            - 'null'
+          format: double
+          minimum: 0
+          maximum: 100000
+        kcal:
+          type:
+            - number
+            - 'null'
+          format: double
+          minimum: 0
+          maximum: 10000
+        proteinG:
+          type:
+            - number
+            - 'null'
+          format: double
+          minimum: 0
+          maximum: 10000
+        carbsG:
+          type:
+            - number
+            - 'null'
+          format: double
+          minimum: 0
+          maximum: 10000
+        fatG:
+          type:
+            - number
+            - 'null'
+          format: double
+          minimum: 0
+          maximum: 10000
+        fiberG:
+          type:
+            - number
+            - 'null'
+          format: double
+          minimum: 0
+          maximum: 10000
+    BuddyPersonalFoodCreate:
+      type: object
+      description: Create a personal food (AI-054). At least one of non-empty components or non-null stated; components are the main path.
+      required:
+        - kind
+        - language
+        - script
+        - name
+        - aliases
+        - components
+        - stated
+      properties:
+        kind:
+          type: string
+          enum:
+            - personalFoodCreate
+        language:
+          type: string
+        script:
+          type: string
+        name:
+          type: string
+        aliases:
+          type: array
+          items:
+            type: string
+          maxItems: 5
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/BuddyFoodItem'
+          maxItems: 30
+          description: An estimate inside it keeps its badge and is review-only (WP4 may restrict these to real matches, D10).
+        stated:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyStatedNutrients'
+            - type: 'null'
+    BuddySavedMealLog:
+      type: object
+      description: Log a saved meal by name (DY-031).
+      required:
+        - kind
+        - language
+        - script
+        - savedMealId
+        - timeHint
+        - slotHint
+        - dateHint
+        - share
+      properties:
+        kind:
+          type: string
+          enum:
+            - savedMealLog
+        language:
+          type: string
+        script:
+          type: string
+        savedMealId:
+          type: string
+          format: uuid
+          description: A request savedMeals ID.
+        timeHint:
+          type:
+            - string
+            - 'null'
+          description: Literal time phrase as the user said it (B08); the app resolves it.
+        slotHint:
+          type:
+            - string
+            - 'null'
+          description: 'The exact provided slot name when one matches, else a canonical English slot word: breakfast, lunch, dinner, snack, suhoor, iftar. No match: null (no hint).'
+        dateHint:
+          type:
+            - string
+            - 'null'
+          pattern: ^(today|yesterday|daysAgo:([2-9]|[1-9][0-9]{1,2})|lastWeekday:(mon|tue|wed|thu|fri|sat|sun)|date:([0-9]{4}-)?(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$
+          description: 'Closed day grammar the app resolves locally: today, yesterday, daysAgo:N (N is 2-999; 0 and 1 are today and yesterday), lastWeekday:mon..sun (the most recent such day strictly before today), date:[YYYY-]MM-DD (a date the user stated). The server guarantees a valid month/day, and a valid calendar date when a year is given. A missing year is the most recent past occurrence (02-29 resolves up to 4 years back); the app rejects future dates. A value the app can''t parse routes the intent as unrecognized.'
+        share:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyShare'
+            - type: 'null'
+    BuddySavedMealCreate:
+      type: object
+      description: 'Save a meal as ... (DY-031). Exactly one source: activeProposal, targets or source.'
+      required:
+        - kind
+        - language
+        - script
+        - name
+        - activeProposal
+        - targets
+        - source
+      properties:
+        kind:
+          type: string
+          enum:
+            - savedMealCreate
+        language:
+          type: string
+        script:
+          type: string
+        name:
+          type: string
+          description: 'Never null: a nameless "save this" is clarified.'
+        activeProposal:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: The request activeProposal ("save this").
+        targets:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 30
+          description: Request recentEntries IDs to save.
+          uniqueItems: true
+        source:
+          oneOf:
+            - $ref: '#/components/schemas/BuddyDayHint'
+            - type: 'null'
+          description: Day/slot to save from, for the app's local lookup.
     BuddyIntent:
       oneOf:
         - $ref: '#/components/schemas/BuddyFoodLog'
@@ -1945,6 +2641,17 @@ components:
         - $ref: '#/components/schemas/BuddyOutOfScope'
         - $ref: '#/components/schemas/BuddyMedical'
         - $ref: '#/components/schemas/BuddyWeighIn'
+        - $ref: '#/components/schemas/BuddyDiaryEdit'
+        - $ref: '#/components/schemas/BuddyDiaryDelete'
+        - $ref: '#/components/schemas/BuddyAmbiguousReference'
+        - $ref: '#/components/schemas/BuddyDiaryCopy'
+        - $ref: '#/components/schemas/BuddyMemoryChange'
+        - $ref: '#/components/schemas/BuddyBatch'
+        - $ref: '#/components/schemas/BuddyBatchPortion'
+        - $ref: '#/components/schemas/BuddyBatchClose'
+        - $ref: '#/components/schemas/BuddyPersonalFoodCreate'
+        - $ref: '#/components/schemas/BuddySavedMealLog'
+        - $ref: '#/components/schemas/BuddySavedMealCreate'
       discriminator:
         propertyName: kind
         mapping:
@@ -1953,6 +2660,17 @@ components:
           outOfScope: '#/components/schemas/BuddyOutOfScope'
           medical: '#/components/schemas/BuddyMedical'
           weighIn: '#/components/schemas/BuddyWeighIn'
+          diaryEdit: '#/components/schemas/BuddyDiaryEdit'
+          diaryDelete: '#/components/schemas/BuddyDiaryDelete'
+          ambiguousReference: '#/components/schemas/BuddyAmbiguousReference'
+          diaryCopy: '#/components/schemas/BuddyDiaryCopy'
+          memoryChange: '#/components/schemas/BuddyMemoryChange'
+          batch: '#/components/schemas/BuddyBatch'
+          batchPortion: '#/components/schemas/BuddyBatchPortion'
+          batchClose: '#/components/schemas/BuddyBatchClose'
+          personalFoodCreate: '#/components/schemas/BuddyPersonalFoodCreate'
+          savedMealLog: '#/components/schemas/BuddySavedMealLog'
+          savedMealCreate: '#/components/schemas/BuddySavedMealCreate'
     BuddyInterpretation:
       type: object
       required:

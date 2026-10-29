@@ -1,9 +1,40 @@
 import 'package:fb_domain/fb_domain.dart';
 import 'package:test/test.dart';
 
+import 'proposal_codec_test.dart' show cardRows, roundTrip;
 import 'proposal_fixtures.dart';
 
 void main() {
+  // rule: B09 decoder forward-compat
+  test('B09 foodLog plus an unknown kind builds the card, routes unrecognized, '
+      'leaves the question budget untouched and round-trips the codec', () {
+    final foodOnly = session(
+      message([
+        intent([riceItem()]),
+      ]),
+    );
+    final mixed = session(
+      message([
+        intent([riceItem()]),
+        {
+          'kind': 'savedMealLog',
+          'language': 'en',
+          'script': 'latin',
+          'listRef': {'ref': 2},
+        },
+      ]),
+    );
+    expect(mixed.cards.length, 1);
+    expect(mixed.cards, foodOnly.cards);
+    expect(mixed.budget, foodOnly.budget);
+    expect(mixed.budget.questions.length, 1);
+    expect(mixed.routing.map((i) => (i.index, i.kind)), [(1, 'unrecognized')]);
+    expect(mixed.routing.single.items, isEmpty);
+    final restored = roundTrip(mixed);
+    expect(restored.cards, mixed.cards);
+    expect(restored.budget, mixed.budget);
+    expect(cardRows(restored), cardRows(mixed));
+  });
   test('AI-060 stated then saved then fallback resolves each dimension', () {
     final json = message([
       intent([riceItem()]),

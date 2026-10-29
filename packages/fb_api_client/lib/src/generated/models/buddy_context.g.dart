@@ -26,6 +26,11 @@ _BuddyContext _$BuddyContextFromJson(Map<String, dynamic> json) =>
       customExercises: (json['customExercises'] as List<dynamic>)
           .map((e) => BuddyNamedReference.fromJson(e as Map<String, dynamic>))
           .toList(),
+      activeCard: json['activeCard'] == null
+          ? null
+          : BuddyActiveCard.fromJson(
+              json['activeCard'] as Map<String, dynamic>,
+            ),
     );
 
 Map<String, dynamic> _$BuddyContextToJson(
@@ -37,4 +42,5 @@ Map<String, dynamic> _$BuddyContextToJson(
   'memory': instance.memory.map((e) => e.toJson()).toList(),
   'recentEntries': instance.recentEntries.map((e) => e.toJson()).toList(),
   'customExercises': instance.customExercises.map((e) => e.toJson()).toList(),
+  'activeCard': instance.activeCard?.toJson(),
 };

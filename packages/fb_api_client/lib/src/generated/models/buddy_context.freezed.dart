@@ -16,7 +16,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BuddyContext {
 
- List<BuddyPersonalFood> get personalFoods; List<BuddyNamedReference> get savedMeals; List<BuddyNamedReference> get openBatches; List<BuddyMemory> get memory; List<BuddyRecentEntry> get recentEntries; List<BuddyNamedReference> get customExercises;
+ List<BuddyPersonalFood> get personalFoods; List<BuddyNamedReference> get savedMeals; List<BuddyNamedReference> get openBatches; List<BuddyMemory> get memory;/// Ordered newest first; at most 30, about 3 days. Only date, slot and name are forwarded to the model.
+ List<BuddyRecentEntry> get recentEntries; List<BuddyNamedReference> get customExercises;/// The open proposal card a follow-up refers to (AI-044). Requires activeProposal (else 400). Optional: older apps omit it; absent and null are the same. Its slot, time and line name/amount/unitCode/state are forwarded to the model.
+ BuddyActiveCard? get activeCard;
 /// Create a copy of BuddyContext
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +32,20 @@ $BuddyContextCopyWith<BuddyContext> get copyWith => _$BuddyContextCopyWithImpl<B
 @override
 bool operator ==(Object other) {
   final _this = this as BuddyContext;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BuddyContext&&const DeepCollectionEquality().equals(other.personalFoods, _this.personalFoods)&&const DeepCollectionEquality().equals(other.savedMeals, _this.savedMeals)&&const DeepCollectionEquality().equals(other.openBatches, _this.openBatches)&&const DeepCollectionEquality().equals(other.memory, _this.memory)&&const DeepCollectionEquality().equals(other.recentEntries, _this.recentEntries)&&const DeepCollectionEquality().equals(other.customExercises, _this.customExercises));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BuddyContext&&const DeepCollectionEquality().equals(other.personalFoods, _this.personalFoods)&&const DeepCollectionEquality().equals(other.savedMeals, _this.savedMeals)&&const DeepCollectionEquality().equals(other.openBatches, _this.openBatches)&&const DeepCollectionEquality().equals(other.memory, _this.memory)&&const DeepCollectionEquality().equals(other.recentEntries, _this.recentEntries)&&const DeepCollectionEquality().equals(other.customExercises, _this.customExercises)&&(identical(other.activeCard, _this.activeCard) || other.activeCard == _this.activeCard));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as BuddyContext;
-  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.personalFoods),const DeepCollectionEquality().hash(_this.savedMeals),const DeepCollectionEquality().hash(_this.openBatches),const DeepCollectionEquality().hash(_this.memory),const DeepCollectionEquality().hash(_this.recentEntries),const DeepCollectionEquality().hash(_this.customExercises));
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.personalFoods),const DeepCollectionEquality().hash(_this.savedMeals),const DeepCollectionEquality().hash(_this.openBatches),const DeepCollectionEquality().hash(_this.memory),const DeepCollectionEquality().hash(_this.recentEntries),const DeepCollectionEquality().hash(_this.customExercises),_this.activeCard);
 }
 
 @override
 String toString() {
   final _this = this as BuddyContext;
-  return 'BuddyContext(personalFoods: ${_this.personalFoods}, savedMeals: ${_this.savedMeals}, openBatches: ${_this.openBatches}, memory: ${_this.memory}, recentEntries: ${_this.recentEntries}, customExercises: ${_this.customExercises})';
+  return 'BuddyContext(personalFoods: ${_this.personalFoods}, savedMeals: ${_this.savedMeals}, openBatches: ${_this.openBatches}, memory: ${_this.memory}, recentEntries: ${_this.recentEntries}, customExercises: ${_this.customExercises}, activeCard: ${_this.activeCard})';
 }
 
 
@@ -54,11 +56,11 @@ abstract mixin class $BuddyContextCopyWith<$Res>  {
   factory $BuddyContextCopyWith(BuddyContext value, $Res Function(BuddyContext) _then) = _$BuddyContextCopyWithImpl;
 @useResult
 $Res call({
- List<BuddyPersonalFood> personalFoods, List<BuddyNamedReference> savedMeals, List<BuddyNamedReference> openBatches, List<BuddyMemory> memory, List<BuddyRecentEntry> recentEntries, List<BuddyNamedReference> customExercises
+ List<BuddyPersonalFood> personalFoods, List<BuddyNamedReference> savedMeals, List<BuddyNamedReference> openBatches, List<BuddyMemory> memory, List<BuddyRecentEntry> recentEntries, List<BuddyNamedReference> customExercises, BuddyActiveCard? activeCard
 });
 
 
-
+$BuddyActiveCardCopyWith<$Res>? get activeCard;
 
 }
 /// @nodoc
@@ -71,7 +73,7 @@ class _$BuddyContextCopyWithImpl<$Res>
 
 /// Create a copy of BuddyContext
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? personalFoods = null,Object? savedMeals = null,Object? openBatches = null,Object? memory = null,Object? recentEntries = null,Object? customExercises = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? personalFoods = null,Object? savedMeals = null,Object? openBatches = null,Object? memory = null,Object? recentEntries = null,Object? customExercises = null,Object? activeCard = freezed,}) {
   return _then(BuddyContext(
 personalFoods: null == personalFoods ? _self.personalFoods : personalFoods // ignore: cast_nullable_to_non_nullable
 as List<BuddyPersonalFood>,savedMeals: null == savedMeals ? _self.savedMeals : savedMeals // ignore: cast_nullable_to_non_nullable
@@ -79,10 +81,23 @@ as List<BuddyNamedReference>,openBatches: null == openBatches ? _self.openBatche
 as List<BuddyNamedReference>,memory: null == memory ? _self.memory : memory // ignore: cast_nullable_to_non_nullable
 as List<BuddyMemory>,recentEntries: null == recentEntries ? _self.recentEntries : recentEntries // ignore: cast_nullable_to_non_nullable
 as List<BuddyRecentEntry>,customExercises: null == customExercises ? _self.customExercises : customExercises // ignore: cast_nullable_to_non_nullable
-as List<BuddyNamedReference>,
+as List<BuddyNamedReference>,activeCard: freezed == activeCard ? _self.activeCard : activeCard // ignore: cast_nullable_to_non_nullable
+as BuddyActiveCard?,
   ));
 }
+/// Create a copy of BuddyContext
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$BuddyActiveCardCopyWith<$Res>? get activeCard {
+    if (_self.activeCard == null) {
+    return null;
+  }
 
+  return $BuddyActiveCardCopyWith<$Res>(_self.activeCard!, (value) {
+    return _then(_self.copyWith(activeCard: value));
+  });
+}
 }
 
 
@@ -164,10 +179,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<BuddyPersonalFood> personalFoods,  List<BuddyNamedReference> savedMeals,  List<BuddyNamedReference> openBatches,  List<BuddyMemory> memory,  List<BuddyRecentEntry> recentEntries,  List<BuddyNamedReference> customExercises)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<BuddyPersonalFood> personalFoods,  List<BuddyNamedReference> savedMeals,  List<BuddyNamedReference> openBatches,  List<BuddyMemory> memory,  List<BuddyRecentEntry> recentEntries,  List<BuddyNamedReference> customExercises,  BuddyActiveCard? activeCard)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BuddyContext() when $default != null:
-return $default(_that.personalFoods,_that.savedMeals,_that.openBatches,_that.memory,_that.recentEntries,_that.customExercises);case _:
+return $default(_that.personalFoods,_that.savedMeals,_that.openBatches,_that.memory,_that.recentEntries,_that.customExercises,_that.activeCard);case _:
   return orElse();
 
 }
@@ -185,10 +200,10 @@ return $default(_that.personalFoods,_that.savedMeals,_that.openBatches,_that.mem
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<BuddyPersonalFood> personalFoods,  List<BuddyNamedReference> savedMeals,  List<BuddyNamedReference> openBatches,  List<BuddyMemory> memory,  List<BuddyRecentEntry> recentEntries,  List<BuddyNamedReference> customExercises)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<BuddyPersonalFood> personalFoods,  List<BuddyNamedReference> savedMeals,  List<BuddyNamedReference> openBatches,  List<BuddyMemory> memory,  List<BuddyRecentEntry> recentEntries,  List<BuddyNamedReference> customExercises,  BuddyActiveCard? activeCard)  $default,) {final _that = this;
 switch (_that) {
 case _BuddyContext():
-return $default(_that.personalFoods,_that.savedMeals,_that.openBatches,_that.memory,_that.recentEntries,_that.customExercises);case _:
+return $default(_that.personalFoods,_that.savedMeals,_that.openBatches,_that.memory,_that.recentEntries,_that.customExercises,_that.activeCard);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +220,10 @@ return $default(_that.personalFoods,_that.savedMeals,_that.openBatches,_that.mem
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<BuddyPersonalFood> personalFoods,  List<BuddyNamedReference> savedMeals,  List<BuddyNamedReference> openBatches,  List<BuddyMemory> memory,  List<BuddyRecentEntry> recentEntries,  List<BuddyNamedReference> customExercises)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<BuddyPersonalFood> personalFoods,  List<BuddyNamedReference> savedMeals,  List<BuddyNamedReference> openBatches,  List<BuddyMemory> memory,  List<BuddyRecentEntry> recentEntries,  List<BuddyNamedReference> customExercises,  BuddyActiveCard? activeCard)?  $default,) {final _that = this;
 switch (_that) {
 case _BuddyContext() when $default != null:
-return $default(_that.personalFoods,_that.savedMeals,_that.openBatches,_that.memory,_that.recentEntries,_that.customExercises);case _:
+return $default(_that.personalFoods,_that.savedMeals,_that.openBatches,_that.memory,_that.recentEntries,_that.customExercises,_that.activeCard);case _:
   return null;
 
 }
@@ -220,7 +235,7 @@ return $default(_that.personalFoods,_that.savedMeals,_that.openBatches,_that.mem
 @JsonSerializable()
 
 class _BuddyContext implements BuddyContext {
-  const _BuddyContext({required  List<BuddyPersonalFood> personalFoods, required  List<BuddyNamedReference> savedMeals, required  List<BuddyNamedReference> openBatches, required  List<BuddyMemory> memory, required  List<BuddyRecentEntry> recentEntries, required  List<BuddyNamedReference> customExercises}): _personalFoods = personalFoods,_savedMeals = savedMeals,_openBatches = openBatches,_memory = memory,_recentEntries = recentEntries,_customExercises = customExercises;
+  const _BuddyContext({required  List<BuddyPersonalFood> personalFoods, required  List<BuddyNamedReference> savedMeals, required  List<BuddyNamedReference> openBatches, required  List<BuddyMemory> memory, required  List<BuddyRecentEntry> recentEntries, required  List<BuddyNamedReference> customExercises, this.activeCard}): _personalFoods = personalFoods,_savedMeals = savedMeals,_openBatches = openBatches,_memory = memory,_recentEntries = recentEntries,_customExercises = customExercises;
   factory _BuddyContext.fromJson(Map<String, dynamic> json) => _$BuddyContextFromJson(json);
 
  final  List<BuddyPersonalFood> _personalFoods;
@@ -251,7 +266,9 @@ class _BuddyContext implements BuddyContext {
   return EqualUnmodifiableListView(_memory);
 }
 
+/// Ordered newest first; at most 30, about 3 days. Only date, slot and name are forwarded to the model.
  final  List<BuddyRecentEntry> _recentEntries;
+/// Ordered newest first; at most 30, about 3 days. Only date, slot and name are forwarded to the model.
 @override List<BuddyRecentEntry> get recentEntries {
   if (_recentEntries is EqualUnmodifiableListView) return _recentEntries;
   // ignore: implicit_dynamic_type
@@ -265,6 +282,8 @@ class _BuddyContext implements BuddyContext {
   return EqualUnmodifiableListView(_customExercises);
 }
 
+/// The open proposal card a follow-up refers to (AI-044). Requires activeProposal (else 400). Optional: older apps omit it; absent and null are the same. Its slot, time and line name/amount/unitCode/state are forwarded to the model.
+@override final  BuddyActiveCard? activeCard;
 
 /// Create a copy of BuddyContext
 /// with the given fields replaced by the non-null parameter values.
@@ -279,18 +298,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _BuddyContext&&const DeepCollectionEquality().equals(other.personalFoods, _personalFoods)&&const DeepCollectionEquality().equals(other.savedMeals, _savedMeals)&&const DeepCollectionEquality().equals(other.openBatches, _openBatches)&&const DeepCollectionEquality().equals(other.memory, _memory)&&const DeepCollectionEquality().equals(other.recentEntries, _recentEntries)&&const DeepCollectionEquality().equals(other.customExercises, _customExercises));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _BuddyContext&&const DeepCollectionEquality().equals(other.personalFoods, _personalFoods)&&const DeepCollectionEquality().equals(other.savedMeals, _savedMeals)&&const DeepCollectionEquality().equals(other.openBatches, _openBatches)&&const DeepCollectionEquality().equals(other.memory, _memory)&&const DeepCollectionEquality().equals(other.recentEntries, _recentEntries)&&const DeepCollectionEquality().equals(other.customExercises, _customExercises)&&(identical(other.activeCard, activeCard) || other.activeCard == activeCard));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_personalFoods),const DeepCollectionEquality().hash(_savedMeals),const DeepCollectionEquality().hash(_openBatches),const DeepCollectionEquality().hash(_memory),const DeepCollectionEquality().hash(_recentEntries),const DeepCollectionEquality().hash(_customExercises));
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_personalFoods),const DeepCollectionEquality().hash(_savedMeals),const DeepCollectionEquality().hash(_openBatches),const DeepCollectionEquality().hash(_memory),const DeepCollectionEquality().hash(_recentEntries),const DeepCollectionEquality().hash(_customExercises),activeCard);
 }
 
 @override
 String toString() {
-    return 'BuddyContext(personalFoods: $personalFoods, savedMeals: $savedMeals, openBatches: $openBatches, memory: $memory, recentEntries: $recentEntries, customExercises: $customExercises)';
+    return 'BuddyContext(personalFoods: $personalFoods, savedMeals: $savedMeals, openBatches: $openBatches, memory: $memory, recentEntries: $recentEntries, customExercises: $customExercises, activeCard: $activeCard)';
 }
 
 
@@ -301,11 +320,11 @@ abstract mixin class _$BuddyContextCopyWith<$Res> implements $BuddyContextCopyWi
   factory _$BuddyContextCopyWith(_BuddyContext value, $Res Function(_BuddyContext) _then) = __$BuddyContextCopyWithImpl;
 @override @useResult
 $Res call({
- List<BuddyPersonalFood> personalFoods, List<BuddyNamedReference> savedMeals, List<BuddyNamedReference> openBatches, List<BuddyMemory> memory, List<BuddyRecentEntry> recentEntries, List<BuddyNamedReference> customExercises
+ List<BuddyPersonalFood> personalFoods, List<BuddyNamedReference> savedMeals, List<BuddyNamedReference> openBatches, List<BuddyMemory> memory, List<BuddyRecentEntry> recentEntries, List<BuddyNamedReference> customExercises, BuddyActiveCard? activeCard
 });
 
 
-
+@override $BuddyActiveCardCopyWith<$Res>? get activeCard;
 
 }
 /// @nodoc
@@ -318,7 +337,7 @@ class __$BuddyContextCopyWithImpl<$Res>
 
 /// Create a copy of BuddyContext
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? personalFoods = null,Object? savedMeals = null,Object? openBatches = null,Object? memory = null,Object? recentEntries = null,Object? customExercises = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? personalFoods = null,Object? savedMeals = null,Object? openBatches = null,Object? memory = null,Object? recentEntries = null,Object? customExercises = null,Object? activeCard = freezed,}) {
   return _then(_BuddyContext(
 personalFoods: null == personalFoods ? _self._personalFoods : personalFoods // ignore: cast_nullable_to_non_nullable
 as List<BuddyPersonalFood>,savedMeals: null == savedMeals ? _self._savedMeals : savedMeals // ignore: cast_nullable_to_non_nullable
@@ -326,11 +345,24 @@ as List<BuddyNamedReference>,openBatches: null == openBatches ? _self._openBatch
 as List<BuddyNamedReference>,memory: null == memory ? _self._memory : memory // ignore: cast_nullable_to_non_nullable
 as List<BuddyMemory>,recentEntries: null == recentEntries ? _self._recentEntries : recentEntries // ignore: cast_nullable_to_non_nullable
 as List<BuddyRecentEntry>,customExercises: null == customExercises ? _self._customExercises : customExercises // ignore: cast_nullable_to_non_nullable
-as List<BuddyNamedReference>,
+as List<BuddyNamedReference>,activeCard: freezed == activeCard ? _self.activeCard : activeCard // ignore: cast_nullable_to_non_nullable
+as BuddyActiveCard?,
   ));
 }
 
+/// Create a copy of BuddyContext
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$BuddyActiveCardCopyWith<$Res>? get activeCard {
+    if (_self.activeCard == null) {
+    return null;
+  }
 
+  return $BuddyActiveCardCopyWith<$Res>(_self.activeCard!, (value) {
+    return _then(_self.copyWith(activeCard: value));
+  });
+}
 }
 
 // dart format on

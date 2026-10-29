@@ -10,6 +10,7 @@ part 'buddy_memory.g.dart';
 @Freezed()
 abstract class BuddyMemory with _$BuddyMemory {
   const factory BuddyMemory({
+    /// Open string; the memoryKind codes are recommended: default, portion, alias, brand, nickname.
     required String kind,
     required String key,
     required String value,

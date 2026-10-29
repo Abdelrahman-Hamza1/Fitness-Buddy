@@ -18,7 +18,12 @@ abstract class BuddyWeighIn with _$BuddyWeighIn {
     required String script,
     required double value,
     required String unit,
+
+    /// Literal time phrase as the user said it (B08); the app resolves it.
     required String? timeHint,
+
+    /// Closed day grammar the app resolves locally: today, yesterday, daysAgo:N (N is 2-999; 0 and 1 are today and yesterday), lastWeekday:mon..sun (the most recent such day strictly before today), date:[YYYY-]MM-DD (a date the user stated). The server guarantees a valid month/day, and a valid calendar date when a year is given. A missing year is the most recent past occurrence (02-29 resolves up to 4 years back); the app rejects future dates. A value the app can't parse routes the intent as unrecognized.
+    required String? dateHint,
   }) = _BuddyWeighIn;
 
   factory BuddyWeighIn.fromJson(Map<String, Object?> json) =>
