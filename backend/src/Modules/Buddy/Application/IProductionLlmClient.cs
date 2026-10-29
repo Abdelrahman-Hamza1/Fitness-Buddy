@@ -2,10 +2,12 @@ using FitnessBuddy.Modules.Buddy.Domain;
 
 namespace FitnessBuddy.Modules.Buddy.Application;
 
-internal sealed record ProductionOutcome(LlmStatus Status, ParsedMessage? Message, TokenUsage? Usage, decimal? EstimatedUsd);
+/// <summary><c>Invalid</c> is the closed PA13 code of an invalid output (never content); null otherwise.</summary>
+internal sealed record ProductionOutcome(LlmStatus Status, ParsedMessage? Message, TokenUsage? Usage, decimal? EstimatedUsd, InvalidOutput? Invalid = null);
 internal interface IProductionLlmClient
 {
-    Task<ProductionOutcome> ParseAsync(InterpretInput input, bool repair, CancellationToken cancellationToken);
+    // repairOf: null for the first attempt; the first attempt's invalid-output code for B08's single repair.
+    Task<ProductionOutcome> ParseAsync(InterpretInput input, InvalidOutput? repairOf, CancellationToken cancellationToken);
 }
 internal sealed class BuddyOptions
 {

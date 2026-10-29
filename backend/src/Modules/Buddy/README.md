@@ -2,9 +2,24 @@
 
 B08 exposes `POST /v1/buddy/interpret` to live authenticated sessions, including guests. It returns typed proposal **inputs**, never writes to the diary or computes nutrition totals. The app's A21 ProposalEngine applies policy and A23 owns pending messages.
 
-The pipeline validates bounded context, durably reserves a paid send, calls GPT-6 Luna, validates the closed `interpret-v1` schema and semantics, resolves personal/catalog foods, and saves the result for replay. Native Responses uses low effort, 1,600 output tokens, a 20-second deadline, `store:false`, no tools, provider fallback or SDK retries. Invalid output gets at most one separately reserved repair using a fixed instruction; invalid twice returns typed Clarify. Refusal, timeout and provider failure return pending 503. Rerank is disabled.
+The pipeline validates bounded context, durably reserves a paid send, calls GPT-6 Luna, validates the closed `interpret-v2` schema and semantics (B09a: flat intent plus grouped nullable members, list `ref` indexes instead of IDs, the closed day grammar, the stated-figure literal guard), resolves personal/catalog foods, and saves the result for replay. Native Responses uses low effort, 1,600 output tokens, a 20-second deadline, `store:false`, no tools, provider fallback or SDK retries. Invalid output gets at most one separately reserved repair using a fixed instruction that names only the closed invalid-output code (`shape`, `bounds`, `mixedGroups`, `refRange`, `dayHint`, `statedNotLiteral`, `closedValue`, `food`); invalid twice returns typed Clarify. Nothing to link to (no matching saved meal or batch, an empty list, "save this" without an active proposal) is a Clarify `referenceNotFound` without a repair. Refusal, timeout and provider failure return pending 503. Rerank is disabled.
 
 Personal names/aliases are resolved before the catalog; returned food facts and serving data come from those sources. Distinct alternatives and dimension options include the facts needed for offline taps. State mismatches retain both the source state and a stated-state dimension for client yield conversion. Only an unmatched item can expose a physically bounded, explicitly badged AI nutrient range **per 100 g**. An unmatched item without a valid range returns Clarify. No model nutrients replace a real match.
+
+## Intents and resolution (B09a)
+
+The response carries sixteen public kinds (`technical-planning/06-buddy-ai.md` §3.2). `Application/ResolveInterpretation` dispatches each validated parsed intent to one of three resolvers:
+- `ResolveFoods`: B08's personal → catalog → badged-estimate food resolution, unchanged. It serves foodLog items, diary-edit replacements, batch ingredients, personal-food components and memory subject foods (memory keeps a real match only).
+- `ResolveReferences`: diaryEdit, diaryDelete, ambiguousReference, diaryCopy, savedMealLog and savedMealCreate.
+- `ResolveCreations`: memoryChange, batch, batchPortion, batchClose and personalFoodCreate.
+
+The model links mentions to list positions. The server maps them to request IDs and **decides ambiguity** (TD-091), in this order:
+1. no link: `targets: []` when the reference has a date or slot hint (the app looks it up locally), otherwise clarify `referenceNotFound`;
+2. scope all, or one link: those entries are the targets;
+3. several links with a date/slot qualifier: `ambiguousReference` carrying the operation and the patch;
+4. several unqualified links: the newest (date, slot) group, which is the target when it has one entry and otherwise asks.
+
+`ambiguousReference` never comes from the model. A copy without a source slot and an ambiguous save are clarify `unclear`. An unmatched food without an estimate turns its whole intent into clarify `unmatchedFood`. Stated personal-food figures are emitted exactly as validated against the message (TD-092) and never filled or computed. Day hints use the closed grammar `today | yesterday | daysAgo:N | lastWeekday:… | date:[YYYY-]MM-DD`, which the app resolves locally. **Every UUID in a response comes from the request context** (recentEntries, savedMeals, openBatches, personalFoods, activeProposal). This PA5 invariant is asserted in the unit tests and by the public eval's `provenance` check.
 
 ## Replay, limits and deletion
 
@@ -39,12 +54,16 @@ prepares an API-only read-only mount from the existing external owner key. The w
 receive no OpenAI key. It takes effect on the next CI-verified main-image deployment (`up`).
 A plain server stays disabled until configured; no paid probe is part of configuration/deploy.
 
-The API key file must be private, absolute and not a symlink. Mount it read-only outside the repo; never put its value in app settings, the app, argv or logs. The fixed OpenAI transport does not follow redirects. The concurrency bound is per process; daily operational safety ceilings are shared in Postgres. These are not R3 commercial allowances. Context forwarded to the provider excludes IDs, account/device fields and food nutrients. Logs/traces contain only model/version, outcome, timing, tokens and estimated cost. `store:false` does not claim provider zero retention (R1/R2 terms remain as accepted).
+The API key file must be private, absolute and not a symlink. Mount it read-only outside the repo; never put its value in app settings, the app, argv or logs. The fixed OpenAI transport does not follow redirects. The concurrency bound is per process; daily operational safety ceilings are shared in Postgres. These are not R3 commercial allowances. Context forwarded to the provider is an allowlisted projection: list positions (`ref`) instead of IDs, no grams, account/device fields or food nutrients; the active card forwards only its slot, time and line name/amount/unitCode/state. Logs/traces contain only model/version, outcome, the closed invalid-output code, timing, tokens and estimated cost. `store:false` does not claim provider zero retention (R1/R2 terms remain as accepted).
 
 ## Verification
 
-`make check test eval` is offline: v0 SDK replay stays unchanged, while Persistence.Tests starts a real authenticated HTTP API, replays 26 synthetic M3 cases through the native SDK and v1 pipeline, and invokes the Dart public-endpoint grader. The `eval` CI gate checks the uploaded `backend/artifacts/buddy/B08-offline.json`; no key or paid call occurs. These fixtures prove regressions, not model quality or full proposal AQ metrics. Full quantities/question policy awaits A21.
+`make check test eval` is offline. The v0 SDK replay stays unchanged. Persistence.Tests starts a real authenticated HTTP API, replays the synthetic fixtures through the native SDK and v2 pipeline, and invokes the Dart public-endpoint grader for two case files:
+- the 26 M3 cases → `backend/artifacts/buddy/B08-offline.json`;
+- the 53 B09 intent cases (17 Arabic/Arabizi) → `B09-offline.json`.
 
-`make eval-schema` regenerates both versioned internal schemas. Keep the snapshot and prompt version together. The old B02 CLI remains isolated; `--schema-v1` only exports the new schema.
+The `eval` CI gate (`tools/scripts/check-buddy-eval.py`) checks both reports for required IDs, per-case check sets, the PA5 provenance check, the Arabic/Arabizi quarter and the `en`/`ar`/`arabizi` breakdown. No key or paid call is involved. These fixtures prove regressions, not model quality. Engine-level AQ metrics are B09b and A25–A27. Privacy (`IdentityPrivacyTests.B09_interpret_context_and_intents_leave_no_content_in_logs_and_telemetry`), the per-list bounds and the replay of every new kind are covered in Persistence.Tests.
+
+`make eval-schema` regenerates the v0 and production (`interpret-v2`) internal schemas. Keep the snapshot and prompt version together. `interpret-v1.*` are frozen history. The old B02 CLI remains isolated; `--schema-v2` only exports the production schema, and a test pins it inside OpenAI's strict-mode limits and our budget (depth ≤ 5, ≤ ~150 properties).
 
 B08's separately authorized live test has a durable local **10-send total fence**, including repairs. It is absent from make/CI targets and requires the exact owner scope flag recorded in the card. The scope ledger is pre-provisioned outside the test with an fsynced file and parent directory; its `B08-max10\n` header is followed by one ASCII `1` per reserved physical send. The transport only opens existing state, appends and fsyncs before dispatch, and rejects missing/malformed state. Do not recreate or reset it without new owner authorization after that scope is consumed.

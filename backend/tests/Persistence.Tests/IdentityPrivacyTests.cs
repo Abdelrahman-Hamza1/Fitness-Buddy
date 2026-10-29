@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Net;
 using FitnessBuddy.Host.Observability;
+using FitnessBuddy.Modules.Buddy.Domain;
 using FitnessBuddy.Modules.Identity.Application;
 using FitnessBuddy.TestData;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -273,6 +274,131 @@ public sealed class IdentityPrivacyTests(PostgresFixture postgres)
         Assert.NotEmpty(capture.Logs.Lines); Assert.NotEmpty(capture.Activities);
         Assert.Contains(capture.Transport.Envelopes, envelope => envelope.Contains("\"exception\"", StringComparison.Ordinal));
         await capture.AssertAbsentAsync(canaries, auditLines, postgres);
+    }
+
+    // B09a WP6: EN/AR/Arabizi canaries in the message, entry/saved-meal/batch/personal-food names, aliases, memory values,
+    // active-card lines, model mentions/subjects/names and a stated figure never reach logs, scopes, spans, metrics, Sentry,
+    // audit rows or Postgres logs, across 200 (incl. the coded repair), replay, 400, 409, an injected 500, 503 and 429.
+    // The closed invalid-output code (PA13) does appear, so the repair stays diagnosable without content.
+    [Fact, Trait("Rule", "09.4-no-user-content"), Trait("Req", "AC-042")]
+    public async Task B09_interpret_context_and_intents_leave_no_content_in_logs_and_telemetry()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await using var h = new IdentityHarness(postgres); await h.InitializeAsync();
+        using var capture = new SinkCapture();
+        string[] canaries = ["CANARY-B09-TEXT-EN", "رسالة-بدي-سرية-كناري", "CANARY-b09-akalt-riz-arabizi", "CANARY-B09-ENTRY-NAME", "CANARY-B09-SAVED-MEAL",
+            "CANARY-B09-BATCH-NAME", "CANARY-B09-PERSONAL-NAME", "CANARY-B09-ALIAS", "CANARY-B09-MEMORY-VALUE", "CANARY-B09-CARD-LINE", "CANARY-B09-MENTION",
+            "CANARY-B09-SUBJECT", "CANARY-B09-CREATE-NAME", "مقلوبة-كناري-سرية", "8231.5"];
+        var text = $"{canaries[0]} {canaries[1]} {canaries[2]} {canaries[13]} save my bar as 8231.5 kcal per 100g";
+        static ParsedIntent Intent(ParsedKind kind) => new(kind, null, null, null, null, [], null, null, null, null, null, null, null, null, null, null);
+        var valid = new ParsedMessage(MessageLanguage.Mixed, MessageScript.Mixed,
+        [
+            Intent(ParsedKind.DiaryEdit) with { Reference = new([0], canaries[10], ParsedScope.One, "yesterday", null), Portion = new(150, FoodUnit.G, null, null, false) },
+            Intent(ParsedKind.MemoryChange) with { Memory = new(ParsedMemoryOperation.Remember, ParsedMemoryKind.Alias, canaries[11], null, canaries[8], null, null) },
+            Intent(ParsedKind.SavedMealCreate) with { Create = new(canaries[12], [], true) },
+            Intent(ParsedKind.PersonalFoodCreate) with { Create = new(canaries[12], [canaries[7]], false), Stated = new(ParsedNutrientBasis.Per100g, null, null, 8231.5m, null, null, null, null) },
+            Intent(ParsedKind.BatchClose) with { ListRef = 0 },
+            Intent(ParsedKind.FoodLog) with { Items = [new(canaries[13], canaries[10], canaries[13], 1, FoodUnit.Plate, true, null, null, null, [], null)] },
+        ]);
+        var parses = 0;
+        // The first send is semantically invalid (a ref outside recentEntries): one coded repair, then the valid output.
+        using var wire = new BuddyApiTests.BuddyWire
+        {
+            Parse = _ => Interlocked.Increment(ref parses) == 1
+                ? valid with { Intents = [Intent(ParsedKind.DiaryDelete) with { Reference = new([7], canaries[10], ParsedScope.One, null, null) }] }
+                : valid,
+        };
+        await using var factory = capture.Configure(new BuddyApiTests.BuddyApi(postgres, h, wire, dailyLimit: 4), _ => { });
+        using var client = factory.CreateClient(); BuddyApiTests.Headers(client, h); await BuddyApiTests.SignIn(client, h);
+        JsonNode Body(Guid id, string message, int entries = 1)
+        {
+            var body = JsonSerializer.SerializeToNode(BuddyApiTests.Request(id, h, message))!;
+            body["activeProposal"] = "019a0000-0000-7000-8000-0000000000a1";
+            var context = body["context"]!;
+            context["recentEntries"] = new JsonArray([.. Enumerable.Range(0, entries).Select(n => new JsonObject
+            {
+                ["id"] = $"019a0b0c-0000-4000-8000-{n:D12}", ["date"] = "2026-10-20", ["slot"] = "Lunch", ["name"] = canaries[3], ["grams"] = 200,
+            })]);
+            context["savedMeals"] = new JsonArray(new JsonObject { ["id"] = "019a0b0c-0000-4000-8000-000000000101", ["name"] = canaries[4] });
+            context["openBatches"] = new JsonArray(new JsonObject { ["id"] = "019a0b0c-0000-4000-8000-000000000201", ["name"] = canaries[5] });
+            context["personalFoods"] = new JsonArray(new JsonObject
+            {
+                ["id"] = "019a0b0c-0000-4000-8000-000000000301",
+                ["names"] = new JsonArray(canaries[6]),
+                ["aliases"] = new JsonArray(canaries[7]),
+                ["state"] = "cooked",
+                ["nutrients"] = new JsonObject { ["kcal"] = 100, ["proteinG"] = 1, ["carbsG"] = 2, ["fatG"] = 3, ["fiberG"] = 0 },
+                ["servings"] = new JsonArray(),
+            });
+            context["memory"] = new JsonArray(new JsonObject { ["kind"] = "alias", ["key"] = "shake", ["value"] = canaries[8] });
+            context["activeCard"] = new JsonObject
+            {
+                ["slot"] = "Breakfast",
+                ["time"] = "08:00",
+                ["lines"] = new JsonArray(new JsonObject { ["name"] = canaries[9], ["amount"] = 2, ["unitCode"] = "piece", ["state"] = null }),
+            };
+            return body;
+        }
+        async Task<HttpResponseMessage> SendAsync(HttpClient http, Guid id, JsonNode body)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/v1/buddy/interpret") { Content = new StringContent(body.ToJsonString(B18Relaxed), Encoding.UTF8, "application/json") };
+            request.Headers.Add("Idempotency-Key", id.ToString()); return await http.SendAsync(request, ct);
+        }
+        var id = Guid.CreateVersion7();
+        using (var accepted = await SendAsync(client, id, Body(id, text)))
+        {
+            // 200 returns the user's own words in the intents by design; only diagnostics must omit them.
+            Assert.Equal(HttpStatusCode.OK, accepted.StatusCode); Assert.Equal(2, wire.Calls);
+            Assert.Contains(canaries[12], await accepted.Content.ReadAsStringAsync(ct), StringComparison.Ordinal);
+        }
+        using (var replay = await SendAsync(client, id, Body(id, text))) { Assert.Equal(HttpStatusCode.OK, replay.StatusCode); Assert.Equal(2, wire.Calls); }
+        using (var conflict = await SendAsync(client, id, Body(id, text + " " + canaries[2])))
+        { Assert.Equal(HttpStatusCode.Conflict, conflict.StatusCode); B18AssertNoCanary(canaries, await conflict.Content.ReadAsStringAsync(ct)); }
+        var tooMany = Guid.CreateVersion7();
+        using (var invalid = await SendAsync(client, tooMany, Body(tooMany, text, entries: 31)))
+        { Assert.Equal(HttpStatusCode.BadRequest, invalid.StatusCode); B18AssertNoCanary(canaries, await invalid.Content.ReadAsStringAsync(ct)); }
+        Assert.Equal(2, wire.Calls);
+        // An injected resolver failure whose exception message carries the message: 500, no content, scrubbed diagnostics.
+        await using (var failingFactory = factory.WithWebHostBuilder(builder => builder.ConfigureTestServices(services =>
+            services.AddSingleton<FitnessBuddy.Modules.Catalog.Contracts.IFoodResolver>(new ThrowingResolver(text)))))
+        {
+            using var failing = failingFactory.CreateClient(); BuddyApiTests.Headers(failing, h);
+            failing.DefaultRequestHeaders.Authorization = client.DefaultRequestHeaders.Authorization;
+            var crash = Guid.CreateVersion7();
+            using var failed = await SendAsync(failing, crash, Body(crash, text));
+            Assert.Equal(HttpStatusCode.InternalServerError, failed.StatusCode);
+            B18AssertNoCanary(canaries, await failed.Content.ReadAsStringAsync(ct));
+            await failingFactory.Services.GetRequiredService<Sentry.IHub>().FlushAsync(TimeSpan.FromSeconds(5));
+        }
+        wire.Status = HttpStatusCode.ServiceUnavailable;
+        var unavailable = Guid.CreateVersion7();
+        using (var pending = await SendAsync(client, unavailable, Body(unavailable, text)))
+        { Assert.Equal(HttpStatusCode.ServiceUnavailable, pending.StatusCode); B18AssertNoCanary(canaries, await pending.Content.ReadAsStringAsync(ct)); }
+        // The daily ceiling (4 sends: two for the repaired message, the crash, the 503) answers 429 without a send.
+        var sends = wire.Calls; var limited = Guid.CreateVersion7();
+        using (var denied = await SendAsync(client, limited, Body(limited, text)))
+        {
+            Assert.Equal(HttpStatusCode.TooManyRequests, denied.StatusCode); Assert.Equal(sends, wire.Calls);
+            B18AssertNoCanary(canaries, await denied.Content.ReadAsStringAsync(ct));
+        }
+        await factory.Services.GetRequiredService<Sentry.IHub>().FlushAsync(TimeSpan.FromSeconds(5));
+        capture.Meter.RecordObservableInstruments();
+        // The repair request names only the closed code; the invalid model output (its mention) is never sent back.
+        Assert.DoesNotContain("Previous output was invalid", wire.Requests[0], StringComparison.Ordinal);
+        Assert.Contains("Previous output was invalid (refRange)", wire.Requests[1], StringComparison.Ordinal);
+        Assert.All(wire.Requests, body => Assert.DoesNotContain(canaries[10], body, StringComparison.Ordinal));
+        var logs = string.Join('\n', capture.Logs.Lines);
+        Assert.Contains("invalid=refRange", logs, StringComparison.Ordinal);
+        Assert.Contains(capture.Activities, a => a.Contains("buddy.invalid_output=refRange", StringComparison.Ordinal));
+        Assert.Contains(capture.Transport.Envelopes, envelope => envelope.Contains("\"exception\"", StringComparison.Ordinal));
+        await capture.AssertAbsentAsync(canaries, await SinkCapture.AuditAsync(postgres), postgres);
+    }
+
+    private sealed class ThrowingResolver(string text) : FitnessBuddy.Modules.Catalog.Contracts.IFoodResolver
+    {
+        public Task<IReadOnlyList<FitnessBuddy.Modules.Catalog.Contracts.FoodCandidate>> ResolveAsync(FitnessBuddy.Modules.Catalog.Contracts.FoodMention mention, CancellationToken cancellationToken) =>
+            throw new InvalidOperationException(text + " " + mention.CanonicalEn);
+        public Task<FitnessBuddy.Modules.Catalog.Contracts.FoodDetails?> DetailsAsync(string key, CancellationToken cancellationToken) => throw new InvalidOperationException(text + " " + key);
     }
 
     // Unescaped UTF-8 like the app's jsonEncode, so Arabic canaries travel as real text.

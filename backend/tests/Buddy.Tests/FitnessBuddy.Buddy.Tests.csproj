@@ -6,7 +6,7 @@
   <ItemGroup><ProjectReference Include="../../tools/BuddySpike/FitnessBuddy.BuddySpike.csproj" ReferenceOutputAssembly="false" /></ItemGroup>
   <ItemGroup>
     <Content Include="../../../tools/buddy_eval/fixtures/*.json" Link="fixtures/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="../../src/Modules/Buddy/Prompts/interpret-v1.schema.json" Link="production-schema.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../src/Modules/Buddy/Prompts/interpret-v2.schema.json" Link="production-schema.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../src/Modules/Buddy/Prompts/interpret-v0.schema.json" Link="schema.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

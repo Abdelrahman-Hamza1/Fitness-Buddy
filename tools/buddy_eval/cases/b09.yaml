@@ -1,0 +1,5098 @@
+{
+  "description": "Synthetic B09a interpretation-level fixtures (interpret-v2 parsed outputs + request context + partial expected public intents). Not model-quality measurements. Case-local IDs; engine-level AQ is B09b and A25-A27 (PA11).",
+  "cases": [
+    {
+      "id": "T26",
+      "text": "no the rice was 150g",
+      "language": "english",
+      "script": "latin",
+      "note": "Newest linked rice (AI-091).",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [
+                0,
+                5
+              ],
+              "mention": "the rice",
+              "scope": "one",
+              "dateHint": null,
+              "slotHint": null
+            },
+            "move": null,
+            "listRef": null,
+            "portion": {
+              "amount": 150,
+              "unit": "g",
+              "fraction": null,
+              "people": null,
+              "rest": false
+            },
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "targets": [
+              "019a0b09-0000-7000-8000-0000000000e1"
+            ],
+            "reference": {
+              "mention": "the rice",
+              "scope": "one",
+              "dateHint": null,
+              "slotHint": null
+            },
+            "patch": {
+              "amount": {
+                "value": 150,
+                "unit": "g",
+                "explicit": true
+              },
+              "replacement": null,
+              "move": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "AR-T26",
+      "text": "لا الرز كان ١٥٠ غرام",
+      "language": "arabic",
+      "script": "arabic",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabic",
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [
+                0,
+                5
+              ],
+              "mention": "الرز",
+              "scope": "one",
+              "dateHint": null,
+              "slotHint": null
+            },
+            "move": null,
+            "listRef": null,
+            "portion": {
+              "amount": 150,
+              "unit": "g",
+              "fraction": null,
+              "people": null,
+              "rest": false
+            },
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "targets": [
+              "019a0b09-0000-7000-8000-0000000000e1"
+            ],
+            "patch": {
+              "amount": {
+                "value": 150,
+                "unit": "g",
+                "explicit": true
+              },
+              "replacement": null,
+              "move": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "AZ-T26",
+      "text": "la2 el riz kan 150g",
+      "language": "arabic",
+      "script": "arabizi",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabizi",
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [
+                0,
+                5
+              ],
+              "mention": "el riz",
+              "scope": "one",
+              "dateHint": null,
+              "slotHint": null
+            },
+            "move": null,
+            "listRef": null,
+            "portion": {
+              "amount": 150,
+              "unit": "g",
+              "fraction": null,
+              "people": null,
+              "rest": false
+            },
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "targets": [
+              "019a0b09-0000-7000-8000-0000000000e1"
+            ],
+            "patch": {
+              "amount": {
+                "value": 150,
+                "unit": "g",
+                "explicit": true
+              },
+              "replacement": null,
+              "move": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "T27",
+      "text": "move the shawarma to lunch",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [
+                3
+              ],
+              "mention": "the shawarma",
+              "scope": "one",
+              "dateHint": null,
+              "slotHint": null
+            },
+            "move": {
+              "dateHint": null,
+              "slotHint": "Lunch",
+              "timeHint": null
+            },
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "targets": [
+              "019a0b09-0000-7000-8000-0000000000e4"
+            ],
+            "patch": {
+              "amount": null,
+              "replacement": null,
+              "move": {
+                "dateHint": null,
+                "slotHint": "Lunch",
+                "timeHint": null
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "AZ-T27",
+      "text": "7ot el shawarma 3al ghada",
+      "language": "arabic",
+      "script": "arabizi",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabizi",
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [
+                3
+              ],
+              "mention": "el shawarma",
+              "scope": "one",
+              "dateHint": null,
+              "slotHint": null
+            },
+            "move": {
+              "dateHint": null,
+              "slotHint": "Lunch",
+              "timeHint": null
+            },
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "targets": [
+              "019a0b09-0000-7000-8000-0000000000e4"
+            ],
+            "patch": {
+              "move": {
+                "dateHint": null,
+                "slotHint": "Lunch",
+                "timeHint": null
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "T28",
+      "text": "delete the pepsi",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "diaryDelete",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [
+                4
+              ],
+              "mention": "the pepsi",
+              "scope": "one",
+              "dateHint": null,
+              "slotHint": null
+            },
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "diaryDelete",
+            "targets": [
+              "019a0b09-0000-7000-8000-0000000000e5"
+            ],
+            "reference": {
+              "mention": "the pepsi",
+              "scope": "one"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "AR-T28",
+      "text": "امسح البيبسي",
+      "language": "arabic",
+      "script": "arabic",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabic",
+        "intents": [
+          {
+            "kind": "diaryDelete",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [
+                4
+              ],
+              "mention": "البيبسي",
+              "scope": "one",
+              "dateHint": null,
+              "slotHint": null
+            },
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "diaryDelete",
+            "targets": [
+              "019a0b09-0000-7000-8000-0000000000e5"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "T29",
+      "text": "the chicken yesterday was thighs not breast",
+      "language": "english",
+      "script": "latin",
+      "note": "Qualified with two candidates: ask with the patch (T29, TD-091).",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "thighs",
+                "canonicalNameEn": "chicken thigh",
+                "nameAr": null,
+                "amount": null,
+                "unit": null,
+                "amountExplicit": false,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [
+                1,
+                2
+              ],
+              "mention": "the chicken yesterday",
+              "scope": "one",
+              "dateHint": "yesterday",
+              "slotHint": null
+            },
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000c1",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000c2",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken breast",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000c3",
+            "date": "2026-10-20",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "ambiguousReference",
+            "operation": "edit",
+            "candidates": [
+              "019a0b09-0000-7000-8000-0000000000c2",
+              "019a0b09-0000-7000-8000-0000000000c3"
+            ],
+            "reference": {
+              "dateHint": "yesterday",
+              "scope": "one"
+            },
+            "patch": {
+              "amount": null,
+              "replacement": {
+                "mention": "thighs",
+                "match": {
+                  "nameEn": "chicken thigh"
+                },
+                "amount": {
+                  "value": null,
+                  "unit": null,
+                  "explicit": false
+                }
+              },
+              "move": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "T29-one",
+      "text": "the chicken from yesterday was thighs not breast",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "thighs",
+                "canonicalNameEn": "chicken thigh",
+                "nameAr": null,
+                "amount": null,
+                "unit": null,
+                "amountExplicit": false,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [
+                1
+              ],
+              "mention": "the chicken from yesterday",
+              "scope": "one",
+              "dateHint": "yesterday",
+              "slotHint": null
+            },
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000c1",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000c2",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken breast",
+            "grams": 200
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "targets": [
+              "019a0b09-0000-7000-8000-0000000000c2"
+            ],
+            "patch": {
+              "amount": null,
+              "replacement": {
+                "mention": "thighs",
+                "match": {
+                  "nameEn": "chicken thigh"
+                },
+                "amount": {
+                  "value": null,
+                  "unit": null,
+                  "explicit": false
+                }
+              },
+              "move": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "AZ-T29",
+      "text": "el djej mbare7 kan fakhad mish sedr",
+      "language": "arabic",
+      "script": "arabizi",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabizi",
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "fakhad",
+                "canonicalNameEn": "chicken thigh",
+                "nameAr": null,
+                "amount": null,
+                "unit": null,
+                "amountExplicit": false,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [
+                1,
+                2
+              ],
+              "mention": "el djej mbare7",
+              "scope": "one",
+              "dateHint": "yesterday",
+              "slotHint": null
+            },
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000c1",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000c2",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken breast",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000c3",
+            "date": "2026-10-20",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "ambiguousReference",
+            "operation": "edit",
+            "candidates": [
+              "019a0b09-0000-7000-8000-0000000000c2",
+              "019a0b09-0000-7000-8000-0000000000c3"
+            ],
+            "patch": {
+              "replacement": {
+                "mention": "fakhad",
+                "match": {
+                  "nameEn": "chicken thigh"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "T23",
+      "text": "same breakfast as yesterday",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "diaryCopy",
+            "timeHint": null,
+            "slotHint": "Breakfast",
+            "dateHint": "yesterday",
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": {
+              "dateHint": "today",
+              "slotHint": null,
+              "timeHint": null
+            },
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "diaryCopy",
+            "source": {
+              "dateHint": "yesterday",
+              "slotHint": "Breakfast",
+              "timeHint": null
+            },
+            "target": {
+              "dateHint": "today",
+              "slotHint": null,
+              "timeHint": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "AR-T23",
+      "text": "نفس فطور امبارح",
+      "language": "arabic",
+      "script": "arabic",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabic",
+        "intents": [
+          {
+            "kind": "diaryCopy",
+            "timeHint": null,
+            "slotHint": "Breakfast",
+            "dateHint": "yesterday",
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": {
+              "dateHint": "today",
+              "slotHint": null,
+              "timeHint": null
+            },
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "diaryCopy",
+            "source": {
+              "dateHint": "yesterday",
+              "slotHint": "Breakfast"
+            },
+            "target": {
+              "dateHint": "today"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-newest-slot-ask",
+      "text": "change the rice to 100g",
+      "language": "english",
+      "script": "latin",
+      "note": "Two candidates in the newest (date, slot) group ask (PA4).",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [
+                0,
+                1,
+                2
+              ],
+              "mention": "the rice",
+              "scope": "one",
+              "dateHint": null,
+              "slotHint": null
+            },
+            "move": null,
+            "listRef": null,
+            "portion": {
+              "amount": 100,
+              "unit": "g",
+              "fraction": null,
+              "people": null,
+              "rest": false
+            },
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000f1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000f2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000f3",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 200
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "ambiguousReference",
+            "operation": "edit",
+            "candidates": [
+              "019a0b09-0000-7000-8000-0000000000f1",
+              "019a0b09-0000-7000-8000-0000000000f2"
+            ],
+            "patch": {
+              "amount": {
+                "value": 100,
+                "unit": "g",
+                "explicit": true
+              },
+              "replacement": null,
+              "move": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-unqualified-newest",
+      "text": "the eggs were 3",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [
+                6,
+                2
+              ],
+              "mention": "the eggs",
+              "scope": "one",
+              "dateHint": null,
+              "slotHint": null
+            },
+            "move": null,
+            "listRef": null,
+            "portion": {
+              "amount": 3,
+              "unit": "piece",
+              "fraction": null,
+              "people": null,
+              "rest": false
+            },
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "targets": [
+              "019a0b09-0000-7000-8000-0000000000e3"
+            ],
+            "patch": {
+              "amount": {
+                "value": 3,
+                "unit": "piece",
+                "explicit": true
+              },
+              "replacement": null,
+              "move": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-reference-not-found",
+      "text": "delete the falafel",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "diaryDelete",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [],
+              "mention": "the falafel",
+              "scope": "one",
+              "dateHint": null,
+              "slotHint": null
+            },
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "clarify",
+            "reason": "referenceNotFound"
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-day-hint-lookup",
+      "text": "delete monday's snack",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "diaryDelete",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [],
+              "mention": "monday's snack",
+              "scope": "one",
+              "dateHint": "lastWeekday:mon",
+              "slotHint": "Snacks"
+            },
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "diaryDelete",
+            "targets": [],
+            "reference": {
+              "dateHint": "lastWeekday:mon",
+              "slotHint": "Snacks"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-scope-all",
+      "text": "delete all the rice",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "diaryDelete",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [
+                5,
+                0
+              ],
+              "mention": "all the rice",
+              "scope": "all",
+              "dateHint": null,
+              "slotHint": null
+            },
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "diaryDelete",
+            "targets": [
+              "019a0b09-0000-7000-8000-0000000000e1",
+              "019a0b09-0000-7000-8000-0000000000e6"
+            ],
+            "reference": {
+              "scope": "all"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "AR-E-scope-all",
+      "text": "امسح كل الرز",
+      "language": "arabic",
+      "script": "arabic",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabic",
+        "intents": [
+          {
+            "kind": "diaryDelete",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [
+                0,
+                5
+              ],
+              "mention": "كل الرز",
+              "scope": "all",
+              "dateHint": null,
+              "slotHint": null
+            },
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "diaryDelete",
+            "targets": [
+              "019a0b09-0000-7000-8000-0000000000e1",
+              "019a0b09-0000-7000-8000-0000000000e6"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-relative-edit",
+      "text": "add 50g to the rice",
+      "language": "english",
+      "script": "latin",
+      "note": "Relative amount edits are unsupported (PA15).",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "clarify",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": "unsupported",
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "clarify",
+            "reason": "unsupported"
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-transcribed-date",
+      "text": "change the rice on October 3rd to 120g",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [],
+              "mention": "the rice on October 3rd",
+              "scope": "one",
+              "dateHint": "date:10-03",
+              "slotHint": null
+            },
+            "move": null,
+            "listRef": null,
+            "portion": {
+              "amount": 120,
+              "unit": "g",
+              "fraction": null,
+              "people": null,
+              "rest": false
+            },
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "diaryEdit",
+            "targets": [],
+            "reference": {
+              "dateHint": "date:10-03"
+            },
+            "patch": {
+              "amount": {
+                "value": 120,
+                "unit": "g",
+                "explicit": true
+              },
+              "replacement": null,
+              "move": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-numeric-date-day-first",
+      "text": "ate 2 eggs on 3/10/2026",
+      "language": "english",
+      "script": "latin",
+      "note": "Numeric dates are day first (D8).",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": "on 3/10/2026",
+            "slotHint": null,
+            "dateHint": "date:2026-10-03",
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "eggs",
+                "canonicalNameEn": "egg",
+                "nameAr": null,
+                "amount": 2,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "foodLog",
+            "dateHint": "date:2026-10-03",
+            "items": [
+              {
+                "match": {
+                  "nameEn": "egg"
+                },
+                "amount": {
+                  "value": 2,
+                  "unit": "piece",
+                  "explicit": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "AR-E-food-yesterday",
+      "text": "اكلت بيضتين امبارح",
+      "language": "arabic",
+      "script": "arabic",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabic",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": "امبارح",
+            "slotHint": null,
+            "dateHint": "yesterday",
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "بيضتين",
+                "canonicalNameEn": "egg",
+                "nameAr": "بيض",
+                "amount": 2,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "foodLog",
+            "dateHint": "yesterday",
+            "timeHint": "امبارح",
+            "items": [
+              {
+                "match": {
+                  "nameEn": "egg"
+                },
+                "amount": {
+                  "value": 2,
+                  "unit": "piece",
+                  "explicit": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "AZ-E-weigh-in-days-ago",
+      "text": "wazni 97.2 awal mbare7",
+      "language": "arabic",
+      "script": "arabizi",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabizi",
+        "intents": [
+          {
+            "kind": "weighIn",
+            "timeHint": "awal mbare7",
+            "slotHint": null,
+            "dateHint": "daysAgo:2",
+            "dishGroup": null,
+            "items": [],
+            "weighIn": {
+              "value": 97.2,
+              "unit": "kg"
+            },
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "weighIn",
+            "value": 97.2,
+            "unit": "kg",
+            "dateHint": "daysAgo:2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-saved-meal-log",
+      "text": "had my usual breakfast",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "savedMealLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": 0,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [
+          {
+            "id": "019a0b09-0000-7000-8000-000000000051",
+            "name": "usual breakfast"
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-000000000052",
+            "name": "gym shake"
+          }
+        ],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "savedMealLog",
+            "savedMealId": "019a0b09-0000-7000-8000-000000000051",
+            "share": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "AZ-E-saved-meal-half",
+      "text": "akalt nos el gym shake",
+      "language": "arabic",
+      "script": "arabizi",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabizi",
+        "intents": [
+          {
+            "kind": "savedMealLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": 1,
+            "portion": {
+              "amount": null,
+              "unit": null,
+              "fraction": 0.5,
+              "people": null,
+              "rest": false
+            },
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [
+          {
+            "id": "019a0b09-0000-7000-8000-000000000051",
+            "name": "usual breakfast"
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-000000000052",
+            "name": "gym shake"
+          }
+        ],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "savedMealLog",
+            "savedMealId": "019a0b09-0000-7000-8000-000000000052",
+            "share": {
+              "fraction": 0.5,
+              "people": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-saved-meal-no-match",
+      "text": "had my sunday brunch",
+      "language": "english",
+      "script": "latin",
+      "note": "No matching name: clarify without a repair (PA8).",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "savedMealLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [
+          {
+            "id": "019a0b09-0000-7000-8000-000000000051",
+            "name": "usual breakfast"
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-000000000052",
+            "name": "gym shake"
+          }
+        ],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "clarify",
+            "reason": "referenceNotFound"
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-save-this",
+      "text": "save this as gym lunch",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "savedMealCreate",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": {
+              "name": "gym lunch",
+              "aliases": [],
+              "fromActiveProposal": true
+            },
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": [],
+        "activeCard": {
+          "slot": "Lunch",
+          "time": "13:00",
+          "lines": [
+            {
+              "name": "rice",
+              "amount": 200,
+              "unitCode": "g",
+              "state": "cooked"
+            },
+            {
+              "name": "chicken breast",
+              "amount": 150,
+              "unitCode": "g",
+              "state": "cooked"
+            }
+          ]
+        }
+      },
+      "activeProposal": "019a0b09-0000-7000-8000-0000000000aa",
+      "expected": {
+        "intents": [
+          {
+            "kind": "savedMealCreate",
+            "name": "gym lunch",
+            "activeProposal": "019a0b09-0000-7000-8000-0000000000aa",
+            "targets": [],
+            "source": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-save-this-without-card",
+      "text": "save this as post workout",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "savedMealCreate",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": {
+              "name": "post workout",
+              "aliases": [],
+              "fromActiveProposal": true
+            },
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "clarify",
+            "reason": "referenceNotFound"
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-save-yesterday-lunch",
+      "text": "save yesterday's lunch as office lunch",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "savedMealCreate",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": {
+              "refs": [],
+              "mention": "yesterday's lunch",
+              "scope": "all",
+              "dateHint": "yesterday",
+              "slotHint": "Lunch"
+            },
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": {
+              "name": "office lunch",
+              "aliases": [],
+              "fromActiveProposal": false
+            },
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e1",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "rice",
+            "grams": 200
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e2",
+            "date": "2026-10-21",
+            "slot": "Lunch",
+            "name": "chicken breast",
+            "grams": 150
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e3",
+            "date": "2026-10-21",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e4",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "chicken shawarma",
+            "grams": 300
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e5",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "pepsi",
+            "grams": 330
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e6",
+            "date": "2026-10-20",
+            "slot": "Dinner",
+            "name": "rice",
+            "grams": 180
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000e7",
+            "date": "2026-10-20",
+            "slot": "Breakfast",
+            "name": "eggs",
+            "grams": 100
+          }
+        ],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "savedMealCreate",
+            "activeProposal": null,
+            "targets": [],
+            "source": {
+              "dateHint": "yesterday",
+              "slotHint": "Lunch",
+              "timeHint": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "AZ-E-save-this",
+      "text": "khazen hay ka fotoor el gym",
+      "language": "arabic",
+      "script": "arabizi",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabizi",
+        "intents": [
+          {
+            "kind": "savedMealCreate",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": {
+              "name": "fotoor el gym",
+              "aliases": [],
+              "fromActiveProposal": true
+            },
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": [],
+        "activeCard": {
+          "slot": "Breakfast",
+          "time": "08:30",
+          "lines": [
+            {
+              "name": "egg",
+              "amount": 1,
+              "unitCode": "piece",
+              "state": "fried"
+            },
+            {
+              "name": "toast",
+              "amount": 1,
+              "unitCode": "piece",
+              "state": null
+            }
+          ]
+        }
+      },
+      "activeProposal": "019a0b09-0000-7000-8000-0000000000aa",
+      "expected": {
+        "intents": [
+          {
+            "kind": "savedMealCreate",
+            "name": "fotoor el gym",
+            "activeProposal": "019a0b09-0000-7000-8000-0000000000aa",
+            "targets": [],
+            "source": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "T25",
+      "text": "remember i always weigh rice raw",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "memoryChange",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "rice",
+                "canonicalNameEn": "rice",
+                "nameAr": null,
+                "amount": null,
+                "unit": null,
+                "amountExplicit": false,
+                "state": "raw",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": {
+              "operation": "remember",
+              "memoryKind": "default",
+              "subject": "rice",
+              "dimension": "state",
+              "value": "raw",
+              "amount": null,
+              "unit": null
+            },
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "memoryChange",
+            "operation": "remember",
+            "memoryKind": "default",
+            "subject": "rice",
+            "dimension": "state",
+            "value": "raw",
+            "amount": null,
+            "food": {
+              "match": {
+                "nameEn": "rice"
+              },
+              "estimate": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "AR-T25",
+      "text": "تذكر اني دايما بوزن الرز نيء",
+      "language": "arabic",
+      "script": "arabic",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabic",
+        "intents": [
+          {
+            "kind": "memoryChange",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "الرز",
+                "canonicalNameEn": "rice",
+                "nameAr": "رز",
+                "amount": null,
+                "unit": null,
+                "amountExplicit": false,
+                "state": "raw",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": {
+              "operation": "remember",
+              "memoryKind": "default",
+              "subject": "الرز",
+              "dimension": "state",
+              "value": "raw",
+              "amount": null,
+              "unit": null
+            },
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "memoryChange",
+            "operation": "remember",
+            "memoryKind": "default",
+            "dimension": "state",
+            "value": "raw",
+            "food": {
+              "match": {
+                "nameEn": "rice"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-memory-portion",
+      "text": "my bowl is 350g",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "memoryChange",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": {
+              "operation": "remember",
+              "memoryKind": "portion",
+              "subject": "my bowl",
+              "dimension": null,
+              "value": null,
+              "amount": 350,
+              "unit": "g"
+            },
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "memoryChange",
+            "operation": "remember",
+            "memoryKind": "portion",
+            "subject": "my bowl",
+            "dimension": null,
+            "amount": {
+              "value": 350,
+              "unit": "g",
+              "explicit": true
+            },
+            "food": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "AZ-E-memory-forget",
+      "text": "insa eno bawzen el riz nayy",
+      "language": "arabic",
+      "script": "arabizi",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabizi",
+        "intents": [
+          {
+            "kind": "memoryChange",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "el riz",
+                "canonicalNameEn": "rice",
+                "nameAr": null,
+                "amount": null,
+                "unit": null,
+                "amountExplicit": false,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": {
+              "operation": "forget",
+              "memoryKind": "default",
+              "subject": "el riz",
+              "dimension": "state",
+              "value": null,
+              "amount": null,
+              "unit": null
+            },
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [
+          {
+            "kind": "default",
+            "key": "rice",
+            "value": "state:raw"
+          }
+        ],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "memoryChange",
+            "operation": "forget",
+            "memoryKind": "default",
+            "dimension": "state",
+            "food": {
+              "match": {
+                "nameEn": "rice"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "T20",
+      "text": "cooked a pot: 1kg chicken, 500g rice dry, 2 onions, 3 tbsp oil. ate like a third",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "batch",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "chicken",
+                "canonicalNameEn": "chicken",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "kg",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [
+                  "state"
+                ],
+                "estimate": null
+              },
+              {
+                "mention": "rice",
+                "canonicalNameEn": "rice",
+                "nameAr": null,
+                "amount": 500,
+                "unit": "g",
+                "amountExplicit": true,
+                "state": "dry",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "onions",
+                "canonicalNameEn": "onion",
+                "nameAr": null,
+                "amount": 2,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "oil",
+                "canonicalNameEn": "vegetable oil",
+                "nameAr": null,
+                "amount": 3,
+                "unit": "tbsp",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": {
+              "amount": null,
+              "unit": null,
+              "fraction": 0.33,
+              "people": null,
+              "rest": false
+            },
+            "memory": null,
+            "batch": {
+              "name": null,
+              "cookedAmount": null,
+              "cookedUnit": null,
+              "path": null
+            },
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "batch",
+            "name": null,
+            "ingredients": [
+              {
+                "match": {
+                  "nameEn": "chicken"
+                },
+                "amount": {
+                  "value": 1,
+                  "unit": "kg",
+                  "explicit": true
+                }
+              },
+              {
+                "match": {
+                  "nameEn": "rice",
+                  "state": "dry"
+                },
+                "amount": {
+                  "value": 500,
+                  "unit": "g",
+                  "explicit": true
+                }
+              },
+              {
+                "match": {
+                  "nameEn": "onion"
+                },
+                "amount": {
+                  "value": 2,
+                  "unit": "piece",
+                  "explicit": true
+                }
+              },
+              {
+                "match": {
+                  "nameEn": "vegetable oil"
+                },
+                "amount": {
+                  "value": 3,
+                  "unit": "tbsp",
+                  "explicit": true
+                }
+              }
+            ],
+            "cookedWeight": null,
+            "path": null,
+            "eatenNow": {
+              "amount": null,
+              "share": {
+                "fraction": 0.33,
+                "people": null
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "AZ-T20",
+      "text": "tabakht tanjara: kilo djej, 500g riz nashef, 2 basalat, 3 m3ale2 zeit. akalt ta2riban telt",
+      "language": "arabic",
+      "script": "arabizi",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabizi",
+        "intents": [
+          {
+            "kind": "batch",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "djej",
+                "canonicalNameEn": "chicken",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "kg",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [
+                  "state"
+                ],
+                "estimate": null
+              },
+              {
+                "mention": "riz",
+                "canonicalNameEn": "rice",
+                "nameAr": null,
+                "amount": 500,
+                "unit": "g",
+                "amountExplicit": true,
+                "state": "dry",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "basalat",
+                "canonicalNameEn": "onion",
+                "nameAr": null,
+                "amount": 2,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "zeit",
+                "canonicalNameEn": "vegetable oil",
+                "nameAr": null,
+                "amount": 3,
+                "unit": "tbsp",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": {
+              "amount": null,
+              "unit": null,
+              "fraction": 0.33,
+              "people": null,
+              "rest": false
+            },
+            "memory": null,
+            "batch": {
+              "name": null,
+              "cookedAmount": null,
+              "cookedUnit": null,
+              "path": null
+            },
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "batch",
+            "ingredients": [
+              {
+                "match": {
+                  "nameEn": "chicken"
+                },
+                "amount": {
+                  "value": 1,
+                  "unit": "kg",
+                  "explicit": true
+                }
+              },
+              {
+                "match": {
+                  "nameEn": "rice",
+                  "state": "dry"
+                },
+                "amount": {
+                  "value": 500,
+                  "unit": "g",
+                  "explicit": true
+                }
+              },
+              {
+                "match": {
+                  "nameEn": "onion"
+                },
+                "amount": {
+                  "value": 2,
+                  "unit": "piece",
+                  "explicit": true
+                }
+              },
+              {
+                "match": {
+                  "nameEn": "vegetable oil"
+                },
+                "amount": {
+                  "value": 3,
+                  "unit": "tbsp",
+                  "explicit": true
+                }
+              }
+            ],
+            "eatenNow": {
+              "share": {
+                "fraction": 0.33
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "T21",
+      "text": "leftovers of the chicken rice, a plate",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "batchPortion",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": 0,
+            "portion": {
+              "amount": 1,
+              "unit": "plate",
+              "fraction": null,
+              "people": null,
+              "rest": false
+            },
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000b1",
+            "name": "chicken rice pot"
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000b2",
+            "name": "lentil soup"
+          }
+        ],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "batchPortion",
+            "batchId": "019a0b09-0000-7000-8000-0000000000b1",
+            "portion": {
+              "amount": {
+                "value": 1,
+                "unit": "plate",
+                "explicit": true
+              },
+              "share": null
+            },
+            "rest": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "T22",
+      "text": "cooked 3 cups rice for the family i had 1 plate",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "batch",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "rice",
+                "canonicalNameEn": "rice",
+                "nameAr": null,
+                "amount": 3,
+                "unit": "cup",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [
+                  "variant"
+                ],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": {
+              "amount": 1,
+              "unit": "plate",
+              "fraction": null,
+              "people": null,
+              "rest": false
+            },
+            "memory": null,
+            "batch": {
+              "name": null,
+              "cookedAmount": null,
+              "cookedUnit": null,
+              "path": null
+            },
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "batch",
+            "ingredients": [
+              {
+                "match": {
+                  "nameEn": "rice"
+                },
+                "amount": {
+                  "value": 3,
+                  "unit": "cup",
+                  "explicit": true
+                }
+              }
+            ],
+            "eatenNow": {
+              "amount": {
+                "value": 1,
+                "unit": "plate",
+                "explicit": true
+              },
+              "share": null
+            },
+            "path": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-batch-rest",
+      "text": "finished the leftover chicken rice",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "batchPortion",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": 0,
+            "portion": {
+              "amount": null,
+              "unit": null,
+              "fraction": null,
+              "people": null,
+              "rest": true
+            },
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000b1",
+            "name": "chicken rice pot"
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000b2",
+            "name": "lentil soup"
+          }
+        ],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "batchPortion",
+            "batchId": "019a0b09-0000-7000-8000-0000000000b1",
+            "portion": null,
+            "rest": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-batch-close",
+      "text": "threw the rest of the lentil soup away",
+      "language": "english",
+      "script": "latin",
+      "note": "DY-044: closes without logging.",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "batchClose",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": 1,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000b1",
+            "name": "chicken rice pot"
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000b2",
+            "name": "lentil soup"
+          }
+        ],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "batchClose",
+            "batchId": "019a0b09-0000-7000-8000-0000000000b2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "AR-E-batch-close",
+      "text": "كبيت باقي شوربة العدس",
+      "language": "arabic",
+      "script": "arabic",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabic",
+        "intents": [
+          {
+            "kind": "batchClose",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": 1,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000b1",
+            "name": "chicken rice pot"
+          },
+          {
+            "id": "019a0b09-0000-7000-8000-0000000000b2",
+            "name": "lentil soup"
+          }
+        ],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "batchClose",
+            "batchId": "019a0b09-0000-7000-8000-0000000000b2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-batch-no-open-batches",
+      "text": "a plate of the leftover maqluba",
+      "language": "english",
+      "script": "latin",
+      "note": "No open batches: clarify without a repair (PA8).",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "batchPortion",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": 0,
+            "portion": {
+              "amount": 1,
+              "unit": "plate",
+              "fraction": null,
+              "people": null,
+              "rest": false
+            },
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "clarify",
+            "reason": "referenceNotFound"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DY-045",
+      "text": "my mom made maqluba, I had a plate",
+      "language": "english",
+      "script": "latin",
+      "note": "Someone else cooked it: a reference dish, not a batch.",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "maqluba",
+                "canonicalNameEn": "maqluba",
+                "nameAr": "مقلوبة",
+                "amount": 1,
+                "unit": "plate",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": {
+                  "low": {
+                    "kcal": 150,
+                    "proteinG": 6,
+                    "carbsG": 15,
+                    "fatG": 6,
+                    "fiberG": 1
+                  },
+                  "high": {
+                    "kcal": 220,
+                    "proteinG": 10,
+                    "carbsG": 22,
+                    "fatG": 11,
+                    "fiberG": 2
+                  }
+                }
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "foodLog",
+            "items": [
+              {
+                "match": {
+                  "nameEn": "maqluba"
+                },
+                "amount": {
+                  "value": 1,
+                  "unit": "plate",
+                  "explicit": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "T24",
+      "text": "my shake",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "my shake",
+                "canonicalNameEn": "protein shake",
+                "nameAr": null,
+                "amount": null,
+                "unit": null,
+                "amountExplicit": false,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [
+          {
+            "id": "019a0b09-0000-7000-8000-000000000071",
+            "names": [
+              "my shake"
+            ],
+            "aliases": [
+              "protein shake"
+            ],
+            "state": "raw",
+            "nutrients": {
+              "kcal": 95,
+              "proteinG": 11,
+              "carbsG": 5,
+              "fatG": 3,
+              "fiberG": 0
+            },
+            "servings": [
+              {
+                "unitCode": "serving",
+                "g": 340,
+                "ml": null,
+                "rangeLo": null,
+                "rangeHi": null,
+                "source": "user"
+              }
+            ]
+          }
+        ],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "foodLog",
+            "items": [
+              {
+                "match": {
+                  "key": "019a0b09-0000-7000-8000-000000000071",
+                  "source": "personal",
+                  "nameEn": "my shake"
+                },
+                "estimate": null
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-personal-food-components",
+      "text": "save my oats bowl as my food: 50g oats and 200ml milk",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "personalFoodCreate",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "oats",
+                "canonicalNameEn": "oats",
+                "nameAr": null,
+                "amount": 50,
+                "unit": "g",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "milk",
+                "canonicalNameEn": "milk",
+                "nameAr": null,
+                "amount": 200,
+                "unit": "ml",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": {
+              "name": "oats bowl",
+              "aliases": [],
+              "fromActiveProposal": false
+            },
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "personalFoodCreate",
+            "name": "oats bowl",
+            "aliases": [],
+            "components": [
+              {
+                "match": {
+                  "nameEn": "oats"
+                },
+                "amount": {
+                  "value": 50,
+                  "unit": "g",
+                  "explicit": true
+                }
+              },
+              {
+                "match": {
+                  "nameEn": "milk"
+                },
+                "amount": {
+                  "value": 200,
+                  "unit": "ml",
+                  "explicit": true
+                }
+              }
+            ],
+            "stated": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "E-personal-food-stated",
+      "text": "my protein bar is 200 kcal and 20g protein per bar of 60g",
+      "language": "english",
+      "script": "latin",
+      "note": "Transcribed user figures only (TD-092).",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "personalFoodCreate",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": {
+              "name": "protein bar",
+              "aliases": [],
+              "fromActiveProposal": false
+            },
+            "stated": {
+              "basis": "perServing",
+              "servingG": 60,
+              "servingMl": null,
+              "kcal": 200,
+              "proteinG": 20,
+              "carbsG": null,
+              "fatG": null,
+              "fiberG": null
+            }
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "personalFoodCreate",
+            "components": [],
+            "stated": {
+              "basis": "perServing",
+              "servingG": 60,
+              "servingMl": null,
+              "kcal": 200,
+              "proteinG": 20,
+              "carbsG": null,
+              "fatG": null,
+              "fiberG": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "T03",
+      "text": "200g rice, 200g chicken breast raw, cooked with an onion",
+      "language": "english",
+      "script": "latin",
+      "note": "Defaults are context; the server never applies them (TD-032).",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": null,
+            "dateHint": null,
+            "dishGroup": "rice with chicken",
+            "items": [
+              {
+                "mention": "rice",
+                "canonicalNameEn": "rice",
+                "nameAr": null,
+                "amount": 200,
+                "unit": "g",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [
+                  "state",
+                  "fat"
+                ],
+                "estimate": null
+              },
+              {
+                "mention": "chicken breast",
+                "canonicalNameEn": "chicken breast",
+                "nameAr": null,
+                "amount": 200,
+                "unit": "g",
+                "amountExplicit": true,
+                "state": "raw",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "onion",
+                "canonicalNameEn": "onion",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [
+          {
+            "kind": "default",
+            "key": "rice",
+            "value": "state:raw"
+          },
+          {
+            "kind": "default",
+            "key": "cookingFat",
+            "value": "oil:1 tbsp:olive oil"
+          }
+        ],
+        "recentEntries": [],
+        "customExercises": []
+      },
+      "activeProposal": null,
+      "expected": {
+        "intents": [
+          {
+            "kind": "foodLog",
+            "dishGroup": "rice with chicken",
+            "items": [
+              {
+                "match": {
+                  "nameEn": "rice"
+                },
+                "amount": {
+                  "value": 200,
+                  "unit": "g",
+                  "explicit": true
+                }
+              },
+              {
+                "match": {
+                  "nameEn": "chicken breast",
+                  "state": "raw"
+                },
+                "amount": {
+                  "value": 200,
+                  "unit": "g",
+                  "explicit": true
+                }
+              },
+              {
+                "match": {
+                  "nameEn": "onion"
+                },
+                "amount": {
+                  "value": 1,
+                  "unit": "piece",
+                  "explicit": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "C-make-it-2-eggs",
+      "text": "make it 2 eggs",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": "Breakfast",
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "eggs",
+                "canonicalNameEn": "egg",
+                "nameAr": null,
+                "amount": 2,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": "fried",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "toast",
+                "canonicalNameEn": "toast",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": [],
+        "activeCard": {
+          "slot": "Breakfast",
+          "time": "08:30",
+          "lines": [
+            {
+              "name": "egg",
+              "amount": 1,
+              "unitCode": "piece",
+              "state": "fried"
+            },
+            {
+              "name": "toast",
+              "amount": 1,
+              "unitCode": "piece",
+              "state": null
+            }
+          ]
+        }
+      },
+      "activeProposal": "019a0b09-0000-7000-8000-0000000000aa",
+      "expected": {
+        "intents": [
+          {
+            "kind": "foodLog",
+            "slotHint": "Breakfast",
+            "items": [
+              {
+                "match": {
+                  "nameEn": "egg",
+                  "state": "fried"
+                },
+                "amount": {
+                  "value": 2,
+                  "unit": "piece",
+                  "explicit": true
+                }
+              },
+              {
+                "match": {
+                  "nameEn": "toast"
+                },
+                "amount": {
+                  "value": 1,
+                  "unit": "piece",
+                  "explicit": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "C-another-egg",
+      "text": "another egg",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": "Breakfast",
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "egg",
+                "canonicalNameEn": "egg",
+                "nameAr": null,
+                "amount": 3,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": "fried",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "toast",
+                "canonicalNameEn": "toast",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": [],
+        "activeCard": {
+          "slot": "Breakfast",
+          "time": "08:30",
+          "lines": [
+            {
+              "name": "egg",
+              "amount": 2,
+              "unitCode": "piece",
+              "state": "fried"
+            },
+            {
+              "name": "toast",
+              "amount": 1,
+              "unitCode": "piece",
+              "state": null
+            }
+          ]
+        }
+      },
+      "activeProposal": "019a0b09-0000-7000-8000-0000000000aa",
+      "expected": {
+        "intents": [
+          {
+            "kind": "foodLog",
+            "slotHint": "Breakfast",
+            "items": [
+              {
+                "match": {
+                  "nameEn": "egg",
+                  "state": "fried"
+                },
+                "amount": {
+                  "value": 3,
+                  "unit": "piece",
+                  "explicit": true
+                }
+              },
+              {
+                "match": {
+                  "nameEn": "toast"
+                },
+                "amount": {
+                  "value": 1,
+                  "unit": "piece",
+                  "explicit": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "C-no-toast",
+      "text": "no toast",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": "Breakfast",
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "egg",
+                "canonicalNameEn": "egg",
+                "nameAr": null,
+                "amount": 2,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": "fried",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": [],
+        "activeCard": {
+          "slot": "Breakfast",
+          "time": "08:30",
+          "lines": [
+            {
+              "name": "egg",
+              "amount": 2,
+              "unitCode": "piece",
+              "state": "fried"
+            },
+            {
+              "name": "toast",
+              "amount": 1,
+              "unitCode": "piece",
+              "state": null
+            }
+          ]
+        }
+      },
+      "activeProposal": "019a0b09-0000-7000-8000-0000000000aa",
+      "expected": {
+        "intents": [
+          {
+            "kind": "foodLog",
+            "slotHint": "Breakfast",
+            "items": [
+              {
+                "match": {
+                  "nameEn": "egg",
+                  "state": "fried"
+                },
+                "amount": {
+                  "value": 2,
+                  "unit": "piece",
+                  "explicit": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "C-bulgur-not-rice",
+      "text": "bulgur not rice",
+      "language": "english",
+      "script": "latin",
+      "parsed": {
+        "language": "english",
+        "script": "latin",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": "Lunch",
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "bulgur",
+                "canonicalNameEn": "bulgur",
+                "nameAr": null,
+                "amount": 200,
+                "unit": "g",
+                "amountExplicit": true,
+                "state": "cooked",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "chicken breast",
+                "canonicalNameEn": "chicken breast",
+                "nameAr": null,
+                "amount": 150,
+                "unit": "g",
+                "amountExplicit": true,
+                "state": "cooked",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": [],
+        "activeCard": {
+          "slot": "Lunch",
+          "time": "13:00",
+          "lines": [
+            {
+              "name": "rice",
+              "amount": 200,
+              "unitCode": "g",
+              "state": "cooked"
+            },
+            {
+              "name": "chicken breast",
+              "amount": 150,
+              "unitCode": "g",
+              "state": "cooked"
+            }
+          ]
+        }
+      },
+      "activeProposal": "019a0b09-0000-7000-8000-0000000000aa",
+      "expected": {
+        "intents": [
+          {
+            "kind": "foodLog",
+            "slotHint": "Lunch",
+            "items": [
+              {
+                "match": {
+                  "nameEn": "bulgur",
+                  "state": "cooked"
+                },
+                "amount": {
+                  "value": 200,
+                  "unit": "g",
+                  "explicit": true
+                }
+              },
+              {
+                "match": {
+                  "nameEn": "chicken breast",
+                  "state": "cooked"
+                },
+                "amount": {
+                  "value": 150,
+                  "unit": "g",
+                  "explicit": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "AZ-C-another-egg",
+      "text": "kaman bayda",
+      "language": "arabic",
+      "script": "arabizi",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabizi",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": "Breakfast",
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "bayda",
+                "canonicalNameEn": "egg",
+                "nameAr": null,
+                "amount": 3,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": "fried",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              },
+              {
+                "mention": "toast",
+                "canonicalNameEn": "toast",
+                "nameAr": null,
+                "amount": 1,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": null,
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": [],
+        "activeCard": {
+          "slot": "Breakfast",
+          "time": "08:30",
+          "lines": [
+            {
+              "name": "egg",
+              "amount": 2,
+              "unitCode": "piece",
+              "state": "fried"
+            },
+            {
+              "name": "toast",
+              "amount": 1,
+              "unitCode": "piece",
+              "state": null
+            }
+          ]
+        }
+      },
+      "activeProposal": "019a0b09-0000-7000-8000-0000000000aa",
+      "expected": {
+        "intents": [
+          {
+            "kind": "foodLog",
+            "slotHint": "Breakfast",
+            "items": [
+              {
+                "match": {
+                  "nameEn": "egg",
+                  "state": "fried"
+                },
+                "amount": {
+                  "value": 3,
+                  "unit": "piece",
+                  "explicit": true
+                }
+              },
+              {
+                "match": {
+                  "nameEn": "toast"
+                },
+                "amount": {
+                  "value": 1,
+                  "unit": "piece",
+                  "explicit": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "AR-C-no-bread",
+      "text": "بدون خبز",
+      "language": "arabic",
+      "script": "arabic",
+      "parsed": {
+        "language": "arabic",
+        "script": "arabic",
+        "intents": [
+          {
+            "kind": "foodLog",
+            "timeHint": null,
+            "slotHint": "Breakfast",
+            "dateHint": null,
+            "dishGroup": null,
+            "items": [
+              {
+                "mention": "بيض",
+                "canonicalNameEn": "egg",
+                "nameAr": "بيض",
+                "amount": 2,
+                "unit": "piece",
+                "amountExplicit": true,
+                "state": "fried",
+                "variant": null,
+                "share": null,
+                "ambiguities": [],
+                "estimate": null
+              }
+            ],
+            "weighIn": null,
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
+          }
+        ]
+      },
+      "context": {
+        "personalFoods": [],
+        "savedMeals": [],
+        "openBatches": [],
+        "memory": [],
+        "recentEntries": [],
+        "customExercises": [],
+        "activeCard": {
+          "slot": "Breakfast",
+          "time": "08:30",
+          "lines": [
+            {
+              "name": "egg",
+              "amount": 2,
+              "unitCode": "piece",
+              "state": "fried"
+            },
+            {
+              "name": "bread",
+              "amount": 1,
+              "unitCode": "loaf",
+              "state": null
+            }
+          ]
+        }
+      },
+      "activeProposal": "019a0b09-0000-7000-8000-0000000000aa",
+      "expected": {
+        "intents": [
+          {
+            "kind": "foodLog",
+            "slotHint": "Breakfast",
+            "items": [
+              {
+                "match": {
+                  "nameEn": "egg",
+                  "state": "fried"
+                },
+                "amount": {
+                  "value": 2,
+                  "unit": "piece",
+                  "explicit": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

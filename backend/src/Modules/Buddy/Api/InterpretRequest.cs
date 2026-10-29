@@ -37,7 +37,7 @@ public sealed partial record InterpretRequest(Guid RequestId, [property: MinLeng
         && c.Memory is { Length: <= 20 } && c.Memory.All(m => m is not null && Short(m.Kind) && Short(m.Key) && Short(m.Value))
         && c.RecentEntries is { Length: <= 30 } && c.RecentEntries.All(r => r is not null && Reference(r.Id) && Short(r.Slot) && Short(r.Name) && Positive(r.Grams))
         && Distinct(c.RecentEntries.Select(r => r.Id))
-        && (c.ActiveCard is null || Optional(c.ActiveCard.Slot) && (c.ActiveCard.Time is null || Clock().IsMatch(c.ActiveCard.Time)) && c.ActiveCard.Lines is { Length: <= 30 }
+        && (c.ActiveCard is null || Optional(c.ActiveCard.Slot) && (c.ActiveCard.Time is null || Clock().IsMatch(c.ActiveCard.Time) && !c.ActiveCard.Time.EndsWith('\n')) && c.ActiveCard.Lines is { Length: <= 30 }
             && c.ActiveCard.Lines.All(l => l is not null && Short(l.Name) && Positive(l.Amount) && Optional(l.UnitCode) && Optional(l.State)));
     private static bool Refs(BuddyNamedReference[]? refs) => refs is { Length: <= 20 } && refs.All(r => r is not null && Reference(r.Id) && Short(r.Name)) && Distinct(refs.Select(r => r.Id));
     private static bool Distinct(IEnumerable<Guid> ids) { var seen = new HashSet<Guid>(); return ids.All(seen.Add); }

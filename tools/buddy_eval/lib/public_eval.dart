@@ -39,30 +39,145 @@ const List<PublicJson> publicDefaultSlots = [
   },
 ];
 
-/// The `/v1/buddy/interpret` body for one public case.
+/// The case files `bin/public_eval.dart` can run: B08's M3 set and B09's intents.
+const List<String> publicCaseFiles = ['m3', 'b09'];
+
+/// A stable UUIDv7-shaped request ID per case file and position (the ledger
+/// key is per user, the prefix only keeps the two files apart in reports).
+String publicRequestId(String caseFile, int index) {
+  final suffix = (index + 1).toRadixString(16).padLeft(12, '0');
+  return caseFile == 'm3'
+      ? '019a0000-0000-7000-8000-$suffix'
+      : '019a0000-0000-7000-8b09-$suffix';
+}
+
+/// The `/v1/buddy/interpret` body for one public case. B09 cases carry their
+/// own request `context` (case-local IDs) and `activeProposal`; M3 cases only
+/// a memory slice.
 PublicJson publicInterpretBody({
   required String id,
   required PublicJson test,
   required Object? now,
-}) => {
-  'requestId': id,
-  'text': test['text'],
-  'now': now,
-  'tzOffsetMin': 180,
-  'ramadan': {'active': false, 'fajr': null, 'maghrib': null},
-  'slots': publicDefaultSlots,
-  'activeProposal': null,
-  'context': {
-    'personalFoods': <dynamic>[],
-    'savedMeals': <dynamic>[],
-    'openBatches': <dynamic>[],
-    'memory': test['memory'],
-    'recentEntries': <dynamic>[],
-    'customExercises': <dynamic>[],
-  },
-};
+}) {
+  final context = (test['context'] as PublicJson?) ?? const <String, dynamic>{};
+  return {
+    'requestId': id,
+    'text': test['text'],
+    'now': now,
+    'tzOffsetMin': 180,
+    'ramadan': {'active': false, 'fajr': null, 'maghrib': null},
+    'slots': publicDefaultSlots,
+    'activeProposal': test['activeProposal'],
+    'context': {
+      'personalFoods': context['personalFoods'] ?? <dynamic>[],
+      'savedMeals': context['savedMeals'] ?? <dynamic>[],
+      'openBatches': context['openBatches'] ?? <dynamic>[],
+      'memory': context['memory'] ?? test['memory'] ?? <dynamic>[],
+      'recentEntries': context['recentEntries'] ?? <dynamic>[],
+      'customExercises': context['customExercises'] ?? <dynamic>[],
+      if (context['activeCard'] != null) 'activeCard': context['activeCard'],
+    },
+  };
+}
 
-/// Parse/resolution checks only. Full proposal quantities/questions await A21.
+/// The report breakdown key of a case: `arabizi`, `ar` (Arabic letters in the
+/// message) or `en`.
+String languageGroup(PublicJson test) {
+  if (test['script'] == 'arabizi') return 'arabizi';
+  return RegExp('[\u0600-\u06FF]').hasMatch(test['text'] as String)
+      ? 'ar'
+      : 'en';
+}
+
+final RegExp _uuid = RegExp(
+  '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}',
+);
+
+/// B09 PA5: every UUID in a response is an ID of the request context
+/// (recentEntries, savedMeals, openBatches, personalFoods, activeProposal).
+/// Slot and request IDs are not context references and never come back.
+bool provenanceHolds(PublicJson request, PublicJson response) {
+  final context = request['context'] as PublicJson;
+  final allowed = <String>{
+    for (final list in [
+      'recentEntries',
+      'savedMeals',
+      'openBatches',
+      'personalFoods',
+    ])
+      for (final row in (context[list] as List<dynamic>).cast<PublicJson>())
+        (row['id'] as String).toLowerCase(),
+    if (request['activeProposal'] != null)
+      (request['activeProposal'] as String).toLowerCase(),
+  };
+  return _uuid
+      .allMatches(jsonEncode(response))
+      .every((m) => allowed.contains(m.group(0)!.toLowerCase()));
+}
+
+/// Grades one case: B09 cases (with `expected.intents`) by field, M3 cases by
+/// B08's food checks; both add the PA5 provenance check.
+PublicJson gradeCase(PublicJson test, PublicJson response, PublicJson request) {
+  final expected = test['expected'] as PublicJson;
+  final checks = expected.containsKey('intents')
+      ? gradeIntents(test, response)
+      : gradePublic(test, response);
+  checks['provenance'] = provenanceHolds(request, response);
+  return checks;
+}
+
+/// B09 interpretation-level grading (D13). `expected.intents` lists partial
+/// intents: every key present must match the response (maps recursively,
+/// lists by length and position, scalars exactly). Each top-level field name
+/// becomes its own check (`targets`, `candidates`, `patch`, `batchId`, ...).
+PublicJson gradeIntents(PublicJson test, PublicJson response) {
+  final expected =
+      ((test['expected'] as PublicJson)['intents'] as List<dynamic>)
+          .cast<PublicJson>();
+  final intents = (response['intents'] as List<dynamic>).cast<PublicJson>();
+  final checks = <String, bool>{
+    'intents':
+        jsonEncode(intents.map((i) => i['kind']).toList()) ==
+        jsonEncode(expected.map((i) => i['kind']).toList()),
+    'language': intents.every((i) => i['language'] == test['language']),
+    'script': intents.every((i) => i['script'] == test['script']),
+  };
+  for (var index = 0; index < expected.length; index++) {
+    final actual = index < intents.length ? intents[index] : null;
+    for (final entry in expected[index].entries) {
+      if (entry.key == 'kind') continue;
+      final ok =
+          actual != null &&
+          actual.containsKey(entry.key) &&
+          subsetMatches(entry.value, actual[entry.key]);
+      checks[entry.key] = (checks[entry.key] ?? true) && ok;
+    }
+  }
+  return checks;
+}
+
+/// Whether [actual] contains [expected]: maps by the expected keys (a key must
+/// exist), lists by length and position, other values exactly.
+bool subsetMatches(Object? expected, Object? actual) {
+  if (expected is Map) {
+    return actual is Map &&
+        expected.entries.every(
+          (e) =>
+              actual.containsKey(e.key) &&
+              subsetMatches(e.value, actual[e.key]),
+        );
+  }
+  if (expected is List) {
+    if (actual is! List || actual.length != expected.length) return false;
+    for (var i = 0; i < expected.length; i++) {
+      if (!subsetMatches(expected[i], actual[i])) return false;
+    }
+    return true;
+  }
+  return expected == actual;
+}
+
+/// B08's M3 parse/resolution checks. Full proposal quantities/questions are B09b.
 PublicJson gradePublic(PublicJson test, PublicJson response) {
   final expected = test['expected'] as PublicJson;
   final intents = (response['intents'] as List<dynamic>).cast<PublicJson>();
@@ -176,27 +291,38 @@ PublicJson gradePublic(PublicJson test, PublicJson response) {
   return checks;
 }
 
-PublicJson summarizePublic(List<PublicJson> rows, {required String mode}) {
+PublicJson summarizePublic(
+  List<PublicJson> rows, {
+  required String mode,
+  String caseFile = 'm3',
+}) {
   final times = rows.map((r) => r['elapsedMs'] as int).toList()..sort();
-  final languages = <String, PublicJson>{};
-  for (final row in rows) {
-    final script = row['script'] as String;
-    final group = languages.putIfAbsent(
-      script,
-      () => {'cases': 0, 'passed': 0},
-    );
-    group['cases'] = (group['cases'] as int) + 1;
-    if (row['passed'] == true) {
-      group['passed'] = (group['passed'] as int) + 1;
+  PublicJson breakdown(String key) {
+    final groups = <String, PublicJson>{};
+    for (final row in rows) {
+      final group = groups.putIfAbsent(
+        row[key] as String,
+        () => {'cases': 0, 'passed': 0},
+      );
+      group['cases'] = (group['cases'] as int) + 1;
+      if (row['passed'] == true) {
+        group['passed'] = (group['passed'] as int) + 1;
+      }
     }
+    return groups;
   }
+
   return {
     'mode': mode,
-    'scope': 'Parse/resolution only; no A21 proposal or model-quality claim.',
+    'caseFile': caseFile,
+    'scope':
+        'Parse/resolution only (interpretation level); no A21 proposal or '
+        'model-quality claim.',
     'cases': rows.length,
     'passed': rows.where((r) => r['passed'] == true).length,
     'p90Ms': times.isEmpty ? null : times[(times.length * .9).ceil() - 1],
-    'byScript': languages,
+    'byScript': breakdown('script'),
+    'byLanguage': breakdown('group'),
     'rows': rows,
   };
 }

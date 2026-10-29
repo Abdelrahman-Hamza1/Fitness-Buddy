@@ -476,7 +476,7 @@ eval-live: eval-cli ## PAID: at most three fixed synthetic Luna requests; no ret
 
 eval-schema: eval-cli ## Regenerate Buddy's internal schema from C# records
 	cd '$(REPO_ROOT)' && '$(DOTNET)' '$(BUDDY_SPIKE_DLL)' --schema > backend/src/Modules/Buddy/Prompts/interpret-v0.schema.json
-	cd '$(REPO_ROOT)' && '$(DOTNET)' '$(BUDDY_SPIKE_DLL)' --schema-v1 > backend/src/Modules/Buddy/Prompts/interpret-v1.schema.json
+	cd '$(REPO_ROOT)' && '$(DOTNET)' '$(BUDDY_SPIKE_DLL)' --schema-v2 > backend/src/Modules/Buddy/Prompts/interpret-v2.schema.json
 
 ##@ Private laptop test server (B03)
 

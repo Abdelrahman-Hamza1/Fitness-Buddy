@@ -19,18 +19,18 @@ internal sealed class InterpretMessage(IInterpretLedger ledger, IProductionLlmCl
         try
         {
             var existing = await ledger.ClaimAsync(input, cancellationToken); if (existing is not null) { return existing; }
-            var result = await provider.ParseAsync(input, repair: false, cancellationToken);
+            var result = await provider.ParseAsync(input, repairOf: null, cancellationToken);
             if (!await PersistAsync(ct => ledger.RecordAsync(input.RequestId, 1, result, ct))) { return new(InterpretStatus.Unauthorized); }
             if (result.Status == LlmStatus.InvalidOutput)
             {
                 var permission = await ledger.ReserveRepairAsync(input.RequestId, cancellationToken);
                 if (permission != InterpretStatus.Success) { return new(permission == InterpretStatus.Limited ? InterpretStatus.Pending : permission); }
-                result = await provider.ParseAsync(input, repair: true, cancellationToken);
+                result = await provider.ParseAsync(input, repairOf: result.Invalid ?? InvalidOutput.Shape, cancellationToken);
                 if (!await PersistAsync(ct => ledger.RecordAsync(input.RequestId, 2, result, ct))) { return new(InterpretStatus.Unauthorized); }
             }
             BuddyInterpretation interpretation;
             if (result.Status == LlmStatus.InvalidOutput)
-            { interpretation = new("interpret-v1", "gpt-6-luna", [new BuddyClarify("unknown", "unknown", "invalidInterpretation")]); }
+            { interpretation = new(ParsedGrammar.Version, "gpt-6-luna", [new BuddyClarify("unknown", "unknown", "invalidInterpretation")]); }
             else if (result.Status == LlmStatus.Success && result.Message is { } parsed)
             { interpretation = await resolver.ResolveAsync(parsed, input, cancellationToken); }
             else { return new(InterpretStatus.Pending); }

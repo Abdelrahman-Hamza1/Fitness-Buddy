@@ -73,7 +73,7 @@ public sealed class InterpretRequestTests
         Assert.Contains("context", Keys(WithCard(new("Breakfast", null, [Line(amount: 0)]))));
         Assert.Contains("context", Keys(WithCard(new(new string('s', 201), null, [Line()]))));
         Assert.Contains("context", Keys(WithCard(new("Breakfast", null, [null!]))));
-        foreach (var time in new[] { "8:00", "24:00", "08:60", "8 am", "" }) { Assert.Contains("context", Keys(WithCard(new("Breakfast", time, [Line()])))); }
+        foreach (var time in new[] { "8:00", "24:00", "08:60", "8 am", "", "08:00\n" }) { Assert.Contains("context", Keys(WithCard(new("Breakfast", time, [Line()])))); }
         var card = WithCard(new("Breakfast", "08:00", [Line()])).ToInput().Context.ActiveCard!;
         Assert.Equal(("Breakfast", "08:00", "eggs", 2d, "piece", "cooked"), (card.Slot, card.Time, card.Lines[0].Name, card.Lines[0].Amount!.Value, card.Lines[0].UnitCode, card.Lines[0].State));
     }

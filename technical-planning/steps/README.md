@@ -206,14 +206,14 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [B06](B06-account-deletion-backend.md) | Account deletion (backend) | B04, B05 | L | S28 server part |  | ✅ |
 | [B07](B07-catalog-service.md) | Catalog service & online search | B04, **A05** | M | S30 server part |  | ✅ |
 | [B08](B08-buddy-interpret-service.md) | Buddy interpret service | B02, B07 | L | S31 |  | ✅ |
-| [B09a](B09-buddy-intents-edits-memory-batches.md) | Buddy intents server: contract, v2 grammar & resolver (split from B09) | B08, **A21** | L | S35–S37 server parts |  | 🟨 |
+| [B09a](B09-buddy-intents-edits-memory-batches.md) | Buddy intents server: contract, v2 grammar & resolver (split from B09) | B08, **A21** | L | S35–S37 server parts |  | ✅ (live smoke WP7: owner-gated, moved to B09b) |
 | [B09b](B09-buddy-intents-edits-memory-batches.md) | Full AQ metrics with the real ProposalEngine (M3 eval half; split from B09) | B09a | M | S35–S37 server parts | **M3** eval | ⬜ |
 | [B10](B10-barcode-vision-import.md) | Barcode lookup, label & meal photos, paste import | B07, B08 | L | S38–S39 server parts |  | ⬜ |
 | [B11](B11-buddy-qa-suggestions.md) | Buddy Q&A & suggestions | B08 | M | S40 server part |  | ⬜ |
 | [B12](B12-buddy-workouts-review-ramadan.md) | Buddy workouts, weekly review & Ramadan | B08 | M | S42, S44, S46 server parts |  | ⬜ |
 | [B13](B13-staging-infrastructure.md) | Staging on Hetzner & deploy pipeline | S04 ✅ · code any time; provisioning (cost) starts when the app track reaches **A38** (TD-064) | L | S05 |  | ⬜ |
 | [B14](B14-production.md) | Production, backups & go-live | B13 | L | S29 server part | **M7** | ⬜ |
-| [B15](B15-eval-expansion.md) | AI eval expansion & tuning | B09–B12, B14, **A41** | M | S47 | **R1** | ⬜ |
+| [B15](B15-eval-expansion.md) | AI eval expansion & tuning | B09a/B09b, B10–B12, B14, **A41** | M | S47 | **R1** | ⬜ |
 | [B16](B16-security-restore-drill.md) | Security review & restore drill | B14, **A42** | M | S49 | **R1** | ⬜ |
 | [B17](B17-personal-food-sync.md) | personalFood sync entity (server) | B05, **A09a** (contract) | M | new (A09 split) |  | ✅ |
 | [B18](B18-chat-proposal-sync.md) | chatMessage & proposal sync entities (server) | B05, **A21** (WP4 codec shape and size budget) | M | new (A21 plan review) |  | ✅ |
@@ -249,8 +249,8 @@ flowchart LR
 |---|---|---|---|
 | **M1 Dogfood 1: offline food tracker** | A11 | OF-01 food parts pass. A day of food can be logged by search and quick-add in airplane mode. The owner uses the prod build daily and can export | None needed (the laptop for `/v1/config` only) |
 | **M2 Targets & weight** | A16 | Targets property tests pass. The owner's weight-note history is entered and charted | None |
-| **M3 Buddy on the laptop** | A23 + B09's eval run | T01–T16, T19, T39–T41 meet the AQ thresholds (B09 runs the eval). p90 ≤ 5 s measured from the owner's location | Laptop (B03) |
-| **M4 Dogfood 2: Buddy-first** | A31 + B09–B11's eval runs | T17–T29, T33, T36–T38 pass (dish cases may score as estimates until the deferred batches, TD-074). OF-02 passes. The owner logs mostly through Buddy for a week | Laptop |
+| **M3 Buddy on the laptop** | A23 + B09b's eval run | T01–T16, T19, T39–T41 meet the AQ thresholds (B09b runs the eval). p90 ≤ 5 s measured from the owner's location | Laptop (B03) |
+| **M4 Dogfood 2: Buddy-first** | A31 + B09b, A25–A27 and B10/B11's eval runs | T17–T29, T33, T36–T38 pass (dish cases may score as estimates until the deferred batches, TD-074). OF-02 passes. The owner logs mostly through Buddy for a week | Laptop |
 | **M5 Accounts & sync** | A35 (+ B05, B06) | OF-03 passes against the laptop server. Google sign-in, guest upgrade and account deletion work on the A55 | Laptop |
 | **M6 Workouts, insights & Ramadan** | A41 (+ B12) | J9, J10, J11, T30–T35 pass. Every NT rule has a planner test | Laptop |
 | **M7 Production** | B14 + A43 | The restore drill is done. AT-006 passes on production. The app installs from Play. The laptop's data has moved in | Hetzner (B13, B14) |

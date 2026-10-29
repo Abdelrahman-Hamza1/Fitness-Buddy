@@ -1,5 +1,5 @@
 {
-  "description": "Synthetic B08 public-endpoint regression fixtures; not model-quality measurements. T41 exercises the resumed HTTP request and replay, not the app offline queue.",
+  "description": "Synthetic B08 public-endpoint regression fixtures (interpret-v2 parsed shape since B09a WP2); not model-quality measurements. T41 exercises the resumed HTTP request and replay, not the app offline queue.",
   "cases": [
     {
       "id": "T01",
@@ -14,6 +14,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -44,7 +45,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -111,6 +120,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": "rice with chicken",
             "items": [
               {
@@ -157,7 +167,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -238,6 +256,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": "rice with chicken",
             "items": [
               {
@@ -284,7 +303,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -376,6 +403,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -393,7 +421,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -452,6 +488,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": "omelette",
             "items": [
               {
@@ -486,7 +523,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -560,6 +605,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -577,7 +623,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -640,6 +694,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -659,7 +714,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -722,6 +785,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -741,7 +805,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -804,6 +876,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -866,7 +939,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -957,6 +1038,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -977,7 +1059,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -1043,10 +1133,19 @@
             "kind": "clarify",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [],
             "weighIn": null,
-            "reason": "unclear"
+            "reason": "unclear",
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -1089,6 +1188,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -1119,7 +1219,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -1186,6 +1294,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -1216,7 +1325,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -1287,6 +1404,7 @@
             "kind": "foodLog",
             "timeHint": "yesterday",
             "slotHint": "dinner",
+            "dateHint": "yesterday",
             "dishGroup": null,
             "items": [
               {
@@ -1307,7 +1425,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -1372,6 +1498,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -1389,7 +1516,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -1448,6 +1583,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": "zinger meal",
             "items": [
               {
@@ -1493,7 +1629,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -1572,6 +1716,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -1589,7 +1734,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -1648,6 +1801,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": "breakfast",
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -1680,12 +1834,21 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           },
           {
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": "lunch",
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -1703,19 +1866,36 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           },
           {
             "kind": "weighIn",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [],
             "weighIn": {
               "value": 97.2,
               "unit": "kg"
             },
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -1807,10 +1987,19 @@
             "kind": "outOfScope",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [],
             "weighIn": null,
-            "reason": "offTopic"
+            "reason": "offTopic",
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -1853,6 +2042,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -1870,7 +2060,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -1929,6 +2127,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -1946,7 +2145,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -2005,6 +2212,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -2022,7 +2230,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -2081,6 +2297,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -2098,7 +2315,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -2161,6 +2386,7 @@
             "kind": "foodLog",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [
               {
@@ -2178,7 +2404,15 @@
               }
             ],
             "weighIn": null,
-            "reason": null
+            "reason": null,
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -2241,10 +2475,19 @@
             "kind": "outOfScope",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [],
             "weighIn": null,
-            "reason": "offTopic"
+            "reason": "offTopic",
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },
@@ -2287,10 +2530,19 @@
             "kind": "outOfScope",
             "timeHint": null,
             "slotHint": null,
+            "dateHint": null,
             "dishGroup": null,
             "items": [],
             "weighIn": null,
-            "reason": "offTopic"
+            "reason": "offTopic",
+            "reference": null,
+            "move": null,
+            "listRef": null,
+            "portion": null,
+            "memory": null,
+            "batch": null,
+            "create": null,
+            "stated": null
           }
         ]
       },

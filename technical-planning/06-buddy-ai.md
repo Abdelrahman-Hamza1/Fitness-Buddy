@@ -37,41 +37,49 @@ flowchart TB
 
 ```text
 InterpretRequest {
-  requestId            // = chat message id (Idempotency-Key, MN-005)
-  text, image?         // image: JPEG ≤ 1024 px
+  requestId            // = chat message id (Idempotency-Key, MN-005), UUIDv7
+  text, image?         // image: JPEG ≤ 1024 px (B10)
   now, tzOffsetMin, ramadan { active, fajr, maghrib }
-  slots [ {id, name, window} ]
-  activeProposal?      // follow-up edits this card (AI-044)
+  slots [ {id, name, window} ]                         // ≤ 12; ids may be natural UUIDv5 (TD-070)
+  activeProposal?      // the open card (AI-044), UUIDv7; required when activeCard is sent
   context {
-    personalFoods [ {id, names, aliases, servings} ]   // pre-filtered on device vs. the message, ≤ 30
-    savedMeals [ {id, name} ], openBatches [ {id, name, remaining} ]
-    memory [ {kind, key, value} ]                      // the relevant user-model slice (§5)
-    recentEntries [ {id, date, slot, name, grams} ]    // last ~3 days, for "the rice", "yesterday's dinner"
-    customExercises [ {id, names} ]
+    personalFoods [ {id, names, aliases, state, nutrients, servings} ]  // pre-filtered on device vs. the message, ≤ 30
+    savedMeals [ {id, name} ], openBatches [ {id, name} ]               // ≤ 20 each
+    memory [ {kind, key, value} ]                      // the relevant user-model slice (§5), ≤ 20; kind is open (memoryKind codes)
+    recentEntries [ {id, date, slot, name, grams} ]    // newest first, ≤ 30 (~3 days), for "the rice", "yesterday's dinner"
+    customExercises [ {id, name} ]                     // ≤ 20
+    activeCard? { slot, time, lines [ {name, amount, unitCode, state} ] }  // ≤ 30 lines; follow-ups to the open card (B09a, A22 PA6)
   }
 }
 ```
+
+Context reference IDs are any non-nil UUID and distinct per list; names and values are ≤ 200 characters. **What the provider sees is an allowlisted projection** (`ProductionProtocol.Input`, AC-041): the message, time and Ramadan context, slot names/windows, personal-food names/aliases/state, the memory slice, custom-exercise names, and `recentEntries`/`savedMeals`/`openBatches` as **list positions (`ref`)** with date/slot/name only. IDs, entry grams, nutrients, servings and `activeProposal` are never forwarded. The active card forwards only its slot, time and line name/amount/unitCode/state (so its amounts do reach the model).
 
 No name, email, user ID or account details are in the payload (AC-041). The API knows the user from the JWT for rate limiting and usage, but **never forwards identity to the AI provider**.
 
 ### 3.2 Response: a list of typed intents
 
-| Intent | Content | Becomes |
+Public kinds (`interpret-v2`, B08 + B09a; the contract's discriminated `BuddyIntent` union):
+
+| Intent (`kind`) | Content | Becomes |
 |---|---|---|
-| `FoodLog` | slot/time, optional dish group, items[] (§3.3) | food proposal (AI-030–034) |
-| `DiaryEdit` | target entry ID(s), patch (amount / food swap / slot / day) | before→after proposal (AI-050, AI-090) |
-| `DiaryDelete` | entry IDs | delete proposal (AI-051) |
-| `Copy` | source (date + slot) → target | proposal (DY-032, T23) |
-| `WeighIn` · `Measurement` | value, unit, datetime / type | proposal (AI-052, WB-040) |
-| `Workout` | date, template ref?, exercises[] with sets | proposal (WO-030–033) |
-| `Batch` | ingredients, cooked weight?, portion eaten now? | proposal (AI-100) |
-| `PersonalFood` | name, components or per-100 values | proposal (AI-054) |
-| `Memory` | kind, key, value | proposal (AI-055) |
-| `Question` | **QueryPlan** + answer template (§6) | computed answer (AI-110) |
-| `SuggestRequest` | constraints | suggest flow (§7) |
-| `Clarify` | what's unclear + chip options | question without a proposal (AI-150, AI-152, T11) |
-| `AmbiguousReference` | candidate entry IDs | "which one?" chips (AI-091, T29) |
-| `OutOfScope` / `Medical` | — | templated decline (AI-003, SF-030) |
+| `foodLog` | timeHint, slotHint, **dateHint**, optional dishGroup, items[] (§3.3) | food proposal (AI-030–034) |
+| `weighIn` | value, unit, timeHint, **dateHint** | proposal (AI-052) |
+| `diaryEdit` | `targets` (request entry IDs; `[]` = look up by the reference's day/slot), `reference {mention, dateHint, slotHint, scope}`, `patch {amount (absolute) \| replacement (a resolved food item), move {dateHint, slotHint, timeHint}}` | before→after proposal (AI-050, AI-090) |
+| `diaryDelete` | `targets`, `reference` | delete proposal (AI-051) |
+| `ambiguousReference` | `operation` edit\|delete, `candidates` (≥ 2 request entry IDs), `reference`, the would-be `patch` | "which one?" chips; the tap applies the carried patch (AI-091, T29). **Server policy only, never the model** (§3.4) |
+| `diaryCopy` | `source` and `target` day hints (null target members: today, the source's slot, now) | proposal (DY-032, T23) |
+| `savedMealLog` | `savedMealId` (request ID), hints, share | proposal (DY-031) |
+| `savedMealCreate` | name, exactly one source: `activeProposal`, `targets` or `source` day hint | proposal (DY-031) |
+| `memoryChange` | operation remember\|forget, memoryKind, subject, dimension, value, amount, food (real matches only) | proposal (AI-055); the server never applies defaults (TD-032) |
+| `batch` | name, ingredients[] (food items), cookedWeight, path hint, eatenNow portion, hints | proposal (AI-100, DY-040–042) |
+| `batchPortion` | `batchId` (request ID), portion **xor** `rest: true`, hints | proposal (AI-101/102, DY-043) |
+| `batchClose` | `batchId` | closes the batch without logging (DY-044) |
+| `personalFoodCreate` | name, aliases ≤ 5, components[] (food items), `stated` (transcribed user figures, TD-092) | personal-food form (AI-054) |
+| `clarify` | reason: unclear, unsupported, offTopic, invalidInterpretation, unmatchedFood, referenceNotFound, medical | question without a proposal (AI-150, AI-152, T11) |
+| `outOfScope` / `medical` | — | templated decline (AI-003, SF-030) |
+
+Still to come: `Measurement` (WB-040), `Workout` (WO-030–033), `Question` with a **QueryPlan** (§6, B11) and `SuggestRequest` (§7, B11). **New kinds and enum values are additive (04 §4.2):** the app routes an unknown kind, an unknown enum value or a `dateHint` it can't parse as `unrecognized` ("Buddy can't do that in this version yet"), never a destructive default.
 
 One message can yield several intents (AI-015, T39). Each carries the detected `language` and `script` (EN / AR / Arabizi). **In R1, replies are English** (AI-143, D-080). The language is recorded for per-language eval scores and for R2 (AI-141).
 
@@ -105,6 +113,20 @@ The **ProposalEngine** (client, deterministic) then:
 6. Emits the draft `ChangeSet`.
 
 AQ-08 ("> 2 questions: 0 cases") can't be violated, because it's code. The model's job is to *detect* the dimensions, and the eval measures that.
+
+### 3.4 References, day hints and the internal grammar (B09a)
+
+**Internal grammar `interpret-v2`** (`Domain/ParsedMessage.cs`, snapshot `interpret-v2.schema.json`): one flat intent object with grouped nullable members (`reference`, `move`, `listRef`, `portion`, `memory`, `batch`, `create`, `stated`, plus `dateHint`), not an `anyOf` union (B09 D5). The model links mentions by **list position**: `reference.refs` (recentEntries, scope one|all) or one `listRef` (savedMeals or openBatches). Server validation checks range, uniqueness and the right list per kind. An invalid index is invalid output: one repair naming the closed code `refRange`, then `clarify`. Nothing to link to (a null `listRef`, an empty list, "save this" without `activeProposal`) is `clarify referenceNotFound` **without** a repair (PA8). Relative amount edits ("add 50g", "double it") are `clarify unsupported` (PA15).
+
+**Reference policy (TD-091, AI-091):** server code over the model-linked candidates, in this order:
+1. no linked entry: if the reference has a date or slot hint, `targets: []` (the app looks the day/slot up locally and asks); otherwise `clarify referenceNotFound`;
+2. scope all, or exactly one linked entry: those entries are the targets;
+3. several entries with a date/slot qualifier: `ambiguousReference` with all of them;
+4. several unqualified: the **newest (date, slot) group** (newest = latest date, then list position). One entry → it's the target; more → `ambiguousReference` with that group.
+
+`savedMealCreate` uses the same policy; an ambiguous save is `clarify unclear` (there's no save chip). Every UUID in a response comes from the request (PA5), and candidate keys come from personal facts or the catalog resolver.
+
+**Day hints (D8):** closed grammar `today | yesterday | daysAgo:N (2–999) | lastWeekday:mon…sun | date:[YYYY-]MM-DD`. The model only **transcribes** a stated day ("October 3rd" = `date:10-03`; numeric dates are day first) and never calculates one from `now`. The server checks the format and that the date exists. The app resolves the hint locally: a missing year is the most recent past occurrence, and future dates are rejected. `slotHint` is the exact provided slot name when one matches, else a canonical English slot word; `timeHint` stays literal. `foodLog`, `weighIn`, `batch`, `batchPortion` and `savedMealLog` carry `dateHint` when the user states a day.
 
 ## 4. Number sources & resolution (AI-070)
 

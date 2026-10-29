@@ -17,8 +17,12 @@ Future<void> main() async {
       throw const FormatException('HTTPS or local test endpoint required.');
     }
     stage = 'cases';
+    final caseFile = (config['caseFile'] as String?) ?? 'm3';
+    if (!publicCaseFiles.contains(caseFile)) {
+      throw const FormatException('Unknown case file.');
+    }
     final all = loadPublicCases(
-      await File('tools/buddy_eval/cases/m3.yaml').readAsString(),
+      await File('tools/buddy_eval/cases/$caseFile.yaml').readAsString(),
     );
     final ids = (config['caseIds'] as List<dynamic>?)?.cast<String>();
     if (ids != null &&
@@ -32,8 +36,8 @@ Future<void> main() async {
     final rows = <PublicJson>[];
     for (var index = 0; index < cases.length; index++) {
       final test = cases[index];
-      final suffix = (index + 1).toRadixString(16).padLeft(12, '0');
-      final id = '019a0000-0000-7000-8000-$suffix';
+      final id = publicRequestId(caseFile, index);
+      final body = publicInterpretBody(id: id, test: test, now: config['now']);
       stage = 'connect-$index';
       final request = await client.postUrl(base.resolve('/v1/buddy/interpret'));
       request.followRedirects = false;
@@ -44,27 +48,22 @@ Future<void> main() async {
         ..set('X-Platform', 'android')
         ..set('X-Device-Id', config['deviceId'] as String)
         ..set('Idempotency-Key', id);
-      request.add(
-        utf8.encode(
-          jsonEncode(
-            publicInterpretBody(id: id, test: test, now: config['now']),
-          ),
-        ),
-      );
+      request.add(utf8.encode(jsonEncode(body)));
       final watch = Stopwatch()..start();
       stage = 'response';
       final response = await request.close().timeout(
         const Duration(seconds: 50),
       );
-      final body = await response.transform(utf8.decoder).join();
+      final answer = await response.transform(utf8.decoder).join();
       watch.stop();
       stage = 'grade';
       final checks = response.statusCode == 200
-          ? gradePublic(test, jsonDecode(body) as PublicJson)
+          ? gradeCase(test, jsonDecode(answer) as PublicJson, body)
           : <String, dynamic>{'httpSuccess': false};
       rows.add({
         'id': test['id'],
         'script': test['script'],
+        'group': languageGroup(test),
         'status': response.statusCode,
         'checks': checks,
         'passed': checks.values.every((dynamic v) => v == true),
@@ -72,7 +71,11 @@ Future<void> main() async {
       });
     }
     stage = 'report';
-    final report = summarizePublic(rows, mode: config['mode'] as String);
+    final report = summarizePublic(
+      rows,
+      mode: config['mode'] as String,
+      caseFile: caseFile,
+    );
     final path = config['report'] as String;
     await File(
       path,

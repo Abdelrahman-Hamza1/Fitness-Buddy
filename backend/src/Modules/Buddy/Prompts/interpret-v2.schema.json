@@ -1,0 +1,658 @@
+{
+  "type": "object",
+  "properties": {
+    "language": {
+      "enum": [
+        "english",
+        "arabic",
+        "mixed"
+      ]
+    },
+    "script": {
+      "enum": [
+        "latin",
+        "arabic",
+        "arabizi",
+        "mixed"
+      ]
+    },
+    "intents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "enum": [
+              "foodLog",
+              "clarify",
+              "outOfScope",
+              "medical",
+              "weighIn",
+              "diaryEdit",
+              "diaryDelete",
+              "diaryCopy",
+              "savedMealLog",
+              "savedMealCreate",
+              "memoryChange",
+              "batch",
+              "batchPortion",
+              "batchClose",
+              "personalFoodCreate"
+            ]
+          },
+          "timeHint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slotHint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "dateHint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "dishGroup": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "mention": {
+                  "type": "string"
+                },
+                "canonicalNameEn": {
+                  "type": "string"
+                },
+                "nameAr": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "amount": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "unit": {
+                  "enum": [
+                    "g",
+                    "kg",
+                    "ml",
+                    "l",
+                    "piece",
+                    "tsp",
+                    "tbsp",
+                    "cup",
+                    "plate",
+                    "loaf",
+                    "serving",
+                    null
+                  ]
+                },
+                "amountExplicit": {
+                  "type": "boolean"
+                },
+                "state": {
+                  "enum": [
+                    "raw",
+                    "cooked",
+                    "dry",
+                    "drained",
+                    "fried",
+                    null
+                  ]
+                },
+                "variant": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "share": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "fraction": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "people": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "fraction",
+                    "people"
+                  ],
+                  "additionalProperties": false
+                },
+                "ambiguities": {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "state",
+                      "fat",
+                      "variant",
+                      "portion"
+                    ]
+                  }
+                },
+                "estimate": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "low": {
+                      "type": "object",
+                      "properties": {
+                        "kcal": {
+                          "type": "number"
+                        },
+                        "proteinG": {
+                          "type": "number"
+                        },
+                        "carbsG": {
+                          "type": "number"
+                        },
+                        "fatG": {
+                          "type": "number"
+                        },
+                        "fiberG": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "kcal",
+                        "proteinG",
+                        "carbsG",
+                        "fatG",
+                        "fiberG"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "high": {
+                      "type": "object",
+                      "properties": {
+                        "kcal": {
+                          "type": "number"
+                        },
+                        "proteinG": {
+                          "type": "number"
+                        },
+                        "carbsG": {
+                          "type": "number"
+                        },
+                        "fatG": {
+                          "type": "number"
+                        },
+                        "fiberG": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "kcal",
+                        "proteinG",
+                        "carbsG",
+                        "fatG",
+                        "fiberG"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "low",
+                    "high"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "mention",
+                "canonicalNameEn",
+                "nameAr",
+                "amount",
+                "unit",
+                "amountExplicit",
+                "state",
+                "variant",
+                "share",
+                "ambiguities",
+                "estimate"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "weighIn": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "value": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "value",
+              "unit"
+            ],
+            "additionalProperties": false
+          },
+          "reason": {
+            "enum": [
+              "unclear",
+              "unsupported",
+              "medical",
+              "offTopic",
+              null
+            ]
+          },
+          "reference": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "refs": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "mention": {
+                "type": "string"
+              },
+              "scope": {
+                "enum": [
+                  "one",
+                  "all"
+                ]
+              },
+              "dateHint": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "slotHint": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "refs",
+              "mention",
+              "scope",
+              "dateHint",
+              "slotHint"
+            ],
+            "additionalProperties": false
+          },
+          "move": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "dateHint": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "slotHint": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "timeHint": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "dateHint",
+              "slotHint",
+              "timeHint"
+            ],
+            "additionalProperties": false
+          },
+          "listRef": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "portion": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "amount": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "unit": {
+                "enum": [
+                  "g",
+                  "kg",
+                  "ml",
+                  "l",
+                  "piece",
+                  "tsp",
+                  "tbsp",
+                  "cup",
+                  "plate",
+                  "loaf",
+                  "serving",
+                  null
+                ]
+              },
+              "fraction": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "people": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "rest": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "amount",
+              "unit",
+              "fraction",
+              "people",
+              "rest"
+            ],
+            "additionalProperties": false
+          },
+          "memory": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "operation": {
+                "enum": [
+                  "remember",
+                  "forget"
+                ]
+              },
+              "memoryKind": {
+                "enum": [
+                  "default",
+                  "portion",
+                  "alias",
+                  "brand",
+                  "nickname"
+                ]
+              },
+              "subject": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "dimension": {
+                "enum": [
+                  "state",
+                  "fat",
+                  "variant",
+                  "portion",
+                  null
+                ]
+              },
+              "value": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "amount": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "unit": {
+                "enum": [
+                  "g",
+                  "kg",
+                  "ml",
+                  "l",
+                  "piece",
+                  "tsp",
+                  "tbsp",
+                  "cup",
+                  "plate",
+                  "loaf",
+                  "serving",
+                  null
+                ]
+              }
+            },
+            "required": [
+              "operation",
+              "memoryKind",
+              "subject",
+              "dimension",
+              "value",
+              "amount",
+              "unit"
+            ],
+            "additionalProperties": false
+          },
+          "batch": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "cookedAmount": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "cookedUnit": {
+                "enum": [
+                  "g",
+                  "kg",
+                  "ml",
+                  "l",
+                  "piece",
+                  "tsp",
+                  "tbsp",
+                  "cup",
+                  "plate",
+                  "loaf",
+                  "serving",
+                  null
+                ]
+              },
+              "path": {
+                "enum": [
+                  "quick",
+                  "leftovers",
+                  null
+                ]
+              }
+            },
+            "required": [
+              "name",
+              "cookedAmount",
+              "cookedUnit",
+              "path"
+            ],
+            "additionalProperties": false
+          },
+          "create": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "aliases": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "fromActiveProposal": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "aliases",
+              "fromActiveProposal"
+            ],
+            "additionalProperties": false
+          },
+          "stated": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "basis": {
+                "enum": [
+                  "per100g",
+                  "per100ml",
+                  "perServing"
+                ]
+              },
+              "servingG": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "servingMl": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "kcal": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "proteinG": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "carbsG": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "fatG": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "fiberG": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "basis",
+              "servingG",
+              "servingMl",
+              "kcal",
+              "proteinG",
+              "carbsG",
+              "fatG",
+              "fiberG"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "kind",
+          "timeHint",
+          "slotHint",
+          "dateHint",
+          "dishGroup",
+          "items",
+          "weighIn",
+          "reason",
+          "reference",
+          "move",
+          "listRef",
+          "portion",
+          "memory",
+          "batch",
+          "create",
+          "stated"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "language",
+    "script",
+    "intents"
+  ],
+  "additionalProperties": false
+}

@@ -291,7 +291,7 @@ jobs:
 
       # Reuses the Release build above. S04 Persistence.Tests starts one digest-pinned
       # Postgres Testcontainer; Docker is preinstalled, no hosted database/service credentials.
-      - name: Tests, including offline public Buddy M3 eval (B08)
+      - name: Tests, including offline public Buddy M3 and B09 evals (B08, B09a)
         run: |
           make test-dotnet DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT" FLUTTER=flutter DART=dart \
             2>&1 | tee "$RUNNER_TEMP/dotnet-tests.log"
@@ -311,7 +311,9 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: buddy-public-eval
-          path: backend/artifacts/buddy/B08-offline.json
+          path: |
+            backend/artifacts/buddy/B08-offline.json
+            backend/artifacts/buddy/B09-offline.json
           if-no-files-found: error
           retention-days: 7
 
@@ -333,8 +335,8 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RUN_ID: ${{ github.run_id }}
         run: gh run download "$RUN_ID" --name buddy-public-eval --dir report
-      - name: Gate M3 parse and resolution regressions (no key)
-        run: python3 tools/scripts/check-buddy-eval.py report/B08-offline.json
+      - name: Gate M3 and B09 parse and resolution regressions (no key)
+        run: python3 tools/scripts/check-buddy-eval.py report/B08-offline.json report/B09-offline.json
 
   # The same hardened image; B01 also checks the Dart client against its real HTTP API.
   image:
