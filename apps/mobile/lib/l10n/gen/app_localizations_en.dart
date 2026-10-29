@@ -166,6 +166,66 @@ class AppLocalizationsEn extends AppLocalizations {
   String get todayMacroFiber => 'Fiber';
 
   @override
+  String get todayWeekOnTrack => 'This week: on track';
+
+  @override
+  String todayWeekUncounted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days not counted',
+      one: '1 day not counted',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String todayWeekWithUncounted(String line, String uncounted) {
+    return '$line · $uncounted';
+  }
+
+  @override
+  String todayEatenOfBudgetSemantics(String eaten, String budget) {
+    return '$eaten of $budget kcal eaten';
+  }
+
+  @override
+  String todayMacroOfTarget(double eaten, int target) {
+    final intl.NumberFormat eatenNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eatenString = eatenNumberFormat.format(eaten);
+    final intl.NumberFormat targetNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String targetString = targetNumberFormat.format(target);
+
+    return '$eatenString / $targetString g';
+  }
+
+  @override
+  String todayMacroEaten(double eaten) {
+    final intl.NumberFormat eatenNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String eatenString = eatenNumberFormat.format(eaten);
+
+    return '$eatenString g';
+  }
+
+  @override
+  String get todaySetupTitle => 'Set up your targets';
+
+  @override
+  String get todaySetupTime => 'About 2 minutes';
+
+  @override
+  String get todayUpdateSubtitle => 'Your profile needs a newer version';
+
+  @override
+  String get todayTargetsLoadFailed => 'Couldn\'t load your targets.';
+
+  @override
+  String get todayTargetsTryAgain => 'Try again';
+
+  @override
   String todayToConfirm(String count) {
     return '$count to confirm';
   }
@@ -922,6 +982,477 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get setupTitle => 'Set up your targets';
+
+  @override
+  String setupStep(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get setupClose => 'Close setup';
+
+  @override
+  String get setupBack => 'Back';
+
+  @override
+  String get setupNext => 'Next';
+
+  @override
+  String get setupSave => 'Save';
+
+  @override
+  String get setupPageYou => 'About you';
+
+  @override
+  String get setupPageActivity => 'How active are you?';
+
+  @override
+  String get setupPageGoal => 'Your goal';
+
+  @override
+  String get setupPagePreferences => 'Preferences';
+
+  @override
+  String get setupPageTargets => 'Your targets';
+
+  @override
+  String get setupWeightHint => 'Saved as your first weigh-in.';
+
+  @override
+  String get setupActivityHint => 'Pick the one closest to a usual week.';
+
+  @override
+  String get setupPreferencesHint =>
+      'These are filled in from your settings. You can change them here or later in Me.';
+
+  @override
+  String setupTargetsDaily(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '$kcalString kcal a day';
+  }
+
+  @override
+  String setupTargetsWeekly(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '$kcalString kcal a week';
+  }
+
+  @override
+  String get setupTargetsHow => 'How it\'s calculated';
+
+  @override
+  String get setupTargetsMacros => 'Macros';
+
+  @override
+  String get setupTargetsMode =>
+      'Your weekly budget adjusts the rest of the week when a day is over or under. You can change this later in Me.';
+
+  @override
+  String get setupLeaveTitle => 'Leave setup?';
+
+  @override
+  String get setupLeaveMessage => 'What you entered won\'t be saved.';
+
+  @override
+  String get setupLeaveStay => 'Keep going';
+
+  @override
+  String get setupLeaveConfirm => 'Leave';
+
+  @override
+  String get setupSaved => 'Targets set';
+
+  @override
+  String get setupAlreadySetUp => 'Your targets are already set up.';
+
+  @override
+  String get setupSaveFailed =>
+      'Couldn\'t save your targets. Nothing you entered was lost. Try Save again.';
+
+  @override
+  String get setupUpdateTitle => 'Update the app';
+
+  @override
+  String get setupUpdateMessage =>
+      'Your profile was saved by a newer version of Fitness Buddy. Update the app to see and change it.';
+
+  @override
+  String get profileSexLabel => 'Sex';
+
+  @override
+  String get profileSexHint => 'Used for the energy formula';
+
+  @override
+  String get profileSexMale => 'Male';
+
+  @override
+  String get profileSexFemale => 'Female';
+
+  @override
+  String get profileBirthYearLabel => 'Birth year';
+
+  @override
+  String profileBirthYearRange(int min, int max) {
+    return 'Enter a year between $min and $max.';
+  }
+
+  @override
+  String get profileHeightLabel => 'Height';
+
+  @override
+  String get profileHeightUnitCm => 'cm';
+
+  @override
+  String get profileHeightUnitFtIn => 'ft + in';
+
+  @override
+  String get profileHeightFeet => 'Feet';
+
+  @override
+  String get profileHeightInches => 'Inches';
+
+  @override
+  String get profileUnitCm => 'cm';
+
+  @override
+  String get profileUnitFt => 'ft';
+
+  @override
+  String get profileUnitIn => 'in';
+
+  @override
+  String profileHeightRangeCm(int min, int max) {
+    final intl.NumberFormat minNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String minString = minNumberFormat.format(min);
+    final intl.NumberFormat maxNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String maxString = maxNumberFormat.format(max);
+
+    return 'Enter a height between $minString and $maxString cm.';
+  }
+
+  @override
+  String profileHeightRangeFtIn(
+    int minFeet,
+    int minInches,
+    int maxFeet,
+    int maxInches,
+  ) {
+    return 'Enter a height between $minFeet ft $minInches in and $maxFeet ft $maxInches in. Inches go up to 11.';
+  }
+
+  @override
+  String get profileWeightLabel => 'Current weight';
+
+  @override
+  String targetsWeightRange(double min, double max, String unit) {
+    final intl.NumberFormat minNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String minString = minNumberFormat.format(min);
+    final intl.NumberFormat maxNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String maxString = maxNumberFormat.format(max);
+
+    return 'Enter a weight between $minString and $maxString $unit.';
+  }
+
+  @override
+  String targetsMassValue(String amount, String unit) {
+    return '$amount $unit';
+  }
+
+  @override
+  String get targetsEnterNumber => 'Enter a number.';
+
+  @override
+  String get profileActivitySedentary => 'Mostly sitting';
+
+  @override
+  String get profileActivitySedentaryHint =>
+      'Desk work, little walking and no regular exercise';
+
+  @override
+  String get profileActivityLight => 'Lightly active';
+
+  @override
+  String get profileActivityLightHint =>
+      'On your feet part of the day, or light exercise 1 to 3 days a week';
+
+  @override
+  String get profileActivityModerate => 'Moderately active';
+
+  @override
+  String get profileActivityModerateHint =>
+      'An active job, or exercise 3 to 5 days a week';
+
+  @override
+  String get profileActivityHigh => 'Very active';
+
+  @override
+  String get profileActivityHighHint =>
+      'Hard exercise 6 or 7 days a week, or a physical job';
+
+  @override
+  String get profileActivityShortSedentary => 'mostly sitting';
+
+  @override
+  String get profileActivityShortLight => 'lightly active';
+
+  @override
+  String get profileActivityShortModerate => 'moderately active';
+
+  @override
+  String get profileActivityShortHigh => 'very active';
+
+  @override
+  String get targetsChooseOne => 'Choose one to continue.';
+
+  @override
+  String get goalTypeTitle => 'What do you want to do?';
+
+  @override
+  String get goalTypeLose => 'Lose weight';
+
+  @override
+  String get goalTypeMaintain => 'Maintain weight';
+
+  @override
+  String get goalTypeGain => 'Gain weight';
+
+  @override
+  String get goalHow => 'How do you want to set it?';
+
+  @override
+  String get goalKindWeekly => 'Per week';
+
+  @override
+  String get goalKindMonthly => 'This month';
+
+  @override
+  String get goalKindTargetDate => 'Target weight by a date';
+
+  @override
+  String get goalKindTargetRate => 'Target weight at a pace';
+
+  @override
+  String get goalRateLoseLabel => 'Lose each week';
+
+  @override
+  String get goalRateGainLabel => 'Gain each week';
+
+  @override
+  String get goalMonthLoseLabel => 'Lose this month';
+
+  @override
+  String get goalMonthGainLabel => 'Gain this month';
+
+  @override
+  String get goalTargetWeightLabel => 'Target weight';
+
+  @override
+  String get goalTargetDateLabel => 'By';
+
+  @override
+  String get goalTargetDatePick => 'Pick a date';
+
+  @override
+  String get goalTargetDateMissing => 'Pick a target date.';
+
+  @override
+  String get goalTargetDateTooFar => 'Pick a date within 5 years.';
+
+  @override
+  String get goalPaceLabel => 'Pace each week';
+
+  @override
+  String goalRateRange(double max, String unit) {
+    final intl.NumberFormat maxNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String maxString = maxNumberFormat.format(max);
+
+    return 'Enter an amount up to $maxString $unit a week.';
+  }
+
+  @override
+  String goalMonthRange(double max, String unit) {
+    final intl.NumberFormat maxNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String maxString = maxNumberFormat.format(max);
+
+    return 'Enter an amount up to $maxString $unit this month.';
+  }
+
+  @override
+  String goalProjection(String rate, String change, String month) {
+    return '≈ $rate a week · $change in $month';
+  }
+
+  @override
+  String goalProjectionWithDate(
+    String rate,
+    String change,
+    String month,
+    String date,
+  ) {
+    return '≈ $rate a week · $change in $month · goal reached around $date';
+  }
+
+  @override
+  String get goalMaintainNote => 'Your target keeps your weight steady.';
+
+  @override
+  String goalCapMessage(String requested, String planned) {
+    return 'You asked for $requested a week. Plans stay within 1% of your weight a week, so this plan uses $planned.';
+  }
+
+  @override
+  String get goalProblemDeadline => 'Pick a date after today.';
+
+  @override
+  String get goalProblemTargetNotBelow =>
+      'This target weight isn\'t below your current weight. Choose a lower target, or another goal.';
+
+  @override
+  String get goalProblemTargetNotAbove =>
+      'This target weight isn\'t above your current weight. Choose a higher target, or another goal.';
+
+  @override
+  String get goalStoredDatePassed => 'Your goal date has passed.';
+
+  @override
+  String get goalStoredTargetReached => 'You\'ve reached your target weight.';
+
+  @override
+  String get goalFailedUnresolvable =>
+      'This goal doesn\'t fit your current weight. Check the target weight and date.';
+
+  @override
+  String get goalFailedNeedsUpdate =>
+      'Your current goal needs an update. Start a new goal to recalculate.';
+
+  @override
+  String targetsExplainResting(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Resting energy: about $kcalString kcal a day (from your weight, height, age and sex).';
+  }
+
+  @override
+  String targetsExplainActivity(String level, double factor, int kcal) {
+    final intl.NumberFormat factorNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String factorString = factorNumberFormat.format(factor);
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Activity ($level): × $factorString = about $kcalString kcal a day.';
+  }
+
+  @override
+  String targetsExplainGoalLose(
+    String rate,
+    int kcal,
+    int perUnit,
+    String unit,
+  ) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+    final intl.NumberFormat perUnitNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String perUnitString = perUnitNumberFormat.format(perUnit);
+
+    return 'Goal: lose $rate a week = $kcalString kcal less a day (about $perUnitString kcal per $unit).';
+  }
+
+  @override
+  String targetsExplainGoalGain(
+    String rate,
+    int kcal,
+    int perUnit,
+    String unit,
+  ) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+    final intl.NumberFormat perUnitNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String perUnitString = perUnitNumberFormat.format(perUnit);
+
+    return 'Goal: gain $rate a week = $kcalString kcal more a day (about $perUnitString kcal per $unit).';
+  }
+
+  @override
+  String get targetsExplainGoalMaintain =>
+      'Goal: keep your weight steady, so nothing is added or taken away.';
+
+  @override
+  String targetsExplainFloor(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Raised to your safety floor of $kcalString kcal a day.';
+  }
+
+  @override
+  String targetsExplainTarget(int daily, int weekly) {
+    final intl.NumberFormat dailyNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String dailyString = dailyNumberFormat.format(daily);
+    final intl.NumberFormat weeklyNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String weeklyString = weeklyNumberFormat.format(weekly);
+
+    return 'Your target: $dailyString kcal a day, $weeklyString kcal a week.';
+  }
+
+  @override
+  String targetsExplainTargetDaily(int daily) {
+    final intl.NumberFormat dailyNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String dailyString = dailyNumberFormat.format(daily);
+
+    return 'Your target: $dailyString kcal a day.';
+  }
+
+  @override
+  String targetsMacroGrams(int grams) {
+    final intl.NumberFormat gramsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String gramsString = gramsNumberFormat.format(grams);
+
+    return '$gramsString g';
+  }
+
+  @override
+  String get targetsMacroNoTarget => 'No target';
+
+  @override
   String foodResultServing(double amount, String unit) {
     final intl.NumberFormat amountNumberFormat =
         intl.NumberFormat.decimalPattern(localeName);
@@ -1507,6 +2038,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String foodSearchReplacing(String name) {
     return 'Replacing $name';
   }
+
+  @override
+  String get meSectionYou => 'You';
+
+  @override
+  String get meSetUpTargets => 'Set up profile & targets';
 
   @override
   String get meSectionFood => 'Food';

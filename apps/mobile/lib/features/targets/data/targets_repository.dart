@@ -45,6 +45,7 @@ final class TargetsData {
     Iterable<Versioned<GoalPhaseRecord>> phases = const [],
     Iterable<Versioned<TargetSettingsRecord>> settings = const [],
     this.skippedRows = 0,
+    this.profileUnreadable = false,
   }) : phases = List.unmodifiable(phases),
        settings = List.unmodifiable(settings);
 
@@ -60,11 +61,17 @@ final class TargetsData {
   /// Live rows that couldn't be decoded.
   final int skippedRows;
 
+  /// Whether a live profile row exists that this version can't read (a
+  /// newer app wrote it, by sync): setup must not run over it; the app asks
+  /// for an update instead (A13a security review #3).
+  final bool profileUnreadable;
+
   @override
   bool operator ==(Object other) =>
       other is TargetsData &&
       other.profile == profile &&
       other.skippedRows == skippedRows &&
+      other.profileUnreadable == profileUnreadable &&
       _sameList(other.phases, phases) &&
       _sameList(other.settings, settings);
 
@@ -72,6 +79,7 @@ final class TargetsData {
   int get hashCode => Object.hash(
     profile,
     skippedRows,
+    profileUnreadable,
     Object.hashAll(phases),
     Object.hashAll(settings),
   );
@@ -79,7 +87,8 @@ final class TargetsData {
   @override
   String toString() =>
       'TargetsData(profile: ${profile != null}, ${phases.length} phases, '
-      '${settings.length} versions, $skippedRows skipped)';
+      '${settings.length} versions, $skippedRows skipped'
+      '${profileUnreadable ? ', profile unreadable' : ''})';
 }
 
 /// Read-only targets queries (A13 §3.2). Writes go through the
@@ -136,6 +145,7 @@ final class TargetsRepository {
       phases: phases,
       settings: settings,
       skippedRows: skipped,
+      profileUnreadable: profileRow != null && profiles.isEmpty,
     );
   });
 

@@ -54,6 +54,9 @@ void main() {
       expect(DisplayRounding.nutrientGrams(9.96), 10);
       expect(DisplayRounding.nutrientGrams(10.4), 10);
       expect(DisplayRounding.nutrientGrams(31.5), 32);
+      // Macro target g → whole.
+      expect(DisplayRounding.macroTargetGrams(139.5), 140);
+      expect(DisplayRounding.macroTargetGrams(7.4), 7);
       // mg → whole.
       expect(DisplayRounding.milligrams(412.5), 413);
       // Food g/ml → whole.

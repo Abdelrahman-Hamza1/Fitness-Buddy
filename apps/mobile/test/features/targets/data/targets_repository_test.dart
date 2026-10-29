@@ -33,6 +33,7 @@ void main() {
     ]);
     expect(data.settings, [Versioned(version(3), 1)]);
     expect(data.skippedRows, 0);
+    expect(data.profileUnreadable, isFalse);
     expect(data.phases.clear, throwsUnsupportedError);
     expect(data.hashCode, (await repo.read()).hashCode);
     expect(
@@ -84,6 +85,10 @@ void main() {
     ]);
     final data = await TargetsRepository(h.db).read();
     expect(data.profile, isNull);
+    // A13a security #3: the skipped live profile is reported, so setup
+    // never runs over it.
+    expect(data.profileUnreadable, isTrue);
+    expect('$data', endsWith('4 skipped, profile unreadable)'));
     expect(data.phases.map((p) => p.value.id), [fixtureId(3)]);
     expect(data.settings.map((s) => s.value.id), [fixtureId(5)]);
     expect(data.skippedRows, 4);

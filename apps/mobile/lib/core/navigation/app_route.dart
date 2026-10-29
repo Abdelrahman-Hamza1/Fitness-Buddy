@@ -268,6 +268,20 @@ final class AboutRoute extends AppRoute {
   String get location => path;
 }
 
+/// Setup (UX-060, A13 D10): the five-page profile, goal and targets flow,
+/// a full screen outside the tabs. Opened from Today's setup row and Me;
+/// never a startup redirect (UX-001). No parameters.
+final class SetupRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/setup';
+
+  @override
+  String get location => path;
+}
+
 /// The "update needed" screen, outside the tabs (S06 plan D10).
 ///
 /// Only the router targets it (its update-gate redirect); features never

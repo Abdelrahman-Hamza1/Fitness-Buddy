@@ -1,6 +1,11 @@
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
+import 'package:fb_mobile/core/ids/id_generator.dart';
+import 'package:fb_mobile/core/settings/settings_store.dart';
+import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/core/undo/undo_stack.dart';
+import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,7 +28,7 @@ void main() {
     final h = TargetsAppHarness();
     final c = h.container();
     for (final provider in <ProviderListenable<Object?>>[
-      isSetUpProvider,
+      setupStatusProvider,
       profileProvider,
       goalHistoryProvider,
       targetSettingsRecordsProvider,
@@ -32,7 +37,7 @@ void main() {
     ]) {
       c.listen(provider, (_, _) {});
     }
-    expect(await c.read(isSetUpProvider.future), isFalse);
+    expect(await c.read(setupStatusProvider.future), SetupStatus.notSetUp);
     expect(await c.read(profileProvider.future), isNull);
     expect((await c.read(goalHistoryProvider.future)).records, isEmpty);
     expect(await c.read(targetSettingsRecordsProvider.future), isEmpty);
@@ -41,7 +46,7 @@ void main() {
 
     await h.setUp();
     await pumpEventQueue();
-    expect(await c.read(isSetUpProvider.future), isTrue);
+    expect(await c.read(setupStatusProvider.future), SetupStatus.setUp);
     expect((await c.read(profileProvider.future))!.value, setupInput().profile);
     final goals = await c.read(goalHistoryProvider.future);
     final phase = goals.records.single;
@@ -125,28 +130,153 @@ void main() {
     expect(day.week!.uncountedDays, 1);
   });
 
-  test("D8 bodyWeightProvider returns null until A14's trend is wired (the "
-      'seam), so targets use the basis weight; a trend weight, when given, '
-      'is used for the floor', () async {
+  test('TD-090 targets use the trend weight once weigh-ins exist, else the '
+      'basis weight', () async {
     final h = TargetsAppHarness();
-    await h.setUp();
-    final plain = ProviderContainer(
+    // Targets rows without any weigh-in (written directly, not by setup).
+    await h.apply([
+      PutProfile(setupInput().profile),
+      PutGoalPhase(loseHalf.toRecord(id: h.ids.next(), start: today)),
+      PutTargetSettings(
+        TargetSettingsRecord(
+          id: h.ids.next(),
+          revision: 1,
+          effectiveFrom: today,
+          baseKcal: setupBase,
+          basisWeightKg: 80,
+        ),
+      ),
+    ]);
+    // The real seam: no bodyWeightProvider override.
+    final c = ProviderContainer(
       overrides: [
         appDatabaseProvider.overrideWithValue(h.db),
         changeSetApplierProvider.overrideWithValue(h.applier),
+        clockProvider.overrideWithValue(h.clock),
+        idGeneratorProvider.overrideWithValue(h.ids),
+        undoStackProvider.overrideWithValue(h.undo),
       ],
     );
-    addTearDown(plain.dispose);
-    plain.listen(dayTargetsProvider(today), (_, _) {});
-    expect(await plain.read(bodyWeightProvider(today).future), isNull);
-    final basis = (await settled(plain, today))!;
+    addTearDown(c.dispose);
+    c
+      ..listen(dayTargetsProvider(today), (_, _) {})
+      ..listen(bodyWeightProvider(today), (_, _) {});
+    expect(await c.read(bodyWeightProvider(today).future), isNull);
+    final basis = (await settled(c, today))!;
     expect((basis.weightKg, basis.floorKcal), (80.0, 1750.0));
 
-    h.trend = 70;
-    final c = h.container()..listen(dayTargetsProvider(today), (_, _) {});
+    // A14's weigh-in: its trend replaces the basis weight from that day.
+    await h.apply([
+      CreateWeighIn(
+        h.ids.next(),
+        WeighInDraft(
+          time: EntryTime.now(h.clock),
+          input: const WeighInInput(70, MassUnit.kilogram),
+        ),
+      ),
+    ]);
+    await pumpEventQueue();
+    expect(await c.read(bodyWeightProvider(today).future), 70);
     final trend = (await settled(c, today))!;
     // 70 kg: resting 1,650 is the floor; the stored base stays.
     expect((trend.weightKg, trend.floorKcal), (70.0, 1650.0));
     expect(trend.version.baseKcal, setupBase);
+    // The session-owned commands read the same seam (no listener of their
+    // own): "Recalculate" uses the trend weight.
+    final recalculated = await c
+        .read(targetsActionsProvider)
+        .recalculate(await h.shownVersion());
+    expect(recalculated, isA<TargetsDone>());
+    expect((await h.currentVersion()).basisWeightKg, 70);
+    // Before the first weigh-in there is no trend: the basis weight again.
+    expect(await c.read(bodyWeightProvider(today.plusDays(-1)).future), isNull);
+  });
+
+  test(
+    'TD-090 the session-owned commands read the trend once, from a '
+    'container with no other listener: recalculate and saveProfile',
+    () async {
+      final h = TargetsAppHarness();
+      await h.setUp();
+      // The next day, A14's weigh-in of 70 kg after setup's 80 kg: the
+      // trend today (between the two) is what the commands must see.
+      h.advanceDays(1);
+      await h.apply([
+        CreateWeighIn(
+          h.ids.next(),
+          WeighInDraft(
+            time: EntryTime.now(h.clock),
+            input: const WeighInInput(70, MassUnit.kilogram),
+          ),
+        ),
+      ]);
+      ProviderContainer fresh() {
+        // The real seam and nothing watching anything: the commands' read
+        // must not depend on a provider someone else keeps alive.
+        final c = ProviderContainer(
+          overrides: [
+            appDatabaseProvider.overrideWithValue(h.db),
+            changeSetApplierProvider.overrideWithValue(h.applier),
+            clockProvider.overrideWithValue(h.clock),
+            idGeneratorProvider.overrideWithValue(h.ids),
+            undoStackProvider.overrideWithValue(h.undo),
+          ],
+        );
+        addTearDown(c.dispose);
+        return c;
+      }
+
+      final trend = await fresh().read(bodyWeightReaderProvider)(h.date);
+      expect(trend, isNotNull);
+      expect(trend, isNot(80));
+
+      final recalculated = await fresh()
+          .read(targetsActionsProvider)
+          .recalculate(await h.shownVersion());
+      expect(recalculated, isA<TargetsDone>());
+      expect((await h.currentVersion()).basisWeightKg, trend);
+
+      final saved = await fresh()
+          .read(targetsActionsProvider)
+          .saveProfile(const ProfilePatch(activity: ActivityLevel.high), 1);
+      expect(saved, isA<TargetsDone>());
+      expect((saved as TargetsDone).recomputedKcal, isNotNull);
+      expect((await h.currentVersion()).basisWeightKg, trend);
+    },
+  );
+
+  test('a failing read or write is a typed failure (unavailable), never a '
+      'throw to the UI; nothing is written', () async {
+    final h = TargetsAppHarness();
+    await h.setUp();
+    final failingRead = TargetsActions(
+      apply: h.applier.apply,
+      undoStack: h.undo,
+      ids: h.ids,
+      clock: h.clock,
+      read: TargetsRepository(h.db).read,
+      settings: SettingsStore(db: h.db, applier: h.applier),
+      bodyWeightKg: (_) async => throw StateError('weigh-ins unreadable'),
+    );
+    final shown = await h.shownVersion();
+    final before = await h.raw();
+    expect(
+      await failingRead.recalculate(shown),
+      isA<TargetsFailed>().having(
+        (f) => f.reason,
+        'reason',
+        TargetsFailure.unavailable,
+      ),
+    );
+    expect(await h.raw(), before);
+
+    h.applyHook = (_) async => throw StateError('database closed');
+    final outcome = await h.expectNoWrite<TargetsFailed>(
+      () => h.actions.saveProfile(
+        const ProfilePatch(activity: ActivityLevel.high),
+        1,
+      ),
+    );
+    expect(outcome.reason, TargetsFailure.unavailable);
   });
 }

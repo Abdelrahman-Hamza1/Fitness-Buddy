@@ -214,6 +214,87 @@
   "@todayMacroFiber": {
     "description": "Today: fiber macro bar label (HM-003)."
   },
+  "todayWeekOnTrack": "This week: on track",
+  "@todayWeekOnTrack": {
+    "description": "Today: weekly line when the earlier days of the week add up to their plan, rounded (HM-002)."
+  },
+  "todayWeekUncounted": "{count, plural, =1{1 day not counted} other{{count} days not counted}}",
+  "@todayWeekUncounted": {
+    "description": "Today: added to the weekly line for earlier days of the week with no food logged or marked incomplete; they are not counted (TG-032).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "todayWeekWithUncounted": "{line} · {uncounted}",
+  "@todayWeekWithUncounted": {
+    "description": "Today: the weekly line followed by how many days are not counted, e.g. \"This week: 350 kcal under · 1 day not counted\".",
+    "placeholders": {
+      "line": {
+        "type": "String"
+      },
+      "uncounted": {
+        "type": "String"
+      }
+    }
+  },
+  "todayEatenOfBudgetSemantics": "{eaten} of {budget} kcal eaten",
+  "@todayEatenOfBudgetSemantics": {
+    "description": "Screen readers: the progress bar under the big number, e.g. \"1,560 of 2,800 kcal eaten\".",
+    "placeholders": {
+      "eaten": {
+        "type": "String"
+      },
+      "budget": {
+        "type": "String"
+      }
+    }
+  },
+  "todayMacroOfTarget": "{eaten} / {target} g",
+  "@todayMacroOfTarget": {
+    "description": "Today: a macro eaten out of its target, next to its bar, e.g. \"82 / 140 g\" (HM-003).",
+    "placeholders": {
+      "eaten": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "target": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "todayMacroEaten": "{eaten} g",
+  "@todayMacroEaten": {
+    "description": "Today: a macro with no target (carbs and fat in 'calories and protein only', TG-054), e.g. \"96 g\".",
+    "placeholders": {
+      "eaten": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "todaySetupTitle": "Set up your targets",
+  "@todaySetupTitle": {
+    "description": "Today: the row under the big number that opens setup while no targets exist (A13 D10)."
+  },
+  "todaySetupTime": "About 2 minutes",
+  "@todaySetupTime": {
+    "description": "Today: second line of the setup row, how long setup takes."
+  },
+  "todayUpdateSubtitle": "Your profile needs a newer version",
+  "@todayUpdateSubtitle": {
+    "description": "Today: second line of the 'Update the app' row, shown instead of the setup row when the stored profile was saved by a newer app version."
+  },
+  "todayTargetsLoadFailed": "Couldn't load your targets.",
+  "@todayTargetsLoadFailed": {
+    "description": "Today: the targets couldn't be read; the calories eaten still show (UX-052)."
+  },
+  "todayTargetsTryAgain": "Try again",
+  "@todayTargetsTryAgain": {
+    "description": "Today: retries loading the targets."
+  },
   "todayToConfirm": "{count} to confirm",
   "@todayToConfirm": {
     "description": "Today: title of the strip shown while proposals wait for confirmation (HM-004).",
@@ -1287,6 +1368,621 @@
       }
     }
   },
+  "setupTitle": "Set up your targets",
+  "@setupTitle": {
+    "description": "Setup (UX-060): the screen title."
+  },
+  "setupStep": "Step {current} of {total}",
+  "@setupStep": {
+    "description": "Setup: where the user is in the five pages (D9).",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "setupClose": "Close setup",
+  "@setupClose": {
+    "description": "Setup: tooltip and screen-reader label of the close button."
+  },
+  "setupBack": "Back",
+  "@setupBack": {
+    "description": "Setup: goes to the previous page; what was typed is kept."
+  },
+  "setupNext": "Next",
+  "@setupNext": {
+    "description": "Setup: goes to the next page; off until the page's required fields are valid."
+  },
+  "setupSave": "Save",
+  "@setupSave": {
+    "description": "Setup: saves the profile, goal, first weigh-in and targets (last page)."
+  },
+  "setupPageYou": "About you",
+  "@setupPageYou": {
+    "description": "Setup page 1 title (TG-001)."
+  },
+  "setupPageActivity": "How active are you?",
+  "@setupPageActivity": {
+    "description": "Setup page 2 title (TG-001)."
+  },
+  "setupPageGoal": "Your goal",
+  "@setupPageGoal": {
+    "description": "Setup page 3 title (TG-010/011)."
+  },
+  "setupPagePreferences": "Preferences",
+  "@setupPagePreferences": {
+    "description": "Setup page 4 title (UX-060)."
+  },
+  "setupPageTargets": "Your targets",
+  "@setupPageTargets": {
+    "description": "Setup page 5 title: the calculated targets."
+  },
+  "setupWeightHint": "Saved as your first weigh-in.",
+  "@setupWeightHint": {
+    "description": "Setup page 1: under the current weight field (WB-001)."
+  },
+  "setupActivityHint": "Pick the one closest to a usual week.",
+  "@setupActivityHint": {
+    "description": "Setup page 2: under the title."
+  },
+  "setupPreferencesHint": "These are filled in from your settings. You can change them here or later in Me.",
+  "@setupPreferencesHint": {
+    "description": "Setup page 4: under the title."
+  },
+  "setupTargetsDaily": "{kcal} kcal a day",
+  "@setupTargetsDaily": {
+    "description": "Setup page 5: the daily target, the big number.",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "setupTargetsWeekly": "{kcal} kcal a week",
+  "@setupTargetsWeekly": {
+    "description": "Setup page 5: the weekly budget, under the daily target.",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "setupTargetsHow": "How it's calculated",
+  "@setupTargetsHow": {
+    "description": "Setup page 5: heading above the plain-language explanation (TG-021)."
+  },
+  "setupTargetsMacros": "Macros",
+  "@setupTargetsMacros": {
+    "description": "Setup page 5: heading above the macro targets."
+  },
+  "setupTargetsMode": "Your weekly budget adjusts the rest of the week when a day is over or under. You can change this later in Me.",
+  "@setupTargetsMode": {
+    "description": "Setup page 5: how the targets are applied by default."
+  },
+  "setupLeaveTitle": "Leave setup?",
+  "@setupLeaveTitle": {
+    "description": "Setup: title of the sheet shown when closing with something typed (UX-052)."
+  },
+  "setupLeaveMessage": "What you entered won't be saved.",
+  "@setupLeaveMessage": {
+    "description": "Setup: message of the leave sheet."
+  },
+  "setupLeaveStay": "Keep going",
+  "@setupLeaveStay": {
+    "description": "Setup leave sheet: the dominant choice, back to setup."
+  },
+  "setupLeaveConfirm": "Leave",
+  "@setupLeaveConfirm": {
+    "description": "Setup leave sheet: closes setup without saving."
+  },
+  "setupSaved": "Targets set",
+  "@setupSaved": {
+    "description": "Snackbar after setup was saved, with Undo (UX-030)."
+  },
+  "setupAlreadySetUp": "Your targets are already set up.",
+  "@setupAlreadySetUp": {
+    "description": "Setup: Save refused because a profile or targets exist (perhaps from another device)."
+  },
+  "setupSaveFailed": "Couldn't save your targets. Nothing you entered was lost. Try Save again.",
+  "@setupSaveFailed": {
+    "description": "Setup: Save refused for another reason; nothing was written."
+  },
+  "setupUpdateTitle": "Update the app",
+  "@setupUpdateTitle": {
+    "description": "Setup (A13a security review #3): a profile saved by a newer app version can't be read here."
+  },
+  "setupUpdateMessage": "Your profile was saved by a newer version of Fitness Buddy. Update the app to see and change it.",
+  "@setupUpdateMessage": {
+    "description": "Setup: the message under 'Update the app'."
+  },
+  "profileSexLabel": "Sex",
+  "@profileSexLabel": {
+    "description": "Profile form: label of the formula sex choice (TG-001)."
+  },
+  "profileSexHint": "Used for the energy formula",
+  "@profileSexHint": {
+    "description": "Profile form: why sex is asked, under its label (TG-001, TG-020)."
+  },
+  "profileSexMale": "Male",
+  "@profileSexMale": {
+    "description": "Profile form: formula sex choice."
+  },
+  "profileSexFemale": "Female",
+  "@profileSexFemale": {
+    "description": "Profile form: formula sex choice."
+  },
+  "profileBirthYearLabel": "Birth year",
+  "@profileBirthYearLabel": {
+    "description": "Profile form: label of the birth year field (TG-001)."
+  },
+  "profileBirthYearRange": "Enter a year between {min} and {max}.",
+  "@profileBirthYearRange": {
+    "description": "Profile form: the birth year gives an age outside 18 to 100. Years are shown without grouping.",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "profileHeightLabel": "Height",
+  "@profileHeightLabel": {
+    "description": "Profile form: label of the height field, and of its unit choice (TG-001)."
+  },
+  "profileHeightUnitCm": "cm",
+  "@profileHeightUnitCm": {
+    "description": "Profile form: unit choice chip, height in centimetres (TG-002)."
+  },
+  "profileHeightUnitFtIn": "ft + in",
+  "@profileHeightUnitFtIn": {
+    "description": "Profile form: unit choice chip, height in feet and inches (TG-002)."
+  },
+  "profileHeightFeet": "Feet",
+  "@profileHeightFeet": {
+    "description": "Profile form: label of the feet part of an imperial height."
+  },
+  "profileHeightInches": "Inches",
+  "@profileHeightInches": {
+    "description": "Profile form: label of the inches part of an imperial height."
+  },
+  "profileUnitCm": "cm",
+  "@profileUnitCm": {
+    "description": "Profile form: unit after the height number."
+  },
+  "profileUnitFt": "ft",
+  "@profileUnitFt": {
+    "description": "Profile form: unit after the feet number."
+  },
+  "profileUnitIn": "in",
+  "@profileUnitIn": {
+    "description": "Profile form: unit after the inches number."
+  },
+  "profileHeightRangeCm": "Enter a height between {min} and {max} cm.",
+  "@profileHeightRangeCm": {
+    "description": "Profile form: the height is outside the accepted range.",
+    "placeholders": {
+      "min": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "max": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "profileHeightRangeFtIn": "Enter a height between {minFeet} ft {minInches} in and {maxFeet} ft {maxInches} in. Inches go up to 11.",
+  "@profileHeightRangeFtIn": {
+    "description": "Profile form: the imperial height is outside the accepted range, or the inches are 12 or more.",
+    "placeholders": {
+      "minFeet": {
+        "type": "int"
+      },
+      "minInches": {
+        "type": "int"
+      },
+      "maxFeet": {
+        "type": "int"
+      },
+      "maxInches": {
+        "type": "int"
+      }
+    }
+  },
+  "profileWeightLabel": "Current weight",
+  "@profileWeightLabel": {
+    "description": "Profile form: label of the current weight field (TG-001). Saved as a weigh-in."
+  },
+  "targetsWeightRange": "Enter a weight between {min} and {max} {unit}.",
+  "@targetsWeightRange": {
+    "description": "Targets forms: a body or target weight outside the accepted range.",
+    "placeholders": {
+      "min": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "max": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "targetsMassValue": "{amount} {unit}",
+  "@targetsMassValue": {
+    "description": "Targets: a weight or a weight change with its unit, e.g. '0.46 kg' or '−2 lb' (the sign is part of the amount).",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "targetsEnterNumber": "Enter a number.",
+  "@targetsEnterNumber": {
+    "description": "Targets forms: a number field is empty or isn't a number."
+  },
+  "profileActivitySedentary": "Mostly sitting",
+  "@profileActivitySedentary": {
+    "description": "Activity choice (TG-001): the lowest of four levels."
+  },
+  "profileActivitySedentaryHint": "Desk work, little walking and no regular exercise",
+  "@profileActivitySedentaryHint": {
+    "description": "Activity choice: plain description of the lowest level."
+  },
+  "profileActivityLight": "Lightly active",
+  "@profileActivityLight": {
+    "description": "Activity choice (TG-001): the second level."
+  },
+  "profileActivityLightHint": "On your feet part of the day, or light exercise 1 to 3 days a week",
+  "@profileActivityLightHint": {
+    "description": "Activity choice: plain description of the second level."
+  },
+  "profileActivityModerate": "Moderately active",
+  "@profileActivityModerate": {
+    "description": "Activity choice (TG-001): the third level."
+  },
+  "profileActivityModerateHint": "An active job, or exercise 3 to 5 days a week",
+  "@profileActivityModerateHint": {
+    "description": "Activity choice: plain description of the third level."
+  },
+  "profileActivityHigh": "Very active",
+  "@profileActivityHigh": {
+    "description": "Activity choice (TG-001): the highest level."
+  },
+  "profileActivityHighHint": "Hard exercise 6 or 7 days a week, or a physical job",
+  "@profileActivityHighHint": {
+    "description": "Activity choice: plain description of the highest level."
+  },
+  "profileActivityShortSedentary": "mostly sitting",
+  "@profileActivityShortSedentary": {
+    "description": "The lowest activity level inside a sentence, lower case (the target explanation)."
+  },
+  "profileActivityShortLight": "lightly active",
+  "@profileActivityShortLight": {
+    "description": "The second activity level inside a sentence, lower case."
+  },
+  "profileActivityShortModerate": "moderately active",
+  "@profileActivityShortModerate": {
+    "description": "The third activity level inside a sentence, lower case."
+  },
+  "profileActivityShortHigh": "very active",
+  "@profileActivityShortHigh": {
+    "description": "The highest activity level inside a sentence, lower case."
+  },
+  "targetsChooseOne": "Choose one to continue.",
+  "@targetsChooseOne": {
+    "description": "Setup and the targets forms: under a choice (sex, activity, goal) left empty when Next was tapped (UX-052)."
+  },
+  "goalTypeTitle": "What do you want to do?",
+  "@goalTypeTitle": {
+    "description": "Goal form: label above the lose, maintain and gain choices (TG-010)."
+  },
+  "goalTypeLose": "Lose weight",
+  "@goalTypeLose": {
+    "description": "Goal type (TG-010); also the default name of a lose phase."
+  },
+  "goalTypeMaintain": "Maintain weight",
+  "@goalTypeMaintain": {
+    "description": "Goal type (TG-010); also the default name of a maintain phase."
+  },
+  "goalTypeGain": "Gain weight",
+  "@goalTypeGain": {
+    "description": "Goal type (TG-010); also the default name of a gain phase."
+  },
+  "goalHow": "How do you want to set it?",
+  "@goalHow": {
+    "description": "Goal form: label above the four ways to express a lose or gain goal (TG-011)."
+  },
+  "goalKindWeekly": "Per week",
+  "@goalKindWeekly": {
+    "description": "Goal expression: an amount each week."
+  },
+  "goalKindMonthly": "This month",
+  "@goalKindMonthly": {
+    "description": "Goal expression: an amount over this calendar month (the owner's style)."
+  },
+  "goalKindTargetDate": "Target weight by a date",
+  "@goalKindTargetDate": {
+    "description": "Goal expression: a target weight and the date to reach it."
+  },
+  "goalKindTargetRate": "Target weight at a pace",
+  "@goalKindTargetRate": {
+    "description": "Goal expression: a target weight and a weekly pace toward it."
+  },
+  "goalRateLoseLabel": "Lose each week",
+  "@goalRateLoseLabel": {
+    "description": "Goal form: label of the weekly amount field for a lose goal."
+  },
+  "goalRateGainLabel": "Gain each week",
+  "@goalRateGainLabel": {
+    "description": "Goal form: label of the weekly amount field for a gain goal."
+  },
+  "goalMonthLoseLabel": "Lose this month",
+  "@goalMonthLoseLabel": {
+    "description": "Goal form: label of the monthly amount field for a lose goal."
+  },
+  "goalMonthGainLabel": "Gain this month",
+  "@goalMonthGainLabel": {
+    "description": "Goal form: label of the monthly amount field for a gain goal."
+  },
+  "goalTargetWeightLabel": "Target weight",
+  "@goalTargetWeightLabel": {
+    "description": "Goal form: label of the target weight field."
+  },
+  "goalTargetDateLabel": "By",
+  "@goalTargetDateLabel": {
+    "description": "Goal form: label of the target date chip, followed by the date."
+  },
+  "goalTargetDatePick": "Pick a date",
+  "@goalTargetDatePick": {
+    "description": "Goal form: the target date chip before a date is picked."
+  },
+  "goalTargetDateMissing": "Pick a target date.",
+  "@goalTargetDateMissing": {
+    "description": "Goal form: no target date picked yet."
+  },
+  "goalTargetDateTooFar": "Pick a date within 5 years.",
+  "@goalTargetDateTooFar": {
+    "description": "Goal form: the target date is more than 5 years ahead."
+  },
+  "goalPaceLabel": "Pace each week",
+  "@goalPaceLabel": {
+    "description": "Goal form: label of the weekly pace toward the target weight."
+  },
+  "goalRateRange": "Enter an amount up to {max} {unit} a week.",
+  "@goalRateRange": {
+    "description": "Goal form: the weekly amount or pace is 0 or above the accepted range.",
+    "placeholders": {
+      "max": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "goalMonthRange": "Enter an amount up to {max} {unit} this month.",
+  "@goalMonthRange": {
+    "description": "Goal form: the monthly amount is 0 or above the accepted range.",
+    "placeholders": {
+      "max": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "goalProjection": "≈ {rate} a week · {change} in {month}",
+  "@goalProjection": {
+    "description": "Goal form (TG-011): the planned weekly change and what it means over a calendar month, e.g. '≈ −0.46 kg a week · −2 kg in November'.",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      },
+      "change": {
+        "type": "String"
+      },
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "goalProjectionWithDate": "≈ {rate} a week · {change} in {month} · goal reached around {date}",
+  "@goalProjectionWithDate": {
+    "description": "Goal form (TG-011): as goalProjection, with the projected month the target weight is reached, e.g. 'March 2027'.",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      },
+      "change": {
+        "type": "String"
+      },
+      "month": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "goalMaintainNote": "Your target keeps your weight steady.",
+  "@goalMaintainNote": {
+    "description": "Goal form: shown for a maintain goal instead of the projection."
+  },
+  "goalCapMessage": "You asked for {requested} a week. Plans stay within 1% of your weight a week, so this plan uses {planned}.",
+  "@goalCapMessage": {
+    "description": "Goal form and target explanation (TG-013, SF-011): a requested loss above 1% of body weight a week was capped. Calm, no warning words.",
+    "placeholders": {
+      "requested": {
+        "type": "String"
+      },
+      "planned": {
+        "type": "String"
+      }
+    }
+  },
+  "goalProblemDeadline": "Pick a date after today.",
+  "@goalProblemDeadline": {
+    "description": "Goal form (PA3): the target date isn't after today, so no numbers can be shown."
+  },
+  "goalProblemTargetNotBelow": "This target weight isn't below your current weight. Choose a lower target, or another goal.",
+  "@goalProblemTargetNotBelow": {
+    "description": "Goal form (PA3): a lose goal whose target weight isn't below the current weight."
+  },
+  "goalProblemTargetNotAbove": "This target weight isn't above your current weight. Choose a higher target, or another goal.",
+  "@goalProblemTargetNotAbove": {
+    "description": "Goal form (PA3): a gain goal whose target weight isn't above the current weight."
+  },
+  "goalStoredDatePassed": "Your goal date has passed.",
+  "@goalStoredDatePassed": {
+    "description": "Me (PA3): the saved goal's date has passed. Neutral line next to 'Start a new goal'."
+  },
+  "goalStoredTargetReached": "You've reached your target weight.",
+  "@goalStoredTargetReached": {
+    "description": "Me (PA3): the saved goal's target weight is reached. Neutral line next to 'Start a new goal'."
+  },
+  "goalFailedUnresolvable": "This goal doesn't fit your current weight. Check the target weight and date.",
+  "@goalFailedUnresolvable": {
+    "description": "Shown when saving a goal is refused because it can't be worked out from the current weight (PA3)."
+  },
+  "goalFailedNeedsUpdate": "Your current goal needs an update. Start a new goal to recalculate.",
+  "@goalFailedNeedsUpdate": {
+    "description": "Shown when a change is refused because the saved goal can't be worked out any more (PA3)."
+  },
+  "targetsExplainResting": "Resting energy: about {kcal} kcal a day (from your weight, height, age and sex).",
+  "@targetsExplainResting": {
+    "description": "Target explanation (TG-021), line 1: Mifflin-St Jeor resting energy.",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsExplainActivity": "Activity ({level}): × {factor} = about {kcal} kcal a day.",
+  "@targetsExplainActivity": {
+    "description": "Target explanation (TG-021), line 2: the activity factor and the estimated expenditure. {level} is the lower-case activity level.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      },
+      "factor": {
+        "type": "double",
+        "format": "decimalPattern"
+      },
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsExplainGoalLose": "Goal: lose {rate} a week = {kcal} kcal less a day (about {perUnit} kcal per {unit}).",
+  "@targetsExplainGoalLose": {
+    "description": "Target explanation (TG-021), line 3 for a lose goal: the planned rate and the daily adjustment.",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      },
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "perUnit": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "targetsExplainGoalGain": "Goal: gain {rate} a week = {kcal} kcal more a day (about {perUnit} kcal per {unit}).",
+  "@targetsExplainGoalGain": {
+    "description": "Target explanation (TG-021), line 3 for a gain goal.",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      },
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "perUnit": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "targetsExplainGoalMaintain": "Goal: keep your weight steady, so nothing is added or taken away.",
+  "@targetsExplainGoalMaintain": {
+    "description": "Target explanation (TG-021), line 3 for a maintain goal."
+  },
+  "targetsExplainFloor": "Raised to your safety floor of {kcal} kcal a day.",
+  "@targetsExplainFloor": {
+    "description": "Target explanation (SF-010): the calculated target was below the safety floor and was raised to it.",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsExplainTarget": "Your target: {daily} kcal a day, {weekly} kcal a week.",
+  "@targetsExplainTarget": {
+    "description": "Target explanation (TG-021), last line: the daily and weekly targets.",
+    "placeholders": {
+      "daily": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "weekly": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsExplainTargetDaily": "Your target: {daily} kcal a day.",
+  "@targetsExplainTargetDaily": {
+    "description": "Target explanation (TG-021), last line without a weekly budget.",
+    "placeholders": {
+      "daily": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsMacroGrams": "{grams} g",
+  "@targetsMacroGrams": {
+    "description": "Macro summary: a daily macro target in grams.",
+    "placeholders": {
+      "grams": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsMacroNoTarget": "No target",
+  "@targetsMacroNoTarget": {
+    "description": "Macro summary: carbs and fat in 'calories and protein only' mode (TG-054)."
+  },
   "foodResultServing": "{amount} {unit}",
   "@foodResultServing": {
     "description": "Add-food result row: the serving the calories are for, e.g. \"1 loaf\" or \"100 g\".",
@@ -2076,6 +2772,14 @@
         "type": "String"
       }
     }
+  },
+  "meSectionYou": "You",
+  "@meSectionYou": {
+    "description": "Me tab: the heading of the section with the profile and targets (A13)."
+  },
+  "meSetUpTargets": "Set up profile & targets",
+  "@meSetUpTargets": {
+    "description": "Me tab: the row that opens setup while no profile and targets exist (A13 D10)."
   },
   "meSectionFood": "Food",
   "@meSectionFood": {

@@ -191,46 +191,49 @@ final class TargetSettingsRecordsProvider
 String _$targetSettingsRecordsHash() =>
     r'2d44543aad8dea8aea67e9d393b637c1426d59b8';
 
-/// Whether setup has run: a profile and at least one target settings
-/// version exist (D10: Today's setup row and Me's entry use it).
+/// The live [SetupStatus].
 
-@ProviderFor(isSetUp)
-final isSetUpProvider = IsSetUpProvider._();
+@ProviderFor(setupStatus)
+final setupStatusProvider = SetupStatusProvider._();
 
-/// Whether setup has run: a profile and at least one target settings
-/// version exist (D10: Today's setup row and Me's entry use it).
+/// The live [SetupStatus].
 
-final class IsSetUpProvider
-    extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
-    with $FutureModifier<bool>, $FutureProvider<bool> {
-  /// Whether setup has run: a profile and at least one target settings
-  /// version exist (D10: Today's setup row and Me's entry use it).
-  IsSetUpProvider._()
+final class SetupStatusProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<SetupStatus>,
+          SetupStatus,
+          FutureOr<SetupStatus>
+        >
+    with $FutureModifier<SetupStatus>, $FutureProvider<SetupStatus> {
+  /// The live [SetupStatus].
+  SetupStatusProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'isSetUpProvider',
+        name: r'setupStatusProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$isSetUpHash();
+  String debugGetCreateSourceHash() => _$setupStatusHash();
 
   @$internal
   @override
-  $FutureProviderElement<bool> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+  $FutureProviderElement<SetupStatus> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<bool> create(Ref ref) {
-    return isSetUp(ref);
+  FutureOr<SetupStatus> create(Ref ref) {
+    return setupStatus(ref);
   }
 }
 
-String _$isSetUpHash() => r'c19377c742df7bb4742cf1cf13d86363071734ab';
+String _$setupStatusHash() => r'4f6f8df24e890760cc9220fca2c61b4447c20101';
 
 /// Everything Today and Targets show for [date] (D6), derived by
 /// [TargetsTimeline.day] from the stored rows, the earlier days of [date]'s

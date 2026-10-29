@@ -57,6 +57,10 @@ abstract final class DisplayRounding {
     return tenth.abs() < 10 ? tenth : _whole(grams).toDouble();
   }
 
+  /// A daily macro target in grams (TG-050–055): whole grams, so "82 / 140 g"
+  /// compares an eaten amount with a round target.
+  static int macroTargetGrams(double grams) => _whole(grams);
+
   /// A nutrient in milligrams: whole mg.
   static int milligrams(double milligrams) => _whole(milligrams);
 

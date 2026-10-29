@@ -9,6 +9,7 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/quick_add/quick_add.dart';
+import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/today/application/today_controller.dart';
 import 'package:fb_mobile/features/today/application/today_date.dart';
 import 'package:fb_mobile/features/today/presentation/day_page.dart';
@@ -38,6 +39,11 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   /// The loaded days: the viewed one and its neighbours.
   final Map<LocalDate, ProviderSubscription<AsyncValue<DayView>>> _window = {};
 
+  /// The same days' targets (A13 D12), so a swipe finds the numbers block
+  /// loaded too, never a skeleton.
+  final Map<LocalDate, ProviderSubscription<AsyncValue<DayTargets?>>>
+  _targetsWindow = {};
+
   LocalDate get _today =>
       ref.read(todayProvider).value ??
       EntryTime.now(ref.read(clockProvider)).localDate;
@@ -59,10 +65,11 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   @override
   void dispose() {
     _lifecycle.dispose();
-    for (final subscription in _window.values) {
+    for (final subscription in [..._window.values, ..._targetsWindow.values]) {
       subscription.close();
     }
     _window.clear();
+    _targetsWindow.clear();
     _pages.dispose();
     super.dispose();
   }
@@ -90,14 +97,21 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   /// neighbours wait for the viewed day's first data, so they never slow it.
   void _syncWindow() {
     final viewed = _viewed;
-    final wanted = _subscribe(viewed).read().hasValue
-        ? DayPager(_today).window(viewed)
-        : {viewed};
+    final loaded = _subscribe(viewed).read().hasValue;
+    final wanted = loaded ? DayPager(_today).window(viewed) : {viewed};
     for (final date in {...wanted, ..._window.keys}) {
       if (wanted.contains(date)) {
         _subscribe(date);
+        // The viewed page reads its own targets once its day is shown.
+        if (loaded) {
+          _targetsWindow[date] ??= ref.listenManual(
+            dayTargetsProvider(date),
+            (_, _) {},
+          );
+        }
       } else {
         _window.remove(date)?.close();
+        _targetsWindow.remove(date)?.close();
       }
     }
   }

@@ -121,7 +121,7 @@ class _DayHeader extends StatelessWidget {
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      TodayNumbers(totals: totals),
+      TodayNumbers(date: date, isToday: isToday, totals: totals),
       WeightCard(date: date, isToday: isToday),
     ],
   );

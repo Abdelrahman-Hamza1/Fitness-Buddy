@@ -11,6 +11,7 @@ import 'package:fb_mobile/core/events/domain_event_bus.dart';
 import 'package:fb_mobile/core/settings/settings_op_handler.dart';
 import 'package:fb_mobile/core/settings/settings_store.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
+import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -77,6 +78,7 @@ final class TargetsAppHarness {
       handlers: (db) => [
         SettingsOpHandler(db.settingsKv),
         TargetsOpHandler(db),
+        WeighInOpHandler(db),
         DiaryOpHandler(db),
         const ScriptHandler(),
       ],

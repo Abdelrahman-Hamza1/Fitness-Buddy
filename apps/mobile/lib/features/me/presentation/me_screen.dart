@@ -5,17 +5,19 @@ import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
+import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The Me tab (UX-010, A10 D8): one scrolling list of sections in a fixed
-/// order, each shown once its step exists. Today that is Food (Your foods and
-/// Saved meals, A09 D10), Settings (units, week start, halal, theme, city and
-/// the energy unit), Your data (Export your data, A11 D9) and About; Profile
-/// and Targets (A13), Buddy remembers (A26) and Account (A33) add their own
-/// sections. A section with no rows is
-/// not shown. In the dev flavor a Developer section has the "Design preview"
-/// row (A02 D15).
+/// order, each shown once its step exists. Today that is You ("Set up
+/// profile & targets" until setup has run, A13 D10; "Update the app" for a
+/// profile this version can't read; Profile & goal and Targets come with
+/// A13c), Food (Your foods and Saved meals, A09 D10), Settings (units, week
+/// start, halal, theme, city and the energy unit), Your data (Export your
+/// data, A11 D9) and About; Buddy remembers (A26) and Account (A33) add their
+/// own sections. A section with no rows is not shown. In the dev flavor a
+/// Developer section has the "Design preview" row (A02 D15).
 class MeScreen extends ConsumerWidget {
   /// Creates the screen.
   const new({super.key});
@@ -25,12 +27,19 @@ class MeScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final isDev = ref.watch(appConfigProvider).flavor == AppFlavor.dev;
     final open = ref.read(appNavigatorProvider).push;
+    final setup = ref.watch(setupStatusProvider).value;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.tabMe)),
       body: CustomScrollView(
         slivers: [
           SliverList.list(
             children: [
+              ..._group(l10n.meSectionYou, open, [
+                if (setup == SetupStatus.notSetUp)
+                  _Row(l10n.meSetUpTargets, const SetupRoute()),
+                if (setup == SetupStatus.profileUnreadable)
+                  _Row(l10n.setupUpdateTitle, const SetupRoute()),
+              ]),
               ..._group(l10n.meSectionFood, open, [
                 _Row(l10n.meYourFoods, const PersonalFoodsRoute()),
                 _Row(l10n.meSavedMeals, const SavedMealsRoute()),

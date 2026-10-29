@@ -27,3 +27,17 @@ Stream<double?> currentWeightKg(Ref ref) async* {
   final trend = await ref.watch(weightTrendProvider.future);
   yield trend.latest?.trendKg;
 }
+
+/// The trend weight on a date, from one read of the stored weigh-ins.
+typedef BodyWeightReader = Future<double?> Function(LocalDate date);
+
+/// [BodyWeightReader] for commands that run outside any screen (A13's
+/// session-owned `TargetsActions`, D8/TD-090): each call reads the weigh-ins
+/// once and computes the trend, so no auto-disposed provider is created,
+/// held or disposed while it loads. Screens keep using [weightTrendProvider].
+@Riverpod(keepAlive: true)
+BodyWeightReader bodyWeightReader(Ref ref) {
+  final repository = ref.watch(weighInRepositoryProvider);
+  return (date) async =>
+      TrendWeight().compute(await repository.readLive()).trendOn(date);
+}

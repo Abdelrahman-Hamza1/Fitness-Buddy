@@ -11,6 +11,7 @@ import 'package:fb_mobile/features/design_preview/design_preview.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/me/me.dart';
+import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/today/today.dart';
@@ -105,7 +106,10 @@ final class AppRouter implements AppNavigator {
   ];
 
   /// The routes shown outside the tabs (full screen, no tab bar).
-  static const List<AppRoute> outsideTabs = [UpdateRequiredRoute()];
+  static const List<AppRoute> outsideTabs = [
+    UpdateRequiredRoute(),
+    SetupRoute(),
+  ];
 
   /// The go_router configuration, for `MaterialApp.router`.
   final GoRouter config;
@@ -258,6 +262,7 @@ final class AppRouter implements AppNavigator {
     CityPickerRoute() => const CityPickerScreen(),
     AboutRoute() => const AboutScreen(),
     UpdateRequiredRoute() => const UpdateRequiredScreen(),
+    SetupRoute() => const SetupScreen(),
   };
 
   @override

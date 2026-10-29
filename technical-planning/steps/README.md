@@ -159,7 +159,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A11](A11-dogfood-1-readiness.md) | Dogfood 1 readiness: export, crash reports, daily build | **Codex** | A09b, A10a · soft: **B03** | M | S28 export part + new | **M1** | ✅ |
 | [A12](A12-targets-engine.md) | Targets engine | **Codex** | A06 | M | S19 |  | ✅ |
 | [A13a](A13-targets-ui-onboarding.md) | Targets storage & commands (split from A13, 2026-10-28) | Claude | A10a, A10b, A12 | L | S20 part |  | ✅ |
-| [A13b](A13-targets-ui-onboarding.md) | Onboarding & Today numbers (split from A13) | Claude | A13a, A14 | M | S20 part |  | ⬜ |
+| [A13b](A13-targets-ui-onboarding.md) | Onboarding & Today numbers (split from A13) | Claude | A13a, A14 | M | S20 part |  | ✅ |
 | [A13c](A13-targets-ui-onboarding.md) | Profile, goal & targets screens (split from A13) | Claude | A13b | M | S20 part |  | ⬜ |
 | [A14](A14-weigh-ins-trend.md) | Weigh-ins & trend | Claude | A08a | L | S21 |  | ✅ |
 | [A15](A15-weight-graph-measurements.md) | Weight graph & measurements | Claude | A12, A14 | L | S22 |  | ⬜ |

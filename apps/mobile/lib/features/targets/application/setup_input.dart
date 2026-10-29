@@ -78,8 +78,8 @@ final class SetupPreferences {
 }
 
 /// Everything setup saves (D9/D10): the profile as typed, the current
-/// weight as typed (it becomes the first weigh-in once A14 is wired, and the
-/// basis weight of the first target version), the goal and the preferences.
+/// weight as typed (the first weigh-in, WB-001, and the basis weight of the
+/// first target version), the goal and the preferences.
 /// Values are canonical (cm, kg) with the typed units kept (TD-017).
 /// Sensitive: [toString] shows no values.
 final class SetupInput {
@@ -127,8 +127,15 @@ final class SetupInput {
   /// Units, week start, halal and city.
   final SetupPreferences preferences;
 
-  /// The current weight, kg.
-  double get weightKg => Mass.of(weightValue, weightUnit).kilograms;
+  /// The current weight as A14's first weigh-in stores it (WB-001,
+  /// TD-090): the typed value and unit.
+  WeighInInput get weighIn => WeighInInput(weightValue, weightUnit);
+
+  /// The current weight, kg, rounded as the first weigh-in stores it, so
+  /// the first version's basis weight equals that weigh-in's trend (TD-090).
+  /// Throws an `ArgumentError` for a value [weighIn] rejects as huge or not
+  /// finite; [SetupPreview.of] checks [weighIn] first.
+  double get weightKg => weighIn.kg;
 
   /// The stored profile (canonical cm, typed unit kept).
   ProfileRecord get profile => ProfileRecord(
@@ -173,6 +180,16 @@ final class SetupPreview {
     TargetDefaults defaults = const TargetDefaults(),
   }) {
     const rules = TargetRules.input;
+    // The weight follows A14's weigh-in rules (20–500 kg after conversion).
+    if (input.weighIn.validate() != null) {
+      return SetupPreview._(
+        issue: SetupPreviewIssue.invalidInput,
+        violations: {
+          ...rules.profile(input.profile, today: today),
+          TargetRuleViolation.weight,
+        },
+      );
+    }
     final weightKg = input.weightKg;
     final profileViolations = {
       ...rules.profile(input.profile, today: today),

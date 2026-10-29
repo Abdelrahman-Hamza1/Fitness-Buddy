@@ -61,6 +61,12 @@ final class WeighInRepository {
     };
   });
 
+  /// The live weigh-ins once, in [watchLive]'s order (a command's read: no
+  /// stream, nothing to keep open or dispose).
+  Future<List<WeighIn>> readLive() async => [
+    for (final row in await _liveQuery().get()) ?_read(row),
+  ];
+
   SimpleSelectStatement<$WeighInsTable, WeighInRow> _liveQuery() =>
       _db.select(_db.weighIns)
         ..where((t) => t.deletedAt.isNull())
@@ -80,7 +86,8 @@ final class WeighInRepository {
 }
 
 /// The repository over the profile database (read-only composition stays in
-/// data, the application-db rule).
-@riverpod
+/// data, the application-db rule). Keep-alive: a stateless wrapper that
+/// session-owned readers (`bodyWeightReaderProvider`) depend on.
+@Riverpod(keepAlive: true)
 WeighInRepository weighInRepository(Ref ref) =>
     WeighInRepository(ref.watch(appDatabaseProvider));

@@ -7,6 +7,7 @@ import 'package:fb_mobile/features/design_preview/design_preview.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/me/me.dart';
+import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/today/today.dart';
@@ -38,6 +39,7 @@ import '../../helpers/pump_app.dart';
   CityPickerRoute() => (CityPickerScreen, true),
   AboutRoute() => (AboutScreen, true),
   UpdateRequiredRoute() => (UpdateRequiredScreen, false),
+  SetupRoute() => (SetupScreen, false),
 };
 
 /// An entry ID for the change-food routes.
@@ -59,6 +61,7 @@ const List<AppRoute> _allRoutes = [
   CityPickerRoute(),
   AboutRoute(),
   UpdateRequiredRoute(),
+  SetupRoute(),
 ];
 
 void main() {

@@ -7,6 +7,7 @@ import 'package:fb_mobile/core/changes/row_ops.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/settings/settings_store.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
+import 'package:fb_mobile/features/body/data/weigh_in_repository.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/data/target_mappers.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
@@ -56,12 +57,10 @@ ScriptOp syncedPhase(
 ]);
 
 void main() {
-  test('UX-060 completeSetup writes profile, goal phase, target settings '
-      '(generated base, basis weight = typed weight) '
-      'and only the changed preferences in one change set; one undo entry '
-      'restores everything', () async {
-    // A14 isn't on main yet: the weigh-in joins this change set in A13b
-    // WP6 (the seam in TargetsActions._setup); everything else is here.
+  test('UX-060 WB-001 completeSetup writes profile, goal, settings and the '
+      'first weigh-in in one change set; undo removes all', () async {
+    // Also: the generated base, basis weight = the typed weight, and only
+    // the preferences that differ from the stored ones.
     final h = TargetsAppHarness();
     final store = SettingsStore(db: h.db, applier: h.applier);
     final before = await h.state();
@@ -103,6 +102,13 @@ void main() {
     expect(version.shifts, isEmpty);
     expect(version.macros.protein, isNull);
 
+    // The first weigh-in (A14): the typed value and unit, measured now.
+    final weighIns = await WeighInRepository(h.db).watchLive().first;
+    final weighIn = weighIns.single;
+    expect(weighIn.input, const WeighInInput(80, MassUnit.kilogram));
+    expect(weighIn.kg, 80);
+    expect(weighIn.time, EntryTime.now(h.clock));
+
     // Only the week start and the city differ from the stored values.
     final settingRows = await h.db.select(h.db.settingsKv).get();
     expect(settingRows.length - settingRowsBefore.length, 2);
@@ -112,6 +118,49 @@ void main() {
     expect(await h.undo.undo(done.undoEntryId), UndoOutcome.undone);
     expect(await h.state(), before);
     expect(await store.read(AppSettings.weekStart), DayOfWeek.saturday);
+    expect(await WeighInRepository(h.db).watchLive().first, isEmpty);
+  });
+
+  test(
+    'WB-001 TD-090 completeSetup in lb stores the weigh-in as typed and '
+    'its kg as the basis weight; a weight A14 rejects writes nothing',
+    () async {
+      final h = TargetsAppHarness();
+      await h.setUp(setupInput(weight: 176, weightUnit: MassUnit.pound));
+      final weighIn = (await WeighInRepository(h.db).watchLive().first).single;
+      expect(weighIn.input, const WeighInInput(176, MassUnit.pound));
+      expect((await h.currentVersion()).basisWeightKg, weighIn.kg);
+
+      final fresh = TargetsAppHarness();
+      final failed = await fresh.expectNoWrite<TargetsFailed>(
+        () => fresh.actions.completeSetup(setupInput(weight: 19.99)),
+      );
+      expect(failed.reason, TargetsFailure.invalid);
+    },
+  );
+
+  test('A13a security #3 completeSetup over a stored profile this version '
+      "can't read → alreadySetUp, nothing written; setupStatus asks for an "
+      'update', () async {
+    final h = TargetsAppHarness();
+    await h.apply([
+      ScriptOp.rows([
+        UpsertRow(
+          h.db.profiles,
+          profileColumns(setupInput().profile)
+              .copyWith(sex: const Value('average')),
+        ),
+      ]),
+    ]);
+    final c = h.container()..listen(setupStatusProvider, (_, _) {});
+    expect(
+      await c.read(setupStatusProvider.future),
+      SetupStatus.profileUnreadable,
+    );
+    final failed = await h.expectNoWrite<TargetsFailed>(
+      () => h.actions.completeSetup(setupInput()),
+    );
+    expect(failed.reason, TargetsFailure.alreadySetUp);
   });
 
   test('UX-060 completeSetup when already set up → alreadySetUp, nothing '
@@ -178,10 +227,8 @@ void main() {
     final profile = data.profile!.value;
     expect(profile.heightCm, closeTo(180.34, 1e-9));
     expect(profile.heightInputUnit, HeightInputUnit.feetInches);
-    expect(
-      data.settings.single.value.basisWeightKg,
-      closeTo(79.83225712, 1e-9),
-    );
+    // 176 lb, rounded as the first weigh-in stores it (TD-090).
+    expect(data.settings.single.value.basisWeightKg, 79.83);
     final phase = data.phases.single.value;
     expect(phase.weightInputUnit, MassUnit.pound);
     expect(

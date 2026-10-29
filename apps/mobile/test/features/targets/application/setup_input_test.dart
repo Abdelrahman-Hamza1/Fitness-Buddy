@@ -97,7 +97,8 @@ void main() {
       weight: 200,
       weightUnit: MassUnit.pound,
     );
-    expect(input.weightKg, closeTo(90.718474, 1e-9));
+    // Rounded as the first weigh-in stores it (A14, TD-090).
+    expect(input.weightKg, 90.72);
     expect(input.profile.heightCm, closeTo(182.88, 1e-9));
     expect(input.profile.heightInputUnit, HeightInputUnit.feetInches);
     final maintain = GoalInput.maintain(weightInputUnit: MassUnit.pound);

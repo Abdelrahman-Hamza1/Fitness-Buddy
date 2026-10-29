@@ -1,6 +1,6 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_design_system/src/components/progress_bar.dart'
-    show fbBarFill;
+    show FbBarTrack, fbBarFill;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -241,6 +241,74 @@ void main() {
       final labelBottom = tester.getBottomLeft(find.text('Protein')).dy;
       final firstBar = tester.getTopLeft(find.byType(ClipRRect).first).dy;
       expect(labelBottom, lessThanOrEqualTo(firstBar));
+    });
+
+    testWidgets('HM-003 FbMacroValue without a target shows text and no '
+        'track', (tester) async {
+      await pumpFb(
+        tester,
+        const FbMacroBars(
+          macros: [
+            FbMacroValue(
+              kind: FbMacroKind.protein,
+              value: 82,
+              target: 140,
+              label: 'Protein',
+              valueText: '82 / 140 g',
+            ),
+            FbMacroValue(
+              kind: FbMacroKind.carbs,
+              value: 96,
+              label: 'Carbs',
+              valueText: '96 g',
+            ),
+          ],
+        ),
+      );
+      expect(find.text('Carbs'), findsOneWidget);
+      expect(find.text('96 g'), findsOneWidget);
+      // One track: the protein bar's. The carbs row draws none.
+      expect(find.byType(FbBarTrack), findsOneWidget);
+      final colors = _colors(tester, find.byType(FbMacroBars));
+      expect(_hasFill(tester, find.byType(FbMacroBars), colors.carbs), isFalse);
+      expect(
+        tester.getSemantics(find.bySemanticsLabel('Carbs, 96 g')),
+        isNotNull,
+      );
+    });
+
+    testWidgets('UX-070 a macro row keeps its amounts on one line at the end; '
+        'at large text they go under the label', (tester) async {
+      const bars = FbMacroBars(
+        macros: [
+          FbMacroValue(
+            kind: FbMacroKind.protein,
+            value: 82,
+            target: 140,
+            label: 'Protein',
+            valueText: '1,082 / 1,140 g',
+          ),
+        ],
+      );
+      final amounts = find.text('1,082 / 1,140 g');
+      double lineHeight() => tester.getSize(find.text('Protein')).height;
+
+      await pumpFb(tester, bars, width: 320);
+      // Same line as the label, ending at the end, never wrapped.
+      expect(
+        tester.getCenter(amounts).dy,
+        closeTo(tester.getCenter(find.text('Protein')).dy, 4),
+      );
+      expect(tester.getTopRight(amounts).dx, 320);
+      expect(tester.getSize(amounts).height, lessThan(lineHeight() * 1.5));
+
+      await pumpFb(tester, bars, width: 320, textScale: 2);
+      expect(tester.takeException(), isNull);
+      expect(
+        tester.getTopLeft(amounts).dy,
+        greaterThanOrEqualTo(tester.getBottomLeft(find.text('Protein')).dy),
+      );
+      expect(tester.getTopRight(amounts).dx, 320);
     });
   });
 

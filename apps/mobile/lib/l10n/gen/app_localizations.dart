@@ -388,6 +388,72 @@ abstract class AppLocalizations {
   /// **'Fiber'**
   String get todayMacroFiber;
 
+  /// Today: weekly line when the earlier days of the week add up to their plan, rounded (HM-002).
+  ///
+  /// In en, this message translates to:
+  /// **'This week: on track'**
+  String get todayWeekOnTrack;
+
+  /// Today: added to the weekly line for earlier days of the week with no food logged or marked incomplete; they are not counted (TG-032).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day not counted} other{{count} days not counted}}'**
+  String todayWeekUncounted(int count);
+
+  /// Today: the weekly line followed by how many days are not counted, e.g. "This week: 350 kcal under · 1 day not counted".
+  ///
+  /// In en, this message translates to:
+  /// **'{line} · {uncounted}'**
+  String todayWeekWithUncounted(String line, String uncounted);
+
+  /// Screen readers: the progress bar under the big number, e.g. "1,560 of 2,800 kcal eaten".
+  ///
+  /// In en, this message translates to:
+  /// **'{eaten} of {budget} kcal eaten'**
+  String todayEatenOfBudgetSemantics(String eaten, String budget);
+
+  /// Today: a macro eaten out of its target, next to its bar, e.g. "82 / 140 g" (HM-003).
+  ///
+  /// In en, this message translates to:
+  /// **'{eaten} / {target} g'**
+  String todayMacroOfTarget(double eaten, int target);
+
+  /// Today: a macro with no target (carbs and fat in 'calories and protein only', TG-054), e.g. "96 g".
+  ///
+  /// In en, this message translates to:
+  /// **'{eaten} g'**
+  String todayMacroEaten(double eaten);
+
+  /// Today: the row under the big number that opens setup while no targets exist (A13 D10).
+  ///
+  /// In en, this message translates to:
+  /// **'Set up your targets'**
+  String get todaySetupTitle;
+
+  /// Today: second line of the setup row, how long setup takes.
+  ///
+  /// In en, this message translates to:
+  /// **'About 2 minutes'**
+  String get todaySetupTime;
+
+  /// Today: second line of the 'Update the app' row, shown instead of the setup row when the stored profile was saved by a newer app version.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile needs a newer version'**
+  String get todayUpdateSubtitle;
+
+  /// Today: the targets couldn't be read; the calories eaten still show (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your targets.'**
+  String get todayTargetsLoadFailed;
+
+  /// Today: retries loading the targets.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get todayTargetsTryAgain;
+
   /// Today: title of the strip shown while proposals wait for confirmation (HM-004).
   ///
   /// In en, this message translates to:
@@ -1329,6 +1395,644 @@ abstract class AppLocalizations {
   /// **'{state, select, raw{raw} cooked{cooked} dry{dry} drained{drained} fried{fried} as_sold{as sold} other{}}'**
   String foodStateWord(String state);
 
+  /// Setup (UX-060): the screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up your targets'**
+  String get setupTitle;
+
+  /// Setup: where the user is in the five pages (D9).
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String setupStep(int current, int total);
+
+  /// Setup: tooltip and screen-reader label of the close button.
+  ///
+  /// In en, this message translates to:
+  /// **'Close setup'**
+  String get setupClose;
+
+  /// Setup: goes to the previous page; what was typed is kept.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get setupBack;
+
+  /// Setup: goes to the next page; off until the page's required fields are valid.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get setupNext;
+
+  /// Setup: saves the profile, goal, first weigh-in and targets (last page).
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get setupSave;
+
+  /// Setup page 1 title (TG-001).
+  ///
+  /// In en, this message translates to:
+  /// **'About you'**
+  String get setupPageYou;
+
+  /// Setup page 2 title (TG-001).
+  ///
+  /// In en, this message translates to:
+  /// **'How active are you?'**
+  String get setupPageActivity;
+
+  /// Setup page 3 title (TG-010/011).
+  ///
+  /// In en, this message translates to:
+  /// **'Your goal'**
+  String get setupPageGoal;
+
+  /// Setup page 4 title (UX-060).
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get setupPagePreferences;
+
+  /// Setup page 5 title: the calculated targets.
+  ///
+  /// In en, this message translates to:
+  /// **'Your targets'**
+  String get setupPageTargets;
+
+  /// Setup page 1: under the current weight field (WB-001).
+  ///
+  /// In en, this message translates to:
+  /// **'Saved as your first weigh-in.'**
+  String get setupWeightHint;
+
+  /// Setup page 2: under the title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the one closest to a usual week.'**
+  String get setupActivityHint;
+
+  /// Setup page 4: under the title.
+  ///
+  /// In en, this message translates to:
+  /// **'These are filled in from your settings. You can change them here or later in Me.'**
+  String get setupPreferencesHint;
+
+  /// Setup page 5: the daily target, the big number.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal a day'**
+  String setupTargetsDaily(int kcal);
+
+  /// Setup page 5: the weekly budget, under the daily target.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal a week'**
+  String setupTargetsWeekly(int kcal);
+
+  /// Setup page 5: heading above the plain-language explanation (TG-021).
+  ///
+  /// In en, this message translates to:
+  /// **'How it\'s calculated'**
+  String get setupTargetsHow;
+
+  /// Setup page 5: heading above the macro targets.
+  ///
+  /// In en, this message translates to:
+  /// **'Macros'**
+  String get setupTargetsMacros;
+
+  /// Setup page 5: how the targets are applied by default.
+  ///
+  /// In en, this message translates to:
+  /// **'Your weekly budget adjusts the rest of the week when a day is over or under. You can change this later in Me.'**
+  String get setupTargetsMode;
+
+  /// Setup: title of the sheet shown when closing with something typed (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Leave setup?'**
+  String get setupLeaveTitle;
+
+  /// Setup: message of the leave sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'What you entered won\'t be saved.'**
+  String get setupLeaveMessage;
+
+  /// Setup leave sheet: the dominant choice, back to setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going'**
+  String get setupLeaveStay;
+
+  /// Setup leave sheet: closes setup without saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get setupLeaveConfirm;
+
+  /// Snackbar after setup was saved, with Undo (UX-030).
+  ///
+  /// In en, this message translates to:
+  /// **'Targets set'**
+  String get setupSaved;
+
+  /// Setup: Save refused because a profile or targets exist (perhaps from another device).
+  ///
+  /// In en, this message translates to:
+  /// **'Your targets are already set up.'**
+  String get setupAlreadySetUp;
+
+  /// Setup: Save refused for another reason; nothing was written.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save your targets. Nothing you entered was lost. Try Save again.'**
+  String get setupSaveFailed;
+
+  /// Setup (A13a security review #3): a profile saved by a newer app version can't be read here.
+  ///
+  /// In en, this message translates to:
+  /// **'Update the app'**
+  String get setupUpdateTitle;
+
+  /// Setup: the message under 'Update the app'.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile was saved by a newer version of Fitness Buddy. Update the app to see and change it.'**
+  String get setupUpdateMessage;
+
+  /// Profile form: label of the formula sex choice (TG-001).
+  ///
+  /// In en, this message translates to:
+  /// **'Sex'**
+  String get profileSexLabel;
+
+  /// Profile form: why sex is asked, under its label (TG-001, TG-020).
+  ///
+  /// In en, this message translates to:
+  /// **'Used for the energy formula'**
+  String get profileSexHint;
+
+  /// Profile form: formula sex choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get profileSexMale;
+
+  /// Profile form: formula sex choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get profileSexFemale;
+
+  /// Profile form: label of the birth year field (TG-001).
+  ///
+  /// In en, this message translates to:
+  /// **'Birth year'**
+  String get profileBirthYearLabel;
+
+  /// Profile form: the birth year gives an age outside 18 to 100. Years are shown without grouping.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a year between {min} and {max}.'**
+  String profileBirthYearRange(int min, int max);
+
+  /// Profile form: label of the height field, and of its unit choice (TG-001).
+  ///
+  /// In en, this message translates to:
+  /// **'Height'**
+  String get profileHeightLabel;
+
+  /// Profile form: unit choice chip, height in centimetres (TG-002).
+  ///
+  /// In en, this message translates to:
+  /// **'cm'**
+  String get profileHeightUnitCm;
+
+  /// Profile form: unit choice chip, height in feet and inches (TG-002).
+  ///
+  /// In en, this message translates to:
+  /// **'ft + in'**
+  String get profileHeightUnitFtIn;
+
+  /// Profile form: label of the feet part of an imperial height.
+  ///
+  /// In en, this message translates to:
+  /// **'Feet'**
+  String get profileHeightFeet;
+
+  /// Profile form: label of the inches part of an imperial height.
+  ///
+  /// In en, this message translates to:
+  /// **'Inches'**
+  String get profileHeightInches;
+
+  /// Profile form: unit after the height number.
+  ///
+  /// In en, this message translates to:
+  /// **'cm'**
+  String get profileUnitCm;
+
+  /// Profile form: unit after the feet number.
+  ///
+  /// In en, this message translates to:
+  /// **'ft'**
+  String get profileUnitFt;
+
+  /// Profile form: unit after the inches number.
+  ///
+  /// In en, this message translates to:
+  /// **'in'**
+  String get profileUnitIn;
+
+  /// Profile form: the height is outside the accepted range.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a height between {min} and {max} cm.'**
+  String profileHeightRangeCm(int min, int max);
+
+  /// Profile form: the imperial height is outside the accepted range, or the inches are 12 or more.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a height between {minFeet} ft {minInches} in and {maxFeet} ft {maxInches} in. Inches go up to 11.'**
+  String profileHeightRangeFtIn(
+    int minFeet,
+    int minInches,
+    int maxFeet,
+    int maxInches,
+  );
+
+  /// Profile form: label of the current weight field (TG-001). Saved as a weigh-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Current weight'**
+  String get profileWeightLabel;
+
+  /// Targets forms: a body or target weight outside the accepted range.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a weight between {min} and {max} {unit}.'**
+  String targetsWeightRange(double min, double max, String unit);
+
+  /// Targets: a weight or a weight change with its unit, e.g. '0.46 kg' or '−2 lb' (the sign is part of the amount).
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} {unit}'**
+  String targetsMassValue(String amount, String unit);
+
+  /// Targets forms: a number field is empty or isn't a number.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a number.'**
+  String get targetsEnterNumber;
+
+  /// Activity choice (TG-001): the lowest of four levels.
+  ///
+  /// In en, this message translates to:
+  /// **'Mostly sitting'**
+  String get profileActivitySedentary;
+
+  /// Activity choice: plain description of the lowest level.
+  ///
+  /// In en, this message translates to:
+  /// **'Desk work, little walking and no regular exercise'**
+  String get profileActivitySedentaryHint;
+
+  /// Activity choice (TG-001): the second level.
+  ///
+  /// In en, this message translates to:
+  /// **'Lightly active'**
+  String get profileActivityLight;
+
+  /// Activity choice: plain description of the second level.
+  ///
+  /// In en, this message translates to:
+  /// **'On your feet part of the day, or light exercise 1 to 3 days a week'**
+  String get profileActivityLightHint;
+
+  /// Activity choice (TG-001): the third level.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderately active'**
+  String get profileActivityModerate;
+
+  /// Activity choice: plain description of the third level.
+  ///
+  /// In en, this message translates to:
+  /// **'An active job, or exercise 3 to 5 days a week'**
+  String get profileActivityModerateHint;
+
+  /// Activity choice (TG-001): the highest level.
+  ///
+  /// In en, this message translates to:
+  /// **'Very active'**
+  String get profileActivityHigh;
+
+  /// Activity choice: plain description of the highest level.
+  ///
+  /// In en, this message translates to:
+  /// **'Hard exercise 6 or 7 days a week, or a physical job'**
+  String get profileActivityHighHint;
+
+  /// The lowest activity level inside a sentence, lower case (the target explanation).
+  ///
+  /// In en, this message translates to:
+  /// **'mostly sitting'**
+  String get profileActivityShortSedentary;
+
+  /// The second activity level inside a sentence, lower case.
+  ///
+  /// In en, this message translates to:
+  /// **'lightly active'**
+  String get profileActivityShortLight;
+
+  /// The third activity level inside a sentence, lower case.
+  ///
+  /// In en, this message translates to:
+  /// **'moderately active'**
+  String get profileActivityShortModerate;
+
+  /// The highest activity level inside a sentence, lower case.
+  ///
+  /// In en, this message translates to:
+  /// **'very active'**
+  String get profileActivityShortHigh;
+
+  /// Setup and the targets forms: under a choice (sex, activity, goal) left empty when Next was tapped (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Choose one to continue.'**
+  String get targetsChooseOne;
+
+  /// Goal form: label above the lose, maintain and gain choices (TG-010).
+  ///
+  /// In en, this message translates to:
+  /// **'What do you want to do?'**
+  String get goalTypeTitle;
+
+  /// Goal type (TG-010); also the default name of a lose phase.
+  ///
+  /// In en, this message translates to:
+  /// **'Lose weight'**
+  String get goalTypeLose;
+
+  /// Goal type (TG-010); also the default name of a maintain phase.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintain weight'**
+  String get goalTypeMaintain;
+
+  /// Goal type (TG-010); also the default name of a gain phase.
+  ///
+  /// In en, this message translates to:
+  /// **'Gain weight'**
+  String get goalTypeGain;
+
+  /// Goal form: label above the four ways to express a lose or gain goal (TG-011).
+  ///
+  /// In en, this message translates to:
+  /// **'How do you want to set it?'**
+  String get goalHow;
+
+  /// Goal expression: an amount each week.
+  ///
+  /// In en, this message translates to:
+  /// **'Per week'**
+  String get goalKindWeekly;
+
+  /// Goal expression: an amount over this calendar month (the owner's style).
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get goalKindMonthly;
+
+  /// Goal expression: a target weight and the date to reach it.
+  ///
+  /// In en, this message translates to:
+  /// **'Target weight by a date'**
+  String get goalKindTargetDate;
+
+  /// Goal expression: a target weight and a weekly pace toward it.
+  ///
+  /// In en, this message translates to:
+  /// **'Target weight at a pace'**
+  String get goalKindTargetRate;
+
+  /// Goal form: label of the weekly amount field for a lose goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Lose each week'**
+  String get goalRateLoseLabel;
+
+  /// Goal form: label of the weekly amount field for a gain goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Gain each week'**
+  String get goalRateGainLabel;
+
+  /// Goal form: label of the monthly amount field for a lose goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Lose this month'**
+  String get goalMonthLoseLabel;
+
+  /// Goal form: label of the monthly amount field for a gain goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Gain this month'**
+  String get goalMonthGainLabel;
+
+  /// Goal form: label of the target weight field.
+  ///
+  /// In en, this message translates to:
+  /// **'Target weight'**
+  String get goalTargetWeightLabel;
+
+  /// Goal form: label of the target date chip, followed by the date.
+  ///
+  /// In en, this message translates to:
+  /// **'By'**
+  String get goalTargetDateLabel;
+
+  /// Goal form: the target date chip before a date is picked.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date'**
+  String get goalTargetDatePick;
+
+  /// Goal form: no target date picked yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a target date.'**
+  String get goalTargetDateMissing;
+
+  /// Goal form: the target date is more than 5 years ahead.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date within 5 years.'**
+  String get goalTargetDateTooFar;
+
+  /// Goal form: label of the weekly pace toward the target weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace each week'**
+  String get goalPaceLabel;
+
+  /// Goal form: the weekly amount or pace is 0 or above the accepted range.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount up to {max} {unit} a week.'**
+  String goalRateRange(double max, String unit);
+
+  /// Goal form: the monthly amount is 0 or above the accepted range.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount up to {max} {unit} this month.'**
+  String goalMonthRange(double max, String unit);
+
+  /// Goal form (TG-011): the planned weekly change and what it means over a calendar month, e.g. '≈ −0.46 kg a week · −2 kg in November'.
+  ///
+  /// In en, this message translates to:
+  /// **'≈ {rate} a week · {change} in {month}'**
+  String goalProjection(String rate, String change, String month);
+
+  /// Goal form (TG-011): as goalProjection, with the projected month the target weight is reached, e.g. 'March 2027'.
+  ///
+  /// In en, this message translates to:
+  /// **'≈ {rate} a week · {change} in {month} · goal reached around {date}'**
+  String goalProjectionWithDate(
+    String rate,
+    String change,
+    String month,
+    String date,
+  );
+
+  /// Goal form: shown for a maintain goal instead of the projection.
+  ///
+  /// In en, this message translates to:
+  /// **'Your target keeps your weight steady.'**
+  String get goalMaintainNote;
+
+  /// Goal form and target explanation (TG-013, SF-011): a requested loss above 1% of body weight a week was capped. Calm, no warning words.
+  ///
+  /// In en, this message translates to:
+  /// **'You asked for {requested} a week. Plans stay within 1% of your weight a week, so this plan uses {planned}.'**
+  String goalCapMessage(String requested, String planned);
+
+  /// Goal form (PA3): the target date isn't after today, so no numbers can be shown.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date after today.'**
+  String get goalProblemDeadline;
+
+  /// Goal form (PA3): a lose goal whose target weight isn't below the current weight.
+  ///
+  /// In en, this message translates to:
+  /// **'This target weight isn\'t below your current weight. Choose a lower target, or another goal.'**
+  String get goalProblemTargetNotBelow;
+
+  /// Goal form (PA3): a gain goal whose target weight isn't above the current weight.
+  ///
+  /// In en, this message translates to:
+  /// **'This target weight isn\'t above your current weight. Choose a higher target, or another goal.'**
+  String get goalProblemTargetNotAbove;
+
+  /// Me (PA3): the saved goal's date has passed. Neutral line next to 'Start a new goal'.
+  ///
+  /// In en, this message translates to:
+  /// **'Your goal date has passed.'**
+  String get goalStoredDatePassed;
+
+  /// Me (PA3): the saved goal's target weight is reached. Neutral line next to 'Start a new goal'.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve reached your target weight.'**
+  String get goalStoredTargetReached;
+
+  /// Shown when saving a goal is refused because it can't be worked out from the current weight (PA3).
+  ///
+  /// In en, this message translates to:
+  /// **'This goal doesn\'t fit your current weight. Check the target weight and date.'**
+  String get goalFailedUnresolvable;
+
+  /// Shown when a change is refused because the saved goal can't be worked out any more (PA3).
+  ///
+  /// In en, this message translates to:
+  /// **'Your current goal needs an update. Start a new goal to recalculate.'**
+  String get goalFailedNeedsUpdate;
+
+  /// Target explanation (TG-021), line 1: Mifflin-St Jeor resting energy.
+  ///
+  /// In en, this message translates to:
+  /// **'Resting energy: about {kcal} kcal a day (from your weight, height, age and sex).'**
+  String targetsExplainResting(int kcal);
+
+  /// Target explanation (TG-021), line 2: the activity factor and the estimated expenditure. {level} is the lower-case activity level.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity ({level}): × {factor} = about {kcal} kcal a day.'**
+  String targetsExplainActivity(String level, double factor, int kcal);
+
+  /// Target explanation (TG-021), line 3 for a lose goal: the planned rate and the daily adjustment.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal: lose {rate} a week = {kcal} kcal less a day (about {perUnit} kcal per {unit}).'**
+  String targetsExplainGoalLose(
+    String rate,
+    int kcal,
+    int perUnit,
+    String unit,
+  );
+
+  /// Target explanation (TG-021), line 3 for a gain goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal: gain {rate} a week = {kcal} kcal more a day (about {perUnit} kcal per {unit}).'**
+  String targetsExplainGoalGain(
+    String rate,
+    int kcal,
+    int perUnit,
+    String unit,
+  );
+
+  /// Target explanation (TG-021), line 3 for a maintain goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal: keep your weight steady, so nothing is added or taken away.'**
+  String get targetsExplainGoalMaintain;
+
+  /// Target explanation (SF-010): the calculated target was below the safety floor and was raised to it.
+  ///
+  /// In en, this message translates to:
+  /// **'Raised to your safety floor of {kcal} kcal a day.'**
+  String targetsExplainFloor(int kcal);
+
+  /// Target explanation (TG-021), last line: the daily and weekly targets.
+  ///
+  /// In en, this message translates to:
+  /// **'Your target: {daily} kcal a day, {weekly} kcal a week.'**
+  String targetsExplainTarget(int daily, int weekly);
+
+  /// Target explanation (TG-021), last line without a weekly budget.
+  ///
+  /// In en, this message translates to:
+  /// **'Your target: {daily} kcal a day.'**
+  String targetsExplainTargetDaily(int daily);
+
+  /// Macro summary: a daily macro target in grams.
+  ///
+  /// In en, this message translates to:
+  /// **'{grams} g'**
+  String targetsMacroGrams(int grams);
+
+  /// Macro summary: carbs and fat in 'calories and protein only' mode (TG-054).
+  ///
+  /// In en, this message translates to:
+  /// **'No target'**
+  String get targetsMacroNoTarget;
+
   /// Add-food result row: the serving the calories are for, e.g. "1 loaf" or "100 g".
   ///
   /// In en, this message translates to:
@@ -2110,6 +2814,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Replacing {name}'**
   String foodSearchReplacing(String name);
+
+  /// Me tab: the heading of the section with the profile and targets (A13).
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get meSectionYou;
+
+  /// Me tab: the row that opens setup while no profile and targets exist (A13 D10).
+  ///
+  /// In en, this message translates to:
+  /// **'Set up profile & targets'**
+  String get meSetUpTargets;
 
   /// Me tab: the heading of the section with the food lists (Your foods).
   ///

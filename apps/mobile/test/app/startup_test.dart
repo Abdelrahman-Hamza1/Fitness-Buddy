@@ -153,6 +153,9 @@ void main() {
     // dio runs its interceptors on timers: let the fake clock move.
     await tester.pumpAndSettle();
     await call;
+    // Today went with the gate: drift closes its query streams on a zero
+    // timer, which moving the fake clock runs.
+    await tester.pump(Duration.zero);
 
     _expectUpdateScreen();
   });

@@ -2,6 +2,7 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
+import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -353,7 +354,8 @@ void main() {
         ];
         final group = fakeGroup(1, date: testToday);
         await pumpToday(tester, [
-          ...fakeToday(fakeDays: false),
+          // Set up (no setup row, A13): both meals fit on the phone.
+          ...fakeToday(fakeDays: false, setup: SetupStatus.setUp),
           dayViewProvider.overrideWith(
             (ref, date) => AsyncData(fakeView(fakeDay(date, entries, [group]))),
           ),

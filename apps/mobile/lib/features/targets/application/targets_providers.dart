@@ -64,12 +64,28 @@ Future<List<Versioned<TargetSettingsRecord>>> targetSettingsRecords(
   Ref ref,
 ) async => (await ref.watch(targetsDataProvider.future)).settings;
 
-/// Whether setup has run: a profile and at least one target settings
-/// version exist (D10: Today's setup row and Me's entry use it).
+/// Where setup stands (D10): Today's setup row, Me's entry and the setup
+/// screen read it.
+enum SetupStatus {
+  /// No profile or no target settings yet: offer setup.
+  notSetUp,
+
+  /// A profile and at least one version exist.
+  setUp,
+
+  /// A stored profile this version can't read (synced from a newer app):
+  /// ask for an update instead of offering setup (A13a security review #3).
+  profileUnreadable,
+}
+
+/// The live [SetupStatus].
 @riverpod
-Future<bool> isSetUp(Ref ref) async {
+Future<SetupStatus> setupStatus(Ref ref) async {
   final data = await ref.watch(targetsDataProvider.future);
-  return data.profile != null && data.settings.isNotEmpty;
+  if (data.profileUnreadable) return SetupStatus.profileUnreadable;
+  return data.profile != null && data.settings.isNotEmpty
+      ? SetupStatus.setUp
+      : SetupStatus.notSetUp;
 }
 
 /// Everything Today and Targets show for [date] (D6), derived by

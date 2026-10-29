@@ -22,13 +22,14 @@ enum FbMacroKind {
 /// One macro row: its amounts and the texts that go with them.
 @immutable
 class FbMacroValue {
-  /// Creates a macro value.
+  /// Creates a macro value. Without a [target] the row shows its text only,
+  /// with no track (TG-054: carbs and fat in "calories and protein only").
   const new({
     required this.kind,
     required this.value,
-    required this.target,
     required this.label,
     required this.valueText,
+    this.target,
   });
 
   /// Which macro (decides the colour).
@@ -37,8 +38,9 @@ class FbMacroValue {
   /// The amount so far (geometry only).
   final double value;
 
-  /// The target.
-  final double target;
+  /// The target, or null for a macro with no target: then no track is drawn
+  /// and [valueText] carries the amount alone ("96 g").
+  final double? target;
 
   /// The macro's name, e.g. "Protein". Always shown next to the colour
   /// (UX-071).
@@ -50,7 +52,8 @@ class FbMacroValue {
 
 /// Macro bars, one per [FbMacroValue] (HM-003). Each bar has its text label
 /// right above it, so colour is never the only cue (UX-071). Past the target
-/// a bar is full in the neutral over-target tone (SF-021).
+/// a bar is full in the neutral over-target tone (SF-021). A macro without a
+/// target is its label and text only.
 class FbMacroBars extends StatelessWidget {
   /// Creates the bars.
   const new({required this.macros, super.key});
@@ -99,28 +102,39 @@ class _MacroBar extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Expanded(child: Text(macro.label, style: labelStyle)),
-              const SizedBox(width: FbSpace.s2),
-              Flexible(
-                child: Text(
+          // The amounts keep one line at the end ("82 / 140 g" never wraps);
+          // at large text sizes they go under the label instead.
+          if (MediaQuery.textScalerOf(context).scale(14) >= 14 * 1.4)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(macro.label, style: labelStyle),
+                Text(
                   macro.valueText,
                   style: valueStyle,
                   textAlign: TextAlign.end,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: FbSpace.s1),
-          FbBarTrack(
-            value: macro.value,
-            target: macro.target,
-            color: color,
-            height: small ? 4 : 8,
-          ),
+              ],
+            )
+          else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Expanded(child: Text(macro.label, style: labelStyle)),
+                const SizedBox(width: FbSpace.s2),
+                Text(macro.valueText, style: valueStyle),
+              ],
+            ),
+          if (macro.target case final target?) ...[
+            const SizedBox(height: FbSpace.s1),
+            FbBarTrack(
+              value: macro.value,
+              target: target,
+              color: color,
+              height: small ? 4 : 8,
+            ),
+          ],
         ],
       ),
     );

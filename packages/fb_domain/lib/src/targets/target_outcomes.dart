@@ -45,6 +45,10 @@ enum TargetsFailure {
   /// A newly typed goal can't be resolved: a deadline not after today, or a
   /// target weight on the wrong side of the current weight (PA3).
   goalUnresolvable,
+
+  /// The stored data couldn't be read or written just now (a database or
+  /// read failure); nothing was written.
+  unavailable,
 }
 
 /// The typed result of a targets command. Every [toString] is content-free

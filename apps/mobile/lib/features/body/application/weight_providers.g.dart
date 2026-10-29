@@ -148,3 +148,63 @@ final class CurrentWeightKgProvider
 }
 
 String _$currentWeightKgHash() => r'11a978c2b1b311c19c60cf62ce91dc6d4a9b4b15';
+
+/// [BodyWeightReader] for commands that run outside any screen (A13's
+/// session-owned `TargetsActions`, D8/TD-090): each call reads the weigh-ins
+/// once and computes the trend, so no auto-disposed provider is created,
+/// held or disposed while it loads. Screens keep using [weightTrendProvider].
+
+@ProviderFor(bodyWeightReader)
+final bodyWeightReaderProvider = BodyWeightReaderProvider._();
+
+/// [BodyWeightReader] for commands that run outside any screen (A13's
+/// session-owned `TargetsActions`, D8/TD-090): each call reads the weigh-ins
+/// once and computes the trend, so no auto-disposed provider is created,
+/// held or disposed while it loads. Screens keep using [weightTrendProvider].
+
+final class BodyWeightReaderProvider
+    extends
+        $FunctionalProvider<
+          BodyWeightReader,
+          BodyWeightReader,
+          BodyWeightReader
+        >
+    with $Provider<BodyWeightReader> {
+  /// [BodyWeightReader] for commands that run outside any screen (A13's
+  /// session-owned `TargetsActions`, D8/TD-090): each call reads the weigh-ins
+  /// once and computes the trend, so no auto-disposed provider is created,
+  /// held or disposed while it loads. Screens keep using [weightTrendProvider].
+  BodyWeightReaderProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'bodyWeightReaderProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$bodyWeightReaderHash();
+
+  @$internal
+  @override
+  $ProviderElement<BodyWeightReader> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  BodyWeightReader create(Ref ref) {
+    return bodyWeightReader(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(BodyWeightReader value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<BodyWeightReader>(value),
+    );
+  }
+}
+
+String _$bodyWeightReaderHash() => r'6adc9973d4aa497ddb0ba06eeb0247a6c680df3e';

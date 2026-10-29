@@ -7,6 +7,7 @@ import 'package:fb_mobile/core/export/export_registry.dart';
 import 'package:fb_mobile/core/export/export_service.dart';
 import 'package:fb_mobile/core/export/export_sharer.dart';
 import 'package:fb_mobile/core/export/export_snapshot.dart';
+import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -63,7 +64,17 @@ Future<(ProviderContainer, List<String>)> _openFixed(
     ],
   );
   await openMe(tester);
-  await tester.tap(find.widgetWithText(FbListRow, 'Export your data'));
+  // At text scale 2.0 the row can sit below the fold (the You section, A13).
+  final row = find.widgetWithText(FbListRow, 'Export your data');
+  await tester.scrollUntilVisible(
+    row,
+    200,
+    scrollable: find.descendant(
+      of: find.byType(MeScreen),
+      matching: find.byType(Scrollable),
+    ),
+  );
+  await tester.tap(row);
   await tester.pumpAndSettle();
   return (container, taps);
 }

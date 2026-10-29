@@ -6,8 +6,8 @@ import 'package:fb_mobile/core/settings/setting_key.dart';
 import 'package:fb_mobile/core/settings/settings_store.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
+import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
-import 'package:fb_mobile/features/targets/application/body_weight.dart';
 import 'package:fb_mobile/features/targets/application/setup_input.dart';
 import 'package:fb_mobile/features/targets/data/targets_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -106,16 +106,14 @@ final class TargetsActions {
 
   bool _busy = false;
 
-  /// Saves setup (D10) as one change set: the profile, the first goal phase
-  /// (from today), the first target settings version (effective today,
-  /// generated from the typed weight, which is its basis weight; weekly,
-  /// rebalancing on, default macros) and the preferences that differ from
-  /// the stored ones. One undo entry. Refused with
-  /// [TargetsFailure.alreadySetUp] when a profile or version exists.
-  ///
-  /// A14 seam: once A14 is on `main`, A13b WP6 adds A14's `CreateWeighIn`
-  /// (the typed value and unit, measured now, origin direct) to this change
-  /// set; see [_setup].
+  /// Saves setup (D10) as one change set: the profile, the first weigh-in
+  /// (A14's `CreateWeighIn`: the typed value and unit, measured now; WB-001,
+  /// TD-090), the first goal phase (from today), the first target settings
+  /// version (effective today, generated from the typed weight, which is its
+  /// basis weight; weekly, rebalancing on, default macros) and the
+  /// preferences that differ from the stored ones. One undo entry removes
+  /// them all. Refused with [TargetsFailure.alreadySetUp] when a profile
+  /// (readable or not) or a version exists.
   Future<TargetsOutcome> completeSetup(SetupInput input) =>
       _run(TargetsChangeKind.targetsSet, (today) => _setup(input, today));
 
@@ -392,9 +390,17 @@ final class TargetsActions {
 
   Future<_Plan> _setup(SetupInput input, LocalDate today) async {
     final data = await read();
-    if (data.profile != null || data.settings.isNotEmpty) {
+    if (data.profile != null ||
+        data.profileUnreadable ||
+        data.settings.isNotEmpty) {
       return _refuse(TargetsFailure.alreadySetUp);
     }
+    // The first weigh-in follows A14's rules (WB-003, A14 D6).
+    final weighIn = WeighInDraft(
+      time: EntryTime.now(clock),
+      input: input.weighIn,
+    );
+    if (weighIn.validate() != null) return _refuse(TargetsFailure.invalid);
     final (:valid, :normalized) = _name(input.goalName);
     final preview = SetupPreview.of(input, today, defaults: defaults);
     if (preview.issue == SetupPreviewIssue.goalUnresolvable) {
@@ -415,9 +421,7 @@ final class TargetsActions {
     return _Write(
       [
         PutProfile(input.profile),
-        // A14 seam (A13b WP6): CreateWeighIn(typed value + unit, now,
-        // origin direct) goes here, so setup logs the first weigh-in
-        // (WB-001, TD-090).
+        CreateWeighIn(ids.next(), weighIn),
         ...phases.ops,
         PutTargetSettings(version),
         ...preferences,
@@ -748,6 +752,11 @@ final class TargetsActions {
       on ArgumentError {
         return const TargetsFailed(TargetsFailure.invalid);
       }
+      // A read that fails (database, weigh-ins) is typed too: nothing has
+      // been written yet, and the UI never sees a throw.
+      on Object {
+        return const TargetsFailed(TargetsFailure.unavailable);
+      }
       if (plan case _Refuse(:final outcome)) return outcome;
       final write = plan as _Write;
       if (write.ops.isEmpty) return const TargetsUnchanged();
@@ -756,6 +765,10 @@ final class TargetsActions {
         result = await apply(ChangeSet(write.ops, origin: Origin.direct));
       } on ChangeRejected catch (rejection) {
         return _failure(rejection.failure);
+      }
+      // The single writer rolled back: nothing was written.
+      on Object {
+        return const TargetsFailed(TargetsFailure.unavailable);
       }
       if (result is Rejected) return _failure(result.failure);
       final applied = result as Applied;
@@ -864,5 +877,7 @@ TargetsActions targetsActions(Ref ref) => TargetsActions(
   clock: ref.watch(clockProvider),
   read: ref.watch(targetsRepositoryProvider).read,
   settings: ref.watch(settingsStoreProvider),
-  bodyWeightKg: (date) => ref.read(bodyWeightProvider(date).future),
+  // One read of the weigh-ins per command (A14's reader): no auto-disposed
+  // provider is involved, so nothing can be disposed while it loads.
+  bodyWeightKg: ref.watch(bodyWeightReaderProvider),
 );

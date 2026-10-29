@@ -4,6 +4,7 @@ import 'package:fb_mobile/core/changes/apply_result.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart' show Size;
 
 import '../../diary/support/diary_harness.dart';
 import 'support/today_support.dart';
@@ -100,6 +101,9 @@ void main() {
   testWidgets('DY-022 swipe move opens the slot sheet; picking Lunch moves '
       'it with Undo', (tester) async {
     await rigWithBreakfast(tester);
+    // Tall enough for the setup row (A13) and all four meals.
+    tester.view.physicalSize = const Size(360, 1200);
+    await settle(tester);
 
     await swipe(tester, row('Food 1'), 400);
 

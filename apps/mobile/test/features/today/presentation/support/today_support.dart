@@ -15,6 +15,7 @@ import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/quick_add/quick_add.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
+import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:fb_mobile/l10n/gen/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -228,7 +229,9 @@ DiaryDay fullDay(LocalDate date, {int seed = 0}) => fakeDay(
 );
 
 /// The providers of a Today screen on fake data: every day is [days] (an
-/// empty one when it is not there), no database.
+/// empty one when it is not there), the targets of a day are [targets]
+/// (none when it is not there) and setup stands at [setup] (A13: not set up,
+/// so today shows the setup row), no database.
 List<Override> fakeToday({
   Map<LocalDate, DiaryDay> days = const {},
   RecordingNavigator? navigator,
@@ -241,6 +244,8 @@ List<Override> fakeToday({
   Override? chipsOverride,
   List<WeighIn> weighIns = const [],
   CadenceTipState tip = CadenceTipState.initial,
+  Map<LocalDate, DayTargets> targets = const {},
+  SetupStatus setup = SetupStatus.notSetUp,
 }) => [
   clockProvider.overrideWithValue(
     clock ?? ManualClock(DateTime.utc(2026, 10, 17, 12)),
@@ -264,6 +269,9 @@ List<Override> fakeToday({
   // database stream and no preferences.
   weighInsProvider.overrideWith((ref) => Stream.value(weighIns)),
   weightTipStoreProvider.overrideWithValue(MemoryTipStore(tip)),
+  // The numbers block (A13 D12): synchronous, so no skeleton frame.
+  dayTargetsProvider.overrideWith((ref, date) => targets[date]),
+  setupStatusProvider.overrideWith((ref) => setup),
 ];
 
 /// The providers of a Today screen on a real in-memory diary, with a real
@@ -314,6 +322,10 @@ final class TodayRig {
     // The weight card (A14) reads and writes the same in-memory profile.
     weighInRepositoryProvider.overrideWithValue(WeighInRepository(diary.db)),
     weightTipStoreProvider.overrideWithValue(tips),
+    // The numbers block (A13 D12) reads the same in-memory profile: no
+    // targets until a test stores some.
+    targetsRepositoryProvider.overrideWithValue(TargetsRepository(diary.db)),
+    weekStartProvider.overrideWith((ref) => Stream.value(DayOfWeek.saturday)),
   ];
 }
 

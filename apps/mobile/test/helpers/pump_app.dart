@@ -1,4 +1,4 @@
-import 'package:fb_domain/fb_domain.dart' show EntryTime;
+import 'package:fb_domain/fb_domain.dart' show DayOfWeek, EntryTime;
 import 'package:fb_mobile/app/app.dart';
 import 'package:fb_mobile/app/router/app_router.dart';
 import 'package:fb_mobile/core/config/upgrade_signal.dart';
@@ -37,6 +37,11 @@ final Override _systemTheme = themePreferenceProvider.overrideWith(
   (ref) => Stream.value(ThemePreference.system),
 );
 
+/// Nor for the week start, which Today's numbers read (A13).
+final Override _saturdayWeek = weekStartProvider.overrideWith(
+  (ref) => Stream.value(DayOfWeek.saturday),
+);
+
 /// The whole app, wired like `main` does, on a fresh offline [TestPhone],
 /// plus [overrides].
 Widget testApp({List<Override> overrides = const []}) => ProviderScope(
@@ -44,6 +49,7 @@ Widget testApp({List<Override> overrides = const []}) => ProviderScope(
     ...TestPhone().overrides(),
     ...todayOverrides(),
     _systemTheme,
+    _saturdayWeek,
     ...overrides,
   ],
   child: const FitnessBuddyApp(),
@@ -80,6 +86,10 @@ Future<ProviderContainer> pumpApp(
     ),
   );
   await tester.pumpAndSettle();
+  // A screen the startup replaced (Today, by the update screen) disposes its
+  // providers in the last settled frame; drift closes a query stream on a
+  // zero timer, which this pump (moving the fake clock) runs.
+  await tester.pump(Duration.zero);
   // The database is closed by a teardown registered while the app first read
   // it; closing it waits for every open query stream, so the container (and
   // with it every provider's stream) goes first. Teardowns run in reverse.
