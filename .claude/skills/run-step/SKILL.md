@@ -29,8 +29,7 @@ Track progress with a todo list mirroring the phases below. Keep the owner infor
 6. **Owner gate:** send the **plan approval request** (template in process §5.2), listing ⚠️ OWNER decisions and TD candidates with your recommendation. **Stop and wait for the owner's reply.** Record new TDs (the `record-decision` skill) once approved.
 
 ## C. Implement
-1. Set the board to 🟨. Work through the plan's WPs in order. For each WP:
-   - Brief the right specialist (`flutter-engineer`, `dotnet-engineer`, `platform-engineer`, `ai-engineer`, `data-curator`) with the **self-contained brief** template (process §6). One WP per brief. Agents run on Opus; pass `model: sonnet` only for mechanical WPs (`PROCESS.md` B).
+1. Set the board to 🟨. **One engineer builds the whole step (TD-095):** brief the right specialist (`flutter-engineer`, `dotnet-engineer`, `platform-engineer`, `ai-engineer`, `data-curator`) once with the **self-contained brief** template (process §6) covering **all WPs in order**, one commit per WP, focused tests + `make check-*` locally (full suites run in CI). Continue the same agent (SendMessage) for review fixes. Start a fresh agent only for another specialty or when its context is getting large. Agents run on Opus; pass `model: sonnet` only for mechanical work (`PROCESS.md` B).
    - Independent WPs touching disjoint files may run in parallel in the same folder (no worktrees); each agent commits only its own files by explicit path. Heavy commands through `tools/scripts/heavy.sh`, one at a time machine-wide (7 GB laptop).
    - When it returns: inspect the diff (`git diff`), run `make check` + the relevant tests, fix small issues or re-brief once with specifics. Commit with a Conventional Commit message referencing the step.
    - No per-WP ping to the owner (TD-054); message them only for owner actions or blockers.
@@ -40,7 +39,7 @@ Track progress with a todo list mirroring the phases below. Keep the owner infor
 
 ## D. Review & verify
 1. Run the `review-changes` skill (it picks reviewers by what changed, runs them in parallel, and manages the fix loop).
-2. On Risky steps, at milestone steps, or when the evidence is in doubt (TD-085), launch `verifier` on the branch; otherwise the code reviewer's exit-criteria check plus green CI is the evidence. Any ❌ → back to C for the fix (then re-verify). ⚠️ items → prepare exact owner instructions.
+2. At milestone steps, or when the evidence is in doubt (TD-095), launch `verifier` on the branch; otherwise the code reviewer's exit-criteria check plus green CI is the evidence. Any ❌ → back to C for the fix (then re-verify). ⚠️ items → prepare exact owner instructions.
 
 ## E. Close
 1. Write the card's **Outcome**: built · deviations (and why) · follow-ups · new TDs · measurements · metrics (planned vs actual size, WPs, review rounds, findings by severity, tests added).
