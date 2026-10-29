@@ -1,0 +1,205 @@
+{
+  "description": "B09b PA19 shrink-only known-miss baseline for the AQ gate (tools/scripts/check-buddy-eval.py). Entries {report: m3|b09, metric, unit: caseId#item or caseId, code, class: authoring|data|resolver|tooling|policy|interpretation, fixingStep} are authored from a triage, never generated from output. While a report has entries, any miss outside them and any entry that now passes fails the gate, and the threshold gate waits (warning); with none, the spec/40 thresholds are the error gate. Thresholds are never edited here.",
+  "entries": [
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T05#1",
+      "code": "key:usda:egg_white_raw",
+      "class": "resolver",
+      "fixingStep": "resolver-match-quality"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T06#0",
+      "code": "cardIssue:needsConversion",
+      "class": "tooling",
+      "fixingStep": "density-chore"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "AR-T06#0",
+      "code": "cardIssue:needsConversion",
+      "class": "tooling",
+      "fixingStep": "density-chore"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "AZ-T06#0",
+      "code": "cardIssue:needsConversion",
+      "class": "tooling",
+      "fixingStep": "density-chore"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T07#0",
+      "code": "cardIssue:needsConversion",
+      "class": "policy",
+      "fixingStep": "estimate-portion-policy"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T12#0",
+      "code": "cardIssue:needsConversion",
+      "class": "policy",
+      "fixingStep": "estimate-portion-policy"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T13#0",
+      "code": "cardIssue:needsConversion",
+      "class": "policy",
+      "fixingStep": "estimate-portion-policy"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T14#0",
+      "code": "cardIssue:needsConversion",
+      "class": "policy",
+      "fixingStep": "estimate-portion-policy"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T15#0",
+      "code": "cardIssue:needsConversion",
+      "class": "policy",
+      "fixingStep": "estimate-portion-policy"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T16#0",
+      "code": "cardIssue:needsConversion",
+      "class": "policy",
+      "fixingStep": "estimate-portion-policy"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T39#2",
+      "code": "cardIssue:needsConversion",
+      "class": "policy",
+      "fixingStep": "estimate-portion-policy"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T08#0",
+      "code": "key:usda:jute_potherb_raw",
+      "class": "resolver",
+      "fixingStep": "resolver-match-quality"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T09#0",
+      "code": "key:usda:yogurt_plain_whole",
+      "class": "resolver",
+      "fixingStep": "resolver-match-quality"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T09#1",
+      "code": "key:usda:thyme_dried",
+      "class": "data",
+      "fixingStep": "A17"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T10#0",
+      "code": "key:usda:mango_raw",
+      "class": "resolver",
+      "fixingStep": "resolver-match-quality"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T12#1",
+      "code": "cardIssue:needsConversion",
+      "class": "tooling",
+      "fixingStep": "density-chore"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T16#2",
+      "code": "cardIssue:needsConversion",
+      "class": "tooling",
+      "fixingStep": "density-chore"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T19#0",
+      "code": "clarify:unmatchedFood",
+      "class": "data",
+      "fixingStep": "A32"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T39#1",
+      "code": "key:usda:yogurt_plain_whole",
+      "class": "resolver",
+      "fixingStep": "resolver-match-quality"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-03",
+      "unit": "T19#0",
+      "code": "clarify:unmatchedFood",
+      "class": "data",
+      "fixingStep": "A32"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-04",
+      "unit": "T06#0",
+      "code": "cardIssue:needsConversion",
+      "class": "tooling",
+      "fixingStep": "density-chore"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-04",
+      "unit": "AR-T06#0",
+      "code": "cardIssue:needsConversion",
+      "class": "tooling",
+      "fixingStep": "density-chore"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-04",
+      "unit": "AZ-T06#0",
+      "code": "cardIssue:needsConversion",
+      "class": "tooling",
+      "fixingStep": "density-chore"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-07",
+      "unit": "T19",
+      "code": "asked:clarify",
+      "class": "data",
+      "fixingStep": "A32"
+    },
+    {
+      "report": "b09",
+      "metric": "AQ-02",
+      "unit": "DY-045#0",
+      "code": "cardIssue:needsConversion",
+      "class": "policy",
+      "fixingStep": "estimate-portion-policy"
+    }
+  ]
+}

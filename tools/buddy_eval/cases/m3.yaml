@@ -1,5 +1,6 @@
 {
   "description": "Synthetic B08 public-endpoint regression fixtures (interpret-v2 parsed shape since B09a WP2); not model-quality measurements. T41 exercises the resumed HTTP request and replay, not the app offline queue.",
+  "catalogVersion": 7,
   "cases": [
     {
       "id": "T01",
@@ -105,7 +106,32 @@
           null
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "keys": [
+              "usda:egg_whole_fried",
+              "usda:egg_whole_raw"
+            ]
+          },
+          {
+            "at": "0/1",
+            "keys": [
+              "usda:olive_oil"
+            ],
+            "amount": {
+              "value": 1,
+              "unit": "tbsp"
+            }
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "T02",
@@ -241,7 +267,56 @@
           null
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": true,
+        "asks": [
+          "state"
+        ],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "keys": [
+              "usda:rice_white_long_grain_raw",
+              "usda:rice_white_long_grain_cooked",
+              "usda:rice_white_medium_grain_raw",
+              "usda:rice_white_medium_grain_cooked"
+            ],
+            "amount": {
+              "value": 200,
+              "unit": "g"
+            }
+          },
+          {
+            "at": "0/1",
+            "keys": [
+              "usda:chicken_breast_skinless_raw"
+            ],
+            "amount": {
+              "value": 200,
+              "unit": "g"
+            },
+            "weighed": {
+              "kcal": 240,
+              "per100Kcal": {
+                "usda:chicken_breast_skinless_raw": 120
+              }
+            }
+          },
+          {
+            "at": "0/2",
+            "keys": [
+              "usda:onion_raw"
+            ],
+            "amount": {
+              "value": 1,
+              "unit": "piece"
+            }
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "T03",
@@ -388,7 +463,68 @@
           "key": "cooking oil",
           "value": "1 tbsp olive oil"
         }
-      ]
+      ],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {
+          "state:rice": "dry",
+          "fat:rice": "oil:1.0:tbsp"
+        },
+        "items": [
+          {
+            "at": "0/0",
+            "keys": [
+              "usda:rice_white_long_grain_raw",
+              "usda:rice_white_medium_grain_raw"
+            ],
+            "amount": {
+              "value": 200,
+              "unit": "g"
+            },
+            "weighed": {
+              "kcal": 730,
+              "per100Kcal": {
+                "usda:rice_white_long_grain_raw": 365,
+                "usda:rice_white_medium_grain_raw": 360
+              }
+            }
+          },
+          {
+            "at": "0/1",
+            "keys": [
+              "usda:chicken_breast_skinless_raw"
+            ],
+            "amount": {
+              "value": 200,
+              "unit": "g"
+            },
+            "weighed": {
+              "kcal": 240,
+              "per100Kcal": {
+                "usda:chicken_breast_skinless_raw": 120
+              }
+            }
+          },
+          {
+            "at": "0/2",
+            "keys": [
+              "usda:onion_raw"
+            ],
+            "amount": {
+              "value": 1,
+              "unit": "piece"
+            }
+          }
+        ],
+        "components": [
+          {
+            "keys": [
+              "usda:olive_oil"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "T04",
@@ -473,7 +609,31 @@
           null
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "keys": [
+              "usda:chicken_breast_roasted"
+            ],
+            "amount": {
+              "value": 250,
+              "unit": "g"
+            },
+            "weighed": {
+              "kcal": 412.5,
+              "per100Kcal": {
+                "usda:chicken_breast_roasted": 165
+              }
+            }
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "T05",
@@ -590,7 +750,30 @@
           null
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": null,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "keys": [
+              "usda:egg_whole_omelet",
+              "usda:egg_whole_raw"
+            ],
+            "amount": {
+              "value": 2,
+              "unit": "piece"
+            }
+          },
+          {
+            "at": "0/1",
+            "estimate": true
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "T06",
@@ -679,7 +862,31 @@
           "3%"
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "keys": [
+              "usda:milk_whole"
+            ],
+            "amount": {
+              "value": 500,
+              "unit": "ml"
+            },
+            "weighed": {
+              "kcal": 310.1,
+              "per100Kcal": {
+                "usda:milk_whole": 61
+              }
+            }
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "T07",
@@ -710,7 +917,22 @@
                 "ambiguities": [
                   "variant"
                 ],
-                "estimate": null
+                "estimate": {
+                  "low": {
+                    "kcal": 150,
+                    "proteinG": 6,
+                    "carbsG": 15,
+                    "fatG": 6,
+                    "fiberG": 1
+                  },
+                  "high": {
+                    "kcal": 220,
+                    "proteinG": 10,
+                    "carbsG": 22,
+                    "fatG": 11,
+                    "fiberG": 2
+                  }
+                }
               }
             ],
             "weighIn": null,
@@ -770,7 +992,23 @@
           null
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": null,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "estimate": true,
+            "amount": {
+              "value": 1,
+              "unit": "plate"
+            }
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "T08",
@@ -801,7 +1039,22 @@
                 "ambiguities": [
                   "portion"
                 ],
-                "estimate": null
+                "estimate": {
+                  "low": {
+                    "kcal": 90,
+                    "proteinG": 4,
+                    "carbsG": 12,
+                    "fatG": 2,
+                    "fiberG": 1
+                  },
+                  "high": {
+                    "kcal": 160,
+                    "proteinG": 9,
+                    "carbsG": 22,
+                    "fatG": 6,
+                    "fiberG": 3
+                  }
+                }
               }
             ],
             "weighIn": null,
@@ -861,7 +1114,23 @@
           null
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "estimate": true,
+            "amount": {
+              "value": 1,
+              "unit": "plate"
+            }
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "T09",
@@ -1023,7 +1292,35 @@
           null
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": null,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "estimate": true
+          },
+          {
+            "at": "0/1",
+            "estimate": true
+          },
+          {
+            "at": "0/2",
+            "keys": [
+              "usda:olive_oil"
+            ]
+          },
+          {
+            "at": "0/3",
+            "keys": [
+              "usda:pita_white"
+            ]
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "T10",
@@ -1055,7 +1352,22 @@
                   "people": 6
                 },
                 "ambiguities": [],
-                "estimate": null
+                "estimate": {
+                  "low": {
+                    "kcal": 170,
+                    "proteinG": 9,
+                    "carbsG": 15,
+                    "fatG": 8,
+                    "fiberG": 0.5
+                  },
+                  "high": {
+                    "kcal": 260,
+                    "proteinG": 14,
+                    "carbsG": 22,
+                    "fatG": 15,
+                    "fiberG": 1.5
+                  }
+                }
               }
             ],
             "weighIn": null,
@@ -1118,7 +1430,23 @@
           "large"
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "estimate": true,
+            "amount": {
+              "value": 1,
+              "unit": "plate"
+            }
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "T11",
@@ -1173,7 +1501,16 @@
         "itemDimensions": [],
         "statedVariants": []
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": true,
+        "asks": [
+          "clarify"
+        ],
+        "savedDefaults": {},
+        "items": [],
+        "components": []
+      }
     },
     {
       "id": "T12",
@@ -1202,7 +1539,22 @@
                 "variant": null,
                 "share": null,
                 "ambiguities": [],
-                "estimate": null
+                "estimate": {
+                  "low": {
+                    "kcal": 210,
+                    "proteinG": 10,
+                    "carbsG": 20,
+                    "fatG": 9,
+                    "fiberG": 1
+                  },
+                  "high": {
+                    "kcal": 300,
+                    "proteinG": 16,
+                    "carbsG": 30,
+                    "fatG": 16,
+                    "fiberG": 2.5
+                  }
+                }
               },
               {
                 "mention": "Pepsi",
@@ -1279,7 +1631,25 @@
           null
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "estimate": true
+          },
+          {
+            "at": "0/1",
+            "keys": [
+              "usda:cola"
+            ]
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "T13",
@@ -1308,7 +1678,22 @@
                 "variant": null,
                 "share": null,
                 "ambiguities": [],
-                "estimate": null
+                "estimate": {
+                  "low": {
+                    "kcal": 190,
+                    "proteinG": 6,
+                    "carbsG": 25,
+                    "fatG": 7,
+                    "fiberG": 3
+                  },
+                  "high": {
+                    "kcal": 280,
+                    "proteinG": 10,
+                    "carbsG": 35,
+                    "fatG": 14,
+                    "fiberG": 6
+                  }
+                }
               },
               {
                 "mention": "fries",
@@ -1389,7 +1774,25 @@
           "small"
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "estimate": true
+          },
+          {
+            "at": "0/1",
+            "keys": [
+              "usda:fries_fast_food"
+            ]
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "T14",
@@ -1421,7 +1824,22 @@
                   "variant",
                   "portion"
                 ],
-                "estimate": null
+                "estimate": {
+                  "low": {
+                    "kcal": 230,
+                    "proteinG": 9,
+                    "carbsG": 26,
+                    "fatG": 8,
+                    "fiberG": 1.5
+                  },
+                  "high": {
+                    "kcal": 300,
+                    "proteinG": 13,
+                    "carbsG": 35,
+                    "fatG": 14,
+                    "fiberG": 2.5
+                  }
+                }
               }
             ],
             "weighIn": null,
@@ -1483,7 +1901,23 @@
           null
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": null,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "estimate": true,
+            "amount": {
+              "value": 2,
+              "unit": "piece"
+            }
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "T15",
@@ -1512,7 +1946,22 @@
                 "variant": null,
                 "share": null,
                 "ambiguities": [],
-                "estimate": null
+                "estimate": {
+                  "low": {
+                    "kcal": 280,
+                    "proteinG": 6,
+                    "carbsG": 30,
+                    "fatG": 14,
+                    "fiberG": 0.5
+                  },
+                  "high": {
+                    "kcal": 400,
+                    "proteinG": 10,
+                    "carbsG": 45,
+                    "fatG": 24,
+                    "fiberG": 1.5
+                  }
+                }
               }
             ],
             "weighIn": null,
@@ -1568,7 +2017,23 @@
           null
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "estimate": true,
+            "amount": {
+              "value": 1,
+              "unit": "piece"
+            }
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "T16",
@@ -1597,7 +2062,22 @@
                 "variant": null,
                 "share": null,
                 "ambiguities": [],
-                "estimate": null
+                "estimate": {
+                  "low": {
+                    "kcal": 220,
+                    "proteinG": 11,
+                    "carbsG": 20,
+                    "fatG": 10,
+                    "fiberG": 1
+                  },
+                  "high": {
+                    "kcal": 290,
+                    "proteinG": 15,
+                    "carbsG": 28,
+                    "fatG": 16,
+                    "fiberG": 2
+                  }
+                }
               },
               {
                 "mention": "fries",
@@ -1701,7 +2181,33 @@
           null
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "estimate": true
+          },
+          {
+            "at": "0/1",
+            "keys": [
+              "usda:fries_fast_food"
+            ]
+          },
+          {
+            "at": "0/2",
+            "keys": [
+              "usda:cola",
+              "usda:cola_diet",
+              "usda:lemon_lime_soda"
+            ]
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "T19",
@@ -1786,7 +2292,23 @@
           null
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "estimate": true,
+            "amount": {
+              "value": 1,
+              "unit": "piece"
+            }
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "T39",
@@ -1862,7 +2384,22 @@
                 "variant": null,
                 "share": null,
                 "ambiguities": [],
-                "estimate": null
+                "estimate": {
+                  "low": {
+                    "kcal": 200,
+                    "proteinG": 10,
+                    "carbsG": 18,
+                    "fatG": 9,
+                    "fiberG": 1
+                  },
+                  "high": {
+                    "kcal": 300,
+                    "proteinG": 16,
+                    "carbsG": 28,
+                    "fatG": 15,
+                    "fiberG": 2.5
+                  }
+                }
               }
             ],
             "weighIn": null,
@@ -1972,7 +2509,37 @@
           null
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "keys": [
+              "usda:egg_whole_raw",
+              "usda:egg_whole_fried",
+              "usda:egg_whole_hard_boiled",
+              "usda:egg_whole_omelet",
+              "usda:egg_whole_scrambled"
+            ],
+            "amount": {
+              "value": 2,
+              "unit": "piece"
+            }
+          },
+          {
+            "at": "0/1",
+            "estimate": true
+          },
+          {
+            "at": "1/0",
+            "estimate": true
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "T40",
@@ -2027,7 +2594,14 @@
         "itemDimensions": [],
         "statedVariants": []
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [],
+        "components": []
+      }
     },
     {
       "id": "T41",
@@ -2112,7 +2686,29 @@
           null
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "keys": [
+              "usda:egg_whole_raw",
+              "usda:egg_whole_fried",
+              "usda:egg_whole_hard_boiled",
+              "usda:egg_whole_omelet",
+              "usda:egg_whole_scrambled"
+            ],
+            "amount": {
+              "value": 2,
+              "unit": "piece"
+            }
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "AR-T04",
@@ -2197,7 +2793,31 @@
           null
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "keys": [
+              "usda:chicken_breast_roasted"
+            ],
+            "amount": {
+              "value": 250,
+              "unit": "g"
+            },
+            "weighed": {
+              "kcal": 412.5,
+              "per100Kcal": {
+                "usda:chicken_breast_roasted": 165
+              }
+            }
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "AZ-T04",
@@ -2282,7 +2902,31 @@
           null
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "keys": [
+              "usda:chicken_breast_roasted"
+            ],
+            "amount": {
+              "value": 250,
+              "unit": "g"
+            },
+            "weighed": {
+              "kcal": 412.5,
+              "per100Kcal": {
+                "usda:chicken_breast_roasted": 165
+              }
+            }
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "AR-T06",
@@ -2371,7 +3015,31 @@
           "3%"
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "keys": [
+              "usda:milk_whole"
+            ],
+            "amount": {
+              "value": 500,
+              "unit": "ml"
+            },
+            "weighed": {
+              "kcal": 310.1,
+              "per100Kcal": {
+                "usda:milk_whole": 61
+              }
+            }
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "AZ-T06",
@@ -2460,7 +3128,31 @@
           "3%"
         ]
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "keys": [
+              "usda:milk_whole"
+            ],
+            "amount": {
+              "value": 500,
+              "unit": "ml"
+            },
+            "weighed": {
+              "kcal": 310.1,
+              "per100Kcal": {
+                "usda:milk_whole": 61
+              }
+            }
+          }
+        ],
+        "components": []
+      }
     },
     {
       "id": "AR-T40",
@@ -2515,7 +3207,14 @@
         "itemDimensions": [],
         "statedVariants": []
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [],
+        "components": []
+      }
     },
     {
       "id": "AZ-T40",
@@ -2570,7 +3269,14 @@
         "itemDimensions": [],
         "statedVariants": []
       },
-      "memory": []
+      "memory": [],
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [],
+        "components": []
+      }
     }
   ]
 }

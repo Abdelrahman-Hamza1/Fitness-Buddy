@@ -31,14 +31,8 @@ public sealed class BuddyPublicEvalTests(PostgresFixture postgres)
     public async Task Shipped_catalog_without_labelled_percentage_clarifies_instead_of_inventing_variant()
     {
         // Global synthetic catalog tests publish higher versions; keep this real-release proof isolated.
-        var database = "fb_upgrade_" + Guid.NewGuid().ToString("N");
-        var connection = await postgres.CreateUpgradeDatabaseAsync(database);
-        try
+        await WithRealCatalogAsync(async source =>
         {
-            await postgres.Runner.RunAsync(connection, Ct);
-            await CatalogModule.ImportAsync(connection, Path.Combine(Root, "build/catalog"), Ct);
-            var appConnection = new NpgsqlConnectionStringBuilder(postgres.AppConnection) { Database = database }.ConnectionString;
-            await using var source = DatabaseConfiguration.CreateSource(appConnection);
             using var cases = JsonDocument.Parse(await File.ReadAllTextAsync(Path.Combine(Root, "tools/buddy_eval/cases/m3.yaml"), Ct));
             var parsed = JsonSerializer.Deserialize<ParsedMessage>(cases.RootElement.GetProperty("cases").EnumerateArray()
                 .Single(r => r.GetProperty("id").GetString() == "T06").GetProperty("parsed").GetRawText(), InterpretProtocol.Json)!;
@@ -47,22 +41,28 @@ public sealed class BuddyPublicEvalTests(PostgresFixture postgres)
             await using var api = new BuddyApiTests.BuddyApi(postgres, h, wire, configure: services =>
                 services.AddSingleton<IFoodResolver>(new CatalogQueries(new PostgresCatalogStore(source))));
             using var client = api.CreateClient(); BuddyApiTests.Headers(client, h); await BuddyApiTests.SignIn(client, h);
-            using (var response = await BuddyApiTests.Send(client, h, Guid.CreateVersion7(), "500ml milk 3%"))
+            // Since release v7 whole milk is labelled "3.25% fat" (B09b WP5), so 3% matches it at the stated precision; a
+            // percentage no release name carries (1.5%) must still clarify instead of borrowing another milk's facts.
+            var stated = parsed;
+            ParsedMessage WithVariant(string? variant) =>
+                stated with { Intents = [stated.Intents[0] with { Items = [stated.Intents[0].Items[0] with { Variant = variant }] }] };
+            parsed = WithVariant("1.5%");
+            using (var response = await BuddyApiTests.Send(client, h, Guid.CreateVersion7(), "500ml milk 1.5%"))
             {
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 var body = await response.Content.ReadFromJsonAsync<JsonElement>(Ct);
                 Assert.Equal("unmatchedFood", body.GetProperty("intents")[0].GetProperty("reason").GetString());
             }
-            parsed = parsed with { Intents = [parsed.Intents[0] with { Items = [parsed.Intents[0].Items[0] with { Variant = null }] }] };
-            using (var response = await BuddyApiTests.Send(client, h, Guid.CreateVersion7(), "500ml milk"))
+            foreach (var (variant, text) in new[] { ("3%", "500ml milk 3%"), ((string?)null, "500ml milk") })
             {
+                parsed = WithVariant(variant);
+                using var response = await BuddyApiTests.Send(client, h, Guid.CreateVersion7(), text);
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 var body = await response.Content.ReadFromJsonAsync<JsonElement>(Ct);
                 Assert.Equal("usda:milk_whole", body.GetProperty("intents")[0].GetProperty("items")[0].GetProperty("match").GetProperty("key").GetString());
             }
-            Assert.Equal(2, wire.Calls); // Recorded SDK fixtures only; no provider/key.
-        }
-        finally { await postgres.DropUpgradeDatabaseAsync(database); }
+            Assert.Equal(3, wire.Calls); // Recorded SDK fixtures only; no provider/key.
+        });
     }
 
     [Fact]
@@ -74,8 +74,8 @@ public sealed class BuddyPublicEvalTests(PostgresFixture postgres)
     [Trait("Req", "AI-015")]
     public async Task M3_multilingual_fixtures_pass_real_HTTP_SDK_resolver_and_Dart_grader()
     {
-        var (passed, calls) = await RunPublicEvalAsync("m3", "B08-offline.json");
-        Assert.Equal(26, passed); Assert.Equal(26, calls);
+        var (report, calls) = await RunPublicEvalAsync("m3", "B08-offline.json");
+        Assert.Equal(26, report.GetProperty("passed").GetInt32()); Assert.Equal(26, calls);
     }
 
     [Fact]
@@ -98,19 +98,87 @@ public sealed class BuddyPublicEvalTests(PostgresFixture postgres)
         // provenance (every response UUID is a request context ID) on every case.
         using var cases = JsonDocument.Parse(await File.ReadAllTextAsync(Path.Combine(Root, "tools/buddy_eval/cases/b09.yaml"), Ct));
         var count = cases.RootElement.GetProperty("cases").GetArrayLength();
-        var (passed, calls) = await RunPublicEvalAsync("b09", "B09-offline.json");
-        Assert.Equal(count, passed); Assert.Equal(count, calls); // valid recorded outputs: no repair sends
+        var (report, calls) = await RunPublicEvalAsync("b09", "B09-offline.json");
+        Assert.Equal(count, report.GetProperty("passed").GetInt32()); Assert.Equal(count, calls); // valid recorded outputs: no repair sends
+    }
+
+    [Fact]
+    [Trait("Req", "AQ-02")]
+    [Trait("Req", "AQ-03")]
+    [Trait("Req", "AQ-04")]
+    [Trait("Req", "AQ-06")]
+    [Trait("Req", "AQ-07")]
+    [Trait("Req", "AQ-08")]
+    [Trait("Req", "AQ-10")]
+    public async Task Real_catalog_runs_write_engine_level_AQ_reports_for_M3_and_B09()
+    {
+        // B09b: the recorded interpretations go through the real HTTP API, SDK, resolver and the imported release, then the
+        // Dart CLI runs fb_domain's ProposalEngine on each response. This test proves the harness (every row 200, rows = the
+        // selected cases, the imported catalog version, no repair send); the CI eval job gates the AQ thresholds (D22).
+        await WithRealCatalogAsync(async source =>
+        {
+            using var manifest = JsonDocument.Parse(await File.ReadAllTextAsync(Path.Combine(Root, "build/catalog/release/manifest.json"), Ct));
+            var version = manifest.RootElement.GetProperty("catalog_version").GetInt32();
+            var aq = new { catalogDir = Path.Combine(Root, "build/catalog") };
+            void Catalog(IServiceCollection services) => services.AddSingleton<IFoodResolver>(new CatalogQueries(new PostgresCatalogStore(source)));
+            foreach (var (caseFile, artifact) in new[] { ("m3", "B09b-aq-m3.json"), ("b09", "B09b-aq-b09.json") })
+            {
+                var ids = CaseIds(caseFile, aqOnly: true);
+                if (caseFile == "m3") { Assert.Equal(CaseIds("m3", aqOnly: false), ids); } // every M3 case is graded
+                var (report, calls) = await RunPublicEvalAsync(caseFile, artifact, Catalog, aq, ids);
+                Assert.Equal("aq", report.GetProperty("kind").GetString());
+                var rows = report.GetProperty("rows").EnumerateArray().ToArray();
+                Assert.Equal(ids, rows.Select(r => r.GetProperty("id").GetString()!).ToArray());
+                Assert.All(rows, r => Assert.Equal(200, r.GetProperty("status").GetInt32()));
+                Assert.Equal(version, report.GetProperty("catalog").GetProperty("version").GetInt32());
+                Assert.Equal(rows.Length, calls); // valid recorded outputs: no repair sends
+            }
+        });
+    }
+
+    private static string[] CaseIds(string caseFile, bool aqOnly)
+    {
+        using var cases = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, $"tools/buddy_eval/cases/{caseFile}.yaml")));
+        return cases.RootElement.GetProperty("cases").EnumerateArray().Where(c => !aqOnly || c.TryGetProperty("aq", out _))
+            .Select(c => c.GetProperty("id").GetString()!).ToArray();
+    }
+
+    /// <summary>A scratch database with migrations and the generated real release (<c>build/catalog</c>) imported.</summary>
+    private async Task WithRealCatalogAsync(Func<NpgsqlDataSource, Task> run)
+    {
+        var database = "fb_upgrade_" + Guid.NewGuid().ToString("N");
+        var connection = await postgres.CreateUpgradeDatabaseAsync(database);
+        try
+        {
+            await postgres.Runner.RunAsync(connection, Ct);
+            await CatalogModule.ImportAsync(connection, Path.Combine(Root, "build/catalog"), Ct);
+            var appConnection = new NpgsqlConnectionStringBuilder(postgres.AppConnection) { Database = database }.ConnectionString;
+            await using var source = DatabaseConfiguration.CreateSource(appConnection);
+            await run(source);
+        }
+        finally { await postgres.DropUpgradeDatabaseAsync(database); }
     }
 
     /// <summary>
     /// Runs <c>bin/public_eval.dart</c> against a real authenticated loopback API whose provider transport replays the case
     /// file's recorded parsed outputs through the official SDK (no key, no network). Copies the report to the CI artifacts.
+    /// <paramref name="resolver"/> replaces the synthetic fixture catalog; <paramref name="aq"/> switches the CLI to B09b's
+    /// AQ mode; <paramref name="caseIds"/> selects cases in order.
     /// </summary>
-    private async Task<(int Passed, int Calls)> RunPublicEvalAsync(string caseFile, string artifact)
+    private async Task<(JsonElement Report, int Calls)> RunPublicEvalAsync(string caseFile, string artifact,
+        Action<IServiceCollection>? resolver = null, object? aq = null, string[]? caseIds = null)
     {
         await using var h = new IdentityHarness(postgres); await h.InitializeAsync();
         using var cases = JsonDocument.Parse(await File.ReadAllTextAsync(Path.Combine(Root, $"tools/buddy_eval/cases/{caseFile}.yaml"), Ct));
         var rows = cases.RootElement.GetProperty("cases").EnumerateArray().ToArray();
+        // The wire finds a case by its message text (requests carry no case ID): cases sharing a text (T02/T03) must carry
+        // the same recorded output, or a replay would grade one case with another's fixture (B09b PA26).
+        foreach (var group in rows.GroupBy(r => r.GetProperty("text").GetString()))
+        {
+            var first = System.Text.Json.Nodes.JsonNode.Parse(group.First().GetProperty("parsed").GetRawText());
+            Assert.All(group, r => Assert.True(System.Text.Json.Nodes.JsonNode.DeepEquals(first, System.Text.Json.Nodes.JsonNode.Parse(r.GetProperty("parsed").GetRawText())),
+                r.GetProperty("id").GetString() + " shares a text with a different parsed fixture"));
+        }
         using var wire = new BuddyApiTests.BuddyWire
         {
             Parse = body =>
@@ -123,7 +191,7 @@ public sealed class BuddyPublicEvalTests(PostgresFixture postgres)
                 return JsonSerializer.Deserialize<ParsedMessage>(row.GetProperty("parsed").GetRawText(), InterpretProtocol.Json)!;
             },
         };
-        await using var api = new BuddyApiTests.BuddyApi(postgres, h, wire, dailyLimit: 100, s => s.AddSingleton<IFoodResolver, FixtureCatalog>());
+        await using var api = new BuddyApiTests.BuddyApi(postgres, h, wire, dailyLimit: 100, resolver ?? (s => s.AddSingleton<IFoodResolver, FixtureCatalog>()));
         api.UseKestrel(0); using var client = api.CreateClient(); BuddyApiTests.Headers(client, h); await BuddyApiTests.SignIn(client, h);
         var report = Path.Combine(Path.GetTempPath(), $"{caseFile}-eval-" + Guid.NewGuid() + ".json");
         try
@@ -141,6 +209,8 @@ public sealed class BuddyPublicEvalTests(PostgresFixture postgres)
                 mode = "fixture",
                 caseFile,
                 report,
+                caseIds,
+                aq,
             }));
             process.StandardInput.Close();
             var stdout = process.StandardOutput.ReadToEndAsync(Ct); var stderr = process.StandardError.ReadToEndAsync(Ct);
@@ -161,7 +231,7 @@ public sealed class BuddyPublicEvalTests(PostgresFixture postgres)
             // Generated reports contain IDs/booleans/measurements only, and are reproducible CI artifacts.
             var destination = Path.Combine(Root, "backend", "artifacts", "buddy"); Directory.CreateDirectory(destination);
             File.Copy(report, Path.Combine(destination, artifact), overwrite: true);
-            return (result.RootElement.GetProperty("passed").GetInt32(), wire.Calls);
+            return (result.RootElement.Clone(), wire.Calls);
         }
         finally { File.Delete(report); }
     }

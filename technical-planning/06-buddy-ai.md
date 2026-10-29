@@ -112,7 +112,7 @@ The **ProposalEngine** (client, deterministic) then:
 5. Computes totals and "today after this" from local data (AI-031).
 6. Emits the draft `ChangeSet`.
 
-AQ-08 ("> 2 questions: 0 cases") can't be violated, because it's code. The model's job is to *detect* the dimensions, and the eval measures that.
+The engine guarantees at most 2 engine questions per message, because it's code (TD-081). The eval measures AQ-08 ("> 2 questions: 0 cases") as engine questions **plus routed `clarify` intents**, because a clarify is a question to the user too (B09b PA18). An AQ-08 miss caused by a clarify is a policy finding for the chat flow (A22/A23), never a threshold change. The model's job is to *detect* the dimensions, and the eval measures that.
 
 ### 3.4 References, day hints and the internal grammar (B09a)
 
@@ -231,7 +231,7 @@ If p90 misses: stream intents (SSE) so the first card renders while the rest fin
 `tools/buddy_eval` (Dart CLI) is how we know Buddy is good enough (AT-002). Built in B02, grown in every Buddy step.
 
 - **Test set:** `tools/buddy_eval/cases/*.yaml`. B02 starts with three short synthetic EN/AR/Arabizi prompts under the owner's explicit paid-test limit (TD-067); these are not acceptance evidence. B08/B15 expand to T01–T41 plus Arabic-script/Arabizi cases (≥ ¼ of cases), then ≥ 150 (`spec/40` §2). Full Arabic + Arabizi versions of every case come in R2 (D-080). Each case holds: message, starting state (defaults, open batches, recent entries) and the **expected structured outcome** (intents, food IDs, grams, questions asked or not, estimate flags, slot/date).
-- **Runner:** B02 uses a private CLI pipe and parse-only graders, offline by default. B08/B15 extend it to a **real API instance** (local Docker or staging) and the **real `ProposalEngine`** (Dart, A21). It computes AQ-01–12 with per-language breakdowns and writes a Markdown report + JSON for trends.
+- **Runner:** B02 uses a private CLI pipe and parse-only graders, offline by default. B08/B15 extend it to a **real API instance** (local Docker or staging) and the **real `ProposalEngine`** (Dart, A21). It computes AQ-01–12 with per-language breakdowns and writes a Markdown report + JSON for trends. **B09b (built):** Persistence.Tests imports the generated release into a scratch database, replays the recorded M3 and plain B09 interpretations through the real loopback API and catalog resolver, and the Dart CLI's AQ mode runs fb_domain's `ProposalEvaluation` on each raw response with production policy (`/v1/config` thresholds, default slots, release yields). It writes `B09b-aq-{m3,b09}.json` with AQ-02/03/04/06/07/08/10 per language (AQ-05 `n/a` until reference dishes ship, AQ-01 structural, AQ-09 in B11, AQ-12 needs live runs in B15); the CI `eval` job gates them against `spec/40` §2 with a shrink-only known-miss baseline. Expectations come from the spec text and release facts, never from observed output (`tools/buddy_eval/README.md`).
 - **Graders:** deterministic wherever possible (IDs, grams, ±% kcal, counts). Only free-text quality (tone, AI-131) uses a model judge, reported separately.
 - **When it runs:** B02 CI runs offline SDK fixture replay and deterministic parse grading with no key or paid calls. Live smoke is explicit and ≤3 requests, no retries (TD-067). The broader acceptance/nightly system remains B08/B15; paid execution must respect the owner's scope.
 - **Owner feedback loop:** discarded or heavily edited proposals in real use become candidate cases. The owner exports them with one action (TQ-07).

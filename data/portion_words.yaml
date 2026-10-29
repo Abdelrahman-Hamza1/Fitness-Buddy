@@ -37,6 +37,8 @@ rows:
   - {food: "usda:bell_pepper_red_raw", unit: piece, g: 119, range: [74, 164], source: "USDA FDC 170108: medium 119 g, small 74 g, large 164 g"}
   - {food: "usda:bell_pepper_green_raw", unit: piece, g: 119, range: [74, 164], source: "USDA FDC 170427: medium 119 g, small 74 g, large 164 g"}
   - {food: "usda:zucchini_raw", unit: piece, g: 196, range: [118, 323], source: "USDA FDC 169291: medium 196 g, small 118 g, large 323 g"}
+  # Fast food (one serving)
+  - {food: "usda:fries_fast_food", unit: serving, g: 117, range: [71, 154], source: "USDA FDC 170698 (SR Legacy 2018-04): serving medium 117 g, small 71 g, large 154 g", note: "Default is the medium fast-food serving. A side of fries with a sandwich or a shawarma meal can be smaller; a shared plate can be much larger."}
   # Dates, olives, nuts
   - {food: "usda:dates_medjool", unit: piece, g: 24, range: [20, 30], source: "USDA FDC 168191: date, pitted 24 g"}
   - {food: "usda:dates_deglet_noor", unit: piece, g: 7.1, range: [6, 10], source: "USDA FDC 171726: date, pitted 7.1 g"}

@@ -208,7 +208,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [B07](B07-catalog-service.md) | Catalog service & online search | B04, **A05** | M | S30 server part |  | ✅ |
 | [B08](B08-buddy-interpret-service.md) | Buddy interpret service | B02, B07 | L | S31 |  | ✅ |
 | [B09a](B09-buddy-intents-edits-memory-batches.md) | Buddy intents server: contract, v2 grammar & resolver (split from B09) | B08, **A21** | L | S35–S37 server parts |  | ✅ (live smoke WP7: owner-gated, moved to B09b) |
-| [B09b](B09-buddy-intents-edits-memory-batches.md) | Full AQ metrics with the real ProposalEngine (M3 eval half; split from B09) | B09a | M | S35–S37 server parts | **M3** eval | ⬜ |
+| [B09b](B09-buddy-intents-edits-memory-batches.md) | Full AQ metrics with the real ProposalEngine (M3 eval half; split from B09) | B09a | M | S35–S37 server parts | **M3** eval | ✅ (AQ metrics built and measured; M3 gate not yet met: 25 known misses → density chore, estimate-portion policy, resolver match quality, A17, A32; live smoke WP7 owner-gated) |
 | [B10](B10-barcode-vision-import.md) | Barcode lookup, label & meal photos, paste import | B07, B08 | L | S38–S39 server parts |  | ⬜ |
 | [B11](B11-buddy-qa-suggestions.md) | Buddy Q&A & suggestions | B08 | M | S40 server part |  | ⬜ |
 | [B12](B12-buddy-workouts-review-ramadan.md) | Buddy workouts, weekly review & Ramadan | B08 | M | S42, S44, S46 server parts |  | ⬜ |
@@ -250,7 +250,7 @@ flowchart LR
 |---|---|---|---|
 | **M1 Dogfood 1: offline food tracker** | A11 | OF-01 food parts pass. A day of food can be logged by search and quick-add in airplane mode. The owner uses the prod build daily and can export | None needed (the laptop for `/v1/config` only) |
 | **M2 Targets & weight** | A16 | Targets property tests pass. The owner's weight-note history is entered and charted | None |
-| **M3 Buddy on the laptop** | A23 + B09b's eval run | T01–T16, T19, T39–T41 meet the AQ thresholds (B09b runs the eval). p90 ≤ 5 s measured from the owner's location | Laptop (B03) |
+| **M3 Buddy on the laptop** | A23 + B09b's eval run + the known-miss fixes (backlog #148–#151) | T01–T16, T19, T39–T41 meet the AQ thresholds: the B09b `eval` AQ gate is green with an **empty** known-miss baseline (`tools/buddy_eval/cases/aq_known_misses.json`, TD-097). p90 ≤ 5 s measured from the owner's location | Laptop (B03) |
 | **M4 Dogfood 2: Buddy-first** | A31 + B09b, A25–A27 and B10/B11's eval runs | T17–T29, T33, T36–T38 pass (dish cases may score as estimates until the deferred batches, TD-074). OF-02 passes. The owner logs mostly through Buddy for a week | Laptop |
 | **M5 Accounts & sync** | A35 (+ B05, B06) | OF-03 passes against the laptop server. Google sign-in, guest upgrade and account deletion work on the A55 | Laptop |
 | **M6 Workouts, insights & Ramadan** | A41 (+ B12) | J9, J10, J11, T30–T35 pass. Every NT rule has a planner test | Laptop |

@@ -1,5 +1,6 @@
 {
   "description": "Synthetic B09a interpretation-level fixtures (interpret-v2 parsed outputs + request context + partial expected public intents). Not model-quality measurements. Case-local IDs; engine-level AQ is B09b and A25-A27 (PA11).",
+  "catalogVersion": 7,
   "cases": [
     {
       "id": "T26",
@@ -2120,6 +2121,13 @@
             "reason": "unsupported"
           }
         ]
+      },
+      "aq": {
+        "ambiguous": null,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [],
+        "components": []
       }
     },
     {
@@ -2315,6 +2323,28 @@
             ]
           }
         ]
+      },
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "keys": [
+              "usda:egg_whole_raw",
+              "usda:egg_whole_fried",
+              "usda:egg_whole_hard_boiled",
+              "usda:egg_whole_omelet",
+              "usda:egg_whole_scrambled"
+            ],
+            "amount": {
+              "value": 2,
+              "unit": "piece"
+            }
+          }
+        ],
+        "components": []
       }
     },
     {
@@ -2389,6 +2419,28 @@
             ]
           }
         ]
+      },
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "keys": [
+              "usda:egg_whole_raw",
+              "usda:egg_whole_fried",
+              "usda:egg_whole_hard_boiled",
+              "usda:egg_whole_omelet",
+              "usda:egg_whole_scrambled"
+            ],
+            "amount": {
+              "value": 2,
+              "unit": "piece"
+            }
+          }
+        ],
+        "components": []
       }
     },
     {
@@ -2441,6 +2493,13 @@
             "dateHint": "daysAgo:2"
           }
         ]
+      },
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [],
+        "components": []
       }
     },
     {
@@ -4041,6 +4100,22 @@
             ]
           }
         ]
+      },
+      "aq": {
+        "ambiguous": null,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "estimate": true,
+            "amount": {
+              "value": 1,
+              "unit": "plate"
+            }
+          }
+        ],
+        "components": []
       }
     },
     {
@@ -4139,6 +4214,20 @@
             ]
           }
         ]
+      },
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {},
+        "items": [
+          {
+            "at": "0/0",
+            "keys": [
+              "019a0b09-0000-7000-8000-000000000071"
+            ]
+          }
+        ],
+        "components": []
       }
     },
     {
@@ -4444,6 +4533,67 @@
                   "explicit": true
                 }
               }
+            ]
+          }
+        ]
+      },
+      "aq": {
+        "ambiguous": false,
+        "asks": [],
+        "savedDefaults": {
+          "state:rice": "dry",
+          "fat:rice": "oil:1.0:tbsp"
+        },
+        "items": [
+          {
+            "at": "0/0",
+            "keys": [
+              "usda:rice_white_long_grain_raw",
+              "usda:rice_white_medium_grain_raw"
+            ],
+            "amount": {
+              "value": 200,
+              "unit": "g"
+            },
+            "weighed": {
+              "kcal": 730,
+              "per100Kcal": {
+                "usda:rice_white_long_grain_raw": 365,
+                "usda:rice_white_medium_grain_raw": 360
+              }
+            }
+          },
+          {
+            "at": "0/1",
+            "keys": [
+              "usda:chicken_breast_skinless_raw"
+            ],
+            "amount": {
+              "value": 200,
+              "unit": "g"
+            },
+            "weighed": {
+              "kcal": 240,
+              "per100Kcal": {
+                "usda:chicken_breast_skinless_raw": 120
+              }
+            }
+          },
+          {
+            "at": "0/2",
+            "keys": [
+              "usda:onion_raw"
+            ],
+            "amount": {
+              "value": 1,
+              "unit": "piece"
+            }
+          }
+        ],
+        "components": [
+          {
+            "keys": [
+              "usda:olive_oil"
             ]
           }
         ]

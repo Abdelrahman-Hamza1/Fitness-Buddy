@@ -99,6 +99,7 @@ INSERT INTO foods (id, kind, source, source_ref, dish_id, name_en, name_ar, stat
 INSERT INTO dishes (id, name_en, name_ar, default_variant_id, review_status, time_min, catalog_version) VALUES ('ref:mloukhiyeh_rice', 'Mloukhiyeh with rice', 'ملوخية بالرز', 'ref:mloukhiyeh_rice/chicken', 'draft', 15.0, 1);
 INSERT INTO names (target_id, lang, name, key, is_display) VALUES ('usda:rice_white_long_grain_cooked', 'en', 'Rice, white, cooked', 'rice white coked', 1);
 INSERT INTO names (target_id, lang, name, key, is_display) VALUES ('usda:rice_white_long_grain_cooked', 'en', 'Basmati rice, cooked', 'basmati rice coked', 0);
+INSERT INTO names (target_id, lang, name, key, is_display) VALUES ('usda:rice_white_long_grain_cooked', 'en', 'Rice', 'rice', 0);
 INSERT INTO names (target_id, lang, name, key, is_display) VALUES ('usda:rice_white_long_grain_cooked', 'ar', 'رز مطبوخ', 'رز مطبوخ', 1);
 INSERT INTO names (target_id, lang, name, key, is_display) VALUES ('usda:rice_white_long_grain_cooked', 'ar', 'رز بسمتي مطبوخ', 'رز بسمتي مطبوخ', 0);
 INSERT INTO names (target_id, lang, name, key, is_display) VALUES ('usda:rice_white_long_grain_cooked', 'arabizi', 'ruz matbookh', 'ruz matbokh', 1);
@@ -106,6 +107,7 @@ INSERT INTO names (target_id, lang, name, key, is_display) VALUES ('usda:rice_wh
 INSERT INTO names (target_id, lang, name, key, is_display) VALUES ('usda:rice_white_long_grain_cooked', 'arabizi', 'ruz basmati matbookh', 'ruz basmati matbokh', 0);
 INSERT INTO names (target_id, lang, name, key, is_display) VALUES ('usda:rice_white_long_grain_raw', 'en', 'Rice, white, raw', 'rice white raw', 1);
 INSERT INTO names (target_id, lang, name, key, is_display) VALUES ('usda:rice_white_long_grain_raw', 'en', 'Basmati rice, raw', 'basmati rice raw', 0);
+INSERT INTO names (target_id, lang, name, key, is_display) VALUES ('usda:rice_white_long_grain_raw', 'en', 'Rice, raw', 'rice raw', 0);
 INSERT INTO names (target_id, lang, name, key, is_display) VALUES ('usda:rice_white_long_grain_raw', 'ar', 'رز أبيض', 'رز ابيض', 1);
 INSERT INTO names (target_id, lang, name, key, is_display) VALUES ('usda:rice_white_long_grain_raw', 'ar', 'رز', 'رز', 0);
 INSERT INTO names (target_id, lang, name, key, is_display) VALUES ('usda:rice_white_long_grain_raw', 'ar', 'رز بسمتي', 'رز بسمتي', 0);

@@ -12,7 +12,7 @@ foods:
     state: dry
     yield_group: rice
     names:
-      en: ["Rice, white, raw", "Basmati rice, raw"]
+      en: ["Rice, white, raw", "Basmati rice, raw", "Rice, raw"]
       ar: ["رز أبيض", "رز", "رز بسمتي"]
       arabizi: ["ruz abyad", "riz", "ruz", "roz", "ruz basmati", "basmati"]
     servings: [{unit: cup, g: 185}]
@@ -22,7 +22,7 @@ foods:
     state: cooked
     yield_group: rice
     names:
-      en: ["Rice, white, cooked", "Basmati rice, cooked"]
+      en: ["Rice, white, cooked", "Basmati rice, cooked", "Rice"]
       ar: ["رز مطبوخ", "رز بسمتي مطبوخ"]
       arabizi: ["ruz matbookh", "riz matbookh", "ruz basmati matbookh"]
     servings: [{unit: cup, g: 158}]
@@ -164,7 +164,7 @@ foods:
     fdc_id: 171287
     state: raw
     names:
-      en: ["Egg, whole, raw"]
+      en: ["Egg, whole, raw", "Egg"]
       ar: ["بيض"]
       arabizi: ["bayd", "beid", "bayd nay"]
     servings: [{unit: piece, g: 50}]
@@ -465,10 +465,11 @@ foods:
     fdc_id: 171265
     state: raw
     names:
-      en: ["Milk, whole"]
+      en: ["Milk, whole, 3.25% fat", "Milk, whole"]
       ar: ["حليب كامل الدسم"]
       arabizi: ["haleeb", "halib", "milk"]
     servings: [{unit: cup, g: 244}]
+    notes: "Fat label from the USDA description (FDC 171265: \"Milk, whole, 3.25% milkfat, with added vitamin D\"); fat 3.25 g per 100 g."
   - id: usda:sugar_granulated
     fdc_id: 169655
     state: dry

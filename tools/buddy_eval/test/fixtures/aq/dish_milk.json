@@ -1,0 +1,106 @@
+{
+  "promptVersion": "interpret-v2",
+  "model": "fixture",
+  "intents": [
+    {
+      "kind": "foodLog",
+      "language": "english",
+      "script": "latin",
+      "timeHint": null,
+      "slotHint": null,
+      "dateHint": null,
+      "dishGroup": null,
+      "items": [
+        {
+          "mention": "maqluba",
+          "match": null,
+          "alternatives": [],
+          "amount": {
+            "value": 350,
+            "unit": "g",
+            "explicit": true
+          },
+          "share": null,
+          "dimensions": [],
+          "estimate": {
+            "range": {
+              "low": {
+                "kcal": 150,
+                "proteinG": 6,
+                "carbsG": 15,
+                "fatG": 6,
+                "fiberG": 1
+              },
+              "high": {
+                "kcal": 220,
+                "proteinG": 10,
+                "carbsG": 22,
+                "fatG": 11,
+                "fiberG": 2
+              }
+            },
+            "reason": "noCatalogMatch"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "foodLog",
+      "language": "english",
+      "script": "latin",
+      "timeHint": null,
+      "slotHint": "breakfast",
+      "dateHint": null,
+      "dishGroup": null,
+      "items": [
+        {
+          "mention": "milk",
+          "match": {
+            "key": "usda:milk_whole",
+            "nameEn": "Milk, whole",
+            "nameAr": "حليب كامل الدسم",
+            "state": "raw",
+            "source": "usda",
+            "nutrients": {
+              "kcal": 61,
+              "proteinG": 3.15,
+              "carbsG": 4.8,
+              "fatG": 3.25,
+              "fiberG": 0
+            },
+            "ranges": null,
+            "servings": [
+              {
+                "unitCode": "cup",
+                "g": 244,
+                "ml": null,
+                "rangeLo": null,
+                "rangeHi": null,
+                "source": "usda"
+              },
+              {
+                "unitCode": "glass",
+                "g": null,
+                "ml": 250,
+                "rangeLo": 200,
+                "rangeHi": 300,
+                "source": "usda"
+              }
+            ],
+            "densityGPerMl": null,
+            "yieldGroup": null
+          },
+          "alternatives": [],
+          "amount": {
+            "value": 500,
+            "unit": "ml",
+            "explicit": true
+          },
+          "share": null,
+          "dimensions": [],
+          "estimate": null
+        }
+      ]
+    }
+  ]
+}

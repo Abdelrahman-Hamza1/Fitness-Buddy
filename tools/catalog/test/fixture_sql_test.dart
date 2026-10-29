@@ -66,10 +66,12 @@ void main() {
           .where((line) => !line.startsWith('INSERT INTO cities '))
           .join('\n');
       // A05 fixture before city support: schema, foods, names, servings,
-      // yields, FTS and metadata must stay byte-identical.
+      // yields, FTS and metadata must stay byte-identical. Re-pinned by B09b
+      // WP5 (release v7): two name rows, the EN aliases "Rice" and
+      // "Rice, raw" on the fixture's white long-grain rice.
       expect(
         sha256.convert(utf8.encode(withoutCities)).toString(),
-        '3e3218beb8197bb7dac2651510ac0cf60fe88f591685eab08f1174e534141af4',
+        'aaf72f4f6a2f4350c94ec6d09471b3c19664a7482d55d9194e339ba1bd0770ed',
       );
     },
   );
