@@ -2,6 +2,11 @@
 library;
 
 export 'l10n/gen/fb_localizations.dart';
+export 'src/brand/brand_geometry.dart';
+export 'src/brand/brand_lockup.dart';
+export 'src/brand/brand_mark.dart' show FbBrandMark, FbMarkColourway;
+export 'src/brand/brand_path.dart' show parseFbMarkPath;
+export 'src/brand/buddy_avatar.dart';
 export 'src/charts/chart_types.dart';
 export 'src/charts/time_series_chart.dart';
 export 'src/components/amount_display.dart';
@@ -46,6 +51,7 @@ export 'src/theme/fb_theme.dart';
 export 'src/theme/licenses.dart';
 export 'src/tokens/colors.dart';
 export 'src/tokens/contrast.dart';
+export 'src/tokens/density.dart';
 export 'src/tokens/icons.dart';
 export 'src/tokens/motion.dart';
 export 'src/tokens/palette.dart';

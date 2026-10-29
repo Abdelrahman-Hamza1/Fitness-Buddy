@@ -45,5 +45,20 @@ void main() {
       expect(failing, isEmpty, reason: failing.join('\n'));
       expect(pairs.where((p) => p.kind == FbContrastKind.ui), isNotEmpty);
     });
+
+    test('UX-071 mint is never a text role: no contrast pair uses mint as '
+        'text ($name)', () {
+      final mint = FbPalette.of(brightness).mint;
+      expect([
+        for (final pair in pairs)
+          if (pair.kind == FbContrastKind.text && pair.foreground == mint)
+            pair.name,
+      ], isEmpty);
+      // The avatar's mint figure is checked as non-text UI on its disc.
+      expect(
+        pairs.where((p) => p.name == 'mint on avatarBackground').single.kind,
+        FbContrastKind.ui,
+      );
+    });
   }
 }

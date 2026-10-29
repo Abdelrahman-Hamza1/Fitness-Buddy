@@ -331,6 +331,9 @@ void main() {
         -100,
         scrollable: scrollable,
       );
+      // Clear of the date header at the top.
+      await tester.drag(scrollable, const Offset(0, 120));
+      await tester.pump();
       await tester.tap(find.widgetWithText(FbListRow, 'Falafel plate'));
       await tester.pump();
       expect(find.byType(EntryDetailsPanel), findsNothing);

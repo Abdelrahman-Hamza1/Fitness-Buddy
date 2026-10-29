@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Buddy proposal: Compact chips</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.num{font-variant-numeric:tabular-nums}
+.ib{display:inline-flex;align-items:center;justify-content:center;border:0;padding:0;cursor:pointer;font-family:Inter,sans-serif}
+.chip{height:32px;padding:0 12px;border-radius:12px;background:#1D2925;color:#E8EFEC;font-size:13px;font-weight:500;gap:6px}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; position: relative; background: #0C1412; font-family: Inter, sans-serif; color: #E8EFEC">
+
+  <div style="position:absolute; left:0; top:0; width:390px; height:56px; background:#0C1412; overflow:hidden">
+    <div style="position:absolute; left:16px; top:28px; font-family:Nunito, sans-serif; font-weight:800; font-size:24px; line-height:32px; color:#E8EFEC">Today</div>
+    <div style="position:absolute; right:16px; top:34px; width:120px; height:20px; border-radius:999px; background:#141E1B"></div>
+    <div style="position:absolute; left:0; top:0; width:390px; height:56px; background:rgba(0,0,0,0.6)"></div>
+  </div>
+
+  <div style="position:absolute; left:0; top:56px; width:390px; height:788px; box-sizing:border-box; background:#141E1B; border-radius:28px 28px 0 0; display:flex; flex-direction:column; overflow:hidden">
+
+    <div style="display:flex; justify-content:center; padding:8px 0 4px 0">
+      <div style="width:32px; height:4px; border-radius:999px; background:#6C7C77; opacity:0.6"></div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:10px; padding:4px 8px 8px 16px; height:48px; box-sizing:border-box">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="14" fill="#123F36"></circle><circle cx="11" cy="9.5" r="2.2" fill="#6FD6B6"></circle><circle cx="17" cy="9.5" r="2.2" fill="#A8E3CB"></circle><path d="M6.5 20.5a5 5 0 0 1 10 0" fill="none" stroke="#6FD6B6" stroke-width="2" stroke-linecap="round"></path><path d="M11.5 20.5a5 5 0 0 1 10 0" fill="none" stroke="#A8E3CB" stroke-width="2" stroke-linecap="round"></path></svg>
+      <div style="flex:1; font-family:Nunito, sans-serif; font-weight:800; font-size:18px; line-height:24px; color:#E8EFEC">Buddy</div>
+      <button class="ib" aria-label="Close" style="width:44px; height:44px; border-radius:999px; background:transparent; color:#9DAEA8"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+    </div>
+
+    <div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; gap:12px; padding:8px 16px 12px 16px; overflow:hidden">
+
+      <div style="display:flex; justify-content:flex-end">
+        <div style="max-width:280px; padding:10px 14px; background:#1D2925; border-radius:20px; border-end-end-radius:6px; font-size:15px; line-height:22px; color:#E8EFEC">a musakhan roll for lunch</div>
+      </div>
+
+      <div style="display:flex; align-items:flex-start; gap:8px">
+        <svg width="24" height="24" viewBox="0 0 28 28" aria-hidden="true" style="flex:none; margin-top:1px"><circle cx="14" cy="14" r="14" fill="#123F36"></circle><circle cx="11" cy="9.5" r="2.2" fill="#6FD6B6"></circle><circle cx="17" cy="9.5" r="2.2" fill="#A8E3CB"></circle><path d="M6.5 20.5a5 5 0 0 1 10 0" fill="none" stroke="#6FD6B6" stroke-width="2" stroke-linecap="round"></path><path d="M11.5 20.5a5 5 0 0 1 10 0" fill="none" stroke="#A8E3CB" stroke-width="2" stroke-linecap="round"></path></svg>
+        <div style="max-width:300px; padding:2px 0; font-size:15px; line-height:22px; color:#E8EFEC">Here's lunch — check the amounts and add it.</div>
+      </div>
+
+      <button class="ib" aria-label="Added to Lunch, 610 kcal, chicken musakhan, tap to open" style="margin-inline-start:32px; justify-content:flex-start; gap:10px; height:48px; padding:0 14px 0 12px; border-radius:20px; background:transparent; border:1px solid #24322E; color:#9DAEA8; font-size:14px; font-weight:500">
+        <span style="display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:999px; background:#123F36; color:#BFEEDD"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></span>
+        <span class="num" style="color:#E8EFEC">Added to Lunch · 610 kcal</span>
+        <span style="flex:1"></span>
+        <span class="num" style="font-size:12px">≈ estimate</span>
+      </button>
+
+      <div style="display:flex; justify-content:flex-end; padding-top:4px">
+        <div style="max-width:280px; padding:10px 14px; background:#1D2925; border-radius:20px; border-end-end-radius:6px; font-size:15px; line-height:22px; color:#E8EFEC">2 eggs, labneh with olive oil and a cucumber</div>
+      </div>
+
+      <div style="display:flex; align-items:flex-start; gap:8px">
+        <svg width="24" height="24" viewBox="0 0 28 28" aria-hidden="true" style="flex:none; margin-top:1px"><circle cx="14" cy="14" r="14" fill="#123F36"></circle><circle cx="11" cy="9.5" r="2.2" fill="#6FD6B6"></circle><circle cx="17" cy="9.5" r="2.2" fill="#A8E3CB"></circle><path d="M6.5 20.5a5 5 0 0 1 10 0" fill="none" stroke="#6FD6B6" stroke-width="2" stroke-linecap="round"></path><path d="M11.5 20.5a5 5 0 0 1 10 0" fill="none" stroke="#A8E3CB" stroke-width="2" stroke-linecap="round"></path></svg>
+        <div style="max-width:300px; padding:2px 0; font-size:15px; line-height:22px; color:#E8EFEC">Got it. Here's breakfast — check the amounts and add it.</div>
+      </div>
+
+      <div style="margin-inline-start:32px; border:1px solid #24322E; border-radius:20px; padding:16px; display:flex; flex-direction:column; gap:12px">
+
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px">
+          <div style="display:flex; align-items:baseline; gap:8px; min-width:0">
+            <span style="font-family:Nunito, sans-serif; font-weight:700; font-size:18px; line-height:24px; color:#E8EFEC">Breakfast</span>
+            <span class="num" style="font-size:12px; line-height:16px; font-weight:500; color:#9DAEA8">4 items</span>
+          </div>
+          <div class="num" style="font-family:Nunito, sans-serif; font-weight:800; font-size:18px; line-height:24px; color:#E8EFEC">465 kcal</div>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:8px">
+          <button class="ib chip num" aria-label="Eggs, 2, tap to edit">Eggs ×2</button>
+          <button class="ib chip num" aria-label="Labneh, 3 tablespoons, tap to edit">Labneh 3 tbsp</button>
+          <button class="ib chip num" aria-label="Olive oil, assumed 1 tablespoon, tap to edit" style="background:transparent; border:1px dashed #6C7C77; color:#E8EFEC">Olive oil 1 tbsp<span style="color:#9DAEA8">· assumed</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9DAEA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path><path d="m15 5 4 4"></path></svg></button>
+          <button class="ib chip num" aria-label="Cucumber, 1 medium, tap to edit">Cucumber</button>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px">
+          <div style="display:flex; flex-direction:column; gap:5px">
+            <div class="num" style="font-size:12px; line-height:16px; font-weight:500; color:#9DAEA8">P 22 g</div>
+            <div style="height:4px; border-radius:3px; background:#1D2925; overflow:hidden"><div style="width:19%; height:4px; border-radius:3px; background:#8EA8FF"></div></div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:5px">
+            <div class="num" style="font-size:12px; line-height:16px; font-weight:500; color:#9DAEA8">C 12 g</div>
+            <div style="height:4px; border-radius:3px; background:#1D2925; overflow:hidden"><div style="width:10%; height:4px; border-radius:3px; background:#F2BE5C"></div></div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:5px">
+            <div class="num" style="font-size:12px; line-height:16px; font-weight:500; color:#9DAEA8">F 37 g</div>
+            <div style="height:4px; border-radius:3px; background:#1D2925; overflow:hidden"><div style="width:71%; height:4px; border-radius:3px; background:#F29AC0"></div></div>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px; padding-top:4px">
+          <button class="ib" style="flex:1; height:48px; border-radius:999px; background:#6FD6B6; color:#04241D; font-size:15px; font-weight:600">Add to Breakfast</button>
+          <button class="ib" style="height:48px; padding:0 16px; border-radius:999px; background:transparent; color:#6FD6B6; font-size:15px; font-weight:600">Edit</button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div style="padding:8px 16px 16px 16px; display:flex; align-items:center; gap:8px">
+      <div style="flex:1; height:52px; box-sizing:border-box; display:flex; align-items:center; gap:4px; padding:0 4px 0 18px; border-radius:999px; background:#1D2925">
+        <input type="text" placeholder="Message Buddy…" aria-label="Message Buddy" style="flex:1; min-width:0; height:40px; border:0; outline:0; background:transparent; font-family:Inter, sans-serif; font-size:15px; color:#E8EFEC">
+        <button class="ib" aria-label="Speak" style="width:44px; height:44px; border-radius:999px; background:transparent; color:#9DAEA8"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><path d="M12 19v3"></path></svg></button>
+        <button class="ib" aria-label="Send" style="width:44px; height:44px; border-radius:999px; background:#6FD6B6; color:#04241D"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg></button>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

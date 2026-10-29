@@ -48,12 +48,17 @@ void main() {
     // Breakfast's grip dragged below the last row: it ends up last.
     final grips = find.byType(FbDragHandle);
     expect(grips, findsNWidgets(4));
+    // Down past the last row in small steps, whatever the row height
+    // (density).
+    final distance =
+        tester.getCenter(find.text('Footer')).dy -
+        tester.getCenter(grips.first).dy;
     final gesture = await tester.startGesture(tester.getCenter(grips.first));
     await tester.pump(const Duration(milliseconds: 100));
-    await gesture.moveBy(const Offset(0, 20));
-    await tester.pump();
-    await gesture.moveBy(const Offset(0, 180));
-    await tester.pump();
+    for (var moved = 0.0; moved < distance; moved += 20) {
+      await gesture.moveBy(const Offset(0, 20));
+      await tester.pump();
+    }
     await gesture.up();
     await tester.pumpAndSettle();
 

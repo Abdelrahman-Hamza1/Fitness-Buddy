@@ -256,6 +256,16 @@ class _FlowState extends ConsumerState<_Flow> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     spacing: FbSpace.s4,
                     children: [
+                      // The brand on the first page only (A44 D14a): there
+                      // is no separate welcome screen.
+                      if (first)
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: FbBrandLockup(
+                            name: l10n.appTitle,
+                            size: FbLockupSize.large,
+                          ),
+                        ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         spacing: FbSpace.s1,

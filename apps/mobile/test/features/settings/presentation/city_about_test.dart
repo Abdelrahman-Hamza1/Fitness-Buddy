@@ -577,4 +577,26 @@ void main() {
     expect(find.text('City set to Nablus · نابلس'), findsOneWidget);
     await unmountApp(tester, container);
   });
+
+  testWidgets('SF-040 About shows the brand lockup as its header, with the '
+      'app name', (tester) async {
+    final semantics = tester.ensureSemantics();
+    final container = await _openAt(
+      tester,
+      const AboutRoute(),
+      credits: _credits,
+    );
+    final lockup = find.descendant(
+      of: find.byType(AboutScreen),
+      matching: find.byType(FbBrandLockup),
+    );
+    expect(lockup, findsOneWidget);
+    expect(tester.widget<FbBrandLockup>(lockup).name, 'Fitness Buddy');
+    expect(
+      tester.getSemantics(lockup),
+      matchesSemantics(label: 'Fitness Buddy', isHeader: true),
+    );
+    semantics.dispose();
+    await unmountApp(tester, container);
+  });
 }

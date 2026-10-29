@@ -36,13 +36,29 @@ void main() {
     expect(_width(text, FbType.body), greaterThan(0));
   });
 
-  test(
-    'UX-070 tabular figures: digits have equal width in the display style',
-    () {
-      expect(
-        _width('1111', FbType.display),
-        closeTo(_width('8888', FbType.display), 0.01),
-      );
-    },
-  );
+  test('A44-D3 the Nunito variable font is loaded and fontWeight drives '
+      'wght: width at w200 < w400 < w900', () {
+    const text = 'Fitness Buddy 2150';
+    TextStyle at(FontWeight w) => FbType.title.copyWith(fontWeight: w);
+    final w200 = _width(text, at(FontWeight.w200));
+    final w400 = _width(text, at(FontWeight.w400));
+    final w900 = _width(text, at(FontWeight.w900));
+    expect(w200, isNot(_width(text, ahem.copyWith(fontSize: 18))));
+    // A stuck default instance (ExtraLight) or a fixed weight would make
+    // two of these equal.
+    expect(w200, lessThan(w400));
+    expect(w400, lessThan(w900));
+    // Nunito, not Inter: the two families measure differently.
+    expect(w400, isNot(_width(text, FbType.body.copyWith(fontSize: 18))));
+  });
+
+  test('UX-070 tabular figures: digits have equal width in the display style '
+      '(Nunito w800)', () {
+    expect(FbType.display.fontFamily, contains('Nunito'));
+    expect(FbType.display.fontWeight, FontWeight.w800);
+    final one = _width('1111', FbType.display);
+    for (final digits in ['0000', '4444', '7777', '8888']) {
+      expect(_width(digits, FbType.display), closeTo(one, 0.01));
+    }
+  });
 }

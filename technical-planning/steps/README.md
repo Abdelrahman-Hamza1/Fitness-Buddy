@@ -171,6 +171,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A21](A21-proposal-engine.md) | ProposalEngine | **Codex** | A07, A12, **B08** | L | S32 |  | ✅ |
 | [A22a](A22-chat-proposal-card.md) | Chat sheet, message storage & proposal card (split from A22, 2026-10-28) | Claude | A08b, A20, A21, **B08**, **B18**, **B09a** WP0 | L | S33 part |  | ✅ |
 | [A22b](A22-chat-proposal-card.md) | Card adjustments & follow-up (split from A22) | Claude | A22a, **B09a** (contract) | M | S33 part |  | ⬜ |
+| [A44](A44-brand-identity.md) | Brand identity & theme ("Embrace"; runs after A22a, owner 2026-10-29) | Claude | A22a | L | new |  | ✅ (phone checks: backlog #155) |
 | [A23](A23-message-lifecycle.md) | Message lifecycle, pending & failures | Claude | A22a, **B18** (contract) | L | S34 | **M3** | ⬜ |
 | [A24](A24-online-search-pack-updates.md) | Online search & pack updates (app) | Claude | A07, **B07** | M | S30 app part |  | ⬜ |
 | [A25](A25-diary-edits-by-chat.md) | Diary edits by chat (app) | Claude | A23, **B09a** (contract) | M | S35 app part |  | ⬜ |
@@ -192,6 +193,8 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A41](A41-ramadan.md) | Ramadan mode (app) | Claude | A05b, A15, A38, A40, **B12** (contract) | L | S46 app part | **M6** | ⬜ |
 | [A42](A42-performance-a11y-offline.md) | Performance, accessibility & offline acceptance | Claude | A41 | M | S48 | **R1** | ⬜ |
 | [A43](A43-play-internal-release.md) | Play internal testing release | Claude | A42, **B14** | S | S29 app part | **M7** | ⬜ |
+
+**A44 runs right after A22 (owner request, 2026-10-29):** the "Embrace" identity (palette, fonts, icon) lands before the remaining screens are built, an exception to "the number is the order" like the dish batches below.
 
 **Dish batches deferred (TD-074, owner 2026-10-17):** A17–A19, A30 and A32 keep their IDs but run after A41, before A42, an exception to "the number is the order". Until then local dishes are logged as `~ estimate` from the basics; the reference-dish pipeline (A03, A05) stays, so batches can be added any time.
 

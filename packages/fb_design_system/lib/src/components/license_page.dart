@@ -1,10 +1,12 @@
+import 'package:fb_design_system/src/brand/brand_mark.dart';
 import 'package:fb_design_system/src/theme/licenses.dart';
+import 'package:fb_design_system/src/tokens/spacing.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Opens Flutter's open-source licence page for the app, with the licences of
-/// the bundled fonts added (see `registerFbFontLicenses`). The page is shown
-/// on the root navigator, above the app shell, and its words come from the
-/// app's Material localizations.
+/// Opens Flutter's open-source licence page for the app, with the brand mark
+/// as its icon and the licences of the bundled fonts added (see
+/// `registerFbFontLicenses`). The page is shown on the root navigator, above
+/// the app shell, and its words come from the app's Material localizations.
 Future<void> showFbLicensePage(
   BuildContext context, {
   required String applicationName,
@@ -16,6 +18,10 @@ Future<void> showFbLicensePage(
       builder: (_) => LicensePage(
         applicationName: applicationName,
         applicationVersion: applicationVersion,
+        applicationIcon: const Padding(
+          padding: EdgeInsetsDirectional.all(FbSpace.s2),
+          child: FbBrandMark(cropped: true),
+        ),
       ),
     ),
   );

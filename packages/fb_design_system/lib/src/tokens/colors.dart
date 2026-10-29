@@ -16,6 +16,9 @@ final class FbColors extends ThemeExtension<FbColors> {
     required this.info,
     required this.badge,
     required this.skeleton,
+    required this.mint,
+    required this.avatarBackground,
+    required this.avatarForeground,
   });
 
   /// The roles of [palette].
@@ -29,6 +32,9 @@ final class FbColors extends ThemeExtension<FbColors> {
     info: palette.info,
     badge: palette.onSurfaceVariant,
     skeleton: palette.surfaceContainerHigh,
+    mint: palette.mint,
+    avatarBackground: palette.avatarBackground,
+    avatarForeground: palette.avatarForeground,
   );
 
   /// Protein (UX-042).
@@ -58,6 +64,16 @@ final class FbColors extends ThemeExtension<FbColors> {
   /// Skeleton placeholders (UX-051).
   final Color skeleton;
 
+  /// The logo's mint: the Embrace mark's second figure and small highlights.
+  /// Decoration only, never text.
+  final Color mint;
+
+  /// The Buddy avatar's disc.
+  final Color avatarBackground;
+
+  /// The Buddy avatar's first figure (the second is [mint]).
+  final Color avatarForeground;
+
   @override
   FbColors copyWith({
     Color? protein,
@@ -69,6 +85,9 @@ final class FbColors extends ThemeExtension<FbColors> {
     Color? info,
     Color? badge,
     Color? skeleton,
+    Color? mint,
+    Color? avatarBackground,
+    Color? avatarForeground,
   }) => FbColors(
     protein: protein ?? this.protein,
     carbs: carbs ?? this.carbs,
@@ -79,6 +98,9 @@ final class FbColors extends ThemeExtension<FbColors> {
     info: info ?? this.info,
     badge: badge ?? this.badge,
     skeleton: skeleton ?? this.skeleton,
+    mint: mint ?? this.mint,
+    avatarBackground: avatarBackground ?? this.avatarBackground,
+    avatarForeground: avatarForeground ?? this.avatarForeground,
   );
 
   @override
@@ -95,6 +117,9 @@ final class FbColors extends ThemeExtension<FbColors> {
       info: mix(info, other.info),
       badge: mix(badge, other.badge),
       skeleton: mix(skeleton, other.skeleton),
+      mint: mix(mint, other.mint),
+      avatarBackground: mix(avatarBackground, other.avatarBackground),
+      avatarForeground: mix(avatarForeground, other.avatarForeground),
     );
   }
 }

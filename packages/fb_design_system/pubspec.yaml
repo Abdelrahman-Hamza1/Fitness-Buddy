@@ -1,5 +1,5 @@
 name: fb_design_system
-description: "Fitness Buddy design system, with tokens, themes, components and the bundled Latin and Arabic font pair."
+description: "Fitness Buddy design system, with tokens, themes, components and the bundled Latin and Arabic fonts."
 publish_to: none
 resolution: workspace
 
@@ -36,9 +36,13 @@ flutter:
     - family: Inter
       fonts:
         - asset: assets/fonts/InterVariable.ttf
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/NunitoVariable.ttf
     - family: NotoSansArabic
       fonts:
         - asset: assets/fonts/NotoSansArabicVariable.ttf
   assets:
     - assets/fonts/OFL-Inter.txt
+    - assets/fonts/OFL-Nunito.txt
     - assets/fonts/OFL-NotoSansArabic.txt

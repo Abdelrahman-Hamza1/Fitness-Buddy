@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The launcher plate (A44 D11): the logo's deep teal in prod. The dev
+         and staging source sets override it, so the flavors are told apart
+         on the home screen. -->
+    <color name="ic_launcher_background">#FF0B6E5F</color>
+    <!-- The launch window and splash background in day and night (A44 D7):
+         the dark theme's surface, so a fresh install never flashes light. -->
+    <color name="fb_window_background">#FF0C1412</color>
+</resources>

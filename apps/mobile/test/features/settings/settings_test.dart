@@ -89,7 +89,7 @@ void main() {
   test('LC-010 LC-021 FD-080 UX-040 setting keys: names pinned '
       '(units.system, calendar.weekStart, food.halal, '
       'appearance.theme, location.cityId) and defaults metric, '
-      'saturday, true, system, unset', () async {
+      'saturday, true, dark (D-082), unset', () async {
     expect(
       [
         AppSettings.unitSystem.name,
@@ -110,7 +110,7 @@ void main() {
     expect(await r.store.read(AppSettings.unitSystem), UnitSystem.metric);
     expect(await r.store.read(AppSettings.weekStart), DayOfWeek.saturday);
     expect(await r.store.read(AppSettings.halal), isTrue);
-    expect(await r.store.read(AppSettings.theme), ThemePreference.system);
+    expect(await r.store.read(AppSettings.theme), ThemePreference.dark);
     expect(await r.store.read(AppSettings.cityId), isNull);
     final c = r.container();
     final units = c.listen(unitSystemProvider, (_, _) {});
@@ -123,10 +123,7 @@ void main() {
     addTearDown(city.close);
     expect(await c.read(unitSystemProvider.future), UnitSystem.metric);
     expect(await c.read(halalProvider.future), isTrue);
-    expect(
-      await c.read(themePreferenceProvider.future),
-      ThemePreference.system,
-    );
+    expect(await c.read(themePreferenceProvider.future), ThemePreference.dark);
     expect(await c.read(cityIdProvider.future), isNull);
     expect(c.read(settingsActionsProvider), isA<SettingsActions>());
   });
@@ -201,7 +198,7 @@ void main() {
     );
     expect(await r.actions.setHalal(true), isA<SettingsUnchanged>());
     expect(
-      await r.actions.setTheme(ThemePreference.system),
+      await r.actions.setTheme(ThemePreference.dark),
       isA<SettingsUnchanged>(),
     );
     expect(await r.actions.clearCity(), isA<SettingsUnchanged>());
@@ -437,7 +434,8 @@ void main() {
     for (final action in [
       () => r.actions.setWeekStart(DayOfWeek.monday),
       () => r.actions.setHalal(false),
-      () => r.actions.setTheme(ThemePreference.dark),
+      // Dark is the default (D-082): Light is a change.
+      () => r.actions.setTheme(ThemePreference.light),
       () => r.actions.setCity('city:282615'),
     ]) {
       final outcome = await action() as SettingsDone;

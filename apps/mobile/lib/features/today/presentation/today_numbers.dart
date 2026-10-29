@@ -69,29 +69,32 @@ class TodayNumbers extends ConsumerWidget {
       // Shaped like the target-mode block (number, caption, bar, line,
       // macros), so the targets arriving don't shift the page.
       children = const [
-        FbSkeleton.box(width: 160, height: 56),
+        FbSkeleton.box(width: 160, height: FbDensity.displayLineHeight),
         SizedBox(height: FbSpace.s1),
         FbSkeleton.line(width: 120),
-        SizedBox(height: FbSpace.s3),
+        SizedBox(height: FbDensity.blockGap),
         FbSkeleton.line(height: 8),
         SizedBox(height: FbSpace.s2),
         FbSkeleton.line(width: 200),
-        SizedBox(height: FbSpace.s4),
+        SizedBox(height: FbDensity.sectionGap),
         FbSkeleton.line(width: 140),
         SizedBox(height: FbSpace.s3),
         FbSkeleton.line(width: 140),
-        SizedBox(height: FbSpace.s3),
-        FbSkeleton.line(width: 140),
-        SizedBox(height: FbSpace.s3),
-        FbSkeleton.line(width: 100),
+        // One row per macro when they don't sit in columns.
+        if (!FbDensity.macroColumns) ...[
+          SizedBox(height: FbSpace.s3),
+          FbSkeleton.line(width: 140),
+          SizedBox(height: FbSpace.s3),
+          FbSkeleton.line(width: 100),
+        ],
       ];
     }
     return Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(
         FbSpace.s4,
-        FbSpace.s3,
+        FbDensity.blockGap,
         FbSpace.s4,
-        FbSpace.s4,
+        FbDensity.sectionGap,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -160,7 +163,7 @@ class TodayNumbers extends ConsumerWidget {
         caption: view.over ? l10n.todayKcalOver : l10n.todayKcalLeft,
         over: view.over,
       ),
-      const SizedBox(height: FbSpace.s3),
+      const SizedBox(height: FbDensity.blockGap),
       FbProgressBar(
         value: view.eatenKcal.toDouble(),
         target: view.targetKcal.toDouble(),
@@ -191,7 +194,7 @@ class TodayNumbers extends ConsumerWidget {
           child: budgetText,
         ),
       },
-      const SizedBox(height: FbSpace.s4),
+      const SizedBox(height: FbDensity.sectionGap),
       FbMacroBars(
         macros: [
           macro(FbMacroKind.protein, l10n.todayMacroProtein, view.protein),
@@ -243,7 +246,7 @@ class _SetupRow extends ConsumerWidget {
     };
     if (title == null) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsetsDirectional.only(top: FbSpace.s3),
+      padding: const EdgeInsetsDirectional.only(top: FbDensity.cardGap),
       child: FbCard(
         padding: EdgeInsetsDirectional.zero,
         child: FbListRow(
@@ -275,7 +278,7 @@ class EmptyDayHint extends StatelessWidget {
         FbSpace.s4,
         0,
         FbSpace.s4,
-        FbSpace.s3,
+        FbDensity.cardGap,
       ),
       child: FbCard(
         child: Column(

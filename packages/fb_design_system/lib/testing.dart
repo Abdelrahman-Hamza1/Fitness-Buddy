@@ -9,10 +9,11 @@ import 'package:flutter/services.dart';
 /// files in `assets/fonts/`.
 const Map<String, String> _fonts = {
   'Inter': 'InterVariable.ttf',
+  'Nunito': 'NunitoVariable.ttf',
   'NotoSansArabic': 'NotoSansArabicVariable.ttf',
 };
 
-/// Loads Inter and Noto Sans Arabic under the family names that
+/// Loads Inter, Nunito and Noto Sans Arabic under the family names that
 /// `TextStyle(fontFamily: 'Inter', package: 'fb_design_system')` resolves to
 /// (`packages/fb_design_system/Inter`), so tests measure text with the real
 /// font metrics instead of the test font (A02 D19).

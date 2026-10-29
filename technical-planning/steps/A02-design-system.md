@@ -6,6 +6,8 @@
 
 _Old ID: S07 (renumbered by TD-063, 2026-10-16)._
 
+_Palette (D3, "Warm" indigo) superseded and TD-076's font clause amended by TD-098 (A44 "Embrace" identity, 2026-10-29; owner ok 2026-10-29, TQ-23)._
+
 **Goal.** A token-based design system (`fb_design_system`) with the components every screen needs, plus static mockups of the key screens for the owner to react to (TQ-14). After this, feature steps build screens from components instead of inventing UI.
 
 **Spec:** UX-040–044, UX-050, UX-051, UX-070, UX-071, SF-021, SF-022, SF-041, IN-020, AI-032 (estimate marker), FD-010 (badges) · **Decisions:** TD-014

@@ -28,6 +28,9 @@ List<(String, Color)> paletteRoles(FbPalette palette) => [
   ('inverseSurface', palette.inverseSurface),
   ('inverseOnSurface', palette.inverseOnSurface),
   ('inversePrimary', palette.inversePrimary),
+  ('mint', palette.mint),
+  ('avatarBackground', palette.avatarBackground),
+  ('avatarForeground', palette.avatarForeground),
 ];
 
 /// The type styles with their names, largest first.
@@ -39,4 +42,6 @@ const List<(String, TextStyle)> typeStyles = [
   ('bodySmall', FbType.bodySmall),
   ('label', FbType.label),
   ('caption', FbType.caption),
+  ('button', FbType.button),
+  ('chip', FbType.chip),
 ];

@@ -35,11 +35,12 @@ abstract final class AppSettings {
     defaultValue: true,
   );
 
-  /// UX-040.
+  /// UX-040: dark by default (D-082, A44 D7). An unset key reads as dark;
+  /// stored values keep their meaning.
   static final SettingKey<ThemePreference> theme = SettingKey.enumeration(
     'appearance.theme',
     ThemePreference.values,
-    defaultValue: ThemePreference.system,
+    defaultValue: ThemePreference.dark,
   );
 
   /// LC-033: invalid or newer identity formats read as unset.

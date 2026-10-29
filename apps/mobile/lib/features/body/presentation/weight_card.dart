@@ -55,7 +55,7 @@ class WeightCard extends ConsumerWidget {
         FbSpace.s4,
         0,
         FbSpace.s4,
-        FbSpace.s3,
+        FbDensity.cardGap,
       ),
       child: child,
     );

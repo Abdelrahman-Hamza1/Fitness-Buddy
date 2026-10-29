@@ -17,7 +17,8 @@ class PreviewSwitches extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final mode =
-        ref.watch(themePreferenceProvider).value ?? ThemePreference.system;
+        ref.watch(themePreferenceProvider).value ??
+        AppSettings.theme.defaultValue;
     return Padding(
       padding: const EdgeInsetsDirectional.symmetric(
         horizontal: FbSpace.s4,

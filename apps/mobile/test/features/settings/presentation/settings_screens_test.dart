@@ -209,9 +209,11 @@ void main() {
     await unmountApp(tester, container);
   });
 
-  testWidgets('UX-040 #75 Theme sheet: Dark switches the app to dark at '
-      'once; the choice survives a restart (new ProviderScope over the same '
-      'DB); Undo restores System', (tester) async {
+  testWidgets('UX-040 #75 Theme sheet: a fresh install is dark; Light '
+      'switches the app to light at once; the choice survives a restart (new '
+      'ProviderScope over the same DB); Undo restores the previous choice', (
+    tester,
+  ) async {
     final phone = TestPhone();
     final db = memoryDatabase();
     final container = await pumpAt(
@@ -220,17 +222,19 @@ void main() {
       overrides: [appDatabaseProvider.overrideWithValue(db)],
     );
     await openMe(tester);
-    expect(_brightness(tester), Brightness.light);
+    // The default (D-082), though the test platform is light.
+    expect(_brightness(tester), Brightness.dark);
+    expect(_in(_rowOf('Theme'), 'Dark'), findsOneWidget);
 
     await tester.tap(_rowOf('Theme'));
     await tester.pumpAndSettle();
-    await tester.tap(_sheet('Dark'));
+    await tester.tap(_sheet('Light'));
     await settleWrites(tester);
-    expect(_brightness(tester), Brightness.dark);
-    expect(find.text('Theme set to Dark'), findsOneWidget);
-    expect(_in(_rowOf('Theme'), 'Dark'), findsOneWidget);
+    expect(_brightness(tester), Brightness.light);
+    expect(find.text('Theme set to Light'), findsOneWidget);
+    expect(_in(_rowOf('Theme'), 'Light'), findsOneWidget);
 
-    // A restart: a new container over the same database opens dark.
+    // A restart: a new container over the same database opens light.
     await unmountApp(tester, container);
     container.dispose();
     final restarted = await pumpAt(
@@ -238,7 +242,7 @@ void main() {
       phone: phone,
       overrides: [appDatabaseProvider.overrideWithValue(db)],
     );
-    expect(_brightness(tester), Brightness.dark);
+    expect(_brightness(tester), Brightness.light);
     // The first stored value applies without the theme animation (D6).
     expect(
       tester
@@ -250,9 +254,9 @@ void main() {
     await openMe(tester);
     await tester.tap(_rowOf('Theme'));
     await tester.pumpAndSettle();
-    await tester.tap(_sheet('Light'));
+    await tester.tap(_sheet('Dark'));
     await settleWrites(tester);
-    expect(_brightness(tester), Brightness.light);
+    expect(_brightness(tester), Brightness.dark);
     // Later changes animate.
     expect(
       tester
@@ -262,10 +266,10 @@ void main() {
     );
     await tester.tap(find.text('Undo'));
     await settleWrites(tester);
-    expect(_brightness(tester), Brightness.dark);
+    expect(_brightness(tester), Brightness.light);
     expect(
       await _stored(tester, restarted, AppSettings.theme),
-      ThemePreference.dark,
+      ThemePreference.light,
     );
     await unmountApp(tester, restarted);
   });

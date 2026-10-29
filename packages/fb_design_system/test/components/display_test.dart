@@ -279,6 +279,8 @@ void main() {
 
     testWidgets('UX-070 a macro row keeps its amounts on one line at the end; '
         'at large text they go under the label', (tester) async {
+      // Four macros, so the long amount can't fit a compact column and the
+      // bars fall back to rows (A44 PA3).
       const bars = FbMacroBars(
         macros: [
           FbMacroValue(
@@ -287,6 +289,27 @@ void main() {
             target: 140,
             label: 'Protein',
             valueText: '1,082 / 1,140 g',
+          ),
+          FbMacroValue(
+            kind: FbMacroKind.carbs,
+            value: 120,
+            target: 220,
+            label: 'Carbs',
+            valueText: '120 / 220 g',
+          ),
+          FbMacroValue(
+            kind: FbMacroKind.fat,
+            value: 30,
+            target: 70,
+            label: 'Fat',
+            valueText: '30 / 70 g',
+          ),
+          FbMacroValue(
+            kind: FbMacroKind.fiber,
+            value: 12,
+            target: 30,
+            label: 'Fiber',
+            valueText: '12 / 30 g',
           ),
         ],
       );

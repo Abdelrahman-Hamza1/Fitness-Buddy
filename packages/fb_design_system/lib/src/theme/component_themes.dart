@@ -1,3 +1,4 @@
+import 'package:fb_design_system/src/tokens/density.dart';
 import 'package:fb_design_system/src/tokens/spacing.dart';
 import 'package:fb_design_system/src/tokens/typography.dart';
 import 'package:material_ui/material_ui.dart';
@@ -10,10 +11,17 @@ const RoundedRectangleBorder _mdShape = RoundedRectangleBorder(
   borderRadius: FbRadius.mdAll,
 );
 
+// Pill buttons, 48 tall (Embrace recipes). A radius of half the height
+// rather than a StadiumBorder: identical at 48 dp, but a label that wraps at
+// large text sizes keeps normal corners instead of huge round ends.
+const RoundedRectangleBorder _pillShape = RoundedRectangleBorder(
+  borderRadius: BorderRadius.all(Radius.circular(_minTouch / 2)),
+);
+
 ButtonStyle _base() => const ButtonStyle(
   minimumSize: WidgetStatePropertyAll(Size(_minTouch, _minTouch)),
-  shape: WidgetStatePropertyAll(_mdShape),
-  textStyle: WidgetStatePropertyAll(FbType.label),
+  shape: WidgetStatePropertyAll(_pillShape),
+  textStyle: WidgetStatePropertyAll(FbType.button),
   padding: WidgetStatePropertyAll(
     EdgeInsetsDirectional.symmetric(horizontal: FbSpace.s4),
   ),
@@ -42,7 +50,8 @@ OutlinedButtonThemeData fbOutlinedButtonTheme(ColorScheme scheme) =>
 TextButtonThemeData fbTextButtonTheme(ColorScheme scheme) =>
     TextButtonThemeData(style: _base());
 
-/// Cards are tonal and flat, with a hairline edge.
+/// Cards are tonal and flat (no shadow, no gradient): a hairline
+/// outlineVariant edge in light, none in dark.
 CardThemeData fbCardTheme(ColorScheme scheme) => CardThemeData(
   color: scheme.surfaceContainer,
   surfaceTintColor: _clear,
@@ -51,20 +60,31 @@ CardThemeData fbCardTheme(ColorScheme scheme) => CardThemeData(
   clipBehavior: Clip.antiAlias,
   shape: RoundedRectangleBorder(
     borderRadius: FbRadius.lgAll,
-    side: BorderSide(color: scheme.outlineVariant),
+    side: scheme.brightness == Brightness.light
+        ? BorderSide(color: scheme.outlineVariant)
+        : BorderSide.none,
   ),
 );
 
-/// Chips (assumption, answer, quick-add).
+/// Chips (assumption, answer, quick-add): radius 12 on the raised tonal
+/// fill, no border; selected = the brand tint plus a check mark, so colour
+/// is never the only cue (UX-071).
 ChipThemeData fbChipTheme(ColorScheme scheme) => ChipThemeData(
-  backgroundColor: scheme.surfaceContainer,
+  backgroundColor: scheme.surfaceContainerHigh,
   selectedColor: scheme.primaryContainer,
   disabledColor: scheme.surfaceContainerHigh,
-  labelStyle: FbType.label.copyWith(color: scheme.onSurface),
-  secondaryLabelStyle: FbType.label.copyWith(color: scheme.onPrimaryContainer),
-  side: BorderSide(color: scheme.outline),
-  shape: const RoundedRectangleBorder(borderRadius: FbRadius.pillAll),
+  labelStyle: FbType.chip.copyWith(color: scheme.onSurface),
+  secondaryLabelStyle: FbType.chip.copyWith(color: scheme.onPrimaryContainer),
+  checkmarkColor: scheme.onPrimaryContainer,
+  showCheckmark: true,
+  side: BorderSide.none,
+  shape: const RoundedRectangleBorder(borderRadius: FbRadius.mdAll),
   padding: const EdgeInsetsDirectional.symmetric(horizontal: FbSpace.s2),
+  // A little air above and below a label that wraps at large text.
+  labelPadding: const EdgeInsetsDirectional.symmetric(
+    horizontal: FbSpace.s2,
+    vertical: 2,
+  ),
   surfaceTintColor: _clear,
   elevation: FbElevation.flat,
   pressElevation: FbElevation.flat,
@@ -92,15 +112,23 @@ BottomSheetThemeData fbBottomSheetTheme(ColorScheme scheme) =>
       shape: const RoundedRectangleBorder(borderRadius: FbRadius.sheetTop),
     );
 
-/// The bottom navigation bar.
+/// The bottom navigation bar: 72 tall, a brand-tint pill behind the selected
+/// icon, labels 12/600 (selected onSurface, others onSurfaceVariant).
 NavigationBarThemeData fbNavigationBarTheme(ColorScheme scheme) =>
     NavigationBarThemeData(
+      height: 72,
       backgroundColor: scheme.surfaceContainer,
       surfaceTintColor: _clear,
       elevation: FbElevation.flat,
       indicatorColor: scheme.primaryContainer,
-      labelTextStyle: WidgetStatePropertyAll(
-        FbType.caption.copyWith(color: scheme.onSurface),
+      indicatorShape: const StadiumBorder(),
+      labelTextStyle: WidgetStateProperty.resolveWith(
+        (states) => FbType.caption.copyWith(
+          fontWeight: FontWeight.w600,
+          color: states.contains(WidgetState.selected)
+              ? scheme.onSurface
+              : scheme.onSurfaceVariant,
+        ),
       ),
     );
 
@@ -113,7 +141,7 @@ InputDecorationThemeData fbInputDecorationTheme(ColorScheme scheme) {
       );
   return InputDecorationThemeData(
     filled: true,
-    fillColor: scheme.surfaceContainer,
+    fillColor: scheme.surfaceContainerHigh,
     contentPadding: const EdgeInsetsDirectional.symmetric(
       horizontal: FbSpace.s4,
       vertical: FbSpace.s3,
@@ -137,7 +165,16 @@ ListTileThemeData fbListTileTheme(ColorScheme scheme) => ListTileThemeData(
   subtitleTextStyle: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
   contentPadding: const EdgeInsetsDirectional.symmetric(horizontal: FbSpace.s4),
   minVerticalPadding: FbSpace.s2,
+  minTileHeight: FbDensity.rowMinHeight,
   shape: _mdShape,
+);
+
+/// Dialogs: tonal, radius 20, no surface tint.
+DialogThemeData fbDialogTheme(ColorScheme scheme) => DialogThemeData(
+  backgroundColor: scheme.surfaceContainer,
+  surfaceTintColor: _clear,
+  elevation: FbElevation.overlay,
+  shape: const RoundedRectangleBorder(borderRadius: FbRadius.lgAll),
 );
 
 /// The date picker dialog: tonal, rounded, no surface tint.

@@ -28,7 +28,8 @@ class SettingsSection extends ConsumerWidget {
     final weekStart = ref.watch(weekStartProvider).value ?? DayOfWeek.saturday;
     final halal = ref.watch(halalProvider).value ?? true;
     final theme =
-        ref.watch(themePreferenceProvider).value ?? ThemePreference.system;
+        ref.watch(themePreferenceProvider).value ??
+        AppSettings.theme.defaultValue;
     final city = ref.watch(selectedCityProvider).value;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -477,4 +477,23 @@ void main() {
     await settleWrites(tester);
     await unmountApp(tester, c);
   });
+
+  testWidgets("UX-040 Setup's first page shows the brand lockup; the other "
+      "pages don't", (tester) async {
+    final c = await openSetup(tester);
+    final run = SetupRun(tester);
+    expect(find.text('Step 1 of 5'), findsOneWidget);
+    final lockup = find.byType(FbBrandLockup);
+    expect(lockup, findsOneWidget);
+    expect(tester.widget<FbBrandLockup>(lockup).name, 'Fitness Buddy');
+
+    await run.tap('Male');
+    await run.enter('Birth year', '1990');
+    await run.enter('Height', '180');
+    await run.enter('Current weight', '80');
+    await run.next();
+    expect(find.text('Step 2 of 5'), findsOneWidget);
+    expect(find.byType(FbBrandLockup), findsNothing);
+    await unmountApp(tester, c);
+  });
 }

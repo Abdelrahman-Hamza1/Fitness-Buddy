@@ -1,11 +1,14 @@
 import 'package:fb_design_system/l10n/gen/fb_localizations.dart';
+import 'package:fb_design_system/src/brand/buddy_avatar.dart';
 import 'package:fb_design_system/src/tokens/icons.dart';
 import 'package:fb_design_system/src/tokens/spacing.dart';
 import 'package:fb_design_system/src/tokens/typography.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// The "Tell Buddy what you ate" bar (HM-008). A shell: tapping it calls
-/// [onTap] (the app opens the real input); it has no text logic.
+/// The "Tell Buddy what you ate" bar (HM-008): Buddy's avatar at the start,
+/// the hint, and optional camera and barcode buttons; at least 52 dp tall. A
+/// shell: tapping it calls [onTap] (the app opens the real input); it has no
+/// text logic.
 class FbInputBar extends StatelessWidget {
   /// Creates the bar. [onCamera] and [onBarcode] show their buttons when set.
   const new({
@@ -28,10 +31,15 @@ class FbInputBar extends StatelessWidget {
   /// Shows a barcode button when set.
   final VoidCallback? onBarcode;
 
+  /// The bar's minimum height (the identity's input bar).
+  static const double minHeight = 52;
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final l10n = FbLocalizations.of(context);
+    // Without buttons at the end, keep the hint clear of the pill's curve.
+    final trailing = onCamera != null || onBarcode != null;
     return Material(
       color: scheme.surfaceContainerHigh,
       shape: StadiumBorder(side: BorderSide(color: scheme.outlineVariant)),
@@ -42,24 +50,29 @@ class FbInputBar extends StatelessWidget {
               customBorder: const StadiumBorder(),
               onTap: onTap,
               child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 48),
+                constraints: const BoxConstraints(minHeight: minHeight),
                 child: Padding(
-                  padding: const EdgeInsetsDirectional.only(
-                    start: FbSpace.s4,
-                    end: FbSpace.s2,
+                  padding: EdgeInsetsDirectional.only(
+                    start: FbSpace.s3,
+                    end: trailing ? FbSpace.s2 : FbSpace.s4,
                     top: FbSpace.s2,
                     bottom: FbSpace.s2,
                   ),
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Text(
-                      hint,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: FbType.body.copyWith(
-                        color: scheme.onSurfaceVariant,
+                  child: Row(
+                    children: [
+                      const FbBuddyAvatar(),
+                      const SizedBox(width: FbSpace.s3),
+                      Expanded(
+                        child: Text(
+                          hint,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: FbType.body.copyWith(
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ),

@@ -40,13 +40,8 @@ class AboutScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: FbSpace.s2,
               children: [
-                Semantics(
-                  header: true,
-                  child: Text(
-                    l10n.appTitle,
-                    style: FbType.headline.copyWith(color: scheme.onSurface),
-                  ),
-                ),
+                // The brand lockup is the header (A44 D14b).
+                FbBrandLockup(name: l10n.appTitle),
                 if (loading) ...[
                   const FbSkeleton.line(width: 160),
                   const FbSkeleton.line(width: 200),

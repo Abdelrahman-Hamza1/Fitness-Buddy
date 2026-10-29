@@ -6,6 +6,7 @@ import 'package:fb_mobile/app/router/app_router.dart';
 import 'package:fb_mobile/app/theme/app_theme.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
+import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -35,7 +36,7 @@ class FitnessBuddyApp extends ConsumerStatefulWidget {
 class _FitnessBuddyAppState extends ConsumerState<FitnessBuddyApp> {
   /// Whether the first frame is done. The theme setting is read only after
   /// it (UX-001: no storage before the first frame), so that frame uses the
-  /// system theme.
+  /// setting's default: dark (A44 D7), like the Android launch window.
   bool _firstFrameDone = false;
 
   /// Whether the first stored theme has been applied. It applies without the
@@ -53,16 +54,44 @@ class _FitnessBuddyAppState extends ConsumerState<FitnessBuddyApp> {
   }
 
   ThemeMode _themeMode() {
-    if (!_firstFrameDone) return ThemeMode.system;
+    // Not read yet, loading or unreadable: the default (dark), never storage.
+    if (!_firstFrameDone) return _modeOf(AppSettings.theme.defaultValue);
     final preference = ref.watch(themePreferenceProvider);
     if (preference.hasValue && !_themeSettled) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _themeSettled = true);
     }
-    return switch (preference.value) {
-      ThemePreference.light => ThemeMode.light,
-      ThemePreference.dark => ThemeMode.dark,
-      ThemePreference.system || null => ThemeMode.system,
-    };
+    return _modeOf(preference.value ?? AppSettings.theme.defaultValue);
+  }
+
+  static ThemeMode _modeOf(ThemePreference preference) => switch (preference) {
+    ThemePreference.light => ThemeMode.light,
+    ThemePreference.dark => ThemeMode.dark,
+    ThemePreference.system => ThemeMode.system,
+  };
+
+  /// The system bars follow the app's theme, not the phone's (A44 D8): the
+  /// native window is dark, and Today has no app bar to set them. The status
+  /// bar is transparent. Below Android 15 the app isn't edge-to-edge, so the
+  /// navigation bar gets the theme's bottom-bar colour (a transparent one
+  /// would show the dark window behind Light's dark icons); Android 15+
+  /// ignores the colour. Icons contrast with the theme.
+  static Widget _systemBars(BuildContext context, Widget? child) {
+    final theme = Theme.of(context);
+    final dark = theme.brightness == Brightness.dark;
+    final icons = dark ? Brightness.light : Brightness.dark;
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        statusBarColor: const Color(0x00000000),
+        systemNavigationBarColor:
+            theme.navigationBarTheme.backgroundColor ??
+            theme.colorScheme.surfaceContainer,
+        statusBarIconBrightness: icons,
+        systemNavigationBarIconBrightness: icons,
+        // iOS reads the bar's background brightness instead.
+        statusBarBrightness: dark ? Brightness.dark : Brightness.light,
+      ),
+      child: child ?? const SizedBox.shrink(),
+    );
   }
 
   @override
@@ -72,13 +101,14 @@ class _FitnessBuddyAppState extends ConsumerState<FitnessBuddyApp> {
       onGenerateTitle: (context) => context.l10n.appTitle,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      // The stored choice (UX-040); the system's until it is read.
+      // The stored choice (UX-040); the default (dark) until it is read.
       themeMode: _themeMode(),
       themeAnimationDuration: _themeSettled
           ? kThemeAnimationDuration
           : Duration.zero,
       localizationsDelegates: FitnessBuddyApp.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      builder: _systemBars,
     );
   }
 }

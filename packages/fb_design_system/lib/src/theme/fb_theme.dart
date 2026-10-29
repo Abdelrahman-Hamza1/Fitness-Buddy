@@ -57,7 +57,7 @@ abstract final class FbTheme {
       canvasColor: p.surface,
       textTheme: textTheme,
       primaryTextTheme: textTheme,
-      fontFamily: FbType.latinFamily,
+      fontFamily: FbType.bodyFamily,
       fontFamilyFallback: const [FbType.arabicFamily],
       package: FbType.package,
       splashFactory: InkRipple.splashFactory,
@@ -72,6 +72,7 @@ abstract final class FbTheme {
       navigationBarTheme: fbNavigationBarTheme(scheme),
       inputDecorationTheme: fbInputDecorationTheme(scheme),
       listTileTheme: fbListTileTheme(scheme),
+      dialogTheme: fbDialogTheme(scheme),
       datePickerTheme: fbDatePickerTheme(scheme),
       timePickerTheme: fbTimePickerTheme(scheme),
       dividerTheme: DividerThemeData(

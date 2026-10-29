@@ -19,6 +19,8 @@ Finder _onPage(LocalDate date, String text) =>
     find.descendant(of: dayPage(date), matching: find.text(text));
 
 /// Taps the last widget showing [text] (a page's own copy, not a title).
+/// [tapExactly] scrolls it into view first, so the brand lockup on the
+/// first setup page (A44), which pushes the choices down, can't hide it.
 Future<void> _tap(WidgetTester tester, String text) async {
   await tapExactly(tester, find.text(text).last, '"$text"');
   await pumpFor(tester, const Duration(milliseconds: 400));

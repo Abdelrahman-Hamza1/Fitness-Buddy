@@ -1,13 +1,14 @@
-import 'package:fb_design_system/src/tokens/spacing.dart';
+import 'package:fb_design_system/src/tokens/density.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// A tonal, flat card (UX-041). Tappable when [onTap] is set.
+/// A tonal, flat card (UX-041): no shadow, a hairline edge in light only.
+/// Its default padding comes from [FbDensity]. Tappable when [onTap] is set.
 class FbCard extends StatelessWidget {
   /// Creates a card.
   const new({
     required this.child,
     this.onTap,
-    this.padding = const EdgeInsetsDirectional.all(FbSpace.s4),
+    this.padding = const EdgeInsetsDirectional.all(FbDensity.cardPadding),
     super.key,
   });
 

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Log weight</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button{font-family:Inter,sans-serif;cursor:pointer}
+.num{font-variant-numeric:tabular-nums}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; position: relative; background: #0C1412; font-family: Inter, sans-serif; color: #E8EFEC">
+
+  <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 390px; height: 844px; box-sizing: border-box; padding: 24px 16px 0 16px">
+    <div style="height: 40px; display: flex; align-items: center; justify-content: space-between">
+      <div style="font-family: Nunito, sans-serif; font-weight: 800; font-size: 24px; line-height: 32px; color: #E8EFEC">Today</div>
+      <div style="font-size: 14px; line-height: 20px; font-weight: 500; color: #9DAEA8">Thu 29 Oct</div>
+    </div>
+    <div style="margin-top: 12px; height: 168px; background: #141E1B; border-radius: 20px; padding: 16px; box-sizing: border-box">
+      <div class="num" style="font-family: Nunito, sans-serif; font-weight: 800; font-size: 48px; line-height: 56px; color: #E8EFEC">910</div>
+      <div style="font-size: 14px; line-height: 20px; font-weight: 500; color: #9DAEA8">kcal left today</div>
+      <div style="margin-top: 16px; height: 6px; border-radius: 3px; background: #1D2925; overflow: hidden">
+        <div style="width: 58%; height: 6px; background: #6FD6B6; border-radius: 3px"></div>
+      </div>
+      <div class="num" style="margin-top: 8px; font-size: 13px; line-height: 20px; font-weight: 500; color: #9DAEA8">1,240 / 2,150 kcal</div>
+    </div>
+    <div style="margin-top: 12px; height: 96px; background: #141E1B; border-radius: 20px"></div>
+  </div>
+
+  <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 390px; height: 844px; background: rgba(0,0,0,0.6)"></div>
+
+  <section aria-label="Log weight" style="position: absolute; left: 0; bottom: 0; width: 390px; height: 500px; box-sizing: border-box; background: #141E1B; border-radius: 28px 28px 0 0; padding: 8px 16px 24px 16px; display: flex; flex-direction: column">
+
+    <div style="width: 32px; height: 4px; border-radius: 2px; background: #6C7C77; margin: 0 auto"></div>
+
+    <div style="margin-top: 16px; font-family: Nunito, sans-serif; font-weight: 800; font-size: 20px; line-height: 28px; color: #E8EFEC">Log weight</div>
+
+    <button type="button" style="margin-top: 12px; height: 44px; width: 100%; border: 0; border-radius: 12px; background: #1D2925; color: #E8EFEC; display: flex; align-items: center; justify-content: space-between; padding: 0 8px 0 14px; font-size: 15px; font-weight: 500">
+      <span style="display: flex; align-items: center; gap: 10px">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9DAEA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg>
+        <span class="num">Today, 07:40</span>
+      </span>
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9DAEA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+    </button>
+
+    <div style="margin-top: 20px; display: flex; align-items: center; justify-content: space-between">
+      <button type="button" aria-label="Decrease by 0.1 kg" style="width: 56px; height: 56px; border-radius: 999px; border: 0; background: #1D2925; color: #E8EFEC; display: flex; align-items: center; justify-content: center; padding: 0">
+        <svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path></svg>
+      </button>
+      <div style="display: flex; align-items: baseline; gap: 6px">
+        <span class="num" style="font-family: Nunito, sans-serif; font-weight: 800; font-size: 56px; line-height: 64px; color: #E8EFEC">82.4</span>
+        <span style="font-family: Nunito, sans-serif; font-weight: 700; font-size: 20px; line-height: 28px; color: #9DAEA8">kg</span>
+      </div>
+      <button type="button" aria-label="Increase by 0.1 kg" style="width: 56px; height: 56px; border-radius: 999px; border: 0; background: #1D2925; color: #E8EFEC; display: flex; align-items: center; justify-content: center; padding: 0">
+        <svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+      </button>
+    </div>
+
+    <div style="margin-top: 20px; display: flex; justify-content: center">
+      <div style="width: 168px; height: 36px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 3px; box-sizing: border-box; background: #1D2925; border-radius: 12px">
+        <button type="button" aria-pressed="true" style="border: 0; border-radius: 10px; background: #123F36; color: #BFEEDD; font-size: 13px; font-weight: 600; padding: 0; display: flex; align-items: center; justify-content: center; gap: 4px">
+          <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+          <span>kg</span>
+        </button>
+        <button type="button" style="border: 0; border-radius: 10px; background: transparent; color: #9DAEA8; font-size: 13px; font-weight: 500; padding: 0">lb</button>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px; display: flex; align-items: flex-start; gap: 10px; padding: 0 4px">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9DAEA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 20px"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
+      <div style="font-size: 13px; line-height: 20px; font-weight: 500; color: #9DAEA8">Weigh in after waking, before eating, for the steadiest trend.</div>
+    </div>
+
+    <div style="flex: 1"></div>
+
+    <div class="num" style="text-align: center; font-size: 12px; line-height: 16px; font-weight: 500; color: #9DAEA8">Last: 82.6 kg · 2 days ago</div>
+
+    <button type="button" style="margin-top: 10px; height: 48px; width: 100%; border: 0; border-radius: 999px; background: #6FD6B6; color: #04241D; font-size: 15px; font-weight: 600">Save</button>
+
+  </section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

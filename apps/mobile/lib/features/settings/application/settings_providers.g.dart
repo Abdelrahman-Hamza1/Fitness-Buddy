@@ -174,12 +174,14 @@ final class HalalProvider
 
 String _$halalHash() => r'8a75b9b74d4d2736e277e8e2b7d25eccc62c067f';
 
-/// Lazy persisted theme; callers use system before the first emission.
+/// Lazy persisted theme; callers use the default (dark) before the first
+/// emission.
 
 @ProviderFor(themePreference)
 final themePreferenceProvider = ThemePreferenceProvider._();
 
-/// Lazy persisted theme; callers use system before the first emission.
+/// Lazy persisted theme; callers use the default (dark) before the first
+/// emission.
 
 final class ThemePreferenceProvider
     extends
@@ -189,7 +191,8 @@ final class ThemePreferenceProvider
           Stream<ThemePreference>
         >
     with $FutureModifier<ThemePreference>, $StreamProvider<ThemePreference> {
-  /// Lazy persisted theme; callers use system before the first emission.
+  /// Lazy persisted theme; callers use the default (dark) before the first
+  /// emission.
   ThemePreferenceProvider._()
     : super(
         from: null,

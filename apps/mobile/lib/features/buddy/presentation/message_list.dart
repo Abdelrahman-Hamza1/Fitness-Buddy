@@ -184,6 +184,8 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
           text: reply.draft.text,
           fromUser: false,
           semanticLabel: l10n.buddyBubbleBuddy(reply.draft.text),
+          // Who is talking, as on the canvas (A44); decorative.
+          leading: const FbBuddyAvatar(size: 24),
         ),
       if (turn.phase == BuddyTurnPhase.sending)
         FbProposalCard.skeleton(semanticLabel: l10n.buddyWorking),

@@ -81,7 +81,11 @@ Future<void> main() => fbGoldenMatrix(
             text: '2 eggs and a tsp of oil',
             fromUser: true,
           ),
-          const FbMessageBubble(text: "Here's your meal.", fromUser: false),
+          const FbMessageBubble(
+            text: "Here's your meal.",
+            fromUser: false,
+            leading: FbBuddyAvatar(size: 24),
+          ),
         ],
       ),
     ),

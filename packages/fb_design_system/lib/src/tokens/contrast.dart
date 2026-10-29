@@ -64,6 +64,12 @@ final class FbContrastPair {
 
 /// Every foreground/background pair the design system uses in [palette]
 /// (UX-071). All text, large or not, is held to 4.5:1.
+///
+/// Not pairs, on purpose: `outlineVariant` and `mint` on the surfaces are
+/// decoration and carry no information. The Embrace brand mark and the
+/// "Fitness Buddy" lockup are a logo, which WCAG 2.2 SC 1.4.11 exempts: on
+/// light, the mark's mint figure on cream is about 1.4:1 by design (TD-098,
+/// A44 PA8). The Buddy avatar's figures are checked against its disc.
 List<FbContrastPair> fbContrastPairs(FbPalette palette) {
   final p = palette;
   final surfaces = <String, Color>{
@@ -139,6 +145,24 @@ List<FbContrastPair> fbContrastPairs(FbPalette palette) {
       p.brand,
       p.brandContainer,
       FbContrastKind.text,
+    ),
+    FbContrastPair(
+      'wordmark (onBrandContainer) on surface',
+      p.onBrandContainer,
+      p.surface,
+      FbContrastKind.text,
+    ),
+    FbContrastPair(
+      'avatarForeground on avatarBackground',
+      p.avatarForeground,
+      p.avatarBackground,
+      FbContrastKind.ui,
+    ),
+    FbContrastPair(
+      'mint on avatarBackground',
+      p.mint,
+      p.avatarBackground,
+      FbContrastKind.ui,
     ),
     FbContrastPair(
       'snackbar text',

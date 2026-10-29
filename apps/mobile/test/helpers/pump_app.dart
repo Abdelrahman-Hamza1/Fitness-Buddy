@@ -44,12 +44,15 @@ final Override _saturdayWeek = weekStartProvider.overrideWith(
 
 /// The whole app, wired like `main` does, on a fresh offline [TestPhone],
 /// plus [overrides].
+/// An override in [overrides] replaces the base one of the same provider.
 Widget testApp({List<Override> overrides = const []}) => ProviderScope(
   overrides: [
-    ...TestPhone().overrides(),
-    ...todayOverrides(),
-    _systemTheme,
-    _saturdayWeek,
+    ...[
+      ...TestPhone().overrides(),
+      ...todayOverrides(),
+      _systemTheme,
+      _saturdayWeek,
+    ].where((base) => !overrides.any((o) => o.origin == base.origin)),
     ...overrides,
   ],
   child: const FitnessBuddyApp(),

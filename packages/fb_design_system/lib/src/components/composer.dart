@@ -1,4 +1,5 @@
 import 'package:fb_design_system/src/components/icon_button.dart';
+import 'package:fb_design_system/src/components/input_bar.dart';
 import 'package:fb_design_system/src/tokens/icons.dart';
 import 'package:fb_design_system/src/tokens/spacing.dart';
 import 'package:fb_design_system/src/tokens/typography.dart';
@@ -62,49 +63,54 @@ class FbComposer extends StatelessWidget {
             borderRadius: BorderRadius.circular(FbRadius.lg),
             side: BorderSide(color: scheme.outlineVariant),
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              ?leading,
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsetsDirectional.only(
-                    start: leading == null ? FbSpace.s4 : 0,
-                  ),
-                  child: TextField(
-                    controller: controller,
-                    focusNode: focusNode,
-                    autofocus: autofocus,
-                    minLines: 1,
-                    maxLines: 4,
-                    inputFormatters: inputFormatters,
-                    keyboardType: TextInputType.multiline,
-                    textInputAction: TextInputAction.send,
-                    textCapitalization: TextCapitalization.sentences,
-                    style: FbType.body.copyWith(color: scheme.onSurface),
-                    // Providing onEditingComplete keeps the focus after the
-                    // keyboard's send key (UX-023).
-                    onEditingComplete: () => send?.call(),
-                    decoration:
-                        InputDecoration.collapsed(
-                          hintText: hint,
-                          hintStyle: FbType.body.copyWith(
-                            color: scheme.onSurfaceVariant,
+          // As tall as the Today input bar it replaces in the sheet.
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: FbInputBar.minHeight),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                ?leading,
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.only(
+                      start: leading == null ? FbSpace.s4 : 0,
+                    ),
+                    child: TextField(
+                      controller: controller,
+                      focusNode: focusNode,
+                      autofocus: autofocus,
+                      minLines: 1,
+                      maxLines: 4,
+                      inputFormatters: inputFormatters,
+                      keyboardType: TextInputType.multiline,
+                      textInputAction: TextInputAction.send,
+                      textCapitalization: TextCapitalization.sentences,
+                      style: FbType.body.copyWith(color: scheme.onSurface),
+                      // Providing onEditingComplete keeps the focus after the
+                      // keyboard's send key (UX-023).
+                      onEditingComplete: () => send?.call(),
+                      decoration:
+                          InputDecoration.collapsed(
+                            hintText: hint,
+                            hintStyle: FbType.body.copyWith(
+                              color: scheme.onSurfaceVariant,
+                            ),
+                          ).copyWith(
+                            contentPadding:
+                                const EdgeInsetsDirectional.symmetric(
+                                  vertical: FbSpace.s3,
+                                ),
                           ),
-                        ).copyWith(
-                          contentPadding: const EdgeInsetsDirectional.symmetric(
-                            vertical: FbSpace.s3,
-                          ),
-                        ),
+                    ),
                   ),
                 ),
-              ),
-              FbIconButton(
-                icon: FbIcons.send,
-                tooltip: sendTooltip,
-                onPressed: send,
-              ),
-            ],
+                FbIconButton(
+                  icon: FbIcons.send,
+                  tooltip: sendTooltip,
+                  onPressed: send,
+                ),
+              ],
+            ),
           ),
         );
       },

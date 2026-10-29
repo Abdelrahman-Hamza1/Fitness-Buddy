@@ -138,7 +138,7 @@ void main() {
   });
 
   testWidgets('the preview switch changes the theme setting and the app '
-      'theme between light, dark and system; the palette is "Warm"', (
+      'theme between light, dark and system; the palette is "Embrace"', (
     tester,
   ) async {
     _phoneSize(tester);
@@ -149,25 +149,25 @@ void main() {
     ThemeData current() => Theme.of(tester.element(find.byType(Scaffold).last));
     expect(
       container.read(themePreferenceProvider).value,
-      anyOf(isNull, ThemePreference.system),
+      anyOf(isNull, ThemePreference.dark),
     );
-    // The test platform is light.
-    expect(current().colorScheme.primary, FbPalette.of(Brightness.light).brand);
+    // Dark by default (D-082), though the test platform is light.
+    expect(current().colorScheme.primary, FbPalette.of(Brightness.dark).brand);
 
-    await tester.tap(find.text('Dark'));
+    await tester.tap(find.text('Light'));
     await settleWrites(tester);
     expect(
       await tester.runAsync(
         () => container.read(themePreferenceProvider.future),
       ),
-      ThemePreference.dark,
+      ThemePreference.light,
     );
-    expect(current().brightness, Brightness.dark);
-    expect(current().colorScheme.primary, FbPalette.of(Brightness.dark).brand);
-
-    await tester.tap(find.text('Light'));
-    await settleWrites(tester);
     expect(current().brightness, Brightness.light);
+    expect(current().colorScheme.primary, FbPalette.of(Brightness.light).brand);
+
+    await tester.tap(find.text('Dark'));
+    await settleWrites(tester);
+    expect(current().brightness, Brightness.dark);
 
     await tester.tap(find.text('System'));
     await settleWrites(tester);

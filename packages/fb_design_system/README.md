@@ -1,14 +1,29 @@
 # fb_design_system
 
-Fitness Buddy's design system (A02): tokens (colour, type, spacing, radii,
-elevation, motion), the "Warm" palette, light and dark `ThemeData` built on
-`material_ui`, a bundled Latin + Arabic font pair, the component set and
-chart-wrapper interfaces. Pure presentation: no state management, no I/O, no
+Fitness Buddy's design system (A02, A44): tokens (colour, type, spacing, radii,
+density, elevation, motion), the "Embrace" palette (TD-098), light and dark
+`ThemeData` built on `material_ui`, the bundled fonts (Nunito, Inter, Noto Sans
+Arabic), the brand mark, the component set and chart-wrapper interfaces. Pure presentation: no state management, no I/O, no
 domain types (the allowlist is enforced by `test/dependencies_test.dart`).
 
 - `FbTheme.light()` / `FbTheme.dark()`: the themes. Product
-  colours Material lacks (macros, over-target, success, info) are on
-  `context.fbColors`.
+  colours Material lacks (macros, over-target, success, info, mint, the
+  Buddy avatar) are on `context.fbColors`. One brand palette: a second one is
+  two consts and the switch in `lib/src/tokens/palette.dart`.
+- Type: Nunito for the display number, titles and the wordmark
+  (`FbType.display/headline/title/wordmark`), Inter for the rest.
+- Density: `FbDensity` (`lib/src/tokens/density.dart`) holds the compact
+  values (card padding 12, card gap 8, rows 44, display 40) the app uses;
+  the comfortable ones sit beside them, and the one-line `_compact` switch
+  flips them all.
+- Brand: the Embrace mark's geometry lives once, as const SVG path strings
+  in `lib/src/brand/brand_geometry.dart`, read by a small restricted parser
+  (`parseFbMarkPath`). `brand/embrace-mark.svg`, `brand/embrace-mini.svg`
+  (outside `lib/`, not assets) and the Android launcher VectorDrawables are
+  verbatim copies, checked by `apps/mobile/test/android/brand_sync_test.dart`:
+  edit the const, look at the `brand_mark` golden, then copy the strings.
+  Widgets: `FbBrandMark`, `FbBrandLockup` (mark + wordmark, a header; the app
+  passes its name) and `FbBuddyAvatar`.
 - Spacing, radii, elevation and motion are consts: `FbSpace`, `FbRadius`,
   `FbElevation`, `FbMotion`. Icons are named only in `FbIcons`.
 - Built-in component strings are in `lib/l10n/fb_ds_en.arb`

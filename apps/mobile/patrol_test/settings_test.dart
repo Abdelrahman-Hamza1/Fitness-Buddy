@@ -273,14 +273,18 @@ void main() {
       () => find.byType(BottomSheet).evaluate().isNotEmpty,
       'the Theme sheet',
     );
-    await _chooseOption(tester, 'Dark');
-    await _waitForSnackBar(tester, 'Theme set to Dark');
+    // Dark is the default (D-082), so Light is the change.
+    await _chooseOption(tester, 'Light');
+    await _waitForSnackBar(tester, 'Theme set to Light');
     await waitUntil(
       tester,
-      () => _brightness(tester) == Brightness.dark,
-      'the app to turn dark',
+      () => _brightness(tester) == Brightness.light,
+      'the app to turn light',
     );
-    expect(container.read(themePreferenceProvider).value, ThemePreference.dark);
+    expect(
+      container.read(themePreferenceProvider).value,
+      ThemePreference.light,
+    );
     await _waitNoSnackBar(tester);
 
     // City: type "nab", wait for the list (not the skeleton), choose Nablus.
@@ -361,12 +365,13 @@ void main() {
 
   patrolTest('A10 cold start with a persisted opposite theme', ($) async {
     final tester = $.tester;
-    // The theme opposite to the system's, so a start on the system theme
-    // would flash (D6, PA5).
+    // Light, the opposite of the dark default (D-082, A44 D7): frame 1 is
+    // dark (the window and the default), then one switch to the stored
+    // choice, without animation (D6).
     final systemDark =
         tester.platformDispatcher.platformBrightness == Brightness.dark;
-    final chosen = systemDark ? ThemePreference.light : ThemePreference.dark;
-    final want = systemDark ? Brightness.light : Brightness.dark;
+    const chosen = ThemePreference.light;
+    const want = Brightness.light;
 
     final cache = await getTemporaryDirectory();
     final root = await cache.createTemp('fb_theme_it');
@@ -397,7 +402,7 @@ void main() {
 
     // Cold start: a new container on the same database. Count the frames and
     // time until the chosen theme is on screen (printed, not asserted tightly:
-    // the first frame may use the system theme, D6).
+    // the first frame uses the dark default, A44 D7).
     final watch = Stopwatch()..start();
     container = await _launch(tester, root, 'it-theme');
     addTearDown(container.dispose);

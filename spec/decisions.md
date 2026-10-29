@@ -404,3 +404,8 @@ _Entries marked **(provisional)** apply Claude's recommendation to a question th
 - Decision: R1 is built, tested and distributed on **Android only** (the owner's Samsung A55, via Google Play internal testing). All iPhone work moves to **R2**: iOS builds and distribution (TestFlight), Sign in with Apple (AC-001), and the iPhone speed check in AT-004. The app stays a cross-platform Flutter app, and no Android-only shortcuts are allowed in shared code.
 - Why: The owner uses Android and has no Mac. Nobody uses an iPhone in R1. Deferring iOS removes cloud-Mac setup, Apple fees and a second test target until friends need it.
 
+## D-082 — Dark by default, in the Embrace palette
+- Date / Source: 2026-10-29 · owner, after the design-canvas review ("The UI looks amazing"), answering TQ-23: "Well the new default will be the palette we decided, the minty stuff. OK anyways."
+- Status: Accepted. Amends UX-040.
+- Decision: The app opens in the **dark theme by default**, in the "Embrace" brand palette (dark "Deep Forest", teal and mint; light "Mint Cream"). Light and dark themes both stay, and Me › Settings › Theme still offers System / Light / Dark.
+- Why: The owner prefers dark, and the approved Embrace identity is designed dark-first. Following the system stays available as a setting. Technical details: TD-098 (step A44).
