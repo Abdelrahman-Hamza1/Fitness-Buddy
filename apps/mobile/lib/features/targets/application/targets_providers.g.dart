@@ -310,7 +310,7 @@ final class DayTargetsProvider
   }
 }
 
-String _$dayTargetsHash() => r'202e0419b3150581988cd816078bde89b2cbb7b0';
+String _$dayTargetsHash() => r'38fd3072bb052ab0791ca76d02cb28f1c7f24187';
 
 /// Everything Today and Targets show for [date] (D6), derived by
 /// [TargetsTimeline.day] from the stored rows, the earlier days of [date]'s

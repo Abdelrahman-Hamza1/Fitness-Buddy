@@ -6,6 +6,7 @@ import 'package:fb_domain/src/targets/target_settings.dart';
 import 'package:fb_domain/src/targets/weekly_budget.dart';
 import 'package:fb_domain/src/time/local_date.dart';
 import 'package:fb_domain/src/time/week_calendar.dart';
+import 'package:fb_domain/src/workouts/training_shift.dart';
 
 /// One diary day's logged intake, as the app gathers it (D6).
 final class DayIntake {
@@ -194,6 +195,7 @@ abstract final class TargetsTimeline {
     Iterable<DayIntake> intake = const [],
     WeekCalendar calendar = const WeekCalendar(),
     TargetDefaults defaults = const TargetDefaults(),
+    TrainingShiftInput? training,
   }) {
     final version = versionOn(settings, date);
     if (profile == null || version == null) return null;
@@ -206,7 +208,24 @@ abstract final class TargetsTimeline {
       ),
     );
     if (floor == null) return null;
-    final plan = _tryEngine(() => version.toPlan(floor));
+    final versionPlan = _tryEngine(() => version.toPlan(floor));
+    if (versionPlan == null) return null;
+    // The weekly workout plan's training days shift the same weekly budget
+    // (TG-043, WO-061, A36 D5); workouts never add calories (WO-060).
+    final plan = training == null
+        ? versionPlan
+        : _tryEngine(
+            () => TargetPlan(
+              baseKcal: versionPlan.baseKcal,
+              floorKcal: versionPlan.floorKcal,
+              mode: versionPlan.mode,
+              rebalancing: versionPlan.rebalancing,
+              manual: versionPlan.manual,
+              acknowledged: versionPlan.acknowledged,
+              weights: training.weightsOver(versionPlan.weights),
+              macros: versionPlan.macros,
+            ),
+          );
     if (plan == null) return null;
     final phase = phaseOn(goals, date);
     final goalWeight = switch (phase?.expression) {
@@ -237,6 +256,8 @@ abstract final class TargetsTimeline {
         date: date,
         weightKg: goalWeight ?? weight,
         earlierIntake: known.values,
+        remainingWeights:
+            training?.remainingOver(versionPlan.weights, date) ?? const {},
         calendar: calendar,
       ),
     );

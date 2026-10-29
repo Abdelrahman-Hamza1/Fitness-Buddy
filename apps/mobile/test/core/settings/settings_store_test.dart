@@ -221,6 +221,7 @@ void main() {
           TargetsOp.familyName,
           WeighInOp.familyName,
           ChatMessageOp.familyName,
+          WorkoutOp.familyName,
         ],
       );
       final store = container.read(settingsStoreProvider);

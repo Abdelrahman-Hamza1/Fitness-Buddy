@@ -3,6 +3,5244 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
+class $WorkoutSessionsTable extends WorkoutSessions
+    with TableInfo<$WorkoutSessionsTable, WorkoutSessionRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WorkoutSessionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+    'origin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedByUserMeta = const VerificationMeta(
+    'editedByUser',
+  );
+  @override
+  late final GeneratedColumn<bool> editedByUser = GeneratedColumn<bool>(
+    'edited_by_user',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_by_user" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _localDateMeta = const VerificationMeta(
+    'localDate',
+  );
+  @override
+  late final GeneratedColumn<String> localDate = GeneratedColumn<String>(
+    'local_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _startMinuteMeta = const VerificationMeta(
+    'startMinute',
+  );
+  @override
+  late final GeneratedColumn<int> startMinute = GeneratedColumn<int>(
+    'start_minute',
+    aliasedName,
+    true,
+    check: () => ComparableExpr(startMinute).isBetweenValues(0, 1439),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _durationMinutesMeta = const VerificationMeta(
+    'durationMinutes',
+  );
+  @override
+  late final GeneratedColumn<int> durationMinutes = GeneratedColumn<int>(
+    'duration_minutes',
+    aliasedName,
+    true,
+    check: () => ComparableExpr(durationMinutes).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _templateIdMeta = const VerificationMeta(
+    'templateId',
+  );
+  @override
+  late final GeneratedColumn<String> templateId = GeneratedColumn<String>(
+    'template_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    localDate,
+    name,
+    startMinute,
+    durationMinutes,
+    templateId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'workout_sessions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WorkoutSessionRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedHlcMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('origin')) {
+      context.handle(
+        _originMeta,
+        origin.isAcceptableOrUnknown(data['origin']!, _originMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originMeta);
+    }
+    if (data.containsKey('edited_by_user')) {
+      context.handle(
+        _editedByUserMeta,
+        editedByUser.isAcceptableOrUnknown(
+          data['edited_by_user']!,
+          _editedByUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('local_date')) {
+      context.handle(
+        _localDateMeta,
+        localDate.isAcceptableOrUnknown(data['local_date']!, _localDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localDateMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    }
+    if (data.containsKey('start_minute')) {
+      context.handle(
+        _startMinuteMeta,
+        startMinute.isAcceptableOrUnknown(
+          data['start_minute']!,
+          _startMinuteMeta,
+        ),
+      );
+    }
+    if (data.containsKey('duration_minutes')) {
+      context.handle(
+        _durationMinutesMeta,
+        durationMinutes.isAcceptableOrUnknown(
+          data['duration_minutes']!,
+          _durationMinutesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('template_id')) {
+      context.handle(
+        _templateIdMeta,
+        templateId.isAcceptableOrUnknown(data['template_id']!, _templateIdMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WorkoutSessionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WorkoutSessionRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      origin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin'],
+      )!,
+      editedByUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited_by_user'],
+      )!,
+      localDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_date'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      ),
+      startMinute: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}start_minute'],
+      ),
+      durationMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_minutes'],
+      ),
+      templateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}template_id'],
+      ),
+    );
+  }
+
+  @override
+  $WorkoutSessionsTable createAlias(String alias) {
+    return $WorkoutSessionsTable(attachedDatabase, alias);
+  }
+}
+
+class WorkoutSessionRow extends DataClass
+    implements Insertable<WorkoutSessionRow> {
+  /// UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys
+  /// (`core/db/natural_id.dart`). Lowercase canonical text.
+  final String id;
+
+  /// When the row was first written, UTC ms (0 for seeds).
+  final int createdAt;
+
+  /// The hybrid logical clock of the last write (`fb_domain` `Hlc` text).
+  final String updatedHlc;
+
+  /// 1 on insert, +1 per write: the local optimistic concurrency check.
+  final int version;
+
+  /// The tombstone, UTC ms. Synced rows are never hard-deleted.
+  final int? deletedAt;
+
+  /// The install that made the last write (the HLC's node id, TD-053).
+  final String deviceId;
+
+  /// `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`.
+  final String origin;
+
+  /// Provenance: the user overrode a value that came from another source
+  /// (AI-072, the "edited by you" badge). Set only by ops.
+  final bool editedByUser;
+
+  /// The training day, `YYYY-MM-DD`.
+  final String localDate;
+
+  /// "Push", or null. User content.
+  final String? name;
+
+  /// Start time, minutes after local midnight.
+  final int? startMinute;
+
+  /// Duration in minutes.
+  final int? durationMinutes;
+
+  /// The template it was started from (WO-022, A36 D4).
+  final String? templateId;
+  const WorkoutSessionRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedHlc,
+    required this.version,
+    this.deletedAt,
+    required this.deviceId,
+    required this.origin,
+    required this.editedByUser,
+    required this.localDate,
+    this.name,
+    this.startMinute,
+    this.durationMinutes,
+    this.templateId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
+    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['device_id'] = Variable<String>(deviceId);
+    map['origin'] = Variable<String>(origin);
+    map['edited_by_user'] = Variable<bool>(editedByUser);
+    map['local_date'] = Variable<String>(localDate);
+    if (!nullToAbsent || name != null) {
+      map['name'] = Variable<String>(name);
+    }
+    if (!nullToAbsent || startMinute != null) {
+      map['start_minute'] = Variable<int>(startMinute);
+    }
+    if (!nullToAbsent || durationMinutes != null) {
+      map['duration_minutes'] = Variable<int>(durationMinutes);
+    }
+    if (!nullToAbsent || templateId != null) {
+      map['template_id'] = Variable<String>(templateId);
+    }
+    return map;
+  }
+
+  WorkoutSessionsCompanion toCompanion(bool nullToAbsent) {
+    return WorkoutSessionsCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
+      version: Value(version),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deviceId: Value(deviceId),
+      origin: Value(origin),
+      editedByUser: Value(editedByUser),
+      localDate: Value(localDate),
+      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      startMinute: startMinute == null && nullToAbsent
+          ? const Value.absent()
+          : Value(startMinute),
+      durationMinutes: durationMinutes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(durationMinutes),
+      templateId: templateId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(templateId),
+    );
+  }
+
+  factory WorkoutSessionRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WorkoutSessionRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
+      version: serializer.fromJson<int>(json['version']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      origin: serializer.fromJson<String>(json['origin']),
+      editedByUser: serializer.fromJson<bool>(json['editedByUser']),
+      localDate: serializer.fromJson<String>(json['localDate']),
+      name: serializer.fromJson<String?>(json['name']),
+      startMinute: serializer.fromJson<int?>(json['startMinute']),
+      durationMinutes: serializer.fromJson<int?>(json['durationMinutes']),
+      templateId: serializer.fromJson<String?>(json['templateId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
+      'version': serializer.toJson<int>(version),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'origin': serializer.toJson<String>(origin),
+      'editedByUser': serializer.toJson<bool>(editedByUser),
+      'localDate': serializer.toJson<String>(localDate),
+      'name': serializer.toJson<String?>(name),
+      'startMinute': serializer.toJson<int?>(startMinute),
+      'durationMinutes': serializer.toJson<int?>(durationMinutes),
+      'templateId': serializer.toJson<String?>(templateId),
+    };
+  }
+
+  WorkoutSessionRow copyWith({
+    String? id,
+    int? createdAt,
+    String? updatedHlc,
+    int? version,
+    Value<int?> deletedAt = const Value.absent(),
+    String? deviceId,
+    String? origin,
+    bool? editedByUser,
+    String? localDate,
+    Value<String?> name = const Value.absent(),
+    Value<int?> startMinute = const Value.absent(),
+    Value<int?> durationMinutes = const Value.absent(),
+    Value<String?> templateId = const Value.absent(),
+  }) => WorkoutSessionRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+    version: version ?? this.version,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deviceId: deviceId ?? this.deviceId,
+    origin: origin ?? this.origin,
+    editedByUser: editedByUser ?? this.editedByUser,
+    localDate: localDate ?? this.localDate,
+    name: name.present ? name.value : this.name,
+    startMinute: startMinute.present ? startMinute.value : this.startMinute,
+    durationMinutes: durationMinutes.present
+        ? durationMinutes.value
+        : this.durationMinutes,
+    templateId: templateId.present ? templateId.value : this.templateId,
+  );
+  WorkoutSessionRow copyWithCompanion(WorkoutSessionsCompanion data) {
+    return WorkoutSessionRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
+      version: data.version.present ? data.version.value : this.version,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      editedByUser: data.editedByUser.present
+          ? data.editedByUser.value
+          : this.editedByUser,
+      localDate: data.localDate.present ? data.localDate.value : this.localDate,
+      name: data.name.present ? data.name.value : this.name,
+      startMinute: data.startMinute.present
+          ? data.startMinute.value
+          : this.startMinute,
+      durationMinutes: data.durationMinutes.present
+          ? data.durationMinutes.value
+          : this.durationMinutes,
+      templateId: data.templateId.present
+          ? data.templateId.value
+          : this.templateId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WorkoutSessionRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('localDate: $localDate, ')
+          ..write('name: $name, ')
+          ..write('startMinute: $startMinute, ')
+          ..write('durationMinutes: $durationMinutes, ')
+          ..write('templateId: $templateId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    localDate,
+    name,
+    startMinute,
+    durationMinutes,
+    templateId,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WorkoutSessionRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc &&
+          other.version == this.version &&
+          other.deletedAt == this.deletedAt &&
+          other.deviceId == this.deviceId &&
+          other.origin == this.origin &&
+          other.editedByUser == this.editedByUser &&
+          other.localDate == this.localDate &&
+          other.name == this.name &&
+          other.startMinute == this.startMinute &&
+          other.durationMinutes == this.durationMinutes &&
+          other.templateId == this.templateId);
+}
+
+class WorkoutSessionsCompanion extends UpdateCompanion<WorkoutSessionRow> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<String> updatedHlc;
+  final Value<int> version;
+  final Value<int?> deletedAt;
+  final Value<String> deviceId;
+  final Value<String> origin;
+  final Value<bool> editedByUser;
+  final Value<String> localDate;
+  final Value<String?> name;
+  final Value<int?> startMinute;
+  final Value<int?> durationMinutes;
+  final Value<String?> templateId;
+  final Value<int> rowid;
+  const WorkoutSessionsCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
+    this.version = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.editedByUser = const Value.absent(),
+    this.localDate = const Value.absent(),
+    this.name = const Value.absent(),
+    this.startMinute = const Value.absent(),
+    this.durationMinutes = const Value.absent(),
+    this.templateId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WorkoutSessionsCompanion.insert({
+    required String id,
+    required int createdAt,
+    required String updatedHlc,
+    required int version,
+    this.deletedAt = const Value.absent(),
+    required String deviceId,
+    required String origin,
+    this.editedByUser = const Value.absent(),
+    required String localDate,
+    this.name = const Value.absent(),
+    this.startMinute = const Value.absent(),
+    this.durationMinutes = const Value.absent(),
+    this.templateId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedHlc = Value(updatedHlc),
+       version = Value(version),
+       deviceId = Value(deviceId),
+       origin = Value(origin),
+       localDate = Value(localDate);
+  static Insertable<WorkoutSessionRow> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<String>? updatedHlc,
+    Expression<int>? version,
+    Expression<int>? deletedAt,
+    Expression<String>? deviceId,
+    Expression<String>? origin,
+    Expression<bool>? editedByUser,
+    Expression<String>? localDate,
+    Expression<String>? name,
+    Expression<int>? startMinute,
+    Expression<int>? durationMinutes,
+    Expression<String>? templateId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
+      if (version != null) 'version': version,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deviceId != null) 'device_id': deviceId,
+      if (origin != null) 'origin': origin,
+      if (editedByUser != null) 'edited_by_user': editedByUser,
+      if (localDate != null) 'local_date': localDate,
+      if (name != null) 'name': name,
+      if (startMinute != null) 'start_minute': startMinute,
+      if (durationMinutes != null) 'duration_minutes': durationMinutes,
+      if (templateId != null) 'template_id': templateId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WorkoutSessionsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<String>? updatedHlc,
+    Value<int>? version,
+    Value<int?>? deletedAt,
+    Value<String>? deviceId,
+    Value<String>? origin,
+    Value<bool>? editedByUser,
+    Value<String>? localDate,
+    Value<String?>? name,
+    Value<int?>? startMinute,
+    Value<int?>? durationMinutes,
+    Value<String?>? templateId,
+    Value<int>? rowid,
+  }) {
+    return WorkoutSessionsCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
+      version: version ?? this.version,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deviceId: deviceId ?? this.deviceId,
+      origin: origin ?? this.origin,
+      editedByUser: editedByUser ?? this.editedByUser,
+      localDate: localDate ?? this.localDate,
+      name: name ?? this.name,
+      startMinute: startMinute ?? this.startMinute,
+      durationMinutes: durationMinutes ?? this.durationMinutes,
+      templateId: templateId ?? this.templateId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (editedByUser.present) {
+      map['edited_by_user'] = Variable<bool>(editedByUser.value);
+    }
+    if (localDate.present) {
+      map['local_date'] = Variable<String>(localDate.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (startMinute.present) {
+      map['start_minute'] = Variable<int>(startMinute.value);
+    }
+    if (durationMinutes.present) {
+      map['duration_minutes'] = Variable<int>(durationMinutes.value);
+    }
+    if (templateId.present) {
+      map['template_id'] = Variable<String>(templateId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WorkoutSessionsCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('localDate: $localDate, ')
+          ..write('name: $name, ')
+          ..write('startMinute: $startMinute, ')
+          ..write('durationMinutes: $durationMinutes, ')
+          ..write('templateId: $templateId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SessionExercisesTable extends SessionExercises
+    with TableInfo<$SessionExercisesTable, SessionExerciseRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SessionExercisesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+    'origin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedByUserMeta = const VerificationMeta(
+    'editedByUser',
+  );
+  @override
+  late final GeneratedColumn<bool> editedByUser = GeneratedColumn<bool>(
+    'edited_by_user',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_by_user" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _sessionIdMeta = const VerificationMeta(
+    'sessionId',
+  );
+  @override
+  late final GeneratedColumn<String> sessionId = GeneratedColumn<String>(
+    'session_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _exerciseIdMeta = const VerificationMeta(
+    'exerciseId',
+  );
+  @override
+  late final GeneratedColumn<String> exerciseId = GeneratedColumn<String>(
+    'exercise_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(position).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    sessionId,
+    exerciseId,
+    position,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'session_exercises';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SessionExerciseRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedHlcMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('origin')) {
+      context.handle(
+        _originMeta,
+        origin.isAcceptableOrUnknown(data['origin']!, _originMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originMeta);
+    }
+    if (data.containsKey('edited_by_user')) {
+      context.handle(
+        _editedByUserMeta,
+        editedByUser.isAcceptableOrUnknown(
+          data['edited_by_user']!,
+          _editedByUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('session_id')) {
+      context.handle(
+        _sessionIdMeta,
+        sessionId.isAcceptableOrUnknown(data['session_id']!, _sessionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sessionIdMeta);
+    }
+    if (data.containsKey('exercise_id')) {
+      context.handle(
+        _exerciseIdMeta,
+        exerciseId.isAcceptableOrUnknown(data['exercise_id']!, _exerciseIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_exerciseIdMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SessionExerciseRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SessionExerciseRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      origin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin'],
+      )!,
+      editedByUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited_by_user'],
+      )!,
+      sessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}session_id'],
+      )!,
+      exerciseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exercise_id'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+    );
+  }
+
+  @override
+  $SessionExercisesTable createAlias(String alias) {
+    return $SessionExercisesTable(attachedDatabase, alias);
+  }
+}
+
+class SessionExerciseRow extends DataClass
+    implements Insertable<SessionExerciseRow> {
+  /// UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys
+  /// (`core/db/natural_id.dart`). Lowercase canonical text.
+  final String id;
+
+  /// When the row was first written, UTC ms (0 for seeds).
+  final int createdAt;
+
+  /// The hybrid logical clock of the last write (`fb_domain` `Hlc` text).
+  final String updatedHlc;
+
+  /// 1 on insert, +1 per write: the local optimistic concurrency check.
+  final int version;
+
+  /// The tombstone, UTC ms. Synced rows are never hard-deleted.
+  final int? deletedAt;
+
+  /// The install that made the last write (the HLC's node id, TD-053).
+  final String deviceId;
+
+  /// `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`.
+  final String origin;
+
+  /// Provenance: the user overrode a value that came from another source
+  /// (AI-072, the "edited by you" badge). Set only by ops.
+  final bool editedByUser;
+
+  /// The session.
+  final String sessionId;
+
+  /// A catalog ID (`ex:…`) or a custom exercise's ID.
+  final String exerciseId;
+
+  /// Order within the session, from 0.
+  final int position;
+  const SessionExerciseRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedHlc,
+    required this.version,
+    this.deletedAt,
+    required this.deviceId,
+    required this.origin,
+    required this.editedByUser,
+    required this.sessionId,
+    required this.exerciseId,
+    required this.position,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
+    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['device_id'] = Variable<String>(deviceId);
+    map['origin'] = Variable<String>(origin);
+    map['edited_by_user'] = Variable<bool>(editedByUser);
+    map['session_id'] = Variable<String>(sessionId);
+    map['exercise_id'] = Variable<String>(exerciseId);
+    map['position'] = Variable<int>(position);
+    return map;
+  }
+
+  SessionExercisesCompanion toCompanion(bool nullToAbsent) {
+    return SessionExercisesCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
+      version: Value(version),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deviceId: Value(deviceId),
+      origin: Value(origin),
+      editedByUser: Value(editedByUser),
+      sessionId: Value(sessionId),
+      exerciseId: Value(exerciseId),
+      position: Value(position),
+    );
+  }
+
+  factory SessionExerciseRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SessionExerciseRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
+      version: serializer.fromJson<int>(json['version']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      origin: serializer.fromJson<String>(json['origin']),
+      editedByUser: serializer.fromJson<bool>(json['editedByUser']),
+      sessionId: serializer.fromJson<String>(json['sessionId']),
+      exerciseId: serializer.fromJson<String>(json['exerciseId']),
+      position: serializer.fromJson<int>(json['position']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
+      'version': serializer.toJson<int>(version),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'origin': serializer.toJson<String>(origin),
+      'editedByUser': serializer.toJson<bool>(editedByUser),
+      'sessionId': serializer.toJson<String>(sessionId),
+      'exerciseId': serializer.toJson<String>(exerciseId),
+      'position': serializer.toJson<int>(position),
+    };
+  }
+
+  SessionExerciseRow copyWith({
+    String? id,
+    int? createdAt,
+    String? updatedHlc,
+    int? version,
+    Value<int?> deletedAt = const Value.absent(),
+    String? deviceId,
+    String? origin,
+    bool? editedByUser,
+    String? sessionId,
+    String? exerciseId,
+    int? position,
+  }) => SessionExerciseRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+    version: version ?? this.version,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deviceId: deviceId ?? this.deviceId,
+    origin: origin ?? this.origin,
+    editedByUser: editedByUser ?? this.editedByUser,
+    sessionId: sessionId ?? this.sessionId,
+    exerciseId: exerciseId ?? this.exerciseId,
+    position: position ?? this.position,
+  );
+  SessionExerciseRow copyWithCompanion(SessionExercisesCompanion data) {
+    return SessionExerciseRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
+      version: data.version.present ? data.version.value : this.version,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      editedByUser: data.editedByUser.present
+          ? data.editedByUser.value
+          : this.editedByUser,
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      exerciseId: data.exerciseId.present
+          ? data.exerciseId.value
+          : this.exerciseId,
+      position: data.position.present ? data.position.value : this.position,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SessionExerciseRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('exerciseId: $exerciseId, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    sessionId,
+    exerciseId,
+    position,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SessionExerciseRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc &&
+          other.version == this.version &&
+          other.deletedAt == this.deletedAt &&
+          other.deviceId == this.deviceId &&
+          other.origin == this.origin &&
+          other.editedByUser == this.editedByUser &&
+          other.sessionId == this.sessionId &&
+          other.exerciseId == this.exerciseId &&
+          other.position == this.position);
+}
+
+class SessionExercisesCompanion extends UpdateCompanion<SessionExerciseRow> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<String> updatedHlc;
+  final Value<int> version;
+  final Value<int?> deletedAt;
+  final Value<String> deviceId;
+  final Value<String> origin;
+  final Value<bool> editedByUser;
+  final Value<String> sessionId;
+  final Value<String> exerciseId;
+  final Value<int> position;
+  final Value<int> rowid;
+  const SessionExercisesCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
+    this.version = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.editedByUser = const Value.absent(),
+    this.sessionId = const Value.absent(),
+    this.exerciseId = const Value.absent(),
+    this.position = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SessionExercisesCompanion.insert({
+    required String id,
+    required int createdAt,
+    required String updatedHlc,
+    required int version,
+    this.deletedAt = const Value.absent(),
+    required String deviceId,
+    required String origin,
+    this.editedByUser = const Value.absent(),
+    required String sessionId,
+    required String exerciseId,
+    required int position,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedHlc = Value(updatedHlc),
+       version = Value(version),
+       deviceId = Value(deviceId),
+       origin = Value(origin),
+       sessionId = Value(sessionId),
+       exerciseId = Value(exerciseId),
+       position = Value(position);
+  static Insertable<SessionExerciseRow> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<String>? updatedHlc,
+    Expression<int>? version,
+    Expression<int>? deletedAt,
+    Expression<String>? deviceId,
+    Expression<String>? origin,
+    Expression<bool>? editedByUser,
+    Expression<String>? sessionId,
+    Expression<String>? exerciseId,
+    Expression<int>? position,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
+      if (version != null) 'version': version,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deviceId != null) 'device_id': deviceId,
+      if (origin != null) 'origin': origin,
+      if (editedByUser != null) 'edited_by_user': editedByUser,
+      if (sessionId != null) 'session_id': sessionId,
+      if (exerciseId != null) 'exercise_id': exerciseId,
+      if (position != null) 'position': position,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SessionExercisesCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<String>? updatedHlc,
+    Value<int>? version,
+    Value<int?>? deletedAt,
+    Value<String>? deviceId,
+    Value<String>? origin,
+    Value<bool>? editedByUser,
+    Value<String>? sessionId,
+    Value<String>? exerciseId,
+    Value<int>? position,
+    Value<int>? rowid,
+  }) {
+    return SessionExercisesCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
+      version: version ?? this.version,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deviceId: deviceId ?? this.deviceId,
+      origin: origin ?? this.origin,
+      editedByUser: editedByUser ?? this.editedByUser,
+      sessionId: sessionId ?? this.sessionId,
+      exerciseId: exerciseId ?? this.exerciseId,
+      position: position ?? this.position,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (editedByUser.present) {
+      map['edited_by_user'] = Variable<bool>(editedByUser.value);
+    }
+    if (sessionId.present) {
+      map['session_id'] = Variable<String>(sessionId.value);
+    }
+    if (exerciseId.present) {
+      map['exercise_id'] = Variable<String>(exerciseId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SessionExercisesCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('exerciseId: $exerciseId, ')
+          ..write('position: $position, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WorkoutSetsTable extends WorkoutSets
+    with TableInfo<$WorkoutSetsTable, WorkoutSetRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WorkoutSetsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+    'origin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedByUserMeta = const VerificationMeta(
+    'editedByUser',
+  );
+  @override
+  late final GeneratedColumn<bool> editedByUser = GeneratedColumn<bool>(
+    'edited_by_user',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_by_user" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _sessionExerciseIdMeta = const VerificationMeta(
+    'sessionExerciseId',
+  );
+  @override
+  late final GeneratedColumn<String> sessionExerciseId =
+      GeneratedColumn<String>(
+        'session_exercise_id',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(position).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _repsMeta = const VerificationMeta('reps');
+  @override
+  late final GeneratedColumn<int> reps = GeneratedColumn<int>(
+    'reps',
+    aliasedName,
+    true,
+    check: () => ComparableExpr(reps).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _kgMeta = const VerificationMeta('kg');
+  @override
+  late final GeneratedColumn<double> kg = GeneratedColumn<double>(
+    'kg',
+    aliasedName,
+    true,
+    check: () => ComparableExpr(kg).isBiggerOrEqualValue(0),
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _inputValueMeta = const VerificationMeta(
+    'inputValue',
+  );
+  @override
+  late final GeneratedColumn<double> inputValue = GeneratedColumn<double>(
+    'input_value',
+    aliasedName,
+    true,
+    check: () => ComparableExpr(inputValue).isBiggerOrEqualValue(0),
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _inputUnitMeta = const VerificationMeta(
+    'inputUnit',
+  );
+  @override
+  late final GeneratedColumn<String> inputUnit = GeneratedColumn<String>(
+    'input_unit',
+    aliasedName,
+    true,
+    check: () => inputUnit.isIn(const ['kg', 'lb']),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _durationSecondsMeta = const VerificationMeta(
+    'durationSeconds',
+  );
+  @override
+  late final GeneratedColumn<int> durationSeconds = GeneratedColumn<int>(
+    'duration_seconds',
+    aliasedName,
+    true,
+    check: () => ComparableExpr(durationSeconds).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _distanceMetersMeta = const VerificationMeta(
+    'distanceMeters',
+  );
+  @override
+  late final GeneratedColumn<double> distanceMeters = GeneratedColumn<double>(
+    'distance_meters',
+    aliasedName,
+    true,
+    check: () => ComparableExpr(distanceMeters).isBiggerOrEqualValue(0),
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    sessionExerciseId,
+    position,
+    reps,
+    kg,
+    inputValue,
+    inputUnit,
+    durationSeconds,
+    distanceMeters,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'workout_sets';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WorkoutSetRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedHlcMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('origin')) {
+      context.handle(
+        _originMeta,
+        origin.isAcceptableOrUnknown(data['origin']!, _originMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originMeta);
+    }
+    if (data.containsKey('edited_by_user')) {
+      context.handle(
+        _editedByUserMeta,
+        editedByUser.isAcceptableOrUnknown(
+          data['edited_by_user']!,
+          _editedByUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('session_exercise_id')) {
+      context.handle(
+        _sessionExerciseIdMeta,
+        sessionExerciseId.isAcceptableOrUnknown(
+          data['session_exercise_id']!,
+          _sessionExerciseIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_sessionExerciseIdMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    if (data.containsKey('reps')) {
+      context.handle(
+        _repsMeta,
+        reps.isAcceptableOrUnknown(data['reps']!, _repsMeta),
+      );
+    }
+    if (data.containsKey('kg')) {
+      context.handle(_kgMeta, kg.isAcceptableOrUnknown(data['kg']!, _kgMeta));
+    }
+    if (data.containsKey('input_value')) {
+      context.handle(
+        _inputValueMeta,
+        inputValue.isAcceptableOrUnknown(data['input_value']!, _inputValueMeta),
+      );
+    }
+    if (data.containsKey('input_unit')) {
+      context.handle(
+        _inputUnitMeta,
+        inputUnit.isAcceptableOrUnknown(data['input_unit']!, _inputUnitMeta),
+      );
+    }
+    if (data.containsKey('duration_seconds')) {
+      context.handle(
+        _durationSecondsMeta,
+        durationSeconds.isAcceptableOrUnknown(
+          data['duration_seconds']!,
+          _durationSecondsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('distance_meters')) {
+      context.handle(
+        _distanceMetersMeta,
+        distanceMeters.isAcceptableOrUnknown(
+          data['distance_meters']!,
+          _distanceMetersMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WorkoutSetRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WorkoutSetRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      origin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin'],
+      )!,
+      editedByUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited_by_user'],
+      )!,
+      sessionExerciseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}session_exercise_id'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      reps: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reps'],
+      ),
+      kg: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}kg'],
+      ),
+      inputValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}input_value'],
+      ),
+      inputUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}input_unit'],
+      ),
+      durationSeconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_seconds'],
+      ),
+      distanceMeters: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}distance_meters'],
+      ),
+    );
+  }
+
+  @override
+  $WorkoutSetsTable createAlias(String alias) {
+    return $WorkoutSetsTable(attachedDatabase, alias);
+  }
+}
+
+class WorkoutSetRow extends DataClass implements Insertable<WorkoutSetRow> {
+  /// UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys
+  /// (`core/db/natural_id.dart`). Lowercase canonical text.
+  final String id;
+
+  /// When the row was first written, UTC ms (0 for seeds).
+  final int createdAt;
+
+  /// The hybrid logical clock of the last write (`fb_domain` `Hlc` text).
+  final String updatedHlc;
+
+  /// 1 on insert, +1 per write: the local optimistic concurrency check.
+  final int version;
+
+  /// The tombstone, UTC ms. Synced rows are never hard-deleted.
+  final int? deletedAt;
+
+  /// The install that made the last write (the HLC's node id, TD-053).
+  final String deviceId;
+
+  /// `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`.
+  final String origin;
+
+  /// Provenance: the user overrode a value that came from another source
+  /// (AI-072, the "edited by you" badge). Set only by ops.
+  final bool editedByUser;
+
+  /// The session exercise.
+  final String sessionExerciseId;
+
+  /// Order within the exercise, from 0.
+  final int position;
+
+  /// Reps.
+  final int? reps;
+
+  /// Load in kg.
+  final double? kg;
+
+  /// The weight as typed, in [inputUnit] (A36 D1, TD-017).
+  final double? inputValue;
+
+  /// The unit the weight was typed in: `kg` or `lb` (A36 D1).
+  final String? inputUnit;
+
+  /// Duration in seconds.
+  final int? durationSeconds;
+
+  /// Distance in metres.
+  final double? distanceMeters;
+  const WorkoutSetRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedHlc,
+    required this.version,
+    this.deletedAt,
+    required this.deviceId,
+    required this.origin,
+    required this.editedByUser,
+    required this.sessionExerciseId,
+    required this.position,
+    this.reps,
+    this.kg,
+    this.inputValue,
+    this.inputUnit,
+    this.durationSeconds,
+    this.distanceMeters,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
+    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['device_id'] = Variable<String>(deviceId);
+    map['origin'] = Variable<String>(origin);
+    map['edited_by_user'] = Variable<bool>(editedByUser);
+    map['session_exercise_id'] = Variable<String>(sessionExerciseId);
+    map['position'] = Variable<int>(position);
+    if (!nullToAbsent || reps != null) {
+      map['reps'] = Variable<int>(reps);
+    }
+    if (!nullToAbsent || kg != null) {
+      map['kg'] = Variable<double>(kg);
+    }
+    if (!nullToAbsent || inputValue != null) {
+      map['input_value'] = Variable<double>(inputValue);
+    }
+    if (!nullToAbsent || inputUnit != null) {
+      map['input_unit'] = Variable<String>(inputUnit);
+    }
+    if (!nullToAbsent || durationSeconds != null) {
+      map['duration_seconds'] = Variable<int>(durationSeconds);
+    }
+    if (!nullToAbsent || distanceMeters != null) {
+      map['distance_meters'] = Variable<double>(distanceMeters);
+    }
+    return map;
+  }
+
+  WorkoutSetsCompanion toCompanion(bool nullToAbsent) {
+    return WorkoutSetsCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
+      version: Value(version),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deviceId: Value(deviceId),
+      origin: Value(origin),
+      editedByUser: Value(editedByUser),
+      sessionExerciseId: Value(sessionExerciseId),
+      position: Value(position),
+      reps: reps == null && nullToAbsent ? const Value.absent() : Value(reps),
+      kg: kg == null && nullToAbsent ? const Value.absent() : Value(kg),
+      inputValue: inputValue == null && nullToAbsent
+          ? const Value.absent()
+          : Value(inputValue),
+      inputUnit: inputUnit == null && nullToAbsent
+          ? const Value.absent()
+          : Value(inputUnit),
+      durationSeconds: durationSeconds == null && nullToAbsent
+          ? const Value.absent()
+          : Value(durationSeconds),
+      distanceMeters: distanceMeters == null && nullToAbsent
+          ? const Value.absent()
+          : Value(distanceMeters),
+    );
+  }
+
+  factory WorkoutSetRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WorkoutSetRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
+      version: serializer.fromJson<int>(json['version']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      origin: serializer.fromJson<String>(json['origin']),
+      editedByUser: serializer.fromJson<bool>(json['editedByUser']),
+      sessionExerciseId: serializer.fromJson<String>(json['sessionExerciseId']),
+      position: serializer.fromJson<int>(json['position']),
+      reps: serializer.fromJson<int?>(json['reps']),
+      kg: serializer.fromJson<double?>(json['kg']),
+      inputValue: serializer.fromJson<double?>(json['inputValue']),
+      inputUnit: serializer.fromJson<String?>(json['inputUnit']),
+      durationSeconds: serializer.fromJson<int?>(json['durationSeconds']),
+      distanceMeters: serializer.fromJson<double?>(json['distanceMeters']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
+      'version': serializer.toJson<int>(version),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'origin': serializer.toJson<String>(origin),
+      'editedByUser': serializer.toJson<bool>(editedByUser),
+      'sessionExerciseId': serializer.toJson<String>(sessionExerciseId),
+      'position': serializer.toJson<int>(position),
+      'reps': serializer.toJson<int?>(reps),
+      'kg': serializer.toJson<double?>(kg),
+      'inputValue': serializer.toJson<double?>(inputValue),
+      'inputUnit': serializer.toJson<String?>(inputUnit),
+      'durationSeconds': serializer.toJson<int?>(durationSeconds),
+      'distanceMeters': serializer.toJson<double?>(distanceMeters),
+    };
+  }
+
+  WorkoutSetRow copyWith({
+    String? id,
+    int? createdAt,
+    String? updatedHlc,
+    int? version,
+    Value<int?> deletedAt = const Value.absent(),
+    String? deviceId,
+    String? origin,
+    bool? editedByUser,
+    String? sessionExerciseId,
+    int? position,
+    Value<int?> reps = const Value.absent(),
+    Value<double?> kg = const Value.absent(),
+    Value<double?> inputValue = const Value.absent(),
+    Value<String?> inputUnit = const Value.absent(),
+    Value<int?> durationSeconds = const Value.absent(),
+    Value<double?> distanceMeters = const Value.absent(),
+  }) => WorkoutSetRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+    version: version ?? this.version,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deviceId: deviceId ?? this.deviceId,
+    origin: origin ?? this.origin,
+    editedByUser: editedByUser ?? this.editedByUser,
+    sessionExerciseId: sessionExerciseId ?? this.sessionExerciseId,
+    position: position ?? this.position,
+    reps: reps.present ? reps.value : this.reps,
+    kg: kg.present ? kg.value : this.kg,
+    inputValue: inputValue.present ? inputValue.value : this.inputValue,
+    inputUnit: inputUnit.present ? inputUnit.value : this.inputUnit,
+    durationSeconds: durationSeconds.present
+        ? durationSeconds.value
+        : this.durationSeconds,
+    distanceMeters: distanceMeters.present
+        ? distanceMeters.value
+        : this.distanceMeters,
+  );
+  WorkoutSetRow copyWithCompanion(WorkoutSetsCompanion data) {
+    return WorkoutSetRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
+      version: data.version.present ? data.version.value : this.version,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      editedByUser: data.editedByUser.present
+          ? data.editedByUser.value
+          : this.editedByUser,
+      sessionExerciseId: data.sessionExerciseId.present
+          ? data.sessionExerciseId.value
+          : this.sessionExerciseId,
+      position: data.position.present ? data.position.value : this.position,
+      reps: data.reps.present ? data.reps.value : this.reps,
+      kg: data.kg.present ? data.kg.value : this.kg,
+      inputValue: data.inputValue.present
+          ? data.inputValue.value
+          : this.inputValue,
+      inputUnit: data.inputUnit.present ? data.inputUnit.value : this.inputUnit,
+      durationSeconds: data.durationSeconds.present
+          ? data.durationSeconds.value
+          : this.durationSeconds,
+      distanceMeters: data.distanceMeters.present
+          ? data.distanceMeters.value
+          : this.distanceMeters,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WorkoutSetRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('sessionExerciseId: $sessionExerciseId, ')
+          ..write('position: $position, ')
+          ..write('reps: $reps, ')
+          ..write('kg: $kg, ')
+          ..write('inputValue: $inputValue, ')
+          ..write('inputUnit: $inputUnit, ')
+          ..write('durationSeconds: $durationSeconds, ')
+          ..write('distanceMeters: $distanceMeters')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    sessionExerciseId,
+    position,
+    reps,
+    kg,
+    inputValue,
+    inputUnit,
+    durationSeconds,
+    distanceMeters,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WorkoutSetRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc &&
+          other.version == this.version &&
+          other.deletedAt == this.deletedAt &&
+          other.deviceId == this.deviceId &&
+          other.origin == this.origin &&
+          other.editedByUser == this.editedByUser &&
+          other.sessionExerciseId == this.sessionExerciseId &&
+          other.position == this.position &&
+          other.reps == this.reps &&
+          other.kg == this.kg &&
+          other.inputValue == this.inputValue &&
+          other.inputUnit == this.inputUnit &&
+          other.durationSeconds == this.durationSeconds &&
+          other.distanceMeters == this.distanceMeters);
+}
+
+class WorkoutSetsCompanion extends UpdateCompanion<WorkoutSetRow> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<String> updatedHlc;
+  final Value<int> version;
+  final Value<int?> deletedAt;
+  final Value<String> deviceId;
+  final Value<String> origin;
+  final Value<bool> editedByUser;
+  final Value<String> sessionExerciseId;
+  final Value<int> position;
+  final Value<int?> reps;
+  final Value<double?> kg;
+  final Value<double?> inputValue;
+  final Value<String?> inputUnit;
+  final Value<int?> durationSeconds;
+  final Value<double?> distanceMeters;
+  final Value<int> rowid;
+  const WorkoutSetsCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
+    this.version = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.editedByUser = const Value.absent(),
+    this.sessionExerciseId = const Value.absent(),
+    this.position = const Value.absent(),
+    this.reps = const Value.absent(),
+    this.kg = const Value.absent(),
+    this.inputValue = const Value.absent(),
+    this.inputUnit = const Value.absent(),
+    this.durationSeconds = const Value.absent(),
+    this.distanceMeters = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WorkoutSetsCompanion.insert({
+    required String id,
+    required int createdAt,
+    required String updatedHlc,
+    required int version,
+    this.deletedAt = const Value.absent(),
+    required String deviceId,
+    required String origin,
+    this.editedByUser = const Value.absent(),
+    required String sessionExerciseId,
+    required int position,
+    this.reps = const Value.absent(),
+    this.kg = const Value.absent(),
+    this.inputValue = const Value.absent(),
+    this.inputUnit = const Value.absent(),
+    this.durationSeconds = const Value.absent(),
+    this.distanceMeters = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedHlc = Value(updatedHlc),
+       version = Value(version),
+       deviceId = Value(deviceId),
+       origin = Value(origin),
+       sessionExerciseId = Value(sessionExerciseId),
+       position = Value(position);
+  static Insertable<WorkoutSetRow> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<String>? updatedHlc,
+    Expression<int>? version,
+    Expression<int>? deletedAt,
+    Expression<String>? deviceId,
+    Expression<String>? origin,
+    Expression<bool>? editedByUser,
+    Expression<String>? sessionExerciseId,
+    Expression<int>? position,
+    Expression<int>? reps,
+    Expression<double>? kg,
+    Expression<double>? inputValue,
+    Expression<String>? inputUnit,
+    Expression<int>? durationSeconds,
+    Expression<double>? distanceMeters,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
+      if (version != null) 'version': version,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deviceId != null) 'device_id': deviceId,
+      if (origin != null) 'origin': origin,
+      if (editedByUser != null) 'edited_by_user': editedByUser,
+      if (sessionExerciseId != null) 'session_exercise_id': sessionExerciseId,
+      if (position != null) 'position': position,
+      if (reps != null) 'reps': reps,
+      if (kg != null) 'kg': kg,
+      if (inputValue != null) 'input_value': inputValue,
+      if (inputUnit != null) 'input_unit': inputUnit,
+      if (durationSeconds != null) 'duration_seconds': durationSeconds,
+      if (distanceMeters != null) 'distance_meters': distanceMeters,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WorkoutSetsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<String>? updatedHlc,
+    Value<int>? version,
+    Value<int?>? deletedAt,
+    Value<String>? deviceId,
+    Value<String>? origin,
+    Value<bool>? editedByUser,
+    Value<String>? sessionExerciseId,
+    Value<int>? position,
+    Value<int?>? reps,
+    Value<double?>? kg,
+    Value<double?>? inputValue,
+    Value<String?>? inputUnit,
+    Value<int?>? durationSeconds,
+    Value<double?>? distanceMeters,
+    Value<int>? rowid,
+  }) {
+    return WorkoutSetsCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
+      version: version ?? this.version,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deviceId: deviceId ?? this.deviceId,
+      origin: origin ?? this.origin,
+      editedByUser: editedByUser ?? this.editedByUser,
+      sessionExerciseId: sessionExerciseId ?? this.sessionExerciseId,
+      position: position ?? this.position,
+      reps: reps ?? this.reps,
+      kg: kg ?? this.kg,
+      inputValue: inputValue ?? this.inputValue,
+      inputUnit: inputUnit ?? this.inputUnit,
+      durationSeconds: durationSeconds ?? this.durationSeconds,
+      distanceMeters: distanceMeters ?? this.distanceMeters,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (editedByUser.present) {
+      map['edited_by_user'] = Variable<bool>(editedByUser.value);
+    }
+    if (sessionExerciseId.present) {
+      map['session_exercise_id'] = Variable<String>(sessionExerciseId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (reps.present) {
+      map['reps'] = Variable<int>(reps.value);
+    }
+    if (kg.present) {
+      map['kg'] = Variable<double>(kg.value);
+    }
+    if (inputValue.present) {
+      map['input_value'] = Variable<double>(inputValue.value);
+    }
+    if (inputUnit.present) {
+      map['input_unit'] = Variable<String>(inputUnit.value);
+    }
+    if (durationSeconds.present) {
+      map['duration_seconds'] = Variable<int>(durationSeconds.value);
+    }
+    if (distanceMeters.present) {
+      map['distance_meters'] = Variable<double>(distanceMeters.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WorkoutSetsCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('sessionExerciseId: $sessionExerciseId, ')
+          ..write('position: $position, ')
+          ..write('reps: $reps, ')
+          ..write('kg: $kg, ')
+          ..write('inputValue: $inputValue, ')
+          ..write('inputUnit: $inputUnit, ')
+          ..write('durationSeconds: $durationSeconds, ')
+          ..write('distanceMeters: $distanceMeters, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WorkoutTemplateItemsTable extends WorkoutTemplateItems
+    with TableInfo<$WorkoutTemplateItemsTable, WorkoutTemplateItemRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WorkoutTemplateItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+    'origin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedByUserMeta = const VerificationMeta(
+    'editedByUser',
+  );
+  @override
+  late final GeneratedColumn<bool> editedByUser = GeneratedColumn<bool>(
+    'edited_by_user',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_by_user" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _templateIdMeta = const VerificationMeta(
+    'templateId',
+  );
+  @override
+  late final GeneratedColumn<String> templateId = GeneratedColumn<String>(
+    'template_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _exerciseIdMeta = const VerificationMeta(
+    'exerciseId',
+  );
+  @override
+  late final GeneratedColumn<String> exerciseId = GeneratedColumn<String>(
+    'exercise_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(position).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _targetSetsMeta = const VerificationMeta(
+    'targetSets',
+  );
+  @override
+  late final GeneratedColumn<int> targetSets = GeneratedColumn<int>(
+    'target_sets',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(targetSets).isBiggerOrEqualValue(1),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _targetRepsMeta = const VerificationMeta(
+    'targetReps',
+  );
+  @override
+  late final GeneratedColumn<int> targetReps = GeneratedColumn<int>(
+    'target_reps',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(targetReps).isBiggerOrEqualValue(1),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    templateId,
+    exerciseId,
+    position,
+    targetSets,
+    targetReps,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'workout_template_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WorkoutTemplateItemRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedHlcMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('origin')) {
+      context.handle(
+        _originMeta,
+        origin.isAcceptableOrUnknown(data['origin']!, _originMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originMeta);
+    }
+    if (data.containsKey('edited_by_user')) {
+      context.handle(
+        _editedByUserMeta,
+        editedByUser.isAcceptableOrUnknown(
+          data['edited_by_user']!,
+          _editedByUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('template_id')) {
+      context.handle(
+        _templateIdMeta,
+        templateId.isAcceptableOrUnknown(data['template_id']!, _templateIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_templateIdMeta);
+    }
+    if (data.containsKey('exercise_id')) {
+      context.handle(
+        _exerciseIdMeta,
+        exerciseId.isAcceptableOrUnknown(data['exercise_id']!, _exerciseIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_exerciseIdMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    if (data.containsKey('target_sets')) {
+      context.handle(
+        _targetSetsMeta,
+        targetSets.isAcceptableOrUnknown(data['target_sets']!, _targetSetsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_targetSetsMeta);
+    }
+    if (data.containsKey('target_reps')) {
+      context.handle(
+        _targetRepsMeta,
+        targetReps.isAcceptableOrUnknown(data['target_reps']!, _targetRepsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_targetRepsMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WorkoutTemplateItemRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WorkoutTemplateItemRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      origin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin'],
+      )!,
+      editedByUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited_by_user'],
+      )!,
+      templateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}template_id'],
+      )!,
+      exerciseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exercise_id'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      targetSets: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}target_sets'],
+      )!,
+      targetReps: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}target_reps'],
+      )!,
+    );
+  }
+
+  @override
+  $WorkoutTemplateItemsTable createAlias(String alias) {
+    return $WorkoutTemplateItemsTable(attachedDatabase, alias);
+  }
+}
+
+class WorkoutTemplateItemRow extends DataClass
+    implements Insertable<WorkoutTemplateItemRow> {
+  /// UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys
+  /// (`core/db/natural_id.dart`). Lowercase canonical text.
+  final String id;
+
+  /// When the row was first written, UTC ms (0 for seeds).
+  final int createdAt;
+
+  /// The hybrid logical clock of the last write (`fb_domain` `Hlc` text).
+  final String updatedHlc;
+
+  /// 1 on insert, +1 per write: the local optimistic concurrency check.
+  final int version;
+
+  /// The tombstone, UTC ms. Synced rows are never hard-deleted.
+  final int? deletedAt;
+
+  /// The install that made the last write (the HLC's node id, TD-053).
+  final String deviceId;
+
+  /// `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`.
+  final String origin;
+
+  /// Provenance: the user overrode a value that came from another source
+  /// (AI-072, the "edited by you" badge). Set only by ops.
+  final bool editedByUser;
+
+  /// The template.
+  final String templateId;
+
+  /// The exercise.
+  final String exerciseId;
+
+  /// Order within the template, from 0.
+  final int position;
+
+  /// Target sets.
+  final int targetSets;
+
+  /// Target reps.
+  final int targetReps;
+  const WorkoutTemplateItemRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedHlc,
+    required this.version,
+    this.deletedAt,
+    required this.deviceId,
+    required this.origin,
+    required this.editedByUser,
+    required this.templateId,
+    required this.exerciseId,
+    required this.position,
+    required this.targetSets,
+    required this.targetReps,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
+    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['device_id'] = Variable<String>(deviceId);
+    map['origin'] = Variable<String>(origin);
+    map['edited_by_user'] = Variable<bool>(editedByUser);
+    map['template_id'] = Variable<String>(templateId);
+    map['exercise_id'] = Variable<String>(exerciseId);
+    map['position'] = Variable<int>(position);
+    map['target_sets'] = Variable<int>(targetSets);
+    map['target_reps'] = Variable<int>(targetReps);
+    return map;
+  }
+
+  WorkoutTemplateItemsCompanion toCompanion(bool nullToAbsent) {
+    return WorkoutTemplateItemsCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
+      version: Value(version),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deviceId: Value(deviceId),
+      origin: Value(origin),
+      editedByUser: Value(editedByUser),
+      templateId: Value(templateId),
+      exerciseId: Value(exerciseId),
+      position: Value(position),
+      targetSets: Value(targetSets),
+      targetReps: Value(targetReps),
+    );
+  }
+
+  factory WorkoutTemplateItemRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WorkoutTemplateItemRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
+      version: serializer.fromJson<int>(json['version']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      origin: serializer.fromJson<String>(json['origin']),
+      editedByUser: serializer.fromJson<bool>(json['editedByUser']),
+      templateId: serializer.fromJson<String>(json['templateId']),
+      exerciseId: serializer.fromJson<String>(json['exerciseId']),
+      position: serializer.fromJson<int>(json['position']),
+      targetSets: serializer.fromJson<int>(json['targetSets']),
+      targetReps: serializer.fromJson<int>(json['targetReps']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
+      'version': serializer.toJson<int>(version),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'origin': serializer.toJson<String>(origin),
+      'editedByUser': serializer.toJson<bool>(editedByUser),
+      'templateId': serializer.toJson<String>(templateId),
+      'exerciseId': serializer.toJson<String>(exerciseId),
+      'position': serializer.toJson<int>(position),
+      'targetSets': serializer.toJson<int>(targetSets),
+      'targetReps': serializer.toJson<int>(targetReps),
+    };
+  }
+
+  WorkoutTemplateItemRow copyWith({
+    String? id,
+    int? createdAt,
+    String? updatedHlc,
+    int? version,
+    Value<int?> deletedAt = const Value.absent(),
+    String? deviceId,
+    String? origin,
+    bool? editedByUser,
+    String? templateId,
+    String? exerciseId,
+    int? position,
+    int? targetSets,
+    int? targetReps,
+  }) => WorkoutTemplateItemRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+    version: version ?? this.version,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deviceId: deviceId ?? this.deviceId,
+    origin: origin ?? this.origin,
+    editedByUser: editedByUser ?? this.editedByUser,
+    templateId: templateId ?? this.templateId,
+    exerciseId: exerciseId ?? this.exerciseId,
+    position: position ?? this.position,
+    targetSets: targetSets ?? this.targetSets,
+    targetReps: targetReps ?? this.targetReps,
+  );
+  WorkoutTemplateItemRow copyWithCompanion(WorkoutTemplateItemsCompanion data) {
+    return WorkoutTemplateItemRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
+      version: data.version.present ? data.version.value : this.version,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      editedByUser: data.editedByUser.present
+          ? data.editedByUser.value
+          : this.editedByUser,
+      templateId: data.templateId.present
+          ? data.templateId.value
+          : this.templateId,
+      exerciseId: data.exerciseId.present
+          ? data.exerciseId.value
+          : this.exerciseId,
+      position: data.position.present ? data.position.value : this.position,
+      targetSets: data.targetSets.present
+          ? data.targetSets.value
+          : this.targetSets,
+      targetReps: data.targetReps.present
+          ? data.targetReps.value
+          : this.targetReps,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WorkoutTemplateItemRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('templateId: $templateId, ')
+          ..write('exerciseId: $exerciseId, ')
+          ..write('position: $position, ')
+          ..write('targetSets: $targetSets, ')
+          ..write('targetReps: $targetReps')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    templateId,
+    exerciseId,
+    position,
+    targetSets,
+    targetReps,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WorkoutTemplateItemRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc &&
+          other.version == this.version &&
+          other.deletedAt == this.deletedAt &&
+          other.deviceId == this.deviceId &&
+          other.origin == this.origin &&
+          other.editedByUser == this.editedByUser &&
+          other.templateId == this.templateId &&
+          other.exerciseId == this.exerciseId &&
+          other.position == this.position &&
+          other.targetSets == this.targetSets &&
+          other.targetReps == this.targetReps);
+}
+
+class WorkoutTemplateItemsCompanion
+    extends UpdateCompanion<WorkoutTemplateItemRow> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<String> updatedHlc;
+  final Value<int> version;
+  final Value<int?> deletedAt;
+  final Value<String> deviceId;
+  final Value<String> origin;
+  final Value<bool> editedByUser;
+  final Value<String> templateId;
+  final Value<String> exerciseId;
+  final Value<int> position;
+  final Value<int> targetSets;
+  final Value<int> targetReps;
+  final Value<int> rowid;
+  const WorkoutTemplateItemsCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
+    this.version = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.editedByUser = const Value.absent(),
+    this.templateId = const Value.absent(),
+    this.exerciseId = const Value.absent(),
+    this.position = const Value.absent(),
+    this.targetSets = const Value.absent(),
+    this.targetReps = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WorkoutTemplateItemsCompanion.insert({
+    required String id,
+    required int createdAt,
+    required String updatedHlc,
+    required int version,
+    this.deletedAt = const Value.absent(),
+    required String deviceId,
+    required String origin,
+    this.editedByUser = const Value.absent(),
+    required String templateId,
+    required String exerciseId,
+    required int position,
+    required int targetSets,
+    required int targetReps,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedHlc = Value(updatedHlc),
+       version = Value(version),
+       deviceId = Value(deviceId),
+       origin = Value(origin),
+       templateId = Value(templateId),
+       exerciseId = Value(exerciseId),
+       position = Value(position),
+       targetSets = Value(targetSets),
+       targetReps = Value(targetReps);
+  static Insertable<WorkoutTemplateItemRow> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<String>? updatedHlc,
+    Expression<int>? version,
+    Expression<int>? deletedAt,
+    Expression<String>? deviceId,
+    Expression<String>? origin,
+    Expression<bool>? editedByUser,
+    Expression<String>? templateId,
+    Expression<String>? exerciseId,
+    Expression<int>? position,
+    Expression<int>? targetSets,
+    Expression<int>? targetReps,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
+      if (version != null) 'version': version,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deviceId != null) 'device_id': deviceId,
+      if (origin != null) 'origin': origin,
+      if (editedByUser != null) 'edited_by_user': editedByUser,
+      if (templateId != null) 'template_id': templateId,
+      if (exerciseId != null) 'exercise_id': exerciseId,
+      if (position != null) 'position': position,
+      if (targetSets != null) 'target_sets': targetSets,
+      if (targetReps != null) 'target_reps': targetReps,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WorkoutTemplateItemsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<String>? updatedHlc,
+    Value<int>? version,
+    Value<int?>? deletedAt,
+    Value<String>? deviceId,
+    Value<String>? origin,
+    Value<bool>? editedByUser,
+    Value<String>? templateId,
+    Value<String>? exerciseId,
+    Value<int>? position,
+    Value<int>? targetSets,
+    Value<int>? targetReps,
+    Value<int>? rowid,
+  }) {
+    return WorkoutTemplateItemsCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
+      version: version ?? this.version,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deviceId: deviceId ?? this.deviceId,
+      origin: origin ?? this.origin,
+      editedByUser: editedByUser ?? this.editedByUser,
+      templateId: templateId ?? this.templateId,
+      exerciseId: exerciseId ?? this.exerciseId,
+      position: position ?? this.position,
+      targetSets: targetSets ?? this.targetSets,
+      targetReps: targetReps ?? this.targetReps,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (editedByUser.present) {
+      map['edited_by_user'] = Variable<bool>(editedByUser.value);
+    }
+    if (templateId.present) {
+      map['template_id'] = Variable<String>(templateId.value);
+    }
+    if (exerciseId.present) {
+      map['exercise_id'] = Variable<String>(exerciseId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (targetSets.present) {
+      map['target_sets'] = Variable<int>(targetSets.value);
+    }
+    if (targetReps.present) {
+      map['target_reps'] = Variable<int>(targetReps.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WorkoutTemplateItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('templateId: $templateId, ')
+          ..write('exerciseId: $exerciseId, ')
+          ..write('position: $position, ')
+          ..write('targetSets: $targetSets, ')
+          ..write('targetReps: $targetReps, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WeeklyPlanDaysTable extends WeeklyPlanDays
+    with TableInfo<$WeeklyPlanDaysTable, WeeklyPlanDayRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WeeklyPlanDaysTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+    'origin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedByUserMeta = const VerificationMeta(
+    'editedByUser',
+  );
+  @override
+  late final GeneratedColumn<bool> editedByUser = GeneratedColumn<bool>(
+    'edited_by_user',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_by_user" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _weekdayMeta = const VerificationMeta(
+    'weekday',
+  );
+  @override
+  late final GeneratedColumn<int> weekday = GeneratedColumn<int>(
+    'weekday',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(weekday).isBetweenValues(1, 7),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _templateIdMeta = const VerificationMeta(
+    'templateId',
+  );
+  @override
+  late final GeneratedColumn<String> templateId = GeneratedColumn<String>(
+    'template_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    weekday,
+    templateId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'weekly_plan_days';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WeeklyPlanDayRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedHlcMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('origin')) {
+      context.handle(
+        _originMeta,
+        origin.isAcceptableOrUnknown(data['origin']!, _originMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originMeta);
+    }
+    if (data.containsKey('edited_by_user')) {
+      context.handle(
+        _editedByUserMeta,
+        editedByUser.isAcceptableOrUnknown(
+          data['edited_by_user']!,
+          _editedByUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('weekday')) {
+      context.handle(
+        _weekdayMeta,
+        weekday.isAcceptableOrUnknown(data['weekday']!, _weekdayMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_weekdayMeta);
+    }
+    if (data.containsKey('template_id')) {
+      context.handle(
+        _templateIdMeta,
+        templateId.isAcceptableOrUnknown(data['template_id']!, _templateIdMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WeeklyPlanDayRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WeeklyPlanDayRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      origin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin'],
+      )!,
+      editedByUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited_by_user'],
+      )!,
+      weekday: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}weekday'],
+      )!,
+      templateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}template_id'],
+      ),
+    );
+  }
+
+  @override
+  $WeeklyPlanDaysTable createAlias(String alias) {
+    return $WeeklyPlanDaysTable(attachedDatabase, alias);
+  }
+}
+
+class WeeklyPlanDayRow extends DataClass
+    implements Insertable<WeeklyPlanDayRow> {
+  /// UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys
+  /// (`core/db/natural_id.dart`). Lowercase canonical text.
+  final String id;
+
+  /// When the row was first written, UTC ms (0 for seeds).
+  final int createdAt;
+
+  /// The hybrid logical clock of the last write (`fb_domain` `Hlc` text).
+  final String updatedHlc;
+
+  /// 1 on insert, +1 per write: the local optimistic concurrency check.
+  final int version;
+
+  /// The tombstone, UTC ms. Synced rows are never hard-deleted.
+  final int? deletedAt;
+
+  /// The install that made the last write (the HLC's node id, TD-053).
+  final String deviceId;
+
+  /// `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`.
+  final String origin;
+
+  /// Provenance: the user overrode a value that came from another source
+  /// (AI-072, the "edited by you" badge). Set only by ops.
+  final bool editedByUser;
+
+  /// ISO weekday, 1 (Monday) to 7.
+  final int weekday;
+
+  /// The template, or null for rest.
+  final String? templateId;
+  const WeeklyPlanDayRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedHlc,
+    required this.version,
+    this.deletedAt,
+    required this.deviceId,
+    required this.origin,
+    required this.editedByUser,
+    required this.weekday,
+    this.templateId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
+    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['device_id'] = Variable<String>(deviceId);
+    map['origin'] = Variable<String>(origin);
+    map['edited_by_user'] = Variable<bool>(editedByUser);
+    map['weekday'] = Variable<int>(weekday);
+    if (!nullToAbsent || templateId != null) {
+      map['template_id'] = Variable<String>(templateId);
+    }
+    return map;
+  }
+
+  WeeklyPlanDaysCompanion toCompanion(bool nullToAbsent) {
+    return WeeklyPlanDaysCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
+      version: Value(version),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deviceId: Value(deviceId),
+      origin: Value(origin),
+      editedByUser: Value(editedByUser),
+      weekday: Value(weekday),
+      templateId: templateId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(templateId),
+    );
+  }
+
+  factory WeeklyPlanDayRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WeeklyPlanDayRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
+      version: serializer.fromJson<int>(json['version']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      origin: serializer.fromJson<String>(json['origin']),
+      editedByUser: serializer.fromJson<bool>(json['editedByUser']),
+      weekday: serializer.fromJson<int>(json['weekday']),
+      templateId: serializer.fromJson<String?>(json['templateId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
+      'version': serializer.toJson<int>(version),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'origin': serializer.toJson<String>(origin),
+      'editedByUser': serializer.toJson<bool>(editedByUser),
+      'weekday': serializer.toJson<int>(weekday),
+      'templateId': serializer.toJson<String?>(templateId),
+    };
+  }
+
+  WeeklyPlanDayRow copyWith({
+    String? id,
+    int? createdAt,
+    String? updatedHlc,
+    int? version,
+    Value<int?> deletedAt = const Value.absent(),
+    String? deviceId,
+    String? origin,
+    bool? editedByUser,
+    int? weekday,
+    Value<String?> templateId = const Value.absent(),
+  }) => WeeklyPlanDayRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+    version: version ?? this.version,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deviceId: deviceId ?? this.deviceId,
+    origin: origin ?? this.origin,
+    editedByUser: editedByUser ?? this.editedByUser,
+    weekday: weekday ?? this.weekday,
+    templateId: templateId.present ? templateId.value : this.templateId,
+  );
+  WeeklyPlanDayRow copyWithCompanion(WeeklyPlanDaysCompanion data) {
+    return WeeklyPlanDayRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
+      version: data.version.present ? data.version.value : this.version,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      editedByUser: data.editedByUser.present
+          ? data.editedByUser.value
+          : this.editedByUser,
+      weekday: data.weekday.present ? data.weekday.value : this.weekday,
+      templateId: data.templateId.present
+          ? data.templateId.value
+          : this.templateId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeeklyPlanDayRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('weekday: $weekday, ')
+          ..write('templateId: $templateId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    weekday,
+    templateId,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WeeklyPlanDayRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc &&
+          other.version == this.version &&
+          other.deletedAt == this.deletedAt &&
+          other.deviceId == this.deviceId &&
+          other.origin == this.origin &&
+          other.editedByUser == this.editedByUser &&
+          other.weekday == this.weekday &&
+          other.templateId == this.templateId);
+}
+
+class WeeklyPlanDaysCompanion extends UpdateCompanion<WeeklyPlanDayRow> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<String> updatedHlc;
+  final Value<int> version;
+  final Value<int?> deletedAt;
+  final Value<String> deviceId;
+  final Value<String> origin;
+  final Value<bool> editedByUser;
+  final Value<int> weekday;
+  final Value<String?> templateId;
+  final Value<int> rowid;
+  const WeeklyPlanDaysCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
+    this.version = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.editedByUser = const Value.absent(),
+    this.weekday = const Value.absent(),
+    this.templateId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WeeklyPlanDaysCompanion.insert({
+    required String id,
+    required int createdAt,
+    required String updatedHlc,
+    required int version,
+    this.deletedAt = const Value.absent(),
+    required String deviceId,
+    required String origin,
+    this.editedByUser = const Value.absent(),
+    required int weekday,
+    this.templateId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedHlc = Value(updatedHlc),
+       version = Value(version),
+       deviceId = Value(deviceId),
+       origin = Value(origin),
+       weekday = Value(weekday);
+  static Insertable<WeeklyPlanDayRow> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<String>? updatedHlc,
+    Expression<int>? version,
+    Expression<int>? deletedAt,
+    Expression<String>? deviceId,
+    Expression<String>? origin,
+    Expression<bool>? editedByUser,
+    Expression<int>? weekday,
+    Expression<String>? templateId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
+      if (version != null) 'version': version,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deviceId != null) 'device_id': deviceId,
+      if (origin != null) 'origin': origin,
+      if (editedByUser != null) 'edited_by_user': editedByUser,
+      if (weekday != null) 'weekday': weekday,
+      if (templateId != null) 'template_id': templateId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WeeklyPlanDaysCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<String>? updatedHlc,
+    Value<int>? version,
+    Value<int?>? deletedAt,
+    Value<String>? deviceId,
+    Value<String>? origin,
+    Value<bool>? editedByUser,
+    Value<int>? weekday,
+    Value<String?>? templateId,
+    Value<int>? rowid,
+  }) {
+    return WeeklyPlanDaysCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
+      version: version ?? this.version,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deviceId: deviceId ?? this.deviceId,
+      origin: origin ?? this.origin,
+      editedByUser: editedByUser ?? this.editedByUser,
+      weekday: weekday ?? this.weekday,
+      templateId: templateId ?? this.templateId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (editedByUser.present) {
+      map['edited_by_user'] = Variable<bool>(editedByUser.value);
+    }
+    if (weekday.present) {
+      map['weekday'] = Variable<int>(weekday.value);
+    }
+    if (templateId.present) {
+      map['template_id'] = Variable<String>(templateId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeeklyPlanDaysCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('weekday: $weekday, ')
+          ..write('templateId: $templateId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CustomExercisesTable extends CustomExercises
+    with TableInfo<$CustomExercisesTable, CustomExerciseRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CustomExercisesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+    'origin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedByUserMeta = const VerificationMeta(
+    'editedByUser',
+  );
+  @override
+  late final GeneratedColumn<bool> editedByUser = GeneratedColumn<bool>(
+    'edited_by_user',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_by_user" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _aliasesJsonMeta = const VerificationMeta(
+    'aliasesJson',
+  );
+  @override
+  late final GeneratedColumn<String> aliasesJson = GeneratedColumn<String>(
+    'aliases_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _exerciseTypeMeta = const VerificationMeta(
+    'exerciseType',
+  );
+  @override
+  late final GeneratedColumn<String> exerciseType = GeneratedColumn<String>(
+    'exercise_type',
+    aliasedName,
+    false,
+    check: () => exerciseType.isIn(const [
+      'weight_reps',
+      'bodyweight_reps',
+      'assisted',
+      'reps_only',
+      'duration',
+      'distance_duration',
+    ]),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _equipmentMeta = const VerificationMeta(
+    'equipment',
+  );
+  @override
+  late final GeneratedColumn<String> equipment = GeneratedColumn<String>(
+    'equipment',
+    aliasedName,
+    false,
+    check: () => equipment.isIn(const [
+      'barbell',
+      'dumbbell',
+      'cable',
+      'machine',
+      'kettlebell',
+      'bodyweight',
+      'other',
+    ]),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    name,
+    aliasesJson,
+    exerciseType,
+    equipment,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'custom_exercises';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CustomExerciseRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedHlcMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('origin')) {
+      context.handle(
+        _originMeta,
+        origin.isAcceptableOrUnknown(data['origin']!, _originMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originMeta);
+    }
+    if (data.containsKey('edited_by_user')) {
+      context.handle(
+        _editedByUserMeta,
+        editedByUser.isAcceptableOrUnknown(
+          data['edited_by_user']!,
+          _editedByUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('aliases_json')) {
+      context.handle(
+        _aliasesJsonMeta,
+        aliasesJson.isAcceptableOrUnknown(
+          data['aliases_json']!,
+          _aliasesJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('exercise_type')) {
+      context.handle(
+        _exerciseTypeMeta,
+        exerciseType.isAcceptableOrUnknown(
+          data['exercise_type']!,
+          _exerciseTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_exerciseTypeMeta);
+    }
+    if (data.containsKey('equipment')) {
+      context.handle(
+        _equipmentMeta,
+        equipment.isAcceptableOrUnknown(data['equipment']!, _equipmentMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_equipmentMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CustomExerciseRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CustomExerciseRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      origin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin'],
+      )!,
+      editedByUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited_by_user'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      aliasesJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}aliases_json'],
+      )!,
+      exerciseType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exercise_type'],
+      )!,
+      equipment: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}equipment'],
+      )!,
+    );
+  }
+
+  @override
+  $CustomExercisesTable createAlias(String alias) {
+    return $CustomExercisesTable(attachedDatabase, alias);
+  }
+}
+
+class CustomExerciseRow extends DataClass
+    implements Insertable<CustomExerciseRow> {
+  /// UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys
+  /// (`core/db/natural_id.dart`). Lowercase canonical text.
+  final String id;
+
+  /// When the row was first written, UTC ms (0 for seeds).
+  final int createdAt;
+
+  /// The hybrid logical clock of the last write (`fb_domain` `Hlc` text).
+  final String updatedHlc;
+
+  /// 1 on insert, +1 per write: the local optimistic concurrency check.
+  final int version;
+
+  /// The tombstone, UTC ms. Synced rows are never hard-deleted.
+  final int? deletedAt;
+
+  /// The install that made the last write (the HLC's node id, TD-053).
+  final String deviceId;
+
+  /// `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`.
+  final String origin;
+
+  /// Provenance: the user overrode a value that came from another source
+  /// (AI-072, the "edited by you" badge). Set only by ops.
+  final bool editedByUser;
+
+  /// The display name. User content.
+  final String name;
+
+  /// Search aliases, a JSON array of strings. User content.
+  final String aliasesJson;
+
+  /// The WO-004 type code.
+  final String exerciseType;
+
+  /// The equipment code (WO-002, WO-005).
+  final String equipment;
+  const CustomExerciseRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedHlc,
+    required this.version,
+    this.deletedAt,
+    required this.deviceId,
+    required this.origin,
+    required this.editedByUser,
+    required this.name,
+    required this.aliasesJson,
+    required this.exerciseType,
+    required this.equipment,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
+    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['device_id'] = Variable<String>(deviceId);
+    map['origin'] = Variable<String>(origin);
+    map['edited_by_user'] = Variable<bool>(editedByUser);
+    map['name'] = Variable<String>(name);
+    map['aliases_json'] = Variable<String>(aliasesJson);
+    map['exercise_type'] = Variable<String>(exerciseType);
+    map['equipment'] = Variable<String>(equipment);
+    return map;
+  }
+
+  CustomExercisesCompanion toCompanion(bool nullToAbsent) {
+    return CustomExercisesCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
+      version: Value(version),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deviceId: Value(deviceId),
+      origin: Value(origin),
+      editedByUser: Value(editedByUser),
+      name: Value(name),
+      aliasesJson: Value(aliasesJson),
+      exerciseType: Value(exerciseType),
+      equipment: Value(equipment),
+    );
+  }
+
+  factory CustomExerciseRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CustomExerciseRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
+      version: serializer.fromJson<int>(json['version']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      origin: serializer.fromJson<String>(json['origin']),
+      editedByUser: serializer.fromJson<bool>(json['editedByUser']),
+      name: serializer.fromJson<String>(json['name']),
+      aliasesJson: serializer.fromJson<String>(json['aliasesJson']),
+      exerciseType: serializer.fromJson<String>(json['exerciseType']),
+      equipment: serializer.fromJson<String>(json['equipment']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
+      'version': serializer.toJson<int>(version),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'origin': serializer.toJson<String>(origin),
+      'editedByUser': serializer.toJson<bool>(editedByUser),
+      'name': serializer.toJson<String>(name),
+      'aliasesJson': serializer.toJson<String>(aliasesJson),
+      'exerciseType': serializer.toJson<String>(exerciseType),
+      'equipment': serializer.toJson<String>(equipment),
+    };
+  }
+
+  CustomExerciseRow copyWith({
+    String? id,
+    int? createdAt,
+    String? updatedHlc,
+    int? version,
+    Value<int?> deletedAt = const Value.absent(),
+    String? deviceId,
+    String? origin,
+    bool? editedByUser,
+    String? name,
+    String? aliasesJson,
+    String? exerciseType,
+    String? equipment,
+  }) => CustomExerciseRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+    version: version ?? this.version,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deviceId: deviceId ?? this.deviceId,
+    origin: origin ?? this.origin,
+    editedByUser: editedByUser ?? this.editedByUser,
+    name: name ?? this.name,
+    aliasesJson: aliasesJson ?? this.aliasesJson,
+    exerciseType: exerciseType ?? this.exerciseType,
+    equipment: equipment ?? this.equipment,
+  );
+  CustomExerciseRow copyWithCompanion(CustomExercisesCompanion data) {
+    return CustomExerciseRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
+      version: data.version.present ? data.version.value : this.version,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      editedByUser: data.editedByUser.present
+          ? data.editedByUser.value
+          : this.editedByUser,
+      name: data.name.present ? data.name.value : this.name,
+      aliasesJson: data.aliasesJson.present
+          ? data.aliasesJson.value
+          : this.aliasesJson,
+      exerciseType: data.exerciseType.present
+          ? data.exerciseType.value
+          : this.exerciseType,
+      equipment: data.equipment.present ? data.equipment.value : this.equipment,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CustomExerciseRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('name: $name, ')
+          ..write('aliasesJson: $aliasesJson, ')
+          ..write('exerciseType: $exerciseType, ')
+          ..write('equipment: $equipment')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    name,
+    aliasesJson,
+    exerciseType,
+    equipment,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CustomExerciseRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc &&
+          other.version == this.version &&
+          other.deletedAt == this.deletedAt &&
+          other.deviceId == this.deviceId &&
+          other.origin == this.origin &&
+          other.editedByUser == this.editedByUser &&
+          other.name == this.name &&
+          other.aliasesJson == this.aliasesJson &&
+          other.exerciseType == this.exerciseType &&
+          other.equipment == this.equipment);
+}
+
+class CustomExercisesCompanion extends UpdateCompanion<CustomExerciseRow> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<String> updatedHlc;
+  final Value<int> version;
+  final Value<int?> deletedAt;
+  final Value<String> deviceId;
+  final Value<String> origin;
+  final Value<bool> editedByUser;
+  final Value<String> name;
+  final Value<String> aliasesJson;
+  final Value<String> exerciseType;
+  final Value<String> equipment;
+  final Value<int> rowid;
+  const CustomExercisesCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
+    this.version = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.editedByUser = const Value.absent(),
+    this.name = const Value.absent(),
+    this.aliasesJson = const Value.absent(),
+    this.exerciseType = const Value.absent(),
+    this.equipment = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CustomExercisesCompanion.insert({
+    required String id,
+    required int createdAt,
+    required String updatedHlc,
+    required int version,
+    this.deletedAt = const Value.absent(),
+    required String deviceId,
+    required String origin,
+    this.editedByUser = const Value.absent(),
+    required String name,
+    this.aliasesJson = const Value.absent(),
+    required String exerciseType,
+    required String equipment,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedHlc = Value(updatedHlc),
+       version = Value(version),
+       deviceId = Value(deviceId),
+       origin = Value(origin),
+       name = Value(name),
+       exerciseType = Value(exerciseType),
+       equipment = Value(equipment);
+  static Insertable<CustomExerciseRow> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<String>? updatedHlc,
+    Expression<int>? version,
+    Expression<int>? deletedAt,
+    Expression<String>? deviceId,
+    Expression<String>? origin,
+    Expression<bool>? editedByUser,
+    Expression<String>? name,
+    Expression<String>? aliasesJson,
+    Expression<String>? exerciseType,
+    Expression<String>? equipment,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
+      if (version != null) 'version': version,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deviceId != null) 'device_id': deviceId,
+      if (origin != null) 'origin': origin,
+      if (editedByUser != null) 'edited_by_user': editedByUser,
+      if (name != null) 'name': name,
+      if (aliasesJson != null) 'aliases_json': aliasesJson,
+      if (exerciseType != null) 'exercise_type': exerciseType,
+      if (equipment != null) 'equipment': equipment,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CustomExercisesCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<String>? updatedHlc,
+    Value<int>? version,
+    Value<int?>? deletedAt,
+    Value<String>? deviceId,
+    Value<String>? origin,
+    Value<bool>? editedByUser,
+    Value<String>? name,
+    Value<String>? aliasesJson,
+    Value<String>? exerciseType,
+    Value<String>? equipment,
+    Value<int>? rowid,
+  }) {
+    return CustomExercisesCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
+      version: version ?? this.version,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deviceId: deviceId ?? this.deviceId,
+      origin: origin ?? this.origin,
+      editedByUser: editedByUser ?? this.editedByUser,
+      name: name ?? this.name,
+      aliasesJson: aliasesJson ?? this.aliasesJson,
+      exerciseType: exerciseType ?? this.exerciseType,
+      equipment: equipment ?? this.equipment,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (editedByUser.present) {
+      map['edited_by_user'] = Variable<bool>(editedByUser.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (aliasesJson.present) {
+      map['aliases_json'] = Variable<String>(aliasesJson.value);
+    }
+    if (exerciseType.present) {
+      map['exercise_type'] = Variable<String>(exerciseType.value);
+    }
+    if (equipment.present) {
+      map['equipment'] = Variable<String>(equipment.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CustomExercisesCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('name: $name, ')
+          ..write('aliasesJson: $aliasesJson, ')
+          ..write('exerciseType: $exerciseType, ')
+          ..write('equipment: $equipment, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WorkoutTemplatesTable extends WorkoutTemplates
+    with TableInfo<$WorkoutTemplatesTable, WorkoutTemplateRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WorkoutTemplatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+    'origin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedByUserMeta = const VerificationMeta(
+    'editedByUser',
+  );
+  @override
+  late final GeneratedColumn<bool> editedByUser = GeneratedColumn<bool>(
+    'edited_by_user',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_by_user" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    name,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'workout_templates';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WorkoutTemplateRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedHlcMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('origin')) {
+      context.handle(
+        _originMeta,
+        origin.isAcceptableOrUnknown(data['origin']!, _originMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originMeta);
+    }
+    if (data.containsKey('edited_by_user')) {
+      context.handle(
+        _editedByUserMeta,
+        editedByUser.isAcceptableOrUnknown(
+          data['edited_by_user']!,
+          _editedByUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WorkoutTemplateRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WorkoutTemplateRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      origin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin'],
+      )!,
+      editedByUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited_by_user'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+    );
+  }
+
+  @override
+  $WorkoutTemplatesTable createAlias(String alias) {
+    return $WorkoutTemplatesTable(attachedDatabase, alias);
+  }
+}
+
+class WorkoutTemplateRow extends DataClass
+    implements Insertable<WorkoutTemplateRow> {
+  /// UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys
+  /// (`core/db/natural_id.dart`). Lowercase canonical text.
+  final String id;
+
+  /// When the row was first written, UTC ms (0 for seeds).
+  final int createdAt;
+
+  /// The hybrid logical clock of the last write (`fb_domain` `Hlc` text).
+  final String updatedHlc;
+
+  /// 1 on insert, +1 per write: the local optimistic concurrency check.
+  final int version;
+
+  /// The tombstone, UTC ms. Synced rows are never hard-deleted.
+  final int? deletedAt;
+
+  /// The install that made the last write (the HLC's node id, TD-053).
+  final String deviceId;
+
+  /// `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`.
+  final String origin;
+
+  /// Provenance: the user overrode a value that came from another source
+  /// (AI-072, the "edited by you" badge). Set only by ops.
+  final bool editedByUser;
+
+  /// "Push". User content.
+  final String name;
+  const WorkoutTemplateRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedHlc,
+    required this.version,
+    this.deletedAt,
+    required this.deviceId,
+    required this.origin,
+    required this.editedByUser,
+    required this.name,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
+    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['device_id'] = Variable<String>(deviceId);
+    map['origin'] = Variable<String>(origin);
+    map['edited_by_user'] = Variable<bool>(editedByUser);
+    map['name'] = Variable<String>(name);
+    return map;
+  }
+
+  WorkoutTemplatesCompanion toCompanion(bool nullToAbsent) {
+    return WorkoutTemplatesCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
+      version: Value(version),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deviceId: Value(deviceId),
+      origin: Value(origin),
+      editedByUser: Value(editedByUser),
+      name: Value(name),
+    );
+  }
+
+  factory WorkoutTemplateRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WorkoutTemplateRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
+      version: serializer.fromJson<int>(json['version']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      origin: serializer.fromJson<String>(json['origin']),
+      editedByUser: serializer.fromJson<bool>(json['editedByUser']),
+      name: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
+      'version': serializer.toJson<int>(version),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'origin': serializer.toJson<String>(origin),
+      'editedByUser': serializer.toJson<bool>(editedByUser),
+      'name': serializer.toJson<String>(name),
+    };
+  }
+
+  WorkoutTemplateRow copyWith({
+    String? id,
+    int? createdAt,
+    String? updatedHlc,
+    int? version,
+    Value<int?> deletedAt = const Value.absent(),
+    String? deviceId,
+    String? origin,
+    bool? editedByUser,
+    String? name,
+  }) => WorkoutTemplateRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+    version: version ?? this.version,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deviceId: deviceId ?? this.deviceId,
+    origin: origin ?? this.origin,
+    editedByUser: editedByUser ?? this.editedByUser,
+    name: name ?? this.name,
+  );
+  WorkoutTemplateRow copyWithCompanion(WorkoutTemplatesCompanion data) {
+    return WorkoutTemplateRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
+      version: data.version.present ? data.version.value : this.version,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      editedByUser: data.editedByUser.present
+          ? data.editedByUser.value
+          : this.editedByUser,
+      name: data.name.present ? data.name.value : this.name,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WorkoutTemplateRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    name,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WorkoutTemplateRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc &&
+          other.version == this.version &&
+          other.deletedAt == this.deletedAt &&
+          other.deviceId == this.deviceId &&
+          other.origin == this.origin &&
+          other.editedByUser == this.editedByUser &&
+          other.name == this.name);
+}
+
+class WorkoutTemplatesCompanion extends UpdateCompanion<WorkoutTemplateRow> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<String> updatedHlc;
+  final Value<int> version;
+  final Value<int?> deletedAt;
+  final Value<String> deviceId;
+  final Value<String> origin;
+  final Value<bool> editedByUser;
+  final Value<String> name;
+  final Value<int> rowid;
+  const WorkoutTemplatesCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
+    this.version = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.editedByUser = const Value.absent(),
+    this.name = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WorkoutTemplatesCompanion.insert({
+    required String id,
+    required int createdAt,
+    required String updatedHlc,
+    required int version,
+    this.deletedAt = const Value.absent(),
+    required String deviceId,
+    required String origin,
+    this.editedByUser = const Value.absent(),
+    required String name,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedHlc = Value(updatedHlc),
+       version = Value(version),
+       deviceId = Value(deviceId),
+       origin = Value(origin),
+       name = Value(name);
+  static Insertable<WorkoutTemplateRow> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<String>? updatedHlc,
+    Expression<int>? version,
+    Expression<int>? deletedAt,
+    Expression<String>? deviceId,
+    Expression<String>? origin,
+    Expression<bool>? editedByUser,
+    Expression<String>? name,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
+      if (version != null) 'version': version,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deviceId != null) 'device_id': deviceId,
+      if (origin != null) 'origin': origin,
+      if (editedByUser != null) 'edited_by_user': editedByUser,
+      if (name != null) 'name': name,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WorkoutTemplatesCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<String>? updatedHlc,
+    Value<int>? version,
+    Value<int?>? deletedAt,
+    Value<String>? deviceId,
+    Value<String>? origin,
+    Value<bool>? editedByUser,
+    Value<String>? name,
+    Value<int>? rowid,
+  }) {
+    return WorkoutTemplatesCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
+      version: version ?? this.version,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deviceId: deviceId ?? this.deviceId,
+      origin: origin ?? this.origin,
+      editedByUser: editedByUser ?? this.editedByUser,
+      name: name ?? this.name,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (editedByUser.present) {
+      map['edited_by_user'] = Variable<bool>(editedByUser.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WorkoutTemplatesCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('name: $name, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $ChatMessagesTable extends ChatMessages
     with TableInfo<$ChatMessagesTable, ChatMessageRow> {
   @override
@@ -15118,6 +20356,46 @@ class PersonalFoodsCompanion extends UpdateCompanion<PersonalFoodRow> {
 
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
+  late final $WorkoutSessionsTable workoutSessions = $WorkoutSessionsTable(
+    this,
+  );
+  late final Index ixWorkoutSessionsDate = Index(
+    'ix_workout_sessions_date',
+    'CREATE INDEX ix_workout_sessions_date ON workout_sessions (local_date, id) WHERE deleted_at IS NULL',
+  );
+  late final $SessionExercisesTable sessionExercises = $SessionExercisesTable(
+    this,
+  );
+  late final Index ixSessionExercisesSession = Index(
+    'ix_session_exercises_session',
+    'CREATE INDEX ix_session_exercises_session ON session_exercises (session_id, position) WHERE deleted_at IS NULL',
+  );
+  late final Index ixSessionExercisesExercise = Index(
+    'ix_session_exercises_exercise',
+    'CREATE INDEX ix_session_exercises_exercise ON session_exercises (exercise_id) WHERE deleted_at IS NULL',
+  );
+  late final $WorkoutSetsTable workoutSets = $WorkoutSetsTable(this);
+  late final Index ixWorkoutSetsExercise = Index(
+    'ix_workout_sets_exercise',
+    'CREATE INDEX ix_workout_sets_exercise ON workout_sets (session_exercise_id, position) WHERE deleted_at IS NULL',
+  );
+  late final $WorkoutTemplateItemsTable workoutTemplateItems =
+      $WorkoutTemplateItemsTable(this);
+  late final Index ixWorkoutTemplateItemsTemplate = Index(
+    'ix_workout_template_items_template',
+    'CREATE INDEX ix_workout_template_items_template ON workout_template_items (template_id, position) WHERE deleted_at IS NULL',
+  );
+  late final $WeeklyPlanDaysTable weeklyPlanDays = $WeeklyPlanDaysTable(this);
+  late final Index uxWeeklyPlanDaysWeekday = Index(
+    'ux_weekly_plan_days_weekday',
+    'CREATE UNIQUE INDEX ux_weekly_plan_days_weekday ON weekly_plan_days (weekday) WHERE deleted_at IS NULL',
+  );
+  late final $CustomExercisesTable customExercises = $CustomExercisesTable(
+    this,
+  );
+  late final $WorkoutTemplatesTable workoutTemplates = $WorkoutTemplatesTable(
+    this,
+  );
   late final $ChatMessagesTable chatMessages = $ChatMessagesTable(this);
   late final Index ixChatMessagesOrder = Index(
     'ix_chat_messages_order',
@@ -15338,11 +20616,108 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'CREATE TRIGGER chat_messages_no_delete BEFORE DELETE ON chat_messages BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
     'chat_messages_no_delete',
   );
+  late final Trigger customExercisesOutboxAi = Trigger(
+    'CREATE TRIGGER custom_exercises_outbox_ai AFTER INSERT ON custom_exercises WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'customExercise\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'custom_exercises_outbox_ai',
+  );
+  late final Trigger customExercisesOutboxAu = Trigger(
+    'CREATE TRIGGER custom_exercises_outbox_au AFTER UPDATE ON custom_exercises WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'customExercise\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'custom_exercises_outbox_au',
+  );
+  late final Trigger customExercisesNoDelete = Trigger(
+    'CREATE TRIGGER custom_exercises_no_delete BEFORE DELETE ON custom_exercises BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'custom_exercises_no_delete',
+  );
+  late final Trigger workoutSessionsOutboxAi = Trigger(
+    'CREATE TRIGGER workout_sessions_outbox_ai AFTER INSERT ON workout_sessions WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'workoutSession\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'workout_sessions_outbox_ai',
+  );
+  late final Trigger workoutSessionsOutboxAu = Trigger(
+    'CREATE TRIGGER workout_sessions_outbox_au AFTER UPDATE ON workout_sessions WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'workoutSession\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'workout_sessions_outbox_au',
+  );
+  late final Trigger workoutSessionsNoDelete = Trigger(
+    'CREATE TRIGGER workout_sessions_no_delete BEFORE DELETE ON workout_sessions BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'workout_sessions_no_delete',
+  );
+  late final Trigger sessionExercisesOutboxAi = Trigger(
+    'CREATE TRIGGER session_exercises_outbox_ai AFTER INSERT ON session_exercises WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'sessionExercise\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'session_exercises_outbox_ai',
+  );
+  late final Trigger sessionExercisesOutboxAu = Trigger(
+    'CREATE TRIGGER session_exercises_outbox_au AFTER UPDATE ON session_exercises WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'sessionExercise\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'session_exercises_outbox_au',
+  );
+  late final Trigger sessionExercisesNoDelete = Trigger(
+    'CREATE TRIGGER session_exercises_no_delete BEFORE DELETE ON session_exercises BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'session_exercises_no_delete',
+  );
+  late final Trigger workoutSetsOutboxAi = Trigger(
+    'CREATE TRIGGER workout_sets_outbox_ai AFTER INSERT ON workout_sets WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'workoutSet\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'workout_sets_outbox_ai',
+  );
+  late final Trigger workoutSetsOutboxAu = Trigger(
+    'CREATE TRIGGER workout_sets_outbox_au AFTER UPDATE ON workout_sets WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'workoutSet\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'workout_sets_outbox_au',
+  );
+  late final Trigger workoutSetsNoDelete = Trigger(
+    'CREATE TRIGGER workout_sets_no_delete BEFORE DELETE ON workout_sets BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'workout_sets_no_delete',
+  );
+  late final Trigger workoutTemplatesOutboxAi = Trigger(
+    'CREATE TRIGGER workout_templates_outbox_ai AFTER INSERT ON workout_templates WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'workoutTemplate\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'workout_templates_outbox_ai',
+  );
+  late final Trigger workoutTemplatesOutboxAu = Trigger(
+    'CREATE TRIGGER workout_templates_outbox_au AFTER UPDATE ON workout_templates WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'workoutTemplate\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'workout_templates_outbox_au',
+  );
+  late final Trigger workoutTemplatesNoDelete = Trigger(
+    'CREATE TRIGGER workout_templates_no_delete BEFORE DELETE ON workout_templates BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'workout_templates_no_delete',
+  );
+  late final Trigger workoutTemplateItemsOutboxAi = Trigger(
+    'CREATE TRIGGER workout_template_items_outbox_ai AFTER INSERT ON workout_template_items WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'workoutTemplateItem\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'workout_template_items_outbox_ai',
+  );
+  late final Trigger workoutTemplateItemsOutboxAu = Trigger(
+    'CREATE TRIGGER workout_template_items_outbox_au AFTER UPDATE ON workout_template_items WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'workoutTemplateItem\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'workout_template_items_outbox_au',
+  );
+  late final Trigger workoutTemplateItemsNoDelete = Trigger(
+    'CREATE TRIGGER workout_template_items_no_delete BEFORE DELETE ON workout_template_items BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'workout_template_items_no_delete',
+  );
+  late final Trigger weeklyPlanDaysOutboxAi = Trigger(
+    'CREATE TRIGGER weekly_plan_days_outbox_ai AFTER INSERT ON weekly_plan_days WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'weeklyPlanDay\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'weekly_plan_days_outbox_ai',
+  );
+  late final Trigger weeklyPlanDaysOutboxAu = Trigger(
+    'CREATE TRIGGER weekly_plan_days_outbox_au AFTER UPDATE ON weekly_plan_days WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'weeklyPlanDay\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'weekly_plan_days_outbox_au',
+  );
+  late final Trigger weeklyPlanDaysNoDelete = Trigger(
+    'CREATE TRIGGER weekly_plan_days_no_delete BEFORE DELETE ON weekly_plan_days BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'weekly_plan_days_no_delete',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
+    workoutSessions,
+    ixWorkoutSessionsDate,
+    sessionExercises,
+    ixSessionExercisesSession,
+    ixSessionExercisesExercise,
+    workoutSets,
+    ixWorkoutSetsExercise,
+    workoutTemplateItems,
+    ixWorkoutTemplateItemsTemplate,
+    weeklyPlanDays,
+    uxWeeklyPlanDaysWeekday,
+    customExercises,
+    workoutTemplates,
     chatMessages,
     ixChatMessagesOrder,
     ixChatMessagesReply,
@@ -15409,6 +20784,27 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     chatMessagesOutboxAi,
     chatMessagesOutboxAu,
     chatMessagesNoDelete,
+    customExercisesOutboxAi,
+    customExercisesOutboxAu,
+    customExercisesNoDelete,
+    workoutSessionsOutboxAi,
+    workoutSessionsOutboxAu,
+    workoutSessionsNoDelete,
+    sessionExercisesOutboxAi,
+    sessionExercisesOutboxAu,
+    sessionExercisesNoDelete,
+    workoutSetsOutboxAi,
+    workoutSetsOutboxAu,
+    workoutSetsNoDelete,
+    workoutTemplatesOutboxAi,
+    workoutTemplatesOutboxAu,
+    workoutTemplatesNoDelete,
+    workoutTemplateItemsOutboxAi,
+    workoutTemplateItemsOutboxAu,
+    workoutTemplateItemsNoDelete,
+    weeklyPlanDaysOutboxAi,
+    weeklyPlanDaysOutboxAu,
+    weeklyPlanDaysNoDelete,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -15681,6 +21077,153 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'chat_messages',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'custom_exercises',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'custom_exercises',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'custom_exercises',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'workout_sessions',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'workout_sessions',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'workout_sessions',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'session_exercises',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'session_exercises',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'session_exercises',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'workout_sets',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'workout_sets',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'workout_sets',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'workout_templates',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'workout_templates',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'workout_templates',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'workout_template_items',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'workout_template_items',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'workout_template_items',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'weekly_plan_days',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'weekly_plan_days',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'weekly_plan_days',
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [],

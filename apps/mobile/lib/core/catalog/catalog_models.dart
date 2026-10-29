@@ -252,3 +252,30 @@ final class CatalogNameRow {
   /// Earliest retrieval pass that selected this row.
   final CandidatePass pass;
 }
+
+/// A built-in exercise from the catalog pack (WO-001, WO-002, WO-004).
+final class CatalogExercise {
+  /// A built-in exercise.
+  const new({
+    required this.id,
+    required this.nameEn,
+    required this.type,
+    required this.equipment,
+    required this.primaryMuscle,
+  });
+
+  /// The catalog ID, `ex:<slug>`.
+  final String id;
+
+  /// The English display name.
+  final String nameEn;
+
+  /// What a set logs.
+  final ExerciseType type;
+
+  /// The equipment (dumbbell weights are per dumbbell, WO-005).
+  final Equipment equipment;
+
+  /// The main muscle group, like `chest`.
+  final String primaryMuscle;
+}

@@ -3,6 +3,7 @@ import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/application/body_weight.dart';
 import 'package:fb_mobile/features/targets/data/targets_repository.dart';
+import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'targets_providers.g.dart';
@@ -110,9 +111,13 @@ Future<DayTargets?> dayTargets(Ref ref, LocalDate date) async {
     return null;
   }
   final from = calendar.weekStartOf(date);
+  final trainingFuture = ref.watch(
+    trainingShiftProvider(from, from.plusDays(6)).future,
+  );
   final intake = from.isBefore(date)
       ? await ref.watch(_weekIntakeProvider(from, date.plusDays(-1)).future)
       : const <DayIntake>[];
+  final training = await trainingFuture;
   return TargetsTimeline.day(
     date: date,
     settings: settings,
@@ -121,6 +126,7 @@ Future<DayTargets?> dayTargets(Ref ref, LocalDate date) async {
     bodyWeightKg: weightKg,
     intake: intake,
     calendar: calendar,
+    training: training,
   );
 }
 

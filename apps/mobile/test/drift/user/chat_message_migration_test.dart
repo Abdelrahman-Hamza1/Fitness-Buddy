@@ -41,7 +41,8 @@ void main() {
     const versions = GeneratedHelper.versions;
     final latest = versions.last;
     var seededTables = 0;
-    for (final from in versions.where((v) => v < latest)) {
+    // chat_messages arrived in v7: seed only the versions before it.
+    for (final from in versions.where((v) => v < 7)) {
       final schema = await verifier.schemaAt(from);
       final raw = schema.rawDatabase;
       String tablesSql(String type) =>

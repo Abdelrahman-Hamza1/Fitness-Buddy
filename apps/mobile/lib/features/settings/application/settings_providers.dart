@@ -19,6 +19,11 @@ Stream<UnitSystem> unitSystem(Ref ref) =>
 Stream<DayOfWeek> weekStart(Ref ref) =>
     ref.watch(settingsStoreProvider).watch(AppSettings.weekStart);
 
+/// The training-day shifting weight, or null when off (TG-043).
+@riverpod
+Stream<double?> trainingDayWeight(Ref ref) =>
+    ref.watch(settingsStoreProvider).watch(AppSettings.trainingDayWeight);
+
 /// One shared calendar for future weekly views.
 @riverpod
 WeekCalendar weekCalendar(Ref ref) => WeekCalendar(

@@ -185,7 +185,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A33](A33-sign-in-guest-app.md) | Sign-in & guest upgrade | Claude | A20, **B04** | M | S25 |  | ⬜ |
 | [A34](A34-sync-engine-app.md) | Sync engine (app) | Claude | A33, **B05**, **B17**, **B18**, **B19** | L | S27 |  | ⬜ |
 | [A35](A35-account-deletion-app.md) | Account deletion (app) | Claude | A34, **B06** | S | S28 deletion part | **M5** | ⬜ |
-| [A36](A36-workout-domain.md) | Workout domain, library & templates | Claude | A05b, A06, A12 | M | S41 |  | ⬜ |
+| [A36](A36-workout-domain.md) | Workout domain, library & templates | Claude | A05b, A06, A12 | M | S41 |  | ✅ |
 | [A37](A37-workout-logging.md) | Workout logging, history & PRs (app) | Claude | A23, A36, **B12** (contract) | L | S42 app part |  | ⬜ |
 | [A38](A38-adaptive-targets.md) | Adaptive targets & weekly check-in | Claude | A16, A23 | M | S43 |  | ⬜ |
 | [A39](A39-weekly-review.md) | Weekly summary & Buddy review (app) | Claude | A37, A38, **B12** (contract) | M | S44 app part |  | ⬜ |

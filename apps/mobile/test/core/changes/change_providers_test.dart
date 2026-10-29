@@ -98,6 +98,7 @@ void main() {
           TargetsOp.familyName,
           WeighInOp.familyName,
           ChatMessageOp.familyName,
+          WorkoutOp.familyName,
         ],
       );
       expect(container.read(clockProvider), isA<SystemClock>());

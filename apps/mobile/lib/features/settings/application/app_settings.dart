@@ -53,6 +53,24 @@ abstract final class AppSettings {
     defaultValue: null,
   );
 
+  /// TG-043 / WO-061: the calorie-shifting weight of planned training days
+  /// (from the weekly workout plan), or unset for no training-day shifting
+  /// (off by default, D-058). Values outside the engine's weight range read
+  /// as unset.
+  static final trainingDayWeight = SettingKey<double?>(
+    'targets.trainingDayWeight',
+    codec: SettingCodec(
+      toJson: (value) => value,
+      fromJson: (json) =>
+          json is num &&
+              json >= TargetLimits.minWeight &&
+              json <= TargetLimits.maxWeight
+          ? json.toDouble()
+          : null,
+    ),
+    defaultValue: null,
+  );
+
   /// Complete setting vocabulary for export's natural-id reverse lookup.
   static final List<SettingKey<Object?>> all = [
     unitSystem,
@@ -60,6 +78,7 @@ abstract final class AppSettings {
     halal,
     theme,
     cityId,
+    trainingDayWeight,
   ];
 
   /// Accepted GeoNames identity format, without including input in errors.

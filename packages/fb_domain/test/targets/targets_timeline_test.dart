@@ -756,4 +756,59 @@ void main() {
     );
     if (elapsed == 0) expect(result.week!.kcal, 0);
   });
+
+  group('A36 training shift', () {
+    double sum(Iterable<double> v) => v.fold(0, (a, b) => a + b);
+
+    test('TG-043 planned training days get a bigger share of the same '
+        'weekly budget', () {
+      final plain = _day(_sat)!;
+      final shifted = TargetsTimeline.day(
+        date: _sat,
+        settings: [_version()],
+        profile: _profile,
+        training: TrainingShiftInput(
+          plannedDays: {DayOfWeek.saturday, DayOfWeek.tuesday},
+          weight: 1.2,
+        ),
+      )!;
+      expect(shifted.day.kcal, greaterThan(plain.day.kcal));
+      final week = shifted.day.week!;
+      expect(sum(week.targets.values), closeTo(week.budgetKcal, 0.01));
+      expect(week.budgetKcal, plain.day.week!.budgetKcal); // WO-060
+    });
+
+    test('WO-061 a workout logged today on an unplanned day raises today and '
+        'redistributes the rest of the week', () {
+      final training = TrainingShiftInput(
+        plannedDays: {DayOfWeek.saturday, DayOfWeek.tuesday},
+        weight: 1.2,
+        loggedDates: [_mon],
+      );
+      final before = TargetsTimeline.day(
+        date: _mon,
+        settings: [_version()],
+        profile: _profile,
+        training: TrainingShiftInput(
+          plannedDays: training.plannedDays,
+          weight: 1.2,
+        ),
+        intake: [_ate(_sat, 2200), _ate(_sun, 1900)],
+      )!;
+      final after = TargetsTimeline.day(
+        date: _mon,
+        settings: [_version()],
+        profile: _profile,
+        training: training,
+        intake: [_ate(_sat, 2200), _ate(_sun, 1900)],
+      )!;
+      expect(after.day.kcal, greaterThan(before.day.kcal));
+      final week = after.day.week!;
+      expect(week.targets[_tue], lessThan(before.day.week!.targets[_tue]!));
+      expect(
+        week.accountedPastKcal + sum(week.targets.values),
+        closeTo(week.budgetKcal + week.carryKcal, 0.01),
+      );
+    });
+  });
 }

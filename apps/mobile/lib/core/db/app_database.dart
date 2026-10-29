@@ -9,6 +9,7 @@ import 'package:fb_mobile/core/db/migrations/from_3_to_4.dart';
 import 'package:fb_mobile/core/db/migrations/from_4_to_5.dart';
 import 'package:fb_mobile/core/db/migrations/from_5_to_6.dart';
 import 'package:fb_mobile/core/db/migrations/from_6_to_7.dart';
+import 'package:fb_mobile/core/db/migrations/from_7_to_8.dart';
 import 'package:fb_mobile/core/db/seeds/default_slots_seed.dart';
 import 'package:fb_mobile/core/db/synced_tables.dart';
 import 'package:fb_mobile/core/db/tables/body_tables.dart';
@@ -18,6 +19,7 @@ import 'package:fb_mobile/core/db/tables/food_tables.dart';
 import 'package:fb_mobile/core/db/tables/settings_tables.dart';
 import 'package:fb_mobile/core/db/tables/sync_tables.dart';
 import 'package:fb_mobile/core/db/tables/target_tables.dart';
+import 'package:fb_mobile/core/db/tables/workout_tables.dart';
 import 'package:fb_mobile/core/db/write_guard.dart';
 import 'package:fb_mobile/core/db/write_guarded.dart';
 
@@ -53,6 +55,13 @@ typedef CatalogErrorHandler = void Function(Object error, StackTrace stack);
     TargetSettingsRows,
     WeighIns,
     ChatMessages,
+    CustomExercises,
+    WorkoutSessions,
+    SessionExercises,
+    WorkoutSets,
+    WorkoutTemplates,
+    WorkoutTemplateItems,
+    WeeklyPlanDays,
   ],
   include: {
     'sync_triggers.drift',
@@ -60,6 +69,7 @@ typedef CatalogErrorHandler = void Function(Object error, StackTrace stack);
     'targets.drift',
     'body.drift',
     'chat.drift',
+    'workout.drift',
   },
 )
 final class AppDatabase extends _$AppDatabase with WriteGuarded {
@@ -111,10 +121,38 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
       chatMessages,
       chatMessageEntity,
     ),
+    SyncedTable<$CustomExercisesTable, CustomExerciseRow>(
+      customExercises,
+      customExerciseEntity,
+    ),
+    SyncedTable<$WorkoutSessionsTable, WorkoutSessionRow>(
+      workoutSessions,
+      workoutSessionEntity,
+    ),
+    SyncedTable<$SessionExercisesTable, SessionExerciseRow>(
+      sessionExercises,
+      sessionExerciseEntity,
+    ),
+    SyncedTable<$WorkoutSetsTable, WorkoutSetRow>(
+      workoutSets,
+      workoutSetEntity,
+    ),
+    SyncedTable<$WorkoutTemplatesTable, WorkoutTemplateRow>(
+      workoutTemplates,
+      workoutTemplateEntity,
+    ),
+    SyncedTable<$WorkoutTemplateItemsTable, WorkoutTemplateItemRow>(
+      workoutTemplateItems,
+      workoutTemplateItemEntity,
+    ),
+    SyncedTable<$WeeklyPlanDaysTable, WeeklyPlanDayRow>(
+      weeklyPlanDays,
+      weeklyPlanDayEntity,
+    ),
   ];
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -129,6 +167,7 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
       from4To5: from4To5,
       from5To6: from5To6,
       from6To7: from6To7,
+      from7To8: from7To8,
     ),
     beforeOpen: (details) async {
       // drift runs this on the executor it's opening, below the guard (the

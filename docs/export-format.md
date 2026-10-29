@@ -334,3 +334,115 @@ The Buddy chat transcript (A22): what you typed and Buddy's replies.
 | `weigh-ins.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
 | `weigh-ins.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
 | `weigh-ins.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
+## custom-exercises (`customExercise`, `custom_exercises`)
+
+Custom exercises you added (A36, WO-003). Built-in exercises are in the catalog, not here.
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `custom-exercises.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `custom-exercises.name` | text | The exercise name. User content. |
+| `custom-exercises.aliases_json` | JSON value | Other names you search it by, a JSON array of strings. User content. |
+| `custom-exercises.exercise_type` | text | What a set logs: `weight_reps`, `bodyweight_reps`, `assisted`, `reps_only`, `duration` or `distance_duration` (WO-004). |
+| `custom-exercises.equipment` | text | `barbell`, `dumbbell`, `cable`, `machine`, `kettlebell`, `bodyweight` or `other`. |
+| `custom-exercises.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `custom-exercises.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `custom-exercises.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `custom-exercises.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
+## workout-sessions (`workoutSession`, `workout_sessions`)
+
+Logged workouts (A36, WO-010).
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `workout-sessions.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `workout-sessions.local_date` | text | The training day, `YYYY-MM-DD`. |
+| `workout-sessions.name` | text | The session name, like "Push", or null. User content. |
+| `workout-sessions.start_minute` | integer | Start time in minutes after local midnight, or null. |
+| `workout-sessions.duration_minutes` | integer | Duration in minutes, or null. |
+| `workout-sessions.template_id` | text | The template the session was started from, or null. |
+| `workout-sessions.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `workout-sessions.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `workout-sessions.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `workout-sessions.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
+## session-exercises (`sessionExercise`, `session_exercises`)
+
+The exercises of each logged workout, in order (A36).
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `session-exercises.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `session-exercises.session_id` | text | The workout session. |
+| `session-exercises.exercise_id` | text | A built-in exercise (`ex:…`, catalog) or a custom exercise id. |
+| `session-exercises.position` | integer | Order within the session, from 0. |
+| `session-exercises.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `session-exercises.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `session-exercises.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `session-exercises.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
+## workout-sets (`workoutSet`, `workout_sets`)
+
+The sets of each exercise, in order (A36, WO-004).
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `workout-sets.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `workout-sets.session_exercise_id` | text | The session exercise. |
+| `workout-sets.position` | integer | Order within the exercise, from 0. |
+| `workout-sets.reps` | integer | Repetitions, or null for timed sets. |
+| `workout-sets.kg` | real | Load in kg: the weight, the added load (bodyweight) or the assistance (assisted). Per dumbbell for dumbbell exercises (WO-005). |
+| `workout-sets.input_value` | real | The weight as typed, in `input_unit` (like `176` for 176 lb), or null. |
+| `workout-sets.input_unit` | text | The unit the weight was typed in: `kg` or `lb`, or null. |
+| `workout-sets.duration_seconds` | integer | Duration in seconds for timed and cardio sets, else null. |
+| `workout-sets.distance_meters` | real | Distance in metres for cardio sets, or null. |
+| `workout-sets.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `workout-sets.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `workout-sets.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `workout-sets.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
+## workout-templates (`workoutTemplate`, `workout_templates`)
+
+Routine templates (A36, WO-020).
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `workout-templates.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `workout-templates.name` | text | The template name, like "Push". User content. |
+| `workout-templates.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `workout-templates.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `workout-templates.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `workout-templates.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
+## workout-template-items (`workoutTemplateItem`, `workout_template_items`)
+
+The lines of each template: exercise with target sets × reps, in order (A36).
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `workout-template-items.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `workout-template-items.template_id` | text | The template. |
+| `workout-template-items.exercise_id` | text | A built-in exercise (`ex:…`) or a custom exercise id. |
+| `workout-template-items.position` | integer | Order within the template, from 0. |
+| `workout-template-items.target_sets` | integer | Target sets. |
+| `workout-template-items.target_reps` | integer | Target reps per set. |
+| `workout-template-items.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `workout-template-items.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `workout-template-items.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `workout-template-items.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
+## weekly-plan (`weeklyPlanDay`, `weekly_plan_days`)
+
+The weekly plan (A36, WO-021): which template each weekday trains.
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `weekly-plan.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `weekly-plan.weekday` | integer | ISO weekday, 1 (Monday) to 7 (Sunday). |
+| `weekly-plan.template_id` | text | The template trained that day, or null for rest. |
+| `weekly-plan.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `weekly-plan.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `weekly-plan.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `weekly-plan.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |

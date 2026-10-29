@@ -90,6 +90,44 @@ final class WeekStartProvider
 
 String _$weekStartHash() => r'656abc5c29e168a35ec34f461f99965bc2d6548e';
 
+/// The training-day shifting weight, or null when off (TG-043).
+
+@ProviderFor(trainingDayWeight)
+final trainingDayWeightProvider = TrainingDayWeightProvider._();
+
+/// The training-day shifting weight, or null when off (TG-043).
+
+final class TrainingDayWeightProvider
+    extends $FunctionalProvider<AsyncValue<double?>, double?, Stream<double?>>
+    with $FutureModifier<double?>, $StreamProvider<double?> {
+  /// The training-day shifting weight, or null when off (TG-043).
+  TrainingDayWeightProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'trainingDayWeightProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$trainingDayWeightHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<double?> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<double?> create(Ref ref) {
+    return trainingDayWeight(ref);
+  }
+}
+
+String _$trainingDayWeightHash() => r'8ae477ec2985d9cdbdcca93b4cd7184dc736aa78';
+
 /// One shared calendar for future weekly views.
 
 @ProviderFor(weekCalendar)

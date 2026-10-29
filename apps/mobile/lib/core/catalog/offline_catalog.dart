@@ -78,6 +78,33 @@ final class OfflineCatalog {
     return rows.isEmpty ? null : _city(rows.single);
   }
 
+  /// Every built-in exercise with a known type and equipment, by name
+  /// (WO-001). Empty while no pack is attached.
+  Future<List<CatalogExercise>> exercises() => _guard(() async {
+    if (!await _isReady()) return const <CatalogExercise>[];
+    final rows = await _db
+        .customSelect(
+          'SELECT id, name_en, type, equipment, primary_muscle '
+          'FROM $_schema.exercises ORDER BY name_en, id',
+        )
+        .get();
+    return [
+      for (final row in rows)
+        if ((
+              ExerciseType.fromCode(row.read<String>('type')),
+              Equipment.fromCode(row.read<String>('equipment')),
+            )
+            case (final type?, final equipment?))
+          CatalogExercise(
+            id: row.read<String>('id'),
+            nameEn: row.read<String>('name_en'),
+            type: type,
+            equipment: equipment,
+            primaryMuscle: row.read<String>('primary_muscle'),
+          ),
+    ];
+  }, const <CatalogExercise>[]);
+
   CatalogCity _city(QueryRow row) => CatalogCity(
     id: row.read<String>('id'),
     nameEn: row.read<String>('name_en'),

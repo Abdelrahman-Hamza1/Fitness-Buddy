@@ -15,6 +15,7 @@ import 'tables/food_tables.dart';
 import 'tables/target_tables.dart';
 import 'tables/body_tables.dart';
 import 'tables/chat_tables.dart';
+import 'tables/workout_tables.dart';
 
 -- settings_kv (entity 'setting', A01 D16)
 CREATE TRIGGER settings_kv_outbox_ai AFTER INSERT ON settings_kv
@@ -285,6 +286,153 @@ BEGIN
 END;
 
 CREATE TRIGGER chat_messages_no_delete BEFORE DELETE ON chat_messages
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;
+
+-- custom_exercises (entity 'customExercise', A36)
+CREATE TRIGGER custom_exercises_outbox_ai AFTER INSERT ON custom_exercises
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('customExercise', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER custom_exercises_outbox_au AFTER UPDATE ON custom_exercises
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('customExercise', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER custom_exercises_no_delete BEFORE DELETE ON custom_exercises
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;
+
+-- workout_sessions (entity 'workoutSession', A36)
+CREATE TRIGGER workout_sessions_outbox_ai AFTER INSERT ON workout_sessions
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('workoutSession', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER workout_sessions_outbox_au AFTER UPDATE ON workout_sessions
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('workoutSession', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER workout_sessions_no_delete BEFORE DELETE ON workout_sessions
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;
+
+-- session_exercises (entity 'sessionExercise', A36)
+CREATE TRIGGER session_exercises_outbox_ai AFTER INSERT ON session_exercises
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('sessionExercise', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER session_exercises_outbox_au AFTER UPDATE ON session_exercises
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('sessionExercise', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER session_exercises_no_delete BEFORE DELETE ON session_exercises
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;
+
+-- workout_sets (entity 'workoutSet', A36)
+CREATE TRIGGER workout_sets_outbox_ai AFTER INSERT ON workout_sets
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('workoutSet', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER workout_sets_outbox_au AFTER UPDATE ON workout_sets
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('workoutSet', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER workout_sets_no_delete BEFORE DELETE ON workout_sets
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;
+
+-- workout_templates (entity 'workoutTemplate', A36)
+CREATE TRIGGER workout_templates_outbox_ai AFTER INSERT ON workout_templates
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('workoutTemplate', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER workout_templates_outbox_au AFTER UPDATE ON workout_templates
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('workoutTemplate', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER workout_templates_no_delete BEFORE DELETE ON workout_templates
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;
+
+-- workout_template_items (entity 'workoutTemplateItem', A36)
+CREATE TRIGGER workout_template_items_outbox_ai AFTER INSERT ON workout_template_items
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('workoutTemplateItem', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER workout_template_items_outbox_au AFTER UPDATE ON workout_template_items
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('workoutTemplateItem', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER workout_template_items_no_delete BEFORE DELETE ON workout_template_items
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;
+
+-- weekly_plan_days (entity 'weeklyPlanDay', A36)
+CREATE TRIGGER weekly_plan_days_outbox_ai AFTER INSERT ON weekly_plan_days
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('weeklyPlanDay', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER weekly_plan_days_outbox_au AFTER UPDATE ON weekly_plan_days
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('weeklyPlanDay', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER weekly_plan_days_no_delete BEFORE DELETE ON weekly_plan_days
 BEGIN
   SELECT RAISE(ABORT, 'tombstone, never delete');
 END;

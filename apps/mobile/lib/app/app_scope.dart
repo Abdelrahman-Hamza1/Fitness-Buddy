@@ -13,6 +13,7 @@ import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
+import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter_riverpod/misc.dart';
 
 /// The provider overrides that wire the app together: the compile-time
@@ -41,6 +42,7 @@ List<Override> appOverrides(AppConfig config) => [
       TargetsOpHandler(db),
       WeighInOpHandler(db),
       ChatMessageOpHandler(db),
+      WorkoutOpHandler(db),
     ],
   ),
 ];

@@ -1,0 +1,27 @@
+-- Workout indexes (A36). Partial on live rows: every read query includes
+-- deleted_at IS NULL.
+import 'tables/workout_tables.dart';
+
+-- History by date.
+CREATE INDEX ix_workout_sessions_date ON workout_sessions (local_date, id)
+  WHERE deleted_at IS NULL;
+
+-- A session's exercises in order.
+CREATE INDEX ix_session_exercises_session
+  ON session_exercises (session_id, position) WHERE deleted_at IS NULL;
+
+-- Per-exercise history and PRs (WO-041, WO-042).
+CREATE INDEX ix_session_exercises_exercise
+  ON session_exercises (exercise_id) WHERE deleted_at IS NULL;
+
+-- An exercise's sets in order.
+CREATE INDEX ix_workout_sets_exercise
+  ON workout_sets (session_exercise_id, position) WHERE deleted_at IS NULL;
+
+-- A template's items in order.
+CREATE INDEX ix_workout_template_items_template
+  ON workout_template_items (template_id, position) WHERE deleted_at IS NULL;
+
+-- One live plan row per weekday.
+CREATE UNIQUE INDEX ux_weekly_plan_days_weekday
+  ON weekly_plan_days (weekday) WHERE deleted_at IS NULL;
