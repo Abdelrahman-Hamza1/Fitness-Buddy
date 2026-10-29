@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using FitnessBuddy.BuildingBlocks.Web.Http;
 using FitnessBuddy.BuildingBlocks.Web.Modules;
 using FitnessBuddy.Host.Http;
@@ -20,16 +18,8 @@ internal static class ApiRole
         builder.AddFbObservability("api");
         builder.AddFbHttp();
 
-        builder.Services.ConfigureHttpJsonOptions(options =>
-        {
-            // Numbers are numbers: the web default (AllowReadingFromString) would document every
-            // number as `number | string` and accept "12" on input (S02 research gotcha 4).
-            options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
-            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-            // A missing member or a null for a non-nullable one is an unreadable body (TD-043, S03 plan D1).
-            options.SerializerOptions.RespectRequiredConstructorParameters = true;
-            options.SerializerOptions.RespectNullableAnnotations = true;
-        });
+        // Strict numbers, camelCase enums, required members and nullable annotations (ApiJson).
+        builder.Services.ConfigureHttpJsonOptions(options => ApiJson.Configure(options.SerializerOptions));
 
         builder.Services.AddOpenApi("v1", options =>
         {

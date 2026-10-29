@@ -9,6 +9,7 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/settings/settings_op_handler.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/body/body.dart';
+import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
@@ -19,7 +20,7 @@ import 'package:flutter_riverpod/misc.dart';
 /// system clock and ID generator (the only import of
 /// `fb_domain/system.dart`) and the change-op handlers of every feature
 /// (A01 §3.2: the settings handler; A06: the diary's; A13: targets; A14:
-/// weigh-ins).
+/// weigh-ins; A22: chat messages).
 ///
 /// Used by `main` and by tests that pump the whole app.
 List<Override> appOverrides(AppConfig config) => [
@@ -39,6 +40,7 @@ List<Override> appOverrides(AppConfig config) => [
       PersonalFoodOpHandler(db),
       TargetsOpHandler(db),
       WeighInOpHandler(db),
+      ChatMessageOpHandler(db),
     ],
   ),
 ];

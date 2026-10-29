@@ -6,23 +6,48 @@ import 'package:fb_design_system/src/tokens/spacing.dart';
 import 'package:fb_design_system/src/tokens/typography.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// A chip that shows an assumption Buddy made ("Assuming 1 tbsp oil") and
-/// opens it for editing on tap (AI-033).
+/// A chip that shows an assumption Buddy made ("Rice: cooked", "1 tsp of
+/// oil") and opens it for editing on tap (AI-033). The pencil says it can be
+/// changed. A null [onTap] disables it (the card is being logged).
+///
+/// [semanticLabel] is what a screen reader says instead of [label]
+/// ("Assumption: Rice: cooked"); [tapHint] completes "Double tap to …"
+/// ("change it").
 class FbAssumptionChip extends StatelessWidget {
   /// Creates the chip.
-  const new({required this.label, required this.onTap, super.key});
+  const new({
+    required this.label,
+    required this.onTap,
+    this.semanticLabel,
+    this.tapHint,
+    super.key,
+  });
 
   /// The assumption text.
   final String label;
 
-  /// Called on tap.
-  final VoidCallback onTap;
+  /// Called on tap; null disables the chip.
+  final VoidCallback? onTap;
+
+  /// What a screen reader says for the chip; [label] when null.
+  final String? semanticLabel;
+
+  /// The screen reader's tap hint ("change it").
+  final String? tapHint;
 
   @override
-  Widget build(BuildContext context) => ActionChip(
-    label: Text(label),
-    onPressed: onTap,
-    avatar: const Icon(FbIcons.info, size: 18),
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    enabled: onTap != null,
+    label: semanticLabel ?? label,
+    onTap: onTap,
+    onTapHint: tapHint,
+    excludeSemantics: true,
+    child: ActionChip(
+      label: Text(label),
+      onPressed: onTap,
+      avatar: const Icon(FbIcons.edit, size: 18),
+    ),
   );
 }
 

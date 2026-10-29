@@ -1,0 +1,7 @@
+/// Buddy: the chat transcript, its storage and (A22a) the chat sheet with
+/// its proposal cards.
+library;
+
+export 'data/chat_message_op_handler.dart';
+export 'data/chat_message_repository.dart';
+export 'presentation/buddy_sheet.dart' show showBuddySheet;

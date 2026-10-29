@@ -73,6 +73,14 @@ _Full plan written in Phase B; binding persistence handoff accepted by the orche
 - `syncProjection` returns success for two shapes the server rejects (B18 corpus `codecServerRejects`): a card with more than 128 chip taps (`choices` exceeds 128 members) and an amount below decimal range (e.g. `1e-30` g). Both are pathological; add a precheck in `syncProjection` (`syncPayloadTooLarge`, or reject the amount) or keep such rows local, so A34 never queues an unpushable row.
 - New exit criterion: `proposal_sync_vectors_test.dart` (B18 D10, below).
 
+## A22a handoff (2026-10-29, A22a review round 1)
+
+Binding for A23's plan (from A22a's build and reviews):
+- **`dateHint` isn't in the proposal draft codec.** A22a's engine resolves B09's day grammar (`DayHint`; ten years back at most, never before 1970 or in the future) and keeps the hint on the intent, but `ProposalDraftCodec` intents don't carry it, so a restored card would fall back to the reference day. Add it (codec version bump + corpus) **before** restore by `budgetMessageId`.
+- **Never replay A22's `queued`/`failed` rows (PA10).** They have no durable request snapshot; treat them as failed or send them as a new message with a new Idempotency-Key.
+- **Contributor seam:** `proposalPersistenceContributorsProvider` (`onReply`, `onConfirm`, `onDiscard`) returns ops appended to the same change set as A22's own; A23 adds proposal create/resolve/outcome and assistant-message budget ops there, never a second transaction. **Whichever of A22b/A23 merges second wires `onFollowUp`** (shared files `send_buddy_message.dart`, `proposal_resolution.dart`, `message_list.dart`).
+- The thread controller refreshes open cards on non-proposal diary change sets (domain events); A23's restored cards should join that path.
+
 ## Progress log
 
 - 2026-10-24 · A21 architect review PA1/PA2 persistence handoff applied (orchestrator accepted): A23 owns Risky proposals migration, atomic resolution/outcomes and B18 sync consumption; size L and B18 (contract) dependency recorded. Compact per-card/shared-budget restore and 32 KiB versus 512 KiB limits specified. Planning only; B18 board row and full A23 plan remain with the orchestrator.

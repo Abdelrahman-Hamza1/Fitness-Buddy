@@ -208,7 +208,7 @@ Future<void> main() async {
         source: FoodSource.estimate,
         edited: true,
         range: EstimateRange(380, 520),
-        assumptions: ['6 pieces, fried', 'Includes tahini'],
+        assumptions: ['a1:oil:most', 'a1:share:1/2'],
         extras: {NutrientKey.sugar: 1.6, NutrientKey.sodium: 322},
       ),
     ]),

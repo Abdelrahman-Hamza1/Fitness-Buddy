@@ -118,6 +118,16 @@ make test-it    # build, install and run them on the one running emulator or con
 - **Generated files.** `patrol_cli` writes `patrol_test/test_bundle.dart` on every run. The targets delete it afterwards, and git ignores it.
 - **Known warning.** Flutter prints "plugins that apply Kotlin Gradle Plugin (KGP): patrol" (patrol issue #3238). The build works. Re-check when bumping Flutter or Patrol.
 
+### Buddy device round trip (A22 D19, manual)
+
+`integration_test/buddy_round_trip_test.dart` drives the real chat sheet on a connected phone against the API in the flavor config (dev: the laptop server over `adb reverse`) and sends 20 fixed synthetic messages. **Each is a real, paid interpret call: run it only with the owner's go-ahead.** It never runs in CI or `make test-dart`, and it skips unless `A22_ROUND_TRIP=1` is defined. It uses a throw-away profile and prints only `case-<n> <ms>`, then the median and p90 (send tap → first frame with the reply).
+
+```bash
+cd apps/mobile
+flutter test integration_test/buddy_round_trip_test.dart --profile -d <adb-device-id> \
+  --dart-define-from-file=config/dev.json --dart-define=A22_ROUND_TRIP=1
+```
+
 ### Cold-start baseline (S06 plan D20)
 
 With the phone connected (USB or Wireless debugging) and the CI staging build installed:

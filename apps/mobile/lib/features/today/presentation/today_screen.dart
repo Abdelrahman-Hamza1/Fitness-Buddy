@@ -5,8 +5,8 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
-import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/quick_add/quick_add.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
@@ -216,11 +216,11 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
                 FbSpace.s4,
                 FbSpace.s2,
               ),
+              // Opens Buddy's chat sheet over Today (AI-001, HM-008); food
+              // search is its first button.
               child: FbInputBar(
-                hint: l10n.todayInputHintSearch,
-                onTap: () => ref
-                    .read(appNavigatorProvider)
-                    .push(FoodSearchRoute(date: viewed)),
+                hint: l10n.todayInputHint,
+                onTap: () => unawaited(showBuddySheet(context, date: viewed)),
                 // Not built yet (A22, A28): in the dev flavor only.
                 onCamera: dev ? _comingSoon : null,
                 onBarcode: dev ? _comingSoon : null,

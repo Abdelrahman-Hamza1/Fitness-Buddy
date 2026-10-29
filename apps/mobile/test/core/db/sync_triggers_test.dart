@@ -156,6 +156,64 @@ void main() {
       });
     }
 
+    // rule: A22 chat-outbox
+    test('A22 chat message rows capture the outbox and are never '
+        'hard-deleted', () async {
+      final db = memoryDatabase();
+      final row = ChatMessagesCompanion.insert(
+        id: _id,
+        createdAt: 1,
+        updatedHlc: hlcAt(1),
+        version: 1,
+        deviceId: testDevice,
+        origin: 'direct',
+        role: 'user',
+        messageText: 'حمص 🍎',
+        status: 'queued',
+      );
+      await runAuthorizedWrite(() => db.into(db.chatMessages).insert(row));
+      await runAuthorizedWrite(
+        () =>
+            (db.update(db.chatMessages)..where((t) => t.id.equals(_id))).write(
+              ChatMessagesCompanion(
+                updatedHlc: Value(hlcAt(2)),
+                version: const Value(2),
+                status: const Value('done'),
+              ),
+            ),
+      );
+      await runAuthorizedWrite(
+        () =>
+            (db.update(db.chatMessages)..where((t) => t.id.equals(_id))).write(
+              ChatMessagesCompanion(
+                updatedHlc: Value(hlcAt(3)),
+                version: const Value(3),
+                deletedAt: const Value(3),
+              ),
+            ),
+      );
+      expect(await outbox(db), [
+        ('chatMessage', _id, hlcAt(1), false),
+        ('chatMessage', _id, hlcAt(2), false),
+        ('chatMessage', _id, hlcAt(3), true),
+      ]);
+      expect(
+        db.syncedTables.singleWhere((t) => t.sqlName == 'chat_messages').entity,
+        'chatMessage',
+      );
+      await expectLater(
+        runAuthorizedWrite(() => db.delete(db.chatMessages).go()),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('tombstone, never delete'),
+          ),
+        ),
+      );
+      expect(await db.select(db.chatMessages).get(), hasLength(1));
+    });
+
     test('the database opens with capture on', () async {
       final db = memoryDatabase();
       final row = await (db.select(

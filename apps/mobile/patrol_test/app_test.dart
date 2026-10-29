@@ -12,6 +12,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:patrol/patrol.dart';
 
+import 'support/patrol_support.dart';
+
 /// Integration tests on a real device or emulator (S06 plan D18), run by
 /// `make test-it` with the dev flavor and `config/dev.json`.
 ///
@@ -30,11 +32,24 @@ void main() {
       final container = ProviderContainer(overrides: appOverrides(config));
       addTearDown(container.dispose);
 
-      await $.pumpWidgetAndSettle(
+      // Loading skeletons pulse continuously, so settling could stall; wait
+      // for Today and its input bar instead.
+      await $.tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
           child: const FitnessBuddyApp(),
         ),
+      );
+      await waitUntil(
+        $.tester,
+        () =>
+            find.byType(TodayScreen).evaluate().isNotEmpty &&
+            find
+                .textContaining('Tell Buddy what you ate')
+                .evaluate()
+                .isNotEmpty,
+        'Today and its input bar',
+        timeout: const Duration(seconds: 60),
       );
 
       // The shell is up at Today, not waiting on the network.
@@ -57,7 +72,7 @@ void main() {
         'Progress': (ProgressScreen, 'Charts appear after'),
         'Workouts': (WorkoutsScreen, 'Your workouts will show up'),
         'Me': (MeScreen, 'Your foods'),
-        'Today': (TodayScreen, 'Search for a food'),
+        'Today': (TodayScreen, 'Tell Buddy what you ate'),
       };
       for (final MapEntry(key: label, value: (screen, text)) in tabs.entries) {
         await $(NavigationBar).$(label).tap();

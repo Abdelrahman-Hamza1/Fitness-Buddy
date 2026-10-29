@@ -1,4 +1,5 @@
 import 'package:fb_mobile/features/design_preview/presentation/gallery/gallery_basics.dart';
+import 'package:fb_mobile/features/design_preview/presentation/gallery/gallery_buddy.dart';
 import 'package:fb_mobile/features/design_preview/presentation/gallery/gallery_input.dart';
 import 'package:fb_mobile/features/design_preview/presentation/gallery/gallery_section.dart';
 
@@ -8,4 +9,5 @@ import 'package:fb_mobile/features/design_preview/presentation/gallery/gallery_s
 final List<GallerySection> gallerySections = [
   ...gallerySectionsBasics,
   ...gallerySectionsInput,
+  ...gallerySectionsBuddy,
 ];

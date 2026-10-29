@@ -201,6 +201,7 @@ ProposalIntent _intent(ProposalIntent i, Iterable<ProposalItem> items) =>
       timeHint: i.timeHint,
       slotHint: i.slotHint,
       dishGroup: i.dishGroup,
+      dateHint: i.dateHint,
     );
 
 ProposalUpdateResult _recompute(

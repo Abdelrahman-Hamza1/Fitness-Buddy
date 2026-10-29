@@ -532,6 +532,10 @@ catalog-client-smoke: ## Offline generated-client check: binary pack bytes survi
 gen-personal-food-vectors: ## Regenerate the shared synthetic personalFood validation corpus (B17)
 	cd '$(REPO_ROOT)/packages/fb_domain' && '$(DART)' run tool/generate_personal_food_vectors.dart
 
+.PHONY: gen-interpret-request-vectors
+gen-interpret-request-vectors: ## Regenerate the app-built interpret request corpus (A22 D18, TD-093) from the real builder
+	cd '$(REPO_ROOT)/apps/mobile' && '$(DART)' run tool/generate_interpret_request_vectors.dart
+
 .PHONY: gen-chat-proposal-vectors
 gen-chat-proposal-vectors: ## Regenerate the shared synthetic chatMessage/proposal validation corpus (B18)
 	cd '$(REPO_ROOT)/packages/fb_domain' && '$(DART)' run tool/generate_chat_proposal_vectors.dart

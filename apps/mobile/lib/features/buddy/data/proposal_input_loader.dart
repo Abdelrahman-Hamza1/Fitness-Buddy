@@ -89,6 +89,25 @@ final class ProposalInputLoader {
     },
   );
 
+  /// A fresh, read-only context at [referenceTime]: current slots, yields
+  /// and confirmed totals, for recomputing open cards after a confirm or an
+  /// undo (A22 D12) so a confirmed sibling counts once through confirmed
+  /// intake. `null` when it can't be read (never content-bearing).
+  /// [days] adds the confirmed totals of cards on other days (day hints).
+  Future<ProposalContext?> refreshContext({
+    required EntryTime referenceTime,
+    SlotMode mode = SlotMode.normal,
+    int confirmedRevision = 0,
+    Set<LocalDate> days = const {},
+  }) async => (await _loadSnapshot<ProposalContext>(
+    interpretation: const {},
+    referenceTime: referenceTime,
+    mode: mode,
+    confirmedRevision: confirmedRevision,
+    days: days,
+    build: (_, context, _, _) => ProposalResult.success(context),
+  )).value;
+
   Future<ProposalResult<T>> _loadSnapshot<T>({
     required Map<String, Object?> interpretation,
     required EntryTime referenceTime,
@@ -102,6 +121,7 @@ final class ProposalInputLoader {
     Set<String> restoreKeys = const {},
     SlotMode mode = SlotMode.normal,
     int confirmedRevision = 0,
+    Set<LocalDate> days = const {},
   }) async {
     try {
       final config = _config();
@@ -193,10 +213,18 @@ final class ProposalInputLoader {
         final reads = DiaryReads(_db);
         // Only today/yesterday are resolved by v1; explicit later date edits
         // receive refreshed confirmed totals from the application context.
-        final totals = await reads.dailyTotals(
-          referenceTime.localDate.plusDays(-1),
-          referenceTime.localDate,
-        );
+        final today = referenceTime.localDate;
+        // Today, yesterday, and any other day a day hint names (B09 D8), so
+        // a card for that day previews that day's confirmed intake.
+        final named = {
+          ...days,
+          for (final hint in _dayHints(interpretation))
+            ?DayHint.resolve(hint, today),
+        }..removeWhere((d) => d == today || d == today.plusDays(-1));
+        final totals = [
+          ...await reads.dailyTotals(today.plusDays(-1), today),
+          for (final day in named) ...await reads.dailyTotals(day, day),
+        ];
         final context = ProposalContext(
           referenceTime: referenceTime,
           slots: await reads.slots(),
@@ -209,6 +237,7 @@ final class ProposalInputLoader {
             confirmed: {
               referenceTime.localDate: Nutrients.zero,
               referenceTime.localDate.plusDays(-1): Nutrients.zero,
+              for (final day in named) day: Nutrients.zero,
               for (final t in totals) t.date: t.totals,
             },
           ),
@@ -235,6 +264,18 @@ final class ProposalInputLoader {
 
   @override
   String toString() => 'ProposalInputLoader(redacted)';
+}
+
+/// The `dateHint`s of [interpretation]'s intents (bounded by the caller's
+/// traversal above; malformed shapes yield nothing).
+Iterable<String> _dayHints(Map<String, Object?> interpretation) sync* {
+  final intents = interpretation['intents'];
+  if (intents is! List<Object?>) return;
+  for (final intent in intents.take(ProposalPolicyConstants.maxIntents)) {
+    if (intent is Map<String, Object?> && intent['dateHint'] is String) {
+      yield intent['dateHint']! as String;
+    }
+  }
 }
 
 final class _LoadFailure implements Exception {

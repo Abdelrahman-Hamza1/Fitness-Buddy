@@ -135,7 +135,11 @@ void main() {
       expect(find.text('0'), findsOneWidget);
 
       expect(find.text('Search foods'), findsNothing);
+      // The input bar opens Buddy's sheet; its magnifier opens search.
       await tester.tap(find.byType(FbInputBar));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Search foods'));
+      await tester.pumpAndSettle();
       expect(nav.pushed.single, isA<FoodSearchRoute>());
       expect((nav.pushed.single as FoodSearchRoute).date, testToday);
     });
@@ -174,8 +178,8 @@ void main() {
       expect(find.byType(DiaryEntryTile), findsNothing);
     });
 
-    testWidgets('HM-008 AI-001 the input bar is at the bottom and opens '
-        'search for the viewed day', (tester) async {
+    // rule: A22 input-bar-sheet
+    testWidgets('AI-001 HM-008 input bar opens the chat sheet', (tester) async {
       final nav = RecordingNavigator();
       await pumpToday(tester, fakeToday(navigator: nav));
       await tester.tap(find.byTooltip('Previous day'));
@@ -187,11 +191,17 @@ void main() {
         tester.getBottomLeft(bar).dy,
         greaterThan(tester.getBottomLeft(find.byType(PageView)).dy),
       );
-      expect(find.text('Search for a food…'), findsOneWidget);
+      expect(find.text('Tell Buddy what you ate…'), findsOneWidget);
       // No suggestions, so no chip row (A09 D14).
       expect(find.byType(FbQuickAddChip), findsNothing);
 
       await tester.tap(bar);
+      await tester.pumpAndSettle();
+      expect(find.byType(FbComposer), findsOneWidget);
+      // The manual path stays two taps: the sheet's magnifier opens search
+      // for the viewed day, without a slot (auto-slot).
+      await tester.tap(find.byTooltip('Search foods'));
+      await tester.pumpAndSettle();
       final route = nav.pushed.single as FoodSearchRoute;
       expect(route.date, testYesterday);
       expect(route.slotId, isNull);
@@ -245,7 +255,7 @@ void main() {
           minute: 30,
           source: FoodSource.estimate,
           range: EstimateRange(380, 520),
-          assumptions: ['6 pieces, fried', 'Includes tahini'],
+          assumptions: ['a1:oil:most', 'Includes tahini'],
         ),
       ]);
       await pumpToday(tester, fakeToday(days: {testToday: day}));
@@ -306,11 +316,13 @@ void main() {
         'Estimate range',
         '380–520 kcal',
         'Assumptions',
-        '6 pieces, fried',
-        'Includes tahini',
+        // A22 D17: codes as words; legacy raw text as the generic label.
+        'Most of the cooking oil counted (some stays in the pan)',
+        'Assumed value',
       ]) {
         expect(find.text(text), findsAtLeastNWidgets(1), reason: text);
       }
+      expect(find.text('Includes tahini'), findsNothing);
       expect(find.text('Pita bread, white · خبز عربي'), findsNothing);
 
       // A second tap closes it.

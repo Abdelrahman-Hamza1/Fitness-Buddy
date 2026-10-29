@@ -19,8 +19,9 @@ Future<void> _type(WidgetTester tester, String label, String text) async {
   await tester.pump(const Duration(milliseconds: 100));
 }
 
-/// Opens the add-food search from Today's input bar, once the previous
-/// action's Undo snackbar (which can cover the bar on a small phone) is gone.
+/// Opens the add-food search from Today (input bar → Buddy's sheet →
+/// search), once the previous action's Undo snackbar (which can cover the
+/// bar on a small phone) is gone.
 Future<void> _openSearch(WidgetTester tester) async {
   await waitUntil(
     tester,
@@ -28,12 +29,7 @@ Future<void> _openSearch(WidgetTester tester) async {
     'the undo snackbar to go',
     timeout: const Duration(seconds: 15),
   );
-  await tapExactly(tester, find.byType(FbInputBar), 'the input bar');
-  await waitUntil(
-    tester,
-    () => find.byType(FoodSearchScreen).evaluate().isNotEmpty,
-    'the food search screen',
-  );
+  await openSearchFromToday(tester);
   await pumpFor(tester, const Duration(milliseconds: 400));
 }
 

@@ -234,6 +234,31 @@ void main() {
     await unmountApp(tester, prod);
   });
 
+  // Nightly android-it on c420081: the 8 skeleton rows overflowed the
+  // picker on the 320 x 640 emulator with the search keyboard up.
+  testWidgets('UX-051 UX-070 the loading city picker fits a 320 x 640 phone '
+      'with the keyboard up', (tester) async {
+    final gate = Completer<CitySearch>();
+    final container = await _openAt(
+      tester,
+      const CityPickerRoute(),
+      settle: false,
+      overrides: [citySearchProvider.overrideWith((ref) => gate.future)],
+    );
+    // The CI emulator's size, with the search field's keyboard up (set after
+    // the helper's tall screen).
+    tester.view
+      ..physicalSize = const Size(320, 640)
+      ..devicePixelRatio = 1
+      ..viewInsets = const FakeViewPadding(bottom: 250);
+    addTearDown(tester.view.reset);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byType(FbSkeleton), findsAtLeastNWidgets(1));
+    expect(tester.takeException(), isNull);
+    gate.complete(CitySearch(sampleCities));
+    await unmountApp(tester, container);
+  });
+
   testWidgets('UX-051 PA6 the city picker shows skeleton rows until the '
       'cities load; a read error shows "Couldn\'t load the city list." with '
       'Try again, which reloads', (tester) async {

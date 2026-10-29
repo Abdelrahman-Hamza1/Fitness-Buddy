@@ -54,7 +54,11 @@ final class ProposalRequest {
     required this.context,
     required this.facts,
     ProposalPolicy? policy,
-  }) : interpretation = InterpretationDecoder.decode(interpretation, facts),
+  }) : interpretation = InterpretationDecoder.decode(
+         interpretation,
+         facts,
+         today: context.referenceTime.localDate,
+       ),
        policy = policy ?? ProposalPolicy.fromThresholds({});
 
   new _(
@@ -717,11 +721,14 @@ List<ProposalLine> _calculate(
     retention = 1;
   }
   final assumptions = <String>[
-    for (final chip in chips) 'a1:origin:${chip.origin.name}',
-    if (yieldNote != null) _yieldCode(yieldNote),
+    for (final chip in chips) OriginAssumption(chip.origin).code,
+    if (yieldNote != null) YieldAssumption.of(yieldNote).code,
     if (share != 1)
-      'a1:share:${item.fraction == null ? '1' : item.fraction.toString()}/${item.fraction == null ? item.people ?? 1 : 1}',
-    if (oil) 'a1:oil:${retention == 1 ? 'all' : 'most'}',
+      (item.fraction == null
+              ? ShareAssumption.people(item.people ?? 1)
+              : ShareAssumption.fraction(item.fraction!))
+          .code,
+    if (oil) OilAssumption(all: retention == 1).code,
   ];
   if (oil) {
     chips.add(
@@ -828,7 +835,7 @@ List<ProposalLine> _calculate(
             per100: oilFood.per100,
             provenance: Provenance(
               source: oilFood.source,
-              assumptions: ['a1:oil:${retention == 1 ? 'all' : 'most'}'],
+              assumptions: [OilAssumption(all: retention == 1).code],
             ),
           ),
           amount: EntryAmount(
@@ -861,19 +868,24 @@ Nutrients _sum(Iterable<Nutrients> values) {
   );
 }
 
-String _yieldCode(YieldNote note) =>
-    'a1:yield:${note.fromState.code}:${note.toState.code}:'
-    '${note.fromAmount.grams}:${note.toAmount.grams}';
-
 (EntryTime, String) _meal(
   ProposalIntent intent,
   ProposalContext context,
   _EngineState state,
 ) {
   var time = state.times[intent.index] ?? context.referenceTime;
-  if (!state.times.containsKey(intent.index) &&
-      context.normalize(intent.timeHint ?? '') == 'yesterday') {
-    time = time.onDate(time.localDate.plusDays(-1));
+  if (!state.times.containsKey(intent.index)) {
+    // Prefer the day grammar (B09 PA3); older responses say "yesterday" in
+    // the time hint.
+    final day = intent.dateHint == null
+        ? null
+        : DayHint.resolve(intent.dateHint!, time.localDate);
+    if (day != null) {
+      time = time.onDate(day);
+    } else if (intent.dateHint == null &&
+        context.normalize(intent.timeHint ?? '') == 'yesterday') {
+      time = time.onDate(time.localDate.plusDays(-1));
+    }
   }
   final active = context.slots.where((s) => s.active && s.mode == context.mode);
   final explicit = active

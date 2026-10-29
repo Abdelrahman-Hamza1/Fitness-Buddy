@@ -284,6 +284,26 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String proposalOnDay(String day, String when) {
+    return '$day · $when';
+  }
+
+  @override
+  String proposalDayAfter(String day, String left) {
+    return '$day after this: $left left';
+  }
+
+  @override
+  String proposalDayAfterEaten(String day, String eaten) {
+    return '$day after this: $eaten eaten';
+  }
+
+  @override
+  String proposalDayAfterOver(String day, String over) {
+    return '$day after this: $over over';
+  }
+
+  @override
   String proposalItemKcal(String kcal) {
     return '$kcal kcal';
   }
@@ -292,6 +312,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String proposalTotalKcal(String kcal) {
     return '$kcal kcal';
   }
+
+  @override
+  String proposalTotalKcalApprox(String kcal) {
+    return '~$kcal kcal';
+  }
+
+  @override
+  String proposalApprox(String kcal) {
+    return '~$kcal';
+  }
+
+  @override
+  String get proposalEstimateReasonTotal =>
+      'Some items are estimates, so the total is too.';
 
   @override
   String proposalMacrosShort(
@@ -339,6 +373,295 @@ class AppLocalizationsEn extends AppLocalizations {
   String proposalChangeSemantics(String label, String before, String after) {
     return '$label: $before, now $after';
   }
+
+  @override
+  String get buddySheetLabel => 'Buddy chat';
+
+  @override
+  String get buddyComposerHint => 'Tell Buddy what you ate…';
+
+  @override
+  String get buddySend => 'Send';
+
+  @override
+  String get buddySearchFoods => 'Search foods';
+
+  @override
+  String get buddyEmpty =>
+      'Tell Buddy what you ate, like \"2 eggs and toast\". Nothing is logged until you tap Log it.';
+
+  @override
+  String get buddyReplyCards => 'Here\'s your meal. Check it, then tap Log it.';
+
+  @override
+  String get buddyReplyMedical =>
+      'I can\'t help with medical questions. A doctor or pharmacist is the right person to ask.';
+
+  @override
+  String get buddyReplyNotFood =>
+      'I can log food here. Try something like \"2 eggs and toast\".';
+
+  @override
+  String get buddyReplyNoCard =>
+      'I couldn\'t make a card from that. Try search instead.';
+
+  @override
+  String get buddyReplyUnsupported =>
+      'Buddy can\'t do that in this version yet. You can log food here.';
+
+  @override
+  String get buddyFailureOffline => 'You\'re offline. Food search still works.';
+
+  @override
+  String get buddyFailureTimeout => 'Buddy didn\'t answer in time.';
+
+  @override
+  String get buddyFailureServer => 'Buddy couldn\'t answer just now.';
+
+  @override
+  String get buddyFailureUnavailable => 'Buddy is busy right now.';
+
+  @override
+  String get buddyFailureUnavailableFinal =>
+      'Buddy is still busy. Your text is back in the box below.';
+
+  @override
+  String get buddyFailureRejected => 'Buddy couldn\'t read that message.';
+
+  @override
+  String get buddyFailureRateLimited =>
+      'You\'ve reached today\'s Buddy limit. Search still works.';
+
+  @override
+  String get buddyTryAgain => 'Try again';
+
+  @override
+  String get buddyWorking => 'Buddy is making a card';
+
+  @override
+  String buddyBubbleYou(String text) {
+    return 'You: $text';
+  }
+
+  @override
+  String buddyBubbleBuddy(String text) {
+    return 'Buddy: $text';
+  }
+
+  @override
+  String get proposalLoggedPlain => 'Logged';
+
+  @override
+  String proposalNoteJoin(String first, String second) {
+    return '$first · $second';
+  }
+
+  @override
+  String proposalTodayAfterEaten(String eaten) {
+    return 'Today after this: $eaten eaten';
+  }
+
+  @override
+  String proposalLogged(String kcal, String left) {
+    return 'Logged $kcal kcal · $left left today';
+  }
+
+  @override
+  String proposalLoggedEaten(String kcal, String eaten) {
+    return 'Logged $kcal kcal · $eaten eaten today';
+  }
+
+  @override
+  String proposalTodayAfterOver(String over) {
+    return 'Today after this: $over over';
+  }
+
+  @override
+  String proposalLoggedOver(String kcal, String over) {
+    return 'Logged $kcal kcal · $over over today';
+  }
+
+  @override
+  String proposalLoggedOnDay(String kcal, String day) {
+    return 'Logged $kcal kcal for $day';
+  }
+
+  @override
+  String get proposalUndo => 'Undo';
+
+  @override
+  String get proposalUndone => 'Undone. Type it again or search to log it.';
+
+  @override
+  String get proposalDiscarded => 'Discarded. Nothing was logged.';
+
+  @override
+  String get proposalCouldNotLog => 'Couldn\'t log this card.';
+
+  @override
+  String get proposalLogging => 'Logging…';
+
+  @override
+  String get proposalBlockedNeedsAmount => 'Add an amount to log this.';
+
+  @override
+  String get proposalBlockedMissingFood =>
+      'A food on this card isn\'t available. Search for it instead.';
+
+  @override
+  String get proposalBlockedOther =>
+      'This card can\'t be logged. Try search instead.';
+
+  @override
+  String proposalEstimateRange(String low, String high) {
+    return '$low–$high kcal';
+  }
+
+  @override
+  String get proposalEstimateReasonReference =>
+      'Based on a typical portion of a reference dish.';
+
+  @override
+  String get proposalEstimateReasonBuddy =>
+      'Buddy\'s estimate: no close match in the food database.';
+
+  @override
+  String get proposalEstimateReasonAmount => 'The amount was guessed.';
+
+  @override
+  String proposalQuestionState(String food) {
+    return 'How was the $food weighed?';
+  }
+
+  @override
+  String get proposalQuestionFat => 'Any cooking oil?';
+
+  @override
+  String get proposalQuestionVariant => 'Which one?';
+
+  @override
+  String proposalQuestionPortion(String food) {
+    return 'How much $food?';
+  }
+
+  @override
+  String get proposalQuestionOilRetention => 'Did you eat all of the oil?';
+
+  @override
+  String proposalQuestionShare(String food) {
+    return 'How much of the $food did you have?';
+  }
+
+  @override
+  String get proposalStateRaw => 'Raw';
+
+  @override
+  String get proposalStateCooked => 'Cooked';
+
+  @override
+  String get proposalStateDry => 'Dry';
+
+  @override
+  String get proposalStateDrained => 'Drained';
+
+  @override
+  String get proposalStateFried => 'Fried';
+
+  @override
+  String get proposalStateAsSold => 'As sold';
+
+  @override
+  String get proposalOilNone => 'No oil';
+
+  @override
+  String proposalOilAmount(String amount) {
+    return '$amount of oil';
+  }
+
+  @override
+  String get proposalOilAll => 'All of it';
+
+  @override
+  String get proposalOilMost => 'Most of it';
+
+  @override
+  String proposalShareOption(int percent) {
+    return '$percent% of it';
+  }
+
+  @override
+  String proposalChipSemantics(String label) {
+    return 'Assumption: $label';
+  }
+
+  @override
+  String proposalChipFood(String food, String choice) {
+    return '$food: $choice';
+  }
+
+  @override
+  String get proposalChipOilAll => 'All oil eaten';
+
+  @override
+  String get proposalChipOilMost => 'Most oil eaten';
+
+  @override
+  String get proposalChipTapHint => 'change it';
+
+  @override
+  String assumptionYield(
+    String fromAmount,
+    String fromState,
+    String toAmount,
+    String toState,
+  ) {
+    return '$fromAmount weighed $fromState, counted as $toAmount $toState';
+  }
+
+  @override
+  String get assumptionStateRaw => 'raw';
+
+  @override
+  String get assumptionStateCooked => 'cooked';
+
+  @override
+  String get assumptionStateDry => 'dry';
+
+  @override
+  String get assumptionStateDrained => 'drained';
+
+  @override
+  String get assumptionStateFried => 'fried';
+
+  @override
+  String get assumptionStateAsSold => 'as sold';
+
+  @override
+  String get assumptionOilAll => 'All of the cooking oil counted';
+
+  @override
+  String get assumptionOilMost =>
+      'Most of the cooking oil counted (some stays in the pan)';
+
+  @override
+  String assumptionShare(int percent) {
+    return 'Your share: $percent%';
+  }
+
+  @override
+  String get assumptionOriginStated => 'As you said';
+
+  @override
+  String get assumptionOriginSavedDefault => 'Your usual choice';
+
+  @override
+  String get assumptionOriginFallback => 'A typical choice was assumed';
+
+  @override
+  String get assumptionOriginUserAdjusted => 'Changed by you';
+
+  @override
+  String get assumptionGeneric => 'Assumed value';
 
   @override
   String get weightTitle => 'Weight';
@@ -1845,9 +2168,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diaryUndoExpired => 'Too late to undo.';
-
-  @override
-  String get todayInputHintSearch => 'Search for a food…';
 
   @override
   String get devComingSoon => 'Coming soon';

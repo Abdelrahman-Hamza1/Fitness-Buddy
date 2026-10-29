@@ -128,4 +128,27 @@ abstract final class GallerySamples {
   static const String millilitre = 'ml';
   static const String piece = 'piece';
   static const String cup = 'cup';
+
+  // Buddy: chat and proposal card (A22).
+  static const String chatUser = '2 eggs and a tsp of oil';
+  static const String chatBuddy =
+      "Here's your meal. Check it, then tap Log it.";
+  static const String cardHeader = 'Breakfast · 8:40 AM';
+  static const String cardDish = 'Eggs with oil';
+  static const String egg = 'Egg, boiled';
+  static const String eggAmount = '2 pieces (100 g)';
+  static const String eggKcal = '155 kcal';
+  static const String oil = 'Olive oil';
+  static const String oilAmount = '1 tsp (4.5 g)';
+  static const String oilKcal = '40 kcal';
+  static const String oilNote = 'Most of the cooking oil counted';
+  static const String oilRange = '30–50 kcal';
+  static const String oilReason = 'The amount was guessed.';
+  static const String cardTotal = '~195 kcal · Today after this: 1,045 left';
+  static const String cardReason = 'Add an amount to log this.';
+  static const String logged = 'Logged 195 kcal · 1,045 left today';
+  static const String undo = 'Undo';
+  static const String composerHint = 'Tell Buddy what you ate…';
+  static const String send = 'Send';
+  static const String searchFoods = 'Search foods';
 }

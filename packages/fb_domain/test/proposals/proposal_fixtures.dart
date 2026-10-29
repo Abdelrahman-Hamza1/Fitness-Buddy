@@ -79,6 +79,7 @@ Map<String, Object?> intent(
   String? slot,
   String? time,
   String? group,
+  String? date,
 }) => {
   'kind': 'foodLog',
   'language': 'english',
@@ -86,6 +87,7 @@ Map<String, Object?> intent(
   'timeHint': time,
   'slotHint': slot,
   'dishGroup': group,
+  'dateHint': ?date,
   'items': items,
 };
 

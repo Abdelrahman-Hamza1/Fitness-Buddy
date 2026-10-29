@@ -10,10 +10,15 @@ const _knownKinds = {'foodLog', 'clarify', 'medical', 'outOfScope', 'weighIn'};
 /// Maps the public interpret JSON directly into normalized domain values.
 abstract final class InterpretationDecoder {
   /// No transport DTOs, I/O, guesses from names, or content-bearing failures.
+  ///
+  /// A `dateHint` outside the grammar, or one that doesn't resolve to a day
+  /// on or before [today] (when given), routes its intent as `unrecognized`
+  /// (B09 PA3).
   static ProposalResult<ProposalInterpretation> decode(
     Map<String, Object?> json,
-    ProposalFacts facts,
-  ) {
+    ProposalFacts facts, {
+    LocalDate? today,
+  }) {
     try {
       _bound(json, 0);
       if (utf8.encode(jsonEncode(json)).length >
@@ -33,7 +38,19 @@ abstract final class InterpretationDecoder {
       ).indexed) {
         final intent = _map(raw);
         final code = _text(intent, 'kind');
-        final kind = _knownKinds.contains(code) ? code : 'unrecognized';
+        var kind = _knownKinds.contains(code) ? code : 'unrecognized';
+        String? day;
+        if (kind == 'foodLog' || kind == 'weighIn') {
+          // Absent in responses older than B09a (contract).
+          day = intent['dateHint'] == null ? null : _text(intent, 'dateHint');
+          if (day != null &&
+              (today == null
+                  ? !DayHint.isValid(day)
+                  : DayHint.resolve(day, today) == null)) {
+            kind = 'unrecognized';
+            day = null;
+          }
+        }
         // An unknown kind needs only a non-empty kind (bounds checked above);
         // its other members belong to a newer contract.
         if (kind != 'unrecognized') {
@@ -75,6 +92,7 @@ abstract final class InterpretationDecoder {
             timeHint: time,
             slotHint: slot,
             dishGroup: group,
+            dateHint: day,
           ),
         );
       }

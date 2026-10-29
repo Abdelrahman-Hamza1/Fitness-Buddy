@@ -550,6 +550,30 @@ abstract class AppLocalizations {
   /// **'{slot} · {time}'**
   String proposalSlotAtTime(String slot, String time);
 
+  /// Proposal card heading for a meal on another day than today: the day, then the meal and time, e.g. "Yesterday · Breakfast · 8:40 AM" (A22 review).
+  ///
+  /// In en, this message translates to:
+  /// **'{day} · {when}'**
+  String proposalOnDay(String day, String when);
+
+  /// Proposal card for another day: calories left that day once the card is logged (AI-031).
+  ///
+  /// In en, this message translates to:
+  /// **'{day} after this: {left} left'**
+  String proposalDayAfter(String day, String left);
+
+  /// Proposal card for another day: calories eaten that day once logged, when there is no target.
+  ///
+  /// In en, this message translates to:
+  /// **'{day} after this: {eaten} eaten'**
+  String proposalDayAfterEaten(String day, String eaten);
+
+  /// Proposal card for another day: calories over that day's target once logged; neutral.
+  ///
+  /// In en, this message translates to:
+  /// **'{day} after this: {over} over'**
+  String proposalDayAfterOver(String day, String over);
+
   /// Proposal card: calories of one item.
   ///
   /// In en, this message translates to:
@@ -561,6 +585,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{kcal} kcal'**
   String proposalTotalKcal(String kcal);
+
+  /// Proposal card: total calories when some items are estimates (SF-041, D-045).
+  ///
+  /// In en, this message translates to:
+  /// **'~{kcal} kcal'**
+  String proposalTotalKcalApprox(String kcal);
+
+  /// An estimated calorie number inside a sentence, e.g. "Today after this: ~1,430 eaten".
+  ///
+  /// In en, this message translates to:
+  /// **'~{kcal}'**
+  String proposalApprox(String kcal);
+
+  /// Estimate sheet of a card's total: why it is an estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Some items are estimates, so the total is too.'**
+  String get proposalEstimateReasonTotal;
 
   /// Proposal card: total protein, carbs, fat and fiber in grams, short form.
   ///
@@ -638,6 +680,479 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{label}: {before}, now {after}'**
   String proposalChangeSemantics(String label, String before, String after);
+
+  /// Screen-reader label of the Buddy chat sheet (UX-011).
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy chat'**
+  String get buddySheetLabel;
+
+  /// Hint of the Buddy composer (AI-001).
+  ///
+  /// In en, this message translates to:
+  /// **'Tell Buddy what you ate…'**
+  String get buddyComposerHint;
+
+  /// Tooltip of the composer button that sends the message to Buddy.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get buddySend;
+
+  /// Tooltip of the magnifier in the composer, and the action under a failed Buddy message: opens food search (works offline).
+  ///
+  /// In en, this message translates to:
+  /// **'Search foods'**
+  String get buddySearchFoods;
+
+  /// Buddy sheet: shown before the first message of this session (AI-036).
+  ///
+  /// In en, this message translates to:
+  /// **'Tell Buddy what you ate, like \"2 eggs and toast\". Nothing is logged until you tap Log it.'**
+  String get buddyEmpty;
+
+  /// Buddy's fixed English reply above one or more proposal cards (AI-143).
+  ///
+  /// In en, this message translates to:
+  /// **'Here\'s your meal. Check it, then tap Log it.'**
+  String get buddyReplyCards;
+
+  /// Buddy's fixed English reply to a medical question (A22 D16).
+  ///
+  /// In en, this message translates to:
+  /// **'I can\'t help with medical questions. A doctor or pharmacist is the right person to ask.'**
+  String get buddyReplyMedical;
+
+  /// Buddy's fixed English reply to a message that isn't about food (A22 D16).
+  ///
+  /// In en, this message translates to:
+  /// **'I can log food here. Try something like \"2 eggs and toast\".'**
+  String get buddyReplyNotFood;
+
+  /// Buddy's fixed English reply when its answer can't become a card (A22 D6).
+  ///
+  /// In en, this message translates to:
+  /// **'I couldn\'t make a card from that. Try search instead.'**
+  String get buddyReplyNoCard;
+
+  /// Buddy's fixed English reply to a request a newer app version handles (04 §4.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy can\'t do that in this version yet. You can log food here.'**
+  String get buddyReplyUnsupported;
+
+  /// Under a Buddy message that could not be sent: no connection (A22 D6).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline. Food search still works.'**
+  String get buddyFailureOffline;
+
+  /// Under a Buddy message: no answer in time (A22 D6).
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy didn\'t answer in time.'**
+  String get buddyFailureTimeout;
+
+  /// Under a Buddy message: a server error (A22 D6).
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy couldn\'t answer just now.'**
+  String get buddyFailureServer;
+
+  /// Under a Buddy message: the service was unavailable once (A22 D6).
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy is busy right now.'**
+  String get buddyFailureUnavailable;
+
+  /// Under a Buddy message: unavailable a second time; the text went back to the composer (A22 D6).
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy is still busy. Your text is back in the box below.'**
+  String get buddyFailureUnavailableFinal;
+
+  /// Under a Buddy message the server refused (A22 D6).
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy couldn\'t read that message.'**
+  String get buddyFailureRejected;
+
+  /// Under a Buddy message: today's limit is reached (A22 D6).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve reached today\'s Buddy limit. Search still works.'**
+  String get buddyFailureRateLimited;
+
+  /// Under a failed Buddy message: sends the same message again.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get buddyTryAgain;
+
+  /// Screen-reader label of the placeholder card while Buddy answers (AI-030).
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy is making a card'**
+  String get buddyWorking;
+
+  /// Screen-reader label of the user's chat message.
+  ///
+  /// In en, this message translates to:
+  /// **'You: {text}'**
+  String buddyBubbleYou(String text);
+
+  /// Screen-reader label of Buddy's chat message.
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy: {text}'**
+  String buddyBubbleBuddy(String text);
+
+  /// The logged row when its numbers aren't known (fallback).
+  ///
+  /// In en, this message translates to:
+  /// **'Logged'**
+  String get proposalLoggedPlain;
+
+  /// Joins two short notes under a proposal item, e.g. "Your share: 50% · Most of the cooking oil counted".
+  ///
+  /// In en, this message translates to:
+  /// **'{first} · {second}'**
+  String proposalNoteJoin(String first, String second);
+
+  /// Proposal card: calories eaten today once the card is logged, when there is no target (AI-031, A22 D15).
+  ///
+  /// In en, this message translates to:
+  /// **'Today after this: {eaten} eaten'**
+  String proposalTodayAfterEaten(String eaten);
+
+  /// The one-line reply after Log it (AI-140).
+  ///
+  /// In en, this message translates to:
+  /// **'Logged {kcal} kcal · {left} left today'**
+  String proposalLogged(String kcal, String left);
+
+  /// The one-line reply after Log it, when there is no target (AI-140).
+  ///
+  /// In en, this message translates to:
+  /// **'Logged {kcal} kcal · {eaten} eaten today'**
+  String proposalLoggedEaten(String kcal, String eaten);
+
+  /// Proposal card: calories over the target once the card is logged; neutral, never alarming (SF-021).
+  ///
+  /// In en, this message translates to:
+  /// **'Today after this: {over} over'**
+  String proposalTodayAfterOver(String over);
+
+  /// The one-line reply after Log it, over the target; neutral (SF-021).
+  ///
+  /// In en, this message translates to:
+  /// **'Logged {kcal} kcal · {over} over today'**
+  String proposalLoggedOver(String kcal, String over);
+
+  /// The one-line reply after Log it for a meal on another day (AI-140). The day is 'yesterday' (lower case) or a date such as 'Fri, Oct 17'.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged {kcal} kcal for {day}'**
+  String proposalLoggedOnDay(String kcal, String day);
+
+  /// Undoes a logged proposal card (AI-035).
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get proposalUndo;
+
+  /// A logged card after Undo: read-only (A22 D25).
+  ///
+  /// In en, this message translates to:
+  /// **'Undone. Type it again or search to log it.'**
+  String get proposalUndone;
+
+  /// A discarded proposal card (AI-037).
+  ///
+  /// In en, this message translates to:
+  /// **'Discarded. Nothing was logged.'**
+  String get proposalDiscarded;
+
+  /// Proposal card: Log it wrote nothing (A22 D25).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t log this card.'**
+  String get proposalCouldNotLog;
+
+  /// Proposal card: shown while Log it is being applied (Log it disabled).
+  ///
+  /// In en, this message translates to:
+  /// **'Logging…'**
+  String get proposalLogging;
+
+  /// Proposal card: why Log it is disabled, an item has no amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an amount to log this.'**
+  String get proposalBlockedNeedsAmount;
+
+  /// Proposal card: why Log it is disabled, a food is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'A food on this card isn\'t available. Search for it instead.'**
+  String get proposalBlockedMissingFood;
+
+  /// Proposal card: why Log it is disabled, any other reason.
+  ///
+  /// In en, this message translates to:
+  /// **'This card can\'t be logged. Try search instead.'**
+  String get proposalBlockedOther;
+
+  /// Estimate sheet: the likely calorie range (AI-032).
+  ///
+  /// In en, this message translates to:
+  /// **'{low}–{high} kcal'**
+  String proposalEstimateRange(String low, String high);
+
+  /// Estimate sheet: why the item is an estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on a typical portion of a reference dish.'**
+  String get proposalEstimateReasonReference;
+
+  /// Estimate sheet: why the item is an estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy\'s estimate: no close match in the food database.'**
+  String get proposalEstimateReasonBuddy;
+
+  /// Estimate sheet: why the item is an estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'The amount was guessed.'**
+  String get proposalEstimateReasonAmount;
+
+  /// Proposal card question about the weighed state (AI-034).
+  ///
+  /// In en, this message translates to:
+  /// **'How was the {food} weighed?'**
+  String proposalQuestionState(String food);
+
+  /// Proposal card question about added oil (AI-034).
+  ///
+  /// In en, this message translates to:
+  /// **'Any cooking oil?'**
+  String get proposalQuestionFat;
+
+  /// Proposal card question about the kind of dish (AI-034).
+  ///
+  /// In en, this message translates to:
+  /// **'Which one?'**
+  String get proposalQuestionVariant;
+
+  /// Proposal card question about the portion (AI-034).
+  ///
+  /// In en, this message translates to:
+  /// **'How much {food}?'**
+  String proposalQuestionPortion(String food);
+
+  /// Proposal card question about the oil left in the pan (AI-034).
+  ///
+  /// In en, this message translates to:
+  /// **'Did you eat all of the oil?'**
+  String get proposalQuestionOilRetention;
+
+  /// Proposal card question about a shared dish (AI-034).
+  ///
+  /// In en, this message translates to:
+  /// **'How much of the {food} did you have?'**
+  String proposalQuestionShare(String food);
+
+  /// Answer or chip: weighed raw.
+  ///
+  /// In en, this message translates to:
+  /// **'Raw'**
+  String get proposalStateRaw;
+
+  /// Answer or chip: weighed cooked.
+  ///
+  /// In en, this message translates to:
+  /// **'Cooked'**
+  String get proposalStateCooked;
+
+  /// Answer or chip: weighed dry.
+  ///
+  /// In en, this message translates to:
+  /// **'Dry'**
+  String get proposalStateDry;
+
+  /// Answer or chip: weighed drained.
+  ///
+  /// In en, this message translates to:
+  /// **'Drained'**
+  String get proposalStateDrained;
+
+  /// Answer or chip: weighed fried.
+  ///
+  /// In en, this message translates to:
+  /// **'Fried'**
+  String get proposalStateFried;
+
+  /// Answer or chip: weighed as sold.
+  ///
+  /// In en, this message translates to:
+  /// **'As sold'**
+  String get proposalStateAsSold;
+
+  /// Answer or chip: no added oil.
+  ///
+  /// In en, this message translates to:
+  /// **'No oil'**
+  String get proposalOilNone;
+
+  /// Answer or chip: an amount of added oil, e.g. "1 tbsp of oil".
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} of oil'**
+  String proposalOilAmount(String amount);
+
+  /// Answer or chip: all of the oil was eaten.
+  ///
+  /// In en, this message translates to:
+  /// **'All of it'**
+  String get proposalOilAll;
+
+  /// Answer or chip: most of the oil was eaten.
+  ///
+  /// In en, this message translates to:
+  /// **'Most of it'**
+  String get proposalOilMost;
+
+  /// Answer or chip: the share of a dish, e.g. "50% of it".
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% of it'**
+  String proposalShareOption(int percent);
+
+  /// Screen-reader label of an assumption chip (AI-033).
+  ///
+  /// In en, this message translates to:
+  /// **'Assumption: {label}'**
+  String proposalChipSemantics(String label);
+
+  /// Assumption chip naming the food it belongs to, e.g. "Rice: cooked" or "Chicken: 150 g" (AI-033).
+  ///
+  /// In en, this message translates to:
+  /// **'{food}: {choice}'**
+  String proposalChipFood(String food, String choice);
+
+  /// Assumption chip: all of the cooking oil counts.
+  ///
+  /// In en, this message translates to:
+  /// **'All oil eaten'**
+  String get proposalChipOilAll;
+
+  /// Assumption chip: most of the cooking oil counts (some stays in the pan).
+  ///
+  /// In en, this message translates to:
+  /// **'Most oil eaten'**
+  String get proposalChipOilMost;
+
+  /// Screen-reader hint of an assumption chip, read as "Double tap to change it".
+  ///
+  /// In en, this message translates to:
+  /// **'change it'**
+  String get proposalChipTapHint;
+
+  /// An assumption behind a logged item: a weighed amount converted between states, e.g. "200 g weighed dry, counted as 500 g cooked" (A22 D17).
+  ///
+  /// In en, this message translates to:
+  /// **'{fromAmount} weighed {fromState}, counted as {toAmount} {toState}'**
+  String assumptionYield(
+    String fromAmount,
+    String fromState,
+    String toAmount,
+    String toState,
+  );
+
+  /// Lower-case state word inside an assumption.
+  ///
+  /// In en, this message translates to:
+  /// **'raw'**
+  String get assumptionStateRaw;
+
+  /// Lower-case state word inside an assumption.
+  ///
+  /// In en, this message translates to:
+  /// **'cooked'**
+  String get assumptionStateCooked;
+
+  /// Lower-case state word inside an assumption.
+  ///
+  /// In en, this message translates to:
+  /// **'dry'**
+  String get assumptionStateDry;
+
+  /// Lower-case state word inside an assumption.
+  ///
+  /// In en, this message translates to:
+  /// **'drained'**
+  String get assumptionStateDrained;
+
+  /// Lower-case state word inside an assumption.
+  ///
+  /// In en, this message translates to:
+  /// **'fried'**
+  String get assumptionStateFried;
+
+  /// Lower-case state word inside an assumption.
+  ///
+  /// In en, this message translates to:
+  /// **'as sold'**
+  String get assumptionStateAsSold;
+
+  /// An assumption behind a logged item: all of the oil counts.
+  ///
+  /// In en, this message translates to:
+  /// **'All of the cooking oil counted'**
+  String get assumptionOilAll;
+
+  /// An assumption behind a logged item: most of the oil counts.
+  ///
+  /// In en, this message translates to:
+  /// **'Most of the cooking oil counted (some stays in the pan)'**
+  String get assumptionOilMost;
+
+  /// An assumption behind a logged item: the share of a dish eaten.
+  ///
+  /// In en, this message translates to:
+  /// **'Your share: {percent}%'**
+  String assumptionShare(int percent);
+
+  /// An assumption behind a logged item: the choice came from the message.
+  ///
+  /// In en, this message translates to:
+  /// **'As you said'**
+  String get assumptionOriginStated;
+
+  /// An assumption behind a logged item: the choice came from a saved default.
+  ///
+  /// In en, this message translates to:
+  /// **'Your usual choice'**
+  String get assumptionOriginSavedDefault;
+
+  /// An assumption behind a logged item: a visible default was used.
+  ///
+  /// In en, this message translates to:
+  /// **'A typical choice was assumed'**
+  String get assumptionOriginFallback;
+
+  /// An assumption behind a logged item: the user changed the choice on the card.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed by you'**
+  String get assumptionOriginUserAdjusted;
+
+  /// An assumption the app has no words for (an unknown or older code): never the raw text.
+  ///
+  /// In en, this message translates to:
+  /// **'Assumed value'**
+  String get assumptionGeneric;
 
   /// Weight card: title (HM-005).
   ///
@@ -2520,12 +3035,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Too late to undo.'**
   String get diaryUndoExpired;
-
-  /// Hint of the bar at the bottom of Today until Buddy takes it over: it opens the food search (HM-008).
-  ///
-  /// In en, this message translates to:
-  /// **'Search for a food…'**
-  String get todayInputHintSearch;
 
   /// Dev builds only: the camera and barcode buttons do nothing yet.
   ///

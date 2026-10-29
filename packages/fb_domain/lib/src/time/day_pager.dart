@@ -5,9 +5,12 @@ import 'package:fb_domain/src/time/local_time.dart';
 /// Bounded ascending diary pages, with no future days (HM-009).
 final class DayPager {
   /// Ten years of history by default.
-  new(this.today, {this.maxDays = 3650}) {
+  new(this.today, {this.maxDays = defaultMaxDays}) {
     if (maxDays < 0) throw ArgumentError.value(maxDays, 'maxDays');
   }
+
+  /// The default history bound: ten years of days.
+  static const int defaultMaxDays = 3650;
 
   /// The latest allowed date.
   final LocalDate today;

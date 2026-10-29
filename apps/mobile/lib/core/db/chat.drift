@@ -1,0 +1,11 @@
+-- The chat transcript's indexes (A22 D3). Partial on live rows: every read
+-- query includes deleted_at IS NULL.
+import 'tables/chat_tables.dart';
+
+-- Display order: created_at, then id.
+CREATE INDEX ix_chat_messages_order ON chat_messages (created_at, id)
+  WHERE deleted_at IS NULL;
+
+-- Replies grouped by the user message they answer.
+CREATE INDEX ix_chat_messages_reply ON chat_messages (reply_to_message_id)
+  WHERE reply_to_message_id IS NOT NULL AND deleted_at IS NULL;

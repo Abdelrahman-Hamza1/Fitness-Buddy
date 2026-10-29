@@ -137,12 +137,8 @@ void main() {
     await _noSnackbar(tester);
     await _today(tester, today);
 
-    await tapExactly(tester, find.byType(FbInputBar), 'the input bar');
-    await waitUntil(
-      tester,
-      () => find.byType(FoodSearchScreen).evaluate().isNotEmpty,
-      'food search',
-    );
+    // Input bar → Buddy's sheet → search (no meal chosen: auto-slot).
+    await openSearchFromToday(tester);
     await tester.enterText(find.byType(TextField), 'banana');
     final result = find.byWidgetPredicate(
       (w) => w is FoodResultRow && w.row.choice.ref.id == _banana,

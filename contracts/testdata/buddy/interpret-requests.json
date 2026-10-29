@@ -1,0 +1,1187 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "default-slots",
+      "pins": "Four default meal slots (UUIDv5 natural IDs), windows as HH:MM-HH:MM, snacks without one; no personal foods; every other list empty.",
+      "request": {
+        "requestId": "019a3a1c-8f40-7000-8000-000000000001",
+        "text": "2 eggs and toast",
+        "now": "2026-10-29T05:40:00.000Z",
+        "tzOffsetMin": 180,
+        "ramadan": {
+          "active": false,
+          "fajr": null,
+          "maghrib": null
+        },
+        "slots": [
+          {
+            "id": "4c5aed24-f404-506e-a925-f0ff33099753",
+            "name": "breakfast",
+            "window": "04:00-11:00"
+          },
+          {
+            "id": "ca0daf21-3d15-53c5-b4ec-ee09a5e0c674",
+            "name": "lunch",
+            "window": "11:00-16:00"
+          },
+          {
+            "id": "260cb3fe-def5-53e5-9f5c-d64f61a4ec3e",
+            "name": "dinner",
+            "window": "16:00-22:00"
+          },
+          {
+            "id": "9c906ed8-064d-52d3-b116-803e12ee5630",
+            "name": "snacks",
+            "window": null
+          }
+        ],
+        "activeProposal": null,
+        "context": {
+          "personalFoods": [],
+          "savedMeals": [],
+          "openBatches": [],
+          "memory": [],
+          "recentEntries": [],
+          "customExercises": [],
+          "activeCard": null
+        }
+      }
+    },
+    {
+      "id": "arabic-message",
+      "pins": "Arabic-script message matching an Arabic personal food name.",
+      "request": {
+        "requestId": "019a3a1c-8f40-7000-8000-000000000002",
+        "text": "أكلت ملوخية ورز",
+        "now": "2026-10-29T05:40:00.000Z",
+        "tzOffsetMin": 180,
+        "ramadan": {
+          "active": false,
+          "fajr": null,
+          "maghrib": null
+        },
+        "slots": [
+          {
+            "id": "4c5aed24-f404-506e-a925-f0ff33099753",
+            "name": "breakfast",
+            "window": "04:00-11:00"
+          },
+          {
+            "id": "ca0daf21-3d15-53c5-b4ec-ee09a5e0c674",
+            "name": "lunch",
+            "window": "11:00-16:00"
+          },
+          {
+            "id": "260cb3fe-def5-53e5-9f5c-d64f61a4ec3e",
+            "name": "dinner",
+            "window": "16:00-22:00"
+          },
+          {
+            "id": "9c906ed8-064d-52d3-b116-803e12ee5630",
+            "name": "snacks",
+            "window": null
+          }
+        ],
+        "activeProposal": null,
+        "context": {
+          "personalFoods": [
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001002",
+              "names": [
+                "Molokhia",
+                "ملوخية"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": []
+            }
+          ],
+          "savedMeals": [],
+          "openBatches": [],
+          "memory": [],
+          "recentEntries": [],
+          "customExercises": [],
+          "activeCard": null
+        }
+      }
+    },
+    {
+      "id": "arabizi-message",
+      "pins": "Arabizi message matching a personal food alias.",
+      "request": {
+        "requestId": "019a3a1c-8f40-7000-8000-000000000003",
+        "text": "kalet 2 bayd w ful",
+        "now": "2026-10-29T05:40:00.000Z",
+        "tzOffsetMin": 180,
+        "ramadan": {
+          "active": false,
+          "fajr": null,
+          "maghrib": null
+        },
+        "slots": [
+          {
+            "id": "4c5aed24-f404-506e-a925-f0ff33099753",
+            "name": "breakfast",
+            "window": "04:00-11:00"
+          },
+          {
+            "id": "ca0daf21-3d15-53c5-b4ec-ee09a5e0c674",
+            "name": "lunch",
+            "window": "11:00-16:00"
+          },
+          {
+            "id": "260cb3fe-def5-53e5-9f5c-d64f61a4ec3e",
+            "name": "dinner",
+            "window": "16:00-22:00"
+          },
+          {
+            "id": "9c906ed8-064d-52d3-b116-803e12ee5630",
+            "name": "snacks",
+            "window": null
+          }
+        ],
+        "activeProposal": null,
+        "context": {
+          "personalFoods": [
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001004",
+              "names": [
+                "Fava beans"
+              ],
+              "aliases": [
+                "ful",
+                "foul"
+              ],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": []
+            }
+          ],
+          "savedMeals": [],
+          "openBatches": [],
+          "memory": [],
+          "recentEntries": [],
+          "customExercises": [],
+          "activeCard": null
+        }
+      }
+    },
+    {
+      "id": "personal-food-at-bounds",
+      "pins": "A personal food at every bound: 80-unit names, 30 aliases cut to 10 (matching first), 11 servings incl. the entry serving, 920 kcal, 0.1 and 5000 g amounts.",
+      "request": {
+        "requestId": "019a3a1c-8f40-7000-8000-000000000004",
+        "text": "mumxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx with alias29aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "now": "2026-10-29T05:40:00.000Z",
+        "tzOffsetMin": 180,
+        "ramadan": {
+          "active": false,
+          "fajr": null,
+          "maghrib": null
+        },
+        "slots": [
+          {
+            "id": "4c5aed24-f404-506e-a925-f0ff33099753",
+            "name": "breakfast",
+            "window": "04:00-11:00"
+          },
+          {
+            "id": "ca0daf21-3d15-53c5-b4ec-ee09a5e0c674",
+            "name": "lunch",
+            "window": "11:00-16:00"
+          },
+          {
+            "id": "260cb3fe-def5-53e5-9f5c-d64f61a4ec3e",
+            "name": "dinner",
+            "window": "16:00-22:00"
+          },
+          {
+            "id": "9c906ed8-064d-52d3-b116-803e12ee5630",
+            "name": "snacks",
+            "window": null
+          }
+        ],
+        "activeProposal": null,
+        "context": {
+          "personalFoods": [
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001001",
+              "names": [
+                "Mumxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                "ملوخية مممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممم"
+              ],
+              "aliases": [
+                "alias29aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "alias0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "alias1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "alias2aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "alias3aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "alias4aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "alias5aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "alias6aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "alias7aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "alias8aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              ],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 920.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "loaf",
+                  "g": 5000.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                },
+                {
+                  "unitCode": "plate",
+                  "g": 5000.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                },
+                {
+                  "unitCode": "glass",
+                  "g": 5000.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                },
+                {
+                  "unitCode": "sandwich",
+                  "g": 5000.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                },
+                {
+                  "unitCode": "disc",
+                  "g": 5000.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                },
+                {
+                  "unitCode": "serving",
+                  "g": 5000.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                },
+                {
+                  "unitCode": "can",
+                  "g": 5000.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                },
+                {
+                  "unitCode": "cup",
+                  "g": 5000.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                },
+                {
+                  "unitCode": "tbsp",
+                  "g": 5000.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                },
+                {
+                  "unitCode": "tsp",
+                  "g": 5000.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                },
+                {
+                  "unitCode": "piece",
+                  "g": 0.1,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            }
+          ],
+          "savedMeals": [],
+          "openBatches": [],
+          "memory": [],
+          "recentEntries": [],
+          "customExercises": [],
+          "activeCard": null
+        }
+      }
+    },
+    {
+      "id": "maximum-list-sizes",
+      "pins": "15 active slots (4 default + 10 custom with wrapping windows + 1 inactive) cut to 12; 35 matching personal foods cut to 30, most shared words first, then by ID; a 1000-unit message.",
+      "request": {
+        "requestId": "019a3a1c-8f40-7000-8000-000000000005",
+        "text": "rice chicken salad xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "now": "2026-10-29T05:40:00.000Z",
+        "tzOffsetMin": 180,
+        "ramadan": {
+          "active": false,
+          "fajr": null,
+          "maghrib": null
+        },
+        "slots": [
+          {
+            "id": "4c5aed24-f404-506e-a925-f0ff33099753",
+            "name": "breakfast",
+            "window": "04:00-11:00"
+          },
+          {
+            "id": "ca0daf21-3d15-53c5-b4ec-ee09a5e0c674",
+            "name": "lunch",
+            "window": "11:00-16:00"
+          },
+          {
+            "id": "260cb3fe-def5-53e5-9f5c-d64f61a4ec3e",
+            "name": "dinner",
+            "window": "16:00-22:00"
+          },
+          {
+            "id": "9c906ed8-064d-52d3-b116-803e12ee5630",
+            "name": "snacks",
+            "window": null
+          },
+          {
+            "id": "019a3a1c-8f40-7000-8000-000000000500",
+            "name": "Meal 1",
+            "window": "23:00-00:30"
+          },
+          {
+            "id": "019a3a1c-8f40-7000-8000-000000000501",
+            "name": "Meal 2",
+            "window": "23:01-01:00"
+          },
+          {
+            "id": "019a3a1c-8f40-7000-8000-000000000502",
+            "name": "Meal 3",
+            "window": "23:02-01:30"
+          },
+          {
+            "id": "019a3a1c-8f40-7000-8000-000000000503",
+            "name": "Meal 4",
+            "window": "23:03-02:00"
+          },
+          {
+            "id": "019a3a1c-8f40-7000-8000-000000000504",
+            "name": "Meal 5",
+            "window": "23:04-02:30"
+          },
+          {
+            "id": "019a3a1c-8f40-7000-8000-000000000505",
+            "name": "Meal 6",
+            "window": "23:05-03:00"
+          },
+          {
+            "id": "019a3a1c-8f40-7000-8000-000000000506",
+            "name": "Meal 7",
+            "window": "23:06-03:30"
+          },
+          {
+            "id": "019a3a1c-8f40-7000-8000-000000000507",
+            "name": "Meal 8",
+            "window": "23:07-04:00"
+          }
+        ],
+        "activeProposal": null,
+        "context": {
+          "personalFoods": [
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001100",
+              "names": [
+                "Rice chicken 0"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": null,
+                  "ml": 240.0,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001102",
+              "names": [
+                "Rice chicken 2"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001104",
+              "names": [
+                "Rice chicken 4"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001106",
+              "names": [
+                "Rice chicken 6"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": null,
+                  "ml": 240.0,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001108",
+              "names": [
+                "Rice chicken 8"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001110",
+              "names": [
+                "Rice chicken 10"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001112",
+              "names": [
+                "Rice chicken 12"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": null,
+                  "ml": 240.0,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001114",
+              "names": [
+                "Rice chicken 14"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001116",
+              "names": [
+                "Rice chicken 16"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001118",
+              "names": [
+                "Rice chicken 18"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": null,
+                  "ml": 240.0,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001120",
+              "names": [
+                "Rice chicken 20"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001122",
+              "names": [
+                "Rice chicken 22"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001124",
+              "names": [
+                "Rice chicken 24"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": null,
+                  "ml": 240.0,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001126",
+              "names": [
+                "Rice chicken 26"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001128",
+              "names": [
+                "Rice chicken 28"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001130",
+              "names": [
+                "Rice chicken 30"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": null,
+                  "ml": 240.0,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001132",
+              "names": [
+                "Rice chicken 32"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001134",
+              "names": [
+                "Rice chicken 34"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001101",
+              "names": [
+                "Rice 1"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001103",
+              "names": [
+                "Rice 3"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": null,
+                  "ml": 240.0,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001105",
+              "names": [
+                "Rice 5"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001107",
+              "names": [
+                "Rice 7"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001109",
+              "names": [
+                "Rice 9"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": null,
+                  "ml": 240.0,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001111",
+              "names": [
+                "Rice 11"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001113",
+              "names": [
+                "Rice 13"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001115",
+              "names": [
+                "Rice 15"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": null,
+                  "ml": 240.0,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001117",
+              "names": [
+                "Rice 17"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001119",
+              "names": [
+                "Rice 19"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001121",
+              "names": [
+                "Rice 21"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": null,
+                  "ml": 240.0,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            },
+            {
+              "id": "019a3a1c-8f40-7000-8000-000000001123",
+              "names": [
+                "Rice 23"
+              ],
+              "aliases": [],
+              "state": "cooked",
+              "nutrients": {
+                "kcal": 150.0,
+                "proteinG": 10.0,
+                "carbsG": 20.0,
+                "fatG": 5.0,
+                "fiberG": 1.5
+              },
+              "servings": [
+                {
+                  "unitCode": "cup",
+                  "g": 240.0,
+                  "ml": null,
+                  "rangeLo": null,
+                  "rangeHi": null,
+                  "source": "personal"
+                }
+              ]
+            }
+          ],
+          "savedMeals": [],
+          "openBatches": [],
+          "memory": [],
+          "recentEntries": [],
+          "customExercises": [],
+          "activeCard": null
+        }
+      }
+    }
+  ]
+}

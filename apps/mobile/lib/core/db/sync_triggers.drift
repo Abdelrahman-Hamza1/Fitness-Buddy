@@ -14,6 +14,7 @@ import 'tables/diary_tables.dart';
 import 'tables/food_tables.dart';
 import 'tables/target_tables.dart';
 import 'tables/body_tables.dart';
+import 'tables/chat_tables.dart';
 
 -- settings_kv (entity 'setting', A01 D16)
 CREATE TRIGGER settings_kv_outbox_ai AFTER INSERT ON settings_kv
@@ -263,6 +264,27 @@ BEGIN
 END;
 
 CREATE TRIGGER weigh_ins_no_delete BEFORE DELETE ON weigh_ins
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;
+
+-- chat_messages (entity 'chatMessage', A22)
+CREATE TRIGGER chat_messages_outbox_ai AFTER INSERT ON chat_messages
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('chatMessage', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER chat_messages_outbox_au AFTER UPDATE ON chat_messages
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('chatMessage', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER chat_messages_no_delete BEFORE DELETE ON chat_messages
 BEGIN
   SELECT RAISE(ABORT, 'tombstone, never delete');
 END;

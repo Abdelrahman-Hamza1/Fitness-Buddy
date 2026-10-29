@@ -1,4 +1,5 @@
 import 'package:fb_design_system/src/tokens/colors.dart';
+import 'package:fb_design_system/src/tokens/motion.dart';
 import 'package:fb_design_system/src/tokens/spacing.dart';
 import 'package:fb_design_system/src/tokens/typography.dart';
 import 'package:material_ui/material_ui.dart';
@@ -10,17 +11,39 @@ import 'package:material_ui/material_ui.dart';
 /// down to fit, so it never overflows (UX-070, A02 D10). The caption scales
 /// normally. When [over] is true the number takes the neutral over-target
 /// tone: never an error colour, never a warning icon (SF-021).
+///
+/// [FbBigNumber.counting] counts from the previous [count] to the new one
+/// when it changes (UX-025); instantly when animations are off. The first
+/// value shows as is.
 class FbBigNumber extends StatelessWidget {
   /// Creates a big number.
   const new({
-    required this.value,
+    required String this._value,
     required this.caption,
     this.over = false,
     super.key,
-  });
+  }) : count = null,
+       format = null;
 
-  /// The formatted number.
-  final String value;
+  /// A big number that counts to [count], shown through [format].
+  const new counting({
+    required double this.count,
+    required String Function(double) this.format,
+    required this.caption,
+    this.over = false,
+    super.key,
+  }) : _value = null;
+
+  final String? _value;
+
+  /// The formatted number (for a counting one, the number it counts to).
+  String get value => _value ?? format!(count!);
+
+  /// The number to count to.
+  final double? count;
+
+  /// Formats a [count] value.
+  final String Function(double)? format;
 
   /// The line under it.
   final String caption;
@@ -33,6 +56,23 @@ class FbBigNumber extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final count = this.count;
+    final format = this.format;
+    if (count == null || format == null) return _build(context, value);
+    return Semantics(
+      container: true,
+      label: '${format(count)}, $caption',
+      excludeSemantics: true,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(end: count),
+        duration: FbMotion.of(context, FbMotion.slow),
+        curve: FbMotion.curve,
+        builder: (context, shown, _) => _build(context, format(shown)),
+      ),
+    );
+  }
+
+  Widget _build(BuildContext context, String value) {
     final scheme = Theme.of(context).colorScheme;
     final color = over ? context.fbColors.overTarget : scheme.onSurface;
     return Semantics(

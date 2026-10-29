@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/amount_text.dart';
+import 'package:fb_mobile/core/l10n/assumption_labels.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/diary/application/diary_actions.dart';
@@ -203,7 +204,15 @@ class EntryDetailsPanel extends ConsumerWidget {
                     vertical: FbSpace.s1,
                   ),
                   child: Text(
-                    assumption,
+                    // Stored codes become words; unknown or legacy text a
+                    // generic label, never the raw string (A22 D17).
+                    assumptionText(
+                      l10n,
+                      assumption,
+                      system:
+                          ref.watch(unitSystemProvider).value ??
+                          UnitSystem.metric,
+                    ),
                     style: FbType.bodySmall.copyWith(
                       color: scheme.onSurfaceVariant,
                     ),

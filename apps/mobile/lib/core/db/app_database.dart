@@ -8,9 +8,11 @@ import 'package:fb_mobile/core/db/migrations/from_2_to_3.dart';
 import 'package:fb_mobile/core/db/migrations/from_3_to_4.dart';
 import 'package:fb_mobile/core/db/migrations/from_4_to_5.dart';
 import 'package:fb_mobile/core/db/migrations/from_5_to_6.dart';
+import 'package:fb_mobile/core/db/migrations/from_6_to_7.dart';
 import 'package:fb_mobile/core/db/seeds/default_slots_seed.dart';
 import 'package:fb_mobile/core/db/synced_tables.dart';
 import 'package:fb_mobile/core/db/tables/body_tables.dart';
+import 'package:fb_mobile/core/db/tables/chat_tables.dart';
 import 'package:fb_mobile/core/db/tables/diary_tables.dart';
 import 'package:fb_mobile/core/db/tables/food_tables.dart';
 import 'package:fb_mobile/core/db/tables/settings_tables.dart';
@@ -50,12 +52,14 @@ typedef CatalogErrorHandler = void Function(Object error, StackTrace stack);
     GoalPhases,
     TargetSettingsRows,
     WeighIns,
+    ChatMessages,
   ],
   include: {
     'sync_triggers.drift',
     'diary.drift',
     'targets.drift',
     'body.drift',
+    'chat.drift',
   },
 )
 final class AppDatabase extends _$AppDatabase with WriteGuarded {
@@ -103,10 +107,14 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
       targetSettingsEntity,
     ),
     SyncedTable<$WeighInsTable, WeighInRow>(weighIns, weighInEntity),
+    SyncedTable<$ChatMessagesTable, ChatMessageRow>(
+      chatMessages,
+      chatMessageEntity,
+    ),
   ];
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -120,6 +128,7 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
       from3To4: from3To4,
       from4To5: from4To5,
       from5To6: from5To6,
+      from6To7: from6To7,
     ),
     beforeOpen: (details) async {
       // drift runs this on the executor it's opening, below the guard (the

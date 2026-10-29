@@ -99,8 +99,12 @@ void main() {
       for (final row in await db.select(db.diaryEntries).get()) row.id,
     };
 
-    // Today's input bar opens the search through the real go_router.
-    await $('Search for a food…').tap(settlePolicy: SettlePolicy.trySettle);
+    // Today's input bar opens Buddy's sheet; its magnifier opens the search
+    // through the real go_router (A22 D14).
+    await $('Tell Buddy what you ate…')
+        .tap(settlePolicy: SettlePolicy.trySettle);
+    await $(FbComposer).waitUntilVisible();
+    await $.tester.tap(find.byTooltip('Search foods'));
     await _waitUntil(
       tester,
       () => find.byType(FoodSearchScreen).evaluate().isNotEmpty,

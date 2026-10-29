@@ -108,8 +108,11 @@ class TodayNumbers extends ConsumerWidget {
     Widget macro(String label, double grams) =>
         Text(l10n.diaryMacroItem(label, grams), style: style);
     return [
-      FbBigNumber(
-        value: l10n.diaryBigKcal(eaten.eatenKcal),
+      // Counts to the new total when it changes, e.g. after Log it
+      // (UX-025, A22 D24).
+      FbBigNumber.counting(
+        count: eaten.eatenKcal.toDouble(),
+        format: (kcal) => l10n.diaryBigKcal(kcal.round()),
         caption: l10n.diaryKcalEaten,
       ),
       const SizedBox(height: FbSpace.s3),
@@ -151,8 +154,9 @@ class TodayNumbers extends ConsumerWidget {
           },
         );
     return [
-      FbBigNumber(
-        value: l10n.diaryBigKcal(view.remainingKcal.abs()),
+      FbBigNumber.counting(
+        count: view.remainingKcal.abs().toDouble(),
+        format: (kcal) => l10n.diaryBigKcal(kcal.round()),
         caption: view.over ? l10n.todayKcalOver : l10n.todayKcalLeft,
         over: view.over,
       ),

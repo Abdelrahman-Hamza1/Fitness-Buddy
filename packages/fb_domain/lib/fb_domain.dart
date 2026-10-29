@@ -14,6 +14,10 @@ export 'src/body/weigh_in_ops.dart';
 export 'src/changes/change_op.dart';
 export 'src/changes/domain_event.dart';
 export 'src/changes/origin.dart';
+export 'src/chat/chat_language.dart';
+export 'src/chat/chat_message.dart';
+export 'src/chat/chat_message_ops.dart';
+export 'src/chat/chat_text.dart';
 export 'src/diary/day_layout.dart';
 export 'src/diary/diary_entry.dart';
 export 'src/diary/diary_events.dart';
@@ -50,6 +54,8 @@ export 'src/nutrition/nutrient_field.dart';
 export 'src/nutrition/nutrients.dart';
 export 'src/nutrition/sanity.dart';
 export 'src/nutrition/yield.dart';
+export 'src/proposals/assumption_code.dart';
+export 'src/proposals/day_hint.dart';
 export 'src/proposals/proposal_input.dart'
     show
         InterpretationDecoder,

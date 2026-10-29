@@ -97,6 +97,25 @@ energy is kcal, macros/fiber are grams. All ids are opaque row identifiers.
 | `diary-entries.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
 | `diary-entries.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
 
+## chat-messages (`chatMessage`, `chat_messages`)
+
+The Buddy chat transcript (A22): what you typed and Buddy's replies.
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `chat-messages.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `chat-messages.role` | text | `user` (you typed it) or `assistant` (Buddy's reply). |
+| `chat-messages.message_text` | text | The message text. User content. |
+| `chat-messages.status` | text | `queued`, `pending_offline`, `processing`, `done` or `failed`. |
+| `chat-messages.language` | text | The language tag: `en`, `ar` (Arabic script), `ar-Latn` (Arabizi), or null when unknown or mixed. |
+| `chat-messages.reply_to_message_id` | text | On a Buddy reply, the id of the message it answers; else null. |
+| `chat-messages.codec_version` | integer | Version of the `budget_json` format, or null. |
+| `chat-messages.budget_json` | JSON value | On a Buddy reply, the open questions of its proposal cards (ids and counts only), or null. |
+| `chat-messages.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `chat-messages.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `chat-messages.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `chat-messages.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
 ## dish-groups (`dishGroup`, `dish_groups`)
 
 | Column | Type / unit | Meaning |

@@ -14,6 +14,13 @@ final class AuthInterceptor extends Interceptor {
 
   final Uri _api;
   final Dio _dio;
+
+  /// The same session and origin, replaying a refreshed request on [dio]: a
+  /// clone with extra interceptors (Buddy's raw answers, A22) gets its own,
+  /// so the replay passes through those interceptors too.
+  AuthInterceptor forDio(Dio dio) =>
+      AuthInterceptor(apiBaseUrl: _api, dio: dio, session: _session);
+
   final SessionService Function() _session;
   // Private metadata cannot be forged via caller extras or leak in diagnostics.
   final _attempts = Expando<_Attempt>();

@@ -9,6 +9,14 @@ Files (present and planned):
 | `problems/*.json` | Example `application/problem+json` bodies, one per error type in the catalogue (`../README.md`) | C# problem pipeline tests (Host.Tests), Dart `Failure` mapping tests | S03 ✅ |
 | `normalization_cases.yaml` | Text normalization cases (input → normalized key), at least 100 | `fb_text` (Dart), Catalog module (C#) | S08 (Dart) ✅, B07 (C#) |
 | `sync/*.json` | Sync push/pull payload examples | the app's sync code (Dart), UserData module (C#) | the sync steps |
+| `buddy/interpret-requests.json` | App-built interpret request bodies | the app's request builder (Dart), Buddy module (C#) | A22a ✅ (Dart: drift test; C#: `InterpretRequestVectorTests`) |
+
+## `buddy/interpret-requests.json`
+
+App-built `InterpretRequest` bodies (A22 D18, TD-093 Proposed): what the phone actually sends to `POST /v1/buddy/interpret`. Generated, never hand-edited: `make gen-interpret-request-vectors` runs `apps/mobile/tool/generate_interpret_request_vectors.dart` over the app's real `InterpretRequestBuilder`, and the Dart test `apps/mobile/test/features/buddy/data/interpret_request_vectors_test.dart` fails if the committed bytes differ. Synthetic content only.
+
+- `version` (`1`) and `cases`: `{id, pins, request}`. `id` is stable kebab-case, `pins` says in words what the case covers (default UUIDv5 slots with `HH:MM-HH:MM` windows, Arabic, Arabizi, a personal food at every bound, maximum list sizes), `request` is exactly the JSON body.
+- **A case passes** on the server when the API binds it and `InterpretRequest.Validate` admits it (no 400); context reference IDs (slots, personal foods) may be any non-nil UUID (B09a WP0). In Dart it passes when it equals the builder's output byte for byte, reads back unchanged through the generated client and stays within B08's bounds.
 
 ## `sync/entity-payloads*.json`
 

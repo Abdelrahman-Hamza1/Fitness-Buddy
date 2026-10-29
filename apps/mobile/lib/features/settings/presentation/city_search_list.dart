@@ -81,6 +81,14 @@ class _CitySearchListState extends ConsumerState<CitySearchList> {
           ),
         ),
       ),
+      // Expanded (the picker screen) the rows scroll: with the keyboard up
+      // on a 320 x 640 phone they don't fit (nightly android-it). In the
+      // onboarding sheet the plain column sizes the sheet.
+      _ when widget.expand => SingleChildScrollView(
+        padding: pad,
+        physics: const NeverScrollableScrollPhysics(),
+        child: const _Skeleton(),
+      ),
       _ => Padding(padding: pad, child: const _Skeleton()),
     };
     return Column(

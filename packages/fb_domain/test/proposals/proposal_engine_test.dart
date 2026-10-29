@@ -5,6 +5,81 @@ import 'proposal_codec_test.dart' show cardRows, roundTrip;
 import 'proposal_fixtures.dart';
 
 void main() {
+  // rule: A22 date-hint
+  test(
+    'A22 engine prefers dateHint and falls back to a yesterday time hint',
+    () {
+      LocalDate dayOf(ProposalSession s) =>
+          (s.cards.single.lines.single.entry.when as EntryAt).time.localDate;
+      expect(
+        dayOf(
+          session(
+            message([
+              intent([item()], date: 'daysAgo:3'),
+            ]),
+          ),
+        ),
+        LocalDate(2026, 10, 14),
+      );
+      // The day grammar wins over a literal time hint.
+      expect(
+        dayOf(
+          session(
+            message([
+              intent([item()], date: 'today', time: 'yesterday'),
+            ]),
+          ),
+        ),
+        LocalDate(2026, 10, 17),
+      );
+      expect(
+        dayOf(
+          session(
+            message([
+              intent([item()], time: 'yesterday'),
+            ]),
+          ),
+        ),
+        LocalDate(2026, 10, 16),
+      );
+      expect(
+        dayOf(
+          session(
+            message([
+              intent([item()], date: 'date:10-03'),
+            ]),
+          ),
+        ),
+        LocalDate(2026, 10, 3),
+      );
+    },
+  );
+
+  // rule: A22 date-hint
+  test(
+    'A22 a future or unparseable dateHint routes the intent unrecognized',
+    () {
+      for (final date in [
+        'date:2026-10-18',
+        'tomorrow',
+        'daysAgo:1',
+        // Outside the diary's reach: before the epoch, more than ten years.
+        'date:1969-12-31',
+        'daysAgo:3651',
+      ]) {
+        final s = session(
+          message([
+            intent([item()], date: date),
+            intent([riceItem()]),
+          ]),
+        );
+        expect(s.cards, hasLength(1), reason: date);
+        expect(s.routing.map((i) => i.kind), ['unrecognized'], reason: date);
+        expect(s.routing.single.items, isEmpty);
+      }
+    },
+  );
+
   // rule: B09 decoder forward-compat
   test('B09 foodLog plus an unknown kind builds the card, routes unrecognized, '
       'leaves the question budget untouched and round-trips the codec', () {
@@ -490,6 +565,26 @@ void main() {
       expect(s, session(t01()));
     },
   );
+  // rule: A22 default-answer
+  test('A22 a question lists the assumed (fallback) answer first', () {
+    final s = session(
+      message([
+        intent([
+          riceItem(),
+          item(dimensions: [fatDimension()]),
+        ]),
+      ]),
+    );
+    expect(s.budget.questions, hasLength(2));
+    for (final question in s.budget.questions) {
+      final chip = s.cards
+          .expand((c) => c.lines)
+          .expand((l) => l.chips)
+          .singleWhere((c) => c.dimensionId == question.dimensionId);
+      expect(chip.origin, ProposalChoiceOrigin.fallback);
+      expect(question.optionIds.first, chip.optionId);
+    }
+  });
 }
 
 final class _InvalidIds extends FixedIds {

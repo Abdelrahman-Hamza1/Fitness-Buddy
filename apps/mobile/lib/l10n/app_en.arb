@@ -390,6 +390,54 @@
       }
     }
   },
+  "proposalOnDay": "{day} · {when}",
+  "@proposalOnDay": {
+    "description": "Proposal card heading for a meal on another day than today: the day, then the meal and time, e.g. \"Yesterday · Breakfast · 8:40 AM\" (A22 review).",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalDayAfter": "{day} after this: {left} left",
+  "@proposalDayAfter": {
+    "description": "Proposal card for another day: calories left that day once the card is logged (AI-031).",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "left": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalDayAfterEaten": "{day} after this: {eaten} eaten",
+  "@proposalDayAfterEaten": {
+    "description": "Proposal card for another day: calories eaten that day once logged, when there is no target.",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "eaten": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalDayAfterOver": "{day} after this: {over} over",
+  "@proposalDayAfterOver": {
+    "description": "Proposal card for another day: calories over that day's target once logged; neutral.",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "over": {
+        "type": "String"
+      }
+    }
+  },
   "proposalItemKcal": "{kcal} kcal",
   "@proposalItemKcal": {
     "description": "Proposal card: calories of one item.",
@@ -407,6 +455,28 @@
         "type": "String"
       }
     }
+  },
+  "proposalTotalKcalApprox": "~{kcal} kcal",
+  "@proposalTotalKcalApprox": {
+    "description": "Proposal card: total calories when some items are estimates (SF-041, D-045).",
+    "placeholders": {
+      "kcal": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalApprox": "~{kcal}",
+  "@proposalApprox": {
+    "description": "An estimated calorie number inside a sentence, e.g. \"Today after this: ~1,430 eaten\".",
+    "placeholders": {
+      "kcal": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalEstimateReasonTotal": "Some items are estimates, so the total is too.",
+  "@proposalEstimateReasonTotal": {
+    "description": "Estimate sheet of a card's total: why it is an estimate."
   },
   "proposalMacrosShort": "Protein {protein} g · Carbs {carbs} g · Fat {fat} g · Fiber {fiber} g",
   "@proposalMacrosShort": {
@@ -485,6 +555,443 @@
         "type": "String"
       }
     }
+  },
+  "buddySheetLabel": "Buddy chat",
+  "@buddySheetLabel": {
+    "description": "Screen-reader label of the Buddy chat sheet (UX-011)."
+  },
+  "buddyComposerHint": "Tell Buddy what you ate…",
+  "@buddyComposerHint": {
+    "description": "Hint of the Buddy composer (AI-001)."
+  },
+  "buddySend": "Send",
+  "@buddySend": {
+    "description": "Tooltip of the composer button that sends the message to Buddy."
+  },
+  "buddySearchFoods": "Search foods",
+  "@buddySearchFoods": {
+    "description": "Tooltip of the magnifier in the composer, and the action under a failed Buddy message: opens food search (works offline)."
+  },
+  "buddyEmpty": "Tell Buddy what you ate, like \"2 eggs and toast\". Nothing is logged until you tap Log it.",
+  "@buddyEmpty": {
+    "description": "Buddy sheet: shown before the first message of this session (AI-036)."
+  },
+  "buddyReplyCards": "Here's your meal. Check it, then tap Log it.",
+  "@buddyReplyCards": {
+    "description": "Buddy's fixed English reply above one or more proposal cards (AI-143)."
+  },
+  "buddyReplyMedical": "I can't help with medical questions. A doctor or pharmacist is the right person to ask.",
+  "@buddyReplyMedical": {
+    "description": "Buddy's fixed English reply to a medical question (A22 D16)."
+  },
+  "buddyReplyNotFood": "I can log food here. Try something like \"2 eggs and toast\".",
+  "@buddyReplyNotFood": {
+    "description": "Buddy's fixed English reply to a message that isn't about food (A22 D16)."
+  },
+  "buddyReplyNoCard": "I couldn't make a card from that. Try search instead.",
+  "@buddyReplyNoCard": {
+    "description": "Buddy's fixed English reply when its answer can't become a card (A22 D6)."
+  },
+  "buddyReplyUnsupported": "Buddy can't do that in this version yet. You can log food here.",
+  "@buddyReplyUnsupported": {
+    "description": "Buddy's fixed English reply to a request a newer app version handles (04 §4.2)."
+  },
+  "buddyFailureOffline": "You're offline. Food search still works.",
+  "@buddyFailureOffline": {
+    "description": "Under a Buddy message that could not be sent: no connection (A22 D6)."
+  },
+  "buddyFailureTimeout": "Buddy didn't answer in time.",
+  "@buddyFailureTimeout": {
+    "description": "Under a Buddy message: no answer in time (A22 D6)."
+  },
+  "buddyFailureServer": "Buddy couldn't answer just now.",
+  "@buddyFailureServer": {
+    "description": "Under a Buddy message: a server error (A22 D6)."
+  },
+  "buddyFailureUnavailable": "Buddy is busy right now.",
+  "@buddyFailureUnavailable": {
+    "description": "Under a Buddy message: the service was unavailable once (A22 D6)."
+  },
+  "buddyFailureUnavailableFinal": "Buddy is still busy. Your text is back in the box below.",
+  "@buddyFailureUnavailableFinal": {
+    "description": "Under a Buddy message: unavailable a second time; the text went back to the composer (A22 D6)."
+  },
+  "buddyFailureRejected": "Buddy couldn't read that message.",
+  "@buddyFailureRejected": {
+    "description": "Under a Buddy message the server refused (A22 D6)."
+  },
+  "buddyFailureRateLimited": "You've reached today's Buddy limit. Search still works.",
+  "@buddyFailureRateLimited": {
+    "description": "Under a Buddy message: today's limit is reached (A22 D6)."
+  },
+  "buddyTryAgain": "Try again",
+  "@buddyTryAgain": {
+    "description": "Under a failed Buddy message: sends the same message again."
+  },
+  "buddyWorking": "Buddy is making a card",
+  "@buddyWorking": {
+    "description": "Screen-reader label of the placeholder card while Buddy answers (AI-030)."
+  },
+  "buddyBubbleYou": "You: {text}",
+  "@buddyBubbleYou": {
+    "description": "Screen-reader label of the user's chat message.",
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "buddyBubbleBuddy": "Buddy: {text}",
+  "@buddyBubbleBuddy": {
+    "description": "Screen-reader label of Buddy's chat message.",
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalLoggedPlain": "Logged",
+  "@proposalLoggedPlain": {
+    "description": "The logged row when its numbers aren't known (fallback)."
+  },
+  "proposalNoteJoin": "{first} · {second}",
+  "@proposalNoteJoin": {
+    "description": "Joins two short notes under a proposal item, e.g. \"Your share: 50% · Most of the cooking oil counted\".",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalTodayAfterEaten": "Today after this: {eaten} eaten",
+  "@proposalTodayAfterEaten": {
+    "description": "Proposal card: calories eaten today once the card is logged, when there is no target (AI-031, A22 D15).",
+    "placeholders": {
+      "eaten": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalLogged": "Logged {kcal} kcal · {left} left today",
+  "@proposalLogged": {
+    "description": "The one-line reply after Log it (AI-140).",
+    "placeholders": {
+      "kcal": {
+        "type": "String"
+      },
+      "left": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalLoggedEaten": "Logged {kcal} kcal · {eaten} eaten today",
+  "@proposalLoggedEaten": {
+    "description": "The one-line reply after Log it, when there is no target (AI-140).",
+    "placeholders": {
+      "kcal": {
+        "type": "String"
+      },
+      "eaten": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalTodayAfterOver": "Today after this: {over} over",
+  "@proposalTodayAfterOver": {
+    "description": "Proposal card: calories over the target once the card is logged; neutral, never alarming (SF-021).",
+    "placeholders": {
+      "over": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalLoggedOver": "Logged {kcal} kcal · {over} over today",
+  "@proposalLoggedOver": {
+    "description": "The one-line reply after Log it, over the target; neutral (SF-021).",
+    "placeholders": {
+      "kcal": {
+        "type": "String"
+      },
+      "over": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalLoggedOnDay": "Logged {kcal} kcal for {day}",
+  "@proposalLoggedOnDay": {
+    "description": "The one-line reply after Log it for a meal on another day (AI-140). The day is 'yesterday' (lower case) or a date such as 'Fri, Oct 17'.",
+    "placeholders": {
+      "kcal": {
+        "type": "String"
+      },
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalUndo": "Undo",
+  "@proposalUndo": {
+    "description": "Undoes a logged proposal card (AI-035)."
+  },
+  "proposalUndone": "Undone. Type it again or search to log it.",
+  "@proposalUndone": {
+    "description": "A logged card after Undo: read-only (A22 D25)."
+  },
+  "proposalDiscarded": "Discarded. Nothing was logged.",
+  "@proposalDiscarded": {
+    "description": "A discarded proposal card (AI-037)."
+  },
+  "proposalCouldNotLog": "Couldn't log this card.",
+  "@proposalCouldNotLog": {
+    "description": "Proposal card: Log it wrote nothing (A22 D25)."
+  },
+  "proposalLogging": "Logging…",
+  "@proposalLogging": {
+    "description": "Proposal card: shown while Log it is being applied (Log it disabled)."
+  },
+  "proposalBlockedNeedsAmount": "Add an amount to log this.",
+  "@proposalBlockedNeedsAmount": {
+    "description": "Proposal card: why Log it is disabled, an item has no amount."
+  },
+  "proposalBlockedMissingFood": "A food on this card isn't available. Search for it instead.",
+  "@proposalBlockedMissingFood": {
+    "description": "Proposal card: why Log it is disabled, a food is missing."
+  },
+  "proposalBlockedOther": "This card can't be logged. Try search instead.",
+  "@proposalBlockedOther": {
+    "description": "Proposal card: why Log it is disabled, any other reason."
+  },
+  "proposalEstimateRange": "{low}–{high} kcal",
+  "@proposalEstimateRange": {
+    "description": "Estimate sheet: the likely calorie range (AI-032).",
+    "placeholders": {
+      "low": {
+        "type": "String"
+      },
+      "high": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalEstimateReasonReference": "Based on a typical portion of a reference dish.",
+  "@proposalEstimateReasonReference": {
+    "description": "Estimate sheet: why the item is an estimate."
+  },
+  "proposalEstimateReasonBuddy": "Buddy's estimate: no close match in the food database.",
+  "@proposalEstimateReasonBuddy": {
+    "description": "Estimate sheet: why the item is an estimate."
+  },
+  "proposalEstimateReasonAmount": "The amount was guessed.",
+  "@proposalEstimateReasonAmount": {
+    "description": "Estimate sheet: why the item is an estimate."
+  },
+  "proposalQuestionState": "How was the {food} weighed?",
+  "@proposalQuestionState": {
+    "description": "Proposal card question about the weighed state (AI-034).",
+    "placeholders": {
+      "food": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalQuestionFat": "Any cooking oil?",
+  "@proposalQuestionFat": {
+    "description": "Proposal card question about added oil (AI-034)."
+  },
+  "proposalQuestionVariant": "Which one?",
+  "@proposalQuestionVariant": {
+    "description": "Proposal card question about the kind of dish (AI-034)."
+  },
+  "proposalQuestionPortion": "How much {food}?",
+  "@proposalQuestionPortion": {
+    "description": "Proposal card question about the portion (AI-034).",
+    "placeholders": {
+      "food": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalQuestionOilRetention": "Did you eat all of the oil?",
+  "@proposalQuestionOilRetention": {
+    "description": "Proposal card question about the oil left in the pan (AI-034)."
+  },
+  "proposalQuestionShare": "How much of the {food} did you have?",
+  "@proposalQuestionShare": {
+    "description": "Proposal card question about a shared dish (AI-034).",
+    "placeholders": {
+      "food": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalStateRaw": "Raw",
+  "@proposalStateRaw": {
+    "description": "Answer or chip: weighed raw."
+  },
+  "proposalStateCooked": "Cooked",
+  "@proposalStateCooked": {
+    "description": "Answer or chip: weighed cooked."
+  },
+  "proposalStateDry": "Dry",
+  "@proposalStateDry": {
+    "description": "Answer or chip: weighed dry."
+  },
+  "proposalStateDrained": "Drained",
+  "@proposalStateDrained": {
+    "description": "Answer or chip: weighed drained."
+  },
+  "proposalStateFried": "Fried",
+  "@proposalStateFried": {
+    "description": "Answer or chip: weighed fried."
+  },
+  "proposalStateAsSold": "As sold",
+  "@proposalStateAsSold": {
+    "description": "Answer or chip: weighed as sold."
+  },
+  "proposalOilNone": "No oil",
+  "@proposalOilNone": {
+    "description": "Answer or chip: no added oil."
+  },
+  "proposalOilAmount": "{amount} of oil",
+  "@proposalOilAmount": {
+    "description": "Answer or chip: an amount of added oil, e.g. \"1 tbsp of oil\".",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalOilAll": "All of it",
+  "@proposalOilAll": {
+    "description": "Answer or chip: all of the oil was eaten."
+  },
+  "proposalOilMost": "Most of it",
+  "@proposalOilMost": {
+    "description": "Answer or chip: most of the oil was eaten."
+  },
+  "proposalShareOption": "{percent}% of it",
+  "@proposalShareOption": {
+    "description": "Answer or chip: the share of a dish, e.g. \"50% of it\".",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "proposalChipSemantics": "Assumption: {label}",
+  "@proposalChipSemantics": {
+    "description": "Screen-reader label of an assumption chip (AI-033).",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalChipFood": "{food}: {choice}",
+  "@proposalChipFood": {
+    "description": "Assumption chip naming the food it belongs to, e.g. \"Rice: cooked\" or \"Chicken: 150 g\" (AI-033).",
+    "placeholders": {
+      "food": {
+        "type": "String"
+      },
+      "choice": {
+        "type": "String"
+      }
+    }
+  },
+  "proposalChipOilAll": "All oil eaten",
+  "@proposalChipOilAll": {
+    "description": "Assumption chip: all of the cooking oil counts."
+  },
+  "proposalChipOilMost": "Most oil eaten",
+  "@proposalChipOilMost": {
+    "description": "Assumption chip: most of the cooking oil counts (some stays in the pan)."
+  },
+  "proposalChipTapHint": "change it",
+  "@proposalChipTapHint": {
+    "description": "Screen-reader hint of an assumption chip, read as \"Double tap to change it\"."
+  },
+  "assumptionYield": "{fromAmount} weighed {fromState}, counted as {toAmount} {toState}",
+  "@assumptionYield": {
+    "description": "An assumption behind a logged item: a weighed amount converted between states, e.g. \"200 g weighed dry, counted as 500 g cooked\" (A22 D17).",
+    "placeholders": {
+      "fromAmount": {
+        "type": "String"
+      },
+      "fromState": {
+        "type": "String"
+      },
+      "toAmount": {
+        "type": "String"
+      },
+      "toState": {
+        "type": "String"
+      }
+    }
+  },
+  "assumptionStateRaw": "raw",
+  "@assumptionStateRaw": {
+    "description": "Lower-case state word inside an assumption."
+  },
+  "assumptionStateCooked": "cooked",
+  "@assumptionStateCooked": {
+    "description": "Lower-case state word inside an assumption."
+  },
+  "assumptionStateDry": "dry",
+  "@assumptionStateDry": {
+    "description": "Lower-case state word inside an assumption."
+  },
+  "assumptionStateDrained": "drained",
+  "@assumptionStateDrained": {
+    "description": "Lower-case state word inside an assumption."
+  },
+  "assumptionStateFried": "fried",
+  "@assumptionStateFried": {
+    "description": "Lower-case state word inside an assumption."
+  },
+  "assumptionStateAsSold": "as sold",
+  "@assumptionStateAsSold": {
+    "description": "Lower-case state word inside an assumption."
+  },
+  "assumptionOilAll": "All of the cooking oil counted",
+  "@assumptionOilAll": {
+    "description": "An assumption behind a logged item: all of the oil counts."
+  },
+  "assumptionOilMost": "Most of the cooking oil counted (some stays in the pan)",
+  "@assumptionOilMost": {
+    "description": "An assumption behind a logged item: most of the oil counts."
+  },
+  "assumptionShare": "Your share: {percent}%",
+  "@assumptionShare": {
+    "description": "An assumption behind a logged item: the share of a dish eaten.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "assumptionOriginStated": "As you said",
+  "@assumptionOriginStated": {
+    "description": "An assumption behind a logged item: the choice came from the message."
+  },
+  "assumptionOriginSavedDefault": "Your usual choice",
+  "@assumptionOriginSavedDefault": {
+    "description": "An assumption behind a logged item: the choice came from a saved default."
+  },
+  "assumptionOriginFallback": "A typical choice was assumed",
+  "@assumptionOriginFallback": {
+    "description": "An assumption behind a logged item: a visible default was used."
+  },
+  "assumptionOriginUserAdjusted": "Changed by you",
+  "@assumptionOriginUserAdjusted": {
+    "description": "An assumption behind a logged item: the user changed the choice on the card."
+  },
+  "assumptionGeneric": "Assumed value",
+  "@assumptionGeneric": {
+    "description": "An assumption the app has no words for (an unknown or older code): never the raw text."
   },
   "weightTitle": "Weight",
   "@weightTitle": {
@@ -2486,10 +2993,6 @@
   "diaryUndoExpired": "Too late to undo.",
   "@diaryUndoExpired": {
     "description": "Snackbar when the undo window has passed."
-  },
-  "todayInputHintSearch": "Search for a food…",
-  "@todayInputHintSearch": {
-    "description": "Hint of the bar at the bottom of Today until Buddy takes it over: it opens the food search (HM-008)."
   },
   "devComingSoon": "Coming soon",
   "@devComingSoon": {

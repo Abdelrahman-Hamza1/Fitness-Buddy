@@ -71,6 +71,7 @@ final class ProposalIntent extends ProposalValue {
     this.timeHint,
     this.slotHint,
     this.dishGroup,
+    this.dateHint,
   }) : items = List.unmodifiable(items);
 
   /// Original message position.
@@ -91,6 +92,11 @@ final class ProposalIntent extends ProposalValue {
 
   /// Optional dish display name, never logged.
   final String? dishGroup;
+
+  /// Day hint in the closed `DayHint` grammar (B09 D8), already checked to
+  /// resolve to a past or current day; null for older responses, which fall
+  /// back to `timeHint == 'yesterday'`.
+  final String? dateHint;
   @override
   List<Object?> get _values => [
     index,
@@ -99,6 +105,7 @@ final class ProposalIntent extends ProposalValue {
     timeHint,
     slotHint,
     dishGroup,
+    dateHint,
   ];
 }
 

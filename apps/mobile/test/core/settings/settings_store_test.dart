@@ -220,6 +220,7 @@ void main() {
           PersonalFoodOp.familyName,
           TargetsOp.familyName,
           WeighInOp.familyName,
+          ChatMessageOp.familyName,
         ],
       );
       final store = container.read(settingsStoreProvider);

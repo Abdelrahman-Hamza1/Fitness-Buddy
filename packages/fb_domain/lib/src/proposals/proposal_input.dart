@@ -17,6 +17,8 @@ import 'package:fb_domain/src/ids/uuid_v7.dart';
 import 'package:fb_domain/src/nutrition/calculator.dart';
 import 'package:fb_domain/src/nutrition/nutrients.dart';
 import 'package:fb_domain/src/nutrition/yield.dart';
+import 'package:fb_domain/src/proposals/assumption_code.dart';
+import 'package:fb_domain/src/proposals/day_hint.dart';
 import 'package:fb_domain/src/proposals/proposal_policy_constants.dart';
 import 'package:fb_domain/src/proposals/proposal_sync_codes.dart';
 import 'package:fb_domain/src/targets/target_settings.dart';

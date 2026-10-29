@@ -48,6 +48,9 @@ abstract final class FbIcons {
   /// Camera (photo input).
   static const IconData camera = Icons.photo_camera_outlined;
 
+  /// Send a message. Points to the end (mirrors in RTL).
+  static const IconData send = Icons.send_rounded; // app-check: allow directional matchTextDirection mirrors it in RTL
+
   /// Search (the magnifier).
   static const IconData search = Icons.search_rounded;
 

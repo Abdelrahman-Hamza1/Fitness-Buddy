@@ -329,12 +329,14 @@ void main() {
     expect(find.byType(NavigationBar), findsOneWidget);
   });
 
-  testWidgets('HM-008 input bar on an empty Today opens search, back returns', (
-    tester,
-  ) async {
+  testWidgets('HM-008 the chat sheet search button on an empty Today opens '
+      'search, back returns', (tester) async {
     await pumpApp(tester, overrides: [searchOverride(FakeFoodSearch())]);
 
+    // The input bar opens Buddy's sheet (A22); its magnifier opens search.
     await tester.tap(find.byType(FbInputBar));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Search foods'));
     await tester.pumpAndSettle();
     expect(find.byType(FoodSearchScreen), findsOneWidget);
 

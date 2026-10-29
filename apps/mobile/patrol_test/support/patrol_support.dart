@@ -6,9 +6,11 @@ import 'package:fb_mobile/app/app_scope.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/db/database_location.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
+import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/quick_add/quick_add.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:path_provider/path_provider.dart';
@@ -189,6 +191,29 @@ DatabaseLocation isolatedLocation(String profileKey, String path) =>
       temporary: () async => path,
     );
 
+/// Opens food search the manual way from Today (A22 D14): the input bar
+/// opens Buddy's sheet, whose magnifier closes it and opens search (two
+/// taps, offline). Waits for the search screen.
+Future<void> openSearchFromToday(WidgetTester tester) async {
+  await tapExactly(tester, find.byType(FbInputBar), 'the input bar');
+  await waitUntil(
+    tester,
+    () => find.byType(FbComposer).evaluate().isNotEmpty,
+    "Buddy's sheet",
+  );
+  await pumpFor(tester, const Duration(milliseconds: 400));
+  await tapExactly(
+    tester,
+    find.byTooltip('Search foods'),
+    "the sheet's search button",
+  );
+  await waitUntil(
+    tester,
+    () => find.byType(FoodSearchScreen).evaluate().isNotEmpty,
+    'the food search screen',
+  );
+}
+
 /// Starts the real app on a throw-away profile database in the cache
 /// directory (a phone's real diary is never touched), waits for the pack,
 /// and returns the container. No API is reachable.
@@ -196,6 +221,7 @@ Future<ProviderContainer> bootApp(
   PatrolIntegrationTester $,
   String profileKey, {
   String rootName = 'fb_it',
+  List<Override> overrides = const [],
 }) async {
   final config = AppConfig.fromEnvironment();
   final cache = await getTemporaryDirectory();
@@ -213,6 +239,7 @@ Future<ProviderContainer> bootApp(
       databaseLocationProvider.overrideWithValue(
         isolatedLocation(profileKey, root.path),
       ),
+      ...overrides,
     ],
   );
   addTearDown(container.dispose);

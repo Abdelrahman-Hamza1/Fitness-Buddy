@@ -132,6 +132,13 @@ Future<void> _seed(AppDatabase db, {int diaryRows = 1}) async {
         }
         if (spec.entity == 'savedMeal') values['name'] = 'Saved removed';
         if (spec.entity == 'weighIn') values['input_unit'] = 'kg';
+        if (spec.entity == 'chatMessage') {
+          values.addAll({
+            'role': 'user',
+            'status': 'done',
+            'message_text': 'حمص 🍎',
+          });
+        }
         if (spec.entity == 'personalFood') {
           values.addAll({
             'entry_serving_unit': null,
@@ -247,6 +254,35 @@ void main() {
     expect(await allRows(reopened), allBefore);
     final after = await _read(reopened);
     expect(_json(_build(after)), _json(_build(before)));
+  });
+
+  // rule: A22 chat-export
+  test('A22 export includes chat messages', () async {
+    final db = memoryDatabase();
+    await _seed(db);
+    final files = _build(await _read(db));
+    final rows = (_json(files)['data'] as Map)['chatMessage'] as List;
+    expect(rows, hasLength(1));
+    final row = rows.single as Map<String, dynamic>;
+    expect(row['id'], 'chatMessage-live');
+    expect(row['role'], 'user');
+    expect(row['message_text'], 'حمص 🍎');
+    expect(row['status'], 'done');
+    expect(row['budget_json'], {'sugar': 1.2});
+    expect(row.keys, isNot(contains('device_id')));
+    final csv = files.singleWhere((f) => f.name.endsWith('-chat-messages.csv'));
+    final header = _csv(csv).first;
+    expect(
+      [header.first.replaceFirst('\uFEFF', ''), ...header.skip(1)],
+      [
+        for (final c
+            in exportRegistryV1
+                .singleWhere((s) => s.entity == 'chatMessage')
+                .columns
+                .where((c) => c.name != 'version' && c.name != 'origin'))
+          c.name,
+      ],
+    );
   });
 
   test('AC-030 every synced table has an export spec', () {
