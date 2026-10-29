@@ -12,7 +12,9 @@
 #                    shard i of n (1-based) via flutter test's --shard-index,
 #                    without the `perf` tag; `app:perf` = only apps/mobile's
 #                    `perf` tests, one at a time (their host budgets are
-#                    load-sensitive, backlog #116).
+#                    load-sensitive, backlog #116). In the `packages` shard
+#                    every member runs without its `perf` tests first, then
+#                    those alone, one at a time (2026-10-29).
 #   DART_TEST_JOBS   test concurrency per member (default 2 for the 7 GB
 #                    laptop; CI's 4-core runners use 4).
 set -euo pipefail
@@ -99,18 +101,35 @@ while IFS= read -r dir; do
   if [[ $shard == packages && $is_app == true ]] || [[ $shard == app:* && $is_app == false ]]; then
     echo "-- skip $name: not in shard $shard"; continue
   fi
+  # Package members split out their `perf` tests (run alone afterwards).
+  pkg_args=() has_perf=false
+  if [[ $is_app == false ]] && grep -rqE "Tags\(\['perf'\]\)|tags: \['perf'\]" "$dir/test"; then
+    pkg_args=(--exclude-tags perf) has_perf=true
+  fi
   if grep -Eq '^[[:space:]]+sdk:[[:space:]]*flutter[[:space:]]*$' "$dir/pubspec.yaml"; then
     echo "== $name: flutter test${shard:+ ($shard)}"
-    (cd "$dir" && "$FLUTTER" test -j "$jobs" "${app_shard[@]}")
+    (cd "$dir" && "$FLUTTER" test -j "$jobs" "${app_shard[@]}" "${pkg_args[@]}")
+    if [[ $has_perf == true ]]; then
+      echo "== $name: flutter test (perf, one at a time)"
+      (cd "$dir" && "$FLUTTER" test -j 1 --tags perf)
+    fi
   elif [[ -n "${COVERAGE_MIN[$name]:-}" ]]; then
     echo "== $name: dart test (coverage >= ${COVERAGE_MIN[$name]}%)"
     lcov="$dir/build/coverage/$name.lcov"
     rm -f "$lcov"
-    (cd "$dir" && "$DART" test -j "$jobs" --coverage-path="$lcov")
+    (cd "$dir" && "$DART" test -j "$jobs" --coverage-path="$lcov" "${pkg_args[@]}")
     check_coverage "$dir" "$lcov" "${COVERAGE_MIN[$name]}"
+    if [[ $has_perf == true ]]; then
+      echo "== $name: dart test (perf, one at a time)"
+      (cd "$dir" && "$DART" test -j 1 --tags perf)
+    fi
   else
     echo "== $name: dart test"
-    (cd "$dir" && "$DART" test -j "$jobs")
+    (cd "$dir" && "$DART" test -j "$jobs" "${pkg_args[@]}")
+    if [[ $has_perf == true ]]; then
+      echo "== $name: dart test (perf, one at a time)"
+      (cd "$dir" && "$DART" test -j 1 --tags perf)
+    fi
   fi
   ran=$((ran + 1))
 done <<<"$members"

@@ -31,7 +31,12 @@ name: CI
 
 on:
   push:
-    branches: ['**', '!dependabot/**'] # Dependabot branches run via pull_request
+    # Dependabot branches run via pull_request. main is excluded: merge-step.sh
+    # pushes the exact squash commit to merge/<ID> first and moves main only when
+    # `ci` is green on that same commit, so a second run on main repeated the
+    # same tree (and re-ran the emulator on `[it]` commits). main still gets the
+    # nightly schedule run (2026-10-29).
+    branches: ['**', '!dependabot/**', '!main']
   pull_request:
   workflow_dispatch:
   schedule:
