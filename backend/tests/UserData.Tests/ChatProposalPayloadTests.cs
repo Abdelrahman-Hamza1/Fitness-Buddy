@@ -22,7 +22,7 @@ public sealed class ChatProposalPayloadTests
     private static string? Admit(string entity, string raw, bool tombstone = false)
     {
         using var payload = JsonDocument.Parse(raw);
-        return SyncPayloads.InvalidReason(new SyncVersion(entity, Guid.NewGuid(), 1, "unused", Guid.NewGuid(),
+        return SyncPayloads.InvalidReason(new SyncVersion(entity, SyncTestIds.For(entity), 1, "unused", Guid.NewGuid(),
             tombstone ? DateTimeOffset.UnixEpoch : null, payload.RootElement));
     }
 

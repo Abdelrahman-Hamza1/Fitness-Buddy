@@ -25,6 +25,7 @@ internal static class SyncPayloads
                 if ((start.ValueKind == JsonValueKind.Null) != (end.ValueKind == JsonValueKind.Null) ||
                     (start.ValueKind != JsonValueKind.Null && start.GetInt32() == end.GetInt32())) { return "invalidPayload"; }
             }
+            if (TargetsPayloadValidator.Covers(version.Entity) && !TargetsPayloadValidator.Matches(version)) { return "invalidPayload"; }
             var personalFood = version.Entity == "personalFood" && version.SchemaVersion == 1;
             if (personalFood && !PersonalFoodPayloadValidator.Matches(version.Payload)) { return "invalidPayload"; }
             foreach (var property in version.Payload.EnumerateObject())
@@ -37,7 +38,7 @@ internal static class SyncPayloads
             }
             return null;
         }
-        catch (Exception error) when (error is JsonException or InvalidOperationException or FormatException or ArgumentException) { return "invalidPayload"; }
+        catch (Exception error) when (error is JsonException or InvalidOperationException or FormatException or ArgumentException or KeyNotFoundException) { return "invalidPayload"; }
     }
 
     private static bool Representable(JsonElement value, int depth)

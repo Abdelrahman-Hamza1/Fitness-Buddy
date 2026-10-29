@@ -240,13 +240,14 @@ public sealed class PersonalFoodSyncTests(PostgresFixture database)
 internal static class PersonalFoodHttp
 {
     // B18 D12: Entity defaults to personalFood, so B17 call sites are unchanged.
-    internal sealed record Row(Guid Id, string Hlc, string Raw, DateTimeOffset? DeletedAt = null, string Entity = "personalFood");
+    // B19 D10: SchemaVersion defaults to 1, so B17/B18 call sites are unchanged.
+    internal sealed record Row(Guid Id, string Hlc, string Raw, DateTimeOffset? DeletedAt = null, string Entity = "personalFood", int SchemaVersion = 1);
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
     public static async Task<IdentitySession> Register(IdentityHarness h) =>
         (await h.Store.GoogleSignInAsync(new("valid-" + Guid.NewGuid(), Guid.NewGuid() + "@example.invalid"), Guid.NewGuid(), h.Material(), Ct))!;
     public static string Hlc(IdentityHarness h, int counter = 0) => $"{h.Clock.GetUtcNow().ToUnixTimeMilliseconds():D13}-{counter:D5}-{h.Device}";
-    public static Row NewRow(IdentityHarness h, string? raw = null, DateTimeOffset? deleted = null, string entity = "personalFood") =>
-        new(Guid.NewGuid(), Hlc(h), raw ?? Fixture(entity), deleted, entity);
+    public static Row NewRow(IdentityHarness h, string? raw = null, DateTimeOffset? deleted = null, string entity = "personalFood", Guid? id = null, int schemaVersion = 1) =>
+        new(id ?? Guid.NewGuid(), Hlc(h), raw ?? Fixture(entity), deleted, entity, schemaVersion);
     public static string Fixture(string entity = "personalFood")
     {
         using var fixture = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "entity-payloads.json")));
@@ -261,7 +262,7 @@ internal static class PersonalFoodHttp
     }
     public static string Body(IdentityHarness h, Guid dataset, IReadOnlyList<Row> rows)
     {
-        var changes = rows.Select(row => JsonSerializer.Serialize(new { entity = row.Entity, row.Id, schemaVersion = 1, row.Hlc, deviceId = h.Device, row.DeletedAt }, JsonSerializerOptions.Web)[..^1] + ",\"payload\":" + row.Raw + "}");
+        var changes = rows.Select(row => JsonSerializer.Serialize(new { entity = row.Entity, row.Id, schemaVersion = row.SchemaVersion, row.Hlc, deviceId = h.Device, row.DeletedAt }, JsonSerializerOptions.Web)[..^1] + ",\"payload\":" + row.Raw + "}");
         return "{\"datasetId\":\"" + dataset + "\",\"changes\":[" + string.Join(',', changes) + "]}";
     }
     public static async Task<HttpResponseMessage> Push(HttpClient client, IdentityHarness h, Guid dataset, IReadOnlyList<Row> rows)

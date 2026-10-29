@@ -1,0 +1,15 @@
+{
+  "weighIn": {
+    "createdAtMs": 0,
+    "origin": "synthetic",
+    "editedByUser": false,
+    "measuredAtUtc": 1792299600000,
+    "localDate": "2026-10-18",
+    "kg": 81.65,
+    "note": null,
+    "tzOffsetMin": 180,
+    "inputValue": 180.0,
+    "inputUnit": "lb",
+    "preferredForDay": false
+  }
+}

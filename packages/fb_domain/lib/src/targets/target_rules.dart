@@ -101,6 +101,9 @@ final class TargetWireRules {
   /// Longest phase name on the wire.
   static const int maxNameLength = 120;
 
+  /// Largest macro percent on the wire (`…IsPercent` true).
+  static const double maxPercent = 100;
+
   /// Violations of a `profile` map.
   Set<TargetRuleViolation> profile(Map<String, Object?> wire) {
     final r = _Reader(wire)
@@ -184,7 +187,7 @@ final class TargetWireRules {
       final isPercent = r.boolean('${macro}IsPercent', nullable: true);
       if ((value == null) != (isPercent == null)) {
         r.violations.add(TargetRuleViolation.macroPair);
-      } else if (isPercent == true && value! > 100) {
+      } else if (isPercent == true && value! > maxPercent) {
         r.violations.add(TargetRuleViolation.number);
       }
     }

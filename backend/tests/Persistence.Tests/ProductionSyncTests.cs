@@ -6,6 +6,7 @@ using FitnessBuddy.BuildingBlocks.Ids;
 using FitnessBuddy.Modules.Identity.Contracts;
 using FitnessBuddy.Modules.UserData.Domain;
 using FitnessBuddy.Modules.UserData.Infrastructure;
+using FitnessBuddy.TestData;
 
 namespace FitnessBuddy.Persistence.Tests;
 
@@ -17,7 +18,7 @@ public sealed class ProductionSyncTests(PostgresFixture database)
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
     private static JsonElement Fixtures => JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "entity-payloads.json"))).RootElement;
     private static SyncVersion Row(IdentityHarness h, string entity = "weighIn", Guid? id = null, int counter = 0) =>
-        new(entity, id ?? Guid.NewGuid(), 1, $"{h.Clock.GetUtcNow().ToUnixTimeMilliseconds():D13}-{counter:D5}-{h.Device}", h.Device, null, Fixtures.GetProperty(entity).Clone());
+        new(entity, id ?? SyncTestIds.For(entity), 1, $"{h.Clock.GetUtcNow().ToUnixTimeMilliseconds():D13}-{counter:D5}-{h.Device}", h.Device, null, Fixtures.GetProperty(entity).Clone());
     private static async Task<IdentitySession> Registered(IdentityHarness h) =>
         (await h.Store.GoogleSignInAsync(new("valid-" + Guid.NewGuid(), "synthetic@example.invalid"), Guid.NewGuid(), h.Material(), Ct))!;
     private PostgresSyncStore Store(IdentityHarness h) => new(database.App, h.Store, h.Clock, new UuidV7IdGenerator(h.Clock));

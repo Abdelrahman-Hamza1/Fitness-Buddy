@@ -160,9 +160,13 @@ public sealed class PersonalFoodPayloadTests
     [Fact, Trait("Rule", "05.5-payload-validation")]
     public void All_current_entity_fixtures_still_pass_schema_admission()
     {
-        using var fixtures = Read("entity-payloads.json");
-        foreach (var item in fixtures.RootElement.EnumerateObject())
-        { Assert.Null(SyncPayloads.InvalidReason(new(item.Name, Guid.NewGuid(), 1, "unused", Guid.NewGuid(), null, item.Value))); }
+        // One file per schema version (contracts/testdata/README.md), each pushed at its own version.
+        foreach (var (file, version) in new[] { ("entity-payloads.json", 1), ("entity-payloads-v2.json", 2) })
+        {
+            using var fixtures = Read(file);
+            foreach (var item in fixtures.RootElement.EnumerateObject())
+            { Assert.Null(SyncPayloads.InvalidReason(new(item.Name, SyncTestIds.For(item.Name), version, "unused", Guid.NewGuid(), null, item.Value))); }
+        }
     }
 
     private static IEnumerable<string> Strings(JsonElement value) => value.EnumerateArray().Select(v => v.GetString()!);

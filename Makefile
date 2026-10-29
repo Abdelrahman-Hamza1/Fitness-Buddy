@@ -535,3 +535,7 @@ gen-personal-food-vectors: ## Regenerate the shared synthetic personalFood valid
 .PHONY: gen-chat-proposal-vectors
 gen-chat-proposal-vectors: ## Regenerate the shared synthetic chatMessage/proposal validation corpus (B18)
 	cd '$(REPO_ROOT)/packages/fb_domain' && '$(DART)' run tool/generate_chat_proposal_vectors.dart
+
+.PHONY: gen-body-targets-vectors
+gen-body-targets-vectors: ## Regenerate the shared synthetic body & targets validation corpus (B19)
+	cd '$(REPO_ROOT)/packages/fb_domain' && '$(DART)' run tool/generate_body_targets_vectors.dart

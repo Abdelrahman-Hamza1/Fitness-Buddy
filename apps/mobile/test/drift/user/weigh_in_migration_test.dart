@@ -39,13 +39,9 @@ const _tables = {
   'targetSettings': 'target_settings',
 };
 
-/// The local columns the `weighIn` v1 wire doesn't carry yet (A14 D7, PA4).
-const _localOnly = {
-  'tz_offset_min',
-  'input_value',
-  'input_unit',
-  'preferred_for_day',
-};
+/// The `weigh_ins` content columns outside the latest `weighIn` wire
+/// version: none since `weighIn` v2 (B19 D5/D8; A14 D7, PA4).
+const _localOnly = <String>{};
 
 String _snake(String s) =>
     s.replaceAllMapped(RegExp('[A-Z]'), (m) => '_${m[0]!.toLowerCase()}');
@@ -57,16 +53,23 @@ final Map<String, dynamic> _fixtures = _json(
   '../../contracts/testdata/sync/entity-payloads.json',
 );
 
-/// [entity]'s fixture payload as SQL column values (snake_case, booleans as
-/// 0/1), with sync metadata.
-Map<String, Object?> _row(String entity) => {
+/// The latest `weighIn` fixture (v2, B19 D7).
+final Map<String, dynamic> _fixturesV2 = _json(
+  '../../contracts/testdata/sync/entity-payloads-v2.json',
+);
+
+/// [entity]'s fixture payload (from [fixtures], the schema-1 file by
+/// default) as SQL column values (snake_case, booleans as 0/1), with sync
+/// metadata.
+Map<String, Object?> _row(String entity, [Map<String, dynamic>? fixtures]) => {
   'id': _id,
   'created_at': 0,
   'updated_hlc': _hlc,
   'version': 1,
   'device_id': _id,
   'deleted_at': null,
-  for (final f in (_fixtures[entity] as Map<String, dynamic>).entries)
+  for (final f
+      in ((fixtures ?? _fixtures)[entity] as Map<String, dynamic>).entries)
     if (f.key != 'createdAtMs')
       _snake(f.key): f.value is bool ? (f.value == true ? 1 : 0) : f.value,
 };
@@ -168,8 +171,8 @@ void main() {
     );
   });
 
-  test('the weighIn wire fixture fields map to weigh_ins columns by '
-      'snake_case; the extra local columns are the documented four', () async {
+  test('the weighIn v1 fixture maps to weigh_ins columns and the v2 wire '
+      'covers every local column', () async {
     final db = memoryDatabase();
     final columns = {
       for (final r
@@ -183,19 +186,26 @@ void main() {
                 as Map<String, dynamic>)['weighIn']
             as Map<String, dynamic>;
     final latest = versions.keys.map(int.parse).reduce((a, b) => a > b ? a : b);
-    final wire = {
-      for (final field
-          in ((versions['$latest'] as Map<String, dynamic>)['properties']
-                  as Map<String, dynamic>)
-              .keys)
+    Set<String> columnsOf(Iterable<String> fields) => {
+      for (final field in fields)
         if (field == 'createdAtMs') 'created_at' else _snake(field),
     };
+    final wire = columnsOf(
+      ((versions['$latest'] as Map<String, dynamic>)['properties']
+              as Map<String, dynamic>)
+          .keys,
+    );
     expect(
-      (_fixtures['weighIn'] as Map<String, dynamic>).keys
-          .map((f) => f == 'createdAtMs' ? 'created_at' : _snake(f))
-          .toSet(),
+      columnsOf((_fixturesV2['weighIn'] as Map<String, dynamic>).keys),
       wire,
-      reason: 'the fixture covers the latest weighIn wire version',
+      reason: 'the v2 fixture covers the latest weighIn wire version',
+    );
+    expect(
+      columns.containsAll(
+        columnsOf((_fixtures['weighIn'] as Map<String, dynamic>).keys),
+      ),
+      isTrue,
+      reason: 'every weighIn v1 fixture field has a weigh_ins column',
     );
     expect(
       columns.containsAll(wire),
@@ -206,10 +216,9 @@ void main() {
       columns.difference(wire).difference(syncColumnNames.toSet()),
       _localOnly,
       reason:
-          'The weigh_ins columns outside the weighIn v$latest wire must be '
-          'exactly the documented four (A14 D7/PA4). weighIn v2 lands in B19 '
-          '(body & targets sync): add them to weighIn v2 with the v1→v2 '
-          'upgrader there, then update _localOnly here.',
+          'Every weigh_ins content column must be on the latest weighIn wire '
+          '(v$latest). A new local column needs a new weighIn wire version '
+          '(with its upgrader) or a documented entry in _localOnly.',
     );
 
     // The fixture payload stores as it is, with the local columns' values.
@@ -228,5 +237,21 @@ void main() {
       (1.0, '2026-10-18', null),
     );
     expect(stored.preferredForDay, isFalse);
+
+    // The v2 fixture stores in the columns as it is, with nothing added.
+    final v2 = {
+      ..._row('weighIn', _fixturesV2),
+      'id': '${_id.substring(0, 35)}c',
+    };
+    await runAuthorizedWrite(
+      () => db.customStatement(_insert('weigh_ins', v2), v2.values.toList()),
+    );
+    final storedV2 = await db
+        .customSelect(
+          'SELECT * FROM weigh_ins WHERE id = ?',
+          variables: [Variable(v2['id'])],
+        )
+        .getSingle();
+    expect(storedV2.data, v2);
   });
 }

@@ -7,8 +7,11 @@
     <Using Include="Xunit" />
     <Compile Include="../UserData.Tests/PersonalFoodCases.cs" Link="PersonalFoodCases.cs" />
     <Compile Include="../UserData.Tests/ChatProposalCases.cs" Link="ChatProposalCases.cs" />
+    <Compile Include="../UserData.Tests/BodyTargetsCases.cs" Link="BodyTargetsCases.cs" />
+    <Compile Include="../UserData.Tests/SyncTestIds.cs" Link="SyncTestIds.cs" />
     <None Include="../../../contracts/testdata/sync/personal-food-validation-vectors.json" Link="personal-food-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../../contracts/testdata/sync/chat-proposal-validation-vectors.json" Link="chat-proposal-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../../contracts/testdata/sync/body-targets-validation-vectors.json" Link="body-targets-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../../contracts/openapi/sync-entities.json" Link="sync-entities.json" CopyToOutputDirectory="PreserveNewest" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="Testcontainers.PostgreSql" />
@@ -16,6 +19,7 @@
     <ProjectReference Include="../../src/Host/FitnessBuddy.Host.csproj" />
     <None Include="../../../tools/buddy_eval/fixtures/en-eggs.json" Link="buddy-envelope.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../../contracts/testdata/sync/entity-payloads.json" Link="entity-payloads.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../../contracts/testdata/sync/entity-payloads-v2.json" Link="entity-payloads-v2.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../../contracts/testdata/sync/hlc_cases.yaml" Link="hlc_cases.yaml" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../../infra/compose/postgres/001-roles.sql" Link="bootstrap.sql" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

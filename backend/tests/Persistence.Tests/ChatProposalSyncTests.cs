@@ -4,12 +4,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using FitnessBuddy.BuildingBlocks.Ids;
 using FitnessBuddy.BuildingBlocks.Persistence;
 using FitnessBuddy.Host.Http;
 using FitnessBuddy.Modules.Identity.Application;
-using FitnessBuddy.Modules.UserData.Infrastructure;
 using FitnessBuddy.TestData;
+using static FitnessBuddy.Persistence.Tests.SyncHttpSupport;
 using Row = FitnessBuddy.Persistence.Tests.PersonalFoodHttp.Row;
 
 namespace FitnessBuddy.Persistence.Tests;
@@ -34,7 +33,7 @@ public sealed class ChatProposalSyncTests(PostgresFixture database)
         var dataset = await PersonalFoodHttp.Dataset(client);
         var invalidIds = new List<Guid>(); var accepted = new List<Row>(); var batches = 0;
         // Raw JSON keeps duplicate keys and lone-surrogate escapes through HTTP binding.
-        foreach (var group in ByteBoundedCases(ChatProposalCases.All()))
+        foreach (var group in ByteBoundedCases(ChatProposalCases.All(), c => c.Raw))
         {
             batches++;
             var entries = group.Select(c => (Case: c, Row: PersonalFoodHttp.NewRow(h, c.Raw, c.Deleted ? h.Clock.GetUtcNow() : null, c.Entity))).ToArray();
@@ -251,12 +250,12 @@ public sealed class ChatProposalSyncTests(PostgresFixture database)
         using (var push = await PersonalFoodHttp.Push(client, h, dataset, [first, tombstone]))
         { Assert.Equal(["accepted", "accepted"], (await PersonalFoodHttp.Json(push)).GetProperty("results").EnumerateArray().Select(r => r.GetProperty("status").GetString())); }
         // Compaction is by acceptance time, not by the client's deletedAt.
-        await Cleanup(h, user.UserId);
+        await Cleanup(database, h, user.UserId);
         var live = Assert.Single((await PersonalFoodHttp.Page(client, dataset)).GetProperty("changes").EnumerateArray());
         Assert.False(live.GetProperty("compacted").GetBoolean()); AssertSame(tombstone, live);
-        Assert.Equal(1L, await HistoryCount(user.UserId, entity, first.Id));
-        await AgeAndCleanup(h, user.UserId, entity, first.Id, expireHistory: true);
-        Assert.Equal(0L, await HistoryCount(user.UserId, entity, first.Id));
+        Assert.Equal(1L, await HistoryCount(database, user.UserId, entity, first.Id));
+        await AgeAndCleanup(database, h, user.UserId, entity, first.Id, expireHistory: true);
+        Assert.Equal(0L, await HistoryCount(database, user.UserId, entity, first.Id));
         var fence = Assert.Single((await PersonalFoodHttp.Page(client, dataset)).GetProperty("changes").EnumerateArray());
         Assert.True(fence.GetProperty("compacted").GetBoolean()); Assert.Empty(fence.GetProperty("payload").EnumerateObject());
         Assert.Equal(tombstone.Hlc, fence.GetProperty("hlc").GetString());
@@ -283,7 +282,7 @@ public sealed class ChatProposalSyncTests(PostgresFixture database)
         Assert.Empty((await PersonalFoodHttp.Page(cb, dataset, row.Id, entity)).GetProperty("changes").EnumerateArray());
         Assert.Single((await PersonalFoodHttp.Page(ca, dataset, row.Id, entity)).GetProperty("changes").EnumerateArray());
         using (var tombstone = await PersonalFoodHttp.Push(ca, h, dataset, [row with { Hlc = PersonalFoodHttp.Hlc(h, 2), DeletedAt = h.Clock.GetUtcNow() }])) { Assert.Equal(HttpStatusCode.OK, tombstone.StatusCode); }
-        await AgeAndCleanup(h, a.UserId, entity, row.Id, expireHistory: false);
+        await AgeAndCleanup(database, h, a.UserId, entity, row.Id, expireHistory: false);
         Assert.True(Assert.Single((await PersonalFoodHttp.Page(ca, dataset)).GetProperty("changes").EnumerateArray()).GetProperty("compacted").GetBoolean());
         Assert.Empty((await PersonalFoodHttp.Page(cb, dataset)).GetProperty("changes").EnumerateArray());
         Assert.Empty((await PersonalFoodHttp.Page(cb, dataset, row.Id, entity)).GetProperty("changes").EnumerateArray());
@@ -379,7 +378,7 @@ public sealed class ChatProposalSyncTests(PostgresFixture database)
             using (var push = await PersonalFoodHttp.Push(otherClient, h, dataset, [live])) { Assert.Equal(HttpStatusCode.OK, push.StatusCode); }
             kept.Add(live); fences.Add(fence);
         }
-        foreach (var fence in fences) { await AgeAndCleanup(h, user.UserId, fence.Entity, fence.Id, expireHistory: false); }
+        foreach (var fence in fences) { await AgeAndCleanup(database, h, user.UserId, fence.Entity, fence.Id, expireHistory: false); }
         var before = (await PersonalFoodHttp.Page(client, dataset)).GetProperty("changes").EnumerateArray().ToArray();
         Assert.Equal(4, before.Length); Assert.Equal(2, before.Count(r => r.GetProperty("compacted").GetBoolean()));
         foreach (var live in kept) { Assert.NotEmpty((await PersonalFoodHttp.Page(client, dataset, live.Id, live.Entity)).GetProperty("changes").EnumerateArray()); }
@@ -429,65 +428,5 @@ public sealed class ChatProposalSyncTests(PostgresFixture database)
         Assert.True(JsonElement.DeepEquals(expected.RootElement, payload), row.Id.ToString());
         foreach (var field in ExactStringFields.Where(f => expected.RootElement.TryGetProperty(f, out var v) && v.ValueKind == JsonValueKind.String))
         { Assert.Equal(expected.RootElement.GetProperty(field).GetString(), payload.GetProperty(field).GetString()); }
-    }
-
-    private static async Task<JsonElement[]> PullAll(HttpClient client, Guid dataset)
-    {
-        var rows = new List<JsonElement>(); var cursor = "0";
-        while (true)
-        {
-            using var response = await client.GetAsync($"/v1/sync/pull?cursor={cursor}&limit=500&datasetId={dataset}", Ct);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var page = await PersonalFoodHttp.Json(response);
-            var changes = page.GetProperty("changes").EnumerateArray().ToArray();
-            rows.AddRange(changes); cursor = page.GetProperty("nextCursor").GetString()!;
-            // Stop on an empty page, as the app must (never on changes < limit).
-            if (changes.Length == 0) { return [.. rows]; }
-        }
-    }
-
-    private static IEnumerable<IReadOnlyList<ChatProposalCase>> ByteBoundedCases(IReadOnlyList<ChatProposalCase> cases)
-    {
-        var batch = new List<ChatProposalCase>(); var bytes = 0;
-        foreach (var item in cases)
-        {
-            var size = Encoding.UTF8.GetByteCount(item.Raw) + 512;
-            if (batch.Count > 0 && (bytes + size > 128 * 1024 || batch.Count == 100)) { yield return batch.ToArray(); batch.Clear(); bytes = 0; }
-            batch.Add(item); bytes += size;
-        }
-        if (batch.Count > 0) { yield return batch.ToArray(); }
-    }
-
-    private async Task<long> HistoryCount(Guid user, string entity, Guid id)
-    {
-        await using var owner = DatabaseConfiguration.CreateSource(database.MigratorConnection);
-        await using var query = owner.CreateCommand("SELECT count(*) FROM userdata.row_history WHERE user_id=$1 AND entity=$2 AND id=$3");
-        query.Parameters.AddWithValue(user); query.Parameters.AddWithValue(entity); query.Parameters.AddWithValue(id);
-        return (long)(await query.ExecuteScalarAsync(Ct))!;
-    }
-
-    private async Task AgeAndCleanup(IdentityHarness h, Guid user, string entity, Guid id, bool expireHistory)
-    {
-        // Synthetic aging is operator-only (migrator connection); production grants stay unchanged.
-        await using (var owner = DatabaseConfiguration.CreateSource(database.MigratorConnection))
-        {
-            await using var age = owner.CreateCommand("UPDATE userdata.documents SET accepted_at=$4 WHERE user_id=$1 AND entity=$2 AND id=$3");
-            age.Parameters.AddWithValue(user); age.Parameters.AddWithValue(entity); age.Parameters.AddWithValue(id); age.Parameters.AddWithValue(h.Clock.GetUtcNow().AddDays(-31));
-            await age.ExecuteNonQueryAsync(Ct);
-            if (expireHistory)
-            {
-                await using var history = owner.CreateCommand("UPDATE userdata.row_history SET replaced_at=$4 WHERE user_id=$1 AND entity=$2 AND id=$3");
-                history.Parameters.AddWithValue(user); history.Parameters.AddWithValue(entity); history.Parameters.AddWithValue(id); history.Parameters.AddWithValue(h.Clock.GetUtcNow().AddDays(-31));
-                await history.ExecuteNonQueryAsync(Ct);
-            }
-        }
-        await Cleanup(h, user);
-    }
-
-    private async Task Cleanup(IdentityHarness h, Guid user)
-    {
-        await using var session = await database.SessionAsync(user);
-        await new SyncRetentionJob(h.Clock, new UuidV7IdGenerator(h.Clock)).HandleAsync(new(Guid.NewGuid(), "userdata.cleanup", "{}", user, 1), session, Ct);
-        await session.CommitAsync(Ct);
     }
 }

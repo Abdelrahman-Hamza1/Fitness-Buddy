@@ -276,6 +276,81 @@ public sealed class IdentityPrivacyTests(PostgresFixture postgres)
         await capture.AssertAbsentAsync(canaries, auditLines, postgres);
     }
 
+    // B19 (S1): a phase name, an Arabic weigh-in note and distinctive height/weight/kcal/macro numbers reach
+    // owner pull/history exactly, and no error response, log, scope, span, metric, Sentry event, audit row or
+    // Postgres log, across the entity-dependent legs: accepted, wire-invalid, schema-invalid and guest 403.
+    // (400/413/500 don't depend on the entity; the B17/B18 facts above cover them.)
+    [Fact, Trait("Rule", "09.4-no-user-content"), Trait("Req", "AC-010"), Trait("Req", "TG-040"), Trait("Req", "WB-003")]
+    public async Task B19_body_and_targets_values_never_reach_errors_logs_or_telemetry()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await using var h = new IdentityHarness(postgres); await h.InitializeAsync();
+        using var capture = new SinkCapture();
+        await using var factory = capture.Configure(new IdentityApiTests.IdentityApi(postgres, h), _ => { });
+        using var client = await PersonalFoodHttp.Client(factory, h, await PersonalFoodHttp.Register(h));
+        var dataset = await PersonalFoodHttp.Dataset(client);
+        string[] canaries = ["CANARY-B19-PHASE-NAME", "ملاحظة-وزن-سرية-كناري", "173.4567891", "81.2345671", "179.0987651", "2345.678901", "71.8765431", "141.2345671"];
+        var profile = B18Encode(BodyTargetsCases.Raw("profile-base"), new() { ["heightCm"] = 173.4567891m });
+        var phase = B18Encode(BodyTargetsCases.Raw("goalPhase-base-targetDate"), new() { ["name"] = canaries[0], ["targetKg"] = 71.8765431m });
+        var settings = B18Encode(BodyTargetsCases.Raw("targetSettings-base"), new() { ["baseKcal"] = 2345.678901m, ["proteinValue"] = 141.2345671m });
+        var weighIn = B18Encode(BodyTargetsCases.Raw("weighIn2-base"), new() { ["note"] = canaries[1], ["kg"] = 81.2345671m, ["inputValue"] = 179.0987651m });
+        PersonalFoodHttp.Row[] rows =
+        [
+            PersonalFoodHttp.NewRow(h, profile, entity: "profile", id: SyncTestIds.ProfileRowId),
+            PersonalFoodHttp.NewRow(h, phase, entity: "goalPhase", id: Guid.CreateVersion7()),
+            PersonalFoodHttp.NewRow(h, settings, entity: "targetSettings", id: Guid.CreateVersion7()),
+            PersonalFoodHttp.NewRow(h, weighIn, entity: "weighIn", id: Guid.NewGuid(), schemaVersion: 2),
+        ];
+        foreach (var canary in canaries) { Assert.Contains(canary, string.Concat(rows.Select(r => r.Raw)), StringComparison.Ordinal); }
+        using (var accepted = await PersonalFoodHttp.Push(client, h, dataset, rows))
+        {
+            var ack = await accepted.Content.ReadAsStringAsync(ct);
+            Assert.Equal(["accepted", "accepted", "accepted", "accepted"], JsonDocument.Parse(ack).RootElement.GetProperty("results").EnumerateArray().Select(r => r.GetProperty("status").GetString()));
+            B18AssertNoCanary(canaries, ack);
+        }
+        // Wire-invalid (Acknowledgement, Expression fields, Row IDs) and schema-invalid (extra member, unknown inputUnit), each carrying the canaries.
+        var invalid = new[]
+        {
+            rows[2] with { Id = Guid.CreateVersion7(), Raw = B18Encode(settings, new() { ["acknowledged"] = true }) },
+            rows[1] with { Id = Guid.CreateVersion7(), Raw = B18Encode(phase, new() { ["kgPerWeek"] = 0.5m }) },
+            rows[0] with { Hlc = PersonalFoodHttp.Hlc(h, 5), Raw = B18Encode(profile, new() { ["unexpected"] = canaries[0] }) },
+            rows[3] with { Id = Guid.NewGuid(), Raw = B18Encode(weighIn, new() { ["inputUnit"] = "st" }) },
+            // Validator-invalid profile (a non-natural row ID) carrying the height canary.
+            rows[0] with { Id = Guid.CreateVersion7(), Hlc = PersonalFoodHttp.Hlc(h, 6) },
+        };
+        using (var rejected = await PersonalFoodHttp.Push(client, h, dataset, invalid))
+        {
+            Assert.Equal(HttpStatusCode.OK, rejected.StatusCode);
+            var ack = await rejected.Content.ReadAsStringAsync(ct);
+            Assert.Equal(["invalidPayload", "invalidPayload", "invalidPayload", "invalidPayload", "invalidPayload"], JsonDocument.Parse(ack).RootElement.GetProperty("results").EnumerateArray().Select(r => r.GetProperty("reason").GetString()));
+            B18AssertNoCanary(canaries, ack);
+        }
+        // Owner pull and item history intentionally return the stored content exactly.
+        using (var update = await PersonalFoodHttp.Push(client, h, dataset, [.. rows.Select(r => r with { Hlc = PersonalFoodHttp.Hlc(h, 1) })]))
+        { Assert.Equal(HttpStatusCode.OK, update.StatusCode); }
+        var pulled = (await PersonalFoodHttp.Page(client, dataset)).GetProperty("changes").EnumerateArray().ToArray();
+        Assert.Equal(rows.Length, pulled.Length);
+        foreach (var row in rows)
+        {
+            using var expected = JsonDocument.Parse(row.Raw);
+            Assert.True(JsonElement.DeepEquals(expected.RootElement, pulled.Single(c => c.GetProperty("id").GetGuid() == row.Id).GetProperty("payload")));
+            Assert.True(JsonElement.DeepEquals(expected.RootElement, Assert.Single((await PersonalFoodHttp.Page(client, dataset, row.Id, row.Entity)).GetProperty("changes").EnumerateArray()).GetProperty("payload")));
+        }
+        Assert.Equal(canaries[1], pulled.Single(c => c.GetProperty("id").GetGuid() == rows[3].Id).GetProperty("payload").GetProperty("note").GetString());
+        using (var guest = await PersonalFoodHttp.Client(factory, h, await h.GuestAsync()))
+        using (var denied = await PersonalFoodHttp.Push(guest, h, dataset, rows))
+        {
+            Assert.Equal(HttpStatusCode.Forbidden, denied.StatusCode);
+            B18AssertNoCanary(canaries, await denied.Content.ReadAsStringAsync(ct));
+        }
+        using (var erased = await client.DeleteAsync("/v1/me", ct)) { Assert.Equal(HttpStatusCode.NoContent, erased.StatusCode); }
+        await factory.Services.GetRequiredService<IHub>().FlushAsync(TimeSpan.FromSeconds(5));
+        capture.Meter.RecordObservableInstruments();
+        Assert.Contains("operation=push", capture.Metrics);
+        Assert.NotEmpty(capture.Logs.Lines); Assert.NotEmpty(capture.Activities);
+        await capture.AssertAbsentAsync(canaries, await SinkCapture.AuditAsync(postgres), postgres);
+    }
+
     // B09a WP6: EN/AR/Arabizi canaries in the message, entry/saved-meal/batch/personal-food names, aliases, memory values,
     // active-card lines, model mentions/subjects/names and a stated figure never reach logs, scopes, spans, metrics, Sentry,
     // audit rows or Postgres logs, across 200 (incl. the coded repair), replay, 400, 409, an injected 500, 503 and 429.

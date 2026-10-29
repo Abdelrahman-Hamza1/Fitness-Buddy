@@ -217,7 +217,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [B16](B16-security-restore-drill.md) | Security review & restore drill | B14, **A42** | M | S49 | **R1** | ⬜ |
 | [B17](B17-personal-food-sync.md) | personalFood sync entity (server) | B05, **A09a** (contract) | M | new (A09 split) |  | ✅ |
 | [B18](B18-chat-proposal-sync.md) | chatMessage & proposal sync entities (server) | B05, **A21** (WP4 codec shape and size budget) | M | new (A21 plan review) |  | ✅ |
-| [B19](B19-body-targets-sync.md) | Body & targets sync entities (server) | B05, B18, **A13a** (contract), **A14** | M | new (A13 plan review) |  | ⬜ |
+| [B19](B19-body-targets-sync.md) | Body & targets sync entities (server) | B05, B18, **A13a** (contract), **A14** | M | new (A13 plan review) |  | ✅ |
 
 ```mermaid
 flowchart LR

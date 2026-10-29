@@ -8,6 +8,9 @@
     <Content Include="../../../contracts/testdata/sync/chat-proposal-validation-vectors.json" Link="chat-proposal-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../contracts/openapi/sync-entities.json" Link="sync-entities.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../contracts/testdata/sync/entity-payloads.json" Link="entity-payloads.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../contracts/testdata/sync/entity-payloads-v2.json" Link="entity-payloads-v2.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../contracts/testdata/sync/body-targets-validation-vectors.json" Link="body-targets-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../contracts/README.md" Link="contracts-README.md" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../technical-planning/steps/A09-personal-foods-quick-add.md" Link="A09-personal-foods-quick-add.md" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

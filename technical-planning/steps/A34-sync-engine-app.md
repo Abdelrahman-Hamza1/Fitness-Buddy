@@ -15,7 +15,7 @@ _Old ID: S27 (renumbered by TD-063, 2026-10-16)._
 - **Dataset id (TD-066):** when the server's dataset id changes (laptop reset, move to production), reset the cursor and push every local row again; the phone is the source of truth.
 - **Scheduling:** debounced after change sets, on app foreground, on reconnect, on pull-to-refresh. **Never on the startup critical path.**
 - **First sync** on a new device (AC-011): paged pull from 0 with progress, the app usable meanwhile.
-- **Document upgraders** in `fb_domain`: older `schemaVersion` → current on pull.
+- **Document upgraders** in `fb_domain`: older `schemaVersion` → current on pull. First one: `weighIn` v1 → v2 (A14 D7, B19 D6); upload `weighIn` v2 only, after B19 is deployed.
 - **What syncs:** every synced table from earlier steps (diary, foods, saved meals, slots, day marks, profile, goals, targets, weigh-ins, measurements, settings) and later ones as they're added (each step adds its entities to the registry). Images never sync.
 - **Sync indicator** (AC-013, UX-053): small, calm, only when something hasn't synced. A detail sheet with the last sync time.
 - **Earlier versions** (G7): item detail → "Earlier versions" (online) → restore one as a direct action with undo.
@@ -58,6 +58,12 @@ _Written in Phase B._
 - Pull until a page comes back **empty**; never stop because `changes` < `limit`.
 - Pulled rows can be about 2× larger on the wire than pushed ones: the server `\u`-escapes non-ASCII, so the largest `proposal` row is about 393 KB in a pull page. Use small pull pages (`limit`) when rows are large; 500 such rows would be ~200 MB.
 - Tombstones carry a scrubbed valid payload (`chatMessage`: `text: ""`, `budgetJson: null`; `proposal`: keep `codecVersion`, `draftJson: "{}"`, `interpretationJson: null`), as A23's clear history writes them (B18 handoff).
+
+**B19 handoff (2026-10-29, B19 WP1 §8):** `profile`, `goalPhase`, `targetSettings` and `weighIn` upload only after the B19 merge (server-first, TD-080).
+- `weighIn`: pull reads v1 through the v1→v2 upgrader (A14 D7: `inputValue` = `kg`, `inputUnit` `kg`, `preferredForDay` false, `tzOffsetMin` the offset implied by `localDate` and `measuredAtUtc`, clamped to −720…840); upload v2 only.
+- Read whole `num` as `int` for integer fields (`birthYear`, `revision`, `tzOffsetMin`, `createdAtMs`): the server admits `1990.0`, raw `TargetRules.wire` rejects it (`contracts/README.md` A34 decoding note).
+- Tombstones carry the full payload under the live rules. A scrubbed targets tombstone must stay wire-valid (no zeroed `heightCm`/`baseKcal`/`basisWeightKg`, expression fields intact); a scrubbed `weighIn` v2 tombstone sends `kg` 0, `inputValue` 0, `note` null and keeps the rest (B19 D11, backlog #136).
+- The corpus lists `serverRejectsAppTolerates` and `serverAcceptsAppSkips` (in `contracts/testdata/sync/body-targets-validation-vectors.json`) name the rows the server rejects permanently or the app skips on read: never retry them endlessly (#111).
 
 ## Outcome
 _Written in Phase E._

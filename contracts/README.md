@@ -119,7 +119,7 @@ Adding a `NutrientKey`, serving unit or `FoodState` code is a contract change: t
 
 ## Targets semantic rules (profile, goalPhase, targetSettings)
 
-`profile`, `goalPhase` and `targetSettings` v1 (A13a) carry their types, closed vocabularies, nullability, technical bounds (numbers 0 … 1e6, `kgPerWeek` and `monthKg` −1e6 … 1e6, `revision` 1 … 2^53−1, `birthYear` 1 … 9999) and string limits (`name` ≤ 120) in `openapi/sync-entities.json`. Values are canonical (cm, kg); `heightInputUnit` (`cm`, `ft_in`) and `weightInputUnit` (`kg`, `lb`) keep how the user typed them (TD-017). The rules below are the **wire rules** the exporter can't express; the app applies them on every write (`TargetRules.wire` in `packages/fb_domain`) and B19 adds the same server validator before A34 uploads (TD-080). Plausibility ranges (age, height, weight, rates, manual kcal, macros, shift levels) are app-only and are **not** wire rules.
+`profile`, `goalPhase` and `targetSettings` v1 (A13a) carry their types, closed vocabularies, nullability, technical bounds (numbers 0 … 1e6, `kgPerWeek` and `monthKg` −1e6 … 1e6, `revision` 1 … 2^53−1, `birthYear` 1 … 9999) and string limits (`name` ≤ 120) in `openapi/sync-entities.json`. Values are canonical (cm, kg); `heightInputUnit` (`cm`, `ft_in`) and `weightInputUnit` (`kg`, `lb`) keep how the user typed them (TD-017). The rules below are the **wire rules** the exporter can't express; the app applies them on every write (`TargetRules.wire` in `packages/fb_domain`) and the server admits exactly them, nothing more, after the schema check (B19, TD-080). Invalid rows get a bare `invalidPayload`. Entity semantic validators dispatch by entity and **fail closed**: a schema version the validator doesn't know is rejected, so a future `targetSettings` v2 can't skip these rules. Plausibility ranges (age, height, weight, rates, manual kcal, macros, shift levels) are app-only and are **not** wire rules.
 
 - **Positive numbers:** `heightCm`, `targetKg`, `baseKcal` and `basisWeightKg` are greater than 0 (the schema allows 0; the exporter has no `exclusiveMinimum`).
 - **Expression fields:** each `expressionKind` has exactly its own non-null fields and the others null: `targetDate` → `targetKg` + `targetDate`; `targetRate` → `targetKg` + `kgPerWeek` (a positive speed; the target sets the direction); `weekly` → `kgPerWeek` (signed, negative for loss); `monthly` → `monthKg` (signed) + `month` (the app writes the month's first day; that is a convention, not admission-checked: any date names its month).
@@ -130,6 +130,19 @@ Adding a `NutrientKey`, serving unit or `FoodState` code is a contract change: t
 - **Row IDs:** `goalPhase` and `targetSettings` rows have UUIDv7 ids; the one `profile` row has the natural id `naturalId('profile', 'self')` (UUIDv5, TD-070).
 - **Not wire rules:** shift weights outside the app's levels are kept and read as 1.0; timeline overlaps between rows (two phases, two versions on one date) are valid on the wire and resolved by the app's read projection (TD-089).
 
+**Tombstones** carry the full payload and get the same rules (the server checks no scrubbing). A scrubbed targets tombstone must stay wire-valid: it can't zero `heightCm`, `baseKcal` or `basisWeightKg`, or break the expression fields. Whether and when to scrub is A34's.
+
 **A34 decoding note:** JSON may carry an integer field as a float (`1990.0` for `birthYear`, `2.0` for `revision`); the app converts such a whole `num` to `int` before decoding, otherwise `TargetRules.wire` rejects the row as a type error.
 
 Fixtures: one per entity in `testdata/sync/entity-payloads.json` (the `goalPhase` one is a negative monthly goal) and more valid cases in `testdata/sync/targets-payload-variants.json` (negative weekly, maintain = weekly 0, imperial units, manual acknowledged fixed, seven shifts). The app's `targets_contract_test.dart` checks every case against this schema, `TargetRules.wire` and the tables.
+
+**Corpus:** the shared vectors (`testdata/sync/body-targets-validation-vectors.json`, B19) are generated from `TargetRules.wire` and the fb_domain records. They pin the server validator, the Dart wire rules and the app decoders and column writers to this list, rule by rule, including the cases where the sides differ on purpose (format: `testdata/README.md`).
+
+## weighIn versions
+
+`weighIn` has two schema versions, each admitted only under its own `schemaVersion` (a v1 payload sent as 2, or a v2 payload sent as 1, is `invalidPayload`; an unknown version is `unsupported`):
+
+- **v1** (A01): `measuredAtUtc`, `localDate`, `kg`, `note` plus the metadata. Unchanged and still accepted.
+- **v2** (B19, A14 D7): v1's fields, in the same order, plus `tzOffsetMin` (integer −720 … 840, the zone offset at the measurement), `inputValue` (number 0 … 1e12, the value as typed), `inputUnit` (`kg` or `lb`) and `preferredForDay` (boolean, the user's trend pick for the day, WB-003). It is exactly the app's `weigh_ins` row. Everything is in the schema; there is no weighIn-specific validator. Cross-field consistency (`kg` = `inputValue` × unit factor, `localDate` from `measuredAtUtc` + `tzOffsetMin`) is app-local (A14 D6).
+
+The server stores, pulls and versions each document under its own `schemaVersion` and never upgrades or downgrades one; last-write-wins is by HLC whatever the version. The app reads v1 through a v1→v2 upgrader and uploads v2 only, after the server has it (A34). **Tombstones** carry the full payload under the same rules; a scrubbed v2 tombstone (`kg` 0, `inputValue` 0, `note` null, the other fields kept) is admissible. Fixtures: v1 in `testdata/sync/entity-payloads.json`, v2 in `testdata/sync/entity-payloads-v2.json`; the corpus above covers both.
