@@ -131,6 +131,7 @@ Future<void> _seed(AppDatabase db, {int diaryRows = 1}) async {
           values['saved_meal_id'] = 'savedMeal-deleted';
         }
         if (spec.entity == 'savedMeal') values['name'] = 'Saved removed';
+        if (spec.entity == 'weighIn') values['input_unit'] = 'kg';
         if (spec.entity == 'personalFood') {
           values.addAll({
             'entry_serving_unit': null,
@@ -448,8 +449,8 @@ void main() {
       () => db.customStatement('UPDATE meal_slots SET deleted_at = 1'),
     );
     final files = _build(await _read(db));
-    expect(files, hasLength(12));
-    for (final file in files.take(11)) {
+    expect(files, hasLength(exportRegistryV1.length + 1));
+    for (final file in files.take(exportRegistryV1.length)) {
       expect(_csv(file), hasLength(1));
     }
     expect((_json(files)['counts'] as Map).values, everyElement(0));

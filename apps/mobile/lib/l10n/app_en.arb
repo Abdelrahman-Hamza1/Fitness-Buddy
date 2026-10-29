@@ -451,6 +451,454 @@
   "@weightLog": {
     "description": "Weight card: opens the number pad to log a weigh-in (WB-001)."
   },
+  "weightValue": "{value} {unit}",
+  "@weightValue": {
+    "description": "A body weight with its unit: \"97.6 kg\" (A14 D13). The value arrives formatted with one decimal.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "weightUnitKg": "kg",
+  "@weightUnitKg": {
+    "description": "Unit label for kilograms, for body weight (A14)."
+  },
+  "weightUnitLb": "lb",
+  "@weightUnitLb": {
+    "description": "Unit label for pounds, for body weight (A14)."
+  },
+  "weightCardRate": "{rate} {unit}/week",
+  "@weightCardRate": {
+    "description": "Weekly rate of the weight trend, signed: \"−0.4 kg/week\" (WB-011). Neutral: no good/bad wording.",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "weightCardTrend": "Trend {weight}",
+  "@weightCardTrend": {
+    "description": "Weight card: the trend weight, the main number (WB-011): \"Trend 97.6 kg\".",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "weightCardRateLater": "Weekly rate after 2 weeks of weigh-ins",
+  "@weightCardRateLater": {
+    "description": "Weight card: there is a trend but not enough history for a weekly rate yet (WB-011)."
+  },
+  "weightCardTrendFrom": "Trend {weight} · from {date}",
+  "@weightCardTrendFrom": {
+    "description": "Weight card: the last weigh-in is 4 weeks old or older, so no rate; the trend is from that day (A14 PA2).",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "weightCardLast": "Last weigh-in {weight} · {when}",
+  "@weightCardLast": {
+    "description": "Weight card: the latest weigh-in on or before the page's day, smaller: \"Last weigh-in 97.4 kg · Yesterday\".",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "weightCardLastValue": "Last weigh-in {weight}",
+  "@weightCardLastValue": {
+    "description": "Weight card: the latest weigh-in when the trend line already says its date (stale): \"Last weigh-in 97.4 kg\".",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "weightCardEmpty": "Log your first weigh-in",
+  "@weightCardEmpty": {
+    "description": "Weight card: no weigh-in at all yet (UX-050)."
+  },
+  "weightCardEmptyPast": "No weigh-ins by this day. Tap to add one.",
+  "@weightCardEmptyPast": {
+    "description": "Weight card on a past day page: no weigh-in on or before that day, but later ones exist (UX-050)."
+  },
+  "weightCardSparse": "{count, plural, one{1 weigh-in in 4 weeks · trend updates slowly} other{{count} weigh-ins in 4 weeks · trend updates slowly}}",
+  "@weightCardSparse": {
+    "description": "Weight card, today only: honest note when there are few weigh-ins (WB-012). Information, not a nag.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weightCardTip": "Weighing in 2–3 times a week makes the trend steadier.",
+  "@weightCardTip": {
+    "description": "Weight card, today only: a suggestion shown at most once a month while weigh-ins are sparse (WB-012). Calm, no pressure."
+  },
+  "weightCardTipDismiss": "Got it",
+  "@weightCardTipDismiss": {
+    "description": "Weight card: dismisses the weigh-in suggestion."
+  },
+  "weightCardLoadFailed": "Couldn't load your weigh-ins.",
+  "@weightCardLoadFailed": {
+    "description": "Weight card: the weigh-ins couldn't be read."
+  },
+  "weightCardTryAgain": "Try again",
+  "@weightCardTryAgain": {
+    "description": "Weight card: retries loading the weigh-ins."
+  },
+  "weightSpokenKg": "{value} kilograms",
+  "@weightSpokenKg": {
+    "description": "Screen readers: a body weight in kilograms, unit in full: \"97.6 kilograms\". The value arrives formatted, possibly signed.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "weightSpokenLb": "{value} pounds",
+  "@weightSpokenLb": {
+    "description": "Screen readers: a body weight in pounds, unit in full: \"215.2 pounds\". The value arrives formatted, possibly signed.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "weightCardTrendSemantics": "Weight trend {weight}",
+  "@weightCardTrendSemantics": {
+    "description": "Weight card, first row, screen readers: the trend (weight with the unit in full).",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "weightCardTrendRateSemantics": "Weight trend {weight}, {change} per week",
+  "@weightCardTrendRateSemantics": {
+    "description": "Weight card, first row, screen readers: the trend and its signed weekly change, units in full. Neutral.",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      },
+      "change": {
+        "type": "String"
+      }
+    }
+  },
+  "weightCardTrendFromSemantics": "Weight trend {weight}, from {date}",
+  "@weightCardTrendFromSemantics": {
+    "description": "Weight card, first row, screen readers: a trend whose last weigh-in is 4 weeks old or older.",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "weightCardLastSemantics": "Last weigh-in {weight}, {when}",
+  "@weightCardLastSemantics": {
+    "description": "Weight card, second row, screen readers: the latest weigh-in, unit in full, and its day.",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "weightCardLastValueSemantics": "Last weigh-in {weight}",
+  "@weightCardLastValueSemantics": {
+    "description": "Weight card, second row, screen readers: the latest weigh-in when the trend already says its date.",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "weightCardEmptySemantics": "Weight. {message}",
+  "@weightCardEmptySemantics": {
+    "description": "Weight card without a weigh-in on or before the day, screen readers: the title and the visible invitation.",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "weightCardLogSemantics": "{summary}. Log a weigh-in",
+  "@weightCardLogSemantics": {
+    "description": "Weight card, first row, screen readers: the trend sentence, then what a tap does.",
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "weightCardLogNoteSemantics": "{summary}. {note}. Log a weigh-in",
+  "@weightCardLogNoteSemantics": {
+    "description": "Weight card, first row, screen readers: the trend sentence, the visible note under it (rate after 2 weeks, or the weigh-in count), then what a tap does.",
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      },
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "weightCardEditSemantics": "{summary}. Edit",
+  "@weightCardEditSemantics": {
+    "description": "Weight card, last weigh-in row, screen readers: the last weigh-in sentence, then what a tap does.",
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "weighInSheetTitle": "Log weigh-in",
+  "@weighInSheetTitle": {
+    "description": "Weigh-in sheet: title when logging a new weigh-in (WB-001)."
+  },
+  "weighInEditTitle": "Edit weigh-in",
+  "@weighInEditTitle": {
+    "description": "Weigh-in sheet: title when editing a weigh-in."
+  },
+  "weighInSave": "Save",
+  "@weighInSave": {
+    "description": "Weigh-in sheet: the pinned button that saves the weigh-in."
+  },
+  "weighInDelete": "Delete weigh-in",
+  "@weighInDelete": {
+    "description": "Weigh-in sheet, edit mode: deletes the weigh-in (with Undo)."
+  },
+  "weighInValueSemantics": "Weight, {weight}",
+  "@weighInValueSemantics": {
+    "description": "Weigh-in sheet: what a screen reader says for the typed value: \"Weight, 97.4 kg\".",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "weighInWhenLabel": "When",
+  "@weighInWhenLabel": {
+    "description": "Weigh-in sheet: label of the date and time chip."
+  },
+  "weighInDayTime": "{day}, {time}",
+  "@weighInDayTime": {
+    "description": "Weigh-in sheet: the measured date and time: \"Today, 07:42\".",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "weighInAddNote": "Add a note",
+  "@weighInAddNote": {
+    "description": "Weigh-in sheet: chip that shows the optional note field."
+  },
+  "weighInNoteLabel": "Note",
+  "@weighInNoteLabel": {
+    "description": "Weigh-in sheet: label of the optional note field."
+  },
+  "weighInNoteHint": "e.g. after Eid",
+  "@weighInNoteHint": {
+    "description": "Weigh-in sheet: hint in the empty note field."
+  },
+  "weighInNoteTooLong": "Keep the note to {max} characters",
+  "@weighInNoteTooLong": {
+    "description": "Weigh-in sheet: the note is longer than the limit.",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "weighInNoteInvalid": "The note has a character that can't be saved",
+  "@weighInNoteInvalid": {
+    "description": "Weigh-in sheet: the note contains a control character."
+  },
+  "weighInOutOfRange": "Enter a weight between {min} and {max}",
+  "@weighInOutOfRange": {
+    "description": "Weigh-in sheet: hint once more digits can't bring the typed value into the allowed range (A14 D6). Both bounds arrive as whole numbers with their unit: \"20 kg\", \"500 kg\".",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "weighInFuture": "This time is in the future. Choose an earlier time.",
+  "@weighInFuture": {
+    "description": "Weigh-in sheet: the chosen date and time are after now; Save is disabled."
+  },
+  "weighInTooEarly": "Choose a date from 1970 on.",
+  "@weighInTooEarly": {
+    "description": "Weigh-in sheet: the chosen time is before 1 January 1970 (A14 PA9)."
+  },
+  "weighInConfirmChange": "That's {diff} from your weigh-in {when} ({weight}). Save it?",
+  "@weighInConfirmChange": {
+    "description": "Weigh-in sheet: in-sheet confirmation for a change over 3% within 7 days (WB-005). Neutral, factual. diff is signed (\"+3.0 kg\"), when is \"today\", \"yesterday\" or a date.",
+    "placeholders": {
+      "diff": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      },
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "weighInConfirmSaveValue": "Save {weight}",
+  "@weighInConfirmSaveValue": {
+    "description": "Weigh-in sheet, large-change confirmation: the pinned primary button, saves the value as typed: \"Save 100.0 kg\" (WB-005).",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "weighInConfirmEdit": "Edit",
+  "@weighInConfirmEdit": {
+    "description": "Weigh-in sheet, large-change confirmation: the pinned text button that closes the confirmation and goes back to the number pad (WB-005)."
+  },
+  "weighInConfirmUnit": "Did you mean {weight} ({converted})?",
+  "@weighInConfirmUnit": {
+    "description": "Weigh-in sheet: likely unit mix-up (WB-005): \"Did you mean 214.0 lb (97.1 kg)?\".",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      },
+      "converted": {
+        "type": "String"
+      }
+    }
+  },
+  "weighInSaveAsUnit": "Save as {weight}",
+  "@weighInSaveAsUnit": {
+    "description": "Weigh-in sheet, unit confirmation: the pinned primary button, saves the number in the other unit: \"Save as 214.0 lb\".",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "weighInKeepUnit": "Keep {unit}",
+  "@weighInKeepUnit": {
+    "description": "Weigh-in sheet, unit confirmation: the pinned text button, saves the number in the unit it was typed in: \"Keep kg\".",
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "weighInSameDay": "Also on this day: {weight} at {time}",
+  "@weighInSameDay": {
+    "description": "Weigh-in sheet: another weigh-in on the chosen day (WB-003).",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "weighInSameDayUsed": "Also on this day: {weight} at {time} · used for the trend",
+  "@weighInSameDayUsed": {
+    "description": "Weigh-in sheet: another weigh-in on the chosen day, the one the trend uses now (WB-003).",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "weighInUseForTrend": "Use this weigh-in for the trend",
+  "@weighInUseForTrend": {
+    "description": "Weigh-in sheet: switch that picks this weigh-in as the day's trend value (WB-003)."
+  },
+  "weighInSaved": "Weigh-in saved: {weight}",
+  "@weighInSaved": {
+    "description": "Snackbar after logging a weigh-in, with Undo (UX-030).",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "weighInUpdated": "Weigh-in updated: {weight}",
+  "@weighInUpdated": {
+    "description": "Snackbar after editing a weigh-in, with Undo (UX-030).",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "weighInDeleted": "Weigh-in deleted",
+  "@weighInDeleted": {
+    "description": "Snackbar after deleting a weigh-in, with Undo (UX-030)."
+  },
+  "weighInTrendChosen": "Trend weigh-in for the day changed",
+  "@weighInTrendChosen": {
+    "description": "Snackbar after only the day's trend choice changed, with Undo (WB-003)."
+  },
+  "weighInChanged": "This weigh-in changed since you opened it. Reload to see the latest. What you typed stays.",
+  "@weighInChanged": {
+    "description": "Weigh-in sheet, edit mode: the weigh-in or its day changed elsewhere; nothing was saved. Shown with a Reload action."
+  },
+  "weighInReload": "Reload",
+  "@weighInReload": {
+    "description": "Weigh-in sheet: loads the weigh-in as it is now and keeps what was typed (UX-052)."
+  },
+  "weighInDayChanged": "Other weigh-ins on this day changed. Check the trend choice and save again.",
+  "@weighInDayChanged": {
+    "description": "Weigh-in sheet, logging: the day's other weigh-ins changed elsewhere, so the trend choice wasn't saved; nothing was saved and a retry works."
+  },
+  "weighInRemoved": "This weigh-in was deleted.",
+  "@weighInRemoved": {
+    "description": "Weigh-in sheet: the weigh-in being edited no longer exists; nothing was saved."
+  },
+  "weighInSaveFailed": "Couldn't save the weigh-in. Try again.",
+  "@weighInSaveFailed": {
+    "description": "Weigh-in sheet: the save was refused; nothing was saved."
+  },
+  "weighInLoadFailed": "Couldn't load your weigh-ins.",
+  "@weighInLoadFailed": {
+    "description": "Weigh-in sheet: the weigh-ins couldn't be read (the sheet can't prefill or check)."
+  },
+  "weighInTryAgain": "Try again",
+  "@weighInTryAgain": {
+    "description": "Weigh-in sheet: retries loading the weigh-ins."
+  },
   "progressWeekTitle": "This week",
   "@progressWeekTitle": {
     "description": "Progress: heading of the weekly summary (IN-001)."

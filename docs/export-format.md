@@ -12,9 +12,10 @@ as approved for encrypted device transfer/E2EE cloud backup (A11 Q2). Active
 install-id preferences and credentials are excluded. A new install uses a fresh
 active ID while preserving historical row/outbox identities.
 
-Each export produces eleven CSVs and one complete JSON file, named
+Each export produces twelve CSVs and one complete JSON file, named
 `fitness-buddy-YYYY-MM-DD-<type>.csv` and `fitness-buddy-YYYY-MM-DD.json` using the local
-export date. Rows sort by id, except diary entries sort by local_date, occurred_at_utc, id.
+export date. Rows sort by id, except diary entries sort by local_date, occurred_at_utc, id
+and weigh-ins by local_date, measured_at_utc, id.
 Files are in app-private temporary `export/`, wiped before preparation and after
 share returns (also after failure or abandonment). Closing during preparation skips
 sharing. Sharing uses the OS share sheet. share_plus 13.3.1 copies files into
@@ -44,7 +45,7 @@ The JSON object is:
 `schemaVersion` comes from the open database, not a format constant. `counts` and `data`
 contain every entity listed below, including empty arrays. Numbers and booleans retain types,
 null stays null, and each `*_json` field is parsed as a nested JSON value under the same key.
-`occurred_at_utc` is integer UTC milliseconds; `created_at` is UTC ISO-8601 text in both formats.
+`occurred_at_utc` and `measured_at_utc` are integer UTC milliseconds; `created_at` is UTC ISO-8601 text in both formats.
 `version` and `origin` are JSON-only; every other listed column appears in both formats.
 `formatVersion` changes only for a rename, removal or meaning change. New files/columns
 are additive; readers must ignore unknown ones.
@@ -296,3 +297,21 @@ energy is kcal, macros/fiber are grams. All ids are opaque row identifiers.
 | `target-settings.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
 | `target-settings.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
 | `target-settings.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
+## weigh-ins (`weighIn`, `weigh_ins`)
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `weigh-ins.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `weigh-ins.local_date` | text | The day, `YYYY-MM-DD`, from the offset where it was measured. |
+| `weigh-ins.measured_at_utc` | UTC ms | When it was measured, UTC ms. |
+| `weigh-ins.tz_offset_min` | integer | The zone offset where it was measured, minutes ahead of UTC. |
+| `weigh-ins.kg` | number | The weight in kg, rounded once to 2 decimals from the typed value. |
+| `weigh-ins.input_value` | number | The value as typed. |
+| `weigh-ins.input_unit` | text | The unit as typed: `kg` or `lb`. |
+| `weigh-ins.note` | text | The optional note. User content. |
+| `weigh-ins.preferred_for_day` | boolean | The user picked this weigh-in for the trend on its day (otherwise the day's earliest is used). The trend itself is derived and not exported. |
+| `weigh-ins.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `weigh-ins.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `weigh-ins.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `weigh-ins.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |

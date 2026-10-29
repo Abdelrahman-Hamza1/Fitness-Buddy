@@ -66,10 +66,11 @@ Future<void> pad(WidgetTester tester, String keys) async {
   }
 }
 
-/// A taller phone, so a sheet with its pad shows whole.
+/// A taller phone, so a sheet with its pad shows whole (and the day's rows
+/// stay on screen under the header's weight card, A14).
 void useTallPhone(WidgetTester tester) {
   tester.view
-    ..physicalSize = const Size(360, 1400)
+    ..physicalSize = const Size(360, 1500)
     ..devicePixelRatio = 1;
 }
 

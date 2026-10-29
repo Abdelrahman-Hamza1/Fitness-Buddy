@@ -8,6 +8,9 @@ import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
+import 'package:fb_mobile/features/body/body.dart';
+import 'package:fb_mobile/features/body/data/weigh_in_repository.dart';
+import 'package:fb_mobile/features/body/data/weight_tip_store.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/quick_add/quick_add.dart';
@@ -21,6 +24,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../helpers/quick_add_context.dart';
 import '../../../../helpers/unit_feed.dart';
+import '../../../body/support/memory_tip_store.dart';
 import '../../../diary/support/diary_fixtures.dart' show fixtureId;
 import '../../../diary/support/diary_harness.dart';
 
@@ -235,6 +239,8 @@ List<Override> fakeToday({
   UnitSystem units = UnitSystem.metric,
   List<QuickAddChip> chips = const [],
   Override? chipsOverride,
+  List<WeighIn> weighIns = const [],
+  CadenceTipState tip = CadenceTipState.initial,
 }) => [
   clockProvider.overrideWithValue(
     clock ?? ManualClock(DateTime.utc(2026, 10, 17, 12)),
@@ -254,6 +260,10 @@ List<Override> fakeToday({
   // Today tests see none unless they pass [chips].
   chipsOverride ??
       quickAddChipsProvider.overrideWith((ref, date) => AsyncData(chips)),
+  // The weight card (A14) on [weighIns], with the suggestion state [tip]; no
+  // database stream and no preferences.
+  weighInsProvider.overrideWith((ref) => Stream.value(weighIns)),
+  weightTipStoreProvider.overrideWithValue(MemoryTipStore(tip)),
 ];
 
 /// The providers of a Today screen on a real in-memory diary, with a real
@@ -279,6 +289,9 @@ final class TodayRig {
   final RecordingNavigator navigator = RecordingNavigator();
   late final UndoStack stack;
 
+  /// The weight card's suggestion state (A14 D10).
+  final MemoryTipStore tips = MemoryTipStore();
+
   List<Override> get overrides => [
     diaryRepositoryProvider.overrideWithValue(DiaryRepository(diary.db)),
     personalFoodRepositoryProvider.overrideWithValue(
@@ -298,6 +311,9 @@ final class TodayRig {
     appConfigProvider.overrideWithValue(config),
     appNavigatorProvider.overrideWithValue(navigator),
     units.override,
+    // The weight card (A14) reads and writes the same in-memory profile.
+    weighInRepositoryProvider.overrideWithValue(WeighInRepository(diary.db)),
+    weightTipStoreProvider.overrideWithValue(tips),
   ];
 }
 

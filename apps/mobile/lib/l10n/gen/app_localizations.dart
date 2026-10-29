@@ -615,6 +615,378 @@ abstract class AppLocalizations {
   /// **'Log weigh-in'**
   String get weightLog;
 
+  /// A body weight with its unit: "97.6 kg" (A14 D13). The value arrives formatted with one decimal.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} {unit}'**
+  String weightValue(String value, String unit);
+
+  /// Unit label for kilograms, for body weight (A14).
+  ///
+  /// In en, this message translates to:
+  /// **'kg'**
+  String get weightUnitKg;
+
+  /// Unit label for pounds, for body weight (A14).
+  ///
+  /// In en, this message translates to:
+  /// **'lb'**
+  String get weightUnitLb;
+
+  /// Weekly rate of the weight trend, signed: "−0.4 kg/week" (WB-011). Neutral: no good/bad wording.
+  ///
+  /// In en, this message translates to:
+  /// **'{rate} {unit}/week'**
+  String weightCardRate(String rate, String unit);
+
+  /// Weight card: the trend weight, the main number (WB-011): "Trend 97.6 kg".
+  ///
+  /// In en, this message translates to:
+  /// **'Trend {weight}'**
+  String weightCardTrend(String weight);
+
+  /// Weight card: there is a trend but not enough history for a weekly rate yet (WB-011).
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly rate after 2 weeks of weigh-ins'**
+  String get weightCardRateLater;
+
+  /// Weight card: the last weigh-in is 4 weeks old or older, so no rate; the trend is from that day (A14 PA2).
+  ///
+  /// In en, this message translates to:
+  /// **'Trend {weight} · from {date}'**
+  String weightCardTrendFrom(String weight, String date);
+
+  /// Weight card: the latest weigh-in on or before the page's day, smaller: "Last weigh-in 97.4 kg · Yesterday".
+  ///
+  /// In en, this message translates to:
+  /// **'Last weigh-in {weight} · {when}'**
+  String weightCardLast(String weight, String when);
+
+  /// Weight card: the latest weigh-in when the trend line already says its date (stale): "Last weigh-in 97.4 kg".
+  ///
+  /// In en, this message translates to:
+  /// **'Last weigh-in {weight}'**
+  String weightCardLastValue(String weight);
+
+  /// Weight card: no weigh-in at all yet (UX-050).
+  ///
+  /// In en, this message translates to:
+  /// **'Log your first weigh-in'**
+  String get weightCardEmpty;
+
+  /// Weight card on a past day page: no weigh-in on or before that day, but later ones exist (UX-050).
+  ///
+  /// In en, this message translates to:
+  /// **'No weigh-ins by this day. Tap to add one.'**
+  String get weightCardEmptyPast;
+
+  /// Weight card, today only: honest note when there are few weigh-ins (WB-012). Information, not a nag.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 weigh-in in 4 weeks · trend updates slowly} other{{count} weigh-ins in 4 weeks · trend updates slowly}}'**
+  String weightCardSparse(int count);
+
+  /// Weight card, today only: a suggestion shown at most once a month while weigh-ins are sparse (WB-012). Calm, no pressure.
+  ///
+  /// In en, this message translates to:
+  /// **'Weighing in 2–3 times a week makes the trend steadier.'**
+  String get weightCardTip;
+
+  /// Weight card: dismisses the weigh-in suggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get weightCardTipDismiss;
+
+  /// Weight card: the weigh-ins couldn't be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your weigh-ins.'**
+  String get weightCardLoadFailed;
+
+  /// Weight card: retries loading the weigh-ins.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get weightCardTryAgain;
+
+  /// Screen readers: a body weight in kilograms, unit in full: "97.6 kilograms". The value arrives formatted, possibly signed.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} kilograms'**
+  String weightSpokenKg(String value);
+
+  /// Screen readers: a body weight in pounds, unit in full: "215.2 pounds". The value arrives formatted, possibly signed.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} pounds'**
+  String weightSpokenLb(String value);
+
+  /// Weight card, first row, screen readers: the trend (weight with the unit in full).
+  ///
+  /// In en, this message translates to:
+  /// **'Weight trend {weight}'**
+  String weightCardTrendSemantics(String weight);
+
+  /// Weight card, first row, screen readers: the trend and its signed weekly change, units in full. Neutral.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight trend {weight}, {change} per week'**
+  String weightCardTrendRateSemantics(String weight, String change);
+
+  /// Weight card, first row, screen readers: a trend whose last weigh-in is 4 weeks old or older.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight trend {weight}, from {date}'**
+  String weightCardTrendFromSemantics(String weight, String date);
+
+  /// Weight card, second row, screen readers: the latest weigh-in, unit in full, and its day.
+  ///
+  /// In en, this message translates to:
+  /// **'Last weigh-in {weight}, {when}'**
+  String weightCardLastSemantics(String weight, String when);
+
+  /// Weight card, second row, screen readers: the latest weigh-in when the trend already says its date.
+  ///
+  /// In en, this message translates to:
+  /// **'Last weigh-in {weight}'**
+  String weightCardLastValueSemantics(String weight);
+
+  /// Weight card without a weigh-in on or before the day, screen readers: the title and the visible invitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight. {message}'**
+  String weightCardEmptySemantics(String message);
+
+  /// Weight card, first row, screen readers: the trend sentence, then what a tap does.
+  ///
+  /// In en, this message translates to:
+  /// **'{summary}. Log a weigh-in'**
+  String weightCardLogSemantics(String summary);
+
+  /// Weight card, first row, screen readers: the trend sentence, the visible note under it (rate after 2 weeks, or the weigh-in count), then what a tap does.
+  ///
+  /// In en, this message translates to:
+  /// **'{summary}. {note}. Log a weigh-in'**
+  String weightCardLogNoteSemantics(String summary, String note);
+
+  /// Weight card, last weigh-in row, screen readers: the last weigh-in sentence, then what a tap does.
+  ///
+  /// In en, this message translates to:
+  /// **'{summary}. Edit'**
+  String weightCardEditSemantics(String summary);
+
+  /// Weigh-in sheet: title when logging a new weigh-in (WB-001).
+  ///
+  /// In en, this message translates to:
+  /// **'Log weigh-in'**
+  String get weighInSheetTitle;
+
+  /// Weigh-in sheet: title when editing a weigh-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit weigh-in'**
+  String get weighInEditTitle;
+
+  /// Weigh-in sheet: the pinned button that saves the weigh-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get weighInSave;
+
+  /// Weigh-in sheet, edit mode: deletes the weigh-in (with Undo).
+  ///
+  /// In en, this message translates to:
+  /// **'Delete weigh-in'**
+  String get weighInDelete;
+
+  /// Weigh-in sheet: what a screen reader says for the typed value: "Weight, 97.4 kg".
+  ///
+  /// In en, this message translates to:
+  /// **'Weight, {weight}'**
+  String weighInValueSemantics(String weight);
+
+  /// Weigh-in sheet: label of the date and time chip.
+  ///
+  /// In en, this message translates to:
+  /// **'When'**
+  String get weighInWhenLabel;
+
+  /// Weigh-in sheet: the measured date and time: "Today, 07:42".
+  ///
+  /// In en, this message translates to:
+  /// **'{day}, {time}'**
+  String weighInDayTime(String day, String time);
+
+  /// Weigh-in sheet: chip that shows the optional note field.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a note'**
+  String get weighInAddNote;
+
+  /// Weigh-in sheet: label of the optional note field.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get weighInNoteLabel;
+
+  /// Weigh-in sheet: hint in the empty note field.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. after Eid'**
+  String get weighInNoteHint;
+
+  /// Weigh-in sheet: the note is longer than the limit.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the note to {max} characters'**
+  String weighInNoteTooLong(int max);
+
+  /// Weigh-in sheet: the note contains a control character.
+  ///
+  /// In en, this message translates to:
+  /// **'The note has a character that can\'t be saved'**
+  String get weighInNoteInvalid;
+
+  /// Weigh-in sheet: hint once more digits can't bring the typed value into the allowed range (A14 D6). Both bounds arrive as whole numbers with their unit: "20 kg", "500 kg".
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a weight between {min} and {max}'**
+  String weighInOutOfRange(String min, String max);
+
+  /// Weigh-in sheet: the chosen date and time are after now; Save is disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'This time is in the future. Choose an earlier time.'**
+  String get weighInFuture;
+
+  /// Weigh-in sheet: the chosen time is before 1 January 1970 (A14 PA9).
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a date from 1970 on.'**
+  String get weighInTooEarly;
+
+  /// Weigh-in sheet: in-sheet confirmation for a change over 3% within 7 days (WB-005). Neutral, factual. diff is signed ("+3.0 kg"), when is "today", "yesterday" or a date.
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s {diff} from your weigh-in {when} ({weight}). Save it?'**
+  String weighInConfirmChange(String diff, String when, String weight);
+
+  /// Weigh-in sheet, large-change confirmation: the pinned primary button, saves the value as typed: "Save 100.0 kg" (WB-005).
+  ///
+  /// In en, this message translates to:
+  /// **'Save {weight}'**
+  String weighInConfirmSaveValue(String weight);
+
+  /// Weigh-in sheet, large-change confirmation: the pinned text button that closes the confirmation and goes back to the number pad (WB-005).
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get weighInConfirmEdit;
+
+  /// Weigh-in sheet: likely unit mix-up (WB-005): "Did you mean 214.0 lb (97.1 kg)?".
+  ///
+  /// In en, this message translates to:
+  /// **'Did you mean {weight} ({converted})?'**
+  String weighInConfirmUnit(String weight, String converted);
+
+  /// Weigh-in sheet, unit confirmation: the pinned primary button, saves the number in the other unit: "Save as 214.0 lb".
+  ///
+  /// In en, this message translates to:
+  /// **'Save as {weight}'**
+  String weighInSaveAsUnit(String weight);
+
+  /// Weigh-in sheet, unit confirmation: the pinned text button, saves the number in the unit it was typed in: "Keep kg".
+  ///
+  /// In en, this message translates to:
+  /// **'Keep {unit}'**
+  String weighInKeepUnit(String unit);
+
+  /// Weigh-in sheet: another weigh-in on the chosen day (WB-003).
+  ///
+  /// In en, this message translates to:
+  /// **'Also on this day: {weight} at {time}'**
+  String weighInSameDay(String weight, String time);
+
+  /// Weigh-in sheet: another weigh-in on the chosen day, the one the trend uses now (WB-003).
+  ///
+  /// In en, this message translates to:
+  /// **'Also on this day: {weight} at {time} · used for the trend'**
+  String weighInSameDayUsed(String weight, String time);
+
+  /// Weigh-in sheet: switch that picks this weigh-in as the day's trend value (WB-003).
+  ///
+  /// In en, this message translates to:
+  /// **'Use this weigh-in for the trend'**
+  String get weighInUseForTrend;
+
+  /// Snackbar after logging a weigh-in, with Undo (UX-030).
+  ///
+  /// In en, this message translates to:
+  /// **'Weigh-in saved: {weight}'**
+  String weighInSaved(String weight);
+
+  /// Snackbar after editing a weigh-in, with Undo (UX-030).
+  ///
+  /// In en, this message translates to:
+  /// **'Weigh-in updated: {weight}'**
+  String weighInUpdated(String weight);
+
+  /// Snackbar after deleting a weigh-in, with Undo (UX-030).
+  ///
+  /// In en, this message translates to:
+  /// **'Weigh-in deleted'**
+  String get weighInDeleted;
+
+  /// Snackbar after only the day's trend choice changed, with Undo (WB-003).
+  ///
+  /// In en, this message translates to:
+  /// **'Trend weigh-in for the day changed'**
+  String get weighInTrendChosen;
+
+  /// Weigh-in sheet, edit mode: the weigh-in or its day changed elsewhere; nothing was saved. Shown with a Reload action.
+  ///
+  /// In en, this message translates to:
+  /// **'This weigh-in changed since you opened it. Reload to see the latest. What you typed stays.'**
+  String get weighInChanged;
+
+  /// Weigh-in sheet: loads the weigh-in as it is now and keeps what was typed (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Reload'**
+  String get weighInReload;
+
+  /// Weigh-in sheet, logging: the day's other weigh-ins changed elsewhere, so the trend choice wasn't saved; nothing was saved and a retry works.
+  ///
+  /// In en, this message translates to:
+  /// **'Other weigh-ins on this day changed. Check the trend choice and save again.'**
+  String get weighInDayChanged;
+
+  /// Weigh-in sheet: the weigh-in being edited no longer exists; nothing was saved.
+  ///
+  /// In en, this message translates to:
+  /// **'This weigh-in was deleted.'**
+  String get weighInRemoved;
+
+  /// Weigh-in sheet: the save was refused; nothing was saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the weigh-in. Try again.'**
+  String get weighInSaveFailed;
+
+  /// Weigh-in sheet: the weigh-ins couldn't be read (the sheet can't prefill or check).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your weigh-ins.'**
+  String get weighInLoadFailed;
+
+  /// Weigh-in sheet: retries loading the weigh-ins.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get weighInTryAgain;
+
   /// Progress: heading of the weekly summary (IN-001).
   ///
   /// In en, this message translates to:

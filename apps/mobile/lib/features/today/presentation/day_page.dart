@@ -1,13 +1,15 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/today/presentation/today_numbers.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// One day of the pager (HM-009): the numbers on top, then the meals. A flat
+/// One day of the pager (HM-009): the day's header (the numbers, then the
+/// weight card) on top, then the meals. A flat
 /// sliver list of [DayRow]s, so only the rows on screen are built. A day that
 /// is not loaded yet shows meal skeletons; a prefetched one never does
 /// (UX-051). Today and past days look the same.
@@ -45,8 +47,10 @@ class DayPage extends ConsumerWidget {
           itemBuilder: (context, i) {
             final key = keys[i];
             return switch (rows[i]) {
-              NumbersRow(:final totals) => TodayNumbers(
+              NumbersRow(:final totals) => _DayHeader(
                 key: key,
+                date: date,
+                isToday: isToday,
                 totals: totals,
               ),
               EmptyHintRow(:final isToday) => EmptyDayHint(
@@ -95,6 +99,32 @@ class DayPage extends ConsumerWidget {
       ],
     );
   }
+}
+
+/// The top of a day page, as an ordered list (A14 §3.5): the day's numbers →
+/// [A22: the to-confirm strip] → the weight card → [A37: the workout hint].
+/// Later steps add one entry here instead of nesting widgets.
+class _DayHeader extends StatelessWidget {
+  const new({
+    required this.date,
+    required this.isToday,
+    required this.totals,
+    super.key,
+  });
+
+  final LocalDate date;
+  final bool isToday;
+  final Nutrients totals;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      TodayNumbers(totals: totals),
+      WeightCard(date: date, isToday: isToday),
+    ],
+  );
 }
 
 bool _isOpen(DiaryViewChoices choices, DiaryEntry entry) =>

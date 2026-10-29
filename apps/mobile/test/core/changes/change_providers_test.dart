@@ -96,6 +96,7 @@ void main() {
           MealSlotOp.familyName,
           PersonalFoodOp.familyName,
           TargetsOp.familyName,
+          WeighInOp.familyName,
         ],
       );
       expect(container.read(clockProvider), isA<SystemClock>());

@@ -20,4 +20,9 @@ abstract final class PreferenceKeys {
   /// The last good `/v1/config` response, as JSON. The version suffix lets
   /// a future format change start from defaults instead of misreading it.
   static const clientConfig = 'fb.client_config.v1';
+
+  /// When the weight card's "weigh in 2–3 times a week" suggestion last
+  /// showed and whether it was dismissed (A14 D10, PA10): a display
+  /// preference, not user data, so it never syncs.
+  static const weightCadenceTip = 'fb.weight_cadence_tip.v1';
 }

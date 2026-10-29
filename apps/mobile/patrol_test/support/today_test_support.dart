@@ -3,7 +3,6 @@
 
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
-import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/quick_add/quick_add.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,8 +16,11 @@ Finder dayPage(LocalDate date) => find.byKey(ValueKey<LocalDate>(date));
 Finder dayNumber(LocalDate date) =>
     find.descendant(of: dayPage(date), matching: find.byType(FbBigNumber));
 
-/// The requested page has arrived and rendered its loaded sliver list.
-/// Meals below the viewport need not be mounted by SliverList.builder.
+/// The requested page has arrived and rendered its loaded sliver list: its
+/// header (the day's number) is built. Meals below the viewport need not be
+/// mounted by SliverList.builder: on a compact phone the header (numbers,
+/// weight card, A14) can fill the viewport, so callers reveal a meal row with
+/// [revealDayWidget] before using it.
 bool showsLoadedDay(WidgetTester tester, LocalDate date) {
   final page = dayPage(date);
   final pager = find.byType(PageView);
@@ -26,11 +28,7 @@ bool showsLoadedDay(WidgetTester tester, LocalDate date) {
   final controller = tester.widget<PageView>(pager).controller!;
   return !controller.position.isScrollingNotifier.value &&
       (tester.getCenter(page).dx - tester.getCenter(pager).dx).abs() < 1 &&
-      dayNumber(date).evaluate().length == 1 &&
-      find
-          .descendant(of: page, matching: find.byType(SlotHeaderTile))
-          .evaluate()
-          .isNotEmpty;
+      dayNumber(date).evaluate().length == 1;
 }
 
 /// Waits for local UI/data work without settling pulsing skeletons.

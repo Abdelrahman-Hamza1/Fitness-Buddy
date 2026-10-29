@@ -219,6 +219,7 @@ void main() {
           MealSlotOp.familyName,
           PersonalFoodOp.familyName,
           TargetsOp.familyName,
+          WeighInOp.familyName,
         ],
       );
       final store = container.read(settingsStoreProvider);

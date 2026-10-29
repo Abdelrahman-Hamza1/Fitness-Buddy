@@ -8,6 +8,7 @@ import 'package:fb_mobile/core/changes/change_set_applier.dart';
 import 'package:fb_mobile/core/changes/row_ops.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/events/domain_event_bus.dart';
+import 'package:fb_mobile/features/body/data/weigh_in_op_handler.dart';
 import 'package:fb_mobile/features/diary/data/diary_op_handler.dart';
 import 'package:fb_mobile/features/diary/data/diary_reads.dart';
 import 'package:fb_mobile/features/diary/data/meal_slot_op_handler.dart';
@@ -46,6 +47,7 @@ final class DiaryHarness {
       handlers: (db) => [
         DiaryOpHandler(db),
         MealSlotOpHandler(db),
+        WeighInOpHandler(db),
         const ScriptHandler(),
       ],
       clock: clock,

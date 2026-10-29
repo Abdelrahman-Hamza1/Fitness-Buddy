@@ -203,7 +203,7 @@ void main() {
       final micros = await measure(
         () => tester.tap(find.byTooltip('Previous day')),
         () => showsLoadedDay(tester, yesterday),
-        'yesterday to show its meals',
+        'yesterday to show its loaded day',
       );
       if (i >= warmUps) prefetched.add(micros);
       await rest();
@@ -223,7 +223,7 @@ void main() {
       final micros = await measure(
         () async => controller.goTo(date),
         () => showsLoadedDay(tester, date),
-        '$date to show its meals',
+        '$date to show its loaded day',
       );
       if (i >= warmUps) uncached.add(micros);
       await rest();
@@ -239,7 +239,7 @@ void main() {
       final micros = await measure(
         () => tester.tap($(NavigationBar).$('Today')),
         () => showsLoadedDay(tester, today),
-        'Today to show its meals again',
+        'Today to show its loaded day again',
       );
       if (i >= warmUps) reselect.add(micros);
     }

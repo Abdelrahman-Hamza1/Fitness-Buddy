@@ -13,6 +13,7 @@ import 'tables/settings_tables.dart';
 import 'tables/diary_tables.dart';
 import 'tables/food_tables.dart';
 import 'tables/target_tables.dart';
+import 'tables/body_tables.dart';
 
 -- settings_kv (entity 'setting', A01 D16)
 CREATE TRIGGER settings_kv_outbox_ai AFTER INSERT ON settings_kv
@@ -241,6 +242,27 @@ BEGIN
 END;
 
 CREATE TRIGGER target_settings_no_delete BEFORE DELETE ON target_settings
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;
+
+-- weigh_ins (entity 'weighIn', A14)
+CREATE TRIGGER weigh_ins_outbox_ai AFTER INSERT ON weigh_ins
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('weighIn', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER weigh_ins_outbox_au AFTER UPDATE ON weigh_ins
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('weighIn', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER weigh_ins_no_delete BEFORE DELETE ON weigh_ins
 BEGIN
   SELECT RAISE(ABORT, 'tombstone, never delete');
 END;

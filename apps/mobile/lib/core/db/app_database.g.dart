@@ -3,6 +3,957 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
+class $WeighInsTable extends WeighIns
+    with TableInfo<$WeighInsTable, WeighInRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WeighInsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+    'origin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedByUserMeta = const VerificationMeta(
+    'editedByUser',
+  );
+  @override
+  late final GeneratedColumn<bool> editedByUser = GeneratedColumn<bool>(
+    'edited_by_user',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_by_user" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _measuredAtUtcMeta = const VerificationMeta(
+    'measuredAtUtc',
+  );
+  @override
+  late final GeneratedColumn<int> measuredAtUtc = GeneratedColumn<int>(
+    'measured_at_utc',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(measuredAtUtc).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _tzOffsetMinMeta = const VerificationMeta(
+    'tzOffsetMin',
+  );
+  @override
+  late final GeneratedColumn<int> tzOffsetMin = GeneratedColumn<int>(
+    'tz_offset_min',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(tzOffsetMin).isBetweenValues(-720, 840),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localDateMeta = const VerificationMeta(
+    'localDate',
+  );
+  @override
+  late final GeneratedColumn<String> localDate = GeneratedColumn<String>(
+    'local_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _kgMeta = const VerificationMeta('kg');
+  @override
+  late final GeneratedColumn<double> kg = GeneratedColumn<double>(
+    'kg',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(kg).isBiggerOrEqualValue(0),
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _inputValueMeta = const VerificationMeta(
+    'inputValue',
+  );
+  @override
+  late final GeneratedColumn<double> inputValue = GeneratedColumn<double>(
+    'input_value',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(inputValue).isBiggerOrEqualValue(0),
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _inputUnitMeta = const VerificationMeta(
+    'inputUnit',
+  );
+  @override
+  late final GeneratedColumn<String> inputUnit = GeneratedColumn<String>(
+    'input_unit',
+    aliasedName,
+    false,
+    check: () => inputUnit.isIn(const ['kg', 'lb']),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _preferredForDayMeta = const VerificationMeta(
+    'preferredForDay',
+  );
+  @override
+  late final GeneratedColumn<bool> preferredForDay = GeneratedColumn<bool>(
+    'preferred_for_day',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("preferred_for_day" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    measuredAtUtc,
+    tzOffsetMin,
+    localDate,
+    kg,
+    inputValue,
+    inputUnit,
+    note,
+    preferredForDay,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'weigh_ins';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WeighInRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedHlcMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('origin')) {
+      context.handle(
+        _originMeta,
+        origin.isAcceptableOrUnknown(data['origin']!, _originMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originMeta);
+    }
+    if (data.containsKey('edited_by_user')) {
+      context.handle(
+        _editedByUserMeta,
+        editedByUser.isAcceptableOrUnknown(
+          data['edited_by_user']!,
+          _editedByUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('measured_at_utc')) {
+      context.handle(
+        _measuredAtUtcMeta,
+        measuredAtUtc.isAcceptableOrUnknown(
+          data['measured_at_utc']!,
+          _measuredAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_measuredAtUtcMeta);
+    }
+    if (data.containsKey('tz_offset_min')) {
+      context.handle(
+        _tzOffsetMinMeta,
+        tzOffsetMin.isAcceptableOrUnknown(
+          data['tz_offset_min']!,
+          _tzOffsetMinMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_tzOffsetMinMeta);
+    }
+    if (data.containsKey('local_date')) {
+      context.handle(
+        _localDateMeta,
+        localDate.isAcceptableOrUnknown(data['local_date']!, _localDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localDateMeta);
+    }
+    if (data.containsKey('kg')) {
+      context.handle(_kgMeta, kg.isAcceptableOrUnknown(data['kg']!, _kgMeta));
+    } else if (isInserting) {
+      context.missing(_kgMeta);
+    }
+    if (data.containsKey('input_value')) {
+      context.handle(
+        _inputValueMeta,
+        inputValue.isAcceptableOrUnknown(data['input_value']!, _inputValueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_inputValueMeta);
+    }
+    if (data.containsKey('input_unit')) {
+      context.handle(
+        _inputUnitMeta,
+        inputUnit.isAcceptableOrUnknown(data['input_unit']!, _inputUnitMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_inputUnitMeta);
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    if (data.containsKey('preferred_for_day')) {
+      context.handle(
+        _preferredForDayMeta,
+        preferredForDay.isAcceptableOrUnknown(
+          data['preferred_for_day']!,
+          _preferredForDayMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WeighInRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WeighInRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      origin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin'],
+      )!,
+      editedByUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited_by_user'],
+      )!,
+      measuredAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}measured_at_utc'],
+      )!,
+      tzOffsetMin: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tz_offset_min'],
+      )!,
+      localDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_date'],
+      )!,
+      kg: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}kg'],
+      )!,
+      inputValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}input_value'],
+      )!,
+      inputUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}input_unit'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+      preferredForDay: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}preferred_for_day'],
+      )!,
+    );
+  }
+
+  @override
+  $WeighInsTable createAlias(String alias) {
+    return $WeighInsTable(attachedDatabase, alias);
+  }
+}
+
+class WeighInRow extends DataClass implements Insertable<WeighInRow> {
+  /// UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys
+  /// (`core/db/natural_id.dart`). Lowercase canonical text.
+  final String id;
+
+  /// When the row was first written, UTC ms (0 for seeds).
+  final int createdAt;
+
+  /// The hybrid logical clock of the last write (`fb_domain` `Hlc` text).
+  final String updatedHlc;
+
+  /// 1 on insert, +1 per write: the local optimistic concurrency check.
+  final int version;
+
+  /// The tombstone, UTC ms. Synced rows are never hard-deleted.
+  final int? deletedAt;
+
+  /// The install that made the last write (the HLC's node id, TD-053).
+  final String deviceId;
+
+  /// `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`.
+  final String origin;
+
+  /// Provenance: the user overrode a value that came from another source
+  /// (AI-072, the "edited by you" badge). Set only by ops.
+  final bool editedByUser;
+
+  /// When it was measured, UTC ms (≥ 0, the wire's minimum; A14 PA9).
+  final int measuredAtUtc;
+
+  /// The zone offset where it was measured, minutes ahead of UTC.
+  final int tzOffsetMin;
+
+  /// The day, `YYYY-MM-DD`, from the stored offset (DY-002).
+  final String localDate;
+
+  /// The canonical value in kg, rounded once to storage precision.
+  final double kg;
+
+  /// The value as typed (TD-017).
+  final double inputValue;
+
+  /// The unit as typed: `kg` or `lb`.
+  final String inputUnit;
+
+  /// The optional note. User content.
+  final String? note;
+
+  /// The user picked it for the trend on its day (WB-003, A14 D3).
+  final bool preferredForDay;
+  const WeighInRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedHlc,
+    required this.version,
+    this.deletedAt,
+    required this.deviceId,
+    required this.origin,
+    required this.editedByUser,
+    required this.measuredAtUtc,
+    required this.tzOffsetMin,
+    required this.localDate,
+    required this.kg,
+    required this.inputValue,
+    required this.inputUnit,
+    this.note,
+    required this.preferredForDay,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
+    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['device_id'] = Variable<String>(deviceId);
+    map['origin'] = Variable<String>(origin);
+    map['edited_by_user'] = Variable<bool>(editedByUser);
+    map['measured_at_utc'] = Variable<int>(measuredAtUtc);
+    map['tz_offset_min'] = Variable<int>(tzOffsetMin);
+    map['local_date'] = Variable<String>(localDate);
+    map['kg'] = Variable<double>(kg);
+    map['input_value'] = Variable<double>(inputValue);
+    map['input_unit'] = Variable<String>(inputUnit);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    map['preferred_for_day'] = Variable<bool>(preferredForDay);
+    return map;
+  }
+
+  WeighInsCompanion toCompanion(bool nullToAbsent) {
+    return WeighInsCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
+      version: Value(version),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deviceId: Value(deviceId),
+      origin: Value(origin),
+      editedByUser: Value(editedByUser),
+      measuredAtUtc: Value(measuredAtUtc),
+      tzOffsetMin: Value(tzOffsetMin),
+      localDate: Value(localDate),
+      kg: Value(kg),
+      inputValue: Value(inputValue),
+      inputUnit: Value(inputUnit),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      preferredForDay: Value(preferredForDay),
+    );
+  }
+
+  factory WeighInRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WeighInRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
+      version: serializer.fromJson<int>(json['version']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      origin: serializer.fromJson<String>(json['origin']),
+      editedByUser: serializer.fromJson<bool>(json['editedByUser']),
+      measuredAtUtc: serializer.fromJson<int>(json['measuredAtUtc']),
+      tzOffsetMin: serializer.fromJson<int>(json['tzOffsetMin']),
+      localDate: serializer.fromJson<String>(json['localDate']),
+      kg: serializer.fromJson<double>(json['kg']),
+      inputValue: serializer.fromJson<double>(json['inputValue']),
+      inputUnit: serializer.fromJson<String>(json['inputUnit']),
+      note: serializer.fromJson<String?>(json['note']),
+      preferredForDay: serializer.fromJson<bool>(json['preferredForDay']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
+      'version': serializer.toJson<int>(version),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'origin': serializer.toJson<String>(origin),
+      'editedByUser': serializer.toJson<bool>(editedByUser),
+      'measuredAtUtc': serializer.toJson<int>(measuredAtUtc),
+      'tzOffsetMin': serializer.toJson<int>(tzOffsetMin),
+      'localDate': serializer.toJson<String>(localDate),
+      'kg': serializer.toJson<double>(kg),
+      'inputValue': serializer.toJson<double>(inputValue),
+      'inputUnit': serializer.toJson<String>(inputUnit),
+      'note': serializer.toJson<String?>(note),
+      'preferredForDay': serializer.toJson<bool>(preferredForDay),
+    };
+  }
+
+  WeighInRow copyWith({
+    String? id,
+    int? createdAt,
+    String? updatedHlc,
+    int? version,
+    Value<int?> deletedAt = const Value.absent(),
+    String? deviceId,
+    String? origin,
+    bool? editedByUser,
+    int? measuredAtUtc,
+    int? tzOffsetMin,
+    String? localDate,
+    double? kg,
+    double? inputValue,
+    String? inputUnit,
+    Value<String?> note = const Value.absent(),
+    bool? preferredForDay,
+  }) => WeighInRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+    version: version ?? this.version,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deviceId: deviceId ?? this.deviceId,
+    origin: origin ?? this.origin,
+    editedByUser: editedByUser ?? this.editedByUser,
+    measuredAtUtc: measuredAtUtc ?? this.measuredAtUtc,
+    tzOffsetMin: tzOffsetMin ?? this.tzOffsetMin,
+    localDate: localDate ?? this.localDate,
+    kg: kg ?? this.kg,
+    inputValue: inputValue ?? this.inputValue,
+    inputUnit: inputUnit ?? this.inputUnit,
+    note: note.present ? note.value : this.note,
+    preferredForDay: preferredForDay ?? this.preferredForDay,
+  );
+  WeighInRow copyWithCompanion(WeighInsCompanion data) {
+    return WeighInRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
+      version: data.version.present ? data.version.value : this.version,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      editedByUser: data.editedByUser.present
+          ? data.editedByUser.value
+          : this.editedByUser,
+      measuredAtUtc: data.measuredAtUtc.present
+          ? data.measuredAtUtc.value
+          : this.measuredAtUtc,
+      tzOffsetMin: data.tzOffsetMin.present
+          ? data.tzOffsetMin.value
+          : this.tzOffsetMin,
+      localDate: data.localDate.present ? data.localDate.value : this.localDate,
+      kg: data.kg.present ? data.kg.value : this.kg,
+      inputValue: data.inputValue.present
+          ? data.inputValue.value
+          : this.inputValue,
+      inputUnit: data.inputUnit.present ? data.inputUnit.value : this.inputUnit,
+      note: data.note.present ? data.note.value : this.note,
+      preferredForDay: data.preferredForDay.present
+          ? data.preferredForDay.value
+          : this.preferredForDay,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeighInRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('measuredAtUtc: $measuredAtUtc, ')
+          ..write('tzOffsetMin: $tzOffsetMin, ')
+          ..write('localDate: $localDate, ')
+          ..write('kg: $kg, ')
+          ..write('inputValue: $inputValue, ')
+          ..write('inputUnit: $inputUnit, ')
+          ..write('note: $note, ')
+          ..write('preferredForDay: $preferredForDay')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    measuredAtUtc,
+    tzOffsetMin,
+    localDate,
+    kg,
+    inputValue,
+    inputUnit,
+    note,
+    preferredForDay,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WeighInRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc &&
+          other.version == this.version &&
+          other.deletedAt == this.deletedAt &&
+          other.deviceId == this.deviceId &&
+          other.origin == this.origin &&
+          other.editedByUser == this.editedByUser &&
+          other.measuredAtUtc == this.measuredAtUtc &&
+          other.tzOffsetMin == this.tzOffsetMin &&
+          other.localDate == this.localDate &&
+          other.kg == this.kg &&
+          other.inputValue == this.inputValue &&
+          other.inputUnit == this.inputUnit &&
+          other.note == this.note &&
+          other.preferredForDay == this.preferredForDay);
+}
+
+class WeighInsCompanion extends UpdateCompanion<WeighInRow> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<String> updatedHlc;
+  final Value<int> version;
+  final Value<int?> deletedAt;
+  final Value<String> deviceId;
+  final Value<String> origin;
+  final Value<bool> editedByUser;
+  final Value<int> measuredAtUtc;
+  final Value<int> tzOffsetMin;
+  final Value<String> localDate;
+  final Value<double> kg;
+  final Value<double> inputValue;
+  final Value<String> inputUnit;
+  final Value<String?> note;
+  final Value<bool> preferredForDay;
+  final Value<int> rowid;
+  const WeighInsCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
+    this.version = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.editedByUser = const Value.absent(),
+    this.measuredAtUtc = const Value.absent(),
+    this.tzOffsetMin = const Value.absent(),
+    this.localDate = const Value.absent(),
+    this.kg = const Value.absent(),
+    this.inputValue = const Value.absent(),
+    this.inputUnit = const Value.absent(),
+    this.note = const Value.absent(),
+    this.preferredForDay = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WeighInsCompanion.insert({
+    required String id,
+    required int createdAt,
+    required String updatedHlc,
+    required int version,
+    this.deletedAt = const Value.absent(),
+    required String deviceId,
+    required String origin,
+    this.editedByUser = const Value.absent(),
+    required int measuredAtUtc,
+    required int tzOffsetMin,
+    required String localDate,
+    required double kg,
+    required double inputValue,
+    required String inputUnit,
+    this.note = const Value.absent(),
+    this.preferredForDay = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedHlc = Value(updatedHlc),
+       version = Value(version),
+       deviceId = Value(deviceId),
+       origin = Value(origin),
+       measuredAtUtc = Value(measuredAtUtc),
+       tzOffsetMin = Value(tzOffsetMin),
+       localDate = Value(localDate),
+       kg = Value(kg),
+       inputValue = Value(inputValue),
+       inputUnit = Value(inputUnit);
+  static Insertable<WeighInRow> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<String>? updatedHlc,
+    Expression<int>? version,
+    Expression<int>? deletedAt,
+    Expression<String>? deviceId,
+    Expression<String>? origin,
+    Expression<bool>? editedByUser,
+    Expression<int>? measuredAtUtc,
+    Expression<int>? tzOffsetMin,
+    Expression<String>? localDate,
+    Expression<double>? kg,
+    Expression<double>? inputValue,
+    Expression<String>? inputUnit,
+    Expression<String>? note,
+    Expression<bool>? preferredForDay,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
+      if (version != null) 'version': version,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deviceId != null) 'device_id': deviceId,
+      if (origin != null) 'origin': origin,
+      if (editedByUser != null) 'edited_by_user': editedByUser,
+      if (measuredAtUtc != null) 'measured_at_utc': measuredAtUtc,
+      if (tzOffsetMin != null) 'tz_offset_min': tzOffsetMin,
+      if (localDate != null) 'local_date': localDate,
+      if (kg != null) 'kg': kg,
+      if (inputValue != null) 'input_value': inputValue,
+      if (inputUnit != null) 'input_unit': inputUnit,
+      if (note != null) 'note': note,
+      if (preferredForDay != null) 'preferred_for_day': preferredForDay,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WeighInsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<String>? updatedHlc,
+    Value<int>? version,
+    Value<int?>? deletedAt,
+    Value<String>? deviceId,
+    Value<String>? origin,
+    Value<bool>? editedByUser,
+    Value<int>? measuredAtUtc,
+    Value<int>? tzOffsetMin,
+    Value<String>? localDate,
+    Value<double>? kg,
+    Value<double>? inputValue,
+    Value<String>? inputUnit,
+    Value<String?>? note,
+    Value<bool>? preferredForDay,
+    Value<int>? rowid,
+  }) {
+    return WeighInsCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
+      version: version ?? this.version,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deviceId: deviceId ?? this.deviceId,
+      origin: origin ?? this.origin,
+      editedByUser: editedByUser ?? this.editedByUser,
+      measuredAtUtc: measuredAtUtc ?? this.measuredAtUtc,
+      tzOffsetMin: tzOffsetMin ?? this.tzOffsetMin,
+      localDate: localDate ?? this.localDate,
+      kg: kg ?? this.kg,
+      inputValue: inputValue ?? this.inputValue,
+      inputUnit: inputUnit ?? this.inputUnit,
+      note: note ?? this.note,
+      preferredForDay: preferredForDay ?? this.preferredForDay,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (editedByUser.present) {
+      map['edited_by_user'] = Variable<bool>(editedByUser.value);
+    }
+    if (measuredAtUtc.present) {
+      map['measured_at_utc'] = Variable<int>(measuredAtUtc.value);
+    }
+    if (tzOffsetMin.present) {
+      map['tz_offset_min'] = Variable<int>(tzOffsetMin.value);
+    }
+    if (localDate.present) {
+      map['local_date'] = Variable<String>(localDate.value);
+    }
+    if (kg.present) {
+      map['kg'] = Variable<double>(kg.value);
+    }
+    if (inputValue.present) {
+      map['input_value'] = Variable<double>(inputValue.value);
+    }
+    if (inputUnit.present) {
+      map['input_unit'] = Variable<String>(inputUnit.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (preferredForDay.present) {
+      map['preferred_for_day'] = Variable<bool>(preferredForDay.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeighInsCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('measuredAtUtc: $measuredAtUtc, ')
+          ..write('tzOffsetMin: $tzOffsetMin, ')
+          ..write('localDate: $localDate, ')
+          ..write('kg: $kg, ')
+          ..write('inputValue: $inputValue, ')
+          ..write('inputUnit: $inputUnit, ')
+          ..write('note: $note, ')
+          ..write('preferredForDay: $preferredForDay, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $GoalPhasesTable extends GoalPhases
     with TableInfo<$GoalPhasesTable, GoalPhaseRow> {
   @override
@@ -13253,6 +14204,11 @@ class PersonalFoodsCompanion extends UpdateCompanion<PersonalFoodRow> {
 
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
+  late final $WeighInsTable weighIns = $WeighInsTable(this);
+  late final Index ixWeighInsLive = Index(
+    'ix_weigh_ins_live',
+    'CREATE INDEX ix_weigh_ins_live ON weigh_ins (local_date, measured_at_utc) WHERE deleted_at IS NULL',
+  );
   late final $GoalPhasesTable goalPhases = $GoalPhasesTable(this);
   late final Index ixGoalPhasesStart = Index(
     'ix_goal_phases_start',
@@ -13435,11 +14391,25 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'CREATE TRIGGER target_settings_no_delete BEFORE DELETE ON target_settings BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
     'target_settings_no_delete',
   );
+  late final Trigger weighInsOutboxAi = Trigger(
+    'CREATE TRIGGER weigh_ins_outbox_ai AFTER INSERT ON weigh_ins WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'weighIn\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'weigh_ins_outbox_ai',
+  );
+  late final Trigger weighInsOutboxAu = Trigger(
+    'CREATE TRIGGER weigh_ins_outbox_au AFTER UPDATE ON weigh_ins WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'weighIn\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'weigh_ins_outbox_au',
+  );
+  late final Trigger weighInsNoDelete = Trigger(
+    'CREATE TRIGGER weigh_ins_no_delete BEFORE DELETE ON weigh_ins BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'weigh_ins_no_delete',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
+    weighIns,
+    ixWeighInsLive,
     goalPhases,
     ixGoalPhasesStart,
     targetSettingsRows,
@@ -13495,6 +14465,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     targetSettingsOutboxAi,
     targetSettingsOutboxAu,
     targetSettingsNoDelete,
+    weighInsOutboxAi,
+    weighInsOutboxAu,
+    weighInsNoDelete,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -13725,6 +14698,27 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'target_settings',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'weigh_ins',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'weigh_ins',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'weigh_ins',
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [],

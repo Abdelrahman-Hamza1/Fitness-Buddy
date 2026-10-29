@@ -308,6 +308,265 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weightLog => 'Log weigh-in';
 
   @override
+  String weightValue(String value, String unit) {
+    return '$value $unit';
+  }
+
+  @override
+  String get weightUnitKg => 'kg';
+
+  @override
+  String get weightUnitLb => 'lb';
+
+  @override
+  String weightCardRate(String rate, String unit) {
+    return '$rate $unit/week';
+  }
+
+  @override
+  String weightCardTrend(String weight) {
+    return 'Trend $weight';
+  }
+
+  @override
+  String get weightCardRateLater => 'Weekly rate after 2 weeks of weigh-ins';
+
+  @override
+  String weightCardTrendFrom(String weight, String date) {
+    return 'Trend $weight · from $date';
+  }
+
+  @override
+  String weightCardLast(String weight, String when) {
+    return 'Last weigh-in $weight · $when';
+  }
+
+  @override
+  String weightCardLastValue(String weight) {
+    return 'Last weigh-in $weight';
+  }
+
+  @override
+  String get weightCardEmpty => 'Log your first weigh-in';
+
+  @override
+  String get weightCardEmptyPast => 'No weigh-ins by this day. Tap to add one.';
+
+  @override
+  String weightCardSparse(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count weigh-ins in 4 weeks · trend updates slowly',
+      one: '1 weigh-in in 4 weeks · trend updates slowly',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get weightCardTip =>
+      'Weighing in 2–3 times a week makes the trend steadier.';
+
+  @override
+  String get weightCardTipDismiss => 'Got it';
+
+  @override
+  String get weightCardLoadFailed => 'Couldn\'t load your weigh-ins.';
+
+  @override
+  String get weightCardTryAgain => 'Try again';
+
+  @override
+  String weightSpokenKg(String value) {
+    return '$value kilograms';
+  }
+
+  @override
+  String weightSpokenLb(String value) {
+    return '$value pounds';
+  }
+
+  @override
+  String weightCardTrendSemantics(String weight) {
+    return 'Weight trend $weight';
+  }
+
+  @override
+  String weightCardTrendRateSemantics(String weight, String change) {
+    return 'Weight trend $weight, $change per week';
+  }
+
+  @override
+  String weightCardTrendFromSemantics(String weight, String date) {
+    return 'Weight trend $weight, from $date';
+  }
+
+  @override
+  String weightCardLastSemantics(String weight, String when) {
+    return 'Last weigh-in $weight, $when';
+  }
+
+  @override
+  String weightCardLastValueSemantics(String weight) {
+    return 'Last weigh-in $weight';
+  }
+
+  @override
+  String weightCardEmptySemantics(String message) {
+    return 'Weight. $message';
+  }
+
+  @override
+  String weightCardLogSemantics(String summary) {
+    return '$summary. Log a weigh-in';
+  }
+
+  @override
+  String weightCardLogNoteSemantics(String summary, String note) {
+    return '$summary. $note. Log a weigh-in';
+  }
+
+  @override
+  String weightCardEditSemantics(String summary) {
+    return '$summary. Edit';
+  }
+
+  @override
+  String get weighInSheetTitle => 'Log weigh-in';
+
+  @override
+  String get weighInEditTitle => 'Edit weigh-in';
+
+  @override
+  String get weighInSave => 'Save';
+
+  @override
+  String get weighInDelete => 'Delete weigh-in';
+
+  @override
+  String weighInValueSemantics(String weight) {
+    return 'Weight, $weight';
+  }
+
+  @override
+  String get weighInWhenLabel => 'When';
+
+  @override
+  String weighInDayTime(String day, String time) {
+    return '$day, $time';
+  }
+
+  @override
+  String get weighInAddNote => 'Add a note';
+
+  @override
+  String get weighInNoteLabel => 'Note';
+
+  @override
+  String get weighInNoteHint => 'e.g. after Eid';
+
+  @override
+  String weighInNoteTooLong(int max) {
+    return 'Keep the note to $max characters';
+  }
+
+  @override
+  String get weighInNoteInvalid =>
+      'The note has a character that can\'t be saved';
+
+  @override
+  String weighInOutOfRange(String min, String max) {
+    return 'Enter a weight between $min and $max';
+  }
+
+  @override
+  String get weighInFuture =>
+      'This time is in the future. Choose an earlier time.';
+
+  @override
+  String get weighInTooEarly => 'Choose a date from 1970 on.';
+
+  @override
+  String weighInConfirmChange(String diff, String when, String weight) {
+    return 'That\'s $diff from your weigh-in $when ($weight). Save it?';
+  }
+
+  @override
+  String weighInConfirmSaveValue(String weight) {
+    return 'Save $weight';
+  }
+
+  @override
+  String get weighInConfirmEdit => 'Edit';
+
+  @override
+  String weighInConfirmUnit(String weight, String converted) {
+    return 'Did you mean $weight ($converted)?';
+  }
+
+  @override
+  String weighInSaveAsUnit(String weight) {
+    return 'Save as $weight';
+  }
+
+  @override
+  String weighInKeepUnit(String unit) {
+    return 'Keep $unit';
+  }
+
+  @override
+  String weighInSameDay(String weight, String time) {
+    return 'Also on this day: $weight at $time';
+  }
+
+  @override
+  String weighInSameDayUsed(String weight, String time) {
+    return 'Also on this day: $weight at $time · used for the trend';
+  }
+
+  @override
+  String get weighInUseForTrend => 'Use this weigh-in for the trend';
+
+  @override
+  String weighInSaved(String weight) {
+    return 'Weigh-in saved: $weight';
+  }
+
+  @override
+  String weighInUpdated(String weight) {
+    return 'Weigh-in updated: $weight';
+  }
+
+  @override
+  String get weighInDeleted => 'Weigh-in deleted';
+
+  @override
+  String get weighInTrendChosen => 'Trend weigh-in for the day changed';
+
+  @override
+  String get weighInChanged =>
+      'This weigh-in changed since you opened it. Reload to see the latest. What you typed stays.';
+
+  @override
+  String get weighInReload => 'Reload';
+
+  @override
+  String get weighInDayChanged =>
+      'Other weigh-ins on this day changed. Check the trend choice and save again.';
+
+  @override
+  String get weighInRemoved => 'This weigh-in was deleted.';
+
+  @override
+  String get weighInSaveFailed => 'Couldn\'t save the weigh-in. Try again.';
+
+  @override
+  String get weighInLoadFailed => 'Couldn\'t load your weigh-ins.';
+
+  @override
+  String get weighInTryAgain => 'Try again';
+
+  @override
   String get progressWeekTitle => 'This week';
 
   @override

@@ -75,7 +75,7 @@ void main() {
       expect(await service.export(settingNames: []), isA<ExportBusy>());
       wait!.complete();
       expect(await first, isA<Shared>());
-      expect(sharer.files, hasLength(12));
+      expect(sharer.files, hasLength(exportRegistryV1.length + 1));
     },
   );
   test('AC-030 receiver reads shared copies after share returns', () async {
@@ -192,10 +192,10 @@ void main() {
     addTearDown(sub.close);
     await container.read(dataExportControllerProvider.notifier).export();
     final done = container.read(dataExportControllerProvider) as ExportDone;
-    expect((done.outcome as Shared).fileCount, 12);
+    expect((done.outcome as Shared).fileCount, exportRegistryV1.length + 1);
     expect((done.outcome as Shared).rowCount, 0);
     expect(offlineClient.requests, isEmpty);
-    expect(sharer.files, hasLength(12));
+    expect(sharer.files, hasLength(exportRegistryV1.length + 1));
     expect(seenKeys, AppSettings.all.map((k) => k.name));
   });
   test('export dir is wiped before each export', () async {

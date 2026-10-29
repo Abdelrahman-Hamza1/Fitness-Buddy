@@ -15,8 +15,12 @@ Future<void> pumpToday(
   WidgetTester tester,
   List<Override> overrides, {
   double scale = 1,
+  bool tall = false,
 }) async {
   usePhone(tester);
+  // Tall: the opened rows stay on screen under the header (numbers and the
+  // weight card, A14).
+  if (tall) tester.view.physicalSize = const Size(360, 1200);
   await tester.pumpWidget(
     ProviderScope(
       overrides: overrides,
@@ -98,6 +102,7 @@ void main() {
             tester,
             fakeToday(days: {testToday: fullDay(testToday)}),
             scale: scale,
+            tall: true,
           );
 
           final breakfast = slotRow('Breakfast');
@@ -403,6 +408,7 @@ void main() {
             testYesterday: fullDay(testYesterday, seed: 1),
           },
         ),
+        tall: true,
       );
       await tester.tap(slotRow('Lunch'));
       await tester.pump();
@@ -438,7 +444,11 @@ void main() {
 
     testWidgets('UX-013 DY-024 the details of a grouped item are 2 taps from '
         'Today (open the slot, tap the item)', (tester) async {
-      await pumpToday(tester, fakeToday(days: {testToday: fullDay(testToday)}));
+      await pumpToday(
+        tester,
+        fakeToday(days: {testToday: fullDay(testToday)}),
+        tall: true,
+      );
 
       await tester.tap(slotRow('Lunch')); // tap 1
       await tester.pump();

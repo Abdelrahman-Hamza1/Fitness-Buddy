@@ -236,9 +236,12 @@ void main() {
       await tester.pump();
     }
     await tester.pump();
-    expect(sharer.files, hasLength(12));
+    expect(sharer.files, hasLength(exportRegistryV1.length + 1));
     expect(
-      find.text('Handed to the share sheet: 0 entries in 12 files.'),
+      find.text(
+        'Handed to the share sheet: 0 entries in '
+        '${exportRegistryV1.length + 1} files.',
+      ),
       findsOneWidget,
     );
     await unmountApp(tester, container);
@@ -404,7 +407,7 @@ void main() {
       final finalState = container.read(dataExportControllerProvider);
       expect(
         sharer.files,
-        hasLength(12),
+        hasLength(exportRegistryV1.length + 1),
         reason: finalState is ExportFailed
             ? finalState.kind.name
             : finalState.runtimeType.toString(),

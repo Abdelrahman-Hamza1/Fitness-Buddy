@@ -234,6 +234,64 @@ use these; nothing here does I/O.
   names and assumptions never appear; errors about blank names don't echo
   the text.
 
+## Weight trend
+
+A14 D1–D6, D10 (WB-003–005, WB-010–012, TD-088). Code: `lib/src/body/`.
+The app's `WeighInOpHandler` and the `weigh_ins` table use these; nothing
+here does I/O, and the trend is derived, never stored (`05` §2.2).
+
+- **Weigh-ins** (`WeighIn`, the read model): `EntryTime` + stored
+  `localDate`, canonical `kg`, the typed `WeighInInput(value, unit)` (kg or
+  lb, TD-017), an optional note and `preferredForDay`. `WeighInInput.kg`
+  rounds once to storage precision (214 lb → 97.07 kg). `WeighInDraft`
+  trims the note (empty → `null`); `validate()` returns a content-free
+  `WeighInIssue`: unit, out of range (20–500 kg after conversion,
+  `WeighInBounds.minIn/maxIn` give 20.0–500.0 kg and 44.1–1,102.3 lb), time
+  (before 1970), note too long (200 code points) or invalid (`\p{Cc}`;
+  `\p{Cf}` such as ZWJ and RLM is allowed). `isInFuture(nowUtc)` allows
+  5 minutes of skew. These rules apply to local writes only: synced rows
+  are never rejected, so `WeighIn` doesn't check `kg`.
+- **Day choice** (`DayChoice.of`, WB-003): one weigh-in per `localDate`,
+  the day's preferred one (the earliest preferred after a sync), else the
+  earliest by measured time; ties break by ID.
+- **Ops** (`sealed class WeighInOp`, family `weighIn`): `CreateWeighIn(id,
+  draft)`, `UpdateWeighIn(id, expectedVersion, draft)`, `DeleteWeighIn`
+  and `ChooseTrendWeighIn(day, chosen:, dayWeighIns:)`, which must list
+  exactly the day's live weigh-ins at the versions shown (`chosen: null`
+  goes back to the earliest).
+- **Implausible values** (`WeighInCheck.check`, WB-005): first a unit
+  mix-up against the nearest weigh-in in time (the number read in the other
+  unit within ±5 % of it, read as typed more than 25 % away: 214 "kg" after
+  97 kg suggests 214 lb), then a change of strictly more than 3 % from the
+  nearest earlier weigh-in at most 7 days back (else the next one within 7
+  days, for a backfill). An edit passes `editingId` so it isn't compared
+  with itself. **A29 reuses `WeighInCheck` for chat and import rows.**
+- **Trend** (`TrendWeight(config).compute(weighIns)`, WB-010): time-aware
+  exponential smoothing over the day choices in date order. `T₁ = w₁`; a
+  weigh-in `Δd` days after the previous one moves the trend by
+  `α = min(1 − 2^(−Δd / 7), 0.75)` of the distance: 9.4 % for a daily
+  weigh-in, 50 % for a weekly one, 75 % after 14 days or more, never all of
+  it. A convex combination, so the trend stays within its inputs' range and
+  a constant series stays constant. Rows without a positive finite `kg`
+  are skipped. The constants live in one `TrendWeightConfig` (half-life
+  7 d, cap 0.75, rate window 28 d, minimum span 14 d, stale after 28 d).
+- **`trendOn(date)` holds the last value** between and after weigh-ins (a
+  step function, WB-022); `null` before the first. `latest.trendKg` is the
+  app's current weight (A14 PA1).
+- **Weekly rate** (`asOf(date)`, WB-011): with `D` the last weigh-in day on
+  or before the date, `(T(D) − T(D − 28)) / 4`; with a shorter history the
+  span `s = D − first` gives `(T(D) − T₁) · 7 / s`, only when `s ≥ 14`.
+  No rate when `date − D ≥ 28`, outside the last 4 weeks (`isStale`,
+  PA2). Display rounding is the app's.
+- **Honesty** (`WeighInCadence.of(days, today)`, WB-012): weigh-in days in
+  the last 28 (today included): none at all, 1–7 sparse, 8+ frequent, 0
+  with older ones stale. `CadenceTipRule.shouldShow` shows the suggestion
+  only when sparse, at most once per 30 days; on the day it first shows it
+  stays until dismissed (`CadenceTipState`, a display preference).
+- **For A38 (adaptive TDEE)**: take trend windows that start and end on
+  weigh-in days (`points`), not on arbitrary dates, since `trendOn` is a
+  step function and a window edge between weigh-ins sees a held value.
+
 ## Tests
 
 Property tests use `glados` with `propertyRuns` (1,000 runs, from
