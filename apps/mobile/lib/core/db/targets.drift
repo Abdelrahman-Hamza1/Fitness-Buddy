@@ -1,0 +1,9 @@
+-- The targets indexes (A13 D2). Partial on live rows: every read query
+-- includes deleted_at IS NULL.
+import 'tables/target_tables.dart';
+
+CREATE INDEX ix_goal_phases_start ON goal_phases (start_date)
+  WHERE deleted_at IS NULL;
+
+CREATE INDEX ix_target_settings_effective ON target_settings (effective_from)
+  WHERE deleted_at IS NULL;

@@ -28,6 +28,14 @@ abstract final class TargetCalculator {
       5 * profile.ageOn(date) +
       (profile.sex == FormulaSex.male ? 5 : -161);
 
+  /// The SF-010 floor on [date]: the larger of resting energy and the sex
+  /// minimum. Recompute it per date and weight; never persist it.
+  static double floor(
+    TargetProfile profile,
+    LocalDate date, {
+    TargetDefaults defaults = const TargetDefaults(),
+  }) => math.max(resting(profile, date), defaults.minimumKcal(profile.sex));
+
   /// Builds typed numeric explanation fields. Below-limit manual targets
   /// require acknowledgement; WeeklyBudget never accepts a below-floor base.
   static TargetCalculation calculate({
@@ -39,7 +47,7 @@ abstract final class TargetCalculator {
     TargetDefaults defaults = const TargetDefaults(),
   }) {
     final restingKcal = resting(profile, date);
-    final floor = math.max(restingKcal, defaults.minimumKcal(profile.sex));
+    final floor = TargetCalculator.floor(profile, date, defaults: defaults);
     final factor = defaults.activityFactor(profile.activity);
     final expenditure = restingKcal * factor;
     // An impossible formula profile must not produce negative expenditure.

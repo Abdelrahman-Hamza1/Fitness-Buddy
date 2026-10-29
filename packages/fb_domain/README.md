@@ -321,6 +321,48 @@ existing timelines can be explicitly corrected by a user action, not silently
 rewritten on reads. `monthlyKgFromWeeklyRate` converts requested or achievable
 rates to the actual named month for TG-011 display.
 
+### A13 adapter: records, wire rules and the per-date projection (A13a)
+
+`ProfileRecord` (one natural-key row, no weight: weigh-ins are the only stored
+body weight, TD-090), `GoalPhaseRecord` and `TargetSettingsRecord` are the
+stored rows. Each has `toWire()` / `fromWire()` over the camelCase content
+fields in `TargetWireFields` (the sync payload without its metadata; maintain
+is `weekly` with `kgPerWeek` 0; `month` is written as the month's first day;
+the seven shift weights are nullable, NULL = 1.0). `fromWire` returns null for
+anything the wire rules reject, so a broken synced row is skipped, never
+thrown. Their `toString` shows no values (body data is sensitive).
+
+**Wire rules** (`TargetRules.wire`, shared with server admission in B19) are
+listed once, in `contracts/README.md` § "Targets semantic rules"; the
+contract test in the app pins the schema bounds to the Dart constants.
+
+Plausibility ranges (age 18–100, height 100–250 cm, weights 20–500 kg, rates,
+manual kcal 500–10,000, macros, shifts 1.0–2.0, names) are app-only
+(`TargetRules.input`) and can change without a contract change; the handler
+checks them only on fields that differ from the stored row or, for a new
+settings version, from the version it supersedes (the one in effect the day
+before), so a synced outlier never blocks an unrelated edit. A first row is
+checked in full.
+
+Writes are the `targets` op family (`PutProfile`, `PutGoalPhase`,
+`PutTargetSettings`; a null expected version creates) with
+`TargetsChanged`. For timelines the handler compares
+`GoalHistory.conflicts` / `TargetSettingsHistory.conflicts` (ordered ID pairs)
+before and after a write and refuses only new pairs, so conflicts that
+arrived by sync never block an edit (TD-089); `validateForWrite` stays for
+whole-timeline checks. `TargetSettingsRevision.next` is the D5 revision rule.
+
+`TargetsTimeline.day` is the only place Today and Targets numbers come from:
+the version effective on the date, the trend weight (else the version's
+basis weight), the floor from `TargetCalculator.floor`, a below-floor base
+raised unless acknowledged manual fixed (`manualNeedsReview` otherwise), an
+unresolvable goal reported as `goalNeedsUpdate` instead of throwing, days with
+no entries or an incomplete mark unknown (never zero), and `WeekPosition`
+(eaten minus planned over the known complete earlier days; none in fixed
+mode). `TargetsTimeline.explain` gives the TG-021 numbers from the version's
+basis weight and effective date. Command outcomes (`TargetsOutcome`) are
+content-free values for the app's `TargetsActions`.
+
 ## Food search and portions (A07 WP1)
 
 `NameMatcher` accepts normalized query/name keys and a `FuzzyIndex`. Strengths

@@ -3,7 +3,7 @@
 R1 is built on **two tracks** (TD-063), both built by Claude since TD-085 (2026-10-28; Codex retired):
 
 - **App track `A01–A43`**: the Flutter app, the Dart packages and tools, the food data. The **By** column records who built each finished step (Codex built some no-UI steps under TD-078).
-- **Backend track `B01–B18`**: the API, the Buddy server, infrastructure and deploys (B01–B08 and B17 built by Codex; the rest by Claude).
+- **Backend track `B01–B19`**: the API, the Buddy server, infrastructure and deploys (B01–B08 and B17 built by Codex; the rest by Claude).
 
 **Within a track the number is the order.** The only waits are the dependencies on the other track, shown in **bold** on the board (§4) and listed in §6. The finished foundation steps keep their old IDs (`S01`–`S04`, `S06a/b`, `S08`); old `Sxx` IDs are never reused, so a commit called `S04: …` is always the old plan and `A01: …` / `B01: …` the new one (§8).
 
@@ -158,10 +158,12 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A10b](A10-settings-slots.md) | Meal slot editor (split from A10) | Claude | A10a | M | S18 part |  | ✅ |
 | [A11](A11-dogfood-1-readiness.md) | Dogfood 1 readiness: export, crash reports, daily build | **Codex** | A09b, A10a · soft: **B03** | M | S28 export part + new | **M1** | ✅ |
 | [A12](A12-targets-engine.md) | Targets engine | **Codex** | A06 | M | S19 |  | ✅ |
-| [A13](A13-targets-ui-onboarding.md) | Goals & targets UI, R1 onboarding | Claude | A10a, A10b, A12 | M | S20 |  | ⬜ |
+| [A13a](A13-targets-ui-onboarding.md) | Targets storage & commands (split from A13, 2026-10-28) | Claude | A10a, A10b, A12 | L | S20 part |  | ✅ |
+| [A13b](A13-targets-ui-onboarding.md) | Onboarding & Today numbers (split from A13) | Claude | A13a, A14 | M | S20 part |  | ⬜ |
+| [A13c](A13-targets-ui-onboarding.md) | Profile, goal & targets screens (split from A13) | Claude | A13b | M | S20 part |  | ⬜ |
 | [A14](A14-weigh-ins-trend.md) | Weigh-ins & trend | Claude | A08a | M | S21 |  | ⬜ |
 | [A15](A15-weight-graph-measurements.md) | Weight graph & measurements | Claude | A12, A14 | L | S22 |  | ⬜ |
-| [A16](A16-progress-tab.md) | Progress tab v1 | Claude | A13, A15 | M | S23 | **M2** | ⬜ |
+| [A16](A16-progress-tab.md) | Progress tab v1 | Claude | A13c, A15 | M | S23 | **M2** | ⬜ |
 | [A17](dish-batches.md) | Dish batch 2: main dishes A | Claude | A04 | S | D2 |  | ⏸ deferred (TD-074): after A41 |
 | [A18](dish-batches.md) | Dish batch 3: out & street food | Claude | A17 | S | D3 |  | ⏸ deferred (TD-074): after A41 |
 | [A19](dish-batches.md) | Dish batch 4: main dishes B, salads & sides | Claude | A18 | S | D4 |  | ⏸ deferred (TD-074): after A41 |
@@ -179,7 +181,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A31](A31-qa-suggestions-halal.md) | Q&A, suggestions & halal (app) | Claude | A26, **B11** (contract) | M | S40 app part |  | ⬜ |
 | [A32](dish-batches.md) | Dish batch 6: gap fill from dogfooding | Claude | A30 | S | D6 |  | ⏸ deferred (TD-074): after A41 |
 | [A33](A33-sign-in-guest-app.md) | Sign-in & guest upgrade | Claude | A20, **B04** | M | S25 |  | ⬜ |
-| [A34](A34-sync-engine-app.md) | Sync engine (app) | Claude | A33, **B05**, **B17**, **B18** | L | S27 |  | ⬜ |
+| [A34](A34-sync-engine-app.md) | Sync engine (app) | Claude | A33, **B05**, **B17**, **B18**, **B19** | L | S27 |  | ⬜ |
 | [A35](A35-account-deletion-app.md) | Account deletion (app) | Claude | A34, **B06** | S | S28 deletion part | **M5** | ⬜ |
 | [A36](A36-workout-domain.md) | Workout domain, library & templates | Claude | A05b, A06, A12 | M | S41 |  | ⬜ |
 | [A37](A37-workout-logging.md) | Workout logging, history & PRs (app) | Claude | A23, A36, **B12** (contract) | L | S42 app part |  | ⬜ |
@@ -214,6 +216,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [B16](B16-security-restore-drill.md) | Security review & restore drill | B14, **A42** | M | S49 | **R1** | ⬜ |
 | [B17](B17-personal-food-sync.md) | personalFood sync entity (server) | B05, **A09a** (contract) | M | new (A09 split) |  | ✅ |
 | [B18](B18-chat-proposal-sync.md) | chatMessage & proposal sync entities (server) | B05, **A21** (WP4 codec shape and size budget) | M | new (A21 plan review) |  | ✅ |
+| [B19](B19-body-targets-sync.md) | Body & targets sync entities (server) | B05, B18, **A13a** (contract), **A14** | M | new (A13 plan review) |  | ⬜ |
 
 ```mermaid
 flowchart LR
@@ -270,6 +273,8 @@ The only places one track waits for the other. The contract is the meeting point
 | **A21** ProposalEngine | B09 | The `fb_domain` entry point the eval uses for full AQ metrics |
 | **A21** (WP4 codec shape, size budget) | B18 | The compact per-card/message codec the sync entities carry |
 | **B18** chat & proposal sync (contract) | A22, A23, A34 | The `chatMessage` and `proposal` entities: built against first, uploaded later |
+| **A13a** targets storage (contract), **A14** weigh-ins | B19 | The `profile`, `goalPhase`, `targetSettings` v1 entities and their wire rules; A14's deferred `weighIn` v2 fields |
+| **B19** body & targets sync | A34 | Server admission of those entities before the app uploads them |
 | **B07** catalog service | A24 | Online search and pack releases |
 | **B09** intents (contract) | A25, A26, A27 | Edits, memory, batches, personal foods, saved meals |
 | **B10** barcode & vision (contract) | A28, A29 | Barcode lookup, label extraction, photos, import |

@@ -12,7 +12,7 @@ as approved for encrypted device transfer/E2EE cloud backup (A11 Q2). Active
 install-id preferences and credentials are excluded. A new install uses a fresh
 active ID while preserving historical row/outbox identities.
 
-Each export produces eight CSVs and one complete JSON file, named
+Each export produces eleven CSVs and one complete JSON file, named
 `fitness-buddy-YYYY-MM-DD-<type>.csv` and `fitness-buddy-YYYY-MM-DD.json` using the local
 export date. Rows sort by id, except diary entries sort by local_date, occurred_at_utc, id.
 Files are in app-private temporary `export/`, wiped before preparation and after
@@ -122,6 +122,28 @@ energy is kcal, macros/fiber are grams. All ids are opaque row identifiers.
 | `day-marks.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
 | `day-marks.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
 
+## goal-phases (`goalPhase`, `goal_phases`)
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `goal-phases.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `goal-phases.revision` | integer | The goal or settings revision (1, 2, …), separate from `version`. |
+| `goal-phases.name` | text | The goal's name, or null for the default label. User content. |
+| `goal-phases.start_date` | text | The first day, `YYYY-MM-DD`. |
+| `goal-phases.end_date` | text | The last day, `YYYY-MM-DD`, or null while the goal is open. |
+| `goal-phases.goal_type` | text | `lose`, `maintain` or `gain`. |
+| `goal-phases.expression_kind` | text | How the goal is set: `targetDate`, `targetRate`, `weekly` or `monthly` (maintain is `weekly` 0). |
+| `goal-phases.target_kg` | number | Target weight, kg (`targetDate`, `targetRate`). |
+| `goal-phases.target_date` | text | Target date, `YYYY-MM-DD` (`targetDate`). |
+| `goal-phases.kg_per_week` | number | kg a week: a positive speed (`targetRate`) or signed, negative for loss (`weekly`). |
+| `goal-phases.month_kg` | number | Signed kg over the named month (`monthly`). |
+| `goal-phases.month` | text | The named month's first day, `YYYY-MM-DD` (`monthly`). |
+| `goal-phases.weight_input_unit` | text | The unit the goal was typed in: `kg` or `lb` (values above are kg). |
+| `goal-phases.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `goal-phases.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `goal-phases.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `goal-phases.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
 ## meal-slots (`mealSlot`, `meal_slots`)
 
 | Column | Type / unit | Meaning |
@@ -165,6 +187,21 @@ energy is kcal, macros/fiber are grams. All ids are opaque row identifiers.
 | `personal-foods.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
 | `personal-foods.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
 | `personal-foods.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
+## profile (`profile`, `profile`)
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `profile.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `profile.sex` | text | `male` or `female`, for the energy formula. |
+| `profile.birth_year` | integer | Birth year. |
+| `profile.height_cm` | number | Height, cm. |
+| `profile.height_input_unit` | text | How the height was typed: `cm` or `ft_in`. |
+| `profile.activity` | text | `sedentary`, `light`, `moderate` or `high`. |
+| `profile.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `profile.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `profile.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `profile.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
 
 ## saved-meals (`savedMeal`, `saved_meals`)
 
@@ -226,3 +263,36 @@ energy is kcal, macros/fiber are grams. All ids are opaque row identifiers.
 | `settings.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
 | `settings.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
 | `settings.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
+## target-settings (`targetSettings`, `target_settings`)
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `target-settings.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `target-settings.revision` | integer | The goal or settings revision (1, 2, …), separate from `version`. |
+| `target-settings.effective_from` | text | The first day this targets version applies, `YYYY-MM-DD`. |
+| `target-settings.mode` | text | `weekly` (weekly budget) or `fixed` (same every day). |
+| `target-settings.rebalancing` | boolean | Whether earlier days rebalance the rest of the week. |
+| `target-settings.base_kcal` | number | The daily base target, kcal (calculated or set by the user). Daily targets are derived. |
+| `target-settings.manual` | boolean | Whether the base is the user's own target. |
+| `target-settings.acknowledged` | boolean | Whether the user acknowledged a manual target below the safety limits. |
+| `target-settings.basis_weight_kg` | number | The body weight the base was calculated with, kg. |
+| `target-settings.shift_mon` | number | Monday's higher-calorie weight, or null for 1.0. |
+| `target-settings.shift_tue` | number | Tuesday's higher-calorie weight, or null for 1.0. |
+| `target-settings.shift_wed` | number | Wednesday's higher-calorie weight, or null for 1.0. |
+| `target-settings.shift_thu` | number | Thursday's higher-calorie weight, or null for 1.0. |
+| `target-settings.shift_fri` | number | Friday's higher-calorie weight, or null for 1.0. |
+| `target-settings.shift_sat` | number | Saturday's higher-calorie weight, or null for 1.0. |
+| `target-settings.shift_sun` | number | Sunday's higher-calorie weight, or null for 1.0. |
+| `target-settings.protein_value` | number | Protein override (grams, or percent of base energy), or null for the default. |
+| `target-settings.protein_is_percent` | boolean | Whether `protein_value` is a percent. |
+| `target-settings.fat_value` | number | Fat override (grams, or percent of base energy), or null for the default. |
+| `target-settings.fat_is_percent` | boolean | Whether `fat_value` is a percent. |
+| `target-settings.carbs_value` | number | Carbs override (grams, or percent of base energy), or null for the default. |
+| `target-settings.carbs_is_percent` | boolean | Whether `carbs_value` is a percent. |
+| `target-settings.fiber_g` | number | Daily fiber target, g, or null for the default. |
+| `target-settings.calories_protein_only` | boolean | Whether only calories and protein have targets. |
+| `target-settings.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `target-settings.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `target-settings.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `target-settings.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |

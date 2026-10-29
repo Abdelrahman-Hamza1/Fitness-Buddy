@@ -12,6 +12,7 @@ import 'tables/sync_tables.dart';
 import 'tables/settings_tables.dart';
 import 'tables/diary_tables.dart';
 import 'tables/food_tables.dart';
+import 'tables/target_tables.dart';
 
 -- settings_kv (entity 'setting', A01 D16)
 CREATE TRIGGER settings_kv_outbox_ai AFTER INSERT ON settings_kv
@@ -177,6 +178,69 @@ BEGIN
 END;
 
 CREATE TRIGGER personal_foods_no_delete BEFORE DELETE ON personal_foods
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;
+
+-- profile (entity 'profile', A13)
+CREATE TRIGGER profile_outbox_ai AFTER INSERT ON profile
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('profile', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER profile_outbox_au AFTER UPDATE ON profile
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('profile', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER profile_no_delete BEFORE DELETE ON profile
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;
+
+-- goal_phases (entity 'goalPhase', A13)
+CREATE TRIGGER goal_phases_outbox_ai AFTER INSERT ON goal_phases
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('goalPhase', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER goal_phases_outbox_au AFTER UPDATE ON goal_phases
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('goalPhase', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER goal_phases_no_delete BEFORE DELETE ON goal_phases
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;
+
+-- target_settings (entity 'targetSettings', A13)
+CREATE TRIGGER target_settings_outbox_ai AFTER INSERT ON target_settings
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('targetSettings', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER target_settings_outbox_au AFTER UPDATE ON target_settings
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('targetSettings', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER target_settings_no_delete BEFORE DELETE ON target_settings
 BEGIN
   SELECT RAISE(ABORT, 'tombstone, never delete');
 END;

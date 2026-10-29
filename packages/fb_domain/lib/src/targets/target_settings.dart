@@ -5,6 +5,23 @@ import 'package:fb_domain/src/targets/weekly_budget.dart';
 import 'package:fb_domain/src/time/local_date.dart';
 import 'package:fb_domain/src/time/week_calendar.dart';
 
+/// The ordering key of one settings version: row `id`, domain `revision`
+/// and `effectiveFrom` date (A12 PA6).
+typedef SettingsVersionKey = ({
+  String id,
+  int revision,
+  LocalDate effectiveFrom,
+});
+
+/// Every unordered pair of distinct [ids], each as (smaller, larger).
+Set<(String, String)> targetIdPairs(Iterable<String> ids) {
+  final sorted = ids.toSet().toList()..sort();
+  return {
+    for (var i = 0; i < sorted.length; i++)
+      for (var j = i + 1; j < sorted.length; j++) (sorted[i], sorted[j]),
+  };
+}
+
 /// Weekly budgeting or the simple fixed alternative (TG-044).
 enum TargetMode {
   /// Seven-day budget, optionally rebalanced and weighted.
@@ -149,6 +166,10 @@ final class TargetSettings {
   /// Inclusive start date.
   final LocalDate effectiveFrom;
 
+  /// The ordering key shared with stored records (A12 PA6).
+  SettingsVersionKey get key =>
+      (id: id, revision: version, effectiveFrom: effectiveFrom);
+
   /// Normal settings.
   final TargetPlan standard;
 
@@ -172,11 +193,29 @@ final class TargetSettingsHistory {
   /// Immutable ordered rows, including same-date alternatives.
   final List<TargetSettings> versions;
 
-  static int _compare(TargetSettings a, TargetSettings b) {
+  static int _compare(TargetSettings a, TargetSettings b) =>
+      compareKeys(a.key, b.key);
+
+  /// The selection order (A12 PA6): effective date, then revision, then
+  /// UUID; the later key wins a date. Shared by stored-record projections.
+  static int compareKeys(SettingsVersionKey a, SettingsVersionKey b) {
     final date = a.effectiveFrom.compareTo(b.effectiveFrom);
     if (date != 0) return date;
-    final revision = a.version.compareTo(b.version);
+    final revision = a.revision.compareTo(b.revision);
     return revision != 0 ? revision : a.id.compareTo(b.id);
+  }
+
+  /// Every pair of distinct row IDs sharing an effective date (PA2), each
+  /// pair ordered (smaller ID first), so the set is independent of input
+  /// order. A local write is refused only when it adds a pair (TD-089).
+  static Set<(String, String)> conflicts(
+    Iterable<SettingsVersionKey> versions,
+  ) {
+    final byDate = <LocalDate, Set<String>>{};
+    for (final version in versions) {
+      (byDate[version.effectiveFrom] ??= {}).add(version.id);
+    }
+    return {for (final ids in byDate.values) ...targetIdPairs(ids)};
   }
 
   /// Validate a proposed local timeline before saving through ChangeSetApplier.

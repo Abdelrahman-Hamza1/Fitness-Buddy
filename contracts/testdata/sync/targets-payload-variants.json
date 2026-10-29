@@ -1,0 +1,188 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "profile-imperial",
+      "entity": "profile",
+      "payload": {
+        "createdAtMs": 0,
+        "origin": "synthetic",
+        "editedByUser": false,
+        "sex": "male",
+        "birthYear": 1985,
+        "heightCm": 180.34,
+        "heightInputUnit": "ft_in",
+        "activity": "moderate"
+      }
+    },
+    {
+      "id": "goal-weekly-negative",
+      "entity": "goalPhase",
+      "payload": {
+        "createdAtMs": 0,
+        "origin": "synthetic",
+        "editedByUser": false,
+        "revision": 1,
+        "name": null,
+        "startDate": "2026-10-28",
+        "endDate": null,
+        "goalType": "lose",
+        "expressionKind": "weekly",
+        "targetKg": null,
+        "targetDate": null,
+        "kgPerWeek": -0.5,
+        "monthKg": null,
+        "month": null,
+        "weightInputUnit": "kg"
+      }
+    },
+    {
+      "id": "goal-maintain-weekly-zero",
+      "entity": "goalPhase",
+      "payload": {
+        "createdAtMs": 0,
+        "origin": "synthetic",
+        "editedByUser": false,
+        "revision": 1,
+        "name": null,
+        "startDate": "2026-10-28",
+        "endDate": null,
+        "goalType": "maintain",
+        "expressionKind": "weekly",
+        "targetKg": null,
+        "targetDate": null,
+        "kgPerWeek": 0.0,
+        "monthKg": null,
+        "month": null,
+        "weightInputUnit": "kg"
+      }
+    },
+    {
+      "id": "goal-monthly-gain-pounds",
+      "entity": "goalPhase",
+      "payload": {
+        "createdAtMs": 0,
+        "origin": "synthetic",
+        "editedByUser": false,
+        "revision": 1,
+        "name": null,
+        "startDate": "2026-10-28",
+        "endDate": null,
+        "goalType": "gain",
+        "expressionKind": "monthly",
+        "targetKg": null,
+        "targetDate": null,
+        "kgPerWeek": null,
+        "monthKg": 0.907184,
+        "month": "2027-02-01",
+        "weightInputUnit": "lb"
+      }
+    },
+    {
+      "id": "goal-target-date-closed",
+      "entity": "goalPhase",
+      "payload": {
+        "createdAtMs": 0,
+        "origin": "synthetic",
+        "editedByUser": false,
+        "revision": 3,
+        "name": null,
+        "startDate": "2026-10-28",
+        "endDate": "2027-03-01",
+        "goalType": "lose",
+        "expressionKind": "targetDate",
+        "targetKg": 70.0,
+        "targetDate": "2027-03-01",
+        "kgPerWeek": null,
+        "monthKg": null,
+        "month": null,
+        "weightInputUnit": "kg"
+      }
+    },
+    {
+      "id": "goal-target-rate-pounds",
+      "entity": "goalPhase",
+      "payload": {
+        "createdAtMs": 0,
+        "origin": "synthetic",
+        "editedByUser": false,
+        "revision": 1,
+        "name": null,
+        "startDate": "2026-10-28",
+        "endDate": null,
+        "goalType": "lose",
+        "expressionKind": "targetRate",
+        "targetKg": 72.5747792,
+        "targetDate": null,
+        "kgPerWeek": 0.45359237,
+        "monthKg": null,
+        "month": null,
+        "weightInputUnit": "lb"
+      }
+    },
+    {
+      "id": "settings-fixed-manual-acknowledged",
+      "entity": "targetSettings",
+      "payload": {
+        "createdAtMs": 0,
+        "origin": "synthetic",
+        "editedByUser": false,
+        "revision": 2,
+        "effectiveFrom": "2026-10-28",
+        "mode": "fixed",
+        "rebalancing": false,
+        "baseKcal": 1300.0,
+        "manual": true,
+        "acknowledged": true,
+        "basisWeightKg": 82.4,
+        "shiftMon": null,
+        "shiftTue": null,
+        "shiftWed": null,
+        "shiftThu": null,
+        "shiftFri": null,
+        "shiftSat": null,
+        "shiftSun": null,
+        "proteinValue": 30.0,
+        "proteinIsPercent": true,
+        "fatValue": null,
+        "fatIsPercent": null,
+        "carbsValue": null,
+        "carbsIsPercent": null,
+        "fiberG": null,
+        "caloriesProteinOnly": true
+      }
+    },
+    {
+      "id": "settings-seven-shifts",
+      "entity": "targetSettings",
+      "payload": {
+        "createdAtMs": 0,
+        "origin": "synthetic",
+        "editedByUser": false,
+        "revision": 1,
+        "effectiveFrom": "2026-10-28",
+        "mode": "weekly",
+        "rebalancing": true,
+        "baseKcal": 2150.5,
+        "manual": false,
+        "acknowledged": false,
+        "basisWeightKg": 82.4,
+        "shiftMon": 1.0,
+        "shiftTue": 1.0,
+        "shiftWed": 1.0,
+        "shiftThu": 1.15,
+        "shiftFri": 1.3,
+        "shiftSat": 1.15,
+        "shiftSun": 1.0,
+        "proteinValue": null,
+        "proteinIsPercent": null,
+        "fatValue": null,
+        "fatIsPercent": null,
+        "carbsValue": 200.0,
+        "carbsIsPercent": false,
+        "fiberG": null,
+        "caloriesProteinOnly": false
+      }
+    }
+  ]
+}

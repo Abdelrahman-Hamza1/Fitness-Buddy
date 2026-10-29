@@ -236,9 +236,9 @@ void main() {
       await tester.pump();
     }
     await tester.pump();
-    expect(sharer.files, hasLength(9));
+    expect(sharer.files, hasLength(12));
     expect(
-      find.text('Handed to the share sheet: 0 entries in 9 files.'),
+      find.text('Handed to the share sheet: 0 entries in 12 files.'),
       findsOneWidget,
     );
     await unmountApp(tester, container);
@@ -385,7 +385,7 @@ void main() {
       await tester.tap(find.widgetWithText(FilledButton, 'Export'));
       for (
         var i = 0;
-        i < 100 &&
+        i < 300 &&
             find
                 .textContaining('Handed to the share sheet:')
                 .evaluate()
@@ -404,7 +404,7 @@ void main() {
       final finalState = container.read(dataExportControllerProvider);
       expect(
         sharer.files,
-        hasLength(9),
+        hasLength(12),
         reason: finalState is ExportFailed
             ? finalState.kind.name
             : finalState.runtimeType.toString(),

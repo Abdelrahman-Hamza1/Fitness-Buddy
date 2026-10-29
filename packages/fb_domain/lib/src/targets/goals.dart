@@ -1,5 +1,6 @@
 import 'package:fb_domain/src/ids/uuid_v7.dart';
 import 'package:fb_domain/src/targets/target_profile.dart';
+import 'package:fb_domain/src/targets/target_settings.dart' show targetIdPairs;
 import 'package:fb_domain/src/time/local_date.dart';
 
 /// Goal direction (TG-010).
@@ -257,6 +258,24 @@ final class GoalHistory {
       previous = phase;
     }
   }
+
+  /// Every pair of distinct phase IDs whose inclusive date ranges overlap
+  /// (an open end runs forever), each ordered (smaller ID first), so the set
+  /// is independent of input order (PA2). A local write is refused only when
+  /// it adds a pair; conflicts that arrived by sync never block (TD-089).
+  static Set<(String, String)> conflicts(Iterable<GoalPhase> phases) {
+    final list = phases.toList();
+    return {
+      for (var i = 0; i < list.length; i++)
+        for (var j = i + 1; j < list.length; j++)
+          if (list[i].id != list[j].id && _overlap(list[i], list[j]))
+            ...targetIdPairs([list[i].id, list[j].id]),
+    };
+  }
+
+  static bool _overlap(GoalPhase a, GoalPhase b) =>
+      (a.end == null || !b.start.isAfter(a.end!)) &&
+      (b.end == null || !a.start.isAfter(b.end!));
 
   /// Effective phase for [date], or null in a gap. No earlier-phase revival
   /// after a later phase's end; the later start supersedes its predecessor.

@@ -1844,10 +1844,1065 @@ i1.GeneratedColumn<double> _column_70(String aliasedName) =>
       type: i1.DriftSqlType.double,
       $customConstraints: 'NULL',
     );
+
+final class Schema5 extends i0.VersionedSchema {
+  Schema5({required super.database}) : super(version: 5);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    goalPhases,
+    ixGoalPhasesStart,
+    targetSettings,
+    ixTargetSettingsEffective,
+    profile,
+    diaryEntries,
+    ixDiaryEntriesLive,
+    ixDiaryEntriesGroup,
+    dishGroups,
+    ixDishGroupsLive,
+    savedMealItems,
+    ixSavedMealItemsMeal,
+    dayMarks,
+    ixDayMarksDate,
+    ixDiaryEntriesFood,
+    ixSavedMealItemsFood,
+    mealSlots,
+    savedMeals,
+    settingsKv,
+    syncState,
+    syncOutbox,
+    settingsKvOutboxAi,
+    settingsKvOutboxAu,
+    settingsKvNoDelete,
+    mealSlotsOutboxAi,
+    mealSlotsOutboxAu,
+    mealSlotsNoDelete,
+    dishGroupsOutboxAi,
+    dishGroupsOutboxAu,
+    dishGroupsNoDelete,
+    diaryEntriesOutboxAi,
+    diaryEntriesOutboxAu,
+    diaryEntriesNoDelete,
+    dayMarksOutboxAi,
+    dayMarksOutboxAu,
+    dayMarksNoDelete,
+    savedMealsOutboxAi,
+    savedMealsOutboxAu,
+    savedMealsNoDelete,
+    savedMealItemsOutboxAi,
+    savedMealItemsOutboxAu,
+    savedMealItemsNoDelete,
+    personalFoods,
+    personalFoodsOutboxAi,
+    personalFoodsOutboxAu,
+    personalFoodsNoDelete,
+    profileOutboxAi,
+    profileOutboxAu,
+    profileNoDelete,
+    goalPhasesOutboxAi,
+    goalPhasesOutboxAu,
+    goalPhasesNoDelete,
+    targetSettingsOutboxAi,
+    targetSettingsOutboxAu,
+    targetSettingsNoDelete,
+  ];
+  late final Shape10 goalPhases = Shape10(
+    source: i0.VersionedTable(
+      entityName: 'goal_phases',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_71,
+        _column_52,
+        _column_72,
+        _column_73,
+        _column_74,
+        _column_75,
+        _column_76,
+        _column_77,
+        _column_78,
+        _column_79,
+        _column_80,
+        _column_81,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixGoalPhasesStart = i1.Index(
+    'ix_goal_phases_start',
+    'CREATE INDEX ix_goal_phases_start ON goal_phases (start_date) WHERE deleted_at IS NULL',
+  );
+  late final Shape11 targetSettings = Shape11(
+    source: i0.VersionedTable(
+      entityName: 'target_settings',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_71,
+        _column_82,
+        _column_83,
+        _column_84,
+        _column_85,
+        _column_86,
+        _column_87,
+        _column_88,
+        _column_89,
+        _column_90,
+        _column_91,
+        _column_92,
+        _column_93,
+        _column_94,
+        _column_95,
+        _column_96,
+        _column_97,
+        _column_98,
+        _column_99,
+        _column_100,
+        _column_101,
+        _column_102,
+        _column_103,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixTargetSettingsEffective = i1.Index(
+    'ix_target_settings_effective',
+    'CREATE INDEX ix_target_settings_effective ON target_settings (effective_from) WHERE deleted_at IS NULL',
+  );
+  late final Shape12 profile = Shape12(
+    source: i0.VersionedTable(
+      entityName: 'profile',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_104,
+        _column_105,
+        _column_106,
+        _column_107,
+        _column_108,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape3 diaryEntries = Shape3(
+    source: i0.VersionedTable(
+      entityName: 'diary_entries',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_16,
+        _column_17,
+        _column_18,
+        _column_19,
+        _column_20,
+        _column_21,
+        _column_22,
+        _column_23,
+        _column_24,
+        _column_25,
+        _column_26,
+        _column_27,
+        _column_28,
+        _column_29,
+        _column_30,
+        _column_31,
+        _column_32,
+        _column_33,
+        _column_34,
+        _column_35,
+        _column_36,
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+        _column_41,
+        _column_42,
+        _column_43,
+        _column_44,
+        _column_45,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixDiaryEntriesLive = i1.Index(
+    'ix_diary_entries_live',
+    'CREATE INDEX ix_diary_entries_live ON diary_entries (local_date, slot_id) WHERE deleted_at IS NULL',
+  );
+  final i1.Index ixDiaryEntriesGroup = i1.Index(
+    'ix_diary_entries_group',
+    'CREATE INDEX ix_diary_entries_group ON diary_entries (dish_group_id) WHERE dish_group_id IS NOT NULL AND deleted_at IS NULL',
+  );
+  late final Shape4 dishGroups = Shape4(
+    source: i0.VersionedTable(
+      entityName: 'dish_groups',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_46,
+        _column_41,
+        _column_44,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixDishGroupsLive = i1.Index(
+    'ix_dish_groups_live',
+    'CREATE INDEX ix_dish_groups_live ON dish_groups (local_date) WHERE deleted_at IS NULL',
+  );
+  late final Shape5 savedMealItems = Shape5(
+    source: i0.VersionedTable(
+      entityName: 'saved_meal_items',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_16,
+        _column_17,
+        _column_18,
+        _column_19,
+        _column_20,
+        _column_21,
+        _column_22,
+        _column_23,
+        _column_24,
+        _column_25,
+        _column_26,
+        _column_27,
+        _column_28,
+        _column_29,
+        _column_30,
+        _column_31,
+        _column_32,
+        _column_33,
+        _column_34,
+        _column_35,
+        _column_36,
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+        _column_47,
+        _column_48,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixSavedMealItemsMeal = i1.Index(
+    'ix_saved_meal_items_meal',
+    'CREATE INDEX ix_saved_meal_items_meal ON saved_meal_items (saved_meal_id) WHERE deleted_at IS NULL',
+  );
+  late final Shape6 dayMarks = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'day_marks',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_41,
+        _column_49,
+        _column_50,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixDayMarksDate = i1.Index(
+    'ix_day_marks_date',
+    'CREATE INDEX ix_day_marks_date ON day_marks (local_date) WHERE deleted_at IS NULL',
+  );
+  final i1.Index ixDiaryEntriesFood = i1.Index(
+    'ix_diary_entries_food',
+    'CREATE INDEX ix_diary_entries_food ON diary_entries (food_kind, food_id) WHERE deleted_at IS NULL',
+  );
+  final i1.Index ixSavedMealItemsFood = i1.Index(
+    'ix_saved_meal_items_food',
+    'CREATE INDEX ix_saved_meal_items_food ON saved_meal_items (food_kind, food_id) WHERE deleted_at IS NULL',
+  );
+  late final Shape7 mealSlots = Shape7(
+    source: i0.VersionedTable(
+      entityName: 'meal_slots',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK((window_start_min IS NULL)=(window_end_min IS NULL))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_51,
+        _column_52,
+        _column_48,
+        _column_53,
+        _column_54,
+        _column_55,
+        _column_56,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 savedMeals = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'saved_meals',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_46,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape0 settingsKv = Shape0(
+    source: i0.VersionedTable(
+      entityName: 'settings_kv',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_8,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape1 syncState = Shape1(
+    source: i0.VersionedTable(
+      entityName: 'sync_state',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY("key")'],
+      columns: [_column_9, _column_10],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape2 syncOutbox = Shape2(
+    source: i0.VersionedTable(
+      entityName: 'sync_outbox',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_11, _column_12, _column_13, _column_14, _column_15],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger settingsKvOutboxAi = i1.Trigger(
+    'CREATE TRIGGER settings_kv_outbox_ai AFTER INSERT ON settings_kv WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'setting\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'settings_kv_outbox_ai',
+  );
+  final i1.Trigger settingsKvOutboxAu = i1.Trigger(
+    'CREATE TRIGGER settings_kv_outbox_au AFTER UPDATE ON settings_kv WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'setting\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'settings_kv_outbox_au',
+  );
+  final i1.Trigger settingsKvNoDelete = i1.Trigger(
+    'CREATE TRIGGER settings_kv_no_delete BEFORE DELETE ON settings_kv BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'settings_kv_no_delete',
+  );
+  final i1.Trigger mealSlotsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER meal_slots_outbox_ai AFTER INSERT ON meal_slots WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'mealSlot\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'meal_slots_outbox_ai',
+  );
+  final i1.Trigger mealSlotsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER meal_slots_outbox_au AFTER UPDATE ON meal_slots WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'mealSlot\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'meal_slots_outbox_au',
+  );
+  final i1.Trigger mealSlotsNoDelete = i1.Trigger(
+    'CREATE TRIGGER meal_slots_no_delete BEFORE DELETE ON meal_slots BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'meal_slots_no_delete',
+  );
+  final i1.Trigger dishGroupsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER dish_groups_outbox_ai AFTER INSERT ON dish_groups WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'dishGroup\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'dish_groups_outbox_ai',
+  );
+  final i1.Trigger dishGroupsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER dish_groups_outbox_au AFTER UPDATE ON dish_groups WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'dishGroup\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'dish_groups_outbox_au',
+  );
+  final i1.Trigger dishGroupsNoDelete = i1.Trigger(
+    'CREATE TRIGGER dish_groups_no_delete BEFORE DELETE ON dish_groups BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'dish_groups_no_delete',
+  );
+  final i1.Trigger diaryEntriesOutboxAi = i1.Trigger(
+    'CREATE TRIGGER diary_entries_outbox_ai AFTER INSERT ON diary_entries WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'diaryEntry\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'diary_entries_outbox_ai',
+  );
+  final i1.Trigger diaryEntriesOutboxAu = i1.Trigger(
+    'CREATE TRIGGER diary_entries_outbox_au AFTER UPDATE ON diary_entries WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'diaryEntry\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'diary_entries_outbox_au',
+  );
+  final i1.Trigger diaryEntriesNoDelete = i1.Trigger(
+    'CREATE TRIGGER diary_entries_no_delete BEFORE DELETE ON diary_entries BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'diary_entries_no_delete',
+  );
+  final i1.Trigger dayMarksOutboxAi = i1.Trigger(
+    'CREATE TRIGGER day_marks_outbox_ai AFTER INSERT ON day_marks WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'dayMark\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'day_marks_outbox_ai',
+  );
+  final i1.Trigger dayMarksOutboxAu = i1.Trigger(
+    'CREATE TRIGGER day_marks_outbox_au AFTER UPDATE ON day_marks WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'dayMark\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'day_marks_outbox_au',
+  );
+  final i1.Trigger dayMarksNoDelete = i1.Trigger(
+    'CREATE TRIGGER day_marks_no_delete BEFORE DELETE ON day_marks BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'day_marks_no_delete',
+  );
+  final i1.Trigger savedMealsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER saved_meals_outbox_ai AFTER INSERT ON saved_meals WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'savedMeal\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'saved_meals_outbox_ai',
+  );
+  final i1.Trigger savedMealsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER saved_meals_outbox_au AFTER UPDATE ON saved_meals WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'savedMeal\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'saved_meals_outbox_au',
+  );
+  final i1.Trigger savedMealsNoDelete = i1.Trigger(
+    'CREATE TRIGGER saved_meals_no_delete BEFORE DELETE ON saved_meals BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'saved_meals_no_delete',
+  );
+  final i1.Trigger savedMealItemsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER saved_meal_items_outbox_ai AFTER INSERT ON saved_meal_items WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'savedMealItem\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'saved_meal_items_outbox_ai',
+  );
+  final i1.Trigger savedMealItemsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER saved_meal_items_outbox_au AFTER UPDATE ON saved_meal_items WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'savedMealItem\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'saved_meal_items_outbox_au',
+  );
+  final i1.Trigger savedMealItemsNoDelete = i1.Trigger(
+    'CREATE TRIGGER saved_meal_items_no_delete BEFORE DELETE ON saved_meal_items BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'saved_meal_items_no_delete',
+  );
+  late final Shape9 personalFoods = Shape9(
+    source: i0.VersionedTable(
+      entityName: 'personal_foods',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK((entry_serving_unit IS NULL)=(entry_serving_amount IS NULL))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_19,
+        _column_20,
+        _column_57,
+        _column_58,
+        _column_59,
+        _column_30,
+        _column_60,
+        _column_61,
+        _column_62,
+        _column_63,
+        _column_64,
+        _column_65,
+        _column_66,
+        _column_67,
+        _column_68,
+        _column_69,
+        _column_70,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger personalFoodsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER personal_foods_outbox_ai AFTER INSERT ON personal_foods WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'personalFood\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'personal_foods_outbox_ai',
+  );
+  final i1.Trigger personalFoodsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER personal_foods_outbox_au AFTER UPDATE ON personal_foods WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'personalFood\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'personal_foods_outbox_au',
+  );
+  final i1.Trigger personalFoodsNoDelete = i1.Trigger(
+    'CREATE TRIGGER personal_foods_no_delete BEFORE DELETE ON personal_foods BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'personal_foods_no_delete',
+  );
+  final i1.Trigger profileOutboxAi = i1.Trigger(
+    'CREATE TRIGGER profile_outbox_ai AFTER INSERT ON profile WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'profile\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'profile_outbox_ai',
+  );
+  final i1.Trigger profileOutboxAu = i1.Trigger(
+    'CREATE TRIGGER profile_outbox_au AFTER UPDATE ON profile WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'profile\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'profile_outbox_au',
+  );
+  final i1.Trigger profileNoDelete = i1.Trigger(
+    'CREATE TRIGGER profile_no_delete BEFORE DELETE ON profile BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'profile_no_delete',
+  );
+  final i1.Trigger goalPhasesOutboxAi = i1.Trigger(
+    'CREATE TRIGGER goal_phases_outbox_ai AFTER INSERT ON goal_phases WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'goalPhase\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'goal_phases_outbox_ai',
+  );
+  final i1.Trigger goalPhasesOutboxAu = i1.Trigger(
+    'CREATE TRIGGER goal_phases_outbox_au AFTER UPDATE ON goal_phases WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'goalPhase\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'goal_phases_outbox_au',
+  );
+  final i1.Trigger goalPhasesNoDelete = i1.Trigger(
+    'CREATE TRIGGER goal_phases_no_delete BEFORE DELETE ON goal_phases BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'goal_phases_no_delete',
+  );
+  final i1.Trigger targetSettingsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER target_settings_outbox_ai AFTER INSERT ON target_settings WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'targetSettings\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'target_settings_outbox_ai',
+  );
+  final i1.Trigger targetSettingsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER target_settings_outbox_au AFTER UPDATE ON target_settings WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'targetSettings\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'target_settings_outbox_au',
+  );
+  final i1.Trigger targetSettingsNoDelete = i1.Trigger(
+    'CREATE TRIGGER target_settings_no_delete BEFORE DELETE ON target_settings BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'target_settings_no_delete',
+  );
+}
+
+class Shape10 extends i0.VersionedTable {
+  Shape10({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAt =>
+      columnsByName['created_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get updatedHlc =>
+      columnsByName['updated_hlc']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get version =>
+      columnsByName['version']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get deletedAt =>
+      columnsByName['deleted_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get deviceId =>
+      columnsByName['device_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get origin =>
+      columnsByName['origin']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get editedByUser =>
+      columnsByName['edited_by_user']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get revision =>
+      columnsByName['revision']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get name =>
+      columnsByName['name']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get startDate =>
+      columnsByName['start_date']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get endDate =>
+      columnsByName['end_date']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get goalType =>
+      columnsByName['goal_type']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get expressionKind =>
+      columnsByName['expression_kind']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<double> get targetKg =>
+      columnsByName['target_kg']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<String> get targetDate =>
+      columnsByName['target_date']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<double> get kgPerWeek =>
+      columnsByName['kg_per_week']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get monthKg =>
+      columnsByName['month_kg']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<String> get month =>
+      columnsByName['month']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get weightInputUnit =>
+      columnsByName['weight_input_unit']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<int> _column_71(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'revision',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_72(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'start_date',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_73(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'end_date',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_74(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'goal_type',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_75(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'expression_kind',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<double> _column_76(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'target_kg',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_77(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'target_date',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_78(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'kg_per_week',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_79(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'month_kg',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_80(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'month',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_81(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'weight_input_unit',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+
+class Shape11 extends i0.VersionedTable {
+  Shape11({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAt =>
+      columnsByName['created_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get updatedHlc =>
+      columnsByName['updated_hlc']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get version =>
+      columnsByName['version']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get deletedAt =>
+      columnsByName['deleted_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get deviceId =>
+      columnsByName['device_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get origin =>
+      columnsByName['origin']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get editedByUser =>
+      columnsByName['edited_by_user']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get revision =>
+      columnsByName['revision']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get effectiveFrom =>
+      columnsByName['effective_from']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get mode =>
+      columnsByName['mode']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get rebalancing =>
+      columnsByName['rebalancing']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<double> get baseKcal =>
+      columnsByName['base_kcal']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<int> get manual =>
+      columnsByName['manual']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get acknowledged =>
+      columnsByName['acknowledged']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<double> get basisWeightKg =>
+      columnsByName['basis_weight_kg']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get shiftMon =>
+      columnsByName['shift_mon']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get shiftTue =>
+      columnsByName['shift_tue']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get shiftWed =>
+      columnsByName['shift_wed']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get shiftThu =>
+      columnsByName['shift_thu']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get shiftFri =>
+      columnsByName['shift_fri']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get shiftSat =>
+      columnsByName['shift_sat']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get shiftSun =>
+      columnsByName['shift_sun']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get proteinValue =>
+      columnsByName['protein_value']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<int> get proteinIsPercent =>
+      columnsByName['protein_is_percent']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<double> get fatValue =>
+      columnsByName['fat_value']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<int> get fatIsPercent =>
+      columnsByName['fat_is_percent']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<double> get carbsValue =>
+      columnsByName['carbs_value']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<int> get carbsIsPercent =>
+      columnsByName['carbs_is_percent']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<double> get fiberG =>
+      columnsByName['fiber_g']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<int> get caloriesProteinOnly =>
+      columnsByName['calories_protein_only']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<String> _column_82(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'effective_from',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_83(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'mode',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_84(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'rebalancing',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (rebalancing IN (0, 1))',
+    );
+i1.GeneratedColumn<double> _column_85(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'base_kcal',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_86(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'manual',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (manual IN (0, 1))',
+    );
+i1.GeneratedColumn<int> _column_87(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'acknowledged',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (acknowledged IN (0, 1))',
+    );
+i1.GeneratedColumn<double> _column_88(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'basis_weight_kg',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<double> _column_89(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'shift_mon',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_90(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'shift_tue',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_91(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'shift_wed',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_92(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'shift_thu',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_93(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'shift_fri',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_94(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'shift_sat',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_95(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'shift_sun',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_96(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'protein_value',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_97(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'protein_is_percent',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL CHECK (protein_is_percent IN (0, 1))',
+    );
+i1.GeneratedColumn<double> _column_98(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'fat_value',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_99(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'fat_is_percent',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL CHECK (fat_is_percent IN (0, 1))',
+    );
+i1.GeneratedColumn<double> _column_100(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'carbs_value',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_101(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'carbs_is_percent',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL CHECK (carbs_is_percent IN (0, 1))',
+    );
+i1.GeneratedColumn<double> _column_102(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'fiber_g',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_103(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'calories_protein_only',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (calories_protein_only IN (0, 1))',
+    );
+
+class Shape12 extends i0.VersionedTable {
+  Shape12({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAt =>
+      columnsByName['created_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get updatedHlc =>
+      columnsByName['updated_hlc']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get version =>
+      columnsByName['version']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get deletedAt =>
+      columnsByName['deleted_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get deviceId =>
+      columnsByName['device_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get origin =>
+      columnsByName['origin']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get editedByUser =>
+      columnsByName['edited_by_user']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get sex =>
+      columnsByName['sex']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get birthYear =>
+      columnsByName['birth_year']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<double> get heightCm =>
+      columnsByName['height_cm']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<String> get heightInputUnit =>
+      columnsByName['height_input_unit']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get activity =>
+      columnsByName['activity']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_104(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'sex',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_105(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'birth_year',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<double> _column_106(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'height_cm',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_107(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'height_input_unit',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_108(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'activity',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
   required Future<void> Function(i1.Migrator m, Schema4 schema) from3To4,
+  required Future<void> Function(i1.Migrator m, Schema5 schema) from4To5,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -1866,6 +2921,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from3To4(migrator, schema);
         return 4;
+      case 4:
+        final schema = Schema5(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from4To5(migrator, schema);
+        return 5;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -1876,10 +2936,12 @@ i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
   required Future<void> Function(i1.Migrator m, Schema4 schema) from3To4,
+  required Future<void> Function(i1.Migrator m, Schema5 schema) from4To5,
 }) => i0.VersionedSchema.stepByStepHelper(
   step: migrationSteps(
     from1To2: from1To2,
     from2To3: from2To3,
     from3To4: from3To4,
+    from4To5: from4To5,
   ),
 );

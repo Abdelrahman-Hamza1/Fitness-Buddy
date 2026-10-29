@@ -3,6 +3,3715 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
+class $GoalPhasesTable extends GoalPhases
+    with TableInfo<$GoalPhasesTable, GoalPhaseRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GoalPhasesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+    'origin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedByUserMeta = const VerificationMeta(
+    'editedByUser',
+  );
+  @override
+  late final GeneratedColumn<bool> editedByUser = GeneratedColumn<bool>(
+    'edited_by_user',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_by_user" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _revisionMeta = const VerificationMeta(
+    'revision',
+  );
+  @override
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _startDateMeta = const VerificationMeta(
+    'startDate',
+  );
+  @override
+  late final GeneratedColumn<String> startDate = GeneratedColumn<String>(
+    'start_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endDateMeta = const VerificationMeta(
+    'endDate',
+  );
+  @override
+  late final GeneratedColumn<String> endDate = GeneratedColumn<String>(
+    'end_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _goalTypeMeta = const VerificationMeta(
+    'goalType',
+  );
+  @override
+  late final GeneratedColumn<String> goalType = GeneratedColumn<String>(
+    'goal_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _expressionKindMeta = const VerificationMeta(
+    'expressionKind',
+  );
+  @override
+  late final GeneratedColumn<String> expressionKind = GeneratedColumn<String>(
+    'expression_kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _targetKgMeta = const VerificationMeta(
+    'targetKg',
+  );
+  @override
+  late final GeneratedColumn<double> targetKg = GeneratedColumn<double>(
+    'target_kg',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _targetDateMeta = const VerificationMeta(
+    'targetDate',
+  );
+  @override
+  late final GeneratedColumn<String> targetDate = GeneratedColumn<String>(
+    'target_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _kgPerWeekMeta = const VerificationMeta(
+    'kgPerWeek',
+  );
+  @override
+  late final GeneratedColumn<double> kgPerWeek = GeneratedColumn<double>(
+    'kg_per_week',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _monthKgMeta = const VerificationMeta(
+    'monthKg',
+  );
+  @override
+  late final GeneratedColumn<double> monthKg = GeneratedColumn<double>(
+    'month_kg',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _monthMeta = const VerificationMeta('month');
+  @override
+  late final GeneratedColumn<String> month = GeneratedColumn<String>(
+    'month',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _weightInputUnitMeta = const VerificationMeta(
+    'weightInputUnit',
+  );
+  @override
+  late final GeneratedColumn<String> weightInputUnit = GeneratedColumn<String>(
+    'weight_input_unit',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    revision,
+    name,
+    startDate,
+    endDate,
+    goalType,
+    expressionKind,
+    targetKg,
+    targetDate,
+    kgPerWeek,
+    monthKg,
+    month,
+    weightInputUnit,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'goal_phases';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GoalPhaseRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedHlcMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('origin')) {
+      context.handle(
+        _originMeta,
+        origin.isAcceptableOrUnknown(data['origin']!, _originMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originMeta);
+    }
+    if (data.containsKey('edited_by_user')) {
+      context.handle(
+        _editedByUserMeta,
+        editedByUser.isAcceptableOrUnknown(
+          data['edited_by_user']!,
+          _editedByUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('revision')) {
+      context.handle(
+        _revisionMeta,
+        revision.isAcceptableOrUnknown(data['revision']!, _revisionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_revisionMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    }
+    if (data.containsKey('start_date')) {
+      context.handle(
+        _startDateMeta,
+        startDate.isAcceptableOrUnknown(data['start_date']!, _startDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startDateMeta);
+    }
+    if (data.containsKey('end_date')) {
+      context.handle(
+        _endDateMeta,
+        endDate.isAcceptableOrUnknown(data['end_date']!, _endDateMeta),
+      );
+    }
+    if (data.containsKey('goal_type')) {
+      context.handle(
+        _goalTypeMeta,
+        goalType.isAcceptableOrUnknown(data['goal_type']!, _goalTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_goalTypeMeta);
+    }
+    if (data.containsKey('expression_kind')) {
+      context.handle(
+        _expressionKindMeta,
+        expressionKind.isAcceptableOrUnknown(
+          data['expression_kind']!,
+          _expressionKindMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_expressionKindMeta);
+    }
+    if (data.containsKey('target_kg')) {
+      context.handle(
+        _targetKgMeta,
+        targetKg.isAcceptableOrUnknown(data['target_kg']!, _targetKgMeta),
+      );
+    }
+    if (data.containsKey('target_date')) {
+      context.handle(
+        _targetDateMeta,
+        targetDate.isAcceptableOrUnknown(data['target_date']!, _targetDateMeta),
+      );
+    }
+    if (data.containsKey('kg_per_week')) {
+      context.handle(
+        _kgPerWeekMeta,
+        kgPerWeek.isAcceptableOrUnknown(data['kg_per_week']!, _kgPerWeekMeta),
+      );
+    }
+    if (data.containsKey('month_kg')) {
+      context.handle(
+        _monthKgMeta,
+        monthKg.isAcceptableOrUnknown(data['month_kg']!, _monthKgMeta),
+      );
+    }
+    if (data.containsKey('month')) {
+      context.handle(
+        _monthMeta,
+        month.isAcceptableOrUnknown(data['month']!, _monthMeta),
+      );
+    }
+    if (data.containsKey('weight_input_unit')) {
+      context.handle(
+        _weightInputUnitMeta,
+        weightInputUnit.isAcceptableOrUnknown(
+          data['weight_input_unit']!,
+          _weightInputUnitMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_weightInputUnitMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  GoalPhaseRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GoalPhaseRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      origin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin'],
+      )!,
+      editedByUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited_by_user'],
+      )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      ),
+      startDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}start_date'],
+      )!,
+      endDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}end_date'],
+      ),
+      goalType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}goal_type'],
+      )!,
+      expressionKind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}expression_kind'],
+      )!,
+      targetKg: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}target_kg'],
+      ),
+      targetDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}target_date'],
+      ),
+      kgPerWeek: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}kg_per_week'],
+      ),
+      monthKg: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}month_kg'],
+      ),
+      month: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}month'],
+      ),
+      weightInputUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}weight_input_unit'],
+      )!,
+    );
+  }
+
+  @override
+  $GoalPhasesTable createAlias(String alias) {
+    return $GoalPhasesTable(attachedDatabase, alias);
+  }
+}
+
+class GoalPhaseRow extends DataClass implements Insertable<GoalPhaseRow> {
+  /// UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys
+  /// (`core/db/natural_id.dart`). Lowercase canonical text.
+  final String id;
+
+  /// When the row was first written, UTC ms (0 for seeds).
+  final int createdAt;
+
+  /// The hybrid logical clock of the last write (`fb_domain` `Hlc` text).
+  final String updatedHlc;
+
+  /// 1 on insert, +1 per write: the local optimistic concurrency check.
+  final int version;
+
+  /// The tombstone, UTC ms. Synced rows are never hard-deleted.
+  final int? deletedAt;
+
+  /// The install that made the last write (the HLC's node id, TD-053).
+  final String deviceId;
+
+  /// `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`.
+  final String origin;
+
+  /// Provenance: the user overrode a value that came from another source
+  /// (AI-072, the "edited by you" badge). Set only by ops.
+  final bool editedByUser;
+
+  /// The domain revision (≥ 1), separate from the row version.
+  final int revision;
+
+  /// The user's name, `null` for the default label. User content.
+  final String? name;
+
+  /// The first day, `YYYY-MM-DD`.
+  final String startDate;
+
+  /// The last day, `YYYY-MM-DD`, or `null` while open.
+  final String? endDate;
+
+  /// `lose`, `maintain` or `gain`.
+  final String goalType;
+
+  /// `targetDate`, `targetRate`, `weekly` or `monthly`; maintain is
+  /// `weekly` 0.
+  final String expressionKind;
+
+  /// Target weight, kg (`targetDate`, `targetRate`).
+  final double? targetKg;
+
+  /// Target date, `YYYY-MM-DD` (`targetDate`).
+  final String? targetDate;
+
+  /// kg a week: a positive speed (`targetRate`) or signed (`weekly`).
+  final double? kgPerWeek;
+
+  /// Signed kg over the named month (`monthly`).
+  final double? monthKg;
+
+  /// The named month's first day, `YYYY-MM-DD` (`monthly`).
+  final String? month;
+
+  /// The unit the goal's weights and rates were typed in: `kg` or `lb`
+  /// (TD-017). Stored values are canonical kg.
+  final String weightInputUnit;
+  const GoalPhaseRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedHlc,
+    required this.version,
+    this.deletedAt,
+    required this.deviceId,
+    required this.origin,
+    required this.editedByUser,
+    required this.revision,
+    this.name,
+    required this.startDate,
+    this.endDate,
+    required this.goalType,
+    required this.expressionKind,
+    this.targetKg,
+    this.targetDate,
+    this.kgPerWeek,
+    this.monthKg,
+    this.month,
+    required this.weightInputUnit,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
+    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['device_id'] = Variable<String>(deviceId);
+    map['origin'] = Variable<String>(origin);
+    map['edited_by_user'] = Variable<bool>(editedByUser);
+    map['revision'] = Variable<int>(revision);
+    if (!nullToAbsent || name != null) {
+      map['name'] = Variable<String>(name);
+    }
+    map['start_date'] = Variable<String>(startDate);
+    if (!nullToAbsent || endDate != null) {
+      map['end_date'] = Variable<String>(endDate);
+    }
+    map['goal_type'] = Variable<String>(goalType);
+    map['expression_kind'] = Variable<String>(expressionKind);
+    if (!nullToAbsent || targetKg != null) {
+      map['target_kg'] = Variable<double>(targetKg);
+    }
+    if (!nullToAbsent || targetDate != null) {
+      map['target_date'] = Variable<String>(targetDate);
+    }
+    if (!nullToAbsent || kgPerWeek != null) {
+      map['kg_per_week'] = Variable<double>(kgPerWeek);
+    }
+    if (!nullToAbsent || monthKg != null) {
+      map['month_kg'] = Variable<double>(monthKg);
+    }
+    if (!nullToAbsent || month != null) {
+      map['month'] = Variable<String>(month);
+    }
+    map['weight_input_unit'] = Variable<String>(weightInputUnit);
+    return map;
+  }
+
+  GoalPhasesCompanion toCompanion(bool nullToAbsent) {
+    return GoalPhasesCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
+      version: Value(version),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deviceId: Value(deviceId),
+      origin: Value(origin),
+      editedByUser: Value(editedByUser),
+      revision: Value(revision),
+      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      startDate: Value(startDate),
+      endDate: endDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endDate),
+      goalType: Value(goalType),
+      expressionKind: Value(expressionKind),
+      targetKg: targetKg == null && nullToAbsent
+          ? const Value.absent()
+          : Value(targetKg),
+      targetDate: targetDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(targetDate),
+      kgPerWeek: kgPerWeek == null && nullToAbsent
+          ? const Value.absent()
+          : Value(kgPerWeek),
+      monthKg: monthKg == null && nullToAbsent
+          ? const Value.absent()
+          : Value(monthKg),
+      month: month == null && nullToAbsent
+          ? const Value.absent()
+          : Value(month),
+      weightInputUnit: Value(weightInputUnit),
+    );
+  }
+
+  factory GoalPhaseRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GoalPhaseRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
+      version: serializer.fromJson<int>(json['version']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      origin: serializer.fromJson<String>(json['origin']),
+      editedByUser: serializer.fromJson<bool>(json['editedByUser']),
+      revision: serializer.fromJson<int>(json['revision']),
+      name: serializer.fromJson<String?>(json['name']),
+      startDate: serializer.fromJson<String>(json['startDate']),
+      endDate: serializer.fromJson<String?>(json['endDate']),
+      goalType: serializer.fromJson<String>(json['goalType']),
+      expressionKind: serializer.fromJson<String>(json['expressionKind']),
+      targetKg: serializer.fromJson<double?>(json['targetKg']),
+      targetDate: serializer.fromJson<String?>(json['targetDate']),
+      kgPerWeek: serializer.fromJson<double?>(json['kgPerWeek']),
+      monthKg: serializer.fromJson<double?>(json['monthKg']),
+      month: serializer.fromJson<String?>(json['month']),
+      weightInputUnit: serializer.fromJson<String>(json['weightInputUnit']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
+      'version': serializer.toJson<int>(version),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'origin': serializer.toJson<String>(origin),
+      'editedByUser': serializer.toJson<bool>(editedByUser),
+      'revision': serializer.toJson<int>(revision),
+      'name': serializer.toJson<String?>(name),
+      'startDate': serializer.toJson<String>(startDate),
+      'endDate': serializer.toJson<String?>(endDate),
+      'goalType': serializer.toJson<String>(goalType),
+      'expressionKind': serializer.toJson<String>(expressionKind),
+      'targetKg': serializer.toJson<double?>(targetKg),
+      'targetDate': serializer.toJson<String?>(targetDate),
+      'kgPerWeek': serializer.toJson<double?>(kgPerWeek),
+      'monthKg': serializer.toJson<double?>(monthKg),
+      'month': serializer.toJson<String?>(month),
+      'weightInputUnit': serializer.toJson<String>(weightInputUnit),
+    };
+  }
+
+  GoalPhaseRow copyWith({
+    String? id,
+    int? createdAt,
+    String? updatedHlc,
+    int? version,
+    Value<int?> deletedAt = const Value.absent(),
+    String? deviceId,
+    String? origin,
+    bool? editedByUser,
+    int? revision,
+    Value<String?> name = const Value.absent(),
+    String? startDate,
+    Value<String?> endDate = const Value.absent(),
+    String? goalType,
+    String? expressionKind,
+    Value<double?> targetKg = const Value.absent(),
+    Value<String?> targetDate = const Value.absent(),
+    Value<double?> kgPerWeek = const Value.absent(),
+    Value<double?> monthKg = const Value.absent(),
+    Value<String?> month = const Value.absent(),
+    String? weightInputUnit,
+  }) => GoalPhaseRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+    version: version ?? this.version,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deviceId: deviceId ?? this.deviceId,
+    origin: origin ?? this.origin,
+    editedByUser: editedByUser ?? this.editedByUser,
+    revision: revision ?? this.revision,
+    name: name.present ? name.value : this.name,
+    startDate: startDate ?? this.startDate,
+    endDate: endDate.present ? endDate.value : this.endDate,
+    goalType: goalType ?? this.goalType,
+    expressionKind: expressionKind ?? this.expressionKind,
+    targetKg: targetKg.present ? targetKg.value : this.targetKg,
+    targetDate: targetDate.present ? targetDate.value : this.targetDate,
+    kgPerWeek: kgPerWeek.present ? kgPerWeek.value : this.kgPerWeek,
+    monthKg: monthKg.present ? monthKg.value : this.monthKg,
+    month: month.present ? month.value : this.month,
+    weightInputUnit: weightInputUnit ?? this.weightInputUnit,
+  );
+  GoalPhaseRow copyWithCompanion(GoalPhasesCompanion data) {
+    return GoalPhaseRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
+      version: data.version.present ? data.version.value : this.version,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      editedByUser: data.editedByUser.present
+          ? data.editedByUser.value
+          : this.editedByUser,
+      revision: data.revision.present ? data.revision.value : this.revision,
+      name: data.name.present ? data.name.value : this.name,
+      startDate: data.startDate.present ? data.startDate.value : this.startDate,
+      endDate: data.endDate.present ? data.endDate.value : this.endDate,
+      goalType: data.goalType.present ? data.goalType.value : this.goalType,
+      expressionKind: data.expressionKind.present
+          ? data.expressionKind.value
+          : this.expressionKind,
+      targetKg: data.targetKg.present ? data.targetKg.value : this.targetKg,
+      targetDate: data.targetDate.present
+          ? data.targetDate.value
+          : this.targetDate,
+      kgPerWeek: data.kgPerWeek.present ? data.kgPerWeek.value : this.kgPerWeek,
+      monthKg: data.monthKg.present ? data.monthKg.value : this.monthKg,
+      month: data.month.present ? data.month.value : this.month,
+      weightInputUnit: data.weightInputUnit.present
+          ? data.weightInputUnit.value
+          : this.weightInputUnit,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GoalPhaseRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('revision: $revision, ')
+          ..write('name: $name, ')
+          ..write('startDate: $startDate, ')
+          ..write('endDate: $endDate, ')
+          ..write('goalType: $goalType, ')
+          ..write('expressionKind: $expressionKind, ')
+          ..write('targetKg: $targetKg, ')
+          ..write('targetDate: $targetDate, ')
+          ..write('kgPerWeek: $kgPerWeek, ')
+          ..write('monthKg: $monthKg, ')
+          ..write('month: $month, ')
+          ..write('weightInputUnit: $weightInputUnit')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    revision,
+    name,
+    startDate,
+    endDate,
+    goalType,
+    expressionKind,
+    targetKg,
+    targetDate,
+    kgPerWeek,
+    monthKg,
+    month,
+    weightInputUnit,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GoalPhaseRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc &&
+          other.version == this.version &&
+          other.deletedAt == this.deletedAt &&
+          other.deviceId == this.deviceId &&
+          other.origin == this.origin &&
+          other.editedByUser == this.editedByUser &&
+          other.revision == this.revision &&
+          other.name == this.name &&
+          other.startDate == this.startDate &&
+          other.endDate == this.endDate &&
+          other.goalType == this.goalType &&
+          other.expressionKind == this.expressionKind &&
+          other.targetKg == this.targetKg &&
+          other.targetDate == this.targetDate &&
+          other.kgPerWeek == this.kgPerWeek &&
+          other.monthKg == this.monthKg &&
+          other.month == this.month &&
+          other.weightInputUnit == this.weightInputUnit);
+}
+
+class GoalPhasesCompanion extends UpdateCompanion<GoalPhaseRow> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<String> updatedHlc;
+  final Value<int> version;
+  final Value<int?> deletedAt;
+  final Value<String> deviceId;
+  final Value<String> origin;
+  final Value<bool> editedByUser;
+  final Value<int> revision;
+  final Value<String?> name;
+  final Value<String> startDate;
+  final Value<String?> endDate;
+  final Value<String> goalType;
+  final Value<String> expressionKind;
+  final Value<double?> targetKg;
+  final Value<String?> targetDate;
+  final Value<double?> kgPerWeek;
+  final Value<double?> monthKg;
+  final Value<String?> month;
+  final Value<String> weightInputUnit;
+  final Value<int> rowid;
+  const GoalPhasesCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
+    this.version = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.editedByUser = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.name = const Value.absent(),
+    this.startDate = const Value.absent(),
+    this.endDate = const Value.absent(),
+    this.goalType = const Value.absent(),
+    this.expressionKind = const Value.absent(),
+    this.targetKg = const Value.absent(),
+    this.targetDate = const Value.absent(),
+    this.kgPerWeek = const Value.absent(),
+    this.monthKg = const Value.absent(),
+    this.month = const Value.absent(),
+    this.weightInputUnit = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GoalPhasesCompanion.insert({
+    required String id,
+    required int createdAt,
+    required String updatedHlc,
+    required int version,
+    this.deletedAt = const Value.absent(),
+    required String deviceId,
+    required String origin,
+    this.editedByUser = const Value.absent(),
+    required int revision,
+    this.name = const Value.absent(),
+    required String startDate,
+    this.endDate = const Value.absent(),
+    required String goalType,
+    required String expressionKind,
+    this.targetKg = const Value.absent(),
+    this.targetDate = const Value.absent(),
+    this.kgPerWeek = const Value.absent(),
+    this.monthKg = const Value.absent(),
+    this.month = const Value.absent(),
+    required String weightInputUnit,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedHlc = Value(updatedHlc),
+       version = Value(version),
+       deviceId = Value(deviceId),
+       origin = Value(origin),
+       revision = Value(revision),
+       startDate = Value(startDate),
+       goalType = Value(goalType),
+       expressionKind = Value(expressionKind),
+       weightInputUnit = Value(weightInputUnit);
+  static Insertable<GoalPhaseRow> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<String>? updatedHlc,
+    Expression<int>? version,
+    Expression<int>? deletedAt,
+    Expression<String>? deviceId,
+    Expression<String>? origin,
+    Expression<bool>? editedByUser,
+    Expression<int>? revision,
+    Expression<String>? name,
+    Expression<String>? startDate,
+    Expression<String>? endDate,
+    Expression<String>? goalType,
+    Expression<String>? expressionKind,
+    Expression<double>? targetKg,
+    Expression<String>? targetDate,
+    Expression<double>? kgPerWeek,
+    Expression<double>? monthKg,
+    Expression<String>? month,
+    Expression<String>? weightInputUnit,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
+      if (version != null) 'version': version,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deviceId != null) 'device_id': deviceId,
+      if (origin != null) 'origin': origin,
+      if (editedByUser != null) 'edited_by_user': editedByUser,
+      if (revision != null) 'revision': revision,
+      if (name != null) 'name': name,
+      if (startDate != null) 'start_date': startDate,
+      if (endDate != null) 'end_date': endDate,
+      if (goalType != null) 'goal_type': goalType,
+      if (expressionKind != null) 'expression_kind': expressionKind,
+      if (targetKg != null) 'target_kg': targetKg,
+      if (targetDate != null) 'target_date': targetDate,
+      if (kgPerWeek != null) 'kg_per_week': kgPerWeek,
+      if (monthKg != null) 'month_kg': monthKg,
+      if (month != null) 'month': month,
+      if (weightInputUnit != null) 'weight_input_unit': weightInputUnit,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GoalPhasesCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<String>? updatedHlc,
+    Value<int>? version,
+    Value<int?>? deletedAt,
+    Value<String>? deviceId,
+    Value<String>? origin,
+    Value<bool>? editedByUser,
+    Value<int>? revision,
+    Value<String?>? name,
+    Value<String>? startDate,
+    Value<String?>? endDate,
+    Value<String>? goalType,
+    Value<String>? expressionKind,
+    Value<double?>? targetKg,
+    Value<String?>? targetDate,
+    Value<double?>? kgPerWeek,
+    Value<double?>? monthKg,
+    Value<String?>? month,
+    Value<String>? weightInputUnit,
+    Value<int>? rowid,
+  }) {
+    return GoalPhasesCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
+      version: version ?? this.version,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deviceId: deviceId ?? this.deviceId,
+      origin: origin ?? this.origin,
+      editedByUser: editedByUser ?? this.editedByUser,
+      revision: revision ?? this.revision,
+      name: name ?? this.name,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      goalType: goalType ?? this.goalType,
+      expressionKind: expressionKind ?? this.expressionKind,
+      targetKg: targetKg ?? this.targetKg,
+      targetDate: targetDate ?? this.targetDate,
+      kgPerWeek: kgPerWeek ?? this.kgPerWeek,
+      monthKg: monthKg ?? this.monthKg,
+      month: month ?? this.month,
+      weightInputUnit: weightInputUnit ?? this.weightInputUnit,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (editedByUser.present) {
+      map['edited_by_user'] = Variable<bool>(editedByUser.value);
+    }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (startDate.present) {
+      map['start_date'] = Variable<String>(startDate.value);
+    }
+    if (endDate.present) {
+      map['end_date'] = Variable<String>(endDate.value);
+    }
+    if (goalType.present) {
+      map['goal_type'] = Variable<String>(goalType.value);
+    }
+    if (expressionKind.present) {
+      map['expression_kind'] = Variable<String>(expressionKind.value);
+    }
+    if (targetKg.present) {
+      map['target_kg'] = Variable<double>(targetKg.value);
+    }
+    if (targetDate.present) {
+      map['target_date'] = Variable<String>(targetDate.value);
+    }
+    if (kgPerWeek.present) {
+      map['kg_per_week'] = Variable<double>(kgPerWeek.value);
+    }
+    if (monthKg.present) {
+      map['month_kg'] = Variable<double>(monthKg.value);
+    }
+    if (month.present) {
+      map['month'] = Variable<String>(month.value);
+    }
+    if (weightInputUnit.present) {
+      map['weight_input_unit'] = Variable<String>(weightInputUnit.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GoalPhasesCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('revision: $revision, ')
+          ..write('name: $name, ')
+          ..write('startDate: $startDate, ')
+          ..write('endDate: $endDate, ')
+          ..write('goalType: $goalType, ')
+          ..write('expressionKind: $expressionKind, ')
+          ..write('targetKg: $targetKg, ')
+          ..write('targetDate: $targetDate, ')
+          ..write('kgPerWeek: $kgPerWeek, ')
+          ..write('monthKg: $monthKg, ')
+          ..write('month: $month, ')
+          ..write('weightInputUnit: $weightInputUnit, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TargetSettingsRowsTable extends TargetSettingsRows
+    with TableInfo<$TargetSettingsRowsTable, TargetSettingsRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TargetSettingsRowsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+    'origin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedByUserMeta = const VerificationMeta(
+    'editedByUser',
+  );
+  @override
+  late final GeneratedColumn<bool> editedByUser = GeneratedColumn<bool>(
+    'edited_by_user',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_by_user" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _revisionMeta = const VerificationMeta(
+    'revision',
+  );
+  @override
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _effectiveFromMeta = const VerificationMeta(
+    'effectiveFrom',
+  );
+  @override
+  late final GeneratedColumn<String> effectiveFrom = GeneratedColumn<String>(
+    'effective_from',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modeMeta = const VerificationMeta('mode');
+  @override
+  late final GeneratedColumn<String> mode = GeneratedColumn<String>(
+    'mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rebalancingMeta = const VerificationMeta(
+    'rebalancing',
+  );
+  @override
+  late final GeneratedColumn<bool> rebalancing = GeneratedColumn<bool>(
+    'rebalancing',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("rebalancing" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _baseKcalMeta = const VerificationMeta(
+    'baseKcal',
+  );
+  @override
+  late final GeneratedColumn<double> baseKcal = GeneratedColumn<double>(
+    'base_kcal',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _manualMeta = const VerificationMeta('manual');
+  @override
+  late final GeneratedColumn<bool> manual = GeneratedColumn<bool>(
+    'manual',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("manual" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _acknowledgedMeta = const VerificationMeta(
+    'acknowledged',
+  );
+  @override
+  late final GeneratedColumn<bool> acknowledged = GeneratedColumn<bool>(
+    'acknowledged',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("acknowledged" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _basisWeightKgMeta = const VerificationMeta(
+    'basisWeightKg',
+  );
+  @override
+  late final GeneratedColumn<double> basisWeightKg = GeneratedColumn<double>(
+    'basis_weight_kg',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _shiftMonMeta = const VerificationMeta(
+    'shiftMon',
+  );
+  @override
+  late final GeneratedColumn<double> shiftMon = GeneratedColumn<double>(
+    'shift_mon',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _shiftTueMeta = const VerificationMeta(
+    'shiftTue',
+  );
+  @override
+  late final GeneratedColumn<double> shiftTue = GeneratedColumn<double>(
+    'shift_tue',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _shiftWedMeta = const VerificationMeta(
+    'shiftWed',
+  );
+  @override
+  late final GeneratedColumn<double> shiftWed = GeneratedColumn<double>(
+    'shift_wed',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _shiftThuMeta = const VerificationMeta(
+    'shiftThu',
+  );
+  @override
+  late final GeneratedColumn<double> shiftThu = GeneratedColumn<double>(
+    'shift_thu',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _shiftFriMeta = const VerificationMeta(
+    'shiftFri',
+  );
+  @override
+  late final GeneratedColumn<double> shiftFri = GeneratedColumn<double>(
+    'shift_fri',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _shiftSatMeta = const VerificationMeta(
+    'shiftSat',
+  );
+  @override
+  late final GeneratedColumn<double> shiftSat = GeneratedColumn<double>(
+    'shift_sat',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _shiftSunMeta = const VerificationMeta(
+    'shiftSun',
+  );
+  @override
+  late final GeneratedColumn<double> shiftSun = GeneratedColumn<double>(
+    'shift_sun',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _proteinValueMeta = const VerificationMeta(
+    'proteinValue',
+  );
+  @override
+  late final GeneratedColumn<double> proteinValue = GeneratedColumn<double>(
+    'protein_value',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _proteinIsPercentMeta = const VerificationMeta(
+    'proteinIsPercent',
+  );
+  @override
+  late final GeneratedColumn<bool> proteinIsPercent = GeneratedColumn<bool>(
+    'protein_is_percent',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("protein_is_percent" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _fatValueMeta = const VerificationMeta(
+    'fatValue',
+  );
+  @override
+  late final GeneratedColumn<double> fatValue = GeneratedColumn<double>(
+    'fat_value',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fatIsPercentMeta = const VerificationMeta(
+    'fatIsPercent',
+  );
+  @override
+  late final GeneratedColumn<bool> fatIsPercent = GeneratedColumn<bool>(
+    'fat_is_percent',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("fat_is_percent" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _carbsValueMeta = const VerificationMeta(
+    'carbsValue',
+  );
+  @override
+  late final GeneratedColumn<double> carbsValue = GeneratedColumn<double>(
+    'carbs_value',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _carbsIsPercentMeta = const VerificationMeta(
+    'carbsIsPercent',
+  );
+  @override
+  late final GeneratedColumn<bool> carbsIsPercent = GeneratedColumn<bool>(
+    'carbs_is_percent',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("carbs_is_percent" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _fiberGMeta = const VerificationMeta('fiberG');
+  @override
+  late final GeneratedColumn<double> fiberG = GeneratedColumn<double>(
+    'fiber_g',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _caloriesProteinOnlyMeta =
+      const VerificationMeta('caloriesProteinOnly');
+  @override
+  late final GeneratedColumn<bool> caloriesProteinOnly = GeneratedColumn<bool>(
+    'calories_protein_only',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("calories_protein_only" IN (0, 1))',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    revision,
+    effectiveFrom,
+    mode,
+    rebalancing,
+    baseKcal,
+    manual,
+    acknowledged,
+    basisWeightKg,
+    shiftMon,
+    shiftTue,
+    shiftWed,
+    shiftThu,
+    shiftFri,
+    shiftSat,
+    shiftSun,
+    proteinValue,
+    proteinIsPercent,
+    fatValue,
+    fatIsPercent,
+    carbsValue,
+    carbsIsPercent,
+    fiberG,
+    caloriesProteinOnly,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'target_settings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TargetSettingsRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedHlcMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('origin')) {
+      context.handle(
+        _originMeta,
+        origin.isAcceptableOrUnknown(data['origin']!, _originMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originMeta);
+    }
+    if (data.containsKey('edited_by_user')) {
+      context.handle(
+        _editedByUserMeta,
+        editedByUser.isAcceptableOrUnknown(
+          data['edited_by_user']!,
+          _editedByUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('revision')) {
+      context.handle(
+        _revisionMeta,
+        revision.isAcceptableOrUnknown(data['revision']!, _revisionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_revisionMeta);
+    }
+    if (data.containsKey('effective_from')) {
+      context.handle(
+        _effectiveFromMeta,
+        effectiveFrom.isAcceptableOrUnknown(
+          data['effective_from']!,
+          _effectiveFromMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_effectiveFromMeta);
+    }
+    if (data.containsKey('mode')) {
+      context.handle(
+        _modeMeta,
+        mode.isAcceptableOrUnknown(data['mode']!, _modeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_modeMeta);
+    }
+    if (data.containsKey('rebalancing')) {
+      context.handle(
+        _rebalancingMeta,
+        rebalancing.isAcceptableOrUnknown(
+          data['rebalancing']!,
+          _rebalancingMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_rebalancingMeta);
+    }
+    if (data.containsKey('base_kcal')) {
+      context.handle(
+        _baseKcalMeta,
+        baseKcal.isAcceptableOrUnknown(data['base_kcal']!, _baseKcalMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_baseKcalMeta);
+    }
+    if (data.containsKey('manual')) {
+      context.handle(
+        _manualMeta,
+        manual.isAcceptableOrUnknown(data['manual']!, _manualMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_manualMeta);
+    }
+    if (data.containsKey('acknowledged')) {
+      context.handle(
+        _acknowledgedMeta,
+        acknowledged.isAcceptableOrUnknown(
+          data['acknowledged']!,
+          _acknowledgedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_acknowledgedMeta);
+    }
+    if (data.containsKey('basis_weight_kg')) {
+      context.handle(
+        _basisWeightKgMeta,
+        basisWeightKg.isAcceptableOrUnknown(
+          data['basis_weight_kg']!,
+          _basisWeightKgMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_basisWeightKgMeta);
+    }
+    if (data.containsKey('shift_mon')) {
+      context.handle(
+        _shiftMonMeta,
+        shiftMon.isAcceptableOrUnknown(data['shift_mon']!, _shiftMonMeta),
+      );
+    }
+    if (data.containsKey('shift_tue')) {
+      context.handle(
+        _shiftTueMeta,
+        shiftTue.isAcceptableOrUnknown(data['shift_tue']!, _shiftTueMeta),
+      );
+    }
+    if (data.containsKey('shift_wed')) {
+      context.handle(
+        _shiftWedMeta,
+        shiftWed.isAcceptableOrUnknown(data['shift_wed']!, _shiftWedMeta),
+      );
+    }
+    if (data.containsKey('shift_thu')) {
+      context.handle(
+        _shiftThuMeta,
+        shiftThu.isAcceptableOrUnknown(data['shift_thu']!, _shiftThuMeta),
+      );
+    }
+    if (data.containsKey('shift_fri')) {
+      context.handle(
+        _shiftFriMeta,
+        shiftFri.isAcceptableOrUnknown(data['shift_fri']!, _shiftFriMeta),
+      );
+    }
+    if (data.containsKey('shift_sat')) {
+      context.handle(
+        _shiftSatMeta,
+        shiftSat.isAcceptableOrUnknown(data['shift_sat']!, _shiftSatMeta),
+      );
+    }
+    if (data.containsKey('shift_sun')) {
+      context.handle(
+        _shiftSunMeta,
+        shiftSun.isAcceptableOrUnknown(data['shift_sun']!, _shiftSunMeta),
+      );
+    }
+    if (data.containsKey('protein_value')) {
+      context.handle(
+        _proteinValueMeta,
+        proteinValue.isAcceptableOrUnknown(
+          data['protein_value']!,
+          _proteinValueMeta,
+        ),
+      );
+    }
+    if (data.containsKey('protein_is_percent')) {
+      context.handle(
+        _proteinIsPercentMeta,
+        proteinIsPercent.isAcceptableOrUnknown(
+          data['protein_is_percent']!,
+          _proteinIsPercentMeta,
+        ),
+      );
+    }
+    if (data.containsKey('fat_value')) {
+      context.handle(
+        _fatValueMeta,
+        fatValue.isAcceptableOrUnknown(data['fat_value']!, _fatValueMeta),
+      );
+    }
+    if (data.containsKey('fat_is_percent')) {
+      context.handle(
+        _fatIsPercentMeta,
+        fatIsPercent.isAcceptableOrUnknown(
+          data['fat_is_percent']!,
+          _fatIsPercentMeta,
+        ),
+      );
+    }
+    if (data.containsKey('carbs_value')) {
+      context.handle(
+        _carbsValueMeta,
+        carbsValue.isAcceptableOrUnknown(data['carbs_value']!, _carbsValueMeta),
+      );
+    }
+    if (data.containsKey('carbs_is_percent')) {
+      context.handle(
+        _carbsIsPercentMeta,
+        carbsIsPercent.isAcceptableOrUnknown(
+          data['carbs_is_percent']!,
+          _carbsIsPercentMeta,
+        ),
+      );
+    }
+    if (data.containsKey('fiber_g')) {
+      context.handle(
+        _fiberGMeta,
+        fiberG.isAcceptableOrUnknown(data['fiber_g']!, _fiberGMeta),
+      );
+    }
+    if (data.containsKey('calories_protein_only')) {
+      context.handle(
+        _caloriesProteinOnlyMeta,
+        caloriesProteinOnly.isAcceptableOrUnknown(
+          data['calories_protein_only']!,
+          _caloriesProteinOnlyMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_caloriesProteinOnlyMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TargetSettingsRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TargetSettingsRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      origin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin'],
+      )!,
+      editedByUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited_by_user'],
+      )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+      effectiveFrom: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}effective_from'],
+      )!,
+      mode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mode'],
+      )!,
+      rebalancing: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}rebalancing'],
+      )!,
+      baseKcal: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}base_kcal'],
+      )!,
+      manual: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}manual'],
+      )!,
+      acknowledged: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}acknowledged'],
+      )!,
+      basisWeightKg: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}basis_weight_kg'],
+      )!,
+      shiftMon: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}shift_mon'],
+      ),
+      shiftTue: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}shift_tue'],
+      ),
+      shiftWed: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}shift_wed'],
+      ),
+      shiftThu: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}shift_thu'],
+      ),
+      shiftFri: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}shift_fri'],
+      ),
+      shiftSat: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}shift_sat'],
+      ),
+      shiftSun: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}shift_sun'],
+      ),
+      proteinValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}protein_value'],
+      ),
+      proteinIsPercent: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}protein_is_percent'],
+      ),
+      fatValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}fat_value'],
+      ),
+      fatIsPercent: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}fat_is_percent'],
+      ),
+      carbsValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}carbs_value'],
+      ),
+      carbsIsPercent: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}carbs_is_percent'],
+      ),
+      fiberG: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}fiber_g'],
+      ),
+      caloriesProteinOnly: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}calories_protein_only'],
+      )!,
+    );
+  }
+
+  @override
+  $TargetSettingsRowsTable createAlias(String alias) {
+    return $TargetSettingsRowsTable(attachedDatabase, alias);
+  }
+}
+
+class TargetSettingsRow extends DataClass
+    implements Insertable<TargetSettingsRow> {
+  /// UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys
+  /// (`core/db/natural_id.dart`). Lowercase canonical text.
+  final String id;
+
+  /// When the row was first written, UTC ms (0 for seeds).
+  final int createdAt;
+
+  /// The hybrid logical clock of the last write (`fb_domain` `Hlc` text).
+  final String updatedHlc;
+
+  /// 1 on insert, +1 per write: the local optimistic concurrency check.
+  final int version;
+
+  /// The tombstone, UTC ms. Synced rows are never hard-deleted.
+  final int? deletedAt;
+
+  /// The install that made the last write (the HLC's node id, TD-053).
+  final String deviceId;
+
+  /// `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`.
+  final String origin;
+
+  /// Provenance: the user overrode a value that came from another source
+  /// (AI-072, the "edited by you" badge). Set only by ops.
+  final bool editedByUser;
+
+  /// The domain revision (≥ 1), separate from the row version.
+  final int revision;
+
+  /// The first day this version applies, `YYYY-MM-DD`.
+  final String effectiveFrom;
+
+  /// `weekly` or `fixed`.
+  final String mode;
+
+  /// Whether earlier intake rebalances the remaining days.
+  final bool rebalancing;
+
+  /// The daily base, kcal (generated or manual), unrounded.
+  final double baseKcal;
+
+  /// Whether the base is the user's own target.
+  final bool manual;
+
+  /// Whether the user acknowledged a below-limit manual target (SF-012).
+  final bool acknowledged;
+
+  /// The weight the base was computed with, kg.
+  final double basisWeightKg;
+
+  /// Monday's shifting weight; `null` = 1.0 (PA5).
+  final double? shiftMon;
+
+  /// Tuesday's shifting weight; `null` = 1.0.
+  final double? shiftTue;
+
+  /// Wednesday's shifting weight; `null` = 1.0.
+  final double? shiftWed;
+
+  /// Thursday's shifting weight; `null` = 1.0.
+  final double? shiftThu;
+
+  /// Friday's shifting weight; `null` = 1.0.
+  final double? shiftFri;
+
+  /// Saturday's shifting weight; `null` = 1.0.
+  final double? shiftSat;
+
+  /// Sunday's shifting weight; `null` = 1.0.
+  final double? shiftSun;
+
+  /// Protein override value (with [proteinIsPercent]), or `null`.
+  final double? proteinValue;
+
+  /// Whether [proteinValue] is a percent of base energy.
+  final bool? proteinIsPercent;
+
+  /// Fat override value (with [fatIsPercent]), or `null`.
+  final double? fatValue;
+
+  /// Whether [fatValue] is a percent of base energy.
+  final bool? fatIsPercent;
+
+  /// Carbs override value (with [carbsIsPercent]), or `null`.
+  final double? carbsValue;
+
+  /// Whether [carbsValue] is a percent of base energy.
+  final bool? carbsIsPercent;
+
+  /// Daily fiber, g, or `null` for the default.
+  final double? fiberG;
+
+  /// Whether fat and carbs have no targets (TG-054).
+  final bool caloriesProteinOnly;
+  const TargetSettingsRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedHlc,
+    required this.version,
+    this.deletedAt,
+    required this.deviceId,
+    required this.origin,
+    required this.editedByUser,
+    required this.revision,
+    required this.effectiveFrom,
+    required this.mode,
+    required this.rebalancing,
+    required this.baseKcal,
+    required this.manual,
+    required this.acknowledged,
+    required this.basisWeightKg,
+    this.shiftMon,
+    this.shiftTue,
+    this.shiftWed,
+    this.shiftThu,
+    this.shiftFri,
+    this.shiftSat,
+    this.shiftSun,
+    this.proteinValue,
+    this.proteinIsPercent,
+    this.fatValue,
+    this.fatIsPercent,
+    this.carbsValue,
+    this.carbsIsPercent,
+    this.fiberG,
+    required this.caloriesProteinOnly,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
+    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['device_id'] = Variable<String>(deviceId);
+    map['origin'] = Variable<String>(origin);
+    map['edited_by_user'] = Variable<bool>(editedByUser);
+    map['revision'] = Variable<int>(revision);
+    map['effective_from'] = Variable<String>(effectiveFrom);
+    map['mode'] = Variable<String>(mode);
+    map['rebalancing'] = Variable<bool>(rebalancing);
+    map['base_kcal'] = Variable<double>(baseKcal);
+    map['manual'] = Variable<bool>(manual);
+    map['acknowledged'] = Variable<bool>(acknowledged);
+    map['basis_weight_kg'] = Variable<double>(basisWeightKg);
+    if (!nullToAbsent || shiftMon != null) {
+      map['shift_mon'] = Variable<double>(shiftMon);
+    }
+    if (!nullToAbsent || shiftTue != null) {
+      map['shift_tue'] = Variable<double>(shiftTue);
+    }
+    if (!nullToAbsent || shiftWed != null) {
+      map['shift_wed'] = Variable<double>(shiftWed);
+    }
+    if (!nullToAbsent || shiftThu != null) {
+      map['shift_thu'] = Variable<double>(shiftThu);
+    }
+    if (!nullToAbsent || shiftFri != null) {
+      map['shift_fri'] = Variable<double>(shiftFri);
+    }
+    if (!nullToAbsent || shiftSat != null) {
+      map['shift_sat'] = Variable<double>(shiftSat);
+    }
+    if (!nullToAbsent || shiftSun != null) {
+      map['shift_sun'] = Variable<double>(shiftSun);
+    }
+    if (!nullToAbsent || proteinValue != null) {
+      map['protein_value'] = Variable<double>(proteinValue);
+    }
+    if (!nullToAbsent || proteinIsPercent != null) {
+      map['protein_is_percent'] = Variable<bool>(proteinIsPercent);
+    }
+    if (!nullToAbsent || fatValue != null) {
+      map['fat_value'] = Variable<double>(fatValue);
+    }
+    if (!nullToAbsent || fatIsPercent != null) {
+      map['fat_is_percent'] = Variable<bool>(fatIsPercent);
+    }
+    if (!nullToAbsent || carbsValue != null) {
+      map['carbs_value'] = Variable<double>(carbsValue);
+    }
+    if (!nullToAbsent || carbsIsPercent != null) {
+      map['carbs_is_percent'] = Variable<bool>(carbsIsPercent);
+    }
+    if (!nullToAbsent || fiberG != null) {
+      map['fiber_g'] = Variable<double>(fiberG);
+    }
+    map['calories_protein_only'] = Variable<bool>(caloriesProteinOnly);
+    return map;
+  }
+
+  TargetSettingsRowsCompanion toCompanion(bool nullToAbsent) {
+    return TargetSettingsRowsCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
+      version: Value(version),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deviceId: Value(deviceId),
+      origin: Value(origin),
+      editedByUser: Value(editedByUser),
+      revision: Value(revision),
+      effectiveFrom: Value(effectiveFrom),
+      mode: Value(mode),
+      rebalancing: Value(rebalancing),
+      baseKcal: Value(baseKcal),
+      manual: Value(manual),
+      acknowledged: Value(acknowledged),
+      basisWeightKg: Value(basisWeightKg),
+      shiftMon: shiftMon == null && nullToAbsent
+          ? const Value.absent()
+          : Value(shiftMon),
+      shiftTue: shiftTue == null && nullToAbsent
+          ? const Value.absent()
+          : Value(shiftTue),
+      shiftWed: shiftWed == null && nullToAbsent
+          ? const Value.absent()
+          : Value(shiftWed),
+      shiftThu: shiftThu == null && nullToAbsent
+          ? const Value.absent()
+          : Value(shiftThu),
+      shiftFri: shiftFri == null && nullToAbsent
+          ? const Value.absent()
+          : Value(shiftFri),
+      shiftSat: shiftSat == null && nullToAbsent
+          ? const Value.absent()
+          : Value(shiftSat),
+      shiftSun: shiftSun == null && nullToAbsent
+          ? const Value.absent()
+          : Value(shiftSun),
+      proteinValue: proteinValue == null && nullToAbsent
+          ? const Value.absent()
+          : Value(proteinValue),
+      proteinIsPercent: proteinIsPercent == null && nullToAbsent
+          ? const Value.absent()
+          : Value(proteinIsPercent),
+      fatValue: fatValue == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fatValue),
+      fatIsPercent: fatIsPercent == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fatIsPercent),
+      carbsValue: carbsValue == null && nullToAbsent
+          ? const Value.absent()
+          : Value(carbsValue),
+      carbsIsPercent: carbsIsPercent == null && nullToAbsent
+          ? const Value.absent()
+          : Value(carbsIsPercent),
+      fiberG: fiberG == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fiberG),
+      caloriesProteinOnly: Value(caloriesProteinOnly),
+    );
+  }
+
+  factory TargetSettingsRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TargetSettingsRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
+      version: serializer.fromJson<int>(json['version']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      origin: serializer.fromJson<String>(json['origin']),
+      editedByUser: serializer.fromJson<bool>(json['editedByUser']),
+      revision: serializer.fromJson<int>(json['revision']),
+      effectiveFrom: serializer.fromJson<String>(json['effectiveFrom']),
+      mode: serializer.fromJson<String>(json['mode']),
+      rebalancing: serializer.fromJson<bool>(json['rebalancing']),
+      baseKcal: serializer.fromJson<double>(json['baseKcal']),
+      manual: serializer.fromJson<bool>(json['manual']),
+      acknowledged: serializer.fromJson<bool>(json['acknowledged']),
+      basisWeightKg: serializer.fromJson<double>(json['basisWeightKg']),
+      shiftMon: serializer.fromJson<double?>(json['shiftMon']),
+      shiftTue: serializer.fromJson<double?>(json['shiftTue']),
+      shiftWed: serializer.fromJson<double?>(json['shiftWed']),
+      shiftThu: serializer.fromJson<double?>(json['shiftThu']),
+      shiftFri: serializer.fromJson<double?>(json['shiftFri']),
+      shiftSat: serializer.fromJson<double?>(json['shiftSat']),
+      shiftSun: serializer.fromJson<double?>(json['shiftSun']),
+      proteinValue: serializer.fromJson<double?>(json['proteinValue']),
+      proteinIsPercent: serializer.fromJson<bool?>(json['proteinIsPercent']),
+      fatValue: serializer.fromJson<double?>(json['fatValue']),
+      fatIsPercent: serializer.fromJson<bool?>(json['fatIsPercent']),
+      carbsValue: serializer.fromJson<double?>(json['carbsValue']),
+      carbsIsPercent: serializer.fromJson<bool?>(json['carbsIsPercent']),
+      fiberG: serializer.fromJson<double?>(json['fiberG']),
+      caloriesProteinOnly: serializer.fromJson<bool>(
+        json['caloriesProteinOnly'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
+      'version': serializer.toJson<int>(version),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'origin': serializer.toJson<String>(origin),
+      'editedByUser': serializer.toJson<bool>(editedByUser),
+      'revision': serializer.toJson<int>(revision),
+      'effectiveFrom': serializer.toJson<String>(effectiveFrom),
+      'mode': serializer.toJson<String>(mode),
+      'rebalancing': serializer.toJson<bool>(rebalancing),
+      'baseKcal': serializer.toJson<double>(baseKcal),
+      'manual': serializer.toJson<bool>(manual),
+      'acknowledged': serializer.toJson<bool>(acknowledged),
+      'basisWeightKg': serializer.toJson<double>(basisWeightKg),
+      'shiftMon': serializer.toJson<double?>(shiftMon),
+      'shiftTue': serializer.toJson<double?>(shiftTue),
+      'shiftWed': serializer.toJson<double?>(shiftWed),
+      'shiftThu': serializer.toJson<double?>(shiftThu),
+      'shiftFri': serializer.toJson<double?>(shiftFri),
+      'shiftSat': serializer.toJson<double?>(shiftSat),
+      'shiftSun': serializer.toJson<double?>(shiftSun),
+      'proteinValue': serializer.toJson<double?>(proteinValue),
+      'proteinIsPercent': serializer.toJson<bool?>(proteinIsPercent),
+      'fatValue': serializer.toJson<double?>(fatValue),
+      'fatIsPercent': serializer.toJson<bool?>(fatIsPercent),
+      'carbsValue': serializer.toJson<double?>(carbsValue),
+      'carbsIsPercent': serializer.toJson<bool?>(carbsIsPercent),
+      'fiberG': serializer.toJson<double?>(fiberG),
+      'caloriesProteinOnly': serializer.toJson<bool>(caloriesProteinOnly),
+    };
+  }
+
+  TargetSettingsRow copyWith({
+    String? id,
+    int? createdAt,
+    String? updatedHlc,
+    int? version,
+    Value<int?> deletedAt = const Value.absent(),
+    String? deviceId,
+    String? origin,
+    bool? editedByUser,
+    int? revision,
+    String? effectiveFrom,
+    String? mode,
+    bool? rebalancing,
+    double? baseKcal,
+    bool? manual,
+    bool? acknowledged,
+    double? basisWeightKg,
+    Value<double?> shiftMon = const Value.absent(),
+    Value<double?> shiftTue = const Value.absent(),
+    Value<double?> shiftWed = const Value.absent(),
+    Value<double?> shiftThu = const Value.absent(),
+    Value<double?> shiftFri = const Value.absent(),
+    Value<double?> shiftSat = const Value.absent(),
+    Value<double?> shiftSun = const Value.absent(),
+    Value<double?> proteinValue = const Value.absent(),
+    Value<bool?> proteinIsPercent = const Value.absent(),
+    Value<double?> fatValue = const Value.absent(),
+    Value<bool?> fatIsPercent = const Value.absent(),
+    Value<double?> carbsValue = const Value.absent(),
+    Value<bool?> carbsIsPercent = const Value.absent(),
+    Value<double?> fiberG = const Value.absent(),
+    bool? caloriesProteinOnly,
+  }) => TargetSettingsRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+    version: version ?? this.version,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deviceId: deviceId ?? this.deviceId,
+    origin: origin ?? this.origin,
+    editedByUser: editedByUser ?? this.editedByUser,
+    revision: revision ?? this.revision,
+    effectiveFrom: effectiveFrom ?? this.effectiveFrom,
+    mode: mode ?? this.mode,
+    rebalancing: rebalancing ?? this.rebalancing,
+    baseKcal: baseKcal ?? this.baseKcal,
+    manual: manual ?? this.manual,
+    acknowledged: acknowledged ?? this.acknowledged,
+    basisWeightKg: basisWeightKg ?? this.basisWeightKg,
+    shiftMon: shiftMon.present ? shiftMon.value : this.shiftMon,
+    shiftTue: shiftTue.present ? shiftTue.value : this.shiftTue,
+    shiftWed: shiftWed.present ? shiftWed.value : this.shiftWed,
+    shiftThu: shiftThu.present ? shiftThu.value : this.shiftThu,
+    shiftFri: shiftFri.present ? shiftFri.value : this.shiftFri,
+    shiftSat: shiftSat.present ? shiftSat.value : this.shiftSat,
+    shiftSun: shiftSun.present ? shiftSun.value : this.shiftSun,
+    proteinValue: proteinValue.present ? proteinValue.value : this.proteinValue,
+    proteinIsPercent: proteinIsPercent.present
+        ? proteinIsPercent.value
+        : this.proteinIsPercent,
+    fatValue: fatValue.present ? fatValue.value : this.fatValue,
+    fatIsPercent: fatIsPercent.present ? fatIsPercent.value : this.fatIsPercent,
+    carbsValue: carbsValue.present ? carbsValue.value : this.carbsValue,
+    carbsIsPercent: carbsIsPercent.present
+        ? carbsIsPercent.value
+        : this.carbsIsPercent,
+    fiberG: fiberG.present ? fiberG.value : this.fiberG,
+    caloriesProteinOnly: caloriesProteinOnly ?? this.caloriesProteinOnly,
+  );
+  TargetSettingsRow copyWithCompanion(TargetSettingsRowsCompanion data) {
+    return TargetSettingsRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
+      version: data.version.present ? data.version.value : this.version,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      editedByUser: data.editedByUser.present
+          ? data.editedByUser.value
+          : this.editedByUser,
+      revision: data.revision.present ? data.revision.value : this.revision,
+      effectiveFrom: data.effectiveFrom.present
+          ? data.effectiveFrom.value
+          : this.effectiveFrom,
+      mode: data.mode.present ? data.mode.value : this.mode,
+      rebalancing: data.rebalancing.present
+          ? data.rebalancing.value
+          : this.rebalancing,
+      baseKcal: data.baseKcal.present ? data.baseKcal.value : this.baseKcal,
+      manual: data.manual.present ? data.manual.value : this.manual,
+      acknowledged: data.acknowledged.present
+          ? data.acknowledged.value
+          : this.acknowledged,
+      basisWeightKg: data.basisWeightKg.present
+          ? data.basisWeightKg.value
+          : this.basisWeightKg,
+      shiftMon: data.shiftMon.present ? data.shiftMon.value : this.shiftMon,
+      shiftTue: data.shiftTue.present ? data.shiftTue.value : this.shiftTue,
+      shiftWed: data.shiftWed.present ? data.shiftWed.value : this.shiftWed,
+      shiftThu: data.shiftThu.present ? data.shiftThu.value : this.shiftThu,
+      shiftFri: data.shiftFri.present ? data.shiftFri.value : this.shiftFri,
+      shiftSat: data.shiftSat.present ? data.shiftSat.value : this.shiftSat,
+      shiftSun: data.shiftSun.present ? data.shiftSun.value : this.shiftSun,
+      proteinValue: data.proteinValue.present
+          ? data.proteinValue.value
+          : this.proteinValue,
+      proteinIsPercent: data.proteinIsPercent.present
+          ? data.proteinIsPercent.value
+          : this.proteinIsPercent,
+      fatValue: data.fatValue.present ? data.fatValue.value : this.fatValue,
+      fatIsPercent: data.fatIsPercent.present
+          ? data.fatIsPercent.value
+          : this.fatIsPercent,
+      carbsValue: data.carbsValue.present
+          ? data.carbsValue.value
+          : this.carbsValue,
+      carbsIsPercent: data.carbsIsPercent.present
+          ? data.carbsIsPercent.value
+          : this.carbsIsPercent,
+      fiberG: data.fiberG.present ? data.fiberG.value : this.fiberG,
+      caloriesProteinOnly: data.caloriesProteinOnly.present
+          ? data.caloriesProteinOnly.value
+          : this.caloriesProteinOnly,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TargetSettingsRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('revision: $revision, ')
+          ..write('effectiveFrom: $effectiveFrom, ')
+          ..write('mode: $mode, ')
+          ..write('rebalancing: $rebalancing, ')
+          ..write('baseKcal: $baseKcal, ')
+          ..write('manual: $manual, ')
+          ..write('acknowledged: $acknowledged, ')
+          ..write('basisWeightKg: $basisWeightKg, ')
+          ..write('shiftMon: $shiftMon, ')
+          ..write('shiftTue: $shiftTue, ')
+          ..write('shiftWed: $shiftWed, ')
+          ..write('shiftThu: $shiftThu, ')
+          ..write('shiftFri: $shiftFri, ')
+          ..write('shiftSat: $shiftSat, ')
+          ..write('shiftSun: $shiftSun, ')
+          ..write('proteinValue: $proteinValue, ')
+          ..write('proteinIsPercent: $proteinIsPercent, ')
+          ..write('fatValue: $fatValue, ')
+          ..write('fatIsPercent: $fatIsPercent, ')
+          ..write('carbsValue: $carbsValue, ')
+          ..write('carbsIsPercent: $carbsIsPercent, ')
+          ..write('fiberG: $fiberG, ')
+          ..write('caloriesProteinOnly: $caloriesProteinOnly')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    revision,
+    effectiveFrom,
+    mode,
+    rebalancing,
+    baseKcal,
+    manual,
+    acknowledged,
+    basisWeightKg,
+    shiftMon,
+    shiftTue,
+    shiftWed,
+    shiftThu,
+    shiftFri,
+    shiftSat,
+    shiftSun,
+    proteinValue,
+    proteinIsPercent,
+    fatValue,
+    fatIsPercent,
+    carbsValue,
+    carbsIsPercent,
+    fiberG,
+    caloriesProteinOnly,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TargetSettingsRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc &&
+          other.version == this.version &&
+          other.deletedAt == this.deletedAt &&
+          other.deviceId == this.deviceId &&
+          other.origin == this.origin &&
+          other.editedByUser == this.editedByUser &&
+          other.revision == this.revision &&
+          other.effectiveFrom == this.effectiveFrom &&
+          other.mode == this.mode &&
+          other.rebalancing == this.rebalancing &&
+          other.baseKcal == this.baseKcal &&
+          other.manual == this.manual &&
+          other.acknowledged == this.acknowledged &&
+          other.basisWeightKg == this.basisWeightKg &&
+          other.shiftMon == this.shiftMon &&
+          other.shiftTue == this.shiftTue &&
+          other.shiftWed == this.shiftWed &&
+          other.shiftThu == this.shiftThu &&
+          other.shiftFri == this.shiftFri &&
+          other.shiftSat == this.shiftSat &&
+          other.shiftSun == this.shiftSun &&
+          other.proteinValue == this.proteinValue &&
+          other.proteinIsPercent == this.proteinIsPercent &&
+          other.fatValue == this.fatValue &&
+          other.fatIsPercent == this.fatIsPercent &&
+          other.carbsValue == this.carbsValue &&
+          other.carbsIsPercent == this.carbsIsPercent &&
+          other.fiberG == this.fiberG &&
+          other.caloriesProteinOnly == this.caloriesProteinOnly);
+}
+
+class TargetSettingsRowsCompanion extends UpdateCompanion<TargetSettingsRow> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<String> updatedHlc;
+  final Value<int> version;
+  final Value<int?> deletedAt;
+  final Value<String> deviceId;
+  final Value<String> origin;
+  final Value<bool> editedByUser;
+  final Value<int> revision;
+  final Value<String> effectiveFrom;
+  final Value<String> mode;
+  final Value<bool> rebalancing;
+  final Value<double> baseKcal;
+  final Value<bool> manual;
+  final Value<bool> acknowledged;
+  final Value<double> basisWeightKg;
+  final Value<double?> shiftMon;
+  final Value<double?> shiftTue;
+  final Value<double?> shiftWed;
+  final Value<double?> shiftThu;
+  final Value<double?> shiftFri;
+  final Value<double?> shiftSat;
+  final Value<double?> shiftSun;
+  final Value<double?> proteinValue;
+  final Value<bool?> proteinIsPercent;
+  final Value<double?> fatValue;
+  final Value<bool?> fatIsPercent;
+  final Value<double?> carbsValue;
+  final Value<bool?> carbsIsPercent;
+  final Value<double?> fiberG;
+  final Value<bool> caloriesProteinOnly;
+  final Value<int> rowid;
+  const TargetSettingsRowsCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
+    this.version = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.editedByUser = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.effectiveFrom = const Value.absent(),
+    this.mode = const Value.absent(),
+    this.rebalancing = const Value.absent(),
+    this.baseKcal = const Value.absent(),
+    this.manual = const Value.absent(),
+    this.acknowledged = const Value.absent(),
+    this.basisWeightKg = const Value.absent(),
+    this.shiftMon = const Value.absent(),
+    this.shiftTue = const Value.absent(),
+    this.shiftWed = const Value.absent(),
+    this.shiftThu = const Value.absent(),
+    this.shiftFri = const Value.absent(),
+    this.shiftSat = const Value.absent(),
+    this.shiftSun = const Value.absent(),
+    this.proteinValue = const Value.absent(),
+    this.proteinIsPercent = const Value.absent(),
+    this.fatValue = const Value.absent(),
+    this.fatIsPercent = const Value.absent(),
+    this.carbsValue = const Value.absent(),
+    this.carbsIsPercent = const Value.absent(),
+    this.fiberG = const Value.absent(),
+    this.caloriesProteinOnly = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TargetSettingsRowsCompanion.insert({
+    required String id,
+    required int createdAt,
+    required String updatedHlc,
+    required int version,
+    this.deletedAt = const Value.absent(),
+    required String deviceId,
+    required String origin,
+    this.editedByUser = const Value.absent(),
+    required int revision,
+    required String effectiveFrom,
+    required String mode,
+    required bool rebalancing,
+    required double baseKcal,
+    required bool manual,
+    required bool acknowledged,
+    required double basisWeightKg,
+    this.shiftMon = const Value.absent(),
+    this.shiftTue = const Value.absent(),
+    this.shiftWed = const Value.absent(),
+    this.shiftThu = const Value.absent(),
+    this.shiftFri = const Value.absent(),
+    this.shiftSat = const Value.absent(),
+    this.shiftSun = const Value.absent(),
+    this.proteinValue = const Value.absent(),
+    this.proteinIsPercent = const Value.absent(),
+    this.fatValue = const Value.absent(),
+    this.fatIsPercent = const Value.absent(),
+    this.carbsValue = const Value.absent(),
+    this.carbsIsPercent = const Value.absent(),
+    this.fiberG = const Value.absent(),
+    required bool caloriesProteinOnly,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedHlc = Value(updatedHlc),
+       version = Value(version),
+       deviceId = Value(deviceId),
+       origin = Value(origin),
+       revision = Value(revision),
+       effectiveFrom = Value(effectiveFrom),
+       mode = Value(mode),
+       rebalancing = Value(rebalancing),
+       baseKcal = Value(baseKcal),
+       manual = Value(manual),
+       acknowledged = Value(acknowledged),
+       basisWeightKg = Value(basisWeightKg),
+       caloriesProteinOnly = Value(caloriesProteinOnly);
+  static Insertable<TargetSettingsRow> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<String>? updatedHlc,
+    Expression<int>? version,
+    Expression<int>? deletedAt,
+    Expression<String>? deviceId,
+    Expression<String>? origin,
+    Expression<bool>? editedByUser,
+    Expression<int>? revision,
+    Expression<String>? effectiveFrom,
+    Expression<String>? mode,
+    Expression<bool>? rebalancing,
+    Expression<double>? baseKcal,
+    Expression<bool>? manual,
+    Expression<bool>? acknowledged,
+    Expression<double>? basisWeightKg,
+    Expression<double>? shiftMon,
+    Expression<double>? shiftTue,
+    Expression<double>? shiftWed,
+    Expression<double>? shiftThu,
+    Expression<double>? shiftFri,
+    Expression<double>? shiftSat,
+    Expression<double>? shiftSun,
+    Expression<double>? proteinValue,
+    Expression<bool>? proteinIsPercent,
+    Expression<double>? fatValue,
+    Expression<bool>? fatIsPercent,
+    Expression<double>? carbsValue,
+    Expression<bool>? carbsIsPercent,
+    Expression<double>? fiberG,
+    Expression<bool>? caloriesProteinOnly,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
+      if (version != null) 'version': version,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deviceId != null) 'device_id': deviceId,
+      if (origin != null) 'origin': origin,
+      if (editedByUser != null) 'edited_by_user': editedByUser,
+      if (revision != null) 'revision': revision,
+      if (effectiveFrom != null) 'effective_from': effectiveFrom,
+      if (mode != null) 'mode': mode,
+      if (rebalancing != null) 'rebalancing': rebalancing,
+      if (baseKcal != null) 'base_kcal': baseKcal,
+      if (manual != null) 'manual': manual,
+      if (acknowledged != null) 'acknowledged': acknowledged,
+      if (basisWeightKg != null) 'basis_weight_kg': basisWeightKg,
+      if (shiftMon != null) 'shift_mon': shiftMon,
+      if (shiftTue != null) 'shift_tue': shiftTue,
+      if (shiftWed != null) 'shift_wed': shiftWed,
+      if (shiftThu != null) 'shift_thu': shiftThu,
+      if (shiftFri != null) 'shift_fri': shiftFri,
+      if (shiftSat != null) 'shift_sat': shiftSat,
+      if (shiftSun != null) 'shift_sun': shiftSun,
+      if (proteinValue != null) 'protein_value': proteinValue,
+      if (proteinIsPercent != null) 'protein_is_percent': proteinIsPercent,
+      if (fatValue != null) 'fat_value': fatValue,
+      if (fatIsPercent != null) 'fat_is_percent': fatIsPercent,
+      if (carbsValue != null) 'carbs_value': carbsValue,
+      if (carbsIsPercent != null) 'carbs_is_percent': carbsIsPercent,
+      if (fiberG != null) 'fiber_g': fiberG,
+      if (caloriesProteinOnly != null)
+        'calories_protein_only': caloriesProteinOnly,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TargetSettingsRowsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<String>? updatedHlc,
+    Value<int>? version,
+    Value<int?>? deletedAt,
+    Value<String>? deviceId,
+    Value<String>? origin,
+    Value<bool>? editedByUser,
+    Value<int>? revision,
+    Value<String>? effectiveFrom,
+    Value<String>? mode,
+    Value<bool>? rebalancing,
+    Value<double>? baseKcal,
+    Value<bool>? manual,
+    Value<bool>? acknowledged,
+    Value<double>? basisWeightKg,
+    Value<double?>? shiftMon,
+    Value<double?>? shiftTue,
+    Value<double?>? shiftWed,
+    Value<double?>? shiftThu,
+    Value<double?>? shiftFri,
+    Value<double?>? shiftSat,
+    Value<double?>? shiftSun,
+    Value<double?>? proteinValue,
+    Value<bool?>? proteinIsPercent,
+    Value<double?>? fatValue,
+    Value<bool?>? fatIsPercent,
+    Value<double?>? carbsValue,
+    Value<bool?>? carbsIsPercent,
+    Value<double?>? fiberG,
+    Value<bool>? caloriesProteinOnly,
+    Value<int>? rowid,
+  }) {
+    return TargetSettingsRowsCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
+      version: version ?? this.version,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deviceId: deviceId ?? this.deviceId,
+      origin: origin ?? this.origin,
+      editedByUser: editedByUser ?? this.editedByUser,
+      revision: revision ?? this.revision,
+      effectiveFrom: effectiveFrom ?? this.effectiveFrom,
+      mode: mode ?? this.mode,
+      rebalancing: rebalancing ?? this.rebalancing,
+      baseKcal: baseKcal ?? this.baseKcal,
+      manual: manual ?? this.manual,
+      acknowledged: acknowledged ?? this.acknowledged,
+      basisWeightKg: basisWeightKg ?? this.basisWeightKg,
+      shiftMon: shiftMon ?? this.shiftMon,
+      shiftTue: shiftTue ?? this.shiftTue,
+      shiftWed: shiftWed ?? this.shiftWed,
+      shiftThu: shiftThu ?? this.shiftThu,
+      shiftFri: shiftFri ?? this.shiftFri,
+      shiftSat: shiftSat ?? this.shiftSat,
+      shiftSun: shiftSun ?? this.shiftSun,
+      proteinValue: proteinValue ?? this.proteinValue,
+      proteinIsPercent: proteinIsPercent ?? this.proteinIsPercent,
+      fatValue: fatValue ?? this.fatValue,
+      fatIsPercent: fatIsPercent ?? this.fatIsPercent,
+      carbsValue: carbsValue ?? this.carbsValue,
+      carbsIsPercent: carbsIsPercent ?? this.carbsIsPercent,
+      fiberG: fiberG ?? this.fiberG,
+      caloriesProteinOnly: caloriesProteinOnly ?? this.caloriesProteinOnly,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (editedByUser.present) {
+      map['edited_by_user'] = Variable<bool>(editedByUser.value);
+    }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (effectiveFrom.present) {
+      map['effective_from'] = Variable<String>(effectiveFrom.value);
+    }
+    if (mode.present) {
+      map['mode'] = Variable<String>(mode.value);
+    }
+    if (rebalancing.present) {
+      map['rebalancing'] = Variable<bool>(rebalancing.value);
+    }
+    if (baseKcal.present) {
+      map['base_kcal'] = Variable<double>(baseKcal.value);
+    }
+    if (manual.present) {
+      map['manual'] = Variable<bool>(manual.value);
+    }
+    if (acknowledged.present) {
+      map['acknowledged'] = Variable<bool>(acknowledged.value);
+    }
+    if (basisWeightKg.present) {
+      map['basis_weight_kg'] = Variable<double>(basisWeightKg.value);
+    }
+    if (shiftMon.present) {
+      map['shift_mon'] = Variable<double>(shiftMon.value);
+    }
+    if (shiftTue.present) {
+      map['shift_tue'] = Variable<double>(shiftTue.value);
+    }
+    if (shiftWed.present) {
+      map['shift_wed'] = Variable<double>(shiftWed.value);
+    }
+    if (shiftThu.present) {
+      map['shift_thu'] = Variable<double>(shiftThu.value);
+    }
+    if (shiftFri.present) {
+      map['shift_fri'] = Variable<double>(shiftFri.value);
+    }
+    if (shiftSat.present) {
+      map['shift_sat'] = Variable<double>(shiftSat.value);
+    }
+    if (shiftSun.present) {
+      map['shift_sun'] = Variable<double>(shiftSun.value);
+    }
+    if (proteinValue.present) {
+      map['protein_value'] = Variable<double>(proteinValue.value);
+    }
+    if (proteinIsPercent.present) {
+      map['protein_is_percent'] = Variable<bool>(proteinIsPercent.value);
+    }
+    if (fatValue.present) {
+      map['fat_value'] = Variable<double>(fatValue.value);
+    }
+    if (fatIsPercent.present) {
+      map['fat_is_percent'] = Variable<bool>(fatIsPercent.value);
+    }
+    if (carbsValue.present) {
+      map['carbs_value'] = Variable<double>(carbsValue.value);
+    }
+    if (carbsIsPercent.present) {
+      map['carbs_is_percent'] = Variable<bool>(carbsIsPercent.value);
+    }
+    if (fiberG.present) {
+      map['fiber_g'] = Variable<double>(fiberG.value);
+    }
+    if (caloriesProteinOnly.present) {
+      map['calories_protein_only'] = Variable<bool>(caloriesProteinOnly.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TargetSettingsRowsCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('revision: $revision, ')
+          ..write('effectiveFrom: $effectiveFrom, ')
+          ..write('mode: $mode, ')
+          ..write('rebalancing: $rebalancing, ')
+          ..write('baseKcal: $baseKcal, ')
+          ..write('manual: $manual, ')
+          ..write('acknowledged: $acknowledged, ')
+          ..write('basisWeightKg: $basisWeightKg, ')
+          ..write('shiftMon: $shiftMon, ')
+          ..write('shiftTue: $shiftTue, ')
+          ..write('shiftWed: $shiftWed, ')
+          ..write('shiftThu: $shiftThu, ')
+          ..write('shiftFri: $shiftFri, ')
+          ..write('shiftSat: $shiftSat, ')
+          ..write('shiftSun: $shiftSun, ')
+          ..write('proteinValue: $proteinValue, ')
+          ..write('proteinIsPercent: $proteinIsPercent, ')
+          ..write('fatValue: $fatValue, ')
+          ..write('fatIsPercent: $fatIsPercent, ')
+          ..write('carbsValue: $carbsValue, ')
+          ..write('carbsIsPercent: $carbsIsPercent, ')
+          ..write('fiberG: $fiberG, ')
+          ..write('caloriesProteinOnly: $caloriesProteinOnly, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ProfilesTable extends Profiles
+    with TableInfo<$ProfilesTable, ProfileRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProfilesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+    'origin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedByUserMeta = const VerificationMeta(
+    'editedByUser',
+  );
+  @override
+  late final GeneratedColumn<bool> editedByUser = GeneratedColumn<bool>(
+    'edited_by_user',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_by_user" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _sexMeta = const VerificationMeta('sex');
+  @override
+  late final GeneratedColumn<String> sex = GeneratedColumn<String>(
+    'sex',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _birthYearMeta = const VerificationMeta(
+    'birthYear',
+  );
+  @override
+  late final GeneratedColumn<int> birthYear = GeneratedColumn<int>(
+    'birth_year',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _heightCmMeta = const VerificationMeta(
+    'heightCm',
+  );
+  @override
+  late final GeneratedColumn<double> heightCm = GeneratedColumn<double>(
+    'height_cm',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _heightInputUnitMeta = const VerificationMeta(
+    'heightInputUnit',
+  );
+  @override
+  late final GeneratedColumn<String> heightInputUnit = GeneratedColumn<String>(
+    'height_input_unit',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _activityMeta = const VerificationMeta(
+    'activity',
+  );
+  @override
+  late final GeneratedColumn<String> activity = GeneratedColumn<String>(
+    'activity',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    sex,
+    birthYear,
+    heightCm,
+    heightInputUnit,
+    activity,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'profile';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ProfileRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedHlcMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('origin')) {
+      context.handle(
+        _originMeta,
+        origin.isAcceptableOrUnknown(data['origin']!, _originMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originMeta);
+    }
+    if (data.containsKey('edited_by_user')) {
+      context.handle(
+        _editedByUserMeta,
+        editedByUser.isAcceptableOrUnknown(
+          data['edited_by_user']!,
+          _editedByUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('sex')) {
+      context.handle(
+        _sexMeta,
+        sex.isAcceptableOrUnknown(data['sex']!, _sexMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sexMeta);
+    }
+    if (data.containsKey('birth_year')) {
+      context.handle(
+        _birthYearMeta,
+        birthYear.isAcceptableOrUnknown(data['birth_year']!, _birthYearMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_birthYearMeta);
+    }
+    if (data.containsKey('height_cm')) {
+      context.handle(
+        _heightCmMeta,
+        heightCm.isAcceptableOrUnknown(data['height_cm']!, _heightCmMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_heightCmMeta);
+    }
+    if (data.containsKey('height_input_unit')) {
+      context.handle(
+        _heightInputUnitMeta,
+        heightInputUnit.isAcceptableOrUnknown(
+          data['height_input_unit']!,
+          _heightInputUnitMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_heightInputUnitMeta);
+    }
+    if (data.containsKey('activity')) {
+      context.handle(
+        _activityMeta,
+        activity.isAcceptableOrUnknown(data['activity']!, _activityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_activityMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ProfileRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProfileRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      origin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin'],
+      )!,
+      editedByUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited_by_user'],
+      )!,
+      sex: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sex'],
+      )!,
+      birthYear: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}birth_year'],
+      )!,
+      heightCm: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}height_cm'],
+      )!,
+      heightInputUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}height_input_unit'],
+      )!,
+      activity: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}activity'],
+      )!,
+    );
+  }
+
+  @override
+  $ProfilesTable createAlias(String alias) {
+    return $ProfilesTable(attachedDatabase, alias);
+  }
+}
+
+class ProfileRow extends DataClass implements Insertable<ProfileRow> {
+  /// UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys
+  /// (`core/db/natural_id.dart`). Lowercase canonical text.
+  final String id;
+
+  /// When the row was first written, UTC ms (0 for seeds).
+  final int createdAt;
+
+  /// The hybrid logical clock of the last write (`fb_domain` `Hlc` text).
+  final String updatedHlc;
+
+  /// 1 on insert, +1 per write: the local optimistic concurrency check.
+  final int version;
+
+  /// The tombstone, UTC ms. Synced rows are never hard-deleted.
+  final int? deletedAt;
+
+  /// The install that made the last write (the HLC's node id, TD-053).
+  final String deviceId;
+
+  /// `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`.
+  final String origin;
+
+  /// Provenance: the user overrode a value that came from another source
+  /// (AI-072, the "edited by you" badge). Set only by ops.
+  final bool editedByUser;
+
+  /// `male` or `female`.
+  final String sex;
+
+  /// Birth year (age = evaluation year − this).
+  final int birthYear;
+
+  /// Height, cm.
+  final double heightCm;
+
+  /// How the height was typed: `cm` or `ft_in` (TD-017).
+  final String heightInputUnit;
+
+  /// `sedentary`, `light`, `moderate` or `high`.
+  final String activity;
+  const ProfileRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedHlc,
+    required this.version,
+    this.deletedAt,
+    required this.deviceId,
+    required this.origin,
+    required this.editedByUser,
+    required this.sex,
+    required this.birthYear,
+    required this.heightCm,
+    required this.heightInputUnit,
+    required this.activity,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
+    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['device_id'] = Variable<String>(deviceId);
+    map['origin'] = Variable<String>(origin);
+    map['edited_by_user'] = Variable<bool>(editedByUser);
+    map['sex'] = Variable<String>(sex);
+    map['birth_year'] = Variable<int>(birthYear);
+    map['height_cm'] = Variable<double>(heightCm);
+    map['height_input_unit'] = Variable<String>(heightInputUnit);
+    map['activity'] = Variable<String>(activity);
+    return map;
+  }
+
+  ProfilesCompanion toCompanion(bool nullToAbsent) {
+    return ProfilesCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
+      version: Value(version),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deviceId: Value(deviceId),
+      origin: Value(origin),
+      editedByUser: Value(editedByUser),
+      sex: Value(sex),
+      birthYear: Value(birthYear),
+      heightCm: Value(heightCm),
+      heightInputUnit: Value(heightInputUnit),
+      activity: Value(activity),
+    );
+  }
+
+  factory ProfileRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProfileRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
+      version: serializer.fromJson<int>(json['version']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      origin: serializer.fromJson<String>(json['origin']),
+      editedByUser: serializer.fromJson<bool>(json['editedByUser']),
+      sex: serializer.fromJson<String>(json['sex']),
+      birthYear: serializer.fromJson<int>(json['birthYear']),
+      heightCm: serializer.fromJson<double>(json['heightCm']),
+      heightInputUnit: serializer.fromJson<String>(json['heightInputUnit']),
+      activity: serializer.fromJson<String>(json['activity']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
+      'version': serializer.toJson<int>(version),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'origin': serializer.toJson<String>(origin),
+      'editedByUser': serializer.toJson<bool>(editedByUser),
+      'sex': serializer.toJson<String>(sex),
+      'birthYear': serializer.toJson<int>(birthYear),
+      'heightCm': serializer.toJson<double>(heightCm),
+      'heightInputUnit': serializer.toJson<String>(heightInputUnit),
+      'activity': serializer.toJson<String>(activity),
+    };
+  }
+
+  ProfileRow copyWith({
+    String? id,
+    int? createdAt,
+    String? updatedHlc,
+    int? version,
+    Value<int?> deletedAt = const Value.absent(),
+    String? deviceId,
+    String? origin,
+    bool? editedByUser,
+    String? sex,
+    int? birthYear,
+    double? heightCm,
+    String? heightInputUnit,
+    String? activity,
+  }) => ProfileRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+    version: version ?? this.version,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deviceId: deviceId ?? this.deviceId,
+    origin: origin ?? this.origin,
+    editedByUser: editedByUser ?? this.editedByUser,
+    sex: sex ?? this.sex,
+    birthYear: birthYear ?? this.birthYear,
+    heightCm: heightCm ?? this.heightCm,
+    heightInputUnit: heightInputUnit ?? this.heightInputUnit,
+    activity: activity ?? this.activity,
+  );
+  ProfileRow copyWithCompanion(ProfilesCompanion data) {
+    return ProfileRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
+      version: data.version.present ? data.version.value : this.version,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      editedByUser: data.editedByUser.present
+          ? data.editedByUser.value
+          : this.editedByUser,
+      sex: data.sex.present ? data.sex.value : this.sex,
+      birthYear: data.birthYear.present ? data.birthYear.value : this.birthYear,
+      heightCm: data.heightCm.present ? data.heightCm.value : this.heightCm,
+      heightInputUnit: data.heightInputUnit.present
+          ? data.heightInputUnit.value
+          : this.heightInputUnit,
+      activity: data.activity.present ? data.activity.value : this.activity,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProfileRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('sex: $sex, ')
+          ..write('birthYear: $birthYear, ')
+          ..write('heightCm: $heightCm, ')
+          ..write('heightInputUnit: $heightInputUnit, ')
+          ..write('activity: $activity')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    sex,
+    birthYear,
+    heightCm,
+    heightInputUnit,
+    activity,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProfileRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc &&
+          other.version == this.version &&
+          other.deletedAt == this.deletedAt &&
+          other.deviceId == this.deviceId &&
+          other.origin == this.origin &&
+          other.editedByUser == this.editedByUser &&
+          other.sex == this.sex &&
+          other.birthYear == this.birthYear &&
+          other.heightCm == this.heightCm &&
+          other.heightInputUnit == this.heightInputUnit &&
+          other.activity == this.activity);
+}
+
+class ProfilesCompanion extends UpdateCompanion<ProfileRow> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<String> updatedHlc;
+  final Value<int> version;
+  final Value<int?> deletedAt;
+  final Value<String> deviceId;
+  final Value<String> origin;
+  final Value<bool> editedByUser;
+  final Value<String> sex;
+  final Value<int> birthYear;
+  final Value<double> heightCm;
+  final Value<String> heightInputUnit;
+  final Value<String> activity;
+  final Value<int> rowid;
+  const ProfilesCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
+    this.version = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.editedByUser = const Value.absent(),
+    this.sex = const Value.absent(),
+    this.birthYear = const Value.absent(),
+    this.heightCm = const Value.absent(),
+    this.heightInputUnit = const Value.absent(),
+    this.activity = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ProfilesCompanion.insert({
+    required String id,
+    required int createdAt,
+    required String updatedHlc,
+    required int version,
+    this.deletedAt = const Value.absent(),
+    required String deviceId,
+    required String origin,
+    this.editedByUser = const Value.absent(),
+    required String sex,
+    required int birthYear,
+    required double heightCm,
+    required String heightInputUnit,
+    required String activity,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedHlc = Value(updatedHlc),
+       version = Value(version),
+       deviceId = Value(deviceId),
+       origin = Value(origin),
+       sex = Value(sex),
+       birthYear = Value(birthYear),
+       heightCm = Value(heightCm),
+       heightInputUnit = Value(heightInputUnit),
+       activity = Value(activity);
+  static Insertable<ProfileRow> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<String>? updatedHlc,
+    Expression<int>? version,
+    Expression<int>? deletedAt,
+    Expression<String>? deviceId,
+    Expression<String>? origin,
+    Expression<bool>? editedByUser,
+    Expression<String>? sex,
+    Expression<int>? birthYear,
+    Expression<double>? heightCm,
+    Expression<String>? heightInputUnit,
+    Expression<String>? activity,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
+      if (version != null) 'version': version,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deviceId != null) 'device_id': deviceId,
+      if (origin != null) 'origin': origin,
+      if (editedByUser != null) 'edited_by_user': editedByUser,
+      if (sex != null) 'sex': sex,
+      if (birthYear != null) 'birth_year': birthYear,
+      if (heightCm != null) 'height_cm': heightCm,
+      if (heightInputUnit != null) 'height_input_unit': heightInputUnit,
+      if (activity != null) 'activity': activity,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ProfilesCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<String>? updatedHlc,
+    Value<int>? version,
+    Value<int?>? deletedAt,
+    Value<String>? deviceId,
+    Value<String>? origin,
+    Value<bool>? editedByUser,
+    Value<String>? sex,
+    Value<int>? birthYear,
+    Value<double>? heightCm,
+    Value<String>? heightInputUnit,
+    Value<String>? activity,
+    Value<int>? rowid,
+  }) {
+    return ProfilesCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
+      version: version ?? this.version,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deviceId: deviceId ?? this.deviceId,
+      origin: origin ?? this.origin,
+      editedByUser: editedByUser ?? this.editedByUser,
+      sex: sex ?? this.sex,
+      birthYear: birthYear ?? this.birthYear,
+      heightCm: heightCm ?? this.heightCm,
+      heightInputUnit: heightInputUnit ?? this.heightInputUnit,
+      activity: activity ?? this.activity,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (editedByUser.present) {
+      map['edited_by_user'] = Variable<bool>(editedByUser.value);
+    }
+    if (sex.present) {
+      map['sex'] = Variable<String>(sex.value);
+    }
+    if (birthYear.present) {
+      map['birth_year'] = Variable<int>(birthYear.value);
+    }
+    if (heightCm.present) {
+      map['height_cm'] = Variable<double>(heightCm.value);
+    }
+    if (heightInputUnit.present) {
+      map['height_input_unit'] = Variable<String>(heightInputUnit.value);
+    }
+    if (activity.present) {
+      map['activity'] = Variable<String>(activity.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProfilesCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('sex: $sex, ')
+          ..write('birthYear: $birthYear, ')
+          ..write('heightCm: $heightCm, ')
+          ..write('heightInputUnit: $heightInputUnit, ')
+          ..write('activity: $activity, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $DiaryEntriesTable extends DiaryEntries
     with TableInfo<$DiaryEntriesTable, DiaryEntryRow> {
   @override
@@ -9544,6 +13253,18 @@ class PersonalFoodsCompanion extends UpdateCompanion<PersonalFoodRow> {
 
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
+  late final $GoalPhasesTable goalPhases = $GoalPhasesTable(this);
+  late final Index ixGoalPhasesStart = Index(
+    'ix_goal_phases_start',
+    'CREATE INDEX ix_goal_phases_start ON goal_phases (start_date) WHERE deleted_at IS NULL',
+  );
+  late final $TargetSettingsRowsTable targetSettingsRows =
+      $TargetSettingsRowsTable(this);
+  late final Index ixTargetSettingsEffective = Index(
+    'ix_target_settings_effective',
+    'CREATE INDEX ix_target_settings_effective ON target_settings (effective_from) WHERE deleted_at IS NULL',
+  );
+  late final $ProfilesTable profiles = $ProfilesTable(this);
   late final $DiaryEntriesTable diaryEntries = $DiaryEntriesTable(this);
   late final Index ixDiaryEntriesLive = Index(
     'ix_diary_entries_live',
@@ -9678,11 +13399,52 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'CREATE TRIGGER personal_foods_no_delete BEFORE DELETE ON personal_foods BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
     'personal_foods_no_delete',
   );
+  late final Trigger profileOutboxAi = Trigger(
+    'CREATE TRIGGER profile_outbox_ai AFTER INSERT ON profile WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'profile\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'profile_outbox_ai',
+  );
+  late final Trigger profileOutboxAu = Trigger(
+    'CREATE TRIGGER profile_outbox_au AFTER UPDATE ON profile WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'profile\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'profile_outbox_au',
+  );
+  late final Trigger profileNoDelete = Trigger(
+    'CREATE TRIGGER profile_no_delete BEFORE DELETE ON profile BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'profile_no_delete',
+  );
+  late final Trigger goalPhasesOutboxAi = Trigger(
+    'CREATE TRIGGER goal_phases_outbox_ai AFTER INSERT ON goal_phases WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'goalPhase\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'goal_phases_outbox_ai',
+  );
+  late final Trigger goalPhasesOutboxAu = Trigger(
+    'CREATE TRIGGER goal_phases_outbox_au AFTER UPDATE ON goal_phases WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'goalPhase\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'goal_phases_outbox_au',
+  );
+  late final Trigger goalPhasesNoDelete = Trigger(
+    'CREATE TRIGGER goal_phases_no_delete BEFORE DELETE ON goal_phases BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'goal_phases_no_delete',
+  );
+  late final Trigger targetSettingsOutboxAi = Trigger(
+    'CREATE TRIGGER target_settings_outbox_ai AFTER INSERT ON target_settings WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'targetSettings\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'target_settings_outbox_ai',
+  );
+  late final Trigger targetSettingsOutboxAu = Trigger(
+    'CREATE TRIGGER target_settings_outbox_au AFTER UPDATE ON target_settings WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'targetSettings\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'target_settings_outbox_au',
+  );
+  late final Trigger targetSettingsNoDelete = Trigger(
+    'CREATE TRIGGER target_settings_no_delete BEFORE DELETE ON target_settings BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'target_settings_no_delete',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
+    goalPhases,
+    ixGoalPhasesStart,
+    targetSettingsRows,
+    ixTargetSettingsEffective,
+    profiles,
     diaryEntries,
     ixDiaryEntriesLive,
     ixDiaryEntriesGroup,
@@ -9724,6 +13486,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     personalFoodsOutboxAi,
     personalFoodsOutboxAu,
     personalFoodsNoDelete,
+    profileOutboxAi,
+    profileOutboxAu,
+    profileNoDelete,
+    goalPhasesOutboxAi,
+    goalPhasesOutboxAu,
+    goalPhasesNoDelete,
+    targetSettingsOutboxAi,
+    targetSettingsOutboxAu,
+    targetSettingsNoDelete,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -9891,6 +13662,69 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'personal_foods',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'profile',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'profile',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'profile',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'goal_phases',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'goal_phases',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'goal_phases',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'target_settings',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'target_settings',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'target_settings',
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [],

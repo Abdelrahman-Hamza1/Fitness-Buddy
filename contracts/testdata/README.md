@@ -30,6 +30,10 @@ The B18 corpus for the `chatMessage` and `proposal` v1 sync entities. Generated,
 - **No user content and no secrets.** Use invented examples. These files are public in the repository.
 - **Wire examples follow the contract.** A JSON example here must be valid against `../openapi.yaml` (the test that uses it checks that, where practical).
 
+## `sync/targets-payload-variants.json`
+
+Valid `profile`, `goalPhase` and `targetSettings` v1 payloads beyond the one fixture per entity in `entity-payloads.json` (A13a). Format: `{"version": 1, "cases": [{"id", "entity", "payload"}]}`; `id` is stable kebab-case, `entity` is the sync entity name, `payload` is exactly the sync payload (metadata included). **A case passes** when the payload validates against `../openapi/sync-entities.json`, satisfies the targets wire rules (`../README.md`) and round-trips through the app's table unchanged (`apps/mobile/test/features/targets/data/targets_contract_test.dart`). Synthetic values only.
+
 ## `problems/`
 
 One file per type in the error catalogue (`../README.md`), named after its slug: `/errors/validation-failed` → `validation-failed.json`. Each is exactly the `application/problem+json` body the server sends for that type (no extra fields, JSON key order as the server writes it):

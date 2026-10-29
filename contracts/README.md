@@ -112,3 +112,20 @@ Adding a `NutrientKey`, serving unit or `FoodState` code is a contract change: t
 - **No cross-row validation:** a row is admitted on its own. The server never loads the referenced message or sibling cards and never compares top-level fields with copies inside `draftJson`; a missing or inconsistent row surfaces as `sessionIncomplete` / `budgetConflict` in restore.
 - **Byte budget:** the largest valid `proposal` row (both JSON fields at 32768 units of non-ASCII BMP text) is about 197 KB as UTF-8 with non-ASCII unescaped, which fits the 256 KiB push cap. The uploader (A34) must send unescaped UTF-8 (Dart `jsonEncode`'s default), never `\u`-escaped non-ASCII, and should read integers as `num` → `int`.
 - **Corpus:** the shared vectors (`testdata/sync/chat-proposal-validation-vectors.json`, B18 WP2) are generated from the Dart codes and real codec output and pin both sides.
+
+## Targets semantic rules (profile, goalPhase, targetSettings)
+
+`profile`, `goalPhase` and `targetSettings` v1 (A13a) carry their types, closed vocabularies, nullability, technical bounds (numbers 0 … 1e6, `kgPerWeek` and `monthKg` −1e6 … 1e6, `revision` 1 … 2^53−1, `birthYear` 1 … 9999) and string limits (`name` ≤ 120) in `openapi/sync-entities.json`. Values are canonical (cm, kg); `heightInputUnit` (`cm`, `ft_in`) and `weightInputUnit` (`kg`, `lb`) keep how the user typed them (TD-017). The rules below are the **wire rules** the exporter can't express; the app applies them on every write (`TargetRules.wire` in `packages/fb_domain`) and B19 adds the same server validator before A34 uploads (TD-080). Plausibility ranges (age, height, weight, rates, manual kcal, macros, shift levels) are app-only and are **not** wire rules.
+
+- **Positive numbers:** `heightCm`, `targetKg`, `baseKcal` and `basisWeightKg` are greater than 0 (the schema allows 0; the exporter has no `exclusiveMinimum`).
+- **Expression fields:** each `expressionKind` has exactly its own non-null fields and the others null: `targetDate` → `targetKg` + `targetDate`; `targetRate` → `targetKg` + `kgPerWeek` (a positive speed; the target sets the direction); `weekly` → `kgPerWeek` (signed, negative for loss); `monthly` → `monthKg` (signed) + `month` (the app writes the month's first day; that is a convention, not admission-checked: any date names its month).
+- **Maintain:** `goalType` `maintain` is `expressionKind` `weekly` with `kgPerWeek` 0.
+- **Phase dates:** `endDate`, when set, is not before `startDate`.
+- **Macro pairs:** each of `protein`, `fat`, `carbs` has `…Value` and `…IsPercent` both null or both set; a percent value is at most 100.
+- **Acknowledgement:** `acknowledged` is true only with `manual` true.
+- **Row IDs:** `goalPhase` and `targetSettings` rows have UUIDv7 ids; the one `profile` row has the natural id `naturalId('profile', 'self')` (UUIDv5, TD-070).
+- **Not wire rules:** shift weights outside the app's levels are kept and read as 1.0; timeline overlaps between rows (two phases, two versions on one date) are valid on the wire and resolved by the app's read projection (TD-089).
+
+**A34 decoding note:** JSON may carry an integer field as a float (`1990.0` for `birthYear`, `2.0` for `revision`); the app converts such a whole `num` to `int` before decoding, otherwise `TargetRules.wire` rejects the row as a type error.
+
+Fixtures: one per entity in `testdata/sync/entity-payloads.json` (the `goalPhase` one is a negative monthly goal) and more valid cases in `testdata/sync/targets-payload-variants.json` (negative weekly, maintain = weekly 0, imperial units, manual acknowledged fixed, seven shifts). The app's `targets_contract_test.dart` checks every case against this schema, `TargetRules.wire` and the tables.

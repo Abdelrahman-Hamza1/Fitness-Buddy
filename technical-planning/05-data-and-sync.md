@@ -37,8 +37,8 @@ _Logical model. Exact columns are fixed in the migrations of A01/A06 and later s
 
 | Entity | Key fields |
 |---|---|
-| `profile` (1 row) | sex, birth_year, height_cm, activity_level, unit system, week_start, halal, city / location mode, language, digit style |
-| `goals` (phases) | type, start/end, target weight, rate, monthly target, name |
+| `profile` (1 row, `naturalId('profile','self')`) | sex, birth_year, height_cm + height_input_unit, activity_level (body data only; preferences such as unit system, week start, halal, city, language and digit style live in `settings_kv`; no weight: weigh-ins are the only stored body weight, TD-089/TD-090, A13a) |
+| `goal_phases` | type, start/end, expression (weekly / monthly / target date / target rate), target weight + weight_input_unit, name, revision (A13a) |
 | `target_settings` (versioned, effective-from date) | base kcal, mode (weekly / fixed), rebalancing, shifting config, protein/fat/fiber rules, manual overrides + acknowledged warning (SF-012), Ramadan variant, check-in mode (ask / auto) |
 | `weigh_ins` | measured_at, local_date, kg, input value/unit, note |
 | `measurement_types` (custom) + `measurements` | type, value, date |
