@@ -1,0 +1,48 @@
+schema: 1
+id: ref:shish_tawook
+names:
+  en: [Shish tawook, Shish taouk, Chicken skewers]
+  ar: [شيش طاووق, شيش طوق]
+  arabizi: [shish tawook, shish taouk, sheesh tawou2, shish tawouq]
+state: cooked
+variants:
+- id: breast
+  default: true
+  recipe:
+  - {food: 'usda:chicken_breast_roasted', grams: 680, note: 'From 907 g raw skinless breast (source 2 lb), assumed
+      75% grilled edible yield; cooked entry accounts for lost drippings.'}
+  - {food: 'usda:yogurt_plain_whole', grams: 60, range: [40, 120], note: Half of 1/2 cup yogurt marinade retained;
+      assumption.}
+  - {food: 'usda:olive_oil', grams: 27, range: [15, 54], note: 'Half the 1/4 cup marinade oil retained, rest discarded/drips;
+      assumption.'}
+  - {food: 'usda:lemon_juice_raw', grams: 30}
+  - {food: 'usda:garlic_raw', grams: 12}
+  - {food: 'usda:tomato_paste_canned', grams: 8}
+  - {food: 'usda:paprika', grams: 2}
+  - {food: 'usda:cinnamon_ground', grams: 2}
+  - {food: 'usda:oregano_dried', grams: 0.5}
+  - {food: 'usda:ginger_ground', grams: 0.5}
+  - {food: 'usda:salt_table', grams: 3}
+  - {food: 'usda:black_pepper', grams: 0.5}
+  cooked_total_g: 800
+  cooked_total_range: [720, 880]
+portions:
+  piece: {g: 80, range: [60, 110]}
+  plate: {g: 240, range: [160, 350]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Yumna Jawad, Shish Tawook; direct HTTP blocked but full recipe retrieved with browser research: 2 lb breast,
+    1/2 cup yogurt, 1/4 cup each oil/lemon: https://feelgoodfoodie.net/recipe/shish-tawook/'
+  - 'Falasteeni Foodie; fetched recipe card: 3.5 lb chicken with 3 tbsp oil, 3 tbsp yogurt, mayo and vegetables,
+    less marinade per kg: https://falasteenifoodie.com/shish-tawook/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: 'Recipe rows use cooked breast plus retained marinade, 825.5 g minus 25.5 g marinade moisture = 800 g cooked
+    batch. Piece means one skewer of edible chicken (no stick). Source recipes disagree on marinade richness: half-retention
+    assumption spans both, not all marinade is eaten. No bread, toum, fries or rice. Cooked weights and household
+    portion ranges are modelled, not measured; ranges allow serving size and ingredient variation. Authored by Codex
+    2026-10-30 (A19 + A30); claude-draft is the schema''s only draft-author tag, not a claim of review. Independent
+    number check pending (D-087). Mass audit (nutrient rows already exclude discarded skins/bones/drippings): breast:
+    825.5 g input rows - 25.5 g water/steam = 800 g finished.'

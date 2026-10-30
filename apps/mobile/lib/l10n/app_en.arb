@@ -1893,6 +1893,24 @@
       }
     }
   },
+  "unitQuarter": "{count, plural, =1{quarter} other{quarters}}",
+  "@unitQuarter": {
+    "description": "Unit label (quarter chicken), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitWhole": "{count, plural, =1{whole} other{wholes}}",
+  "@unitWhole": {
+    "description": "Unit label (whole chicken), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
   "unitHalfLoaf": "{count, plural, =1{half loaf} other{half loaves}}",
   "@unitHalfLoaf": {
     "description": "Unit label (half loaf), singular for 1 and plural otherwise.",

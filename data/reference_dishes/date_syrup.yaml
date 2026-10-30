@@ -1,0 +1,33 @@
+schema: 1
+id: ref:date_syrup
+names:
+  en: [Date syrup, Date molasses]
+  ar: [دبس تمر, دبس التمر]
+  arabizi: [dibs tamer, dibs tamr, debs tamer]
+state: as_sold
+variants:
+- id: plain
+  default: true
+  per_100g: {kcal: 267.9, protein: 1.2, carbs: 65, fat: 0.34, fiber: 0, extras: {sugar: 60, saturated_fat: 0.3,
+      sodium: 120}}
+  nutrient_source: 'ENZU/CNB Co date syrup product specification, PDF page 2: 267.9 kcal, protein 1.2 g, carbohydrate
+    65 g, fat 0.34 g, sugars 60 g, saturates 0.3 g, salt 0.3 g per 100 g; sodium converted salt/2.5 = 120 mg. Fibre
+    not declared, provisionally 0 for filtered syrup: https://www.cnbco.com/wp-content/uploads/2023/07/Enzu.pdf'
+portions:
+  tbsp: {g: 20, range: [16, 25]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'CNB Co, ENZU date syrup product specification, page 2 (retrieved PDF): https://www.cnbco.com/wp-content/uploads/2023/07/Enzu.pdf'
+  - 'Sonnentracht organic date syrup product sheet: 289 kcal, 69 g carbs, fibre <0.5 g/100 g; cross-check of filtered
+    syrup: https://www.sonnentracht.bio/en/private-label/product-variety/organic-date-syrup//createpdf'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: Supporting single-food ingredient for date-based jallab; use this cited filtered syrup instead of inventing
+    cane-molasses composition. Per-100g nutrients transcribed from ENZU; fibre 0 is a disclosed missing-value assumption,
+    supported by <0.5 g in another manufacturer, not a measured zero. Tablespoon 20 g is a modelled household density
+    (about 1.33 g/ml), not a label serving. Batch is as sold; no cooked yield applies. Cooked weights and household
+    portion ranges are modelled, not measured; ranges allow serving size and ingredient variation. Authored by Codex
+    2026-10-30 (A19 + A30); claude-draft is the schema's only draft-author tag, not a claim of review. Independent
+    number check pending (D-087).

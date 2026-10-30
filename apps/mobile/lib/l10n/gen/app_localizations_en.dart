@@ -1266,6 +1266,28 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String unitQuarter(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'quarters',
+      one: 'quarter',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unitWhole(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'wholes',
+      one: 'whole',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String unitHalfLoaf(num count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

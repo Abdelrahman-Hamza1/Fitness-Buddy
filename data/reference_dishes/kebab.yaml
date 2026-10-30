@@ -1,0 +1,65 @@
+schema: 1
+id: ref:kebab
+names:
+  en: [Kebab, Kabab, Grilled kofta kebab]
+  ar: [كباب, كباب مشوي]
+  arabizi: [kebab, kabab, kabob, kabaab]
+state: cooked
+variants:
+- id: beef
+  default: true
+  names:
+    en: [Beef kebab]
+    ar: [كباب بقر]
+    arabizi: [kebab baqar]
+  recipe:
+  - {food: 'usda:beef_ground_85_cooked', grams: 340, note: 1 lb (454 g) raw mince yields assumed 340 g cooked meat
+      (75%); cooked USDA entry excludes dripped fat.}
+  - {food: 'usda:onion_raw', grams: 70}
+  - {food: 'usda:parsley_fresh', grams: 15}
+  - {food: 'usda:allspice_ground', grams: 3}
+  - {food: 'usda:cumin_seed', grams: 1}
+  - {food: 'usda:cinnamon_ground', grams: 1}
+  - {food: 'usda:coriander_seed', grams: 1}
+  - {food: 'usda:salt_table', grams: 3}
+  - {food: 'usda:black_pepper', grams: 0.5}
+  cooked_total_g: 400
+  cooked_total_range: [360, 440]
+- id: lamb
+  default: false
+  names:
+    en: [Lamb kebab]
+    ar: [كباب غنم]
+    arabizi: [kebab ghanam]
+  recipe:
+  - {food: 'usda:lamb_ground_cooked', grams: 340, note: 1 lb (454 g) raw mince yields assumed 340 g cooked meat
+      (75%); cooked USDA entry excludes dripped fat.}
+  - {food: 'usda:onion_raw', grams: 70}
+  - {food: 'usda:parsley_fresh', grams: 15}
+  - {food: 'usda:allspice_ground', grams: 3}
+  - {food: 'usda:cumin_seed', grams: 1}
+  - {food: 'usda:cinnamon_ground', grams: 1}
+  - {food: 'usda:coriander_seed', grams: 1}
+  - {food: 'usda:salt_table', grams: 3}
+  - {food: 'usda:black_pepper', grams: 0.5}
+  cooked_total_g: 400
+  cooked_total_range: [360, 440]
+portions:
+  piece: {g: 50, range: [30, 80]}
+  plate: {g: 200, range: [130, 300]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Yumna Jawad, Beef Kafta; direct HTTP blocked; full recipe retrieved by browser research: 1 lb 80-85% beef,
+    small onion, 1/4 cup parsley, spices; lamb substitution explicitly allowed: https://feelgoodfoodie.net/recipe/beef-kafta/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: 'Source shapes 12 small fingers; reference models 8 larger 50 g skewers from same batch. 434.5 g rows (already
+    cooked meat) minus 34.5 g vegetable moisture = 400 g finished. Using raw beef nutrients divided by cooked weight
+    would retain grill fat incorrectly; cooked beef/lamb entry used instead. No bread, rice or sauce. Cooked weights
+    and household portion ranges are modelled, not measured; ranges allow serving size and ingredient variation.
+    Authored by Codex 2026-10-30 (A19 + A30); claude-draft is the schema''s only draft-author tag, not a claim of
+    review. Independent number check pending (D-087). Mass audit (nutrient rows already exclude discarded skins/bones/drippings):
+    beef: 434.5 g input rows - 34.5 g water/steam = 400 g finished; lamb: 434.5 g input rows - 34.5 g water/steam
+    = 400 g finished.'

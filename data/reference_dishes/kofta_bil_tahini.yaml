@@ -1,0 +1,67 @@
+schema: 1
+id: ref:kofta_bil_tahini
+names:
+  en: [Kofta bil tahini (siniyyeh), Kofta bil tahini, Siniyyeh, Kafta with tahini]
+  ar: [كفتة بالطحينة, صينية كفتة, كفتة]
+  arabizi: [kofta bi tahini, kafta bil tahini, siniyyeh, siniyet kofta, kofta]
+state: cooked
+variants:
+- id: tahini
+  default: true
+  recipe:
+  - {food: 'usda:beef_ground_85_raw', grams: 454}
+  - {food: 'usda:parsley_fresh', grams: 60}
+  - {food: 'usda:onion_raw', grams: 110}
+  - {food: 'usda:garlic_raw', grams: 15}
+  - {food: 'usda:potato_raw', grams: 500, range: [350, 650]}
+  - {food: 'usda:olive_oil', grams: 27, range: [15, 45]}
+  - {food: 'usda:tahini', grams: 120, range: [90, 150]}
+  - {food: 'usda:lemon_juice_raw', grams: 120}
+  - {food: 'usda:allspice_ground', grams: 2}
+  - {food: 'usda:black_pepper', grams: 1}
+  - {food: 'usda:salt_table', grams: 8}
+  - {food: 'usda:water_tap', grams: 240}
+  cooked_total_g: 1450
+  cooked_total_range: [1305, 1595]
+  names:
+    en: [Tahini kofta tray]
+    ar: [صينية كفتة بالطحينة]
+    arabizi: [siniyet kofta tahini]
+- id: tomato
+  default: false
+  names:
+    en: [Tomato kofta tray, Kofta with tomato]
+    ar: [كفتة بالبندورة, صينية كفتة بالبندورة]
+    arabizi: [kofta bil bandora, siniyet kofta bandora]
+  recipe:
+  - {food: 'usda:beef_ground_85_raw', grams: 454}
+  - {food: 'usda:parsley_fresh', grams: 60}
+  - {food: 'usda:onion_raw', grams: 220}
+  - {food: 'usda:garlic_raw', grams: 9}
+  - {food: 'usda:potato_raw', grams: 500, range: [350, 650]}
+  - {food: 'usda:tomato_raw', grams: 500}
+  - {food: 'usda:olive_oil', grams: 27, range: [15, 45]}
+  - {food: 'usda:allspice_ground', grams: 3}
+  - {food: 'usda:salt_table', grams: 6}
+  - {food: 'usda:black_pepper', grams: 1}
+  cooked_total_g: 1550
+  cooked_total_range: [1395, 1705]
+portions:
+  plate: {g: 450, range: [330, 600]}
+  small_plate: {g: 330, range: [250, 400]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources: ['Wafa, Palestinian Kafta with Tahini Sauce; fetched recipe card: 1 lb meat, 2-3 potatoes, 1/2 cup tahini,
+      1 cup water, 1/2 cup lemon, 2 tbsp oil: https://palestineinadish.com/recipes/kiftah-bi-tahini-sauce/', 'Wafa,
+      Kafta Bil Sanieh; fetched recipe card: 1 lb meat, 2 onions, 3-4 tomatoes, 2-3 potatoes, 2 tbsp oil: https://palestineinadish.com/recipes/ground-meat-with-vegetables-kiftah-%d9%83%d9%81%d8%aa%d8%a7-%d8%a8%d8%a7%d9%84%d8%b5%d9%8a%d9%86%d9%8a%d8%a9/',
+    'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+      cite their own labels.']
+  notes: '1657 g input minus 207 g steam = 1450 g tray, about 3 generous plates. All rendered meat fat remains in
+    sauce; no bread or rice. Optional pomegranate molasses omitted. Source permits beef or lamb; beef 85/15 is the
+    reference. Tomato variant uses the second source: 1780 g rows minus 230 g steam = 1550 g tray, no tahini. Parent
+    default remains tahini; tomato has qualified variant names. Cooked weights and household portion ranges are
+    modelled, not measured; ranges allow serving size and ingredient variation. Authored by Codex 2026-10-30 (A19
+    + A30); claude-draft is the schema''s only draft-author tag, not a claim of review. Independent number check
+    pending (D-087). Mass audit (nutrient rows already exclude discarded skins/bones/drippings): tahini: 1657 g
+    input rows - 207 g water/steam = 1450 g finished; tomato: 1780 g input rows - 230 g water/steam = 1550 g finished.'

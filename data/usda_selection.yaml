@@ -273,9 +273,10 @@ foods:
     fdc_id: 168558
     state: raw
     names:
-      en: ["Pickled cucumbers, dill"]
+      en: ["Pickled cucumbers, dill", "Pickles"]
       ar: ["مخلل خيار", "مخللات"]
       arabizi: ["mkhallal khyar", "mkhallal", "pickles", "mkhalalat", "m5allal 5iyar"]
+    notes: "A19: dill cucumber pickle is the generic pickle proxy; mixed turnip/carrot/pepper pickles may differ. Plain brined, not oil-packed or sweet pickles."
   - id: usda:olives_green_pickled
     fdc_id: 169096
     state: raw
@@ -573,10 +574,11 @@ foods:
     fdc_id: 168191
     state: raw
     names:
-      en: ["Dates, medjool"]
+      en: ["Dates, medjool", "Dates"]
       ar: ["تمر"]
       arabizi: ["tamr", "tamer", "dates"]
     servings: [{unit: piece, g: 24}]
+    notes: "A30: generic dates default to large Medjool (24 g pitted); small Deglet Noor remains 7.1 g each on its separate basic. Pits not counted."
   - id: usda:rice_brown_long_grain_raw
     fdc_id: 169703
     state: dry
@@ -1748,16 +1750,18 @@ foods:
     state: as_sold
     names:
       en: ["Lemon-lime soda", "Soft drink"]
-      ar: ["مشروب غازي ليمون", "سفن أب"]
+      ar: ["مشروب غازي ليمون", "سفن أب", "مشروب غازي"]
       arabizi: ["sprite", "seven up", "7up", "mashroub ghazi"]
+    notes: "A30: generic soft drink resolves here; ordinary sugar-sweetened soda. Diet/zero cola retains separate usda:cola_diet identity."
   - id: usda:orange_juice
     fdc_id: 169098
     state: raw
     names:
       en: ["Orange juice", "Fresh juice", "Juice", "Fresh orange juice"]
-      ar: ["عصير برتقال", "عصير", "عصير برتقال طازج"]
-      arabizi: ["asir burtuqal", "orange juice", "aseer bortoqal", "3aseer", "aseer", "3aseer burtu2an", "aseer bortokal"]
+      ar: ["عصير برتقال", "عصير", "عصير برتقال طازج", "عصير طازج"]
+      arabizi: ["asir burtuqal", "orange juice", "aseer bortoqal", "3aseer", "aseer", "3aseer burtu2an", "aseer bortokal", "aseer tazej"]
     servings: [{unit: cup, g: 248}]
+    notes: "A30: plain fresh juice default is orange with no added sugar. Apple, grape, pomegranate and other named juices retain separate basics; sweetened juice drinks need their own label."
   - id: usda:apple_juice
     fdc_id: 173933
     state: as_sold
@@ -1975,9 +1979,11 @@ foods:
     fdc_id: 171450
     state: cooked
     names:
-      en: ["Chicken, whole, roasted, meat and skin"]
-      ar: ["دجاج كامل محمر بالجلد", "دجاج فرن بالجلد"]
-      arabizi: ["djaj bil forn", "jaj m7ammar"]
+      en: ["Chicken, whole, roasted, meat and skin", "Grilled chicken (quarter, half, whole)", "Grilled chicken"]
+      ar: ["دجاج كامل محمر بالجلد", "دجاج فرن بالجلد", "دجاج مشوي", "جاج مشوي"]
+      arabizi: ["djaj bil forn", "jaj m7ammar", "djaj mashwi", "jaj mashwi", "dajaj mashwi"]
+    servings: [{unit: quarter, g: 180}, {unit: half, g: 360}, {unit: whole, g: 720}]
+    notes: "A19: roasted mixed meat and skin is the USDA proxy for plain charcoal-grilled chicken. Portion grams are cooked edible meat/skin only, not bones: quarter 180 g, half 360 g, whole 720 g from an assumed 1.5 kg ready-to-cook bird. Skinless chicken uses usda:chicken_meat_roasted. No marinade oil, toum, bread or fries included. Household ranges quarter 130-250 g, half 260-500 g, whole 520-1000 g are persisted in portion_words.yaml and override selection point servings in the release. The 48% ready-to-cook-to-edible yield is a curator assumption, not a measured USDA yield."
   - id: usda:chicken_meat_raw
     fdc_id: 171052
     state: raw
@@ -3356,7 +3362,7 @@ foods:
     names:
       en: ["Grape leaves, jarred (in brine)"]
       ar: ["ورق عنب معلب", "ورق دوالي معلب"]
-      arabizi: ["wara2 3enab m3allab", "wara2 dawali"]
+      arabizi: ["wara2 3enab m3allab", "wara2 dawali m3allab"]
     servings: [{unit: piece, g: 4}]
   - id: usda:green_beans_cooked
     fdc_id: 169141

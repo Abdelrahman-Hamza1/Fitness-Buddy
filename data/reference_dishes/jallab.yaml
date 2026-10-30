@@ -1,0 +1,40 @@
+schema: 1
+id: ref:jallab
+names:
+  en: [Jallab, Jellab, Date and rose water jallab]
+  ar: [جلاب, شراب جلاب]
+  arabizi: [jallab, jellab, jalab, jallab tamer]
+state: cooked
+variants:
+- id: date
+  default: true
+  recipe:
+  - {food: 'ref:date_syrup', grams: 320, range: [240, 400], note: '1 cup date molasses at assumed density 1.33 g/ml;
+      source gives cup, no grams.'}
+  - {food: 'usda:pine_nuts_dried', grams: 34, range: [16, 50], note: '4 tbsp = 34 g, 8.5 g in each glass.'}
+  - {food: 'usda:water_tap', grams: 846, note: '60 g rose water + 786 g cold water/melted ice, adjusted to four
+      300 g servings.'}
+  cooked_total_g: 1200
+  cooked_total_range: [1200, 1200]
+portions:
+  glass: {g: 300, range: [230, 400]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Rouba Shahin, Date And Rose Water Jallab; fetched HTML: 1 cup date molasses, 4 tbsp rose water, 4 tbsp pine
+    nuts, 4 tall glasses filled with water/ice: https://roubashahin.com.au/recipes/date-rose-water-jallab/'
+  - 'Rouba Shahin, Jallab Grape Drink; fetched HTML: grape/currant/sugar syrup, 3 tbsp syrup per glass, 1 tbsp nuts:
+    https://roubashahin.com.au/recipes/jallab-grape-drink/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: 'Explicit date-only home variant from Rouba, not a substitute claim for commercial grape/carob syrup. 1200
+    g rows retained as a four-glass pitcher. Default 300 g serving roughly 280-300 ml including 8.5 g nuts, 80 g
+    date syrup supplies 48 g syrup sugars plus trace nut sugars. Sugar assumptions follow selected syrup label;
+    no extra granulated sugar. Source does not measure fill-water; 300 g/glass and density are assumptions. Grape
+    version differs substantially and is cited to flag scope, not averaged into reference. Syrup and nuts dominate
+    kcal; no raisins in this selected recipe. Cooked weights and household portion ranges are modelled, not measured;
+    ranges allow serving size and ingredient variation. Authored by Codex 2026-10-30 (A19 + A30); claude-draft is
+    the schema''s only draft-author tag, not a claim of review. Independent number check pending (D-087). Mass audit
+    (nutrient rows already exclude discarded skins/bones/drippings): date: 1200 g input rows - 0 g water/steam =
+    1200 g finished.'

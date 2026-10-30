@@ -2000,6 +2000,18 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{half} other{halves}}'**
   String unitHalf(num count);
 
+  /// Unit label (quarter chicken), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{quarter} other{quarters}}'**
+  String unitQuarter(num count);
+
+  /// Unit label (whole chicken), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{whole} other{wholes}}'**
+  String unitWhole(num count);
+
   /// Unit label (half loaf), singular for 1 and plural otherwise.
   ///
   /// In en, this message translates to:

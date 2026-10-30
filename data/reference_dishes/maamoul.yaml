@@ -1,0 +1,78 @@
+schema: 1
+id: ref:maamoul
+names:
+  en: [Ma'amoul, Maamoul, Mamoul]
+  ar: [معمول]
+  arabizi: [maamoul, ma3moul, mamoul, maamool]
+state: cooked
+variants:
+- id: date
+  default: true
+  names:
+    en: [Date maamoul]
+    ar: [معمول تمر]
+    arabizi: [maamoul tamer]
+  recipe:
+  - {food: 'usda:semolina_fine_dry', grams: 500, note: '3 cups fine semolina, assumed 167 g/cup (not weighed by
+      source).'}
+  - {food: 'usda:butter_unsalted', grams: 227, range: [190, 260]}
+  - {food: 'usda:sugar_granulated', grams: 25}
+  - {food: 'usda:yeast_bakers', grams: 3, note: Dry yeast mass with compressed-yeast nutrient proxy; under 10 kcal/batch
+      discrepancy.}
+  - {food: 'usda:salt_table', grams: 3}
+  - {food: 'usda:water_tap', grams: 110, note: 80 g warm water + 30 g blossom water; blossom water has negligible
+      core nutrients.}
+  - {food: 'usda:dates_deglet_noor', grams: 340, range: [280, 420], note: 'Double source 170 g date filling: source
+      splits 32 cookies half date/half walnut; this is all-date 32-cookie batch.'}
+  cooked_total_g: 1120
+  cooked_total_range: [1008, 1232]
+  portions:
+    piece: {g: 35, range: [25, 55]}
+- id: walnut
+  default: false
+  names:
+    en: [Walnut maamoul]
+    ar: [معمول جوز]
+    arabizi: [maamoul joz]
+  recipe:
+  - {food: 'usda:semolina_fine_dry', grams: 500, note: '3 cups fine semolina, assumed 167 g/cup (not weighed by
+      source).'}
+  - {food: 'usda:butter_unsalted', grams: 227, range: [190, 260]}
+  - {food: 'usda:sugar_granulated', grams: 25}
+  - {food: 'usda:yeast_bakers', grams: 3, note: Dry yeast mass with compressed-yeast nutrient proxy; under 10 kcal/batch
+      discrepancy.}
+  - {food: 'usda:salt_table', grams: 3}
+  - {food: 'usda:water_tap', grams: 110, note: 80 g warm water + 30 g blossom water; blossom water has negligible
+      core nutrients.}
+  - {food: 'usda:walnuts', grams: 234, range: [180, 280], note: 'Double source 1 cup chopped walnuts (117 g), for
+      all 32 cookies.'}
+  - {food: 'usda:sugar_granulated', grams: 80, range: [60, 110], note: Double source 1/3 cup powdered sugar at 40
+      g; granulated sugar nutrient proxy.}
+  - {food: 'usda:water_tap', grams: 60, note: 'Double source 2 tbsp blossom water filling, core nutrients modelled
+      as water.'}
+  cooked_total_g: 1150
+  cooked_total_range: [1035, 1265]
+  portions:
+    piece: {g: 36, range: [25, 55]}
+portions:
+  piece: {g: 35, range: [25, 55]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Yumna Jawad, Maamoul; full browser recipe: 3 cups semolina, 1 cup butter, 32 cookies split 16 date (170 g filling)
+    + 16 walnut (1 cup walnuts + 1/3 cup powdered sugar): https://feelgoodfoodie.net/recipe/maamoul/'
+  - 'Falasteeni Foodie, Maamoul; fetched card: 4 cups semolina, 1 cup butter PLUS 1/2 cup ghee, milk, unweighed
+    date paste packages; richer/larger recipe: https://falasteenifoodie.com/maamoul/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: 'Default all-date 1208 g input minus 88 g bake steam = 1120 g; all-walnut 1242 g input minus 92 g = 1150
+    g. Both batches make 32 cookies, doubling the source half-batch filling. Whole pitted Deglet Noor proxies date
+    paste without added sugar/oil. This model uses butter, no ghee; source 2 uses extra ghee and fat inside date
+    filling, which can make much richer cookies. No unmeasured fat added in reference; ingredient ranges cover butter
+    variation, not arbitrary date paste packages. Optional sugar dusting omitted (about 4 kcal per added gram).
+    Mahlab omitted from nutrients because catalog lacks it. Cooked weights and household portion ranges are modelled,
+    not measured; ranges allow serving size and ingredient variation. Authored by Codex 2026-10-30 (A19 + A30);
+    claude-draft is the schema''s only draft-author tag, not a claim of review. Independent number check pending
+    (D-087). Mass audit (nutrient rows already exclude discarded skins/bones/drippings): date: 1208 g input rows
+    - 88 g water/steam = 1120 g finished; walnut: 1242 g input rows - 92 g water/steam = 1150 g finished.'

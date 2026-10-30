@@ -1,0 +1,44 @@
+schema: 1
+id: ref:turkish_coffee
+names:
+  en:
+  - Turkish coffee
+  - Turkish coffee, unsweetened
+  ar:
+  - قهوة تركية
+  arabizi:
+  - ahwa turkiyeh
+  - qahwe turkiyeh
+state: cooked
+variants:
+- id: unsweetened
+  default: true
+  recipe:
+  - food: usda:coffee_brewed
+    grams: 60
+    note: Brewed unsweetened nutrient proxy only; grounds not consumed.
+  cooked_total_g: 60
+  cooked_total_range:
+  - 60
+  - 60
+portions:
+  cup:
+    g: 60
+    range: &id001
+    - 40
+    - 90
+  serving:
+    g: 60
+    range: *id001
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Kurukahveci Mehmet Efendi gives 65 ml per Turkish coffee cup; household default rounded to 60 g:
+    https://www.mehmetefendi.com/eng/turkish-coffee/characteristics'
+  - USDA FDC 171890 unsweetened brewed coffee nutrient proxy (data/usda/extract.jsonl).
+  notes: 'A30 fix round: separate identity so cup and serving both mean 60 g; never inherits the generic
+    237 g USDA cup. Density approximated 1 g/ml. These are household fill ranges, not nutrient concentration
+    ranges. No added sugar, milk or eaten grounds; spices are not counted. Finjan is expressed using the
+    existing cup code, so no new label is needed. Remains draft for orchestrator recheck and release;
+    no review promotion.'

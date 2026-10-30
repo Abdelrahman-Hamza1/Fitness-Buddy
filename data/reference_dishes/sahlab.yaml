@@ -1,0 +1,38 @@
+schema: 1
+id: ref:sahlab
+names:
+  en: [Sahlab, Salep drink, Sahlep]
+  ar: [سحلب]
+  arabizi: [sahlab, sa7lab, sahleb, salep]
+state: cooked
+variants:
+- id: milk_starch
+  default: true
+  recipe:
+  - {food: 'usda:milk_whole', grams: 732}
+  - {food: 'usda:sugar_granulated', grams: 50, range: [30, 80]}
+  - {food: 'usda:cornstarch', grams: 16}
+  - {food: 'usda:pistachios_raw', grams: 12, range: [6, 24]}
+  - {food: 'usda:coconut_dried', grams: 9, range: [3, 18]}
+  - {food: 'usda:cinnamon_ground', grams: 1}
+  - {food: 'usda:water_tap', grams: 10, note: 2 tsp blossom water represented as water for core nutrients.}
+  cooked_total_g: 800
+  cooked_total_range: [720, 880]
+portions:
+  cup: {g: 267, range: [200, 350]}
+  glass: {g: 267, range: [200, 350]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Falasteeni Foodie, Sahlab; fetched card: 3 cups milk, 1/4 cup sugar, 2 tbsp cornstarch, 2 tsp blossom water
+    and optional nut/coconut/cinnamon garnish: https://falasteenifoodie.com/sahlab-dessert-recipe/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: '830 g rows minus 30 g steam = 800 g hot drink, three cups each about 260 ml (267 g). Sugar 16.7 g per
+    cup before lactose; toppings assumed 4 g pistachios + 3 g coconut/cup and counted. Cornstarch home version,
+    not literal orchid-root powder; mastic omitted from nutrients. Cafes may add more sugar, cream or nuts; no syrup/ghee
+    included. Cooked weights and household portion ranges are modelled, not measured; ranges allow serving size
+    and ingredient variation. Authored by Codex 2026-10-30 (A19 + A30); claude-draft is the schema''s only draft-author
+    tag, not a claim of review. Independent number check pending (D-087). Mass audit (nutrient rows already exclude
+    discarded skins/bones/drippings): milk_starch: 830 g input rows - 30 g water/steam = 800 g finished.'

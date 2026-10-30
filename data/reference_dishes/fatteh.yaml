@@ -1,0 +1,69 @@
+schema: 1
+id: ref:fatteh
+names:
+  en: [Fatteh (hummus fatteh), Fatteh, Fattet hummus]
+  ar: [فتة حمص, فتة]
+  arabizi: [fatteh hummus, fattet hummus, fatteh, fatte7]
+state: cooked
+variants:
+- id: toasted
+  default: true
+  recipe:
+  - {food: 'usda:chickpeas_cooked', grams: 328}
+  - {food: 'usda:tahini', grams: 120, range: [90, 150]}
+  - {food: 'usda:yogurt_plain_whole', grams: 245, range: [200, 330]}
+  - {food: 'usda:pita_white', grams: 120, note: Two small pita assumed; PBS does not quantify bread.}
+  - {food: 'usda:lemon_juice_raw', grams: 30}
+  - {food: 'usda:garlic_raw', grams: 6}
+  - {food: 'usda:salt_table', grams: 6}
+  - {food: 'usda:cumin_seed', grams: 3}
+  - {food: 'usda:pine_nuts_dried', grams: 17, range: [10, 30]}
+  - {food: 'usda:olive_oil', grams: 27, range: [14, 40]}
+  - {food: 'usda:parsley_fresh', grams: 4}
+  - {food: 'usda:water_tap', grams: 100, note: 'Chickpea cooking broth added to moisten toasted bread; 100 g household
+      assumption, second recipe uses broth.'}
+  cooked_total_g: 990
+  cooked_total_range: [891, 1089]
+- id: fried_bread
+  default: false
+  names:
+    en: [Fatteh with fried bread]
+    ar: [فتة بخبز مقلي]
+    arabizi: [fatteh khubz maqli]
+  recipe:
+  - {food: 'usda:chickpeas_cooked', grams: 328}
+  - {food: 'usda:tahini', grams: 120, range: [90, 150]}
+  - {food: 'usda:yogurt_plain_whole', grams: 245, range: [200, 330]}
+  - {food: 'usda:pita_white', grams: 120, note: Two small pita assumed; PBS does not quantify bread.}
+  - {food: 'usda:lemon_juice_raw', grams: 30}
+  - {food: 'usda:garlic_raw', grams: 6}
+  - {food: 'usda:salt_table', grams: 6}
+  - {food: 'usda:cumin_seed', grams: 3}
+  - {food: 'usda:pine_nuts_dried', grams: 17, range: [10, 30]}
+  - {food: 'usda:olive_oil', grams: 27, range: [14, 40]}
+  - {food: 'usda:parsley_fresh', grams: 4}
+  - {food: 'usda:vegetable_oil_soybean', grams: 30, range: [15, 50], note: 'Absorbed bread frying oil only, curator
+      assumption.'}
+  - {food: 'usda:water_tap', grams: 100, note: 'Chickpea cooking broth added to moisten toasted bread; 100 g household
+      assumption, second recipe uses broth.'}
+  cooked_total_g: 1020
+  cooked_total_range: [918, 1122]
+portions:
+  bowl: {g: 330, range: [230, 450]}
+  plate: {g: 400, range: [300, 550]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources: ['Khadiga, PBS Pan Pals, Fattet Hummus; fetched recipe card: 2 cups cooked chickpeas, 1/2 cup tahini,
+      1 cup yogurt, 2 tbsp oil and pine nuts, toasted pita: https://www.pbs.org/food/recipes/fattet-hummus', 'brotus,
+      Fattet Hummus, community recipe not tested by Nigella.com: chickpeas/hummus/broth, 2 small pita, unmeasured
+      pine nuts; differs from yogurt version: https://www.nigella.com/recipes/members/brotuss-fattet-hummus', 'USDA
+      FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+      cite their own labels.']
+  notes: 'PBS yogurt/tahini composition selected; the Nigella community version uses hummus and broth instead, so
+    not averaged. PBS bread unweighed; assume two 60 g pita from the second source. Toasted rows total 1006 g minus
+    16 g toasting/warming water = 990 g; fried-bread adds 30 g absorbed oil (1020 g). All 27 g garnish oil counted,
+    no ghee or side rice. Bowl 330 g is one third batch, plate 400 g larger. Oil/tahini vary. Cooked yield and portions
+    modelled, not weighed. Codex draft 2026-10-30; schema tag claude-draft; independent check pending (D-087). Mass
+    audit (nutrient rows already exclude discarded skins/bones/drippings): toasted: 1006 g input rows - 16 g water/steam
+    = 990 g finished; fried_bread: 1036 g input rows - 16 g water/steam = 1020 g finished.'

@@ -1,0 +1,33 @@
+schema: 1
+id: ref:tea_with_sugar
+names:
+  en: [Tea with sugar, Sweet tea, Tea with 2 tsp sugar]
+  ar: [شاي بسكر, شاي مع سكر]
+  arabizi: [shai bi sukkar, shay bi sokkar, shai ma3 sukkar, shay b sokar]
+state: cooked
+variants:
+- id: two_teaspoons
+  default: true
+  recipe:
+  - {food: 'usda:tea_black_brewed', grams: 600, note: 'Four small glasses, each 150 g brewed unsweetened tea.'}
+  - {food: 'usda:sugar_granulated', grams: 33.6, range: [16.8, 50.4], note: Two USDA teaspoons at 4.2 g each per
+      glass; range 1-3 tsp per glass.}
+  cooked_total_g: 633.6
+  cooked_total_range: [633.6, 633.6]
+portions:
+  glass: {g: 158.4, range: [110, 210]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - USDA FDC 173227 brewed black tea and 169655 granulated sugar; teaspoon sugar = 4.2 g (existing catalog portions).
+    Local small tea glass = 150 ml (data/portion_words.yaml household assumption).
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: 'Four-glass pot retains all 633.6 g rows. Default glass contains 150 g tea + 8.4 g added sugar; approximate
+    drink volume 150 ml, mass 158.4 g. This is an explicit household composition assumption, not a published national
+    standard. Sugar range is 1-3 tsp; plain tea stays on its unsweetened USDA identity. No milk. Cooked weights
+    and household portion ranges are modelled, not measured; ranges allow serving size and ingredient variation.
+    Authored by Codex 2026-10-30 (A19 + A30); claude-draft is the schema''s only draft-author tag, not a claim of
+    review. Independent number check pending (D-087). Mass audit (nutrient rows already exclude discarded skins/bones/drippings):
+    two_teaspoons: 633.6 g input rows - 0 g water/steam = 633.6 g finished.'

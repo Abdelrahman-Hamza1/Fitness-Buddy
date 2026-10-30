@@ -167,7 +167,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A16](A16-progress-tab.md) | Progress tab v1 | Claude | A13c, A15 | L | S23 | **M2** | ✅ |
 | [A17](dish-batches.md) | Dish batch 2: main dishes A | Claude | A04 | S | D2 |  | ✅ (ai-verified, D-087) |
 | [A18](dish-batches.md) | Dish batch 3: out & street food | Claude | A17 | S | D3 |  | ✅ (ai-verified, D-087) |
-| [A19](dish-batches.md) | Dish batch 4: main dishes B, salads & sides | Claude | A18 | S | D4 |  | ⬜ wave 2 (TD-105) |
+| [A19](dish-batches.md) | Dish batch 4: main dishes B, salads & sides | Claude | A18 | S | D4 |  | ✅ (with A30, one combined step, built by Codex) |
 | [A20](A20-api-session.md) | API session: anonymous identity & auth interceptor | **Codex** | **B04** (contract) | S | S25 part |  | ✅ |
 | [A21](A21-proposal-engine.md) | ProposalEngine | **Codex** | A07, A12, **B08** | L | S32 |  | ✅ |
 | [A22a](A22-chat-proposal-card.md) | Chat sheet, message storage & proposal card (split from A22, 2026-10-28) | Claude | A08b, A20, A21, **B08**, **B18**, **B09a** WP0 | L | S33 part |  | ✅ |
@@ -182,7 +182,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A28a](A28-barcode-label-scan.md) | Barcode scanning (app, no AI; split from A28, 2026-10-30) | Claude | A09a, A24, **B10a** (contract) | M | S38 app part |  | ⬜ wave 3 (TD-105) |
 | [A28b](A28-barcode-label-scan.md) | Label scan (app; split from A28) | Claude | A28a, A23b, **B10b** (contract) | M | S38 app part |  | ⬜ phase 2 |
 | [A29](A29-photo-body-import.md) | Photo logging, body data by chat & paste import (app) | Claude | A15, A23, **B10b** (contract) | M | S39 app part |  | ⬜ phase 2 |
-| [A30](dish-batches.md) | Dish batch 5: sweets, drinks & Ramadan staples | Claude | A19 | S | D5 |  | ⬜ wave 2 (TD-105) |
+| [A30](dish-batches.md) | Dish batch 5: sweets, drinks & Ramadan staples | Claude | A19 | S | D5 |  | ✅ (with A19) |
 | [A31](A31-qa-suggestions-halal.md) | Q&A, suggestions & halal (app) | Claude | A26, **B11** (contract) | M | S40 app part |  | ⬜ phase 2 |
 | [A32](dish-batches.md) | Dish batch 6: gap fill from dogfooding | Claude | A30 | S | D6 |  | ⏸ gap fill once dogfooding shows the misses (TD-105) |
 | [A33](A33-sign-in-guest-app.md) | Sign-in & guest upgrade | Claude | A20, **B04** | M | S25 |  | ✅ |
@@ -190,7 +190,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A35](A35-account-deletion-app.md) | Account deletion (app) | Claude | A34, **B06** | S | S28 deletion part | **M5** | ⬜ wave 4 |
 | [A36](A36-workout-domain.md) | Workout domain, library & templates | Claude | A05b, A06, A12 | M | S41 |  | ✅ |
 | [A37a](A37-workout-logging.md) | Workouts without AI: log & history (no plan needed, last-time numbers, autosave, Repeat, PRs, Today row; split from A37, 2026-10-30) | Claude | A36, A15a | L | S42 app part |  | ✅ |
-| [A37c](A37-workout-logging.md) | Workouts without AI: plans, muscle map & progress (starter plans, templates, exercise page; split from A37) | Claude | A37a · soft: A16 (Progress entry) | M–L | S42 app part |  | ✅ closed, awaiting merge (1 Codex round + fix-check, 2 major fixed) |
+| [A37c](A37-workout-logging.md) | Workouts without AI: plans, muscle map & progress (starter plans, templates, exercise page; split from A37) | Claude | A37a · soft: A16 (Progress entry) | M–L | S42 app part |  | ✅ |
 | [A37b](A37-workout-logging.md) | Workout logging by chat (split from A37) | Claude | A37c, A23b, **B12** (contract) | M | S42 app part |  | ⬜ phase 2 |
 | [A38](A38-adaptive-targets.md) | Adaptive targets & weekly check-in | Claude | A16, A23a (proposal storage) | M | S43 |  | ⬜ wave 3 |
 | [A39a](A39-weekly-review.md) | Weekly summary (numbers, no Buddy; split from A39, 2026-10-30) | Claude | A37c, A38 | M | S44 app part |  | ⬜ wave 4 (TD-105) |

@@ -50,6 +50,7 @@ groups:
         names: {en: ["Kebab"], ar: ["كباب"], arabizi: ["kebab"]}
       - id: grilled_chicken
         names: {en: ["Grilled chicken (quarter, half, whole)"], ar: ["دجاج مشوي"], arabizi: ["djaj mashwi"]}
+        match: [usda:chicken_whole_roasted]
       - id: fatteh
         names: {en: ["Fatteh (hummus fatteh)"], ar: ["فتة حمص"], arabizi: ["fatteh hummus"]}
       - id: lentil_soup
@@ -180,9 +181,10 @@ groups:
     items:
       - id: arabic_coffee
         names: {en: ["Arabic coffee"], ar: ["قهوة عربية"], arabizi: ["ahwa arabiyeh"]}
-        match: [usda:coffee_brewed]
+        match: [ref:arabic_coffee]
       - id: turkish_coffee
         names: {en: ["Turkish coffee"], ar: ["قهوة تركية"], arabizi: ["ahwa turkiyeh"]}
+        match: [ref:turkish_coffee]
       - id: tea_with_sugar
         names: {en: ["Tea with sugar"], ar: ["شاي بسكر"], arabizi: ["shai bi sukkar"]}
       - id: sahlab

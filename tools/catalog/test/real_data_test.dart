@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:fb_catalog/fb_catalog.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:path/path.dart' as p;
+import 'package:sqlite3/sqlite3.dart';
 import 'package:test/test.dart';
 
 final String dataDir = p.join('..', '..', 'data');
@@ -47,6 +48,80 @@ void main() {
     search = PackSearch.open(real.pack);
   });
   tearDownAll(() => search.close());
+
+  test('FD-003 chicken ranges survive the production release and pack', () {
+    expect(real.data.issues, isEmpty);
+    expect(real.report.errors, isEmpty);
+    final release = composeRelease(
+      data: real.data,
+      report: real.report,
+      versionOf: (_) => 0,
+      attribution: const [],
+    );
+    final out = p.join(p.dirname(real.pack), 'production.db');
+    writePack(release, out, meta: const {});
+    final db = sqlite3.open(out, mode: OpenMode.readOnly);
+    addTearDown(db.close);
+    for (final (unit, grams, lo, hi) in [
+      ('quarter', 180, 130, 250),
+      ('half', 360, 260, 500),
+      ('whole', 720, 520, 1000),
+    ]) {
+      final row = release
+          .table('servings')
+          .singleWhere(
+            (r) =>
+                r['food_id'] == 'usda:chicken_whole_roasted' &&
+                r['unit_code'] == unit,
+          );
+      final packed = db.select(
+        'SELECT * FROM servings WHERE food_id = ? AND unit_code = ?',
+        ['usda:chicken_whole_roasted', unit],
+      ).single;
+      for (final values in [row, packed]) {
+        expect(values['g'], grams);
+        expect(values['range_lo'], lo);
+        expect(values['range_hi'], hi);
+        expect(values['source'], startsWith('A19 household model:'));
+      }
+    }
+  });
+
+  test('FD-003 coffee identities have distinct cup weights', () {
+    final release = composeRelease(
+      data: real.data,
+      report: real.report,
+      versionOf: (_) => 0,
+      attribution: const [],
+      includeDrafts: true,
+    );
+    for (final (name, id, grams) in [
+      ('Coffee, brewed (no sugar)', 'usda:coffee_brewed', 237),
+      ('Arabic coffee', 'ref:arabic_coffee', 30),
+      ('قهوة عربية', 'ref:arabic_coffee', 30),
+      ('ahwa arabiyeh', 'ref:arabic_coffee', 30),
+      ('Turkish coffee', 'ref:turkish_coffee', 60),
+      ('قهوة تركية', 'ref:turkish_coffee', 60),
+      ('qahwe turkiyeh', 'ref:turkish_coffee', 60),
+    ]) {
+      expect(targets(search, name).first, id);
+      final foodId = id.startsWith('ref:') ? '$id/unsweetened' : id;
+      final cup = release
+          .table('servings')
+          .singleWhere(
+            (r) => r['food_id'] == foodId && r['unit_code'] == 'cup',
+          );
+      expect(cup['g'], grams, reason: name);
+    }
+    final generic = real.data.basics.singleWhere(
+      (b) => b.id == 'usda:coffee_brewed',
+    );
+    expect(generic.names, {
+      'en': ['Coffee, brewed (no sugar)'],
+      'ar': ['قهوة'],
+      'arabizi': ['qahwa', 'ahwe', 'coffee', 'kahwa'],
+    });
+  });
 
   test('FD-060 every staple group has a yields row', () {
     final groups = {for (final y in real.data.yields!) y.group};

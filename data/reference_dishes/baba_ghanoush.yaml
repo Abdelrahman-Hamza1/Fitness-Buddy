@@ -1,0 +1,38 @@
+schema: 1
+id: ref:baba_ghanoush
+names:
+  en: [Baba ghanoush / mutabbal, Baba ghanoush, Mutabbal, Moutabbal]
+  ar: [بابا غنوج, متبل, متبل باذنجان]
+  arabizi: [baba ghanoush, baba ghanouj, mutabbal, mtabbal, moutabal]
+state: cooked
+variants:
+- id: tahini
+  default: true
+  recipe:
+  - {food: 'usda:eggplant_raw', grams: 600, note: Peeled edible raw flesh from roughly 700 g whole eggplant; skin/stem
+      discarded.}
+  - {food: 'usda:tahini', grams: 60, range: [40, 90]}
+  - {food: 'usda:lemon_juice_raw', grams: 50}
+  - {food: 'usda:garlic_raw', grams: 6}
+  - {food: 'usda:olive_oil', grams: 14, range: [5, 27]}
+  - {food: 'usda:salt_table', grams: 2}
+  cooked_total_g: 530
+  cooked_total_range: [477, 583]
+
+portions:
+  bowl: {g: 150, range: [100, 230]}
+  tbsp: {g: 20, range: [15, 30]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Wafa, Mutabal; fetched recipe card: large eggplant, 1/4 cup tahini, lemon, garlic: https://palestineinadish.com/recipes/mutabal-recipe/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: >-
+    Fix round 2026-10-30: removed the vegetable variant because its cited roasting and garnish oils were
+    omitted and not quantified. Only the independently accepted tahini variant remains; all its
+    nutrition and portions are unchanged. Default 732 g rows minus 202 g modelled roasting/draining
+    water = 530 g dip. Raw eggplant flesh excludes skin and stem; tahini and garnish oil counted
+    explicitly. No bread. Household bowl and spoon ranges are modelled. Status stays draft for
+    orchestrator recheck; no claim of review promotion.

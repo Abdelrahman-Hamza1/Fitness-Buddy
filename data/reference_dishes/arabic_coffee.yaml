@@ -1,0 +1,45 @@
+schema: 1
+id: ref:arabic_coffee
+names:
+  en:
+  - Arabic coffee
+  - Arabic coffee, unsweetened
+  - Arabic coffee finjan
+  ar:
+  - قهوة عربية
+  arabizi:
+  - ahwa arabiyeh
+  - qahwa arabiyeh
+  - finjan qahwa
+state: cooked
+variants:
+- id: unsweetened
+  default: true
+  recipe:
+  - food: usda:coffee_brewed
+    grams: 30
+    note: Brewed unsweetened nutrient proxy only; grounds not consumed.
+  cooked_total_g: 30
+  cooked_total_range:
+  - 30
+  - 30
+portions:
+  cup:
+    g: 30
+    range: &id001
+    - 20
+    - 50
+  serving:
+    g: 30
+    range: *id001
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Taiba Hospital patient instructions use 30 ml as an Arabic coffee cup household comparison: https://www.taibahospital.com/wp-content/uploads/2024/03/Instructions-for-Patients-Post-Bariatric-Surgery.pdf'
+  - USDA FDC 171890 unsweetened brewed coffee nutrient proxy (data/usda/extract.jsonl).
+  notes: 'A30 fix round: separate identity so cup and serving both mean 30 g; never inherits the generic
+    237 g USDA cup. Density approximated 1 g/ml. These are household fill ranges, not nutrient concentration
+    ranges. No added sugar, milk or eaten grounds; spices are not counted. Finjan is expressed using the
+    existing cup code, so no new label is needed. Remains draft for orchestrator recheck and release;
+    no review promotion.'

@@ -1,0 +1,41 @@
+schema: 1
+id: ref:tahini_salad
+names:
+  en: [Tahini salad, Palestinian tahini salad]
+  ar: [سلطة طحينة, سلطة بالطحينة]
+  arabizi: [salatet tahini, salata tahini, salatet ta7ineh]
+state: cooked
+variants:
+- id: vegetables
+  default: true
+  recipe:
+  - {food: 'usda:tomato_raw', grams: 500}
+  - {food: 'usda:cucumber_raw', grams: 300}
+  - {food: 'usda:parsley_fresh', grams: 20}
+  - {food: 'usda:onion_raw', grams: 70}
+  - {food: 'usda:tahini', grams: 120, range: [60, 150]}
+  - {food: 'usda:olive_oil', grams: 54, range: [14, 70]}
+  - {food: 'usda:lemon_juice_raw', grams: 90}
+  - {food: 'usda:salt_table', grams: 6}
+  cooked_total_g: 1160
+  cooked_total_range: [1100, 1250]
+portions:
+  bowl: {g: 200, range: [130, 300]}
+  plate: {g: 300, range: [200, 420]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Dena Qaddura, Palestinian Tahini Salad; fetched HTML/article summary: 1/2 cup tahini, 1/4 cup oil, 2 lemons,
+    4 tomatoes, English cucumber, parsley, onion: https://cookwithdena.com/2022/05/23/palestinian-tahini-salad/'
+  - 'Bateekh w Jebneh, Your Lebanon; fetched card: 2 tomatoes, 2 cucumbers, 3-6 tbsp tahini, lemon, unspecified
+    oil: https://yourlebanon.com/recipe/palestinian-tahini-salad/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: '1160 g rows retained with no cooking. Default uses Dena oil/tahini ratios, edible vegetable weights assumed;
+    salt reduced from source tablespoon to 6 g. Second source uses less tahini and does not quantify oil: ingredient
+    ranges span lighter versions. Tahini salad means vegetables dressed with tahini, not pure tahini paste/sauce.
+    Cooked weights and household portion ranges are modelled, not measured; ranges allow serving size and ingredient
+    variation. Authored by Codex 2026-10-30 (A19 + A30); claude-draft is the schema''s only draft-author tag, not
+    a claim of review. Independent number check pending (D-087). Mass audit (nutrient rows already exclude discarded
+    skins/bones/drippings): vegetables: 1160 g input rows - 0 g water/steam = 1160 g finished.'

@@ -1,0 +1,73 @@
+schema: 1
+id: ref:bazella_with_rice
+names:
+  en: [Bazella with rice, Pea stew with rice]
+  ar: [بازيلا مع رز, بازيلاء مع رز]
+  arabizi: [bazella ma ruz, bazila ma roz]
+state: cooked
+variants:
+- id: with_rice
+  default: true
+  recipe:
+  - {food: 'usda:beef_chuck_raw', grams: 454}
+  - {food: 'usda:green_peas_raw', grams: 580, note: 4 cups at USDA 145 g/cup; raw is the proxy for uncooked frozen
+      peas.}
+  - {food: 'usda:carrot_raw', grams: 244}
+  - {food: 'usda:tomatoes_canned', grams: 794}
+  - {food: 'usda:coriander_leaves_fresh', grams: 16}
+  - {food: 'usda:tomato_paste_canned', grams: 16}
+  - {food: 'usda:garlic_raw', grams: 12}
+  - {food: 'usda:olive_oil', grams: 27, range: [15, 45]}
+  - {food: 'usda:allspice_ground', grams: 1}
+  - {food: 'usda:salt_table', grams: 6}
+  - {food: 'usda:black_pepper', grams: 1}
+  - {food: 'usda:water_tap', grams: 480}
+  - {food: 'usda:rice_white_long_grain_cooked', grams: 1200, note: Six 200 g cooked plain rice accompaniments; curator
+      serving assumption. No extra oil/vermicelli.}
+  cooked_total_g: 3650
+  cooked_total_range: [3285, 4015]
+- id: stew_only
+  default: false
+  names:
+    en: [Bazella stew, Bazella]
+    ar: [يخنة بازيلا]
+    arabizi: [bazella stew, bazella tabikh]
+  recipe:
+  - {food: 'usda:beef_chuck_raw', grams: 454}
+  - {food: 'usda:green_peas_raw', grams: 580, note: 4 cups at USDA 145 g/cup; raw is the proxy for uncooked frozen
+      peas.}
+  - {food: 'usda:carrot_raw', grams: 244}
+  - {food: 'usda:tomatoes_canned', grams: 794}
+  - {food: 'usda:coriander_leaves_fresh', grams: 16}
+  - {food: 'usda:tomato_paste_canned', grams: 16}
+  - {food: 'usda:garlic_raw', grams: 12}
+  - {food: 'usda:olive_oil', grams: 27, range: [15, 45]}
+  - {food: 'usda:allspice_ground', grams: 1}
+  - {food: 'usda:salt_table', grams: 6}
+  - {food: 'usda:black_pepper', grams: 1}
+  - {food: 'usda:water_tap', grams: 480}
+  cooked_total_g: 2450
+  cooked_total_range: [2205, 2695]
+  portions:
+    bowl: {g: 350, range: [250, 500]}
+    plate: {g: 400, range: [300, 550]}
+portions:
+  plate: {g: 550, range: [400, 750]}
+  small_plate: {g: 400, range: [300, 500]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Alphafoodie, Bazella w Riz; fetched recipe card: 1 lb beef, 4 cups peas, 4 carrots, 28 oz tomatoes, 2 tbsp
+    oil, 2 cups stock/water: https://www.alphafoodie.com/lebanese-carrot-and-pea-stew-bazella/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: '2631 g rows minus 181 g steam = 2450 g stew. Water replaces optional stock because beef cooks in the pot
+    and provides broth; rendered fat counted. Fresh/frozen peas differ slightly; carrot and pea quantities matter
+    more than spices. Default platter adds 1200 g cooked rice to whole pot; 550 g plate is a proportional mixed
+    serving (about 181 g rice and 369 g stew). Stew-only names do not imply rice. Cooked weights and household portion
+    ranges are modelled, not measured; ranges allow serving size and ingredient variation. Authored by Codex 2026-10-30
+    (A19 + A30); claude-draft is the schema''s only draft-author tag, not a claim of review. Independent number
+    check pending (D-087). Mass audit (nutrient rows already exclude discarded skins/bones/drippings): with_rice:
+    3831 g input rows - 181 g water/steam = 3650 g finished; stew_only: 2631 g input rows - 181 g water/steam =
+    2450 g finished.'

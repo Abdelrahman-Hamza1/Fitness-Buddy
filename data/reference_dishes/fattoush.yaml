@@ -1,0 +1,66 @@
+schema: 1
+id: ref:fattoush
+names:
+  en: [Fattoush, Fattush salad]
+  ar: [فتوش]
+  arabizi: [fattoush, fatoush, fatoosh, fattoosh]
+state: cooked
+variants:
+- id: toasted
+  default: true
+  recipe:
+  - {food: 'usda:lettuce_romaine_raw', grams: 300}
+  - {food: 'usda:cucumber_raw', grams: 240}
+  - {food: 'usda:tomato_raw', grams: 200}
+  - {food: 'usda:radish_raw', grams: 75}
+  - {food: 'usda:spring_onion_raw', grams: 30}
+  - {food: 'usda:parsley_fresh', grams: 40}
+  - {food: 'usda:mint_fresh', grams: 15}
+  - {food: 'usda:pita_white', grams: 60}
+  - {food: 'usda:olive_oil', grams: 54, range: [35, 80]}
+  - {food: 'usda:lemon_juice_raw', grams: 45}
+  - {food: 'ref:sumac', grams: 2}
+  - {food: 'usda:salt_table', grams: 5}
+  cooked_total_g: 1050
+  cooked_total_range: [945, 1155]
+- id: fried_pita
+  default: false
+  names:
+    en: [Fattoush with fried pita]
+    ar: [فتوش بخبز مقلي]
+    arabizi: [fattoush khubz maqli]
+  recipe:
+  - {food: 'usda:lettuce_romaine_raw', grams: 300}
+  - {food: 'usda:cucumber_raw', grams: 240}
+  - {food: 'usda:tomato_raw', grams: 200}
+  - {food: 'usda:radish_raw', grams: 75}
+  - {food: 'usda:spring_onion_raw', grams: 30}
+  - {food: 'usda:parsley_fresh', grams: 40}
+  - {food: 'usda:mint_fresh', grams: 15}
+  - {food: 'usda:pita_white', grams: 60}
+  - {food: 'usda:olive_oil', grams: 81, range: [54, 108], note: 54 g dressing plus 27 g absorbed bread frying oil;
+      not the oil bath.}
+  - {food: 'usda:lemon_juice_raw', grams: 45}
+  - {food: 'ref:sumac', grams: 2}
+  - {food: 'usda:salt_table', grams: 5}
+  cooked_total_g: 1077
+  cooked_total_range: [969, 1185]
+portions:
+  bowl: {g: 250, range: [170, 350]}
+  plate: {g: 350, range: [250, 450]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Wafa, Fattoush; fetched recipe card: 1 toasted pita, vegetables/herbs, 1/4 cup oil: https://palestineinadish.com/recipes/fattoush-salad-a-fantastic-meal-on-its-own/'
+  - 'Yumna Jawad, Fattoush; full browser recipe: 3 tbsp dressing oil plus 3 tbsp frying oil, with peppers: https://feelgoodfoodie.net/recipe/lebanese-fattoush-salad/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: '1066 g rows minus 16 g pita toasting loss = 1050 g. Fried variant adds 27 g oil and keeps same 16 g moisture
+    loss. Vegetable/bunch weights assumed after trimming. Optional purslane (not in catalog) and 1 tsp pomegranate
+    molasses omitted; not replaced with cane molasses. Default follows toasted Palestinian version; fried variant
+    models 2 tbsp retained oil, between the source preparations. Cooked weights and household portion ranges are
+    modelled, not measured; ranges allow serving size and ingredient variation. Authored by Codex 2026-10-30 (A19
+    + A30); claude-draft is the schema''s only draft-author tag, not a claim of review. Independent number check
+    pending (D-087). Mass audit (nutrient rows already exclude discarded skins/bones/drippings): toasted: 1066 g
+    input rows - 16 g water/steam = 1050 g finished; fried_pita: 1093 g input rows - 16 g water/steam = 1077 g finished.'

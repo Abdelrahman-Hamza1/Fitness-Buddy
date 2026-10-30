@@ -1,0 +1,145 @@
+schema: 1
+id: ref:qatayef
+names:
+  en: ['Qatayef (walnut or cheese, fried or baked)', Qatayef, Katayef]
+  ar: [قطايف, قطائف]
+  arabizi: [qatayef, atayef, katayef, 2atayef, qateyef]
+state: cooked
+variants:
+- id: walnut_fried
+  default: true
+  names:
+    en: [Walnut qatayef fried]
+    ar: [قطايف جوز مقلية]
+    arabizi: [qatayef joz maqli]
+  recipe:
+  - {food: 'usda:wheat_flour_white', grams: 240}
+  - {food: 'usda:semolina_fine_dry', grams: 55}
+  - {food: 'usda:sugar_granulated', grams: 25, note: Sugar in pancake batter.}
+  - {food: 'usda:yeast_bakers', grams: 3, note: Compressed yeast nutrient proxy at 1 tsp dry yeast mass; undercounts
+      less than 10 kcal per batch.}
+  - {food: 'usda:salt_table', grams: 1.5}
+  - {food: 'usda:water_tap', grams: 600, note: 2.5 cups pancake water; baking powder omitted from nutrients (no
+      matching basic).}
+  - {food: 'usda:walnuts', grams: 360, range: [300, 440], note: 'Double the source half-batch walnut filling for all 30 pancakes.'}
+  - {food: 'usda:cinnamon_ground', grams: 10}
+  - {food: 'usda:honey', grams: 126, note: 'Double source half-batch 3 tbsp honey to 6 tbsp at USDA 21 g per tbsp.'}
+  - {food: 'usda:vegetable_oil_soybean', grams: 90, range: [60, 150], note: 'Absorbed frying oil (3 g/piece) or
+      brushing oil (1 g/piece); curator assumption, never full bath.'}
+  - {food: 'usda:sugar_granulated', grams: 200, range: [120, 300], note: 'Sugar from syrup eaten; UNSUPPORTED retained quantity; not established by the source dipping batch.'}
+  - {food: 'usda:water_tap', grams: 120, note: Water in syrup retained after boil/drain; assumption.}
+  cooked_total_g: 1548
+  cooked_total_range: [1388, 1718]
+  portions:
+    piece: {g: 51.6, range: [46.27, 57.27]}
+    two_pieces: {g: 103.2, range: [92.54, 114.54]}
+- id: walnut_baked
+  default: false
+  names:
+    en: [Walnut qatayef baked]
+    ar: [قطايف جوز بالفرن]
+    arabizi: [qatayef joz bil forn]
+  recipe:
+  - {food: 'usda:wheat_flour_white', grams: 240}
+  - {food: 'usda:semolina_fine_dry', grams: 55}
+  - {food: 'usda:sugar_granulated', grams: 25, note: Sugar in pancake batter.}
+  - {food: 'usda:yeast_bakers', grams: 3, note: Compressed yeast nutrient proxy at 1 tsp dry yeast mass; undercounts
+      less than 10 kcal per batch.}
+  - {food: 'usda:salt_table', grams: 1.5}
+  - {food: 'usda:water_tap', grams: 600, note: 2.5 cups pancake water; baking powder omitted from nutrients (no
+      matching basic).}
+  - {food: 'usda:walnuts', grams: 360, range: [300, 440], note: 'Double the source half-batch walnut filling for all 30 pancakes.'}
+  - {food: 'usda:cinnamon_ground', grams: 10}
+  - {food: 'usda:honey', grams: 126, note: 'Double source half-batch 3 tbsp honey to 6 tbsp at USDA 21 g per tbsp.'}
+  - {food: 'usda:vegetable_oil_soybean', grams: 30, range: [15, 50], note: 'Absorbed frying oil (3 g/piece) or brushing
+      oil (1 g/piece); curator assumption, never full bath.'}
+  - {food: 'usda:sugar_granulated', grams: 200, range: [120, 300], note: 'Sugar from syrup eaten; UNSUPPORTED retained quantity; not established by the source dipping batch.'}
+  - {food: 'usda:water_tap', grams: 120, note: Water in syrup retained after boil/drain; assumption.}
+  cooked_total_g: 1488
+  cooked_total_range: [1334, 1652]
+  portions:
+    piece: {g: 49.6, range: [44.47, 55.07]}
+    two_pieces: {g: 99.2, range: [88.94, 110.14]}
+- id: cheese_fried
+  default: false
+  names:
+    en: [Cheese qatayef fried]
+    ar: [قطايف جبنة مقلية]
+    arabizi: [qatayef jibneh maqli]
+  recipe:
+  - {food: 'usda:wheat_flour_white', grams: 240}
+  - {food: 'usda:semolina_fine_dry', grams: 55}
+  - {food: 'usda:sugar_granulated', grams: 25, note: Sugar in pancake batter.}
+  - {food: 'usda:yeast_bakers', grams: 3, note: Compressed yeast nutrient proxy at 1 tsp dry yeast mass; undercounts
+      less than 10 kcal per batch.}
+  - {food: 'usda:salt_table', grams: 1.5}
+  - {food: 'usda:water_tap', grams: 600, note: 2.5 cups pancake water; baking powder omitted from nutrients (no
+      matching basic).}
+  - {food: 'ref:akkawi_cheese', grams: 600, range: [500, 800]}
+  - {food: 'usda:vegetable_oil_soybean', grams: 90, range: [60, 150], note: 'Absorbed frying oil (3 g/piece) or
+      brushing oil (1 g/piece); curator assumption, never full bath.'}
+  - {food: 'usda:sugar_granulated', grams: 200, range: [120, 300], note: 'Sugar from syrup eaten; UNSUPPORTED retained quantity; not established by the source dipping batch.'}
+  - {food: 'usda:water_tap', grams: 120, note: Water in syrup retained after boil/drain; assumption.}
+  cooked_total_g: 1670
+  cooked_total_range: [1483, 1907]
+  portions:
+    piece: {g: 55.67, range: [49.43, 63.57]}
+    two_pieces: {g: 111.34, range: [98.86, 127.14]}
+- id: cheese_baked
+  default: false
+  names:
+    en: [Cheese qatayef baked]
+    ar: [قطايف جبنة بالفرن]
+    arabizi: [qatayef jibneh bil forn]
+  recipe:
+  - {food: 'usda:wheat_flour_white', grams: 240}
+  - {food: 'usda:semolina_fine_dry', grams: 55}
+  - {food: 'usda:sugar_granulated', grams: 25, note: Sugar in pancake batter.}
+  - {food: 'usda:yeast_bakers', grams: 3, note: Compressed yeast nutrient proxy at 1 tsp dry yeast mass; undercounts
+      less than 10 kcal per batch.}
+  - {food: 'usda:salt_table', grams: 1.5}
+  - {food: 'usda:water_tap', grams: 600, note: 2.5 cups pancake water; baking powder omitted from nutrients (no
+      matching basic).}
+  - {food: 'ref:akkawi_cheese', grams: 600, range: [500, 800]}
+  - {food: 'usda:vegetable_oil_soybean', grams: 30, range: [15, 50], note: 'Absorbed frying oil (3 g/piece) or brushing
+      oil (1 g/piece); curator assumption, never full bath.'}
+  - {food: 'usda:sugar_granulated', grams: 200, range: [120, 300], note: 'Sugar from syrup eaten; UNSUPPORTED retained quantity; not established by the source dipping batch.'}
+  - {food: 'usda:water_tap', grams: 120, note: Water in syrup retained after boil/drain; assumption.}
+  cooked_total_g: 1610
+  cooked_total_range: [1429, 1841]
+  portions:
+    piece: {g: 53.67, range: [47.63, 61.37]}
+    two_pieces: {g: 107.34, range: [95.26, 122.74]}
+portions:
+  piece: {g: 51.6, range: [46.27, 57.27]}
+  two_pieces: {g: 103.2, range: [92.54, 114.54]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+  - 'Amina, Hungry Paprikas, Qatayef; fetched card: 240 g flour, 55 g semolina, 25 g sugar, 2.5 cups water, 30 pieces,
+    half walnut and half 300 g cheese filling; double either for a single filling, 400 g sugar syrup batch: https://www.hungrypaprikas.com/qatayef/'
+  - 'Falasteeni Foodie, Qatayef; fetched card uses 1.5 cups flour and 1 cup semolina, more semolina than Hungry
+    Paprikas; frying or brushing/baking: https://falasteenifoodie.com/qatayef-recipe/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  - "Al-Ismail et al. (2021), Trans fatty acids content of sweets and appetisers traditionally consumed in Jordan, Table I: https://www.innovhub-ssi.it/kdocs/2012987/2021_vol._982_-_art._06_-_al-ismail.pdf"
+  notes: >-
+    Fix round 2026-10-30: NOT SUPPORTED FOR RELEASE; keep draft. Hungry Paprikas explicitly makes 15
+    walnut and 15 cheese pancakes: a 30-piece single-filling batch doubles walnuts to 360 g [300,440],
+    cinnamon to 10 g and honey to 126 g, or Akkawi to 600 g [500,800]. The 30-piece yield is sourced;
+    finished mass is not. To correct the existing draft consistently without pretending to measure
+    yield, carry forward its UNVERIFIED steam losses (282.5 g walnut; 264.5 g cheese): walnut_fried
+    1830.5 - 282.5 = 1548 g; walnut_baked 1770.5 - 282.5 = 1488 g; cheese_fried 1934.5 - 264.5 = 1670 g;
+    cheese_baked 1874.5 - 264.5 = 1610 g. Batch bounds add the extra filling low/high masses to the old
+    draft bounds: walnut +218/+288 g; cheese +250/+400 g. Piece masses and bounds divide batch masses by
+    30, rounded to 0.01 g; two_pieces doubles those displayed masses and bounds. These are conditional
+    arithmetic bounds at 30 equal pieces, not measured piece-size variability. The original 200 g syrup
+    sugar, 120 g syrup water and 90/30 g frying/brushing oil remain UNSUPPORTED placeholders; no new
+    retained quantities invented. Al-Ismail et al. Table I specifies 25 g cheese or 46 g walnut syrup
+    for a DIFFERENT 325 g dough preparation and leaves frying oil unquantified; scaling it onto this
+    batter would not validate retention or yield. The 2023 Egyptian dessert absorption study does not
+    report qatayef. A batch weighing before/after frying and dipping, or a matching published
+    preparation with retained masses, is still required. Akkawi is a desalted brined-label nutrient
+    proxy; dry yeast uses compressed yeast nutrients as previously disclosed. Baking powder omitted from
+    nutrient rows. No review promotion.

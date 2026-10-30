@@ -1,0 +1,63 @@
+schema: 1
+id: ref:freekeh_soup
+names:
+  en: [Freekeh soup, Shorbat freekeh]
+  ar: [شوربة فريكة, شوربة فريك]
+  arabizi: [shorbat freekeh, shorbet freekeh, shorbet freeke, shorbet frikeh]
+state: cooked
+variants:
+- id: chicken
+  default: true
+  recipe:
+  - {food: 'ref:freekeh', grams: 180, range: [140, 200], note: 'One dry cup = 180 g from ref:freekeh manufacturer
+      serving (45 g per 1/4 cup).'}
+  - {food: 'usda:chicken_breast_skinless_raw', grams: 454}
+  - {food: 'usda:onion_raw', grams: 110}
+  - {food: 'usda:olive_oil', grams: 40, range: [27, 54]}
+  - {food: 'usda:allspice_ground', grams: 3}
+  - {food: 'usda:garlic_powder', grams: 3}
+  - {food: 'usda:onion_powder', grams: 2}
+  - {food: 'usda:black_pepper', grams: 1}
+  - {food: 'usda:salt_table', grams: 6}
+  - {food: 'usda:water_tap', grams: 1920}
+  cooked_total_g: 2470
+  cooked_total_range: [2223, 2717]
+- id: vegetarian
+  default: false
+  names:
+    en: [Vegetarian freekeh soup]
+    ar: [شوربة فريكة بدون دجاج]
+    arabizi: [shorbat freekeh bala djaj]
+  recipe:
+  - {food: 'ref:freekeh', grams: 180, range: [140, 200], note: 'One dry cup = 180 g from ref:freekeh manufacturer
+      serving (45 g per 1/4 cup).'}
+  - {food: 'usda:onion_raw', grams: 110}
+  - {food: 'usda:olive_oil', grams: 40, range: [27, 54]}
+  - {food: 'usda:allspice_ground', grams: 3}
+  - {food: 'usda:garlic_powder', grams: 3}
+  - {food: 'usda:onion_powder', grams: 2}
+  - {food: 'usda:black_pepper', grams: 1}
+  - {food: 'usda:salt_table', grams: 6}
+  - {food: 'usda:water_tap', grams: 1920}
+  cooked_total_g: 2070
+  cooked_total_range: [1863, 2277]
+portions:
+  bowl: {g: 300, range: [220, 450]}
+  cup: {g: 240, range: [180, 300]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Falasteeni Foodie, Freekeh Soup; fetched: 1 cup freekeh, 1 lb breast, 3 tbsp oil, 8 cups water: https://falasteenifoodie.com/freekeh-soup/'
+  - 'Yumna Jawad, Freekeh Soup; browser-retrieved recipe uses 2 cups freekeh, 2 tbsp butter, tomato paste and same
+    8 cups water: https://feelgoodfoodie.net/recipe/freekeh-soup/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: 'Default follows the thinner Falasteeni Foodie version, not the twice-as-much-grain recipe. Chicken batch
+    2719 g minus 249 g steam = 2470 g; vegetarian 2265 g minus 195 g = 2070 g, omitting chicken but keeping broth
+    volume. Bouillon replaced with salt/water (its small fat/carbs omitted); chicken fat and juices stay in soup.
+    Freekeh dry nutrients only; no extra 3x yield added. Cooked weights and household portion ranges are modelled,
+    not measured; ranges allow serving size and ingredient variation. Authored by Codex 2026-10-30 (A19 + A30);
+    claude-draft is the schema''s only draft-author tag, not a claim of review. Independent number check pending
+    (D-087). Mass audit (nutrient rows already exclude discarded skins/bones/drippings): chicken: 2719 g input rows
+    - 249 g water/steam = 2470 g finished; vegetarian: 2265 g input rows - 195 g water/steam = 2070 g finished.'

@@ -1,0 +1,56 @@
+schema: 1
+id: ref:qamar_al_din
+names:
+  en: [Qamar al-din, Qamar al deen, Apricot Ramadan drink]
+  ar: [قمر الدين, عصير قمر الدين]
+  arabizi: [qamar al din, qamar al deen, amar el din, 2amar el deen]
+state: cooked
+variants:
+- id: sweet
+  default: true
+  recipe:
+  - {food: 'usda:apricots_dried', grams: 400, note: '400 g homemade leather share: source leather makes 454 g from
+      454 g dried apricots; model 400/454 share.'}
+  - {food: 'usda:sugar_granulated', grams: 118, range: [80, 160], note: About 51 g already in homemade leather (58
+      g sugar x 400/454) + 67 g added to pitcher.}
+  - {food: 'usda:lemon_juice_raw', grams: 4}
+  - {food: 'usda:water_tap', grams: 665, note: 'Drink adds 720 g water; leather manufacture removes about 55 g net
+      water from apricots, so net water row = 665 g.'}
+  cooked_total_g: 1187
+  cooked_total_range: [1100, 1350]
+- id: diluted
+  default: false
+  names:
+    en: [Diluted qamar al din]
+    ar: [قمر الدين مخفف]
+    arabizi: [qamar al din mkhaffaf]
+  recipe:
+  - {food: 'usda:apricots_dried', grams: 400}
+  - {food: 'usda:sugar_granulated', grams: 118, range: [80, 160]}
+  - {food: 'usda:lemon_juice_raw', grams: 4}
+  - {food: 'usda:water_tap', grams: 1061, note: Extra 396 g water to make a 75% juice /25% water mix by mass.}
+  cooked_total_g: 1583
+  cooked_total_range: [1500, 1750]
+portions:
+  glass: {g: 250, range: [200, 330]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Amira Ibrahim, Qamar Al-Deen drink; full browser recipe: 400 g leather + 3 cups water + 1/3 cup sugar; suggests
+    dilution to 75% juice/25% water: https://amiraspantry.com/qamar-al-deen-apricot-drink/'
+  - 'Amira Ibrahim, homemade apricot paste; full browser recipe: 454 g dried apricots, 1.25 cups water, 1/4-1/3
+    cup sugar, lemon; reported yield 1 lb: https://amiraspantry.com/qamar-eddeen-paste/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: 'Avoids pretending commercial apricot leather equals unsweetened dried apricots: homemade leather sugar
+    is explicit. 454 g dried apricot + 58 g sugar + 5 g lemon + 300 g cooking water -> 454 g leather, 363 g water
+    loss (source yield model, not measured). Use 400/454 share: 400 g apricot, 51 g sugar, 4 g lemon, net -55 g
+    water; drink adds 720 g water + 67 g sugar -> 1187 g pitcher. Recipe rows combine water as 665 g and sum to
+    1187 g, no further evaporation. Added sugar about 25 g per 250 g glass plus intrinsic apricot sugars. Diluted
+    variant retains same nutrients in 1583 g. Commercial sweetened leather compositions may differ substantially;
+    labelled pack should replace homemade model. Cooked weights and household portion ranges are modelled, not measured;
+    ranges allow serving size and ingredient variation. Authored by Codex 2026-10-30 (A19 + A30); claude-draft is
+    the schema''s only draft-author tag, not a claim of review. Independent number check pending (D-087). Mass audit
+    (nutrient rows already exclude discarded skins/bones/drippings): sweet: 1187 g input rows - 0 g water/steam
+    = 1187 g finished; diluted: 1583 g input rows - 0 g water/steam = 1583 g finished.'

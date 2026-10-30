@@ -1,0 +1,37 @@
+schema: 1
+id: ref:yogurt_cucumber_salad
+names:
+  en: [Yogurt-cucumber salad, Cucumber yogurt salad, Khiyar bi laban]
+  ar: [سلطة لبن وخيار, خيار بلبن, سلطة خيار باللبن]
+  arabizi: [salatet laban w khiyar, khiyar bi laban, salatet khyar bil laban]
+state: cooked
+variants:
+- id: whole_milk_yogurt
+  default: true
+  recipe:
+  - {food: 'usda:yogurt_plain_whole', grams: 163}
+  - {food: 'usda:cucumber_raw', grams: 240}
+  - {food: 'usda:lemon_juice_raw', grams: 45}
+  - {food: 'usda:garlic_raw', grams: 6}
+  - {food: 'usda:mint_dried', grams: 2}
+  - {food: 'usda:salt_table', grams: 4}
+  - {food: 'usda:water_tap', grams: 120}
+  cooked_total_g: 580
+  cooked_total_range: [540, 640]
+portions:
+  bowl: {g: 200, range: [130, 300]}
+  small_bowl: {g: 120, range: [80, 180]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Falasteeni Foodie, Khiyar Bi Laban; fetched recipe card: 2/3 cup whole yogurt, 1/2 cup water, lemon, 3 Persian
+    cucumbers, 2 tsp dried mint: https://falasteenifoodie.com/cucumber-yogurt-salad-khiyar-bi-laban/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: '580 g rows retained. Small cucumbers assumed 80 g each, yogurt cup 245 g; lemon juice 45 g. This source
+    makes a thin salad; more yogurt or Greek yogurt raises protein/energy. No oil included; added oil is logged
+    separately. Cooked weights and household portion ranges are modelled, not measured; ranges allow serving size
+    and ingredient variation. Authored by Codex 2026-10-30 (A19 + A30); claude-draft is the schema''s only draft-author
+    tag, not a claim of review. Independent number check pending (D-087). Mass audit (nutrient rows already exclude
+    discarded skins/bones/drippings): whole_milk_yogurt: 580 g input rows - 0 g water/steam = 580 g finished.'

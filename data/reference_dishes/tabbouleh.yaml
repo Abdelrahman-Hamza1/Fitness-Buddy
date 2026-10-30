@@ -1,0 +1,42 @@
+schema: 1
+id: ref:tabbouleh
+names:
+  en: [Tabbouleh, Tabouli, Tabouleh]
+  ar: [تبولة]
+  arabizi: [tabbouleh, tabouleh, tabouli, tabooleh, taboule]
+state: cooked
+variants:
+- id: parsley
+  default: true
+  recipe:
+  - {food: 'usda:parsley_fresh', grams: 180, range: [150, 240], note: '3 packed cups leaves; assume 60 g per packed
+      cup, not gross bunch weight.'}
+  - {food: 'usda:tomato_raw', grams: 250}
+  - {food: 'usda:spring_onion_raw', grams: 30}
+  - {food: 'usda:mint_fresh', grams: 10}
+  - {food: 'usda:bulgur_dry', grams: 35, note: '1/4 cup at catalog dry 140 g/cup; softens in tomato/lemon juice,
+      no separate cooking water.'}
+  - {food: 'usda:olive_oil', grams: 72, range: [45, 90]}
+  - {food: 'usda:lemon_juice_raw', grams: 45}
+  - {food: 'usda:salt_table', grams: 1.5}
+  - {food: 'usda:black_pepper', grams: 0.5}
+  cooked_total_g: 624
+  cooked_total_range: [590, 680]
+portions:
+  bowl: {g: 180, range: [120, 280]}
+  plate: {g: 250, range: [180, 350]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Yumna Jawad, Traditional Lebanese Tabbouleh; direct HTTP blocked, full recipe read via browser research: 3
+    bunches/packed cups parsley, 1/4 cup bulgur, 1/3 cup oil, 2 tomatoes: https://feelgoodfoodie.net/recipe/traditional-lebanese-tabbouleh-salad/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: 'All 624 g ingredients retained; no cooking loss or double-counted bulgur water. Bunch sizes vary strongly
+    so parsley is an edible leaf assumption. This is parsley-heavy tabbouleh; grain-heavy supermarket tabouli differs.
+    Dressing oil is the dominant kcal uncertainty; drained salad will be lighter. Cooked weights and household portion
+    ranges are modelled, not measured; ranges allow serving size and ingredient variation. Authored by Codex 2026-10-30
+    (A19 + A30); claude-draft is the schema''s only draft-author tag, not a claim of review. Independent number
+    check pending (D-087). Mass audit (nutrient rows already exclude discarded skins/bones/drippings): parsley:
+    624 g input rows - 0 g water/steam = 624 g finished.'

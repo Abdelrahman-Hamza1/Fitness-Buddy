@@ -1,0 +1,69 @@
+schema: 1
+id: ref:baklava
+names:
+  en: [Baklava, Baklawa]
+  ar: [بقلاوة]
+  arabizi: [baklawa, baklava, ba2lawa, baqlawa]
+state: cooked
+variants:
+- id: walnut
+  default: true
+  names:
+    en: [Walnut baklava]
+    ar: [بقلاوة بالجوز]
+    arabizi: [baklawa joz]
+  recipe:
+  - {food: 'usda:phyllo_dough', grams: 454}
+  - {food: 'usda:walnuts', grams: 510, range: [400, 550]}
+  - {food: 'usda:ghee', grams: 160, range: [135, 190], note: 'Replaces source 170-227 g butter with about 80% butterfat
+      = 136-182 g ghee; default 160 g, pan fat included.'}
+  - {food: 'usda:sugar_granulated', grams: 200, range: [160, 250], note: '50 g filling sugar plus 150 g syrup sugar,
+      source total 1 cup.'}
+  - {food: 'usda:honey', grams: 340, range: [250, 380], note: '1 cup honey for syrup, all poured and eaten; leftover
+      syrup would lower kcal.'}
+  - {food: 'usda:water_tap', grams: 240}
+  - {food: 'usda:lemon_juice_raw', grams: 45}
+  - {food: 'usda:cinnamon_ground', grams: 5}
+  cooked_total_g: 1800
+  cooked_total_range: [1620, 1980]
+- id: pistachio
+  default: false
+  names:
+    en: [Pistachio baklava]
+    ar: [بقلاوة بالفستق]
+    arabizi: [baklawa fustuq]
+  recipe:
+  - {food: 'usda:phyllo_dough', grams: 454}
+  - {food: 'usda:pistachios_raw', grams: 510, range: [400, 550]}
+  - {food: 'usda:ghee', grams: 160, range: [135, 190], note: 'Replaces source 170-227 g butter with about 80% butterfat
+      = 136-182 g ghee; default 160 g, pan fat included.'}
+  - {food: 'usda:sugar_granulated', grams: 200, range: [160, 250], note: '50 g filling sugar plus 150 g syrup sugar,
+      source total 1 cup.'}
+  - {food: 'usda:honey', grams: 340, range: [250, 380], note: '1 cup honey for syrup, all poured and eaten; leftover
+      syrup would lower kcal.'}
+  - {food: 'usda:water_tap', grams: 240}
+  - {food: 'usda:lemon_juice_raw', grams: 45}
+  - {food: 'usda:cinnamon_ground', grams: 5}
+  cooked_total_g: 1800
+  cooked_total_range: [1620, 1980]
+portions:
+  piece: {g: 50, range: [30, 80]}
+  large_piece: {g: 75, range: [55, 110]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Suzy Karadsheh, The Mediterranean Dish, family Baklava; full browser recipe: 454 g phyllo, 510 g total nuts,
+    170-227 g butter, 1 cup total sugar, 1 cup honey + 1 cup water syrup; explicitly permits all-walnut/pistachio:
+    https://www.themediterraneandish.com/how-to-make-baklava/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: '1954 g rows minus 154 g syrup/baking steam = 1800 g tray. Uses source nut-rich honey syrup model with
+    ghee replacing butterfat, not a claim all Palestinian baklawa uses honey. 24 large 75 g source diamonds or 36
+    smaller 50 g pieces; reference piece selects 36. All syrup sugar and honey counted. Ghee, nut mass and syrup
+    drainage dominate. No extra pistachio garnish beyond filling. Cooked weights and household portion ranges are
+    modelled, not measured; ranges allow serving size and ingredient variation. Authored by Codex 2026-10-30 (A19
+    + A30); claude-draft is the schema''s only draft-author tag, not a claim of review. Independent number check
+    pending (D-087). Mass audit (nutrient rows already exclude discarded skins/bones/drippings): walnut: 1954 g
+    input rows - 154 g water/steam = 1800 g finished; pistachio: 1954 g input rows - 154 g water/steam = 1800 g
+    finished.'

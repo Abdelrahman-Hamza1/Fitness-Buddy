@@ -1,0 +1,37 @@
+schema: 1
+id: ref:lentil_soup
+names:
+  en: [Lentil soup (shorbat adas), Lentil soup, Shorbat adas]
+  ar: [شوربة عدس, شوربة عدس أحمر]
+  arabizi: [shorbat adas, shorbet 3adas, shorbet adas, shorba adas]
+state: cooked
+variants:
+- id: red_lentil
+  default: true
+  recipe:
+  - {food: 'usda:lentils_red_dry', grams: 192}
+  - {food: 'usda:olive_oil', grams: 27, range: [14, 40]}
+  - {food: 'usda:onion_raw', grams: 110}
+  - {food: 'usda:cumin_seed', grams: 3}
+  - {food: 'usda:salt_table', grams: 5}
+  - {food: 'usda:water_tap', grams: 960}
+  cooked_total_g: 1150
+  cooked_total_range: [1035, 1265]
+portions:
+  bowl: {g: 300, range: [220, 420]}
+  cup: {g: 240, range: [180, 300]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Wafa, Easy Palestinian Red Lentil Soup; fetched card: 1 cup lentils, 2 tbsp oil, 1 onion, 4 cups water, 1.5
+    tsp cumin: https://palestineinadish.com/recipes/easy-palestinian-red-lentil-soup/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: '1297 g rows minus 147 g steam = 1150 g soup, approximately four 287 g servings. USDA dry cup = 192 g;
+    cumin rounded to 3 g. Do not also multiply lentils by cooked yield: hydration already in water row and total.
+    No bread, cream or chicken stock. Cooked weights and household portion ranges are modelled, not measured; ranges
+    allow serving size and ingredient variation. Authored by Codex 2026-10-30 (A19 + A30); claude-draft is the schema''s
+    only draft-author tag, not a claim of review. Independent number check pending (D-087). Mass audit (nutrient
+    rows already exclude discarded skins/bones/drippings): red_lentil: 1297 g input rows - 147 g water/steam = 1150
+    g finished.'

@@ -1,8 +1,8 @@
 # Fitness Buddy: progress
 
-**55 of 87 steps done** · `▓▓▓▓▓▓░░░░` 63%
+**57 of 87 steps done** · `▓▓▓▓▓▓░░░░` 65%
 
-App 40/64 · Backend 15/23 · Foundation 7/7
+App 42/64 · Backend 15/23 · Foundation 7/7
 
 ## Now
 
@@ -15,7 +15,7 @@ App 40/64 · Backend 15/23 · Foundation 7/7
 | ✅ | **M1** Dogfood 1 | `▓▓▓▓▓` 14/14 | — |
 | ✅ | **M2** Targets & weight | `▓▓▓▓▓` 9/9 | — |
 | 🟨 | **M5** Accounts & sync | `▓▓▓▓░` 18/20 | A34 A35 |
-| 🟨 | **M2b** Solid app (no AI) | `▓▓░░░` 13/22 | A19 A28a A30 A38 A39a A40 +5 |
+| 🟨 | **M2b** Solid app (no AI) | `▓▓▓░░` 15/22 | A28a A38 A39a A40 A41a A42 +3 |
 | 🟨 | **M3** Buddy on the laptop | `▓░░░░` 1/4 | A23b A48 A49 #148 #149 #150 #151 |
 | ⬜ | **M4** Dogfood 2 | `░░░░░` 0/8 | A25 A26 A27 A28b A29 A31 +2 |
 | ⬜ | **M6** Workouts, review &… | `░░░░░` 0/4 | A37b A39b A41b B12 |
@@ -29,10 +29,10 @@ App 40/64 · Backend 15/23 · Foundation 7/7
 Not started, every dependency done; earliest milestone first:
 
 - [A34](technical-planning/steps/A34-sync-engine-app.md) Sync engine (app) · M5
-- [A19](technical-planning/steps/dish-batches.md) Dish batch 4: main dishes B, salads & sides · M2b
 - [A38](technical-planning/steps/A38-adaptive-targets.md) Adaptive targets & weekly check-in · M2b
 - [B10a](technical-planning/steps/B10-barcode-vision-import.md) Barcode lookup (server, no AI; split from B10, 2026-10-30) · M2b
 - [A23b](technical-planning/steps/A23-message-lifecycle.md) Message queue, failures & pending strip (split from A23) · M3
+- [A26](technical-planning/steps/A26-memory-user-model.md) Memory & user model (app) · M4
 
 ## Waiting on you
 

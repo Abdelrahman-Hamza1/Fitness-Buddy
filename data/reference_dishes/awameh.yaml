@@ -1,0 +1,54 @@
+schema: 1
+id: ref:awameh
+names:
+  en: [Awameh / luqaimat, Awameh, Luqaimat, Luqmat al qadi]
+  ar: [عوامة, عوامات, لقيمات, لقمة القاضي]
+  arabizi: [awameh, 3awameh, awamat, luqaimat, lo2mat el qadi]
+state: cooked
+variants:
+- id: fried_syrup
+  default: true
+  recipe:
+  - {food: 'usda:wheat_flour_white', grams: 281}
+  - {food: 'usda:cornstarch', grams: 12}
+  - {food: 'usda:sugar_granulated', grams: 19, note: 1.5 tbsp batter sugar.}
+  - {food: 'usda:milk_powder_whole', grams: 8}
+  - {food: 'usda:yeast_bakers', grams: 4, note: Dry yeast nutrient proxy uses compressed entry; difference under
+      12 kcal per batch.}
+  - {food: 'usda:salt_table', grams: 0.8}
+  - {food: 'usda:water_tap', grams: 480, note: 360 g batter water + 120 g water in retained syrup.}
+  - {food: 'usda:vegetable_oil_soybean', grams: 90, range: [60, 140], note: 'Absorbed frying oil only, assumed 1.5
+      g for each of 60 balls; source does not quantify retention.'}
+  - {food: 'usda:sugar_granulated', grams: 240, range: [160, 340], note: 'Sugar actually eaten in 360 g retained
+      syrup, not entire dipping batch.'}
+  - {food: 'usda:lemon_juice_raw', grams: 4}
+  cooked_total_g: 1050
+  cooked_total_range: [945, 1155]
+portions:
+  piece: {g: 18, range: [12, 28]}
+  serving: {g: 108, range: [72, 168]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+  - "Falasteeni Foodie, Awameh; fetched card: 2.25 cups flour, 1.5 tbsp starch/sugar, 1 tbsp milk powder, 1.5 cups water, fried and dipped in syrup: https://falasteenifoodie.com/the-best-awameh-luqaimat-recipe/"
+  - "Wafa, Ater; fetched recipe card: 2 cups sugar to 1 cup water, lemon and blossom water: https://palestineinadish.com/recipes/how-to-make-sugar-syrup-ater/"
+  - "USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients cite their own labels."
+  - "Amina Al-Saigh, Luqaimat; 45 pieces, different batter; frying bath not absorbed amount: https://www.hungrypaprikas.com/luqaimat/"
+  - "Egyptian Journal of Food Science 51(2), 165-178 (2023), Fig. 6; search-index absorption extract only (full PDF timed out): https://journals.ekb.eg/article_307495_d59efe70f1411ebf6b3369f450882a94.pdf"
+  - "Al-Ismail et al. (2021), Table III commercial awameh fat: https://www.innovhub-ssi.it/kdocs/2012987/2021_vol._982_-_art._06_-_al-ismail.pdf"
+  notes: >-
+    Fix round 2026-10-30: NOT SUPPORTED FOR RELEASE; keep draft. Existing 60 balls, 90 g absorbed oil,
+    240 g syrup sugar, 120 g syrup water and 1050 g finished yield remain UNSUPPORTED diagnostic
+    placeholders. Original batter ingredients are supported; a subtraction of assumed steam does not
+    support these decisive quantities. Hungry Paprikas publishes a 45-piece yield for its DIFFERENT
+    1.5-cup-flour batter, not 60 pieces for this 2.25-cup recipe; its 2 cups oil is the frying bath, not
+    absorbed oil. A 2023 Egyptian Journal of Food Science study reports luqmat-el-qady sugar-syrup
+    absorption 0.25 g/g (search-index extract; full PDF fetch timed out), but using it here still needs
+    a compatible pre-syrup fried mass, syrup concentration and absorbed oil. Do not turn 0.25 g/g into
+    240 g retained sugar or splice different batters together. Al-Ismail Table III reports 6.69% fat in
+    sampled commercial awameh; this is a compositional cross-check, not an oil-uptake measurement for
+    the current batter. No honest complete replacement found. Need a matched recipe with counted
+    finished pieces, pre/post-fry weights and retained syrup. The 18 g piece (six-piece 108 g serving)
+    and 1138.8 g rows minus 88.8 g steam are provisional only. Dry yeast nutrient proxy uses compressed
+    yeast; small baking-powder/blossom-water quantities omitted.

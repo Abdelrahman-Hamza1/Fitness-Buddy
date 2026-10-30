@@ -1,0 +1,54 @@
+schema: 1
+id: ref:knafeh_nabulsiyeh
+names:
+  en: [Knafeh nabulsiyeh, Knafeh, Kunafa, Knafeh naameh]
+  ar: [كنافة نابلسية, كنافة, كنافة ناعمة]
+  arabizi: [knafeh nabulsiyeh, knafeh, kunafa, knafa, knafe na3me]
+state: cooked
+variants:
+- id: fine_cheese
+  default: true
+  recipe:
+  - {food: 'usda:wheat_flour_white', grams: 250, note: '80% of source dough batch (2.5 cups at 125 g/cup); source
+      freezes leftover crumbs, used fraction is an assumption.'}
+  - {food: 'usda:semolina_fine_dry', grams: 33}
+  - {food: 'usda:milk_powder_whole', grams: 34, note: '80% x 1/3 cup x USDA 128 g/cup = 34.1 g, rounded.'}
+  - {food: 'usda:cornstarch', grams: 26}
+  - {food: 'usda:ghee', grams: 107, range: [90, 150], note: '59 g in used dough (80% x 80 ml x assumed 0.92 g/ml)
+      + 48 g pan grease (3.5 tbsp x 15 ml x 0.92 g/ml); density is a curator conversion, not a weighed source amount.'}
+  - {food: 'ref:akkawi_cheese', grams: 227}
+  - {food: 'ref:nabulsi_cheese', grams: 227}
+  - {food: 'usda:cheese_mozzarella_whole_milk', grams: 340}
+  - {food: 'usda:sugar_granulated', grams: 300, range: [200, 400], note: Sugar in approximately 450 g syrup actually
+      poured and eaten; source does not specify syrup quantity.}
+  - {food: 'usda:water_tap', grams: 366, note: 216 g in used dough plus 150 g in retained syrup.}
+  - {food: 'usda:lemon_juice_raw', grams: 5}
+  - {food: 'usda:pistachios_raw', grams: 24, range: [12, 40]}
+  cooked_total_g: 1750
+  cooked_total_range: [1575, 1925]
+portions:
+  piece: {g: 145, range: [90, 220]}
+  large_piece: {g: 220, range: [170, 300]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+  - "Falasteeni Foodie, Knafeh Naameh; fetched recipe card and instructions: flour/semolina/milk dough, 1/3 cup dough ghee + 3.5 tbsp pan ghee; 1/2 lb each Akkawi/Nabulsi + 12 oz mozzarella; leftover crumbs frozen: https://falasteenifoodie.com/knafeh-naameh-nabulsi-knafeh/"
+  - "Wafa, Ater; fetched recipe card: 2 cups sugar to 1 cup water, lemon and blossom water: https://palestineinadish.com/recipes/how-to-make-sugar-syrup-ater/"
+  - "USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients cite their own labels."
+  - "Cleobuttera, Knafeh Naameh; alternate kataifi-based preparation with specified dough and finishing syrup: https://cleobuttera.com/middle-eastern/knafeh-naameh/"
+  - "Al-Ismail et al. (2021), Table I alternate flour/margarine preparation: https://www.innovhub-ssi.it/kdocs/2012987/2021_vol._982_-_art._06_-_al-ismail.pdf"
+  notes: >-
+    Fix round 2026-10-30: NOT SUPPORTED FOR RELEASE; keep draft. No evidence-based replacement found for
+    80% of the flour/semolina dough, 300 g retained sugar, 150 g retained syrup water or 1750 g finished
+    mass. Existing rows and 145 g piece are frozen diagnostic placeholders, not a supported preparation.
+    An alternative Cleobuttera naameh recipe specifies 375 g kataifi, 800 g cheese and about 3/4 cup
+    finishing syrup plus 60 g syrup in the crust. It uses a different dough and cheese mix; without a
+    kataifi ingredient identity and a finished mass it cannot validate or be spliced into this flour-
+    dough recipe. Al-Ismail Table I lists a different flour/margarine knafeh with weighed syrup but no
+    finished mass. Fresh mozzarella in the original source is specifically NOT the generic whole-milk
+    mozzarella FDC row used here: that row is an undiscriminated proxy, not a verified fresh-cheese
+    composition. Rework needs a matching fresh-mozzarella label, complete used-dough weight and retained
+    syrup/finished-tray weight. Desalted Akkawi and Nabulsi remain disclosed brined-label proxies; ghee
+    conversion uses 240 ml cup and assumed 0.92 g/ml. The subtraction 1939 g input minus 189 g steam is
+    an assumption, not independent yield evidence.

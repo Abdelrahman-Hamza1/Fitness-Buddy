@@ -1,0 +1,61 @@
+schema: 1
+id: ref:waraq_dawali
+names:
+  en: [Stuffed grape leaves (waraq dawali), Waraq dawali, Dawali, Warak enab]
+  ar: [ورق دوالي, دوالي, ورق عنب محشي]
+  arabizi: [waraq dawali, warak dawali, dawali, wara2 dawali, waraq enab mahshi]
+state: cooked
+variants:
+- id: meat_rice
+  default: true
+  recipe:
+  - {food: 'usda:grape_leaves_canned', grams: 300, note: 'Drained/rinsed leaves from a 454 g jar; 300 g drained
+      is an assumption, not jar gross weight.'}
+  - {food: 'usda:rice_white_medium_grain_raw', grams: 400, note: 2 cups Calrose; assumed 200 g/cup.}
+  - {food: 'usda:beef_ground_85_raw', grams: 454}
+  - {food: 'usda:olive_oil', grams: 54, range: [35, 80]}
+  - {food: 'usda:lemon_juice_raw', grams: 60}
+  - {food: 'usda:allspice_ground', grams: 2}
+  - {food: 'usda:salt_table', grams: 6}
+  - {food: 'usda:water_tap', grams: 750, note: 'Water retained for rice plus covered simmer; source says cover 3/4
+      pot, no measured amount.'}
+  cooked_total_g: 1850
+  cooked_total_range: [1665, 2035]
+- id: vegetarian
+  default: false
+  names:
+    en: [Vegetarian stuffed grape leaves, Yalanji]
+    ar: [يلنجي, ورق عنب بالزيت]
+    arabizi: [yalanji, yalangi, waraq enab bil zeit]
+  recipe:
+  - {food: 'usda:grape_leaves_canned', grams: 300}
+  - {food: 'usda:rice_white_medium_grain_raw', grams: 200}
+  - {food: 'usda:onion_raw', grams: 110}
+  - {food: 'usda:spring_onion_raw', grams: 60}
+  - {food: 'usda:parsley_fresh', grams: 15}
+  - {food: 'usda:mint_dried', grams: 3}
+  - {food: 'usda:dill_fresh', grams: 3}
+  - {food: 'usda:olive_oil', grams: 108, range: [70, 120]}
+  - {food: 'usda:salt_table', grams: 6}
+  - {food: 'usda:black_pepper', grams: 2}
+  - {food: 'usda:water_tap', grams: 420}
+  cooked_total_g: 1150
+  cooked_total_range: [1035, 1265]
+portions:
+  piece: {g: 22, range: [15, 35]}
+  plate: {g: 330, range: [220, 450]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources: ['Wafa, Warak Dawali; fetched recipe card: 2 cups rice, 1 lb meat, 16 oz jar, 1/4 cup oil: https://palestineinadish.com/recipes/warak-dawali/',
+    'Palestinian Cookbook, vegetarian yalanji; fetched: 1 cup rice, 1/2 cup oil, onions/herbs, 1.75 cups water:
+      https://palestiniancookbook.wordpress.com/2018/12/03/waraq-al-dawali/', 'USDA FoodData Central: ingredient
+      nutrients from this repository data/usda/extract.jsonl; local reference ingredients cite their own labels.']
+  notes: 'Default mass balance: 2026 g rows minus 176 g steam = 1850 g, about 84 thin rolls; vegetarian 1227 g minus
+    77 g = 1150 g, about 52 rolls. Rice absorbs water already included in rows; do not apply an extra rice yield.
+    Meat fat stays in pot. Vegetarian source uses half the rice and twice the oil, so it is a distinct variant.
+    No chops beneath leaves included; plate is about 15 rolls. Cooked weights and household portion ranges are modelled,
+    not measured; ranges allow serving size and ingredient variation. Authored by Codex 2026-10-30 (A19 + A30);
+    claude-draft is the schema''s only draft-author tag, not a claim of review. Independent number check pending
+    (D-087). Mass audit (nutrient rows already exclude discarded skins/bones/drippings): meat_rice: 2026 g input
+    rows - 176 g water/steam = 1850 g finished; vegetarian: 1227 g input rows - 77 g water/steam = 1150 g finished.'

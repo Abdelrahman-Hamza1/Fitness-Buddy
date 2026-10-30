@@ -1,0 +1,67 @@
+schema: 1
+id: ref:basbousa
+names:
+  en: [Harissa / basbousa, Basbousa, Harissa, Namoura]
+  ar: [هريسة, بسبوسة, نمورة]
+  arabizi: [harissa, hareeseh, basbousa, basboosa, namoura]
+state: cooked
+variants:
+- id: ghee_yogurt
+  default: true
+  recipe:
+  - {food: 'usda:semolina_coarse', grams: 306}
+  - {food: 'usda:ghee', grams: 126, range: [100, 155], note: 112 g (1/2 cup) in batter + 14 g pan grease.}
+  - {food: 'usda:sugar_granulated', grams: 316, range: [260, 380], note: '116 g in batter + 200 g syrup sugar, all
+      syrup eaten.'}
+  - {food: 'usda:honey', grams: 63, note: 1 tbsp batter and 2 tbsp syrup at USDA 21 g/tbsp.}
+  - {food: 'usda:yogurt_plain_whole', grams: 97}
+  - {food: 'usda:coconut_dried', grams: 45, range: [0, 60]}
+  - {food: 'usda:tahini', grams: 7.5}
+  - {food: 'usda:almonds', grams: 24, note: 'Assumed nut garnish: 2 g for each of 12 portions.'}
+  - {food: 'usda:lemon_juice_raw', grams: 5}
+  - {food: 'usda:water_tap', grams: 240}
+  cooked_total_g: 1100
+  cooked_total_range: [1000, 1200]
+- id: namoura_egg
+  default: false
+  names:
+    en: [Namoura with eggs, Harissa with eggs]
+    ar: [هريسة بالبيض, نمورة بالبيض]
+    arabizi: [namoura bayd, harissa bil bayd]
+  recipe:
+  - {food: 'usda:semolina_coarse', grams: 600, note: '3.75 cups, assume 160 g/cup.'}
+  - {food: 'usda:coconut_dried', grams: 67}
+  - {food: 'usda:sugar_granulated', grams: 767, note: 67 g batter sugar + 700 g syrup sugar.}
+  - {food: 'usda:wheat_flour_white', grams: 31}
+  - {food: 'usda:butter_unsalted', grams: 113}
+  - {food: 'usda:vegetable_oil_soybean', grams: 108}
+  - {food: 'usda:egg_whole_raw', grams: 100}
+  - {food: 'usda:yogurt_plain_whole', grams: 245}
+  - {food: 'usda:milk_whole', grams: 61}
+  - {food: 'usda:tahini', grams: 45}
+  - {food: 'usda:lemon_juice_raw', grams: 7}
+  - {food: 'usda:water_tap', grams: 495, note: 480 g syrup water + 15 g blossom water modelled as water.}
+  cooked_total_g: 2390
+  cooked_total_range: [2151, 2629]
+  portions:
+    piece: {g: 80, range: [50, 120]}
+portions:
+  piece: {g: 92, range: [60, 140]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources: ['Amira Ibrahim, Basbousa; full browser recipe: 306 g farina, 1/2 cup ghee, 116 g sugar, 97 g yogurt,
+      45 g coconut, syrup 1 cup sugar/water + honey: https://amiraspantry.com/basbousa/', 'Falasteeni Foodie, Namoura;
+      fetched card: 3.75 cups semolina, butter + oil, eggs, 3.5 cups syrup sugar, 30 pieces: https://falasteenifoodie.com/namoura-harissa/',
+    'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+      cite their own labels.']
+  notes: 'Default follows Amira (semolina proxy for farina): 1229.5 g rows minus 129.5 g bake/syrup steam = 1100
+    g, 12 x about 92 g. Egg namoura follows separate source whole batch, 2639 g minus 249 g steam = 2390 g, 30 x
+    about 80 g; no combining source serving counts. Source baking powders/vanilla/mastic omitted from nutrient rows
+    (minor); leavening still required. Default ghee is explicit; egg variant uses butter plus oil, no hidden ghee.
+    Syrup sweetness and coconut vary; sugar rows include ALL syrup eaten. Cooked weights and household portion ranges
+    are modelled, not measured; ranges allow serving size and ingredient variation. Authored by Codex 2026-10-30
+    (A19 + A30); claude-draft is the schema''s only draft-author tag, not a claim of review. Independent number
+    check pending (D-087). Mass audit (nutrient rows already exclude discarded skins/bones/drippings): ghee_yogurt:
+    1229.5 g input rows - 129.5 g water/steam = 1100 g finished; namoura_egg: 2639 g input rows - 249 g water/steam
+    = 2390 g finished.'

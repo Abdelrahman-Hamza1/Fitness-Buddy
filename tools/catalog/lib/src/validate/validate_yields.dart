@@ -4,9 +4,9 @@ import 'package:fb_catalog/src/model/yields.dart';
 import 'package:fb_catalog/src/validate/report.dart';
 import 'package:fb_domain/fb_domain.dart';
 
-/// Portion-word units that are valid data before `fb_domain` knows them:
-/// `can` (علبة) arrives with the A05 parser change (A05 D14).
-const extraPortionUnits = {'can'};
+/// Catalog household units beyond `fb_domain`'s core units. Quarter, half
+/// and whole describe edible chicken portions, not mass/volume measures.
+const extraPortionUnits = {'can', 'quarter', 'half', 'whole'};
 
 /// Base mass and volume codes: amounts, not portion words.
 const _measureUnits = {'mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'fl_oz'};

@@ -1,0 +1,49 @@
+schema: 1
+id: ref:mahshi_kousa
+names:
+  en: [Mahshi kousa, Stuffed zucchini, Mahshi]
+  ar: [محشي كوسا, محشي]
+  arabizi: [mahshi kousa, ma7shi kousa, mahshi kusa, mahshi]
+state: cooked
+variants:
+- id: meat_rice
+  default: true
+  recipe:
+  - {food: 'usda:zucchini_raw', grams: 1000, range: [800, 1200], note: 'Cored edible shells only, assumed 50 g per
+      small vegetable; discarded flesh not counted.'}
+  - {food: 'usda:rice_white_medium_grain_raw', grams: 200}
+  - {food: 'usda:beef_ground_85_raw', grams: 340}
+  - {food: 'usda:ghee', grams: 28, range: [20, 40]}
+  - {food: 'usda:tomato_raw', grams: 600}
+  - {food: 'usda:allspice_ground', grams: 2}
+  - {food: 'usda:cardamom', grams: 0.5}
+  - {food: 'usda:black_pepper', grams: 1}
+  - {food: 'usda:salt_table', grams: 6}
+  - {food: 'usda:water_tap', grams: 500, note: 120 g blending water in source; extra 380 g assumed to nearly cover
+      vegetables.}
+  cooked_total_g: 2400
+  cooked_total_range: [2160, 2640]
+portions:
+  plate: {g: 480, range: [330, 650]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+  - 'Wafa, Mahshi Batinjan; fetched recipe card: 12 eggplants + 8 zucchini, 3/4 lb meat, 1 cup rice, 2 tbsp ghee,
+    4-5 tomatoes: https://palestineinadish.com/recipes/mahshi-batinjan-stuffed-eggplants-one-of-my-favorites/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  - "Amina Al-Saigh, Kousa Mahshi; whole squash weighed before coring, not a cored-shell yield: https://www.hungrypaprikas.com/kousa-mahshi/"
+  notes: >-
+    Fix round 2026-10-30: NOT SUPPORTED FOR RELEASE; keep draft. Removed piece: the 2400 g whole-pot
+    composition includes sauce and cannot represent a drained 100 g vegetable. At 20 vegetables the old
+    pot model would allocate 120 g including sauce, not 100 g. The 480 g plate and nutrient rows are
+    unchanged diagnostic placeholders, not verified nutrition. Original source supports a mixed pot (12
+    eggplants, 8 zucchini), not 1000 g cored shells of either single vegetable. Additional researched
+    Hungry Paprikas kousa recipe weighs 2 kg whole squash BEFORE coring and notes leftover filling; it
+    cannot establish edible shell mass or filling retained for this adaptation. No supported shell
+    conversion, 380 g extra water, sauce retention or finished yield was found. Do not infer these from
+    a mass subtraction. Replacing the current 2677.5 g input / 2400 g cooked pot requires measured cored
+    shells, actual water and finished pot/solids/sauce weights. All meat fat and served sauce are
+    counted in the provisional composition; no side rice. No piece may return without a separate
+    supported solids/sauce allocation.

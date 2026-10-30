@@ -1,0 +1,37 @@
+schema: 1
+id: ref:muhallabiya
+names:
+  en: [Muhallabiya, Muhallabia, Mahalabia, Milk pudding]
+  ar: [مهلبية, محلبية]
+  arabizi: [muhallabiya, mhalabiyeh, mahalabia, mohalabiyeh]
+state: cooked
+variants:
+- id: milk
+  default: true
+  recipe:
+  - {food: 'usda:milk_whole', grams: 976}
+  - {food: 'usda:sugar_granulated', grams: 100, range: [65, 130]}
+  - {food: 'usda:cornstarch', grams: 43}
+  - {food: 'usda:water_tap', grams: 5, note: 'Rose water core-nutrient proxy, 1 tsp.'}
+  - {food: 'usda:pistachios_raw', grams: 16, range: [8, 32], note: Optional garnish modelled as 2 g for each of
+      8 source servings.}
+  cooked_total_g: 1100
+  cooked_total_range: [990, 1210]
+portions:
+  small_bowl: {g: 140, range: [100, 190]}
+  bowl: {g: 200, range: [150, 280]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+  - 'Yumna Jawad, Muhallabia; full browser card: 4 cups whole milk, 1/2 cup sugar, 1/3 cup cornstarch, 1 tsp rosewater;
+    8 servings: https://feelgoodfoodie.net/recipe/muhallabia/'
+  - 'USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients
+    cite their own labels.'
+  notes: '1140 g rows minus 40 g simmering moisture = 1100 g finished pudding, 8 small cups around 138 g. Catalog
+    milk cup 244 g, sugar 200 g/cup, starch 128 g/cup. Whole milk only, no cream or ghee; cream-rich versions are
+    different. Garnish nuts counted; extra syrup is not included. Cornstarch is a published variant, not orchid
+    powder or rice flour. Cooked weights and household portion ranges are modelled, not measured; ranges allow serving
+    size and ingredient variation. Authored by Codex 2026-10-30 (A19 + A30); claude-draft is the schema''s only
+    draft-author tag, not a claim of review. Independent number check pending (D-087). Mass audit (nutrient rows
+    already exclude discarded skins/bones/drippings): milk: 1140 g input rows - 40 g water/steam = 1100 g finished.'

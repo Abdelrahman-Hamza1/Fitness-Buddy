@@ -1,0 +1,71 @@
+schema: 1
+id: ref:pasta_with_sauce
+names:
+  en: [Pasta / spaghetti with sauce, Pasta with sauce, Spaghetti with tomato sauce]
+  ar: [معكرونة بالصلصة, مكرونة بصلصة, سباغيتي بالصلصة]
+  arabizi: [makarona bi salsa, macarona bil salsa, spaghetti salsa]
+state: cooked
+variants:
+- id: tomato
+  default: true
+  recipe:
+  - {food: 'usda:pasta_cooked', grams: 1200, note: Modelled drained yield from 500 g dry pasta (2.4x); cooked entry
+      used so no second hydration factor.}
+  - {food: 'usda:tomato_raw', grams: 1000}
+  - {food: 'usda:olive_oil', grams: 60, range: [40, 80], note: Alphafoodie sauce scales 2 tbsp/454 g tomatoes to
+      about 60 g oil/kg.}
+  - {food: 'usda:garlic_raw', grams: 12}
+  - {food: 'usda:basil_fresh', grams: 10}
+  - {food: 'usda:salt_table', grams: 6}
+  - {food: 'usda:black_pepper', grams: 1}
+  cooked_total_g: 2070
+  cooked_total_range: [1863, 2277]
+- id: meat
+  default: false
+  names:
+    en: [Pasta with meat sauce]
+    ar: [معكرونة باللحمة, سباغيتي باللحمة]
+    arabizi: [makarona bil lahme, spaghetti lahme]
+  recipe:
+  - {food: 'usda:pasta_cooked', grams: 1200}
+  - {food: 'usda:tomato_raw', grams: 1000}
+  - {food: 'usda:olive_oil', grams: 60, range: [40, 80], note: Alphafoodie sauce scales 2 tbsp/454 g tomatoes to
+      about 60 g oil/kg.}
+  - {food: 'usda:garlic_raw', grams: 12}
+  - {food: 'usda:basil_fresh', grams: 10}
+  - {food: 'usda:beef_ground_90_cooked', grams: 300, note: 'Optional meat-sauce adaptation: 400 g raw lean mince,
+      assumed 75% cooked yield and drained fat; not in base tomato source.'}
+  - {food: 'usda:onion_raw', grams: 110}
+  - {food: 'usda:salt_table', grams: 6}
+  - {food: 'usda:black_pepper', grams: 1}
+  cooked_total_g: 2450
+  cooked_total_range: [2205, 2695]
+portions:
+  plate: {g: 350, range: [250, 500]}
+  small_plate: {g: 250, range: [180, 330]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources:
+  - "Alphafoodie, Homemade Tomato Sauce; fetched recipe card; base tomato/garlic/oil/basil sauce, adapted to 1 kg tomatoes: https://www.alphafoodie.com/homemade-roasted-tomato-sauce/"
+  - "USDA FoodData Central: ingredient nutrients from this repository data/usda/extract.jsonl; local reference ingredients cite their own labels."
+  - "British Heart Foundation, Spaghetti Bolognese, six servings; 500 g extra-lean mince / 400 g dried spaghetti, covered simmer: https://www.bhf.org.uk/informationsupport/support/healthy-living/healthy-eating/recipe-finder/spaghetti-bolognese"
+  - "Foodbank SA, Spaghetti Bolognese, four servings; 500 g mince / 500 g pasta, five-minute covered sauce: https://www.foodbank.org.au/wp-content/uploads/2021/06/Meal-Pack-Spaghetti-Bolognese-FINAL-2021.pdf"
+  - "Nestle NZ, Spaghetti Bolognese; complete ratio but lentil method ambiguity: https://www.nestle.co.nz/nutrition/cook-for-life/recipes/spaghetti-bolognese"
+  notes: >-
+    Fix round 2026-10-30: NOT SUPPORTED FOR RELEASE; keep both variants draft. Original Alphafoodie
+    citation supports sauce only. Its roasted-method yield (about 1.25 cups per pound tomatoes) does not
+    establish the current 870 g sauce/kg tomatoes; stovetop reduction differs. Both old recipes and
+    cooked totals remain diagnostic placeholders, not validated nutrition. Whole-meal sources were
+    found: British Heart Foundation gives 500 g extra-lean raw mince plus 400 g dry spaghetti for six
+    servings, covered simmer for one hour, with an optional uncovered reduction and extra stock in place
+    of wine. Foodbank gives 500 g mince plus 500 g dry spaghetti for four, a covered five-minute sauce
+    with lentils and 800 g canned tomatoes. These support specific whole-meal ratios, but neither
+    specifies finished grams; neither validates the old 400 g raw mince / 500 g pasta ratio, 75% drained
+    mince yield, fresh-tomato sauce or its concentration. Nestle supplies another complete pasta/mince
+    recipe but lists lentils without a step adding them; not chosen. No sources found that support a
+    complete replacement concentration honestly. Do not select an arbitrary steam loss to make a 350 g
+    plate fit. A rework must pick ONE whole-meal method, account for retained juices or discarded fat
+    and obtain its cooked pot weight. Existing 1200 g pasta row uses catalog 2.4x hydration (500 g dry);
+    that factor is not evidence for the selected sauce ratio. Existing totals (2070 g tomato, 2450 g
+    meat) and plate/small_plate remain conditional; no cheese, cream or finishing oil.
