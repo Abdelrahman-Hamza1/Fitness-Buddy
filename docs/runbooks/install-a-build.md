@@ -26,6 +26,28 @@ With the laptop server on and Tailscale connected, launch prod and ask Claude
 to confirm a `GET /v1/config` 200 in the laptop API log (no content/URL in evidence).
 The app remains usable offline when the server is off.
 
+## Install from the laptop over USB
+
+The fastest way to put today's `main` on the A55 (the build is signed with the
+release key on the laptop, so it updates the installed prod app in place).
+
+Once on the phone: Settings → About phone → Software information → tap
+**Build number** 7 times → back to Settings → Developer options → turn on
+**USB debugging**. Connect the cable and tap **Allow** on the phone.
+
+```bash
+cd ~/work/fitness_buddy && git checkout main && git pull --ff-only
+make build-android FLAVOR=prod      # ~4 min; prod = the daily app
+make install-android FLAVOR=prod    # adb install -r: updates, keeps data
+```
+
+- Check the phone is seen: `~/development/android-sdk/platform-tools/adb devices` (one `device` line).
+- A build that fails with "resource … not found" after resource or splash changes
+  is a stale local build: run `rm -rf apps/mobile/build/app` and build again.
+- Export your data before an update that changes the database (see above).
+  Never uninstall to get past an install error.
+- `dev` and `staging` are separate apps with their own data; use `prod` daily.
+
 ## Android backup and exports
 
 Exports are unencrypted. Preparation originals in private `export/` are removed
