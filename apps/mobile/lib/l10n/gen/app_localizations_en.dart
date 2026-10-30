@@ -3516,6 +3516,360 @@ class AppLocalizationsEn extends AppLocalizations {
       'Couldn\'t change the trend weigh-in. Try again.';
 
   @override
+  String get weightHistoryTitle => 'Past weigh-ins';
+
+  @override
+  String get weightHistoryOpen => 'Add past weigh-ins';
+
+  @override
+  String get weightHistoryIntro =>
+      'Add weigh-ins from before you started, one row per day. They\'re saved together and can be undone in one go.';
+
+  @override
+  String get weightHistoryPickDate => 'Pick a date';
+
+  @override
+  String get weightHistoryDate => 'Date';
+
+  @override
+  String get weightHistoryValue => 'Weight';
+
+  @override
+  String get weightHistoryRemoveRow => 'Remove row';
+
+  @override
+  String get weightHistoryAddRow => 'Add row';
+
+  @override
+  String get weightHistorySave => 'Save';
+
+  @override
+  String weightHistoryToSave(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count weigh-ins to save',
+      one: '1 weigh-in to save',
+      zero: 'Nothing to save yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get weightHistoryIncomplete => 'Every row needs a date and a weight';
+
+  @override
+  String get weightHistoryFuture => 'That date is in the future';
+
+  @override
+  String get weightHistoryDuplicate => 'Already logged on this day';
+
+  @override
+  String get weightHistoryDuplicateRow => 'Same as an earlier row';
+
+  @override
+  String weightHistoryOtherUnit(String weight) {
+    return 'Did you mean $weight?';
+  }
+
+  @override
+  String weightHistoryUseUnit(String unit) {
+    return 'Use $unit';
+  }
+
+  @override
+  String weightHistoryLargeChange(String change, String date) {
+    return '$change from $date. Is that right?';
+  }
+
+  @override
+  String get weightHistoryKeep => 'Keep';
+
+  @override
+  String get weightHistoryKept => 'Kept';
+
+  @override
+  String get weightHistorySameDay =>
+      'You already have a different weigh-in that day. The earliest one of the day is used for the trend.';
+
+  @override
+  String weightHistorySaved(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count weigh-ins added',
+      one: '1 weigh-in added',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get weightHistoryFailed =>
+      'Couldn\'t save. Your rows are still here, try again.';
+
+  @override
+  String get weightHistoryFailedFuture =>
+      'A date is in the future. Check the rows and try again.';
+
+  @override
+  String get weightHistoryDiscardTitle => 'Discard these rows?';
+
+  @override
+  String get weightHistoryDiscardMessage =>
+      'You\'ve typed weigh-ins that aren\'t saved yet.';
+
+  @override
+  String get weightHistoryDiscardKeep => 'Keep editing';
+
+  @override
+  String get weightHistoryDiscardConfirm => 'Discard';
+
+  @override
+  String get weightHistoryError => 'Couldn\'t load your weigh-ins';
+
+  @override
+  String get weightHistoryTryAgain => 'Try again';
+
+  @override
+  String get measurementsTitle => 'Measurements';
+
+  @override
+  String get measurementKindWaist => 'Waist';
+
+  @override
+  String get measurementKindChest => 'Chest';
+
+  @override
+  String get measurementKindHips => 'Hips';
+
+  @override
+  String get measurementKindArm => 'Arm';
+
+  @override
+  String get measurementKindThigh => 'Thigh';
+
+  @override
+  String get measurementKindNeck => 'Neck';
+
+  @override
+  String get measurementKindBodyFat => 'Body fat';
+
+  @override
+  String get measurementUnitCm => 'cm';
+
+  @override
+  String get measurementUnitIn => 'in';
+
+  @override
+  String get measurementUnitPercent => '%';
+
+  @override
+  String measurementValue(String value, String unit) {
+    return '$value $unit';
+  }
+
+  @override
+  String get measurementNoEntries => 'No entries yet';
+
+  @override
+  String measurementLatest(String value, String date) {
+    return 'Latest $value · $date';
+  }
+
+  @override
+  String measurementChangeSince(String change, String date) {
+    return '$change since $date';
+  }
+
+  @override
+  String get measurementAdd => 'Add measurement';
+
+  @override
+  String get measurementAddCustom => 'Add custom measurement';
+
+  @override
+  String get measurementEmptyTitle => 'No measurements yet';
+
+  @override
+  String get measurementEmptyMessage =>
+      'Track your waist, other body measurements and body fat. Each one gets its own graph.';
+
+  @override
+  String get measurementTypeEmpty =>
+      'Add your first entry to start this graph.';
+
+  @override
+  String get measurementError => 'Couldn\'t load your measurements';
+
+  @override
+  String get measurementTryAgain => 'Try again';
+
+  @override
+  String get measurementRemoved => 'This measurement was removed';
+
+  @override
+  String get measurementRemovedMessage =>
+      'It was deleted, here or on another device.';
+
+  @override
+  String get measurementSheetTitle => 'Add measurement';
+
+  @override
+  String get measurementEditTitle => 'Edit measurement';
+
+  @override
+  String get measurementTypeLabel => 'Type';
+
+  @override
+  String get measurementValueLabel => 'Value';
+
+  @override
+  String get measurementDate => 'Date';
+
+  @override
+  String get measurementSave => 'Save';
+
+  @override
+  String get measurementDelete => 'Delete';
+
+  @override
+  String measurementOutOfRange(String min, String max) {
+    return 'Enter a value between $min and $max';
+  }
+
+  @override
+  String measurementSaved(String name, String value) {
+    return '$name saved: $value';
+  }
+
+  @override
+  String measurementUpdated(String name, String value) {
+    return '$name updated: $value';
+  }
+
+  @override
+  String get measurementDeleted => 'Entry deleted';
+
+  @override
+  String get measurementFailedChanged =>
+      'This entry changed meanwhile. Close it and try again.';
+
+  @override
+  String get measurementFailedRemoved => 'This entry was removed.';
+
+  @override
+  String get measurementFailedType => 'This measurement type was removed.';
+
+  @override
+  String get measurementFailedFuture => 'That time is in the future.';
+
+  @override
+  String get measurementFailedInvalid =>
+      'Couldn\'t save. Check the value and try again.';
+
+  @override
+  String get measurementEntries => 'Entries';
+
+  @override
+  String get measurementTapHint => 'Tap a point to see details';
+
+  @override
+  String get measurementEdit => 'Edit';
+
+  @override
+  String get measurementLegendEntries => 'Entries';
+
+  @override
+  String get measurementLegendTrend => 'Trend';
+
+  @override
+  String get measurementTrendHint => 'A trend line shows from 5 entries';
+
+  @override
+  String measurementGraphSemantics(String name, String count) {
+    return '$name graph, $count entries.';
+  }
+
+  @override
+  String get measurementMenu => 'More';
+
+  @override
+  String get measurementRenameType => 'Rename';
+
+  @override
+  String get measurementDeleteType => 'Delete type';
+
+  @override
+  String measurementDeleteTypeTitle(String name) {
+    return 'Delete $name?';
+  }
+
+  @override
+  String measurementDeleteTypeMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Its $count entries are deleted too. You can undo this.',
+      one: 'Its 1 entry is deleted too. You can undo this.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get measurementDeleteTypeConfirm => 'Delete';
+
+  @override
+  String get measurementDeleteTypeKeep => 'Keep';
+
+  @override
+  String measurementTypeCreated(String name) {
+    return '$name added';
+  }
+
+  @override
+  String measurementTypeRenamed(String name) {
+    return 'Renamed to $name';
+  }
+
+  @override
+  String measurementTypeDeleted(String name) {
+    return '$name deleted';
+  }
+
+  @override
+  String get measurementCustomTitle => 'New measurement';
+
+  @override
+  String get measurementRenameTitle => 'Rename measurement';
+
+  @override
+  String get measurementCustomName => 'Name';
+
+  @override
+  String get measurementCustomHint => 'For example: Left arm';
+
+  @override
+  String get measurementCustomNote =>
+      'Custom measurements are lengths, in cm or in.';
+
+  @override
+  String get measurementCustomEmpty => 'Enter a name';
+
+  @override
+  String get measurementCustomTooLong => 'Use 40 characters or fewer';
+
+  @override
+  String get measurementCustomInvalid =>
+      'Remove line breaks and control characters';
+
+  @override
+  String get measurementCustomDuplicate =>
+      'You already have a measurement with this name';
+
+  @override
+  String get measurementCustomFailed => 'Couldn\'t save the name. Try again.';
+
+  @override
   String get meProfileGoal => 'Profile & goal';
 
   @override

@@ -4,6 +4,7 @@ import 'package:fb_mobile/app/router/app_router.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/account/account.dart';
+import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/design_preview/design_preview.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
@@ -42,6 +43,9 @@ import '../../helpers/pump_app.dart';
   AboutRoute() => (AboutScreen, true),
   TodayWeightGraphRoute() => (WeightGraphScreen, true),
   WeightGraphRoute() => (WeightGraphScreen, true),
+  WeightHistoryRoute() => (WeightHistoryScreen, false),
+  MeasurementsRoute() => (MeasurementsScreen, true),
+  MeasurementTypeRoute() => (MeasurementTypeScreen, true),
   UpdateRequiredRoute() => (UpdateRequiredScreen, false),
   SetupRoute() => (SetupScreen, false),
   SignInRoute() => (SignInScreen, false),
@@ -67,6 +71,9 @@ const List<AppRoute> _allRoutes = [
   MealSlotsRoute(),
   TodayWeightGraphRoute(),
   WeightGraphRoute(),
+  WeightHistoryRoute(),
+  MeasurementsRoute(),
+  MeasurementTypeRoute('waist'),
   CityPickerRoute(),
   AboutRoute(),
   UpdateRequiredRoute(),
@@ -88,6 +95,11 @@ void main() {
       '/workouts',
       '/me',
     ]);
+    // A15b D17: the weight history is full screen, outside the tabs.
+    expect(
+      AppRouter.outsideTabs.map((r) => r.location),
+      contains('/weight-history'),
+    );
     expect(
       [
         ...AppRouter.tabs,
@@ -104,6 +116,8 @@ void main() {
         const AboutRoute(),
         const TodayWeightGraphRoute(),
         const WeightGraphRoute(),
+        const MeasurementsRoute(),
+        const MeasurementTypeRoute('waist'),
         const ProfileRoute(),
         const TargetsRoute(),
       ].map((r) => r.location),

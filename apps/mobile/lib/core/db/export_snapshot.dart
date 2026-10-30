@@ -40,6 +40,7 @@ final class ExportSnapshotReader {
           final order = switch (spec.entity) {
             'diaryEntry' => 'local_date, occurred_at_utc, id',
             'weighIn' => 'local_date, measured_at_utc, id',
+            'measurement' => 'local_date, measured_at_utc, id',
             _ => 'id',
           };
           final result = await _db

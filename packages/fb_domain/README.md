@@ -288,6 +288,10 @@ here does I/O, and the trend is derived, never stored (`05` §2.2).
   with older ones stale. `CadenceTipRule.shouldShow` shows the suggestion
   only when sparse, at most once per 30 days; on the day it first shows it
   stays until dismissed (`CadenceTipState`, a display preference).
+- **Shared smoothing** (`smoothDaily(dayValues, config)`, A15b D16):
+  the loop above over `(date, value)` pairs with strictly increasing dates.
+  `TrendWeight.compute` delegates to it with identical numbers, and the
+  measurement trends reuse it.
 - **For A38 (adaptive TDEE)**: take trend windows that start and end on
   weigh-in days (`points`), not on arbitrary dates, since `trendOn` is a
   step function and a window edge between weigh-ins sees a held value.
@@ -298,6 +302,25 @@ A15a D7, D10 (WB-021, WB-023, TD-099 Proposed). Code: `lib/src/body/weight_graph
 
 - **`WeightProjection.of({trend, today, goalKg})`** returns a `WeightProjection` or `NoProjection(reason)` (`noGoal`, `stale`, `noRate`, `flat`, `awayFromGoal`, `reached`, `tooFewPoints`). Centre from the latest trend point along the weight card's weekly rate; σ the OLS slope standard error of the day choices in the 56 days ending there (floor 0.1 kg/week); `at(date)` gives lower/centre/upper = centre ± 1.28·σ·t/7, each clamped at the goal; `drawUntil` is where the slow edge reaches the goal (≤ 730 days); `reachDate` where the centre does (none past 730 days). Rate uncertainty only: never shown as a probability. Constants: `ProjectionConfig`.
 - **`WeightStats.of({trend, today, history, monthTargetKgPerWeek})`**: change since the active phase's start (else the first weigh-in; a start more than 28 days after the last weigh-in uses the first trend point after it), this month's change (from the 1st, or a phase start this month), this month's target from the rate the targets show (TG-011, SF-011-capped; pro-rated when the phase started this month), and the average weekly rate after 14 days ("Average since {date}"). `toString` carries no values.
+
+## Weight history batch
+
+A15b D17 (WB-001, WB-003, WB-005, WB-031). Code: `lib/src/body/weigh_in_batch.dart`.
+
+- **`WeighInBatchCheck.check({rows, existing, today, timeFor})`** checks the rows of the multi-row entry in date order. Blocking (Save disabled): `incomplete` (no date or value), `outOfRange` (20–500 kg, or before 1970), `future` (after today). Excluded until the user keeps the row: `duplicate` (a stored weigh-in, or an earlier included row, on that date within 0.05 kg) and `implausible` (`WeighInCheck` against the stored weigh-ins and the earlier included rows; a unit mix-up suggests the other unit). Info: `sameDay` (a stored weigh-in that date with another value; the row stays included). Kept rows become references for later rows.
+- **Keep** stores the result's opaque `keepToken`: the flag, the row's date, value and unit, and the exact reference and finding. A Keep counts only while the token is unchanged, so editing the row, or the earlier row or stored weigh-in it was checked against, clears it.
+- **`WeighInBatch.timeFor(date, clock)`**: 08:00 local (`EntryTime.fromLocal`, DST-safe); today gets the earlier of 08:00 and now. **`WeighInBatch.ops(drafts, ids)`** builds one `CreateWeighIn` per included row (1 to 500 = `ChangeSet.maxOps`); the app applies them as one change set with one undo. A29's paste import reuses both.
+
+## Measurements
+
+A15b D13–D16 (WB-040–042, TD-103 Proposed). Code: `lib/src/body/measurement*.dart`.
+
+- **Kinds** (`MeasurementKind`): waist, chest, hips, arm, thigh, neck, `bodyFat` and `custom`; the codes are a closed wire enum. Every kind but body fat is a length. `MeasurementTypeRef {kind, customTypeId?}` names a series; its `key` (`waist`, `custom-<uuid>`) is for routes and providers, `parse` reads it back.
+- **Input** (`MeasurementInput(value, unit)`, TD-017): cm, inches (2.54 cm) or percent; `canonical` rounds once to storage precision (36.5 in → 92.71 cm). `MeasurementDraft.validate()` returns a content-free `MeasurementIssue`: `customWithoutType` (wire rule M1), `unit` (M2: percent exactly for body fat), `outOfRange` (10–300 cm, 2–75 %; local writes only), `time` (before 1970). `isInFuture(nowUtc)` allows 5 minutes of skew.
+- **Custom type names** (`CustomTypeName`): trimmed, 1–40 code points, no `\p{Cc}` (`\p{Cf}` allowed); live names are unique by `compareKey` (trimmed, lower-cased in Dart, so non-ASCII letters fold too).
+- **Ops** (`sealed class MeasurementOp`, family `measurement`): `CreateMeasurement`, `UpdateMeasurement` (an identical draft writes nothing; the type can't change), `DeleteMeasurement`, `CreateMeasurementType`, `RenameMeasurementType`, `DeleteMeasurementType(type, measurements)` (exactly the type's live measurements as shown, tombstoned together).
+- **Series** (`MeasurementSeries.of`, WB-041/042): every measurement is a point (by measured time); the day choice is the earliest of each date (ties by ID); the trend is `smoothDaily` over the day choices, shown only from 5 entries (points, not days). No rate, no projection. `latest`, `first` and `change` feed the header.
+- `toString` never shows a value or a name.
 
 ## Tests
 

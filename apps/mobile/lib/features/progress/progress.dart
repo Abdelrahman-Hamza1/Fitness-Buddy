@@ -2,5 +2,7 @@
 /// (`03-architecture.md` §3.2).
 library;
 
+export 'presentation/measurement_type_screen.dart' show MeasurementTypeScreen;
+export 'presentation/measurements_screen.dart' show MeasurementsScreen;
 export 'presentation/progress_screen.dart';
 export 'presentation/weight_graph_screen.dart' show WeightGraphScreen;

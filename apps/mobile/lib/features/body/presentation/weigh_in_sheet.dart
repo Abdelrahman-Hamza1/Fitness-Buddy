@@ -224,7 +224,8 @@ class _WeighInSheetState extends ConsumerState<WeighInSheet> {
           final l10n = host.l10n;
           final weight = weighInInputText(l10n, submission.draft.input);
           final message = switch (kind) {
-            WeighInKind.weighInLogged => withDayClause(
+            WeighInKind.weighInLogged ||
+            WeighInKind.weighInsLogged => withDayClause(
               host,
               l10n.weighInSaved(weight),
               submission.draft.localDate,

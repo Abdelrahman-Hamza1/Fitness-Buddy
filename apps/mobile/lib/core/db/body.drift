@@ -5,3 +5,8 @@ import 'tables/body_tables.dart';
 -- The live list in date and time order, and a day's weigh-ins (D3).
 CREATE INDEX ix_weigh_ins_live ON weigh_ins (local_date, measured_at_utc)
   WHERE deleted_at IS NULL;
+
+-- A type's live measurements in date and time order (A15b D13).
+CREATE INDEX ix_measurements_live
+  ON measurements (kind, custom_type_id, local_date, measured_at_utc)
+  WHERE deleted_at IS NULL;

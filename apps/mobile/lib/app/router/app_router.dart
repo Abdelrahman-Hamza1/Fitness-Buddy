@@ -9,6 +9,7 @@ import 'package:fb_mobile/core/config/update_gate.dart';
 import 'package:fb_mobile/core/errors/navigation_observer.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/account/account.dart';
+import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/design_preview/design_preview.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
@@ -84,8 +85,10 @@ final class AppRouter implements AppNavigator {
                       _foodSearchRoute(),
                       _goRoute(const TodayWeightGraphRoute(), nested: true),
                     ],
-                    if (route is ProgressRoute)
+                    if (route is ProgressRoute) ...[
                       _goRoute(const WeightGraphRoute(), nested: true),
+                      _measurementsRoute(),
+                    ],
                     if (route is MeRoute) ...[
                       _personalFoodsRoute(),
                       _savedMealsRoute(),
@@ -120,6 +123,7 @@ final class AppRouter implements AppNavigator {
     UpdateRequiredRoute(),
     SetupRoute(),
     SignInRoute(),
+    WeightHistoryRoute(),
   ];
 
   /// The go_router configuration, for `MaterialApp.router`.
@@ -184,6 +188,24 @@ final class AppRouter implements AppNavigator {
             : PersonalFoodsRoute.path,
         builder: (_, state) =>
             _screen(PersonalFoodRoute(id: state.pathParameters['id'])),
+      ),
+    ],
+  );
+
+  // Measurements (A15b D18): the list and one type's screen by its key.
+  static GoRoute _measurementsRoute() => GoRoute(
+    path: MeasurementsRoute.path.split('/').last,
+    name: MeasurementsRoute.path,
+    builder: (_, _) => _screen(const MeasurementsRoute()),
+    routes: [
+      GoRoute(
+        path: ':${MeasurementTypeRoute.typeParam}',
+        name: MeasurementTypeRoute.path,
+        builder: (_, state) => _screen(
+          MeasurementTypeRoute(
+            state.pathParameters[MeasurementTypeRoute.typeParam] ?? '',
+          ),
+        ),
       ),
     ],
   );
@@ -273,6 +295,9 @@ final class AppRouter implements AppNavigator {
     CityPickerRoute() => const CityPickerScreen(),
     AboutRoute() => const AboutScreen(),
     TodayWeightGraphRoute() || WeightGraphRoute() => const WeightGraphScreen(),
+    WeightHistoryRoute() => const WeightHistoryScreen(),
+    MeasurementsRoute() => const MeasurementsScreen(),
+    MeasurementTypeRoute(:final key) => MeasurementTypeScreen(typeKey: key),
     UpdateRequiredRoute() => const UpdateRequiredScreen(),
     SetupRoute() => const SetupScreen(),
     SignInRoute() => const SignInScreen(),

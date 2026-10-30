@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:fb_domain/src/body/smooth_daily.dart';
 import 'package:fb_domain/src/body/weigh_in.dart';
 import 'package:fb_domain/src/time/local_date.dart';
 
@@ -255,7 +256,7 @@ final class WeightTrend {
 }
 
 /// Computes the [WeightTrend] (WB-010, A14 D1, TD-088): a time-aware
-/// exponential smoothing over one weigh-in per day.
+/// exponential smoothing over one weigh-in per day ([smoothDaily]).
 ///
 /// The day choices ([DayChoice.of]) are taken in date order. The first sets
 /// the trend; each next one, `Δd` days after the previous, moves it by
@@ -275,24 +276,18 @@ final class TrendWeight {
   /// The trend over [weighIns] (live rows, any order, repeats allowed).
   WeightTrend compute(Iterable<WeighIn> weighIns) {
     final days = DayChoice.of(weighIns.where((weighIn) => weighIn.isReadable));
-    final points = <TrendPoint>[];
-    for (final day in days) {
-      final previous = points.isEmpty ? null : points.last;
-      final trend = previous == null
-          ? day.kg
-          : previous.trendKg +
-                config.alpha(previous.localDate.daysUntil(day.localDate)) *
-                    (day.kg - previous.trendKg);
-      points.add(
+    final trend = smoothDaily([
+      for (final day in days) (day.localDate, day.kg),
+    ], config);
+    return WeightTrend._(config, [
+      for (final (i, day) in days.indexed)
         TrendPoint(
           localDate: day.localDate,
           weighInId: day.id,
           rawKg: day.kg,
-          trendKg: trend,
+          trendKg: trend[i],
         ),
-      );
-    }
-    return WeightTrend._(config, points);
+    ]);
   }
 }
 

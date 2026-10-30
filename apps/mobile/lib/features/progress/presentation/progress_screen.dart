@@ -5,7 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The Progress tab (UX-010). Until the Progress layout (A16): a Weight row
-/// that opens the weight graph (UX-013), over an empty state.
+/// that opens the weight graph and a Measurements row (UX-013), over an
+/// empty state.
 class ProgressScreen extends ConsumerWidget {
   /// Creates the screen.
   const new({super.key});
@@ -23,6 +24,13 @@ class ProgressScreen extends ConsumerWidget {
             trailing: const Icon(FbIcons.next),
             onTap: () =>
                 ref.read(appNavigatorProvider).push(const WeightGraphRoute()),
+          ),
+          FbListRow(
+            leading: const Icon(FbIcons.progress),
+            title: l10n.measurementsTitle,
+            trailing: const Icon(FbIcons.next),
+            onTap: () =>
+                ref.read(appNavigatorProvider).push(const MeasurementsRoute()),
           ),
           FbEmptyState(
             icon: FbIcons.progress,

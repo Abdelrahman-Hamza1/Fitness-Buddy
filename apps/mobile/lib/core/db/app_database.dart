@@ -11,6 +11,7 @@ import 'package:fb_mobile/core/db/migrations/from_5_to_6.dart';
 import 'package:fb_mobile/core/db/migrations/from_6_to_7.dart';
 import 'package:fb_mobile/core/db/migrations/from_7_to_8.dart';
 import 'package:fb_mobile/core/db/migrations/from_8_to_9.dart';
+import 'package:fb_mobile/core/db/migrations/from_9_to_10.dart';
 import 'package:fb_mobile/core/db/seeds/default_slots_seed.dart';
 import 'package:fb_mobile/core/db/synced_tables.dart';
 import 'package:fb_mobile/core/db/tables/body_tables.dart';
@@ -55,6 +56,8 @@ typedef CatalogErrorHandler = void Function(Object error, StackTrace stack);
     GoalPhases,
     TargetSettingsRows,
     WeighIns,
+    MeasurementTypes,
+    Measurements,
     ChatMessages,
     Proposals,
     CustomExercises,
@@ -119,6 +122,14 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
       targetSettingsEntity,
     ),
     SyncedTable<$WeighInsTable, WeighInRow>(weighIns, weighInEntity),
+    SyncedTable<$MeasurementTypesTable, MeasurementTypeRow>(
+      measurementTypes,
+      measurementTypeEntity,
+    ),
+    SyncedTable<$MeasurementsTable, MeasurementRow>(
+      measurements,
+      measurementEntity,
+    ),
     SyncedTable<$ChatMessagesTable, ChatMessageRow>(
       chatMessages,
       chatMessageEntity,
@@ -155,7 +166,7 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
   ];
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -172,6 +183,7 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
       from6To7: from6To7,
       from7To8: from7To8,
       from8To9: from8To9,
+      from9To10: from9To10,
     ),
     beforeOpen: (details) async {
       // drift runs this on the executor it's opening, below the guard (the

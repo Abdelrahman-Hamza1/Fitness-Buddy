@@ -40,3 +40,66 @@ class WeighIns extends Table with SyncColumns {
 
 /// The sync entity name of [WeighIns] (contract `weighIn`).
 const weighInEntity = 'weighIn';
+
+/// Custom measurement types, all lengths (WB-040, A15b D13). Built-in kinds
+/// are code, not rows. Name rules (trimmed, 1–40 characters, unique among
+/// live types ignoring case) live in the handler: the CHECKs are only as
+/// strict as the wire.
+@DataClassName('MeasurementTypeRow')
+class MeasurementTypes extends Table with SyncColumns {
+  /// The type's name ("Left arm"). User content.
+  TextColumn get name => text()();
+}
+
+/// The sync entity name of [MeasurementTypes] (contract `measurementType`).
+const measurementTypeEntity = 'measurementType';
+
+/// Body measurements (WB-040–042, A15b D13). The CHECKs equal the wire; the
+/// pair rules M1–M3 (`contracts/README.md`) and the local-write bounds live
+/// in the handler, and the mappers tolerate synced rows that break them.
+@DataClassName('MeasurementRow')
+class Measurements extends Table with SyncColumns {
+  /// The kind: a built-in code or `custom`.
+  TextColumn get kind => text().check(
+    kind.isIn(const [
+      'waist',
+      'chest',
+      'hips',
+      'arm',
+      'thigh',
+      'neck',
+      'bodyFat',
+      'custom',
+    ]),
+  )();
+
+  /// The custom type for `custom` (no FK: synced rows may arrive in any
+  /// order), else null.
+  TextColumn get customTypeId => text().nullable()();
+
+  /// When it was measured, UTC ms (≥ 0, the wire's minimum).
+  IntColumn get measuredAtUtc =>
+      integer().check(measuredAtUtc.isBiggerOrEqualValue(0))();
+
+  /// The zone offset where it was measured, minutes ahead of UTC.
+  IntColumn get tzOffsetMin =>
+      integer().check(tzOffsetMin.isBetweenValues(-720, 840))();
+
+  /// The day, `YYYY-MM-DD`, from the stored offset (DY-002).
+  TextColumn get localDate => text()();
+
+  /// The canonical value: cm for lengths, % for body fat, rounded once to
+  /// storage precision.
+  RealColumn get value => real().check(value.isBiggerOrEqualValue(0))();
+
+  /// The value as typed (TD-017).
+  RealColumn get inputValue =>
+      real().check(inputValue.isBiggerOrEqualValue(0))();
+
+  /// The unit as typed: `cm`, `in` or `percent`.
+  TextColumn get inputUnit =>
+      text().check(inputUnit.isIn(const ['cm', 'in', 'percent']))();
+}
+
+/// The sync entity name of [Measurements] (contract `measurement`).
+const measurementEntity = 'measurement';

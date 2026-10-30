@@ -50,6 +50,7 @@ List<Override> appOverrides(AppConfig config) => [
       PersonalFoodOpHandler(db),
       TargetsOpHandler(db),
       WeighInOpHandler(db),
+      MeasurementOpHandler(db),
       ChatMessageOpHandler(db),
       ProposalOpHandler(db),
       WorkoutOpHandler(db),

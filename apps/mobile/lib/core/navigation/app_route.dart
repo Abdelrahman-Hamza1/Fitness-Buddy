@@ -282,6 +282,52 @@ final class WeightGraphRoute extends AppRoute {
   String get location => path;
 }
 
+/// Body measurements (A15b D18): a detail screen of the Progress tab.
+final class MeasurementsRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/progress/measurements';
+
+  @override
+  String get location => path;
+}
+
+/// One measurement type's graph and entries (A15b D18), nested under
+/// [MeasurementsRoute]. [key] is a `MeasurementTypeRef.key` (`waist`,
+/// `custom-<uuid>`); an unknown or removed one shows the removed state.
+final class MeasurementTypeRoute extends AppRoute {
+  /// Creates the route for the type [key].
+  const new(this.key);
+
+  /// The route's path pattern.
+  static const path = '/progress/measurements/:type';
+
+  /// The path parameter holding [key].
+  static const typeParam = 'type';
+
+  /// The type's key.
+  final String key;
+
+  @override
+  String get location =>
+      '${MeasurementsRoute.path}/${Uri.encodeComponent(key)}';
+}
+
+/// Past weigh-ins as rows (A15b D17): full screen outside the tabs, opened
+/// from the weight graph. No parameters.
+final class WeightHistoryRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/weight-history';
+
+  @override
+  String get location => path;
+}
+
 /// Me › Profile & goal (A13c D13, TG-001/010–012): a detail screen of the
 /// Me tab.
 final class ProfileRoute extends AppRoute {

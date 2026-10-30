@@ -5190,6 +5190,582 @@ abstract class AppLocalizations {
   /// **'Couldn\'t change the trend weigh-in. Try again.'**
   String get weightGraphUseForTrendFailed;
 
+  /// Weight history screen title (A15b D17): many old weigh-ins typed as rows.
+  ///
+  /// In en, this message translates to:
+  /// **'Past weigh-ins'**
+  String get weightHistoryTitle;
+
+  /// Weight graph AppBar action tooltip and empty-state button that open the weight history screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Add past weigh-ins'**
+  String get weightHistoryOpen;
+
+  /// Weight history screen intro.
+  ///
+  /// In en, this message translates to:
+  /// **'Add weigh-ins from before you started, one row per day. They\'re saved together and can be undone in one go.'**
+  String get weightHistoryIntro;
+
+  /// Weight history row: the date chip before a date is picked.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date'**
+  String get weightHistoryPickDate;
+
+  /// Weight history row: label of the date chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get weightHistoryDate;
+
+  /// Weight history row: label of the value field.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weightHistoryValue;
+
+  /// Weight history row: tooltip of the remove button.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove row'**
+  String get weightHistoryRemoveRow;
+
+  /// Weight history: adds a row dated a week after the last one.
+  ///
+  /// In en, this message translates to:
+  /// **'Add row'**
+  String get weightHistoryAddRow;
+
+  /// Weight history: the pinned Save button.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get weightHistorySave;
+
+  /// Weight history: how many rows Save will add.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Nothing to save yet} =1{1 weigh-in to save} other{{count} weigh-ins to save}}'**
+  String weightHistoryToSave(int count);
+
+  /// Weight history: why Save is off while a row is incomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Every row needs a date and a weight'**
+  String get weightHistoryIncomplete;
+
+  /// Weight history row: the date is after today (Save is off).
+  ///
+  /// In en, this message translates to:
+  /// **'That date is in the future'**
+  String get weightHistoryFuture;
+
+  /// Weight history row: a stored weigh-in that day has the same value. The row is left out until kept.
+  ///
+  /// In en, this message translates to:
+  /// **'Already logged on this day'**
+  String get weightHistoryDuplicate;
+
+  /// Weight history row: an earlier row has the same day and value. Left out until kept.
+  ///
+  /// In en, this message translates to:
+  /// **'Same as an earlier row'**
+  String get weightHistoryDuplicateRow;
+
+  /// Weight history row: the number reads like the other unit (WB-005), e.g. "Did you mean 214.0 lb?". Left out until kept or switched.
+  ///
+  /// In en, this message translates to:
+  /// **'Did you mean {weight}?'**
+  String weightHistoryOtherUnit(String weight);
+
+  /// Weight history row: switch this row to the suggested unit, e.g. "Use lb".
+  ///
+  /// In en, this message translates to:
+  /// **'Use {unit}'**
+  String weightHistoryUseUnit(String unit);
+
+  /// Weight history row: a jump of more than 3 % within a week (WB-005). Neutral, no judgement. Left out until kept.
+  ///
+  /// In en, this message translates to:
+  /// **'{change} from {date}. Is that right?'**
+  String weightHistoryLargeChange(String change, String date);
+
+  /// Weight history row: keep a flagged row so it's saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get weightHistoryKeep;
+
+  /// Weight history row: the flagged row will be saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept'**
+  String get weightHistoryKept;
+
+  /// Weight history row: info only, the row is still saved (WB-003).
+  ///
+  /// In en, this message translates to:
+  /// **'You already have a different weigh-in that day. The earliest one of the day is used for the trend.'**
+  String get weightHistorySameDay;
+
+  /// Undo snack bar after saving the weight history (one undo for all rows).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 weigh-in added} other{{count} weigh-ins added}}'**
+  String weightHistorySaved(int count);
+
+  /// Weight history: the save was refused; nothing was written and the rows are kept (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save. Your rows are still here, try again.'**
+  String get weightHistoryFailed;
+
+  /// Weight history: the save was refused because a time is in the future.
+  ///
+  /// In en, this message translates to:
+  /// **'A date is in the future. Check the rows and try again.'**
+  String get weightHistoryFailedFuture;
+
+  /// Weight history: sheet title when leaving with typed rows.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard these rows?'**
+  String get weightHistoryDiscardTitle;
+
+  /// Weight history: discard sheet message.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve typed weigh-ins that aren\'t saved yet.'**
+  String get weightHistoryDiscardMessage;
+
+  /// Weight history: discard sheet, stay (the dominant choice).
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get weightHistoryDiscardKeep;
+
+  /// Weight history: discard sheet, leave without saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get weightHistoryDiscardConfirm;
+
+  /// Weight history: the stored weigh-ins couldn't be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your weigh-ins'**
+  String get weightHistoryError;
+
+  /// Weight history: retry after a load error.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get weightHistoryTryAgain;
+
+  /// Measurements screen title and the Progress row that opens it (A15b D18).
+  ///
+  /// In en, this message translates to:
+  /// **'Measurements'**
+  String get measurementsTitle;
+
+  /// Built-in measurement type.
+  ///
+  /// In en, this message translates to:
+  /// **'Waist'**
+  String get measurementKindWaist;
+
+  /// Built-in measurement type.
+  ///
+  /// In en, this message translates to:
+  /// **'Chest'**
+  String get measurementKindChest;
+
+  /// Built-in measurement type.
+  ///
+  /// In en, this message translates to:
+  /// **'Hips'**
+  String get measurementKindHips;
+
+  /// Built-in measurement type (one value; a custom type covers left/right).
+  ///
+  /// In en, this message translates to:
+  /// **'Arm'**
+  String get measurementKindArm;
+
+  /// Built-in measurement type.
+  ///
+  /// In en, this message translates to:
+  /// **'Thigh'**
+  String get measurementKindThigh;
+
+  /// Built-in measurement type.
+  ///
+  /// In en, this message translates to:
+  /// **'Neck'**
+  String get measurementKindNeck;
+
+  /// Built-in measurement type: body fat percentage, entered by hand (WB-042). No health judgement.
+  ///
+  /// In en, this message translates to:
+  /// **'Body fat'**
+  String get measurementKindBodyFat;
+
+  /// Length unit: centimetres.
+  ///
+  /// In en, this message translates to:
+  /// **'cm'**
+  String get measurementUnitCm;
+
+  /// Length unit: inches.
+  ///
+  /// In en, this message translates to:
+  /// **'in'**
+  String get measurementUnitIn;
+
+  /// Body fat unit.
+  ///
+  /// In en, this message translates to:
+  /// **'%'**
+  String get measurementUnitPercent;
+
+  /// A measurement with its unit, e.g. "92.0 cm", "18.4 %".
+  ///
+  /// In en, this message translates to:
+  /// **'{value} {unit}'**
+  String measurementValue(String value, String unit);
+
+  /// A measurement type without entries.
+  ///
+  /// In en, this message translates to:
+  /// **'No entries yet'**
+  String get measurementNoEntries;
+
+  /// Latest entry of a type, e.g. "Latest 92.0 cm · Oct 17".
+  ///
+  /// In en, this message translates to:
+  /// **'Latest {value} · {date}'**
+  String measurementLatest(String value, String date);
+
+  /// Change from the first entry, neutral, e.g. "−3.5 cm since Jan 3".
+  ///
+  /// In en, this message translates to:
+  /// **'{change} since {date}'**
+  String measurementChangeSince(String change, String date);
+
+  /// Button: open the measurement form.
+  ///
+  /// In en, this message translates to:
+  /// **'Add measurement'**
+  String get measurementAdd;
+
+  /// Button: create a custom measurement type (a length).
+  ///
+  /// In en, this message translates to:
+  /// **'Add custom measurement'**
+  String get measurementAddCustom;
+
+  /// Measurements empty state title.
+  ///
+  /// In en, this message translates to:
+  /// **'No measurements yet'**
+  String get measurementEmptyTitle;
+
+  /// Measurements empty state message.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your waist, other body measurements and body fat. Each one gets its own graph.'**
+  String get measurementEmptyMessage;
+
+  /// A measurement type's screen without entries.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first entry to start this graph.'**
+  String get measurementTypeEmpty;
+
+  /// Measurements error state.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your measurements'**
+  String get measurementError;
+
+  /// Measurements error retry button.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get measurementTryAgain;
+
+  /// A measurement type's screen when the type no longer exists.
+  ///
+  /// In en, this message translates to:
+  /// **'This measurement was removed'**
+  String get measurementRemoved;
+
+  /// A measurement type's screen when the type no longer exists.
+  ///
+  /// In en, this message translates to:
+  /// **'It was deleted, here or on another device.'**
+  String get measurementRemovedMessage;
+
+  /// Measurement sheet title (new entry).
+  ///
+  /// In en, this message translates to:
+  /// **'Add measurement'**
+  String get measurementSheetTitle;
+
+  /// Measurement sheet title (edit).
+  ///
+  /// In en, this message translates to:
+  /// **'Edit measurement'**
+  String get measurementEditTitle;
+
+  /// Measurement sheet: the type chips' label for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get measurementTypeLabel;
+
+  /// Measurement sheet: the value field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Value'**
+  String get measurementValueLabel;
+
+  /// Measurement sheet: the date chip label.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get measurementDate;
+
+  /// Measurement sheet: Save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get measurementSave;
+
+  /// Measurement sheet and entry row: delete the entry (undoable).
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get measurementDelete;
+
+  /// Measurement sheet: the value is outside the local range, e.g. "10.0 cm" and "300.0 cm".
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a value between {min} and {max}'**
+  String measurementOutOfRange(String min, String max);
+
+  /// Undo snack bar after logging, e.g. "Waist saved: 92.0 cm".
+  ///
+  /// In en, this message translates to:
+  /// **'{name} saved: {value}'**
+  String measurementSaved(String name, String value);
+
+  /// Undo snack bar after editing an entry.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} updated: {value}'**
+  String measurementUpdated(String name, String value);
+
+  /// Undo snack bar after deleting an entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry deleted'**
+  String get measurementDeleted;
+
+  /// Measurement save refused: the entry changed (nothing written).
+  ///
+  /// In en, this message translates to:
+  /// **'This entry changed meanwhile. Close it and try again.'**
+  String get measurementFailedChanged;
+
+  /// Measurement save refused: the entry is gone.
+  ///
+  /// In en, this message translates to:
+  /// **'This entry was removed.'**
+  String get measurementFailedRemoved;
+
+  /// Measurement save refused: the custom type is gone.
+  ///
+  /// In en, this message translates to:
+  /// **'This measurement type was removed.'**
+  String get measurementFailedType;
+
+  /// Measurement save refused: the time is in the future.
+  ///
+  /// In en, this message translates to:
+  /// **'That time is in the future.'**
+  String get measurementFailedFuture;
+
+  /// Measurement save refused for another reason (nothing written).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save. Check the value and try again.'**
+  String get measurementFailedInvalid;
+
+  /// Measurement type screen: the entries list header.
+  ///
+  /// In en, this message translates to:
+  /// **'Entries'**
+  String get measurementEntries;
+
+  /// Hint under a measurement chart when no point is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a point to see details'**
+  String get measurementTapHint;
+
+  /// Button: edit the selected entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get measurementEdit;
+
+  /// Chart legend / screen-reader name of the entry dots.
+  ///
+  /// In en, this message translates to:
+  /// **'Entries'**
+  String get measurementLegendEntries;
+
+  /// Chart legend / screen-reader name of the trend line.
+  ///
+  /// In en, this message translates to:
+  /// **'Trend'**
+  String get measurementLegendTrend;
+
+  /// Measurement chart: why there is no trend line yet (WB-041).
+  ///
+  /// In en, this message translates to:
+  /// **'A trend line shows from 5 entries'**
+  String get measurementTrendHint;
+
+  /// Screen-reader summary of a measurement chart.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} graph, {count} entries.'**
+  String measurementGraphSemantics(String name, String count);
+
+  /// Tooltip of a custom type's menu button.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get measurementMenu;
+
+  /// Custom type menu: rename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get measurementRenameType;
+
+  /// Custom type menu: delete the type and its entries (asks first when it has entries; undoable).
+  ///
+  /// In en, this message translates to:
+  /// **'Delete type'**
+  String get measurementDeleteType;
+
+  /// Sheet title before deleting a custom type with entries.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {name}?'**
+  String measurementDeleteTypeTitle(String name);
+
+  /// Sheet message before deleting a custom type with entries.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Its 1 entry is deleted too. You can undo this.} other{Its {count} entries are deleted too. You can undo this.}}'**
+  String measurementDeleteTypeMessage(int count);
+
+  /// Sheet button: delete the custom type and its entries.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get measurementDeleteTypeConfirm;
+
+  /// Sheet button: keep the custom type (the dominant choice).
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get measurementDeleteTypeKeep;
+
+  /// Undo snack bar after creating a custom type.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} added'**
+  String measurementTypeCreated(String name);
+
+  /// Undo snack bar after renaming a custom type.
+  ///
+  /// In en, this message translates to:
+  /// **'Renamed to {name}'**
+  String measurementTypeRenamed(String name);
+
+  /// Undo snack bar after deleting a custom type.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} deleted'**
+  String measurementTypeDeleted(String name);
+
+  /// Custom type sheet title (create).
+  ///
+  /// In en, this message translates to:
+  /// **'New measurement'**
+  String get measurementCustomTitle;
+
+  /// Custom type sheet title (rename).
+  ///
+  /// In en, this message translates to:
+  /// **'Rename measurement'**
+  String get measurementRenameTitle;
+
+  /// Custom type sheet: the name field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get measurementCustomName;
+
+  /// Custom type sheet: the name field hint.
+  ///
+  /// In en, this message translates to:
+  /// **'For example: Left arm'**
+  String get measurementCustomHint;
+
+  /// Custom type sheet: what a custom type measures.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom measurements are lengths, in cm or in.'**
+  String get measurementCustomNote;
+
+  /// Custom type sheet: the name is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a name'**
+  String get measurementCustomEmpty;
+
+  /// Custom type sheet: the name is too long.
+  ///
+  /// In en, this message translates to:
+  /// **'Use 40 characters or fewer'**
+  String get measurementCustomTooLong;
+
+  /// Custom type sheet: the name has a control character.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove line breaks and control characters'**
+  String get measurementCustomInvalid;
+
+  /// Custom type sheet: another live type has this name (ignoring case).
+  ///
+  /// In en, this message translates to:
+  /// **'You already have a measurement with this name'**
+  String get measurementCustomDuplicate;
+
+  /// Custom type sheet: the save was refused for another reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the name. Try again.'**
+  String get measurementCustomFailed;
+
   /// Me, You section: opens Profile & goal (A13c D13).
   ///
   /// In en, this message translates to:

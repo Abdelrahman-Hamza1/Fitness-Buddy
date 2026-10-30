@@ -13,9 +13,10 @@ final class WeighInMappingError implements Exception {
 }
 
 /// The domain weigh-in of [row]. Throws [WeighInMappingError] for a row it
-/// can't read (an unknown unit, a malformed date, or a kg or typed value
-/// outside the read bound [WeighInBounds.isReadableKg]; all possible only
-/// via sync).
+/// can't read (an unknown unit, a malformed date, a kg or typed value
+/// outside the read bound [WeighInBounds.isReadableKg], or a measured time
+/// whose wall clock is outside the years 1–9999; all possible only via
+/// sync).
 WeighIn weighInOf(WeighInRow row) {
   final unit = MassUnit.fromCode(row.inputUnit);
   if (unit == null || !WeighInInput.units.contains(unit)) {
@@ -26,13 +27,16 @@ WeighIn weighInOf(WeighInRow row) {
     throw const WeighInMappingError();
   }
   try {
+    // The wall clock must be representable (years 1–9999): the weight
+    // graph reads it (A15b review M1).
+    final time = EntryTime(
+      DateTime.fromMillisecondsSinceEpoch(row.measuredAtUtc, isUtc: true),
+      row.tzOffsetMin,
+    )..localDateTime;
     return WeighIn(
       id: row.id,
       version: row.version,
-      time: EntryTime(
-        DateTime.fromMillisecondsSinceEpoch(row.measuredAtUtc, isUtc: true),
-        row.tzOffsetMin,
-      ),
+      time: time,
       localDate: LocalDate.parse(row.localDate),
       kg: row.kg,
       input: WeighInInput(row.inputValue, unit),

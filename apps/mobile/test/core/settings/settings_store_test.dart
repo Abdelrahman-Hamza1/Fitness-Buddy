@@ -220,6 +220,7 @@ void main() {
           PersonalFoodOp.familyName,
           TargetsOp.familyName,
           WeighInOp.familyName,
+          MeasurementOp.familyName,
           ChatMessageOp.familyName,
           ProposalOp.familyName,
           WorkoutOp.familyName,

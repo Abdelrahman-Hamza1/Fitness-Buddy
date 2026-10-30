@@ -132,6 +132,14 @@ Future<void> _seed(AppDatabase db, {int diaryRows = 1}) async {
         }
         if (spec.entity == 'savedMeal') values['name'] = 'Saved removed';
         if (spec.entity == 'weighIn') values['input_unit'] = 'kg';
+        if (spec.entity == 'measurement') {
+          // An orphan: its custom type is the tombstoned one (A15b PA6).
+          values.addAll({
+            'kind': 'custom',
+            'custom_type_id': 'measurementType-deleted',
+            'input_unit': 'cm',
+          });
+        }
         if (spec.entity == 'workoutSet') values['input_unit'] = 'kg';
         if (spec.entity == 'customExercise') {
           values.addAll({'exercise_type': 'weight_reps', 'equipment': 'cable'});
@@ -295,6 +303,46 @@ void main() {
                 .where((c) => c.name != 'version' && c.name != 'origin'))
           c.name,
       ],
+    );
+  });
+
+  test('AC-030 export includes measurement types and measurements', () async {
+    final db = memoryDatabase();
+    await _seed(db);
+    final files = _build(await _read(db));
+    final data = _json(files)['data'] as Map;
+    final types = data['measurementType'] as List;
+    expect(types, hasLength(1));
+    expect((types.single as Map)['id'], 'measurementType-live');
+    expect((types.single as Map)['name'], 'text');
+    final rows = data['measurement'] as List;
+    expect(rows, hasLength(1));
+    final row = rows.single as Map<String, dynamic>;
+    expect(row['id'], 'measurement-live');
+    expect(row['kind'], 'custom');
+    expect(row['value'], 12.5);
+    expect(row['input_unit'], 'cm');
+    expect(row.keys, isNot(contains('device_id')));
+    expect(
+      files.where(
+        (f) =>
+            f.name.endsWith('-measurements.csv') ||
+            f.name.endsWith('-measurement-types.csv'),
+      ),
+      hasLength(2),
+    );
+  });
+
+  test('AC-030 export is table-level: an orphan measurement (type missing or '
+      'deleted) is still exported with its custom_type_id', () async {
+    final db = memoryDatabase();
+    await _seed(db);
+    final data = _json(_build(await _read(db)))['data'] as Map;
+    final row = (data['measurement'] as List).single as Map<String, dynamic>;
+    expect(row['custom_type_id'], 'measurementType-deleted');
+    expect(
+      (data['measurementType'] as List).map((t) => (t as Map)['id']),
+      isNot(contains('measurementType-deleted')),
     );
   });
 

@@ -269,6 +269,48 @@ BEGIN
   SELECT RAISE(ABORT, 'tombstone, never delete');
 END;
 
+-- measurement_types (entity 'measurementType', A15b)
+CREATE TRIGGER measurement_types_outbox_ai AFTER INSERT ON measurement_types
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('measurementType', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER measurement_types_outbox_au AFTER UPDATE ON measurement_types
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('measurementType', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER measurement_types_no_delete BEFORE DELETE ON measurement_types
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;
+
+-- measurements (entity 'measurement', A15b)
+CREATE TRIGGER measurements_outbox_ai AFTER INSERT ON measurements
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('measurement', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER measurements_outbox_au AFTER UPDATE ON measurements
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('measurement', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER measurements_no_delete BEFORE DELETE ON measurements
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;
+
 -- chat_messages (entity 'chatMessage', A22)
 CREATE TRIGGER chat_messages_outbox_ai AFTER INSERT ON chat_messages
 WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'

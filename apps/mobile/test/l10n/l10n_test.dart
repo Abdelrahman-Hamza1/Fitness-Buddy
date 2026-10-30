@@ -99,6 +99,9 @@ void main() {
         );
       }
     }
+    // Outside-tab screens watch the database too (A15b's weight history):
+    // let drift close their streams.
+    await unmountApp(tester, container);
   });
 
   testWidgets('LC-002 material_ui widgets get Material localizations', (

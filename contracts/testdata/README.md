@@ -64,6 +64,10 @@ The B19 corpus for the `profile`, `goalPhase`, `targetSettings` (v1) and `weighI
 
 Valid `profile`, `goalPhase` and `targetSettings` v1 payloads beyond the one fixture per entity in `entity-payloads.json` (A13a). Format: `{"version": 1, "cases": [{"id", "entity", "payload"}]}`; `id` is stable kebab-case, `entity` is the sync entity name, `payload` is exactly the sync payload (metadata included). **A case passes** when the payload validates against `../openapi/sync-entities.json`, satisfies the targets wire rules (`../README.md`) and round-trips through the app's table unchanged (`apps/mobile/test/features/targets/data/targets_contract_test.dart`). Synthetic values only.
 
+## `sync/measurement-payload-variants.json`
+
+Valid `measurement` and `measurementType` v1 payloads beyond the one fixture per entity in `entity-payloads.json` (A15b D14): body fat in percent, a custom measurement typed in inches, a 120-character type name. Same format as `targets-payload-variants.json`. **A case passes** when the payload validates against `../openapi/sync-entities.json`, satisfies the measurement wire rules M1–M3 (`../README.md`) and maps 1:1 to the app's table columns (the app's measurement contract test, A15b WP9). Synthetic values only.
+
 ## `problems/`
 
 One file per type in the error catalogue (`../README.md`), named after its slug: `/errors/validation-failed` → `validation-failed.json`. Each is exactly the `application/problem+json` body the server sends for that type (no extra fields, JSON key order as the server writes it):

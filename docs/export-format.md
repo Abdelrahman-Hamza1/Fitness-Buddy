@@ -12,10 +12,10 @@ as approved for encrypted device transfer/E2EE cloud backup (A11 Q2). Active
 install-id preferences and credentials are excluded. A new install uses a fresh
 active ID while preserving historical row/outbox identities.
 
-Each export produces twelve CSVs and one complete JSON file, named
+Each export produces one CSV per entity (23) and one complete JSON file, named
 `fitness-buddy-YYYY-MM-DD-<type>.csv` and `fitness-buddy-YYYY-MM-DD.json` using the local
 export date. Rows sort by id, except diary entries sort by local_date, occurred_at_utc, id
-and weigh-ins by local_date, measured_at_utc, id.
+and weigh-ins and measurements by local_date, measured_at_utc, id.
 Files are in app-private temporary `export/`, wiped before preparation and after
 share returns (also after failure or abandonment). Closing during preparation skips
 sharing. Sharing uses the OS share sheet. share_plus 13.3.1 copies files into
@@ -357,6 +357,39 @@ Buddy's cards (A23): one per meal, waiting for you or already logged or discarde
 | `weigh-ins.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
 | `weigh-ins.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
 | `weigh-ins.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
+## measurement-types (`measurementType`, `measurement_types`)
+
+Your own measurement types (A15b, WB-040), all lengths. The built-in kinds (waist, chest, hips, arm, thigh, neck, body fat) aren't rows.
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `measurement-types.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `measurement-types.name` | text | The type's name. User content. |
+| `measurement-types.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `measurement-types.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `measurement-types.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `measurement-types.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
+## measurements (`measurement`, `measurements`)
+
+Body measurements (A15b, WB-040–042). Each type's trend is derived and not exported.
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `measurements.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `measurements.local_date` | text | The day, `YYYY-MM-DD`, from the offset where it was measured. |
+| `measurements.measured_at_utc` | UTC ms | When it was measured, UTC ms. |
+| `measurements.tz_offset_min` | integer | The zone offset where it was measured, minutes ahead of UTC. |
+| `measurements.kind` | text | `waist`, `chest`, `hips`, `arm`, `thigh`, `neck`, `bodyFat` or `custom`. |
+| `measurements.custom_type_id` | text | For `custom`, the id of its row in measurement-types (kept even if that type is gone); else empty. |
+| `measurements.value` | number | The value in cm, or in % for body fat, rounded once to 2 decimals from the typed value. |
+| `measurements.input_value` | number | The value as typed. |
+| `measurements.input_unit` | text | The unit as typed: `cm`, `in` or `percent`. |
+| `measurements.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `measurements.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `measurements.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `measurements.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
 
 ## custom-exercises (`customExercise`, `custom_exercises`)
 

@@ -1,10 +1,12 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/progress/application/graph_window.dart';
 import 'package:fb_mobile/features/progress/application/weight_graph_providers.dart';
+import 'package:fb_mobile/features/progress/presentation/graph_range_chips.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,20 +43,44 @@ class _WeightGraphScreenState extends ConsumerState<WeightGraphScreen> {
     super.dispose();
   }
 
+  /// Past weigh-ins as rows (A15b D17), outside the tabs; Back returns
+  /// here.
+  void _openHistory() =>
+      ref.read(appNavigatorProvider).push(const WeightHistoryRoute());
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final model = ref.watch(weightGraphProvider);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.weightGraphTitle)),
+      appBar: AppBar(
+        title: Text(l10n.weightGraphTitle),
+        actions: [
+          FbIconButton(
+            icon: FbIcons.diary,
+            tooltip: l10n.weightHistoryOpen,
+            onPressed: _openHistory,
+          ),
+        ],
+      ),
       body: switch (model) {
         AsyncData(:final value) when value.weighIns.isEmpty => FbEmptyState(
           icon: FbIcons.chart,
           title: l10n.weightGraphEmptyTitle,
           message: l10n.weightGraphEmptyMessage,
-          action: FbButton.primary(
-            label: l10n.weightGraphLog,
-            onPressed: () => showWeighInSheet(context),
+          action: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: FbSpace.s2,
+            children: [
+              FbButton.primary(
+                label: l10n.weightGraphLog,
+                onPressed: () => showWeighInSheet(context),
+              ),
+              FbButton.text(
+                label: l10n.weightHistoryOpen,
+                onPressed: _openHistory,
+              ),
+            ],
           ),
         ),
         AsyncData(:final value) => _Graph(model: value),
@@ -109,24 +135,11 @@ class _Graph extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsetsDirectional.all(FbSpace.s4),
       children: [
-        Wrap(
-          spacing: FbSpace.s2,
-          runSpacing: FbSpace.s2,
-          children: [
-            for (final range in GraphRange.values)
-              FbChoiceChip(
-                label: _rangeLabel(l10n, range),
-                selected: range == window.range,
-                dropdown: false,
-                onTap: () => controller.setRange(range),
-              ),
-            if (window.panStart != null)
-              FbChoiceChip(
-                label: l10n.weightGraphToday,
-                dropdown: false,
-                onTap: controller.reset,
-              ),
-          ],
+        GraphRangeChips(
+          range: window.range,
+          onRange: controller.setRange,
+          panned: window.panStart != null,
+          onToday: controller.reset,
         ),
         const SizedBox(height: FbSpace.s3),
         FbTimeSeriesChart(
@@ -205,7 +218,7 @@ class _Graph extends ConsumerWidget {
               .read(selectedWeighInProvider.notifier)
               .select(p?.key as String?),
           formatValue: (v) => weightNumber(l10n, v),
-          formatDate: (at, step) => _date(l10n, at, step),
+          formatDate: (at, step) => graphTickLabel(l10n, at, step),
           semanticLabel: l10n.weightGraphSemantics(
             '${model.weighIns.length}',
             latest == null ? '' : value(latest.trendKg),
@@ -244,24 +257,6 @@ class _Graph extends ConsumerWidget {
       for (var d = 0; d < total; d += step) p.anchorDate.plusDays(d),
       p.drawUntil,
     ];
-  }
-
-  static String _rangeLabel(AppLocalizations l10n, GraphRange range) =>
-      switch (range) {
-        GraphRange.m1 => l10n.weightGraphRange1M,
-        GraphRange.m3 => l10n.weightGraphRange3M,
-        GraphRange.m6 => l10n.weightGraphRange6M,
-        GraphRange.y1 => l10n.weightGraphRange1Y,
-        GraphRange.all => l10n.weightGraphRangeAll,
-      };
-
-  static String _date(AppLocalizations l10n, DateTime at, FbTimeStep step) {
-    final local = DateTime(at.year, at.month, at.day);
-    return switch (step) {
-      FbTimeStep.day => DateFormat.MMMd(l10n.localeName).format(local),
-      FbTimeStep.month => DateFormat.MMM(l10n.localeName).format(local),
-      FbTimeStep.year => DateFormat.y(l10n.localeName).format(local),
-    };
   }
 }
 

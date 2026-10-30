@@ -138,6 +138,19 @@ Fixtures: one per entity in `testdata/sync/entity-payloads.json` (the `goalPhase
 
 **Corpus:** the shared vectors (`testdata/sync/body-targets-validation-vectors.json`, B19) are generated from `TargetRules.wire` and the fb_domain records. They pin the server validator, the Dart wire rules and the app decoders and column writers to this list, rule by rule, including the cases where the sides differ on purpose (format: `testdata/README.md`).
 
+## Measurement semantic rules (measurementType, measurement)
+
+`measurementType` and `measurement` v1 (A15b D14) carry their types, closed vocabularies (`kind`: `waist`, `chest`, `hips`, `arm`, `thigh`, `neck`, `bodyFat`, `custom`; `inputUnit`: `cm`, `in`, `percent`), nullability, technical bounds (`value` and `inputValue` 0 … 1e6, `tzOffsetMin` −720 … 840, `measuredAtUtc` 0 … 2^53−1) and string limits (`name` ≤ 120) in `openapi/sync-entities.json`. `value` is canonical: cm for lengths, % for body fat; `inputValue` + `inputUnit` keep how the user typed it (TD-017). The rules below are the **wire rules** the exporter can't express. The app applies them on every write (`MeasurementDraft.validate` in `packages/fb_domain`) and tolerates rows that break them on read (skipped and counted). **B20** admits exactly them, nothing more, after the schema check (TD-080); entity validators dispatch by entity and version and **fail closed**. Until B20 the server admits these entities by schema only (nothing uploads them before A34), so **no live server takes a build carrying these registry entries before B20 is merged** (deploy hold).
+
+- **M1 custom type:** `customTypeId` is non-null exactly when `kind` is `custom`.
+- **M2 unit fits kind:** `inputUnit` is `percent` exactly when `kind` is `bodyFat`, else `cm` or `in`.
+- **M3 percent bound:** a `bodyFat` row's `value` and `inputValue` are at most 100.
+- **Not wire rules:** the app's local plausibility ranges (10–300 cm, 2–75 %), `value` = `inputValue` × the unit factor, `localDate` from `measuredAtUtc` + `tzOffsetMin`, the custom type existing or being live, and name uniqueness (cross-row, TD-089 style).
+
+**Tombstones** carry the full payload under the same rules. A new built-in kind or unit is a new `measurement` schema version, server validator first (TD-080).
+
+Fixtures: one built-in `waist` measurement and one type per entity in `testdata/sync/entity-payloads.json`, and more valid cases in `testdata/sync/measurement-payload-variants.json` (body fat in %, a custom measurement typed in inches, a 120-character type name).
+
 ## weighIn versions
 
 `weighIn` has two schema versions, each admitted only under its own `schemaVersion` (a v1 payload sent as 2, or a v2 payload sent as 1, is `invalidPayload`; an unknown version is `unsupported`):

@@ -8239,6 +8239,1558 @@ class WeighInsCompanion extends UpdateCompanion<WeighInRow> {
   }
 }
 
+class $MeasurementsTable extends Measurements
+    with TableInfo<$MeasurementsTable, MeasurementRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MeasurementsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+    'origin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedByUserMeta = const VerificationMeta(
+    'editedByUser',
+  );
+  @override
+  late final GeneratedColumn<bool> editedByUser = GeneratedColumn<bool>(
+    'edited_by_user',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_by_user" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    check: () => kind.isIn(const [
+      'waist',
+      'chest',
+      'hips',
+      'arm',
+      'thigh',
+      'neck',
+      'bodyFat',
+      'custom',
+    ]),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _customTypeIdMeta = const VerificationMeta(
+    'customTypeId',
+  );
+  @override
+  late final GeneratedColumn<String> customTypeId = GeneratedColumn<String>(
+    'custom_type_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _measuredAtUtcMeta = const VerificationMeta(
+    'measuredAtUtc',
+  );
+  @override
+  late final GeneratedColumn<int> measuredAtUtc = GeneratedColumn<int>(
+    'measured_at_utc',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(measuredAtUtc).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _tzOffsetMinMeta = const VerificationMeta(
+    'tzOffsetMin',
+  );
+  @override
+  late final GeneratedColumn<int> tzOffsetMin = GeneratedColumn<int>(
+    'tz_offset_min',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(tzOffsetMin).isBetweenValues(-720, 840),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localDateMeta = const VerificationMeta(
+    'localDate',
+  );
+  @override
+  late final GeneratedColumn<String> localDate = GeneratedColumn<String>(
+    'local_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<double> value = GeneratedColumn<double>(
+    'value',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(value).isBiggerOrEqualValue(0),
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _inputValueMeta = const VerificationMeta(
+    'inputValue',
+  );
+  @override
+  late final GeneratedColumn<double> inputValue = GeneratedColumn<double>(
+    'input_value',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(inputValue).isBiggerOrEqualValue(0),
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _inputUnitMeta = const VerificationMeta(
+    'inputUnit',
+  );
+  @override
+  late final GeneratedColumn<String> inputUnit = GeneratedColumn<String>(
+    'input_unit',
+    aliasedName,
+    false,
+    check: () => inputUnit.isIn(const ['cm', 'in', 'percent']),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    kind,
+    customTypeId,
+    measuredAtUtc,
+    tzOffsetMin,
+    localDate,
+    value,
+    inputValue,
+    inputUnit,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'measurements';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MeasurementRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedHlcMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('origin')) {
+      context.handle(
+        _originMeta,
+        origin.isAcceptableOrUnknown(data['origin']!, _originMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originMeta);
+    }
+    if (data.containsKey('edited_by_user')) {
+      context.handle(
+        _editedByUserMeta,
+        editedByUser.isAcceptableOrUnknown(
+          data['edited_by_user']!,
+          _editedByUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('custom_type_id')) {
+      context.handle(
+        _customTypeIdMeta,
+        customTypeId.isAcceptableOrUnknown(
+          data['custom_type_id']!,
+          _customTypeIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('measured_at_utc')) {
+      context.handle(
+        _measuredAtUtcMeta,
+        measuredAtUtc.isAcceptableOrUnknown(
+          data['measured_at_utc']!,
+          _measuredAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_measuredAtUtcMeta);
+    }
+    if (data.containsKey('tz_offset_min')) {
+      context.handle(
+        _tzOffsetMinMeta,
+        tzOffsetMin.isAcceptableOrUnknown(
+          data['tz_offset_min']!,
+          _tzOffsetMinMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_tzOffsetMinMeta);
+    }
+    if (data.containsKey('local_date')) {
+      context.handle(
+        _localDateMeta,
+        localDate.isAcceptableOrUnknown(data['local_date']!, _localDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localDateMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    if (data.containsKey('input_value')) {
+      context.handle(
+        _inputValueMeta,
+        inputValue.isAcceptableOrUnknown(data['input_value']!, _inputValueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_inputValueMeta);
+    }
+    if (data.containsKey('input_unit')) {
+      context.handle(
+        _inputUnitMeta,
+        inputUnit.isAcceptableOrUnknown(data['input_unit']!, _inputUnitMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_inputUnitMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MeasurementRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MeasurementRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      origin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin'],
+      )!,
+      editedByUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited_by_user'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      customTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}custom_type_id'],
+      ),
+      measuredAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}measured_at_utc'],
+      )!,
+      tzOffsetMin: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tz_offset_min'],
+      )!,
+      localDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_date'],
+      )!,
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}value'],
+      )!,
+      inputValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}input_value'],
+      )!,
+      inputUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}input_unit'],
+      )!,
+    );
+  }
+
+  @override
+  $MeasurementsTable createAlias(String alias) {
+    return $MeasurementsTable(attachedDatabase, alias);
+  }
+}
+
+class MeasurementRow extends DataClass implements Insertable<MeasurementRow> {
+  /// UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys
+  /// (`core/db/natural_id.dart`). Lowercase canonical text.
+  final String id;
+
+  /// When the row was first written, UTC ms (0 for seeds).
+  final int createdAt;
+
+  /// The hybrid logical clock of the last write (`fb_domain` `Hlc` text).
+  final String updatedHlc;
+
+  /// 1 on insert, +1 per write: the local optimistic concurrency check.
+  final int version;
+
+  /// The tombstone, UTC ms. Synced rows are never hard-deleted.
+  final int? deletedAt;
+
+  /// The install that made the last write (the HLC's node id, TD-053).
+  final String deviceId;
+
+  /// `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`.
+  final String origin;
+
+  /// Provenance: the user overrode a value that came from another source
+  /// (AI-072, the "edited by you" badge). Set only by ops.
+  final bool editedByUser;
+
+  /// The kind: a built-in code or `custom`.
+  final String kind;
+
+  /// The custom type for `custom` (no FK: synced rows may arrive in any
+  /// order), else null.
+  final String? customTypeId;
+
+  /// When it was measured, UTC ms (≥ 0, the wire's minimum).
+  final int measuredAtUtc;
+
+  /// The zone offset where it was measured, minutes ahead of UTC.
+  final int tzOffsetMin;
+
+  /// The day, `YYYY-MM-DD`, from the stored offset (DY-002).
+  final String localDate;
+
+  /// The canonical value: cm for lengths, % for body fat, rounded once to
+  /// storage precision.
+  final double value;
+
+  /// The value as typed (TD-017).
+  final double inputValue;
+
+  /// The unit as typed: `cm`, `in` or `percent`.
+  final String inputUnit;
+  const MeasurementRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedHlc,
+    required this.version,
+    this.deletedAt,
+    required this.deviceId,
+    required this.origin,
+    required this.editedByUser,
+    required this.kind,
+    this.customTypeId,
+    required this.measuredAtUtc,
+    required this.tzOffsetMin,
+    required this.localDate,
+    required this.value,
+    required this.inputValue,
+    required this.inputUnit,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
+    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['device_id'] = Variable<String>(deviceId);
+    map['origin'] = Variable<String>(origin);
+    map['edited_by_user'] = Variable<bool>(editedByUser);
+    map['kind'] = Variable<String>(kind);
+    if (!nullToAbsent || customTypeId != null) {
+      map['custom_type_id'] = Variable<String>(customTypeId);
+    }
+    map['measured_at_utc'] = Variable<int>(measuredAtUtc);
+    map['tz_offset_min'] = Variable<int>(tzOffsetMin);
+    map['local_date'] = Variable<String>(localDate);
+    map['value'] = Variable<double>(value);
+    map['input_value'] = Variable<double>(inputValue);
+    map['input_unit'] = Variable<String>(inputUnit);
+    return map;
+  }
+
+  MeasurementsCompanion toCompanion(bool nullToAbsent) {
+    return MeasurementsCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
+      version: Value(version),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deviceId: Value(deviceId),
+      origin: Value(origin),
+      editedByUser: Value(editedByUser),
+      kind: Value(kind),
+      customTypeId: customTypeId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customTypeId),
+      measuredAtUtc: Value(measuredAtUtc),
+      tzOffsetMin: Value(tzOffsetMin),
+      localDate: Value(localDate),
+      value: Value(value),
+      inputValue: Value(inputValue),
+      inputUnit: Value(inputUnit),
+    );
+  }
+
+  factory MeasurementRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MeasurementRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
+      version: serializer.fromJson<int>(json['version']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      origin: serializer.fromJson<String>(json['origin']),
+      editedByUser: serializer.fromJson<bool>(json['editedByUser']),
+      kind: serializer.fromJson<String>(json['kind']),
+      customTypeId: serializer.fromJson<String?>(json['customTypeId']),
+      measuredAtUtc: serializer.fromJson<int>(json['measuredAtUtc']),
+      tzOffsetMin: serializer.fromJson<int>(json['tzOffsetMin']),
+      localDate: serializer.fromJson<String>(json['localDate']),
+      value: serializer.fromJson<double>(json['value']),
+      inputValue: serializer.fromJson<double>(json['inputValue']),
+      inputUnit: serializer.fromJson<String>(json['inputUnit']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
+      'version': serializer.toJson<int>(version),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'origin': serializer.toJson<String>(origin),
+      'editedByUser': serializer.toJson<bool>(editedByUser),
+      'kind': serializer.toJson<String>(kind),
+      'customTypeId': serializer.toJson<String?>(customTypeId),
+      'measuredAtUtc': serializer.toJson<int>(measuredAtUtc),
+      'tzOffsetMin': serializer.toJson<int>(tzOffsetMin),
+      'localDate': serializer.toJson<String>(localDate),
+      'value': serializer.toJson<double>(value),
+      'inputValue': serializer.toJson<double>(inputValue),
+      'inputUnit': serializer.toJson<String>(inputUnit),
+    };
+  }
+
+  MeasurementRow copyWith({
+    String? id,
+    int? createdAt,
+    String? updatedHlc,
+    int? version,
+    Value<int?> deletedAt = const Value.absent(),
+    String? deviceId,
+    String? origin,
+    bool? editedByUser,
+    String? kind,
+    Value<String?> customTypeId = const Value.absent(),
+    int? measuredAtUtc,
+    int? tzOffsetMin,
+    String? localDate,
+    double? value,
+    double? inputValue,
+    String? inputUnit,
+  }) => MeasurementRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+    version: version ?? this.version,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deviceId: deviceId ?? this.deviceId,
+    origin: origin ?? this.origin,
+    editedByUser: editedByUser ?? this.editedByUser,
+    kind: kind ?? this.kind,
+    customTypeId: customTypeId.present ? customTypeId.value : this.customTypeId,
+    measuredAtUtc: measuredAtUtc ?? this.measuredAtUtc,
+    tzOffsetMin: tzOffsetMin ?? this.tzOffsetMin,
+    localDate: localDate ?? this.localDate,
+    value: value ?? this.value,
+    inputValue: inputValue ?? this.inputValue,
+    inputUnit: inputUnit ?? this.inputUnit,
+  );
+  MeasurementRow copyWithCompanion(MeasurementsCompanion data) {
+    return MeasurementRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
+      version: data.version.present ? data.version.value : this.version,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      editedByUser: data.editedByUser.present
+          ? data.editedByUser.value
+          : this.editedByUser,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      customTypeId: data.customTypeId.present
+          ? data.customTypeId.value
+          : this.customTypeId,
+      measuredAtUtc: data.measuredAtUtc.present
+          ? data.measuredAtUtc.value
+          : this.measuredAtUtc,
+      tzOffsetMin: data.tzOffsetMin.present
+          ? data.tzOffsetMin.value
+          : this.tzOffsetMin,
+      localDate: data.localDate.present ? data.localDate.value : this.localDate,
+      value: data.value.present ? data.value.value : this.value,
+      inputValue: data.inputValue.present
+          ? data.inputValue.value
+          : this.inputValue,
+      inputUnit: data.inputUnit.present ? data.inputUnit.value : this.inputUnit,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MeasurementRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('kind: $kind, ')
+          ..write('customTypeId: $customTypeId, ')
+          ..write('measuredAtUtc: $measuredAtUtc, ')
+          ..write('tzOffsetMin: $tzOffsetMin, ')
+          ..write('localDate: $localDate, ')
+          ..write('value: $value, ')
+          ..write('inputValue: $inputValue, ')
+          ..write('inputUnit: $inputUnit')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    kind,
+    customTypeId,
+    measuredAtUtc,
+    tzOffsetMin,
+    localDate,
+    value,
+    inputValue,
+    inputUnit,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MeasurementRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc &&
+          other.version == this.version &&
+          other.deletedAt == this.deletedAt &&
+          other.deviceId == this.deviceId &&
+          other.origin == this.origin &&
+          other.editedByUser == this.editedByUser &&
+          other.kind == this.kind &&
+          other.customTypeId == this.customTypeId &&
+          other.measuredAtUtc == this.measuredAtUtc &&
+          other.tzOffsetMin == this.tzOffsetMin &&
+          other.localDate == this.localDate &&
+          other.value == this.value &&
+          other.inputValue == this.inputValue &&
+          other.inputUnit == this.inputUnit);
+}
+
+class MeasurementsCompanion extends UpdateCompanion<MeasurementRow> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<String> updatedHlc;
+  final Value<int> version;
+  final Value<int?> deletedAt;
+  final Value<String> deviceId;
+  final Value<String> origin;
+  final Value<bool> editedByUser;
+  final Value<String> kind;
+  final Value<String?> customTypeId;
+  final Value<int> measuredAtUtc;
+  final Value<int> tzOffsetMin;
+  final Value<String> localDate;
+  final Value<double> value;
+  final Value<double> inputValue;
+  final Value<String> inputUnit;
+  final Value<int> rowid;
+  const MeasurementsCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
+    this.version = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.editedByUser = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.customTypeId = const Value.absent(),
+    this.measuredAtUtc = const Value.absent(),
+    this.tzOffsetMin = const Value.absent(),
+    this.localDate = const Value.absent(),
+    this.value = const Value.absent(),
+    this.inputValue = const Value.absent(),
+    this.inputUnit = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MeasurementsCompanion.insert({
+    required String id,
+    required int createdAt,
+    required String updatedHlc,
+    required int version,
+    this.deletedAt = const Value.absent(),
+    required String deviceId,
+    required String origin,
+    this.editedByUser = const Value.absent(),
+    required String kind,
+    this.customTypeId = const Value.absent(),
+    required int measuredAtUtc,
+    required int tzOffsetMin,
+    required String localDate,
+    required double value,
+    required double inputValue,
+    required String inputUnit,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedHlc = Value(updatedHlc),
+       version = Value(version),
+       deviceId = Value(deviceId),
+       origin = Value(origin),
+       kind = Value(kind),
+       measuredAtUtc = Value(measuredAtUtc),
+       tzOffsetMin = Value(tzOffsetMin),
+       localDate = Value(localDate),
+       value = Value(value),
+       inputValue = Value(inputValue),
+       inputUnit = Value(inputUnit);
+  static Insertable<MeasurementRow> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<String>? updatedHlc,
+    Expression<int>? version,
+    Expression<int>? deletedAt,
+    Expression<String>? deviceId,
+    Expression<String>? origin,
+    Expression<bool>? editedByUser,
+    Expression<String>? kind,
+    Expression<String>? customTypeId,
+    Expression<int>? measuredAtUtc,
+    Expression<int>? tzOffsetMin,
+    Expression<String>? localDate,
+    Expression<double>? value,
+    Expression<double>? inputValue,
+    Expression<String>? inputUnit,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
+      if (version != null) 'version': version,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deviceId != null) 'device_id': deviceId,
+      if (origin != null) 'origin': origin,
+      if (editedByUser != null) 'edited_by_user': editedByUser,
+      if (kind != null) 'kind': kind,
+      if (customTypeId != null) 'custom_type_id': customTypeId,
+      if (measuredAtUtc != null) 'measured_at_utc': measuredAtUtc,
+      if (tzOffsetMin != null) 'tz_offset_min': tzOffsetMin,
+      if (localDate != null) 'local_date': localDate,
+      if (value != null) 'value': value,
+      if (inputValue != null) 'input_value': inputValue,
+      if (inputUnit != null) 'input_unit': inputUnit,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MeasurementsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<String>? updatedHlc,
+    Value<int>? version,
+    Value<int?>? deletedAt,
+    Value<String>? deviceId,
+    Value<String>? origin,
+    Value<bool>? editedByUser,
+    Value<String>? kind,
+    Value<String?>? customTypeId,
+    Value<int>? measuredAtUtc,
+    Value<int>? tzOffsetMin,
+    Value<String>? localDate,
+    Value<double>? value,
+    Value<double>? inputValue,
+    Value<String>? inputUnit,
+    Value<int>? rowid,
+  }) {
+    return MeasurementsCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
+      version: version ?? this.version,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deviceId: deviceId ?? this.deviceId,
+      origin: origin ?? this.origin,
+      editedByUser: editedByUser ?? this.editedByUser,
+      kind: kind ?? this.kind,
+      customTypeId: customTypeId ?? this.customTypeId,
+      measuredAtUtc: measuredAtUtc ?? this.measuredAtUtc,
+      tzOffsetMin: tzOffsetMin ?? this.tzOffsetMin,
+      localDate: localDate ?? this.localDate,
+      value: value ?? this.value,
+      inputValue: inputValue ?? this.inputValue,
+      inputUnit: inputUnit ?? this.inputUnit,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (editedByUser.present) {
+      map['edited_by_user'] = Variable<bool>(editedByUser.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (customTypeId.present) {
+      map['custom_type_id'] = Variable<String>(customTypeId.value);
+    }
+    if (measuredAtUtc.present) {
+      map['measured_at_utc'] = Variable<int>(measuredAtUtc.value);
+    }
+    if (tzOffsetMin.present) {
+      map['tz_offset_min'] = Variable<int>(tzOffsetMin.value);
+    }
+    if (localDate.present) {
+      map['local_date'] = Variable<String>(localDate.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<double>(value.value);
+    }
+    if (inputValue.present) {
+      map['input_value'] = Variable<double>(inputValue.value);
+    }
+    if (inputUnit.present) {
+      map['input_unit'] = Variable<String>(inputUnit.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MeasurementsCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('kind: $kind, ')
+          ..write('customTypeId: $customTypeId, ')
+          ..write('measuredAtUtc: $measuredAtUtc, ')
+          ..write('tzOffsetMin: $tzOffsetMin, ')
+          ..write('localDate: $localDate, ')
+          ..write('value: $value, ')
+          ..write('inputValue: $inputValue, ')
+          ..write('inputUnit: $inputUnit, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MeasurementTypesTable extends MeasurementTypes
+    with TableInfo<$MeasurementTypesTable, MeasurementTypeRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MeasurementTypesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+    'origin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedByUserMeta = const VerificationMeta(
+    'editedByUser',
+  );
+  @override
+  late final GeneratedColumn<bool> editedByUser = GeneratedColumn<bool>(
+    'edited_by_user',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_by_user" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    name,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'measurement_types';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MeasurementTypeRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedHlcMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('origin')) {
+      context.handle(
+        _originMeta,
+        origin.isAcceptableOrUnknown(data['origin']!, _originMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originMeta);
+    }
+    if (data.containsKey('edited_by_user')) {
+      context.handle(
+        _editedByUserMeta,
+        editedByUser.isAcceptableOrUnknown(
+          data['edited_by_user']!,
+          _editedByUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MeasurementTypeRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MeasurementTypeRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      origin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin'],
+      )!,
+      editedByUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited_by_user'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+    );
+  }
+
+  @override
+  $MeasurementTypesTable createAlias(String alias) {
+    return $MeasurementTypesTable(attachedDatabase, alias);
+  }
+}
+
+class MeasurementTypeRow extends DataClass
+    implements Insertable<MeasurementTypeRow> {
+  /// UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys
+  /// (`core/db/natural_id.dart`). Lowercase canonical text.
+  final String id;
+
+  /// When the row was first written, UTC ms (0 for seeds).
+  final int createdAt;
+
+  /// The hybrid logical clock of the last write (`fb_domain` `Hlc` text).
+  final String updatedHlc;
+
+  /// 1 on insert, +1 per write: the local optimistic concurrency check.
+  final int version;
+
+  /// The tombstone, UTC ms. Synced rows are never hard-deleted.
+  final int? deletedAt;
+
+  /// The install that made the last write (the HLC's node id, TD-053).
+  final String deviceId;
+
+  /// `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`.
+  final String origin;
+
+  /// Provenance: the user overrode a value that came from another source
+  /// (AI-072, the "edited by you" badge). Set only by ops.
+  final bool editedByUser;
+
+  /// The type's name ("Left arm"). User content.
+  final String name;
+  const MeasurementTypeRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedHlc,
+    required this.version,
+    this.deletedAt,
+    required this.deviceId,
+    required this.origin,
+    required this.editedByUser,
+    required this.name,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
+    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['device_id'] = Variable<String>(deviceId);
+    map['origin'] = Variable<String>(origin);
+    map['edited_by_user'] = Variable<bool>(editedByUser);
+    map['name'] = Variable<String>(name);
+    return map;
+  }
+
+  MeasurementTypesCompanion toCompanion(bool nullToAbsent) {
+    return MeasurementTypesCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
+      version: Value(version),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deviceId: Value(deviceId),
+      origin: Value(origin),
+      editedByUser: Value(editedByUser),
+      name: Value(name),
+    );
+  }
+
+  factory MeasurementTypeRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MeasurementTypeRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
+      version: serializer.fromJson<int>(json['version']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      origin: serializer.fromJson<String>(json['origin']),
+      editedByUser: serializer.fromJson<bool>(json['editedByUser']),
+      name: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
+      'version': serializer.toJson<int>(version),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'origin': serializer.toJson<String>(origin),
+      'editedByUser': serializer.toJson<bool>(editedByUser),
+      'name': serializer.toJson<String>(name),
+    };
+  }
+
+  MeasurementTypeRow copyWith({
+    String? id,
+    int? createdAt,
+    String? updatedHlc,
+    int? version,
+    Value<int?> deletedAt = const Value.absent(),
+    String? deviceId,
+    String? origin,
+    bool? editedByUser,
+    String? name,
+  }) => MeasurementTypeRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+    version: version ?? this.version,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deviceId: deviceId ?? this.deviceId,
+    origin: origin ?? this.origin,
+    editedByUser: editedByUser ?? this.editedByUser,
+    name: name ?? this.name,
+  );
+  MeasurementTypeRow copyWithCompanion(MeasurementTypesCompanion data) {
+    return MeasurementTypeRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
+      version: data.version.present ? data.version.value : this.version,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      editedByUser: data.editedByUser.present
+          ? data.editedByUser.value
+          : this.editedByUser,
+      name: data.name.present ? data.name.value : this.name,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MeasurementTypeRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    name,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MeasurementTypeRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc &&
+          other.version == this.version &&
+          other.deletedAt == this.deletedAt &&
+          other.deviceId == this.deviceId &&
+          other.origin == this.origin &&
+          other.editedByUser == this.editedByUser &&
+          other.name == this.name);
+}
+
+class MeasurementTypesCompanion extends UpdateCompanion<MeasurementTypeRow> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<String> updatedHlc;
+  final Value<int> version;
+  final Value<int?> deletedAt;
+  final Value<String> deviceId;
+  final Value<String> origin;
+  final Value<bool> editedByUser;
+  final Value<String> name;
+  final Value<int> rowid;
+  const MeasurementTypesCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
+    this.version = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.editedByUser = const Value.absent(),
+    this.name = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MeasurementTypesCompanion.insert({
+    required String id,
+    required int createdAt,
+    required String updatedHlc,
+    required int version,
+    this.deletedAt = const Value.absent(),
+    required String deviceId,
+    required String origin,
+    this.editedByUser = const Value.absent(),
+    required String name,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedHlc = Value(updatedHlc),
+       version = Value(version),
+       deviceId = Value(deviceId),
+       origin = Value(origin),
+       name = Value(name);
+  static Insertable<MeasurementTypeRow> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<String>? updatedHlc,
+    Expression<int>? version,
+    Expression<int>? deletedAt,
+    Expression<String>? deviceId,
+    Expression<String>? origin,
+    Expression<bool>? editedByUser,
+    Expression<String>? name,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
+      if (version != null) 'version': version,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deviceId != null) 'device_id': deviceId,
+      if (origin != null) 'origin': origin,
+      if (editedByUser != null) 'edited_by_user': editedByUser,
+      if (name != null) 'name': name,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MeasurementTypesCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<String>? updatedHlc,
+    Value<int>? version,
+    Value<int?>? deletedAt,
+    Value<String>? deviceId,
+    Value<String>? origin,
+    Value<bool>? editedByUser,
+    Value<String>? name,
+    Value<int>? rowid,
+  }) {
+    return MeasurementTypesCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
+      version: version ?? this.version,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deviceId: deviceId ?? this.deviceId,
+      origin: origin ?? this.origin,
+      editedByUser: editedByUser ?? this.editedByUser,
+      name: name ?? this.name,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (editedByUser.present) {
+      map['edited_by_user'] = Variable<bool>(editedByUser.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MeasurementTypesCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('name: $name, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $GoalPhasesTable extends GoalPhases
     with TableInfo<$GoalPhasesTable, GoalPhaseRow> {
   @override
@@ -21552,6 +23104,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'ix_weigh_ins_live',
     'CREATE INDEX ix_weigh_ins_live ON weigh_ins (local_date, measured_at_utc) WHERE deleted_at IS NULL',
   );
+  late final $MeasurementsTable measurements = $MeasurementsTable(this);
+  late final Index ixMeasurementsLive = Index(
+    'ix_measurements_live',
+    'CREATE INDEX ix_measurements_live ON measurements (kind, custom_type_id, local_date, measured_at_utc) WHERE deleted_at IS NULL',
+  );
+  late final $MeasurementTypesTable measurementTypes = $MeasurementTypesTable(
+    this,
+  );
   late final $GoalPhasesTable goalPhases = $GoalPhasesTable(this);
   late final Index ixGoalPhasesStart = Index(
     'ix_goal_phases_start',
@@ -21746,6 +23306,30 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'CREATE TRIGGER weigh_ins_no_delete BEFORE DELETE ON weigh_ins BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
     'weigh_ins_no_delete',
   );
+  late final Trigger measurementTypesOutboxAi = Trigger(
+    'CREATE TRIGGER measurement_types_outbox_ai AFTER INSERT ON measurement_types WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'measurementType\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'measurement_types_outbox_ai',
+  );
+  late final Trigger measurementTypesOutboxAu = Trigger(
+    'CREATE TRIGGER measurement_types_outbox_au AFTER UPDATE ON measurement_types WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'measurementType\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'measurement_types_outbox_au',
+  );
+  late final Trigger measurementTypesNoDelete = Trigger(
+    'CREATE TRIGGER measurement_types_no_delete BEFORE DELETE ON measurement_types BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'measurement_types_no_delete',
+  );
+  late final Trigger measurementsOutboxAi = Trigger(
+    'CREATE TRIGGER measurements_outbox_ai AFTER INSERT ON measurements WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'measurement\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'measurements_outbox_ai',
+  );
+  late final Trigger measurementsOutboxAu = Trigger(
+    'CREATE TRIGGER measurements_outbox_au AFTER UPDATE ON measurements WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'measurement\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'measurements_outbox_au',
+  );
+  late final Trigger measurementsNoDelete = Trigger(
+    'CREATE TRIGGER measurements_no_delete BEFORE DELETE ON measurements BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'measurements_no_delete',
+  );
   late final Trigger chatMessagesOutboxAi = Trigger(
     'CREATE TRIGGER chat_messages_outbox_ai AFTER INSERT ON chat_messages WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'chatMessage\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
     'chat_messages_outbox_ai',
@@ -21880,6 +23464,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     ixProposalsPending,
     weighIns,
     ixWeighInsLive,
+    measurements,
+    ixMeasurementsLive,
+    measurementTypes,
     goalPhases,
     ixGoalPhasesStart,
     targetSettingsRows,
@@ -21938,6 +23525,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     weighInsOutboxAi,
     weighInsOutboxAu,
     weighInsNoDelete,
+    measurementTypesOutboxAi,
+    measurementTypesOutboxAu,
+    measurementTypesNoDelete,
+    measurementsOutboxAi,
+    measurementsOutboxAu,
+    measurementsNoDelete,
     chatMessagesOutboxAi,
     chatMessagesOutboxAu,
     chatMessagesNoDelete,
@@ -22216,6 +23809,48 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'weigh_ins',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'measurement_types',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'measurement_types',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'measurement_types',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'measurements',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'measurements',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'measurements',
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [],

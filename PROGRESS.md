@@ -1,22 +1,22 @@
 # Fitness Buddy: progress
 
-**43 of 73 steps done** · `▓▓▓▓▓░░░░░` 58%
+**44 of 74 steps done** · `▓▓▓▓▓░░░░░` 59%
 
-App 30/53 · Backend 13/20 · Foundation 7/7
+App 31/53 · Backend 13/21 · Foundation 7/7
 
 ## Now
 
-- 🟦 planning [A15b](technical-planning/steps/A15-weight-graph-measurements.md) Weight history entry & measurements (split from A15) · M2
+- Nothing marked in progress on the board.
 
 ## Milestones
 
 | | Milestone | Done | Open |
 |---|---|---|---|
 | ✅ | **M1** Dogfood 1 | `▓▓▓▓▓` 14/14 | — |
-| 🟨 | **M2** Targets & weight | `▓▓▓░░` 7/9 | A15b A16 |
+| 🟨 | **M2** Targets & weight | `▓▓▓▓░` 8/9 | A16 |
 | 🟨 | **M3** Buddy on the laptop | `▓▓▓▓░` 15/16 | A23b #148 #149 #150 #151 |
 | 🟨 | **M4** Dogfood 2 | `░░░░░` 1/9 | A25 A26 A27 A28 A29 A31 +2 |
-| 🟨 | **M5** Accounts & sync | `▓▓▓░░` 4/6 | A34 A35 |
+| 🟨 | **M5** Accounts & sync | `▓▓░░░` 4/7 | A34 A35 B20 |
 | 🟨 | **M6** Workouts, insights &… | `▓░░░░` 2/8 | A37 A38 A39 A40 A41 B12 |
 | ⬜ | **M7** Production | `░░░░░` 0/4 | A42 A43 B13 B14 |
 | ⬜ | **R1** done | `░░░░░` 0/7 | A17 A18 A19 A30 A32 B15 +3 |
@@ -27,11 +27,11 @@ App 30/53 · Backend 13/20 · Foundation 7/7
 
 Not started, every dependency done; earliest milestone first:
 
+- [A16](technical-planning/steps/A16-progress-tab.md) Progress tab v1 · M2
 - [A23b](technical-planning/steps/A23-message-lifecycle.md) Message queue, failures & pending strip (split from A23) · M3
 - [A26](technical-planning/steps/A26-memory-user-model.md) Memory & user model (app) · M4
 - [B10](technical-planning/steps/B10-barcode-vision-import.md) Barcode lookup, label & meal photos, paste import · M4
 - [B11](technical-planning/steps/B11-buddy-qa-suggestions.md) Buddy Q&A & suggestions · M4
-- [A34](technical-planning/steps/A34-sync-engine-app.md) Sync engine (app) · M5
 
 ## Waiting on you
 
@@ -45,7 +45,7 @@ Not started, every dependency done; earliest milestone first:
 - **#130** On the A55: Meal times (Me > Meal times): add, rename, set a window, reorder (drag and…
 - **#125** Install the prod build (docs/runbooks/install-a-build.md: Chrome download from the main…
 - **#124** On the A55: Me > Your data > Export your data with Android font size at the largest…
-- …and 36 more owner items in the [backlog](technical-planning/steps/backlog.md)
+- …and 37 more owner items in the [backlog](technical-planning/steps/backlog.md)
 
 ---
 

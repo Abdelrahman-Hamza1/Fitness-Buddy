@@ -14,6 +14,9 @@ enum WeighInKind {
   /// A weigh-in was logged ("Weigh-in saved: 97.4 kg").
   weighInLogged,
 
+  /// Past weigh-ins were added in one go ("12 weigh-ins added", A15b D17).
+  weighInsLogged,
+
   /// A weigh-in was edited.
   weighInUpdated,
 
@@ -73,8 +76,8 @@ final class WeighInDone extends WeighInOutcome {
   /// What happened.
   final WeighInKind kind;
 
-  /// Label placeholders (`value`: double, `unit`: MassUnit); user content,
-  /// never logged.
+  /// Label placeholders (`value`: double, `unit`: MassUnit; `count`: int
+  /// for [WeighInKind.weighInsLogged]); user content, never logged.
   final Map<String, Object> args;
 }
 
@@ -110,6 +113,9 @@ class WeighInActions extends _$WeighInActions {
   /// The pending key of a new weigh-in.
   static const String logKey = 'log';
 
+  /// The pending key of a batch of past weigh-ins.
+  static const String logManyKey = 'logMany';
+
   @override
   Set<String> build() => const {};
 
@@ -126,6 +132,27 @@ class WeighInActions extends _$WeighInActions {
       ],
       WeighInKind.weighInLogged,
       _args(draft.input),
+    );
+  }
+
+  /// Logs [drafts] (the weight history's included rows, see
+  /// `WeighInBatchCheck`) as new weigh-ins in **one** change set with one
+  /// undo entry (A15b D17). Any refused draft refuses the whole batch and
+  /// nothing is written. Throws an `ArgumentError` for none or more than
+  /// `WeighInBatchCheck.maxRows`.
+  Future<WeighInOutcome> logMany(List<WeighInDraft> drafts) {
+    for (final draft in drafts) {
+      if (_refusal(draft) case final failed?) return Future.value(failed);
+    }
+    final generator = ref.read(idGeneratorProvider);
+    final ops = WeighInBatch.ops(drafts, [
+      for (final _ in drafts) generator.next(),
+    ]);
+    return _run(
+      {logManyKey},
+      ops,
+      WeighInKind.weighInsLogged,
+      {'count': drafts.length},
     );
   }
 

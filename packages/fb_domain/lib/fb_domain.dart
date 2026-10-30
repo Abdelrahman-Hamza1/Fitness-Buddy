@@ -7,8 +7,13 @@
 library;
 
 export 'src/account/guest_prompt_policy.dart';
+export 'src/body/measurement.dart';
+export 'src/body/measurement_ops.dart';
+export 'src/body/measurement_series.dart';
+export 'src/body/smooth_daily.dart';
 export 'src/body/trend_weight.dart';
 export 'src/body/weigh_in.dart';
+export 'src/body/weigh_in_batch.dart';
 export 'src/body/weigh_in_cadence.dart';
 export 'src/body/weigh_in_check.dart';
 export 'src/body/weigh_in_ops.dart';

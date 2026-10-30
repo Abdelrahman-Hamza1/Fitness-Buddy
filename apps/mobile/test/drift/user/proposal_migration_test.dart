@@ -48,7 +48,8 @@ void main() {
       expect(latest, greaterThanOrEqualTo(9));
       var seededTables = 0;
       var seededChat = 0;
-      for (final from in versions.where((v) => v < latest)) {
+      // Proposals arrive in v9: start from every version before it.
+      for (final from in versions.where((v) => v < 9)) {
         final schema = await verifier.schemaAt(from);
         final raw = schema.rawDatabase;
         final tables = {

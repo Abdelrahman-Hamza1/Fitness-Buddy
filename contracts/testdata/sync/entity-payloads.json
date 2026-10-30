@@ -217,5 +217,24 @@
     "carbsIsPercent": null,
     "fiberG": 30.0,
     "caloriesProteinOnly": false
+  },
+  "measurementType": {
+    "createdAtMs": 0,
+    "origin": "synthetic",
+    "editedByUser": false,
+    "name": "synthetic"
+  },
+  "measurement": {
+    "createdAtMs": 0,
+    "origin": "synthetic",
+    "editedByUser": false,
+    "kind": "waist",
+    "customTypeId": null,
+    "measuredAtUtc": 0,
+    "tzOffsetMin": 0,
+    "localDate": "1970-01-01",
+    "value": 92.5,
+    "inputValue": 92.5,
+    "inputUnit": "cm"
   }
 }

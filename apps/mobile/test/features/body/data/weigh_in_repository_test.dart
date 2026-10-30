@@ -2,6 +2,8 @@ import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/features/body/data/weigh_in_mappers.dart';
+import 'package:fb_mobile/features/progress/application/weight_graph_providers.dart'
+    show chartOrdered;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/weigh_in_harness.dart';
@@ -89,5 +91,32 @@ void main() {
       );
     }
     expect(const WeighInMappingError().toString(), 'WeighInMappingError');
+  });
+
+  test('a synced weigh-in whose wall clock is outside the years 1–9999 is '
+      'left out, and the graph orders the rest (A15b review M1)', () async {
+    final h = WeighInHarness();
+    await h.seed([weighInDraft(97)]);
+    await h.apply([
+      ScriptOp.rows([
+        InsertRow(
+          h.db.weighIns,
+          WeighInsCompanion(
+            id: Value(fixtureId(2)),
+            measuredAtUtc: const Value(253402300800000),
+            tzOffsetMin: const Value(840),
+            localDate: const Value('2026-10-17'),
+            kg: const Value(80),
+            inputValue: const Value(80),
+            inputUnit: const Value('kg'),
+          ),
+        ),
+      ]),
+    ]);
+    final live = await h.live();
+    expect([for (final w in live) w.id], [fixtureId(1)]);
+    expect(chartOrdered(live), hasLength(1));
+    final bad = await h.row(2);
+    expect(() => weighInOf(bad), throwsA(isA<WeighInMappingError>()));
   });
 }

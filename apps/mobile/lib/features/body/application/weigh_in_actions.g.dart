@@ -56,7 +56,7 @@ final class WeighInActionsProvider
   }
 }
 
-String _$weighInActionsHash() => r'c3fbad14348217b88017a69a070bfc53357e9010';
+String _$weighInActionsHash() => r'c536b96bdb371539e62f76383132dee84fc6357f';
 
 /// Weigh-in commands (A14 D5): every write is one change set through the
 /// single writer, pushed to the undo stack as a direct action (UX-030).

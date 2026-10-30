@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "measurement-body-fat-percent",
+      "entity": "measurement",
+      "payload": {
+        "createdAtMs": 0,
+        "origin": "synthetic",
+        "editedByUser": false,
+        "kind": "bodyFat",
+        "customTypeId": null,
+        "measuredAtUtc": 1792310400000,
+        "tzOffsetMin": 180,
+        "localDate": "2026-10-18",
+        "value": 18.4,
+        "inputValue": 18.4,
+        "inputUnit": "percent"
+      }
+    },
+    {
+      "id": "measurement-custom-inches",
+      "entity": "measurement",
+      "payload": {
+        "createdAtMs": 0,
+        "origin": "synthetic",
+        "editedByUser": false,
+        "kind": "custom",
+        "customTypeId": "0199e3c2-5b1a-7c3d-8e4f-0123456789ab",
+        "measuredAtUtc": 1792310400000,
+        "tzOffsetMin": -300,
+        "localDate": "2026-10-18",
+        "value": 34.29,
+        "inputValue": 13.5,
+        "inputUnit": "in"
+      }
+    },
+    {
+      "id": "measurement-type-name-120",
+      "entity": "measurementType",
+      "payload": {
+        "createdAtMs": 0,
+        "origin": "synthetic",
+        "editedByUser": false,
+        "name": "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"
+      }
+    }
+  ]
+}
