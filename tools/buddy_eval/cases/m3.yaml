@@ -769,7 +769,10 @@
           },
           {
             "at": "0/1",
-            "estimate": true
+            "keys": [
+              "ref:nabulsi_cheese/brined",
+              "usda:feta_cheese"
+            ]
           }
         ],
         "components": []
@@ -1824,22 +1827,7 @@
                   "variant",
                   "portion"
                 ],
-                "estimate": {
-                  "low": {
-                    "kcal": 230,
-                    "proteinG": 9,
-                    "carbsG": 26,
-                    "fatG": 8,
-                    "fiberG": 1.5
-                  },
-                  "high": {
-                    "kcal": 300,
-                    "proteinG": 13,
-                    "carbsG": 35,
-                    "fatG": 14,
-                    "fiberG": 2.5
-                  }
-                }
+                "estimate": null
               }
             ],
             "weighIn": null,
@@ -1909,11 +1897,13 @@
         "items": [
           {
             "at": "0/0",
-            "estimate": true,
             "amount": {
               "value": 2,
               "unit": "piece"
-            }
+            },
+            "keys": [
+              "usda:pizza_cheese"
+            ]
           }
         ],
         "components": []
@@ -2062,22 +2052,7 @@
                 "variant": null,
                 "share": null,
                 "ambiguities": [],
-                "estimate": {
-                  "low": {
-                    "kcal": 220,
-                    "proteinG": 11,
-                    "carbsG": 20,
-                    "fatG": 10,
-                    "fiberG": 1
-                  },
-                  "high": {
-                    "kcal": 290,
-                    "proteinG": 15,
-                    "carbsG": 28,
-                    "fatG": 16,
-                    "fiberG": 2
-                  }
-                }
+                "estimate": null
               },
               {
                 "mention": "fries",
@@ -2189,7 +2164,9 @@
         "items": [
           {
             "at": "0/0",
-            "estimate": true
+            "keys": [
+              "usda:chicken_sandwich_crispy"
+            ]
           },
           {
             "at": "0/1",
@@ -2300,11 +2277,13 @@
         "items": [
           {
             "at": "0/0",
-            "estimate": true,
             "amount": {
               "value": 1,
               "unit": "piece"
-            }
+            },
+            "keys": [
+              "usda:snickers_bar"
+            ]
           }
         ],
         "components": []

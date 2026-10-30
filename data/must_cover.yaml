@@ -80,6 +80,7 @@ groups:
         names: {en: ["Zinger sandwich"], ar: ["زنجر"], arabizi: ["zinger"]}
       - id: broasted_chicken
         names: {en: ["Broasted chicken"], ar: ["بروستد دجاج"], arabizi: ["broasted djaj"]}
+        match: [ref:broasted_chicken, usda:fried_chicken_breast, usda:fried_chicken_thigh, usda:fried_chicken_drumstick, usda:fried_chicken_wing]
       - id: manakeesh_zaatar
         names: {en: ["Manakeesh zaatar"], ar: ["مناقيش زعتر"], arabizi: ["manakish zaatar"]}
       - id: manakeesh_cheese
@@ -92,8 +93,10 @@ groups:
         names: {en: ["Fatayer cheese"], ar: ["فطائر جبنة"], arabizi: ["fatayer jibneh"]}
       - id: pizza_slice
         names: {en: ["Pizza slice"], ar: ["شريحة بيتزا"], arabizi: ["pizza slice"]}
+        match: [ref:pizza_slice, usda:pizza_cheese]
       - id: burger
         names: {en: ["Burger"], ar: ["برجر"], arabizi: ["burger"]}
+        match: [ref:burger, usda:hamburger_single, usda:cheeseburger_single]
   # Breakfast and bread
   - id: breakfast
     items:
@@ -171,6 +174,7 @@ groups:
         names: {en: ["Muhallabiya"], ar: ["مهلبية"], arabizi: ["muhallabiya"]}
       - id: halawa
         names: {en: ["Halawa"], ar: ["حلاوة"], arabizi: ["halawa"]}
+        match: [ref:halawa, usda:halawa]
   # Drinks
   - id: drinks
     items:
@@ -198,6 +202,7 @@ groups:
         names: {en: ["Jallab"], ar: ["جلاب"], arabizi: ["jallab"]}
       - id: tamarind
         names: {en: ["Tamarind (tamer hindi)"], ar: ["تمر هندي"], arabizi: ["tamer hindi"]}
+        match: [ref:tamarind, usda:tamarind_nectar]
   # Ramadan staples (the rest are listed above)
   - id: ramadan
     items:
@@ -208,6 +213,7 @@ groups:
     items:
       - id: rice
         names: {en: ["Rice"], ar: ["رز"], arabizi: ["ruz"]}
+        match: [ref:rice, usda:rice_white_long_grain_raw, usda:rice_white_long_grain_cooked, usda:rice_brown_long_grain_raw, usda:rice_brown_long_grain_cooked, usda:rice_white_medium_grain_raw, usda:rice_white_medium_grain_cooked]
       - id: bulgur
         names: {en: ["Bulgur"], ar: ["برغل"], arabizi: ["burghul"]}
       - id: freekeh
@@ -220,6 +226,7 @@ groups:
         names: {en: ["Chickpeas"], ar: ["حمص"], arabizi: ["hummus"]}
       - id: chicken_breast
         names: {en: ["Chicken breast"], ar: ["صدر دجاج"], arabizi: ["sadr djaj"]}
+        match: [ref:chicken_breast, usda:chicken_breast_raw, usda:chicken_breast_roasted, usda:chicken_breast_skinless_raw]
       - id: chicken_thigh
         names: {en: ["Chicken thigh"], ar: ["فخذ دجاج"], arabizi: ["fakhd djaj"]}
       - id: minced_beef
@@ -227,15 +234,19 @@ groups:
         match: [usda:beef_ground]
       - id: lamb
         names: {en: ["Lamb"], ar: ["لحم غنم"], arabizi: ["lahme ghanam"]}
+        match: [ref:lamb, usda:lamb_ground_raw, usda:lamb_ground_cooked, usda:lamb_leg_raw, usda:lamb_leg_roasted, usda:lamb_shoulder_raw, usda:lamb_shoulder_braised, usda:lamb_mixed_cuts_raw, usda:lamb_mixed_cuts_cooked]
       - id: fish
         names: {en: ["Fish"], ar: ["سمك"], arabizi: ["samak"]}
-        match: [usda:tuna_canned_water_drained, usda:sardines_canned_oil_drained, usda:salmon_farmed_raw, usda:tilapia_raw, usda:shrimp_raw]
+        match: [usda:tuna_canned_water_drained, usda:sardines_canned_oil_drained, usda:salmon_farmed_raw, usda:tilapia_raw, usda:tilapia_cooked, usda:shrimp_raw]
       - id: egg
         names: {en: ["Eggs"], ar: ["بيض"], arabizi: ["bayd"]}
+        match: [ref:egg, usda:egg_whole]
       - id: milk
         names: {en: ["Milk"], ar: ["حليب"], arabizi: ["haleeb"]}
+        match: [ref:milk, usda:milk_whole, usda:milk_reduced_fat_2, usda:milk_skim, usda:milk_powder_whole]
       - id: yogurt
         names: {en: ["Yogurt"], ar: ["لبن زبادي"], arabizi: ["laban zabadi"]}
+        match: [ref:yogurt, usda:yogurt_plain_whole, usda:yogurt_plain_lowfat, usda:yogurt_greek_plain_nonfat]
       - id: olive_oil
         names: {en: ["Olive oil"], ar: ["زيت زيتون"], arabizi: ["zeit zeitoun"]}
       - id: vegetable_oil

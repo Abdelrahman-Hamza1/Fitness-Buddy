@@ -57,15 +57,15 @@ foods:
     names:
       en: ["Wheat flour, white, all-purpose"]
       ar: ["طحين أبيض"]
-      arabizi: ["taheen abyad", "tehin abyad", "flour"]
+      arabizi: ["taheen abyad", "tehin abyad", "flour", "6a7een abyad"]
     servings: [{unit: cup, g: 125}]
   - id: usda:pita_white
     fdc_id: 174915
     state: cooked
     names:
-      en: ["Pita bread, white"]
-      ar: ["خبز عربي"]
-      arabizi: ["khubz arabi", "taboon", "khobz arabi", "pita"]
+      en: ["Pita bread, white", "Bread", "Khubz", "Arabic bread", "Arabi bread"]
+      ar: ["خبز عربي", "خبز"]
+      arabizi: ["khubz arabi", "taboon", "khobz arabi", "pita", "khubz", "khobz", "khobez", "5obez", "5ubz", "5obz"]
     servings: [{unit: piece, g: 60}]
     notes: "Also the proxy for taboon bread (USDA has no taboon entry); see the loaf weight in portion_words.yaml."
   - id: usda:pita_whole_wheat
@@ -131,7 +131,7 @@ foods:
     names:
       en: ["Lamb leg, raw"]
       ar: ["فخذ خروف"]
-      arabizi: ["fakhd kharouf", "fakhz kharuf"]
+      arabizi: ["fakhd kharouf", "fakhz kharuf", "fa5d 5arouf"]
     fiber_zero: true
   - id: usda:lamb_leg_roasted
     fdc_id: 174312
@@ -147,9 +147,9 @@ foods:
     state: raw
     yield_group: beef
     names:
-      en: ["Minced beef 80/20, raw"]
-      ar: ["لحم بقر مفروم"]
-      arabizi: ["lahme mafroum", "lahme baqar mafroum", "lahm mafrum"]
+      en: ["Minced beef 80/20, raw", "Meat", "Beef"]
+      ar: ["لحم بقر مفروم", "لحمة"]
+      arabizi: ["lahme mafroum", "lahme baqar mafroum", "lahm mafrum", "la7me", "lahme", "la7meh", "la7me mafroumeh"]
     fiber_zero: true
   - id: usda:beef_ground_90_raw
     fdc_id: 174030
@@ -158,7 +158,7 @@ foods:
     names:
       en: ["Minced beef 90/10, raw"]
       ar: ["لحم بقر مفروم قليل الدسم"]
-      arabizi: ["lahme mafroum low fat", "lahme mafroum khali dasam"]
+      arabizi: ["lahme mafroum low fat", "lahme mafroum khali dasam", "la7me mafroum 2aleel dasam"]
     fiber_zero: true
   - id: usda:egg_whole_raw
     fdc_id: 171287
@@ -192,7 +192,7 @@ foods:
     names:
       en: ["Cauliflower, raw"]
       ar: ["قرنبيط"]
-      arabizi: ["qarnabeet", "zahra", "karnabeet"]
+      arabizi: ["qarnabeet", "zahra", "karnabeet", "2arnabeet"]
   - id: usda:eggplant_raw
     fdc_id: 2685577
     state: raw
@@ -230,7 +230,7 @@ foods:
     names:
       en: ["Cucumber, raw"]
       ar: ["خيار"]
-      arabizi: ["khyar", "khiyar", "cucumber"]
+      arabizi: ["khyar", "khiyar", "cucumber", "5iyar", "5yar"]
     servings: [{unit: piece, g: 120}]
   - id: usda:parsley_fresh
     fdc_id: 170416
@@ -238,7 +238,7 @@ foods:
     names:
       en: ["Parsley, fresh"]
       ar: ["بقدونس"]
-      arabizi: ["baqdounes", "baqdunis", "parsley"]
+      arabizi: ["baqdounes", "baqdunis", "parsley", "ba2doones", "ba2dounes"]
   - id: usda:jute_potherb_raw
     fdc_id: 168419
     state: raw
@@ -275,7 +275,7 @@ foods:
     names:
       en: ["Pickled cucumbers, dill"]
       ar: ["مخلل خيار", "مخللات"]
-      arabizi: ["mkhallal khyar", "mkhallal", "pickles", "mkhalalat"]
+      arabizi: ["mkhallal khyar", "mkhallal", "pickles", "mkhalalat", "m5allal 5iyar"]
   - id: usda:olives_green_pickled
     fdc_id: 169096
     state: raw
@@ -303,14 +303,14 @@ foods:
     names:
       en: ["Red bell pepper, raw"]
       ar: ["فلفل أحمر حلو"]
-      arabizi: ["filfil helu ahmar", "filfil ahmar"]
+      arabizi: ["filfil helu ahmar", "filfil ahmar", "filfil a7mar"]
   - id: usda:bell_pepper_green_raw
     fdc_id: 170427
     state: raw
     names:
       en: ["Green bell pepper, raw"]
       ar: ["فلفل أخضر"]
-      arabizi: ["filfil akhdar helu", "filfil akhdar"]
+      arabizi: ["filfil akhdar helu", "filfil akhdar", "filfil a5dar"]
   - id: usda:cabbage_raw
     fdc_id: 169975
     state: raw
@@ -332,14 +332,14 @@ foods:
     names:
       en: ["Spinach, raw"]
       ar: ["سبانخ"]
-      arabizi: ["sabanekh", "sabanakh", "spinach"]
+      arabizi: ["sabanekh", "sabanakh", "spinach", "sabane5"]
   - id: usda:lettuce_romaine_raw
     fdc_id: 169247
     state: raw
     names:
       en: ["Lettuce, romaine, raw"]
       ar: ["خس"]
-      arabizi: ["khass", "khas"]
+      arabizi: ["khass", "khas", "5ass", "5as"]
   - id: usda:okra_raw
     fdc_id: 169260
     state: raw
@@ -353,7 +353,7 @@ foods:
     names:
       en: ["Fava beans, immature, raw"]
       ar: ["فول أخضر"]
-      arabizi: ["ful akhdar", "foul akhdar"]
+      arabizi: ["ful akhdar", "foul akhdar", "ful a5dar"]
   - id: usda:chickpeas_dry
     fdc_id: 173756
     state: dry
@@ -361,7 +361,7 @@ foods:
     names:
       en: ["Chickpeas, dry"]
       ar: ["حمص حب"]
-      arabizi: ["hummus habb", "homs habb"]
+      arabizi: ["hummus habb", "homs habb", "7ummus 7ab", "7ummus 7abb"]
     servings: [{unit: cup, g: 200}]
   - id: usda:chickpeas_cooked
     fdc_id: 173757
@@ -370,7 +370,7 @@ foods:
     names:
       en: ["Chickpeas, boiled"]
       ar: ["حمص مسلوق"]
-      arabizi: ["hummus maslouq", "homs maslouk"]
+      arabizi: ["hummus maslouq", "homs maslouk", "7ummus maslou2"]
     servings: [{unit: cup, g: 164}]
   - id: usda:chickpeas_canned_drained
     fdc_id: 173800
@@ -378,7 +378,7 @@ foods:
     names:
       en: ["Chickpeas, canned, drained"]
       ar: ["حمص معلب"]
-      arabizi: ["hummus mu3allab", "canned chickpeas"]
+      arabizi: ["hummus mu3allab", "canned chickpeas", "7ummus m3allab"]
   - id: usda:lentils_dry
     fdc_id: 172420
     state: dry
@@ -386,7 +386,7 @@ foods:
     names:
       en: ["Lentils, dry"]
       ar: ["عدس"]
-      arabizi: ["adas", "addas", "lentils"]
+      arabizi: ["adas", "addas", "lentils", "3adas", "3addas"]
     servings: [{unit: cup, g: 192}]
   - id: usda:tahini
     fdc_id: 170189
@@ -394,7 +394,7 @@ foods:
     names:
       en: ["Tahini (sesame paste)"]
       ar: ["طحينة"]
-      arabizi: ["tahini", "tahineh"]
+      arabizi: ["tahini", "tahineh", "6a7ini", "6a7ineh"]
     servings: [{unit: tbsp, g: 15}]
   - id: usda:sesame_seeds
     fdc_id: 170150
@@ -450,24 +450,24 @@ foods:
     fdc_id: 171284
     state: raw
     names:
-      en: ["Yogurt, plain, whole milk"]
-      ar: ["لبن زبادي"]
-      arabizi: ["laban", "yoghurt", "zabadi"]
+      en: ["Yogurt, plain, whole milk", "Yogurt"]
+      ar: ["لبن زبادي", "لبن", "لبن رايب", "رايب"]
+      arabizi: ["laban", "yoghurt", "zabadi", "leben", "rayeb"]
     servings: [{unit: cup, g: 245}]
   - id: usda:feta_cheese
     fdc_id: 173420
     state: raw
     names:
-      en: ["Feta cheese"]
-      ar: ["جبنة فيتا"]
+      en: ["Feta cheese", "Feta", "Feta white cheese"]
+      ar: ["جبنة فيتا", "فيتا"]
       arabizi: ["jibne feta", "jibneh feta", "feta"]
   - id: usda:milk_whole
     fdc_id: 171265
     state: raw
     names:
-      en: ["Milk, whole, 3.25% fat", "Milk, whole"]
-      ar: ["حليب كامل الدسم"]
-      arabizi: ["haleeb", "halib", "milk"]
+      en: ["Milk, whole, 3.25% fat", "Milk, whole", "Milk"]
+      ar: ["حليب كامل الدسم", "حليب"]
+      arabizi: ["haleeb", "halib", "milk", "7aleeb", "7alib", "7leeb"]
     servings: [{unit: cup, g: 244}]
     notes: "Fat label from the USDA description (FDC 171265: \"Milk, whole, 3.25% milkfat, with added vitamin D\"); fat 3.25 g per 100 g."
   - id: usda:sugar_granulated
@@ -517,7 +517,7 @@ foods:
     names:
       en: ["Cinnamon, ground"]
       ar: ["قرفة"]
-      arabizi: ["erfe", "qirfa", "cinnamon"]
+      arabizi: ["erfe", "qirfa", "cinnamon", "2erfe"]
   - id: usda:allspice_ground
     fdc_id: 171315
     state: dry
@@ -744,7 +744,7 @@ foods:
     names:
       en: ["Lentils, boiled"]
       ar: ["عدس مطبوخ"]
-      arabizi: ["adas matbookh", "addas matbookh"]
+      arabizi: ["adas matbookh", "addas matbookh", "3adas matboo5"]
     servings: [{unit: cup, g: 198}]
   - id: usda:lentils_red_dry
     fdc_id: 174284
@@ -753,7 +753,7 @@ foods:
     names:
       en: ["Red lentils, dry"]
       ar: ["عدس أحمر", "عدس مجروش"]
-      arabizi: ["adas ahmar", "adas majrousheh", "red lentils"]
+      arabizi: ["adas ahmar", "adas majrousheh", "red lentils", "3adas a7mar", "3adas majrousheh"]
     servings: [{unit: cup, g: 192}]
   - id: usda:fava_beans_dry
     fdc_id: 175205
@@ -762,7 +762,7 @@ foods:
     names:
       en: ["Fava beans, dry"]
       ar: ["فول حب", "فول ناشف"]
-      arabizi: ["ful habb", "foul habb", "ful nashef"]
+      arabizi: ["ful habb", "foul habb", "ful nashef", "ful 7abb"]
     servings: [{unit: cup, g: 150}]
   - id: usda:fava_beans_cooked
     fdc_id: 173753
@@ -771,7 +771,7 @@ foods:
     names:
       en: ["Fava beans, boiled"]
       ar: ["فول مسلوق", "فول مطبوخ"]
-      arabizi: ["ful maslouq", "foul maslouk"]
+      arabizi: ["ful maslouq", "foul maslouk", "ful maslou2"]
     servings: [{unit: cup, g: 170}]
   - id: usda:fava_beans_canned
     fdc_id: 173754
@@ -814,7 +814,7 @@ foods:
     names:
       en: ["Kidney beans, dry"]
       ar: ["فاصوليا حمراء حب", "فاصوليا حمرا"]
-      arabizi: ["fasoulia hamra", "fasolia hamra", "kidney beans"]
+      arabizi: ["fasoulia hamra", "fasolia hamra", "kidney beans", "fasoulia 7amra"]
     servings: [{unit: cup, g: 184}]
   - id: usda:kidney_beans_cooked
     fdc_id: 173740
@@ -838,7 +838,7 @@ foods:
     names:
       en: ["Green beans, raw"]
       ar: ["فاصوليا خضراء", "لوبيا خضراء"]
-      arabizi: ["fasoulia khadra", "fasolia khadra", "loubia"]
+      arabizi: ["fasoulia khadra", "fasolia khadra", "loubia", "fasoulia 5adra"]
     servings: [{unit: cup, g: 100}]
   - id: usda:green_peas_raw
     fdc_id: 170419
@@ -869,18 +869,18 @@ foods:
     state: raw
     yield_group: chicken
     names:
-      en: ["Chicken breast, skinless, raw", "Chicken breast"]
-      ar: ["صدر دجاج", "صدر دجاج بدون جلد"]
-      arabizi: ["sadr djaj", "sader djaj", "chicken breast", "sadr djaj bedoon jild", "sadr dajaj skinless"]
+      en: ["Chicken breast, skinless, raw", "Chicken breast", "Chicken"]
+      ar: ["صدر دجاج", "صدر دجاج بدون جلد", "دجاج"]
+      arabizi: ["sadr djaj", "sader djaj", "chicken breast", "sadr djaj bedoon jild", "sadr dajaj skinless", "djaj", "jaj", "dajaj", "djej", "sadr jaj"]
     servings: [{unit: piece, g: 272}]
   - id: usda:chicken_thigh_skinless_raw
     fdc_id: 173627
     state: raw
     yield_group: chicken
     names:
-      en: ["Chicken thigh, skinless, raw"]
-      ar: ["ورك دجاج بدون جلد"]
-      arabizi: ["werek djaj bedoon jild", "werek dajaj skinless"]
+      en: ["Chicken thigh, skinless, raw", "Chicken thigh"]
+      ar: ["ورك دجاج بدون جلد", "فخذ دجاج"]
+      arabizi: ["werek djaj bedoon jild", "werek dajaj skinless", "fakhd djaj", "fa5ed djaj"]
     servings: [{unit: piece, g: 149}]
   - id: usda:chicken_liver_raw
     fdc_id: 171060
@@ -958,7 +958,7 @@ foods:
     names:
       en: ["Lamb shoulder, raw"]
       ar: ["كتف خروف"]
-      arabizi: ["katef kharouf", "katf kharuf"]
+      arabizi: ["katef kharouf", "katf kharuf", "katef 5arouf"]
   - id: usda:lamb_shoulder_braised
     fdc_id: 172497
     state: cooked
@@ -972,9 +972,9 @@ foods:
     state: raw
     yield_group: lamb
     names:
-      en: ["Lamb, mixed cuts, raw"]
+      en: ["Lamb, mixed cuts, raw", "Lamb"]
       ar: ["لحم غنم", "لحم خروف"]
-      arabizi: ["lahme ghanam", "lahm kharouf", "lahm ghanam"]
+      arabizi: ["lahme ghanam", "lahm kharouf", "lahm ghanam", "ghanam"]
   - id: usda:lamb_mixed_cuts_cooked
     fdc_id: 172546
     state: cooked
@@ -1029,16 +1029,16 @@ foods:
     yield_group: fish
     names:
       en: ["Tilapia, raw", "Fish, white, raw"]
-      ar: ["سمك بلطي"]
-      arabizi: ["samak bolti", "samak baltee", "tilapia"]
+      ar: ["سمك بلطي", "مشط", "سمك مشط"]
+      arabizi: ["samak bolti", "samak baltee", "tilapia", "musht", "mesht"]
   - id: usda:tilapia_cooked
     fdc_id: 175177
     state: cooked
     yield_group: fish
     names:
-      en: ["Tilapia, cooked"]
-      ar: ["سمك بلطي مطبوخ", "سمك بلطي مشوي"]
-      arabizi: ["samak bolti mashwi", "tilapia cooked"]
+      en: ["Tilapia, cooked", "Fish", "White fish fillet, cooked"]
+      ar: ["سمك بلطي مطبوخ", "سمك بلطي مشوي", "سمك", "فيليه سمك أبيض مطبوخ", "مشط مشوي"]
+      arabizi: ["samak bolti mashwi", "tilapia cooked", "samak", "musht mashwi"]
   - id: usda:shrimp_raw
     fdc_id: 175179
     state: raw
@@ -1196,8 +1196,8 @@ foods:
     state: raw
     names:
       en: ["Margarine, hard"]
-      ar: ["مرغرين", "سمنة نباتية"]
-      arabizi: ["margarine", "marjarin", "samneh nabatiyye"]
+      ar: ["مرغرين"]
+      arabizi: ["margarine", "marjarin"]
     servings: [{unit: tsp, g: 4.7}]
   - id: usda:sunflower_oil
     fdc_id: 171025
@@ -1246,7 +1246,7 @@ foods:
     names:
       en: ["Potato, boiled"]
       ar: ["بطاطا مسلوقة"]
-      arabizi: ["batata maslouqa", "bataata maslouka"]
+      arabizi: ["batata maslouqa", "bataata maslouka", "batata maslou2a"]
     servings: [{unit: piece, g: 167}]
   - id: usda:sweet_potato_raw
     fdc_id: 168482
@@ -1254,15 +1254,15 @@ foods:
     names:
       en: ["Sweet potato, raw"]
       ar: ["بطاطا حلوة"]
-      arabizi: ["batata helwe", "batata halwa"]
+      arabizi: ["batata helwe", "batata halwa", "batata 7elwe"]
     servings: [{unit: piece, g: 130}]
   - id: usda:fries_fast_food
     fdc_id: 170698
     state: fried
     names:
-      en: ["French fries (fast food)"]
+      en: ["French fries (fast food)", "Fries"]
       ar: ["بطاطا مقلية", "بطاطس مقلية"]
-      arabizi: ["batata maqliyye", "batata maqliyyeh", "french fries"]
+      arabizi: ["batata maqliyye", "batata maqliyyeh", "french fries", "fries", "batata ma2liyeh"]
   - id: usda:bell_pepper_yellow_raw
     fdc_id: 169383
     state: raw
@@ -1276,7 +1276,7 @@ foods:
     names:
       en: ["Hot green chili pepper, raw"]
       ar: ["فلفل أخضر حار", "فلفل حار"]
-      arabizi: ["filfil akhdar har", "filfil har"]
+      arabizi: ["filfil akhdar har", "filfil har", "filfil 7ar"]
     servings: [{unit: piece, g: 45}]
   - id: usda:celery_raw
     fdc_id: 169988
@@ -1338,7 +1338,7 @@ foods:
     names:
       en: ["Spring onion, raw"]
       ar: ["بصل أخضر"]
-      arabizi: ["basal akhdar", "basal akhdar scallion"]
+      arabizi: ["basal akhdar", "basal akhdar scallion", "basal a5dar"]
   - id: usda:arugula_raw
     fdc_id: 169387
     state: raw
@@ -1366,7 +1366,7 @@ foods:
     names:
       en: ["Grape leaves, raw"]
       ar: ["ورق عنب"]
-      arabizi: ["waraq enab", "waraq 3enab"]
+      arabizi: ["waraq enab", "waraq 3enab", "wara2 3enab"]
   - id: usda:corn_sweet_raw
     fdc_id: 169998
     state: raw
@@ -1388,7 +1388,7 @@ foods:
     names:
       en: ["Spinach, boiled"]
       ar: ["سبانخ مطبوخة"]
-      arabizi: ["sabanekh matbookha", "sabanakh matbookha"]
+      arabizi: ["sabanekh matbookha", "sabanakh matbookha", "sabane5 matboo5a"]
     servings: [{unit: cup, g: 180}]
   - id: usda:okra_cooked
     fdc_id: 169261
@@ -1404,7 +1404,7 @@ foods:
     names:
       en: ["Cauliflower, boiled"]
       ar: ["قرنبيط مطبوخ", "زهرة مطبوخة"]
-      arabizi: ["qarnabeet matbookh", "zahra matbookha"]
+      arabizi: ["qarnabeet matbookh", "zahra matbookha", "2arnabeet matboo5"]
   - id: usda:zucchini_cooked
     fdc_id: 169292
     state: cooked
@@ -1482,7 +1482,7 @@ foods:
     names:
       en: ["Watermelon, raw"]
       ar: ["بطيخ أحمر", "بطيخ"]
-      arabizi: ["batteekh", "bitteekh", "watermelon"]
+      arabizi: ["batteekh", "bitteekh", "watermelon", "bete5", "battee5"]
     servings: [{unit: cup, g: 152}, {unit: wedge, g: 286}]
   - id: usda:cantaloupe_raw
     fdc_id: 169092
@@ -1505,16 +1505,16 @@ foods:
     state: raw
     names:
       en: ["Peach, raw"]
-      ar: ["خوخ"]
-      arabizi: ["khokh", "khoukh", "peach"]
+      ar: ["دراق"]
+      arabizi: ["durra2", "dra2", "darraq", "daraq", "peach"]
     servings: [{unit: piece, g: 150}]
   - id: usda:nectarine_raw
     fdc_id: 169914
     state: raw
     names:
       en: ["Nectarine, raw"]
-      ar: ["دراق", "نكتارين"]
-      arabizi: ["darraq", "daraq"]
+      ar: ["نكتارين"]
+      arabizi: ["nektarin", "nectarine"]
     servings: [{unit: piece, g: 142}]
   - id: usda:apricot_raw
     fdc_id: 171697
@@ -1545,8 +1545,8 @@ foods:
     state: raw
     names:
       en: ["Plum, raw"]
-      ar: ["برقوق"]
-      arabizi: ["barqooq", "barquq"]
+      ar: ["برقوق", "خوخ"]
+      arabizi: ["barqooq", "barquq", "5o5", "khokh", "khoukh"]
     servings: [{unit: piece, g: 66}]
   - id: usda:cherries_sweet_raw
     fdc_id: 171719
@@ -1754,9 +1754,9 @@ foods:
     fdc_id: 169098
     state: raw
     names:
-      en: ["Orange juice", "Fresh juice"]
-      ar: ["عصير برتقال"]
-      arabizi: ["asir burtuqal", "orange juice", "aseer bortoqal"]
+      en: ["Orange juice", "Fresh juice", "Juice", "Fresh orange juice"]
+      ar: ["عصير برتقال", "عصير", "عصير برتقال طازج"]
+      arabizi: ["asir burtuqal", "orange juice", "aseer bortoqal", "3aseer", "aseer", "3aseer burtu2an", "aseer bortokal"]
     servings: [{unit: cup, g: 248}]
   - id: usda:apple_juice
     fdc_id: 173933
@@ -1875,7 +1875,7 @@ foods:
     fdc_id: 167587
     state: as_sold
     names:
-      en: ["Chocolate, milk"]
+      en: ["Milk chocolate bar", "Milk chocolate"]
       ar: ["شوكولاتة", "شوكولاتة بالحليب"]
       arabizi: ["shokolata", "chocolate", "shokolata bil haleeb"]
   - id: usda:chocolate_dark
@@ -1951,8 +1951,8 @@ foods:
     state: dry
     names:
       en: ["Thyme, dried"]
-      ar: ["زعتر أخضر", "زعتر أخضر مجفف"]
-      arabizi: ["zaatar akhdar", "thyme"]
+      ar: ["زعتر أخضر مجفف", "زعتر يابس"]
+      arabizi: ["zaatar akhdar mjaffaf", "thyme", "zaatar yabes"]
     servings: [{unit: tsp, g: 1}]
   - id: usda:bay_leaf
     fdc_id: 170917
@@ -1961,3 +1961,3168 @@ foods:
       en: ["Bay leaf"]
       ar: ["ورق غار", "ورق لورا"]
       arabizi: ["waraq ghar", "waraq laura", "bay leaf"]
+
+  # A47 B1: protein and dairy (USDA SR Legacy 2018-04).
+  # Poultry
+  - id: usda:chicken_whole_raw
+    fdc_id: 171447
+    state: raw
+    names:
+      en: ["Chicken, whole, meat and skin, raw"]
+      ar: ["دجاج كامل", "دجاجة كاملة"]
+      arabizi: ["djaj kamel", "jaj kamel", "djaje"]
+  - id: usda:chicken_whole_roasted
+    fdc_id: 171450
+    state: cooked
+    names:
+      en: ["Chicken, whole, roasted, meat and skin"]
+      ar: ["دجاج كامل محمر بالجلد", "دجاج فرن بالجلد"]
+      arabizi: ["djaj bil forn", "jaj m7ammar"]
+  - id: usda:chicken_meat_raw
+    fdc_id: 171052
+    state: raw
+    yield_group: chicken
+    names:
+      en: ["Chicken meat, mixed, skinless, raw"]
+      ar: ["لحم دجاج بدون جلد"]
+      arabizi: ["la7m djaj bidoon jild"]
+  - id: usda:chicken_meat_roasted
+    fdc_id: 171054
+    state: cooked
+    yield_group: chicken
+    names:
+      en: ["Chicken meat, mixed, roasted, skinless"]
+      ar: ["لحم دجاج مشوي بدون جلد"]
+      arabizi: ["la7m djaj mashwi"]
+  - id: usda:chicken_meat_stewed
+    fdc_id: 171451
+    state: cooked
+    yield_group: chicken
+    names:
+      en: ["Chicken meat, boiled (stewed), skinless"]
+      ar: ["دجاج مسلوق", "لحم دجاج مسلوق"]
+      arabizi: ["djaj masloo2", "jaj maslou2"]
+    notes: "Uses the existing chicken yield group (0.72); simmered chicken is nearer 0.74 to 0.77 in the cited 2014 yield table."
+  - id: usda:chicken_drumstick_raw
+    fdc_id: 172373
+    state: raw
+    names:
+      en: ["Chicken drumstick with skin, raw"]
+      ar: ["دبوس دجاج", "ساق دجاج"]
+      arabizi: ["dabbous djaj", "sa2 djaj", "drumstick"]
+    servings: [{unit: piece, g: 133}]
+  - id: usda:chicken_drumstick_roasted
+    fdc_id: 173612
+    state: cooked
+    names:
+      en: ["Chicken drumstick with skin, roasted"]
+      ar: ["دبوس دجاج مشوي"]
+      arabizi: ["dabbous mashwi", "drumstick mashwi"]
+    servings: [{unit: piece, g: 105}]
+  - id: usda:chicken_drumstick_skinless_raw
+    fdc_id: 173614
+    state: raw
+    yield_group: chicken
+    names:
+      en: ["Chicken drumstick, skinless, raw"]
+      ar: ["دبوس دجاج بدون جلد"]
+      arabizi: ["dabbous bidoon jild"]
+    servings: [{unit: piece, g: 122}]
+  - id: usda:chicken_wing_raw
+    fdc_id: 172390
+    state: raw
+    names:
+      en: ["Chicken wings, raw"]
+      ar: ["جوانح دجاج", "أجنحة دجاج"]
+      arabizi: ["jawane7 djaj", "ajni7a", "wings"]
+    servings: [{unit: piece, g: 107}]
+  - id: usda:chicken_wing_roasted
+    fdc_id: 173630
+    state: cooked
+    names:
+      en: ["Chicken wings, roasted"]
+      ar: ["جوانح دجاج مشوية", "أجنحة مشوية"]
+      arabizi: ["jawane7 mashwiyye", "wings mashwi"]
+    servings: [{unit: piece, g: 85}]
+  - id: usda:chicken_ground_raw
+    fdc_id: 171116
+    state: raw
+    names:
+      en: ["Chicken, ground, raw"]
+      ar: ["دجاج مفروم"]
+      arabizi: ["djaj mafroum", "jaj mafrum"]
+  - id: usda:chicken_ground_cooked
+    fdc_id: 171117
+    state: cooked
+    names:
+      en: ["Chicken, ground, cooked"]
+      ar: ["دجاج مفروم مطبوخ"]
+      arabizi: ["djaj mafroum matbou5"]
+  - id: usda:chicken_gizzard_raw
+    fdc_id: 171456
+    state: raw
+    names:
+      en: ["Chicken gizzards, raw"]
+      ar: ["قوانص دجاج"]
+      arabizi: ["qawanes", "2awanes djaj"]
+  - id: usda:chicken_gizzard_cooked
+    fdc_id: 171457
+    state: cooked
+    names:
+      en: ["Chicken gizzards, cooked"]
+      ar: ["قوانص مطبوخة"]
+      arabizi: ["qawanes matbou5a"]
+  - id: usda:chicken_heart_raw
+    fdc_id: 171458
+    state: raw
+    names:
+      en: ["Chicken hearts, raw"]
+      ar: ["قلوب دجاج"]
+      arabizi: ["qloob djaj", "2loub djaj"]
+  - id: usda:turkey_ground_raw
+    fdc_id: 171505
+    state: raw
+    names:
+      en: ["Turkey, ground, raw"]
+      ar: ["حبش مفروم", "ديك رومي مفروم"]
+      arabizi: ["7abash mafroum", "turkey mafroum"]
+  - id: usda:turkey_breast_roasted
+    fdc_id: 174516
+    state: cooked
+    names:
+      en: ["Turkey breast, roasted, meat only"]
+      ar: ["صدر حبش مشوي", "ديك رومي مشوي"]
+      arabizi: ["sadr 7abash", "turkey breast"]
+    servings: [{unit: piece, g: 863}]
+    notes: "The piece serving is one whole USDA turkey breast (863 g), not a slice."
+  - id: usda:turkey_breast_deli
+    fdc_id: 174572
+    state: as_sold
+    names:
+      en: ["Turkey breast, sliced (deli)"]
+      ar: ["حبش مدخن", "شرائح حبش", "شرائح ديك رومي"]
+      arabizi: ["7abash mudakhan", "turkey slices"]
+  - id: usda:chicken_breast_deli
+    fdc_id: 173874
+    state: as_sold
+    names:
+      en: ["Chicken breast, sliced (deli)"]
+      ar: ["شرائح صدر دجاج مدخن", "صدر دجاج مدخن"]
+      arabizi: ["sadr djaj mudakhan", "chicken slices"]
+  - id: usda:duck_roasted
+    fdc_id: 172409
+    state: cooked
+    names:
+      en: ["Duck, roasted, meat and skin"]
+      ar: ["بط مشوي"]
+      arabizi: ["baṭ mashwi", "bat"]
+  - id: usda:quail_cooked
+    fdc_id: 169902
+    state: cooked
+    names:
+      en: ["Quail, cooked"]
+      ar: ["فري", "سمان"]
+      arabizi: ["fri", "semman"]
+  - id: usda:pigeon_raw
+    fdc_id: 174475
+    state: raw
+    names:
+      en: ["Pigeon (squab), raw"]
+      ar: ["حمام"]
+      arabizi: ["7amam", "hamam"]
+  # Meat
+  - id: usda:beef_ground_85_raw
+    fdc_id: 171796
+    state: raw
+    yield_group: beef
+    names:
+      en: ["Minced beef 85/15, raw"]
+      ar: ["لحم بقر مفروم 85"]
+      arabizi: ["la7me mafroumeh 85"]
+  - id: usda:beef_ground_85_cooked
+    fdc_id: 174034
+    state: cooked
+    yield_group: beef
+    names:
+      en: ["Minced beef 85/15, cooked"]
+      ar: ["لحم بقر مفروم مطبوخ 85"]
+      arabizi: ["la7me mafroumeh matbou5a 85"]
+  - id: usda:beef_ground_90_cooked
+    fdc_id: 171794
+    state: cooked
+    yield_group: beef
+    names:
+      en: ["Minced beef 90/10, cooked"]
+      ar: ["لحم بقر مفروم قليل الدسم مطبوخ"]
+      arabizi: ["la7me mafroumeh lean matbou5a"]
+  - id: usda:beef_ground_95_raw
+    fdc_id: 171790
+    state: raw
+    yield_group: beef
+    names:
+      en: ["Minced beef 95/5, raw"]
+      ar: ["لحم بقر مفروم خالي الدهن"]
+      arabizi: ["la7me mafroumeh 95"]
+  - id: usda:beef_ground_95_cooked
+    fdc_id: 174028
+    state: cooked
+    yield_group: beef
+    names:
+      en: ["Minced beef 95/5, cooked"]
+      ar: ["لحم بقر مفروم خالي الدهن مطبوخ"]
+      arabizi: ["la7me mafroumeh 95 matbou5a"]
+  - id: usda:beef_tenderloin_raw
+    fdc_id: 169542
+    state: raw
+    yield_group: beef
+    names:
+      en: ["Beef tenderloin (fillet), raw"]
+      ar: ["فيليه بقر", "فيليه لحمة"]
+      arabizi: ["filleh ba2ar", "fillet"]
+  - id: usda:beef_tenderloin_broiled
+    fdc_id: 169543
+    state: cooked
+    yield_group: beef
+    names:
+      en: ["Beef tenderloin (fillet), grilled"]
+      ar: ["فيليه بقر مشوي"]
+      arabizi: ["filleh mashwi"]
+  - id: usda:beef_ribeye_raw
+    fdc_id: 172151
+    state: raw
+    yield_group: beef
+    names:
+      en: ["Beef rib eye steak, raw"]
+      ar: ["ستيك ريب آي"]
+      arabizi: ["ribeye", "steak ribeye"]
+  - id: usda:beef_ribeye_grilled
+    fdc_id: 173387
+    state: cooked
+    yield_group: beef
+    names:
+      en: ["Beef rib eye steak, grilled"]
+      ar: ["ستيك ريب آي مشوي"]
+      arabizi: ["ribeye mashwi"]
+  - id: usda:beef_shank_raw
+    fdc_id: 169441
+    state: raw
+    yield_group: beef
+    names:
+      en: ["Beef shank, raw"]
+      ar: ["موزات بقر"]
+      arabizi: ["mozat ba2ar", "mawzat"]
+  - id: usda:beef_shank_cooked
+    fdc_id: 169442
+    state: cooked
+    yield_group: beef
+    names:
+      en: ["Beef shank, simmered"]
+      ar: ["موزات بقر مطبوخة"]
+      arabizi: ["mozat matbou5a"]
+  - id: usda:beef_lean_round_raw
+    fdc_id: 173982
+    state: raw
+    yield_group: beef
+    names:
+      en: ["Beef, lean (top round), raw"]
+      ar: ["لحمة هبرة", "لحم بقر هبرة"]
+      arabizi: ["la7me habra", "habra"]
+  - id: usda:beef_lean_round_roasted
+    fdc_id: 171755
+    state: cooked
+    yield_group: beef
+    names:
+      en: ["Beef, lean (top round), roasted"]
+      ar: ["لحمة هبرة مطبوخة"]
+      arabizi: ["la7me habra matbou5a"]
+  - id: usda:veal_ground_raw
+    fdc_id: 175290
+    state: raw
+    names:
+      en: ["Veal, ground, raw"]
+      ar: ["لحم عجل مفروم"]
+      arabizi: ["la7m 3ijl mafroum"]
+  - id: usda:veal_stew_raw
+    fdc_id: 173843
+    state: raw
+    yield_group: beef
+    names:
+      en: ["Veal, stewing cubes, raw"]
+      ar: ["لحم عجل", "لحم عجل للطبخ"]
+      arabizi: ["la7m 3ijl", "3ijel"]
+    notes: "Uses the existing beef yield group as a typical stew proxy; there is no separate veal yield row."
+  - id: usda:veal_stew_braised
+    fdc_id: 175289
+    state: cooked
+    yield_group: beef
+    names:
+      en: ["Veal, stewing cubes, braised"]
+      ar: ["لحم عجل مطبوخ"]
+      arabizi: ["la7m 3ijl matbou5"]
+    notes: "Uses the existing beef yield group as a typical stew proxy; there is no separate veal yield row."
+  - id: usda:veal_escalope_breaded
+    fdc_id: 173819
+    state: fried
+    names:
+      en: ["Veal escalope, breaded, pan-fried"]
+      ar: ["إسكالوب عجل", "إسكالوب"]
+      arabizi: ["escalope", "eskalope"]
+  - id: usda:lamb_chops_raw
+    fdc_id: 174377
+    state: raw
+    yield_group: lamb
+    names:
+      en: ["Lamb chops (rib), raw"]
+      ar: ["ريش غنم", "ريش خروف"]
+      arabizi: ["raysh ghanam", "reesh", "lamb chops"]
+  - id: usda:lamb_chops_grilled
+    fdc_id: 174378
+    state: cooked
+    yield_group: lamb
+    names:
+      en: ["Lamb chops (rib), grilled"]
+      ar: ["ريش مشوية", "ريش غنم مشوي"]
+      arabizi: ["raysh mashwiyye", "reesh mashwi"]
+  - id: usda:lamb_shank_raw
+    fdc_id: 172547
+    state: raw
+    yield_group: lamb
+    names:
+      en: ["Lamb shank, raw"]
+      ar: ["موزات غنم", "موزات خروف"]
+      arabizi: ["mozat ghanam", "mozat 5aroof"]
+  - id: usda:lamb_shank_braised
+    fdc_id: 174371
+    state: cooked
+    yield_group: lamb
+    names:
+      en: ["Lamb shank, braised"]
+      ar: ["موزات غنم مطبوخة"]
+      arabizi: ["mozat ghanam matbou5a"]
+  - id: usda:goat_raw
+    fdc_id: 175303
+    state: raw
+    names:
+      en: ["Goat meat, raw"]
+      ar: ["لحم ماعز", "لحم سخل", "لحم جدي"]
+      arabizi: ["la7m ma3ez", "sa5el", "jidi"]
+  - id: usda:goat_roasted
+    fdc_id: 175304
+    state: cooked
+    names:
+      en: ["Goat meat, roasted"]
+      ar: ["لحم ماعز مطبوخ"]
+      arabizi: ["la7m ma3ez matbou5"]
+  # Offal
+  - id: usda:lamb_liver_raw
+    fdc_id: 172531
+    state: raw
+    names:
+      en: ["Lamb liver, raw"]
+      ar: ["كبدة غنم", "كبدة خروف"]
+      arabizi: ["kebde ghanam", "kibdeh 5aroof"]
+  - id: usda:lamb_liver_fried
+    fdc_id: 172533
+    state: fried
+    names:
+      en: ["Lamb liver, pan-fried"]
+      ar: ["كبدة غنم مقلية"]
+      arabizi: ["kebde ma2liyye", "kibdeh ma2lieh"]
+  - id: usda:lamb_kidney_raw
+    fdc_id: 174354
+    state: raw
+    names:
+      en: ["Lamb kidneys, raw"]
+      ar: ["كلاوي غنم"]
+      arabizi: ["kalawi", "klawi"]
+  - id: usda:beef_tongue_cooked
+    fdc_id: 170598
+    state: cooked
+    names:
+      en: ["Beef tongue, simmered"]
+      ar: ["لسان بقر"]
+      arabizi: ["lsan ba2ar"]
+  - id: usda:beef_tripe_cooked
+    fdc_id: 174769
+    state: cooked
+    names:
+      en: ["Beef tripe, simmered"]
+      ar: ["كرشة"]
+      arabizi: ["kirsheh"]
+  - id: usda:beef_brain_cooked
+    fdc_id: 168624
+    state: cooked
+    names:
+      en: ["Beef brain, simmered"]
+      ar: ["مخ"]
+      arabizi: ["mo5"]
+    servings: [{unit: piece, g: 391}]
+  # Meat
+  - id: usda:rabbit_raw
+    fdc_id: 172521
+    state: raw
+    names:
+      en: ["Rabbit, raw"]
+      ar: ["أرنب"]
+      arabizi: ["arnab"]
+  # Deli
+  - id: usda:beef_frankfurter
+    fdc_id: 173862
+    state: as_sold
+    names:
+      en: ["Beef hot dog (frankfurter)"]
+      ar: ["نقانق بقر", "هوت دوغ"]
+      arabizi: ["na2aneq", "hotdog", "hot dog"]
+  - id: usda:chicken_frankfurter
+    fdc_id: 171624
+    state: as_sold
+    names:
+      en: ["Chicken hot dog (frankfurter)"]
+      ar: ["نقانق دجاج"]
+      arabizi: ["na2aneq djaj", "chicken hotdog"]
+    servings: [{unit: piece, g: 45}]
+  - id: usda:beef_bologna
+    fdc_id: 172012
+    state: as_sold
+    names:
+      en: ["Beef bologna (mortadella-style)"]
+      ar: ["مرتديلا", "مرتديلا بقر", "لانشون"]
+      arabizi: ["mortadella", "mortadilla", "luncheon"]
+    servings: [{unit: piece, g: 30}]
+    notes: "USDA beef bologna is a mortadella-style proxy; local mortadella/luncheon may be chicken and differs by brand. One piece is one slice."
+  - id: usda:beef_salami
+    fdc_id: 172935
+    state: as_sold
+    names:
+      en: ["Beef salami, cooked"]
+      ar: ["سلامي بقر", "سلامي"]
+      arabizi: ["salami"]
+    servings: [{unit: piece, g: 26}]
+    notes: "One piece is one USDA slice (26 g)."
+  - id: usda:beef_sausage_cooked
+    fdc_id: 174618
+    state: cooked
+    names:
+      en: ["Beef sausage, cooked"]
+      ar: ["سجق بقر", "مقانق"]
+      arabizi: ["sujuk", "ma2aneq"]
+    notes: "USDA cooked beef sausage is a proxy for sujuk; Levantine sujuk is drier and spicier."
+  - id: usda:beef_pastrami
+    fdc_id: 170204
+    state: as_sold
+    names:
+      en: ["Beef pastrami"]
+      ar: ["بسطرمة"]
+      arabizi: ["basterma", "pastrami"]
+    servings: [{unit: piece, g: 28}]
+    notes: "USDA beef pastrami is a proxy for basterma; Levantine fenugreek-cured basterma differs. One piece is one slice."
+  - id: usda:corned_beef_canned
+    fdc_id: 170602
+    state: as_sold
+    names:
+      en: ["Corned beef, canned"]
+      ar: ["لحمة معلبة", "بولوبيف"]
+      arabizi: ["la7me m3allabe", "bully beef", "corned beef"]
+    servings: [{unit: piece, g: 21}]
+    notes: "One piece is one USDA slice (21 g)."
+  # Fish
+  - id: usda:sea_bass_raw
+    fdc_id: 175142
+    state: raw
+    yield_group: fish
+    names:
+      en: ["Sea bass, raw"]
+      ar: ["لوكس", "قاروص", "سمك لوكس"]
+      arabizi: ["lokos", "louks", "2arous"]
+    servings: [{unit: piece, g: 129}]
+  - id: usda:sea_bass_cooked
+    fdc_id: 173694
+    state: cooked
+    yield_group: fish
+    names:
+      en: ["Sea bass, cooked"]
+      ar: ["لوكس مشوي", "قاروص مشوي"]
+      arabizi: ["lokos mashwi"]
+    servings: [{unit: piece, g: 101}]
+  - id: usda:mullet_raw
+    fdc_id: 175123
+    state: raw
+    yield_group: fish
+    names:
+      en: ["Mullet, raw"]
+      ar: ["بوري", "سمك بوري"]
+      arabizi: ["bouri", "boori"]
+    servings: [{unit: piece, g: 119}]
+  - id: usda:mullet_cooked
+    fdc_id: 175124
+    state: cooked
+    yield_group: fish
+    names:
+      en: ["Mullet, cooked"]
+      ar: ["بوري مشوي"]
+      arabizi: ["bouri mashwi"]
+    servings: [{unit: piece, g: 93}]
+  - id: usda:grouper_raw
+    fdc_id: 171962
+    state: raw
+    yield_group: fish
+    names:
+      en: ["Grouper, raw"]
+      ar: ["لقز", "هامور"]
+      arabizi: ["lu2oz", "hamour"]
+    servings: [{unit: piece, g: 259}]
+  - id: usda:grouper_cooked
+    fdc_id: 171963
+    state: cooked
+    yield_group: fish
+    names:
+      en: ["Grouper, cooked"]
+      ar: ["لقز مشوي", "هامور مشوي"]
+      arabizi: ["lu2oz mashwi"]
+    servings: [{unit: piece, g: 202}]
+  - id: usda:cod_raw
+    fdc_id: 171955
+    state: raw
+    yield_group: fish
+    names:
+      en: ["Cod, raw"]
+      ar: ["سمك القد", "فيليه كود"]
+      arabizi: ["cod", "fillet cod"]
+    servings: [{unit: piece, g: 231}]
+  - id: usda:cod_cooked
+    fdc_id: 171956
+    state: cooked
+    yield_group: fish
+    names:
+      en: ["Cod, cooked"]
+      ar: ["سمك قد مطبوخ"]
+      arabizi: ["cod matbou5"]
+    servings: [{unit: piece, g: 180}]
+  - id: usda:mackerel_raw
+    fdc_id: 175119
+    state: raw
+    yield_group: fish
+    names:
+      en: ["Mackerel, raw"]
+      ar: ["ماكريل", "سكمبري"]
+      arabizi: ["makarel", "sqomri"]
+    servings: [{unit: piece, g: 112}]
+  - id: usda:mackerel_cooked
+    fdc_id: 175120
+    state: cooked
+    yield_group: fish
+    names:
+      en: ["Mackerel, cooked"]
+      ar: ["ماكريل مشوي"]
+      arabizi: ["makarel mashwi"]
+    servings: [{unit: piece, g: 88}]
+  - id: usda:trout_raw
+    fdc_id: 173717
+    state: raw
+    yield_group: fish
+    names:
+      en: ["Trout, farmed, raw"]
+      ar: ["سمك ترويت", "سلمون مرقط"]
+      arabizi: ["trout", "troute"]
+    servings: [{unit: piece, g: 79}]
+  - id: usda:trout_cooked
+    fdc_id: 173718
+    state: cooked
+    yield_group: fish
+    names:
+      en: ["Trout, farmed, cooked"]
+      ar: ["ترويت مشوي"]
+      arabizi: ["trout mashwi"]
+    servings: [{unit: piece, g: 71}]
+  - id: usda:sole_raw
+    fdc_id: 174196
+    state: raw
+    yield_group: fish
+    names:
+      en: ["Sole (flatfish), raw"]
+      ar: ["سمك موسى", "سمك سول"]
+      arabizi: ["samak mousa", "sole"]
+    servings: [{unit: piece, g: 163}]
+  - id: usda:sole_cooked
+    fdc_id: 174197
+    state: cooked
+    yield_group: fish
+    names:
+      en: ["Sole (flatfish), cooked"]
+      ar: ["سمك موسى مشوي"]
+      arabizi: ["samak mousa mashwi"]
+    servings: [{unit: piece, g: 127}]
+  - id: usda:sardines_canned_tomato
+    fdc_id: 175140
+    state: drained
+    names:
+      en: ["Sardines, canned in tomato sauce"]
+      ar: ["سردين بالصلصة", "سردين بالبندورة"]
+      arabizi: ["sardin bil bandora", "sardine tomato"]
+    servings: [{unit: cup, g: 89}]
+  - id: usda:salmon_smoked
+    fdc_id: 173687
+    state: as_sold
+    names:
+      en: ["Smoked salmon"]
+      ar: ["سلمون مدخن"]
+      arabizi: ["salamon mudakhan", "smoked salmon"]
+    servings: [{unit: cup, g: 136}]
+  - id: usda:salmon_canned
+    fdc_id: 175175
+    state: drained
+    names:
+      en: ["Salmon, canned, drained"]
+      ar: ["سلمون معلب"]
+      arabizi: ["salamon m3allab"]
+  - id: usda:anchovy_canned_oil
+    fdc_id: 174183
+    state: drained
+    names:
+      en: ["Anchovies, canned in oil"]
+      ar: ["أنشوفة", "أنشوجة"]
+      arabizi: ["anchovy", "anshouga"]
+  - id: usda:fish_sticks
+    fdc_id: 174195
+    state: cooked
+    names:
+      en: ["Fish sticks, oven-baked"]
+      ar: ["أصابع سمك"]
+      arabizi: ["asabe3 samak", "fish fingers"]
+    servings: [{unit: piece, g: 28}]
+    notes: "One piece is the USDA 28 g stick (4 x 1 x 0.5 inches)."
+  - id: usda:squid_raw
+    fdc_id: 174223
+    state: raw
+    names:
+      en: ["Squid (calamari), raw"]
+      ar: ["حبار", "كاليماري"]
+      arabizi: ["7abbar", "calamari"]
+  - id: usda:calamari_fried
+    fdc_id: 171982
+    state: fried
+    names:
+      en: ["Calamari, fried"]
+      ar: ["كاليماري مقلي", "حبار مقلي"]
+      arabizi: ["calamari ma2li"]
+  - id: usda:shrimp_breaded_fried
+    fdc_id: 171970
+    state: fried
+    names:
+      en: ["Shrimp, breaded and fried"]
+      ar: ["جمبري مقلي", "قريدس مقلي"]
+      arabizi: ["jambari ma2li", "2raydes ma2li"]
+    servings: [{unit: piece, g: 7.5}]
+  - id: usda:crab_sticks
+    fdc_id: 174203
+    state: as_sold
+    names:
+      en: ["Crab sticks (imitation crab)"]
+      ar: ["سلطعون مقلد", "أصابع كابوريا"]
+      arabizi: ["crab sticks", "kaboria"]
+  # Dairy Egg
+  - id: usda:egg_yolk_raw
+    fdc_id: 172184
+    state: raw
+    names:
+      en: ["Egg yolk, raw"]
+      ar: ["صفار بيض"]
+      arabizi: ["safar bayd", "sfar bed"]
+    servings: [{unit: piece, g: 17}]
+  - id: usda:egg_poached
+    fdc_id: 172186
+    state: cooked
+    names:
+      en: ["Egg, poached"]
+      ar: ["بيض بوشيه"]
+      arabizi: ["bayd poche"]
+    servings: [{unit: piece, g: 50}]
+  - id: usda:egg_duck_raw
+    fdc_id: 172189
+    state: raw
+    names:
+      en: ["Duck egg, raw"]
+      ar: ["بيض بط"]
+      arabizi: ["bayd bat"]
+    servings: [{unit: piece, g: 70}]
+  - id: usda:egg_quail_raw
+    fdc_id: 172191
+    state: raw
+    names:
+      en: ["Quail egg, raw"]
+      ar: ["بيض سمان", "بيض فري"]
+      arabizi: ["bayd semman"]
+    servings: [{unit: piece, g: 9}]
+  - id: usda:milk_lowfat_1
+    fdc_id: 170872
+    state: raw
+    names:
+      en: ["Milk, 1% fat"]
+      ar: ["حليب 1%"]
+      arabizi: ["7aleeb 1%", "halib 1"]
+    servings: [{unit: cup, g: 244}]
+  - id: usda:milk_goat
+    fdc_id: 171278
+    state: raw
+    names:
+      en: ["Goat milk"]
+      ar: ["حليب ماعز"]
+      arabizi: ["7aleeb ma3ez"]
+    servings: [{unit: cup, g: 244}]
+  - id: usda:milk_sheep
+    fdc_id: 170882
+    state: raw
+    names:
+      en: ["Sheep milk"]
+      ar: ["حليب غنم"]
+      arabizi: ["7aleeb ghanam"]
+    servings: [{unit: cup, g: 245}]
+  - id: usda:milk_chocolate_drink
+    fdc_id: 170879
+    state: raw
+    names:
+      en: ["Chocolate milk drink", "Milk, chocolate-flavoured", "Chocolate milk"]
+      ar: ["حليب بالشوكولاتة", "حليب كاكاو"]
+      arabizi: ["7aleeb shokolata", "7aleeb kakao", "chocolate milk"]
+    servings: [{unit: cup, g: 250}]
+  - id: usda:milk_evaporated
+    fdc_id: 171276
+    state: as_sold
+    names:
+      en: ["Evaporated milk (canned)"]
+      ar: ["حليب مبخر", "حليب علب", "حليب مكثف غير محلى"]
+      arabizi: ["7aleeb mbakhar", "7aleeb 3elab", "evaporated milk"]
+    servings: [{unit: cup, g: 252}]
+  - id: usda:milk_condensed_sweetened
+    fdc_id: 171275
+    state: as_sold
+    names:
+      en: ["Sweetened condensed milk"]
+      ar: ["حليب مكثف محلى", "حليب مكثف"]
+      arabizi: ["7aleeb mukathaf", "condensed milk"]
+    servings: [{unit: cup, g: 306}]
+  - id: usda:milk_powder_nonfat
+    fdc_id: 172195
+    state: dry
+    names:
+      en: ["Milk powder, nonfat"]
+      ar: ["حليب بودرة خالي الدسم"]
+      arabizi: ["7aleeb budra 5ali dasam"]
+    servings: [{unit: cup, g: 120}]
+  - id: usda:yogurt_greek_whole
+    fdc_id: 171304
+    state: raw
+    names:
+      en: ["Greek yogurt, plain, whole milk"]
+      ar: ["زبادي يوناني كامل الدسم"]
+      arabizi: ["laban yunani kamel", "greek yogurt full fat"]
+  - id: usda:yogurt_greek_lowfat
+    fdc_id: 170903
+    state: raw
+    names:
+      en: ["Greek yogurt, plain, low fat"]
+      ar: ["زبادي يوناني قليل الدسم"]
+      arabizi: ["laban yunani light"]
+  - id: usda:yogurt_skim
+    fdc_id: 170887
+    state: raw
+    names:
+      en: ["Yogurt, plain, nonfat"]
+      ar: ["لبن خالي الدسم", "زبادي خالي الدسم"]
+      arabizi: ["laban 5ali dasam", "laban skim"]
+    servings: [{unit: cup, g: 245}]
+  - id: usda:yogurt_fruit_lowfat
+    fdc_id: 170889
+    state: raw
+    names:
+      en: ["Fruit yogurt, low fat"]
+      ar: ["زبادي بالفواكه", "لبن بالفواكه"]
+      arabizi: ["laban bil fawakeh", "fruit yogurt"]
+    servings: [{unit: cup, g: 245}]
+  - id: usda:kefir_lowfat
+    fdc_id: 170904
+    state: raw
+    names:
+      en: ["Kefir, plain, low fat"]
+      ar: ["كفير"]
+      arabizi: ["kefir"]
+    servings: [{unit: cup, g: 243}]
+  - id: usda:cream_coffee_light
+    fdc_id: 170857
+    state: raw
+    names:
+      en: ["Cream, light (coffee cream)"]
+      ar: ["كريمة قهوة"]
+      arabizi: ["cream qahwa"]
+    servings: [{unit: cup, g: 240}]
+  - id: usda:cream_whipped_spray
+    fdc_id: 170860
+    state: as_sold
+    names:
+      en: ["Whipped cream (spray)"]
+      ar: ["كريمة مخفوقة", "كريمة شانتيه"]
+      arabizi: ["krema shantiyeh", "whipped cream"]
+    servings: [{unit: cup, g: 60}]
+  - id: usda:sour_cream
+    fdc_id: 171257
+    state: as_sold
+    names:
+      en: ["Sour cream"]
+      ar: ["قشدة حامضة", "سور كريم"]
+      arabizi: ["sour cream"]
+    servings: [{unit: cup, g: 230}]
+  - id: usda:coffee_creamer_powder
+    fdc_id: 171263
+    state: dry
+    names:
+      en: ["Coffee creamer, powdered (non-dairy)"]
+      ar: ["مبيض قهوة", "كوفي ميت"]
+      arabizi: ["coffee mate", "mubayyed qahwa", "creamer"]
+    servings: [{unit: tsp, g: 2}]
+  # Cheese
+  - id: usda:cheese_yellow_gouda
+    fdc_id: 171241
+    state: as_sold
+    names:
+      en: ["Gouda (yellow) cheese"]
+      ar: ["جبنة صفراء", "جبنة جودة", "جبنة صفرا"]
+      arabizi: ["jibne safra", "jbneh safra", "gouda"]
+    notes: "Gouda is the yellow-cheese proxy; local yellow cheese can also be Edam or Emmental-type."
+  - id: usda:cheese_edam
+    fdc_id: 173419
+    state: as_sold
+    names:
+      en: ["Edam cheese"]
+      ar: ["جبنة إيدام"]
+      arabizi: ["edam"]
+  - id: usda:cheese_parmesan_grated
+    fdc_id: 171247
+    state: as_sold
+    names:
+      en: ["Parmesan cheese, grated"]
+      ar: ["جبنة بارميزان", "بارميزان"]
+      arabizi: ["parmesan", "jibne parmezan"]
+    servings: [{unit: cup, g: 100}]
+  - id: usda:cheese_processed_slices
+    fdc_id: 170853
+    state: as_sold
+    names:
+      en: ["Processed cheese slices"]
+      ar: ["جبنة شرائح", "جبنة سلايس", "جبنة توست"]
+      arabizi: ["jibne slice", "jbneh shara2e7", "cheese slices"]
+    servings: [{unit: piece, g: 28}]
+    notes: "One piece is one USDA slice (28 g)."
+  - id: usda:cheese_spread_processed
+    fdc_id: 171254
+    state: as_sold
+    names:
+      en: ["Processed cheese spread (triangles)"]
+      ar: ["جبنة مثلثات", "جبنة مطبوخة"]
+      arabizi: ["jibne mthallathat", "jbneh mutallath"]
+    servings: [{unit: cup, g: 244}]
+    notes: "USDA American cheese spread is a proxy for triangles (290 kcal/100 g versus about 240 to 270 for local brands). The cup serving is spread, not one triangle."
+  - id: usda:cheese_mozzarella_part_skim
+    fdc_id: 170847
+    state: as_sold
+    names:
+      en: ["Mozzarella, part skim"]
+      ar: ["موزاريلا قليلة الدسم"]
+      arabizi: ["mozzarella light"]
+  - id: usda:cheese_pizza_shredded
+    fdc_id: 170900
+    state: as_sold
+    names:
+      en: ["Pizza cheese, shredded (low-moisture mozzarella)"]
+      ar: ["جبنة بيتزا", "جبنة مبشورة"]
+      arabizi: ["jibne pizza", "mozzarella mabshoura"]
+    servings: [{unit: cup, g: 86}]
+  - id: usda:cheese_cottage_lowfat
+    fdc_id: 173417
+    state: as_sold
+    names:
+      en: ["Cottage cheese, low fat 1%"]
+      ar: ["جبنة قريش قليلة الدسم", "كوتج لايت"]
+      arabizi: ["cottage light"]
+    servings: [{unit: cup, g: 226}]
+  - id: usda:cheese_goat_soft
+    fdc_id: 173435
+    state: as_sold
+    names:
+      en: ["Goat cheese, soft"]
+      ar: ["جبنة ماعز"]
+      arabizi: ["jibne ma3ez"]
+  - id: usda:cheese_ricotta
+    fdc_id: 170851
+    state: as_sold
+    names:
+      en: ["Ricotta cheese"]
+      ar: ["ريكوتا"]
+      arabizi: ["ricotta"]
+    servings: [{unit: cup, g: 246}]
+  - id: usda:cheese_swiss
+    fdc_id: 171251
+    state: as_sold
+    names:
+      en: ["Swiss cheese"]
+      ar: ["جبنة سويسرية", "إيمنتال"]
+      arabizi: ["swiss cheese", "emmental"]
+    servings: [{unit: piece, g: 28}]
+    notes: "One piece is one USDA slice (28 g)."
+  - id: usda:cheese_sauce
+    fdc_id: 172200
+    state: as_sold
+    names:
+      en: ["Cheese sauce"]
+      ar: ["صوص جبنة", "صلصة جبنة"]
+      arabizi: ["cheese sauce", "sos jibne"]
+    servings: [{unit: cup, g: 243}]
+  # Dairy Egg
+  - id: usda:whey_protein_powder
+    fdc_id: 173180
+    state: dry
+    names:
+      en: ["Whey protein powder"]
+      ar: ["بروتين واي", "مسحوق بروتين"]
+      arabizi: ["whey", "protein powder", "brotein"]
+    servings: [{unit: serving, g: 32}]
+    notes: "One serving is the USDA 0.33 cup portion (32 g); scoop sizes vary by brand."
+  - id: usda:whey_isolate_powder
+    fdc_id: 173177
+    state: dry
+    names:
+      en: ["Whey protein isolate powder"]
+      ar: ["واي آيزوليت", "بروتين آيزوليت"]
+      arabizi: ["whey isolate", "isolate"]
+  - id: usda:milkshake_vanilla
+    fdc_id: 170884
+    state: as_sold
+    names:
+      en: ["Milkshake, vanilla"]
+      ar: ["ميلك شيك فانيلا"]
+      arabizi: ["milkshake vanilla"]
+  - id: usda:milkshake_chocolate
+    fdc_id: 170883
+    state: as_sold
+    names:
+      en: ["Milkshake, chocolate"]
+      ar: ["ميلك شيك شوكولاتة"]
+      arabizi: ["milkshake chocolate"]
+
+  # A47 B2: plants and staples (pinned USDA SR Legacy and Foundation).
+  # Fruit
+  - id: usda:prickly_pear_raw
+    fdc_id: 167750
+    state: raw
+    names:
+      en: ["Prickly pear, raw", "Cactus fruit"]
+      ar: ["صبر", "تين شوكي"]
+      arabizi: ["sabr", "saber", "subbar"]
+    servings: [{unit: piece, g: 103}]
+  - id: usda:clementine_raw
+    fdc_id: 168195
+    state: raw
+    names:
+      en: ["Clementine, raw"]
+      ar: ["كلمنتينا", "كليمنتين"]
+      arabizi: ["klementina", "clementina"]
+    servings: [{unit: piece, g: 74}]
+  - id: usda:persimmon_raw
+    fdc_id: 169941
+    state: raw
+    names:
+      en: ["Persimmon, raw", "Kaki"]
+      ar: ["كاكا", "كاكي"]
+      arabizi: ["kaka", "kaki"]
+    servings: [{unit: piece, g: 168}]
+  - id: usda:loquat_raw
+    fdc_id: 169908
+    state: raw
+    names:
+      en: ["Loquat, raw"]
+      ar: ["أكدنيا", "إسكدنيا", "بشملة"]
+      arabizi: ["akadinya", "akedinia", "iskidinya", "askadinya"]
+    servings: [{unit: piece, g: 16}]
+    notes: "One piece is a medium loquat (16 g edible portion)."
+  - id: usda:guava_raw
+    fdc_id: 173044
+    state: raw
+    names:
+      en: ["Guava, raw"]
+      ar: ["جوافة"]
+      arabizi: ["jawafa", "guava", "gawafa"]
+    servings: [{unit: piece, g: 55}]
+  - id: usda:melon_honeydew_raw
+    fdc_id: 169911
+    state: raw
+    names:
+      en: ["Honeydew melon, raw"]
+      ar: ["شمام أصفر", "بطيخ أصفر", "شمام عسلي"]
+      arabizi: ["shammam asfar", "bate5 asfar", "batikh asfar"]
+    servings: [{unit: cup, g: 170}]
+  - id: usda:quince_raw
+    fdc_id: 168163
+    state: raw
+    names:
+      en: ["Quince, raw"]
+      ar: ["سفرجل"]
+      arabizi: ["safarjal", "sfarjal"]
+    servings: [{unit: piece, g: 92}]
+  - id: usda:mulberries_raw
+    fdc_id: 169913
+    state: raw
+    names:
+      en: ["Mulberries, raw"]
+      ar: ["توت"]
+      arabizi: ["toot", "tut"]
+    servings: [{unit: piece, g: 1.5}]
+  - id: usda:blackberries_raw
+    fdc_id: 173946
+    state: raw
+    names:
+      en: ["Blackberries, raw"]
+      ar: ["توت العليق", "عليق"]
+      arabizi: ["toot 3ulle2", "3ullaiq"]
+    servings: [{unit: cup, g: 144}]
+  - id: usda:blueberries_raw
+    fdc_id: 171711
+    state: raw
+    names:
+      en: ["Blueberries, raw"]
+      ar: ["توت أزرق", "بلوبيري"]
+      arabizi: ["toot azra2", "blueberry"]
+    servings: [{unit: cup, g: 148}]
+  - id: usda:raspberries_raw
+    fdc_id: 167755
+    state: raw
+    names:
+      en: ["Raspberries, raw"]
+      ar: ["توت أحمر", "رازبيري"]
+      arabizi: ["toot a7mar", "raspberry"]
+    servings: [{unit: cup, g: 123}]
+  - id: usda:cranberries_dried
+    fdc_id: 171723
+    state: dry
+    names:
+      en: ["Cranberries, dried, sweetened"]
+      ar: ["توت بري مجفف", "كرانبري"]
+      arabizi: ["cranberry", "toot barri mjaffaf"]
+    servings: [{unit: cup, g: 160}]
+  - id: usda:prunes_dried
+    fdc_id: 168162
+    state: dry
+    names:
+      en: ["Prunes (dried plums)"]
+      ar: ["برقوق مجفف", "خوخ مجفف", "قراصيا"]
+      arabizi: ["barqouq mjaffaf", "5o5 mjaffaf", "prunes"]
+    servings: [{unit: piece, g: 9.5}]
+  - id: usda:raisins_golden
+    fdc_id: 168164
+    state: dry
+    names:
+      en: ["Raisins, golden"]
+      ar: ["زبيب أشقر", "زبيب ذهبي"]
+      arabizi: ["zbeeb ashqar", "zbib dahabi"]
+    servings: [{unit: cup, g: 165}]
+  - id: usda:papaya_raw
+    fdc_id: 169926
+    state: raw
+    names:
+      en: ["Papaya, raw"]
+      ar: ["بابايا"]
+      arabizi: ["papaya", "babaya"]
+    servings: [{unit: piece, g: 157}]
+  - id: usda:passion_fruit_raw
+    fdc_id: 169108
+    state: raw
+    names:
+      en: ["Passion fruit, raw"]
+      ar: ["باشن فروت", "ماراكويا"]
+      arabizi: ["passion fruit", "marakuya"]
+    servings: [{unit: piece, g: 18}]
+  - id: usda:coconut_meat_raw
+    fdc_id: 170169
+    state: raw
+    names:
+      en: ["Coconut meat (fresh)"]
+      ar: ["لب جوز الهند", "جوز هند طري"]
+      arabizi: ["lob joz el hind", "coconut fresh"]
+    servings: [{unit: piece, g: 45}]
+    notes: "One piece is a 2 x 2 x 0.5 inch piece (45 g), not a whole coconut."
+  - id: usda:cherimoya_raw
+    fdc_id: 173953
+    state: raw
+    names:
+      en: ["Cherimoya (custard apple), raw"]
+      ar: ["قشطة (فاكهة)", "شيريمويا"]
+      arabizi: ["ishta fakha", "cherimoya"]
+    servings: [{unit: piece, g: 235}]
+  - id: usda:lychee_raw
+    fdc_id: 169086
+    state: raw
+    names:
+      en: ["Lychee, raw"]
+      ar: ["ليتشي"]
+      arabizi: ["lychee", "litchi"]
+    servings: [{unit: piece, g: 9.6}]
+  - id: usda:pomelo_raw
+    fdc_id: 167754
+    state: raw
+    names:
+      en: ["Pomelo, raw"]
+      ar: ["بوملي", "بوميلي"]
+      arabizi: ["pomelo", "bomali"]
+    servings: [{unit: piece, g: 609}]
+  - id: usda:jujube_raw
+    fdc_id: 168151
+    state: raw
+    names:
+      en: ["Jujube, raw"]
+      ar: ["عناب"]
+      arabizi: ["3unnab"]
+    fiber_zero: true
+    notes: "Chinese jujube (Ziziphus jujuba); local dom (Ziziphus spina-christi) is a different fruit."
+  - id: usda:apple_green_raw
+    fdc_id: 168203
+    state: raw
+    names:
+      en: ["Apple, green (Granny Smith), raw"]
+      ar: ["تفاح أخضر"]
+      arabizi: ["tuffa7 a5dar", "tofa7 akhdar"]
+    servings: [{unit: piece, g: 167}]
+  - id: usda:apple_red_raw
+    fdc_id: 168201
+    state: raw
+    names:
+      en: ["Apple, red (Red Delicious), raw"]
+      ar: ["تفاح أحمر"]
+      arabizi: ["tuffa7 a7mar", "tofa7 ahmar"]
+    servings: [{unit: piece, g: 212}]
+  - id: usda:fruit_cocktail_canned_syrup
+    fdc_id: 173028
+    state: as_sold
+    names:
+      en: ["Fruit cocktail, canned in heavy syrup"]
+      ar: ["كوكتيل فواكه معلب", "فواكه معلبة"]
+      arabizi: ["cocktail fawakeh", "fawakeh m3allabe"]
+    servings: [{unit: cup, g: 248}]
+  - id: usda:peaches_canned_syrup
+    fdc_id: 169112
+    state: as_sold
+    names:
+      en: ["Peaches, canned in heavy syrup"]
+      ar: ["دراق معلب"]
+      arabizi: ["durra2 m3allab", "peaches canned"]
+    servings: [{unit: cup, g: 262}]
+  - id: usda:pineapple_canned_juice
+    fdc_id: 169126
+    state: as_sold
+    names:
+      en: ["Pineapple, canned in juice"]
+      ar: ["أناناس معلب"]
+      arabizi: ["ananas m3allab"]
+    servings: [{unit: cup, g: 249}]
+  - id: usda:banana_chips
+    fdc_id: 168849
+    state: as_sold
+    names:
+      en: ["Banana chips"]
+      ar: ["شيبس موز", "موز مجفف"]
+      arabizi: ["chips moz", "moz mjaffaf"]
+  # Vegetable
+  - id: usda:swiss_chard_raw
+    fdc_id: 169991
+    state: raw
+    names:
+      en: ["Swiss chard, raw"]
+      ar: ["سلق"]
+      arabizi: ["sele2", "sile2", "sele8"]
+    servings: [{unit: piece, g: 48}]
+    notes: "One piece is one USDA leaf (48 g); a cup is 36 g."
+  - id: usda:swiss_chard_cooked
+    fdc_id: 170401
+    state: cooked
+    names:
+      en: ["Swiss chard, boiled"]
+      ar: ["سلق مطبوخ", "سلق مسلوق"]
+      arabizi: ["sele2 matbou5", "sele2 masloo2"]
+    servings: [{unit: cup, g: 175}]
+  - id: usda:purslane_raw
+    fdc_id: 169274
+    state: raw
+    names:
+      en: ["Purslane, raw"]
+      ar: ["فرفحينة", "بقلة", "رجلة"]
+      arabizi: ["farfa7ina", "ba2leh", "rejleh"]
+    fiber_zero: true
+    servings: [{unit: cup, g: 43}]
+  - id: usda:leeks_raw
+    fdc_id: 169246
+    state: raw
+    names:
+      en: ["Leek, raw"]
+      ar: ["كراث"]
+      arabizi: ["kurrath", "kurrat", "krath"]
+    servings: [{unit: cup, g: 89}]
+  - id: usda:artichoke_raw
+    fdc_id: 169205
+    state: raw
+    names:
+      en: ["Artichoke, raw"]
+      ar: ["أرضي شوكي", "خرشوف"]
+      arabizi: ["ardi shawki", "kharshouf"]
+    servings: [{unit: piece, g: 128}]
+  - id: usda:artichoke_cooked
+    fdc_id: 168386
+    state: cooked
+    names:
+      en: ["Artichoke, boiled"]
+      ar: ["أرضي شوكي مطبوخ"]
+      arabizi: ["ardi shawki matbou5"]
+    servings: [{unit: piece, g: 120}]
+  - id: usda:fennel_bulb_raw
+    fdc_id: 169385
+    state: raw
+    names:
+      en: ["Fennel bulb, raw"]
+      ar: ["شومر"]
+      arabizi: ["shomar", "shumar"]
+    servings: [{unit: cup, g: 87}]
+  - id: usda:chicory_greens_raw
+    fdc_id: 169992
+    state: raw
+    names:
+      en: ["Chicory greens (hindbeh), raw"]
+      ar: ["هندبة", "هندباء", "علت"]
+      arabizi: ["hindbeh", "hendbe", "3elet"]
+    servings: [{unit: cup, g: 29}]
+    notes: "Cultivated chicory greens are a proxy for local wild hindbeh/3elet."
+  - id: usda:red_cabbage_raw
+    fdc_id: 169977
+    state: raw
+    names:
+      en: ["Red cabbage, raw"]
+      ar: ["ملفوف أحمر"]
+      arabizi: ["malfouf a7mar"]
+    servings: [{unit: cup, g: 89}]
+    notes: "USDA FDC 169977: one cup, chopped (89 g). The 23 g leaf is not a whole piece/head."
+  - id: usda:cabbage_cooked
+    fdc_id: 169976
+    state: cooked
+    names:
+      en: ["Cabbage, boiled"]
+      ar: ["ملفوف مطبوخ", "ملفوف مسلوق"]
+      arabizi: ["malfouf matbou5"]
+    servings: [{unit: cup, g: 150}]
+  - id: usda:beetroot_cooked
+    fdc_id: 169146
+    state: cooked
+    names:
+      en: ["Beetroot, boiled"]
+      ar: ["شمندر مسلوق", "شمندر مطبوخ"]
+      arabizi: ["shamandar masloo2"]
+    servings: [{unit: cup, g: 170}]
+  - id: usda:sweet_potato_baked
+    fdc_id: 168483
+    state: cooked
+    names:
+      en: ["Sweet potato, baked"]
+      ar: ["بطاطا حلوة مشوية", "بطاطا حلوة بالفرن"]
+      arabizi: ["batata 7elwe mashwiyye"]
+    servings: [{unit: piece, g: 114}]
+  - id: usda:sweet_potato_boiled
+    fdc_id: 168484
+    state: cooked
+    names:
+      en: ["Sweet potato, boiled"]
+      ar: ["بطاطا حلوة مسلوقة"]
+      arabizi: ["batata 7elwe masloo2a"]
+    servings: [{unit: piece, g: 151}]
+  - id: usda:pumpkin_cooked
+    fdc_id: 168449
+    state: cooked
+    names:
+      en: ["Pumpkin, boiled"]
+      ar: ["قرع مطبوخ", "يقطين مطبوخ"]
+      arabizi: ["qare3 matbou5"]
+    servings: [{unit: cup, g: 245}]
+  - id: usda:butternut_squash_raw
+    fdc_id: 169295
+    state: raw
+    names:
+      en: ["Butternut squash, raw"]
+      ar: ["قرع عسلي"]
+      arabizi: ["qare3 3asali", "butternut"]
+    servings: [{unit: cup, g: 140}]
+  - id: usda:corn_sweet_boiled
+    fdc_id: 169999
+    state: cooked
+    names:
+      en: ["Sweet corn, boiled"]
+      ar: ["ذرة مسلوقة", "عرنوس ذرة"]
+      arabizi: ["dura masloo2a", "3arnous dura"]
+    servings: [{unit: piece, g: 103}]
+    notes: "One piece is the edible kernels from a medium ear (103 g)."
+  - id: usda:corn_sweet_canned_drained
+    fdc_id: 169214
+    state: drained
+    names:
+      en: ["Sweet corn, canned, drained"]
+      ar: ["ذرة معلبة"]
+      arabizi: ["dura m3allabe", "corn can"]
+    servings: [{unit: cup, g: 164}]
+  - id: usda:mushrooms_canned_drained
+    fdc_id: 169254
+    state: drained
+    names:
+      en: ["Mushrooms, canned, drained"]
+      ar: ["فطر معلب", "مشروم معلب"]
+      arabizi: ["fu6r m3allab", "mushroom can"]
+    servings: [{unit: piece, g: 12}]
+  - id: usda:mushrooms_white_cooked
+    fdc_id: 169252
+    state: cooked
+    names:
+      en: ["Mushrooms, white, boiled"]
+      ar: ["فطر مطبوخ"]
+      arabizi: ["fu6r matbou5"]
+    servings: [{unit: cup, g: 156}]
+  - id: usda:red_chili_raw
+    fdc_id: 170106
+    state: raw
+    names:
+      en: ["Hot red chili pepper, raw"]
+      ar: ["فلفل أحمر حار"]
+      arabizi: ["felfel a7mar 7ar"]
+    servings: [{unit: piece, g: 45}]
+  - id: usda:jalapeno_raw
+    fdc_id: 168576
+    state: raw
+    names:
+      en: ["Jalapeno pepper, raw"]
+      ar: ["هالبينو"]
+      arabizi: ["jalapeno", "halapeno"]
+    servings: [{unit: piece, g: 14}]
+  - id: usda:jalapeno_pickled
+    fdc_id: 170080
+    state: as_sold
+    names:
+      en: ["Jalapeno peppers, pickled (canned)"]
+      ar: ["هالبينو مخلل"]
+      arabizi: ["jalapeno m5allal"]
+    servings: [{unit: piece, g: 22}]
+  - id: usda:hot_peppers_pickled
+    fdc_id: 169766
+    state: as_sold
+    names:
+      en: ["Hot peppers, pickled"]
+      ar: ["فلفل مخلل", "مخلل فلفل حار"]
+      arabizi: ["felfel m5allal", "m5allal felfel"]
+    servings: [{unit: cup, g: 136}]
+  - id: usda:tomato_cooked
+    fdc_id: 170050
+    state: cooked
+    names:
+      en: ["Tomato, cooked"]
+      ar: ["بندورة مطبوخة"]
+      arabizi: ["bandora matbou5a"]
+    servings: [{unit: piece, g: 123}]
+  - id: usda:tomatoes_sun_dried
+    fdc_id: 168567
+    state: dry
+    names:
+      en: ["Sun-dried tomatoes"]
+      ar: ["بندورة مجففة", "بندورة ناشفة"]
+      arabizi: ["bandora mjaffafe"]
+    servings: [{unit: piece, g: 2}]
+  - id: usda:tomato_puree_canned
+    fdc_id: 170460
+    state: as_sold
+    names:
+      en: ["Tomato puree, canned"]
+      ar: ["بندورة مهروسة", "عصير بندورة مركز"]
+      arabizi: ["bandora mahrouse"]
+    servings: [{unit: cup, g: 250}]
+  - id: usda:ginger_root_raw
+    fdc_id: 169231
+    state: raw
+    names:
+      en: ["Ginger root (fresh)"]
+      ar: ["جذر زنجبيل", "زنجبيل أخضر"]
+      arabizi: ["zanjabeel a5dar", "ginger root"]
+    servings: [{unit: cup, g: 96}]
+  - id: usda:grape_leaves_canned
+    fdc_id: 169393
+    state: as_sold
+    names:
+      en: ["Grape leaves, jarred (in brine)"]
+      ar: ["ورق عنب معلب", "ورق دوالي معلب"]
+      arabizi: ["wara2 3enab m3allab", "wara2 dawali"]
+    servings: [{unit: piece, g: 4}]
+  - id: usda:green_beans_cooked
+    fdc_id: 169141
+    state: cooked
+    names:
+      en: ["Green beans, boiled"]
+      ar: ["فاصوليا خضراء مطبوخة", "لوبيا مطبوخة"]
+      arabizi: ["fasolia khadra matbou5a", "lubyeh matbou5a"]
+    servings: [{unit: cup, g: 125}]
+  - id: usda:green_peas_canned_drained
+    fdc_id: 170013
+    state: drained
+    names:
+      en: ["Green peas, canned, drained"]
+      ar: ["بازيلاء معلبة"]
+      arabizi: ["bazella m3allabe"]
+    servings: [{unit: cup, g: 175}]
+  - id: usda:peas_carrots_frozen_cooked
+    fdc_id: 170018
+    state: cooked
+    names:
+      en: ["Peas and carrots, frozen, boiled"]
+      ar: ["بازيلاء وجزر"]
+      arabizi: ["bazella w jazar"]
+    servings: [{unit: cup, g: 160}]
+  - id: usda:mixed_vegetables_frozen_cooked
+    fdc_id: 170472
+    state: cooked
+    names:
+      en: ["Mixed vegetables, frozen, boiled"]
+      ar: ["خضار مشكلة", "خضار مجمدة"]
+      arabizi: ["5udar mshakkale", "khudar mshakkaleh"]
+    servings: [{unit: cup, g: 182}]
+  - id: usda:potato_baked
+    fdc_id: 170093
+    state: cooked
+    names:
+      en: ["Potato, baked with skin"]
+      ar: ["بطاطا مشوية", "بطاطا بالفرن"]
+      arabizi: ["batata mashwiyye", "batata bil forn"]
+    servings: [{unit: piece, g: 173}]
+  - id: usda:potato_mashed
+    fdc_id: 168555
+    state: cooked
+    names:
+      en: ["Mashed potatoes (milk and butter)"]
+      ar: ["بطاطا مهروسة", "بوريه بطاطا"]
+      arabizi: ["batata mahrouse", "pure batata"]
+    servings: [{unit: cup, g: 210}]
+  - id: usda:potato_fries_oven_baked
+    fdc_id: 170118
+    state: cooked
+    names:
+      en: ["French fries, frozen, oven-baked"]
+      ar: ["بطاطا مقلية بالفرن", "بطاطس فرن"]
+      arabizi: ["batata bil forn frozen", "oven fries"]
+    servings: [{unit: piece, g: 7.4}]
+    notes: "One piece is one USDA strip (7.4 g), not a plate or packet of fries."
+  - id: usda:taro_cooked
+    fdc_id: 168486
+    state: cooked
+    names:
+      en: ["Taro (colocasia), cooked"]
+      ar: ["قلقاس مطبوخ", "قلقاس"]
+      arabizi: ["qolqas", "2ul2as"]
+    servings: [{unit: cup, g: 132}]
+  - id: usda:capers_canned
+    fdc_id: 172238
+    state: as_sold
+    names:
+      en: ["Capers"]
+      ar: ["قبار"]
+      arabizi: ["qubbar", "capers"]
+    servings: [{unit: tbsp, g: 8.6}]
+  - id: usda:asparagus_raw
+    fdc_id: 168389
+    state: raw
+    names:
+      en: ["Asparagus, raw"]
+      ar: ["هليون"]
+      arabizi: ["halyoun", "asparagus"]
+    servings: [{unit: piece, g: 16}]
+  - id: usda:eggplant_cooked
+    fdc_id: 169229
+    state: cooked
+    names:
+      en: ["Eggplant, boiled"]
+      ar: ["باذنجان مطبوخ", "باذنجان مسلوق"]
+      arabizi: ["betinjan matbou5"]
+    servings: [{unit: cup, g: 99}]
+    notes: "Boiled eggplant without added fat; fried eggplant needs a separate entry because of oil uptake."
+  - id: usda:coleslaw
+    fdc_id: 170300
+    state: as_sold
+    names:
+      en: ["Coleslaw"]
+      ar: ["سلطة ملفوف بالمايونيز", "كول سلو"]
+      arabizi: ["coleslaw", "salatet malfouf"]
+    servings: [{unit: cup, g: 191}]
+  # Grain
+  - id: usda:rice_short_grain_raw
+    fdc_id: 168881
+    state: dry
+    yield_group: rice
+    names:
+      en: ["Rice, white short-grain, raw"]
+      ar: ["رز حبة قصيرة", "رز قصير"]
+      arabizi: ["ruz 2aseer", "short grain rice"]
+    servings: [{unit: cup, g: 200}]
+  - id: usda:rice_short_grain_cooked
+    fdc_id: 168882
+    state: cooked
+    yield_group: rice
+    names:
+      en: ["Rice, white short-grain, cooked"]
+      ar: ["رز حبة قصيرة مطبوخ"]
+      arabizi: ["ruz 2aseer matbou5"]
+    fiber_zero: true
+    servings: [{unit: cup, g: 186}]
+  - id: usda:rice_parboiled_raw
+    fdc_id: 169707
+    state: dry
+    yield_group: rice
+    names:
+      en: ["Rice, parboiled, raw"]
+      ar: ["رز مسلوق (بربويلد)", "رز أمريكي"]
+      arabizi: ["ruz parboiled", "ruz amriki"]
+    servings: [{unit: cup, g: 185}]
+    notes: "Uses the existing rice yield group (2.8); the paired USDA parboiled rice water ratio is about 2.9. Ruz amriki varies by household."
+  - id: usda:rice_parboiled_cooked
+    fdc_id: 169708
+    state: cooked
+    yield_group: rice
+    names:
+      en: ["Rice, parboiled, cooked"]
+      ar: ["رز بربويلد مطبوخ"]
+      arabizi: ["ruz parboiled matbou5"]
+    servings: [{unit: cup, g: 158}]
+    notes: "Uses the existing rice yield group (2.8); the paired USDA parboiled rice water ratio is about 2.9."
+  - id: usda:instant_noodles_dry
+    fdc_id: 171177
+    state: dry
+    names:
+      en: ["Instant noodles, dry (with seasoning)"]
+      ar: ["إندومي", "نودلز"]
+      arabizi: ["indomie", "noodles", "indomi"]
+    notes: "USDA dry ramen is the generic Indomie-type proxy; brand recipes and seasoning packets differ. No packet serving is assumed."
+  - id: usda:egg_noodles_cooked
+    fdc_id: 169732
+    state: cooked
+    names:
+      en: ["Egg noodles, cooked"]
+      ar: ["نودلز بيض مطبوخة"]
+      arabizi: ["egg noodles"]
+    servings: [{unit: cup, g: 160}]
+  - id: usda:quinoa_raw
+    fdc_id: 168874
+    state: dry
+    names:
+      en: ["Quinoa, raw"]
+      ar: ["كينوا"]
+      arabizi: ["kinwa", "quinoa", "kenwa"]
+    servings: [{unit: cup, g: 170}]
+  - id: usda:quinoa_cooked
+    fdc_id: 168917
+    state: cooked
+    names:
+      en: ["Quinoa, cooked"]
+      ar: ["كينوا مطبوخة"]
+      arabizi: ["kinwa matbou5a"]
+    servings: [{unit: cup, g: 185}]
+  - id: usda:semolina_coarse
+    fdc_id: 2003588
+    state: dry
+    names:
+      en: ["Semolina, coarse"]
+      ar: ["سميد خشن"]
+      arabizi: ["smeed 5shin", "smid kheshen"]
+  - id: usda:rice_flour
+    fdc_id: 169714
+    state: dry
+    names:
+      en: ["Rice flour"]
+      ar: ["طحين رز"]
+      arabizi: ["ta7een ruz"]
+    servings: [{unit: cup, g: 158}]
+  - id: usda:cornmeal_yellow
+    fdc_id: 168867
+    state: dry
+    names:
+      en: ["Cornmeal, yellow"]
+      ar: ["طحين ذرة"]
+      arabizi: ["ta7een dura"]
+    servings: [{unit: cup, g: 157}]
+  - id: usda:wheat_berries_durum
+    fdc_id: 169721
+    state: dry
+    names:
+      en: ["Wheat berries (whole wheat grain)"]
+      ar: ["قمح", "قمح حب"]
+      arabizi: ["qam7", "2am7"]
+    fiber_zero: true
+    servings: [{unit: cup, g: 192}]
+  # Bread
+  - id: usda:bread_french_baguette
+    fdc_id: 172675
+    state: as_sold
+    names:
+      en: ["French bread (baguette)"]
+      ar: ["خبز فرنسي", "باجيت", "صمون"]
+      arabizi: ["khubz faransi", "baguette", "samoun"]
+    servings: [{unit: piece, g: 139}]
+    notes: "One piece is the USDA large 139 g slice; weigh a bakery baguette portion rather than assuming a thin sandwich slice."
+  - id: usda:bread_multigrain
+    fdc_id: 168013
+    state: as_sold
+    names:
+      en: ["Bread, multigrain"]
+      ar: ["خبز حبوب", "خبز حبوب كاملة"]
+      arabizi: ["khubz 7boob", "multigrain"]
+    servings: [{unit: piece, g: 26}]
+    notes: "One piece is one USDA slice (26 g)."
+  - id: usda:bread_rye
+    fdc_id: 172684
+    state: as_sold
+    names:
+      en: ["Bread, rye"]
+      ar: ["خبز جاودار"]
+      arabizi: ["rye bread"]
+    servings: [{unit: piece, g: 32}]
+    notes: "One piece is one USDA slice (32 g)."
+  - id: usda:bread_white_toasted
+    fdc_id: 174925
+    state: as_sold
+    names:
+      en: ["Bread, white, toasted"]
+      ar: ["توست محمص"]
+      arabizi: ["toast m7ammas"]
+    servings: [{unit: piece, g: 27}]
+    notes: "One piece is one USDA slice (27 g)."
+  - id: usda:bread_roll_burger
+    fdc_id: 172796
+    state: as_sold
+    names:
+      en: ["Burger or hot dog bun"]
+      ar: ["خبز همبرغر", "كعك برغر"]
+      arabizi: ["burger bun", "khubz burger"]
+    servings: [{unit: piece, g: 44}]
+  - id: usda:bread_roll_dinner
+    fdc_id: 172793
+    state: as_sold
+    names:
+      en: ["Bread roll (dinner roll)"]
+      ar: ["خبز رول", "صمونة"]
+      arabizi: ["roll", "samouneh"]
+    servings: [{unit: piece, g: 28}]
+  - id: usda:croissant_butter
+    fdc_id: 174987
+    state: as_sold
+    names:
+      en: ["Croissant, butter"]
+      ar: ["كرواسون", "كرواسان"]
+      arabizi: ["croissant", "kruwason"]
+    servings: [{unit: piece, g: 57}]
+  - id: usda:croissant_cheese
+    fdc_id: 174989
+    state: as_sold
+    names:
+      en: ["Croissant, cheese"]
+      ar: ["كرواسون جبنة"]
+      arabizi: ["croissant jibne"]
+    servings: [{unit: piece, g: 57}]
+  - id: usda:bagel_plain
+    fdc_id: 174899
+    state: as_sold
+    names:
+      en: ["Bagel, plain"]
+      ar: ["بيغل"]
+      arabizi: ["bagel"]
+    servings: [{unit: piece, g: 105}]
+    notes: "US-style bagel; ka'ak al-quds is a separate reference-dish gap."
+  - id: usda:tortilla_flour
+    fdc_id: 175037
+    state: as_sold
+    names:
+      en: ["Flour tortilla (wrap)"]
+      ar: ["تورتيلا", "خبز تورتيلا"]
+      arabizi: ["tortilla", "wrap bread"]
+    servings: [{unit: piece, g: 30}]
+  - id: usda:bread_crumbs_dry
+    fdc_id: 174928
+    state: dry
+    names:
+      en: ["Breadcrumbs, dry"]
+      ar: ["بقسماط مطحون", "فتات خبز"]
+      arabizi: ["ba2somat", "breadcrumbs"]
+    servings: [{unit: cup, g: 108}]
+  - id: usda:crackers_saltine
+    fdc_id: 172746
+    state: as_sold
+    names:
+      en: ["Saltine crackers"]
+      ar: ["كراكرز مالح", "بسكويت مالح"]
+      arabizi: ["crackers", "baskot male7"]
+    servings: [{unit: piece, g: 3}]
+  - id: usda:crackers_butter_snack
+    fdc_id: 174982
+    state: as_sold
+    names:
+      en: ["Butter crackers"]
+      ar: ["بسكويت تك", "كراكرز زبدة"]
+      arabizi: ["tuc", "ritz", "crackers zebde"]
+    servings: [{unit: piece, g: 3.2}]
+    notes: "Generic snack crackers are a TUC/Ritz-type proxy; one piece is the USDA round cracker (3.2 g). Brand recipes and rectangular crackers differ."
+  - id: usda:rusk_toast
+    fdc_id: 174981
+    state: as_sold
+    names:
+      en: ["Rusk toast"]
+      ar: ["خبز محمص (رسك)", "رسك"]
+      arabizi: ["rusk", "rusk toast"]
+    fiber_zero: true
+    servings: [{unit: piece, g: 10}]
+    notes: "USDA rusk toast; local sesame ka'ak differs and is not an alias. One piece is one 10 g rusk."
+  - id: usda:pancakes
+    fdc_id: 175047
+    state: cooked
+    names:
+      en: ["Pancakes"]
+      ar: ["بان كيك", "فطائر بان كيك"]
+      arabizi: ["pancake", "bancake"]
+    fiber_zero: true
+    servings: [{unit: piece, g: 38}]
+  - id: usda:waffles
+    fdc_id: 175039
+    state: cooked
+    names:
+      en: ["Waffles"]
+      ar: ["وافل"]
+      arabizi: ["waffle", "wafel"]
+    fiber_zero: true
+    servings: [{unit: piece, g: 75}]
+  # Cereal
+  - id: usda:corn_flakes
+    fdc_id: 174648
+    state: as_sold
+    names:
+      en: ["Corn flakes"]
+      ar: ["كورن فليكس", "رقائق ذرة"]
+      arabizi: ["corn flakes", "kornflex"]
+    servings: [{unit: cup, g: 28}]
+    notes: "Generic proxy from the USDA RALSTON Corn Flakes row; brand recipes differ."
+  - id: usda:frosted_flakes
+    fdc_id: 172990
+    state: as_sold
+    names:
+      en: ["Frosted flakes"]
+      ar: ["كورن فليكس بالسكر", "فروستيز"]
+      arabizi: ["frosties", "frosted flakes"]
+    servings: [{unit: cup, g: 41.3}]
+    notes: "Generic proxy from the USDA MALT-O-MEAL Frosted Flakes row. Cup weight (41.3 g) is rounded from 31 g per 0.75 cup."
+  - id: usda:chocolate_cereal_puffs
+    fdc_id: 172973
+    state: as_sold
+    names:
+      en: ["Chocolate cereal puffs"]
+      ar: ["حبوب إفطار بالشوكولاتة", "كوكو بوبس"]
+      arabizi: ["coco pops", "cocoa puffs"]
+    servings: [{unit: cup, g: 30}]
+  - id: usda:granola
+    fdc_id: 171646
+    state: as_sold
+    names:
+      en: ["Granola"]
+      ar: ["جرانولا"]
+      arabizi: ["granola", "granula"]
+    servings: [{unit: cup, g: 122}]
+  - id: usda:oats_instant_dry
+    fdc_id: 171661
+    state: dry
+    names:
+      en: ["Oats, instant, dry"]
+      ar: ["شوفان سريع التحضير"]
+      arabizi: ["shofan saree3", "instant oats"]
+  # Legume
+  - id: usda:black_eyed_peas_dry
+    fdc_id: 173758
+    state: dry
+    yield_group: beans
+    names:
+      en: ["Black-eyed peas, dry"]
+      ar: ["لوبيا ناشفة", "لوبيا حب"]
+      arabizi: ["lubyeh nashfe", "lubia 7ab"]
+    servings: [{unit: cup, g: 167}]
+  - id: usda:black_eyed_peas_cooked
+    fdc_id: 173759
+    state: cooked
+    yield_group: beans
+    names:
+      en: ["Black-eyed peas, boiled"]
+      ar: ["لوبيا حب مطبوخة"]
+      arabizi: ["lubyeh 7ab matbou5a"]
+    servings: [{unit: cup, g: 171}]
+  - id: usda:fava_beans_green_cooked
+    fdc_id: 170378
+    state: cooked
+    names:
+      en: ["Fava beans, green, boiled"]
+      ar: ["فول أخضر مطبوخ"]
+      arabizi: ["fool a5dar matbou5"]
+  - id: usda:baked_beans_canned
+    fdc_id: 175182
+    state: as_sold
+    names:
+      en: ["Baked beans, canned (in tomato sauce)"]
+      ar: ["فاصوليا بالصلصة معلبة", "بيكد بينز"]
+      arabizi: ["baked beans", "fasolia bil salsa"]
+    servings: [{unit: cup, g: 254}]
+  - id: usda:split_peas_dry
+    fdc_id: 172428
+    state: dry
+    names:
+      en: ["Split peas, dry"]
+      ar: ["بازيلاء مجروشة"]
+      arabizi: ["bazella majroushe", "split peas"]
+    servings: [{unit: cup, g: 196}]
+  - id: usda:tofu_firm
+    fdc_id: 172475
+    state: raw
+    names:
+      en: ["Tofu, firm"]
+      ar: ["توفو"]
+      arabizi: ["tofu"]
+    servings: [{unit: cup, g: 252}]
+  # Nut Seed
+  - id: usda:almonds_roasted_salted
+    fdc_id: 168596
+    state: dry
+    names:
+      en: ["Almonds, roasted, salted"]
+      ar: ["لوز محمص", "لوز مملح"]
+      arabizi: ["lowz m7ammas", "loz m7ammas"]
+    servings: [{unit: cup, g: 138}]
+  - id: usda:cashews_roasted_salted
+    fdc_id: 169421
+    state: dry
+    names:
+      en: ["Cashews, roasted, salted"]
+      ar: ["كاجو محمص"]
+      arabizi: ["kaju m7ammas", "cashew mo7ammas"]
+    servings: [{unit: cup, g: 137}]
+  - id: usda:pistachios_roasted_salted
+    fdc_id: 169426
+    state: dry
+    names:
+      en: ["Pistachios, roasted, salted"]
+      ar: ["فستق حلبي محمص", "فستق مملح"]
+      arabizi: ["fosto2 7alabi m7ammas", "fostok"]
+    servings: [{unit: cup, g: 123}]
+  - id: usda:mixed_nuts_with_peanuts
+    fdc_id: 168599
+    state: dry
+    names:
+      en: ["Mixed nuts, roasted, with peanuts"]
+      ar: ["مكسرات مشكلة", "قلوبات", "مكسرات"]
+      arabizi: ["mkassarat", "mksarat", "2alobat"]
+    servings: [{unit: cup, g: 137}]
+  - id: usda:mixed_nuts_no_peanuts
+    fdc_id: 169423
+    state: dry
+    names:
+      en: ["Mixed nuts, roasted, no peanuts (extra)"]
+      ar: ["مكسرات إكسترا", "مكسرات بدون فستق عبيد"]
+      arabizi: ["mkassarat extra", "mkassarat super"]
+    servings: [{unit: cup, g: 144}]
+  - id: usda:peanuts_oil_roasted_salted
+    fdc_id: 174261
+    state: dry
+    names:
+      en: ["Peanuts, oil-roasted, salted"]
+      ar: ["فستق عبيد مقلي مملح"]
+      arabizi: ["fosto2 3abeed ma2li"]
+    servings: [{unit: cup, g: 144}]
+    notes: "The cup serving is chopped, shelled peanuts (144 g)."
+  - id: usda:chestnuts_roasted
+    fdc_id: 170190
+    state: dry
+    names:
+      en: ["Chestnuts, roasted"]
+      ar: ["كستناء مشوية", "كستنا"]
+      arabizi: ["kastana", "kastanaa mashwiyye"]
+    servings: [{unit: cup, g: 143}]
+  - id: usda:pecans
+    fdc_id: 170182
+    state: raw
+    names:
+      en: ["Pecans"]
+      ar: ["بيكان", "جوز بيكان"]
+      arabizi: ["pecan"]
+    servings: [{unit: cup, g: 109}]
+    notes: "The cup serving is chopped pecans (109 g); a cup of halves is 99 g."
+  - id: usda:almond_butter
+    fdc_id: 168588
+    state: as_sold
+    names:
+      en: ["Almond butter"]
+      ar: ["زبدة لوز"]
+      arabizi: ["zebdet lowz", "almond butter"]
+    servings: [{unit: tbsp, g: 16}]
+  - id: usda:watermelon_seeds
+    fdc_id: 169407
+    state: dry
+    names:
+      en: ["Watermelon seeds (kernels)"]
+      ar: ["بزر بطيخ", "بزر أبيض"]
+      arabizi: ["bizr batee5", "bzr b6ee5"]
+    fiber_zero: true
+    servings: [{unit: cup, g: 108}]
+    notes: "Values and cup weight are edible kernels, excluding shells."
+  - id: usda:sunflower_seeds_roasted_salted
+    fdc_id: 169418
+    state: dry
+    names:
+      en: ["Sunflower seeds, roasted, salted (kernels)"]
+      ar: ["بزر دوار الشمس محمص", "بزر عباد الشمس محمص"]
+      arabizi: ["bizr 3abbad shams", "bzr asmar"]
+    servings: [{unit: cup, g: 128}]
+    notes: "Values and cup weight are edible kernels, excluding shells."
+  - id: usda:pumpkin_seeds_roasted_salted
+    fdc_id: 168601
+    state: dry
+    names:
+      en: ["Pumpkin seeds, whole, roasted, salted"]
+      ar: ["بزر قرع محمص", "بزر أبيض محمص"]
+      arabizi: ["bizr qare3 m7ammas"]
+    servings: [{unit: cup, g: 64}]
+    notes: "The USDA row and cup weight are whole seeds including the edible hull; they are not peeled kernels."
+  - id: usda:flaxseed
+    fdc_id: 169414
+    state: dry
+    names:
+      en: ["Flaxseed"]
+      ar: ["بزر كتان", "بذور الكتان"]
+      arabizi: ["bizr kittan", "flax"]
+    servings: [{unit: tbsp, g: 10.3}]
+    notes: "One tablespoon is whole seed (10.3 g); ground flaxseed is 7 g per tablespoon."
+  - id: usda:chia_seeds
+    fdc_id: 170554
+    state: dry
+    names:
+      en: ["Chia seeds"]
+      ar: ["بذور شيا", "شيا"]
+      arabizi: ["chia", "bzoor chia"]
+  # Oil Fat
+  - id: usda:sesame_oil
+    fdc_id: 171016
+    state: raw
+    names:
+      en: ["Sesame oil"]
+      ar: ["زيت سمسم", "سيرج"]
+      arabizi: ["zeit simsim", "sirej"]
+    servings: [{unit: tbsp, g: 13.6}]
+  - id: usda:peanut_oil
+    fdc_id: 171410
+    state: raw
+    names:
+      en: ["Peanut oil"]
+      ar: ["زيت فول سوداني"]
+      arabizi: ["zeit fool soudani"]
+    servings: [{unit: tbsp, g: 13.5}]
+  - id: usda:avocado_oil
+    fdc_id: 173573
+    state: raw
+    names:
+      en: ["Avocado oil"]
+      ar: ["زيت أفوكادو"]
+      arabizi: ["zeit avocado"]
+    servings: [{unit: tbsp, g: 14}]
+  - id: usda:vegetable_ghee_shortening
+    fdc_id: 173584
+    state: raw
+    names:
+      en: ["Vegetable ghee (shortening)"]
+      ar: ["سمن نباتي", "سمنة نباتية"]
+      arabizi: ["samneh nabatiyyeh", "samn nabati", "samneh nabatiyye"]
+    servings: [{unit: tbsp, g: 12.8}]
+    notes: "USDA nearly all-fat vegetable shortening is the vegetable-ghee proxy; hard margarine is about 80% fat."
+  - id: usda:margarine_soft_tub
+    fdc_id: 172347
+    state: raw
+    names:
+      en: ["Margarine, soft (tub)"]
+      ar: ["مرغرين طري", "زبدة نباتية"]
+      arabizi: ["margarine soft", "zebde nabatiyyeh"]
+    servings: [{unit: tbsp, g: 14.2}]
+  - id: usda:beef_tallow
+    fdc_id: 171400
+    state: raw
+    names:
+      en: ["Beef fat (tallow)"]
+      ar: ["دهن بقر", "شحمة"]
+      arabizi: ["shi7me", "dehn ba2ar"]
+    servings: [{unit: tbsp, g: 12.8}]
+  - id: usda:lamb_fat
+    fdc_id: 174892
+    state: raw
+    names:
+      en: ["Lamb fat (external), raw"]
+      ar: ["لية", "دهن غنم"]
+      arabizi: ["liyyeh", "dehn ghanam"]
+    notes: "USDA Australian lamb external fat is a proxy for local tail fat (liyyeh); cut and composition differ."
+  # Spice
+  - id: usda:mint_dried
+    fdc_id: 172239
+    state: dry
+    names:
+      en: ["Mint, dried"]
+      ar: ["نعنع ناشف", "نعنع مجفف"]
+      arabizi: ["na3na3 nashef", "na3na3 mjaffaf"]
+    servings: [{unit: tsp, g: 0.5}]
+  - id: usda:sage_ground
+    fdc_id: 170935
+    state: dry
+    names:
+      en: ["Sage, dried"]
+      ar: ["ميرمية", "مريمية"]
+      arabizi: ["maramiyyeh", "miramieh"]
+    servings: [{unit: tsp, g: 0.7}]
+  - id: usda:anise_seed
+    fdc_id: 171316
+    state: dry
+    names:
+      en: ["Anise seed"]
+      ar: ["يانسون"]
+      arabizi: ["yansoon", "yansun"]
+    servings: [{unit: tsp, g: 2.1}]
+  - id: usda:caraway_seed
+    fdc_id: 170918
+    state: dry
+    names:
+      en: ["Caraway seed"]
+      ar: ["كراوية"]
+      arabizi: ["karawya"]
+    servings: [{unit: tsp, g: 2.1}]
+  - id: usda:fenugreek_seed
+    fdc_id: 171324
+    state: dry
+    names:
+      en: ["Fenugreek seed"]
+      ar: ["حلبة"]
+      arabizi: ["7elbe", "hilbeh"]
+    servings: [{unit: tsp, g: 3.7}]
+  - id: usda:nutmeg_ground
+    fdc_id: 171326
+    state: dry
+    names:
+      en: ["Nutmeg"]
+      ar: ["جوزة الطيب"]
+      arabizi: ["jozet el teeb"]
+    servings: [{unit: tsp, g: 2.2}]
+  - id: usda:curry_powder
+    fdc_id: 170924
+    state: dry
+    names:
+      en: ["Curry powder"]
+      ar: ["كاري", "بهارات كاري"]
+      arabizi: ["kari", "curry"]
+    servings: [{unit: tsp, g: 2}]
+  - id: usda:chili_powder
+    fdc_id: 171319
+    state: dry
+    names:
+      en: ["Chili powder"]
+      ar: ["بودرة تشيلي", "مسحوق الفلفل الحار"]
+      arabizi: ["chili powder"]
+    servings: [{unit: tsp, g: 2.7}]
+  - id: usda:garlic_powder
+    fdc_id: 171325
+    state: dry
+    names:
+      en: ["Garlic powder"]
+      ar: ["ثوم بودرة", "ثوم مجفف"]
+      arabizi: ["toom budra"]
+    servings: [{unit: tsp, g: 3.1}]
+  - id: usda:onion_powder
+    fdc_id: 171327
+    state: dry
+    names:
+      en: ["Onion powder"]
+      ar: ["بصل بودرة"]
+      arabizi: ["basal budra"]
+    servings: [{unit: tsp, g: 2.4}]
+  - id: usda:oregano_dried
+    fdc_id: 171328
+    state: dry
+    names:
+      en: ["Oregano, dried"]
+      ar: ["أوريغانو", "زعتر بري"]
+      arabizi: ["oregano", "za3tar barri"]
+    servings: [{unit: tsp, g: 1}]
+    notes: "USDA oregano; za'atar barri can also mean wild thyme locally."
+  - id: usda:fennel_seed
+    fdc_id: 171323
+    state: dry
+    names:
+      en: ["Fennel seed"]
+      ar: ["شومر حب", "بذور الشومر"]
+      arabizi: ["shomar 7ab"]
+    servings: [{unit: tsp, g: 2}]
+  - id: usda:rosemary_dried
+    fdc_id: 171333
+    state: dry
+    names:
+      en: ["Rosemary, dried"]
+      ar: ["إكليل الجبل", "روزماري"]
+      arabizi: ["rosemary", "ekleel el jabal"]
+    servings: [{unit: tsp, g: 1.2}]
+  - id: usda:saffron
+    fdc_id: 170934
+    state: dry
+    names:
+      en: ["Saffron"]
+      ar: ["زعفران"]
+      arabizi: ["za3faran"]
+    servings: [{unit: tsp, g: 0.7}]
+  - id: usda:basil_fresh
+    fdc_id: 172232
+    state: raw
+    names:
+      en: ["Basil, fresh"]
+      ar: ["ريحان", "حبق"]
+      arabizi: ["ray7an", "7ba2"]
+    servings: [{unit: tbsp, g: 2.65}]
+    notes: "One tablespoon is chopped basil, derived from the USDA 2-tablespoon portion (5.3 g)."
+  - id: usda:thyme_fresh
+    fdc_id: 173470
+    state: raw
+    names:
+      en: ["Fresh za'atar leaves (thyme)"]
+      ar: ["ورق زعتر أخضر", "زعتر أخضر ورق", "زعتر أخضر"]
+      arabizi: ["za3tar a5dar taza", "wara2 za3tar", "zaatar akhdar"]
+    servings: [{unit: tsp, g: 0.8}]
+    notes: "Fresh thyme is the proxy for fresh Origanum syriacum (za'atar) leaves; species differ. Dried leaves have a separate entry."
+
+  # A47 B3: condiments, sweets, snacks, drinks and fast food (pinned USDA).
+  # Condiment
+  - id: usda:mustard_yellow
+    fdc_id: 172234
+    state: as_sold
+    names:
+      en: ["Mustard, yellow"]
+      ar: ["خردل", "مسطردة"]
+      arabizi: ["5ardal", "mustard", "mostarda"]
+    servings: [{unit: tsp, g: 5}]
+  - id: usda:hot_sauce
+    fdc_id: 174527
+    state: as_sold
+    names:
+      en: ["Hot sauce (pepper sauce)"]
+      ar: ["صوص حار", "صلصة حارة"]
+      arabizi: ["sos 7ar", "hot sauce"]
+    servings: [{unit: tsp, g: 4.7}]
+  - id: usda:bbq_sauce
+    fdc_id: 174523
+    state: as_sold
+    names:
+      en: ["Barbecue sauce"]
+      ar: ["صوص باربكيو"]
+      arabizi: ["bbq sauce", "barbecue"]
+    servings: [{unit: tbsp, g: 17}]
+  - id: usda:soy_sauce
+    fdc_id: 174277
+    state: as_sold
+    names:
+      en: ["Soy sauce"]
+      ar: ["صويا صوص", "صلصة الصويا"]
+      arabizi: ["soya sauce", "soy sauce"]
+    servings: [{unit: tbsp, g: 16}]
+  - id: usda:pasta_sauce_marinara
+    fdc_id: 171192
+    state: as_sold
+    names:
+      en: ["Pasta sauce (marinara)"]
+      ar: ["صلصة معكرونة", "صوص مارينارا"]
+      arabizi: ["marinara", "sos pasta"]
+    servings: [{unit: serving, g: 132}]
+    notes: "One serving is the USDA half-cup portion (132 g), not a full cup."
+  - id: usda:pesto
+    fdc_id: 171579
+    state: as_sold
+    names:
+      en: ["Pesto sauce"]
+      ar: ["صوص بيستو"]
+      arabizi: ["pesto"]
+    servings: [{unit: cup, g: 252}]
+    notes: "Cup weight is scaled from the USDA quarter-cup portion (63 g)."
+  - id: usda:ranch_dressing
+    fdc_id: 173592
+    state: as_sold
+    names:
+      en: ["Ranch dressing"]
+      ar: ["صوص رانش"]
+      arabizi: ["ranch"]
+    servings: [{unit: tbsp, g: 15}]
+  - id: usda:caesar_dressing
+    fdc_id: 169055
+    state: as_sold
+    names:
+      en: ["Caesar dressing"]
+      ar: ["صوص سيزر"]
+      arabizi: ["caesar"]
+    servings: [{unit: tbsp, g: 14.7}]
+  - id: usda:thousand_island_dressing
+    fdc_id: 171402
+    state: as_sold
+    names:
+      en: ["Thousand island dressing"]
+      ar: ["صوص ثاوزند آيلاند", "صوص كوكتيل"]
+      arabizi: ["thousand island", "sos cocktail"]
+    servings: [{unit: tbsp, g: 16}]
+  - id: usda:mayonnaise_light
+    fdc_id: 171443
+    state: as_sold
+    names:
+      en: ["Mayonnaise, light (reduced fat)"]
+      ar: ["مايونيز لايت", "مايونيز قليل الدسم"]
+      arabizi: ["mayonnaise light", "mayo light"]
+    servings: [{unit: tbsp, g: 15}]
+    notes: "USDA reduced-fat mayonnaise with olive oil; other light mayonnaise recipes differ."
+  - id: usda:vinegar_balsamic
+    fdc_id: 172241
+    state: as_sold
+    names:
+      en: ["Balsamic vinegar"]
+      ar: ["خل بلسميك"]
+      arabizi: ["balsamic"]
+    fiber_zero: true
+    servings: [{unit: tbsp, g: 16}]
+  - id: usda:vinegar_white
+    fdc_id: 172237
+    state: as_sold
+    names:
+      en: ["White vinegar (distilled)"]
+      ar: ["خل أبيض"]
+      arabizi: ["5al abyad", "khal abyad"]
+    servings: [{unit: tbsp, g: 14.9}]
+  - id: usda:salsa
+    fdc_id: 174524
+    state: as_sold
+    names:
+      en: ["Salsa"]
+      ar: ["صلصة سالسا"]
+      arabizi: ["salsa"]
+    servings: [{unit: tbsp, g: 18}]
+  - id: usda:molasses
+    fdc_id: 168820
+    state: as_sold
+    names:
+      en: ["Molasses (sugarcane)"]
+      ar: ["دبس قصب"]
+      arabizi: ["debs 2asab", "molasses"]
+    servings: [{unit: tbsp, g: 20}]
+    notes: "Sugarcane molasses; not grape, date or carob dibs."
+  - id: usda:maple_syrup
+    fdc_id: 169661
+    state: as_sold
+    names:
+      en: ["Maple syrup"]
+      ar: ["شراب القيقب"]
+      arabizi: ["maple syrup"]
+    servings: [{unit: tbsp, g: 20}]
+  - id: usda:pancake_syrup
+    fdc_id: 169578
+    state: as_sold
+    names:
+      en: ["Pancake syrup"]
+      ar: ["شراب بان كيك"]
+      arabizi: ["pancake syrup"]
+    servings: [{unit: tbsp, g: 20}]
+  - id: usda:bouillon_cube_chicken
+    fdc_id: 171563
+    state: dry
+    names:
+      en: ["Chicken stock cube"]
+      ar: ["مكعب مرقة دجاج", "ماجي"]
+      arabizi: ["maggi", "mka3ab mara2a", "stock cube"]
+    servings: [{unit: piece, g: 4.8}]
+    notes: "Dry stock cube, not prepared broth. One piece is the USDA 4.8 g cube; local cube sizes differ."
+  - id: usda:bouillon_cube_beef
+    fdc_id: 171561
+    state: dry
+    names:
+      en: ["Beef stock cube"]
+      ar: ["مكعب مرقة لحم"]
+      arabizi: ["mka3ab mara2at la7me"]
+    servings: [{unit: piece, g: 3.6}]
+    notes: "Dry stock cube, not prepared broth. One piece is the USDA 3.6 g cube; local cube sizes differ."
+  - id: usda:chicken_stock_homemade
+    fdc_id: 172884
+    state: cooked
+    names:
+      en: ["Chicken broth (homemade stock)"]
+      ar: ["مرقة دجاج"]
+      arabizi: ["mara2at djaj", "mara2a"]
+    servings: [{unit: cup, g: 240}]
+  - id: usda:marmalade_orange
+    fdc_id: 168819
+    state: as_sold
+    names:
+      en: ["Orange marmalade"]
+      ar: ["مربى برتقال"]
+      arabizi: ["mrabba burtu2an"]
+    servings: [{unit: tbsp, g: 20}]
+  - id: usda:jam_apricot
+    fdc_id: 170645
+    state: as_sold
+    names:
+      en: ["Apricot jam"]
+      ar: ["مربى مشمش"]
+      arabizi: ["mrabba mishmish"]
+    servings: [{unit: tbsp, g: 20}]
+  - id: usda:sweetener_tabletop
+    fdc_id: 169657
+    state: dry
+    names:
+      en: ["Sweetener, tabletop (aspartame packets)"]
+      ar: ["محلي صناعي", "سكر دايت"]
+      arabizi: ["sweetener", "sukkar diet"]
+    servings: [{unit: tsp, g: 3.5}]
+    notes: "Aspartame-based tabletop sweetener with bulking ingredients; not saccharin. One teaspoon is 3.5 g; the USDA packet is 1 g."
+  # Sweet
+  - id: usda:halawa
+    fdc_id: 167996
+    state: as_sold
+    names:
+      en: ["Halawa (tahini halva)"]
+      ar: ["حلاوة", "حلاوة طحينية", "حلاوة سادة"]
+      arabizi: ["7alawa", "halawa", "halaweh", "7alaweh"]
+  - id: usda:sesame_bar
+    fdc_id: 169588
+    state: as_sold
+    names:
+      en: ["Sesame bar (sesame crunch)"]
+      ar: ["سمسمية"]
+      arabizi: ["simsmiyyeh", "semsemieh"]
+    servings: [{unit: piece, g: 1.8}]
+    notes: "One piece is the small USDA sesame-crunch candy (1.8 g), not a whole local sesame bar."
+  - id: usda:chocolate_white
+    fdc_id: 167571
+    state: as_sold
+    names:
+      en: ["White chocolate"]
+      ar: ["شوكولاتة بيضاء"]
+      arabizi: ["shokolata bayda"]
+    servings: [{unit: piece, g: 85}]
+  - id: usda:caramel_candy
+    fdc_id: 167974
+    state: as_sold
+    names:
+      en: ["Caramel candy (toffee)"]
+      ar: ["كراميل", "توفي"]
+      arabizi: ["karamel", "toffee"]
+    servings: [{unit: piece, g: 10.1}]
+  - id: usda:hard_candy
+    fdc_id: 167990
+    state: as_sold
+    names:
+      en: ["Hard candy"]
+      ar: ["سكاكر", "ملبس"]
+      arabizi: ["skakir", "mlabbas", "7elo"]
+    servings: [{unit: piece, g: 6}]
+  - id: usda:gummy_candy
+    fdc_id: 167989
+    state: as_sold
+    names:
+      en: ["Gummy candy (jelly sweets)"]
+      ar: ["حلو جيلي", "جيلي بينز"]
+      arabizi: ["gummy", "jelly candy"]
+    servings: [{unit: piece, g: 4.2}]
+    notes: "USDA starch-jelly gumdrops; one piece is a medium gumdrop (4.2 g), not a gummy bear. Gelatin source, if present, is unspecified; halal flags belong to A31."
+  - id: usda:marshmallows
+    fdc_id: 167995
+    state: as_sold
+    names:
+      en: ["Marshmallows"]
+      ar: ["مارشملو", "خطمي"]
+      arabizi: ["marshmallow", "marshmello"]
+    servings: [{unit: cup, g: 50}]
+    notes: "The cup portion is miniature marshmallows. Gelatin source is unspecified; halal flags belong to A31."
+  - id: usda:nougat_almond
+    fdc_id: 169060
+    state: as_sold
+    names:
+      en: ["Nougat with almonds"]
+      ar: ["نوجا"]
+      arabizi: ["nougat", "noga"]
+    servings: [{unit: piece, g: 14}]
+  - id: usda:chewing_gum
+    fdc_id: 168771
+    state: as_sold
+    names:
+      en: ["Chewing gum"]
+      ar: ["علكة", "علك"]
+      arabizi: ["3elke", "3ilka", "gum"]
+    servings: [{unit: piece, g: 3}]
+  - id: usda:chewing_gum_sugarless
+    fdc_id: 169882
+    state: as_sold
+    names:
+      en: ["Chewing gum, sugar-free"]
+      ar: ["علكة بدون سكر"]
+      arabizi: ["3elke bidoon sukkar"]
+    servings: [{unit: piece, g: 2}]
+  - id: usda:wafer_chocolate_coated
+    fdc_id: 174088
+    state: as_sold
+    names:
+      en: ["Chocolate-coated wafer bar"]
+      ar: ["ويفر بالشوكولاتة", "ويفر مغطى شوكولاتة"]
+      arabizi: ["wafer shokolata", "wafer"]
+    servings: [{unit: piece, g: 9.7}]
+    notes: "One piece is one wafer cookie, rounded from the USDA 3-cookie portion (29 g)."
+  - id: usda:wafer_cream_filled
+    fdc_id: 172736
+    state: as_sold
+    names:
+      en: ["Cream-filled wafers"]
+      ar: ["ويفر بالكريمة", "بسكويت ويفر"]
+      arabizi: ["wafer krema", "wafers"]
+    servings: [{unit: piece, g: 10.1}]
+    notes: "One piece uses the explicit USDA one-cookie portion (10.1 g)."
+  - id: usda:tea_biscuits
+    fdc_id: 168014
+    state: as_sold
+    names:
+      en: ["Tea biscuits (Marie-type)"]
+      ar: ["بسكويت شاي", "بسكويت ماري"]
+      arabizi: ["baskot shai", "biskwit marie"]
+    servings: [{unit: piece, g: 4.9}]
+    notes: "USDA animal crackers including arrowroot/tea biscuits; one piece is the 4.9 g arrowroot biscuit. Local biscuit recipes differ."
+  - id: usda:cookies_chocolate_chip
+    fdc_id: 172716
+    state: as_sold
+    names:
+      en: ["Chocolate chip cookies"]
+      ar: ["كوكيز", "كوكيز بالشوكولاتة"]
+      arabizi: ["cookies", "kukiz"]
+    servings: [{unit: piece, g: 12.9}]
+  - id: usda:cookies_chocolate_sandwich
+    fdc_id: 172718
+    state: as_sold
+    names:
+      en: ["Chocolate sandwich cookies (Oreo-type)"]
+      ar: ["أوريو", "بسكويت شوكولاتة محشي"]
+      arabizi: ["oreo", "baskot ma7shi shokolata"]
+    servings: [{unit: piece, g: 12}]
+  - id: usda:cookies_vanilla_sandwich
+    fdc_id: 172737
+    state: as_sold
+    names:
+      en: ["Vanilla cream sandwich cookies"]
+      ar: ["بسكويت محشي كريمة", "بسكويت فانيلا محشي"]
+      arabizi: ["baskot ma7shi vanilla"]
+    servings: [{unit: piece, g: 15}]
+    notes: "One piece is the USDA oval cookie (15 g); its round cookie is 10 g."
+  - id: usda:cookies_shortbread
+    fdc_id: 174967
+    state: as_sold
+    names:
+      en: ["Shortbread cookies"]
+      ar: ["بسكويت زبدة هش", "شورت بريد"]
+      arabizi: ["shortbread"]
+    servings: [{unit: piece, g: 11.8}]
+    notes: "Plain US shortbread cookies; ghraybeh needs its own recipe."
+  - id: usda:cookies_oatmeal
+    fdc_id: 172725
+    state: as_sold
+    names:
+      en: ["Oatmeal cookies"]
+      ar: ["كوكيز شوفان"]
+      arabizi: ["oatmeal cookies"]
+    servings: [{unit: piece, g: 25}]
+    notes: "One piece is the large USDA cookie (25 g)."
+  - id: usda:brownies
+    fdc_id: 172713
+    state: as_sold
+    names:
+      en: ["Brownies"]
+      ar: ["براونيز"]
+      arabizi: ["brownies", "brownie"]
+    servings: [{unit: piece, g: 56}]
+    notes: "One piece is the large USDA 2.75-inch square (56 g)."
+  - id: usda:cake_chocolate_frosted
+    fdc_id: 174934
+    state: as_sold
+    names:
+      en: ["Chocolate cake with frosting"]
+      ar: ["كيك شوكولاتة", "كيكة شوكولاتة"]
+      arabizi: ["cake shokolata", "keke shokolata"]
+    servings: [{unit: piece, g: 138}]
+    notes: "One piece is 1/12 of the USDA bakery cake (138 g)."
+  - id: usda:cake_plain_unfrosted
+    fdc_id: 172710
+    state: as_sold
+    names:
+      en: ["Plain cake, unfrosted", "Cake"]
+      ar: ["كيك عادي", "كيكة", "كيك سادة", "كيك"]
+      arabizi: ["cake", "keke", "kaka sada"]
+    servings: [{unit: piece, g: 68}]
+    notes: "Yellow cake prepared from a recipe without frosting. One piece is the USDA 1/12 slice (68 g); sponge cake has a separate entry."
+  - id: usda:cake_sponge
+    fdc_id: 172706
+    state: as_sold
+    names:
+      en: ["Sponge cake"]
+      ar: ["كيك إسفنجي"]
+      arabizi: ["sponge cake", "cake isfanji"]
+    servings: [{unit: piece, g: 38}]
+    notes: "One piece is the USDA 1/12 slice of a 16 oz sponge cake (38 g)."
+  - id: usda:cheesecake
+    fdc_id: 172711
+    state: as_sold
+    names:
+      en: ["Cheesecake"]
+      ar: ["تشيز كيك"]
+      arabizi: ["cheesecake", "cheese cake"]
+    servings: [{unit: serving, g: 125}]
+    notes: "One piece is the USDA NLEA serving (125 g)."
+  - id: usda:snack_cake_chocolate_filled
+    fdc_id: 174942
+    state: as_sold
+    names:
+      en: ["Chocolate cake, cream-filled with frosting"]
+      ar: ["كيك محشي شوكولاتة", "كيك مغلف"]
+      arabizi: ["cake ma7shi"]
+    servings: [{unit: piece, g: 50}]
+    notes: "One piece is a 50 g cupcake."
+  - id: usda:snack_cake_sponge_filled
+    fdc_id: 174943
+    state: as_sold
+    names:
+      en: ["Sponge cake, cream-filled"]
+      ar: ["كيك فانيلا محشي كريمة"]
+      arabizi: ["twinkie", "cake vanilla ma7shi"]
+    servings: [{unit: piece, g: 42}]
+  - id: usda:doughnut_glazed
+    fdc_id: 172758
+    state: as_sold
+    names:
+      en: ["Doughnut, glazed"]
+      ar: ["دونات"]
+      arabizi: ["donut", "dunat", "doughnut"]
+    servings: [{unit: piece, g: 64}]
+  - id: usda:puff_pastry_baked
+    fdc_id: 172738
+    state: cooked
+    names:
+      en: ["Puff pastry, baked"]
+      ar: ["عجينة بف باستري", "عجينة منفوخة"]
+      arabizi: ["puff pastry", "3ajeenet puff"]
+    servings: [{unit: piece, g: 40}]
+    notes: "Baked pastry; one piece is the USDA 40 g shell, not a whole sheet."
+  - id: usda:phyllo_dough
+    fdc_id: 172791
+    state: as_sold
+    names:
+      en: ["Phyllo dough"]
+      ar: ["عجينة فيلو", "رقائق البقلاوة"]
+      arabizi: ["phyllo", "filo", "ru2a2 ba2lawa"]
+    servings: [{unit: piece, g: 19}]
+    notes: "Unbaked dough; one piece is one 19 g sheet."
+  - id: usda:cinnamon_roll
+    fdc_id: 175034
+    state: as_sold
+    names:
+      en: ["Cinnamon roll"]
+      ar: ["رول القرفة", "سينابون"]
+      arabizi: ["cinnamon roll", "cinnabon"]
+    servings: [{unit: piece, g: 83}]
+  - id: usda:ice_cream_chocolate
+    fdc_id: 168809
+    state: as_sold
+    names:
+      en: ["Ice cream, chocolate"]
+      ar: ["بوظة شوكولاتة"]
+      arabizi: ["bouza shokolata", "ice cream chocolate"]
+    servings: [{unit: piece, g: 58}]
+    notes: "One piece is the USDA individual 3.5 fl oz portion (58 g)."
+  - id: usda:ice_cream_strawberry
+    fdc_id: 168810
+    state: as_sold
+    names:
+      en: ["Ice cream, strawberry"]
+      ar: ["بوظة فراولة"]
+      arabizi: ["bouza frawle"]
+    servings: [{unit: piece, g: 58}]
+    notes: "One piece is the USDA individual 3.5 fl oz portion (58 g)."
+  - id: usda:ice_pop_fruit
+    fdc_id: 169632
+    state: as_sold
+    names:
+      en: ["Fruit ice pop"]
+      ar: ["بوظة عصير", "أسكيمو عصير", "مصاصة ثلج"]
+      arabizi: ["bouza 3aseer", "eskimo"]
+    servings: [{unit: piece, g: 77}]
+  - id: usda:ice_cream_cone
+    fdc_id: 175000
+    state: as_sold
+    names:
+      en: ["Ice cream cone (wafer, empty)"]
+      ar: ["بسكويت كورنيه", "قمع بوظة"]
+      arabizi: ["cone", "korneh"]
+    servings: [{unit: piece, g: 4}]
+    notes: "Empty wafer-type cone (4 g); ice cream is separate."
+  - id: usda:flan_caramel
+    fdc_id: 167574
+    state: cooked
+    names:
+      en: ["Crème caramel (flan)"]
+      ar: ["كريم كراميل"]
+      arabizi: ["creme caramel", "krem karamel"]
+    servings: [{unit: cup, g: 306}]
+    notes: "Cup weight is scaled from the USDA half-cup portion (153 g)."
+  - id: usda:pudding_vanilla
+    fdc_id: 169608
+    state: as_sold
+    names:
+      en: ["Vanilla pudding"]
+      ar: ["بودنغ فانيلا", "بودينغ"]
+      arabizi: ["pudding vanilla"]
+  - id: usda:pudding_rice
+    fdc_id: 168782
+    state: as_sold
+    names:
+      en: ["Rice pudding"]
+      ar: ["رز بحليب"]
+      arabizi: ["ruz bi 7aleeb", "roz b 7alib"]
+    servings: [{unit: serving, g: 113}]
+    notes: "US ready-to-eat rice pudding; local homemade ruz bi haleeb varies and belongs to A30. One serving is the USDA 4 oz pudding cup (113 g)."
+  - id: usda:jelly_dessert
+    fdc_id: 169596
+    state: as_sold
+    names:
+      en: ["Jelly dessert (gelatin), prepared"]
+      ar: ["جيلي", "جيلو"]
+      arabizi: ["jelly", "jello"]
+    servings: [{unit: cup, g: 270}]
+    notes: "Prepared with water, not dry powder. Cup weight is scaled from the USDA half-cup portion (135 g). Gelatin source is unspecified; halal flags belong to A31."
+  # Snack
+  - id: usda:popcorn_air_popped
+    fdc_id: 167959
+    state: as_sold
+    names:
+      en: ["Popcorn, air-popped"]
+      ar: ["فشار", "بوشار"]
+      arabizi: ["fshar", "boshar", "popcorn"]
+    servings: [{unit: cup, g: 8}]
+  - id: usda:popcorn_microwave_butter
+    fdc_id: 173141
+    state: as_sold
+    names:
+      en: ["Popcorn, microwave, butter"]
+      ar: ["فشار مايكرويف بالزبدة"]
+      arabizi: ["fshar microwave"]
+    servings: [{unit: cup, g: 7.9}]
+  - id: usda:pretzels_hard
+    fdc_id: 167555
+    state: as_sold
+    names:
+      en: ["Pretzels, hard, salted"]
+      ar: ["بريتزل", "مملحات"]
+      arabizi: ["pretzel", "pretzels"]
+    servings: [{unit: piece, g: 6}]
+    notes: "One piece is one twist, derived from the USDA 10-twist portion (60 g)."
+  - id: usda:corn_puffs_cheese
+    fdc_id: 167949
+    state: as_sold
+    names:
+      en: ["Cheese corn puffs (Cheetos-type)"]
+      ar: ["شيبس ذرة بالجبنة", "تشيتوس", "بفك"]
+      arabizi: ["cheetos", "bafak", "chips jibne"]
+  - id: usda:tortilla_chips_nacho
+    fdc_id: 167559
+    state: as_sold
+    names:
+      en: ["Tortilla chips, nacho cheese (Doritos-type)"]
+      ar: ["دوريتوس", "تورتيلا شيبس"]
+      arabizi: ["doritos", "tortilla chips"]
+  - id: usda:rice_cakes
+    fdc_id: 170250
+    state: as_sold
+    names:
+      en: ["Rice cakes"]
+      ar: ["كعك أرز", "رايس كيك"]
+      arabizi: ["rice cake", "rice cakes"]
+    servings: [{unit: piece, g: 9}]
+  - id: usda:granola_bar
+    fdc_id: 167542
+    state: as_sold
+    names:
+      en: ["Granola bar"]
+      ar: ["جرانولا بار", "لوح جرانولا"]
+      arabizi: ["granola bar"]
+    servings: [{unit: piece, g: 21}]
+    notes: "One piece uses the USDA 21 g bar; other listed bars are 25 or 28 g."
+  - id: usda:trail_mix
+    fdc_id: 167561
+    state: as_sold
+    names:
+      en: ["Trail mix (nuts and dried fruit)"]
+      ar: ["مكسرات مع فواكه مجففة"]
+      arabizi: ["trail mix"]
+    fiber_zero: true
+    servings: [{unit: cup, g: 150}]
+  # Drink
+  - id: usda:mango_nectar
+    fdc_id: 167785
+    state: as_sold
+    names:
+      en: ["Mango juice (nectar)"]
+      ar: ["عصير مانجا", "عصير مانجو"]
+      arabizi: ["3aseer manga", "mango juice"]
+    servings: [{unit: cup, g: 251}]
+  - id: usda:guava_nectar
+    fdc_id: 167784
+    state: as_sold
+    names:
+      en: ["Guava juice (nectar)"]
+      ar: ["عصير جوافة"]
+      arabizi: ["3aseer jawafa"]
+    servings: [{unit: cup, g: 251}]
+  - id: usda:apricot_nectar
+    fdc_id: 171704
+    state: as_sold
+    names:
+      en: ["Apricot juice (nectar)"]
+      ar: ["عصير مشمش"]
+      arabizi: ["3aseer mishmish"]
+    servings: [{unit: cup, g: 266}]
+    notes: "Canned apricot nectar; qamar al-din is a separate A30 drink."
+  - id: usda:peach_nectar
+    fdc_id: 168185
+    state: as_sold
+    names:
+      en: ["Peach juice (nectar)"]
+      ar: ["عصير دراق"]
+      arabizi: ["3aseer durra2"]
+    servings: [{unit: cup, g: 220}]
+  - id: usda:tamarind_nectar
+    fdc_id: 167786
+    state: as_sold
+    names:
+      en: ["Tamarind drink (tamer hindi)", "Tamarind (tamer hindi)"]
+      ar: ["تمر هندي", "عصير تمر هندي"]
+      arabizi: ["tamer hindi", "tamr hindi", "tamar hindi"]
+    servings: [{unit: cup, g: 251}]
+    notes: "Owner-approved canned-nectar proxy for tamer hindi (57 kcal per 100 g); street-drink sweetness varies."
+  - id: usda:pineapple_juice
+    fdc_id: 169947
+    state: as_sold
+    names:
+      en: ["Pineapple juice"]
+      ar: ["عصير أناناس"]
+      arabizi: ["3aseer ananas"]
+    servings: [{unit: cup, g: 250}]
+  - id: usda:carrot_juice
+    fdc_id: 170491
+    state: as_sold
+    names:
+      en: ["Carrot juice"]
+      ar: ["عصير جزر"]
+      arabizi: ["3aseer jazar"]
+    servings: [{unit: cup, g: 236}]
+  - id: usda:grapefruit_juice
+    fdc_id: 174678
+    state: as_sold
+    names:
+      en: ["Grapefruit juice"]
+      ar: ["عصير جريب فروت"]
+      arabizi: ["3aseer grapefruit"]
+    servings: [{unit: cup, g: 257}]
+  - id: usda:fruit_punch
+    fdc_id: 171914
+    state: as_sold
+    names:
+      en: ["Fruit punch drink"]
+      ar: ["عصير فواكه مشكل", "كوكتيل عصير"]
+      arabizi: ["3aseer fawakeh", "fruit punch"]
+    servings: [{unit: cup, g: 248}]
+  - id: usda:orange_drink
+    fdc_id: 174868
+    state: as_sold
+    names:
+      en: ["Orange drink (juice drink)"]
+      ar: ["شراب برتقال", "عصير برتقال صناعي"]
+      arabizi: ["sharab burtu2an", "orange drink"]
+    servings: [{unit: cup, g: 248}]
+  - id: usda:orange_drink_powder_prepared
+    fdc_id: 173236
+    state: as_sold
+    names:
+      en: ["Orange powder drink, prepared (Tang-type)"]
+      ar: ["تانج", "عصير بودرة"]
+      arabizi: ["tang", "3aseer budra"]
+    servings: [{unit: serving, g: 203}]
+    notes: "Prepared with water, not dry powder. One serving is the USDA 6 fl oz portion (203 g); Tang recipes differ."
+  - id: usda:lemonade
+    fdc_id: 173667
+    state: as_sold
+    names:
+      en: ["Lemonade"]
+      ar: ["ليموناضة", "ليمونادة"]
+      arabizi: ["limonada", "lemonade"]
+    servings: [{unit: serving, g: 247}]
+    notes: "Prepared pink lemonade, not concentrate; one serving is the USDA 8 fl oz bottle (247 g). Fresh lemon-mint is a separate A30 drink."
+  - id: usda:cranberry_juice_cocktail
+    fdc_id: 171903
+    state: as_sold
+    names:
+      en: ["Cranberry juice drink"]
+      ar: ["عصير توت بري"]
+      arabizi: ["cranberry juice"]
+    servings: [{unit: cup, g: 253}]
+  - id: usda:energy_drink
+    fdc_id: 173210
+    state: as_sold
+    names:
+      en: ["Energy drink (Red Bull-type)"]
+      ar: ["مشروب طاقة", "ريد بول"]
+      arabizi: ["red bull", "energy drink"]
+    servings: [{unit: can, g: 258}]
+    notes: "USDA Red Bull formulation; one can is the USDA 8.4 fl oz can (258 g)."
+  - id: usda:energy_drink_sugar_free
+    fdc_id: 174822
+    state: as_sold
+    names:
+      en: ["Energy drink, sugar-free"]
+      ar: ["مشروب طاقة بدون سكر"]
+      arabizi: ["energy drink zero", "red bull sugar free"]
+    servings: [{unit: serving, g: 240}]
+    notes: "One serving is the USDA 8 fl oz portion (240 g)."
+  - id: usda:sports_drink
+    fdc_id: 173660
+    state: as_sold
+    names:
+      en: ["Sports drink (Gatorade-type)"]
+      ar: ["مشروب رياضي", "جاتوريد"]
+      arabizi: ["gatorade", "sports drink"]
+    servings: [{unit: serving, g: 244}]
+    notes: "USDA Gatorade formulation; one serving is 8 fl oz (244 g)."
+  - id: usda:orange_soda
+    fdc_id: 174854
+    state: as_sold
+    names:
+      en: ["Orange soda"]
+      ar: ["ميرندا", "فانتا", "مشروب غازي برتقال"]
+      arabizi: ["mirinda", "fanta"]
+    servings: [{unit: can, g: 372}]
+    notes: "Generic orange soda, used for Mirinda/Fanta-type drinks; one can is 12 fl oz (372 g). Brand recipes differ."
+  - id: usda:lemon_lime_soda_diet
+    fdc_id: 173204
+    state: as_sold
+    names:
+      en: ["Lemon-lime soda, diet"]
+      ar: ["سفن أب دايت", "سبرايت زيرو"]
+      arabizi: ["7up diet", "sprite zero"]
+    servings: [{unit: can, g: 355}]
+    notes: "One can is the USDA 12 fl oz portion (355 g); brand recipes differ."
+  - id: usda:club_soda
+    fdc_id: 174842
+    state: as_sold
+    names:
+      en: ["Soda water (club soda)"]
+      ar: ["صودا", "مياه غازية"]
+      arabizi: ["soda", "mayy ghaziyyeh"]
+    servings: [{unit: can, g: 355}]
+    notes: "One can is the USDA 12 fl oz portion (355 g)."
+  - id: usda:malt_beverage_nonalcoholic
+    fdc_id: 174863
+    state: as_sold
+    names:
+      en: ["Malt drink (non-alcoholic beer)"]
+      ar: ["بيرة شعير", "مشروب شعير"]
+      arabizi: ["beera sha3eer", "barbican", "moussy"]
+    servings: [{unit: cup, g: 237}]
+    notes: "USDA malt-beverage proxy for non-alcoholic malt drinks; brand recipes differ."
+  - id: usda:espresso
+    fdc_id: 171891
+    state: cooked
+    names:
+      en: ["Espresso"]
+      ar: ["إسبريسو", "اسبرسو"]
+      arabizi: ["espresso", "expresso"]
+    servings: [{unit: serving, g: 29.6}]
+    notes: "One serving is the USDA 1 fl oz portion (29.6 g)."
+  - id: usda:iced_coffee_milk
+    fdc_id: 171880
+    state: as_sold
+    names:
+      en: ["Iced coffee, milk-based, sweetened (bottled)"]
+      ar: ["آيس كوفي", "قهوة مثلجة"]
+      arabizi: ["ice coffee", "iced coffee"]
+    servings: [{unit: cup, g: 262}]
+  - id: usda:iced_tea_lemon
+    fdc_id: 171888
+    state: as_sold
+    names:
+      en: ["Iced tea, lemon, sweetened"]
+      ar: ["آيس تي", "شاي مثلج"]
+      arabizi: ["ice tea", "iced tea"]
+    servings: [{unit: cup, g: 271}]
+  - id: usda:chamomile_tea
+    fdc_id: 174156
+    state: cooked
+    names:
+      en: ["Chamomile tea"]
+      ar: ["بابونج", "شاي بابونج"]
+      arabizi: ["babounej", "babunaj"]
+    servings: [{unit: cup, g: 237}]
+  - id: usda:herbal_tea
+    fdc_id: 173232
+    state: cooked
+    names:
+      en: ["Herbal tea (sage, anise, zhourat)"]
+      ar: ["شاي أعشاب", "زهورات"]
+      arabizi: ["zhourat", "shai a3shab"]
+    servings: [{unit: cup, g: 237}]
+    notes: "Unsweetened brewed herbal tea; the dry herbs have separate entries."
+  - id: usda:hot_chocolate_milk
+    fdc_id: 171879
+    state: as_sold
+    names:
+      en: ["Hot chocolate (cocoa mix with milk)"]
+      ar: ["هوت شوكليت", "كاكاو بالحليب"]
+      arabizi: ["hot chocolate", "kakao bil 7aleeb"]
+    servings: [{unit: cup, g: 266}]
+  - id: usda:cocoa_drink_mix_powder
+    fdc_id: 174122
+    state: dry
+    names:
+      en: ["Cocoa drink mix, powder"]
+      ar: ["كاكاو سريع الذوبان", "بودرة كاكاو محلاة"]
+      arabizi: ["cocoa mix"]
+    servings: [{unit: serving, g: 28}]
+    notes: "Dry cocoa mix; one serving is the USDA 28 g envelope, before adding water or milk."
+  - id: usda:chocolate_milk_powder
+    fdc_id: 174159
+    state: dry
+    names:
+      en: ["Chocolate milk powder (Nesquik-type)"]
+      ar: ["نسكويك"]
+      arabizi: ["nesquik", "nesquick"]
+    servings: [{unit: serving, g: 22}]
+    notes: "Dry fortified mix; one serving is 22 g before adding milk. Nesquik recipes differ."
+  - id: usda:malted_milk_powder
+    fdc_id: 174864
+    state: dry
+    names:
+      en: ["Malted milk powder (Ovaltine-type)"]
+      ar: ["أوفالتين"]
+      arabizi: ["ovaltine"]
+    servings: [{unit: serving, g: 21}]
+    notes: "USDA Ovaltine Classic Malt dry powder; one serving is 21 g before adding milk."
+  - id: usda:coconut_water
+    fdc_id: 174831
+    state: as_sold
+    names:
+      en: ["Coconut water"]
+      ar: ["ماء جوز الهند"]
+      arabizi: ["coconut water"]
+    servings: [{unit: cup, g: 245}]
+  - id: usda:soy_milk
+    fdc_id: 172446
+    state: as_sold
+    names:
+      en: ["Soy milk"]
+      ar: ["حليب صويا"]
+      arabizi: ["7aleeb soya", "soy milk"]
+    servings: [{unit: cup, g: 243}]
+    notes: "USDA original/vanilla unfortified soymilk; not an unsweetened-only formulation."
+  # Fast Food
+  - id: usda:pizza_cheese
+    fdc_id: 173292
+    state: as_sold
+    names:
+      en: ["Pizza, cheese (chain, regular crust)", "Pizza slice"]
+      ar: ["بيتزا جبنة", "بيتزا", "شريحة بيتزا"]
+      arabizi: ["pizza", "pitza", "pizza jibne", "pizza slice"]
+    servings: [{unit: piece, g: 107}]
+    notes: "Owner-approved cheese-pizza proxy for a pizza slice; one piece is the USDA 107 g slice of a 14-inch regular-crust pizza."
+  - id: usda:hamburger_single
+    fdc_id: 170694
+    state: as_sold
+    names:
+      en: ["Hamburger, single patty, with condiments", "Burger"]
+      ar: ["همبرغر", "برغر", "برجر"]
+      arabizi: ["burger", "hamburger", "bergar"]
+    servings: [{unit: sandwich, g: 97}]
+    notes: "Owner-approved generic burger proxy; one sandwich is the USDA 97 g single-patty burger with condiments. Local burgers vary."
+  - id: usda:cheeseburger_single
+    fdc_id: 170691
+    state: as_sold
+    names:
+      en: ["Cheeseburger, single patty, with condiments"]
+      ar: ["تشيز برغر"]
+      arabizi: ["cheeseburger", "cheese burger"]
+    servings: [{unit: piece, g: 127}]
+  - id: usda:cheeseburger_double
+    fdc_id: 173319
+    state: as_sold
+    names:
+      en: ["Cheeseburger, double patty"]
+      ar: ["دبل تشيز برغر"]
+      arabizi: ["double cheeseburger"]
+    servings: [{unit: sandwich, g: 155}]
+  - id: usda:chicken_sandwich_crispy
+    fdc_id: 170318
+    state: as_sold
+    names:
+      en: ["Crispy chicken sandwich (lettuce, mayo)"]
+      ar: ["سندويش كرسبي", "سندويشة زنجر"]
+      arabizi: ["crispy sandwich", "zinger sandwich"]
+    servings: [{unit: sandwich, g: 152}, {unit: piece, g: 152}]
+    notes: "USDA crispy chicken sandwich with lettuce and mayonnaise; local zinger size/spice varies. One piece is one whole sandwich (USDA FDC 170318: 152 g), not a chicken fillet. Not counted as the must-cover zinger until separately approved."
+  - id: usda:chicken_sandwich_grilled
+    fdc_id: 170368
+    state: as_sold
+    names:
+      en: ["Grilled chicken sandwich"]
+      ar: ["سندويش دجاج مشوي"]
+      arabizi: ["grilled chicken sandwich"]
+    servings: [{unit: sandwich, g: 230}]
+    notes: "USDA grilled chicken sandwich includes lettuce, tomato and spread."
+  - id: usda:chicken_strips_fast_food
+    fdc_id: 173321
+    state: fried
+    names:
+      en: ["Chicken strips (tenders), fried"]
+      ar: ["ستربس", "كرسبي ستربس"]
+      arabizi: ["strips", "crispy strips", "tenders"]
+    servings: [{unit: piece, g: 30}]
+  - id: usda:chicken_nuggets_fast_food
+    fdc_id: 170718
+    state: fried
+    names:
+      en: ["Chicken nuggets, fried"]
+      ar: ["ناغتس", "قطع دجاج مقلية"]
+      arabizi: ["nuggets", "naggets"]
+    servings: [{unit: piece, g: 16}]
+  - id: usda:fried_chicken_breast
+    fdc_id: 170756
+    state: fried
+    names:
+      en: ["Fried chicken breast, breaded (broasted-style)", "Broasted chicken"]
+      ar: ["صدر بروستد", "صدر دجاج مقلي", "بروستد دجاج"]
+      arabizi: ["broasted breast", "fried chicken breast", "broasted djaj"]
+    servings: [{unit: piece, g: 203}]
+    notes: "Owner-approved broasted-style proxy: USDA fried breast with meat, skin and breading. One piece uses the USDA breast-with-skin portion (203 g)."
+  - id: usda:fried_chicken_drumstick
+    fdc_id: 170757
+    state: fried
+    names:
+      en: ["Fried chicken drumstick, breaded (broasted-style)"]
+      ar: ["دبوس بروستد", "دبوس مقلي"]
+      arabizi: ["broasted drumstick"]
+    servings: [{unit: piece, g: 75}]
+    notes: "Owner-approved broasted-style proxy: USDA fried drumstick with meat, skin and breading. One piece uses the USDA drumstick-with-skin portion (75 g)."
+  - id: usda:fried_chicken_thigh
+    fdc_id: 170359
+    state: fried
+    names:
+      en: ["Fried chicken thigh, breaded (broasted-style)"]
+      ar: ["ورك بروستد", "ورك مقلي"]
+      arabizi: ["broasted thigh"]
+    servings: [{unit: piece, g: 136}]
+    notes: "Owner-approved broasted-style proxy: USDA fried thigh with meat, skin and breading. One piece uses the USDA thigh-with-skin portion (136 g)."
+  - id: usda:fried_chicken_wing
+    fdc_id: 170360
+    state: fried
+    names:
+      en: ["Fried chicken wing, breaded (broasted-style)"]
+      ar: ["جوانح بروستد", "جناح مقلي"]
+      arabizi: ["broasted wings", "fried wings"]
+    servings: [{unit: piece, g: 58}]
+    notes: "Owner-approved broasted-style proxy: USDA fried wing with meat, skin and breading. One piece uses the USDA wing-with-skin portion (58 g)."
+  - id: usda:onion_rings
+    fdc_id: 170697
+    state: fried
+    names:
+      en: ["Onion rings, fried"]
+      ar: ["حلقات بصل"]
+      arabizi: ["onion rings", "7ala2at basal"]
+    servings: [{unit: serving, g: 117}]
+    notes: "One serving is the USDA package of 18 rings (117 g), not one ring."
+  - id: usda:nachos_cheese
+    fdc_id: 170291
+    state: as_sold
+    names:
+      en: ["Nachos with cheese"]
+      ar: ["ناتشوز"]
+      arabizi: ["nachos"]
+    servings: [{unit: serving, g: 80}]
+  - id: usda:sundae_hot_fudge
+    fdc_id: 173276
+    state: as_sold
+    names:
+      en: ["Sundae, hot fudge"]
+      ar: ["صنداي"]
+      arabizi: ["sundae"]
+    servings: [{unit: serving, g: 158}]
+    notes: "One serving is the USDA sundae (158 g)."
+  # Branded Bars
+  - id: usda:snickers_bar
+    fdc_id: 169589
+    state: as_sold
+    names:
+      en: ["Snickers bar"]
+      ar: ["سنيكرز"]
+      arabizi: ["snickers", "snikers"]
+    servings: [{unit: piece, g: 57}]
+    notes: "USDA SR Legacy US formulation. One piece is the 2 oz bar (57 g); current/local pack sizes and recipes may differ."
+  - id: usda:kit_kat_bar
+    fdc_id: 167992
+    state: as_sold
+    names:
+      en: ["Kit Kat bar"]
+      ar: ["كيت كات"]
+      arabizi: ["kitkat", "kit kat"]
+    servings: [{unit: piece, g: 42}]
+    notes: "USDA SR Legacy US formulation. One piece is the 1.5 oz bar (42 g); current/local pack sizes and recipes may differ."
+  - id: usda:twix_bar
+    fdc_id: 168768
+    state: as_sold
+    names:
+      en: ["Twix"]
+      ar: ["تويكس"]
+      arabizi: ["twix"]
+    servings: [{unit: serving, g: 57}]
+    notes: "USDA SR Legacy US formulation. One serving is the 2 oz package (57 g), not a single finger; current/local pack sizes and recipes may differ."
+  - id: usda:mms_milk_chocolate
+    fdc_id: 169583
+    state: as_sold
+    names:
+      en: ["M&M's, milk chocolate", "M&M's"]
+      ar: ["إم آند إمز"]
+      arabizi: ["m&m", "mnm", "mms"]
+    servings: [{unit: serving, g: 48}]
+    notes: "USDA SR Legacy US formulation. One serving is the 1.69 oz package (48 g), not one candy; current/local pack sizes and recipes may differ."
+  - id: usda:toblerone
+    fdc_id: 167947
+    state: as_sold
+    names:
+      en: ["Toblerone"]
+      ar: ["توبليرون"]
+      arabizi: ["toblerone"]
+    servings: [{unit: piece, g: 35}]
+    notes: "USDA SR Legacy formulation. One piece is the 35 g bar, not one triangle; current/local pack sizes and recipes may differ."
+
+  # A47 B5: verified against the retained SR Legacy CSVs; balls only, no bread.
+  - id: usda:falafel_home_prepared
+    fdc_id: 172455
+    state: fried
+    fiber_zero: true
+    names:
+      en: ["Falafel (home-prepared balls)", "Falafel"]
+      ar: ["فلافل منزلية", "فلافل مقلية"]
+      arabizi: ["homemade falafel", "falafel ma2li", "falafel beiti"]
+    servings: [{unit: piece, g: 17}]
+    notes: "USDA SR Legacy 172455, home-prepared falafel balls: one patty (about 2-1/4 inch diameter) weighs 17 g. Excludes bread, tahini and sandwich fillings; do not log a whole sandwich with this portion. USDA omits fibre, so fiber_zero follows the import convention (unknown, not a measured zero). Qualified AR/Arabizi aliases preserve the existing draft falafel variant's exact names."

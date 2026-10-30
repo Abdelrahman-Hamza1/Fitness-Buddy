@@ -13,8 +13,8 @@ variants:
 portions:
   cup: {g: 180, range: [160, 190]}
 review:
-  status: draft
-  reviewed_by: claude-draft
+  status: reviewed
+  reviewed_by: ai-verified
   sources:
     - "USDA FoodData Central, Branded Foods 2553773, Cracked Freekeh (Woodland Foods): https://fdc.nal.usda.gov/food-details/2553773/nutrients"
-  notes: "Dry (uncooked) cracked freekeh from one US label. Other freekeh labels seen in FDC range 325-360 kcal, 12-20 g protein, 10-12 g fiber per 100 g, so this is a typical value, not exact. USDA has no generic freekeh. For cooked freekeh use the dry entry with the freekeh yield factor (cooked is roughly 2.5 to 3 times the dry weight; the factor row belongs in data/yields.yaml). The cup weight (180 g) is the label's own serving (45 g = 1/4 cup)."
+  notes: "Dry (uncooked) cracked freekeh from one US label. Other freekeh labels seen in FDC range 325-360 kcal, 12-20 g protein, 10-12 g fiber per 100 g, so this is a typical value, not exact. USDA has no generic freekeh. For cooked freekeh use the dry entry with the freekeh yield factor (cooked is roughly 2.5 to 3 times the dry weight; the factor row belongs in data/yields.yaml). The cup weight (180 g) is the label's own serving (45 g = 1/4 cup). AI verification 2026-10-30 (A47 B6, owner-delegated): FDC 2553773 re-read through the FDC API; per 100 g 356 kcal, 13.33 P, 71.11 C, 2.22 F, fibre 11.1, sodium 0, serving 45 g (1/4 cup) match. Label per serving is rounded (160 kcal, 6 P, 5 g fibre). Cup 180 g is 4 x 45 g, which is a dry cup."

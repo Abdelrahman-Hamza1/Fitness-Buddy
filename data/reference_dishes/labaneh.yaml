@@ -14,8 +14,8 @@ portions:
   tbsp: {g: 20, range: [15, 30]}
   serving: {g: 60, range: [40, 100]}
 review:
-  status: draft
-  reviewed_by: claude-draft
+  status: reviewed
+  reviewed_by: ai-verified
   sources:
     - "Baladna Fresh Labneh Full Fat product page (label per 100 g): https://baladna.com/en/product/full-fat-fresh-labneh"
-  notes: "One Gulf brand label; labaneh varies a lot with straining time and milk fat (Baladna's own Turkish full fat labneh page lists 158 kcal and its Jarashia style 123 kcal per 100 g). Labaneh balls in oil are much richer (Baladna: 322 kcal) and are not covered here: that page does not say whether the figures are for drained solids. Spoon and serving weights are typical household values."
+  notes: "One Gulf brand label; labaneh varies a lot with straining time and milk fat (Baladna's own Turkish full fat labneh page lists 158 kcal and its Jarashia style 123 kcal per 100 g). Labaneh balls in oil are much richer (Baladna: 322 kcal) and are not covered here: that page does not say whether the figures are for drained solids. Spoon and serving weights are typical household values. AI verification 2026-10-30 (A47 B6, owner-delegated): Baladna page re-opened; 154 kcal, 9 P, 7 C, 10 F, sodium 300 mg, salt 0.6% match; fibre not printed. Greek yogurt analogue FDC 171304 is lower because labaneh is more strained and fattier. Portions are household estimates."

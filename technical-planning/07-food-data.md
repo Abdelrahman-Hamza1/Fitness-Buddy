@@ -62,7 +62,7 @@ portions:                        # cooked grams per portion word
 review:
   status: reviewed               # draft | reviewed
   sources: ["<recipe url or book>", "<second source>"]
-  reviewed_by: owner             # or claude-draft
+  reviewed_by: owner             # or ai-verified | claude-draft
   notes: "Oil varies a lot by household; range reflects 40–100 g."
 ```
 

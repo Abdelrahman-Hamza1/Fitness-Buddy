@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:drift/drift.dart' show QueryExecutor, QueryInterceptor, Value;
 import 'package:fb_domain/fb_domain.dart';
@@ -623,6 +624,148 @@ void main() {
         isNotEmpty,
       );
     },
+  );
+
+  test(
+    'FD-060 PA12 real pack pins every compatible pair; '
+    '90/10 beef switches only to matching 90/10',
+    () async {
+      final db = backgroundDatabase(
+        tempDir().path,
+        catalog: FixedPack(File('assets/catalog/catalog.db').absolute.path),
+      );
+      final repository = FoodCatalogRepository(OfflineCatalog(db));
+      final loader = FoodChoiceLoader(repository, () => []);
+      final targets = await db
+          .customSelect(
+            'SELECT id FROM catalog.foods WHERE yield_group '
+            'IS NOT NULL ORDER BY id',
+          )
+          .get();
+      final actual = <String>[];
+      for (final row in targets) {
+        final id = row.read<String>('id');
+        final choice = (await loader.load(
+          FoodChoiceRef(FoodRef.catalog(id, version: '6')),
+        ))!;
+        if (id == 'usda:beef_ground_90_raw') {
+          expect(choice.siblings.map((s) => s.id), [
+            'usda:beef_ground_90_cooked',
+          ]);
+        }
+        actual.addAll(choice.siblings.map((s) => '$id -> ${s.id}'));
+      }
+      expect(
+        actual..sort(),
+        <(String, String)>[
+          ('usda:beef_chuck_braised', 'usda:beef_chuck_raw'),
+          ('usda:beef_chuck_raw', 'usda:beef_chuck_braised'),
+          ('usda:beef_ground_80_cooked', 'usda:beef_ground_80_raw'),
+          ('usda:beef_ground_80_raw', 'usda:beef_ground_80_cooked'),
+          ('usda:beef_ground_85_cooked', 'usda:beef_ground_85_raw'),
+          ('usda:beef_ground_85_raw', 'usda:beef_ground_85_cooked'),
+          ('usda:beef_ground_90_cooked', 'usda:beef_ground_90_raw'),
+          ('usda:beef_ground_90_raw', 'usda:beef_ground_90_cooked'),
+          ('usda:beef_ground_95_cooked', 'usda:beef_ground_95_raw'),
+          ('usda:beef_ground_95_raw', 'usda:beef_ground_95_cooked'),
+          ('usda:beef_lean_round_raw', 'usda:beef_lean_round_roasted'),
+          ('usda:beef_lean_round_roasted', 'usda:beef_lean_round_raw'),
+          ('usda:beef_ribeye_grilled', 'usda:beef_ribeye_raw'),
+          ('usda:beef_ribeye_raw', 'usda:beef_ribeye_grilled'),
+          ('usda:beef_sirloin_broiled', 'usda:beef_sirloin_raw'),
+          ('usda:beef_sirloin_raw', 'usda:beef_sirloin_broiled'),
+          ('usda:beef_tenderloin_broiled', 'usda:beef_tenderloin_raw'),
+          ('usda:beef_tenderloin_raw', 'usda:beef_tenderloin_broiled'),
+          ('usda:black_eyed_peas_cooked', 'usda:black_eyed_peas_dry'),
+          ('usda:black_eyed_peas_dry', 'usda:black_eyed_peas_cooked'),
+          ('usda:bulgur_cooked', 'usda:bulgur_dry'),
+          ('usda:bulgur_dry', 'usda:bulgur_cooked'),
+          ('usda:chicken_meat_raw', 'usda:chicken_meat_roasted'),
+          ('usda:chicken_meat_roasted', 'usda:chicken_meat_raw'),
+          ('usda:chickpeas_cooked', 'usda:chickpeas_dry'),
+          ('usda:chickpeas_dry', 'usda:chickpeas_cooked'),
+          ('usda:cod_cooked', 'usda:cod_raw'),
+          ('usda:cod_raw', 'usda:cod_cooked'),
+          ('usda:fava_beans_cooked', 'usda:fava_beans_dry'),
+          ('usda:fava_beans_dry', 'usda:fava_beans_cooked'),
+          ('usda:grouper_cooked', 'usda:grouper_raw'),
+          ('usda:grouper_raw', 'usda:grouper_cooked'),
+          ('usda:kidney_beans_cooked', 'usda:kidney_beans_dry'),
+          ('usda:kidney_beans_dry', 'usda:kidney_beans_cooked'),
+          ('usda:lamb_chops_grilled', 'usda:lamb_chops_raw'),
+          ('usda:lamb_chops_raw', 'usda:lamb_chops_grilled'),
+          ('usda:lamb_ground_cooked', 'usda:lamb_ground_raw'),
+          ('usda:lamb_ground_raw', 'usda:lamb_ground_cooked'),
+          ('usda:lamb_leg_raw', 'usda:lamb_leg_roasted'),
+          ('usda:lamb_leg_roasted', 'usda:lamb_leg_raw'),
+          ('usda:lamb_mixed_cuts_cooked', 'usda:lamb_mixed_cuts_raw'),
+          ('usda:lamb_mixed_cuts_raw', 'usda:lamb_mixed_cuts_cooked'),
+          ('usda:lamb_shank_braised', 'usda:lamb_shank_raw'),
+          ('usda:lamb_shank_raw', 'usda:lamb_shank_braised'),
+          ('usda:lamb_shoulder_braised', 'usda:lamb_shoulder_raw'),
+          ('usda:lamb_shoulder_raw', 'usda:lamb_shoulder_braised'),
+          ('usda:lentils_cooked', 'usda:lentils_dry'),
+          ('usda:lentils_dry', 'usda:lentils_cooked'),
+          ('usda:mackerel_cooked', 'usda:mackerel_raw'),
+          ('usda:mackerel_raw', 'usda:mackerel_cooked'),
+          ('usda:mullet_cooked', 'usda:mullet_raw'),
+          ('usda:mullet_raw', 'usda:mullet_cooked'),
+          ('usda:pasta_cooked', 'usda:pasta_dry'),
+          ('usda:pasta_dry', 'usda:pasta_cooked'),
+          ('usda:pasta_whole_wheat_cooked', 'usda:pasta_whole_wheat_dry'),
+          ('usda:pasta_whole_wheat_dry', 'usda:pasta_whole_wheat_cooked'),
+          ('usda:potato_boiled', 'usda:potato_raw'),
+          ('usda:potato_raw', 'usda:potato_boiled'),
+          (
+            'usda:rice_brown_long_grain_cooked',
+            'usda:rice_brown_long_grain_raw',
+          ),
+          (
+            'usda:rice_brown_long_grain_raw',
+            'usda:rice_brown_long_grain_cooked',
+          ),
+          ('usda:rice_parboiled_cooked', 'usda:rice_parboiled_raw'),
+          ('usda:rice_parboiled_raw', 'usda:rice_parboiled_cooked'),
+          ('usda:rice_short_grain_cooked', 'usda:rice_short_grain_raw'),
+          ('usda:rice_short_grain_raw', 'usda:rice_short_grain_cooked'),
+          (
+            'usda:rice_white_long_grain_cooked',
+            'usda:rice_white_long_grain_raw',
+          ),
+          (
+            'usda:rice_white_long_grain_raw',
+            'usda:rice_white_long_grain_cooked',
+          ),
+          (
+            'usda:rice_white_medium_grain_cooked',
+            'usda:rice_white_medium_grain_raw',
+          ),
+          (
+            'usda:rice_white_medium_grain_raw',
+            'usda:rice_white_medium_grain_cooked',
+          ),
+          ('usda:salmon_farmed_cooked', 'usda:salmon_farmed_raw'),
+          ('usda:salmon_farmed_raw', 'usda:salmon_farmed_cooked'),
+          ('usda:sea_bass_cooked', 'usda:sea_bass_raw'),
+          ('usda:sea_bass_raw', 'usda:sea_bass_cooked'),
+          ('usda:shrimp_cooked', 'usda:shrimp_raw'),
+          ('usda:shrimp_raw', 'usda:shrimp_cooked'),
+          ('usda:sole_cooked', 'usda:sole_raw'),
+          ('usda:sole_raw', 'usda:sole_cooked'),
+          ('usda:tilapia_cooked', 'usda:tilapia_raw'),
+          ('usda:tilapia_raw', 'usda:tilapia_cooked'),
+          ('usda:trout_cooked', 'usda:trout_raw'),
+          ('usda:trout_raw', 'usda:trout_cooked'),
+          ('usda:veal_stew_braised', 'usda:veal_stew_raw'),
+          ('usda:veal_stew_raw', 'usda:veal_stew_braised'),
+          ('usda:white_beans_cooked', 'usda:white_beans_dry'),
+          ('usda:white_beans_dry', 'usda:white_beans_cooked'),
+        ].map((pair) => '${pair.$1} -> ${pair.$2}').toList(),
+      );
+    },
+    skip: !File('assets/catalog/catalog.db').existsSync()
+        ? 'Build catalog-pack first'
+        : false,
   );
 
   test('FD-060 fixture group with only one state offers no switch', () async {

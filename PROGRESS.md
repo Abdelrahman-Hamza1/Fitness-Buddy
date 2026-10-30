@@ -1,8 +1,8 @@
 # Fitness Buddy: progress
 
-**46 of 86 steps done** · `▓▓▓▓▓░░░░░` 53%
+**47 of 86 steps done** · `▓▓▓▓▓░░░░░` 54%
 
-App 32/63 · Backend 14/23 · Foundation 7/7
+App 33/63 · Backend 14/23 · Foundation 7/7
 
 ## Now
 
@@ -15,7 +15,7 @@ App 32/63 · Backend 14/23 · Foundation 7/7
 | ✅ | **M1** Dogfood 1 | `▓▓▓▓▓` 14/14 | — |
 | 🟨 | **M2** Targets & weight | `▓▓▓▓░` 8/9 | A16 |
 | 🟨 | **M5** Accounts & sync | `▓▓▓▓░` 16/19 | A34 A35 B21 |
-| 🟨 | **M2b** Solid app (no AI) | `▓░░░░` 7/23 | A17 A18 A19 A28a A30 A37a +14 |
+| 🟨 | **M2b** Solid app (no AI) | `▓░░░░` 8/23 | A17 A18 A19 A28a A30 A37a +13 |
 | 🟨 | **M3** Buddy on the laptop | `▓░░░░` 1/3 | A23b A49 #148 #149 #150 #151 |
 | ⬜ | **M4** Dogfood 2 | `░░░░░` 0/8 | A25 A26 A27 A28b A29 A31 +2 |
 | ⬜ | **M6** Workouts, review &… | `░░░░░` 0/4 | A37b A39b A41b B12 |

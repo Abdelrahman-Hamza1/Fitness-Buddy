@@ -4,14 +4,6 @@
     {
       "report": "m3",
       "metric": "AQ-02",
-      "unit": "T05#1",
-      "code": "key:usda:egg_white_raw",
-      "class": "resolver",
-      "fixingStep": "resolver-match-quality"
-    },
-    {
-      "report": "m3",
-      "metric": "AQ-02",
       "unit": "T06#0",
       "code": "cardIssue:needsConversion",
       "class": "tooling",
@@ -44,39 +36,7 @@
     {
       "report": "m3",
       "metric": "AQ-02",
-      "unit": "T12#0",
-      "code": "cardIssue:needsConversion",
-      "class": "policy",
-      "fixingStep": "estimate-portion-policy"
-    },
-    {
-      "report": "m3",
-      "metric": "AQ-02",
-      "unit": "T13#0",
-      "code": "cardIssue:needsConversion",
-      "class": "policy",
-      "fixingStep": "estimate-portion-policy"
-    },
-    {
-      "report": "m3",
-      "metric": "AQ-02",
-      "unit": "T14#0",
-      "code": "cardIssue:needsConversion",
-      "class": "policy",
-      "fixingStep": "estimate-portion-policy"
-    },
-    {
-      "report": "m3",
-      "metric": "AQ-02",
       "unit": "T15#0",
-      "code": "cardIssue:needsConversion",
-      "class": "policy",
-      "fixingStep": "estimate-portion-policy"
-    },
-    {
-      "report": "m3",
-      "metric": "AQ-02",
-      "unit": "T16#0",
       "code": "cardIssue:needsConversion",
       "class": "policy",
       "fixingStep": "estimate-portion-policy"
@@ -124,6 +84,22 @@
     {
       "report": "m3",
       "metric": "AQ-02",
+      "unit": "T12#0",
+      "code": "key:usda:chicken_breast_skinless_raw",
+      "class": "resolver",
+      "fixingStep": "A49"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
+      "unit": "T13#0",
+      "code": "key:usda:falafel_home_prepared",
+      "class": "resolver",
+      "fixingStep": "A49"
+    },
+    {
+      "report": "m3",
+      "metric": "AQ-02",
       "unit": "T12#1",
       "code": "cardIssue:needsConversion",
       "class": "tooling",
@@ -140,26 +116,10 @@
     {
       "report": "m3",
       "metric": "AQ-02",
-      "unit": "T19#0",
-      "code": "clarify:unmatchedFood",
-      "class": "data",
-      "fixingStep": "A32"
-    },
-    {
-      "report": "m3",
-      "metric": "AQ-02",
       "unit": "T39#1",
       "code": "key:usda:yogurt_plain_whole",
       "class": "resolver",
       "fixingStep": "resolver-match-quality"
-    },
-    {
-      "report": "m3",
-      "metric": "AQ-03",
-      "unit": "T19#0",
-      "code": "clarify:unmatchedFood",
-      "class": "data",
-      "fixingStep": "A32"
     },
     {
       "report": "m3",
@@ -184,14 +144,6 @@
       "code": "cardIssue:needsConversion",
       "class": "tooling",
       "fixingStep": "density-chore"
-    },
-    {
-      "report": "m3",
-      "metric": "AQ-07",
-      "unit": "T19",
-      "code": "asked:clarify",
-      "class": "data",
-      "fixingStep": "A32"
     },
     {
       "report": "b09",

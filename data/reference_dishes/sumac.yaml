@@ -13,8 +13,8 @@ variants:
 portions:
   tsp: {g: 2.5, range: [1.5, 4]}
 review:
-  status: draft
-  reviewed_by: claude-draft
+  status: reviewed
+  reviewed_by: ai-verified
   sources:
     - "Steenbergs Sumac product page (label per 100 g): https://steenbergs.co.uk/product/sumac/"
-  notes: "One UK spice-shop label (with added salt, 5.7 g salt per 100 g). Other sumac labels range 250-585 kcal per 100 g and several list 40+ g fibre, so treat as +-30%. The amount used in a dish (1 to 5 g) makes the effect on a plate small. Fibre is unknown, shown as 0."
+  notes: "One UK spice-shop label (with added salt, 5.7 g salt per 100 g). Other sumac labels range 250-585 kcal per 100 g and several list 40+ g fibre, so treat as +-30%. The amount used in a dish (1 to 5 g) makes the effect on a plate small. Fibre is unknown, shown as 0. AI verification 2026-10-30 (A47 B6, owner-delegated): Steenbergs page re-opened; 376 kcal, 3.3 P, 61.5 C (sugars 0.5), 13 F (2.9 sat), salt 5.7 g, ingredients sumac and salt match. Fibre is not listed there, and 0 is a placeholder: retail labels seen elsewhere show roughly 18-45 g fibre per 100 g (unverified), so the true fibre is much higher. Negligible effect at 2.5 g per teaspoon."

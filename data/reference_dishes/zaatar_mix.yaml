@@ -14,8 +14,8 @@ portions:
   tbsp: {g: 6, range: [4, 10]}
   tsp: {g: 2, range: [1, 4]}
 review:
-  status: draft
-  reviewed_by: claude-draft
+  status: reviewed
+  reviewed_by: ai-verified
   sources:
     - "Sligro Spice Market Za'atar specification (PS in Foodservice): https://psinfoodservice.com/en/product/2084567-za-atar"
-  notes: "Dry blend of sesame, thyme and sumac (no oil). Palestinian zaatar often has more sesame and oil-cured olive oil mixed in, so energy varies about +-80 kcal per 100 g between families and shops. Zaatar served with olive oil is a separate dish (zaatar_with_olive_oil), where the oil is the main variable. Spoon weights are typical household values."
+  notes: "Dry blend of sesame, thyme and sumac (no oil). Palestinian zaatar often has more sesame and oil-cured olive oil mixed in, so energy varies about +-80 kcal per 100 g between families and shops. Zaatar served with olive oil is a separate dish (zaatar_with_olive_oil), where the oil is the main variable. Spoon weights are typical household values. AI verification 2026-10-30 (A47 B6, owner-delegated): PS in Foodservice spec re-opened (Sligro Spice Market, ingredients sesame, thyme, sumac); 1900 kJ/454 kcal, fat 33.3 (sat 5.22), carbs 16 (sugars 0.8), fibre 24, protein 13.5 match. Stated kcal is 454 whereas 4/4/9/2 gives 465.7, within sanity tolerance. Spoon weights are household estimates."

@@ -14,8 +14,8 @@ portions:
   slice: {g: 30, range: [20, 45]}
   piece: {g: 60, range: [40, 90]}
 review:
-  status: draft
-  reviewed_by: claude-draft
+  status: reviewed
+  reviewed_by: ai-verified
   sources:
     - "Matvaretabellen, Cheese, Halloumi (01.270): https://www.matvaretabellen.no/en/cheese-halloumi/"
-  notes: "Published table value (not a brand label); brand labels in FDC range 296-393 kcal per 100 g depending on fat, so +-30 kcal is normal. Portion weights are typical household values (a grilled slice 25-45 g). Grilling without oil adds nothing; frying in oil adds the oil."
+  notes: "Published table value (not a brand label); brand labels in FDC range 296-393 kcal per 100 g depending on fat, so +-30 kcal is normal. Portion weights are typical household values (a grilled slice 25-45 g). Grilling without oil adds nothing; frying in oil adds the oil. AI verification 2026-10-30 (A47 B6, owner-delegated): Matvaretabellen 01.270 re-opened; 290 kcal, 22.3 P, 0.9 C (sugar 0.9), 21.9 F (14.9 sat), fibre 0, sodium 1680 mg match. Portions are household estimates."

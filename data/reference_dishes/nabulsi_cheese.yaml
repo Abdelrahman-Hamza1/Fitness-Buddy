@@ -1,9 +1,9 @@
 schema: 1
 id: ref:nabulsi_cheese
 names:
-  en: [Nabulsi cheese, Nablus cheese, Nabulsi white cheese]
-  ar: [جبنة نابلسية, جبنة نابلسي, نابلسية]
-  arabizi: [jibne nabulsi, jebneh nabulsiyeh, nabulsi cheese, jibneh nablusiyyeh, nabulsi, jebne nabolsi]
+  en: [Nabulsi cheese, Nablus cheese, Nabulsi white cheese, Cheese, White cheese]
+  ar: [جبنة نابلسية, جبنة نابلسي, نابلسية, جبنة, جبنة بيضاء]
+  arabizi: [jibne nabulsi, jebneh nabulsiyeh, nabulsi cheese, jibneh nablusiyyeh, nabulsi, jebne nabolsi, jibne, jbneh, jibneh, jebne, jebneh]
 state: as_sold
 variants:
   - id: brined
@@ -14,8 +14,8 @@ portions:
   slice: {g: 30, range: [20, 50]}
   piece: {g: 60, range: [40, 100]}
 review:
-  status: draft
-  reviewed_by: claude-draft
+  status: reviewed
+  reviewed_by: ai-verified
   sources:
     - "Baladna Nabulsi Cheese product page (label per 100 g): https://baladna.com/en/product/nabulsi-cheese"
-  notes: "One Gulf brand label (cow's milk, high salt: sodium 900 mg). Nabulsi made in Palestine from sheep or goat milk, or desalted for eating, can differ by about +-50 kcal; the other published values seen ranged 260-380 kcal per 100 g. Portion weights are typical household values, not from the label. Check against the brand your family buys."
+  notes: "One Gulf brand label (cow's milk, high salt: sodium 900 mg). Nabulsi made in Palestine from sheep or goat milk, or desalted for eating, can differ by about +-50 kcal; the other published values seen ranged 260-380 kcal per 100 g. Portion weights are typical household values, not from the label. The generic words cheese and jibneh resolve here as the everyday white cheese. Check against the brand your family buys. AI verification 2026-10-30 (A47 B6, owner-delegated): Baladna page re-opened; 292 kcal, 24 P, 4 C, 20 F (14 sat), sodium 900 mg match; fibre not printed. Feta analogue FDC 173420 (265 kcal) is consistent. Portions are household estimates."

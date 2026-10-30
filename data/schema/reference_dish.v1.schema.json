@@ -32,7 +32,7 @@
       "required": ["status", "reviewed_by", "sources"],
       "properties": {
         "status": { "enum": ["draft", "reviewed"] },
-        "reviewed_by": { "enum": ["claude-draft", "owner"] },
+        "reviewed_by": { "enum": ["claude-draft", "ai-verified", "owner"] },
         "sources": {
           "type": "array",
           "minItems": 1,

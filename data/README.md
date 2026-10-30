@@ -7,7 +7,7 @@ bulk downloads are never committed. Tooling: `tools/catalog/` (`make catalog`).
 |---|---|
 | `usda_selection.yaml` | The chosen USDA basics: catalog ID `usda:<slug>`, FDC ID, state, EN/AR/Arabizi names. Edited by hand. |
 | `usda/extract.jsonl` | Per-100 g values of the selection, written by `make catalog-usda` (sorted, deterministic). `usda/sources.yaml` pins the downloads by sha256. |
-| `reference_dishes/<slug>.yaml` | One reference dish each (format v1, `schema/reference_dish.v1.schema.json`): names, variants (recipe or `per_100g`), portions with ranges, review status and sources. New dishes start as `draft`. |
+| `reference_dishes/<slug>.yaml` | One reference dish each (format v1, `schema/reference_dish.v1.schema.json`): names, variants (recipe or `per_100g`), portions with ranges, review status and sources. New dishes start as `draft`. `review.reviewed_by` is `claude-draft`, `ai-verified` (numbers checked against cited sources by an AI, owner-delegated 2026-10-30, A47) or `owner` (strongest). |
 | `must_cover.yaml` | The spec's must-cover list (`spec/11` section 6, FD-052) with EN, AR and Arabizi names. `catalog coverage` reports how each item resolves. |
 | `yields.yaml` | Cooking yield factors (FD-060): grams of `to` per gram of `from`, one row per group and pair (`yields.v1.schema.json`). The only owner of yield factors. |
 | `portion_words.yaml` | What one loaf, piece, glass, can, tbsp or tsp of a food weighs or holds (FD-003, `portion_words.v1.schema.json`). The only owner of household units: a `servings` entry in the selection with the same unit must agree (the validator checks). |

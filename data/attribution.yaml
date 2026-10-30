@@ -6,16 +6,41 @@ sources:
     licence: "CC0 1.0 (public domain); credit requested"
     url: "https://fdc.nal.usda.gov/"
     credit: "U.S. Department of Agriculture, Agricultural Research Service. FoodData Central. fdc.nal.usda.gov."
-    used_for: "Per-100 g nutrient values of the basics (SR Legacy 2018-04 and Foundation Foods)"
+    used_for: "Per-100 g nutrient values of the basics (SR Legacy 2018-04 and Foundation Foods), plus Branded Foods label values for the freekeh reference food"
     status: active
+    note: "Freekeh: Branded Foods record 2553773 (Woodland Foods Cracked Freekeh), checked through the FDC API in A47 B6; https://fdc.nal.usda.gov/food-details/2553773/nutrients. The branded candy-bar basics use SR Legacy, not Branded Foods."
+  - id: baladna
+    name: "Baladna product nutrition labels"
+    licence: "Not confirmed: no reuse licence recorded for the cited product pages"
+    url: "https://baladna.com/en/product/nabulsi-cheese"
+    credit: "Baladna. Nabulsi Cheese, Akawi Cheese and Fresh Labneh Full Fat product nutrition labels."
+    used_for: "Per-100 g label values for the Nabulsi, Akkawi and labaneh reference foods"
+    status: active
+    note: "Product links are retained in each reference food's sources: /en/product/nabulsi-cheese, /en/product/akawi-cheese and /en/product/full-fat-fresh-labneh. Terms were not verified in A47 B6; confirm reuse terms before R2/R3."
+  - id: steenbergs
+    name: "Steenbergs product nutrition label"
+    licence: "Not confirmed: no reuse licence recorded for the cited product page"
+    url: "https://steenbergs.co.uk/product/sumac/"
+    credit: "Steenbergs. Sumac product nutrition label (sumac and salt)."
+    used_for: "Per-100 g label values for the ground sumac reference food"
+    status: active
+    note: "The source does not list fibre. Terms were not verified in A47 B6; confirm reuse terms before R2/R3."
+  - id: sligro_ps_foodservice
+    name: "Sligro Spice Market specification via PS in Foodservice"
+    licence: "Not confirmed: no reuse licence recorded for the cited product specification"
+    url: "https://psinfoodservice.com/en/product/2084567-za-atar"
+    credit: "Sligro Spice Market. Za'atar product specification, published by PS in Foodservice."
+    used_for: "Per-100 g label values for the dry zaatar mix reference food"
+    status: active
+    note: "Terms were not verified in A47 B6; confirm reuse terms before R2/R3."
   - id: matvaretabellen
     name: "Norwegian Food Composition Table (Matvaretabellen)"
     licence: "Not confirmed: the source asks to be cited; no explicit licence found (backlog #64)"
     url: "https://www.matvaretabellen.no/"
     credit: "Norwegian Food Composition Table 2024. The Norwegian Food Safety Authority. www.matvaretabellen.no"
-    used_for: "A cited source of the halloumi reference dish"
+    used_for: "Per-100 g nutrient values of the released halloumi reference food (food ID 01.270)"
     status: active
-    note: "Confirm terms with matvaretabellen@mattilsynet.no, or replace the source, before R2/R3 (backlog #64)."
+    note: "Halloumi source: https://www.matvaretabellen.no/en/cheese-halloumi/. Confirm terms with matvaretabellen@mattilsynet.no, or replace the source, before R2/R3 (backlog #64)."
   - id: geonames
     name: "GeoNames"
     licence: "CC BY 4.0"
