@@ -120,4 +120,53 @@ final class ChangeSetApplierProvider
   }
 }
 
-String _$changeSetApplierHash() => r'a7e88f86a601cb00a59bd09ea118fbcb8c7a90b7';
+String _$changeSetApplierHash() => r'df37aa36b79cee13ccf4370a9de2241180756958';
+
+/// A33 §6: the write gate (transition, read-only copy, inactive profile).
+/// Null (always writable) unless the app wiring overrides it.
+
+@ProviderFor(profileWriteGate)
+final profileWriteGateProvider = ProfileWriteGateProvider._();
+
+/// A33 §6: the write gate (transition, read-only copy, inactive profile).
+/// Null (always writable) unless the app wiring overrides it.
+
+final class ProfileWriteGateProvider
+    extends $FunctionalProvider<WriteGate?, WriteGate?, WriteGate?>
+    with $Provider<WriteGate?> {
+  /// A33 §6: the write gate (transition, read-only copy, inactive profile).
+  /// Null (always writable) unless the app wiring overrides it.
+  ProfileWriteGateProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'profileWriteGateProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$profileWriteGateHash();
+
+  @$internal
+  @override
+  $ProviderElement<WriteGate?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  WriteGate? create(Ref ref) {
+    return profileWriteGate(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(WriteGate? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<WriteGate?>(value),
+    );
+  }
+}
+
+String _$profileWriteGateHash() => r'6919b5e8512722dd1100443ec4a6c132ad3d861f';

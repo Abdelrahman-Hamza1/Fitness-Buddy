@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/account/profile_generation.dart';
 import 'package:fb_mobile/core/events/domain_event_bus.dart';
 import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
@@ -213,8 +214,13 @@ final class BuddyTurn {
     this.assistantMessageId,
     this.interpretation,
     this.cards = const [],
+    this.profileGeneration = 0,
     this.followUpCardId,
   });
+
+  /// The profile generation the turn was created in (A33 round 4): its
+  /// completions and confirms are dropped once the profile switched.
+  final int profileGeneration;
 
   /// The saved user message.
   final SavedBuddyMessage message;
@@ -271,6 +277,7 @@ final class BuddyTurn {
     assistantMessageId: assistantMessageId ?? this.assistantMessageId,
     interpretation: interpretation ?? this.interpretation,
     cards: cards ?? this.cards,
+    profileGeneration: profileGeneration,
     followUpCardId: followUpCardId,
   );
 
@@ -333,8 +340,18 @@ class BuddyThreadController extends _$BuddyThreadController {
   /// A save in flight, before its turn exists (keeps Send single-flight).
   bool _saving = false;
 
+  /// The profile generation this thread belongs to (A33 round 4).
+  int _generation = 0;
+
+  /// Whether work started in generation [gen] may still change the thread.
+  bool _current(int gen) => ref.mounted && gen == _generation;
+
   @override
   BuddyThread build() {
+    // A profile switch rebuilds the thread empty: no text, card or confirm
+    // crosses profiles (A33 round 4).
+    _generation = ref.watch(profileGenerationProvider);
+    _saving = false;
     // A diary change made elsewhere (the sheet closed, a manual log) moves
     // the open cards' "today after this": refresh them (A22a review). This
     // controller lives for the app process, so it hears changes while the
@@ -352,10 +369,11 @@ class BuddyThreadController extends _$BuddyThreadController {
   }
 
   Future<void> _refreshOpenCards() async {
+    final gen = _generation;
     final open = state.turns.any(
       (t) => t.cards.any((c) => c.resolution == CardResolution.open),
     );
-    if (open) await _refreshOthersSafely('');
+    if (open) await _refreshOthersSafely('', gen);
   }
 
   SendBuddyMessage get _send => ref.read(sendBuddyMessageProvider);
@@ -366,33 +384,55 @@ class BuddyThreadController extends _$BuddyThreadController {
   /// Ignored while a send is in flight or for blank text.
   Future<void> send(String raw, BuddyReplyTexts texts) async {
     if (state.sending || _saving) return;
+    final gen = _generation;
+    // The use case of this generation (its applier is bound to it).
+    final send = _send;
     _saving = true;
-    final SavedBuddyMessage? message;
+    SavedBuddyMessage? message;
     try {
-      message = await _send.save(raw);
+      message = await send.save(raw);
+    } on Object {
+      message = null;
     } finally {
-      _saving = false;
+      if (_current(gen)) _saving = false;
     }
-    if (message == null) return;
+    if (!_current(gen)) return;
+    if (message == null) {
+      // Not persisted (e.g. the write gate refused during an account
+      // transition): the text goes back to the composer (A33 re-check 4).
+      if (raw.trim().isNotEmpty && ref.mounted) {
+        state = BuddyThread(
+          turns: state.turns,
+          composerRestore: raw,
+          followUpOff: state.followUpOff,
+        );
+      }
+      return;
+    }
     // A message sent while a card is open updates that card (AI-044).
     final target = state.followUpCard;
     state = BuddyThread(
       turns: [
         ...state.turns,
-        BuddyTurn(message: message, followUpCardId: target?.id),
+        BuddyTurn(
+          message: message,
+          profileGeneration: gen,
+          followUpCardId: target?.id,
+        ),
       ],
       followUpOff: state.followUpOff,
     );
     try {
-      final request = await _send.prepare(message, followUp: target?.card);
+      final request = await send.prepare(message, followUp: target?.card);
+      if (!_current(gen)) return;
       _update(message.id, (t) => t.copyWith(request: request));
-      await _dispatch(message.id, texts);
+      await _dispatch(message.id, texts, gen);
       // A throw must never leave the turn "sending" (Send stays disabled
       // forever): it fails as a server error, retryable when the request
       // was prepared (A22a review). Nothing of it is logged.
       // ignore: avoid_catches_without_on_clauses
     } catch (_) {
-      _failed(message.id);
+      if (_current(gen)) _failed(message.id);
     }
   }
 
@@ -409,13 +449,15 @@ class BuddyThreadController extends _$BuddyThreadController {
   Future<void> retry(String userMessageId, BuddyReplyTexts texts) async {
     final turn = _turn(userMessageId);
     if (turn == null || !turn.canRetry || state.sending) return;
+    final gen = _generation;
+    if (turn.profileGeneration != gen) return;
     _update(userMessageId, (t) => t.copyWith(phase: BuddyTurnPhase.sending));
     try {
-      await _dispatch(userMessageId, texts);
+      await _dispatch(userMessageId, texts, gen);
       // See [send].
       // ignore: avoid_catches_without_on_clauses
     } catch (_) {
-      _failed(userMessageId);
+      if (_current(gen)) _failed(userMessageId);
     }
   }
 
@@ -594,6 +636,9 @@ class BuddyThreadController extends _$BuddyThreadController {
         state.isUpdating(cardId)) {
       return;
     }
+    final gen = _generation;
+    if (turn.profileGeneration != gen) return;
+    final resolution = _resolution;
     final before = card.card;
     _setCard(
       turn.userMessageId,
@@ -601,7 +646,7 @@ class BuddyThreadController extends _$BuddyThreadController {
     );
     final ConfirmOutcome outcome;
     try {
-      outcome = await _resolution.confirm(
+      outcome = await resolution.confirm(
         card.session,
         cardId,
         card.origin ?? _origin(turn),
@@ -610,6 +655,7 @@ class BuddyThreadController extends _$BuddyThreadController {
       // "Couldn't log this card." (A22a review).
       // ignore: avoid_catches_without_on_clauses
     } catch (_) {
+      if (!_current(gen)) return;
       _setCard(
         turn.userMessageId,
         _card(cardId)!.$2
@@ -617,6 +663,7 @@ class BuddyThreadController extends _$BuddyThreadController {
       );
       return;
     }
+    if (!_current(gen)) return;
     final current = _card(cardId)!.$2;
     switch (outcome) {
       case CardLogged(:final session, :final undoEntryId, :final appliedAt):
@@ -641,7 +688,7 @@ class BuddyThreadController extends _$BuddyThreadController {
             ),
           ),
         );
-        await _refreshOthersSafely(cardId);
+        await _refreshOthersSafely(cardId, gen);
       case CardRebuilt(:final session):
         _setCard(
           turn.userMessageId,
@@ -663,15 +710,18 @@ class BuddyThreadController extends _$BuddyThreadController {
         state.isUpdating(cardId)) {
       return;
     }
+    final gen = _generation;
+    if (found.$1.profileGeneration != gen) return;
+    final resolution = _resolution;
     final ProposalSession? session;
     try {
-      session = await _resolution.discard(found.$2.session, cardId);
+      session = await resolution.discard(found.$2.session, cardId);
       // A throw leaves the card open (A22a review).
       // ignore: avoid_catches_without_on_clauses
     } catch (_) {
       return;
     }
-    if (session == null) return;
+    if (session == null || !_current(gen)) return;
     _replaceSession(found.$1, found.$2.session, session, null);
     _setCard(
       found.$1.userMessageId,
@@ -679,7 +729,7 @@ class BuddyThreadController extends _$BuddyThreadController {
         resolution: CardResolution.discarded,
         // Undo only while a discard writes nothing (no contributor ops; A23
         // adds a resolve-undo before it registers any, E8).
-        discardedFrom: _resolution.discardUndoable ? found.$2.session : null,
+        discardedFrom: resolution.discardUndoable ? found.$2.session : null,
         discardedAt: ref.read(clockProvider).nowUtc(),
       ),
     );
@@ -692,7 +742,8 @@ class BuddyThreadController extends _$BuddyThreadController {
     final before = found?.$2.discardedFrom;
     if (found == null ||
         before == null ||
-        found.$2.resolution != CardResolution.discarded) {
+        found.$2.resolution != CardResolution.discarded ||
+        found.$1.profileGeneration != _generation) {
       return;
     }
     _setCard(
@@ -714,9 +765,11 @@ class BuddyThreadController extends _$BuddyThreadController {
     final entry = found?.$2.undoEntryId;
     if (found == null ||
         entry == null ||
-        found.$2.resolution != CardResolution.logged) {
+        found.$2.resolution != CardResolution.logged ||
+        found.$1.profileGeneration != _generation) {
       return null;
     }
+    final gen = _generation;
     final UndoOutcome outcome;
     try {
       outcome = await _resolution.undo(entry);
@@ -725,6 +778,7 @@ class BuddyThreadController extends _$BuddyThreadController {
     } catch (_) {
       return null;
     }
+    if (!_current(gen)) return null;
     final now = _card(cardId)!.$2;
     _setCard(
       found.$1.userMessageId,
@@ -739,15 +793,17 @@ class BuddyThreadController extends _$BuddyThreadController {
         undoRefused: outcome == UndoOutcome.undone ? null : outcome,
       ),
     );
-    if (outcome == UndoOutcome.undone) await _refreshOthersSafely(cardId);
+    if (outcome == UndoOutcome.undone) {
+      await _refreshOthersSafely(cardId, gen);
+    }
     return outcome;
   }
 
   /// [_refreshOthers], where a failure only leaves sibling previews as they
   /// were: the logged card and its Undo are already shown.
-  Future<void> _refreshOthersSafely(String cardId) async {
+  Future<void> _refreshOthersSafely(String cardId, int gen) async {
     try {
-      await _refreshOthers(cardId);
+      await _refreshOthers(cardId, gen);
       // Any failure here is only a stale preview.
       // ignore: avoid_catches_without_on_clauses
     } catch (_) {
@@ -755,7 +811,12 @@ class BuddyThreadController extends _$BuddyThreadController {
     }
   }
 
-  Future<void> _dispatch(String userMessageId, BuddyReplyTexts texts) async {
+  Future<void> _dispatch(
+    String userMessageId,
+    BuddyReplyTexts texts,
+    int gen,
+  ) async {
+    if (!_current(gen)) return;
     final turn = _turn(userMessageId)!;
     final target = switch (turn.followUpCardId) {
       final id? => _card(id),
@@ -768,7 +829,8 @@ class BuddyThreadController extends _$BuddyThreadController {
             card: target.$2.card,
             referenceTime: target.$1.message.time,
           );
-    final reply = await _send.dispatch(
+    final send = _send;
+    final reply = await send.dispatch(
       turn.message,
       turn.request!,
       texts,
@@ -777,6 +839,8 @@ class BuddyThreadController extends _$BuddyThreadController {
       // left alone and the reply says so, never "Updated" (review 7).
       followUpClosed: target != null && followUp == null,
     );
+    // A reply that arrives after a profile switch is dropped (A33 round 4).
+    if (!_current(gen)) return;
     switch (reply) {
       case BuddyFollowedUp(
         :final assistantMessageId,
@@ -860,7 +924,7 @@ class BuddyThreadController extends _$BuddyThreadController {
 
   /// Recomputes every other open card's session with a fresh context, so
   /// its "today after this" counts confirmed intake once (D12).
-  Future<void> _refreshOthers(String cardId) async {
+  Future<void> _refreshOthers(String cardId, int gen) async {
     final seen = <ProposalSession>{};
     for (final turn in state.turns) {
       for (final card in turn.cards) {
@@ -869,6 +933,7 @@ class BuddyThreadController extends _$BuddyThreadController {
           card.session,
           turn.message.time,
         );
+        if (!_current(gen)) return;
         if (!identical(refreshed, card.session)) {
           _replaceSession(
             _turn(turn.userMessageId)!,

@@ -334,6 +334,21 @@ final class SetupRoute extends AppRoute {
   String get location => path;
 }
 
+/// Sign in or create an account (AC-001, AC-003, A33): a full screen
+/// outside the tabs, opened from Me › Account, the guest prompt and the
+/// session-expired banner. Never a startup redirect (signing in is never
+/// required). No parameters.
+final class SignInRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/sign-in';
+
+  @override
+  String get location => path;
+}
+
 /// The "update needed" screen, outside the tabs (S06 plan D10).
 ///
 /// Only the router targets it (its update-gate redirect); features never

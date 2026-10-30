@@ -4,6 +4,7 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,6 +56,7 @@ class MeScreen extends ConsumerWidget {
                 trailing: const Icon(FbIcons.next),
                 onTap: () => unawaited(showExportSheet(context)),
               ),
+              const AccountSection(),
               ..._group(l10n.meSectionAbout, open, [
                 _Row(l10n.meAbout, const AboutRoute()),
               ]),

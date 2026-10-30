@@ -1,5 +1,6 @@
 import 'package:fb_domain/system.dart';
 import 'package:fb_mobile/app/router/app_router.dart';
+import 'package:fb_mobile/core/account/account_providers.dart';
 import 'package:fb_mobile/core/catalog/catalog.dart';
 import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
@@ -30,6 +31,14 @@ List<Override> appOverrides(AppConfig config) => [
   // The database attaches whichever pack the installer finds on disk (A05).
   catalogPackSourceProvider.overrideWith(
     (ref) => ref.watch(catalogPackInstallerProvider),
+  ),
+  // A33 D3/§6: the database opens the registry's active profile lazily,
+  // after crash recovery of any interrupted account transition.
+  activeProfileResolverProvider.overrideWith(
+    (ref) => ref.read(accountTransitionsProvider).resolveActiveProfile,
+  ),
+  profileWriteGateProvider.overrideWith(
+    (ref) => ref.watch(accountWriteGateProvider),
   ),
   clockProvider.overrideWithValue(const SystemClock()),
   idGeneratorProvider.overrideWithValue(systemUuidV7Generator()),

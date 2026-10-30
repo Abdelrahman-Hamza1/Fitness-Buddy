@@ -60,7 +60,7 @@ final class BuddyThreadControllerProvider
 }
 
 String _$buddyThreadControllerHash() =>
-    r'2cf9a3c4d9b9de9dae200ecd062d5e2621acfa9f';
+    r'104546d5e008211127e263ac6989292e0337b6b3';
 
 /// Buddy's thread for this app process (D11): dismissing the sheet keeps it;
 /// a restart starts empty (durable restore is A23's).

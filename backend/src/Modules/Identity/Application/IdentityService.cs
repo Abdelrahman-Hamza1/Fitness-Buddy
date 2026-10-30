@@ -39,6 +39,13 @@ internal sealed class IdentityService(IIdentityStore store, IIdentityTokens toke
         if (allowed) { await email.SendAsync(id, normalized, code, expires, ct); }
         return (id, expires);
     }
+    // A33: the guest-upgrade email code needs the live guest bearer, so a missing or
+    // stale token is a 401 the app can refresh, never a silent no-code challenge.
+    public async Task<(Guid Id, DateTimeOffset Expires)?> StartLinkEmailAsync(string address, IdentitySession principal, string ip, CancellationToken ct)
+    {
+        if (!principal.IsAnonymous) { return null; }
+        return await StartEmailAsync(address, "link", principal, ip, ct);
+    }
     public async Task<IssuedTokens?> VerifyEmailAsync(Guid id, string code, Guid device, CancellationToken ct)
     {
         var (raw, m) = Material(device);

@@ -82,6 +82,48 @@ AuthTransport authTransport(Ref ref) {
   return GeneratedAuthTransport(FbApi(dio), ref.watch(sessionClockProvider));
 }
 
+/// A33 security 7: revokes a newly issued session that is abandoned before
+/// it is committed (cancelled flow, refused merge) with its **own** bearer,
+/// best effort. Uses the auth adapter; the token lives only in this call and
+/// is never logged or stored.
+@Riverpod(keepAlive: true)
+Future<void> Function(String accessToken) abandonedSessionRevoker(Ref ref) {
+  final baseUrl = ref.watch(appConfigProvider).apiBaseUrl;
+  final adapter = ref.watch(authHttpClientAdapterProvider);
+  return (accessToken) async {
+    final dio = createApiDio(
+      baseUrl: baseUrl,
+      adapter: adapter,
+      interceptors: [
+        ClientHeadersInterceptor(
+          apiBaseUrl: baseUrl,
+          appVersion: () async =>
+              (await ref.read(packageInfoProvider.future)).version,
+          deviceId: () => ref.read(deviceIdStoreProvider).deviceId(),
+        ),
+        _OwnBearer(accessToken),
+      ],
+    );
+    // The adapter is shared with the auth transport: never close it here.
+    await FbApi(dio).identity.logoutSession();
+  };
+}
+
+final class _OwnBearer extends Interceptor {
+  new(this._token);
+
+  final String _token;
+
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    options.headers['Authorization'] = 'Bearer $_token';
+    handler.next(options);
+  }
+
+  @override
+  String toString() => '_OwnBearer(redacted)';
+}
+
 /// Lazy keepAlive coordinator; construction performs no storage/network I/O.
 @Riverpod(keepAlive: true)
 SessionService sessionService(Ref ref) {

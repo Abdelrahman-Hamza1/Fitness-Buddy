@@ -1,6 +1,7 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/today/presentation/today_numbers.dart';
@@ -102,7 +103,8 @@ class DayPage extends ConsumerWidget {
 }
 
 /// The top of a day page, as an ordered list (A14 §3.5): the day's numbers →
-/// [A22: the to-confirm strip] → the weight card → [A37: the workout hint].
+/// [A22: the to-confirm strip] → the weight card → the account banner (A33,
+/// Today only) → [A37: the workout hint].
 /// Later steps add one entry here instead of nesting widgets.
 class _DayHeader extends StatelessWidget {
   const new({
@@ -123,6 +125,7 @@ class _DayHeader extends StatelessWidget {
     children: [
       TodayNumbers(date: date, isToday: isToday, totals: totals),
       WeightCard(date: date, isToday: isToday),
+      if (isToday) const AccountTodayBanner(),
     ],
   );
 }

@@ -80,6 +80,7 @@ final class SessionEnvelope {
     required this.kind,
     this.credentials,
     this.rotationPending = false,
+    this.commitTag,
   });
 
   /// Server identity, confined to the core session/storage layer.
@@ -93,6 +94,12 @@ final class SessionEnvelope {
 
   /// Durable intent marker required before physically sending refresh.
   final bool rotationPending;
+
+  /// A33 §6: the unique tag of the account transition that committed these
+  /// credentials (opaque, no secret). Recovery rolls a sign-in forward only
+  /// on an exact match, so an unchanged guest envelope (same user id after
+  /// an upgrade) never looks like a new commit.
+  final String? commitTag;
 
   @override
   String toString() => 'SessionEnvelope(redacted)';
@@ -139,7 +146,7 @@ final class SecureSessionStore {
   String get _pointer => 'fb.session.active.v1.$_namespace';
   String get _intent => 'fb.session.intent.v1.$_namespace';
 
-  Future<T> _queued<T>(Future<T> Function() action) {
+  Future<T> _queued<T>(Future<T> Function() action, {bool checkIntent = true}) {
     final result = _tail.then((_) async {
       if (_poisoned) {
         throw SessionStorageFailure(
@@ -148,7 +155,7 @@ final class SecureSessionStore {
         );
       }
       try {
-        await _checkIntent();
+        if (checkIntent) await _checkIntent();
         return await action();
       } on SessionStorageFailure {
         rethrow;
@@ -222,6 +229,7 @@ final class SecureSessionStore {
         kind: kind,
         credentials: credentials,
         rotationPending: data['pending'] as bool,
+        commitTag: data['tag'] as String?,
       );
       _validate(envelope);
       return envelope;
@@ -347,6 +355,7 @@ final class SecureSessionStore {
           'userId': envelope.userId,
           'kind': envelope.kind.name,
           'pending': envelope.rotationPending,
+          'tag': ?envelope.commitTag,
           'pair': pair == null
               ? null
               : {
@@ -379,4 +388,51 @@ final class SecureSessionStore {
     _validateKey(accountKey);
     await _mutate(() => _storage.delete(accountKey));
   });
+
+  /// A33 §6: explicit reconciliation of an interrupted save, invoked only by
+  /// account-transition recovery (startup, before the session starts). An
+  /// intent marker otherwise blocks every operation. Deterministic:
+  /// - the marked envelope is readable → complete: select it, clear intent;
+  /// - it is missing or malformed → discard: clear the intent, keep the
+  ///   pointer as it was;
+  /// - the store can't be read → throw and keep the intent (fail closed).
+  /// Returns whether an intent was found.
+  Future<bool> reconcileIntent() => _queued(checkIntent: false, () async {
+    final raw = await _storage.read(_intent);
+    if (raw == null) return false;
+    String? key;
+    try {
+      key = _readMarker(raw);
+    } on SessionStorageFailure {
+      key = null; // A malformed marker names nothing to complete.
+    }
+    SessionEnvelope? envelope;
+    if (key != null) {
+      try {
+        envelope = await _read(key);
+      } on SessionStorageFailure catch (error) {
+        if (error.kind != SessionStorageFailureKind.malformed) rethrow;
+      }
+    }
+    if (envelope != null) await _select(envelope);
+    await _finish();
+    return true;
+  });
+
+  /// A33 sign-out (§6): clears the active pointer first (a pointer to a
+  /// missing envelope would read as malformed and block startup), then
+  /// deletes every envelope in [accountKeys]. The keys come from the account
+  /// transition journal, so a crash between the deletes is finished by
+  /// recovery deleting the same keys, whether or not a pointer still exists.
+  Future<void> forgetKeys(Iterable<String> accountKeys) => _queued(() async {
+    final keys = accountKeys.toSet()..forEach(_validateKey);
+    await _mutate(() => _storage.delete(_pointer));
+    _knownState = null;
+    for (final key in keys) {
+      await _mutate(() => _storage.delete(key));
+    }
+  });
+
+  /// [forgetKeys] for one key.
+  Future<void> forget(String accountKey) => forgetKeys([accountKey]);
 }

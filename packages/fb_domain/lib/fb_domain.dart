@@ -6,6 +6,7 @@
 /// `package:fb_domain/testing.dart`, which this barrel doesn't export.
 library;
 
+export 'src/account/guest_prompt_policy.dart';
 export 'src/body/trend_weight.dart';
 export 'src/body/weigh_in.dart';
 export 'src/body/weigh_in_cadence.dart';

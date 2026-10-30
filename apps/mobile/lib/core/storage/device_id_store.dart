@@ -23,10 +23,20 @@ final class DeviceIdStore {
   final SharedPreferencesAsync _preferences;
   final IdGenerator _ids;
   Future<String>? _id;
+  String? _value;
 
   /// The device id, read (or created) once and then memoised. Concurrent
   /// first calls share one lookup, so they can't make two ids.
-  Future<String> deviceId() {
+  ///
+  /// Once resolved the id is cached as a value, not as the first caller's
+  /// future: a completed future created in another zone (a widget test's
+  /// fake clock, then awaited in `runAsync`) would never deliver it.
+  Future<String> deviceId() async {
+    if (_value case final value?) return value;
+    return _value = await _lookup();
+  }
+
+  Future<String> _lookup() {
     if (_id case final id?) return id;
     final id = _id = _loadOrCreate();
     // A failed lookup is retried on the next call instead of being kept.

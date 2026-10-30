@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/account/account_providers.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
@@ -126,6 +127,8 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
     final sending = ref.watch(
       buddyThreadControllerProvider.select((t) => t.sending),
     );
+    // No sending while an account transition switches profiles (A33).
+    final accountBusy = ref.watch(accountBusyProvider);
     // After a second 503 the text comes back to the composer (A22 D6).
     ref.listen(buddyThreadControllerProvider.select((t) => t.composerRestore), (
       _,
@@ -199,7 +202,7 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
                   child: BuddyComposer(
                     controller: _text,
                     focusNode: _focus,
-                    onSend: sending ? null : _send,
+                    onSend: sending || accountBusy ? null : _send,
                     onSearch: _search,
                   ),
                 ),

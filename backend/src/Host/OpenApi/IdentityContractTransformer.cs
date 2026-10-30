@@ -9,7 +9,7 @@ internal sealed class IdentityContractTransformer : IOpenApiOperationTransformer
 {
     public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
     {
-        if (operation.OperationId is "getMe" or "deleteAccount" or "logoutSession" or "linkIdentity" or "pushSync" or "pullSync" or "getSyncHistory" or "getItemSyncHistory"
+        if (operation.OperationId is "getMe" or "deleteAccount" or "logoutSession" or "linkIdentity" or "startEmailLink" or "pushSync" or "pullSync" or "getSyncHistory" or "getItemSyncHistory"
             or "interpretMessage" or "searchFoods" or "getFood" or "getLatestCatalogPack" or "downloadCatalogPack")
         {
             context.Document!.Components ??= new OpenApiComponents();
@@ -47,7 +47,8 @@ internal sealed class IdentityContractTransformer : IOpenApiOperationTransformer
 
     public Task TransformAsync(OpenApiSchema schema, OpenApiSchemaTransformerContext context, CancellationToken cancellationToken)
     {
-        if (context.JsonTypeInfo.Type == typeof(EmailStartRequest) && schema.Properties?["email"] is OpenApiSchema email)
+        if ((context.JsonTypeInfo.Type == typeof(EmailStartRequest) || context.JsonTypeInfo.Type == typeof(EmailLinkStartRequest))
+            && schema.Properties?["email"] is OpenApiSchema email)
         {
             email.Format = "email";
         }

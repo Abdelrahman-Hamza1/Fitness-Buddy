@@ -8,17 +8,20 @@ part of 'db_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The open profile (A01 D13): `local` until A33 adds accounts and guests.
+/// The open profile (A01 D13), or `null` until an A33 switch: then the
+/// database location reads the registry's active profile lazily when the
+/// database opens (A33 D3), so no storage is touched here.
 
-@ProviderFor(profileKey)
+@ProviderFor(ProfileKey)
 final profileKeyProvider = ProfileKeyProvider._();
 
-/// The open profile (A01 D13): `local` until A33 adds accounts and guests.
-
-final class ProfileKeyProvider
-    extends $FunctionalProvider<String, String, String>
-    with $Provider<String> {
-  /// The open profile (A01 D13): `local` until A33 adds accounts and guests.
+/// The open profile (A01 D13), or `null` until an A33 switch: then the
+/// database location reads the registry's active profile lazily when the
+/// database opens (A33 D3), so no storage is touched here.
+final class ProfileKeyProvider extends $NotifierProvider<ProfileKey, String?> {
+  /// The open profile (A01 D13), or `null` until an A33 switch: then the
+  /// database location reads the registry's active profile lazily when the
+  /// database opens (A33 D3), so no storage is touched here.
   ProfileKeyProvider._()
     : super(
         from: null,
@@ -35,24 +38,96 @@ final class ProfileKeyProvider
 
   @$internal
   @override
-  $ProviderElement<String> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  String create(Ref ref) {
-    return profileKey(ref);
-  }
+  ProfileKey create() => ProfileKey();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(String value) {
+  Override overrideWithValue(String? value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<String>(value),
+      providerOverride: $SyncValueProvider<String?>(value),
     );
   }
 }
 
-String _$profileKeyHash() => r'c03e637b5c9b8f5b05a43dc79834911d46901db2';
+String _$profileKeyHash() => r'c372b242c80e33ddd5c345f5870c91f5a6e56d20';
+
+/// The open profile (A01 D13), or `null` until an A33 switch: then the
+/// database location reads the registry's active profile lazily when the
+/// database opens (A33 D3), so no storage is touched here.
+
+abstract class _$ProfileKey extends $Notifier<String?> {
+  String? build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<String?, String?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<String?, String?>,
+              String?,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
+/// Reads the active profile from the registry when the database opens
+/// (A33 D3). Overridden by the account layer; tests keep `local`.
+
+@ProviderFor(activeProfileResolver)
+final activeProfileResolverProvider = ActiveProfileResolverProvider._();
+
+/// Reads the active profile from the registry when the database opens
+/// (A33 D3). Overridden by the account layer; tests keep `local`.
+
+final class ActiveProfileResolverProvider
+    extends
+        $FunctionalProvider<
+          Future<String> Function()?,
+          Future<String> Function()?,
+          Future<String> Function()?
+        >
+    with $Provider<Future<String> Function()?> {
+  /// Reads the active profile from the registry when the database opens
+  /// (A33 D3). Overridden by the account layer; tests keep `local`.
+  ActiveProfileResolverProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'activeProfileResolverProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$activeProfileResolverHash();
+
+  @$internal
+  @override
+  $ProviderElement<Future<String> Function()?> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  Future<String> Function()? create(Ref ref) {
+    return activeProfileResolver(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Future<String> Function()? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Future<String> Function()?>(value),
+    );
+  }
+}
+
+String _$activeProfileResolverHash() =>
+    r'9a1b266c8508c0143918f3d9a256f3b140262f76';
 
 /// Where the catalog pack is: none until A05 (A01 D14).
 
@@ -155,7 +230,60 @@ final class DatabaseLocationProvider
   }
 }
 
-String _$databaseLocationHash() => r'e1c7c02b7683c22e79664766ecc20c2fe56c5afa';
+String _$databaseLocationHash() => r'2657c7ab5f0013da60f5439b04b30feddb9e145d';
+
+/// The one [OpenProfileHandles] (no dependencies).
+
+@ProviderFor(openProfileHandles)
+final openProfileHandlesProvider = OpenProfileHandlesProvider._();
+
+/// The one [OpenProfileHandles] (no dependencies).
+
+final class OpenProfileHandlesProvider
+    extends
+        $FunctionalProvider<
+          OpenProfileHandles,
+          OpenProfileHandles,
+          OpenProfileHandles
+        >
+    with $Provider<OpenProfileHandles> {
+  /// The one [OpenProfileHandles] (no dependencies).
+  OpenProfileHandlesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'openProfileHandlesProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$openProfileHandlesHash();
+
+  @$internal
+  @override
+  $ProviderElement<OpenProfileHandles> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  OpenProfileHandles create(Ref ref) {
+    return openProfileHandles(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(OpenProfileHandles value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<OpenProfileHandles>(value),
+    );
+  }
+}
+
+String _$openProfileHandlesHash() =>
+    r'dbff930e805e774dcc1555185325f4025f5517dc';
 
 /// The open profile's database. Synchronous: it opens lazily on the first
 /// query, so reading this provider touches no storage (UX-001). Closed when
@@ -207,4 +335,4 @@ final class AppDatabaseProvider
   }
 }
 
-String _$appDatabaseHash() => r'159aea520ee2ef9207c27392cde0a08b8bc3d283';
+String _$appDatabaseHash() => r'5724ac97f1e2798e6f99a892fa1c06a7f9f9e692';

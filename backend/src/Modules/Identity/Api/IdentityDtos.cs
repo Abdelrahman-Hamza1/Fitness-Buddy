@@ -6,6 +6,8 @@ public sealed record GoogleSignInRequest([property: MaxLength(16384), MinLength(
 
 public sealed record EmailStartRequest([property: MaxLength(254), EmailAddress] string Email, [property: RegularExpression("^(signIn|link)$")] string Purpose);
 
+public sealed record EmailLinkStartRequest([property: MaxLength(254), EmailAddress] string Email);
+
 public sealed record EmailChallenge(Guid ChallengeId, DateTimeOffset ExpiresAt);
 
 public sealed record EmailVerifyRequest(Guid ChallengeId, [property: RegularExpression("^[0-9]{6}$")] string Code);

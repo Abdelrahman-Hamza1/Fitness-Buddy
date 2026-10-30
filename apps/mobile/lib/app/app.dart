@@ -4,7 +4,9 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/app/bootstrap/app_bootstrap.dart';
 import 'package:fb_mobile/app/router/app_router.dart';
 import 'package:fb_mobile/app/theme/app_theme.dart';
+import 'package:fb_mobile/core/account/profile_generation.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -75,7 +77,10 @@ class _FitnessBuddyAppState extends ConsumerState<FitnessBuddyApp> {
   /// navigation bar gets the theme's bottom-bar colour (a transparent one
   /// would show the dark window behind Light's dark icons); Android 15+
   /// ignores the colour. Icons contrast with the theme.
-  static Widget _systemBars(BuildContext context, Widget? child) {
+  static Widget _systemBars(BuildContext context, Widget? child) =>
+      AccountBusyScope(child: _bars(context, child));
+
+  static Widget _bars(BuildContext context, Widget? child) {
     final theme = Theme.of(context);
     final dark = theme.brightness == Brightness.dark;
     final icons = dark ? Brightness.light : Brightness.dark;
@@ -97,6 +102,10 @@ class _FitnessBuddyAppState extends ConsumerState<FitnessBuddyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      // A33 re-check 3: a profile switch starts a new generation; the whole
+      // tree (routes, sheets, open drafts) is rebuilt for it, so no form
+      // opened for the old profile survives to save into the new one.
+      key: ValueKey(ref.watch(profileGenerationProvider)),
       routerConfig: ref.watch(appRouterProvider).config,
       onGenerateTitle: (context) => context.l10n.appTitle,
       theme: AppTheme.light,

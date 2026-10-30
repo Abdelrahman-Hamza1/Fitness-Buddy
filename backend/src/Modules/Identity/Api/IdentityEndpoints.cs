@@ -42,6 +42,15 @@ internal static class IdentityEndpoints
             var challenge = await service.StartEmailAsync(request.Email, request.Purpose, context.Features.Get<IdentitySession>(), Peer(context.Connection.RemoteIpAddress), ct);
             return TypedResults.Ok(new EmailChallenge(challenge.Id, challenge.Expires));
         }).WithName("startEmailSignIn").Produces<EmailChallenge>().ProducesProblem(401).ProducesProblem(403).ProducesProblem(409).ProducesProblem(501).ProducesProblem(503);
+        auth.MapPost("/link/email/start", async (EmailLinkStartRequest request, HttpContext context, IdentityService service, CancellationToken ct) =>
+        {
+            var principal = context.Features.Get<IdentitySession>();
+            if (principal is null) { return (IResult)Unauthorized(); }
+            var challenge = await service.StartLinkEmailAsync(request.Email, principal, Peer(context.Connection.RemoteIpAddress), ct);
+            return challenge is { } started
+                ? TypedResults.Ok(new EmailChallenge(started.Id, started.Expires))
+                : TypedResults.Problem(statusCode: 403, title: "Forbidden", type: "/errors/forbidden");
+        }).RequireAuthorization("any-user").WithName("startEmailLink").Produces<EmailChallenge>().ProducesProblem(401).ProducesProblem(403).ProducesProblem(409).ProducesProblem(501).ProducesProblem(503);
         auth.MapPost("/logout", async (HttpContext context, IIdentityStore store, CancellationToken ct) =>
         {
             var principal = context.Features.Get<IdentitySession>()!;

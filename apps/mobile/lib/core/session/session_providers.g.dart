@@ -310,6 +310,69 @@ final class AuthTransportProvider
 
 String _$authTransportHash() => r'fd7afce82928e20167177f52970d97afa3e71be3';
 
+/// A33 security 7: revokes a newly issued session that is abandoned before
+/// it is committed (cancelled flow, refused merge) with its **own** bearer,
+/// best effort. Uses the auth adapter; the token lives only in this call and
+/// is never logged or stored.
+
+@ProviderFor(abandonedSessionRevoker)
+final abandonedSessionRevokerProvider = AbandonedSessionRevokerProvider._();
+
+/// A33 security 7: revokes a newly issued session that is abandoned before
+/// it is committed (cancelled flow, refused merge) with its **own** bearer,
+/// best effort. Uses the auth adapter; the token lives only in this call and
+/// is never logged or stored.
+
+final class AbandonedSessionRevokerProvider
+    extends
+        $FunctionalProvider<
+          Future<void> Function(String accessToken),
+          Future<void> Function(String accessToken),
+          Future<void> Function(String accessToken)
+        >
+    with $Provider<Future<void> Function(String accessToken)> {
+  /// A33 security 7: revokes a newly issued session that is abandoned before
+  /// it is committed (cancelled flow, refused merge) with its **own** bearer,
+  /// best effort. Uses the auth adapter; the token lives only in this call and
+  /// is never logged or stored.
+  AbandonedSessionRevokerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'abandonedSessionRevokerProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$abandonedSessionRevokerHash();
+
+  @$internal
+  @override
+  $ProviderElement<Future<void> Function(String accessToken)> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  Future<void> Function(String accessToken) create(Ref ref) {
+    return abandonedSessionRevoker(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Future<void> Function(String accessToken) value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<Future<void> Function(String accessToken)>(value),
+    );
+  }
+}
+
+String _$abandonedSessionRevokerHash() =>
+    r'a1f7a59e70027509051ab9961cad9797caff81a9';
+
 /// Lazy keepAlive coordinator; construction performs no storage/network I/O.
 
 @ProviderFor(sessionService)

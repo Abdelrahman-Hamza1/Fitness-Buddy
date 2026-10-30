@@ -178,3 +178,13 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 169 | A13c | Profile & goal and Targets read today once per screen (`targetsTodayProvider`); follow midnight like Today's date provider | minor | next targets step | open |
 | 170 | A13c | The TG-042 carry note is tested at view level only; add a host journey with logged food (rest of the week at its limit) | minor | A36 | open |
 | 183 | A24 batch merge | Patrol `online_search_test` skipped: on the emulator the search field is not found after opening search with the fake signed-in session (CI 2026-10-29, twice). Add a widget-tree dump to the wait, run with `[it]`, fix and unskip | major | next session | open |
+| 173 | A33 D7 | ⚠️ Owner: Google OAuth web/server client ID + Android client (release SHA-1), approve `google_sign_in`; then the plugin adapter behind `GoogleIdTokenSource` and the A55 Google sign-in check | owner | owner → small app chore | open |
+| 174 | A33 exit criteria | Patrol "sign out → remove → a clean app": needs an isolated profiles root for the journey (removal must never touch the device's real `profiles/`) | minor | next Patrol-touching step | open |
+| 175 | A33 review 7 | Real merge of guest data into an account that already has a kept copy on this phone (today refused, both copies stay) | major | A34 | open |
+| 176 | A33 D8 | Account-only actions (sync, backup, delete) call the guest prompt with `GuestPromptTrigger.accountOnlyAction` | minor | A34 / A35 | open |
+| 177 | A33 exit criteria | Email upgrade end to end against the laptop server on the A55 (the Patrol journey uses in-app fakes) | owner check | owner | open |
+| 178 | A33 review | A malformed `fb.profiles.v1` value falls back to the guest profile: decide a fail-closed policy (e.g. block writes and ask) | minor | A34 | open |
+| 179 | A33 security 7 | Revocation of abandoned issued sessions is best effort; if it fails the session lives until its 30-day expiry: consider server-side cleanup of never-used sessions | minor | B-track chore | open |
+| 180 | A33 re-check 3 | Profile-generation binding is enforced by the app-tree rebuild and per-generation appliers; consider binding long-lived commands explicitly | minor | when a command outlives a screen | open |
+| 181 | A33 UX | Owner A55 checks: sign-in screens, Today banners, guest prompt, "Updating your account…" state at the largest font size | owner check | owner | open |
+| 182 | A33 re-check 4 | Buddy generation scoping tests cover a late reply and a confirm after a switch only: add retry, in-flight confirm and in-flight undo across a switch, with a harness that uses per-generation databases and the write gate | minor | A34 | open |

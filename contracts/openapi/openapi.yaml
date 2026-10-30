@@ -52,6 +52,8 @@ paths:
     $ref: './modules/identity.yaml#/paths/~1v1~1auth~1logout'
   /v1/auth/link/{provider}:
     $ref: './modules/identity.yaml#/paths/~1v1~1auth~1link~1{provider}'
+  /v1/auth/link/email/start:
+    $ref: './modules/identity.yaml#/paths/~1v1~1auth~1link~1email~1start'
   /.well-known/jwks.json:
     $ref: './modules/identity.yaml#/paths/~1.well-known~1jwks.json'
   /v1/me:

@@ -18,11 +18,17 @@ QueryExecutor openUserDatabase(DatabaseLocation location) =>
     LazyDatabase(() async {
       final path = await location.userDatabasePath();
       final temporary = await location.temporaryDirectory();
-      final isolate = await DriftIsolate.spawn(
-        () => openNativeUserDatabase(path, temporaryDirectory: temporary),
-      );
+      final isolate = await _spawn(path, temporary);
       return await isolate.connect(singleClientMode: true);
     });
+
+/// Spawns the background isolate from plain strings only: its entry closure
+/// must not capture the location (A33: the location holds a memoized
+/// future and a registry resolver, which can't be sent to an isolate).
+Future<DriftIsolate> _spawn(String path, String temporary) =>
+    DriftIsolate.spawn(
+      () => openNativeUserDatabase(path, temporaryDirectory: temporary),
+    );
 
 /// Opens the SQLite file at [path] in the current isolate, creating its
 /// directory, with URI filenames on and the connection pragmas

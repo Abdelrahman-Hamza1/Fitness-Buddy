@@ -3,6 +3,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/changes/apply_result.dart';
 import 'package:fb_mobile/core/changes/op_handler.dart';
 import 'package:fb_mobile/core/changes/row_ops.dart';
+import 'package:fb_mobile/core/changes/write_gate.dart';
 import 'package:fb_mobile/core/db/synced_tables.dart';
 import 'package:fb_mobile/core/db/write/row_writer.dart';
 import 'package:fb_mobile/core/db/write_guarded.dart';
@@ -35,6 +36,9 @@ final class ChangeSetApplier<D extends WriteGuarded> {
     required this._ids,
     required this._deviceId,
     required this._events,
+    this._gate,
+    this._profileKey,
+    this._generation,
   }) : _db = db,
        _writer = RowWriter(db, tables) {
     for (final handler in handlers(db)) {
@@ -55,6 +59,17 @@ final class ChangeSetApplier<D extends WriteGuarded> {
   final IdGenerator _ids;
   final Future<String> Function() _deviceId;
   final DomainEventBus _events;
+
+  /// A33 §6: account transitions, read-only kept copies and inactive
+  /// profiles may not be written. Checked for apply and revert alike.
+  final WriteGate? _gate;
+
+  /// The registry-resolved profile the database belongs to (memoized by its
+  /// location); `null` for a pinned location (an explicit switch, tests).
+  final Future<String> Function()? _profileKey;
+
+  /// The profile generation this applier was created for (A33 re-check 3).
+  final int? _generation;
   final Map<String, ChangeOpHandler<ChangeOp>> _handlers = {};
 
   HybridLogicalClock? _hlc;
@@ -116,6 +131,10 @@ final class ChangeSetApplier<D extends WriteGuarded> {
     }),
   );
 
+  /// Completes when every apply/revert queued so far has finished (A33 §6:
+  /// a transition suspends writes, then waits for this before switching).
+  Future<void> idle() => _tail;
+
   /// Runs [body] after every earlier call has finished.
   Future<T> _serial<T>(Future<T> Function() body) {
     final result = _tail.then((_) => body());
@@ -131,6 +150,16 @@ final class ChangeSetApplier<D extends WriteGuarded> {
     )
     body,
   ) async {
+    // Inside the serialized entry shared by apply and revert (A33 §6), so a
+    // transition that suspends writes and then awaits [idle] can't race a
+    // queued write.
+    if (_gate case final gate?) {
+      final profile = await _profileKey?.call();
+      if (await gate.denial(profile, generation: _generation)
+          case final reason?) {
+        return Rejected(InvalidOp(reason));
+      }
+    }
     final hlc = _hlc ?? await _restoreHlc();
     final changeSetId = _ids.next();
     final now = _clock.nowUtc();

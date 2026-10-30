@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/account/profile_generation.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_issues.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
@@ -379,4 +381,50 @@ void main() {
       }
     },
   );
+
+  test('AC-003 A33 a message the write gate refuses is never lost: the text '
+      'goes back to the composer and nothing is sent', () async {
+    // E.g. an account transition is switching profiles: the save fails.
+    final h = BuddyHarness()
+      ..answer(message())
+      ..throwOnApply = (set) => set.ops.single is CreateChatMessage;
+    await h.thread.send('2 eggs and toast', texts);
+    expect(h.state.turns, isEmpty);
+    expect(h.adapter.requests, isEmpty);
+    expect(h.thread.takeComposerRestore(), '2 eggs and toast');
+
+    // Once writes are allowed again, sending works as usual.
+    h.throwOnApply = null;
+    await h.thread.send('2 eggs and toast', texts);
+    expect(h.state.turns, hasLength(1));
+  });
+
+  test('AC-003 A33 a profile switch clears the thread: a late reply, a '
+      'retry and a confirm from the old profile are dropped', () async {
+    final h = BuddyHarness();
+    final reply = Completer<void>();
+    final answer = json(message());
+    h.adapter.respond = (request) async {
+      await reply.future;
+      return await answer(request);
+    };
+    final sending = h.thread.send('2 eggs', texts);
+    await pumpEventQueue();
+    expect(h.state.turns, hasLength(1));
+
+    h.container.read(profileGenerationProvider.notifier).bump();
+    expect(h.state.turns, isEmpty, reason: 'rebuilt empty for the new profile');
+    reply.complete();
+    await sending;
+    expect(h.state.turns, isEmpty, reason: 'the late reply is dropped');
+
+    // A card from before a switch can't be confirmed afterwards.
+    h.answer(message());
+    await h.thread.send('2 eggs', texts);
+    final cardId = h.state.turns.single.cards.single.id;
+    h.container.read(profileGenerationProvider.notifier).bump();
+    await h.thread.confirm(cardId);
+    expect(await h.entries(), isEmpty);
+    expect(h.state.turns, isEmpty);
+  });
 }

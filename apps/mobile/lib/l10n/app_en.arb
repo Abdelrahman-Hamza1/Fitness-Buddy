@@ -5304,5 +5304,149 @@
         "type": "String"
       }
     }
+  },
+  "meSectionAccount": "Account",
+  "@meSectionAccount": {
+    "description": "Me tab: Account section header (A33)."
+  },
+  "accountGuest": "You're using Fitness Buddy as a guest. Your data stays on this phone.",
+  "@accountGuest": {
+    "description": "Me › Account: guest status line (AC-002)."
+  },
+  "accountSignedIn": "Signed in",
+  "@accountSignedIn": {
+    "description": "Me › Account: signed-in status line. No email or id is shown."
+  },
+  "accountSessionExpired": "Session expired. Sign in again to keep your account.",
+  "@accountSessionExpired": {
+    "description": "Me › Account and banner: registered session expired (A33 D9)."
+  },
+  "accountReadOnly": "This is a read-only copy. Sign in to edit.",
+  "@accountReadOnly": {
+    "description": "Me › Account: kept copy after sign-out (AC-004)."
+  },
+  "accountSignIn": "Sign in or create an account",
+  "@accountSignIn": {
+    "description": "Me › Account: row that opens sign-in. Also the sign-in screen title."
+  },
+  "accountSignInAgain": "Sign in again",
+  "@accountSignInAgain": {
+    "description": "Action on the session-expired banner/row."
+  },
+  "accountSignOut": "Sign out",
+  "@accountSignOut": {
+    "description": "Me › Account: sign-out row and sheet title."
+  },
+  "accountSignOutKeep": "Keep a copy on this phone",
+  "@accountSignOutKeep": {
+    "description": "Sign-out sheet option: keep a read-only copy (AC-004)."
+  },
+  "accountSignOutKeepDetail": "You can see it but not edit it until you sign in.",
+  "@accountSignOutKeepDetail": {
+    "description": "Sign-out sheet option subtitle for keep."
+  },
+  "accountSignOutRemove": "Remove from this phone",
+  "@accountSignOutRemove": {
+    "description": "Sign-out sheet option: wipe local data (AC-004)."
+  },
+  "accountSignOutRemoveDetail": "Your account data stays safe on the server.",
+  "@accountSignOutRemoveDetail": {
+    "description": "Sign-out sheet option subtitle for remove."
+  },
+  "accountContinueAsGuest": "Continue as guest",
+  "@accountContinueAsGuest": {
+    "description": "Me › Account: leave the read-only copy and use a guest profile."
+  },
+  "accountSyncPlaceholder": "Sync status",
+  "@accountSyncPlaceholder": {
+    "description": "Me › Account: placeholder row until A34."
+  },
+  "accountDeletePlaceholder": "Delete account",
+  "@accountDeletePlaceholder": {
+    "description": "Me › Account: placeholder row until A35."
+  },
+  "accountComingSoon": "Coming soon",
+  "@accountComingSoon": {
+    "description": "Subtitle for placeholder rows."
+  },
+  "signInEmailLabel": "Email",
+  "@signInEmailLabel": {
+    "description": "Sign-in screen: email field label."
+  },
+  "signInSendCode": "Send code",
+  "@signInSendCode": {
+    "description": "Sign-in screen: button that emails a 6-digit code."
+  },
+  "signInCodeLabel": "6-digit code",
+  "@signInCodeLabel": {
+    "description": "Sign-in screen: code field label."
+  },
+  "signInVerify": "Continue",
+  "@signInVerify": {
+    "description": "Sign-in screen: verify code button."
+  },
+  "signInGoogle": "Continue with Google",
+  "@signInGoogle": {
+    "description": "Sign-in screen: Google button (hidden until configured)."
+  },
+  "signInConflictTitle": "This account already exists",
+  "@signInConflictTitle": {
+    "description": "Sign-in: 409 identity conflict title (AC-003)."
+  },
+  "signInConflictBody": "What should happen to the data on this phone?",
+  "@signInConflictBody": {
+    "description": "Sign-in: conflict question."
+  },
+  "signInMerge": "Add it to my account",
+  "@signInMerge": {
+    "description": "Sign-in conflict option: merge this device's data into the account."
+  },
+  "signInDiscard": "Discard it",
+  "@signInDiscard": {
+    "description": "Sign-in conflict option: delete this device's guest data."
+  },
+  "signInDone": "You're signed in",
+  "@signInDone": {
+    "description": "Sign-in: success line."
+  },
+  "signInErrorOffline": "You're offline. Try again when you're connected.",
+  "@signInErrorOffline": {
+    "description": "Sign-in failure: offline."
+  },
+  "signInErrorCode": "That code didn't work. Check it or send a new one.",
+  "@signInErrorCode": {
+    "description": "Sign-in failure: wrong/expired code."
+  },
+  "signInErrorThrottled": "Too many tries. Wait a moment and try again.",
+  "@signInErrorThrottled": {
+    "description": "Sign-in failure: rate limited."
+  },
+  "signInErrorOther": "Couldn't sign in. Try again.",
+  "@signInErrorOther": {
+    "description": "Sign-in failure: other."
+  },
+  "signInMergeBlocked": "This account already has a copy on this phone, so the two can't be combined yet. Your guest data stays here. You can discard it to open your account, or go back.",
+  "@signInMergeBlocked": {
+    "description": "Sign-in conflict: merge refused because a kept copy of the account exists on the device (A33 review 7). Both copies stay."
+  },
+  "signInDoneButton": "Done",
+  "@signInDoneButton": {
+    "description": "Sign-in success: closes the sign-in screen."
+  },
+  "guestPromptBody": "You're using Fitness Buddy as a guest. Create a free account and everything you've logged comes with you.",
+  "@guestPromptBody": {
+    "description": "Today: the gentle guest prompt (AC-002), at most once a week after the first week."
+  },
+  "guestPromptCreate": "Create account",
+  "@guestPromptCreate": {
+    "description": "Guest prompt: opens sign-in."
+  },
+  "guestPromptNotNow": "Not now",
+  "@guestPromptNotNow": {
+    "description": "Guest prompt: dismisses the card."
+  },
+  "accountTransitionBusy": "Updating your account…",
+  "@accountTransitionBusy": {
+    "description": "Full-screen calm state while sign-in, sign-out or the recovery of an interrupted one switches local profiles (A33). Usually under a second."
   }
 }

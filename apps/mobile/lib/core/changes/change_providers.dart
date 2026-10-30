@@ -1,5 +1,7 @@
+import 'package:fb_mobile/core/account/profile_generation.dart';
 import 'package:fb_mobile/core/changes/change_set_applier.dart';
 import 'package:fb_mobile/core/changes/op_handler.dart';
+import 'package:fb_mobile/core/changes/write_gate.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/events/domain_event_bus.dart';
@@ -24,7 +26,8 @@ OpHandlerFactory<AppDatabase> changeOpHandlers(
 @Riverpod(keepAlive: true)
 ChangeSetApplier<AppDatabase> changeSetApplier(Ref ref) {
   final db = ref.watch(appDatabaseProvider);
-  return ChangeSetApplier(
+  final location = ref.watch(databaseLocationProvider);
+  final applier = ChangeSetApplier(
     db: db,
     tables: db.syncedTables,
     handlers: ref.watch(changeOpHandlersProvider),
@@ -32,5 +35,20 @@ ChangeSetApplier<AppDatabase> changeSetApplier(Ref ref) {
     ids: ref.watch(idGeneratorProvider),
     deviceId: ref.watch(deviceIdStoreProvider).deviceId,
     events: ref.watch(domainEventBusProvider),
+    gate: ref.watch(profileWriteGateProvider),
+    profileKey: location.followsRegistry ? location.resolvedProfileKey : null,
+    generation: ref.watch(profileGenerationProvider),
   );
+  // A33: the account transitions reach the open profile through these
+  // handles, never through this provider (a circular dependency).
+  ref.read(openProfileHandlesProvider)
+    ..database = db
+    ..location = location
+    ..idle = applier.idle;
+  return applier;
 }
+
+/// A33 §6: the write gate (transition, read-only copy, inactive profile).
+/// Null (always writable) unless the app wiring overrides it.
+@Riverpod(keepAlive: true)
+WriteGate? profileWriteGate(Ref ref) => null;

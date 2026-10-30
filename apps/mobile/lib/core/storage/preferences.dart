@@ -25,4 +25,9 @@ abstract final class PreferenceKeys {
   /// showed and whether it was dismissed (A14 D10, PA10): a display
   /// preference, not user data, so it never syncs.
   static const weightCadenceTip = 'fb.weight_cadence_tip.v1';
+
+  /// When this install was first used and when the guest "create an
+  /// account" prompt last showed (AC-002, A33 D8): display state, not user
+  /// data, never synced.
+  static const guestPrompt = 'fb.guest_prompt.v1';
 }

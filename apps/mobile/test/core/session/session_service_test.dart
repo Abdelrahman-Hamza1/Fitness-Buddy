@@ -328,6 +328,127 @@ void main() {
   );
 
   test(
+    'AC-004 A33 endSession forgets the account and the next start is a guest',
+    () async {
+      await f.service.startAfterFirstFrame();
+      await f.service.acceptAuthenticatedSession(
+        tokens(id: 'synthetic-account-c', anonymous: false),
+      );
+      await f.service.endSession();
+
+      expect(f.service.state.status, SessionStatus.none);
+      expect(await f.store.readActive(), isNull);
+      final creates = f.auth.creates;
+      await f.service.ensureAvailable();
+      expect(f.auth.creates, creates + 1);
+      expect(f.service.state.status, SessionStatus.anonymous);
+    },
+  );
+
+  test('AC-004 A33 signing out rejects acquisition synchronously and makes the '
+      'outstanding lease non-current', () async {
+    final lease = await f.service.startAfterFirstFrame();
+    final creates = f.auth.creates;
+    final ending = f.service.endSession();
+    expect(f.service.isCurrentLease(lease), isFalse);
+    await expectLater(
+      f.service.ensureAvailable(),
+      failure(SessionFailureKind.superseded),
+    );
+    await ending;
+    expect(f.auth.creates, creates);
+  });
+
+  test('AC-004 A33 teardown is serialized with an acceptance in flight: the '
+      'accepted envelope is forgotten too', () async {
+    await f.service.startAfterFirstFrame();
+    f.barrier.hold = Completer<void>();
+    final accepted = f.service.acceptAuthenticatedSession(
+      tokens(id: 'synthetic-account-d', anonymous: false),
+    );
+    final acceptedCheck = expectLater(accepted, throwsA(anything));
+    await settle();
+    final ending = f.service.endSession();
+    f.barrier.hold!.complete();
+    f.barrier.hold = null;
+    await ending;
+    await acceptedCheck;
+    expect(await f.store.readActive(), isNull);
+    expect(f.service.state.status, SessionStatus.none);
+  });
+
+  test('AC-004 A33 a storage failure during sign-out fails closed: no '
+      'replacement guest', () async {
+    await f.service.startAfterFirstFrame();
+    await f.service.acceptAuthenticatedSession(
+      tokens(id: 'synthetic-account-e', anonymous: false),
+    );
+    f.barrier.failAt = f.barrier.commits + 1;
+    await expectLater(
+      f.service.endSession(),
+      failure(SessionFailureKind.storage),
+    );
+    final creates = f.auth.creates;
+    await expectLater(
+      f.service.ensureAvailable(),
+      failure(SessionFailureKind.storage),
+    );
+    expect(f.auth.creates, creates);
+  });
+
+  test(
+    'AC-004 A33 crash point: a sign-out interrupted after the pointer delete '
+    'still wipes the journaled envelope on recovery',
+    () async {
+      await f.service.startAfterFirstFrame();
+      await f.service.acceptAuthenticatedSession(
+        tokens(id: 'synthetic-account-f', anonymous: false),
+      );
+      final refs = await f.service.storedCredentialRefs();
+      expect(refs, hasLength(1));
+      // Crash after the pointer delete, before the envelope delete.
+      await f.store.forgetKeys(const []);
+      expect(f.secrets.values.keys, contains(refs.single));
+
+      // Next launch: recovery forgets the journaled key, pointer or not.
+      final restarted = f.newService(storage: f.newStore());
+      await restarted.endSession(alsoForget: refs);
+      expect(f.secrets.values.keys, isNot(contains(refs.single)));
+    },
+  );
+
+  test('AC-003 A33 the commit tag is stored with the accepted envelope, kept '
+      'across a rotation, and absent on an untouched guest envelope', () async {
+    await f.service.startAfterFirstFrame();
+    expect(await f.service.activeCommitTag(), isNull);
+    await f.service.acceptAuthenticatedSession(
+      tokens(id: 'synthetic-account-g', anonymous: false),
+      commitTag: 'tag-unique-1',
+    );
+    expect(await f.service.activeCommitTag(), 'tag-unique-1');
+    f.auth.rotate = (_) async =>
+        tokens(id: 'synthetic-account-g', anonymous: false, suffix: 'r');
+    final refreshes = f.auth.refreshes;
+    f.clock.advance(const Duration(minutes: 20));
+    await f.service.ensureAvailable();
+    expect(f.auth.refreshes, refreshes + 1);
+    expect(await f.service.activeCommitTag(), 'tag-unique-1');
+  });
+
+  test('AC-003 A33 suspend rejects acquisition until released', () async {
+    await f.service.startAfterFirstFrame();
+    final release = f.service.suspend();
+    await expectLater(
+      f.service.ensureAvailable(),
+      failure(SessionFailureKind.superseded),
+    );
+    expect(f.service.canRetryAutomatically, isFalse);
+    release();
+    await f.service.ensureAvailable();
+    expect(f.service.state.readiness, SessionReadiness.ready);
+  });
+
+  test(
     'AC-001 acceptance queues behind an in-flight old durable mutation',
     () async {
       final lease = await f.service.startAfterFirstFrame();

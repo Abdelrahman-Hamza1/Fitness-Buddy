@@ -448,4 +448,55 @@ void main() {
     held.complete(true);
     await tester.pump();
   });
+
+  test('AC-003 A33 crash point: an envelope written before the pointer is '
+      'completed by reconciliation', () async {
+    barrier.failAt = 2; // The pair's commit fails: no pointer, intent left.
+    await expectLater(store().save(envelope()), throwsA(anything));
+    barrier.failAt = null;
+    final restarted = store();
+    await expectLater(
+      restarted.readActive(),
+      throwsA(isA<SessionStorageFailure>()),
+      reason: 'the intent blocks everything until reconciled',
+    );
+    expect(await restarted.reconcileIntent(), isTrue);
+    expect((await restarted.readActive())!.userId, 'synthetic-a');
+    expect(await restarted.reconcileIntent(), isFalse);
+  });
+
+  test(
+    'AC-003 A33 crash point: an intent without its envelope is discarded and '
+    'the previous selection stays',
+    () async {
+      await store().save(envelope(id: 'synthetic-previous'));
+      barrier
+        ..commits = 0
+        ..failAt = 1; // Only the intent was written.
+      await expectLater(
+        store().save(envelope(id: 'synthetic-new')),
+        throwsA(anything),
+      );
+      barrier.failAt = null;
+      final restarted = store();
+      expect(await restarted.reconcileIntent(), isTrue);
+      expect((await restarted.readActive())!.userId, 'synthetic-previous');
+    },
+  );
+
+  test(
+    'AC-003 A33 reconciliation fails closed when the store cannot be read',
+    () async {
+      barrier.failAt = 2;
+      await expectLater(store().save(envelope()), throwsA(anything));
+      barrier.failAt = null;
+      secrets.failure = Exception('keystore');
+      await expectLater(store().reconcileIntent(), throwsA(anything));
+      secrets.failure = null;
+      expect(
+        secrets.values.keys.where((k) => k.contains('intent')),
+        hasLength(1),
+      );
+    },
+  );
 }

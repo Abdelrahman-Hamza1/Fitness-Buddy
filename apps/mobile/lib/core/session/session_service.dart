@@ -99,6 +99,10 @@ final class SessionService {
   bool _restored = false;
   bool _disposed = false;
   SessionFailureKind? _blocked;
+  // A33 §6: set synchronously by endSession and suspend; reject acquisition.
+  bool _signingOut = false;
+  int _suspensions = 0;
+  Future<void>? _teardown;
   final _attemptListeners = <void Function()>{};
 
   /// Safe snapshot; no credentials or server user id.
@@ -117,6 +121,8 @@ final class SessionService {
   /// Acceptance fences even an earlier lease for the same account.
   bool isCurrentLease(SessionLease lease) =>
       ownsLease(lease) &&
+      !_signingOut &&
+      _suspensions == 0 &&
       _acceptance == null &&
       lease.generation == _generation &&
       _envelope?.credentials != null &&
@@ -130,6 +136,8 @@ final class SessionService {
   /// become safe to resend merely because the deadline elapsed.
   bool get canRetryAutomatically =>
       !_disposed &&
+      !_signingOut &&
+      _suspensions == 0 &&
       _blocked == null &&
       _failures > 0 &&
       _flight == null &&
@@ -166,6 +174,11 @@ final class SessionService {
   Future<SessionLease> _enter({int? rejectedGeneration}) {
     if (_disposed) return _failed(SessionFailureKind.superseded);
     if (!_started) return _failed(SessionFailureKind.notStarted);
+    // A33 §6: no acquisition (and so no anonymous replacement) while an
+    // account transition runs or the account is signing out.
+    if (_signingOut || _suspensions > 0) {
+      return _failed(SessionFailureKind.superseded);
+    }
     if (_acceptance case final acceptance?) return acceptance;
     if (_flight case final flight?) return flight;
     if (_blocked case final kind?) return _failed(kind);
@@ -302,15 +315,20 @@ final class SessionService {
     return result;
   }
 
-  SessionEnvelope _fromTokens(AuthTokens tokens) {
+  SessionEnvelope _fromTokens(AuthTokens tokens, {String? commitTag}) {
     if (tokens.userId.isEmpty ||
         tokens.accessToken.isEmpty ||
         tokens.refreshToken.isEmpty) {
       throw const AuthFailure(AuthFailureKind.rejected);
     }
+    final current = _envelope;
     return SessionEnvelope(
       userId: tokens.userId,
       kind: tokens.isAnonymous ? SessionKind.anonymous : SessionKind.registered,
+      // A rotation keeps the committing transition's tag.
+      commitTag:
+          commitTag ??
+          (current?.userId == tokens.userId ? current?.commitTag : null),
       credentials: SessionCredentials(
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
@@ -320,9 +338,13 @@ final class SessionService {
     );
   }
 
-  Future<SessionLease> _commitTokens(AuthTokens tokens, int epoch) async {
+  Future<SessionLease> _commitTokens(
+    AuthTokens tokens,
+    int epoch, {
+    String? commitTag,
+  }) async {
     _check(epoch);
-    final envelope = _fromTokens(tokens);
+    final envelope = _fromTokens(tokens, commitTag: commitTag);
     await _save(envelope, epoch);
     _restored = true;
     _blocked = null;
@@ -366,6 +388,7 @@ final class SessionService {
         kind: current.kind,
         credentials: current.credentials,
         rotationPending: true,
+        commitTag: current.commitTag,
       ),
       epoch,
     );
@@ -399,7 +422,11 @@ final class SessionService {
     final current = _envelope!;
     if (current.kind == SessionKind.registered) {
       await _save(
-        SessionEnvelope(userId: current.userId, kind: current.kind),
+        SessionEnvelope(
+          userId: current.userId,
+          kind: current.kind,
+          commitTag: current.commitTag,
+        ),
         epoch,
       );
       _generation++;
@@ -412,12 +439,18 @@ final class SessionService {
 
   /// A33 calls this only after selecting/merging its local account. Acceptance
   /// fences pending auth immediately and publishes only after durable storage.
-  Future<SessionLease> acceptAuthenticatedSession(AuthTokens tokens) {
+  ///
+  /// [commitTag] (A33 §6) is stored in the envelope so journal recovery can
+  /// tell this commit from an older envelope of the same user.
+  Future<SessionLease> acceptAuthenticatedSession(
+    AuthTokens tokens, {
+    String? commitTag,
+  }) {
     if (_disposed) return _failed(SessionFailureKind.superseded);
     final epoch = ++_epoch;
     _generation++;
     _flight = null;
-    final acceptance = _accept(tokens, epoch);
+    final acceptance = _accept(tokens, epoch, commitTag);
     _acceptance = acceptance;
     unawaited(
       acceptance.then<void>(
@@ -438,10 +471,22 @@ final class SessionService {
     return acceptance;
   }
 
-  Future<SessionLease> _accept(AuthTokens tokens, int epoch) async {
+  Future<SessionLease> _accept(
+    AuthTokens tokens,
+    int epoch,
+    String? commitTag,
+  ) async {
+    // Serialized with sign-out teardown (A33 §6): never interleave.
+    if (_teardown case final teardown?) {
+      try {
+        await teardown;
+      } on Object {
+        // The teardown's failure is reported to its own caller.
+      }
+    }
     try {
       if (tokens.isAnonymous) throw const AuthFailure(AuthFailureKind.rejected);
-      return await _commitTokens(tokens, epoch);
+      return await _commitTokens(tokens, epoch, commitTag: commitTag);
     } on SessionStorageFailure catch (error) {
       _check(epoch);
       _blocked = SessionFailureKind.storage;
@@ -457,6 +502,112 @@ final class SessionService {
       _publish(SessionReadiness.unavailable);
       throw const SessionFailure(SessionFailureKind.rejected);
     }
+  }
+
+  /// A33 §6: suspends lease acquisition (and makes outstanding leases
+  /// non-current) until the returned release runs. Acceptance still works:
+  /// the account transition commits its tokens while suspended.
+  void Function() suspend() {
+    _suspensions++;
+    var released = false;
+    return () {
+      if (released) return;
+      released = true;
+      _suspensions--;
+      if (_suspensions == 0) _attemptSettled();
+    };
+  }
+
+  /// A33 §6: reconciles an interrupted secure save (see
+  /// `SecureSessionStore.reconcileIntent`), then re-reads the selected
+  /// account on next use. Called by account-transition recovery only.
+  Future<void> reconcileStorage() async {
+    if (await _store.reconcileIntent()) _restored = false;
+  }
+
+  /// The commit tag of the durably selected envelope, or `null` when there
+  /// is none or it has no tag. Storage errors propagate (fail closed).
+  Future<String?> activeCommitTag() async =>
+      (await _store.readActive())?.commitTag;
+
+  /// The hashed keys of every credential envelope this service knows of:
+  /// the durably selected one and the one in memory. The account transition
+  /// journals them before sign-out clears anything (A33 §6).
+  Future<List<String>> storedCredentialRefs() async {
+    final stored = await _store.readActive();
+    return {
+      for (final envelope in [?stored, ?_envelope])
+        _store.accountKey(envelope.userId),
+    }.toList();
+  }
+
+  /// A33 sign-out (§6): synchronously enters "signing out" (acquisition is
+  /// rejected from this call on), waits for any acceptance in flight, then
+  /// forgets the account's credentials and pointer and returns to
+  /// [SessionStatus.none]. A storage failure fails closed: the session stays
+  /// blocked (no replacement guest) and the error propagates.
+  ///
+  /// [alsoForget] are journaled keys (from [storedCredentialRefs]) deleted
+  /// even when no pointer references them any more (crash recovery).
+  Future<void> endSession({Iterable<String> alsoForget = const []}) {
+    if (_disposed) return Future<void>.value();
+    _signingOut = true;
+    final epoch = ++_epoch;
+    _generation++;
+    _flight = null;
+    final acceptance = _acceptance;
+    final previous = _teardown;
+    final teardown = _endSession(epoch, acceptance, previous, alsoForget);
+    _teardown = teardown;
+    return teardown.whenComplete(() {
+      if (identical(_teardown, teardown)) {
+        _teardown = null;
+        _signingOut = false;
+        _attemptSettled();
+      }
+    });
+  }
+
+  Future<void> _endSession(
+    int epoch,
+    Future<SessionLease>? acceptance,
+    Future<void>? previous,
+    Iterable<String> alsoForget,
+  ) async {
+    for (final pending in [?acceptance, ?previous]) {
+      try {
+        await pending;
+      } on Object {
+        // Settled either way; ordering is what matters here.
+      }
+    }
+    await _mutations;
+    try {
+      // The durable pointer is authoritative: an acceptance fenced by this
+      // sign-out may have stored its envelope without publishing it.
+      final stored = await _store.readActive();
+      await _store.forgetKeys({
+        for (final envelope in [?stored, ?_envelope])
+          _store.accountKey(envelope.userId),
+        ...alsoForget,
+      });
+    } on SessionStorageFailure catch (error) {
+      if (_disposed) rethrow;
+      _blocked = SessionFailureKind.storage;
+      if (error.knownState case final known?) _state = known;
+      _publish(SessionReadiness.unavailable);
+      throw const SessionFailure(SessionFailureKind.storage);
+    }
+    if (_disposed || epoch != _epoch) return;
+    _envelope = null;
+    _restored = true;
+    _acceptance = null;
+    _blocked = null;
+    _failures = 0;
+    _nextAttemptAt = Duration.zero;
+    _freshUntil = Duration.zero;
+    _state = const SessionState(status: SessionStatus.none);
+    _onState?.call(_state);
   }
 
   /// Invalidates late operations. WP4 owns timer/lifecycle disposal.

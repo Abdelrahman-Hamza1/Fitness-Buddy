@@ -54,6 +54,37 @@ public sealed class IdentityApiTests(PostgresFixture postgres)
         Assert.Equal(HttpStatusCode.Unauthorized, malformed.StatusCode);
         Assert.DoesNotContain("private-token-canary", await malformed.Content.ReadAsStringAsync(TestContext.Current.CancellationToken), StringComparison.Ordinal);
     }
+    [Fact]
+    [Trait("Req", "AC-003")]
+    public async Task Guest_email_link_start_requires_the_guest_bearer_and_sends_a_code()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await using var h = new IdentityHarness(postgres); await h.InitializeAsync();
+        await using var factory = new IdentityApi(postgres, h);
+        using var client = factory.CreateClient();
+        client.DefaultRequestHeaders.Add("X-App-Version", "0.1.0"); client.DefaultRequestHeaders.Add("X-Platform", "android"); client.DefaultRequestHeaders.Add("X-Device-Id", h.Device.ToString());
+        var email = new { email = Guid.NewGuid() + "@example.invalid" };
+        using var anonymous = await client.PostAsJsonAsync("/v1/auth/link/email/start", email, ct);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymous.StatusCode);
+        Assert.Equal(0, h.Email.Count);
+        using var created = await client.PostAsync("/v1/auth/anonymous", null, ct);
+        var guest = (await created.Content.ReadFromJsonAsync<IssuedTokens>(ct))!;
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", guest.AccessToken);
+        using var started = await client.PostAsJsonAsync("/v1/auth/link/email/start", email, ct);
+        Assert.Equal(HttpStatusCode.OK, started.StatusCode);
+        Assert.True(started.Headers.CacheControl!.NoStore);
+        Assert.Equal(1, h.Email.Count);
+        var challenge = await started.Content.ReadFromJsonAsync<JsonElement>(ct);
+        using var linked = await client.PostAsJsonAsync("/v1/auth/link/email", new { idToken = (string?)null, challengeId = challenge.GetProperty("challengeId").GetGuid(), code = h.Email.Code }, ct);
+        Assert.Equal(HttpStatusCode.OK, linked.StatusCode);
+        var registered = (await linked.Content.ReadFromJsonAsync<IssuedTokens>(ct))!;
+        Assert.Equal(guest.UserId, registered.UserId);
+        Assert.False(registered.IsAnonymous);
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", registered.AccessToken);
+        using var refused = await client.PostAsJsonAsync("/v1/auth/link/email/start", email, ct);
+        Assert.Equal(HttpStatusCode.Forbidden, refused.StatusCode);
+        Assert.Equal(1, h.Email.Count);
+    }
     internal sealed class IdentityApi(PostgresFixture p, IdentityHarness h) : WebApplicationFactory<Program>
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)

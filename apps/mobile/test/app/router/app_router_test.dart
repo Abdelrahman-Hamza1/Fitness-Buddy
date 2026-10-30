@@ -3,6 +3,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/app/router/app_router.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/design_preview/design_preview.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
@@ -43,6 +44,7 @@ import '../../helpers/pump_app.dart';
   WeightGraphRoute() => (WeightGraphScreen, true),
   UpdateRequiredRoute() => (UpdateRequiredScreen, false),
   SetupRoute() => (SetupScreen, false),
+  SignInRoute() => (SignInScreen, false),
   ProfileRoute() => (ProfileGoalScreen, true),
   TargetsRoute() => (TargetsScreen, true),
 };
@@ -69,6 +71,7 @@ const List<AppRoute> _allRoutes = [
   AboutRoute(),
   UpdateRequiredRoute(),
   SetupRoute(),
+  SignInRoute(),
   ProfileRoute(),
   TargetsRoute(),
 ];

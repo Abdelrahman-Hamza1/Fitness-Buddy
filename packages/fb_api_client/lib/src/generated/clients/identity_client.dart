@@ -7,6 +7,7 @@ import 'package:retrofit/retrofit.dart';
 
 import '../models/auth_tokens.dart';
 import '../models/email_challenge.dart';
+import '../models/email_link_start_request.dart';
 import '../models/email_start_request.dart';
 import '../models/email_verify_request.dart';
 import '../models/google_sign_in_request.dart';
@@ -67,6 +68,14 @@ abstract class IdentityClient {
   Future<AuthTokens> linkIdentity({
     @Path('provider') required String provider,
     @Body() required LinkIdentityRequest body,
+  });
+
+  /// startEmailLink.
+  ///
+  /// Sends the guest-upgrade email code. Requires the live guest bearer (401 when missing or stale, 403 for a registered account), so the app never gets a silent no-code challenge. Email delivery is a private laptop adapter until B14.
+  @POST('/v1/auth/link/email/start')
+  Future<EmailChallenge> startEmailLink({
+    @Body() required EmailLinkStartRequest body,
   });
 
   /// Get public token verification keys.

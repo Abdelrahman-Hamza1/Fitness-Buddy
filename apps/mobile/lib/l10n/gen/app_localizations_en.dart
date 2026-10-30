@@ -3950,4 +3950,122 @@ class AppLocalizationsEn extends AppLocalizations {
   String goalEditNote(String date) {
     return 'This changes your current goal, which started on $date. To begin a new goal from today instead, use Start a new goal.';
   }
+
+  @override
+  String get meSectionAccount => 'Account';
+
+  @override
+  String get accountGuest =>
+      'You\'re using Fitness Buddy as a guest. Your data stays on this phone.';
+
+  @override
+  String get accountSignedIn => 'Signed in';
+
+  @override
+  String get accountSessionExpired =>
+      'Session expired. Sign in again to keep your account.';
+
+  @override
+  String get accountReadOnly => 'This is a read-only copy. Sign in to edit.';
+
+  @override
+  String get accountSignIn => 'Sign in or create an account';
+
+  @override
+  String get accountSignInAgain => 'Sign in again';
+
+  @override
+  String get accountSignOut => 'Sign out';
+
+  @override
+  String get accountSignOutKeep => 'Keep a copy on this phone';
+
+  @override
+  String get accountSignOutKeepDetail =>
+      'You can see it but not edit it until you sign in.';
+
+  @override
+  String get accountSignOutRemove => 'Remove from this phone';
+
+  @override
+  String get accountSignOutRemoveDetail =>
+      'Your account data stays safe on the server.';
+
+  @override
+  String get accountContinueAsGuest => 'Continue as guest';
+
+  @override
+  String get accountSyncPlaceholder => 'Sync status';
+
+  @override
+  String get accountDeletePlaceholder => 'Delete account';
+
+  @override
+  String get accountComingSoon => 'Coming soon';
+
+  @override
+  String get signInEmailLabel => 'Email';
+
+  @override
+  String get signInSendCode => 'Send code';
+
+  @override
+  String get signInCodeLabel => '6-digit code';
+
+  @override
+  String get signInVerify => 'Continue';
+
+  @override
+  String get signInGoogle => 'Continue with Google';
+
+  @override
+  String get signInConflictTitle => 'This account already exists';
+
+  @override
+  String get signInConflictBody =>
+      'What should happen to the data on this phone?';
+
+  @override
+  String get signInMerge => 'Add it to my account';
+
+  @override
+  String get signInDiscard => 'Discard it';
+
+  @override
+  String get signInDone => 'You\'re signed in';
+
+  @override
+  String get signInErrorOffline =>
+      'You\'re offline. Try again when you\'re connected.';
+
+  @override
+  String get signInErrorCode =>
+      'That code didn\'t work. Check it or send a new one.';
+
+  @override
+  String get signInErrorThrottled =>
+      'Too many tries. Wait a moment and try again.';
+
+  @override
+  String get signInErrorOther => 'Couldn\'t sign in. Try again.';
+
+  @override
+  String get signInMergeBlocked =>
+      'This account already has a copy on this phone, so the two can\'t be combined yet. Your guest data stays here. You can discard it to open your account, or go back.';
+
+  @override
+  String get signInDoneButton => 'Done';
+
+  @override
+  String get guestPromptBody =>
+      'You\'re using Fitness Buddy as a guest. Create a free account and everything you\'ve logged comes with you.';
+
+  @override
+  String get guestPromptCreate => 'Create account';
+
+  @override
+  String get guestPromptNotNow => 'Not now';
+
+  @override
+  String get accountTransitionBusy => 'Updating your account…';
 }

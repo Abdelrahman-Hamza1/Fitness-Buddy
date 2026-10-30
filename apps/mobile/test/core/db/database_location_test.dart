@@ -18,6 +18,47 @@ void main() {
     expect(await guest.userDatabasePath(), '$root/profiles/guest-1/user.db');
   });
 
+  test("AC-003 the database opens the registry's active profile lazily, "
+      'and rejects a bad resolved key', () async {
+    var reads = 0;
+    final location = DatabaseLocation(
+      profileKey: 'local',
+      root: () async => '/root',
+      temporary: () async => '/tmp',
+      resolveProfileKey: () async {
+        reads++;
+        return 'acct-0123456789abcdef';
+      },
+    );
+    expect(reads, 0, reason: 'building a location touches no storage');
+    expect(
+      await location.userDatabasePath(),
+      '/root/profiles/acct-0123456789abcdef/user.db',
+    );
+    final bad = DatabaseLocation(
+      profileKey: 'local',
+      root: () async => '/root',
+      temporary: () async => '/tmp',
+      resolveProfileKey: () async => '../escape',
+    );
+    await expectLater(bad.userDatabasePath(), throwsArgumentError);
+  });
+
+  test('AC-003 the first resolved profile key sticks: later resolutions '
+      'reuse it and no future is cached', () async {
+    var reads = 0;
+    final location = DatabaseLocation(
+      profileKey: 'local',
+      root: () async => '/root',
+      temporary: () async => '/tmp',
+      resolveProfileKey: () async => ++reads == 1 ? 'guest-2' : 'acct-x',
+    );
+    expect(await location.resolvedProfileKey(), 'guest-2');
+    expect(await location.resolvedProfileKey(), 'guest-2');
+    expect(await location.userDatabasePath(), '/root/profiles/guest-2/user.db');
+    expect(reads, 1);
+  });
+
   test('profile keys that are not plain directory names are rejected', () {
     for (final bad in ['', '../x', 'a/b', 'Local', 'a' * 65]) {
       expect(
@@ -77,7 +118,7 @@ void main() {
     final db = container.read(appDatabaseProvider);
     await pumpEventQueue();
     expect(counting.resolved, 0);
-    expect(container.read(profileKeyProvider), 'local');
+    expect(container.read(profileKeyProvider), isNull);
 
     await db.select(db.syncState).get();
     expect(counting.resolved, 1);

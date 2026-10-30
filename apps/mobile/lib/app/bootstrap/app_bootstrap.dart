@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fb_mobile/core/account/account_providers.dart';
 import 'package:fb_mobile/core/catalog/catalog.dart';
 import 'package:fb_mobile/core/config/client_config.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
@@ -99,7 +100,15 @@ final class AppBootstrap {
         await _ref.read(clientConfigProvider.notifier).refresh();
       }),
     );
-    unawaited(_contained(() => _ref.read(sessionLifecycleProvider).start()));
+    unawaited(
+      _contained(() async {
+        // A33 §6: finish or roll back an interrupted account transition
+        // before the API session may acquire anything; acquisition stays
+        // suspended while a journal remains.
+        await _contained(() => _ref.read(accountTransitionsProvider).recover());
+        await _contained(() => _ref.read(sessionLifecycleProvider).start());
+      }),
+    );
   }
 }
 

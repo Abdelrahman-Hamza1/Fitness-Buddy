@@ -78,6 +78,7 @@ export 'models/email_challenge.dart';
 export 'models/email_verify_request.dart';
 export 'models/refresh_request.dart';
 export 'models/link_identity_request.dart';
+export 'models/email_link_start_request.dart';
 export 'models/json_web_key.dart';
 export 'models/json_web_key_set.dart';
 export 'models/current_account.dart';

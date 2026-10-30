@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:fb_domain/fb_domain.dart' show LocalDate, VersionedId, isUuid;
 import 'package:fb_mobile/app/shell/app_shell.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
+import 'package:fb_mobile/core/account/profile_generation.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/config/update_gate.dart';
 import 'package:fb_mobile/core/errors/navigation_observer.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/design_preview/design_preview.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
@@ -117,6 +119,7 @@ final class AppRouter implements AppNavigator {
   static const List<AppRoute> outsideTabs = [
     UpdateRequiredRoute(),
     SetupRoute(),
+    SignInRoute(),
   ];
 
   /// The go_router configuration, for `MaterialApp.router`.
@@ -272,6 +275,7 @@ final class AppRouter implements AppNavigator {
     TodayWeightGraphRoute() || WeightGraphRoute() => const WeightGraphScreen(),
     UpdateRequiredRoute() => const UpdateRequiredScreen(),
     SetupRoute() => const SetupScreen(),
+    SignInRoute() => const SignInScreen(),
     ProfileRoute() => const ProfileGoalScreen(),
     TargetsRoute() => const TargetsScreen(),
   };
@@ -295,6 +299,8 @@ final class AppRouter implements AppNavigator {
 /// (`lib/app/app_scope.dart`). Follows [updateRequiredProvider].
 @Riverpod(keepAlive: true)
 AppRouter appRouter(Ref ref) {
+  // A new router (and navigator) per profile generation (A33 re-check 3).
+  ref.watch(profileGenerationProvider);
   final updateRequired = ValueNotifier(false);
   ref.listen(
     updateRequiredProvider,
@@ -307,8 +313,12 @@ AppRouter appRouter(Ref ref) {
     designPreview: ref.read(appConfigProvider).flavor == AppFlavor.dev,
   );
   ref.onDispose(() {
-    router.dispose();
-    updateRequired.dispose();
+    // After the current frame's work: on a generation switch the old
+    // MaterialApp (still holding this router) unmounts in the same frame.
+    scheduleMicrotask(() {
+      router.dispose();
+      updateRequired.dispose();
+    });
   });
   return router;
 }

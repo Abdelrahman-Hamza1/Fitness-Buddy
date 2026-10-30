@@ -4,6 +4,7 @@ import 'package:fb_domain/system.dart';
 import 'package:fb_mobile/core/changes/apply_result.dart';
 import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/changes/row_ops.dart';
+import 'package:fb_mobile/core/changes/write_gate.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/db/natural_id.dart';
@@ -112,4 +113,98 @@ void main() {
       expect(() => bare.read(clockProvider), throwsA(anything));
     },
   );
+
+  test('AC-004 the write gate rejects apply and revert inside the serialized '
+      'entry, bound to the profile of the database', () async {
+    final db = memoryDatabase();
+    final gate = _FakeGate();
+    final container = ProviderContainer.test(
+      overrides: [
+        clockProvider.overrideWithValue(const SystemClock()),
+        idGeneratorProvider.overrideWithValue(systemUuidV7Generator()),
+        sharedPreferencesProvider.overrideWith((ref) {
+          SharedPreferencesAsyncPlatform.instance =
+              InMemorySharedPreferencesAsync.empty();
+          return SharedPreferencesAsync();
+        }),
+        appDatabaseProvider.overrideWithValue(db),
+        changeOpHandlersProvider.overrideWithValue(
+          (_) => const [ScriptHandler()],
+        ),
+        profileWriteGateProvider.overrideWithValue(gate),
+        activeProfileResolverProvider.overrideWithValue(() async => 'local'),
+      ],
+    );
+    final applier = container.read(changeSetApplierProvider);
+    final applied = await applier.apply(
+      ChangeSet([
+        ScriptOp.rows([
+          UpsertRow(
+            db.settingsKv,
+            SettingsKvCompanion(
+              id: Value(naturalId('setting', 'units.system')),
+              valueJson: const Value('"metric"'),
+            ),
+          ),
+        ]),
+      ], origin: Origin.direct),
+    ) as Applied;
+    expect(gate.seen, ['local']);
+
+    gate.reason = 'readOnlyProfile';
+    final reverted = await applier.revert(applied.inverse);
+    expect((reverted as Rejected).failure, const InvalidOp('readOnlyProfile'));
+    final again = await applier.apply(
+      ChangeSet([ScriptOp.rows([])], origin: Origin.direct),
+    );
+    expect((again as Rejected).failure, const InvalidOp('readOnlyProfile'));
+    expect(await db.select(db.settingsKv).get(), hasLength(1));
+
+    // A denial decided at the queue head: a write queued before the gate
+    // closes is still checked when its turn comes.
+    gate.reason = null;
+    final queued = applier.apply(
+      ChangeSet([ScriptOp.rows([])], origin: Origin.direct),
+    );
+    gate.reason = 'transition';
+    expect(((await queued) as Rejected).failure, const InvalidOp('transition'));
+    await applier.idle();
+  });
+
+  test('AC-004 a pinned database (explicit switch, tests) is gated without '
+      'an active-profile comparison', () async {
+    final db = memoryDatabase();
+    final gate = _FakeGate();
+    final container = ProviderContainer.test(
+      overrides: [
+        clockProvider.overrideWithValue(const SystemClock()),
+        idGeneratorProvider.overrideWithValue(systemUuidV7Generator()),
+        sharedPreferencesProvider.overrideWith((ref) {
+          SharedPreferencesAsyncPlatform.instance =
+              InMemorySharedPreferencesAsync.empty();
+          return SharedPreferencesAsync();
+        }),
+        appDatabaseProvider.overrideWithValue(db),
+        changeOpHandlersProvider.overrideWithValue(
+          (_) => const [ScriptHandler()],
+        ),
+        profileWriteGateProvider.overrideWithValue(gate),
+      ],
+    );
+    await container
+        .read(changeSetApplierProvider)
+        .apply(ChangeSet([ScriptOp.rows([])], origin: Origin.direct));
+    expect(gate.seen, ['pinned']);
+  });
+}
+
+final class _FakeGate implements WriteGate {
+  String? reason;
+  final seen = <String>[];
+
+  @override
+  Future<String?> denial(String? profileKey, {int? generation}) async {
+    seen.add(profileKey ?? 'pinned');
+    return reason;
+  }
 }

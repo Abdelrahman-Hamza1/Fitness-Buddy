@@ -5789,6 +5789,222 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This changes your current goal, which started on {date}. To begin a new goal from today instead, use Start a new goal.'**
   String goalEditNote(String date);
+
+  /// Me tab: Account section header (A33).
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get meSectionAccount;
+
+  /// Me › Account: guest status line (AC-002).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re using Fitness Buddy as a guest. Your data stays on this phone.'**
+  String get accountGuest;
+
+  /// Me › Account: signed-in status line. No email or id is shown.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in'**
+  String get accountSignedIn;
+
+  /// Me › Account and banner: registered session expired (A33 D9).
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired. Sign in again to keep your account.'**
+  String get accountSessionExpired;
+
+  /// Me › Account: kept copy after sign-out (AC-004).
+  ///
+  /// In en, this message translates to:
+  /// **'This is a read-only copy. Sign in to edit.'**
+  String get accountReadOnly;
+
+  /// Me › Account: row that opens sign-in. Also the sign-in screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in or create an account'**
+  String get accountSignIn;
+
+  /// Action on the session-expired banner/row.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in again'**
+  String get accountSignInAgain;
+
+  /// Me › Account: sign-out row and sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get accountSignOut;
+
+  /// Sign-out sheet option: keep a read-only copy (AC-004).
+  ///
+  /// In en, this message translates to:
+  /// **'Keep a copy on this phone'**
+  String get accountSignOutKeep;
+
+  /// Sign-out sheet option subtitle for keep.
+  ///
+  /// In en, this message translates to:
+  /// **'You can see it but not edit it until you sign in.'**
+  String get accountSignOutKeepDetail;
+
+  /// Sign-out sheet option: wipe local data (AC-004).
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from this phone'**
+  String get accountSignOutRemove;
+
+  /// Sign-out sheet option subtitle for remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account data stays safe on the server.'**
+  String get accountSignOutRemoveDetail;
+
+  /// Me › Account: leave the read-only copy and use a guest profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue as guest'**
+  String get accountContinueAsGuest;
+
+  /// Me › Account: placeholder row until A34.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync status'**
+  String get accountSyncPlaceholder;
+
+  /// Me › Account: placeholder row until A35.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get accountDeletePlaceholder;
+
+  /// Subtitle for placeholder rows.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get accountComingSoon;
+
+  /// Sign-in screen: email field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get signInEmailLabel;
+
+  /// Sign-in screen: button that emails a 6-digit code.
+  ///
+  /// In en, this message translates to:
+  /// **'Send code'**
+  String get signInSendCode;
+
+  /// Sign-in screen: code field label.
+  ///
+  /// In en, this message translates to:
+  /// **'6-digit code'**
+  String get signInCodeLabel;
+
+  /// Sign-in screen: verify code button.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get signInVerify;
+
+  /// Sign-in screen: Google button (hidden until configured).
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get signInGoogle;
+
+  /// Sign-in: 409 identity conflict title (AC-003).
+  ///
+  /// In en, this message translates to:
+  /// **'This account already exists'**
+  String get signInConflictTitle;
+
+  /// Sign-in: conflict question.
+  ///
+  /// In en, this message translates to:
+  /// **'What should happen to the data on this phone?'**
+  String get signInConflictBody;
+
+  /// Sign-in conflict option: merge this device's data into the account.
+  ///
+  /// In en, this message translates to:
+  /// **'Add it to my account'**
+  String get signInMerge;
+
+  /// Sign-in conflict option: delete this device's guest data.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard it'**
+  String get signInDiscard;
+
+  /// Sign-in: success line.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re signed in'**
+  String get signInDone;
+
+  /// Sign-in failure: offline.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline. Try again when you\'re connected.'**
+  String get signInErrorOffline;
+
+  /// Sign-in failure: wrong/expired code.
+  ///
+  /// In en, this message translates to:
+  /// **'That code didn\'t work. Check it or send a new one.'**
+  String get signInErrorCode;
+
+  /// Sign-in failure: rate limited.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many tries. Wait a moment and try again.'**
+  String get signInErrorThrottled;
+
+  /// Sign-in failure: other.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t sign in. Try again.'**
+  String get signInErrorOther;
+
+  /// Sign-in conflict: merge refused because a kept copy of the account exists on the device (A33 review 7). Both copies stay.
+  ///
+  /// In en, this message translates to:
+  /// **'This account already has a copy on this phone, so the two can\'t be combined yet. Your guest data stays here. You can discard it to open your account, or go back.'**
+  String get signInMergeBlocked;
+
+  /// Sign-in success: closes the sign-in screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get signInDoneButton;
+
+  /// Today: the gentle guest prompt (AC-002), at most once a week after the first week.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re using Fitness Buddy as a guest. Create a free account and everything you\'ve logged comes with you.'**
+  String get guestPromptBody;
+
+  /// Guest prompt: opens sign-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get guestPromptCreate;
+
+  /// Guest prompt: dismisses the card.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get guestPromptNotNow;
+
+  /// Full-screen calm state while sign-in, sign-out or the recovery of an interrupted one switches local profiles (A33). Usually under a second.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating your account…'**
+  String get accountTransitionBusy;
 }
 
 class _AppLocalizationsDelegate

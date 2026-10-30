@@ -159,6 +159,21 @@ public sealed class IdentityTests(PostgresFixture postgres)
         Assert.False(linked.IsAnonymous);
     }
     [Fact]
+    public async Task Email_link_start_needs_a_guest_principal_and_its_code_links_the_same_user()
+    {
+        await using var h = await HarnessAsync();
+        var guest = await h.GuestAsync();
+        var sent = h.Email.Count;
+        var start = (await h.Service.StartLinkEmailAsync(Guid.NewGuid() + "@example.invalid", guest, Guid.NewGuid().ToString(), Ct))!.Value;
+        Assert.Equal(sent + 1, h.Email.Count);
+        var linked = (await h.Service.LinkAsync(guest, "email", null, start.Id, h.Email.Code, h.Device, Ct))!;
+        Assert.Equal(guest.UserId, linked.UserId);
+        Assert.False(linked.IsAnonymous);
+        var registered = guest with { IsAnonymous = false };
+        Assert.Null(await h.Service.StartLinkEmailAsync(Guid.NewGuid() + "@example.invalid", registered, Guid.NewGuid().ToString(), Ct));
+        Assert.Equal(sent + 1, h.Email.Count);
+    }
+    [Fact]
     public async Task Simultaneous_email_consumption_issues_only_one_session()
     {
         await using var h = await HarnessAsync();
