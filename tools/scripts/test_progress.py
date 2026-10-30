@@ -105,6 +105,11 @@ class ProgressTest(unittest.TestCase):
         by_id = {i: {} for i in ("A04a", "A04b", "B10", "B11", "B12")}
         self.assertEqual(p.resolve_ids("A04 and B10–B12, not #10–#12", by_id), ["B10", "B11", "B12", "A04a", "A04b"])
 
+    def test_milestone_letter_suffix(self):
+        text = "## 5. Milestones\n\n| Milestone | Reached when |\n|---|---|\n| **M2b Solid app** | A05 |\n\n## 6. Next\n"
+        m = p.parse_milestones(text)[0]
+        self.assertEqual((m["id"], m["name"]), ("M2b", "Solid app"))
+
     def test_check_mode(self):
         with tempfile.TemporaryDirectory() as root:
             os.makedirs(os.path.join(root, "technical-planning", "steps"))

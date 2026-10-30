@@ -1,6 +1,6 @@
 # 16 — Home (Today) & Insights
 
-_Status: **Draft v1** · 2026-10-10 · Main decisions: D-031, D-043, D-052, D-068, D-070, D-071._
+_Status: **Draft v1** · 2026-10-10, amended 2026-10-30 · Main decisions: D-031, D-043, D-052, D-068, D-070, D-071, D-084, D-085._
 
 ## 1. Today screen (home, D-043, D-071)
 
@@ -16,8 +16,8 @@ Top to bottom:
 │   P 110/180  C 140/250  F 45/80  Fib 18 │
 │ ─────────────────────────────────────── │
 │ ⏳ 1 to confirm · +640 kcal          ›  │  ← only when pending (AI-045)
-│ Weight  97.6 trend · −0.4/wk        ›   │
-│ Push day today                       ›  │  ← only with a weekly plan
+│ 97.6 kg · trend −0.4/wk              ＋ │  ← slim once weighed today (D-084)
+│ Push ✓ · 5 exercises · 1 PR          ›  │  ← planned day or after logging
 │ ─────────────────────────────────────── │
 │ Breakfast                       420     │
 │   Fried egg · Labaneh · Taboon …        │
@@ -34,8 +34,8 @@ Top to bottom:
 - **HM-002** `[R1]` A small weekly line: "This week: X under / over" against the weekly budget (TG-045).
 - **HM-003** `[R1]` Macro progress for protein, carbs, fat (with targets) and fiber (smaller).
 - **HM-004** `[R1]` A "to confirm" strip appears only when proposals are pending (AI-045).
-- **HM-005** `[R1]` Weight card: trend, weekly rate, tap to log a weigh-in (WB-001) or open the graph.
-- **HM-006** `[R1]` A workout hint appears only when there's a weekly plan (WO-021). Tapping it opens logging for that template.
+- **HM-005** `[R1]` Weight on Today (D-084): with a weigh-in today, one slim row (weight · trend · ＋); tapping the row opens the graph, ＋ logs a weigh-in (WB-001). With no weigh-in today, the full weight card (trend, weekly rate, log a weigh-in).
+- **HM-006** `[R1]` A workout row appears only on a planned day ("Push day today", WO-021) or after a workout was logged that day ("Push ✓ · 5 exercises · 1 PR"). With no plan, nothing shows until you log (D-085). Tapping it opens logging for that template, or the logged session.
 - **HM-007** `[R1]` Diary by slot (DY-020).
 - **HM-008** `[R1]` Quick-add chips and the input bar with camera and barcode buttons are always at the bottom.
 - **HM-009** `[R1]` Swiping left or right changes the day. The same layout shows past days.
@@ -43,7 +43,7 @@ Top to bottom:
 
 ## 2. Progress tab
 
-- **IN-001** `[R1]` **Weekly summary** for the current week and any past week: average calories vs. budget, days within target, protein target hit days, fiber average, trend weight change, workouts done vs. planned, PRs, and the Buddy weekly review on top (AI-130).
+- **IN-001** `[R1]` **Weekly summary** for the current week and any past week: average calories vs. budget, days within target, protein target hit days, fiber average, trend weight change, workouts done (vs. planned, when there is a plan), PRs, and the Buddy weekly review on top (AI-130).
 - **IN-002** `[R1]` **Calories chart**: daily intake vs. daily target, by week or month, with incomplete days marked differently.
 - **IN-003** `[R1]` **Macros chart**: protein, carbs, fat, fiber per day vs. targets.
 - **IN-004** `[R1]` **Weight chart** (WB-020 to WB-023).

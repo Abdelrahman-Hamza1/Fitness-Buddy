@@ -2,7 +2,9 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A41 | M | Claude | ⬜ Not started |
+| App | A41a, A35 | M | Claude | ⬜ Not started (phase 1, wave 5) |
+
+_2026-10-30 (TD-105): the last phase-1 step and the gate of milestone M2b. Depends on A41a (not the Buddy half A41b) and A35. The Buddy round-trip speed (UX-005) is measured on what exists then; phase 2 re-checks it at M3._
 
 _Old ID: S48 (renumbered by TD-063, 2026-10-16)._
 

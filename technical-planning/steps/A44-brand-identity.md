@@ -251,6 +251,7 @@ _One dated line per event, newest last (process §8a)._
 - 2026-10-29 · WP6 (orchestrator, A22a on main 61ecc8c): merged `origin/main` 04a878d (conflicts: board rows in `steps/README.md`, kept A22a/A22b with A44 after them; 14 Today/quick-add/app-shell golden PNGs, kept ours for regeneration; 12-decisions auto-merged with TD-093 and TD-098). A22a's composer/bubble/card use tokens only; the composer now has the input bar's 52 dp minimum. Buddy avatar wired: 24 dp `leading` on Buddy's bubbles (decorative, outside the read-out label); the sheet has no title row, so no header avatar. `make check-dart` and `make gen-check` pass; goldens left to CI.
 - 2026-10-29 · Close: Outcome written, board ✅, backlog #155–#156; merge via `merge-step.sh` (CI incl. `[it]`), failing goldens regenerated scoped if any.
 - 2026-10-29 · Merged `origin/main` feebcc9 (B09b): B09b took TD-096/097, so A44's identity TD is renumbered **TD-098** everywhere (card, D-082, TD-076 annotation, TQ-23, code comments, SVG comments) and A44's backlog items are #155–#156. Merge CI on fe8d00d failed only on goldens (`food_card_golden_test.dart` ×4 from A22a, one `today_golden_test.dart` case); regenerated scoped.
+- 2026-10-30: owner verdict on the Embrace mark: approved as shipped ("Ok."); the other A55 checks in backlog #155 stay open. Theme default changes to light in A45 (D-083, TD-107).
 
 ## Outcome
 **Built (2026-10-29).** The app now uses the owner-approved **Embrace** identity (TD-098 Accepted, spec D-082):

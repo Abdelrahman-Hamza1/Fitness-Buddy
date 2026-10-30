@@ -138,9 +138,9 @@ def parse_milestones(text):
             out = []
             for r in rows:
                 name = plain(r[0])
-                m = re.match(r"^([MR]\d+)\s*(.*)$", name)
+                m = re.match(r"^([MR]\d+[a-z]?)\s*(.*)$", name)
                 if not m:
-                    raise BoardError(f"§5: milestone name {r[0]!r} doesn't start with M<n>/R<n>")
+                    raise BoardError(f"§5: milestone name {r[0]!r} doesn't start with M<n>/R<n> (optional letter: M2b)")
                 issues = []
                 for a, b in ISSUE_RANGE_RE.findall(r[1]):
                     issues.extend(range(int(a), int(b or a) + 1))

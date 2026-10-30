@@ -8,7 +8,7 @@ _Old ID: S23 (renumbered by TD-063, 2026-10-16)._
 
 **Goal.** The Progress tab with calories, macros, weight, measurements and goal progress, all filterable by goal phase, so weekly progress is obvious at a glance (SC-5).
 
-**Spec:** IN-002, IN-003, IN-004, IN-006 (measurements; exercise entry in A37), IN-007, IN-009, IN-020, IN-021, DY-004 (manual incomplete marking in the UI), SC-5 · **Decisions:** —
+**Spec:** IN-002, IN-003, IN-004, IN-006 (measurements; exercise entry in A37a), IN-007, IN-009, IN-020, IN-021, DY-004 (manual incomplete marking in the UI), SC-5 · **Decisions:** —
 
 ## Scope
 - **Progress tab layout:** a current-week header (the weekly summary card arrives in A39), then chart sections.

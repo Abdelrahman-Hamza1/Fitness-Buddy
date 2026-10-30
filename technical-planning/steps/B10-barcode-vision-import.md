@@ -2,13 +2,17 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| Backend | B07, B08 | L | Claude (TD-085) | ⬜ Not started |
+| Backend | B10a: B07; B10b: B10a, B08 | B10a M + B10b L (split 2026-10-30) | Claude (TD-085) | ⬜ B10a (wave 3) · ⬜ B10b (phase 2) |
 
 _Old ID: S38 and S39 server parts (renumbered by TD-063, 2026-10-16). The app sides are A28 and A29._
 
 **Goal.** The server side of packaged food and pictures: barcode lookups through a licence-isolated Open Food Facts cache, nutrition-label reading, meal photos, and turning a pasted weight note into rows.
 
 **Spec:** FD-030–033, FD-040–042 (extraction side), AI-011, AI-012, AI-052, AI-057, WB-030–032 (parse side), C-5, T17, T18, T33 · **Decisions:** TD-010, D-073
+
+## Split (2026-10-30, TD-105)
+- **B10a Barcode lookup** (phase 1, wave 3, no AI): the `GET /v1/foods/barcode/{code}` contract, the licence-isolated OFF cache and client, the expiry job, their tests. App side: A28a.
+- **B10b Label & meal photos, paste import** (phase 2): `POST /v1/buddy/label`, image input on interpret, `POST /v1/buddy/import`, the `WeighIn`/`Measurement` intents, vision routing, scrubbers and the eval. App side: A28b and A29.
 
 ## Scope
 - **Contract first** (one commit per endpoint, Progress-log line each): `GET /v1/foods/barcode/{code}`, `POST /v1/buddy/label` (`LabelExtraction`: basis per 100 / serving, serving size, nutrients, name guess, per-field confidence), image input on interpret (meal photo, the same `Interpretation`), `POST /v1/buddy/import` (rows: date, value, unit?, original text), and the `WeighIn` / `Measurement` intents.
@@ -36,6 +40,10 @@ Optional: photograph a few Arabic labels and share the weight-note format for th
 
 ## Low-level plan
 _Written in Phase B._
+
+## Progress log
+_One dated line per event, newest last (process §8a)._
+- 2026-10-30: split into a/b (TD-105, owner).
 
 ## Outcome
 _Written in Phase E._

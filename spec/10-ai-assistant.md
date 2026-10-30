@@ -148,6 +148,7 @@ Details are in `12-diary-meals-recipes.md` §5. Buddy's part:
 - **AI-100** `[R1]` Understands "cooked a pot of…" as a batch, and offers the quick path (log the whole batch or your share now) or saving it as leftovers to portion later (D-044).
 - **AI-101** `[R1]` Understands portions as grams, fractions, plates or shares ("we were 6") (D-072).
 - **AI-102** `[R1]` Understands references to open batches ("leftover chicken rice, a plate").
+- **AI-103** `[R1]` A shared dish logged without an amount ("had maqluba with the family") defaults to **one person's typical portion**, shown as an assumption with −/+ on the card. An explicit amount ("half the pot", "big plate", "we were 6") overrides it; Buddy asks only when it's truly ambiguous (D-086).
 
 ## 10. Questions about your data
 

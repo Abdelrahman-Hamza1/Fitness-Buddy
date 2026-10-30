@@ -5,6 +5,8 @@ description: Run Fitness Buddy's review pipeline on the current step branch: cho
 
 # Review changes
 
+> **Codex only (TD-106, owner 2026-10-30).** Every reviewer role below (code, security, UX, architecture, fix-checks) runs as a **Codex task** (`codex:codex-rescue`, read-only, a new task per review, "proceed without confirmation"; on a capacity error retry after ~2 min, up to 3×), not as a Claude agent. Start the review as soon as the code is pushed, in parallel with CI. Normal steps: one combined Codex review; Risky steps: two parallel Codex tasks (code + security). At most about 2 fix-check rounds; remaining edge cases go to the backlog. The tables below still decide *what* each review must cover.
+
 ## 1. Scope the diff
 ```
 git fetch origin main

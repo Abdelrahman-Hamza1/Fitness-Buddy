@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A33, **B05**, **B17**, **B18** | L | Claude (TD-085; was Codex, TD-078) | ⬜ Not started |
+| App | A33, **B05**, **B17**, **B18**, **B19**, **B20**, **B21** | L | Claude (TD-085; was Codex, TD-078) | ⬜ Not started |
 
 _Old ID: S27 (renumbered by TD-063, 2026-10-16)._
 

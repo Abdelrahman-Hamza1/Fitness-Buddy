@@ -2,13 +2,17 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A23, **B10** (contract) | L | Claude | ⬜ Not started |
+| App | A28a: A09a, A24, **B10a** (contract); A28b: A28a, A23b, **B10b** (contract) | A28a M + A28b M (split 2026-10-30) | Claude | ⬜ A28a (wave 3) · ⬜ A28b (phase 2) |
 
 _Old ID: S38 app part (renumbered by TD-063, 2026-10-16)._
 
 **Goal.** Packaged food in seconds: scan a barcode → product → amount → logged. When the product is unknown or incomplete, photograph the nutrition label (Arabic or English) → review → saved as your food, linked to the barcode for next time.
 
 **Spec:** FD-030, FD-031, FD-032, FD-033, FD-040, FD-041, FD-042, FD-081, AI-012, UX-006, OF-02 (barcode part), C-5, T17, T18 · **Decisions:** TD-010, D-073
+
+## Split (2026-10-30, TD-105)
+- **A28a Barcode scanning** (phase 1, wave 3, no AI): scanner, the lookup chain (personal foods → offline pack incl. A48 brands → `GET /v1/foods/barcode/{code}` from B10a), product card → amount → direct action with undo (T17), OFF attribution, halal warnings, the coverage counter. Not found → add the product by form as a personal food linked to the barcode. The plan decides what an offline scan of an unknown code does (keep it for a later lookup, or offer the form).
+- **A28b Label scan** (phase 2): "Scan the label instead" → `POST /v1/buddy/label` (B10b) → review screen (proposal) → personal food linked to the barcode (T18).
 
 ## Scope
 - **Scanner** (mobile_scanner) from the input bar's barcode button.
@@ -45,6 +49,10 @@ Use barcode and label scan in daily logging. Optional: photograph a few Arabic l
 
 ## Low-level plan
 _Written in Phase B._
+
+## Progress log
+_One dated line per event, newest last (process §8a)._
+- 2026-10-30: split into a/b (TD-105, owner).
 
 ## Outcome
 _Written in Phase E._

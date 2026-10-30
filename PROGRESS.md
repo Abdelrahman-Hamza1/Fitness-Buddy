@@ -1,8 +1,8 @@
 # Fitness Buddy: progress
 
-**44 of 74 steps done** · `▓▓▓▓▓░░░░░` 59%
+**44 of 86 steps done** · `▓▓▓▓▓░░░░░` 51%
 
-App 31/53 · Backend 13/21 · Foundation 7/7
+App 31/63 · Backend 13/23 · Foundation 7/7
 
 ## Now
 
@@ -14,12 +14,13 @@ App 31/53 · Backend 13/21 · Foundation 7/7
 |---|---|---|---|
 | ✅ | **M1** Dogfood 1 | `▓▓▓▓▓` 14/14 | — |
 | 🟨 | **M2** Targets & weight | `▓▓▓▓░` 8/9 | A16 |
-| 🟨 | **M3** Buddy on the laptop | `▓▓▓▓░` 15/16 | A23b #148 #149 #150 #151 |
-| 🟨 | **M4** Dogfood 2 | `░░░░░` 1/9 | A25 A26 A27 A28 A29 A31 +2 |
-| 🟨 | **M5** Accounts & sync | `▓▓░░░` 4/7 | A34 A35 B20 |
-| 🟨 | **M6** Workouts, insights &… | `▓░░░░` 2/8 | A37 A38 A39 A40 A41 B12 |
-| ⬜ | **M7** Production | `░░░░░` 0/4 | A42 A43 B13 B14 |
-| ⬜ | **R1** done | `░░░░░` 0/7 | A17 A18 A19 A30 A32 B15 +3 |
+| 🟨 | **M5** Accounts & sync | `▓▓▓░░` 15/19 | A34 A35 B20 B21 |
+| 🟨 | **M2b** Solid app (no AI) | `▓░░░░` 6/23 | A17 A18 A19 A28a A30 A37a +16 |
+| 🟨 | **M3** Buddy on the laptop | `▓░░░░` 1/3 | A23b A49 #148 #149 #150 #151 |
+| ⬜ | **M4** Dogfood 2 | `░░░░░` 0/8 | A25 A26 A27 A28b A29 A31 +2 |
+| ⬜ | **M6** Workouts, review &… | `░░░░░` 0/4 | A37b A39b A41b B12 |
+| ⬜ | **M7** Production | `░░░░░` 0/3 | A43 B13 B14 |
+| ⬜ | **R1** done | `░░░░░` 0/3 | A32 B15 B16 A42 A43 |
 
 ✅ reached · 🟨 in progress · ⬜ ahead. Each step counts toward the first milestone that needs it.
 
@@ -28,24 +29,24 @@ App 31/53 · Backend 13/21 · Foundation 7/7
 Not started, every dependency done; earliest milestone first:
 
 - [A16](technical-planning/steps/A16-progress-tab.md) Progress tab v1 · M2
-- [A23b](technical-planning/steps/A23-message-lifecycle.md) Message queue, failures & pending strip (split from A23) · M3
-- [A26](technical-planning/steps/A26-memory-user-model.md) Memory & user model (app) · M4
-- [B10](technical-planning/steps/B10-barcode-vision-import.md) Barcode lookup, label & meal photos, paste import · M4
-- [B11](technical-planning/steps/B11-buddy-qa-suggestions.md) Buddy Q&A & suggestions · M4
+- [B20](technical-planning/steps/B20-measurement-sync.md) Measurement sync entities (server; ⚠️ deploy hold until merged) · M5
+- [A17](technical-planning/steps/dish-batches.md) Dish batch 2: main dishes A · M2b
+- [A37a](technical-planning/steps/A37-workout-logging.md) Workouts without AI: muscle map, form, optional starter plans, history & PRs (split from A37, 2026-10-30) · M2b
+- [A45](technical-planning/steps/A45-ux-polish.md) UX polish: steady chips, light default, slim weight row, tab reset · M2b
 
 ## Waiting on you
 
-- **#200** ⚠️ Owner: Google OAuth web/server client ID + Android client (release SHA-1), approve…
-- **#190** ⚠️ Owner: share the PPL routine so templates can be seeded for testing
 - **#185** ⚠️ Owner/A55 check: pack update end to end against the laptop server: publish a new…
 - **#164** ⚠️ Owner A55 check: a profile-mode pan of the weight graph over two years of daily…
 - **#154** ⚠️ Owner-gated live smoke of interpret-v2 (≤ 10 sends, ≈ $0.01): proves strict-mode…
-- **#149** Estimate portions for unmatched dishes: an unmatched estimate with a plate/piece/serving…
 - **#195** Owner A55 check of Me › Targets and Profile & goal with real data: the explanation reads…
 - **#130** On the A55: Meal times (Me > Meal times): add, rename, set a window, reorder (drag and…
 - **#125** Install the prod build (docs/runbooks/install-a-build.md: Chrome download from the main…
 - **#124** On the A55: Me > Your data > Export your data with Android font size at the largest…
-- …and 37 more owner items in the [backlog](technical-planning/steps/backlog.md)
+- **#123** At the A22 phone session: run A21 §6's A55 profile benchmark (UI-free), then at least…
+- **#115** On the A55: set real settings (imperial/metric, theme dark/light, week start, halal…
+- **#104** A09b owner check: use the chips for a few days on the A55: right items at the right…
+- …and 35 more owner items in the [backlog](technical-planning/steps/backlog.md)
 
 ---
 

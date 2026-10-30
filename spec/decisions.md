@@ -144,11 +144,13 @@ Format:
 
 ## D-028 — Workouts: simple strength logging
 - Date / Source: 2026-10-10 · round-01 Q35–Q38
+- Status: Amended by D-085 (no plan required, starter plans).
 - Decision: Strength training (owner: PPL, 3–4×/week). Simple logging: exercise, sets × reps × weight, usually logged **after** the session. No RPE, tempo or periodization initially.
 - Open: Rank and scope → round-02 R2-2, R2-23.
 
 ## D-029 — Exercise library stays simple
 - Date / Source: 2026-10-10 · round-01 Q39
+- Status: Amended by D-085 (a muscle map for every exercise).
 - Decision: Exercise names (with aliases) plus custom exercises. Media/instructions only if they add no complexity. They're optional and Later.
 
 ## D-030 — Cardio
@@ -406,6 +408,38 @@ _Entries marked **(provisional)** apply Claude's recommendation to a question th
 
 ## D-082 — Dark by default, in the Embrace palette
 - Date / Source: 2026-10-29 · owner, after the design-canvas review ("The UI looks amazing"), answering TQ-23: "Well the new default will be the palette we decided, the minty stuff. OK anyways."
-- Status: Accepted. Amends UX-040.
+- Status: Accepted. Amends UX-040. **The default is superseded by D-083** (light, 2026-10-30); the palette part stands.
 - Decision: The app opens in the **dark theme by default**, in the "Embrace" brand palette (dark "Deep Forest", teal and mint; light "Mint Cream"). Light and dark themes both stay, and Me › Settings › Theme still offers System / Light / Dark.
 - Why: The owner prefers dark, and the approved Embrace identity is designed dark-first. Following the system stays available as a setting. Technical details: TD-098 (step A44).
+
+## D-083 — Light by default
+- Date / Source: 2026-10-30 · owner, after the first phone checks of the prod build ("rec for all")
+- Status: Accepted. **Supersedes D-082's default** (the Embrace palette stays). Amends UX-040.
+- Decision: The app opens in the **light theme** ("Mint Cream") by default. Dark and System stay as choices in Me › Settings › Theme.
+- Why: On the phone the owner preferred light for daily use. Technical details: TD-107 (step A45).
+
+## D-084 — Slim weight row on Today
+- Date / Source: 2026-10-30 · owner phone feedback (option a)
+- Status: Accepted. Amends HM-005.
+- Decision: When there's a weigh-in today, Today shows weight as **one slim row**: weight · trend · ＋. Tapping the row opens the weight graph; ＋ logs a weigh-in. The full weight card shows only when there's **no weigh-in today**, to invite one.
+- Why: Once you've weighed in, the card takes space that food logging needs. Step A45.
+
+## D-085 — Workouts: muscle maps, no plan required, starter plans
+- Date / Source: 2026-10-30 · owner workouts discussion ("I like muscle map… keep it simple… allow users without specific plans… some people like randomness. I trust your judgements")
+- Status: Accepted. **Amends D-028, D-029**, WO-001, WO-003, WO-010, WO-021, WO-034, WO-041, WO-043, HM-006.
+- Decision:
+  - **Pictures:** every exercise, built-in and custom, shows a **muscle map**: front and back body, main muscles dark, secondary muscles lighter. We draw it ourselves from an MIT-licensed body outline. No photos or videos. (The free-exercise-db photos are scraped and must never ship.)
+  - **No plan is ever required.** Training without a plan, or randomly, is a first-class way to use the app: log by picking exercises or by telling Buddy. Sessions are named from their muscles ("Chest & triceps") unless renamed. **Repeat** works on any past session, not only templates. The week view shows only the days you trained. **Never** a "missed day" message.
+  - **Starter plans** are an optional gallery: Full body (3 days), Upper/Lower (4), Push/Pull/Legs (3–6), and Build my own. Picking one copies editable templates and weekdays.
+  - **Logging after the session** is the main way. The form saves as you type.
+  - **Working sets only:** no warm-up sets, no supersets or drop sets in R1. Weights in **kg**; lb typed to Buddy is converted.
+  - **Today** shows a workout row only on planned days or after you logged one ("Push ✓ · 5 exercises · 1 PR"). Users with no plan see nothing until they log.
+  - **Exercise page:** the main line is the heaviest set; estimated 1RM is a toggle.
+  - **Calorie shifting** stays off by default (TG-043).
+- Why: The owner wants simple and free-form training to feel normal, with a picture per exercise that works for custom ones too. A muscle map needs no photo licences and covers every exercise. The owner's own PPL routine is covered by the PPL starter plan or by just logging.
+
+## D-086 — Shared dish portions default to one person
+- Date / Source: 2026-10-30 · owner Q&A (option a; backlog #149)
+- Status: Accepted. Amends AI-101 (adds AI-103), D-072.
+- Decision: When a shared dish is logged without an amount ("had maqluba with the family"), Buddy assumes **one person's typical portion**, shown as an assumption with −/+ on the card. An explicit amount ("half the pot", "big plate", "we were 6") overrides it. Buddy asks only when it's truly ambiguous.
+- Why: A sensible default with an easy fix is faster than a question every time, and keeps the "nothing logged without confirmation" rule. Step A49.

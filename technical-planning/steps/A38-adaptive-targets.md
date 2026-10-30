@@ -2,7 +2,9 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A16, A23 | M | Claude | ⬜ Not started |
+| App | A16, A23a (proposal storage) | M | Claude | ⬜ Not started (phase 1, wave 3) |
+
+_2026-10-30 (TD-105): depends on A23a (durable proposals, done) instead of all of A23; the check-in proposal needs proposal storage, not the Buddy message queue (A23b, phase 2)._
 
 _Old ID: S43 (renumbered by TD-063, 2026-10-16)._
 

@@ -1,6 +1,6 @@
 ---
 name: run-step
-description: Orchestrator playbook for executing one Fitness Buddy step on either track (app A01–A43, backend B01–B18; TD-063, TD-085) end to end: readiness check, research, planning, owner plan approval, work packages with specialist agents, reviews, verification, close-out and owner acceptance. Use when the owner says "run A06", "next step", "continue the plan", or similar.
+description: Orchestrator playbook for executing one Fitness Buddy step on either track (app A01–A50, backend B01–B21; TD-063, TD-085) end to end: readiness check, research, planning, owner plan approval, work packages with specialist agents, reviews, verification, close-out and owner acceptance. Use when the owner says "run A06", "next step", "continue the plan", or similar.
 ---
 
 # Run a step (orchestrator playbook)
@@ -44,7 +44,7 @@ Track progress with a todo list mirroring the phases below. Keep the owner infor
 ## E. Close
 1. Write the card's **Outcome**: built · deviations (and why) · follow-ups · new TDs · measurements · metrics (planned vs actual size, WPs, review rounds, findings by severity, tests added).
 2. Update the status board (✅ after the owner's OK; until then keep 🟨 with a note "awaiting owner"), any planning docs the step changed, and `technical-planning/steps/backlog.md` (follow-ups, minor findings).
-3. Commit (`docs(<ID>): outcome`). On a milestone step, or when the step changed Patrol tests or native Android code, put `[it]` in this commit's message so the merge run includes the emulator tests (TD-086). Push the branch only when the owner will review it on GitHub (step 4); otherwise `merge-step.sh` carries it, and a separate push just starts a redundant CI run.
+3. Commit (`docs(<ID>): outcome`). No `[it]`: the emulator runs nightly and manually only (TD-104). Push the branch only when the owner will review it on GitHub (step 4); otherwise `merge-step.sh` carries it, and a separate push just starts a redundant CI run.
 4. **Owner gate:** send the **close summary** (template in process §5.2) with demo steps for the A55 when relevant, and the GitHub branch name for reviewing the diff. **Wait for the owner's OK.**
 5. On OK: commit the Outcome and board ✅ on the step branch, then run `tools/scripts/merge-step.sh <ID> "<step name>" step/<ID>-…` in the background with `MERGE_TRAILER` set to the attribution line. It builds the squash commit without touching the folder, pushes `merge/<ID>`, waits for `ci` and moves `main` only when green (TD-036, TD-039, TD-086, `PROCESS.md` A5). Never push to `main` by hand. While it waits, start the next step's Orient and Plan (new branch from `origin/main`; if it depends on the step being merged, rebase it once the merge lands).
 6. Propose the next step.

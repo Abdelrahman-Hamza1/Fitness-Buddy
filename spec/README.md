@@ -50,7 +50,7 @@ Rules:
 | File | Purpose | State |
 |---|---|---|
 | `README.md` | This index | ✅ |
-| `decisions.md` | Decision log (append-only) | ✅ D-001 to D-082 |
+| `decisions.md` | Decision log (append-only) | ✅ D-001 to D-086 |
 | `glossary.md` | Shared vocabulary | ✅ |
 | `research/competitive-analysis.md` | Existing apps: what they do well and badly, what we take from them | ✅ |
 | `research/domain-pitfalls.md` | Hard problems in nutrition, weight and AI logging | ✅ |

@@ -2,13 +2,17 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A05b, A15, A38, A40, **B12** (contract) | L | Claude | ⬜ Not started |
+| App | A41a: A05b, A15, A38, A40; A41b: A41a, A39b, **B12** (contract) | A41a L + A41b S (split 2026-10-30) | Claude | ⬜ A41a (wave 4) · ⬜ A41b (phase 2) |
 
 _Old ID: S46 app part (renumbered by TD-063, 2026-10-16)._
 
 **Goal.** Ramadan is first-class: detected automatically (proposed, not forced), with iftar/suhoor slots, Ramadan targets, prayer-time reminders, honest weight expectations and a Ramadan comparison.
 
 **Spec:** LC-020, LC-030, LC-031, LC-032, LC-033, LC-034, DY-012, TG-037, TG-060, TG-061, NT-008, NT-009, NT-026, WB-021 (Ramadan shading), IN-008, AI-120 (Ramadan suggestions), T30, T31, T32, J9, J11 · **Decisions:** TD-013
+
+## Split (2026-10-30, TD-105)
+- **A41a Ramadan mode without Buddy** (phase 1, wave 4): calendar and detection proposal, prayer times, Ramadan slots, Ramadan targets (offered through the weekly summary/check-in instead of the Buddy review), not-fasting days, suhoor/iftar reminders, chart shading, adaptive-target confidence, the Ramadan comparison (IN-008). J9/J11 parts that need no Buddy.
+- **A41b Ramadan Buddy parts** (phase 2): Ramadan context for suggestions (AI-120), the "maintain during Ramadan" offer in the Buddy review, T30–T32 on B12's contract.
 
 ## Scope
 - **`RamadanCalendar`** (`fb_domain`): an Umm al-Qura Hijri package (chosen here) → Ramadan start/end per year + the user's ±1-day shift + a manual on/off (LC-030). The Hijri date shown alongside during Ramadan (LC-020).
@@ -48,6 +52,10 @@ Check the prayer times for your city. Review during the next real Ramadan.
 
 ## Low-level plan
 _Written in Phase B._
+
+## Progress log
+_One dated line per event, newest last (process §8a)._
+- 2026-10-30: split into a/b (TD-105, owner).
 
 ## Outcome
 _Written in Phase E._

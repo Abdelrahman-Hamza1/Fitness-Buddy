@@ -2,8 +2,8 @@
 
 R1 is built on **two tracks** (TD-063), both built by Claude since TD-085 (2026-10-28; Codex retired):
 
-- **App track `A01–A43`**: the Flutter app, the Dart packages and tools, the food data. The **By** column records who built each finished step (Codex built some no-UI steps under TD-078).
-- **Backend track `B01–B20`**: the API, the Buddy server, infrastructure and deploys (B01–B08 and B17 built by Codex; the rest by Claude).
+- **App track `A01–A50`**: the Flutter app, the Dart packages and tools, the food data. The **By** column records who built each finished step (Codex built some no-UI steps under TD-078).
+- **Backend track `B01–B21`**: the API, the Buddy server, infrastructure and deploys (B01–B08 and B17 built by Codex; the rest by Claude).
 
 **Within a track the number is the order.** The only waits are the dependencies on the other track, shown in **bold** on the board (§4) and listed in §6. The finished foundation steps keep their old IDs (`S01`–`S04`, `S06a/b`, `S08`); old `Sxx` IDs are never reused, so a commit called `S04: …` is always the old plan and `A01: …` / `B01: …` the new one (§8).
 
@@ -164,41 +164,53 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A14](A14-weigh-ins-trend.md) | Weigh-ins & trend | Claude | A08a | L | S21 |  | ✅ |
 | [A15a](A15-weight-graph-measurements.md) | Weight graph (split from A15, 2026-10-28) | Claude | A12, A13a, A14 | L | S22 part |  | ✅ |
 | [A15b](A15-weight-graph-measurements.md) | Weight history entry & measurements (split from A15; owner real-history sign-off pending, #213) | Claude | A15a | L | S22 part |  | ✅ |
-| [A16](A16-progress-tab.md) | Progress tab v1 | Claude | A13c, A15 | M | S23 | **M2** | ⬜ |
-| [A17](dish-batches.md) | Dish batch 2: main dishes A | Claude | A04 | S | D2 |  | ⏸ deferred (TD-074): after A41 |
-| [A18](dish-batches.md) | Dish batch 3: out & street food | Claude | A17 | S | D3 |  | ⏸ deferred (TD-074): after A41 |
-| [A19](dish-batches.md) | Dish batch 4: main dishes B, salads & sides | Claude | A18 | S | D4 |  | ⏸ deferred (TD-074): after A41 |
+| [A16](A16-progress-tab.md) | Progress tab v1 | Claude | A13c, A15 | M | S23 | **M2** | ⬜ wave 1 (TD-105) |
+| [A17](dish-batches.md) | Dish batch 2: main dishes A | Claude | A04 | S | D2 |  | ⬜ wave 1 (TD-105) |
+| [A18](dish-batches.md) | Dish batch 3: out & street food | Claude | A17 | S | D3 |  | ⬜ wave 1 (TD-105) |
+| [A19](dish-batches.md) | Dish batch 4: main dishes B, salads & sides | Claude | A18 | S | D4 |  | ⬜ wave 2 (TD-105) |
 | [A20](A20-api-session.md) | API session: anonymous identity & auth interceptor | **Codex** | **B04** (contract) | S | S25 part |  | ✅ |
 | [A21](A21-proposal-engine.md) | ProposalEngine | **Codex** | A07, A12, **B08** | L | S32 |  | ✅ |
 | [A22a](A22-chat-proposal-card.md) | Chat sheet, message storage & proposal card (split from A22, 2026-10-28) | Claude | A08b, A20, A21, **B08**, **B18**, **B09a** WP0 | L | S33 part |  | ✅ |
 | [A22b](A22-chat-proposal-card.md) | Card adjustments & follow-up (split from A22) | Claude | A22a, **B09a** (contract) | M | S33 part |  |✅ |
 | [A44](A44-brand-identity.md) | Brand identity & theme ("Embrace"; runs after A22a, owner 2026-10-29) | Claude | A22a | L | new |  | ✅ (phone checks: backlog #155) |
 | [A23a](A23-message-lifecycle.md) | Durable proposals & restore (split from A23, 2026-10-30) | Claude | A22a, A22b, **B18** (contract) | L | S34 part |  | ✅ |
-| [A23b](A23-message-lifecycle.md) | Message queue, failures & pending strip (split from A23) | Claude | A23a | L | S34 part | **M3** | ⬜ |
+| [A23b](A23-message-lifecycle.md) | Message queue, failures & pending strip (split from A23) | Claude | A23a | L | S34 part | **M3** | ⬜ phase 2 (plan written) (TD-105) |
 | [A24](A24-online-search-pack-updates.md) | Online search & pack updates (app) | Claude | A07, **B07** | M | S30 app part |  | ✅ |
-| [A25](A25-diary-edits-by-chat.md) | Diary edits by chat (app) | Claude | A23, **B09a** (contract) | M | S35 app part |  | ⬜ |
-| [A26](A26-memory-user-model.md) | Memory & user model (app) | Claude | A23a, **B09a** (contract) | M | S36 app part |  | ⬜ |
-| [A27](A27-batches-chat-foods.md) | Batches, personal foods & saved meals by chat (app) | Claude | A09b, A23, **B09a** (contract) | L | S37 app part |  | ⬜ |
-| [A28](A28-barcode-label-scan.md) | Barcode & label scan (app) | Claude | A23, **B10** (contract) | L | S38 app part |  | ⬜ |
-| [A29](A29-photo-body-import.md) | Photo logging, body data by chat & paste import (app) | Claude | A15, A23, **B10** (contract) | M | S39 app part |  | ⬜ |
-| [A30](dish-batches.md) | Dish batch 5: sweets, drinks & Ramadan staples | Claude | A19 | S | D5 |  | ⏸ deferred (TD-074): after A41 |
-| [A31](A31-qa-suggestions-halal.md) | Q&A, suggestions & halal (app) | Claude | A26, **B11** (contract) | M | S40 app part |  | ⬜ |
-| [A32](dish-batches.md) | Dish batch 6: gap fill from dogfooding | Claude | A30 | S | D6 |  | ⏸ deferred (TD-074): after A41 |
+| [A25](A25-diary-edits-by-chat.md) | Diary edits by chat (app) | Claude | A23, **B09a** (contract) | M | S35 app part |  | ⬜ phase 2 |
+| [A26](A26-memory-user-model.md) | Memory & user model (app) | Claude | A23a, **B09a** (contract) | M | S36 app part |  | ⬜ phase 2 |
+| [A27](A27-batches-chat-foods.md) | Batches, personal foods & saved meals by chat (app) | Claude | A09b, A23, **B09a** (contract) | L | S37 app part |  | ⬜ phase 2 |
+| [A28a](A28-barcode-label-scan.md) | Barcode scanning (app, no AI; split from A28, 2026-10-30) | Claude | A09a, A24, **B10a** (contract) | M | S38 app part |  | ⬜ wave 3 (TD-105) |
+| [A28b](A28-barcode-label-scan.md) | Label scan (app; split from A28) | Claude | A28a, A23b, **B10b** (contract) | M | S38 app part |  | ⬜ phase 2 |
+| [A29](A29-photo-body-import.md) | Photo logging, body data by chat & paste import (app) | Claude | A15, A23, **B10b** (contract) | M | S39 app part |  | ⬜ phase 2 |
+| [A30](dish-batches.md) | Dish batch 5: sweets, drinks & Ramadan staples | Claude | A19 | S | D5 |  | ⬜ wave 2 (TD-105) |
+| [A31](A31-qa-suggestions-halal.md) | Q&A, suggestions & halal (app) | Claude | A26, **B11** (contract) | M | S40 app part |  | ⬜ phase 2 |
+| [A32](dish-batches.md) | Dish batch 6: gap fill from dogfooding | Claude | A30 | S | D6 |  | ⏸ gap fill once dogfooding shows the misses (TD-105) |
 | [A33](A33-sign-in-guest-app.md) | Sign-in & guest upgrade | Claude | A20, **B04** | M | S25 |  | ✅ |
-| [A34](A34-sync-engine-app.md) | Sync engine (app) | Claude | A33, **B05**, **B17**, **B18**, **B19**, **B20** | L | S27 |  | ⬜ |
-| [A35](A35-account-deletion-app.md) | Account deletion (app) | Claude | A34, **B06** | S | S28 deletion part | **M5** | ⬜ |
+| [A34](A34-sync-engine-app.md) | Sync engine (app) | Claude | A33, **B05**, **B17**, **B18**, **B19**, **B20**, **B21** | L | S27 |  | ⬜ wave 4 |
+| [A35](A35-account-deletion-app.md) | Account deletion (app) | Claude | A34, **B06** | S | S28 deletion part | **M5** | ⬜ wave 4 |
 | [A36](A36-workout-domain.md) | Workout domain, library & templates | Claude | A05b, A06, A12 | M | S41 |  | ✅ |
-| [A37](A37-workout-logging.md) | Workout logging, history & PRs (app) | Claude | A23, A36, **B12** (contract) | L | S42 app part |  | ⬜ |
-| [A38](A38-adaptive-targets.md) | Adaptive targets & weekly check-in | Claude | A16, A23 | M | S43 |  | ⬜ |
-| [A39](A39-weekly-review.md) | Weekly summary & Buddy review (app) | Claude | A37, A38, **B12** (contract) | M | S44 app part |  | ⬜ |
-| [A40](A40-notifications.md) | Notifications | Claude | A27, A37, A39 | M | S45 |  | ⬜ |
-| [A41](A41-ramadan.md) | Ramadan mode (app) | Claude | A05b, A15, A38, A40, **B12** (contract) | L | S46 app part | **M6** | ⬜ |
-| [A42](A42-performance-a11y-offline.md) | Performance, accessibility & offline acceptance | Claude | A41 | M | S48 | **R1** | ⬜ |
-| [A43](A43-play-internal-release.md) | Play internal testing release | Claude | A42, **B14** | S | S29 app part | **M7** | ⬜ |
+| [A37a](A37-workout-logging.md) | Workouts without AI: muscle map, form, optional starter plans, history & PRs (split from A37, 2026-10-30) | Claude | A36, A15a · soft: A16 (Progress entry) | L | S42 app part |  | ⬜ wave 2 (TD-105) |
+| [A37b](A37-workout-logging.md) | Workout logging by chat (split from A37) | Claude | A37a, A23b, **B12** (contract) | M | S42 app part |  | ⬜ phase 2 |
+| [A38](A38-adaptive-targets.md) | Adaptive targets & weekly check-in | Claude | A16, A23a (proposal storage) | M | S43 |  | ⬜ wave 3 |
+| [A39a](A39-weekly-review.md) | Weekly summary (numbers, no Buddy; split from A39, 2026-10-30) | Claude | A37a, A38 | M | S44 app part |  | ⬜ wave 4 (TD-105) |
+| [A39b](A39-weekly-review.md) | Buddy weekly review (split from A39) | Claude | A39a, A23b, **B12** (contract) | S | S44 app part |  | ⬜ phase 2 |
+| [A40](A40-notifications.md) | Notifications | Claude | A37a, A39a (TD-105; see card) | M | S45 |  | ⬜ wave 4 |
+| [A41a](A41-ramadan.md) | Ramadan mode without Buddy (split from A41, 2026-10-30) | Claude | A05b, A15, A38, A40 | L | S46 app part |  | ⬜ wave 4 (TD-105) |
+| [A41b](A41-ramadan.md) | Ramadan Buddy parts (split from A41) | Claude | A41a, A39b, **B12** (contract) | S | S46 app part | **M6** | ⬜ phase 2 |
+| [A42](A42-performance-a11y-offline.md) | Performance, accessibility & offline acceptance | Claude | A41a, A35 (TD-105) | M | S48 | **M2b** · **R1** | ⬜ wave 5, the last phase-1 step |
+| [A43](A43-play-internal-release.md) | Play internal testing release | Claude | A42, **B14** | S | S29 app part | **M7** | ⬜ production |
+| [A45](A45-ux-polish.md) | UX polish: steady chips, light default, slim weight row, tab reset | Claude | A15b, A44 | M | new (owner phone feedback) |  | ⬜ wave 1 (TD-105) |
+| [A46](A46-test-diet.md) | Test diet (one-time cut, TD-104) | Claude | — | M | new |  | ⬜ wave 1 (TD-105) |
+| [A47](A47-food-basics-expansion.md) | Food basics expansion (~250 → ~600) | Claude | A05 | M | new |  | ⬜ wave 1 (TD-105) |
+| [A48](A48-local-brands.md) | Local brands & packaged foods | Claude | A47 | M | new |  | ⬜ wave 2 (TD-105) |
+| [A49](A49-buddy-accuracy.md) | Buddy accuracy (backlog #148–#151) | Claude | A23b, **B09b** | M | new |  | ⬜ phase 2 |
+| [A50](A50-google-sign-in.md) | Google sign-in on the phone (backlog #200) | Claude | A33 | S | new |  | ⬜ wave 3 (TD-105) |
 
 **A44 runs right after A22 (owner request, 2026-10-29):** the "Embrace" identity (palette, fonts, icon) lands before the remaining screens are built, an exception to "the number is the order" like the dish batches below.
 
-**Dish batches deferred (TD-074, owner 2026-10-17):** A17–A19, A30 and A32 keep their IDs but run after A41, before A42, an exception to "the number is the order". Until then local dishes are logged as `~ estimate` from the basics; the reference-dish pipeline (A03, A05) stays, so batches can be added any time.
+**Solid app first (TD-105, owner 2026-10-30):** no new Buddy/AI work until phase 1, the non-AI app, is done (milestone **M2b**); the Buddy features already built keep working. Phase 1 runs in waves, shown in the Status column: **wave 1** A46, A47, A17, A18, A16, A45 · **wave 2** B20, A37a, B21, A19, A30, A48 · **wave 3** A50, B10a, A28a, A38 · **wave 4** A39a, A40, A41a, A34, A35 · **wave 5** A42. Then **phase 2** (Buddy: A23b, A49, A25–A27, A28b, A29, A31, B10b, B11, B12, A37b, A39b, A41b), then **production** (B13, B14, A43). Steps with an AI half were split into a (no AI) and b (Buddy). The waves are an exception to "the number is the order".
+
+**Dish batches (TD-074, amended by TD-105):** A17 and A18 are back in wave 1, A19 and A30 in wave 2; A32 stays the gap fill from dogfooding. The reference-dish pipeline (A03, A05) is unchanged.
 
 ### 4.2 Backend track (Claude since TD-085; B01–B08, B17 built by Codex)
 
@@ -214,40 +226,44 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [B08](B08-buddy-interpret-service.md) | Buddy interpret service | B02, B07 | L | S31 |  | ✅ |
 | [B09a](B09-buddy-intents-edits-memory-batches.md) | Buddy intents server: contract, v2 grammar & resolver (split from B09) | B08, **A21** | L | S35–S37 server parts |  | ✅ (live smoke WP7: owner-gated, moved to B09b) |
 | [B09b](B09-buddy-intents-edits-memory-batches.md) | Full AQ metrics with the real ProposalEngine (M3 eval half; split from B09) | B09a | M | S35–S37 server parts | **M3** eval | ✅ (AQ metrics built and measured; M3 gate not yet met: 25 known misses → density chore, estimate-portion policy, resolver match quality, A17, A32; live smoke WP7 owner-gated) |
-| [B10](B10-barcode-vision-import.md) | Barcode lookup, label & meal photos, paste import | B07, B08 | L | S38–S39 server parts |  | ⬜ |
-| [B11](B11-buddy-qa-suggestions.md) | Buddy Q&A & suggestions | B08 | M | S40 server part |  | ⬜ |
-| [B12](B12-buddy-workouts-review-ramadan.md) | Buddy workouts, weekly review & Ramadan | B08 | M | S42, S44, S46 server parts |  | ⬜ |
-| [B13](B13-staging-infrastructure.md) | Staging on Hetzner & deploy pipeline | S04 ✅ · code any time; provisioning (cost) starts when the app track reaches **A38** (TD-064) | L | S05 |  | ⬜ |
-| [B14](B14-production.md) | Production, backups & go-live | B13 | L | S29 server part | **M7** | ⬜ |
-| [B15](B15-eval-expansion.md) | AI eval expansion & tuning | B09a/B09b, B10–B12, B14, **A41** | M | S47 | **R1** | ⬜ |
-| [B16](B16-security-restore-drill.md) | Security review & restore drill | B14, **A42** | M | S49 | **R1** | ⬜ |
+| [B10a](B10-barcode-vision-import.md) | Barcode lookup (server, no AI; split from B10, 2026-10-30) | B07 | M | S38 server part |  | ⬜ wave 3 (TD-105) |
+| [B10b](B10-barcode-vision-import.md) | Label & meal photos, paste import (split from B10) | B10a, B08 | L | S38–S39 server parts |  | ⬜ phase 2 |
+| [B11](B11-buddy-qa-suggestions.md) | Buddy Q&A & suggestions | B08 | M | S40 server part |  | ⬜ phase 2 |
+| [B12](B12-buddy-workouts-review-ramadan.md) | Buddy workouts, weekly review & Ramadan | B08 | M | S42, S44, S46 server parts |  | ⬜ phase 2 |
+| [B13](B13-staging-infrastructure.md) | Staging on Hetzner & deploy pipeline | S04 ✅ · code any time; provisioning (cost) starts when the app track reaches **A38** (TD-064) | L | S05 |  | ⬜ production |
+| [B14](B14-production.md) | Production, backups & go-live | B13 | L | S29 server part | **M7** | ⬜ production |
+| [B15](B15-eval-expansion.md) | AI eval expansion & tuning | B09a/B09b, B10–B12, B14, **A41** | M | S47 | **R1** | ⬜ R1 close |
+| [B16](B16-security-restore-drill.md) | Security review & restore drill | B14, **A42** | M | S49 | **R1** | ⬜ R1 close |
 | [B17](B17-personal-food-sync.md) | personalFood sync entity (server) | B05, **A09a** (contract) | M | new (A09 split) |  | ✅ |
 | [B18](B18-chat-proposal-sync.md) | chatMessage & proposal sync entities (server) | B05, **A21** (WP4 codec shape and size budget) | M | new (A21 plan review) |  | ✅ |
 | [B19](B19-body-targets-sync.md) | Body & targets sync entities (server) | B05, B18, **A13a** (contract), **A14** | M | new (A13 plan review) |  | ✅ |
-| [B20](B20-measurement-sync.md) | Measurement sync entities (server; ⚠️ deploy hold until merged) | B05, B19, **A15b** (contract) | M | new (A15b plan) |  | ⬜ |
+| [B20](B20-measurement-sync.md) | Measurement sync entities (server; ⚠️ deploy hold until merged) | B05, B19, **A15b** (contract) | M | new (A15b plan) |  | ⬜ wave 2 (TD-105) |
+| [B21](B21-workout-sync.md) | Workout sync entities (server; backlog #189) | B05, B20, **A36** | M | new (A36 D6) |  | ⬜ wave 2 (TD-105) |
 
 ```mermaid
 flowchart LR
-  subgraph App["App track · Claude"]
-    a1["A01–A10<br/>food tracker"] --> M1{{"M1 Dogfood 1<br/>offline"}} --> a2["A12–A16<br/>targets & weight"] --> M2{{"M2"}}
-    M2 --> a3["A20–A23 Buddy core"] --> M3{{"M3 Buddy<br/>on the laptop"}} --> a4["A24–A32<br/>Buddy breadth"] --> M4{{"M4 Dogfood 2"}}
-    M4 --> a5["A33–A35<br/>sign-in & sync"] --> M5{{"M5"}} --> a6["A36–A41 workouts,<br/>insights, Ramadan"] --> M6{{"M6"}} --> a7["A42 performance<br/>A43 Play release"]
+  subgraph P0["Done"]
+    d1["A01–A15, A20–A24, A33, A36, A44<br/>B01–B09b, B17–B19"] --> M1{{"M1 Dogfood 1"}}
   end
-  subgraph Backend["Backend track · Claude"]
-    b1["B01 sync spike<br/>B02 AI bake-off<br/>B03 laptop server"] --> b2["B04 identity<br/>B05 sync<br/>B06 deletion"] --> b3["B07 catalog<br/>B08 Buddy interpret"] --> b4["B09–B12<br/>Buddy intents & vision"] --> b5["B13 staging<br/>B14 production<br/>(Hetzner, last)"] --> b6["B15 eval<br/>B16 security"]
+  subgraph P1["Phase 1 · solid app, no AI (TD-105)"]
+    w1["Wave 1<br/>A46 test diet · A47 basics<br/>A17, A18 dishes · A16 · A45 polish"] --> M2{{"M2"}}
+    w1 --> w2["Wave 2<br/>B20 · A37a workouts · B21<br/>A19, A30 · A48 brands"]
+    w2 --> w3["Wave 3<br/>A50 Google · B10a + A28a barcode<br/>A38 adaptive targets"]
+    w3 --> w4["Wave 4<br/>A39a summary · A40 · A41a Ramadan<br/>A34 sync · A35 deletion"] --> M5{{"M5 Accounts & sync"}}
+    w4 --> w5["Wave 5<br/>A42 performance, a11y, offline"] --> M2b{{"M2b Solid app"}}
   end
-  b1 -. B03 .-> M1
-  a1 -. A05 .-> b3
-  b2 -. B04 .-> a3
-  b3 -. B08 .-> a3
-  b3 -. B18 contract .-> a3
-  b4 -. contracts .-> a4
-  b2 -. B05, B06 .-> a5
-  b4 -. B12 .-> a6
-  a6 -. A38 reached .-> b5
-  b5 -. B14 .-> a7
-  a7 --> R1{{"R1 done"}}
-  b6 --> R1
+  subgraph P2["Phase 2 · Buddy"]
+    p1["A23b · A49 accuracy"] --> M3{{"M3 Buddy"}} --> p2["A25–A27 · A28b · A29 · A31<br/>B10b · B11"] --> M4{{"M4 Buddy-first"}}
+    M4 --> p3["B12 · A37b · A39b · A41b"] --> M6{{"M6"}}
+  end
+  subgraph P3["Production"]
+    b13["B13 staging<br/>B14 production"] --> a43["A43 Play release"] --> M7{{"M7"}}
+    M7 --> fin["B15 eval · B16 security<br/>A32 gap fill"] --> R1{{"R1 done"}}
+  end
+  M1 --> w1
+  M2b --> p1
+  M6 --> b13
+  w3 -. A38 reached: provision Hetzner .-> b13
 ```
 
 ## 5. Milestones
@@ -256,14 +272,17 @@ flowchart LR
 |---|---|---|---|
 | **M1 Dogfood 1: offline food tracker** | A11 | OF-01 food parts pass. A day of food can be logged by search and quick-add in airplane mode. The owner uses the prod build daily and can export | None needed (the laptop for `/v1/config` only) |
 | **M2 Targets & weight** | A16 | Targets property tests pass. The owner's weight-note history is entered and charted | None |
-| **M3 Buddy on the laptop** | A23 + B09b's eval run + the known-miss fixes (backlog #148–#151) | T01–T16, T19, T39–T41 meet the AQ thresholds: the B09b `eval` AQ gate is green with an **empty** known-miss baseline (`tools/buddy_eval/cases/aq_known_misses.json`, TD-097). p90 ≤ 5 s measured from the owner's location | Laptop (B03) |
-| **M4 Dogfood 2: Buddy-first** | A31 + B09b, A25–A27 and B10/B11's eval runs | T17–T29, T33, T36–T38 pass (dish cases may score as estimates until the deferred batches, TD-074). OF-02 passes. The owner logs mostly through Buddy for a week | Laptop |
-| **M5 Accounts & sync** | A35 (+ B05, B06) | OF-03 passes against the laptop server. Google sign-in, guest upgrade and account deletion work on the A55 | Laptop |
-| **M6 Workouts, insights & Ramadan** | A41 (+ B12) | J9, J10, J11, T30–T35 pass. Every NT rule has a planner test | Laptop |
-| **M7 Production** | B14 + A43 | The restore drill is done. AT-006 passes on production. The app installs from Play. The laptop's data has moved in | Hetzner (B13, B14) |
-| **R1 done** | A42, A43 (M7), B15, B16, the dish batches (AT-003 green, TD-074) | AT-001 to AT-007 met. Every AQ threshold met on ≥ 150 cases. The owner uses it as the only tracker for 2 weeks. SC-1 checked at 4 weeks | Production |
+| **M5 Accounts & sync** | A35 (+ B05, B06, B20, B21); phase 1, wave 4 | OF-03 passes against the laptop server. Google sign-in, guest upgrade and account deletion work on the A55 | Laptop |
+| **M2b Solid app (no AI)** | Phase 1 (TD-105), in waves: wave 1 A46, A47, A17, A18, A16, A45 · wave 2 B20, A37a, B21, A19, A30, A48 · wave 3 A50, B10a, A28a, A38 · wave 4 A39a, A40, A41a, A34, A35 · wave 5 A42 | Every non-AI feature of R1 works offline and syncs: food (≈ 600 basics, the dish batches A17–A30, local brands, barcodes), weight, Progress, workouts without a plan or with a starter plan, weekly summary, notifications, Ramadan mode, sign-in (Google too), sync and deletion. A42's speed, accessibility and offline checks pass on the A55. The nightly emulator run is green | Laptop |
+| **M3 Buddy on the laptop** | A23b + A49 (the known-miss fixes, backlog #148–#151) + B09b's eval run; phase 2 | T01–T16, T19, T39–T41 meet the AQ thresholds: the B09b `eval` AQ gate is green with an **empty** known-miss baseline (`tools/buddy_eval/cases/aq_known_misses.json`, TD-097). p90 ≤ 5 s measured from the owner's location | Laptop (B03) |
+| **M4 Dogfood 2: Buddy-first** | A31 + B09b, A25–A27, A28b, A29 and B10b/B11's eval runs | T17–T29, T33, T36–T38 pass. OF-02 passes. The owner logs mostly through Buddy for a week | Laptop |
+| **M6 Workouts, review & Ramadan by Buddy** | A37b, A39b, A41b (+ B12) | J9, J10, J11, T30–T35 pass. Every NT rule has a planner test (from A40/A41a) | Laptop |
+| **M7 Production** | B14 + A43 | The restore drill is done. AT-006 passes on production. The app installs from Play. The laptop's data has moved in. Open option (TD-105): ship to Play before phase 2 with Buddy hidden; decided later | Hetzner (B13, B14) |
+| **R1 done** | A42, A43 (M7), B15, B16, A32 (AT-003 green across the dish batches, TD-074) | AT-001 to AT-007 met. Every AQ threshold met on ≥ 150 cases. The owner uses it as the only tracker for 2 weeks. SC-1 checked at 4 weeks | Production |
 
-**Emulator tests at milestones (TD-086):** the Patrol emulator job runs nightly on `main`, not on every push. A milestone step's last commit carries `[it]`, so its merge run includes the emulator tests, and the nightly after it must be green before the milestone counts as reached.
+**Emulator tests at milestones (TD-086, TD-104):** the Patrol emulator job runs only nightly on `main` and on manual runs; no `[it]`. A milestone counts as reached once the nightly after its last merge is green.
+
+**Milestone order:** the table is in delivery order (TD-105): M5 and M2b come in phase 1, before the Buddy milestones M3, M4 and M6. The IDs keep their old numbers so history still reads.
 
 **While the laptop is the server:** everything except Buddy, online search, sign-in and sync works with the laptop off (local-first). Online features work whenever the laptop runs the test-server stack + the Tailscale mapping (B03 runbook).
 
@@ -287,12 +306,15 @@ The only places one track waits for the other. The contract is the meeting point
 | **B20** measurement sync | A34 | Server admission of the measurement entities before the app uploads them |
 | **B07** catalog service | A24 | Online search and pack releases |
 | **B09a** intents (contract) | A25, A26, A27 | Edits, memory, batches, personal foods, saved meals |
-| **B10** barcode & vision (contract) | A28, A29 | Barcode lookup, label extraction, photos, import |
+| **B10a** barcode lookup (contract) | A28a | Barcode lookup (no AI) |
+| **B10b** label & vision (contract) | A28b, A29 | Label extraction, photos, import |
 | **B11** Q&A & suggestions (contract) | A31 | QueryPlans and suggestions |
 | **B05** sync, **B06** deletion | A34, A35 | Push/pull/history; `DELETE /v1/me` |
-| **B12** workouts, review, Ramadan (contract) | A37, A39, A41 | The last Buddy intents |
+| **A36** workout tables | B21 | The workout entity shapes (A36 D6) for the sync contract |
+| **B21** workout sync | A34 | Server admission of the workout entities before the app uploads them |
+| **B12** workouts, review, Ramadan (contract) | A37b, A39b, A41b | The last Buddy intents |
 | App track reaches **A38** | B13 | The signal to provision Hetzner (TD-064); the code can be written earlier |
-| **A41**, **A42** | B15, B16 | The finished app for the final eval and security review |
+| **A41b**, **A42** | B15, B16 | The finished app for the final eval and security review |
 | **B14** production | A43 | The production URL and data for the Play release |
 
 ## 7. How to pick the next step
@@ -300,7 +322,8 @@ The only places one track waits for the other. The contract is the meeting point
 1. Take the **lowest-numbered open step of a track** (rule 4 says which track goes first).
 2. If it waits on the other track, run that dependency first; if it waits on an owner input (§3), tell the owner and take the next ready step. Never start a step whose dependencies aren't met.
 3. Steps marked 🟨 resume from their card's **Progress log**.
-4. **Claude orders both tracks (TD-085):** one step at a time in the folder, chosen by the critical path: milestones first, then a step the other track waits on (e.g. B18's contract before A22/A23, A33 before A34, B12's contract before A37), then the lowest-numbered ready step. The owner can reorder it.
+4. **Claude orders both tracks (TD-085):** chosen by the critical path: milestones first, then a step the other track waits on (e.g. B20 and B21 before A34), then the lowest-numbered ready step. The owner can reorder it.
+5. **Phases (TD-105):** phase 1 (the solid non-AI app, waves 1–5 in §4.1's Status column, milestone M2b) comes first; no new Buddy/AI work starts before it's done. Then phase 2 (Buddy), then production. Within a wave, pick by rule 4.
 
 Up to three lanes (TD-087: `~/work/fitness_buddy`, `_2`, `_3`), one step branch per lane: start from a clean `git status` on the latest `origin/main`, push the branch at every phase change (`../13-delivery-process.md` §10).
 

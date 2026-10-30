@@ -1,10 +1,10 @@
 # How work gets done (process v3)
 
-_The one-page process (TD-075, amended by TD-085, TD-087 and TD-095). Part A is the shared rules, Part B the models and reviews. Details and templates stay in `technical-planning/13-delivery-process.md`; where they differ, this page wins._
+_The one-page process (TD-075, amended by TD-085, TD-087, TD-095, TD-104, TD-105 and TD-106). Part A is the shared rules, Part B the models and reviews. Details and templates stay in `technical-planning/13-delivery-process.md`; where they differ, this page wins._
 
 ## 0. Who runs what (TD-085, owner 2026-10-28)
 
-**Claude builds everything; the owner talks only to Claude.** The main Claude session (Opus) is the orchestrator of both tracks: it picks the next step on either track, has it planned, briefs Claude's specialist agents (`.claude/agents/`), checks their work against diffs and CI, commits, pushes and merges. **Codex is retired** (the owner moved to the Claude Max plan): no Codex runs, no Codex reviews. Steps that Codex built keep their history; their cards and evidence still mention it.
+**Claude builds everything; the owner talks only to Claude.** The main Claude session (Opus) is the orchestrator of both tracks: it picks the next step on either track, has it planned, briefs Claude's specialist agents (`.claude/agents/`), checks their work against diffs and CI, commits, pushes and merges. Codex no longer builds anything (the owner moved to the Claude Max plan); steps that Codex built keep their history. **Since 2026-10-30 Codex does all reviews** (TD-106, Part B), read-only, through the Codex plugin. **Phase order (TD-105):** the solid non-AI app first (phase 1, milestone M2b), then new Buddy work (phase 2), then production.
 
 ## A. Shared rules
 
@@ -14,11 +14,11 @@ _The one-page process (TD-075, amended by TD-085, TD-087 and TD-095). Part A is 
    - **Normal:** everything else that is code.
    - **Data/docs:** data files, docs, fixtures.
 3. **Lifecycle (TD-095):** orient → plan → review the plan → implement → review the code → close. **One engineer agent builds the whole step**: all its work packages in order, one commit per WP, then the review fixes; a fresh agent takes over only when the step needs another specialty (e.g. .NET vs Flutter) or the agent's context is getting large. Split a step only when it's too big for one agent. **One merge per step**; a contract-only early merge only when another lane is actually waiting for it. One branch `step/<ID>-…` per step from `main`; Conventional Commits; focused tests + `make check-dart`/`check-dotnet` before every commit, full suites in CI (2026-10-29). Related ready Normal steps may be planned together as a wave (one plan review across them); Risky steps get their own plan review. Each step keeps its own branch, review, Outcome and merge.
-4. **Review.** Every code step gets one independent review by an agent that didn't write the code, which also checks every exit criterion against tests and CI evidence. Blockers and majors are fixed and re-checked; minors are fixed if cheap or logged in `steps/backlog.md`. Risky steps add a `security-reviewer`, screens add a `ux-reviewer`; the `verifier` runs at milestone steps only (`steps/README.md` §5), with CI as the test evidence (TD-095). Data/docs steps are gated by their validators and CI.
+4. **Review (TD-106).** Every code step gets an independent **Codex** review that also checks every exit criterion against tests and CI evidence. It starts as soon as the code is pushed, in parallel with CI. Risky steps: two parallel Codex tasks (code/architecture + security/data integrity); Normal steps: one combined task (it covers UX on screens). Blockers and majors are fixed and re-checked by a new Codex task; **at most about 2 fix-check rounds**, then remaining edge cases go to `steps/backlog.md` and the step merges (only real blockers or data loss on common paths justify another round). Minors are fixed if cheap or logged. The `verifier` runs at milestone steps only (`steps/README.md` §5), with CI as the test evidence (TD-095). Data/docs steps are gated by their validators and CI.
 5. **Merge only through `tools/scripts/merge-step.sh <ID> "<name>" <branch>`** (`docs` / `chore` instead of an ID for docs or tooling changes outside a step). It builds the squash commit without checking anything out, pushes it as `merge/<ID>`, waits for the `ci` check and moves `main` only when it is green (TD-036, TD-039, TD-086). The folder stays free while it waits: start the next step meanwhile (run it in the background). Never push to `main` by hand. A red `ci` means stop: read the failing job, fix, rerun; a test that fails without a related change is re-run once, then treated as real. If the script timed out while `ci` was still running (or finished green on that exact commit), rerun it with `MERGE_REUSE=1` (and `MERGE_CI_TIMEOUT_MIN=40` for the long device job): it reuses the previous attempt's commit when the tree and parent are unchanged, so no second CI run; never for a red `ci`. `tools/scripts/merge-step-selftest.sh` pins this.
 6. **Owner gates (TD-037).** Self-approve plans and self-merge when the step has no owner item and every gate passes. **Ask first** for: a spec change, a change to an Accepted TD, a new paid service or vendor, a security trade-off, a scope cut affecting a milestone, a destructive production operation. Owner skims and phone checks are collected and never block a merge.
 7. **Up to three lanes (TD-087).** Work happens in three full clones, `~/work/fitness_buddy`, `~/work/fitness_buddy_2` and `~/work/fitness_buddy_3` (no worktrees), each holding one step branch at a time, started from a clean `git status` on the current `origin/main`. A lane's agents work only in their folder. Pick lanes that touch different areas; resolve shared files (status board, ARB, TD table) when rebasing. Heavy commands (full suites, `make check`, Gradle, Testcontainers) run through `tools/scripts/heavy.sh <cmd>`, one at a time on the machine; single-file tests run freely. Parallel agents inside one session commit only their own files by explicit path and never run a formatter over files they don't own. The laptop has 7 GB: one heavy build at a time.
-8. **Fast CI (TD-086).** A regular run takes 5–10 minutes; the emulator tests (`android-it`) run nightly on `main`. Check `tools/scripts/ci-nightly.sh` at session start: a red nightly is stop-the-line, fixed before the next merge. Put `[it]` in a commit message to run the emulator tests on that push: always on the last commit of a milestone step, and when a step changes Patrol tests or native Android code.
+8. **Fast CI (TD-086, TD-104).** A regular run takes 5–10 minutes. The emulator tests (`android-it`) run **only nightly on `main` and on manual runs**; merges never wait for them, and `[it]` is no longer used (A46 removes the trigger from `ci.yml`). Check `tools/scripts/ci-nightly.sh` at session start: a red nightly is the first task of the morning: fix the test or delete it, no retries.
 9. **Never lose work.** Commit after every work package, and append one dated line to the card's Progress log at every phase change, then push. A lost session resumes from the Progress log. **After changing the board or `steps/backlog.md`, run `make progress`** and commit the regenerated `PROGRESS.md` (the owner's progress page; CI fails a stale one; on a rebase conflict regenerate it, never merge it by hand).
 10. **Budget.** The plan states the expected size; the Outcome records the actual size and review findings. If the owner's weekly limit runs low, finish open steps first and move Normal-step implementation to Sonnet, telling the owner.
 11. **Owner messages:** short and plain, result or decision first; every question comes with a recommendation answerable with "ok".
@@ -28,24 +28,28 @@ _The one-page process (TD-075, amended by TD-085, TD-087 and TD-095). Part A is 
 - **No local test runs by default.** Locally run only codegen and `make check-dart` / `check-dotnet` / `dotnet build`. CI is the evidence. On a CI failure, reproduce only the failing tests through `tools/scripts/heavy.sh`, each with a `timeout 600`, so a hang can't hold the heavy lock.
 - **One merge at a time.** Never run two `merge-step.sh` runs concurrently.
 - **Batch merges (owner, 2026-10-29).** When several finished steps are waiting, they may land with ONE CI run: an integration branch merges each step branch in order, then one squash commit per step (`<ID>: <name>`) is stacked on `main`, and CI runs on the top commit. `main` fast-forwards only when `ci` is green. Fixes found by that run fold into the last step's commit.
+- **Lean tests for new steps (TD-104).** Tests only for logic and risk (data loss, money, security, migrations) plus one happy-path test per new screen. No goldens by default. Never assert UI copy. A test that fails twice without a real bug is rewritten or deleted.
 - **Emulator job budget.** The `android-it` job gets 25 minutes per attempt (the suite grew past 15). Patrol journeys that have never been green on the emulator are expected to need a fix round.
 
-## B. Models and reviews (TD-085)
+## B. Models and reviews (TD-085, amended by TD-106)
 
-**Opus by default for everything that needs judgment**: the orchestrator, planning, plan review, implementation on every tier, code review, security review, UX review, research, data curation and verification. **Sonnet only for mechanical work**, by a per-brief `model: sonnet` override:
-- reproducing a failing test, reading CI logs, re-running flaky jobs;
-- repo searches and inventories (`Explore`);
-- mechanical chores with a fully specified result: ARB/codegen merges, renames, regenerating files, applying a review fix that's already written out word for word.
+**All code stays on Opus:** the orchestrator, planning, the engineers building app and backend steps, Risky work, and hard bugs. **Sonnet is the default for non-code work**, by a per-brief `model: sonnet`:
+- docs, board and backlog commits;
+- data curation (food basics, dish batches, brands);
+- research and audits;
+- test deletions in the test diet (A46);
+- reading CI logs, reproducing failing tests, re-running flaky jobs, chores.
 
-A Sonnet task that fails or needs a judgment call goes back to Opus.
+A Sonnet task that fails or needs a judgment call on code goes back to Opus.
+
+**Reviews are Codex only** (owner, 2026-10-30): plan and architecture, code, security, UX and fix-checks, each a new read-only task through the Codex plugin. No Opus `architect`, `code-reviewer`, `security-reviewer` or `ux-reviewer` reviews while this rule stands. The orchestrator triages Codex's findings.
 
 | Tier | Plan + plan review | Implementation | Reviews |
 |---|---|---|---|
-| Risky | `step-planner` + `architect` (own review) | Opus engineers | `code-reviewer` + `security-reviewer` + `verifier` (+ `ux-reviewer` on UI) |
-| Normal | `step-planner` + `architect` (per step or wave) | Opus engineers | `code-reviewer` (+ `ux-reviewer` on UI) |
-| Data/docs | `step-planner` or the orchestrator | Opus (`data-curator` for food data) | validators + CI |
+| Risky | `step-planner` (Opus) + its own Codex plan review | Opus engineers | two parallel Codex tasks: code/architecture + security/data integrity; `verifier` at milestones |
+| Normal | `step-planner` (Opus) + Codex plan review (per step or wave) | Opus engineers | one combined Codex task (code, UX on screens) |
+| Data/docs | the orchestrator or a Sonnet agent | Sonnet (`data-curator` for food data) | validators + CI |
 
 - **Engineers by area:** `flutter-engineer` (app, Dart packages and tools), `dotnet-engineer` (backend modules, EF Core, contract conformance), `platform-engineer` (CI, Docker, infra, deploys, backups, observability), `ai-engineer` (prompts, Buddy server AI, `buddy_eval`), `data-curator` (`data/`).
-- `ux-reviewer` joins real screens and user-facing copy; the `architect` reviews code for new foundations and seams, on either track.
-- `security-reviewer` covers both tracks, including B16's R1 security review; on Risky steps it also records a verification file `technical-planning/steps/evidence/<ID>-verification.md`.
+- On Risky steps the orchestrator records the security review's result in `technical-planning/steps/evidence/<ID>-verification.md`.
 - The orchestrator briefs agents with self-contained briefs (`13` §6), checks their claims against diffs and CI, and writes the Outcome.

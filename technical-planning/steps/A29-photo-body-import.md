@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A15, A23, **B10** (contract) | M | Claude | ⬜ Not started |
+| App | A15, A23, **B10b** (contract) | M | Claude | ⬜ Not started |
 
 _Old ID: S39 app part (renumbered by TD-063, 2026-10-16)._
 
