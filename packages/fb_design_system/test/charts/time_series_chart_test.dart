@@ -186,46 +186,4 @@ void main() {
     );
     expect(tester.takeException(), isNull);
   });
-
-  testWidgets("the chart exposes the caller's semantic summary, and an "
-      'empty chart says so', (tester) async {
-    final handle = tester.ensureSemantics();
-    await pumpFb(
-      tester,
-      FbTimeSeriesChart(
-        series: [FbSeries(points: _points())],
-        range: _range(),
-        semanticLabel: 'Weight, 30 weigh-ins',
-      ),
-    );
-    expect(find.bySemanticsLabel('Weight, 30 weigh-ins'), findsOneWidget);
-    await pumpFb(tester, FbTimeSeriesChart(series: const [], range: _range()));
-    expect(find.text('No data yet'), findsOneWidget);
-    handle.dispose();
-  });
-
-  testWidgets('axis labels never overlap at 320 dp and text scale 2.0', (
-    tester,
-  ) async {
-    await pumpFb(
-      tester,
-      width: 320,
-      textScale: 2,
-      FbTimeSeriesChart(
-        series: [FbSeries(points: _points())],
-        range: FbChartRange(
-          start: _t0,
-          end: _t0.add(const Duration(days: 365)),
-        ),
-        formatDate: (at, step) => 'Month ${at.month}',
-      ),
-    );
-    final painter =
-        tester.widget<CustomPaint>(_paint()).painter! as TimeSeriesPainter;
-    final rects = painter.timeLabelRects;
-    expect(rects, isNotEmpty);
-    for (var i = 1; i < rects.length; i++) {
-      expect(rects[i].overlaps(rects[i - 1]), isFalse);
-    }
-  });
 }

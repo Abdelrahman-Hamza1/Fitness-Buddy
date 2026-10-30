@@ -1,24 +1,18 @@
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_domain/testing.dart';
 import 'package:fb_mobile/core/changes/apply_result.dart';
-import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/changes/change_set_applier.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
-import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/db/natural_id.dart';
 import 'package:fb_mobile/core/events/domain_event_bus.dart';
 import 'package:fb_mobile/core/settings/setting_key.dart';
 import 'package:fb_mobile/core/settings/settings_op_handler.dart';
 import 'package:fb_mobile/core/settings/settings_store.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../helpers/test_phone.dart';
 import '../db/support/db_support.dart';
 
 enum _Units { metric, imperial }
-
-const _proposal = '0199e3c2-5b1a-7c3d-8e4f-0000000000b1';
 
 final SettingKey<_Units> _units = SettingKey.enumeration(
   'units.system',
@@ -168,14 +162,6 @@ void main() {
       expect((await s.rows()).single.origin, startsWith('undo:'));
     });
 
-    test('the origin is recorded', () async {
-      final s = _Setup();
-      await _applied(
-        s.store.put(_goal, 1800, origin: Origin.proposal(_proposal)),
-      );
-      expect((await s.rows()).single.origin, 'proposal:$_proposal');
-    });
-
     test('a stored value the key cannot read reads as the default', () async {
       final s = _Setup();
       await _applied(
@@ -186,50 +172,6 @@ void main() {
         ),
       );
       expect(await s.store.read(_goal), 2000);
-    });
-
-    test('several settings in one change set apply together', () async {
-      final s = _Setup();
-      await _applied(
-        s.applier.apply(
-          ChangeSet([
-            SettingsOp.put('profile.goalKcal', '1500'),
-            SettingsOp.put('units.system', '"imperial"'),
-          ], origin: Origin.direct),
-        ),
-      );
-      expect(await s.store.read(_goal), 1500);
-      expect(await s.store.read(_units), _Units.imperial);
-    });
-
-    test('appOverrides registers the settings handler: settingsStoreProvider '
-        'writes through the app applier', () async {
-      final db = memoryDatabase();
-      final container = ProviderContainer.test(
-        overrides: [
-          ...TestPhone().overrides(),
-          appDatabaseProvider.overrideWithValue(db),
-        ],
-      );
-      expect(
-        container.read(changeOpHandlersProvider)(db).map((h) => h.family),
-        [
-          SettingsOp.familyName,
-          DiaryOp.familyName,
-          MealSlotOp.familyName,
-          PersonalFoodOp.familyName,
-          TargetsOp.familyName,
-          WeighInOp.familyName,
-          MeasurementOp.familyName,
-          ChatMessageOp.familyName,
-          ProposalOp.familyName,
-          WorkoutOp.familyName,
-        ],
-      );
-      final store = container.read(settingsStoreProvider);
-      await _applied(store.put(_goal, 1600, origin: Origin.direct));
-      expect(await store.read(_goal), 1600);
-      expect((await db.select(db.settingsKv).getSingle()).valueJson, '1600');
     });
   });
 }

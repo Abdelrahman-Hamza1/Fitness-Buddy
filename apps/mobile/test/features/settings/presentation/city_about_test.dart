@@ -15,7 +15,6 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/settings/settings_op_handler.dart';
 import 'package:fb_mobile/core/storage/device_id_store.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
-import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
@@ -182,122 +181,6 @@ void main() {
     await unmountApp(tester, container);
   });
 
-  testWidgets('UX-050 LC-033 no match says "No city found. Try the English or '
-      'Arabic name."', (tester) async {
-    final container = await _openAt(tester, const CityPickerRoute());
-    await tester.enterText(find.byType(TextField), 'zzzz');
-    await tester.pump();
-    expect(
-      find.text('No city found. Try the English or Arabic name.'),
-      findsOneWidget,
-    );
-    // The Arabic name finds the city too, folding the marks.
-    await tester.enterText(find.byType(TextField), 'عمان');
-    await tester.pump();
-    expect(find.text('Amman · عمّان'), findsOneWidget);
-    await unmountApp(tester, container);
-  });
-
-  testWidgets('UX-052 LC-033 without a city list the picker says so for any '
-      'query, never "No city found"', (tester) async {
-    // The default test database has no catalog pack attached.
-    final container = await pumpAt(tester, phone: phoneOf(devConfig));
-    showRoute(container, const CityPickerRoute());
-    await tester.pumpAndSettle();
-    const unavailable = "The city list isn't available right now.";
-    expect(find.text(unavailable), findsOneWidget);
-    await tester.enterText(find.byType(TextField), 'nab');
-    await tester.pump();
-    expect(find.text(unavailable), findsOneWidget);
-    expect(
-      find.text('No city found. Try the English or Arabic name.'),
-      findsNothing,
-    );
-    await unmountApp(tester, container);
-  });
-
-  testWidgets('D7 "Use my location" shows only in dev, saying Coming soon', (
-    tester,
-  ) async {
-    final container = await _openAt(tester, const CityPickerRoute());
-    expect(find.text('Use my location'), findsOneWidget);
-    expect(find.text('Coming soon'), findsOneWidget);
-    await unmountApp(tester, container);
-
-    final prod = await _openAt(
-      tester,
-      const CityPickerRoute(),
-      config: prodConfig,
-    );
-    expect(find.text('Use my location'), findsNothing);
-    expect(find.text('Coming soon'), findsNothing);
-    await unmountApp(tester, prod);
-  });
-
-  // Nightly android-it on c420081: the 8 skeleton rows overflowed the
-  // picker on the 320 x 640 emulator with the search keyboard up.
-  testWidgets('UX-051 UX-070 the loading city picker fits a 320 x 640 phone '
-      'with the keyboard up', (tester) async {
-    final gate = Completer<CitySearch>();
-    final container = await _openAt(
-      tester,
-      const CityPickerRoute(),
-      settle: false,
-      overrides: [citySearchProvider.overrideWith((ref) => gate.future)],
-    );
-    // The CI emulator's size, with the search field's keyboard up (set after
-    // the helper's tall screen).
-    tester.view
-      ..physicalSize = const Size(320, 640)
-      ..devicePixelRatio = 1
-      ..viewInsets = const FakeViewPadding(bottom: 250);
-    addTearDown(tester.view.reset);
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(find.byType(FbSkeleton), findsAtLeastNWidgets(1));
-    expect(tester.takeException(), isNull);
-    gate.complete(CitySearch(sampleCities));
-    await unmountApp(tester, container);
-  });
-
-  testWidgets('UX-051 PA6 the city picker shows skeleton rows until the '
-      'cities load; a read error shows "Couldn\'t load the city list." with '
-      'Try again, which reloads', (tester) async {
-    final gate = Completer<CitySearch>();
-    var attempts = 0;
-    final container = await _openAt(
-      tester,
-      const CityPickerRoute(),
-      settle: false,
-      overrides: [
-        citySearchProvider.overrideWith((ref) {
-          attempts++;
-          if (attempts == 1) return gate.future;
-          if (attempts == 2) return Future<CitySearch>.error(Exception('x'));
-          return Future.value(CitySearch(sampleCities));
-        }),
-      ],
-    );
-    // Loading: skeleton rows, no list, no message.
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(find.byType(FbSkeleton), findsAtLeastNWidgets(4));
-    expect(find.text('Nablus · نابلس'), findsNothing);
-
-    // The read fails: the error, with a way to retry.
-    ProviderScope.containerOf(tester.element(find.byType(CityPickerScreen)))
-        .invalidate(citySearchProvider);
-    await tester.pumpAndSettle();
-    expect(find.text("Couldn't load the city list."), findsOneWidget);
-    expect(find.text('Try again'), findsOneWidget);
-    expect(find.byType(FbSkeleton), findsNothing);
-
-    await tester.tap(find.text('Try again'));
-    await tester.pumpAndSettle();
-    expect(find.text("Couldn't load the city list."), findsNothing);
-    expect(find.text('Nablus · نابلس'), findsOneWidget);
-    gate.complete(CitySearch(sampleCities));
-    await unmountApp(tester, container);
-  });
-
   testWidgets('SF-040 About shows the version, the food data version, the '
       'USDA and GeoNames credits, the licences link and "Fitness Buddy gives '
       'estimates for tracking, not medical advice."', (tester) async {
@@ -327,91 +210,6 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
     expect(find.byType(LicensePage), findsOneWidget);
-    await unmountApp(tester, container);
-  });
-
-  testWidgets('SF-040 outside production About names the build', (
-    tester,
-  ) async {
-    final container = await _openAt(
-      tester,
-      const AboutRoute(),
-      credits: _credits,
-    );
-    expect(find.text('Version 0.1.0 (1) · dev'), findsOneWidget);
-    await unmountApp(tester, container);
-  });
-
-  testWidgets('UX-051 PA6 About shows skeleton lines for the version and '
-      'food data until they load; a pack read error shows the '
-      'credits-unavailable line and the rest of the page', (tester) async {
-    final gate = Completer<AboutInfo>();
-    final container = await _openAt(
-      tester,
-      const AboutRoute(),
-      settle: false,
-      overrides: [aboutInfoProvider.overrideWith((ref) => gate.future)],
-    );
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(find.byType(FbSkeleton), findsAtLeastNWidgets(3));
-    expect(find.textContaining('Version'), findsNothing);
-    // What needs no data is there from the start.
-    expect(find.text('Open-source licences'), findsOneWidget);
-    expect(find.textContaining('not medical advice'), findsOneWidget);
-
-    gate.complete(
-      const AboutInfo(
-        version: '0.1.0',
-        build: '1',
-        flavor: AppFlavor.prod,
-        packVersion: null,
-        activeCredits: null,
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(find.byType(FbSkeleton), findsNothing);
-    expect(find.text('Version 0.1.0 (1)'), findsOneWidget);
-    expect(find.textContaining('Food data version'), findsNothing);
-    expect(
-      find.text("Data credits aren't available right now."),
-      findsOneWidget,
-    );
-    expect(container, isNotNull);
-    await unmountApp(tester, container);
-  });
-
-  testWidgets("UX-052 About says the version isn't available when it can't "
-      'be read, and still shows the rest', (tester) async {
-    final container = await _openAt(
-      tester,
-      const AboutRoute(),
-      overrides: [
-        aboutInfoProvider.overrideWith(
-          (ref) => Future<AboutInfo>.error(Exception('x')),
-        ),
-      ],
-    );
-    expect(find.text("Version isn't available right now."), findsOneWidget);
-    expect(find.byType(FbSkeleton), findsNothing);
-    expect(find.textContaining('Version 0'), findsNothing);
-    expect(find.text('Open-source licences'), findsOneWidget);
-    expect(find.textContaining('not medical advice'), findsOneWidget);
-    await unmountApp(tester, container);
-  });
-
-  testWidgets("UX-052 About without a pack says credits aren't available", (
-    tester,
-  ) async {
-    // The default test database has no catalog pack attached.
-    final container = await pumpAt(tester, phone: phoneOf(prodConfig));
-    showRoute(container, const AboutRoute());
-    await tester.pumpAndSettle();
-    expect(find.text('Version 0.1.0 (1)'), findsOneWidget);
-    expect(
-      find.text("Data credits aren't available right now."),
-      findsOneWidget,
-    );
-    expect(find.text('Open-source licences'), findsOneWidget);
     await unmountApp(tester, container);
   });
 
@@ -445,81 +243,6 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     await unmountApp(tester, container);
-  });
-
-  testWidgets('UX-070 Me, the city picker and About at text scale 1.3 do not '
-      'overflow', (tester) async {
-    tester.platformDispatcher.textScaleFactorTestValue = 1.3;
-    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
-    final container = await _openAt(tester, const MeRoute(), credits: _credits);
-    tester.view.physicalSize = const Size(320, 640);
-    await tester.pumpAndSettle();
-    expect(tester.takeException(), isNull);
-    for (var i = 0; i < 3; i++) {
-      await tester.drag(find.byType(CustomScrollView), const Offset(0, -400));
-      await tester.pumpAndSettle();
-      expect(tester.takeException(), isNull);
-    }
-
-    showRoute(container, const CityPickerRoute());
-    await tester.pumpAndSettle();
-    expect(find.byType(FbListRow), findsWidgets);
-    await tester.enterText(find.byType(TextField), 'ra');
-    await tester.pumpAndSettle();
-    expect(tester.takeException(), isNull);
-
-    showRoute(container, const AboutRoute());
-    await tester.pumpAndSettle();
-    expect(find.byType(AboutScreen), findsOneWidget);
-    expect(tester.takeException(), isNull);
-    await unmountApp(tester, container);
-  });
-
-  group('RTL', () {
-    final overrides = [
-      ...fakeToday(),
-      citySearchProvider.overrideWith((ref) async => CitySearch(sampleCities)),
-      ...fakeSettings(city: sampleCities.first),
-    ];
-
-    Future<void> pumpRtl(WidgetTester tester, Widget screen) async {
-      tester.view
-        ..physicalSize = const Size(320, 900)
-        ..devicePixelRatio = 1;
-      addTearDown(tester.view.reset);
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: overrides,
-          child: phoneApp(
-            Directionality(textDirection: TextDirection.rtl, child: screen),
-            textScale: 1.3,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-    }
-
-    testWidgets('UX-070 Me in right-to-left layout does not overflow and '
-        'shows the city as "Nablus · نابلس"', (tester) async {
-      await pumpRtl(tester, const MeScreen());
-      expect(tester.takeException(), isNull);
-      expect(_in(_rowOf('City'), 'Nablus · نابلس'), findsOneWidget);
-      expect(
-        Directionality.of(tester.element(_rowOf('City'))),
-        TextDirection.rtl,
-      );
-    });
-
-    testWidgets('UX-070 the city picker in right-to-left layout does not '
-        'overflow and shows "Nablus · نابلس"', (tester) async {
-      await pumpRtl(tester, const CityPickerScreen());
-      expect(tester.takeException(), isNull);
-      expect(find.text('Nablus · نابلس'), findsOneWidget);
-      await tester.enterText(find.byType(TextField), 'nab');
-      await tester.pumpAndSettle();
-      expect(tester.takeException(), isNull);
-      expect(find.text('Nablus · نابلس'), findsOneWidget);
-    });
   });
 
   testWidgets('LC-033 PA6 while the city is being saved the choices are off: '
@@ -575,28 +298,6 @@ void main() {
     // The picker is still underneath: it was not the one popped.
     expect(find.byType(CityPickerScreen, skipOffstage: false), findsOneWidget);
     expect(find.text('City set to Nablus · نابلس'), findsOneWidget);
-    await unmountApp(tester, container);
-  });
-
-  testWidgets('SF-040 About shows the brand lockup as its header, with the '
-      'app name', (tester) async {
-    final semantics = tester.ensureSemantics();
-    final container = await _openAt(
-      tester,
-      const AboutRoute(),
-      credits: _credits,
-    );
-    final lockup = find.descendant(
-      of: find.byType(AboutScreen),
-      matching: find.byType(FbBrandLockup),
-    );
-    expect(lockup, findsOneWidget);
-    expect(tester.widget<FbBrandLockup>(lockup).name, 'Fitness Buddy');
-    expect(
-      tester.getSemantics(lockup),
-      matchesSemantics(label: 'Fitness Buddy', isHeader: true),
-    );
-    semantics.dispose();
     await unmountApp(tester, container);
   });
 }

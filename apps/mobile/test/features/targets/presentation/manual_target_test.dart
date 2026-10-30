@@ -78,20 +78,4 @@ void main() {
     expect((await rig.data()).settings, hasLength(1));
     await rig.close();
   });
-
-  testWidgets('SF-012 a manual target within the limits applies directly '
-      'with undo', (tester) async {
-    final rig = await _enter(tester, '2000');
-    expect(find.byType(BelowLimitScreen), findsNothing);
-    final version = await _current(rig);
-    expect(version.manual, isTrue);
-    expect(version.acknowledged, isFalse);
-    expect(version.mode, TargetMode.weekly);
-    expect(find.text('Targets updated'), findsOneWidget);
-    expect(find.text('Use the calculated target'), findsOneWidget);
-
-    await rig.tapAndSettle('Undo');
-    expect((await _current(rig)).manual, isFalse);
-    await rig.close();
-  });
 }

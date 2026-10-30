@@ -206,37 +206,6 @@ void main() {
     expect((await h.currentVersion()).baseKcal, 1200);
   });
 
-  test('TG-002 lb and ft+in inputs are stored as kg and cm', () async {
-    final h = TargetsAppHarness();
-    await h.setUp(
-      setupInput(
-        height: Length.feetAndInches(5, 11),
-        heightUnit: HeightInputUnit.feetInches,
-        weight: 176,
-        weightUnit: MassUnit.pound,
-        goal: GoalInput(
-          type: GoalType.lose,
-          expression: GoalExpression.weekly(
-            -Mass.of(1, MassUnit.pound).kilograms,
-          ),
-          weightInputUnit: MassUnit.pound,
-        ),
-      ),
-    );
-    final data = await h.data();
-    final profile = data.profile!.value;
-    expect(profile.heightCm, closeTo(180.34, 1e-9));
-    expect(profile.heightInputUnit, HeightInputUnit.feetInches);
-    // 176 lb, rounded as the first weigh-in stores it (TD-090).
-    expect(data.settings.single.value.basisWeightKg, 79.83);
-    final phase = data.phases.single.value;
-    expect(phase.weightInputUnit, MassUnit.pound);
-    expect(
-      (phase.expression as WeeklyGoal).kgPerWeek,
-      closeTo(-.45359237, 1e-12),
-    );
-  });
-
   test('D5 saving sex, birth year, height or activity on a generated version '
       'recomputes the base with bodyWeightKg(today) in the same change set; '
       'a manual version is untouched', () async {
@@ -869,90 +838,6 @@ void main() {
     );
     expect(failed.reason, TargetsFailure.invalid);
   });
-
-  test(
-    'D15 out-of-range input is refused with invalid, nothing written',
-    () async {
-      final h = TargetsAppHarness();
-      for (final input in [
-        setupInput(weight: 10),
-        setupInput(height: Length.centimeters(90)),
-        setupInput(birthYear: 2015),
-        setupInput(goalName: 'x' * 41),
-        setupInput(
-          preferences: const SetupPreferences(
-            unitSystem: UnitSystem.metric,
-            weekStart: DayOfWeek.saturday,
-            halal: true,
-            cityId: 'Paris',
-          ),
-        ),
-        setupInput(
-          goal: GoalInput(
-            type: GoalType.lose,
-            expression: GoalExpression.weekly(-2.5),
-          ),
-        ),
-      ]) {
-        expect(
-          (await h.expectNoWrite<TargetsFailed>(
-            () => h.actions.completeSetup(input),
-          )).reason,
-          TargetsFailure.invalid,
-        );
-      }
-      await h.setUp();
-      final shown = await h.shownVersion();
-      final phase = (await h.phases()).single;
-      final phaseId = VersionedId(phase.value.id, phase.version);
-      for (final command in <Future<TargetsOutcome> Function()>[
-        () => h.actions.saveProfile(const ProfilePatch(heightCm: 90), 1),
-        () => h.actions.setManualTarget(shown, 400),
-        () => h.actions.setManualTarget(shown, 10001),
-        () => h.actions.setShifting(shown, {DayOfWeek.friday: 2.5}),
-        () => h.actions.setMacros(
-          shown,
-          MacroSettings(protein: MacroOverride.grams(1001)),
-        ),
-        () => h.actions.renamePhase(phaseId, 'x' * 41),
-        () => h.actions.renamePhase(phaseId, 'a\u0007b'),
-      ]) {
-        expect(
-          (await h.expectNoWrite<TargetsFailed>(command)).reason,
-          TargetsFailure.invalid,
-        );
-      }
-      // A newly typed goal that can't be resolved (a target weight on the
-      // wrong side, a deadline not after today) has its own reason.
-      final wrongSide = GoalInput(
-        type: GoalType.lose,
-        expression: GoalExpression.targetRate(90, .5),
-      );
-      for (final command in <Future<TargetsOutcome> Function()>[
-        () => h.actions.startPhase(wrongSide),
-        () => h.actions.saveGoal(wrongSide, phaseId),
-      ]) {
-        expect(
-          (await h.expectNoWrite<TargetsFailed>(command)).reason,
-          TargetsFailure.goalUnresolvable,
-        );
-      }
-      final fresh = TargetsAppHarness();
-      expect(
-        (await fresh.expectNoWrite<TargetsFailed>(
-          () => fresh.actions.completeSetup(
-            setupInput(
-              goal: GoalInput(
-                type: GoalType.lose,
-                expression: GoalExpression.targetDate(75, today),
-              ),
-            ),
-          ),
-        )).reason,
-        TargetsFailure.goalUnresolvable,
-      );
-    },
-  );
 
   test('PA3 an implausible synced basis weight is unusable: limit checks '
       'and recalculation refuse, a profile save applies without a '

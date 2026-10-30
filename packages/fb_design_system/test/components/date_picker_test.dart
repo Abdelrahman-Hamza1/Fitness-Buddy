@@ -42,42 +42,4 @@ void main() {
 
     expect(out, [DateTime(2026, 10, 15)]);
   });
-
-  testWidgets('HM-009 showFbDatePicker returns the picked day, and null '
-      'when cancelled', (tester) async {
-    final out = <DateTime?>[];
-    await pumpFb(
-      tester,
-      _Opener(initial: DateTime(2026, 10, 15), last: last, out: out),
-      height: 900,
-    );
-    await tester.tap(find.text('open'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('18'));
-    await tester.tap(find.text('OK'));
-    await tester.pumpAndSettle();
-    expect(out.single, DateTime(2026, 10, 18));
-
-    await tester.tap(find.text('open'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Cancel'));
-    await tester.pumpAndSettle();
-    expect(out.last, isNull);
-  });
-
-  testWidgets('HM-009 showFbDatePicker starts on lastDate when '
-      'initialDate is later', (tester) async {
-    final out = <DateTime?>[];
-    await pumpFb(
-      tester,
-      _Opener(initial: DateTime(2026, 11, 3), last: last, out: out),
-      height: 900,
-    );
-    await tester.tap(find.text('open'));
-    await tester.pumpAndSettle();
-    expect(find.textContaining('October 2026'), findsOneWidget);
-    await tester.tap(find.text('OK'));
-    await tester.pumpAndSettle();
-    expect(out.single, last);
-  });
 }

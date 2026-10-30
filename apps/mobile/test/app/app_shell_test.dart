@@ -5,7 +5,6 @@ import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
-import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -25,21 +24,6 @@ Override _stored(ThemePreference theme) =>
     themePreferenceProvider.overrideWith((ref) => Stream.value(theme));
 
 void main() {
-  testWidgets(
-    'UX-010 shell shows the four tabs Today, Progress, Workouts, Me',
-    (tester) async {
-      await pumpApp(tester);
-
-      final destinations = tester
-          .widgetList<NavigationDestination>(find.byType(NavigationDestination))
-          .map((d) => d.label);
-      expect(destinations, ['Today', 'Progress', 'Workouts', 'Me']);
-      // Today is home.
-      expect(_selectedTab(tester), 0);
-      expect(find.byType(TodayScreen), findsOneWidget);
-    },
-  );
-
   testWidgets(
     "UX-010 tapping a tab shows its content and keeps the other branches' "
     'state',
@@ -147,40 +131,5 @@ void main() {
     expect(settled.themeMode, ThemeMode.light);
     expect(settled.themeAnimationDuration, Duration.zero);
     await unmountApp(tester);
-  });
-
-  testWidgets('UX-040 status and navigation bar icons contrast with the theme '
-      '(light icons on dark, dark on light); the navigation bar is opaque in '
-      "the theme's bottom-bar colour", (tester) async {
-    SystemUiOverlayStyle bars() => tester
-        .widgetList<AnnotatedRegion<SystemUiOverlayStyle>>(
-          find.byType(AnnotatedRegion<SystemUiOverlayStyle>),
-        )
-        .first
-        .value;
-
-    final container = await pumpApp(tester);
-    expect(_shown(tester), Brightness.dark);
-    expect(bars().statusBarIconBrightness, Brightness.light);
-    expect(bars().systemNavigationBarIconBrightness, Brightness.light);
-    expect(bars().statusBarColor, const Color(0x00000000));
-    expect(
-      bars().systemNavigationBarColor,
-      AppTheme.dark.colorScheme.surfaceContainer,
-    );
-    expect(bars().systemNavigationBarColor!.a, 1);
-
-    await container
-        .read(settingsActionsProvider)
-        .setTheme(ThemePreference.light);
-    await settleWrites(tester);
-    expect(_shown(tester), Brightness.light);
-    expect(bars().statusBarIconBrightness, Brightness.dark);
-    expect(bars().systemNavigationBarIconBrightness, Brightness.dark);
-    expect(
-      bars().systemNavigationBarColor,
-      AppTheme.light.colorScheme.surfaceContainer,
-    );
-    await unmountApp(tester, container);
   });
 }

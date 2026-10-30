@@ -97,42 +97,6 @@ void main() {
     expect((await h.entry(2)).dishGroupId, fixtureId(50));
   });
 
-  test('DY-011 overnight overlap: Late 23:00-01:00 inside Night 22:00-02:00 '
-      'catches 00:30; 01:00 goes to Night (exclusive end), 02:00 to the '
-      'next rule', () async {
-    final h = DiaryHarness();
-    final c = setup(h);
-    final night = await add(c, 'Night', TimeWindow(22 * 60, 2 * 60));
-    final late = await add(c, 'Late', TimeWindow(23 * 60, 60));
-    await h.apply([
-      LogEntries([
-        autoAt(1, 0, 30),
-        autoAt(2, 1, 0),
-        autoAt(3, 2, 0),
-        autoAt(4, 22, 30),
-      ]),
-    ]);
-    expect(await slotOf(h, 1), late);
-    expect(await slotOf(h, 2), night);
-    // 02:00 is in no window: the catch-all (Snacks) is the next rule.
-    expect(await slotOf(h, 3), DefaultSlots.snacksId);
-    // 22:30 is in Night 22-02 and Dinner 16-22? No: Dinner ends at 22:00.
-    expect(await slotOf(h, 4), night);
-  });
-
-  test('DY-011 exclusive end: with Pre-workout 17:00-18:00, a log at 18:00 '
-      'goes to Dinner', () async {
-    final h = DiaryHarness();
-    final c = setup(h);
-    final pre = await add(c, 'Pre-workout', TimeWindow(17 * 60, 18 * 60));
-    await h.apply([
-      LogEntries([autoAt(1, 17, 59), autoAt(2, 18, 0), autoAt(3, 17, 0)]),
-    ]);
-    expect(await slotOf(h, 1), pre);
-    expect(await slotOf(h, 2), DefaultSlots.dinnerId);
-    expect(await slotOf(h, 3), pre);
-  });
-
   test('DY-010 exit 2 host journey: add Pre-workout 17:00-18:00, rename '
       'Snacks to Evening snack, move Breakfast to 05:00-10:00, reorder; food '
       'with no meal lands in Pre-workout at 17:30 and in Evening snack at '

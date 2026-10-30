@@ -317,15 +317,6 @@ void main() {
     );
   });
 
-  test('AQ-05 reported not applicable without reference dishes', () {
-    final report = _summary([_run(_case(_aq()), _fixture('rice_chicken'))]);
-    expect((report['metrics'] as PublicJson)['AQ-05'], {
-      'status': 'n/a',
-      'reason': 'noReferenceDishes',
-      'dishes': 0,
-    });
-  });
-
   test('AQ-06 ambiguous case asks the expected kind; a clarify counts as '
       'asking', () {
     PublicJson ambiguous(List<String> asks) =>
@@ -630,32 +621,6 @@ void main() {
     final report = jsonEncode(_summary([result]));
     expect(report, isNot(contains('canary')));
     expect(report, contains('T02#0 key:$_cooked'));
-  });
-
-  test('B09 release yields loader parses rows', () {
-    const manifest =
-        '{"catalog_version": 6, "files": {"yields.jsonl": {"count": 2}}, '
-        '"counts": {"dishes": 0}}';
-    const rows =
-        '{"yield_group":"rice","from_state":"dry","to_state":"cooked",'
-        '"factor":2.8,"source":"usda"}\n'
-        '{"yield_group":"chicken","from_state":"raw","to_state":"cooked",'
-        '"factor":0.72,"source":"usda"}\n';
-    final release = parseAqRelease(manifest: manifest, yieldsJsonl: rows);
-    expect(release.version, 6);
-    expect(release.dishes, 0);
-    expect(release.yields, hasLength(2));
-    expect(release.yields.first.group, 'rice');
-    expect(release.yields.first.from, FoodState.dry);
-    expect(release.yields.first.to, FoodState.cooked);
-    expect(release.yields.last.factor, .72);
-    expect(
-      () => parseAqRelease(
-        manifest: manifest,
-        yieldsJsonl: rows.split('\n').first,
-      ),
-      throwsFormatException,
-    );
   });
 
   test('AQ-01 adapter imports no write path, I/O or app code: the eval only '

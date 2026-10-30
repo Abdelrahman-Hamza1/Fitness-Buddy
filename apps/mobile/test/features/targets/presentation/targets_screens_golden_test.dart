@@ -1,7 +1,5 @@
 import 'package:alchemist/alchemist.dart';
 import 'package:fb_domain/fb_domain.dart';
-import 'package:fb_mobile/features/targets/presentation/below_limit_screen.dart';
-import 'package:fb_mobile/features/targets/presentation/manual_target_sheet.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -27,16 +25,6 @@ final GoalPhaseRecord _goal = GoalInput(
   type: GoalType.lose,
   expression: GoalExpression.weekly(-.5),
 ).toRecord(id: '01890abc-def0-7123-8abc-0123456789ab', start: _today);
-
-final GoalPhaseRecord _pastGoal =
-    GoalInput(
-      type: GoalType.lose,
-      expression: GoalExpression.weekly(-.75),
-    ).toRecord(
-      id: '01890abc-def0-7123-8abc-0123456789ac',
-      start: LocalDate(2026, 1, 3),
-      end: LocalDate(2026, 4, 30),
-    );
 
 TargetSettingsRecord _version({
   double base = 2162.5,
@@ -84,22 +72,6 @@ TargetsView _targetsView(TargetSettingsRecord version) {
   );
 }
 
-final ProfileGoalView _profileView = ProfileGoalView(
-  today: _today,
-  profile: const Versioned(_profile, 1),
-  units: UnitSystem.metric,
-  weightKg: 80,
-  currentWeightKg: 79.4,
-  active: Versioned(_goal, 1),
-  past: [Versioned(_pastGoal, 2)],
-  goalCalculation: goalPreviewOf(
-    _profile,
-    80,
-    GoalInput(type: GoalType.lose, expression: GoalExpression.weekly(-.5)),
-    _today,
-  ).calculation,
-);
-
 Future<void> _golden(
   String name,
   String description,
@@ -138,14 +110,6 @@ Future<void> _golden(
 
 Future<void> main() async {
   await _golden(
-    'targets_profile_goal',
-    'TG-001 TG-011 TG-012 Profile & goal',
-    () => const ProfileGoalScreen(),
-    overrides: [
-      profileGoalViewProvider.overrideWith((ref) async => _profileView),
-    ],
-  );
-  await _golden(
     'targets_screen_weekly',
     'TG-021 TG-040 TG-043 Targets, weekly budget with a higher-calorie Friday',
     () => const TargetsScreen(),
@@ -156,46 +120,5 @@ Future<void> main() async {
       ),
     ],
     height: 1800,
-  );
-  await _golden(
-    'targets_screen_forced_fixed',
-    'SF-012 PA7 Targets, acknowledged own target below the floor',
-    () => const TargetsScreen(),
-    overrides: [
-      targetsViewProvider.overrideWith(
-        (ref) async => _targetsView(
-          _version(
-            base: 1300,
-            mode: TargetMode.fixed,
-            manual: true,
-            acknowledged: true,
-          ),
-        ),
-      ),
-    ],
-    height: 1800,
-  );
-  await _golden(
-    'targets_below_limit_warning',
-    'SF-012 SF-020 the below-limit warning screen',
-    () => BelowLimitScreen(
-      kcal: 1300,
-      need: TargetsNeedsAcknowledgement(
-        floorKcal: 1750,
-        impliedKgPerWeek: -1.29,
-        warnings: const {
-          TargetWarning.manualBelowFloor,
-          TargetWarning.manualLossRateExceeded,
-        },
-      ),
-      units: UnitSystem.metric,
-    ),
-    height: 800,
-  );
-  await _golden(
-    'targets_manual_sheet',
-    'SF-012 the own-target sheet',
-    () => Scaffold(body: ManualTargetSheet(view: _targetsView(_version()))),
-    height: 600,
   );
 }

@@ -164,27 +164,6 @@ void main() {
       expect(await r.db.select(r.db.settingsKv).get(), isEmpty);
     },
   );
-  test('UX-030 SettingsActions.setUnitSystem: one settings put, '
-      'origin direct, undo recorded; undo restores the default '
-      '(row tombstoned)', () async {
-    final r = Rig();
-    final outcome =
-        await r.actions.setUnitSystem(UnitSystem.imperial) as SettingsDone;
-    final row = (await r.db.select(r.db.settingsKv).get()).single;
-    expect(row.id, settingRowId('units.system'));
-    expect(row.valueJson, '"imperial"');
-    expect(row.origin, 'direct');
-    expect(await outbox(r.db), hasLength(1));
-    expect(outcome.kind, SettingsKind.settingChanged);
-    expect(r.stack.latest!.id, outcome.undoEntryId);
-    expect(r.stack.latest!.label.args, {'key': 'units.system'});
-    expect(await r.stack.undo(outcome.undoEntryId), UndoOutcome.undone);
-    expect(await r.store.read(AppSettings.unitSystem), UnitSystem.metric);
-    expect(
-      (await r.db.select(r.db.settingsKv).get()).single.deletedAt,
-      isNotNull,
-    );
-  });
   test('same value → Unchanged, nothing written', () async {
     final r = Rig();
     final before = await r.raw();
@@ -293,47 +272,6 @@ void main() {
     expect(search.suggestions('city:360630').first.city.nameEn, 'Cairo');
     expect(search.query('no match'), isEmpty);
   });
-  test(
-    'LC-033 city search perf p95 < 5 ms over 2,300 rows (printed)',
-    () async {
-      final cities = [
-        for (var i = 0; i < 2300; i++)
-          CatalogCity(
-            id: 'city:$i',
-            nameEn: 'City $i',
-            nameAr: 'مدينة $i',
-            countryCode: i.isEven ? 'PS' : 'JO',
-            population: i,
-            timezone: 'Asia/Hebron',
-            latitude: 32,
-            longitude: 35,
-          ),
-      ];
-      final search = CitySearch(cities);
-      for (var i = 0; i < 100; i++) {
-        search.query('city');
-      }
-      final samples = <int>[];
-      for (var i = 0; i < 300; i++) {
-        final watch = Stopwatch()..start();
-        final results = search.query(i.isEven ? 'city' : 'مدينة 1');
-        watch.stop();
-        expect(results, isNotEmpty);
-        samples.add(watch.elapsedMicroseconds);
-      }
-      samples.sort();
-      final p95 = samples[(samples.length * .95).ceil() - 1];
-      // The WP1 gate requires the measured distribution in the test output.
-      // ignore: avoid_print
-      print(
-        'LC-033 city search: rows=2300 runs=300 '
-        'p50=${samples[149]}us p95=${p95}us max=${samples.last}us',
-      );
-      expect(p95, lessThan(5000));
-    },
-    // A timing gate: the parallel suite's load can push one run over.
-    retry: 2,
-  );
   test('D14 about info: only active credits (USDA, GeoNames), never '
       'note; no pack → null credits', () async {
     final credits = [

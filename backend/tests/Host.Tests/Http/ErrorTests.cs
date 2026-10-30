@@ -53,16 +53,4 @@ public sealed class ErrorTests(ApiFactory factory) : IClassFixture<ApiFactory>
         Assert.Equal("Not Found", problem.GetProperty("title").GetString());
     }
 
-    [Fact]
-    [Trait("Rule", "04.4.2-errors")]
-    public async Task Error_result_from_a_handler_maps_to_version_conflict_412()
-    {
-        using var client = factory.CreateClient();
-        using var response = await client.FetchAsync(Api.Get("/v1/_probe/conflict"));
-
-        var problem = await Api.ProblemAsync(response, 412);
-        Assert.Equal("/errors/version-conflict", problem.GetProperty("type").GetString());
-        Assert.Equal("Version conflict", problem.GetProperty("title").GetString());
-        Assert.DoesNotContain("probe.version_conflict", problem.GetRawText(), StringComparison.Ordinal);
-    }
 }

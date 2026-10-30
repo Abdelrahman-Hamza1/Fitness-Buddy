@@ -72,42 +72,4 @@ Future<void> main() async {
     full,
     targetsOn(weekDay(4), intake: midweek),
   );
-  await _golden(
-    'HM-001 SF-021 today: over the target, neutral tone',
-    'today_targets_over',
-    fakeDay(testToday, [
-      ...full.entries,
-      fakeEntry(
-        7,
-        date: testToday,
-        slotId: DefaultSlots.dinnerId,
-        hour: 20,
-        name: 'Mansaf',
-        kcal: 1250,
-      ),
-    ], full.groups),
-    targetsOn(weekDay(4), intake: midweek),
-  );
-  await _golden(
-    'TG-044 today: same every day, no weekly line',
-    'today_targets_fixed',
-    full,
-    targetsOn(
-      weekDay(4),
-      settings: [sampleVersion(mode: TargetMode.fixed, base: 2200)],
-      intake: midweek,
-    ),
-  );
-  await _golden(
-    'TG-054 today: calories and protein only',
-    'today_targets_protein_only',
-    full,
-    targetsOn(
-      weekDay(4),
-      settings: [
-        sampleVersion(macros: MacroSettings(caloriesProteinOnly: true)),
-      ],
-      intake: midweek,
-    ),
-  );
 }

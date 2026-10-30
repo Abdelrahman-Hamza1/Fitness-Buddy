@@ -12,8 +12,6 @@ import 'helpers.dart';
 
 // Built from code points so this file stays ASCII and no tool rewrites it.
 final String _alef = String.fromCharCode(0x627);
-final String _backslash = String.fromCharCode(0x5C);
-
 List<Violation> _names(String source) =>
     checkPatrolNames(path: 'patrol_test/x_test.dart', source: source);
 
@@ -70,57 +68,5 @@ void main() {
       _names(r"patrolTest('A10 $mode native ${a / b}', ($) async {});"),
       isEmpty,
     );
-  });
-
-  test('comments before the name or between its literals are skipped', () {
-    final before = _names(
-      r"patrolTest(/* reason */ 'bad/name', ($) async {});",
-    );
-    expect(before, hasLength(1));
-    expect(before.single.line, 1);
-
-    final between = _names(
-      "patrolTest('A10 fine' // why\n"
-      "    /* more */ 'but; here',\n"
-      '    (\$) async {});\n',
-    );
-    expect(between, hasLength(1));
-    expect(between.single.line, 2);
-  });
-
-  test('an escape that spells a non-ASCII character is flagged', () {
-    expect(
-      _names("patrolTest('A10 ${_backslash}u0627', (\$) async {});"),
-      hasLength(1),
-    );
-    expect(
-      _names("patrolTest('A10 ${_backslash}xe9', (\$) async {});"),
-      hasLength(1),
-    );
-  });
-
-  test('a patrolTest mention in a comment or a string is not a call', () {
-    expect(
-      _names(
-        "// patrolTest('a/b', ...)\n"
-        "const s = \"patrolTest('a;b'\";\n",
-      ),
-      isEmpty,
-    );
-  });
-
-  test('an allow comment does not silence the patrol name guard', () {
-    final violations = _names(
-      "patrolTest('a/b', (\$) async {}); // app-check: allow patrol-name why\n",
-    );
-    expect(violations, hasLength(1));
-  });
-
-  test('package mode does not look at patrol_test', () {
-    final app = tempApp({
-      'lib/a.dart': '',
-      'patrol_test/bad_test.dart': "void main() { patrolTest('a/b', f); }\n",
-    });
-    expect(_run(['--package', app]).code, exitOk);
   });
 }

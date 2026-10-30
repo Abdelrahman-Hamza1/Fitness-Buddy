@@ -4,40 +4,9 @@ import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/pump_app.dart';
-import '../onboarding/setup_support.dart';
 import '../settings/presentation/settings_support.dart';
 
-Finder _header(String title) => find.widgetWithText(FbSectionHeader, title);
-
 void main() {
-  testWidgets('UX-060 UX-010 Me shows "Set up profile & targets" under You, '
-      'first, until setup has run; the row opens setup; then Profile & goal', (
-    tester,
-  ) async {
-    final c = await pumpAt(tester);
-    await openMe(tester);
-    expect(
-      tester.getTopLeft(_header('You')).dy,
-      lessThan(tester.getTopLeft(_header('Food')).dy),
-    );
-    await tester.tap(find.text('Set up profile & targets'));
-    await tester.pumpAndSettle();
-    expect(find.byType(SetupScreen), findsOneWidget);
-
-    final run = SetupRun(tester);
-    await run.toTargets();
-    await run.next('Save');
-    await settleWrites(tester);
-    await openMe(tester);
-    // Once set up, You has Profile & goal and Targets (A13c).
-    expect(find.text('Set up profile & targets'), findsNothing);
-    expect(_header('You'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FbListRow, 'Profile & goal'));
-    await tester.pumpAndSettle();
-    expect(find.byType(ProfileGoalScreen), findsOneWidget);
-    await unmountApp(tester, c);
-  });
-
   testWidgets('A13a security #3 Me offers "Update the app" for a profile '
       "this version can't read", (tester) async {
     final c = await pumpAt(

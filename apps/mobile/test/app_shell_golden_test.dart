@@ -45,26 +45,4 @@ Future<void> main() async {
       ],
     ),
   );
-
-  await goldenTest(
-    'UX-040 update required screen light/dark, text x2',
-    fileName: 'update_required',
-    builder: () => GoldenTestGroup(
-      columns: 3,
-      children: [
-        GoldenTestScenario(
-          name: 'light',
-          child: _shell(Brightness.light, updateRequired: true),
-        ),
-        GoldenTestScenario(
-          name: 'dark',
-          child: _shell(Brightness.dark, updateRequired: true),
-        ),
-        GoldenTestScenario(
-          name: 'light, text x2',
-          child: _shell(Brightness.light, textScale: 2, updateRequired: true),
-        ),
-      ],
-    ),
-  );
 }

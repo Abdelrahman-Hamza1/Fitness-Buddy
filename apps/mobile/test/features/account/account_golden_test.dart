@@ -2,7 +2,6 @@ import 'package:alchemist/alchemist.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/account/application/sign_in_controller.dart';
-import 'package:fb_mobile/features/account/presentation/sign_out_sheet.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -86,25 +85,5 @@ Future<void> main() async {
         () => _FixedSignIn(const SignInState()),
       ),
     ],
-  );
-
-  await _golden(
-    'AC-003 UX-070 sign-in: merge refused, both copies stay',
-    'sign_in_merge_blocked',
-    () => const SignInScreen(),
-    overrides: [
-      signInControllerProvider.overrideWith(
-        () => _FixedSignIn(
-          const SignInState(step: SignInStep.conflict, mergeBlocked: true),
-        ),
-      ),
-    ],
-  );
-
-  await _golden(
-    'AC-004 UX-070 the sign-out sheet: keep a read-only copy or remove',
-    'sign_out_sheet',
-    () => Scaffold(body: SignOutSheetBody(onSelected: (_) {})),
-    height: 500,
   );
 }

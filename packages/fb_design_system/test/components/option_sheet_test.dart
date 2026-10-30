@@ -90,19 +90,4 @@ void main() {
     await tester.pumpAndSettle();
     expect(picked, [null]);
   });
-
-  testWidgets('UX-070 showFbOptionSheet: no overflow at text scale 2.0 on a '
-      'phone, and the last option stays reachable', (tester) async {
-    await pumpFb(
-      tester,
-      const _Shell(picked: []),
-      textScale: 2,
-      width: 320,
-      height: 640,
-    );
-    await tester.tap(find.text('open'));
-    await tester.pumpAndSettle();
-    expect(tester.takeException(), isNull);
-    expect(find.text('Imperial'), findsOneWidget);
-  });
 }

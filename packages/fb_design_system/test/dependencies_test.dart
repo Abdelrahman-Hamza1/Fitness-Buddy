@@ -41,14 +41,5 @@ void main() {
       ];
       expect(violations, isEmpty);
     });
-
-    test('material_ui has the same exact pin as the app', () {
-      final app = loadYaml(
-        File('../../apps/mobile/pubspec.yaml').readAsStringSync(),
-      ) as YamlMap;
-      final mine = (pubspec['dependencies'] as YamlMap)['material_ui'];
-      expect(mine, (app['dependencies'] as YamlMap)['material_ui']);
-      expect(mine, matches(RegExp(r'^\d+\.\d+\.\d+$')), reason: 'exact pin');
-    });
   });
 }

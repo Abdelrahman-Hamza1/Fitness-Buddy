@@ -70,11 +70,7 @@ void main() {
     _expectShell();
   });
 
-  for (final (name, failure) in [
-    ('offline', offline),
-    ('timeout', timeout),
-    ('500', json({'title': 'boom'}, status: 500)),
-  ]) {
+  for (final (name, failure) in [('offline', offline)]) {
     testWidgets('config fetch failure ($name) keeps the defaults and the '
         'shell stays usable', (tester) async {
       final phone = TestPhone()..adapter.respond = failure;
@@ -120,18 +116,6 @@ void main() {
     _expectUpdateScreen();
   });
 
-  testWidgets('426 response trips the update gate and shows the update '
-      'screen', (tester) async {
-    // The server refuses /v1/config itself.
-    final phone = TestPhone()
-      ..adapter.respond = problem(ProblemTypes.upgradeRequired, 426);
-
-    await pumpApp(tester, phone: phone);
-
-    _expectUpdateScreen();
-    expect(find.text('Update needed'), findsOneWidget);
-  });
-
   testWidgets('426 on any later request shows the update screen', (
     tester,
   ) async {
@@ -158,32 +142,6 @@ void main() {
     await tester.pump(Duration.zero);
 
     _expectUpdateScreen();
-  });
-
-  for (final (minimum, gated) in [
-    ('0.1.1', true),
-    ('0.1.0', false),
-    ('0.0.1', false),
-  ]) {
-    testWidgets('minimumAppVersion $minimum with the app at 0.1.0 '
-        '${gated ? 'shows' : "doesn't show"} the update screen', (
-      tester,
-    ) async {
-      final phone = TestPhone()..adapter.respond = config(minimum);
-
-      await pumpApp(tester, phone: phone);
-
-      gated ? _expectUpdateScreen() : _expectShell();
-    });
-  }
-
-  testWidgets('a malformed own app version fails open (A8)', (tester) async {
-    final phone = TestPhone(appVersion: '0.1.0-dev')
-      ..adapter.respond = config('9.9.9');
-
-    await pumpApp(tester, phone: phone);
-
-    _expectShell();
   });
 
   testWidgets('Check again lifts the gate when the fresh config allows the '

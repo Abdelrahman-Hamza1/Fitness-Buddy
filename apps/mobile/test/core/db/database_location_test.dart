@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/db/connection.dart';
 import 'package:fb_mobile/core/db/database_location.dart';
-import 'package:fb_mobile/core/db/db_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'support/db_support.dart';
@@ -106,22 +104,5 @@ void main() {
     expect(await pragma('synchronous'), 1);
     expect(await pragma('busy_timeout'), 5000);
     expect(await pragma('trusted_schema'), 0);
-  });
-
-  test('appDatabaseProvider is synchronous and touches no storage', () async {
-    final counting = CountingLocation(tempDir().path);
-    final container = ProviderContainer(
-      overrides: [
-        databaseLocationProvider.overrideWithValue(counting.location),
-      ],
-    );
-    final db = container.read(appDatabaseProvider);
-    await pumpEventQueue();
-    expect(counting.resolved, 0);
-    expect(container.read(profileKeyProvider), isNull);
-
-    await db.select(db.syncState).get();
-    expect(counting.resolved, 1);
-    container.dispose();
   });
 }

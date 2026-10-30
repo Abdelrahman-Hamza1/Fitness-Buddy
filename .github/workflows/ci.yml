@@ -21,9 +21,14 @@
 # Fast CI (TD-086): a regular run aims at 5-10 minutes. The Dart tests run in
 # parallel shards (`dart-test`), the AAB (all ABIs, only needed for Play) is
 # built on main and nightly only, and the emulator job `android-it` runs
-# nightly on main (schedule), on manual runs, and on a push whose head commit
-# message contains `[it]` (milestone steps, Patrol or native changes). A red
-# nightly is stop-the-line: fixed before the next merge.
+# nightly on main (schedule) and on manual runs only (TD-104: no commit-message
+# trigger). A red nightly is stop-the-line: fixed before the next merge.
+# Docs-only fast path (TD-104): a push whose diff against its merge-base on main
+# touches only docs (spec/, technical-planning/, docs/, PROCESS.md, PROGRESS.md,
+# README.md and other root *.md, research-notes.md) runs `changes` (with the
+# PROGRESS.md check) and skips every heavy job; the `ci` gate accepts those
+# skips. Any other path, main, merge/*, pull requests, schedule and manual runs
+# keep the full run.
 # Every other job runs on every push, with one exception (TD-060, supersedes
 # S01 A2): on step branches that change nothing the Android build can depend on
 # (`changes` job), `android` is skipped, so a backend-only branch doesn't wait
@@ -36,7 +41,7 @@ on:
     # Dependabot branches run via pull_request. main is excluded: merge-step.sh
     # pushes the exact squash commit to merge/<ID> first and moves main only when
     # `ci` is green on that same commit, so a second run on main repeated the
-    # same tree (and re-ran the emulator on `[it]` commits). main still gets the
+    # same tree. main still gets the
     # nightly schedule run (2026-10-29).
     branches: ['**', '!dependabot/**', '!main']
   pull_request:
@@ -70,6 +75,7 @@ jobs:
     timeout-minutes: 5
     outputs:
       android: ${{ steps.android.outputs.android }}
+      docs_only: ${{ steps.android.outputs.docs_only }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -84,15 +90,25 @@ jobs:
           REF: ${{ github.ref }}
         run: |
           android=true
+          docs_only=false
           if [[ "$EVENT" == push && "$REF" != refs/heads/main && "$REF" != refs/heads/merge/* ]] \
             && base="$(git merge-base origin/main HEAD 2>/dev/null)"; then
             relevant='^(apps/mobile/|packages/|contracts/|data/|tools/catalog/|pubspec\.(yaml|lock)$|analysis_options\.yaml$|\.fvmrc$|Makefile$|\.github/workflows/ci\.yml$|tools/scripts/(build-android|android-defines|setup-android|patrol-android|android-|session-|test_session_|apk_hardening|apk-hardening|testdata/apk-hardening/))'
             if ! git diff --name-only "$base" HEAD | grep -Eq "$relevant"; then
               android=false
             fi
+            # Docs only (TD-104): every changed path is documentation. An empty
+            # diff is not docs-only, so nothing is skipped on a doubt.
+            docs='^(spec/|technical-planning/|docs/|PROCESS\.md$|PROGRESS\.md$|research-notes\.md$|[^/]+\.md$)'
+            changed="$(git diff --name-only "$base" HEAD)"
+            if [[ -n "$changed" ]] && ! grep -Evq "$docs" <<<"$changed"; then
+              docs_only=true
+              android=false
+            fi
           fi
           echo "android=$android" >>"$GITHUB_OUTPUT"
-          echo "Android jobs run: $android" >>"$GITHUB_STEP_SUMMARY"
+          echo "docs_only=$docs_only" >>"$GITHUB_OUTPUT"
+          echo "Android jobs run: $android; docs-only: $docs_only" >>"$GITHUB_STEP_SUMMARY"
 
       # The owner's progress page is generated from the step board and backlog;
       # a board change without `make progress` fails here, in seconds (python3
@@ -111,6 +127,8 @@ jobs:
   # builds the release pack and uploads it with its manifest.
   catalog:
     name: catalog
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -162,6 +180,8 @@ jobs:
 
   dart:
     name: dart
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -208,19 +228,21 @@ jobs:
         run: make trace FLUTTER=flutter DART=dart | tee -a "$GITHUB_STEP_SUMMARY"
 
   # The Dart tests in parallel shards (TD-086): apps/mobile split in three by
-  # flutter test's --shard-index (without `perf` tests), apps/mobile's `perf`
-  # tests alone and one at a time (load-sensitive budgets), every other
-  # workspace member in one. The same
+  # flutter test's --shard-index, every other workspace member in one (no host
+  # timing tests anywhere, TD-104). Property tests run 100 times here and 1,000
+  # on nightly and manual runs (PROPERTY_RUNS). The same
   # script as `make test-dart` on a laptop; DART_TEST_SHARD picks the slice and
   # the 4-core runner gets 4 test workers.
   dart-test:
     name: dart-test (${{ matrix.shard }})
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        shard: ['app:1/3', 'app:2/3', 'app:3/3', 'app:perf', 'packages']
+        shard: ['app:1/3', 'app:2/3', 'app:3/3', 'packages']
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -239,6 +261,8 @@ jobs:
         env:
           DART_TEST_SHARD: ${{ matrix.shard }}
           DART_TEST_JOBS: '4'
+          # 100 property runs on push and PR, 1,000 on nightly and manual runs (TD-104).
+          PROPERTY_RUNS: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && '1000' || '100' }}
         run: make deps-dart catalog-pack test-dart FLUTTER=flutter DART=dart 2>&1 | tee "$RUNNER_TEMP/dart-tests.log"
 
       # Failing tests as annotations (readable through the API without a token).
@@ -250,6 +274,8 @@ jobs:
 
   dotnet:
     name: dotnet
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -334,7 +360,8 @@ jobs:
   # Reuse the real endpoint run from dotnet; no second build or paid provider call.
   eval:
     name: eval
-    needs: dotnet
+    needs: [changes, dotnet]
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
@@ -364,6 +391,8 @@ jobs:
   # The same hardened image; B01 also checks the Dart client against its real HTTP API.
   image:
     name: image
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -399,6 +428,8 @@ jobs:
   # UID, GID and REPO_ROOT for compose. No Flutter or .NET here.
   contract:
     name: contract
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -624,11 +655,11 @@ jobs:
   # warning and in the job summary; a second failure fails the job.
   android-it:
     name: android-it
-    # Nightly, manual, or on request with `[it]` in the head commit message
-    # (TD-086); the gate below treats a skipped android-it as passed.
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[it]')
+    # Nightly and manual runs only (TD-104: no push trigger); the gate below
+    # treats a skipped android-it as passed.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
-    timeout-minutes: 70
+    timeout-minutes: 45
     env:
       EMULATOR_OPTIONS: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
     steps:
@@ -728,9 +759,8 @@ jobs:
       - name: Patrol tests on the emulator
         id: it1
         continue-on-error: true
-        # The suite grew to 24 journeys (A13c, A15a, A24 together): the
-        # build plus ~10 min of tests no longer fit 15 minutes.
-        timeout-minutes: 25
+        # About 5 journeys and the Keystore probe (TD-104).
+        timeout-minutes: 12
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: 34
@@ -749,7 +779,7 @@ jobs:
       - name: Patrol tests on the emulator (the one automatic retry, plan A7)
         id: it2
         if: steps.it1.outcome == 'failure'
-        timeout-minutes: 22
+        timeout-minutes: 12
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: 34
@@ -828,8 +858,10 @@ jobs:
           done
 
   # The one required status check. Fails unless every needed job succeeded.
-  # The only allowed skip: android/android-it when `changes` says the branch
-  # doesn't touch Android (TD-060). Any other failure, cancel or skip fails it.
+  # The only allowed skips: android when `changes` says the branch doesn't touch
+  # Android (TD-060), android-it (nightly and manual only, TD-104), and every
+  # heavy job when `changes` says the push changed only docs (TD-104). Any other
+  # failure, cancel or skip fails it.
   ci:
     name: ci
     if: always()
@@ -842,6 +874,7 @@ jobs:
         env:
           NEEDS: ${{ toJSON(needs) }}
           ANDROID: ${{ needs.changes.outputs.android }}
+          DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
         run: |
           jq -r 'to_entries[] | "\(.key)\t\(.value.result)"' <<<"$NEEDS" | {
             failed=0 seen=0
@@ -851,7 +884,11 @@ jobs:
               if [[ "$result" == skipped && "$ANDROID" == false && "$job" == android ]]; then
                 continue
               fi
-              # Runs only nightly, manually or on `[it]` (TD-086); when it runs it must pass.
+              # Docs-only push (TD-104): every heavy job is skipped on purpose.
+              if [[ "$result" == skipped && "$DOCS_ONLY" == true && "$job" != changes ]]; then
+                continue
+              fi
+              # Runs only nightly and manually (TD-104); when it runs it must pass.
               if [[ "$result" == skipped && "$job" == android-it ]]; then
                 continue
               fi

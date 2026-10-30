@@ -7,9 +7,6 @@ import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'generated/schema.dart';
-import 'generated/schema_v1.dart' as v1;
-import 'generated/schema_v2.dart' as v2;
-import 'generated/schema_v3.dart' as v3;
 import 'generated/schema_v4.dart' as v4;
 import 'generated/schema_v5.dart' as v5;
 
@@ -159,23 +156,4 @@ void main() {
       validateItems: validate,
     );
   });
-
-  for (final (from, create)
-      in <(int, GeneratedDatabase Function(QueryExecutor))>[
-        (3, v3.DatabaseAtV3.new),
-        (2, v2.DatabaseAtV2.new),
-        (1, v1.DatabaseAtV1.new),
-      ]) {
-    test('migration v$from → v5', () async {
-      await verifier.testWithDataIntegrity(
-        oldVersion: from,
-        newVersion: 5,
-        createOld: create,
-        createNew: v5.DatabaseAtV5.new,
-        openTestedDatabase: AppDatabase.new,
-        createItems: (batch, db) => seed(batch, from),
-        validateItems: validate,
-      );
-    });
-  }
 }

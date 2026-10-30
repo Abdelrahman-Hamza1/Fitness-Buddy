@@ -40,48 +40,6 @@ void main() {
       }
     });
 
-    test('T07 "akalt sahen maqlobe 3nd sitti" returns ref:maqluba', () {
-      final s = buildFixturePack();
-      expect(
-        targets(s, 'akalt sahen maqlobe 3nd sitti'),
-        contains('ref:maqluba'),
-      );
-    });
-
-    test('T08 "صحن ملوخية مع رز" returns ref:mloukhiyeh_rice', () {
-      final s = buildFixturePack();
-      expect(targets(s, 'صحن ملوخية مع رز'), contains('ref:mloukhiyeh_rice'));
-    });
-
-    test('T12 "شاورما دجاج عربي" returns ref:chicken_shawarma_arabi', () {
-      final s = buildFixturePack();
-      expect(
-        targets(s, 'شاورما دجاج عربي'),
-        contains('ref:chicken_shawarma_arabi'),
-      );
-    });
-
-    test('short token "رز" matches by exact key', () {
-      final s = buildFixturePack();
-      expect(targets(s, 'رز'), ['usda:rice_raw']);
-      // Too short for a trigram, and not a whole name: no hit, no error.
-      expect(s.search('ز'), isEmpty);
-    });
-
-    test('falafel sandwich by "falafel", "فلافل", "falafel sandwich"', () {
-      final s = buildFixturePack();
-      for (final q in ['falafel', 'فلافل', 'falafel sandwich']) {
-        expect(targets(s, q).first, 'ref:falafel_sandwich', reason: q);
-      }
-    });
-
-    test('musakhan by EN/AR/Arabizi', () {
-      final s = buildFixturePack();
-      for (final q in ['Musakhan', 'مسخن', 'mosakhan', 'mussakhan']) {
-        expect(targets(s, q).first, 'ref:musakhan', reason: q);
-      }
-    });
-
     test('hits carry review status, display name and per-100 g', () {
       final s = buildFixturePack();
       final hit = s.search('musakhan').first;
@@ -194,17 +152,6 @@ void main() {
         ),
         throwsA(isA<MustCoverException>()),
       );
-    });
-
-    test('the real data/must_cover.yaml parses', () {
-      final file = File(p.join('..', '..', 'data', 'must_cover.yaml'));
-      final items = parseMustCover(file.readAsStringSync());
-      expect(items.length, greaterThan(100));
-      for (final i in items) {
-        for (final lang in nameLanguages) {
-          expect(i.names[lang], isNotEmpty, reason: '${i.id} $lang');
-        }
-      }
     });
   });
 

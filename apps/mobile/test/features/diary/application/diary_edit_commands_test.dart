@@ -10,12 +10,9 @@ import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
-import 'package:fb_mobile/features/foods/application/food_amount_controller.dart';
 import 'package:fb_mobile/features/foods/application/food_choice.dart';
-import 'package:fb_mobile/features/foods/application/foods_providers.dart';
 import 'package:fb_mobile/features/foods/application/log_food.dart';
 import 'package:fb_mobile/features/foods/application/replace_entry_food.dart';
-import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -377,115 +374,6 @@ void main() {
     );
     expect(await h.state(), after);
     await c.read(undoStackProvider).undo(outcome.undoEntryId);
-    expect(await h.state(), before);
-  });
-  test("DY-021 the replace sheet defaults to the entry's "
-      "input when its unit resolves, else A07's default", () async {
-    for (final unit in ['loaf', 'g']) {
-      final h = DiaryHarness();
-      await h.apply([
-        LogEntries([
-          NewDiaryEntry(
-            id: fixtureId(1),
-            when: .onDay(today),
-            food: foodOf(1),
-            amount: EntryAmount(
-              input: Quantity(2, 'loaf'),
-              amount: 120,
-              basis: NutrientBasis.per100g,
-            ),
-          ),
-        ]),
-      ]);
-      final food = choice(unit: unit);
-      final foodRef = FoodChoiceRef(food.ref);
-      final c = ProviderContainer(
-        overrides: [
-          diaryRepositoryProvider.overrideWithValue(DiaryRepository(h.db)),
-          foodChoiceProvider(foodRef).overrideWith((ref) async => food),
-          unitSystemProvider.overrideWith(
-            (ref) => Stream.value(UnitSystem.metric),
-          ),
-          foodSlotsProvider.overrideWith(
-            (ref) => Stream.value(DefaultSlots.all),
-          ),
-          clockProvider.overrideWithValue(h.clock),
-          replaceEntryFoodProvider.overrideWith(
-            (ref) => ReplaceEntryFood(
-              apply: h.applier.apply,
-              undoStack: setup(h).read(undoStackProvider),
-            ),
-          ),
-        ],
-      );
-      addTearDown(c.dispose);
-      final provider = foodAmountControllerProvider(
-        foodRef,
-        today,
-        replacing: VersionedId(fixtureId(1), 1),
-      );
-      final sub = c.listen(provider, (_, _) {});
-      addTearDown(sub.close);
-      final state = await c.read(provider.future);
-      expect(
-        state.input,
-        unit == 'loaf' ? Quantity(2, 'loaf') : Quantity(100, 'g'),
-      );
-      final notifier = c.read(provider.notifier);
-      expect(await notifier.submit(), isA<FoodLogged>());
-      expect((await entry(h)).food, food.food);
-    }
-  });
-  test('DY-023 copyMeal builds copy ids and SourceVersions for '
-      'every shown entry and group', () async {
-    final h = DiaryHarness();
-    await h.apply([
-      CreateDishGroup(
-        id: fixtureId(50),
-        name: 'Dish',
-        date: today,
-        slotId: DefaultSlots.lunchId,
-      ),
-      LogEntries([
-        newEntry(1, group: 50, slotId: DefaultSlots.lunchId),
-        newEntry(2, slotId: DefaultSlots.lunchId),
-      ]),
-    ]);
-    final sent = <ChangeSet>[];
-    final c = setup(
-      h,
-      apply: (change) {
-        sent.add(change);
-        return h.applier.apply(change);
-      },
-    );
-    final day = await h.reads.day(today);
-    final section = DayLayout.build(
-      day.slots,
-      day.groups,
-      day.entries,
-    ).sections.firstWhere((s) => s.slot?.id == DefaultSlots.lunchId);
-    final actions = c.read(diaryActionsControllerProvider.notifier);
-    final before = await h.state();
-    final outcome =
-        await actions.copyMeal(section, today.plusDays(-1)) as DiaryActionDone;
-    final op = sent.single.ops.single as CopyMeal;
-    expect(op.expected.entries.toSet(), {
-      VersionedId(fixtureId(1), 1),
-      VersionedId(fixtureId(2), 1),
-    });
-    expect(op.expected.groups, [VersionedId(fixtureId(50), 1)]);
-    expect(op.copyIds.keys.toSet(), {
-      fixtureId(1),
-      fixtureId(2),
-      fixtureId(50),
-    });
-    expect(sent.single.origin, Origin.direct);
-    await c.read(undoStackProvider).undo(outcome.undoEntryId);
-    expect(await h.state(), before);
-    final saved = await actions.saveMeal(section, ' Meal ') as DiaryActionDone;
-    expect((sent.last.ops.single as SaveMeal).expected.groups, isEmpty);
-    await c.read(undoStackProvider).undo(saved.undoEntryId);
     expect(await h.state(), before);
   });
   test('DY-023 copyMeal observes a split group but copies an Other '

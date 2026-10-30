@@ -1,22 +1,17 @@
 import 'package:alchemist/alchemist.dart';
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
-import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../diary/support/diary_fixtures.dart' show fixtureId;
 import 'support/today_support.dart';
 
 /// Phone size of a screen golden cell, in dp.
 const double _width = 360;
 const double _height = 640;
-
-/// Tall enough for the opened rows at text scale 2.0.
-const double _tall = 1300;
 
 /// Today as a phone shows it: LTR only in R1 (`09` §3), [brightness], text
 /// [scale], animations off, on [days] with the given session [choices].
@@ -113,121 +108,18 @@ Future<void> _sheetGolden(
 
 Future<void> main() async {
   final full = {testToday: fullDay(testToday)};
-  final lunch = DiaryViewChoices(expandedSlotIds: [DefaultSlots.lunchId]);
 
   await _screenGolden(
     'HM-007 UX-050 today: empty day',
     'today_empty_day',
     (b, s) => _phone({}, b, s),
   );
+  // covers: UX-041 (a clean, not empty, full day)
   await _screenGolden(
     'HM-007 DY-020 today: full day',
     'today_full_day',
     (b, s) => _phone(full, b, s),
   );
-  await _screenGolden(
-    'HM-007 DY-020 today: full day, lunch expanded',
-    'today_full_day_lunch_expanded',
-    (b, s) => _phone(full, b, s, choices: lunch, height: _tall),
-  );
-  await _screenGolden(
-    'LC-010 DY-020 today: full day, imperial',
-    'today_full_day_imperial',
-    (b, s) => _phone(
-      full,
-      b,
-      s,
-      choices: lunch,
-      height: _tall,
-      units: UnitSystem.imperial,
-    ),
-  );
-  await _screenGolden(
-    'DY-021 today: expanded item (editable)',
-    'today_expanded_item',
-    (b, s) => _phone(
-      full,
-      b,
-      s,
-      choices: DiaryViewChoices(
-        expandedSlotIds: [DefaultSlots.breakfastId],
-        expandedEntry: (date: testToday, id: fixtureId(1)),
-      ),
-      height: 2300,
-    ),
-  );
-  await _screenGolden(
-    'DY-024 today: dish group collapsed (open: lunch expanded)',
-    'today_dish_group_collapsed',
-    (b, s) => _phone(
-      full,
-      b,
-      s,
-      choices: DiaryViewChoices(
-        expandedSlotIds: [DefaultSlots.lunchId],
-        collapsedGroupIds: [fixtureId(901)],
-      ),
-      height: _tall,
-    ),
-  );
-  await _screenGolden(
-    'DY-022 move-to-meal sheet',
-    'move_to_slot_sheet',
-    (b, s) => SizedBox(
-      width: _width,
-      height: 420,
-      child: phoneApp(
-        Scaffold(
-          bottomSheet: Builder(
-            builder: (context) => FbSheet(
-              title: context.l10n.diaryMoveTitle,
-              child: MoveToSlotList(
-                slots: DefaultSlots.all,
-                currentSlotId: DefaultSlots.breakfastId,
-                onPick: (_) {},
-              ),
-            ),
-          ),
-        ),
-        brightness: b,
-        textScale: s,
-      ),
-    ),
-  );
-  // The estimate the user corrected: both badges, the range, the assumptions
-  // and the editable chips and buttons (AI-072).
-  final edited = {
-    testToday: fakeDay(testToday, [
-      fakeEntry(
-        1,
-        date: testToday,
-        name: 'Falafel plate',
-        ar: 'فلافل',
-        kcal: 450,
-        minute: 30,
-        source: FoodSource.estimate,
-        edited: true,
-        range: EstimateRange(380, 520),
-        assumptions: ['a1:oil:most', 'a1:share:1/2'],
-        extras: {NutrientKey.sugar: 1.6, NutrientKey.sodium: 322},
-      ),
-    ]),
-  };
-  await _screenGolden(
-    'DY-021 AI-072 today: expanded item (editable, edited by you, assumptions)',
-    'today_expanded_item_edited',
-    (b, s) => _phone(
-      edited,
-      b,
-      s,
-      choices: DiaryViewChoices(
-        expandedSlotIds: [DefaultSlots.breakfastId],
-        expandedEntry: (date: testToday, id: fixtureId(1)),
-      ),
-      height: 2300,
-    ),
-  );
-
   final pita = fakeEntry(
     1,
     date: testToday,
@@ -247,35 +139,5 @@ Future<void> main() async {
       entryProvider(pita.id).overrideWith((ref) => Stream.value(pita)),
     ],
     heights: (820, 1000),
-  );
-  await _sheetGolden(
-    'AI-072 nutrient override sheet',
-    'nutrient_override_sheet',
-    (title) => NutrientOverrideSheet(entry: pita, field: NutrientField.protein),
-    title: 'Edit Protein',
-    overrides: [
-      entryProvider(pita.id).overrideWith((ref) => Stream.value(pita)),
-    ],
-    heights: (680, 900),
-  );
-
-  final yesterday = {testYesterday: fullDay(testYesterday)};
-  final breakfast = fakeView(yesterday[testYesterday]!).layout.sections
-      .firstWhere((s) => s.key == DefaultSlots.breakfastId);
-  await _sheetGolden(
-    'DY-023 copy meal sheet',
-    'copy_meal_sheet',
-    (title) => CopyMealSheet(section: breakfast, date: testYesterday),
-    title: 'Copy Breakfast',
-    overrides: fakeToday(days: yesterday),
-    heights: (260, 420),
-  );
-  await _sheetGolden(
-    'DY-023 save meal sheet',
-    'save_meal_sheet',
-    (title) => SaveMealSheet(section: breakfast, date: testYesterday),
-    title: 'Save as meal',
-    overrides: fakeToday(days: yesterday),
-    heights: (280, 360),
   );
 }

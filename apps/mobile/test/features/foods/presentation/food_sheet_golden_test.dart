@@ -63,14 +63,4 @@ Future<void> main() async {
     'food_sheet_portion',
     () => catalogChoice(pita),
   );
-  await _sheetGolden(
-    'FD-060 FD-062 food sheet: state choice and yield note',
-    'food_sheet_state_choice',
-    () => catalogChoice(
-      riceCooked,
-      history: usedBefore(riceCooked, 100, 'g', 100),
-      siblings: [riceDry],
-      yields: yields,
-    ),
-  );
 }

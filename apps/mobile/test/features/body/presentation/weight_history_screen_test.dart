@@ -50,73 +50,6 @@ void main() {
     await unmountHistory(tester, rig);
   });
 
-  testWidgets('WB-005 WB-031 weight history: a duplicate or a large jump is '
-      'excluded until Keep; Use lb fixes a mix-up; a same-day different value '
-      'shows an info line', (tester) async {
-    final rig = HistoryRig();
-    await rig.seed(tester, [
-      weighInDraft(97, date: LocalDate(2026, 10, 7)),
-      weighInDraft(97.2, date: LocalDate(2026, 10, 14)),
-    ]);
-    await openHistory(tester, rig);
-
-    // 7 Oct, 97.0: a duplicate of the stored one.
-    await pickRowDate(tester, 0, 7);
-    await typeRow(tester, 0, '97');
-    expect(find.text('Already logged on this day'), findsOneWidget);
-    expect(find.text('Nothing to save yet'), findsOneWidget);
-    expect(isEnabled(tester, button('Save')), isFalse);
-    await tester.tap(button('Keep'));
-    await tester.pump();
-    expect(find.text('Kept'), findsOneWidget);
-    expect(find.text('1 weigh-in to save'), findsOneWidget);
-
-    // 14 Oct, 98.0: another value that day, still saved.
-    await tester.tap(button('Add row'));
-    await tester.pump();
-    await typeRow(tester, 1, '98');
-    expect(
-      find.textContaining('The earliest one of the day is used for the trend'),
-      findsOneWidget,
-    );
-    expect(find.text('2 weigh-ins to save'), findsOneWidget);
-
-    // 17 Oct (capped at today), 214 "kg": likely lb.
-    await tester.tap(button('Add row'));
-    await tester.pump();
-    await typeRow(tester, 2, '214');
-    expect(find.text('Did you mean 214.0 lb?'), findsOneWidget);
-    await tester.tap(button('Use lb'));
-    await tester.pump();
-    expect(find.text('Did you mean 214.0 lb?'), findsNothing);
-    expect(rowUnit(tester, 2), 'lb');
-
-    // 17 Oct, 101.5 kg: a jump from the row above, asked.
-    await tester.tap(button('Add row'));
-    await tester.pump();
-    await typeRow(tester, 3, '101.5');
-    expect(find.textContaining('Is that right?'), findsOneWidget);
-    expect(find.text('3 weigh-ins to save'), findsOneWidget);
-    await tester.tap(button('Keep'));
-    await tester.pump();
-    expect(find.text('4 weigh-ins to save'), findsOneWidget);
-    // Editing a kept row clears its Keep.
-    await typeRow(tester, 3, '101.6');
-    expect(find.text('3 weigh-ins to save'), findsOneWidget);
-    await tester.tap(button('Keep'));
-    await tester.pump();
-
-    await tester.tap(button('Save'));
-    await settle(tester);
-    final live = await rig.live(tester);
-    expect(live, hasLength(6));
-    expect(
-      live.where((w) => w.input == const WeighInInput(214, MassUnit.pound)),
-      hasLength(1),
-    );
-    await unmountHistory(tester, rig);
-  });
-
   testWidgets('UX-052 weight history: incomplete, out-of-range or future rows '
       'disable Save; leaving with typed rows asks first; nothing typed is lost '
       'after a refused save', (tester) async {
@@ -167,32 +100,6 @@ void main() {
     await tester.tap(button('Discard'));
     await tester.pumpAndSettle();
     expect(rig.navigator.pops, 1);
-    await unmountHistory(tester, rig);
-  });
-
-  testWidgets('LC-010 weight history defaults to the unit setting and accepts '
-      'the other unit', (tester) async {
-    final rig = HistoryRig()..units.value = UnitSystem.imperial;
-    await openHistory(tester, rig);
-    expect(rowUnit(tester, 0), 'lb');
-    expect(
-      tester
-          .widget<FbChoiceChip>(find.widgetWithText(FbChoiceChip, 'lb'))
-          .selected,
-      isTrue,
-    );
-    await pickRowDate(tester, 0, 10);
-    await typeRow(tester, 0, '214');
-    await tester.tap(find.widgetWithText(FbChoiceChip, 'kg'));
-    await tester.pump();
-    expect(rowUnit(tester, 0), 'kg');
-    await typeRow(tester, 0, '97.4');
-    await tester.tap(button('Save'));
-    await settle(tester);
-    expect(
-      (await rig.live(tester)).single.input,
-      const WeighInInput(97.4, MassUnit.kilogram),
-    );
     await unmountHistory(tester, rig);
   });
 }

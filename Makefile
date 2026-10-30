@@ -245,9 +245,9 @@ db-migrations: ## After a schema change: dump the new drift schema version, rege
 # Goldens are alchemist's CI variant only (S06 plan D17): text renders as blocks,
 # so the images are identical on the laptop and in CI. `make test-dart` compares
 # them; this target rewrites them after an intended UI change (review the PNGs).
+# Only about 15 key screens have a golden (TD-104).
 .PHONY: goldens
-goldens: ## Regenerate the golden images of packages/fb_design_system and apps/mobile (test/**/goldens/ci), then review and commit them
-	cd '$(REPO_ROOT)/packages/fb_design_system' && '$(FLUTTER)' test --update-goldens --tags golden
+goldens: ## Regenerate the 15 key-screen golden images of apps/mobile (test/**/goldens/ci), then review and commit them
 	cd '$(REPO_ROOT)/apps/mobile' && '$(FLUTTER)' test --update-goldens --tags golden
 
 # Android builds (S06 plan D4-D7, A6, A8). Flavors: dev (local API over adb

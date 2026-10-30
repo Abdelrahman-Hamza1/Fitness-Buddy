@@ -69,13 +69,6 @@ void main() {
       expect(kg.draft!.input, const WeighInInput(97.4, MassUnit.kilogram));
     });
 
-    test('backspace edits the prefill; a point replaces it with 0.', () {
-      final form = logForm([storedWeighIn(1, weighInDraft(97.4))]);
-      expect(type(form, '<').buffer, '97.');
-      expect(type(form, '<<<').buffer, '9');
-      expect(type(form, '.').buffer, '0.');
-    });
-
     test('no weigh-ins: the pad is empty and Save is off', () {
       final form = logForm(const []);
       expect(form.buffer, isEmpty);
@@ -174,12 +167,6 @@ void main() {
       }
     });
 
-    test('WB-005 exactly 3 % saves without asking', () {
-      final (form, submission) = type(logForm([yesterday]), '99.9').save(now);
-      expect(form.confirming, isNull);
-      expect(submission!.draft.kg, 99.9);
-    });
-
     test('WB-005 Did you mean lb: Save as lb stores 214 lb / 97.07 kg; Keep '
         'kg keeps what was typed', () {
       final (asking, _) = type(logForm([yesterday]), '214').save(now);
@@ -194,19 +181,6 @@ void main() {
 
       final (_, kg) = asking.confirm();
       expect(kg!.draft.input, const WeighInInput(214, MassUnit.kilogram));
-    });
-
-    test('confirm without an open confirmation does nothing', () {
-      final form = type(logForm([yesterday]), '97');
-      final (same, submission) = form.confirm();
-      expect(identical(same, form), isTrue);
-      expect(submission, isNull);
-    });
-
-    test('WB-005 the first weigh-in is only checked against the bounds', () {
-      final (form, submission) = type(logForm(const []), '140').save(now);
-      expect(form.confirming, isNull);
-      expect(submission!.draft.kg, 140);
     });
   });
 
@@ -233,17 +207,6 @@ void main() {
       expect(on.withUseForTrend(on: false).trendPick, isNull);
     });
 
-    test('a weigh-in on another day shows no switch', () {
-      final form = type(
-        logForm([early]),
-        '97.8',
-      ).withTime(at(day17.plusDays(-1), 7));
-      expect(form.sameDay, isEmpty);
-      expect(form.showTrendSwitch, isFalse);
-      expect(form.usedForTrendNow, isNull);
-      expect(form.trendPick, isNull);
-    });
-
     test('WB-003 a backfilled earlier weigh-in is the default choice; '
         'switching it off picks the other one', () {
       final form = type(logForm([early]), '97.0').withTime(at(day17, 6));
@@ -264,12 +227,6 @@ void main() {
       final form = type(logForm([preferred]), '97.0').withTime(at(day17, 6));
       expect(form.usedForTrendNow, preferred);
       expect(form.defaultForTrend, isFalse);
-    });
-
-    test('a new day resets the switch to its default', () {
-      final form = type(logForm([early]), '97.8').withUseForTrend(on: true);
-      expect(form.withTime(at(day17, 8)).useForTrend, isTrue);
-      expect(form.withTime(at(day17.plusDays(-1), 8)).useForTrend, isNull);
     });
   });
 
@@ -390,12 +347,6 @@ void main() {
       final log = logForm(const []);
       expect(log.reload(), same(log));
     });
-
-    test('the edited weigh-in is not listed as "also on this day"', () {
-      final form = WeighInFormState.edit(stored, weighIns: [early, stored]);
-      expect(form.sameDay, [early]);
-      expect(form.usedForTrendNow, early);
-    });
   });
 
   group('Save off', () {
@@ -423,26 +374,6 @@ void main() {
           reason: keys,
         );
       }
-    });
-
-    test('m2 the range hint shows only once more digits cannot bring the '
-        'value into range', () {
-      bool hint(String keys, [MassUnit unit = MassUnit.kilogram]) =>
-          type(logForm(const [], unit: unit), keys).showRangeHint;
-      // Still typing: "1" or "19" can become "190"; "0" is replaced.
-      for (final keys in ['1', '19', '0', '4']) {
-        expect(hint(keys), isFalse, reason: keys);
-      }
-      expect(hint('4', MassUnit.pound), isFalse);
-      // Final: decimals started, every digit used, or above the maximum.
-      for (final keys in ['19.5', '0.', '1.', '501', '5000', '500.1']) {
-        expect(hint(keys), isTrue, reason: keys);
-      }
-      expect(hint('44.0', MassUnit.pound), isTrue);
-      expect(hint('1103', MassUnit.pound), isTrue);
-      // In range or empty: no hint.
-      expect(hint('97'), isFalse);
-      expect(hint(''), isFalse);
     });
 
     test("WB-003 a future time can't be saved; a time before 1970 is too "
@@ -483,14 +414,5 @@ void main() {
       );
       expect(form.withNote('  ').save(now).$2!.draft.note, isNull);
     });
-  });
-
-  test('reloaded weigh-ins keep what was typed', () {
-    final form = type(logForm(const []), '97');
-    final other = storedWeighIn(1, weighInDraft(97.2, hour: 6));
-    final reloaded = form.withWeighIns([other]);
-    expect(reloaded.buffer, '97');
-    expect(reloaded.sameDay, [other]);
-    expect(reloaded.toString(), isNot(contains('97')));
   });
 }

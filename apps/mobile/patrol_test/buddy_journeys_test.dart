@@ -62,83 +62,43 @@ Future<void> _logIt(WidgetTester tester) async {
   );
 }
 
-/// J1–J3 on the device (A22 D18): the real app and sheet on a throw-away
-/// profile, Buddy's answers recorded and served by in-app fake transports
-/// for both the auth and the API clients, with an in-memory session store
-/// (no network, no keystore). Each journey logs through the single writer.
+/// J1 on the device (A22 D18, trimmed by A46): the real app and sheet on a
+/// throw-away profile, Buddy's answer recorded and served by in-app fake
+/// transports for both the auth and the API clients, with an in-memory session
+/// store (no network, no keystore). The card logs through the single writer.
+/// J2 (estimate) and J3 (Arabic) are host tests and `tools/buddy_eval`.
 void main() {
-  patrolTest(
-    'AI-030 AI-032 AI-143 J1 J2 J3 Buddy journeys log through the chat sheet',
-    ($) async {
-      final api = BuddyFakeAdapter();
-      final auth = BuddyFakeAuthAdapter();
-      final container = await bootApp(
-        $,
-        'it-buddy',
-        rootName: 'fb_buddy_it',
-        overrides: buddyFakeApi(api, auth: auth),
-      );
-      final tester = $.tester;
-      final before = await _liveEntries(container);
+  patrolTest('AI-030 J1 a Buddy card logs through the chat sheet', ($) async {
+    final api = BuddyFakeAdapter();
+    final auth = BuddyFakeAuthAdapter();
+    final container = await bootApp(
+      $,
+      'it-buddy',
+      rootName: 'fb_buddy_it',
+      overrides: buddyFakeApi(api, auth: auth),
+    );
+    final tester = $.tester;
+    final before = await _liveEntries(container);
 
-      await _openSheet(tester);
+    await _openSheet(tester);
 
-      // J1: two questions, answer one, then log.
-      await _send(tester, j1Text);
-      expect(find.text('Any cooking oil?'), findsOneWidget);
-      await _tapInSheet(
-        tester,
-        find.widgetWithText(FbAnswerChip, 'Cooked'),
-        'the Cooked answer',
-      );
-      await pumpFor(tester, const Duration(milliseconds: 300));
-      await _logIt(tester);
-      await waitUntilAsync(
-        tester,
-        () async => await _liveEntries(container) == before + 2,
-        'J1 entries',
-      );
+    // J1: two questions, answer one, then log.
+    await _send(tester, j1Text);
+    expect(find.text('Any cooking oil?'), findsOneWidget);
+    await _tapInSheet(
+      tester,
+      find.widgetWithText(FbAnswerChip, 'Cooked'),
+      'the Cooked answer',
+    );
+    await pumpFor(tester, const Duration(milliseconds: 300));
+    await _logIt(tester);
+    await waitUntilAsync(
+      tester,
+      () async => await _liveEntries(container) == before + 2,
+      'J1 entries',
+    );
 
-      // J2: an estimate with its range, then log.
-      await _send(tester, j2Text);
-      await _tapInSheet(
-        tester,
-        find.byType(FbEstimateMarker).first,
-        'the estimate marker',
-      );
-      await waitUntil(
-        tester,
-        () => find
-            .text("Buddy's estimate: no close match in the food database.")
-            .evaluate()
-            .isNotEmpty,
-        'the estimate sheet',
-      );
-      // Close the estimate sheet (the topmost route).
-      final reason = find.text(
-        "Buddy's estimate: no close match in the food database.",
-      );
-      await Navigator.of(tester.element(reason)).maybePop();
-      await pumpFor(tester, const Duration(milliseconds: 500));
-      await _logIt(tester);
-      await waitUntilAsync(
-        tester,
-        () async => await _liveEntries(container) == before + 3,
-        'J2 entry',
-      );
-
-      // J3: Arabic in, English reply out.
-      await _send(tester, j3Text);
-      await _logIt(tester);
-      await waitUntilAsync(
-        tester,
-        () async => await _liveEntries(container) == before + 5,
-        'J3 entries',
-      );
-      expect(find.textContaining('eaten today'), findsWidgets);
-      expect(api.interpreted, [j1Text, j2Text, j3Text]);
-      expect(auth.calls, contains('/v1/auth/anonymous'));
-    },
-    timeout: const Timeout(Duration(minutes: 4)),
-  );
+    expect(api.interpreted, [j1Text]);
+    expect(auth.calls, contains('/v1/auth/anonymous'));
+  }, timeout: const Timeout(Duration(minutes: 4)));
 }

@@ -365,35 +365,6 @@ void main() {
       expect(r.err.toString(), contains('duplicate'));
     });
 
-    test('ID stability: the build fails against a base with a removed ID', () {
-      final data = makeDataDir();
-      build(data);
-      final r = build(data, update: false, base: lockFixture('base.lock'));
-      // base.lock has ref:musakhan/standard etc.; the data still has them,
-      // but base has usda:olive_oil as food and the lock agrees: passes.
-      expect(r.result.exitCode, 0, reason: '${r.err}');
-      final removed = IdLock.parse(
-        '${lockFixture('base.lock').format()}'
-        'usda:gone\tfood\t1\tactive\n',
-      );
-      final bad = build(data, update: false, base: removed);
-      expect(bad.result.exitCode, 1);
-      expect(bad.err.toString(), contains('usda:gone'));
-    });
-
-    test(
-      'ID stability: an ID released in the lock but gone from data fails',
-      () {
-        final data = makeDataDir();
-        build(data);
-        File(p.join(data.path, 'reference_dishes', 'musakhan.yaml'))
-            .deleteSync();
-        final r = build(data, update: false);
-        expect(r.result.exitCode, 1);
-        expect(r.err.toString(), contains('ref:musakhan'));
-      },
-    );
-
     test('FD-060 yields load and reach the pack', () {
       final data = makeDataDir();
       File(p.join(data.path, 'yields.yaml')).writeAsStringSync(
@@ -480,12 +451,6 @@ void main() {
           .writeAsStringSync('sources:\n  - {id: x}\n');
       expect(build(data).result.exitCode, 1);
     });
-  });
-
-  test('the committed data builds fresh under the size budget', () {
-    final r = build(Directory(p.join('..', '..', 'data')), update: false);
-    expect(r.result.exitCode, 0, reason: '${r.err}');
-    expect(r.result.packBytes, lessThan(maxPackBytes));
   });
 
   group('AT-003 coverage (D17)', () {

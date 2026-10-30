@@ -47,11 +47,6 @@ void main() {
   });
   tearDownAll(() => search.close());
 
-  test('FD-050 the real data validates with no errors', () {
-    expect([...real.data.issues, ...real.report.errors], isEmpty);
-    expect(real.data.dishes.length, greaterThanOrEqualTo(5));
-  });
-
   test('FD-060 every staple group has a yields row', () {
     final groups = {for (final y in real.data.yields!) y.group};
     const staples = [

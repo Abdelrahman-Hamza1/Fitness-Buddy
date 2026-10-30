@@ -4,8 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/api/api_providers.dart';
 import 'package:fb_mobile/core/api/client_headers_interceptor.dart';
-import 'package:fb_mobile/core/api/dio_factory.dart';
-import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/storage/device_id_store.dart';
 import 'package:fb_mobile/core/storage/preferences.dart';
 import 'package:flutter/foundation.dart';
@@ -123,15 +121,6 @@ void main() {
     }
   });
 
-  test('X-Platform is ios on an iPhone', () async {
-    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-    final phone = TestPhone()..adapter.respond = config('0.0.0');
-
-    final request = await _getConfig(phone, _start(phone));
-
-    expect(request.headers[ClientHeaders.platform], 'ios');
-  });
-
   test('device id is created once and reused after a restart', () async {
     final phone = TestPhone()..adapter.respond = config('0.0.0');
 
@@ -154,27 +143,30 @@ void main() {
     );
   });
 
-  test('device id: concurrent first lookups share one id; a stored id that '
-      'is not a UUID is replaced', () async {
-    final store = InMemorySharedPreferencesAsync.withData({
-      PreferenceKeys.deviceId: 'not-a-uuid',
-    });
-    SharedPreferencesAsyncPlatform.instance = store;
-    final ids = UuidV7Generator(_FixedClock(), Random(1));
-    final deviceIds = DeviceIdStore(SharedPreferencesAsync(), ids);
+  test(
+    'TD-053 device id: concurrent first lookups share one id; a stored id that '
+    'is not a UUID is replaced',
+    () async {
+      final store = InMemorySharedPreferencesAsync.withData({
+        PreferenceKeys.deviceId: 'not-a-uuid',
+      });
+      SharedPreferencesAsyncPlatform.instance = store;
+      final ids = UuidV7Generator(_FixedClock(), Random(1));
+      final deviceIds = DeviceIdStore(SharedPreferencesAsync(), ids);
 
-    final results = await Future.wait([
-      deviceIds.deviceId(),
-      deviceIds.deviceId(),
-    ]);
+      final results = await Future.wait([
+        deviceIds.deviceId(),
+        deviceIds.deviceId(),
+      ]);
 
-    expect(results[0], results[1]);
-    expect(isUuidV7(results[0]), isTrue);
-    expect(
-      await SharedPreferencesAsync().getString(PreferenceKeys.deviceId),
-      results[0],
-    );
-  });
+      expect(results[0], results[1]);
+      expect(isUuidV7(results[0]), isTrue);
+      expect(
+        await SharedPreferencesAsync().getString(PreferenceKeys.deviceId),
+        results[0],
+      );
+    },
+  );
 
   test('a request whose headers cannot be looked up is not sent', () async {
     final phone = TestPhone()
@@ -187,29 +179,6 @@ void main() {
       throwsA(isA<DioException>()),
     );
     expect(phone.adapter.requests, isEmpty);
-  });
-
-  test('dio timeouts are 10/15/15 s', () {
-    final options = _start(TestPhone()).read(dioProvider).options;
-
-    expect(options.connectTimeout, const Duration(seconds: 10));
-    expect(options.sendTimeout, const Duration(seconds: 15));
-    expect(options.receiveTimeout, const Duration(seconds: 15));
-    expect(ApiTimeouts.connect, options.connectTimeout);
-  });
-
-  test('base URL comes from the flavor config', () async {
-    final phone = TestPhone(
-      config: AppConfig(
-        flavor: AppFlavor.staging,
-        apiBaseUrl: Uri.parse('https://api.example.test'),
-        sentryDsn: '',
-      ),
-    )..adapter.respond = config('0.0.0');
-
-    final request = await _getConfig(phone, _start(phone));
-
-    expect(request.uri, Uri.parse('https://api.example.test/v1/config'));
   });
 
   test('the API client never follows a redirect: a 302 fails and nothing is '

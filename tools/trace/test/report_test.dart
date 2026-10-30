@@ -127,23 +127,4 @@ void main() {
       ),
     );
   });
-
-  test('AT-001 report shortens titles to 80 characters and escapes pipes', () {
-    final long = 'x' * 100;
-    final spec = combineSpecFiles([
-      _parser.parse(
-        'spec/a.md',
-        '- **ZZ-001** `[R1]` $long\n- **ZZ-002** `[R1]` a | b\n',
-      ),
-    ], overrides: const {});
-
-    final markdown = TraceReport(
-      spec: spec,
-      coverage: const {},
-      releases: const [Release.r1],
-    ).toMarkdown();
-
-    expect(markdown, contains('| ${'x' * 79}… |'));
-    expect(markdown, contains(r'| a \| b |'));
-  });
 }

@@ -70,22 +70,4 @@ void main() {
       isNull,
     );
   });
-
-  testWidgets('UX-070 FbSwitchRow: no overflow at text scale 2.0 on a phone', (
-    tester,
-  ) async {
-    await pumpFb(
-      tester,
-      FbSwitchRow(
-        title: 'Show only foods that are halal certified or halal by default',
-        subtitle: 'A long subtitle that also needs to wrap',
-        value: true,
-        onChanged: (_) {},
-      ),
-      textScale: 2,
-      width: 320,
-      height: 640,
-    );
-    expect(tester.takeException(), isNull);
-  });
 }

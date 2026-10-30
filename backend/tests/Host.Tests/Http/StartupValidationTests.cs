@@ -22,11 +22,6 @@ public sealed class StartupValidationTests
 
     [Fact]
     [Trait("Rule", "09.4-api-hardening")]
-    public void Invalid_trusted_network_fails_startup() =>
-        Assert.Contains(Chain(Start("Proxy:TrustedNetworks:0", "nope")), e => e is OptionsValidationException);
-
-    [Fact]
-    [Trait("Rule", "09.4-api-hardening")]
     public void Invalid_minimum_app_version_fails_startup() =>
         Assert.Contains(Chain(Start("Clients:MinimumAppVersion", "01.0.0")), e => e is OptionsValidationException);
 

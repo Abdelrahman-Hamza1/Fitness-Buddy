@@ -277,62 +277,6 @@ void main() {
     expect(_json(_build(after)), _json(_build(before)));
   });
 
-  // rule: A22 chat-export
-  test('A22 export includes chat messages', () async {
-    final db = memoryDatabase();
-    await _seed(db);
-    final files = _build(await _read(db));
-    final rows = (_json(files)['data'] as Map)['chatMessage'] as List;
-    expect(rows, hasLength(1));
-    final row = rows.single as Map<String, dynamic>;
-    expect(row['id'], 'chatMessage-live');
-    expect(row['role'], 'user');
-    expect(row['message_text'], 'حمص 🍎');
-    expect(row['status'], 'done');
-    expect(row['budget_json'], {'sugar': 1.2});
-    expect(row.keys, isNot(contains('device_id')));
-    final csv = files.singleWhere((f) => f.name.endsWith('-chat-messages.csv'));
-    final header = _csv(csv).first;
-    expect(
-      [header.first.replaceFirst('\uFEFF', ''), ...header.skip(1)],
-      [
-        for (final c
-            in exportRegistryV1
-                .singleWhere((s) => s.entity == 'chatMessage')
-                .columns
-                .where((c) => c.name != 'version' && c.name != 'origin'))
-          c.name,
-      ],
-    );
-  });
-
-  test('AC-030 export includes measurement types and measurements', () async {
-    final db = memoryDatabase();
-    await _seed(db);
-    final files = _build(await _read(db));
-    final data = _json(files)['data'] as Map;
-    final types = data['measurementType'] as List;
-    expect(types, hasLength(1));
-    expect((types.single as Map)['id'], 'measurementType-live');
-    expect((types.single as Map)['name'], 'text');
-    final rows = data['measurement'] as List;
-    expect(rows, hasLength(1));
-    final row = rows.single as Map<String, dynamic>;
-    expect(row['id'], 'measurement-live');
-    expect(row['kind'], 'custom');
-    expect(row['value'], 12.5);
-    expect(row['input_unit'], 'cm');
-    expect(row.keys, isNot(contains('device_id')));
-    expect(
-      files.where(
-        (f) =>
-            f.name.endsWith('-measurements.csv') ||
-            f.name.endsWith('-measurement-types.csv'),
-      ),
-      hasLength(2),
-    );
-  });
-
   test('AC-030 export is table-level: an orphan measurement (type missing or '
       'deleted) is still exported with its custom_type_id', () async {
     final db = memoryDatabase();
@@ -344,43 +288,6 @@ void main() {
       (data['measurementType'] as List).map((t) => (t as Map)['id']),
       isNot(contains('measurementType-deleted')),
     );
-  });
-
-  // rule: A23 proposal-export
-  test('A23 export includes proposals and the local chat columns', () async {
-    final db = memoryDatabase();
-    await _seed(db);
-    final files = _build(await _read(db));
-    final data = _json(files)['data'] as Map;
-    final proposals = data['proposal'] as List;
-    expect(proposals, hasLength(1));
-    final row = proposals.single as Map<String, dynamic>;
-    expect(row['id'], 'proposal-live');
-    expect(row['kind'], 'foodLog');
-    expect(row['status'], 'pending');
-    expect(row['outcome'], null);
-    expect(row['draft_json'], {'sugar': 1.2});
-    expect(row['interpretation_json'], [
-      [0, null, null, null, <Object?>[], null],
-    ]);
-    expect(row.keys, isNot(contains('device_id')));
-    final csv = files.singleWhere((f) => f.name.endsWith('-proposals.csv'));
-    final header = _csv(csv).first;
-    expect(
-      [header.first.replaceFirst('\uFEFF', ''), ...header.skip(1)],
-      [
-        for (final c
-            in exportRegistryV1
-                .singleWhere((s) => s.entity == 'proposal')
-                .columns
-                .where((c) => c.name != 'version' && c.name != 'origin'))
-          c.name,
-      ],
-    );
-    // The local-only chat columns are the user's own data: exported.
-    final chat = (data['chatMessage'] as List).single as Map<String, dynamic>;
-    expect(chat['request_json'], {'sugar': 1.2});
-    expect(chat['answer_json'], {'sugar': 1.2});
   });
 
   test('AC-030 every synced table has an export spec', () {
@@ -419,8 +326,7 @@ void main() {
   });
   test('AT-006 export counts equal live DB counts per table', () async {
     final db = memoryDatabase();
-    await _seed(db, diaryRows: 20000);
-    final timer = Stopwatch()..start();
+    await _seed(db, diaryRows: 300);
     final snapshot = await _read(db);
     final files = _build(snapshot);
     final json = _json(files);
@@ -453,12 +359,6 @@ void main() {
       ...AppSettings.all.map((k) => k.name),
       '',
     });
-    // Non-gating size/timing evidence, no user data.
-    // ignore: avoid_print
-    print(
-      'A11 20000-entry export: ${timer.elapsedMilliseconds} ms, '
-      '${files.last.bytes.length} JSON bytes',
-    );
   });
   test('AC-030 JSON round-trips every exported value', () async {
     final db = memoryDatabase();

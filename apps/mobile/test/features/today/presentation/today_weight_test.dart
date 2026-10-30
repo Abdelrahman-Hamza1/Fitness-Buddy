@@ -97,25 +97,4 @@ void main() {
     expect(live.map((w) => w.kg), contains(101));
     await unmount(tester, rig);
   });
-
-  testWidgets('HM-009 the weight card is on past day pages too, as of that '
-      'day', (tester) async {
-    final rig = await todayWithWeighIn(tester);
-    // Yesterday: the weigh-in is on that day.
-    await tester.tap(find.byTooltip('Previous day'));
-    await settle(tester);
-    final card = find.descendant(
-      of: find.byKey(ValueKey<LocalDate>(testYesterday)),
-      matching: find.byType(WeightCard),
-    );
-    expect(card, findsOneWidget);
-    expect(
-      find.descendant(
-        of: card,
-        matching: find.text('Last weigh-in 97.4 kg · Yesterday'),
-      ),
-      findsOneWidget,
-    );
-    await unmount(tester, rig);
-  });
 }

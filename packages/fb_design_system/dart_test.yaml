@@ -1,7 +1,0 @@
-# Test tag `golden`: alchemist golden tests; `make goldens` regenerates
-# their images.
-tags:
-  golden:
-  perf:
-  live:
-    skip: 'needs the local API on port 5198 (see apps/mobile/dart_test.yaml)'

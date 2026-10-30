@@ -21,15 +21,6 @@ const Map<String, String> _valid = {
 void main() {
   group('AppConfig reads every key; each config JSON has all keys; '
       'staging/prod URLs are https', () {
-    test('reads every key', () {
-      final config = AppConfig.fromDefines(_valid);
-
-      expect(config.flavor, AppFlavor.staging);
-      expect(config.apiBaseUrl, Uri.parse('https://api.example.test'));
-      expect(config.sentryDsn, 'https://key@o123.ingest.de.sentry.io/1');
-      expect(AppConfig.keys, _valid.keys.toSet());
-    });
-
     test('each config JSON has all keys, its own flavor and parses', () {
       for (final MapEntry(key: name, value: defines)
           in _configFiles().entries) {

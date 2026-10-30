@@ -7,11 +7,9 @@ import 'package:drift/native.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_domain/testing.dart';
 import 'package:fb_mobile/core/changes/apply_result.dart';
-import 'package:fb_mobile/core/changes/change_set_applier.dart';
 import 'package:fb_mobile/core/changes/op_handler.dart';
 import 'package:fb_mobile/core/changes/row_ops.dart';
 import 'package:fb_mobile/core/db/write_guard.dart';
-import 'package:fb_mobile/core/events/domain_event_bus.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../db/support/db_support.dart';
@@ -331,32 +329,6 @@ void main() {
       expect(await h.rows('test_notes'), isEmpty);
     });
 
-    test('an id is required on insert', () {
-      final db = testDatabase();
-      expect(
-        () => InsertRow(db.testNotes, const TestNotesCompanion()),
-        throwsArgumentError,
-      );
-    });
-
-    test("the handler factory is called with the applier's own database", () {
-      final db = testDatabase();
-      final seen = <Object>[];
-      ChangeSetApplier<TestDatabase>(
-        db: db,
-        tables: db.syncedTables,
-        handlers: (bound) {
-          seen.add(bound);
-          return const [ScriptHandler()];
-        },
-        clock: ManualClock.millis(t0),
-        ids: SequenceIdGenerator(),
-        deviceId: () async => testDevice,
-        events: DomainEventBus(),
-      );
-      expect(seen.single, same(db));
-    });
-
     test('TxReader.liveRow skips tombstones; row returns them', () async {
       final h = Harness(testDatabase());
       await h.applied([
@@ -375,16 +347,6 @@ void main() {
         ]),
       );
       expect(result, isA<Applied>());
-    });
-
-    test('two handlers for one family are refused', () {
-      expect(
-        () => Harness(
-          testDatabase(),
-          handlers: const [ScriptHandler(), ScriptHandler()],
-        ),
-        throwsArgumentError,
-      );
     });
 
     test('handlers can read but not write: a direct write in a plan throws '

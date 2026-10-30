@@ -550,35 +550,4 @@ void main() {
     final midnight = rank([e(1, 'a', minute: 1430)], ctx: context(minute: 10));
     expect(midnight.single.score, greaterThan(.9));
   });
-  test(
-    'A09 perf quick-add rank over 1,500 entries and 40 saved '
-    'meals p95 < 10 ms',
-    tags: ['perf'],
-    () {
-      final entries = [
-        for (var i = 0; i < 1500; i++)
-          e(i + 1, 'f${i % 25}', age: i ~/ 25, minute: 480 + i % 25),
-      ];
-      final meals = [
-        for (var i = 0; i < 40; i++)
-          meal(3000 + i, ['f${i * 2}', 'f${i * 2 + 1}']),
-      ];
-      for (var i = 0; i < 20; i++) {
-        rank(entries, meals: meals);
-      }
-      final times = <double>[];
-      for (var i = 0; i < 100; i++) {
-        final timer = Stopwatch()..start();
-        rank(entries, meals: meals);
-        timer.stop();
-        times.add(timer.elapsedMicroseconds / 1000);
-      }
-      times.sort();
-      final p95 = times[94];
-      print(
-        'A09 rank 1500 entries / 40 meals: median ${times[49]} ms; p95 $p95 ms (100 runs)',
-      );
-      expect(p95, lessThan(10));
-    },
-  );
 }

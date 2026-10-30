@@ -1,12 +1,8 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:drift/drift.dart'
-    show ApplyInterceptor, QueryExecutor, QueryInterceptor, Value;
+import 'package:drift/drift.dart' show QueryExecutor, QueryInterceptor, Value;
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/catalog/catalog.dart';
-import 'package:fb_mobile/core/db/app_database.dart';
-import 'package:fb_mobile/core/db/connection.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
@@ -175,38 +171,6 @@ void main() {
     expect(rows.last.choice.ref.id, riceId);
   });
 
-  test(
-    'FD-021 PA5 dish hydration uses one foods and one servings query',
-    () async {
-      final root = tempDir().path;
-      final path = writeFixturePack('$root/pack.db');
-      final counter = ReadCounter();
-      final db = AppDatabase(
-        openNativeUserDatabase('$root/user.db').interceptWith(counter),
-        catalog: FixedPack(path),
-      );
-      addTearDown(db.close);
-      final catalog = OfflineCatalog(db);
-      await catalog.packVersion();
-      counter.statements.clear();
-      final result = await catalog.foodsByIds(['ref:mloukhiyeh_rice', riceId]);
-      expect(result['ref:mloukhiyeh_rice']!.length, greaterThan(1));
-      expect(
-        counter.statements
-            .where((s) => s.contains('FROM catalog.foods'))
-            .length,
-        1,
-      );
-      expect(
-        counter.statements
-            .where((s) => s.contains('FROM catalog.servings'))
-            .length,
-        1,
-      );
-      expect(counter.statements.length, 2);
-    },
-  );
-
   test('FD-020 PA11 index rebuilds on history vocabulary '
       'and pack detach off search path', () async {
     final (db, catalog) = fixtureCatalog();
@@ -242,21 +206,6 @@ void main() {
       expect(row.tier, SourceTier.history);
     },
   );
-
-  test('FD-023 FD-020 fixture names in three scripts, '
-      'short prefixes, no exercises', () async {
-    final service = fixtureService(
-      extraSql:
-          "INSERT INTO names VALUES ('ex:fake','en','rice "
-          "exercise','rice exercise',1);",
-    );
-    await ready(service);
-    for (final q in ['rice', 'رز', 'ruz']) {
-      final rows = (await service.search(q)).rows;
-      expect(rows.map((r) => r.choice.ref.id), contains(riceId), reason: q);
-      expect(rows.any((r) => r.choice.ref.id == 'ex:fake'), isFalse);
-    }
-  });
 
   test(
     'FD-020 fuzzy retrieves rcie without a shared trigram and chiken breast',
@@ -676,104 +625,6 @@ void main() {
     },
   );
 
-  test(
-    'FD-060 PA12 real pack pins every compatible pair; '
-    '90/10 beef has no switch',
-    () async {
-      final db = backgroundDatabase(
-        tempDir().path,
-        catalog: FixedPack(File('assets/catalog/catalog.db').absolute.path),
-      );
-      final repository = FoodCatalogRepository(OfflineCatalog(db));
-      final loader = FoodChoiceLoader(repository, () => []);
-      final targets = await db
-          .customSelect(
-            'SELECT id FROM catalog.foods WHERE yield_group '
-            'IS NOT NULL ORDER BY id',
-          )
-          .get();
-      final actual = <String>[];
-      for (final row in targets) {
-        final id = row.read<String>('id');
-        final choice = (await loader.load(
-          FoodChoiceRef(FoodRef.catalog(id, version: '6')),
-        ))!;
-        if (id == 'usda:beef_ground_90_raw') expect(choice.siblings, isEmpty);
-        actual.addAll(choice.siblings.map((s) => '$id -> ${s.id}'));
-      }
-      expect(
-        actual..sort(),
-        <(String, String)>[
-          ('usda:beef_chuck_braised', 'usda:beef_chuck_raw'),
-          ('usda:beef_chuck_raw', 'usda:beef_chuck_braised'),
-          ('usda:beef_ground_80_cooked', 'usda:beef_ground_80_raw'),
-          ('usda:beef_ground_80_raw', 'usda:beef_ground_80_cooked'),
-          ('usda:beef_sirloin_broiled', 'usda:beef_sirloin_raw'),
-          ('usda:beef_sirloin_raw', 'usda:beef_sirloin_broiled'),
-          ('usda:bulgur_cooked', 'usda:bulgur_dry'),
-          ('usda:bulgur_dry', 'usda:bulgur_cooked'),
-          ('usda:chickpeas_cooked', 'usda:chickpeas_dry'),
-          ('usda:chickpeas_dry', 'usda:chickpeas_cooked'),
-          ('usda:fava_beans_cooked', 'usda:fava_beans_dry'),
-          ('usda:fava_beans_dry', 'usda:fava_beans_cooked'),
-          ('usda:kidney_beans_cooked', 'usda:kidney_beans_dry'),
-          ('usda:kidney_beans_dry', 'usda:kidney_beans_cooked'),
-          ('usda:lamb_ground_cooked', 'usda:lamb_ground_raw'),
-          ('usda:lamb_ground_raw', 'usda:lamb_ground_cooked'),
-          ('usda:lamb_leg_raw', 'usda:lamb_leg_roasted'),
-          ('usda:lamb_leg_roasted', 'usda:lamb_leg_raw'),
-          ('usda:lamb_mixed_cuts_cooked', 'usda:lamb_mixed_cuts_raw'),
-          ('usda:lamb_mixed_cuts_raw', 'usda:lamb_mixed_cuts_cooked'),
-          ('usda:lamb_shoulder_braised', 'usda:lamb_shoulder_raw'),
-          ('usda:lamb_shoulder_raw', 'usda:lamb_shoulder_braised'),
-          ('usda:lentils_cooked', 'usda:lentils_dry'),
-          ('usda:lentils_dry', 'usda:lentils_cooked'),
-          ('usda:pasta_cooked', 'usda:pasta_dry'),
-          ('usda:pasta_dry', 'usda:pasta_cooked'),
-          ('usda:pasta_whole_wheat_cooked', 'usda:pasta_whole_wheat_dry'),
-          ('usda:pasta_whole_wheat_dry', 'usda:pasta_whole_wheat_cooked'),
-          ('usda:potato_boiled', 'usda:potato_raw'),
-          ('usda:potato_raw', 'usda:potato_boiled'),
-          (
-            'usda:rice_brown_long_grain_cooked',
-            'usda:rice_brown_long_grain_raw',
-          ),
-          (
-            'usda:rice_brown_long_grain_raw',
-            'usda:rice_brown_long_grain_cooked',
-          ),
-          (
-            'usda:rice_white_long_grain_cooked',
-            'usda:rice_white_long_grain_raw',
-          ),
-          (
-            'usda:rice_white_long_grain_raw',
-            'usda:rice_white_long_grain_cooked',
-          ),
-          (
-            'usda:rice_white_medium_grain_cooked',
-            'usda:rice_white_medium_grain_raw',
-          ),
-          (
-            'usda:rice_white_medium_grain_raw',
-            'usda:rice_white_medium_grain_cooked',
-          ),
-          ('usda:salmon_farmed_cooked', 'usda:salmon_farmed_raw'),
-          ('usda:salmon_farmed_raw', 'usda:salmon_farmed_cooked'),
-          ('usda:shrimp_cooked', 'usda:shrimp_raw'),
-          ('usda:shrimp_raw', 'usda:shrimp_cooked'),
-          ('usda:tilapia_cooked', 'usda:tilapia_raw'),
-          ('usda:tilapia_raw', 'usda:tilapia_cooked'),
-          ('usda:white_beans_cooked', 'usda:white_beans_dry'),
-          ('usda:white_beans_dry', 'usda:white_beans_cooked'),
-        ].map((pair) => '${pair.$1} -> ${pair.$2}').toList(),
-      );
-    },
-    skip: !File('assets/catalog/catalog.db').existsSync()
-        ? 'Build catalog-pack first'
-        : false,
-  );
-
   test('FD-060 fixture group with only one state offers no switch', () async {
     final service = fixtureService(
       extraSql: "UPDATE foods SET yield_group='isolated' WHERE id='$riceId';",
@@ -785,38 +636,6 @@ void main() {
     ).load(FoodChoiceRef(FoodRef.catalog(riceId, version: '1'))))!;
     expect(choice.siblings, isEmpty);
   });
-
-  final pack = File('assets/catalog/catalog.db');
-  test('FD-020 FD-022 real pack pita in three scripts '
-      'first and once, 2 loaves default', () async {
-    final db = backgroundDatabase(
-      tempDir().path,
-      catalog: FixedPack(pack.absolute.path),
-    );
-    final service = FoodSearchService(
-      FoodCatalogRepository(OfflineCatalog(db)),
-    );
-    addTearDown(service.dispose);
-    await ready(service);
-    for (final q in ['pita', 'خبز عربي', 'khubz arabi']) {
-      final rows = (await service.search(q)).rows;
-      expect(rows.first.choice.ref.id, 'usda:pita_white', reason: q);
-      expect(rows.where((r) => r.choice.ref.id == 'usda:pita_white').length, 1);
-    }
-    final result = await service.search('2 khubz arabi');
-    expect(result.rows.first.defaultPortion, Quantity(2, 'loaf'));
-    expect(
-      result.rows.first.choice.measures.resolve(Quantity(1, 'loaf')),
-      isA<Resolved>().having((r) => r.amount, 'g', 60),
-    );
-    await service.updateHistory([
-      historyOf('usda:pita_white', unit: 'loaf', input: 2, amount: 120),
-    ]);
-    expect(
-      (await service.search('pita')).rows.first.defaultPortion,
-      Quantity(2, 'loaf'),
-    );
-  }, skip: !pack.existsSync() ? 'Build catalog-pack first' : false);
 }
 
 class BlockingRepository extends FoodCatalogRepository {

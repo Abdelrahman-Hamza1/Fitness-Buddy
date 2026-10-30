@@ -168,12 +168,4 @@ void main() {
     expect(_label == UndoLabel('entriesLogged'), isFalse);
     expect('${_entry(1, utcMillis(t0))}', contains('UndoLabel(entriesLogged)'));
   });
-
-  test("a label's args are a copy and unmodifiable", () {
-    final args = <String, Object>{'count': 2};
-    final label = UndoLabel('entriesLogged', args: args);
-    args['count'] = 3;
-    expect(label.args, {'count': 2});
-    expect(() => label.args['count'] = 4, throwsUnsupportedError);
-  });
 }

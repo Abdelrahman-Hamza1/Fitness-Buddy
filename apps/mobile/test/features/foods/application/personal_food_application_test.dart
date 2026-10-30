@@ -712,15 +712,6 @@ void main() {
       }
     },
   );
-  test('FD-071 the foods feature imports no API client', () {
-    for (final file
-        in Directory('lib/features/foods')
-            .listSync(recursive: true)
-            .whereType<File>()
-            .where((f) => f.path.endsWith('.dart'))) {
-      expect(file.readAsStringSync(), isNot(contains('package:fb_api_client')));
-    }
-  });
   test('FD-073 snapshot fallback keeps the observed live guard '
       'across edit, delete and merge races', () async {
     for (final mutation in ['edit', 'delete', 'merge']) {

@@ -83,55 +83,6 @@ void main() {
     expect(changes.last, '12.5');
   });
 
-  testWidgets('D16 FbNumberField: errorText is shown under the field in the '
-      'neutral error colour', (tester) async {
-    final controller = TextEditingController();
-    addTearDown(controller.dispose);
-    await pumpFb(
-      tester,
-      FbNumberField(
-        controller: controller,
-        label: 'Protein',
-        errorText: 'Too much',
-      ),
-    );
-    expect(find.text('Too much'), findsOneWidget);
-    expect(
-      tester.widget<Text>(find.text('Too much')).style?.color,
-      FbTheme.light().colorScheme.error,
-    );
-  });
-
-  testWidgets('D16 FbNumberField: a screen reader hears one text field, '
-      '"label, value unit", and the number', (tester) async {
-    final handle = tester.ensureSemantics();
-    final controller = TextEditingController(text: '12.5');
-    addTearDown(controller.dispose);
-    await pumpFb(
-      tester,
-      FbNumberField(controller: controller, label: 'Protein', unit: 'g'),
-    );
-    final node = tester.getSemantics(find.byType(EditableText));
-    expect(node.label, 'Protein, 12.5 g');
-    expect(node.value, '12.5');
-    expect(node.flagsCollection.isTextField, isTrue);
-
-    controller.clear();
-    await tester.pump();
-    expect(tester.getSemantics(find.byType(EditableText)).label, 'Protein, g');
-    handle.dispose();
-  });
-
-  testWidgets('D16 FbNumberField: without a unit the label stands alone '
-      'while empty', (tester) async {
-    final handle = tester.ensureSemantics();
-    final controller = TextEditingController();
-    addTearDown(controller.dispose);
-    await pumpFb(tester, FbNumberField(controller: controller, label: 'Size'));
-    expect(tester.getSemantics(find.byType(EditableText)).label, 'Size');
-    handle.dispose();
-  });
-
   testWidgets('D16 FbNumberField: disabled, it takes no input', (tester) async {
     final controller = TextEditingController(text: '3');
     addTearDown(controller.dispose);
@@ -141,29 +92,4 @@ void main() {
     );
     expect(tester.widget<TextField>(find.byType(TextField)).enabled, isFalse);
   });
-
-  testWidgets(
-    'UX-040 D16 FbNumberField: a semanticLabel replaces the label for a '
-    'screen reader; the field still shows the label',
-    (tester) async {
-      final handle = tester.ensureSemantics();
-      final controller = TextEditingController(text: '30');
-      addTearDown(controller.dispose);
-      await pumpFb(
-        tester,
-        FbNumberField(
-          controller: controller,
-          label: 'Serving size',
-          semanticLabel: 'Size of one piece',
-          unit: 'g',
-        ),
-      );
-      expect(find.text('Serving size'), findsOneWidget);
-      expect(
-        tester.getSemantics(find.byType(EditableText)).label,
-        'Size of one piece, 30 g',
-      );
-      handle.dispose();
-    },
-  );
 }

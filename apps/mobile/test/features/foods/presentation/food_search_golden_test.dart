@@ -59,36 +59,9 @@ Future<void> _screenGolden(
 
 Future<void> main() async {
   await _screenGolden(
-    'FD-020 food search: empty unavailable pack with a query',
-    'food_search_pack_empty',
-    () => FakeFoodSearch(packReady: false),
-    query: 'zzqx',
-  );
-  await _screenGolden(
-    'FD-023 food search: recent foods',
-    'food_search_recent',
-    () => FakeFoodSearch(recent: recentRows),
-  );
-  await _screenGolden(
     'FD-020 FD-021 food search: results',
     'food_search_results',
     () => FakeFoodSearch(answers: {'rice': recentRows}),
     query: 'rice',
-  );
-  await _screenGolden(
-    'FD-020 food search: no results',
-    'food_search_no_results',
-    FakeFoodSearch.new,
-    query: 'zzqx',
-  );
-  await _screenGolden(
-    'FD-023 food search: no history yet',
-    'food_search_no_history',
-    FakeFoodSearch.new,
-  );
-  await _screenGolden(
-    'FD-023 food search: food database not ready',
-    'food_search_pack_not_ready',
-    () => FakeFoodSearch(packReady: false, recent: recentRows.take(2).toList()),
   );
 }

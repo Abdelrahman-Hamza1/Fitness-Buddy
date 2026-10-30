@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/features/body/body.dart';
@@ -100,63 +98,6 @@ void main() {
     await unmount(tester, rig);
   });
 
-  testWidgets('UX-050 with no weigh-ins the card invites the first one', (
-    tester,
-  ) async {
-    final rig = SheetRig();
-    await pumpCard(tester, rig);
-    expect(cardTexts(tester), ['Weight', 'Log your first weigh-in']);
-    expect(find.byIcon(FbIcons.edit), findsNothing);
-    expect(
-      find.bySemanticsLabel('Weight. Log your first weigh-in'),
-      findsOneWidget,
-    );
-
-    // Row 1 opens the log sheet.
-    await tester.tap(find.text('Log your first weigh-in'));
-    await settle(tester);
-    expect(find.text('Log weigh-in'), findsOneWidget);
-    expect(whenChip(tester), 'Today, 3:00 PM');
-    await unmount(tester, rig);
-  });
-
-  testWidgets('WB-011 with one weigh-in the card says the rate comes after 2 '
-      'weeks', (tester) async {
-    final rig = SheetRig();
-    await rig.seed(tester, [weighInDraft(97.4, date: day17.plusDays(-1))]);
-    await pumpCard(tester, rig);
-    final texts = cardTexts(tester);
-    expect(texts, contains('Trend 97.4 kg'));
-    expect(texts, contains('Weekly rate after 2 weeks of weigh-ins'));
-    expect(texts, contains('Last weigh-in 97.4 kg · Yesterday'));
-    // M2: no cadence line and no suggestion until the rate is there.
-    expect(find.textContaining('weigh-ins in 4 weeks'), findsNothing);
-    expect(find.textContaining('weigh-in in 4 weeks'), findsNothing);
-    expect(find.textContaining('Weighing in'), findsNothing);
-    expect(
-      find.bySemanticsLabel(
-        'Weight trend 97.4 kilograms. Weekly rate after 2 weeks of '
-        'weigh-ins. Log a weigh-in',
-      ),
-      findsOneWidget,
-    );
-    await unmount(tester, rig);
-
-    // Still under 2 weeks of history (13 days): the same.
-    final young = SheetRig();
-    final tips = MemoryTipStore();
-    await young.seed(tester, weekly([13, 6], [97.4, 97.2]));
-    await pumpCard(tester, young, tips: tips);
-    expect(
-      cardTexts(tester),
-      contains('Weekly rate after 2 weeks of weigh-ins'),
-    );
-    expect(find.textContaining('in 4 weeks'), findsNothing);
-    expect(find.textContaining('Weighing in'), findsNothing);
-    expect(tips.writes, 0);
-    await unmount(tester, young);
-  });
-
   testWidgets('WB-012 sparse weigh-ins show the honesty line; the suggestion '
       'appears at most once a month', (tester) async {
     final drafts = weekly([21, 14, 7], [98, 97.5, 97]);
@@ -212,66 +153,6 @@ void main() {
     await unmount(tester, frequent);
   });
 
-  testWidgets('LC-010 the imperial setting shows lb for the trend, rate and '
-      'last weigh-in', (tester) async {
-    final rig = SheetRig()..units.value = UnitSystem.imperial;
-    await rig.seed(
-      tester,
-      weekly([28, 21, 14, 7, 0], [98, 97.5, 97, 96.5, 96]),
-    );
-    await pumpCard(tester, rig);
-    final texts = cardTexts(tester);
-    // 96.46875 kg = 212.7 lb; −0.3828 kg/week = −0.8 lb/week.
-    expect(texts, containsAll(['Trend 212.7 lb', '${minus}0.8 lb/week']));
-    expect(texts, contains('Last weigh-in 211.6 lb · Today'));
-    expect(
-      find.bySemanticsLabel(
-        'Weight trend 212.7 pounds, ${minus}0.8 pounds per week. 4 '
-        'weigh-ins in 4 weeks · trend updates slowly. Log a weigh-in',
-      ),
-      findsOneWidget,
-    );
-    await unmount(tester, rig);
-  });
-
-  testWidgets('UX-051 loading shows a skeleton; an error shows Try again', (
-    tester,
-  ) async {
-    final rig = SheetRig();
-    final pending = StreamController<List<WeighIn>>();
-    addTearDown(pending.close);
-    await pumpCard(
-      tester,
-      rig,
-      extra: [weighInsProvider.overrideWith((ref) => pending.stream)],
-    );
-    expect(find.byType(FbSkeleton), findsOneWidget);
-    pending.add(const []);
-    await settle(tester);
-    expect(find.byType(FbSkeleton), findsNothing);
-    await unmount(tester, rig);
-
-    final failing = SheetRig();
-    var fail = true;
-    await pumpCard(
-      tester,
-      failing,
-      extra: [
-        weighInsProvider.overrideWith(
-          (ref) => fail
-              ? Stream<List<WeighIn>>.error(StateError('read'))
-              : Stream.value(const <WeighIn>[]),
-        ),
-      ],
-    );
-    expect(find.text("Couldn't load your weigh-ins."), findsOneWidget);
-    fail = false;
-    await tester.tap(find.text('Try again'));
-    await settle(tester);
-    expect(find.text('Log your first weigh-in'), findsOne);
-    await unmount(tester, failing);
-  });
-
   testWidgets('HM-009 a past day shows the trend as of that day and logs to '
       'that day', (tester) async {
     final rig = SheetRig();
@@ -294,108 +175,6 @@ void main() {
     expect(stored.single.kg, 97.8);
     expect(find.text('Weigh-in saved: 97.8 kg for Wed, Oct 7'), findsOneWidget);
     await unmount(tester, rig);
-  });
-
-  testWidgets("WB-012 the honesty line and suggestion show on today's page "
-      'only', (tester) async {
-    final rig = SheetRig();
-    await rig.seed(tester, weekly([21, 14, 7], [98, 97.5, 97]));
-    // The same day, not as today's page.
-    await pumpCard(tester, rig, isToday: false);
-    expect(find.textContaining('in 4 weeks'), findsNothing);
-    expect(find.textContaining('Weighing in'), findsNothing);
-    expect(cardTexts(tester), contains(startsWith('Trend ')));
-    await unmount(tester, rig);
-  });
-
-  testWidgets('WB-012 with no weigh-ins in the last 4 weeks the card shows no '
-      'weekly rate', (tester) async {
-    final rig = SheetRig();
-    await rig.seed(tester, weekly([40, 33], [98, 97]));
-    await pumpCard(tester, rig);
-    final texts = cardTexts(tester);
-    expect(texts, contains('Trend 97.5 kg · from Mon, Sep 14'));
-    expect(texts.any((t) => t.contains('/week')), isFalse);
-    expect(texts.any((t) => t.contains('Weekly rate')), isFalse);
-    // n4: the date shows once, on the trend row; no extra honesty line.
-    expect(texts, contains('Last weigh-in 97.0 kg'));
-    expect(texts.where((t) => t.contains('Sep 14')), hasLength(1));
-    // Row 3 opens the weight graph (A15a D12).
-    expect(texts, hasLength(4));
-    expect(texts.last, 'Weight graph');
-    await unmount(tester, rig);
-
-    // Exactly 28 days since the last weigh-in: outside the last 4 weeks.
-    final edge = SheetRig();
-    await edge.seed(tester, weekly([42, 35, 28], [98, 97.5, 97]));
-    await pumpCard(tester, edge);
-    final edgeTexts = cardTexts(tester);
-    expect(edgeTexts, contains(startsWith('Trend ')));
-    expect(edgeTexts.first, 'Weight');
-    expect(edgeTexts[1], contains(' · from '));
-    expect(edgeTexts.any((t) => t.contains('/week')), isFalse);
-    await unmount(tester, edge);
-  });
-
-  testWidgets('M3 a past day before the first weigh-in invites one for that '
-      'day, not the first one', (tester) async {
-    final rig = SheetRig();
-    await rig.seed(tester, weekly([7, 0], [98, 97]));
-    await pumpCard(tester, rig, date: day17.plusDays(-10));
-    // The graph row shows on every day page once there are weigh-ins
-    // (A15a D12).
-    expect(cardTexts(tester), [
-      'Weight',
-      'No weigh-ins by this day. Tap to add one.',
-      'Weight graph',
-    ]);
-    expect(
-      find.bySemanticsLabel(
-        'Weight. No weigh-ins by this day. Tap to add one.',
-      ),
-      findsOneWidget,
-    );
-    await unmount(tester, rig);
-  });
-
-  testWidgets('security: a weigh-in with kg 1e306 does not break the card', (
-    tester,
-  ) async {
-    final rig = SheetRig();
-    final absurd = WeighIn(
-      id: fixtureId(1),
-      version: 1,
-      time: weighInDraft(1, hour: 6).time,
-      localDate: day17,
-      kg: 1e306,
-      input: const WeighInInput(1e306, MassUnit.kilogram),
-    );
-    final fine = storedWeighIn(2, weighInDraft(97.4, date: day17.plusDays(-1)));
-    await pumpCard(
-      tester,
-      rig,
-      extra: [
-        weighInsProvider.overrideWith((ref) => Stream.value([fine, absurd])),
-      ],
-    );
-    expect(tester.takeException(), isNull);
-    final texts = cardTexts(tester);
-    expect(texts, contains('Trend 97.4 kg'));
-    expect(texts, contains('Last weigh-in 97.4 kg · Yesterday'));
-    await unmount(tester, rig);
-
-    // Only absurd rows: the card is empty, as without weigh-ins.
-    final only = SheetRig();
-    await pumpCard(
-      tester,
-      only,
-      extra: [
-        weighInsProvider.overrideWith((ref) => Stream.value([absurd])),
-      ],
-    );
-    expect(tester.takeException(), isNull);
-    expect(cardTexts(tester), ['Weight', 'Log your first weigh-in']);
-    await unmount(tester, only);
   });
 
   testWidgets('the last weigh-in row opens it for editing', (tester) async {

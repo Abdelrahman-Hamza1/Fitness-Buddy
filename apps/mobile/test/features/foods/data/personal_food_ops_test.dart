@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:fb_domain/fb_domain.dart';
@@ -608,24 +607,6 @@ void main() {
     final next = stream.firstWhere((v) => v.single.draft.names.en == 'Changed');
     await h.apply([UpdatePersonalFood(fixtureId(1), 3, draft('Changed'))]);
     expect((await next).single.draft.names.en, 'Changed');
-  });
-  test('A09 perf merge relinking 1,000 entries and 50 saved items '
-      'applies in < 300 ms (host, p95 of 20, printed)', () async {
-    final samples = <int>[];
-    for (var i = 0; i < 20; i++) {
-      final h = PersonalHarness();
-      await h.seed(entries: 1000, items: 50);
-      final timer = Stopwatch()..start();
-      await h.apply(h.merge());
-      timer.stop();
-      samples.add(timer.elapsedMicroseconds);
-    }
-    samples.sort();
-    final p95 = samples[18] / 1000;
-    stdout.writeln(
-      'A09 merge p95: $p95 ms (20 runs, 1000 entries + 50 saved items)',
-    );
-    expect(p95, lessThan(300));
   });
   test('DY-031 LogSavedMeal keeps explicit instants and rejects '
       'unusable slots without writes', () async {

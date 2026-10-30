@@ -43,7 +43,7 @@ void main() {
     }
   });
 
-  test('HM-002 the week line is the rounded week position with its '
+  test('HM-002 TG-045 the week line is the rounded week position with its '
       'uncounted days; TG-044 none in fixed mode', () {
     final weekly = TodayNumbersView.of(
       eatenTotals(0),
@@ -106,17 +106,5 @@ void main() {
     expect(proteinOnly.carbs.targetGrams, isNull);
     expect(proteinOnly.fat.targetGrams, isNull);
     expect(proteinOnly.fiber.targetGrams, isNotNull);
-  });
-
-  test('the views say nothing about their numbers in toString', () {
-    final view = TodayNumbersView.of(
-      eatenTotals(1234),
-      targetsOn(weekDay(2)),
-    ) as TargetNumbers;
-    expect([view, view.week, view.protein].map((v) => v.toString()), [
-      'TargetNumbers',
-      'WeekLine',
-      'MacroNumbers',
-    ]);
   });
 }

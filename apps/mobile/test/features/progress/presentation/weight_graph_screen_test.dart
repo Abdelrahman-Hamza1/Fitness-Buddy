@@ -31,19 +31,6 @@ Future<void> selectPoint(WidgetTester tester, String key) async {
 }
 
 void main() {
-  testWidgets('WB-020 IN-004 weigh-ins are points and the trend is a line', (
-    tester,
-  ) async {
-    await pumpGraph(tester, graphApp(graphOverrides()));
-    final chart = chartOf(tester);
-    expect(chart.series[0].style, FbSeriesStyle.points);
-    expect(chart.series[0].selectable, isTrue);
-    expect(chart.series[0].points, hasLength(730));
-    expect(chart.series[1].style, FbSeriesStyle.line);
-    expect(chart.series[1].points, hasLength(730));
-    expect(find.text('Tap a point to see details'), findsOneWidget);
-  });
-
   testWidgets('WB-020 the range chips switch 1M, 3M, 6M, 1Y and All; 3M by '
       'default; the choice survives leaving and returning', (tester) async {
     final container = ProviderContainer.test(
@@ -71,62 +58,6 @@ void main() {
     expect(chartOf(tester).panBounds, isNull);
   });
 
-  testWidgets('WB-020 dragging pans back in time and Today resets the '
-      'window', (tester) async {
-    await pumpGraph(tester, graphApp(graphOverrides()));
-    final before = chartOf(tester).range;
-    expect(find.widgetWithText(FbChoiceChip, 'Today'), findsNothing);
-    chartOf(tester).onRangeChanged!(before.shift(const Duration(days: -20)));
-    await tester.pumpAndSettle();
-    expect(
-      chartOf(tester).range.start,
-      before.start.subtract(const Duration(days: 20)),
-    );
-    await tester.tap(find.widgetWithText(FbChoiceChip, 'Today'));
-    await tester.pumpAndSettle();
-    expect(chartOf(tester).range, before);
-    expect(find.widgetWithText(FbChoiceChip, 'Today'), findsNothing);
-  });
-
-  testWidgets("WB-021 the active goal's weight line, the projection cone and "
-      'the phase shading are drawn; an unnamed phase shows its goal type '
-      'label', (tester) async {
-    await pumpGraph(
-      tester,
-      graphApp(
-        graphOverrides(
-          weighIns: seededHistory(days: 200, perDay: 0.02),
-          phases: [losePhase(graphToday.plusDays(-60))],
-        ),
-      ),
-    );
-    final chart = chartOf(tester);
-    expect(chart.goal?.label, startsWith('Goal 85'));
-    expect(chart.series, hasLength(3));
-    expect(chart.series[2].style, FbSeriesStyle.dashedLine);
-    expect(chart.bands.single.points, isNotEmpty);
-    expect(chart.periods.single.label, 'Lose weight');
-    expect(chart.periods.single.tone, FbPeriodTone.phaseA);
-    expect(find.textContaining('at your current trend'), findsOneWidget);
-  });
-
-  testWidgets('WB-021 a period from chartHighlightPeriodsProvider is shaded '
-      'and labelled Ramadan', (tester) async {
-    await pumpGraph(
-      tester,
-      graphApp(
-        graphOverrides(
-          highlights: [
-            (start: graphToday.plusDays(-20), end: graphToday.plusDays(-10)),
-          ],
-        ),
-      ),
-    );
-    final period = chartOf(tester).periods.single;
-    expect(period.label, 'Ramadan');
-    expect(period.tone, FbPeriodTone.highlight);
-  });
-
   testWidgets('WB-022 tapping a point shows its value, date, note and the '
       'trend that day', (tester) async {
     final history = seededHistory();
@@ -147,60 +78,6 @@ void main() {
       chartOf(tester).selected,
       FbPointRef(series: 0, key: fixtureId(730)),
     );
-  });
-
-  testWidgets('LC-010 imperial shows lb on the axis, the details and the '
-      'stats', (tester) async {
-    await pumpGraph(
-      tester,
-      graphApp(graphOverrides(units: UnitSystem.imperial)),
-    );
-    final chart = chartOf(tester);
-    expect(chart.series[1].points.last.value, greaterThan(150));
-    await selectPoint(tester, fixtureId(730));
-    expect(find.textContaining('lb that day'), findsOneWidget);
-    expect(find.textContaining(' lb'), findsWidgets);
-  });
-
-  testWidgets('WB-023 the stats show change since the start, this month, the '
-      'average since a date and why a monthly target is missing', (
-    tester,
-  ) async {
-    await pumpGraph(tester, graphApp(graphOverrides()));
-    expect(find.text('Summary'), findsOneWidget);
-    expect(find.textContaining('Change since'), findsOneWidget);
-    expect(find.text('This month'), findsOneWidget);
-    expect(find.textContaining('Average since'), findsOneWidget);
-    expect(find.text('Set a goal to see a monthly target'), findsOneWidget);
-  });
-
-  testWidgets('one weigh-in: one point, no projection, stats say they show '
-      'after 2 weeks', (tester) async {
-    await pumpGraph(
-      tester,
-      graphApp(graphOverrides(weighIns: seededHistory(days: 1))),
-    );
-    expect(chartOf(tester).series[0].points, hasLength(1));
-    expect(chartOf(tester).bands, isEmpty);
-    expect(find.text('Shows after 2 weeks of weigh-ins'), findsOneWidget);
-  });
-
-  testWidgets('UX-050 no weigh-ins: the empty state offers Log weigh-in', (
-    tester,
-  ) async {
-    await pumpGraph(tester, graphApp(graphOverrides(weighIns: const [])));
-    expect(find.text('No weigh-ins yet'), findsOneWidget);
-    expect(button('Log weigh-in'), findsOneWidget);
-    expect(find.byType(FbTimeSeriesChart), findsNothing);
-  });
-
-  testWidgets('UX-052 an error shows Try again', (tester) async {
-    await pumpGraph(
-      tester,
-      graphApp(graphOverrides(graphError: StateError('read failed'))),
-    );
-    expect(find.text("Couldn't load your weight"), findsOneWidget);
-    expect(button('Try again'), findsOneWidget);
   });
 
   group('with the write path', () {

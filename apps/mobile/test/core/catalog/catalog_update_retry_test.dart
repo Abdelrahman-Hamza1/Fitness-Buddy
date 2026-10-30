@@ -4,16 +4,6 @@ import 'package:fb_mobile/core/catalog/catalog.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('FD-023 a successful check registers no retry', () async {
-    var attempts = 0;
-    final retry = OneRetry(() async => attempts++);
-    expect(await retry.run(), isTrue);
-    retry.ready();
-    await pumpEventQueue();
-    expect(attempts, 1);
-    expect(retry.finished, isTrue);
-  });
-
   test('FD-023 a failed check is retried exactly once when the session '
       'becomes ready', () async {
     var attempts = 0;

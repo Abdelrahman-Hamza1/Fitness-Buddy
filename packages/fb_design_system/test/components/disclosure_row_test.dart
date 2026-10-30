@@ -13,9 +13,6 @@ FbDisclosureRow _row({required bool expanded, VoidCallback? onToggle}) =>
       onToggle: onToggle ?? () {},
     );
 
-double _turns(WidgetTester tester) =>
-    tester.widget<AnimatedRotation>(find.byType(AnimatedRotation)).turns;
-
 void main() {
   testWidgets('HM-007 FbDisclosureRow: the expanded state is announced and '
       'the row is one button', (tester) async {
@@ -62,27 +59,5 @@ void main() {
     await pumpFb(tester, _row(expanded: false, onToggle: () => taps++));
     await tester.tap(find.text('Breakfast'));
     expect(taps, 1);
-  });
-
-  testWidgets('HM-007 FbDisclosureRow: the chevron rotates half a turn when '
-      'expanded', (tester) async {
-    await pumpFb(tester, _row(expanded: false));
-    expect(_turns(tester), 0);
-    await pumpFb(tester, _row(expanded: true));
-    expect(_turns(tester), 0.5);
-  });
-
-  testWidgets('UX-040 FbDisclosureRow: the chevron turn is instant with '
-      'reduced motion and animated otherwise', (tester) async {
-    await pumpFb(tester, _row(expanded: false));
-    expect(
-      tester.widget<AnimatedRotation>(find.byType(AnimatedRotation)).duration,
-      Duration.zero,
-    );
-    await pumpFb(tester, _row(expanded: false), disableAnimations: false);
-    expect(
-      tester.widget<AnimatedRotation>(find.byType(AnimatedRotation)).duration,
-      FbMotion.normal,
-    );
   });
 }

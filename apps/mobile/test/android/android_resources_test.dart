@@ -6,8 +6,6 @@ import 'package:material_ui/material_ui.dart';
 
 import 'android_xml.dart';
 
-const _darkParent = 'parent="@android:style/Theme.Black.NoTitleBar"';
-
 void main() {
   test('A44-D7 the Android window background colour equals the dark surface '
       'token', () {
@@ -58,28 +56,5 @@ void main() {
         .listSync(recursive: true)
         .where((f) => f.path.endsWith('ic_launcher.png'));
     expect(pngs, isEmpty);
-  });
-
-  test('A44-D12 the v31 LaunchTheme sets the splash background, animated icon '
-      'and icon background, and a solid window background', () {
-    final styles = readAndroid('main/res/values-v31/styles.xml');
-    expect(styles, contains('<style name="LaunchTheme" $_darkParent>'));
-    expect(styleItems(styles, 'LaunchTheme'), {
-      'android:windowSplashScreenBackground': '@color/fb_window_background',
-      'android:windowSplashScreenAnimatedIcon':
-          '@drawable/ic_launcher_foreground',
-      'android:windowSplashScreenIconBackgroundColor':
-          '@color/ic_launcher_background',
-      'android:windowBackground': '@color/fb_window_background',
-    });
-    // Pre-12: the dark window colour and the mark, in one layer-list.
-    final launch = readAndroid('main/res/drawable/launch_background.xml');
-    final items = xmlElements(launch, 'item');
-    expect(items.first['android:drawable'], '@color/fb_window_background');
-    expect(items.last['android:drawable'], '@drawable/ic_launcher_foreground');
-    expect(
-      Directory('$androidSrc/main/res/drawable-v21').existsSync(),
-      isFalse,
-    );
   });
 }

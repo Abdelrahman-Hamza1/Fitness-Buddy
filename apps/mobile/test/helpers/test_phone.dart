@@ -31,15 +31,12 @@ final AppConfig testConfig = AppConfig(
 /// lookup (`package info`) and request (`GET /v1/config`), so tests can
 /// check what happens before the first frame (UX-001).
 final class TestPhone {
-  /// Creates a phone with the app installed at [appVersion]. With
-  /// [realNetwork] the app talks to [config]'s real API instead of
-  /// [adapter] (live tests only). [onlineSearch] and [packUpdates] opt in
-  /// to the A24 online food search and background pack check; both are off
-  /// by default so request logs stay exact.
+  /// Creates a phone with the app installed at [appVersion]. [onlineSearch]
+  /// and [packUpdates] opt in to the A24 online food search and background
+  /// pack check; both are off by default so request logs stay exact.
   new({
     this.appVersion = '0.1.0',
     AppConfig? config,
-    this.realNetwork = false,
     this.onlineSearch = false,
     this.packUpdates = false,
   }) : config = config ?? testConfig {
@@ -54,9 +51,6 @@ final class TestPhone {
 
   /// The network.
   final FakeHttpAdapter adapter = FakeHttpAdapter();
-
-  /// Whether requests go to the real API (not [adapter]).
-  final bool realNetwork;
 
   /// Whether food search also asks the server catalog (A24).
   final bool onlineSearch;
@@ -91,7 +85,7 @@ final class TestPhone {
       SharedPreferencesAsyncPlatform.instance = _store;
       return SharedPreferencesAsync();
     }),
-    if (!realNetwork) httpClientAdapterProvider.overrideWithValue(adapter),
+    httpClientAdapterProvider.overrideWithValue(adapter),
     // A24: off unless the test opts in (each adds requests to the log).
     catalogPackUpdatesEnabledProvider.overrideWithValue(packUpdates),
     onlineFoodSearchEnabledProvider.overrideWithValue(onlineSearch),

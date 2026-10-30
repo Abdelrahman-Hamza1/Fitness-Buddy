@@ -134,20 +134,6 @@ void main() {
       );
       expect(await search.search('quinoa'), isNull);
     });
-
-    test('FD-020 results are cached for the sheet, bounded', () async {
-      final cache = OnlineFoodCache(capacity: 1);
-      final search = OnlineFoodSearch(
-        FakeCatalogClient(
-          (q) => page([apiFood('usda:$q'), apiFood('off:1', source: 'off')]),
-        ),
-        cache,
-      );
-      expect((await search.search('a'))!.map((f) => f.id), ['usda:a']);
-      await search.search('b');
-      expect(cache['usda:a'], isNull);
-      expect(cache['usda:b']?.id, 'usda:b');
-    });
   });
 
   group('appendOnline', () {
@@ -311,47 +297,6 @@ void main() {
         controller.setQuery('rice');
         await settle(container);
         expect(client.queries, ['rice']);
-      },
-    );
-
-    test(
-      'FD-020 a same-query refresh keeps the retry budget and deadline',
-      () async {
-        final (container, client) = await start(
-          (_) => throw StateError('offline'),
-        );
-        // Hold the first retry wait (index 1), then refresh the same query.
-        time.blockAt = 1;
-        final controller = container.read(foodSearchControllerProvider.notifier)
-          ..setQuery('rice');
-        await controller.settle();
-        await pumpEventQueue();
-        expect(client.queries, ['rice']);
-        expect(waits(), [
-          FoodSearchController.onlineDelay,
-          FoodSearchController.onlineRetryDelays[0],
-        ]);
-        final heldRun = controller.settleOnline();
-
-        controller.setQuery('rice');
-        await settle(container);
-        time.gate.complete();
-        await heldRun;
-
-        // One budget for the query: the first request plus one per retry
-        // delay, never restarted by the refresh.
-        expect(
-          client.queries,
-          hasLength(FoodSearchController.onlineRetryDelays.length + 1),
-        );
-        // The refresh resumed at the held deadline (already reached), then
-        // the remaining retry delays; no second initial delay.
-        expect(waits(), [
-          FoodSearchController.onlineDelay,
-          FoodSearchController.onlineRetryDelays[0],
-          Duration.zero,
-          ...FoodSearchController.onlineRetryDelays.skip(1),
-        ]);
       },
     );
 

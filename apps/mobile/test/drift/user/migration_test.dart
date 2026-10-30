@@ -24,19 +24,17 @@ void main() {
   });
 
   group('every schema step', () {
-    // Each older version migrates to every newer one and ends with exactly
-    // the dumped schema (tables, columns, triggers).
+    // Each older version migrates to the latest and ends with exactly the
+    // dumped schema (tables, columns, triggers). A phone only ever upgrades
+    // to the current version, so intermediate targets prove nothing extra
+    // (TD-104: n migrations, not n(n-1)/2).
     const versions = GeneratedHelper.versions;
-    for (final (i, fromVersion) in versions.indexed) {
-      group('from $fromVersion', () {
-        for (final toVersion in versions.skip(i + 1)) {
-          test('to $toVersion', () async {
-            final schema = await verifier.schemaAt(fromVersion);
-            final db = AppDatabase(schema.newConnection());
-            await verifier.migrateAndValidate(db, toVersion);
-            await db.close();
-          });
-        }
+    for (final fromVersion in versions.take(versions.length - 1)) {
+      test('from $fromVersion to latest', () async {
+        final schema = await verifier.schemaAt(fromVersion);
+        final db = AppDatabase(schema.newConnection());
+        await verifier.migrateAndValidate(db, versions.last);
+        await db.close();
       });
     }
   });

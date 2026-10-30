@@ -13,14 +13,6 @@ import 'helpers.dart';
 }
 
 void main() {
-  test('the real apps/mobile tree passes', () {
-    final result = _run(['../../apps/mobile']);
-
-    expect(result.err, isEmpty);
-    expect(result.code, exitOk);
-    expect(result.out, startsWith('app-check: OK, '));
-  });
-
   test('a clean app: exit 0 and one OK line', () {
     final app = tempApp({
       'lib/features/today/today.dart': "export 'presentation/s.dart';\n",

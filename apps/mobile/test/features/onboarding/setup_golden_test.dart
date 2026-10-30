@@ -73,7 +73,6 @@ Future<void> _golden(SetupPage page) => goldenTest(
 );
 
 Future<void> main() async {
-  for (final page in SetupPage.values) {
-    await _golden(page);
-  }
+  // Only the first page is a key screen (TD-104).
+  await _golden(SetupPage.you);
 }

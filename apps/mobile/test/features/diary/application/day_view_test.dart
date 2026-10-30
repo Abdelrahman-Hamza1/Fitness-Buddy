@@ -193,43 +193,6 @@ void main() {
     },
   );
 
-  testWidgets(
-    'DY-022 PA4 forgotten marks swept at undo window plus 10 seconds',
-    (tester) async {
-      final h = DiaryHarness();
-      late DiaryEntry entry;
-      late ProviderContainer c;
-      await tester.runAsync(() async {
-        await h.apply([
-          LogEntries([newEntry(1)]),
-        ]);
-        c = setup(h);
-        entry = (await h.reads.day(today)).entries.single;
-      });
-      final complete = Completer<ApplyResult>();
-      setApply(c, h, (_) => complete.future);
-      final pending = c
-          .read(diaryActionsControllerProvider.notifier)
-          .deleteEntry(entry);
-      complete.complete(
-        Applied(
-          changeSetId: fixtureId(99),
-          inverse: InverseChangeSet(changeSetId: fixtureId(99), rows: []),
-          events: [],
-        ),
-      );
-      await tester.pump();
-      await pending;
-      h.clock.advance(const Duration(seconds: 15));
-      await tester.pump(const Duration(seconds: 15));
-      expect(c.read(diaryActionsControllerProvider).hidden, hasLength(1));
-      h.clock.advance(const Duration(seconds: 1));
-      await tester.pump(const Duration(seconds: 1));
-      expect(c.read(diaryActionsControllerProvider).hidden, isEmpty);
-      c.dispose();
-    },
-  );
-
   test('DY-024 UX-013 rows: slots persist, groups start open, one '
       'expanded entry; own-day cleanup and slot move', () async {
     final h = DiaryHarness();

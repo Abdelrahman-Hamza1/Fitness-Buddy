@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:fb_trace/fb_trace.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
@@ -44,27 +42,6 @@ void main() {
     );
     expect(result.out, isNot(contains('ZZ-051 |')));
     expect(result.err, contains('trace: R1: 2 total, 1 covered, 1 missing\n'));
-  });
-
-  test('AT-001 cli: default release is R1, --release all adds the rest', () {
-    final root = repo();
-
-    expect(_run(['--root', root]).out, isNot(contains('## R2')));
-    final all = _run(['--root', root, '--release', 'all']);
-    expect(all.code, exitOk);
-    expect(all.out, contains('## R2 missing (1)'));
-    expect(all.out, contains('## Untagged (0)'));
-  });
-
-  test('AT-001 cli: --out writes the report to a file', () {
-    final root = repo();
-    final outFile = p.join(root, 'trace.md');
-
-    final result = _run(['--root', root, '--out', outFile]);
-
-    expect(result.code, exitOk);
-    expect(result.out, isEmpty);
-    expect(File(outFile).readAsStringSync(), contains('## R1 missing (1)'));
   });
 
   test('AT-001 cli: duplicate IDs exit 2; bad flag exits 64', () {

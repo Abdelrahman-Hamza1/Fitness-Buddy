@@ -553,31 +553,6 @@ void main() {
     expect(f.auth.refreshes, 2);
   });
 
-  test(
-    'AC-002 failed guest recovery acquisition shares the same deadline',
-    () async {
-      await f.seed(pending: true);
-      f.auth.create = () async => throw const AuthFailure(
-        AuthFailureKind.throttled,
-        retryAt: Duration(seconds: 300),
-      );
-      await expectLater(
-        f.service.startAfterFirstFrame(),
-        failure(SessionFailureKind.retryable),
-      );
-      for (var i = 0; i < 10; i++) {
-        await expectLater(
-          f.service.ensureAvailable(),
-          failure(SessionFailureKind.retryable),
-        );
-      }
-      expect(f.auth.creates, 1);
-      expect(f.auth.refreshes, 0);
-      expect((await f.store.readActive())!.rotationPending, isTrue);
-      expect(f.service.nextAttemptAt, const Duration(seconds: 300));
-    },
-  );
-
   for (final days in [-40, 40]) {
     test(
       'AC-001 skew $days days cannot invalidate account or repeat refresh',

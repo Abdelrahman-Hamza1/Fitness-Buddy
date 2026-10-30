@@ -178,32 +178,6 @@ void main() {
       }
     });
 
-    test(
-      'malformed versions fail open (A8): the own version or the minimum',
-      () async {
-        for (final (installed, minimum) in [
-          ('0.1.0-dev', '9.9.9'),
-          ('', '9.9.9'),
-          ('0.1', '9.9.9'),
-          ('0.1.0', '9.9'),
-          ('0.1.0', 'latest'),
-        ]) {
-          final phone = TestPhone(appVersion: installed)
-            ..adapter.respond = config(minimum);
-          final app = _start(phone);
-          await app.read(clientConfigProvider.notifier).refresh();
-
-          expect(
-            await _updateRequired(app),
-            isFalse,
-            reason:
-                '$installed '
-                'vs $minimum',
-          );
-        }
-      },
-    );
-
     test('the default minimum (0.0.0) never reads the package info', () {
       final phone = TestPhone();
       final app = _start(phone);
@@ -261,31 +235,6 @@ void main() {
       app.read(upgradeSignalProvider.notifier).clear();
       await pumpEventQueue();
       expect(phone.adapter.requests, hasLength(2));
-    });
-
-    test('a 426 without a problem body trips the gate', () async {
-      final phone = TestPhone()
-        ..adapter.respond = (_) => ResponseBody.fromString('', 426);
-      final app = await _startAuthenticated(phone);
-
-      await expectLater(
-        app.read(dioProvider).get<void>('/v1/anything'),
-        throwsA(isA<DioException>()),
-      );
-      expect(app.read(upgradeSignalProvider), isTrue);
-    });
-
-    test('problem type /errors/upgrade-required trips the gate', () async {
-      final phone = TestPhone()
-        // The type decides, whatever the status.
-        ..adapter.respond = problem(ProblemTypes.upgradeRequired, 400);
-      final app = await _startAuthenticated(phone);
-
-      await expectLater(
-        app.read(dioProvider).get<void>('/v1/anything'),
-        throwsA(isA<DioException>()),
-      );
-      expect(app.read(upgradeSignalProvider), isTrue);
     });
 
     test('/v1/config itself answering 426 trips the gate without a refresh '

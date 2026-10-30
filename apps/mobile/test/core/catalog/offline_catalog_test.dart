@@ -97,12 +97,6 @@ void main() {
     expect(await catalog.byId('usda:nope'), isNull);
   });
 
-  test('CatalogBadge maps usda to database and reference to reference', () {
-    expect(CatalogBadge.fromSource('usda'), CatalogBadge.database);
-    expect(CatalogBadge.fromSource('reference'), CatalogBadge.reference);
-    expect(CatalogBadge.fromSource('off'), isNull);
-  });
-
   test('byBarcode returns null on an empty barcode table and the food when '
       'present', () async {
     final (_, empty) = fixtureCatalog();
@@ -131,11 +125,6 @@ void main() {
     );
     expect(note, isNotNull);
     expect(note!.toAmount.grams, greaterThan(400));
-  });
-
-  test('the pack version is read from the pack meta', () async {
-    final (_, catalog) = fixtureCatalog();
-    expect(await catalog.packVersion(), 1);
   });
 
   test('info gives the pack version and the attribution entries', () async {

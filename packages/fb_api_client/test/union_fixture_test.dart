@@ -67,19 +67,6 @@ void main() {
       expect(noKind, isA<IntentUnrecognized>());
     });
 
-    test('switch over the sealed type is exhaustive', () {
-      // No default branch: this only compiles because Intent is sealed.
-      String describe(Intent intent) => switch (intent) {
-        IntentLogFood(:final items) => 'log ${items.length}',
-        IntentAskQuestion(:final question) => 'ask $question',
-        IntentUnknown() => 'unknown',
-        IntentUnrecognized() => 'update the app',
-      };
-
-      expect(describe(Intent.fromJson(logFoodJson)), 'log 2');
-      expect(describe(Intent.fromJson({'kind': 'next'})), 'update the app');
-    });
-
     test(
       'a list of intents decodes through a dio call (fake adapter)',
       () async {

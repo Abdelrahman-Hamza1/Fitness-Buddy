@@ -98,10 +98,10 @@ The pyramid is weighted toward pure logic, where the product promises live:
 | **Adapter contract tests** | Every `ILlmClient`, `IEmailSender`, `IOpenFoodFactsClient` adapter | Shared test suite per port, recorded fixtures | Every adapter |
 | **API contract** | Conformance, breaking changes, style | Conformance diff, oasdiff, Spectral | Every PR |
 | **Sync** | Convergence simulation, fault injection, version skew, OF-03 | Dart simulator + real API in Docker | Must pass (`05` §5.3) |
-| **Widget / golden** | Design-system components + key screens: light/dark, text scale 1.0/2.0, LTR (+ RTL for components) | `flutter_test`, `alchemist` | Design system 100% |
-| **Integration / E2E** | Journeys J1, J4, J5, J7, J8, J12 (offline), guest sign-up, export | **patrol** on an emulator + the local API | Before each release |
+| **Widget / golden** | One happy-path widget test per screen; goldens only for about 15 key screens (one light cell each, plus one text-scale-2.0 cell on Today); never assert copy (TD-104) | `flutter_test`, `alchemist` | No coverage target |
+| **Integration / E2E** | About 5 journeys (offline launch, log food, weigh-in, sign-in, Buddy J1) + the native Keystore probe | **patrol** on an emulator | Nightly and manual runs only (TD-104) |
 | **AI acceptance** | AQ-01–12 | `tools/buddy_eval` | Thresholds in `spec/40` §2 |
-| **Performance** | Cold start, Today screen, Buddy round trip | Integration test with timeline on the A55 | Budgets in `09` §6 |
+| **Performance** | Cold start, Today screen, search | Manual check on the A55 (`make cold-start`), a release-checklist item; no host or emulator timing gates (TD-104) | Budgets in `09` §6 |
 
 **Test data:** synthetic only. Real messages enter the repo only when the owner exports them (TQ-07).
 
@@ -124,10 +124,10 @@ The pyramid is weighted toward pure logic, where the product promises live:
 
 | Workflow | Trigger | Steps |
 |---|---|---|
-| `ci` (**built in S01**, `.github/workflows/ci.yml`) | every push and PR, nightly on `main` (01:30 UTC, TD-086), manual | Job `dart`: `make deps-dart check-dart` (format · analyze `--fatal-infos` · app-check) + gen-check + `make trace` into the job summary. Job `dart-test`: the Dart tests in 4 parallel shards (`DART_TEST_SHARD`: apps/mobile in three, the other members in one; TD-086). Job `dotnet`: `make deps-dotnet check-dotnet test-dotnet` (format · build with warnings as errors + NuGetAudit, TD-041 · tests incl. ArchUnitNET). Gate job **`ci`** needs every job and is the **only required check** (TD-039). Testcontainers Postgres 18.6 persistence/RLS/queue/idempotency tests (S04), codegen up-to-date (S02/S06), `fb_domain` coverage gate (S08) |
+| `ci` (**built in S01**, `.github/workflows/ci.yml`) | every push and PR, nightly on `main` (01:30 UTC, TD-086), manual | Job `dart`: `make deps-dart check-dart` (format · analyze `--fatal-infos` · app-check) + gen-check + `make trace` into the job summary. Job `dart-test`: the Dart tests in 4 parallel shards (`DART_TEST_SHARD`: apps/mobile in three, the other members in one; TD-086); property tests run 100 times on push and PR, 1,000 on nightly and manual runs (`PROPERTY_RUNS`, TD-104). A push that changes only docs skips every heavy job (TD-104). Job `dotnet`: `make deps-dotnet check-dotnet test-dotnet` (format · build with warnings as errors + NuGetAudit, TD-041 · tests incl. ArchUnitNET). Gate job **`ci`** needs every job and is the **only required check** (TD-039). Testcontainers Postgres 18.6 persistence/RLS/queue/idempotency tests (S04), codegen up-to-date (S02/S06), `fb_domain` coverage gate (S08) |
 | `image` (**built in S03**, inside `ci.yml`) | every push and PR | `make image-smoke`: pinned non-root container, config/health, console trace correlation, empty/repeated migrations against isolated Postgres, worker schedule/shutdown, DB-down readiness, graceful stop and image size; included in the `ci` gate |
 | `android` (**built in S06b**, inside `ci.yml`) | every push, except step branches whose diff against `main` touches nothing Android-relevant (TD-060); always on `main`, `merge/*`, PRs | release APK (arm64) with the hardening check; the AAB only on `main`, nightly and manual runs (TD-086) |
-| `android-it` (**built in S06b**, inside `ci.yml`) | nightly on `main` and manual runs only (TD-104; the `[it]` push trigger from TD-086 is removed by A46, don't use it meanwhile) | Patrol on an API 34 emulator (incl. perf tests and the A20 kill/restart probe). A red nightly is the next morning's first task: fix the test or delete it, no retries; `tools/scripts/ci-nightly.sh` reports it |
+| `android-it` (**built in S06b**, inside `ci.yml`) | nightly on `main` and manual runs only (TD-104; the commit-message push trigger from TD-086 is removed) | Patrol on an API 34 emulator (about 5 journeys, the Keystore probe and the A20 kill/restart probe). A red nightly is the next morning's first task: fix the test or delete it, no retries; `tools/scripts/ci-nightly.sh` reports it |
 | _Later gates_ | | `catalog`, `eval` and Android builds become jobs in `ci.yml` (or reusable workflows called from it) and are added to the gate's `needs:`, so the ruleset never changes |
 | `contract` (**built in S02**, distributed inside `ci.yml`) | every push and PR (no path filter) | Job `contract` (Docker only, pinned images, offline): bundle freshness · Spectral (`fb-*` rules) · rule self-tests · oasdiff breaking report vs the newest `contracts-v*` tag (before the first tag: vs the merge-base with `main`, reported but not blocking, TD-044). Job `dart`: `make gen-check` (committed `fb_api_client` = generator output). Job `dotnet`: `make contract-conformance` (server's build-time OpenAPI = contract, TD-046), before the tests. Locally: `make check-contract` |
 | `catalog` | PRs touching `data/` or `tools/catalog` | validate dishes · build the pack · AT-003 name-resolution test |
@@ -145,7 +145,7 @@ See `08` §2. The app's `dev` flavor points at the local API (`make up`), `stagi
 
 1. Implements its step card's spec IDs. Any deviation is first recorded as a spec decision (`spec/decisions.md`) or a TD (`12`).
 2. Domain and handler logic unit-tested, including the edge cases named in the spec text.
-3. UI: empty, loading (skeleton) and error states (UX-050–052), light/dark, text scale 2.0, golden tests.
+3. UI: empty, loading (skeleton) and error states (UX-050–052) handled; one happy-path widget test per new screen; no goldens unless the screen becomes a key screen (TD-104).
 4. Works offline where the spec says it must (`spec/20` §3).
 5. Writes go through change sets: undo for direct actions, proposals for AI.
 6. Strings in ARB. No `left/right`.

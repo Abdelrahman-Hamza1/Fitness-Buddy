@@ -1,13 +1,10 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
-import 'package:fb_mobile/features/body/body.dart';
-import 'package:fb_mobile/features/targets/presentation/profile_edit_sheet.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../../helpers/pump_app.dart' show settleWrites;
 import 'targets_screens_support.dart';
 
 Finder _row(String title) => find.widgetWithText(FbListRow, title);
@@ -47,21 +44,6 @@ void main() {
     await rig.close();
   });
 
-  testWidgets('PA1 the Current weight row shows the trend and opens the '
-      'weigh-in sheet', (tester) async {
-    final rig = await TargetsScreenRig.open(
-      tester,
-      route: const ProfileRoute(),
-    );
-    expect(
-      find.descendant(of: _row('Current weight'), matching: find.text('80 kg')),
-      findsOneWidget,
-    );
-    await rig.tap('Current weight');
-    expect(find.byType(WeighInSheet), findsOneWidget);
-    await rig.close();
-  });
-
   testWidgets('TG-012 starting a new goal ends the current one yesterday and '
       'lists it under Past goals', (tester) async {
     final rig = await TargetsScreenRig.open(tester);
@@ -88,77 +70,6 @@ void main() {
       ),
       findsOneWidget,
     );
-    await rig.close();
-  });
-
-  testWidgets('PA3 a passed goal date shows the neutral line with Start a new '
-      'goal', (tester) async {
-    final rig = await TargetsScreenRig.open(
-      tester,
-      goal: GoalInput(
-        type: GoalType.lose,
-        expression: GoalExpression.targetDate(78, LocalDate(2026, 11, 30)),
-      ),
-    );
-    rig.advanceDays(60);
-    await rig.show(const ProfileRoute());
-    expect(find.text('Your goal date has passed.'), findsOneWidget);
-    expect(find.text('Edit goal'), findsNothing);
-    expect(find.text('Start a new goal'), findsOneWidget);
-    await rig.close();
-  });
-
-  testWidgets('TG-012 a phase without a name shows the default label; rename '
-      'stores the name', (tester) async {
-    final rig = await TargetsScreenRig.open(
-      tester,
-      route: const ProfileRoute(),
-    );
-    final card = find.byType(FbCard);
-    expect(
-      find.descendant(of: card, matching: find.text('Lose weight')),
-      findsOneWidget,
-    );
-    await rig.tap('Rename');
-    await tester.enterText(find.byType(TextField), 'Summer cut');
-    await tester.pumpAndSettle();
-    await rig.tapAndSettle('Save');
-
-    expect((await rig.data()).phases.single.value.name, 'Summer cut');
-    expect(
-      find.descendant(of: card, matching: find.text('Summer cut')),
-      findsOneWidget,
-    );
-    expect(find.text('Goal renamed'), findsOneWidget);
-    await rig.close();
-  });
-
-  testWidgets('UX-052 a goal renamed elsewhere: Reload takes the stored row '
-      'and keeps the typed name', (tester) async {
-    final rig = await TargetsScreenRig.open(
-      tester,
-      route: const ProfileRoute(),
-    );
-    await rig.tap('Rename');
-    await tester.enterText(find.byType(TextField), 'Summer cut');
-    await tester.pumpAndSettle();
-
-    final phase = (await rig.data()).phases.single;
-    await rig.run(
-      (a) => a.renamePhase(
-        VersionedId(phase.value.id, phase.version),
-        'Elsewhere',
-      ),
-    );
-    expect(find.text('This changed. Reload.'), findsOneWidget);
-    final save = find.widgetWithText(FbButton, 'Save');
-    expect(tester.widget<FbButton>(save).onPressed, isNull);
-
-    await rig.tap('Reload');
-    expect(find.text('This changed. Reload.'), findsNothing);
-    expect(find.text('Summer cut'), findsOneWidget);
-    await rig.tapAndSettle('Save');
-    expect((await rig.data()).phases.single.value.name, 'Summer cut');
     await rig.close();
   });
 
@@ -221,50 +132,6 @@ void main() {
     await rig.tapAndSettle('Save');
     expect((await rig.data()).profile!.value.birthYear, 1991);
     expect(find.textContaining('Profile updated'), findsOneWidget);
-    await rig.close();
-  });
-
-  testWidgets('UX-030 dismissing the sheet during Save still shows the '
-      'result with Undo', (tester) async {
-    final rig = await TargetsScreenRig.open(
-      tester,
-      route: const ProfileRoute(),
-    );
-    await rig.tap('Activity');
-    await rig.tap('Lightly active');
-    final hold = rig.holdWrites();
-    await tester.tap(find.widgetWithText(FbButton, 'Save'));
-    await tester.pump();
-    // Dismiss the sheet (tap the barrier above it) while the write waits.
-    await tester.tapAt(const Offset(180, 20));
-    await tester.pumpAndSettle();
-    expect(find.byType(ProfileEditSheet), findsNothing);
-
-    hold.complete();
-    await settleWrites(tester);
-    expect(find.textContaining('Profile updated'), findsOneWidget);
-    expect(find.text('Undo'), findsOneWidget);
-    expect((await rig.data()).profile!.value.activity, ActivityLevel.light);
-    await rig.close();
-  });
-
-  testWidgets('UX-052 a failed goal save keeps the typed goal', (tester) async {
-    final rig = await TargetsScreenRig.open(
-      tester,
-      route: const ProfileRoute(),
-    );
-    await rig.tap('Start a new goal');
-    await rig.tap('Maintain weight');
-    rig.failWrites = true;
-    await rig.tapAndSettle('Save');
-    expect(find.text('New goal from today'), findsOneWidget);
-    expect(
-      find.text(
-        "Couldn't save just now. Nothing you entered was lost. Try again.",
-      ),
-      findsOneWidget,
-    );
-    expect((await rig.data()).phases, hasLength(1));
     await rig.close();
   });
 

@@ -1,4 +1,3 @@
-import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/app/router/app_router.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
@@ -186,17 +185,6 @@ void main() {
     }
   });
 
-  testWidgets('the update screen is not reachable while no update is needed', (
-    tester,
-  ) async {
-    final container = await pumpApp(tester);
-    container.read(appRouterProvider).go(const UpdateRequiredRoute());
-    await tester.pumpAndSettle();
-
-    expect(find.byType(UpdateRequiredScreen), findsNothing);
-    expect(find.byType(TodayScreen), findsOneWidget);
-  });
-
   testWidgets('an unknown location goes to Today', (tester) async {
     final container = await pumpApp(tester);
     final router = container.read(appRouterProvider)..go(const MeRoute());
@@ -291,29 +279,6 @@ void main() {
     }
   });
 
-  testWidgets('D7 a malformed replace parameter goes to Today (router)', (
-    tester,
-  ) async {
-    final container = await pumpApp(
-      tester,
-      overrides: [searchOverride(FakeFoodSearch())],
-    );
-    final router = container.read(appRouterProvider);
-
-    for (final query in [
-      'replace=nope&version=1',
-      'replace=$_entryId&version=0',
-      'replace=$_entryId',
-      'version=2',
-    ]) {
-      router.config.go('/today/add-food?$query');
-      await tester.pumpAndSettle();
-      expect(find.byType(FoodSearchScreen), findsNothing, reason: query);
-      expect(find.byType(TodayScreen), findsOneWidget, reason: query);
-      expect(router.config.state.matchedLocation, TodayRoute.path);
-    }
-  });
-
   testWidgets('D7 a valid replace parameter opens the search in change-food '
       'mode', (tester) async {
     final container = await pumpApp(
@@ -336,43 +301,5 @@ void main() {
     expect(screen.replace, VersionedId(_entryId, 2));
     expect(find.text('Change food'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
-  });
-
-  testWidgets('A07 D11 the add-food screen gets the day and the slot from '
-      'the location, and the tab bar stays', (tester) async {
-    final container = await pumpApp(
-      tester,
-      overrides: [searchOverride(FakeFoodSearch())],
-    );
-    container
-        .read(appRouterProvider)
-        .go(
-          FoodSearchRoute(date: LocalDate(2026, 10, 20), slotId: 'slot-lunch'),
-        );
-    await tester.pumpAndSettle();
-
-    final screen = tester.widget<FoodSearchScreen>(
-      find.byType(FoodSearchScreen),
-    );
-    expect(screen.date, LocalDate(2026, 10, 20));
-    expect(screen.slotId, 'slot-lunch');
-    expect(find.byType(NavigationBar), findsOneWidget);
-  });
-
-  testWidgets('HM-008 the chat sheet search button on an empty Today opens '
-      'search, back returns', (tester) async {
-    await pumpApp(tester, overrides: [searchOverride(FakeFoodSearch())]);
-
-    // The input bar opens Buddy's sheet (A22); its magnifier opens search.
-    await tester.tap(find.byType(FbInputBar));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Search foods'));
-    await tester.pumpAndSettle();
-    expect(find.byType(FoodSearchScreen), findsOneWidget);
-
-    await tester.tap(find.byType(BackButton));
-    await tester.pumpAndSettle();
-    expect(find.byType(FoodSearchScreen), findsNothing);
-    expect(find.byType(TodayScreen), findsOneWidget);
   });
 }

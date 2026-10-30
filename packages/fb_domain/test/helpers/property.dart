@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:fb_domain/fb_domain.dart';
 import 'package:glados/glados.dart';
 
-/// Runs per property test, locally and in CI (S08 D14, exit criterion
-/// "≥ 1,000 runs each"). Never lower it in a single test.
-const int propertyRunCount = 1000;
+/// Runs per property test: 100 by default (push, PR and laptop), 1,000 when
+/// `PROPERTY_RUNS=1000` is set (CI's nightly and manual runs; TD-104, which
+/// amends S08 D14). Never lower it in a single test.
+final int propertyRunCount =
+    int.tryParse(Platform.environment['PROPERTY_RUNS'] ?? '') ?? 100;
 
 /// The explore settings every property test uses. A fresh value per test, so
 /// each test has its own seeded random and doesn't depend on test order.

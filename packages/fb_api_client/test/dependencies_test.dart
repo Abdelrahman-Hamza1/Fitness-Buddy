@@ -23,29 +23,11 @@ const _exactlyPinned = <String>{
   'retrofit_generator',
 };
 
-/// Imports that would tie the client to Flutter or to platform I/O.
-final _forbiddenImports = RegExp(
-  r'''^\s*(?:import|export)\s+['"](dart:(?:io|ui|ffi|isolate|html)|package:flutter/)''',
-);
-
 void main() {
   final pubspec = loadYaml(File('pubspec.yaml').readAsStringSync()) as YamlMap;
   YamlMap section(String name) => (pubspec[name] as YamlMap?) ?? YamlMap();
 
   group('fb_api_client stays pure Dart:', () {
-    test('no dependency on the Flutter SDK', () {
-      for (final name in ['dependencies', 'dev_dependencies']) {
-        for (final MapEntry(:key, :value) in section(name).entries) {
-          final onFlutterSdk = value is YamlMap && value['sdk'] == 'flutter';
-          expect(
-            onFlutterSdk,
-            isFalse,
-            reason: '$key depends on the Flutter SDK in $name',
-          );
-        }
-      }
-    });
-
     test('runtime dependencies are within the allowlist', () {
       expect(
         section('dependencies').keys
@@ -66,17 +48,6 @@ void main() {
           reason: '$name must be pinned exactly (S02 D1)',
         );
       }
-    });
-
-    test('lib/ imports no Flutter or I/O library', () {
-      final violations = <String>[
-        for (final file in Directory('lib').listSync(recursive: true))
-          if (file is File && file.path.endsWith('.dart'))
-            for (final (index, line) in file.readAsLinesSync().indexed)
-              if (_forbiddenImports.hasMatch(line))
-                '${file.path}:${index + 1}: ${line.trim()}',
-      ];
-      expect(violations, isEmpty);
     });
   });
 }

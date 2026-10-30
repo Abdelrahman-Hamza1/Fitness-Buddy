@@ -1,5 +1,4 @@
 import 'package:fb_trace/fb_trace.dart';
-import 'package:fb_trace/src/comment_stripper.dart';
 import 'package:test/test.dart';
 
 import 'helpers.dart';
@@ -67,41 +66,6 @@ void main() {
         'ZZ-071', 'ZZ-072', // string in an interpolation
         'ZZ-073', // multi-line triple-quoted name
       });
-    });
-
-    test('AT-001 ignores commented-out C# Trait', () {
-      final ids = idsInCSharpTests(csharpComments);
-
-      for (final id in [
-        'ZZ-080', 'ZZ-081', 'ZZ-082', 'ZZ-083', // line, doc, block comments
-        'ZZ-084', 'ZZ-085', 'ZZ-086', 'ZZ-087', 'ZZ-088', // after code
-      ]) {
-        expect(ids, isNot(contains(id)), reason: id);
-      }
-    });
-
-    test(
-      'AT-001 does not take // or /* inside a string for a comment (C#)',
-      () {
-        expect(idsInCSharpTests(csharpComments), {
-          'ZZ-090', // a real trait before a line comment
-          'ZZ-091', 'ZZ-092', // after a URL and an opening marker in a string
-          'ZZ-093', 'ZZ-094', // verbatim with "" escapes, raw string
-          'ZZ-095', // block comments don't nest
-          'ZZ-096', // covers list
-        });
-      },
-    );
-
-    test('AT-001 blanks comments but keeps offsets and line breaks', () {
-      const source = "a /* b\nc */ d // e\r\nf '// g' h";
-      final expected = "a${' ' * 5}\n${' ' * 5}d${' ' * 5}\r\nf '// g' h";
-
-      expect(stripDartComments(source), expected);
-      expect(
-        stripCSharpComments(source.replaceAll("'", '"')),
-        expected.replaceAll("'", '"'),
-      );
     });
   });
 

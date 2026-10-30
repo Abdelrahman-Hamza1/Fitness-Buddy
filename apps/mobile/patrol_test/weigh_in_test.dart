@@ -10,7 +10,6 @@ import 'package:material_ui/material_ui.dart';
 import 'package:patrol/patrol.dart';
 
 import 'support/patrol_support.dart';
-import 'support/today_test_support.dart';
 
 /// The live weigh-ins, read from the profile.
 Future<List<WeighIn>> _stored(ProviderContainer container) =>
@@ -21,6 +20,9 @@ Future<List<WeighIn>> _stored(ProviderContainer container) =>
           const Duration(seconds: 10),
           onTimeout: () => throw TestFailure('Timed out reading weigh-ins'),
         );
+
+/// Stable identity used by TodayScreen's day pager.
+Finder dayPage(LocalDate date) => find.byKey(ValueKey<LocalDate>(date));
 
 /// The weight card of [date]'s page, with the text [text].
 Finder _cardText(LocalDate date, String text) => find.descendant(

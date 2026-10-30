@@ -344,18 +344,6 @@ void main() {
         contains('duplicate ar name "مقلوبة"'),
       );
     });
-
-    test('the committed selection and extract validate', () {
-      final data = loadCatalog(
-        schemaDir: schemaDir,
-        selection: File(p.join('..', '..', 'data', 'usda_selection.yaml')),
-        extract: File(p.join('..', '..', 'data', 'usda', 'extract.jsonl')),
-        dishesDir: Directory(p.join(fixtures, 'none')),
-      );
-      final report = validateCatalog(basics: data.basics, dishes: data.dishes);
-      expect(data.issues, isEmpty);
-      expect(report.errors, isEmpty);
-    });
   });
 
   group('cli', () {

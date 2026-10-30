@@ -39,7 +39,7 @@ Cheap now, expensive later, so from the **first screen**:
 - All strings in ARB files (gen-l10n). No string literals in widgets (lint check).
 - **Directional layout only:** `EdgeInsetsDirectional`, `AlignmentDirectional`, `start/end`, never `left/right` (lint/grep check in CI).
 - Numbers and dates go through `intl` formatters that will respect the digit-style setting (LC-004, R2).
-- Golden tests for design-system components run in **LTR and RTL** from A02. Screen goldens run in LTR in R1, with RTL added at the start of R2.
+- Goldens exist only for about 15 key screens, in LTR (TD-104). RTL is checked by behaviour tests and by hand until R2.
 - Bilingual food names (LC-005): display in the interface language, with the other language on details **when the food has one** (D-080).
 - Buddy **understands** EN/AR/Arabizi in R1. Replies are English (AI-143). Per-message reply language comes in R2 (AI-141).
 - Charts: time axes stay chronological (LC-003), handled in our chart wrappers.
@@ -82,7 +82,7 @@ Cheap now, expensive later, so from the **first screen**:
 
 ## 7. Accessibility (UX-070–072)
 
-- Text scaling: layouts tested at 1.0 and 2.0 in golden tests (2.0 bounds 1.5; the big number, which clamps its scale at 1.5, also has a 1.5 row; A02 D9). The big numbers use responsive type.
+- Text scaling: the Today full-day golden has one text-scale-2.0 cell, and a few widget smoke tests render at 2.0 (TD-104). The big numbers use responsive type and clamp their scale at 1.5.
 - Contrast: design tokens checked for WCAG AA in both themes (automated test over the palette).
 - Never colour alone: macro colours always come with labels. Over-target uses a neutral tone + text (SF-021).
 - R2: semantics labels on all controls in EN + AR.

@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/features/body/presentation/weight_text.dart';
 import 'package:fb_mobile/l10n/gen/app_localizations.dart';
@@ -66,34 +63,5 @@ void main() {
     expect(weightTyped(l10n, ''), '0');
     expect(weightTyped(l10n, '97.'), '97.');
     expect(weightTyped(l10n, '97.4'), '97.4');
-  });
-
-  test('D13 weight copy is neutral: no praise or blame words in any '
-      'weight* or weighIn* string', () {
-    final arb = jsonDecode(
-      File('lib/l10n/app_en.arb').readAsStringSync(),
-    ) as Map<String, dynamic>;
-    final keys = [
-      for (final key in arb.keys)
-        if (key.startsWith('weight') || key.startsWith('weighIn')) key,
-    ];
-    expect(keys, hasLength(greaterThan(60)));
-    for (final key in keys) {
-      final copy = (arb[key] as String).toLowerCase();
-      for (final word in [
-        'great',
-        'good',
-        'bad',
-        'oops',
-        'too much',
-        'gained',
-        'lost',
-        'well done',
-        'careful',
-        'warning',
-      ]) {
-        expect(copy, isNot(contains(word)), reason: '$key: $word');
-      }
-    }
   });
 }

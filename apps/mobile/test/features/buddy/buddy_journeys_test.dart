@@ -1,5 +1,4 @@
 import 'package:fb_api_client/fb_api_client.dart';
-import 'package:fb_design_system/fb_design_system.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../fixtures/buddy_fixtures.dart';
@@ -42,54 +41,6 @@ void main() {
       }
       expect(h.issues, isEmpty, reason: text);
     }
-  });
-
-  // rule: A22 journey-j1
-  testWidgets('AI-030 J1 home-cooked weighed meal asks two questions then '
-      'logs', (tester) async {
-    final h = await _journey(tester, j1Text);
-    expect(find.text('Rice with chicken'), findsOneWidget);
-    expect(find.textContaining('weighed?'), findsOneWidget);
-    expect(find.text('Any cooking oil?'), findsOneWidget);
-    expect(find.text('Default'), findsNWidgets(2));
-    // Answer: the rice was weighed cooked.
-    await _tap(tester, find.widgetWithText(FbAnswerChip, 'Cooked'));
-    await tester.pumpAndSettle();
-    await _tap(tester, find.text('Log it'));
-    await settleBuddy(tester);
-    final entries = await h.entries();
-    expect(entries, hasLength(2));
-    expect(
-      entries.map((e) => e.foodId),
-      containsAll([
-        'usda:rice_white_long_grain_cooked',
-        'usda:chicken_breast_roasted',
-      ]),
-    );
-    expect(find.textContaining('Logged '), findsOneWidget);
-    await unmountBuddy(tester, h);
-  });
-
-  // rule: A22 journey-j2
-  testWidgets('AI-032 J2 family plate is an estimate with a range then logs', (
-    tester,
-  ) async {
-    final h = await _journey(tester, j2Text);
-    await _tap(tester, find.byType(FbEstimateMarker).first);
-    await tester.pumpAndSettle();
-    expect(find.textContaining('–'), findsWidgets);
-    expect(
-      find.text("Buddy's estimate: no close match in the food database."),
-      findsOneWidget,
-    );
-    await tester.tapAt(const Offset(5, 5));
-    await tester.pumpAndSettle();
-    await _tap(tester, find.text('Log it'));
-    await settleBuddy(tester);
-    final entries = await h.entries();
-    expect(entries.single.isEstimate, isTrue);
-    expect(entries.single.estimateRangeJson, isNotNull);
-    await unmountBuddy(tester, h);
   });
 
   // rule: A22 journey-j3

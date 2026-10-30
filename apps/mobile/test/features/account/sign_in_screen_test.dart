@@ -49,27 +49,6 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('AC-003 a guest upgrades with an email code: the code comes '
-      'from the authenticated link start and the account keeps the same '
-      'user id', (tester) async {
-    await pump(tester);
-    expect(find.text('Continue with Google'), findsNothing);
-    await tester.enterText(find.byType(TextField), canaryEmail);
-    await tester.tap(find.text('Send code'));
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), '123456');
-    await tester.tap(find.text('Continue'));
-    await tester.pumpAndSettle();
-
-    expect(find.text("You're signed in"), findsOneWidget);
-    expect(identity.calls, ['start:link', 'link:email']);
-    expect(session.accepted, [userA]);
-    expect(
-      (await registry.read()).active.ownerRef,
-      registry.ownerRefFor(userA),
-    );
-  });
-
   testWidgets('AC-003 a 409 asks merge or discard; a wrong code says so', (
     tester,
   ) async {

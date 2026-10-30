@@ -6,19 +6,6 @@ final LocalDate _today = LocalDate(2026, 10, 29);
 
 void main() {
   group('typed numbers', () {
-    test('TG-002 decimal commas, Arabic-Indic and Persian digits and the '
-        'Arabic decimal mark read as numbers; signs and grouping do not', () {
-      expect(parseTypedNumber('72.5'), 72.5);
-      expect(parseTypedNumber('72,5'), 72.5);
-      expect(parseTypedNumber('٧٢٫٥'), 72.5);
-      expect(parseTypedNumber('۷۲'), 72);
-      expect(parseTypedNumber(' 80 '), 80);
-      expect(parseTypedNumber('.5'), .5);
-      for (final bad in ['', '.', '-1', '+1', '1,000.5', '1 000', 'abc']) {
-        expect(parseTypedNumber(bad), isNull, reason: bad);
-      }
-    });
-
     test('D15 a birth year gives an age of 18–100 on the date; a decimal is '
         'not a year', () {
       expect(readBirthYear('1990', _today).value, 1990);
@@ -89,33 +76,6 @@ void main() {
         );
         expect(read.value, WeighInInput(value, unit).kg);
       }
-    });
-
-    test('D15 the ranges named in messages are accepted at both ends', () {
-      expect(TypedRanges.weight(MassUnit.kilogram), (min: 20.0, max: 500.0));
-      final lb = TypedRanges.weight(MassUnit.pound);
-      expect(lb, (min: 44.1, max: 1102.3));
-      for (final value in [lb.min, lb.max]) {
-        expect(
-          BodyWeightDraft(unit: MassUnit.pound, text: '$value').read().value,
-          isNotNull,
-        );
-      }
-      expect(TypedRanges.heightCm(), (min: 100, max: 250));
-      final ftIn = TypedRanges.heightFeetInches();
-      expect(ftIn.min, (feet: 3, inches: 4));
-      expect(ftIn.max, (feet: 8, inches: 2));
-      for (final (feet, inches) in [(3, 4), (8, 2)]) {
-        final draft = HeightDraft(
-          unit: HeightInputUnit.feetInches,
-          feet: '$feet',
-          inches: '$inches',
-        );
-        expect(draft.read().value, isNotNull);
-      }
-      expect(TypedRanges.maxRate(MassUnit.kilogram), 2);
-      expect(TypedRanges.maxRate(MassUnit.pound), 4.4);
-      expect(TypedRanges.maxMonth(MassUnit.pound), 17.6);
     });
   });
 

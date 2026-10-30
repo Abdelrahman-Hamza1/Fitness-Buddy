@@ -1,6 +1,5 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:flutter/semantics.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -115,39 +114,6 @@ void main() {
     expect(find.text('Oats'), findsNothing);
   });
 
-  testWidgets('DY-022 UX-040 FbSwipeActions draws the dismiss background at '
-      'the end edge and the confirm background at the start edge', (
-    tester,
-  ) async {
-    for (final direction in TextDirection.values) {
-      await _pump(tester, <String>[], direction: direction);
-      final row = tester.getRect(find.text('Oats'));
-      final gesture = await tester.startGesture(row.center);
-      // The first move only wins the gesture arena.
-      await gesture.moveBy(const Offset(-30, 0));
-      await tester.pump();
-      await gesture.moveBy(const Offset(-60, 0));
-      await tester.pump();
-      // Dragging left: LTR reveals the dismiss side (right edge); RTL the
-      // confirm side, so the delete icon is not built there yet.
-      if (direction == TextDirection.ltr) {
-        expect(
-          tester.getCenter(find.byIcon(FbIcons.delete)).dx,
-          greaterThan(180),
-        );
-        expect(find.byIcon(FbIcons.move), findsNothing);
-      } else {
-        expect(find.byIcon(FbIcons.delete), findsNothing);
-        expect(
-          tester.getCenter(find.byIcon(FbIcons.move)).dx,
-          greaterThan(180),
-        );
-      }
-      await gesture.up();
-      await tester.pumpAndSettle();
-    }
-  });
-
   testWidgets('DY-022 FbSwipeActions: both actions are semantics custom '
       'actions that call the same callbacks', (tester) async {
     final handle = tester.ensureSemantics();
@@ -168,79 +134,5 @@ void main() {
     );
     expect(log, ['move Oats']);
     handle.dispose();
-  });
-
-  testWidgets('DY-022 FbSwipeActions gives one haptic tick when the '
-      'drag passes the threshold', (tester) async {
-    final calls = <Object?>[];
-    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-      SystemChannels.platform,
-      (call) async {
-        if (call.method == 'HapticFeedback.vibrate') calls.add(call.arguments);
-        return null;
-      },
-    );
-    addTearDown(
-      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-        SystemChannels.platform,
-        null,
-      ),
-    );
-    await _pump(tester, <String>[]);
-
-    final gesture = await tester.startGesture(
-      tester.getCenter(find.text('Oats')),
-    );
-    // The first move only wins the gesture arena.
-    await gesture.moveBy(const Offset(-30, 0));
-    await tester.pump();
-    await gesture.moveBy(const Offset(-90, 0));
-    await tester.pump();
-    expect(calls, isEmpty);
-    await gesture.moveBy(const Offset(-80, 0));
-    await tester.pump();
-    await gesture.moveBy(const Offset(-30, 0));
-    await tester.pump();
-    expect(calls, ['HapticFeedbackType.selectionClick']);
-    await gesture.up();
-    await tester.pumpAndSettle();
-  });
-
-  testWidgets('UX-040 FbSwipeActions: with reduced motion the row leaves at '
-      'once', (tester) async {
-    await _pump(tester, <String>[]);
-    await tester.drag(find.text('Oats'), const Offset(-200, 0));
-    await tester.pump();
-    await tester.pump();
-    expect(find.text('Oats'), findsNothing);
-  });
-
-  testWidgets('DY-022 FbSwipeActions without actions is just the child', (
-    tester,
-  ) async {
-    await pumpFb(tester, const FbSwipeActions(child: Text('Plain')));
-    expect(find.byType(Dismissible), findsNothing);
-    expect(find.text('Plain'), findsOneWidget);
-  });
-
-  testWidgets('DY-022 FbSwipeActions with one action allows one direction', (
-    tester,
-  ) async {
-    final log = <String>[];
-    await pumpFb(
-      tester,
-      FbSwipeActions(
-        dismissAction: FbSwipeAction(
-          label: 'Delete',
-          icon: FbIcons.delete,
-          onTriggered: () => log.add('delete'),
-        ),
-        child: const SizedBox(height: 56, child: Text('Only delete')),
-      ),
-    );
-    await tester.drag(find.text('Only delete'), const Offset(200, 0));
-    await tester.pumpAndSettle();
-    expect(log, isEmpty);
-    expect(find.text('Only delete'), findsOneWidget);
   });
 }

@@ -1,5 +1,3 @@
-import 'dart:ui' show SemanticsAction;
-
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
@@ -70,26 +68,6 @@ void main() {
     await unmountApp(tester, container);
   });
 
-  testWidgets('PR-11 About version exposes a full-width semantic long press', (
-    tester,
-  ) async {
-    final semantics = tester.ensureSemantics();
-
-    final (container, _) = await _openAbout(tester, prodConfig, enabled: true);
-    expect(
-      tester
-          .getSemantics(_version(prodConfig))
-          .getSemanticsData()
-          .hasAction(SemanticsAction.longPress),
-      isTrue,
-    );
-    final y = tester.getCenter(_version(prodConfig)).dy;
-    await tester.longPressAt(Offset(300, y));
-    await tester.pumpAndSettle();
-    expect(find.byType(FbSheet), findsOneWidget);
-    await unmountApp(tester, container);
-    semantics.dispose();
-  });
   testWidgets('PR-11 About: Cancel on the confirm sheet sends nothing', (
     tester,
   ) async {
@@ -105,43 +83,6 @@ void main() {
     expect(find.byType(FbSheet), findsNothing);
     expect(sent, isEmpty);
     expect(find.text('Test report queued'), findsNothing);
-    await unmountApp(tester, container);
-  });
-
-  testWidgets('PR-11 About: without a crash-report address the dev build says '
-      'reports are off and asks nothing', (tester) async {
-    final (container, sent) = await _openAbout(
-      tester,
-      devConfig,
-      enabled: false,
-    );
-    await tester.longPress(_version(devConfig));
-    await tester.pumpAndSettle();
-    expect(find.byType(FbSheet), findsNothing);
-    expect(sent, isEmpty);
-    expect(
-      find.text('Crash reports are off in dev builds, so nothing was sent.'),
-      findsOneWidget,
-    );
-    await unmountApp(tester, container);
-  });
-
-  testWidgets('PR-11 About: a prod build with no address says it is not set '
-      'up', (tester) async {
-    final (container, sent) = await _openAbout(
-      tester,
-      prodConfig,
-      enabled: false,
-    );
-    await tester.longPress(_version(prodConfig));
-    await tester.pumpAndSettle();
-    expect(sent, isEmpty);
-    expect(
-      find.text(
-        "Crash reports aren't set up in this build, so nothing was sent.",
-      ),
-      findsOneWidget,
-    );
     await unmountApp(tester, container);
   });
 

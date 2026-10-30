@@ -232,26 +232,4 @@ void main() {
       expect(years.length, inInclusiveRange(2, 5));
     });
   });
-
-  test('slice + LTTB + scale for 730×2 points: median < 2 ms (printed, not '
-      'a gate)', () {
-    final raw = daily(730);
-    final trend = daily(730, base: 89);
-    final runs = <int>[];
-    for (var run = 0; run < 21; run++) {
-      final watch = Stopwatch()..start();
-      final start = ms(raw[365].at);
-      final end = ms(raw.last.at);
-      final a = drawnIndices(raw, start, end, 120);
-      final b = drawnIndices(trend, start, end, 360);
-      NiceScale.fit([
-        for (final i in a) raw[i].value,
-        for (final i in b) trend[i].value,
-      ]);
-      runs.add(watch.elapsedMicroseconds);
-    }
-    runs.sort();
-    // ignore: avoid_print, the benchmark is printed evidence (A15 D22).
-    print('A15 chart slice+LTTB+scale median: ${runs[runs.length ~/ 2]} µs');
-  }, tags: 'perf');
 }

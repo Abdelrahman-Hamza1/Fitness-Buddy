@@ -1,5 +1,4 @@
 import 'package:alchemist/alchemist.dart';
-import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_domain/testing.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
@@ -46,29 +45,6 @@ Widget _phone(
   ),
 );
 
-/// Types [keys] on every scenario's pad, then taps every pinned Save.
-PumpAction _typeAndSave(String keys) => (tester) async {
-  await tester.pumpAndSettle();
-  final pads = find.byType(FbNumberPad);
-  final count = pads.evaluate().length;
-  for (var i = 0; i < count; i++) {
-    for (final c in keys.split('')) {
-      final key = find.descendant(of: pads.at(i), matching: find.text(c));
-      await tester.ensureVisible(key);
-      await tester.pumpAndSettle();
-      await tester.tap(key);
-      await tester.pump();
-    }
-  }
-  // From the last scenario back: a confirmation replaces its own scenario's
-  // pinned Save with the answers, so the earlier Saves keep their indexes.
-  final saves = find.widgetWithText(FbButton, 'Save');
-  for (var i = count - 1; i >= 0; i--) {
-    await tester.tap(saves.at(i));
-    await tester.pumpAndSettle();
-  }
-};
-
 Future<void> _golden(
   String name,
   String file,
@@ -107,36 +83,5 @@ Future<void> main() async {
     'weigh_in_sheet_prefilled',
     const WeighInSheet(),
     lastWeek,
-  );
-  await _golden(
-    'WB-005 weigh-in sheet: large-change confirm',
-    'weigh_in_sheet_large_change',
-    const WeighInSheet(),
-    lastWeek,
-    pumpBeforeTest: _typeAndSave('100'),
-  );
-  await _golden(
-    'WB-005 weigh-in sheet: unit confirm',
-    'weigh_in_sheet_unit',
-    const WeighInSheet(),
-    lastWeek,
-    pumpBeforeTest: _typeAndSave('214'),
-  );
-  await _golden(
-    'WB-003 weigh-in sheet: same day',
-    'weigh_in_sheet_same_day',
-    const WeighInSheet(),
-    [...lastWeek, storedWeighIn(3, weighInDraft(97.2, hour: 6, minute: 50))],
-  );
-  final edited = storedWeighIn(
-    4,
-    weighInDraft(97.8, hour: 9, note: 'after Eid'),
-    preferred: true,
-  );
-  await _golden(
-    'weigh-in sheet: edit',
-    'weigh_in_sheet_edit',
-    WeighInSheet(edit: edited),
-    [...lastWeek, storedWeighIn(3, weighInDraft(97.2, hour: 6)), edited],
   );
 }

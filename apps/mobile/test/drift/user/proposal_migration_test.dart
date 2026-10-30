@@ -48,8 +48,10 @@ void main() {
       expect(latest, greaterThanOrEqualTo(9));
       var seededTables = 0;
       var seededChat = 0;
-      // Proposals arrive in v9: start from every version before it.
-      for (final from in versions.where((v) => v < 9)) {
+      // Every version before the latest: the one generic "no row is lost on
+      // upgrade" test (TD-104). Proposals arrive in v9; their own checks run
+      // for the versions before it.
+      for (final from in versions.where((v) => v < latest)) {
         final schema = await verifier.schemaAt(from);
         final raw = schema.rawDatabase;
         final tables = {
@@ -59,13 +61,16 @@ void main() {
           ))
             r['name'] as String,
         };
-        expect(tables, isNot(contains('proposals')), reason: 'v$from');
+        if (from < 9) {
+          expect(tables, isNot(contains('proposals')), reason: 'v$from');
+        }
         raw.execute(
           "INSERT INTO sync_state (key, value) VALUES ('outbox.capture', '1')",
         );
         // One row per synced table that has a contract fixture, with only the
         // columns that table had at that version (chat rows from v7 on).
         for (final table in tables) {
+          if (table == 'proposals') continue;
           final payload = fixtures[entityOf[table]] as Map<String, dynamic>?;
           if (payload == null) continue;
           final columns = {
@@ -114,86 +119,96 @@ void main() {
             );
           }
         }
-        // The local-only chat columns arrive empty on existing rows.
-        if (tables.contains('chat_messages')) {
-          for (final r
-              in await db
-                  .customSelect(
-                    'SELECT request_json, answer_json FROM chat_messages',
-                  )
-                  .get()) {
-            expect(r.data['request_json'], isNull, reason: 'v$from');
-            expect(r.data['answer_json'], isNull, reason: 'v$from');
+        if (from < 9) {
+          // The local-only chat columns arrive empty on existing rows.
+          if (tables.contains('chat_messages')) {
+            for (final r
+                in await db
+                    .customSelect(
+                      'SELECT request_json, answer_json FROM chat_messages',
+                    )
+                    .get()) {
+              expect(r.data['request_json'], isNull, reason: 'v$from');
+              expect(r.data['answer_json'], isNull, reason: 'v$from');
+            }
           }
-        }
 
-        // The new table, its indexes and triggers.
-        expect(await db.select(db.proposals).get(), isEmpty);
-        final triggers = await db
-            .customSelect(
-              "SELECT name FROM sqlite_master WHERE type = 'trigger' "
-              "AND tbl_name = 'proposals'",
-            )
-            .map((r) => r.read<String>('name'))
-            .get();
-        expect(triggers.toSet(), {
-          'proposals_outbox_ai',
-          'proposals_outbox_au',
-          'proposals_no_delete',
-        });
-        for (final (index, columns) in [
-          ('ix_proposals_budget', ['budget_message_id']),
-          ('ix_proposals_pending', ['created_at']),
-        ]) {
-          final info = await db
-              .customSelect("SELECT name FROM pragma_index_info('$index')")
+          // The new table, its indexes and triggers.
+          expect(await db.select(db.proposals).get(), isEmpty);
+          final triggers = await db
+              .customSelect(
+                "SELECT name FROM sqlite_master WHERE type = 'trigger' "
+                "AND tbl_name = 'proposals'",
+              )
+              .map((r) => r.read<String>('name'))
               .get();
-          expect(info.map((r) => r.read<String>('name')), columns);
-        }
-        // Capture works after the upgrade, CHECKs hold, and rows are never
-        // hard-deleted.
-        final proposal = fixtures['proposal'] as Map<String, dynamic>;
-        Future<void> insert(String id, String status, String? outcome) =>
-            runAuthorizedWrite(
-              () => db.customStatement(
-                'INSERT INTO proposals (id, created_at, updated_hlc, version, '
-                'device_id, origin, edited_by_user, kind, status, outcome, '
-                'resolved_at, origin_message_id, budget_message_id, '
-                'codec_version, interpretation_json, draft_json) '
-                'VALUES (?, 0, ?, 1, ?, ?, 0, ?, ?, ?, NULL, ?, ?, ?, ?, ?)',
-                [
-                  id,
-                  _hlc,
-                  _id,
-                  proposal['origin'],
-                  proposal['kind'],
-                  status,
-                  outcome,
-                  proposal['originMessageId'],
-                  proposal['budgetMessageId'],
-                  proposal['codecVersion'],
-                  proposal['interpretationJson'],
-                  proposal['draftJson'],
-                ],
-              ),
-            );
-        await insert(_proposalId, 'pending', null);
-        expect((await db.select(db.syncOutbox).get()).last.entity, 'proposal');
-        for (final (status, outcome) in [
-          ('active', null),
-          ('pending', 'adjusted chips'),
-        ]) {
-          await expectLater(
-            insert(_id, status, outcome),
-            throwsA(isA<Exception>()),
-            reason: '$status/$outcome',
+          expect(triggers.toSet(), {
+            'proposals_outbox_ai',
+            'proposals_outbox_au',
+            'proposals_no_delete',
+          });
+          for (final (index, columns) in [
+            ('ix_proposals_budget', ['budget_message_id']),
+            ('ix_proposals_pending', ['created_at']),
+          ]) {
+            final info = await db
+                .customSelect("SELECT name FROM pragma_index_info('$index')")
+                .get();
+            expect(info.map((r) => r.read<String>('name')), columns);
+          }
+          // Capture works after the upgrade, CHECKs hold, and rows are never
+          // hard-deleted.
+          final proposal = fixtures['proposal'] as Map<String, dynamic>;
+          Future<void> insert(
+            String id,
+            String status,
+            String? outcome,
+          ) => runAuthorizedWrite(
+            () => db.customStatement(
+              'INSERT INTO proposals (id, created_at, updated_hlc, version, '
+              'device_id, origin, edited_by_user, kind, status, outcome, '
+              'resolved_at, origin_message_id, budget_message_id, '
+              'codec_version, interpretation_json, draft_json) '
+              'VALUES (?, 0, ?, 1, ?, ?, 0, ?, ?, ?, NULL, ?, ?, ?, ?, ?)',
+              [
+                id,
+                _hlc,
+                _id,
+                proposal['origin'],
+                proposal['kind'],
+                status,
+                outcome,
+                proposal['originMessageId'],
+                proposal['budgetMessageId'],
+                proposal['codecVersion'],
+                proposal['interpretationJson'],
+                proposal['draftJson'],
+              ],
+            ),
           );
+          await insert(_proposalId, 'pending', null);
+          expect(
+            (await db.select(db.syncOutbox).get()).last.entity,
+            'proposal',
+          );
+          for (final (status, outcome) in [
+            ('active', null),
+            ('pending', 'adjusted chips'),
+          ]) {
+            await expectLater(
+              insert(_id, status, outcome),
+              throwsA(isA<Exception>()),
+              reason: '$status/$outcome',
+            );
+          }
+          await expectLater(
+            runAuthorizedWrite(
+              () => db.customStatement('DELETE FROM proposals'),
+            ),
+            throwsA(isA<Exception>()),
+          );
+          expect(await db.select(db.proposals).get(), hasLength(1));
         }
-        await expectLater(
-          runAuthorizedWrite(() => db.customStatement('DELETE FROM proposals')),
-          throwsA(isA<Exception>()),
-        );
-        expect(await db.select(db.proposals).get(), hasLength(1));
         await db.close();
       }
       // Every prior version with user tables was seeded, chat from v7 on.

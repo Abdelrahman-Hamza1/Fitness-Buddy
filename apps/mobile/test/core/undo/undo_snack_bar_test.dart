@@ -92,21 +92,4 @@ void main() {
     expect(find.text("Couldn't undo, it was changed since."), findsOneWidget);
     stack.dispose();
   });
-
-  testWidgets('D13 Undo after the window says "Too late to undo."', (
-    tester,
-  ) async {
-    final clock = ManualClock(DateTime.utc(2026, 10, 17, 12));
-    final stack = _stack(clock, () => applied);
-    await _show(tester, stack);
-
-    // The snackbar is still on screen when the clock says the window is over.
-    clock.advance(const Duration(seconds: 7));
-    await tester.tap(find.text('Undo'));
-    await tester.pump();
-    await tester.pump();
-
-    expect(find.text('Too late to undo.'), findsOneWidget);
-    stack.dispose();
-  });
 }

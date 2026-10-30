@@ -80,12 +80,5 @@ void main() {
         'diary.showFiber',
       );
     });
-
-    test('toString names the key only', () {
-      expect(
-        SettingKey.string('profile.name', defaultValue: '').toString(),
-        'SettingKey(profile.name)',
-      );
-    });
   });
 }

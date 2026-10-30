@@ -583,38 +583,6 @@ void main() {
     // Dispose lifecycle listeners and timers before fake-time assertions.
     s.c.dispose();
   });
-  testWidgets("HM-008 D14 the model doesn't start before the viewed day's "
-      'first data frame has been drawn', (tester) async {
-    final gate = StreamController<DiaryDay>();
-    addTearDown(gate.close);
-    final probes = InputProbes();
-    final s = Setup(
-      viewedDate: day,
-      viewedInput: gate.stream,
-      windowInput: (_) => probes.window.stream,
-      mealsInput: probes.meals.stream,
-      personalInput: probes.personal.stream,
-      slotsInput: probes.slots.stream,
-    );
-    s.c.listen(quickAddChipsProvider(day), (_, _) {});
-    await tester.idle();
-    expect(probes.starts(), [0, 0, 0, 0], reason: 'no data yet');
-    gate.add(emptyDay(day));
-    await tester.idle();
-    // The day's data is in and its frame is being built: no input has a
-    // listener and nothing is ranked yet.
-    expect(probes.starts(), [
-      0,
-      0,
-      0,
-      0,
-    ], reason: 'the data frame is not drawn');
-    expect(s.c.read(quickAddChipsProvider(day)).isLoading, isTrue);
-    await frame(tester);
-    expect(probes.starts(), [1, 1, 1, 1], reason: 'after the post-frame step');
-    expect(s.c.read(quickAddChipsProvider(day)).requireValue, isEmpty);
-    s.disposeNow();
-  });
   testWidgets('HM-008 D14 leaving the viewed day (or disposing) before its '
       'frame leaves no input listener and never flips a disposed '
       'activation', (tester) async {
@@ -713,75 +681,6 @@ void main() {
     s.disposeNow();
     expect(probes.cancels(), [3, 3, 3, 3]);
   });
-  testWidgets('HM-008 D14 the activation schedules its own frame from idle '
-      'and the chips arrive by pumping alone', (tester) async {
-    final gate = StreamController<DiaryDay>();
-    addTearDown(gate.close);
-    final s = Setup(
-      viewedDate: day,
-      viewedInput: gate.stream,
-      windowInput: (_) => Stream.value([]),
-      mealsInput: Stream.value([]),
-      personalInput: Stream.value([]),
-      slotsInput: Stream.value(DefaultSlots.all),
-    );
-    await tester.pump();
-    expect(tester.binding.hasScheduledFrame, isFalse, reason: 'idle');
-    s.c.listen(quickAddChipsProvider(day), (_, _) {});
-    gate.add(emptyDay(day));
-    await tester.idle();
-    expect(s.c.read(quickAddChipsProvider(day)).isLoading, isTrue);
-    expect(
-      tester.binding.hasScheduledFrame,
-      isTrue,
-      reason: 'the activation asked for the frame itself',
-    );
-    await flush(tester);
-    expect(s.c.read(quickAddActivationProvider(day)), isTrue);
-    expect(s.c.read(quickAddChipsProvider(day)).requireValue, isEmpty);
-    s.disposeNow();
-  });
-  testWidgets('HM-008 D14 a second viewed day activates independently of '
-      'the first', (tester) async {
-    final other = day.plusDays(-1);
-    final gate = StreamController<DiaryDay>();
-    final otherGate = StreamController<DiaryDay>();
-    addTearDown(gate.close);
-    addTearDown(otherGate.close);
-    final probes = InputProbes();
-    final s = Setup(
-      viewedDate: day,
-      viewedInput: gate.stream,
-      windowInput: (_) => probes.window.stream,
-      mealsInput: probes.meals.stream,
-      personalInput: probes.personal.stream,
-      slotsInput: probes.slots.stream,
-      extraDays: {other: otherGate.stream},
-    );
-    s.c.listen(quickAddChipsProvider(day), (_, _) {});
-    gate.add(emptyDay(day));
-    await tester.idle();
-    await frame(tester);
-    expect(s.c.read(quickAddActivationProvider(day)), isTrue);
-    expect(s.c.read(quickAddChipsProvider(day)).requireValue, isEmpty);
-    // The second day's own data arrives later: it starts inactive while the
-    // first day is active, and a later frame activates it alone.
-    s.c.listen(quickAddChipsProvider(other), (_, _) {});
-    await tester.idle();
-    expect(s.c.exists(quickAddActivationProvider(other)), isFalse);
-    otherGate.add(emptyDay(other));
-    await tester.idle();
-    expect(s.c.read(quickAddActivationProvider(other)), isFalse);
-    expect(s.c.read(quickAddChipsProvider(other)).isLoading, isTrue);
-    expect(s.c.read(quickAddActivationProvider(day)), isTrue);
-    await frame(tester);
-    expect(s.c.read(quickAddActivationProvider(other)), isTrue);
-    expect(s.c.read(quickAddChipsProvider(other)).requireValue, isEmpty);
-    expect(s.c.read(quickAddChipsProvider(day)).requireValue, isEmpty);
-    // The shared inputs are not started again for the second day.
-    expect(probes.starts(), [1, 1, 1, 1]);
-    s.disposeNow();
-  });
   test('MN-021 quick-add and saved-meal logging make no API '
       'call (API providers overridden by failing fakes)', () async {
     final service = fixtureService();
@@ -852,70 +751,6 @@ void main() {
     expect(s.c.read(quickAddControllerProvider), isEmpty);
     s.apply = null;
     expect(await s.controller.logChip(chip, day), isA<QuickAddLogged>());
-  });
-  test('DY-031 saved-meal pending, expected exceptions and '
-      'unexpected cleanup', () async {
-    final s = Setup();
-    await s.h.seed();
-    final meal = await s.saved();
-    final gate = Completer<void>();
-    var calls = 0;
-    s.apply = (change) async {
-      calls++;
-      await gate.future;
-      return await s.h.applier.apply(change);
-    };
-    final first = s.actions.log(meal, day, lunch);
-    expect(await s.actions.log(meal, day, lunch), isA<SavedMealPending>());
-    expect(await s.actions.rename(meal, 'Other'), isA<SavedMealPending>());
-    expect(calls, 1);
-    gate.complete();
-    await first;
-    s.apply = (_) async => throw StateError('unexpected apply');
-    await expectLater(s.actions.log(meal, day, lunch), throwsStateError);
-    s.apply = (_) async =>
-        throw const ChangeRejected(InvalidOp('sourceChanged'));
-    expect(
-      (await s.actions.log(meal, day, lunch) as SavedMealFailed).reason,
-      SavedMealFailure.changed,
-    );
-    s.apply = (_) async => throw const ChangeRejected(InvalidOp('invalid'));
-    expect(
-      (await s.actions.log(meal, day, lunch) as SavedMealFailed).reason,
-      SavedMealFailure.invalid,
-    );
-    s.apply = null;
-    expect(await s.actions.log(meal, day, lunch), isA<SavedMealDone>());
-    final empty = SavedMeal(
-      id: meal.id,
-      version: meal.version,
-      name: meal.name,
-      items: [],
-    );
-    expect(
-      (await s.actions.log(empty, day, lunch) as SavedMealFailed).reason,
-      SavedMealFailure.invalid,
-    );
-    expect(
-      await s.actions.rename(meal, 'bad\u0000name'),
-      isA<SavedMealFailed>(),
-    );
-  });
-  test('DY-031 an Undo failure rethrows and clears '
-      'saved-meal pending', () async {
-    final s = Setup();
-    await s.h.seed();
-    final meal = await s.saved();
-    final broken = UndoStack(revert: s.h.applier.revert, clock: BrokenClock());
-    addTearDown(broken.dispose);
-    final actions = SavedMealActions(
-      apply: s.h.applier.apply,
-      undoStack: broken,
-      ids: SequenceIdGenerator(startMs: 0x0199e3c45b1a),
-      clock: s.clock,
-    );
-    await expectLater(actions.log(meal, day, lunch), throwsStateError);
-    await expectLater(actions.log(meal, day, lunch), throwsStateError);
   });
 }
 

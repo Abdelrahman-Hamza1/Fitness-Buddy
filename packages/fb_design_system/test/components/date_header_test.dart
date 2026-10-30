@@ -67,24 +67,4 @@ void main() {
     await tester.tap(find.byTooltip('Previous day'));
     expect(previous, 1);
   });
-
-  testWidgets('HM-009 FbDateHeader: the tappable label keeps a 48 dp '
-      'target at text scale 2', (tester) async {
-    await pumpFb(
-      tester,
-      FbDateHeader(label: 'Today', onPrevious: () {}, onLabelTap: () {}),
-      textScale: 2,
-    );
-    expect(
-      tester
-          .getSize(
-            find.ancestor(
-              of: find.text('Today'),
-              matching: find.byType(InkWell),
-            ),
-          )
-          .height,
-      greaterThanOrEqualTo(48),
-    );
-  });
 }

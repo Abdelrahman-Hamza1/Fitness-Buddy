@@ -17,39 +17,10 @@ void main() {
   // em per glyph), every golden's text metrics would be wrong.
   const ahem = TextStyle(fontFamily: 'Ahem', fontSize: 16);
 
-  test('A02-D19 the package font is loaded: Latin text is not measured '
-      'with Ahem', () {
-    const text = 'Hello iii';
-    final inter = _width(text, FbType.body);
-    expect(inter, isNot(_width(text, ahem)));
-    expect(inter, lessThan(_width(text, ahem)));
-    // Proportional: narrow and wide glyphs differ (Ahem: all equal).
-    expect(
-      _width('iiiiii', FbType.body),
-      lessThan(_width('WWWWWW', FbType.body)),
-    );
-  });
-
   test('A02-D19 the Arabic fallback font is loaded for Arabic text', () {
     const text = 'لبنة بالزعتر';
     expect(_width(text, FbType.body), isNot(_width(text, ahem)));
     expect(_width(text, FbType.body), greaterThan(0));
-  });
-
-  test('A44-D3 the Nunito variable font is loaded and fontWeight drives '
-      'wght: width at w200 < w400 < w900', () {
-    const text = 'Fitness Buddy 2150';
-    TextStyle at(FontWeight w) => FbType.title.copyWith(fontWeight: w);
-    final w200 = _width(text, at(FontWeight.w200));
-    final w400 = _width(text, at(FontWeight.w400));
-    final w900 = _width(text, at(FontWeight.w900));
-    expect(w200, isNot(_width(text, ahem.copyWith(fontSize: 18))));
-    // A stuck default instance (ExtraLight) or a fixed weight would make
-    // two of these equal.
-    expect(w200, lessThan(w400));
-    expect(w400, lessThan(w900));
-    // Nunito, not Inter: the two families measure differently.
-    expect(w400, isNot(_width(text, FbType.body.copyWith(fontSize: 18))));
   });
 
   test('UX-070 tabular figures: digits have equal width in the display style '

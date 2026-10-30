@@ -102,24 +102,6 @@ void main() {
       });
     });
 
-    test('LC-051 every listed dual form means two of its unit', () {
-      final units = {
-        for (final MapEntry(:key, :value) in arabicUnitWords.entries)
-          normalizeKey(key): value,
-      };
-      for (final singular in arabicDualUnits) {
-        for (final dual in arabicDualForms(singular)) {
-          expect(
-            parseQuantity('$dual food'),
-            _q(2, units[normalizeKey(singular)], 'food', '$dual food'),
-            reason: dual,
-          );
-        }
-      }
-      expect(arabicDualForms('حبة'), {'حبتين', 'حبتان'});
-      expect(arabicDualForms('رغيف'), {'رغيفين', 'رغيفان'});
-    });
-
     test('LC-051 ملعقة alone is a tablespoon, with a size word it follows the '
         'size (A10)', () {
       _expectAll({
@@ -146,35 +128,6 @@ void main() {
         parseQuantity('8 oz chicken'),
         _q(8, 'oz', 'chicken', '8 oz chicken'),
       );
-    });
-
-    test('LC-011 every unit code has a word, with and without a space', () {
-      _expectAll({
-        '150 g chicken': _q(150, 'g', 'chicken'),
-        '150g chicken': _q(150, 'g', 'chicken'),
-        '1.5kg rice': _q(1.5, 'kg', 'rice'),
-        '2 lbs beef': _q(2, 'lb', 'beef'),
-        '250 ml milk': _q(250, 'ml', 'milk'),
-        '1 l water': _q(1, 'l', 'water'),
-        '12 fl oz cola': _q(12, 'fl_oz', 'cola'),
-        '12 fl. oz. cola': _q(12, 'fl_oz', 'cola'),
-        '2 cups of rice': _q(2, 'cup', 'rice'),
-        '1 tbsp olive oil': _q(1, 'tbsp', 'olive oil'),
-        '2 teaspoons sugar': _q(2, 'tsp', 'sugar'),
-        '3 pieces chicken': _q(3, 'piece', 'chicken'),
-        '2 loaves bread': _q(2, 'loaf', 'bread'),
-        '1 plate koshari': _q(1, 'plate', 'koshari'),
-        '1 glass juice': _q(1, 'glass', 'juice'),
-        '2 sandwiches falafel': _q(2, 'sandwich', 'falafel'),
-        '4 discs taameya': _q(4, 'disc', 'taameya'),
-        '2 servings pasta': _q(2, 'serving', 'pasta'),
-        '٢٠٠ جم فراخ': _q(200, 'g', 'فراخ'),
-        '٢كيلو طماطم': _q(2, 'kg', 'طماطم'),
-        'كوب من الأرز': _implicit('cup', 'الأرز'),
-        'لتر لبن': _implicit('l', 'لبن'),
-        '½cup sugar': _q(0.5, 'cup', 'sugar'),
-        '２ｃｕｐｓ ｒｉｃｅ': _q(2, 'cup', 'ｒｉｃｅ'),
-      });
     });
   });
 
@@ -429,24 +382,6 @@ void main() {
         'eggs ×3': _q(3, null, 'eggs'),
         'eggs 2X': _q(2, null, 'eggs'),
       });
-    });
-  });
-
-  group('ParsedQuantity', () {
-    test('value equality, hash and a readable toString', () {
-      final a = _q(2, 'cup', 'rice');
-      expect(a, _q(2, 'cup', 'rice'));
-      expect(a.hashCode, _q(2, 'cup', 'rice').hashCode);
-      expect(a, isNot(_q(2, 'cup', 'milk')));
-      expect(a, isNot(_q(2, 'g', 'rice')));
-      expect(a, isNot(_q(3, 'cup', 'rice')));
-      expect(a, isNot(_implicit('cup', 'rice')));
-      expect(a, isNot(_q(2, 'cup', 'rice', '2 cups rice')));
-      expect(a.toString(), 'ParsedQuantity(2.0 cup, "rice")');
-      expect(
-        const ParsedQuantity.none('rice').toString(),
-        'ParsedQuantity(1.0 - implicit, "rice")',
-      );
     });
   });
 }

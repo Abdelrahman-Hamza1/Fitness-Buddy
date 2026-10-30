@@ -76,17 +76,6 @@ void main() {
     },
   );
 
-  test('A05 D7 the committed app fixture SQL is what data/ produces', () {
-    final err = StringBuffer();
-    final sql = buildFixtureSql(p.join(_root, 'data'), err);
-    expect(sql, isNotNull, reason: '$err');
-    expect(
-      File(_fixture).readAsStringSync(),
-      sql,
-      reason: 'stale: run `dart run tools/catalog/bin/catalog.dart emit-sql`',
-    );
-  });
-
   test(
     'the fixture SQL builds a pack with the schema and the fixture items',
     () {

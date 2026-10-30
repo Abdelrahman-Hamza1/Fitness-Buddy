@@ -1,7 +1,5 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
-import 'package:fb_mobile/core/changes/apply_result.dart';
-import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -144,20 +142,6 @@ void main() {
       rig.stack.dispose();
     });
 
-    testWidgets('DY-021 the same amount writes nothing', (tester) async {
-      final rig = await pitaDetails(tester);
-
-      await tester.tap(chip('Amount'));
-      await tester.pumpAndSettle();
-      await tester.tap(button('Save'));
-      await settle(tester);
-
-      expect(find.text('Undo'), findsNothing);
-      expect(find.byType(EntryAmountSheet), findsNothing);
-      expect((await tester.runAsync(() => rig.diary.entry(1)))!.version, 1);
-      rig.stack.dispose();
-    });
-
     testWidgets('DY-021 an amount of 0 or nothing leaves Save off', (
       tester,
     ) async {
@@ -227,22 +211,6 @@ void main() {
     });
   });
 
-  group('change food', () {
-    testWidgets('DY-021 Change food opens the search in replace mode with '
-        'the item and its version', (tester) async {
-      final rig = await foodsDetails(tester);
-
-      await tester.tap(chip('Change food'));
-      await tester.pump();
-
-      final route = rig.navigator.pushed.single as FoodSearchRoute;
-      expect(route.replace, vid(1));
-      expect(route.date, testToday);
-      expect(route.slotId, DefaultSlots.breakfastId);
-      rig.stack.dispose();
-    });
-  });
-
   group('nutrient values', () {
     testWidgets('AI-072 tapping Protein opens the override sheet; Save shows '
         'the yours badge and "edited by you"', (tester) async {
@@ -284,83 +252,6 @@ void main() {
       expect(find.text('Your edit of food database values'), findsNothing);
       rig.stack.dispose();
     });
-
-    testWidgets('AI-072 a value above the limit is explained and Save stays '
-        'off', (tester) async {
-      await pitaDetails(tester);
-
-      await tester.tap(find.text('Calories'));
-      await tester.pumpAndSettle();
-      await pad(tester, '30000');
-
-      expect(find.text('Enter 20,000 kcal or less.'), findsOneWidget);
-      expect(isEnabled(tester, button('Save')), isFalse);
-      await pad(tester, '<');
-      expect(find.text('Enter 20,000 kcal or less.'), findsNothing);
-      expect(isEnabled(tester, button('Save')), isTrue);
-    });
-
-    testWidgets('AI-072 grams take one decimal, kcal and mg none', (
-      tester,
-    ) async {
-      await pitaDetails(tester);
-
-      await tester.tap(find.text('Protein'));
-      await tester.pumpAndSettle();
-      await pad(tester, '1.55');
-      // The second decimal is refused by the pad.
-      expect(find.bySemanticsLabel('Protein, 1.5 g'), findsOneWidget);
-    });
-  });
-
-  group('details buttons', () {
-    testWidgets('DY-021 DY-022 UX-013 the Meal chip is the visible Move '
-        'control and the details have a visible Delete button', (tester) async {
-      final rig = await foodsDetails(tester);
-      // One Move control, the chip; no second button for it.
-      expect(button('Move to another meal'), findsNothing);
-
-      await tester.tap(chip('Meal'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(FbListRow, 'Dinner').last);
-      await settle(tester);
-      expect(find.text('Moved Food 1 to Dinner'), findsOneWidget);
-      expect(
-        (await tester.runAsync(() => rig.diary.entry(1)))!.slotId,
-        DefaultSlots.dinnerId,
-      );
-
-      await tester.tap(button('Delete'));
-      await settle(tester);
-      expect(find.text('Deleted Food 1'), findsOneWidget);
-      expect(
-        (await tester.runAsync(() => rig.diary.entry(1)))!.deletedAt,
-        isNotNull,
-      );
-      expect(find.byType(EntryDetailsPanel), findsNothing);
-
-      await tester.tap(find.text('Undo'));
-      await settle(tester);
-      expect(
-        (await tester.runAsync(() => rig.diary.entry(1)))!.deletedAt,
-        isNull,
-      );
-      rig.stack.dispose();
-    });
-
-    testWidgets('DY-021 the Change food chip has a leading search icon', (
-      tester,
-    ) async {
-      await foodsDetails(tester);
-
-      expect(
-        find.descendant(
-          of: chip('Change food'),
-          matching: find.byIcon(FbIcons.search),
-        ),
-        findsOneWidget,
-      );
-    });
   });
 
   group('open sheets follow their item', () {
@@ -382,47 +273,6 @@ void main() {
       expect(find.text('This item was removed.'), findsOneWidget);
       expect(isEnabled(tester, button('Save')), isFalse);
       expect(find.byType(EntryAmountSheet), findsOneWidget);
-      rig.stack.dispose();
-    });
-
-    testWidgets('D12 a sheet whose entry moved to another slot or day stays '
-        'usable', (tester) async {
-      final rig = await foodsDetails(tester);
-      await tester.tap(chip('Amount'));
-      await tester.pumpAndSettle();
-      await pad(tester, '2');
-
-      await tester.runAsync(
-        () => rig.diary.apply([
-          MoveEntries([vid(1)], toSlotId: DefaultSlots.lunchId),
-        ]),
-      );
-      await settle(tester);
-      expect(find.text('This item changed.'), findsNothing);
-      expect(find.text('This item was removed.'), findsNothing);
-      expect(isEnabled(tester, button('Save')), isTrue);
-
-      // Another day: the same entry, a new version.
-      await tester.runAsync(
-        () => rig.diary.apply([
-          UpdateDiaryEntry(
-            fixtureId(1),
-            2,
-            EntryPatch(localDate: testYesterday, localTime: LocalTime(9)),
-          ),
-        ]),
-      );
-      await settle(tester);
-      expect(find.text('This item changed.'), findsNothing);
-      expect(isEnabled(tester, button('Save')), isTrue);
-
-      await tester.tap(button('Save'));
-      await settle(tester);
-      expect(find.byType(EntryAmountSheet), findsNothing);
-      expect(find.text('Changed Food 1 to 2 g'), findsOneWidget);
-      final stored = (await tester.runAsync(() => rig.diary.entry(1)))!;
-      expect(stored.amount, 2);
-      expect(stored.version, 4);
       rig.stack.dispose();
     });
 
@@ -465,24 +315,6 @@ void main() {
       final stored = (await tester.runAsync(() => rig.diary.entry(1)))!;
       expect(stored.amount, 5);
       expect(stored.version, 3);
-      rig.stack.dispose();
-    });
-
-    testWidgets('D12 the value sheet follows its item too', (tester) async {
-      final rig = await foodsDetails(tester);
-      await tester.tap(find.text('Protein'));
-      await tester.pumpAndSettle();
-      await pad(tester, '9');
-
-      await tester.runAsync(
-        () => rig.diary.apply([
-          DeleteEntries([vid(1)]),
-        ]),
-      );
-      await settle(tester);
-
-      expect(find.text('This item was removed.'), findsOneWidget);
-      expect(isEnabled(tester, button('Save')), isFalse);
       rig.stack.dispose();
     });
   });
@@ -591,65 +423,6 @@ void main() {
       rig.stack.dispose();
     });
 
-    testWidgets('DY-023 a copy sheet whose meal changed says "That meal '
-        'changed. Nothing was copied." and stays open', (tester) async {
-      final rig = TodayRig(
-        apply: (change) async => const Rejected(InvalidOp('sourceChanged')),
-      );
-      await yesterday(tester, rig: rig);
-
-      await tester.tap(find.byTooltip('More for Breakfast'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Copy to…'));
-      await tester.pumpAndSettle();
-      await tester.tap(button('Copy'));
-      await settle(tester);
-
-      expect(
-        find.text('That meal changed. Nothing was copied.'),
-        findsOneWidget,
-      );
-      expect(find.byType(CopyMealSheet), findsOneWidget);
-      expect(find.text('Undo'), findsNothing);
-      rig.stack.dispose();
-    });
-
-    testWidgets('DY-023 a meal edited under the open copy sheet shows "This '
-        'meal changed" with Reload and keeps Copy off until then', (
-      tester,
-    ) async {
-      final rig = await yesterday(tester);
-      await tester.tap(find.byTooltip('More for Breakfast'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Copy to…'));
-      await tester.pumpAndSettle();
-      expect(isEnabled(tester, button('Copy')), isTrue);
-
-      await tester.runAsync(
-        () => rig.diary.apply([
-          LogEntries([
-            newEntry(
-              3,
-              when: atDay(testYesterday, 10),
-              slotId: DefaultSlots.breakfastId,
-            ),
-          ]),
-        ]),
-      );
-      await settle(tester);
-
-      expect(find.text('This meal changed.'), findsOneWidget);
-      expect(isEnabled(tester, button('Copy')), isFalse);
-      await tester.tap(find.text('Reload'));
-      await tester.pumpAndSettle();
-      expect(find.text('This meal changed.'), findsNothing);
-      expect(isEnabled(tester, button('Copy')), isTrue);
-      await tester.tap(button('Copy'));
-      await settle(tester);
-      expect(find.text('Copied 3 items to Today'), findsOneWidget);
-      rig.stack.dispose();
-    });
-
     testWidgets('DY-023 Save as meal requires 1–60 characters; Save shows '
         'Undo', (tester) async {
       final rig = await yesterday(tester);
@@ -701,35 +474,6 @@ void main() {
       await tester.tap(find.text('Undo'));
       await settle(tester);
       expect(await tester.runAsync(liveMeals), 0);
-      rig.stack.dispose();
-    });
-
-    testWidgets('DY-023 a save sheet whose meal changed says "That meal '
-        'changed. Nothing was saved." and stays open', (tester) async {
-      final rig = TodayRig(
-        apply: (change) async => const Rejected(
-          VersionConflict(
-            entity: 'diary_entry',
-            id: 'x',
-            expected: 1,
-            actual: 2,
-          ),
-        ),
-      );
-      await yesterday(tester, rig: rig);
-
-      await tester.tap(find.byTooltip('More for Breakfast'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Save as meal…'));
-      await tester.pumpAndSettle();
-      await tester.tap(button('Save'));
-      await settle(tester);
-
-      expect(
-        find.text('That meal changed. Nothing was saved.'),
-        findsOneWidget,
-      );
-      expect(find.byType(SaveMealSheet), findsOneWidget);
       rig.stack.dispose();
     });
   });

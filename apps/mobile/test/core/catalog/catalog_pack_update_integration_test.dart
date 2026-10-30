@@ -87,24 +87,4 @@ void main() {
       '/v1/catalog/packs/7',
     ]);
   });
-
-  test('FD-023 a corrupted download is rejected; the old pack stays '
-      'attached and entries are unaffected', () async {
-    final good = packBytes();
-    adapter.respond = serve(
-      [...good]..[200] ^= 0xff,
-      sha: '${sha256.convert(good)}',
-    );
-    expect(await updater.checkForUpdate(), CatalogUpdate.rejected);
-    expect(await attachedVersion(), 6);
-    expect(await installer.currentPackPath(), endsWith('catalog-6.db'));
-    expect(await entries(), 2);
-  });
-
-  test('FD-023 offline leaves the current pack attached', () async {
-    adapter.respond = offline;
-    await expectLater(updater.checkForUpdate(), throwsA(isA<DioException>()));
-    expect(await attachedVersion(), 6);
-    expect(await entries(), 2);
-  });
 }

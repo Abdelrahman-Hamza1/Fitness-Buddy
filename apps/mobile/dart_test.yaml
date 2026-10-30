@@ -1,12 +1,5 @@
-# Test tags. `golden`: alchemist golden tests (S06 plan D17);
-# `make goldens` regenerates their images. `perf`: benchmarks that print
-# their numbers and assert a generous host budget (A01 §5); they run with
-# the other tests, and `flutter test --tags perf` runs only them. `live`:
-# tests against a running local API, skipped unless asked for (S06 plan WP2):
-#   (backend/) dotnet run --project src/Host --urls http://localhost:5198
-#   (apps/mobile/) flutter test --tags live --run-skipped
+# Test tag `golden`: alchemist golden tests of the 15 key screens (S06 plan
+# D17, TD-104); `make goldens` regenerates their images. There are no `perf`
+# or `live` tags (TD-104).
 tags:
   golden:
-  perf:
-  live:
-    skip: 'needs the local API on port 5198 (see apps/mobile/dart_test.yaml)'

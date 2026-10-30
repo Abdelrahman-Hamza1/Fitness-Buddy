@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
@@ -171,7 +170,7 @@ public sealed class CatalogTests(PostgresFixture postgres)
     [Trait("Req", "WO-001")]
     [Trait("Req", "WO-004")]
     [Trait("Req", "LC-033")]
-    public async Task Full_shipped_release_import_and_warmed_search_latency()
+    public async Task Full_shipped_release_import_and_search()
     {
         // `make test-dotnet` builds the non-mutating release first. CI and local tests use identical bytes.
         var path = Path.Combine(Root, "build/catalog");
@@ -203,24 +202,12 @@ public sealed class CatalogTests(PostgresFixture postgres)
             {
                 Assert.Equal(0L, await aliases.ExecuteScalarAsync(Ct));
             }
-            var samples = new List<double>();
+            // No host timing assertion (TD-104): the searches only have to run.
             foreach (var query in new[] { "rice", "ارز", "roz", "chicken", "دجاج", "djaj", "chiken", "milk", "oil", "banana" })
             {
                 _ = await queries.SearchAsync(query, 20, null, Ct);
-                for (var i = 0; i < 10; i++) { var timer = Stopwatch.StartNew(); _ = await queries.SearchAsync(query, 20, null, Ct); samples.Add(timer.Elapsed.TotalMilliseconds); }
             }
-            samples.Sort(); var p95 = samples[(int)Math.Ceiling(samples.Count * .95) - 1];
-            Console.WriteLine($"B07 full catalog: foods={release.Rows["foods"].Length},names={release.Rows["names"].Length},packBytes={release.Pack.Length},queries={samples.Count},p95Ms={p95:F2}");
-            var evidence = Path.Combine(Root, "backend/artifacts/catalog"); Directory.CreateDirectory(evidence);
-            await File.WriteAllTextAsync(Path.Combine(evidence, "measurement.json"), JsonSerializer.Serialize(new
-            {
-                foods = release.Rows["foods"].Length,
-                names = release.Rows["names"].Length,
-                packBytes = release.Pack.Length,
-                queries = samples.Count,
-                p95Ms = p95
-            }), Ct);
-            Assert.True(p95 < 150, $"Search p95 {p95:F2}ms");
+            Console.WriteLine($"B07 full catalog: foods={release.Rows["foods"].Length},names={release.Rows["names"].Length},packBytes={release.Pack.Length}");
             var fixtures = JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(Root, "contracts/testdata/catalog_search.json"), Ct))!.AsArray();
             foreach (var fixture in fixtures)
             {

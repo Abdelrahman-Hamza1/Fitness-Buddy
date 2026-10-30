@@ -49,14 +49,4 @@ Future<void> main() async {
       for (final range in GraphRange.values) range.name: (_seeded(range), 1.0),
     }),
   );
-  await goldenTest(
-    'WB-022 UX-050 UX-070 weight graph: 3M at text scale 2.0, a selected '
-    'point, empty',
-    fileName: 'weight_graph_states',
-    builder: () => _group({
-      '3M x2': (_seeded(GraphRange.m3), 2.0),
-      'selected': (_seeded(GraphRange.m3, selected: true), 1.0),
-      'empty': (graphOverrides(weighIns: const []), 1.0),
-    }),
-  );
 }

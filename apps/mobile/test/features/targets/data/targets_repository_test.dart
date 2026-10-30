@@ -1,6 +1,5 @@
 import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:fb_domain/fb_domain.dart';
-import 'package:fb_mobile/core/db/tables/sync_columns.dart';
 import 'package:fb_mobile/features/targets/data/target_mappers.dart';
 import 'package:fb_mobile/features/targets/data/targets_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -96,75 +95,6 @@ void main() {
     expect(shifted.shifts, {DayOfWeek.saturday: 5000.0, DayOfWeek.sunday: 1.3});
     expect(shifted.weights, {DayOfWeek.sunday: 1.3});
     expect(shifted.toPlan(1500).weights, {DayOfWeek.sunday: 1.3});
-  });
-
-  test('PA8 prep: every content column maps 1:1 to a wire field '
-      '(camelCase ↔ snake_case) and a record round-trips through its '
-      'row', () async {
-    final h = TargetsHarness();
-    for (final (table, fields) in <(TableInfo<Table, Object?>, List<String>)>[
-      (h.db.profiles, TargetWireFields.profile),
-      (h.db.goalPhases, TargetWireFields.goalPhase),
-      (h.db.targetSettingsRows, TargetWireFields.targetSettings),
-    ]) {
-      expect(
-        {
-          for (final c in table.$columns)
-            if (!syncColumnNames.contains(c.name)) c.name,
-        },
-        fields.map(columnOfWireField).toSet(),
-        reason: table.actualTableName,
-      );
-    }
-    expect(columnOfWireField('basisWeightKg'), 'basis_weight_kg');
-    expect(columnOfWireField('fiberG'), 'fiber_g');
-
-    final goal = GoalPhaseRecord(
-      id: fixtureId(1),
-      revision: 3,
-      name: 'Spring',
-      start: today,
-      end: today.plusDays(90),
-      type: GoalType.lose,
-      expression: GoalExpression.monthly(-2, LocalDate(2026, 11, 1)),
-      weightInputUnit: MassUnit.pound,
-    );
-    final settings = TargetSettingsRecord(
-      id: fixtureId(2),
-      revision: 2,
-      effectiveFrom: today,
-      mode: TargetMode.fixed,
-      rebalancing: false,
-      baseKcal: 1300.5,
-      manual: true,
-      acknowledged: true,
-      basisWeightKg: 72.3,
-      shifts: {for (final d in DayOfWeek.values) d: 1 + d.isoNumber / 10},
-      macros: MacroSettings(
-        protein: MacroOverride.grams(140),
-        fat: MacroOverride.percent(25),
-        carbs: MacroOverride.grams(180),
-        fiberGrams: 30,
-        caloriesProteinOnly: true,
-      ),
-    );
-    await h.apply([
-      PutProfile(profile),
-      PutGoalPhase(goal),
-      PutTargetSettings(settings),
-    ]);
-    final profileRow = await h.db.select(h.db.profiles).getSingle();
-    final goalRow = await h.db.select(h.db.goalPhases).getSingle();
-    final settingsRow = await h.db.select(h.db.targetSettingsRows).getSingle();
-    expect(wireOfRow(profileRow, TargetWireFields.profile), profile.toWire());
-    expect(wireOfRow(goalRow, TargetWireFields.goalPhase), goal.toWire());
-    expect(
-      wireOfRow(settingsRow, TargetWireFields.targetSettings),
-      settings.toWire(),
-    );
-    expect(profileOf(profileRow), profile);
-    expect(goalPhaseOf(goalRow), goal);
-    expect(targetSettingsOf(settingsRow), settings);
   });
 
   test('watchTargets emits the current rows and again after a change; the '

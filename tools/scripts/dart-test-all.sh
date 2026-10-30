@@ -9,14 +9,14 @@
 # Optional environment (CI's parallel test shards, TD-086):
 #   DART_TEST_SHARD  empty = every member (default); `packages` = every member
 #                    except apps/mobile; `app:<i>/<n>` = only apps/mobile,
-#                    shard i of n (1-based) via flutter test's --shard-index,
-#                    without the `perf` tag; `app:perf` = only apps/mobile's
-#                    `perf` tests, one at a time (their host budgets are
-#                    load-sensitive, backlog #116). In the `packages` shard
-#                    every member runs without its `perf` tests first, then
-#                    those alone, one at a time (2026-10-29).
+#                    shard i of n (1-based) via flutter test's --shard-index.
+#                    There are no host timing tests and no `perf` shard
+#                    (TD-104).
 #   DART_TEST_JOBS   test concurrency per member (default 2 for the 7 GB
 #                    laptop; CI's 4-core runners use 4).
+#   PROPERTY_RUNS    glados property runs per test (default 100; CI's nightly
+#                    and manual runs set 1000; TD-104). Read by the
+#                    `test/helpers/property.dart` of fb_domain and fb_text.
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -31,12 +31,11 @@ jobs="${DART_TEST_JOBS:-2}"
 app_shard=()
 case "$shard" in
   '' | packages) ;;
-  app:perf) app_shard=(--tags perf); jobs=1 ;;
   app:*)
     [[ $shard =~ ^app:([1-9][0-9]*)/([1-9][0-9]*)$ ]] && (( BASH_REMATCH[1] <= BASH_REMATCH[2] )) \
       || { echo "dart-test-all: error: bad DART_TEST_SHARD '$shard' (app:<i>/<n>, 1 <= i <= n)" >&2; exit 64; }
-    app_shard=(--total-shards "${BASH_REMATCH[2]}" --shard-index "$((BASH_REMATCH[1] - 1))" --exclude-tags perf) ;;
-  *) echo "dart-test-all: error: bad DART_TEST_SHARD '$shard' (empty, packages, app:perf or app:<i>/<n>)" >&2; exit 64 ;;
+    app_shard=(--total-shards "${BASH_REMATCH[2]}" --shard-index "$((BASH_REMATCH[1] - 1))") ;;
+  *) echo "dart-test-all: error: bad DART_TEST_SHARD '$shard' (empty, packages or app:<i>/<n>)" >&2; exit 64 ;;
 esac
 
 # Minimum line coverage of lib/ in percent, per package name (S08 D15).
@@ -101,35 +100,18 @@ while IFS= read -r dir; do
   if [[ $shard == packages && $is_app == true ]] || [[ $shard == app:* && $is_app == false ]]; then
     echo "-- skip $name: not in shard $shard"; continue
   fi
-  # Package members split out their `perf` tests (run alone afterwards).
-  pkg_args=() has_perf=false
-  if [[ $is_app == false ]] && grep -rqE "Tags\(\['perf'\]\)|tags: \['perf'\]" "$dir/test"; then
-    pkg_args=(--exclude-tags perf) has_perf=true
-  fi
   if grep -Eq '^[[:space:]]+sdk:[[:space:]]*flutter[[:space:]]*$' "$dir/pubspec.yaml"; then
     echo "== $name: flutter test${shard:+ ($shard)}"
-    (cd "$dir" && "$FLUTTER" test -j "$jobs" "${app_shard[@]}" "${pkg_args[@]}")
-    if [[ $has_perf == true ]]; then
-      echo "== $name: flutter test (perf, one at a time)"
-      (cd "$dir" && "$FLUTTER" test -j 1 --tags perf)
-    fi
+    (cd "$dir" && "$FLUTTER" test -j "$jobs" "${app_shard[@]}")
   elif [[ -n "${COVERAGE_MIN[$name]:-}" ]]; then
     echo "== $name: dart test (coverage >= ${COVERAGE_MIN[$name]}%)"
     lcov="$dir/build/coverage/$name.lcov"
     rm -f "$lcov"
-    (cd "$dir" && "$DART" test -j "$jobs" --coverage-path="$lcov" "${pkg_args[@]}")
+    (cd "$dir" && "$DART" test -j "$jobs" --coverage-path="$lcov")
     check_coverage "$dir" "$lcov" "${COVERAGE_MIN[$name]}"
-    if [[ $has_perf == true ]]; then
-      echo "== $name: dart test (perf, one at a time)"
-      (cd "$dir" && "$DART" test -j 1 --tags perf)
-    fi
   else
     echo "== $name: dart test"
-    (cd "$dir" && "$DART" test -j "$jobs" "${pkg_args[@]}")
-    if [[ $has_perf == true ]]; then
-      echo "== $name: dart test (perf, one at a time)"
-      (cd "$dir" && "$DART" test -j 1 --tags perf)
-    fi
+    (cd "$dir" && "$DART" test -j "$jobs")
   fi
   ran=$((ran + 1))
 done <<<"$members"

@@ -95,26 +95,4 @@ void main() {
     expect(allLb.addRow(day17).rows.last.unit, MassUnit.pound);
     expect(base.rows[1].toString(), isNot(contains('214')));
   });
-
-  test('typed numbers: comma, Arabic-Indic digits and the Arabic decimal mark '
-      'are read; anything else is empty', () {
-    expect(parseWeightHistoryNumber('97.4'), 97.4);
-    expect(parseWeightHistoryNumber('97,4'), 97.4);
-    expect(parseWeightHistoryNumber('٩٧٫٤'), 97.4);
-    expect(parseWeightHistoryNumber('۹۷'), 97);
-    expect(parseWeightHistoryNumber('.5'), 0.5);
-    expect(parseWeightHistoryNumber(''), isNull);
-    expect(parseWeightHistoryNumber('-1'), isNull);
-    expect(parseWeightHistoryNumber('1.2.3'), isNull);
-    final row = WeightHistoryForm.start(MassUnit.kilogram)
-        .withDate(0, day17)
-        .withText(0, '97,4')
-        .rows
-        .single;
-    expect(row.value, 97.4);
-    expect(
-      row.batchRow,
-      WeighInBatchRow(unit: MassUnit.kilogram, date: day17, value: 97.4),
-    );
-  });
 }

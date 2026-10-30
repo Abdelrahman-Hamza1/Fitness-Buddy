@@ -45,25 +45,6 @@ void main() {
       );
       expect(requirements['ZZ-01']!.release, Release.untagged);
     });
-
-    test('AT-001 a release tag later in the line does not count', () {
-      final requirements = _parse(
-        '- **ZZ-001** Every requirement tagged `[R1]` across the spec.\n',
-      );
-
-      expect(requirements['ZZ-001']!.release, Release.untagged);
-    });
-
-    test('AT-001 unknown release tag is untagged with a warning', () {
-      final file = _parser.parse('spec/zz.md', '- **ZZ-001** `[R4]` Odd.\n');
-
-      expect(file.requirements.single.release, Release.untagged);
-      expect(
-        file.warnings.single,
-        'spec/zz.md:1: ZZ-001 has an unknown release tag "[R4]", '
-        'counted as untagged',
-      );
-    });
   });
 
   group('tables:', () {
@@ -191,24 +172,6 @@ Prose mentions ZZ-001 and **ZZ-002** but defines nothing.
         ]);
       },
     );
-
-    test('AT-001 release overrides: UX-001..007 and AQ-01..12 except AQ-11 '
-        'are R1, AQ-11 is R2', () {
-      final r1 = [
-        for (var i = 1; i <= 7; i++) 'UX-00$i',
-        for (var i = 1; i <= 12; i++)
-          if (i != 11) 'AQ-${i.toString().padLeft(2, '0')}',
-      ];
-
-      expect(releaseOverrides.keys, unorderedEquals([...r1, 'AQ-11']));
-      for (final id in r1) {
-        expect(releaseOverrides[id]!.release, Release.r1, reason: id);
-      }
-      expect(releaseOverrides['AQ-11']!.release, Release.r2);
-      for (final override in releaseOverrides.values) {
-        expect(override.reason, isNotEmpty);
-      }
-    });
   });
 
   test('AT-001 reads only top-level spec files, skipping README, decisions '
