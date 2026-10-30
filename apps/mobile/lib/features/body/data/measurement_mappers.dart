@@ -22,17 +22,17 @@ Measurement measurementOf(MeasurementRow row) {
   final kind = MeasurementKind.fromCode(row.kind);
   final unit = MeasurementUnit.fromCode(row.inputUnit);
   if (kind == null || unit == null) throw const MeasurementMappingError();
-  final isCustom = kind == MeasurementKind.custom;
-  // M1, M2.
-  if (isCustom != (row.customTypeId != null) ||
-      unit.isLength != kind.isLength) {
-    throw const MeasurementMappingError();
-  }
   if (!_readable(row.value) || !_readable(row.inputValue)) {
     throw const MeasurementMappingError();
   }
-  // M3.
-  if (!kind.isLength && (row.value > 100 || row.inputValue > 100)) {
+  // M1–M3, the rules the server admits (B20).
+  if (!MeasurementWireRules.holds(
+    kind: kind,
+    customTypeId: row.customTypeId,
+    unit: unit,
+    value: row.value,
+    inputValue: row.inputValue,
+  )) {
     throw const MeasurementMappingError();
   }
   try {

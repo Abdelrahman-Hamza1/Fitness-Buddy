@@ -66,6 +66,12 @@ _Written in Phase B._
 - The corpus lists `serverRejectsAppTolerates` and `serverAcceptsAppSkips` (in `contracts/testdata/sync/body-targets-validation-vectors.json`) name the rows the server rejects permanently or the app skips on read: never retry them endlessly (#111).
 
 
+**B20 handoff (2026-10-30, B20 WP3 §9):** upload `measurementType` and `measurement` v1 only after B20 is deployed (server-first, TD-080).
+- A scrubbed `measurement` tombstone may zero `value` and `inputValue` but must keep `kind`, `customTypeId` and `inputUnit` paired (M1, M2); a scrubbed `measurementType` tombstone may send `name` `""` (B20 D8, backlog #136).
+- The corpus's `serverRejectsAppTolerates` rows (in `contracts/testdata/sync/measurement-validation-vectors.json`: a 121-unit type name, a body fat of `100.0000000000000001`, metadata out of bounds) are rejected permanently: never retry them endlessly (#111). `serverAcceptsAppSkips` lists the rows the app skips on read (value 0, `measuredAtUtc` past year 9999, an empty or blank type name).
+- Read whole `num` as `int` for `measuredAtUtc`, `tzOffsetMin` and `createdAtMs` (the server admits `180.0`).
+- A pulled measurement whose type is missing or tombstoned stays stored and hidden (A15b D25); the server never cascades a type tombstone.
+
 **A23 handoff (2026-10-30, A23 plan review, TD-102):**
 - Remote apply preserves the local-only `chat_messages` columns `request_json` and `answer_json`: never overwrite or null them from a pulled row; a pulled tombstone (and clear history) nulls them.
 - After a remote apply touches `chatMessage`/`proposal` rows, re-run the Buddy thread's `ensureRestored` for those sessions (A23 D12).

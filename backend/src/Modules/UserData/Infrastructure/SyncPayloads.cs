@@ -26,6 +26,7 @@ internal static class SyncPayloads
                     (start.ValueKind != JsonValueKind.Null && start.GetInt32() == end.GetInt32())) { return "invalidPayload"; }
             }
             if (TargetsPayloadValidator.Covers(version.Entity) && !TargetsPayloadValidator.Matches(version)) { return "invalidPayload"; }
+            if (MeasurementPayloadValidator.Covers(version.Entity) && !MeasurementPayloadValidator.Matches(version)) { return "invalidPayload"; }
             var personalFood = version.Entity == "personalFood" && version.SchemaVersion == 1;
             if (personalFood && !PersonalFoodPayloadValidator.Matches(version.Payload)) { return "invalidPayload"; }
             foreach (var property in version.Payload.EnumerateObject())

@@ -199,6 +199,29 @@ abstract final class MeasurementBounds {
       ((unit.isLength ? maxCm : maxPercent) / unit.factor * 10).floor() / 10;
 }
 
+/// The measurement wire rules M1–M3 of `contracts/README.md` § "Measurement
+/// semantic rules" (TD-080), and nothing else: the server admits exactly
+/// these (B20), the app's mapper skips rows that break them, and the shared
+/// corpus is generated from them. Plausibility ranges are not wire rules.
+abstract final class MeasurementWireRules {
+  /// The largest body-fat `value` and `inputValue` (M3).
+  static const double maxPercent = 100;
+
+  /// Whether the pairing holds: a type ID exactly for [MeasurementKind.custom]
+  /// (M1), percent exactly for [MeasurementKind.bodyFat] (M2), and a body-fat
+  /// [value] and [inputValue] of at most [maxPercent] (M3; NaN fails).
+  static bool holds({
+    required MeasurementKind kind,
+    required String? customTypeId,
+    required MeasurementUnit unit,
+    required double value,
+    required double inputValue,
+  }) =>
+      (kind == MeasurementKind.custom) == (customTypeId != null) &&
+      unit.isLength == kind.isLength &&
+      (kind.isLength || (value <= maxPercent && inputValue <= maxPercent));
+}
+
 /// Why a measurement draft can't be saved (A15b D15). Content-free: the
 /// app maps each to an ARB string.
 enum MeasurementIssue {

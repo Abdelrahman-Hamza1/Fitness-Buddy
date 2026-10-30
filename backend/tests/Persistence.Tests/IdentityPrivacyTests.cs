@@ -351,6 +351,85 @@ public sealed class IdentityPrivacyTests(PostgresFixture postgres)
         await capture.AssertAbsentAsync(canaries, await SinkCapture.AuditAsync(postgres), postgres);
     }
 
+    // B20: custom type names (Latin and Arabic) and distinctive measurement values reach owner pull/history
+    // exactly, and no error response, log, scope, span, metric, Sentry event, audit row or Postgres log,
+    // across the entity-dependent legs: accepted, M1-invalid, M2-invalid, M3-invalid, schema-invalid and guest 403.
+    [Fact, Trait("Rule", "09.4-no-user-content"), Trait("Req", "AC-010"), Trait("Req", "WB-040"), Trait("Req", "WB-042")]
+    public async Task B20_measurement_names_and_values_never_reach_errors_logs_or_telemetry()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await using var h = new IdentityHarness(postgres); await h.InitializeAsync();
+        using var capture = new SinkCapture();
+        await using var factory = capture.Configure(new IdentityApiTests.IdentityApi(postgres, h), _ => { });
+        using var client = await PersonalFoodHttp.Client(factory, h, await PersonalFoodHttp.Register(h));
+        var dataset = await PersonalFoodHttp.Dataset(client);
+        string[] canaries = ["CANARY-B20-TYPE-NAME", "ذراع-يسار-سري-كناري", "87.6543219", "34.5098761", "18.7654321", "150.1234567"];
+        var typeId = Guid.CreateVersion7();
+        var type = B18Encode(MeasurementCases.Raw("measurementType-base"), new() { ["name"] = canaries[0] });
+        var arabicType = B18Encode(MeasurementCases.Raw("measurementType-base"), new() { ["name"] = canaries[1] });
+        var waist = B18Encode(MeasurementCases.Raw("measurement-base-waist-in"), new() { ["value"] = 87.6543219m, ["inputValue"] = 34.5098761m });
+        var bodyFat = B18Encode(MeasurementCases.Raw("measurement-base-bodyFat"), new() { ["value"] = 18.7654321m, ["inputValue"] = 18.7654321m });
+        var custom = B18Encode(MeasurementCases.Raw("measurement-base-custom-cm"), new() { ["customTypeId"] = typeId.ToString(), ["value"] = 87.6543219m, ["inputValue"] = 87.6543219m });
+        PersonalFoodHttp.Row[] rows =
+        [
+            PersonalFoodHttp.NewRow(h, type, entity: "measurementType", id: typeId),
+            PersonalFoodHttp.NewRow(h, arabicType, entity: "measurementType", id: Guid.CreateVersion7()),
+            PersonalFoodHttp.NewRow(h, waist, entity: "measurement", id: Guid.CreateVersion7()),
+            PersonalFoodHttp.NewRow(h, bodyFat, entity: "measurement", id: Guid.CreateVersion7()),
+            PersonalFoodHttp.NewRow(h, custom, entity: "measurement", id: Guid.CreateVersion7()),
+        ];
+        using (var accepted = await PersonalFoodHttp.Push(client, h, dataset, rows))
+        {
+            var ack = await accepted.Content.ReadAsStringAsync(ct);
+            Assert.All(JsonDocument.Parse(ack).RootElement.GetProperty("results").EnumerateArray(), r => Assert.Equal("accepted", r.GetProperty("status").GetString()));
+            B18AssertNoCanary(canaries, ack);
+        }
+        // M1 (custom without its type), M2 (body fat in cm), M3 (body fat over 100) and schema-invalid
+        // (extra member, unknown inputUnit), each carrying canaries.
+        var invalid = new[]
+        {
+            rows[4] with { Id = Guid.CreateVersion7(), Raw = B18Encode(custom, new() { ["customTypeId"] = null }) },
+            rows[3] with { Id = Guid.CreateVersion7(), Raw = B18Encode(bodyFat, new() { ["inputUnit"] = "cm" }) },
+            rows[3] with { Id = Guid.CreateVersion7(), Raw = B18Encode(bodyFat, new() { ["value"] = 150.1234567m }) },
+            rows[0] with { Id = Guid.CreateVersion7(), Raw = B18Encode(type, new() { ["unexpected"] = canaries[1] }) },
+            rows[2] with { Id = Guid.CreateVersion7(), Raw = B18Encode(waist, new() { ["inputUnit"] = "inch" }) },
+        };
+        var sent = string.Concat(rows.Concat(invalid).Select(r => r.Raw));
+        foreach (var canary in canaries) { Assert.Contains(canary, sent, StringComparison.Ordinal); }
+        using (var rejected = await PersonalFoodHttp.Push(client, h, dataset, invalid))
+        {
+            Assert.Equal(HttpStatusCode.OK, rejected.StatusCode);
+            var ack = await rejected.Content.ReadAsStringAsync(ct);
+            Assert.All(JsonDocument.Parse(ack).RootElement.GetProperty("results").EnumerateArray(), r => Assert.Equal("invalidPayload", r.GetProperty("reason").GetString()));
+            Assert.Equal(invalid.Length, JsonDocument.Parse(ack).RootElement.GetProperty("results").GetArrayLength());
+            B18AssertNoCanary(canaries, ack);
+        }
+        // Owner pull and item history intentionally return the stored content exactly.
+        using (var update = await PersonalFoodHttp.Push(client, h, dataset, [.. rows.Select(r => r with { Hlc = PersonalFoodHttp.Hlc(h, 1) })]))
+        { Assert.Equal(HttpStatusCode.OK, update.StatusCode); }
+        var pulled = (await PersonalFoodHttp.Page(client, dataset)).GetProperty("changes").EnumerateArray().ToArray();
+        Assert.Equal(rows.Length, pulled.Length);
+        foreach (var row in rows)
+        {
+            using var expected = JsonDocument.Parse(row.Raw);
+            Assert.True(JsonElement.DeepEquals(expected.RootElement, pulled.Single(c => c.GetProperty("id").GetGuid() == row.Id).GetProperty("payload")));
+            Assert.True(JsonElement.DeepEquals(expected.RootElement, Assert.Single((await PersonalFoodHttp.Page(client, dataset, row.Id, row.Entity)).GetProperty("changes").EnumerateArray()).GetProperty("payload")));
+        }
+        Assert.Equal(canaries[1], pulled.Single(c => c.GetProperty("id").GetGuid() == rows[1].Id).GetProperty("payload").GetProperty("name").GetString());
+        using (var guest = await PersonalFoodHttp.Client(factory, h, await h.GuestAsync()))
+        using (var denied = await PersonalFoodHttp.Push(guest, h, dataset, rows))
+        {
+            Assert.Equal(HttpStatusCode.Forbidden, denied.StatusCode);
+            B18AssertNoCanary(canaries, await denied.Content.ReadAsStringAsync(ct));
+        }
+        using (var erased = await client.DeleteAsync("/v1/me", ct)) { Assert.Equal(HttpStatusCode.NoContent, erased.StatusCode); }
+        await factory.Services.GetRequiredService<IHub>().FlushAsync(TimeSpan.FromSeconds(5));
+        capture.Meter.RecordObservableInstruments();
+        Assert.Contains("operation=push", capture.Metrics);
+        Assert.NotEmpty(capture.Logs.Lines); Assert.NotEmpty(capture.Activities);
+        await capture.AssertAbsentAsync(canaries, await SinkCapture.AuditAsync(postgres), postgres);
+    }
+
     // B09a WP6: EN/AR/Arabizi canaries in the message, entry/saved-meal/batch/personal-food names, aliases, memory values,
     // active-card lines, model mentions/subjects/names and a stated figure never reach logs, scopes, spans, metrics, Sentry,
     // audit rows or Postgres logs, across 200 (incl. the coded repair), replay, 400, 409, an injected 500, 503 and 429.

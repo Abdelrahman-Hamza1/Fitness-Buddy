@@ -562,3 +562,7 @@ gen-chat-proposal-vectors: ## Regenerate the shared synthetic chatMessage/propos
 .PHONY: gen-body-targets-vectors
 gen-body-targets-vectors: ## Regenerate the shared synthetic body & targets validation corpus (B19)
 	cd '$(REPO_ROOT)/packages/fb_domain' && '$(DART)' run tool/generate_body_targets_vectors.dart
+
+.PHONY: gen-measurement-vectors
+gen-measurement-vectors: ## Regenerate the shared synthetic measurement validation corpus (B20)
+	cd '$(REPO_ROOT)/packages/fb_domain' && '$(DART)' run tool/generate_measurement_vectors.dart
