@@ -174,7 +174,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A22b](A22-chat-proposal-card.md) | Card adjustments & follow-up (split from A22) | Claude | A22a, **B09a** (contract) | M | S33 part |  |✅ |
 | [A44](A44-brand-identity.md) | Brand identity & theme ("Embrace"; runs after A22a, owner 2026-10-29) | Claude | A22a | L | new |  | ✅ (phone checks: backlog #155) |
 | [A23](A23-message-lifecycle.md) | Message lifecycle, pending & failures | Claude | A22a, **B18** (contract) | L | S34 | **M3** | ⬜ |
-| [A24](A24-online-search-pack-updates.md) | Online search & pack updates (app) | Claude | A07, **B07** | M | S30 app part |  | ⬜ |
+| [A24](A24-online-search-pack-updates.md) | Online search & pack updates (app) | Claude | A07, **B07** | M | S30 app part |  | ✅ |
 | [A25](A25-diary-edits-by-chat.md) | Diary edits by chat (app) | Claude | A23, **B09a** (contract) | M | S35 app part |  | ⬜ |
 | [A26](A26-memory-user-model.md) | Memory & user model (app) | Claude | A23, **B09a** (contract) | M | S36 app part |  | ⬜ |
 | [A27](A27-batches-chat-foods.md) | Batches, personal foods & saved meals by chat (app) | Claude | A09b, A23, **B09a** (contract) | L | S37 app part |  | ⬜ |

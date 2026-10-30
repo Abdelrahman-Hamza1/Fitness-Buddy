@@ -67,6 +67,109 @@ final class CatalogPackInstallerProvider
 String _$catalogPackInstallerHash() =>
     r'be6e7ebc74c4910a36c0f5341a7fabdc1bbffc57';
 
+/// Whether the bootstrap checks for a newer pack (A24 D6). On in the app;
+/// test phones switch it off so their exact request logs stay unchanged.
+
+@ProviderFor(catalogPackUpdatesEnabled)
+final catalogPackUpdatesEnabledProvider = CatalogPackUpdatesEnabledProvider._();
+
+/// Whether the bootstrap checks for a newer pack (A24 D6). On in the app;
+/// test phones switch it off so their exact request logs stay unchanged.
+
+final class CatalogPackUpdatesEnabledProvider
+    extends $FunctionalProvider<bool, bool, bool>
+    with $Provider<bool> {
+  /// Whether the bootstrap checks for a newer pack (A24 D6). On in the app;
+  /// test phones switch it off so their exact request logs stay unchanged.
+  CatalogPackUpdatesEnabledProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'catalogPackUpdatesEnabledProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$catalogPackUpdatesEnabledHash();
+
+  @$internal
+  @override
+  $ProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  bool create(Ref ref) {
+    return catalogPackUpdatesEnabled(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$catalogPackUpdatesEnabledHash() =>
+    r'9cf87d30f92c93100fa6d7966afee7ce5dc359e2';
+
+/// Background pack updates over the generated client (A24 D5/D6).
+
+@ProviderFor(catalogPackUpdater)
+final catalogPackUpdaterProvider = CatalogPackUpdaterProvider._();
+
+/// Background pack updates over the generated client (A24 D5/D6).
+
+final class CatalogPackUpdaterProvider
+    extends
+        $FunctionalProvider<
+          CatalogPackUpdater,
+          CatalogPackUpdater,
+          CatalogPackUpdater
+        >
+    with $Provider<CatalogPackUpdater> {
+  /// Background pack updates over the generated client (A24 D5/D6).
+  CatalogPackUpdaterProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'catalogPackUpdaterProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$catalogPackUpdaterHash();
+
+  @$internal
+  @override
+  $ProviderElement<CatalogPackUpdater> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  CatalogPackUpdater create(Ref ref) {
+    return catalogPackUpdater(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CatalogPackUpdater value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CatalogPackUpdater>(value),
+    );
+  }
+}
+
+String _$catalogPackUpdaterHash() =>
+    r'95eeeb55f38fbab1279b2e6a7781abe18934a04c';
+
 /// Reads the attached offline catalog.
 
 @ProviderFor(offlineCatalog)

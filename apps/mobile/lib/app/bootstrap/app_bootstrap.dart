@@ -6,12 +6,16 @@ import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/errors/error_reporting.dart';
 import 'package:fb_mobile/core/export/export_providers.dart';
 import 'package:fb_mobile/core/session/session_providers.dart';
+import 'package:fb_mobile/core/session/session_state.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'
+    show ProviderSubscription;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_bootstrap.g.dart';
 
 /// The work deferred until the first frame is on screen (UX-001, S06 plan
-/// D9, D12, A1): independent error reporting, catalog pack install (A05 D9),
+/// D9, D12, A1): independent error reporting, catalog pack install (A05 D9)
+/// then the background pack update (A24),
 /// public `/v1/config` refresh and API session startup (A20 D9).
 ///
 /// The app widget (`FitnessBuddyApp`) calls [afterFirstFrame] from a
@@ -37,6 +41,39 @@ final class AppBootstrap {
     }
   }
 
+  /// FD-023: check for a newer pack after the bundled one is in place. A
+  /// failure (offline, no session yet, corrupt download) keeps the current
+  /// pack, is not reported, and gets one retry when the API session becomes
+  /// ready during this launch (A24 review #6, fix check #2).
+  Future<void> _updateCatalog() async {
+    await _installCatalog();
+    await _contained(() async {
+      if (!_ref.read(catalogPackUpdatesEnabledProvider)) return;
+      final retry = OneRetry(
+        () => _ref.read(catalogPackUpdaterProvider).checkForUpdate(),
+      );
+      // Watch readiness before the first attempt, so a session that becomes
+      // ready while it is in flight still earns the one retry.
+      late final ProviderSubscription<SessionState> sub;
+      var closed = false;
+      void stopWhenFinished() {
+        if (closed || !retry.finished) return;
+        closed = true;
+        sub.close();
+      }
+
+      sub = _ref.listen(sessionStateProvider, (previous, next) {
+        if (next.readiness == SessionReadiness.ready &&
+            previous?.readiness != SessionReadiness.ready) {
+          retry.ready();
+        }
+        stopWhenFinished();
+      });
+      await retry.run();
+      stopWhenFinished();
+    });
+  }
+
   Future<void> _contained(FutureOr<void> Function() work) async {
     try {
       if (_ref.mounted) await work();
@@ -55,7 +92,7 @@ final class AppBootstrap {
         await _ref.read(errorReportingProvider).start();
       }),
     );
-    unawaited(_installCatalog());
+    unawaited(_updateCatalog());
     unawaited(_contained(() => _ref.read(exportCacheSweeperProvider).sweep()));
     unawaited(
       _contained(() async {

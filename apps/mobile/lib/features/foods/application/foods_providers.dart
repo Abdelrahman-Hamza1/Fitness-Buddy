@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/catalog/catalog_providers.dart';
+import 'package:fb_mobile/core/catalog/online_food_search.dart';
 import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
@@ -71,6 +72,7 @@ Future<FoodChoice?> foodChoice(Ref ref, FoodChoiceRef choice) async {
     ref.watch(foodCatalogRepositoryProvider),
     () => service.history,
     personalFoods: () => service.personalFoods,
+    onlineFood: (id) => ref.read(onlineFoodCacheProvider)[id],
   ).load(choice);
 }
 

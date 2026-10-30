@@ -199,7 +199,10 @@ FoodChoice historyChoice(FoodHistoryItem item, {VersionedId? guard}) =>
 /// Loader expands only compatible state siblings with an actual yield factor.
 final class FoodChoiceLoader {
   /// Creates this structured value.
-  new(this.repository, this.history, {this.personalFoods});
+  new(this.repository, this.history, {this.personalFoods, this.onlineFood});
+
+  /// Foods seen in online results (A24 D4), used when the pack lacks the ID.
+  final CatalogFood? Function(String id)? onlineFood;
 
   /// Latest live personal rows; an absent row must never fall back unguarded.
   final List<PersonalFood> Function()? personalFoods;
@@ -227,8 +230,9 @@ final class FoodChoiceLoader {
     }
     final food = ref.food.kind == FoodRefKind.catalog
         ? (await repository.foodsByIds([
-            ref.food.id!,
-          ]))[ref.food.id]?.firstOrNull
+                ref.food.id!,
+              ]))[ref.food.id]?.firstOrNull ??
+              onlineFood?.call(ref.food.id!)
         : null;
     if (food == null) return used == null ? null : historyChoice(used);
     final yields = await repository.yields();

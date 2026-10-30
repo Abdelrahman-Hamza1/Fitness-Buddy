@@ -15,6 +15,7 @@ final class FoodSearchResults {
     required this.packReady,
     this.carried,
     this.hasGood = false,
+    this.onlineRows = 0,
   });
 
   /// Ranked, de-duplicated foods for this query.
@@ -28,6 +29,9 @@ final class FoodSearchResults {
 
   /// Whether the unsplit query has a good-band match.
   final bool hasGood;
+
+  /// How many trailing [rows] came from the online search (A24).
+  final int onlineRows;
 }
 
 FuzzyIndex _buildIndex(List<String> words) => FuzzyIndex.build(words);
@@ -416,6 +420,51 @@ final class FoodSearchService {
           best.values.any((s) => s.isGood) ||
           matchedHistory.values.any((s) => s.isGood) ||
           _personal.values.any((f) => match(_personalKeys(f))?.isGood ?? false),
+    );
+  }
+
+  /// The text the online leg searches for [text]: the name part when
+  /// [local] carried a typed quantity (A24 D2).
+  static String onlineQuery(String text, FoodSearchResults local) =>
+      local.carried == null ? text : (parseQuantity(text)?.rest ?? text);
+
+  /// Appends [online] foods after the [local] rows (FD-020, A24 D2): server
+  /// order, at most [limit] rows, skipping any food whose identity keys
+  /// (catalog ID, dish, strict name + state) a row already has (`07` §5.2).
+  FoodSearchResults appendOnline(
+    FoodSearchResults local,
+    List<CatalogFood> online, {
+    UnitSystem system = UnitSystem.metric,
+    int limit = 20,
+  }) {
+    final seen = {for (final row in local.rows) ..._keys(row.choice)};
+    final historyById = {for (final h in _history) _identity(h.food.ref): h};
+    final extra = <FoodSearchRow>[];
+    for (final food in online) {
+      if (extra.length >= limit) break;
+      final choice = catalogChoice(
+        food,
+        history: historyById['catalog:${food.id}'],
+      );
+      final keys = _keys(choice);
+      if (keys.any(seen.contains)) continue;
+      seen.addAll(keys);
+      extra.add(
+        FoodSearchRow(
+          choice: choice,
+          tier: _catalogTier(food),
+          parsed: local.carried,
+          system: system,
+        ),
+      );
+    }
+    if (extra.isEmpty) return local;
+    return FoodSearchResults(
+      rows: [...local.rows, ...extra],
+      packReady: local.packReady,
+      carried: local.carried,
+      hasGood: local.hasGood,
+      onlineRows: extra.length,
     );
   }
 

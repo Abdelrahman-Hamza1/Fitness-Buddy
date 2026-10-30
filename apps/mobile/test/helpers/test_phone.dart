@@ -1,5 +1,7 @@
 import 'package:fb_mobile/app/app_scope.dart';
 import 'package:fb_mobile/core/api/api_providers.dart';
+import 'package:fb_mobile/core/catalog/catalog_providers.dart';
+import 'package:fb_mobile/core/catalog/online_food_search.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/config/package_info.dart';
 import 'package:fb_mobile/core/storage/preferences.dart';
@@ -31,9 +33,16 @@ final AppConfig testConfig = AppConfig(
 final class TestPhone {
   /// Creates a phone with the app installed at [appVersion]. With
   /// [realNetwork] the app talks to [config]'s real API instead of
-  /// [adapter] (live tests only).
-  new({this.appVersion = '0.1.0', AppConfig? config, this.realNetwork = false})
-    : config = config ?? testConfig {
+  /// [adapter] (live tests only). [onlineSearch] and [packUpdates] opt in
+  /// to the A24 online food search and background pack check; both are off
+  /// by default so request logs stay exact.
+  new({
+    this.appVersion = '0.1.0',
+    AppConfig? config,
+    this.realNetwork = false,
+    this.onlineSearch = false,
+    this.packUpdates = false,
+  }) : config = config ?? testConfig {
     adapter.onRequest = (r) => events.add('${r.method} ${r.path}');
   }
 
@@ -48,6 +57,12 @@ final class TestPhone {
 
   /// Whether requests go to the real API (not [adapter]).
   final bool realNetwork;
+
+  /// Whether food search also asks the server catalog (A24).
+  final bool onlineSearch;
+
+  /// Whether the bootstrap checks for a newer catalog pack (A24).
+  final bool packUpdates;
 
   /// When set, the app can't open its preferences.
   bool preferencesBroken = false;
@@ -77,6 +92,9 @@ final class TestPhone {
       return SharedPreferencesAsync();
     }),
     if (!realNetwork) httpClientAdapterProvider.overrideWithValue(adapter),
+    // A24: off unless the test opts in (each adds requests to the log).
+    catalogPackUpdatesEnabledProvider.overrideWithValue(packUpdates),
+    onlineFoodSearchEnabledProvider.overrideWithValue(onlineSearch),
     packageInfoProvider.overrideWith((ref) async {
       events.add('package info');
       return PackageInfo(

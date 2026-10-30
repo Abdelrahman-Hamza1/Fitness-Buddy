@@ -9,14 +9,29 @@ part of 'food_search_controller.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// One running search + one replaceable pending request, without debounce.
+///
+/// After local results for a query are on screen, an online search for the
+/// same query runs after [onlineDelay] and its new foods are appended (A24
+/// D1/D2). Local results never wait for it; a failed online leg changes
+/// nothing.
 
 @ProviderFor(FoodSearchController)
 final foodSearchControllerProvider = FoodSearchControllerProvider._();
 
 /// One running search + one replaceable pending request, without debounce.
+///
+/// After local results for a query are on screen, an online search for the
+/// same query runs after [onlineDelay] and its new foods are appended (A24
+/// D1/D2). Local results never wait for it; a failed online leg changes
+/// nothing.
 final class FoodSearchControllerProvider
     extends $NotifierProvider<FoodSearchController, FoodSearchState> {
   /// One running search + one replaceable pending request, without debounce.
+  ///
+  /// After local results for a query are on screen, an online search for the
+  /// same query runs after [onlineDelay] and its new foods are appended (A24
+  /// D1/D2). Local results never wait for it; a failed online leg changes
+  /// nothing.
   FoodSearchControllerProvider._()
     : super(
         from: null,
@@ -45,9 +60,14 @@ final class FoodSearchControllerProvider
 }
 
 String _$foodSearchControllerHash() =>
-    r'496bb72cc3330e97449a32326568fde2e328c8ef';
+    r'f4615832ac736ae8c7fbd77a597e4caf384ea64d';
 
 /// One running search + one replaceable pending request, without debounce.
+///
+/// After local results for a query are on screen, an online search for the
+/// same query runs after [onlineDelay] and its new foods are appended (A24
+/// D1/D2). Local results never wait for it; a failed online leg changes
+/// nothing.
 
 abstract class _$FoodSearchController extends $Notifier<FoodSearchState> {
   FoodSearchState build();

@@ -76,16 +76,19 @@ final class BuddyFakeAuthAdapter extends _FakeAdapter {
 
 /// The overrides that put the fakes under both of the app's HTTP clients and
 /// give the session a fresh in-memory store, so no tokens from another test
-/// (or the phone's real keystore) are read or written.
+/// (or the phone's real keystore) are read or written. [adapter] is any API
+/// transport fake (Buddy's, or A24's catalog fake); [flavor] keys the
+/// session store (lowercase letters, digits or '-').
 List<Override> buddyFakeApi(
-  BuddyFakeAdapter adapter, {
+  HttpClientAdapter adapter, {
   required BuddyFakeAuthAdapter auth,
+  String flavor = 'buddy-journeys',
 }) => [
   httpClientAdapterProvider.overrideWithValue(adapter),
   authHttpClientAdapterProvider.overrideWithValue(auth),
   secureSessionStoreProvider.overrideWithValue(
     SecureSessionStore(
-      flavor: 'buddy-journeys',
+      flavor: flavor,
       origin: Uri.parse('https://buddy-fake.example.test'),
       storage: _MemorySessionSecrets(),
       durability: const _InstantDurability(),
