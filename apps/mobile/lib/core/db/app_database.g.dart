@@ -4050,6 +4050,46 @@ class $CustomExercisesTable extends CustomExercises
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _primaryMuscleMeta = const VerificationMeta(
+    'primaryMuscle',
+  );
+  @override
+  late final GeneratedColumn<String> primaryMuscle = GeneratedColumn<String>(
+    'primary_muscle',
+    aliasedName,
+    true,
+    check: () => primaryMuscle.isIn(const [
+      'chest',
+      'shoulders',
+      'biceps',
+      'triceps',
+      'forearms',
+      'traps',
+      'upper_back',
+      'lower_back',
+      'abs',
+      'obliques',
+      'quadriceps',
+      'hamstrings',
+      'glutes',
+      'calves',
+      'adductors',
+    ]),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _secondaryMusclesJsonMeta =
+      const VerificationMeta('secondaryMusclesJson');
+  @override
+  late final GeneratedColumn<String> secondaryMusclesJson =
+      GeneratedColumn<String>(
+        'secondary_muscles_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('[]'),
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -4064,6 +4104,8 @@ class $CustomExercisesTable extends CustomExercises
     aliasesJson,
     exerciseType,
     equipment,
+    primaryMuscle,
+    secondaryMusclesJson,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -4173,6 +4215,24 @@ class $CustomExercisesTable extends CustomExercises
     } else if (isInserting) {
       context.missing(_equipmentMeta);
     }
+    if (data.containsKey('primary_muscle')) {
+      context.handle(
+        _primaryMuscleMeta,
+        primaryMuscle.isAcceptableOrUnknown(
+          data['primary_muscle']!,
+          _primaryMuscleMeta,
+        ),
+      );
+    }
+    if (data.containsKey('secondary_muscles_json')) {
+      context.handle(
+        _secondaryMusclesJsonMeta,
+        secondaryMusclesJson.isAcceptableOrUnknown(
+          data['secondary_muscles_json']!,
+          _secondaryMusclesJsonMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -4230,6 +4290,14 @@ class $CustomExercisesTable extends CustomExercises
         DriftSqlType.string,
         data['${effectivePrefix}equipment'],
       )!,
+      primaryMuscle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}primary_muscle'],
+      ),
+      secondaryMusclesJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}secondary_muscles_json'],
+      )!,
     );
   }
 
@@ -4278,6 +4346,13 @@ class CustomExerciseRow extends DataClass
 
   /// The equipment code (WO-002, WO-005).
   final String equipment;
+
+  /// The main muscle code (WO-007, A37 D2, D6), or null: rows from before
+  /// v11, or synced without one.
+  final String? primaryMuscle;
+
+  /// Secondary muscle codes, a JSON array (at most 4, never the primary).
+  final String secondaryMusclesJson;
   const CustomExerciseRow({
     required this.id,
     required this.createdAt,
@@ -4291,6 +4366,8 @@ class CustomExerciseRow extends DataClass
     required this.aliasesJson,
     required this.exerciseType,
     required this.equipment,
+    this.primaryMuscle,
+    required this.secondaryMusclesJson,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4309,6 +4386,10 @@ class CustomExerciseRow extends DataClass
     map['aliases_json'] = Variable<String>(aliasesJson);
     map['exercise_type'] = Variable<String>(exerciseType);
     map['equipment'] = Variable<String>(equipment);
+    if (!nullToAbsent || primaryMuscle != null) {
+      map['primary_muscle'] = Variable<String>(primaryMuscle);
+    }
+    map['secondary_muscles_json'] = Variable<String>(secondaryMusclesJson);
     return map;
   }
 
@@ -4328,6 +4409,10 @@ class CustomExerciseRow extends DataClass
       aliasesJson: Value(aliasesJson),
       exerciseType: Value(exerciseType),
       equipment: Value(equipment),
+      primaryMuscle: primaryMuscle == null && nullToAbsent
+          ? const Value.absent()
+          : Value(primaryMuscle),
+      secondaryMusclesJson: Value(secondaryMusclesJson),
     );
   }
 
@@ -4349,6 +4434,10 @@ class CustomExerciseRow extends DataClass
       aliasesJson: serializer.fromJson<String>(json['aliasesJson']),
       exerciseType: serializer.fromJson<String>(json['exerciseType']),
       equipment: serializer.fromJson<String>(json['equipment']),
+      primaryMuscle: serializer.fromJson<String?>(json['primaryMuscle']),
+      secondaryMusclesJson: serializer.fromJson<String>(
+        json['secondaryMusclesJson'],
+      ),
     );
   }
   @override
@@ -4367,6 +4456,8 @@ class CustomExerciseRow extends DataClass
       'aliasesJson': serializer.toJson<String>(aliasesJson),
       'exerciseType': serializer.toJson<String>(exerciseType),
       'equipment': serializer.toJson<String>(equipment),
+      'primaryMuscle': serializer.toJson<String?>(primaryMuscle),
+      'secondaryMusclesJson': serializer.toJson<String>(secondaryMusclesJson),
     };
   }
 
@@ -4383,6 +4474,8 @@ class CustomExerciseRow extends DataClass
     String? aliasesJson,
     String? exerciseType,
     String? equipment,
+    Value<String?> primaryMuscle = const Value.absent(),
+    String? secondaryMusclesJson,
   }) => CustomExerciseRow(
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
@@ -4396,6 +4489,10 @@ class CustomExerciseRow extends DataClass
     aliasesJson: aliasesJson ?? this.aliasesJson,
     exerciseType: exerciseType ?? this.exerciseType,
     equipment: equipment ?? this.equipment,
+    primaryMuscle: primaryMuscle.present
+        ? primaryMuscle.value
+        : this.primaryMuscle,
+    secondaryMusclesJson: secondaryMusclesJson ?? this.secondaryMusclesJson,
   );
   CustomExerciseRow copyWithCompanion(CustomExercisesCompanion data) {
     return CustomExerciseRow(
@@ -4419,6 +4516,12 @@ class CustomExerciseRow extends DataClass
           ? data.exerciseType.value
           : this.exerciseType,
       equipment: data.equipment.present ? data.equipment.value : this.equipment,
+      primaryMuscle: data.primaryMuscle.present
+          ? data.primaryMuscle.value
+          : this.primaryMuscle,
+      secondaryMusclesJson: data.secondaryMusclesJson.present
+          ? data.secondaryMusclesJson.value
+          : this.secondaryMusclesJson,
     );
   }
 
@@ -4436,7 +4539,9 @@ class CustomExerciseRow extends DataClass
           ..write('name: $name, ')
           ..write('aliasesJson: $aliasesJson, ')
           ..write('exerciseType: $exerciseType, ')
-          ..write('equipment: $equipment')
+          ..write('equipment: $equipment, ')
+          ..write('primaryMuscle: $primaryMuscle, ')
+          ..write('secondaryMusclesJson: $secondaryMusclesJson')
           ..write(')'))
         .toString();
   }
@@ -4455,6 +4560,8 @@ class CustomExerciseRow extends DataClass
     aliasesJson,
     exerciseType,
     equipment,
+    primaryMuscle,
+    secondaryMusclesJson,
   );
   @override
   bool operator ==(Object other) =>
@@ -4471,7 +4578,9 @@ class CustomExerciseRow extends DataClass
           other.name == this.name &&
           other.aliasesJson == this.aliasesJson &&
           other.exerciseType == this.exerciseType &&
-          other.equipment == this.equipment);
+          other.equipment == this.equipment &&
+          other.primaryMuscle == this.primaryMuscle &&
+          other.secondaryMusclesJson == this.secondaryMusclesJson);
 }
 
 class CustomExercisesCompanion extends UpdateCompanion<CustomExerciseRow> {
@@ -4487,6 +4596,8 @@ class CustomExercisesCompanion extends UpdateCompanion<CustomExerciseRow> {
   final Value<String> aliasesJson;
   final Value<String> exerciseType;
   final Value<String> equipment;
+  final Value<String?> primaryMuscle;
+  final Value<String> secondaryMusclesJson;
   final Value<int> rowid;
   const CustomExercisesCompanion({
     this.id = const Value.absent(),
@@ -4501,6 +4612,8 @@ class CustomExercisesCompanion extends UpdateCompanion<CustomExerciseRow> {
     this.aliasesJson = const Value.absent(),
     this.exerciseType = const Value.absent(),
     this.equipment = const Value.absent(),
+    this.primaryMuscle = const Value.absent(),
+    this.secondaryMusclesJson = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CustomExercisesCompanion.insert({
@@ -4516,6 +4629,8 @@ class CustomExercisesCompanion extends UpdateCompanion<CustomExerciseRow> {
     this.aliasesJson = const Value.absent(),
     required String exerciseType,
     required String equipment,
+    this.primaryMuscle = const Value.absent(),
+    this.secondaryMusclesJson = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        createdAt = Value(createdAt),
@@ -4539,6 +4654,8 @@ class CustomExercisesCompanion extends UpdateCompanion<CustomExerciseRow> {
     Expression<String>? aliasesJson,
     Expression<String>? exerciseType,
     Expression<String>? equipment,
+    Expression<String>? primaryMuscle,
+    Expression<String>? secondaryMusclesJson,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -4554,6 +4671,9 @@ class CustomExercisesCompanion extends UpdateCompanion<CustomExerciseRow> {
       if (aliasesJson != null) 'aliases_json': aliasesJson,
       if (exerciseType != null) 'exercise_type': exerciseType,
       if (equipment != null) 'equipment': equipment,
+      if (primaryMuscle != null) 'primary_muscle': primaryMuscle,
+      if (secondaryMusclesJson != null)
+        'secondary_muscles_json': secondaryMusclesJson,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4571,6 +4691,8 @@ class CustomExercisesCompanion extends UpdateCompanion<CustomExerciseRow> {
     Value<String>? aliasesJson,
     Value<String>? exerciseType,
     Value<String>? equipment,
+    Value<String?>? primaryMuscle,
+    Value<String>? secondaryMusclesJson,
     Value<int>? rowid,
   }) {
     return CustomExercisesCompanion(
@@ -4586,6 +4708,8 @@ class CustomExercisesCompanion extends UpdateCompanion<CustomExerciseRow> {
       aliasesJson: aliasesJson ?? this.aliasesJson,
       exerciseType: exerciseType ?? this.exerciseType,
       equipment: equipment ?? this.equipment,
+      primaryMuscle: primaryMuscle ?? this.primaryMuscle,
+      secondaryMusclesJson: secondaryMusclesJson ?? this.secondaryMusclesJson,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4629,6 +4753,14 @@ class CustomExercisesCompanion extends UpdateCompanion<CustomExerciseRow> {
     if (equipment.present) {
       map['equipment'] = Variable<String>(equipment.value);
     }
+    if (primaryMuscle.present) {
+      map['primary_muscle'] = Variable<String>(primaryMuscle.value);
+    }
+    if (secondaryMusclesJson.present) {
+      map['secondary_muscles_json'] = Variable<String>(
+        secondaryMusclesJson.value,
+      );
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -4650,6 +4782,8 @@ class CustomExercisesCompanion extends UpdateCompanion<CustomExerciseRow> {
           ..write('aliasesJson: $aliasesJson, ')
           ..write('exerciseType: $exerciseType, ')
           ..write('equipment: $equipment, ')
+          ..write('primaryMuscle: $primaryMuscle, ')
+          ..write('secondaryMusclesJson: $secondaryMusclesJson, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

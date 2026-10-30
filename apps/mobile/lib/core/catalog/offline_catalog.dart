@@ -19,7 +19,10 @@ final class OfflineCatalog {
   /// file) counts as absent; [onError] hears about it once, with the error
   /// only (no paths).
   new(this._db, {this.onError}) {
-    _packSub = packChanges.listen((_) => _readiness = null);
+    _packSub = packChanges.listen((_) {
+      _readiness = null;
+      _secondaryMuscles = null;
+    });
   }
 
   final AppDatabase _db;
@@ -79,12 +82,18 @@ final class OfflineCatalog {
   }
 
   /// Every built-in exercise with a known type and equipment, by name
-  /// (WO-001). Empty while no pack is attached.
+  /// (WO-001), with its muscles (WO-007). Empty while no pack is attached.
+  ///
+  /// Packs built before A37a (an A24 download newer than the bundled pack)
+  /// have no `secondary_muscles` column and legacy primary codes: muscles
+  /// are read through `Muscle.fromCatalogCode` (A37 D4, PA5).
   Future<List<CatalogExercise>> exercises() => _guard(() async {
     if (!await _isReady()) return const <CatalogExercise>[];
+    final secondaries = await _hasSecondaryMuscles();
     final rows = await _db
         .customSelect(
-          'SELECT id, name_en, type, equipment, primary_muscle '
+          'SELECT id, name_en, type, equipment, primary_muscle'
+          '${secondaries ? ', secondary_muscles' : ''} '
           'FROM $_schema.exercises ORDER BY name_en, id',
         )
         .get();
@@ -95,15 +104,68 @@ final class OfflineCatalog {
               Equipment.fromCode(row.read<String>('equipment')),
             )
             case (final type?, final equipment?))
-          CatalogExercise(
-            id: row.read<String>('id'),
-            nameEn: row.read<String>('name_en'),
-            type: type,
-            equipment: equipment,
-            primaryMuscle: row.read<String>('primary_muscle'),
-          ),
+          _exercise(row, type, equipment, secondaries: secondaries),
     ];
   }, const <CatalogExercise>[]);
+
+  CatalogExercise _exercise(
+    QueryRow row,
+    ExerciseType type,
+    Equipment equipment, {
+    required bool secondaries,
+  }) {
+    final primary = Muscle.fromCatalogCode(row.read<String>('primary_muscle'));
+    return CatalogExercise(
+      id: row.read<String>('id'),
+      nameEn: row.read<String>('name_en'),
+      type: type,
+      equipment: equipment,
+      primary: primary,
+      secondaries: secondaries
+          ? Muscle.secondariesFromCatalog(
+              (row.read<String?>('secondary_muscles') ?? '')
+                  .split(',')
+                  .where((code) => code.isNotEmpty),
+              primary: primary,
+            )
+          : const [],
+    );
+  }
+
+  // Whether the attached pack has `exercises.secondary_muscles`, asked once
+  // per attached pack: every attach or swap clears it (see the constructor),
+  // so an old → new swap reads the new column at once.
+  Future<bool>? _secondaryMuscles;
+
+  Future<bool> _hasSecondaryMuscles() => _secondaryMuscles ??= _db
+      .customSelect(
+        "SELECT 1 FROM pragma_table_info('exercises', '$_schema') "
+        "WHERE name = 'secondary_muscles'",
+      )
+      .get()
+      .then((rows) => rows.isNotEmpty);
+
+  /// Every English name and alias of each built-in exercise, display name
+  /// first (WO-001, A37 D12): the picker searches them. Empty while no pack
+  /// is attached.
+  Future<Map<String, List<String>>> exerciseNames() => _guard(() async {
+    if (!await _isReady()) return const <String, List<String>>{};
+    final rows = await _db
+        .customSelect(
+          'SELECT n.target_id, n.name FROM $_schema.names n '
+          'JOIN $_schema.exercises e ON e.id = n.target_id '
+          "WHERE n.lang = 'en' "
+          'ORDER BY n.target_id, n.is_display DESC, n.rowid',
+        )
+        .get();
+    final names = <String, List<String>>{};
+    for (final row in rows) {
+      (names[row.read<String>('target_id')] ??= []).add(
+        row.read<String>('name'),
+      );
+    }
+    return names;
+  }, const <String, List<String>>{});
 
   CatalogCity _city(QueryRow row) => CatalogCity(
     id: row.read<String>('id'),

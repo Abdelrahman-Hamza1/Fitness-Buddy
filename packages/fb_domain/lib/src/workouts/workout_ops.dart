@@ -67,8 +67,10 @@ final class UpdateCustomExercise extends WorkoutOp {
   String toString() => 'UpdateCustomExercise($exercise)';
 }
 
-/// Delete a custom exercise (tombstone; undo revives it). Logged sets keep
-/// pointing at it, so history stays readable.
+/// Delete a custom exercise (tombstone; undo revives it), only while no
+/// live session or template uses it (A37 D15: the handler refuses with
+/// `exerciseInUse`). References from deleted rows keep pointing at it, so
+/// history stays readable.
 final class DeleteCustomExercise extends WorkoutOp {
   /// Delete [exercise] at its shown version.
   const new(this.exercise) : super._();

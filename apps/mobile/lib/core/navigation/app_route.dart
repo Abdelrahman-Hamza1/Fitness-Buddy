@@ -66,6 +66,94 @@ final class WorkoutsRoute extends AppRoute {
   String get location => path;
 }
 
+/// The workout log form for a new session (WO-034, A37 D13), a detail
+/// screen of the Workouts tab: on [date] (today when null), with the
+/// [exercises] just picked, or a Repeat of session [repeat] (WO-024). Only
+/// IDs and the date travel in the URL.
+final class WorkoutLogRoute extends AppRoute {
+  /// Creates the route.
+  const new({this.date, this.repeat, this.exercises = const []});
+
+  /// The route's path pattern.
+  static const path = '/workouts/log';
+
+  /// The query parameter holding [date] (`YYYY-MM-DD`).
+  static const dateParam = 'date';
+
+  /// The query parameter holding [repeat].
+  static const repeatParam = 'repeat';
+
+  /// The query parameter holding [exercises], comma-separated.
+  static const exercisesParam = 'exercises';
+
+  /// The training day; null for today.
+  final LocalDate? date;
+
+  /// The session to repeat, or null.
+  final String? repeat;
+
+  /// The picked exercise IDs, in order.
+  final List<String> exercises;
+
+  @override
+  String get location {
+    final query = {
+      dateParam: ?date?.toString(),
+      repeatParam: ?repeat,
+      if (exercises.isNotEmpty) exercisesParam: exercises.join(','),
+    };
+    return Uri(
+      path: path,
+      queryParameters: query.isEmpty ? null : query,
+    ).toString();
+  }
+}
+
+/// One logged session, in the log form (WO-034, A37 D14): a detail screen
+/// of the Workouts tab.
+final class WorkoutSessionRoute extends AppRoute {
+  /// Creates the route for session [id].
+  const new({required this.id});
+
+  /// The route's path pattern.
+  static const path = '/workouts/session/:id';
+
+  /// The session.
+  final String id;
+
+  @override
+  String get location => '/workouts/session/$id';
+}
+
+/// Every logged session by date (WO-040): a detail screen of the Workouts
+/// tab.
+final class WorkoutHistoryRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/workouts/history';
+
+  @override
+  String get location => path;
+}
+
+/// One logged session opened from Today's workout row (HM-006, A37 D13):
+/// the same form, nested in the Today tab so its stack stays.
+final class TodayWorkoutSessionRoute extends AppRoute {
+  /// Creates the route for session [id].
+  const new({required this.id});
+
+  /// The route's path pattern.
+  static const path = '/today/workout/:id';
+
+  /// The session.
+  final String id;
+
+  @override
+  String get location => '/today/workout/$id';
+}
+
 /// The Me tab: profile, goals, targets, memory, settings (UX-010).
 final class MeRoute extends AppRoute {
   /// Creates the route.

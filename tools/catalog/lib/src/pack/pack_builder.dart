@@ -80,14 +80,18 @@ PackSummary buildPack({
   );
 }
 
-Object? _cell(Row row, String column) {
-  if (column != 'extras_json') return row[column];
-  final extras = row['extras'];
-  return extras == null ? null : jsonEncode(extras);
-}
+Object? _cell(Row row, String column) => switch (column) {
+  'extras_json' => switch (row['extras']) {
+    null => null,
+    final extras => jsonEncode(extras),
+  },
+  'secondary_muscles' => (row[column]! as List<Object?>).join(','),
+  _ => row[column],
+};
 
 /// Columns inserted per table, in DDL order. A column named `extras_json`
-/// takes the row's `extras` map as JSON text.
+/// takes the row's `extras` map as JSON text; `secondary_muscles` takes the
+/// row's list as comma-joined codes (`''` for none, A37 D4).
 const packColumns = <String, List<String>>{
   'foods': [
     'id', 'kind', 'source', 'source_ref', 'dish_id', 'name_en', 'name_ar',
@@ -112,6 +116,7 @@ const packColumns = <String, List<String>>{
     'type',
     'equipment',
     'primary_muscle',
+    'secondary_muscles',
     'catalog_version', //
   ],
   'cities': [
@@ -245,6 +250,7 @@ CREATE TABLE exercises (
   type TEXT NOT NULL,
   equipment TEXT NOT NULL,
   primary_muscle TEXT NOT NULL,
+  secondary_muscles TEXT NOT NULL,
   catalog_version INTEGER NOT NULL
 ) WITHOUT ROWID;
 CREATE TABLE cities (

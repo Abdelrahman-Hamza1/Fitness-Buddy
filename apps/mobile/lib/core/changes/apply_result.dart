@@ -30,6 +30,21 @@ final class Applied extends ApplyResult {
   /// [ChangeSetApplied]). Unmodifiable.
   final List<DomainEvent> events;
 
+  /// The version row [id] of [table] (its SQL name) has after this change
+  /// set, or `null` if it didn't write the row (A37 D9). Read from
+  /// [inverse]: each of its rows expects the version this change set left.
+  int? versionAfter(String table, String id) {
+    for (final row in inverse.rows) {
+      if (row.id != id || row.table.actualTableName != table) continue;
+      return switch (row) {
+        RestoreRow(:final expectedVersion) => expectedVersion,
+        TombstoneRow(:final expectedVersion) => expectedVersion,
+        _ => null,
+      };
+    }
+    return null;
+  }
+
   @override
   String toString() => 'Applied($changeSetId)';
 }

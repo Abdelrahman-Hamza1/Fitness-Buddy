@@ -20,10 +20,13 @@ String planDayId(DayOfWeek weekday) =>
 ///
 /// Rejections: `RowNotFound` / `VersionConflict` for a parent that is gone
 /// or changed; `InvalidOp` with `duplicateId` (an ID already used),
-/// `childOwnership` (a child ID that belongs to another aggregate or is a
-/// tombstone), `unknownExercise`, `invalidSet` (values don't fit the
+/// `childOwnership` (a child ID that belongs to another aggregate; a
+/// session's own tombstoned children are revived, A37 D25),
+/// `unknownExercise`, `invalidSet` (values don't fit the
 /// exercise type, WO-004), `future` (a session after today, WO-011),
-/// `typeInUse` (a custom exercise's type changed while sets use it).
+/// `typeInUse` (a custom exercise's type changed while sets use it),
+/// `exerciseInUse` (deleting a custom exercise sessions or templates use,
+/// A37 D15).
 /// Undo is refused with `exerciseInUse` when it would remove or retype a
 /// custom exercise that sessions or templates now use.
 final class WorkoutOpHandler extends ChangeOpHandler<WorkoutOp> {
@@ -76,12 +79,7 @@ final class WorkoutOpHandler extends ChangeOpHandler<WorkoutOp> {
     final columns = customExerciseColumns(op.draft);
     final typeChanged = row.exerciseType != op.draft.type.code;
     if (typeChanged && await _inUse(tx.db, row.id)) _reject('typeInUse');
-    if (!typeChanged &&
-        row.name == columns.name.value &&
-        row.aliasesJson == columns.aliasesJson.value &&
-        row.equipment == columns.equipment.value) {
-      return OpPlan(const []);
-    }
+    if (sameCustomExercise(row, op.draft)) return OpPlan(const []);
     return OpPlan(
       [
         UpdateRow(
@@ -97,6 +95,9 @@ final class WorkoutOpHandler extends ChangeOpHandler<WorkoutOp> {
 
   Future<OpPlan> _deleteExercise(VersionedId exercise, TxReader tx) async {
     await _live(tx, db.customExercises, customExerciseEntity, exercise);
+    // Only while unused (A37 D15), checked inside the write transaction, so
+    // a session logged meanwhile can't be orphaned by a stale check.
+    if (await _inUse(tx.db, exercise.id)) _reject('exerciseInUse');
     return OpPlan([
       TombstoneRow(
         db.customExercises,
@@ -169,16 +170,39 @@ final class WorkoutOpHandler extends ChangeOpHandler<WorkoutOp> {
     final ownSets = {for (final s in liveSets) s.id: s};
 
     // Child ownership: an existing child ID must be a live child of this
-    // session; anything else (another aggregate, a tombstone) is refused.
+    // session, or one of its own tombstones (revived with the same ID, A37
+    // D25: a re-checked set, an undone removal). Anything else (a child of
+    // another aggregate, live or not) is refused.
     final draftExerciseIds = [for (final e in op.draft.exercises) e.id];
     final draftSetIds = [
       for (final e in op.draft.exercises) ...e.sets.map((s) => s.id),
     ];
+    final revivedExercises = <String>{};
     for (final row in await _exercisesById(tx, draftExerciseIds)) {
-      if (!ownExercises.containsKey(row.id)) _reject('childOwnership');
+      if (ownExercises.containsKey(row.id)) continue;
+      if (row.deletedAt == null || row.sessionId != session.id) {
+        _reject('childOwnership');
+      }
+      revivedExercises.add(row.id);
     }
-    for (final row in await _setsById(tx, draftSetIds)) {
-      if (!ownSets.containsKey(row.id)) _reject('childOwnership');
+    final revivedSets = <String>{};
+    final existingSets = await _setsById(tx, draftSetIds);
+    final dead = [
+      for (final row in existingSets)
+        if (!ownSets.containsKey(row.id)) row,
+    ];
+    if (dead.isNotEmpty) {
+      // Every exercise row of this session, live or tombstoned.
+      final everExercises = {
+        for (final e in await _exercisesOfSession(tx, session.id)) e.id,
+      };
+      for (final row in dead) {
+        if (row.deletedAt == null ||
+            !everExercises.contains(row.sessionExerciseId)) {
+          _reject('childOwnership');
+        }
+        revivedSets.add(row.id);
+      }
     }
 
     final sessionChanged = !sameSession(session, op.draft);
@@ -186,7 +210,16 @@ final class WorkoutOpHandler extends ChangeOpHandler<WorkoutOp> {
     for (final (i, exercise) in op.draft.exercises.indexed) {
       final columns = sessionExerciseColumns(session.id, exercise, i);
       final existing = ownExercises[exercise.id];
-      if (existing == null) {
+      if (revivedExercises.contains(exercise.id)) {
+        // Content from the draft, deleted_at cleared; the session's version
+        // check below still guards concurrency (D25).
+        rows.add(
+          UpsertRow(
+            db.sessionExercises,
+            columns.copyWith(id: Value(exercise.id)),
+          ),
+        );
+      } else if (existing == null) {
         rows.add(
           InsertRow(
             db.sessionExercises,
@@ -206,7 +239,11 @@ final class WorkoutOpHandler extends ChangeOpHandler<WorkoutOp> {
       for (final (j, set) in exercise.sets.indexed) {
         final columns = setColumns(exercise.id, set, j);
         final existing = ownSets[set.id];
-        if (existing == null) {
+        if (revivedSets.contains(set.id)) {
+          rows.add(
+            UpsertRow(db.workoutSets, columns.copyWith(id: Value(set.id))),
+          );
+        } else if (existing == null) {
           rows.add(
             InsertRow(db.workoutSets, columns.copyWith(id: Value(set.id))),
           );
@@ -534,6 +571,13 @@ final class WorkoutOpHandler extends ChangeOpHandler<WorkoutOp> {
       : await (tx.db.select(
           db.workoutTemplateItems,
         )..where((t) => t.id.isIn(ids))).get();
+
+  Future<List<SessionExerciseRow>> _exercisesOfSession(
+    TxReader tx,
+    String sessionId,
+  ) => (tx.db.select(
+    db.sessionExercises,
+  )..where((t) => t.sessionId.equals(sessionId))).get();
 
   Future<List<SessionExerciseRow>> _liveExercisesOf(
     TxReader tx,

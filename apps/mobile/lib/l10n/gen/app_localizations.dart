@@ -130,12 +130,6 @@ abstract class AppLocalizations {
   /// **'Charts appear after a few days of logging.'**
   String get progressPlaceholder;
 
-  /// Placeholder body of the Workouts tab until workouts are built.
-  ///
-  /// In en, this message translates to:
-  /// **'Your workouts will show up here.'**
-  String get workoutsPlaceholder;
-
   /// Title of the screen shown when this app version is too old to talk to the server.
   ///
   /// In en, this message translates to:
@@ -178,7 +172,7 @@ abstract class AppLocalizations {
   /// **'No data yet'**
   String get progressEmptyTitle;
 
-  /// Title of the Workouts tab's empty state until workouts are built.
+  /// Title of the Workouts tab's and the history's empty state (first visit, A37a).
   ///
   /// In en, this message translates to:
   /// **'No workouts yet'**
@@ -6994,6 +6988,594 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{label}: {amount} of {target} g'**
   String progressGramsValueTarget(String label, String amount, String target);
+
+  /// A muscle group (A37 D2): picker chips and session names. The select value is the group's code.
+  ///
+  /// In en, this message translates to:
+  /// **'{group, select, chest{Chest} back{Back} shoulders{Shoulders} biceps{Biceps} triceps{Triceps} forearms{Forearms} legs{Legs} core{Core} other{Other}}'**
+  String workoutMuscleGroup(String group);
+
+  /// One muscle of the vocabulary (WO-007, A37 D2), on custom exercises and exercise rows.
+  ///
+  /// In en, this message translates to:
+  /// **'{muscle, select, chest{Chest} shoulders{Shoulders} biceps{Biceps} triceps{Triceps} forearms{Forearms} traps{Traps} upperBack{Upper back} lowerBack{Lower back} abs{Abs} obliques{Obliques} quadriceps{Quads} hamstrings{Hamstrings} glutes{Glutes} calves{Calves} adductors{Adductors} other{Other}}'**
+  String workoutMuscle(String muscle);
+
+  /// What an exercise logs per set (WO-004).
+  ///
+  /// In en, this message translates to:
+  /// **'{type, select, weightReps{Weight × reps} bodyweightReps{Bodyweight × reps} assisted{Assisted} repsOnly{Reps only} duration{Time} distanceDuration{Cardio} other{Other}}'**
+  String workoutExerciseType(String type);
+
+  /// An exercise's equipment (WO-002).
+  ///
+  /// In en, this message translates to:
+  /// **'{equipment, select, barbell{Barbell} dumbbell{Dumbbell} cable{Cable} machine{Machine} kettlebell{Kettlebell} bodyweight{Bodyweight} other{Other}}'**
+  String workoutEquipment(String equipment);
+
+  /// A session named from its two main muscle groups, e.g. 'Chest & triceps' (WO-010, A37 D10).
+  ///
+  /// In en, this message translates to:
+  /// **'{first, select, chest{Chest} back{Back} shoulders{Shoulders} biceps{Biceps} triceps{Triceps} forearms{Forearms} legs{Legs} core{Core} other{Other}} & {second, select, chest{chest} back{back} shoulders{shoulders} biceps{biceps} triceps{triceps} forearms{forearms} legs{legs} core{core} other{other}}'**
+  String workoutTitlePair(String first, String second);
+
+  /// A session spread over many muscle groups (A37 D10).
+  ///
+  /// In en, this message translates to:
+  /// **'Full body'**
+  String get workoutTitleFullBody;
+
+  /// A session of cardio only (A37 D10).
+  ///
+  /// In en, this message translates to:
+  /// **'Cardio'**
+  String get workoutTitleCardio;
+
+  /// A session with nothing to name it from (A37 D10).
+  ///
+  /// In en, this message translates to:
+  /// **'Workout'**
+  String get workoutTitleUntitled;
+
+  /// An exercise that was deleted or isn't in this app's catalog (A37 D15).
+  ///
+  /// In en, this message translates to:
+  /// **'Removed exercise'**
+  String get workoutRemovedExercise;
+
+  /// Exercise picker title (WO-001).
+  ///
+  /// In en, this message translates to:
+  /// **'Pick exercises'**
+  String get workoutPickTitle;
+
+  /// Exercise picker search field hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search exercises'**
+  String get workoutPickSearchHint;
+
+  /// Exercise picker chip: every exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get workoutPickAll;
+
+  /// Exercise picker chip: cardio exercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Cardio'**
+  String get workoutPickCardio;
+
+  /// Exercise picker: adds the selected exercises to the workout, in the order picked.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Add 1 exercise} other{Add {count} exercises}}'**
+  String workoutPickAdd(int count);
+
+  /// Exercise picker: creates a custom exercise named after the search text (WO-003).
+  ///
+  /// In en, this message translates to:
+  /// **'Create “{name}”'**
+  String workoutPickCreate(String name);
+
+  /// Exercise picker: creates a custom exercise (WO-003).
+  ///
+  /// In en, this message translates to:
+  /// **'Create a custom exercise'**
+  String get workoutPickCreateBlank;
+
+  /// Exercise picker: nothing matches the search.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercise matches. Create it as your own.'**
+  String get workoutPickNoResults;
+
+  /// Exercise picker: marks a custom exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Your exercise'**
+  String get workoutPickCustomTag;
+
+  /// Exercise picker: tooltip of the edit button on a custom exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit exercise'**
+  String get workoutPickEditCustom;
+
+  /// Exercise picker: semantics of a selected row with its pick order.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected {position}'**
+  String workoutPickSelected(int position);
+
+  /// Custom exercise form title, new (WO-003).
+  ///
+  /// In en, this message translates to:
+  /// **'New exercise'**
+  String get workoutCustomNewTitle;
+
+  /// Custom exercise form title, edit (WO-003).
+  ///
+  /// In en, this message translates to:
+  /// **'Edit exercise'**
+  String get workoutCustomEditTitle;
+
+  /// Custom exercise form: name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get workoutCustomName;
+
+  /// Custom exercise form: the name is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a name'**
+  String get workoutCustomNameError;
+
+  /// Custom exercise form: aliases field.
+  ///
+  /// In en, this message translates to:
+  /// **'Other names'**
+  String get workoutCustomAliases;
+
+  /// Custom exercise form: aliases field hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Separate with commas, e.g. low fly, LTH fly'**
+  String get workoutCustomAliasesHint;
+
+  /// Custom exercise form: the type section (WO-004).
+  ///
+  /// In en, this message translates to:
+  /// **'What you log'**
+  String get workoutCustomType;
+
+  /// Custom exercise form: the type is locked because sessions or templates use the exercise (A36).
+  ///
+  /// In en, this message translates to:
+  /// **'Already logged, so this can\'t change.'**
+  String get workoutCustomTypeLocked;
+
+  /// Custom exercise form: the equipment section.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment'**
+  String get workoutCustomEquipment;
+
+  /// Custom exercise form: the main muscle section (WO-007).
+  ///
+  /// In en, this message translates to:
+  /// **'Main muscle'**
+  String get workoutCustomPrimary;
+
+  /// Custom exercise form: no main muscle picked.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the main muscle'**
+  String get workoutCustomPrimaryError;
+
+  /// Custom exercise form: the secondary muscles section (WO-007).
+  ///
+  /// In en, this message translates to:
+  /// **'Other muscles (up to 4)'**
+  String get workoutCustomSecondary;
+
+  /// Custom exercise form: saves the exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get workoutCustomSave;
+
+  /// Custom exercise form: deletes the exercise (only while unused, A37 D15).
+  ///
+  /// In en, this message translates to:
+  /// **'Delete exercise'**
+  String get workoutCustomDelete;
+
+  /// Custom exercise form: why Delete isn't offered.
+  ///
+  /// In en, this message translates to:
+  /// **'Used in your workouts, so it can\'t be deleted.'**
+  String get workoutCustomInUse;
+
+  /// Undo snackbar after creating a custom exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise added'**
+  String get workoutCustomCreated;
+
+  /// Undo snackbar after editing a custom exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise updated'**
+  String get workoutCustomUpdated;
+
+  /// Undo snackbar after deleting a custom exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise deleted'**
+  String get workoutCustomDeleted;
+
+  /// A workout action found the row changed or gone; nothing was written.
+  ///
+  /// In en, this message translates to:
+  /// **'It changed meanwhile. Try again.'**
+  String get workoutActionChanged;
+
+  /// A workout action was refused for another reason; nothing was written.
+  ///
+  /// In en, this message translates to:
+  /// **'That didn\'t work. Nothing was changed.'**
+  String get workoutActionRefused;
+
+  /// One set: weight in kg times reps, e.g. '80 × 8' (WO-034 last-time numbers, history).
+  ///
+  /// In en, this message translates to:
+  /// **'{kg} × {reps}'**
+  String workoutSetWeightReps(String kg, int reps);
+
+  /// One bodyweight set with added weight in kg, e.g. '+10 × 8'.
+  ///
+  /// In en, this message translates to:
+  /// **'+{kg} × {reps}'**
+  String workoutSetAddedWeight(String kg, int reps);
+
+  /// One assisted set: reps with the assistance weight in kg.
+  ///
+  /// In en, this message translates to:
+  /// **'{reps} reps, −{kg} kg'**
+  String workoutSetAssisted(String kg, int reps);
+
+  /// One set of reps only.
+  ///
+  /// In en, this message translates to:
+  /// **'{reps, plural, =1{1 rep} other{{reps} reps}}'**
+  String workoutSetReps(int reps);
+
+  /// One cardio set: minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String workoutSetCardio(String minutes);
+
+  /// One cardio set: minutes and kilometres.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min · {km} km'**
+  String workoutSetCardioDistance(String minutes, String km);
+
+  /// Workouts tab, first visit (UX-010, WO-024): what to do. Keep the opening 'Your workouts will show up here' (tab tests).
+  ///
+  /// In en, this message translates to:
+  /// **'Your workouts will show up here. Pick exercises and log your sets after the gym, no plan needed.'**
+  String get workoutsFirstVisitMessage;
+
+  /// Workouts tab: starts a new workout by picking exercises (WO-034).
+  ///
+  /// In en, this message translates to:
+  /// **'Pick exercises'**
+  String get workoutsPickExercises;
+
+  /// Workouts tab: starts a new workout (WO-034).
+  ///
+  /// In en, this message translates to:
+  /// **'Log a workout'**
+  String get workoutsLogWorkout;
+
+  /// Workouts tab: the recent sessions section (WO-040).
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get workoutsRecent;
+
+  /// Workouts tab and session menu: starts a new workout copying this one (WO-024).
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat'**
+  String get workoutsRepeat;
+
+  /// Workouts tab: opens the history (WO-040).
+  ///
+  /// In en, this message translates to:
+  /// **'All workouts'**
+  String get workoutsHistory;
+
+  /// Week strip: semantics of a day with a workout (WO-024: trained days only).
+  ///
+  /// In en, this message translates to:
+  /// **'{day}, trained'**
+  String workoutsWeekTrained(String day);
+
+  /// History screen title (WO-040).
+  ///
+  /// In en, this message translates to:
+  /// **'Workout history'**
+  String get workoutHistoryTitle;
+
+  /// A session's counts in lists (WO-040).
+  ///
+  /// In en, this message translates to:
+  /// **'{exercises, plural, =1{1 exercise} other{{exercises} exercises}} · {sets, plural, =1{1 set} other{{sets} sets}}'**
+  String workoutSessionSummary(int exercises, int sets);
+
+  /// How many exercises of a session set a personal record (WO-042): a plain marker.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 PR} other{{count} PRs}}'**
+  String workoutPrCount(int count);
+
+  /// The plain personal-record marker on a set or exercise (WO-042, D-033: no celebration).
+  ///
+  /// In en, this message translates to:
+  /// **'PR'**
+  String get workoutPr;
+
+  /// Today: the workout row after logging (HM-006), e.g. 'Push ✓ · 5 exercises'.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} ✓ · {exercises, plural, =1{1 exercise} other{{exercises} exercises}}'**
+  String workoutTodayRow(String title, int exercises);
+
+  /// Today: how many more sessions the day has.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count}'**
+  String workoutTodayMore(int count);
+
+  /// Log form title, new session (WO-034).
+  ///
+  /// In en, this message translates to:
+  /// **'Log workout'**
+  String get workoutLogNewTitle;
+
+  /// Log form title, existing session (WO-034, D14).
+  ///
+  /// In en, this message translates to:
+  /// **'Workout'**
+  String get workoutLogEditTitle;
+
+  /// Log form: the session name field; its hint is the automatic name (WO-010).
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get workoutLogName;
+
+  /// Log form: semantics of the date row (WO-011).
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get workoutLogDate;
+
+  /// Log form: opens the exercise picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Add exercises'**
+  String get workoutLogAddExercises;
+
+  /// Log form: adds a set to an exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Add set'**
+  String get workoutLogAddSet;
+
+  /// Log form: leaves the form (everything is already saved).
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get workoutLogDone;
+
+  /// Log form: tooltip of the menu (Repeat, Delete).
+  ///
+  /// In en, this message translates to:
+  /// **'Workout options'**
+  String get workoutLogMenu;
+
+  /// Log form menu: deletes the session (undo in the snackbar).
+  ///
+  /// In en, this message translates to:
+  /// **'Delete workout'**
+  String get workoutLogDelete;
+
+  /// Log form: tooltip of an exercise's menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise options'**
+  String get workoutExerciseMenu;
+
+  /// Log form exercise menu: moves the exercise up.
+  ///
+  /// In en, this message translates to:
+  /// **'Move up'**
+  String get workoutExerciseMoveUp;
+
+  /// Log form exercise menu: moves the exercise down.
+  ///
+  /// In en, this message translates to:
+  /// **'Move down'**
+  String get workoutExerciseMoveDown;
+
+  /// Log form exercise menu: removes the exercise from this workout.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove exercise'**
+  String get workoutExerciseRemove;
+
+  /// Log form: dumbbell weights are per dumbbell (WO-005).
+  ///
+  /// In en, this message translates to:
+  /// **'kg per dumbbell'**
+  String get workoutPerDumbbell;
+
+  /// Log form: semantics of the last-time numbers of a set (WO-034).
+  ///
+  /// In en, this message translates to:
+  /// **'Last time {value}'**
+  String workoutLastTime(String value);
+
+  /// Log form: a set's number.
+  ///
+  /// In en, this message translates to:
+  /// **'{number}'**
+  String workoutSetNumber(int number);
+
+  /// Log form: the checkbox that saves a set (WO-034: only checked sets are saved).
+  ///
+  /// In en, this message translates to:
+  /// **'Set {number} done'**
+  String workoutSetDone(int number);
+
+  /// Log form: the typed values don't fit the exercise; the last valid numbers stay saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Check this set\'s numbers'**
+  String get workoutSetInvalid;
+
+  /// Log form field: weight in kg.
+  ///
+  /// In en, this message translates to:
+  /// **'kg'**
+  String get workoutFieldKg;
+
+  /// Log form field: added weight in kg (bodyweight exercises, optional).
+  ///
+  /// In en, this message translates to:
+  /// **'+kg'**
+  String get workoutFieldAddedKg;
+
+  /// Log form field: assistance weight in kg (assisted exercises).
+  ///
+  /// In en, this message translates to:
+  /// **'Assist kg'**
+  String get workoutFieldAssistKg;
+
+  /// Log form field: reps.
+  ///
+  /// In en, this message translates to:
+  /// **'Reps'**
+  String get workoutFieldReps;
+
+  /// Log form field: time of a timed set, minutes and seconds.
+  ///
+  /// In en, this message translates to:
+  /// **'m:ss'**
+  String get workoutFieldTime;
+
+  /// Log form field: cardio minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Min'**
+  String get workoutFieldMinutes;
+
+  /// Log form field: cardio distance in km (optional).
+  ///
+  /// In en, this message translates to:
+  /// **'Km'**
+  String get workoutFieldKm;
+
+  /// Log form: autosave stopped after a conflict (PA3). Reload or Keep mine.
+  ///
+  /// In en, this message translates to:
+  /// **'This workout changed somewhere else. Your latest edits aren\'t saved.'**
+  String get workoutConflict;
+
+  /// Log form conflict: discards the unsaved edits and shows the workout as saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload'**
+  String get workoutConflictReload;
+
+  /// Log form conflict: saves this form over the other change.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep mine'**
+  String get workoutConflictKeep;
+
+  /// Snackbar after leaving a new workout (one Undo per visit, D9).
+  ///
+  /// In en, this message translates to:
+  /// **'Workout saved'**
+  String get workoutSaved;
+
+  /// Snackbar after leaving an edited workout (one Undo per visit, D9).
+  ///
+  /// In en, this message translates to:
+  /// **'Workout updated'**
+  String get workoutUpdated;
+
+  /// Snackbar after a workout was deleted (Undo restores it).
+  ///
+  /// In en, this message translates to:
+  /// **'Workout deleted'**
+  String get workoutDeleted;
+
+  /// Log form: the session no longer exists (deleted on another screen or device).
+  ///
+  /// In en, this message translates to:
+  /// **'This workout was deleted.'**
+  String get workoutSessionGone;
+
+  /// Log form: a save failed (storage error or refused); nothing typed is lost. Retry or leave without saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save this workout. Your entries are still here.'**
+  String get workoutSaveFailed;
+
+  /// Log form: retries the failed save.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get workoutSaveRetry;
+
+  /// Log form: leaves after a failed save, without the entries that weren't saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave without saving'**
+  String get workoutSaveDiscard;
+
+  /// Log form: semantics and tooltip of a set's number, which opens its menu (remove).
+  ///
+  /// In en, this message translates to:
+  /// **'Set {number} options'**
+  String workoutSetMenu(int number);
+
+  /// Log form set menu: removes the set.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove set'**
+  String get workoutSetRemove;
+
+  /// Custom exercise form: too many aliases.
+  ///
+  /// In en, this message translates to:
+  /// **'At most {max} other names'**
+  String workoutCustomAliasesTooMany(int max);
+
+  /// Custom exercise form: an alias is too long.
+  ///
+  /// In en, this message translates to:
+  /// **'Each name can have at most {max} characters'**
+  String workoutCustomAliasTooLong(int max);
 }
 
 class _AppLocalizationsDelegate

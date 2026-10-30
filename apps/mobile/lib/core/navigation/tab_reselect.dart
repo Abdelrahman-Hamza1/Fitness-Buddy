@@ -11,8 +11,8 @@ part 'tab_reselect.g.dart';
 /// tab list. Lives in `core/` so screens can react to a tab re-tap without
 /// importing `app/` (A45 D13).
 ///
-/// Workouts is a placeholder with nothing to scroll; the step that builds
-/// its screen (A37) wraps it in [ScrollToTopOnTabReselect].
+/// The Workouts tab's list (A37a) is wrapped in [ScrollToTopOnTabReselect]
+/// like the others.
 enum AppTab {
   /// Today.
   today,

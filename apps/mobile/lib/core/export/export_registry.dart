@@ -348,6 +348,8 @@ const exportRegistryV1 = <ExportTableSpec>[
     ExportColumn('aliases_json', ExportKind.json),
     ExportColumn('exercise_type', ExportKind.text),
     ExportColumn('equipment', ExportKind.text),
+    ExportColumn('primary_muscle', ExportKind.text),
+    ExportColumn('secondary_muscles_json', ExportKind.json),
     ExportColumn('created_at', ExportKind.utcMs),
     ExportColumn('edited_by_user', ExportKind.boolean),
     ExportColumn('version', ExportKind.integer),

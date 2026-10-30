@@ -69,9 +69,10 @@ void main() {
       // yields, FTS and metadata must stay byte-identical. Re-pinned by B09b
       // WP5 (release v7): two name rows, the EN aliases "Rice" and
       // "Rice, raw" on the fixture's white long-grain rice.
+      // Re-pinned by A37a: the exercises table gains secondary_muscles.
       expect(
         sha256.convert(utf8.encode(withoutCities)).toString(),
-        'aaf72f4f6a2f4350c94ec6d09471b3c19664a7482d55d9194e339ba1bd0770ed',
+        '5cc34d5e43f1f92af09601ff1ef65f4c5e96279dd1a65c38999db3a2cfd37e0f',
       );
     },
   );

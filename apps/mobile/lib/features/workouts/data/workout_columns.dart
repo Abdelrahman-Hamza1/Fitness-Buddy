@@ -6,13 +6,17 @@ import 'package:fb_mobile/core/db/app_database.dart';
 
 /// Row columns of workout drafts (A36 D1, D7). Pure mapping, no I/O.
 
-/// A custom exercise's content columns.
+/// A custom exercise's content columns (A37 D6: muscles as codes).
 CustomExercisesCompanion customExerciseColumns(CustomExerciseDraft draft) =>
     CustomExercisesCompanion(
       name: Value(draft.name),
       aliasesJson: Value(jsonEncode(draft.aliases)),
       exerciseType: Value(draft.type.code),
       equipment: Value(draft.equipment.code),
+      primaryMuscle: Value(draft.primaryMuscle?.code),
+      secondaryMusclesJson: Value(
+        jsonEncode([for (final m in draft.secondaryMuscles) m.code]),
+      ),
     );
 
 /// A session row's content columns.
@@ -72,6 +76,17 @@ WorkoutTemplateItemsCompanion templateItemColumns(
   targetSets: Value(item.sets),
   targetReps: Value(item.reps),
 );
+
+/// Whether stored [row] already has [draft]'s custom exercise content.
+bool sameCustomExercise(CustomExerciseRow row, CustomExerciseDraft draft) {
+  final c = customExerciseColumns(draft);
+  return row.name == c.name.value &&
+      row.aliasesJson == c.aliasesJson.value &&
+      row.exerciseType == c.exerciseType.value &&
+      row.equipment == c.equipment.value &&
+      row.primaryMuscle == c.primaryMuscle.value &&
+      row.secondaryMusclesJson == c.secondaryMusclesJson.value;
+}
 
 /// Whether stored [row] already has [draft]'s session content.
 bool sameSession(WorkoutSessionRow row, WorkoutSessionDraft draft) =>

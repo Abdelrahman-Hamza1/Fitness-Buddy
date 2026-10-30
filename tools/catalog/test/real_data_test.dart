@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:fb_catalog/fb_catalog.dart';
+import 'package:fb_domain/fb_domain.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
@@ -105,6 +106,20 @@ void main() {
       for (final name in e.names) {
         expect(targets(search, name).first, e.id, reason: name);
       }
+    }
+  });
+
+  test('WO-007 every built-in exercise has a vocabulary primary muscle', () {
+    for (final e in real.data.exercises) {
+      final primary = Muscle.fromCode(e.primaryMuscle);
+      expect(primary, isNotNull, reason: e.id);
+      expect(
+        Muscle.checkSecondaries([
+          for (final code in e.secondaryMuscles) Muscle.fromCode(code)!,
+        ], primary),
+        hasLength(e.secondaryMuscles.length),
+        reason: e.id,
+      );
     }
   });
 

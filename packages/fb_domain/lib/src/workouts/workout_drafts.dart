@@ -4,6 +4,7 @@ import 'package:fb_domain/src/time/local_date.dart';
 import 'package:fb_domain/src/time/local_time.dart';
 import 'package:fb_domain/src/units/units.dart';
 import 'package:fb_domain/src/workouts/exercise_type.dart';
+import 'package:fb_domain/src/workouts/muscle.dart';
 import 'package:fb_domain/src/workouts/workout_set.dart';
 
 /// Limits of workout drafts (A36), for local writes only.
@@ -54,19 +55,27 @@ bool _sameList<T>(List<T> a, List<T> b) {
   return true;
 }
 
-/// A custom exercise's content (WO-003): name, aliases, type, equipment.
+/// A custom exercise's content (WO-003): name, aliases, type, equipment,
+/// and its muscles for the muscle map (WO-007, A37 D6).
 final class CustomExerciseDraft {
-  /// Throws an `ArgumentError` for a blank or long name or alias, or too
-  /// many aliases. Names are trimmed; duplicate aliases dropped.
+  /// Throws an `ArgumentError` for a blank or long name or alias, too many
+  /// aliases, or [secondaryMuscles] that are more than 4, repeat a muscle or
+  /// contain [primaryMuscle]. Names are trimmed; duplicate aliases dropped.
   new({
     required String name,
     required this.type,
     required this.equipment,
     Iterable<String> aliases = const [],
+    this.primaryMuscle,
+    Iterable<Muscle> secondaryMuscles = const [],
   }) : name = _checkName(name, 'name'),
        aliases = List.unmodifiable({
          for (final a in aliases) _checkName(a, 'aliases'),
-       }) {
+       }),
+       secondaryMuscles = Muscle.checkSecondaries(
+         secondaryMuscles,
+         primaryMuscle,
+       ) {
     if (this.aliases.length > WorkoutLimits.aliasesMax) {
       throw ArgumentError.value(aliases, 'aliases', 'at most 10');
     }
@@ -84,17 +93,33 @@ final class CustomExerciseDraft {
   /// The equipment (WO-002, WO-005).
   final Equipment equipment;
 
+  /// The main muscle (dark on the map), or `null` for a row from before
+  /// A37a or synced without one (A37 D2: "no primary muscle"). The form
+  /// requires it.
+  final Muscle? primaryMuscle;
+
+  /// Secondary muscles (lighter on the map), in order.
+  final List<Muscle> secondaryMuscles;
+
   @override
   bool operator ==(Object other) =>
       other is CustomExerciseDraft &&
       other.name == name &&
       other.type == type &&
       other.equipment == equipment &&
-      _sameList(other.aliases, aliases);
+      other.primaryMuscle == primaryMuscle &&
+      _sameList(other.aliases, aliases) &&
+      _sameList(other.secondaryMuscles, secondaryMuscles);
 
   @override
-  int get hashCode =>
-      Object.hash(name, type, equipment, Object.hashAll(aliases));
+  int get hashCode => Object.hash(
+    name,
+    type,
+    equipment,
+    Object.hashAll(aliases),
+    primaryMuscle,
+    Object.hashAll(secondaryMuscles),
+  );
 
   @override
   String toString() => 'CustomExerciseDraft(${type.code}, ${equipment.code})';

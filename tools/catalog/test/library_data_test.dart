@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:fb_catalog/fb_catalog.dart';
 import 'package:path/path.dart' as p;
+import 'package:sqlite3/sqlite3.dart';
 import 'package:test/test.dart';
 
 import 'support/data_dir.dart';
@@ -15,6 +16,16 @@ exercises:
     type: weight_reps
     equipment: barbell
     primary_muscle: chest
+    secondary_muscles: [triceps, shoulders]
+''';
+
+const _plank = '''
+  - id: ex:plank
+    names: {en: [Plank]}
+    type: duration
+    equipment: bodyweight
+    primary_muscle: abs
+    secondary_muscles: []
 ''';
 
 String geoname(
@@ -118,6 +129,87 @@ void main() {
       }
     },
   );
+
+  test('WO-007 secondary muscles flow into release and pack', () {
+    File(p.join(data.path, 'exercises.yaml'))
+        .writeAsStringSync('$exercise$_plank');
+    final logs = StringBuffer();
+    final result = runBuild(
+      BuildOptions(
+        data: DataPaths(data.path),
+        contractDir: contractDir,
+        outDir: p.join(data.path, 'out'),
+        update: true,
+      ),
+      out: logs,
+      err: logs,
+    );
+    expect(result.exitCode, 0, reason: '$logs');
+    final rows = {
+      for (final row in result.release!.table('exercises'))
+        row['id']! as String: row,
+    };
+    expect(rows['ex:barbell_bench_press']!['secondary_muscles'], [
+      'triceps',
+      'shoulders',
+    ]);
+    expect(rows['ex:plank']!['secondary_muscles'], isEmpty);
+    expect(validateLoadFiles(result.release!, contractDir), isEmpty);
+    final pack = sqlite3.open(result.packPath!, mode: OpenMode.readOnly);
+    addTearDown(pack.close);
+    expect(
+      {
+        for (final r in pack.select(
+          'SELECT id, primary_muscle, secondary_muscles FROM exercises',
+        ))
+          r['id']: '${r['primary_muscle']}|${r['secondary_muscles']}',
+      },
+      {'ex:barbell_bench_press': 'chest|triceps,shoulders', 'ex:plank': 'abs|'},
+    );
+  });
+
+  test('WO-007 loader rejects secondary equal to primary or duplicated', () {
+    expect(exerciseIssues(exercise), isEmpty);
+    for (final secondaries in [
+      '[chest]',
+      '[triceps, chest]',
+      '[triceps, triceps]',
+      '[triceps, shoulders, abs, forearms, biceps]',
+      '[neck]',
+      '[back]',
+    ]) {
+      expect(
+        exerciseIssues(
+          exercise.replaceFirst('[triceps, shoulders]', secondaries),
+        ),
+        isNotEmpty,
+        reason: secondaries,
+      );
+    }
+    // The key is required, even when empty.
+    expect(
+      exerciseIssues(
+        exercise.replaceFirst(
+          '    secondary_muscles: [triceps, shoulders]\n',
+          '',
+        ),
+      ),
+      isNotEmpty,
+    );
+    // Legacy primaries left the vocabulary (A37 D2).
+    for (final legacy in ['back', 'core', 'full_body']) {
+      expect(
+        exerciseIssues(
+          exercise.replaceFirst(
+            'primary_muscle: chest',
+            'primary_muscle: $legacy',
+          ),
+        ),
+        isNotEmpty,
+        reason: legacy,
+      );
+    }
+  });
 
   test('WO-001 normalized exercise aliases cannot collide with foods', () {
     File(p.join(data.path, 'exercises.yaml'))

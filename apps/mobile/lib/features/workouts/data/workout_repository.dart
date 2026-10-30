@@ -108,14 +108,51 @@ final class WorkoutRepository {
   Future<List<Stored<WorkoutSessionDraft>>> sessions(
     LocalDate from,
     LocalDate to,
+  ) => _sessionsWhere(
+    (t) =>
+        t.deletedAt.isNull() &
+        t.localDate.isBetweenValues(from.toString(), to.toString()),
+  );
+
+  /// Every live session, by date then ID, with exercises and sets: history,
+  /// last-time numbers and PR markers derive from it (A37 D24).
+  Stream<List<Stored<WorkoutSessionDraft>>> watchAllSessions() => _db
+      .customSelect(
+        'SELECT 1 FROM workout_sessions, session_exercises, workout_sets '
+        'LIMIT 0',
+        readsFrom: {_db.workoutSessions, _db.sessionExercises, _db.workoutSets},
+      )
+      .watch()
+      .asyncMap((_) => allSessions());
+
+  /// See [watchAllSessions].
+  Future<List<Stored<WorkoutSessionDraft>>> allSessions() =>
+      _sessionsWhere((t) => t.deletedAt.isNull());
+
+  /// Live session [id] with its exercises and sets, or `null` (gone, or a
+  /// synced row the domain can't read).
+  Future<Stored<WorkoutSessionDraft>?> session(String id) async =>
+      (await _sessionsWhere((t) => t.id.equals(id) & t.deletedAt.isNull()))
+          .firstOrNull;
+
+  /// The IDs of exercises that live sessions or templates use (A37 D15: a
+  /// custom exercise can be deleted only while unused).
+  Stream<Set<String>> watchExerciseReferences() => _db
+      .customSelect(
+        'SELECT exercise_id FROM session_exercises WHERE deleted_at IS NULL '
+        'UNION SELECT exercise_id FROM workout_template_items '
+        'WHERE deleted_at IS NULL',
+        readsFrom: {_db.sessionExercises, _db.workoutTemplateItems},
+      )
+      .watch()
+      .map((rows) => {for (final r in rows) r.read<String>('exercise_id')});
+
+  Future<List<Stored<WorkoutSessionDraft>>> _sessionsWhere(
+    Expression<bool> Function($WorkoutSessionsTable t) filter,
   ) => _db.readSnapshot(() async {
     final rows =
         await (_db.select(_db.workoutSessions)
-              ..where(
-                (t) =>
-                    t.deletedAt.isNull() &
-                    t.localDate.isBetweenValues(from.toString(), to.toString()),
-              )
+              ..where(filter)
               ..orderBy([
                 (t) => OrderingTerm(expression: t.localDate),
                 (t) => OrderingTerm(expression: t.id),
@@ -183,6 +220,10 @@ final class WorkoutRepository {
     try {
       final aliases = (jsonDecode(r.aliasesJson) as List<Object?>)
           .whereType<String>();
+      final primary = switch (r.primaryMuscle) {
+        final code? => Muscle.fromCode(code),
+        null => null,
+      };
       return (
         ref: VersionedId(r.id, r.version),
         draft: CustomExerciseDraft(
@@ -190,11 +231,28 @@ final class WorkoutRepository {
           type: type,
           equipment: equipment,
           aliases: aliases,
+          primaryMuscle: primary,
+          secondaryMuscles: _secondaries(r.secondaryMusclesJson, primary),
         ),
       );
       // Malformed aliases JSON or a synced row outside the local bounds.
     } on Object {
       return null;
+    }
+  }
+
+  /// Secondary muscles read tolerantly (a synced row may break the local
+  /// bounds): unknown codes, duplicates and the primary dropped, at most 4.
+  static List<Muscle> _secondaries(String json, Muscle? primary) {
+    try {
+      return {
+        for (final code
+            in (jsonDecode(json) as List<Object?>).whereType<String>())
+          if (Muscle.fromCode(code) case final m? when m != primary) m,
+      }.take(Muscle.secondariesMax).toList();
+      // Malformed JSON: no secondaries, the exercise stays visible.
+    } on Object {
+      return const [];
     }
   }
 

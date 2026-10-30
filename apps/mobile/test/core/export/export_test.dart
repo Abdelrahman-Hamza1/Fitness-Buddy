@@ -142,7 +142,12 @@ Future<void> _seed(AppDatabase db, {int diaryRows = 1}) async {
         }
         if (spec.entity == 'workoutSet') values['input_unit'] = 'kg';
         if (spec.entity == 'customExercise') {
-          values.addAll({'exercise_type': 'weight_reps', 'equipment': 'cable'});
+          values.addAll({
+            'exercise_type': 'weight_reps',
+            'equipment': 'cable',
+            'primary_muscle': 'chest',
+            'secondary_muscles_json': '["triceps"]',
+          });
         }
         if (spec.entity == 'chatMessage') {
           values.addAll({

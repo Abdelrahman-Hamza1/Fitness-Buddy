@@ -18,6 +18,7 @@
           "type",
           "equipment",
           "primary_muscle",
+          "secondary_muscles",
           "names"
         ],
         "properties": {
@@ -51,18 +52,45 @@
           "primary_muscle": {
             "enum": [
               "chest",
-              "back",
               "shoulders",
               "biceps",
               "triceps",
+              "forearms",
+              "traps",
+              "upper_back",
+              "lower_back",
+              "abs",
+              "obliques",
               "quadriceps",
               "hamstrings",
               "glutes",
               "calves",
-              "core",
-              "full_body",
               "adductors"
             ]
+          },
+          "secondary_muscles": {
+            "type": "array",
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "chest",
+                "shoulders",
+                "biceps",
+                "triceps",
+                "forearms",
+                "traps",
+                "upper_back",
+                "lower_back",
+                "abs",
+                "obliques",
+                "quadriceps",
+                "hamstrings",
+                "glutes",
+                "calves",
+                "adductors"
+              ]
+            }
           },
           "names": {
             "type": "object",

@@ -402,6 +402,8 @@ Custom exercises you added (A36, WO-003). Built-in exercises are in the catalog,
 | `custom-exercises.aliases_json` | JSON value | Other names you search it by, a JSON array of strings. User content. |
 | `custom-exercises.exercise_type` | text | What a set logs: `weight_reps`, `bodyweight_reps`, `assisted`, `reps_only`, `duration` or `distance_duration` (WO-004). |
 | `custom-exercises.equipment` | text | `barbell`, `dumbbell`, `cable`, `machine`, `kettlebell`, `bodyweight` or `other`. |
+| `custom-exercises.primary_muscle` | text | The main muscle (WO-007): `chest`, `shoulders`, `biceps`, `triceps`, `forearms`, `traps`, `upper_back`, `lower_back`, `abs`, `obliques`, `quadriceps`, `hamstrings`, `glutes`, `calves` or `adductors`; empty for exercises added before A37a. |
+| `custom-exercises.secondary_muscles_json` | JSON value | Secondary muscles, a JSON array of up to 4 of the same codes (never the main one). |
 | `custom-exercises.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
 | `custom-exercises.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
 | `custom-exercises.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |

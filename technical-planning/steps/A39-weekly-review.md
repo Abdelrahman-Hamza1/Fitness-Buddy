@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A39a: A37a, A38; A39b: A39a, A23b, **B12** (contract) | A39a M + A39b S (split 2026-10-30) | Claude | ⬜ A39a (wave 4) · ⬜ A39b (phase 2) |
+| App | A39a: A37c, A38; A39b: A39a, A23b, **B12** (contract) | A39a M + A39b S (split 2026-10-30) | Claude | ⬜ A39a (wave 4) · ⬜ A39b (phase 2) |
 
 _Old ID: S44 app part (renumbered by TD-063, 2026-10-16)._
 

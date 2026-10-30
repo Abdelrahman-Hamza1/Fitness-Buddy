@@ -189,12 +189,13 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A34](A34-sync-engine-app.md) | Sync engine (app) | Claude | A33, **B05**, **B17**, **B18**, **B19**, **B20**, **B21** | L | S27 |  | ⬜ wave 4 |
 | [A35](A35-account-deletion-app.md) | Account deletion (app) | Claude | A34, **B06** | S | S28 deletion part | **M5** | ⬜ wave 4 |
 | [A36](A36-workout-domain.md) | Workout domain, library & templates | Claude | A05b, A06, A12 | M | S41 |  | ✅ |
-| [A37a](A37-workout-logging.md) | Workouts without AI: muscle map, form, optional starter plans, history & PRs (split from A37, 2026-10-30) | Claude | A36, A15a · soft: A16 (Progress entry) | L | S42 app part |  | ⬜ wave 2 (TD-105) |
-| [A37b](A37-workout-logging.md) | Workout logging by chat (split from A37) | Claude | A37a, A23b, **B12** (contract) | M | S42 app part |  | ⬜ phase 2 |
+| [A37a](A37-workout-logging.md) | Workouts without AI: log & history (no plan needed, last-time numbers, autosave, Repeat, PRs, Today row; split from A37, 2026-10-30) | Claude | A36, A15a | L | S42 app part |  | ✅ |
+| [A37c](A37-workout-logging.md) | Workouts without AI: plans, muscle map & progress (starter plans, templates, exercise page; split from A37) | Claude | A37a · soft: A16 (Progress entry) | M–L | S42 app part |  | ⬜ wave 2 (TD-105) (plan reviewed) |
+| [A37b](A37-workout-logging.md) | Workout logging by chat (split from A37) | Claude | A37c, A23b, **B12** (contract) | M | S42 app part |  | ⬜ phase 2 |
 | [A38](A38-adaptive-targets.md) | Adaptive targets & weekly check-in | Claude | A16, A23a (proposal storage) | M | S43 |  | ⬜ wave 3 |
-| [A39a](A39-weekly-review.md) | Weekly summary (numbers, no Buddy; split from A39, 2026-10-30) | Claude | A37a, A38 | M | S44 app part |  | ⬜ wave 4 (TD-105) |
+| [A39a](A39-weekly-review.md) | Weekly summary (numbers, no Buddy; split from A39, 2026-10-30) | Claude | A37c, A38 | M | S44 app part |  | ⬜ wave 4 (TD-105) |
 | [A39b](A39-weekly-review.md) | Buddy weekly review (split from A39) | Claude | A39a, A23b, **B12** (contract) | S | S44 app part |  | ⬜ phase 2 |
-| [A40](A40-notifications.md) | Notifications | Claude | A37a, A39a (TD-105; see card) | M | S45 |  | ⬜ wave 4 |
+| [A40](A40-notifications.md) | Notifications | Claude | A37c, A39a (TD-105; see card) | M | S45 |  | ⬜ wave 4 |
 | [A41a](A41-ramadan.md) | Ramadan mode without Buddy (split from A41, 2026-10-30) | Claude | A05b, A15, A38, A40 | L | S46 app part |  | ⬜ wave 4 (TD-105) |
 | [A41b](A41-ramadan.md) | Ramadan Buddy parts (split from A41) | Claude | A41a, A39b, **B12** (contract) | S | S46 app part | **M6** | ⬜ phase 2 |
 | [A42](A42-performance-a11y-offline.md) | Performance, accessibility & offline acceptance | Claude | A41a, A35 (TD-105) | M | S48 | **M2b** · **R1** | ⬜ wave 5, the last phase-1 step |
@@ -208,7 +209,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 
 **A44 runs right after A22 (owner request, 2026-10-29):** the "Embrace" identity (palette, fonts, icon) lands before the remaining screens are built, an exception to "the number is the order" like the dish batches below.
 
-**Solid app first (TD-105, owner 2026-10-30):** no new Buddy/AI work until phase 1, the non-AI app, is done (milestone **M2b**); the Buddy features already built keep working. Phase 1 runs in waves, shown in the Status column: **wave 1** A46, A47, A17, A18, A16, A45 · **wave 2** B20, A37a, B21, A19, A30, A48 · **wave 3** A50, B10a, A28a, A38 · **wave 4** A39a, A40, A41a, A34, A35 · **wave 5** A42. Then **phase 2** (Buddy: A23b, A49, A25–A27, A28b, A29, A31, B10b, B11, B12, A37b, A39b, A41b), then **production** (B13, B14, A43). Steps with an AI half were split into a (no AI) and b (Buddy). The waves are an exception to "the number is the order".
+**Solid app first (TD-105, owner 2026-10-30):** no new Buddy/AI work until phase 1, the non-AI app, is done (milestone **M2b**); the Buddy features already built keep working. Phase 1 runs in waves, shown in the Status column: **wave 1** A46, A47, A17, A18, A16, A45 · **wave 2** B20, A37a, A37c, B21, A19, A30, A48 · **wave 3** A50, B10a, A28a, A38 · **wave 4** A39a, A40, A41a, A34, A35 · **wave 5** A42. Then **phase 2** (Buddy: A23b, A49, A25–A27, A28b, A29, A31, B10b, B11, B12, A37b, A39b, A41b), then **production** (B13, B14, A43). Steps with an AI half were split into a (no AI) and b (Buddy). The waves are an exception to "the number is the order".
 
 **Dish batches (TD-074, amended by TD-105):** A17 and A18 are back in wave 1, A19 and A30 in wave 2; A32 stays the gap fill from dogfooding. The reference-dish pipeline (A03, A05) is unchanged.
 
@@ -247,7 +248,7 @@ flowchart LR
   end
   subgraph P1["Phase 1 · solid app, no AI (TD-105)"]
     w1["Wave 1<br/>A46 test diet · A47 basics<br/>A17, A18 dishes · A16 · A45 polish"] --> M2{{"M2"}}
-    w1 --> w2["Wave 2<br/>B20 · A37a workouts · B21<br/>A19, A30 · A48 brands"]
+    w1 --> w2["Wave 2<br/>B20 · A37a + A37c workouts · B21<br/>A19, A30 · A48 brands"]
     w2 --> w3["Wave 3<br/>A50 Google · B10a + A28a barcode<br/>A38 adaptive targets"]
     w3 --> w4["Wave 4<br/>A39a summary · A40 · A41a Ramadan<br/>A34 sync · A35 deletion"] --> M5{{"M5 Accounts & sync"}}
     w4 --> w5["Wave 5<br/>A42 performance, a11y, offline"] --> M2b{{"M2b Solid app"}}
@@ -273,7 +274,7 @@ flowchart LR
 | **M1 Dogfood 1: offline food tracker** | A11 | OF-01 food parts pass. A day of food can be logged by search and quick-add in airplane mode. The owner uses the prod build daily and can export | None needed (the laptop for `/v1/config` only) |
 | **M2 Targets & weight** | A16 | Targets property tests pass. The owner's weight-note history is entered and charted | None |
 | **M5 Accounts & sync** | A35 (+ B05, B06, B20, B21); phase 1, wave 4 | OF-03 passes against the laptop server. Google sign-in, guest upgrade and account deletion work on the A55 | Laptop |
-| **M2b Solid app (no AI)** | Phase 1 (TD-105), in waves: wave 1 A46, A47, A17, A18, A16, A45 · wave 2 B20, A37a, B21, A19, A30, A48 · wave 3 A50, B10a, A28a, A38 · wave 4 A39a, A40, A41a, A34, A35 · wave 5 A42 | Every non-AI feature of R1 works offline and syncs: food (≈ 600 basics, the dish batches A17–A30, local brands, barcodes), weight, Progress, workouts without a plan or with a starter plan, weekly summary, notifications, Ramadan mode, sign-in (Google too), sync and deletion. A42's speed, accessibility and offline checks pass on the A55. The nightly emulator run is green | Laptop |
+| **M2b Solid app (no AI)** | Phase 1 (TD-105), in waves: wave 1 A46, A47, A17, A18, A16, A45 · wave 2 B20, A37a, A37c, B21, A19, A30, A48 · wave 3 A50, B10a, A28a, A38 · wave 4 A39a, A40, A41a, A34, A35 · wave 5 A42 | Every non-AI feature of R1 works offline and syncs: food (≈ 600 basics, the dish batches A17–A30, local brands, barcodes), weight, Progress, workouts without a plan or with a starter plan, weekly summary, notifications, Ramadan mode, sign-in (Google too), sync and deletion. A42's speed, accessibility and offline checks pass on the A55. The nightly emulator run is green | Laptop |
 | **M3 Buddy on the laptop** | A23b + A49 (the known-miss fixes, backlog #148–#151) + B09b's eval run; phase 2 | T01–T16, T19, T39–T41 meet the AQ thresholds: the B09b `eval` AQ gate is green with an **empty** known-miss baseline (`tools/buddy_eval/cases/aq_known_misses.json`, TD-097). p90 ≤ 5 s measured from the owner's location | Laptop (B03) |
 | **M4 Dogfood 2: Buddy-first** | A31 + B09b, A25–A27, A28b, A29 and B10b/B11's eval runs | T17–T29, T33, T36–T38 pass. OF-02 passes. The owner logs mostly through Buddy for a week | Laptop |
 | **M6 Workouts, review & Ramadan by Buddy** | A37b, A39b, A41b (+ B12) | J9, J10, J11, T30–T35 pass. Every NT rule has a planner test (from A40/A41a) | Laptop |

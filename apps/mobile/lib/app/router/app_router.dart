@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:fb_domain/fb_domain.dart' show LocalDate, VersionedId, isUuid;
+import 'package:fb_domain/fb_domain.dart'
+    show LocalDate, VersionedId, checkExerciseId, isUuid;
 import 'package:fb_mobile/app/router/tab_tap.dart';
 import 'package:fb_mobile/app/shell/app_shell.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
@@ -96,6 +97,20 @@ final class AppRouter implements AppNavigator {
                     if (route is TodayRoute) ...[
                       _foodSearchRoute(),
                       _goRoute(const TodayWeightGraphRoute(), nested: true),
+                      _sessionRoute(
+                        TodayWorkoutSessionRoute.path,
+                        TodayRoute.path,
+                        (id) => TodayWorkoutSessionRoute(id: id),
+                      ),
+                    ],
+                    if (route is WorkoutsRoute) ...[
+                      _workoutLogRoute(),
+                      _sessionRoute(
+                        WorkoutSessionRoute.path,
+                        WorkoutsRoute.path,
+                        (id) => WorkoutSessionRoute(id: id),
+                      ),
+                      _goRoute(const WorkoutHistoryRoute(), nested: true),
                     ],
                     if (route is ProgressRoute) ...[
                       _goRoute(const WeightGraphRoute(), nested: true),
@@ -257,6 +272,60 @@ final class AppRouter implements AppNavigator {
     ],
   );
 
+  // A new workout (A37 D13): the date and the session to repeat come from
+  // the query string; malformed ones are ignored (today, no repeat).
+  static GoRoute _workoutLogRoute() => GoRoute(
+    path: WorkoutLogRoute.path.split('/').last,
+    name: WorkoutLogRoute.path,
+    builder: (_, state) => _screen(workoutLogRouteOf(state.uri)),
+  );
+
+  /// The [WorkoutLogRoute] a location stands for.
+  @visibleForTesting
+  static WorkoutLogRoute workoutLogRouteOf(Uri location) {
+    final params = location.queryParameters;
+    final date = params[WorkoutLogRoute.dateParam];
+    final repeat = params[WorkoutLogRoute.repeatParam];
+    bool isExercise(String id) {
+      try {
+        checkExerciseId(id, 'id');
+        return true;
+        // A malformed ID is dropped, never guessed.
+        // ignore: avoid_catching_errors
+      } on ArgumentError {
+        return false;
+      }
+    }
+
+    return WorkoutLogRoute(
+      date: date == null ? null : LocalDate.tryParse(date),
+      repeat: repeat != null && isUuid(repeat) ? repeat : null,
+      exercises: [
+        for (final id in (params[WorkoutLogRoute.exercisesParam] ?? '').split(
+          ',',
+        ))
+          if (isExercise(id)) id,
+      ],
+    );
+  }
+
+  // One session by ID (A37 D13, D14), nested in [home]'s tab; a malformed
+  // ID goes back to [home].
+  static GoRoute _sessionRoute(
+    String pattern,
+    String home,
+    AppRoute Function(String id) route,
+  ) {
+    final parts = pattern.split('/');
+    return GoRoute(
+      path: parts.sublist(parts.length - 2).join('/'),
+      name: pattern,
+      redirect: (_, state) =>
+          isUuid(state.pathParameters['id'] ?? '') ? null : home,
+      builder: (_, state) => _screen(route(state.pathParameters['id']!)),
+    );
+  }
+
   // Saved meals (A09 D10): a malformed ID goes to the list.
   static GoRoute _savedMealsRoute() => GoRoute(
     path: SavedMealsRoute.path.split('/').last,
@@ -328,6 +397,18 @@ final class AppRouter implements AppNavigator {
     TodayRoute() => const TodayScreen(),
     ProgressRoute() => const ProgressScreen(),
     WorkoutsRoute() => const WorkoutsScreen(),
+    WorkoutLogRoute(:final date, :final repeat, :final exercises) =>
+      WorkoutLogScreen.newSession(
+        date: date,
+        repeatOf: repeat,
+        exercises: exercises,
+      ),
+    WorkoutSessionRoute(:final id) => WorkoutLogScreen.session(id),
+    TodayWorkoutSessionRoute(:final id) => WorkoutLogScreen.session(
+      id,
+      inToday: true,
+    ),
+    WorkoutHistoryRoute() => const WorkoutHistoryScreen(),
     MeRoute() => const MeScreen(),
     DesignPreviewRoute() => const DesignPreviewScreen(),
     FoodSearchRoute(:final date, :final slotId, :final replace) =>

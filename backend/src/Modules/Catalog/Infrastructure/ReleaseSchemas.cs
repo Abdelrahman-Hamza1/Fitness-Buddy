@@ -19,7 +19,7 @@ internal static class ReleaseSchemas
         foreach (var keyword in schema.EnumerateObject())
         {
             if (keyword.Name is not ("$schema" or "$id" or "title" or "description" or "type" or "properties" or "required" or "additionalProperties"
-                or "anyOf" or "oneOf" or "const" or "enum" or "minimum" or "maximum" or "exclusiveMinimum" or "minLength" or "maxLength" or "pattern" or "propertyNames" or "items"))
+                or "anyOf" or "oneOf" or "const" or "enum" or "minimum" or "maximum" or "exclusiveMinimum" or "minLength" or "maxLength" or "pattern" or "propertyNames" or "items" or "minItems" or "maxItems" or "uniqueItems"))
             { throw new InvalidOperationException("Unsupported catalog schema keyword."); }
             if (keyword.Name == "properties") { foreach (var child in keyword.Value.EnumerateObject()) { CheckVocabulary(child.Value); } }
             if (keyword.Name is "additionalProperties" or "propertyNames" or "items" && keyword.Value.ValueKind == JsonValueKind.Object) { CheckVocabulary(keyword.Value); }
@@ -71,7 +71,17 @@ internal static class ReleaseSchemas
                 else if (s.TryGetProperty("additionalProperties", out var extra) && (extra.ValueKind == JsonValueKind.False || extra.ValueKind == JsonValueKind.Object && !Matches(extra, p.Value))) { return false; }
             }
         }
-        if (v.ValueKind == JsonValueKind.Array && s.TryGetProperty("items", out var items) && v.EnumerateArray().Any(c => !Matches(items, c))) { return false; }
+        if (v.ValueKind == JsonValueKind.Array)
+        {
+            if (s.TryGetProperty("items", out var items) && v.EnumerateArray().Any(c => !Matches(items, c))) { return false; }
+            var length = v.GetArrayLength();
+            if (s.TryGetProperty("minItems", out var minItems) && length < minItems.GetInt32() || s.TryGetProperty("maxItems", out var maxItems) && length > maxItems.GetInt32()) { return false; }
+            if (s.TryGetProperty("uniqueItems", out var unique) && unique.ValueKind == JsonValueKind.True)
+            {
+                var seen = v.EnumerateArray().ToList();
+                for (var i = 0; i < seen.Count; i++) { for (var j = i + 1; j < seen.Count; j++) { if (Equal(seen[i], seen[j])) { return false; } } }
+            }
+        }
         if (v.ValueKind == JsonValueKind.Number)
         {
             var number = v.GetDecimal();

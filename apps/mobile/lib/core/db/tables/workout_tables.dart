@@ -42,6 +42,32 @@ class CustomExercises extends Table with SyncColumns {
       'other',
     ]),
   )();
+
+  /// The main muscle code (WO-007, A37 D2, D6), or null: rows from before
+  /// v11, or synced without one.
+  TextColumn get primaryMuscle => text().nullable().check(
+    primaryMuscle.isIn(const [
+      'chest',
+      'shoulders',
+      'biceps',
+      'triceps',
+      'forearms',
+      'traps',
+      'upper_back',
+      'lower_back',
+      'abs',
+      'obliques',
+      'quadriceps',
+      'hamstrings',
+      'glutes',
+      'calves',
+      'adductors',
+    ]),
+  )();
+
+  /// Secondary muscle codes, a JSON array (at most 4, never the primary).
+  TextColumn get secondaryMusclesJson =>
+      text().withDefault(const Constant('[]'))();
 }
 
 /// Logged sessions (WO-010, WO-011).

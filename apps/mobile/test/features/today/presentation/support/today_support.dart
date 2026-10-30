@@ -17,6 +17,7 @@ import 'package:fb_mobile/features/quick_add/quick_add.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/today/today.dart';
+import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:fb_mobile/l10n/gen/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
@@ -272,6 +273,8 @@ List<Override> fakeToday({
   // The numbers block (A13 D12): synchronous, so no skeleton frame.
   dayTargetsProvider.overrideWith((ref, date) => targets[date]),
   setupStatusProvider.overrideWith((ref) => setup),
+  // The workout row (A37 D20) is the workouts tests' business (R7): no row.
+  todayWorkoutProvider.overrideWith((ref, date) => null),
 ];
 
 /// The providers of a Today screen on a real in-memory diary, with a real
@@ -326,6 +329,8 @@ final class TodayRig {
     // targets until a test stores some.
     targetsRepositoryProvider.overrideWithValue(TargetsRepository(diary.db)),
     weekStartProvider.overrideWith((ref) => Stream.value(DayOfWeek.saturday)),
+    // The workout row (A37 D20) is the workouts tests' business (R7).
+    todayWorkoutProvider.overrideWith((ref, date) => null),
   ];
 }
 

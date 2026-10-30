@@ -43,7 +43,10 @@ final class UndoLabel {
   String toString() => 'UndoLabel($key)';
 }
 
-/// One undoable change set (A01 D17).
+/// One undoable change set (A01 D17), undone by its [inverse] or, for a
+/// visit of several writes (A37 D9), by a [compensation]: a forward change
+/// set whose ops carry the expected versions, so anything changed since is
+/// a conflict and nothing is written.
 @immutable
 final class UndoEntry {
   /// The entry [id] (the change set's ID) for [inverse], applied at
@@ -51,9 +54,18 @@ final class UndoEntry {
   const new({
     required this.id,
     required this.label,
-    required this.inverse,
+    required InverseChangeSet this.inverse,
     required this.appliedAt,
-  });
+  }) : compensation = null;
+
+  /// The entry [id] (the first change set of the visit) undone by applying
+  /// [compensation], whose origin should be `undo:<id>`.
+  const new compensating({
+    required this.id,
+    required this.label,
+    required ChangeSet this.compensation,
+    required this.appliedAt,
+  }) : inverse = null;
 
   /// The applied change set's ID; [UndoStack.undo] takes it.
   final String id;
@@ -61,8 +73,11 @@ final class UndoEntry {
   /// What the snackbar says.
   final UndoLabel label;
 
-  /// What undoes it.
-  final InverseChangeSet inverse;
+  /// What undoes it by revert, or `null` for a compensation.
+  final InverseChangeSet? inverse;
+
+  /// What undoes it by apply, or `null` for an inverse.
+  final ChangeSet? compensation;
 
   /// When it was applied, UTC; the undo window starts here.
   final DateTime appliedAt;
@@ -92,14 +107,17 @@ enum UndoOutcome {
 /// most [capacity], each for [window] after it was applied (the snackbar's
 /// 5 s plus 1 s of grace for the tap), on the injected [Clock].
 ///
-/// Undo applies the inverse through `revert` (the applier), which pushes no
-/// entry of its own: there is no redo.
+/// Undo applies the inverse through `revert` (the applier), or a
+/// compensation through `apply`; neither pushes an entry of its own: there
+/// is no redo.
 final class UndoStack {
-  /// A stack that undoes with `revert` (`ChangeSetApplier.revert`) and
-  /// measures the window with `clock`.
+  /// A stack that undoes with `revert` (`ChangeSetApplier.revert`) or, for
+  /// compensating entries, `apply` (`ChangeSetApplier.apply`), and measures
+  /// the window with `clock`.
   new({
     required this._revert,
     required this._clock,
+    this._apply,
     this.window = undoWindow,
     this.capacity = 5,
   });
@@ -114,6 +132,7 @@ final class UndoStack {
   final int capacity;
 
   final Future<ApplyResult> Function(InverseChangeSet) _revert;
+  final Future<ApplyResult> Function(ChangeSet)? _apply;
   final Clock _clock;
 
   /// Oldest first; may hold expired entries until they're pushed out.
@@ -138,6 +157,22 @@ final class UndoStack {
       id: applied.changeSetId,
       label: label,
       inverse: applied.inverse,
+      appliedAt: _clock.nowUtc(),
+    );
+    push(entry);
+    return entry;
+  }
+
+  /// Pushes an entry [id] undone by [compensation] (A37 D9), applied now.
+  UndoEntry recordCompensation(
+    String id,
+    UndoLabel label,
+    ChangeSet compensation,
+  ) {
+    final entry = UndoEntry.compensating(
+      id: id,
+      label: label,
+      compensation: compensation,
       appliedAt: _clock.nowUtc(),
     );
     push(entry);
@@ -172,10 +207,23 @@ final class UndoStack {
     final entry = _entries.removeAt(index);
     _changed();
     if (_isExpired(entry)) return UndoOutcome.expired;
-    return switch (await _revert(entry.inverse)) {
+    final result = switch (entry) {
+      UndoEntry(:final inverse?) => await _revert(inverse),
+      UndoEntry(:final compensation?) => await _applyCompensation(compensation),
+      _ => throw StateError('an undo entry needs an inverse or a compensation'),
+    };
+    return switch (result) {
       Applied() => UndoOutcome.undone,
       Rejected() => UndoOutcome.conflict,
     };
+  }
+
+  Future<ApplyResult> _applyCompensation(ChangeSet compensation) {
+    final apply = _apply;
+    if (apply == null) {
+      throw StateError('a compensating entry needs an apply callback');
+    }
+    return apply(compensation);
   }
 
   /// Stops the expiry timer and ends [watchLatest]'s streams.
@@ -206,8 +254,10 @@ final class UndoStack {
 /// `ref.read(undoStackProvider).undo(entry.id)`.
 @Riverpod(keepAlive: true)
 UndoStack undoStack(Ref ref) {
+  final applier = ref.watch(changeSetApplierProvider);
   final stack = UndoStack(
-    revert: ref.watch(changeSetApplierProvider).revert,
+    revert: applier.revert,
+    apply: applier.apply,
     clock: ref.watch(clockProvider),
   );
   ref.onDispose(stack.dispose);

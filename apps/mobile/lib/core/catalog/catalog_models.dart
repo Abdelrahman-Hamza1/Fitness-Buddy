@@ -253,7 +253,8 @@ final class CatalogNameRow {
   final CandidatePass pass;
 }
 
-/// A built-in exercise from the catalog pack (WO-001, WO-002, WO-004).
+/// A built-in exercise from the catalog pack (WO-001, WO-002, WO-004,
+/// WO-007).
 final class CatalogExercise {
   /// A built-in exercise.
   const new({
@@ -261,7 +262,8 @@ final class CatalogExercise {
     required this.nameEn,
     required this.type,
     required this.equipment,
-    required this.primaryMuscle,
+    required this.primary,
+    this.secondaries = const [],
   });
 
   /// The catalog ID, `ex:<slug>`.
@@ -276,6 +278,10 @@ final class CatalogExercise {
   /// The equipment (dumbbell weights are per dumbbell, WO-005).
   final Equipment equipment;
 
-  /// The main muscle group, like `chest`.
-  final String primaryMuscle;
+  /// The main muscle, or `null` when the pack has none for it (a legacy
+  /// `full_body`, or a code this app doesn't know; A37 D2, D4).
+  final Muscle? primary;
+
+  /// Secondary muscles; empty for packs built before A37a.
+  final List<Muscle> secondaries;
 }

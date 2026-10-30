@@ -55,7 +55,7 @@ final class UndoStackProvider
   }
 }
 
-String _$undoStackHash() => r'91709c07456959687093862afd82df4907d06e88';
+String _$undoStackHash() => r'fb7d32d9ae2bf2a6dc494d3d0c71c1458fef7bd7';
 
 /// The newest entry that can still be undone, `null` once it expires: what
 /// the undo snackbar shows (A02, A08).

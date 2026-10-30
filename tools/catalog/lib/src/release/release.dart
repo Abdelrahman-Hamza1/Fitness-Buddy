@@ -359,6 +359,7 @@ Release composeRelease({
             'type': e.type,
             'equipment': e.equipment,
             'primary_muscle': e.primaryMuscle,
+            'secondary_muscles': e.secondaryMuscles,
             'catalog_version': versionOf(e.id),
           },
       ],

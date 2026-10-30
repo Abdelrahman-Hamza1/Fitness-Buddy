@@ -8,6 +8,7 @@ import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/today/today.dart';
+import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,6 +30,8 @@ List<Override> todayOverrides() => [
     (ref) => Stream.value(EntryTime.now(ref.watch(clockProvider)).localDate),
   ),
   quickAddContextWithoutTimer(),
+  // Today's workout row (A37 D20) is the workouts tests' business (R7).
+  todayWorkoutProvider.overrideWith((ref, date) => null),
 ];
 
 /// This app's scope closes with the widget tree, inside fake async: no

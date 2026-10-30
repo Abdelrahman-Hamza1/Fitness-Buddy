@@ -39,13 +39,29 @@ List<ExerciseSeed> loadExercises(
         );
       }
     }
+    final primary = row['primary_muscle'] as String;
+    final secondaries = (row['secondary_muscles'] as List<dynamic>)
+        .cast<String>();
+    // The schema checks the vocabulary and the count; these two rules span
+    // fields (A37 D3).
+    if (secondaries.toSet().length != secondaries.length ||
+        secondaries.contains(primary)) {
+      issues.add(
+        CatalogIssue(
+          file.path,
+          '/exercises/$i/secondary_muscles',
+          'secondary muscles must be distinct and differ from the primary',
+        ),
+      );
+    }
     result.add(
       ExerciseSeed(
         id: id,
         names: List.unmodifiable(names),
         type: row['type'] as String,
         equipment: row['equipment'] as String,
-        primaryMuscle: row['primary_muscle'] as String,
+        primaryMuscle: primary,
+        secondaryMuscles: List.unmodifiable(secondaries),
       ),
     );
   }

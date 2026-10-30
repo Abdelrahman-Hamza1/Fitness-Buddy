@@ -6,6 +6,7 @@ import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/today/presentation/today_numbers.dart';
+import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -112,8 +113,9 @@ class DayPage extends ConsumerWidget {
 
 /// The top of a day page, as an ordered list (A14 §3.5): the day's numbers →
 /// the incomplete-day note (A16 D11, a marked day only) → [A22: the
-/// to-confirm strip] → the weight card → the account banner (A33, Today
-/// only) → [A37: the workout hint].
+/// to-confirm strip] → the weight card → the workout row (A37 D20: after
+/// logging; A37c adds the planned day) → the account banner (A33, Today
+/// only).
 /// Later steps add one entry here instead of nesting widgets.
 class _DayHeader extends StatelessWidget {
   const new({
@@ -137,6 +139,7 @@ class _DayHeader extends StatelessWidget {
       TodayNumbers(date: date, isToday: isToday, totals: totals),
       if (incomplete) _IncompleteNote(date: date),
       WeightCard(date: date, isToday: isToday),
+      WorkoutTodayRow(date: date),
       if (isToday) const AccountTodayBanner(),
     ],
   );

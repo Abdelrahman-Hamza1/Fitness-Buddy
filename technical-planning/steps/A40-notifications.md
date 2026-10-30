@@ -2,9 +2,9 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A37a, A39a | M | Claude | ⬜ Not started (phase 1, wave 4) |
+| App | A37c, A39a | M | Claude | ⬜ Not started (phase 1, wave 4) |
 
-_2026-10-30 (TD-105): re-pointed from A27, A37, A39 to the non-AI halves A37a (workout reminder on planned days) and A39a (summary ready), so phase 1 needs no Buddy step. The batch-closing reminder (batches arrive with A27, phase 2) is added when batches exist; the pending-proposal reminder uses A23a's proposals (done)._
+_2026-10-30 (TD-105): re-pointed from A27, A37, A39 to the non-AI halves A37c (workout reminder on planned days; A37a/A37c split 2026-10-30) and A39a (summary ready), so phase 1 needs no Buddy step. The batch-closing reminder (batches arrive with A27, phase 2) is added when batches exist; the pending-proposal reminder uses A23a's proposals (done)._
 
 _Old ID: S45 (renumbered by TD-063, 2026-10-16)._
 

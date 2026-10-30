@@ -6,13 +6,19 @@ class ExerciseSeed {
     required this.type,
     required this.equipment,
     required this.primaryMuscle,
+    required this.secondaryMuscles,
   });
 
   final String id;
   final List<String> names;
   final String type;
   final String equipment;
+
+  /// One muscle code (A37 D2, D3): dark on the muscle map.
   final String primaryMuscle;
+
+  /// 0–4 distinct codes, never [primaryMuscle]: lighter on the map.
+  final List<String> secondaryMuscles;
 }
 
 /// One GeoNames-derived city for offline location selection (LC-033).

@@ -29,9 +29,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Charts appear after a few days of logging.';
 
   @override
-  String get workoutsPlaceholder => 'Your workouts will show up here.';
-
-  @override
   String get updateRequiredTitle => 'Update needed';
 
   @override
@@ -4713,5 +4710,461 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String progressGramsValueTarget(String label, String amount, String target) {
     return '$label: $amount of $target g';
+  }
+
+  @override
+  String workoutMuscleGroup(String group) {
+    String _temp0 = intl.Intl.selectLogic(group, {
+      'chest': 'Chest',
+      'back': 'Back',
+      'shoulders': 'Shoulders',
+      'biceps': 'Biceps',
+      'triceps': 'Triceps',
+      'forearms': 'Forearms',
+      'legs': 'Legs',
+      'core': 'Core',
+      'other': 'Other',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String workoutMuscle(String muscle) {
+    String _temp0 = intl.Intl.selectLogic(muscle, {
+      'chest': 'Chest',
+      'shoulders': 'Shoulders',
+      'biceps': 'Biceps',
+      'triceps': 'Triceps',
+      'forearms': 'Forearms',
+      'traps': 'Traps',
+      'upperBack': 'Upper back',
+      'lowerBack': 'Lower back',
+      'abs': 'Abs',
+      'obliques': 'Obliques',
+      'quadriceps': 'Quads',
+      'hamstrings': 'Hamstrings',
+      'glutes': 'Glutes',
+      'calves': 'Calves',
+      'adductors': 'Adductors',
+      'other': 'Other',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String workoutExerciseType(String type) {
+    String _temp0 = intl.Intl.selectLogic(type, {
+      'weightReps': 'Weight × reps',
+      'bodyweightReps': 'Bodyweight × reps',
+      'assisted': 'Assisted',
+      'repsOnly': 'Reps only',
+      'duration': 'Time',
+      'distanceDuration': 'Cardio',
+      'other': 'Other',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String workoutEquipment(String equipment) {
+    String _temp0 = intl.Intl.selectLogic(equipment, {
+      'barbell': 'Barbell',
+      'dumbbell': 'Dumbbell',
+      'cable': 'Cable',
+      'machine': 'Machine',
+      'kettlebell': 'Kettlebell',
+      'bodyweight': 'Bodyweight',
+      'other': 'Other',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String workoutTitlePair(String first, String second) {
+    String _temp0 = intl.Intl.selectLogic(first, {
+      'chest': 'Chest',
+      'back': 'Back',
+      'shoulders': 'Shoulders',
+      'biceps': 'Biceps',
+      'triceps': 'Triceps',
+      'forearms': 'Forearms',
+      'legs': 'Legs',
+      'core': 'Core',
+      'other': 'Other',
+    });
+    String _temp1 = intl.Intl.selectLogic(second, {
+      'chest': 'chest',
+      'back': 'back',
+      'shoulders': 'shoulders',
+      'biceps': 'biceps',
+      'triceps': 'triceps',
+      'forearms': 'forearms',
+      'legs': 'legs',
+      'core': 'core',
+      'other': 'other',
+    });
+    return '$_temp0 & $_temp1';
+  }
+
+  @override
+  String get workoutTitleFullBody => 'Full body';
+
+  @override
+  String get workoutTitleCardio => 'Cardio';
+
+  @override
+  String get workoutTitleUntitled => 'Workout';
+
+  @override
+  String get workoutRemovedExercise => 'Removed exercise';
+
+  @override
+  String get workoutPickTitle => 'Pick exercises';
+
+  @override
+  String get workoutPickSearchHint => 'Search exercises';
+
+  @override
+  String get workoutPickAll => 'All';
+
+  @override
+  String get workoutPickCardio => 'Cardio';
+
+  @override
+  String workoutPickAdd(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Add $count exercises',
+      one: 'Add 1 exercise',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String workoutPickCreate(String name) {
+    return 'Create “$name”';
+  }
+
+  @override
+  String get workoutPickCreateBlank => 'Create a custom exercise';
+
+  @override
+  String get workoutPickNoResults =>
+      'No exercise matches. Create it as your own.';
+
+  @override
+  String get workoutPickCustomTag => 'Your exercise';
+
+  @override
+  String get workoutPickEditCustom => 'Edit exercise';
+
+  @override
+  String workoutPickSelected(int position) {
+    return 'Selected $position';
+  }
+
+  @override
+  String get workoutCustomNewTitle => 'New exercise';
+
+  @override
+  String get workoutCustomEditTitle => 'Edit exercise';
+
+  @override
+  String get workoutCustomName => 'Name';
+
+  @override
+  String get workoutCustomNameError => 'Enter a name';
+
+  @override
+  String get workoutCustomAliases => 'Other names';
+
+  @override
+  String get workoutCustomAliasesHint =>
+      'Separate with commas, e.g. low fly, LTH fly';
+
+  @override
+  String get workoutCustomType => 'What you log';
+
+  @override
+  String get workoutCustomTypeLocked =>
+      'Already logged, so this can\'t change.';
+
+  @override
+  String get workoutCustomEquipment => 'Equipment';
+
+  @override
+  String get workoutCustomPrimary => 'Main muscle';
+
+  @override
+  String get workoutCustomPrimaryError => 'Pick the main muscle';
+
+  @override
+  String get workoutCustomSecondary => 'Other muscles (up to 4)';
+
+  @override
+  String get workoutCustomSave => 'Save';
+
+  @override
+  String get workoutCustomDelete => 'Delete exercise';
+
+  @override
+  String get workoutCustomInUse =>
+      'Used in your workouts, so it can\'t be deleted.';
+
+  @override
+  String get workoutCustomCreated => 'Exercise added';
+
+  @override
+  String get workoutCustomUpdated => 'Exercise updated';
+
+  @override
+  String get workoutCustomDeleted => 'Exercise deleted';
+
+  @override
+  String get workoutActionChanged => 'It changed meanwhile. Try again.';
+
+  @override
+  String get workoutActionRefused => 'That didn\'t work. Nothing was changed.';
+
+  @override
+  String workoutSetWeightReps(String kg, int reps) {
+    return '$kg × $reps';
+  }
+
+  @override
+  String workoutSetAddedWeight(String kg, int reps) {
+    return '+$kg × $reps';
+  }
+
+  @override
+  String workoutSetAssisted(String kg, int reps) {
+    return '$reps reps, −$kg kg';
+  }
+
+  @override
+  String workoutSetReps(int reps) {
+    String _temp0 = intl.Intl.pluralLogic(
+      reps,
+      locale: localeName,
+      other: '$reps reps',
+      one: '1 rep',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String workoutSetCardio(String minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String workoutSetCardioDistance(String minutes, String km) {
+    return '$minutes min · $km km';
+  }
+
+  @override
+  String get workoutsFirstVisitMessage =>
+      'Your workouts will show up here. Pick exercises and log your sets after the gym, no plan needed.';
+
+  @override
+  String get workoutsPickExercises => 'Pick exercises';
+
+  @override
+  String get workoutsLogWorkout => 'Log a workout';
+
+  @override
+  String get workoutsRecent => 'Recent';
+
+  @override
+  String get workoutsRepeat => 'Repeat';
+
+  @override
+  String get workoutsHistory => 'All workouts';
+
+  @override
+  String workoutsWeekTrained(String day) {
+    return '$day, trained';
+  }
+
+  @override
+  String get workoutHistoryTitle => 'Workout history';
+
+  @override
+  String workoutSessionSummary(int exercises, int sets) {
+    String _temp0 = intl.Intl.pluralLogic(
+      exercises,
+      locale: localeName,
+      other: '$exercises exercises',
+      one: '1 exercise',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      sets,
+      locale: localeName,
+      other: '$sets sets',
+      one: '1 set',
+    );
+    return '$_temp0 · $_temp1';
+  }
+
+  @override
+  String workoutPrCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count PRs',
+      one: '1 PR',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get workoutPr => 'PR';
+
+  @override
+  String workoutTodayRow(String title, int exercises) {
+    String _temp0 = intl.Intl.pluralLogic(
+      exercises,
+      locale: localeName,
+      other: '$exercises exercises',
+      one: '1 exercise',
+    );
+    return '$title ✓ · $_temp0';
+  }
+
+  @override
+  String workoutTodayMore(int count) {
+    return '+$count';
+  }
+
+  @override
+  String get workoutLogNewTitle => 'Log workout';
+
+  @override
+  String get workoutLogEditTitle => 'Workout';
+
+  @override
+  String get workoutLogName => 'Name';
+
+  @override
+  String get workoutLogDate => 'Date';
+
+  @override
+  String get workoutLogAddExercises => 'Add exercises';
+
+  @override
+  String get workoutLogAddSet => 'Add set';
+
+  @override
+  String get workoutLogDone => 'Done';
+
+  @override
+  String get workoutLogMenu => 'Workout options';
+
+  @override
+  String get workoutLogDelete => 'Delete workout';
+
+  @override
+  String get workoutExerciseMenu => 'Exercise options';
+
+  @override
+  String get workoutExerciseMoveUp => 'Move up';
+
+  @override
+  String get workoutExerciseMoveDown => 'Move down';
+
+  @override
+  String get workoutExerciseRemove => 'Remove exercise';
+
+  @override
+  String get workoutPerDumbbell => 'kg per dumbbell';
+
+  @override
+  String workoutLastTime(String value) {
+    return 'Last time $value';
+  }
+
+  @override
+  String workoutSetNumber(int number) {
+    return '$number';
+  }
+
+  @override
+  String workoutSetDone(int number) {
+    return 'Set $number done';
+  }
+
+  @override
+  String get workoutSetInvalid => 'Check this set\'s numbers';
+
+  @override
+  String get workoutFieldKg => 'kg';
+
+  @override
+  String get workoutFieldAddedKg => '+kg';
+
+  @override
+  String get workoutFieldAssistKg => 'Assist kg';
+
+  @override
+  String get workoutFieldReps => 'Reps';
+
+  @override
+  String get workoutFieldTime => 'm:ss';
+
+  @override
+  String get workoutFieldMinutes => 'Min';
+
+  @override
+  String get workoutFieldKm => 'Km';
+
+  @override
+  String get workoutConflict =>
+      'This workout changed somewhere else. Your latest edits aren\'t saved.';
+
+  @override
+  String get workoutConflictReload => 'Reload';
+
+  @override
+  String get workoutConflictKeep => 'Keep mine';
+
+  @override
+  String get workoutSaved => 'Workout saved';
+
+  @override
+  String get workoutUpdated => 'Workout updated';
+
+  @override
+  String get workoutDeleted => 'Workout deleted';
+
+  @override
+  String get workoutSessionGone => 'This workout was deleted.';
+
+  @override
+  String get workoutSaveFailed =>
+      'Couldn\'t save this workout. Your entries are still here.';
+
+  @override
+  String get workoutSaveRetry => 'Retry';
+
+  @override
+  String get workoutSaveDiscard => 'Leave without saving';
+
+  @override
+  String workoutSetMenu(int number) {
+    return 'Set $number options';
+  }
+
+  @override
+  String get workoutSetRemove => 'Remove set';
+
+  @override
+  String workoutCustomAliasesTooMany(int max) {
+    return 'At most $max other names';
+  }
+
+  @override
+  String workoutCustomAliasTooLong(int max) {
+    return 'Each name can have at most $max characters';
   }
 }

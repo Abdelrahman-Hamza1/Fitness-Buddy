@@ -1,13 +1,17 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/app/router/app_router.dart';
+import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:fb_mobile/features/today/today.dart';
+import 'package:fb_mobile/features/workouts/presentation/set_row.dart';
+import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -179,6 +183,62 @@ void main() {
     );
     expect(find.byType(PersonalFoodsScreen, skipOffstage: false), findsNothing);
     expect(router.config.state.matchedLocation, const MeRoute().location);
+    await unmountApp(tester, container);
+  });
+
+  testWidgets('WO-034 A45 a workout being logged survives a tab switch; a '
+      "re-tap of Workouts runs the visit's exit: edits saved, visit "
+      'finished, then the tab root', (tester) async {
+    final container = await pumpApp(tester);
+    final router = container.read(appRouterProvider);
+    const exercise = '0199e3c2-0000-7000-8000-000000000001';
+    await applyOps(tester, container, [
+      CreateCustomExercise(
+        exercise,
+        CustomExerciseDraft(
+          name: 'Cable fly',
+          type: ExerciseType.weightReps,
+          equipment: Equipment.cable,
+          primaryMuscle: Muscle.chest,
+        ),
+      ),
+    ]);
+    await _tap(tester, 2);
+    router.push(const WorkoutLogRoute(exercises: [exercise]));
+    await settle(tester);
+    expect(find.byType(WorkoutLogScreen), findsOneWidget);
+    final fields = find.descendant(
+      of: find.byType(SetRow),
+      matching: find.byType(EditableText),
+    );
+    await tester.enterText(fields.at(0), '80');
+    await tester.enterText(fields.at(1), '8');
+    await tester.tap(
+      find.descendant(of: find.byType(SetRow), matching: find.byType(Checkbox)),
+    );
+    await tester.pump();
+
+    // A switch away and back keeps the form (the visit is still open).
+    await _tap(tester, 0);
+    expect(find.byType(TodayScreen), findsOneWidget);
+    await _tap(tester, 2);
+    expect(find.byType(WorkoutLogScreen), findsOneWidget);
+
+    // A re-tap runs the exit path, then shows the Workouts root.
+    await _tap(tester, 2);
+    await settle(tester);
+    expect(find.byType(WorkoutsScreen), findsOneWidget);
+    expect(find.byType(WorkoutLogScreen, skipOffstage: false), findsNothing);
+    final sessions = await tester.runAsync(
+      () =>
+          WorkoutRepository(container.read(appDatabaseProvider)).allSessions(),
+    );
+    expect(
+      sessions!.single.draft.exercises.single.sets.single.values,
+      const SetValues(reps: 8, kg: 80),
+    );
+    // The visit finished: its one Undo is offered.
+    expect(container.read(undoStackProvider).latest, isNotNull);
     await unmountApp(tester, container);
   });
 }
