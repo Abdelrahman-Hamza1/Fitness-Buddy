@@ -9,9 +9,10 @@ On the A55, open GitHub in Chrome, sign in, open this repository → Actions →
 a successful **CI run on main** → `app-prod-release.apk`. Download the APK
 (the artifact is unzipped), open it, allow Chrome to install unknown apps when
 prompted, and choose **Install/Update over the existing app**. Never uninstall
-or clear storage to update. Builds last 30 days; a weekly main run refreshes them.
-Step branches build staging; merge branches build prod for verification without
-publishing it. Fork builds have no secrets and use a debug key; never install a
+or clear storage to update. Builds last 30 days; the nightly main run refreshes them.
+A staging build of a step branch needs a manual run (Actions → CI → Run workflow,
+pick the branch); pushing a branch runs no CI (TD-108). Merge branches build prod
+for verification without publishing it. Fork builds have no secrets and use a debug key; never install a
 `*-debugkey.apk` as the daily build.
 
 Before an update, export your data and keep the files outside the app. Note the

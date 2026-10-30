@@ -105,9 +105,9 @@ Planned (full map: [`technical-planning/10-engineering-practices.md`](technical-
 
 ## CI
 
-One workflow, `.github/workflows/ci.yml`, runs on every push and pull request. Its gate job **`ci`** is the one required check on `main`: it passes only if Dart, .NET, contract and image jobs pass, plus Android jobs when required (TD-060). In CI, `make deps-dart` runs `flutter pub get --enforce-lockfile`, so `pubspec.lock` can never be re-resolved silently; to update it, run `make deps-dart` locally and commit the result.
+One workflow, `.github/workflows/ci.yml`, runs on pushes to `merge/**` (the commits `tools/scripts/merge-step.sh` builds), pull requests, nightly on `main` and on manual runs; pushing a step branch runs nothing (TD-108). Its gate job **`ci`** is the one required check on `main`: it passes only if Dart, .NET, contract, image and Android jobs pass (a docs-only merge runs just the `changes` check). In CI, `make deps-dart` runs `flutter pub get --enforce-lockfile`, so `pubspec.lock` can never be re-resolved silently; to update it, run `make deps-dart` locally and commit the result.
 
-To wait for and read the result of a pushed commit (no `gh` or token needed, public repo):
+To wait for and read the result of a pushed commit (no `gh` needed, public repo; a read-only token in `~/.config/fitness-buddy/github-token` lifts the anonymous rate limit, see [`docs/runbooks/github-token.md`](docs/runbooks/github-token.md)):
 
 ```bash
 tools/scripts/ci-status.sh <sha>     # exit 0 = ci passed, 1 = failed, 2 = timed out
@@ -115,11 +115,11 @@ tools/scripts/ci-status.sh <sha>     # exit 0 = ci passed, 1 = failed, 2 = timed
 
 ## Merge flow
 
-Work happens on a step branch (`step/Sxx-name`) with Conventional Commits. At the end of a step:
+Work happens on a step branch (`step/Sxx-name`) with Conventional Commits. At the end of a step, `tools/scripts/merge-step.sh <ID> "<name>" <branch>` (or `merge-step.sh group …` for several ready steps, TD-108):
 
-1. Squash the branch on a local `merge/Sxx` branch, one commit `Sxx: <step name>`, and push it.
-2. Wait for `ci` to be green on that SHA (`tools/scripts/ci-status.sh <sha>`).
-3. Fast-forward `main` to the same SHA (`git push origin merge/Sxx:main`), then delete both branches.
+1. Builds one squash commit per step on `origin/main`, `<ID>: <step name>`, without a checkout, and pushes it (the top one, for a group) as a `merge/…` branch.
+2. Waits for `ci` to be green on that SHA (`tools/scripts/ci-status.sh <sha>`).
+3. Fast-forwards `main` to the same SHA, then deletes the merge and step branches.
 
 `main` only accepts commits on which `ci` already passed. Details: [`technical-planning/13-delivery-process.md`](technical-planning/13-delivery-process.md).
 

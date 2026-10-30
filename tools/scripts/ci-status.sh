@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Waits for the CI result of one commit and reports it, without `gh` or a token
-# (S01 D20, A6). Polls the GitHub REST API for the commit's check runs and
-# finishes when the required check `ci` (the gate job of .github/workflows/ci.yml)
-# has completed. Only check runs created by GitHub Actions (app id 15368) count,
-# so another app cannot fake a `ci` result. If the commit has several `ci` runs
-# (e.g. push + pull_request, or a re-run), all must be completed and the newest
-# one (highest id) decides.
+# Waits for the CI result of one commit and reports it, without `gh`; a token
+# is optional (S01 D20, A6, TD-108). Polls the GitHub REST API for the commit's
+# check runs and finishes when the required check `ci` (the gate job of
+# .github/workflows/ci.yml) has completed. Only check runs created by GitHub
+# Actions (app id 15368) count, so another app cannot fake a `ci` result. If
+# the commit has several `ci` runs (e.g. push + pull_request, or a re-run), all
+# must be completed and the newest one (highest id) decides.
 #
 # Usage: tools/scripts/ci-status.sh <sha> [timeout-minutes]
 #   <sha>             commit to check (7-40 hex characters, normally a full SHA)
@@ -20,13 +20,20 @@
 #   CI_STATUS_REPO            owner/repo (default Abdelrahman-Hamza1/Fitness-Buddy)
 #   CI_STATUS_CHECK           name of the required check run (default ci)
 #   GITHUB_TOKEN or GH_TOKEN  sent as a bearer token if set (raises the rate
-#                             limit from 60 to 5000 requests/hour); never printed
+#                             limit from 60 to 5000 requests/hour); never printed.
+#                             Unset: the private file
+#                             ${XDG_CONFIG_HOME:-$HOME/.config}/fitness-buddy/github-token
+#                             (mode 600, else ignored with a warning; TD-108,
+#                             docs/runbooks/github-token.md). A rejected token
+#                             (HTTP 401: expired or revoked) is dropped and the
+#                             polling goes on anonymously.
 #   CI_STATUS_API             API base URL, for testing against a local fake
 #                             server (default https://api.github.com). A token
 #                             is only ever sent to the default.
 #
 # Anonymous access works because the repo is public: 60 requests/hour per IP,
-# shared with everything else on this machine. One poll = one request.
+# shared with everything else on this machine (every lane). One poll = one
+# request. With the token: 5,000/hour for the owner's account.
 #
 # Exit codes: 0 `ci` succeeded · 1 `ci` failed (failure, cancelled, timed_out,
 # or any other non-success conclusion) · 2 timed out waiting · 64 usage error.
@@ -64,7 +71,10 @@ for tool in curl python3; do
   command -v "$tool" >/dev/null 2>&1 || usage_error "$tool is not installed"
 done
 
-token="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
+# shellcheck source=tools/scripts/github-token.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/github-token.sh"
+load_github_token
+token="$gh_token"
 [[ "$API" == "$DEFAULT_API" ]] || token=""
 url="$API/repos/$REPO/commits/$sha/check-runs?filter=latest&per_page=100"
 deadline=$(($(date +%s) + timeout_min * 60))
@@ -159,7 +169,11 @@ sys.exit(0 if newest.get("conclusion") == "success" else 1)
 '
 
 log "repo $REPO, commit $sha, waiting for check '$CHECK_NAME' (timeout ${timeout_min} min)"
-[[ -z "$token" ]] || log "using the token from GITHUB_TOKEN/GH_TOKEN"
+if [[ -n "$token" ]]; then
+  log "using the token from $gh_token_source"
+else
+  log "no token: anonymous API, 60 requests/hour shared by this machine (docs/runbooks/github-token.md)"
+fi
 # Cap the initial wait at timeout - 60 s (never negative), so at least one poll
 # happens before the deadline whatever CI_STATUS_INITIAL_WAIT says.
 initial_wait=$((timeout_min * 60 - 60))
@@ -191,6 +205,15 @@ while :; do
         3) log "'$CHECK_NAME' pending (requests left: ${remaining:-?})" ;;
         *) warn "unexpected API response, retrying" ;;
       esac
+      ;;
+    401)
+      if [[ -n "$token" ]]; then
+        token=""
+        wait_s=0
+        warn "the token from $gh_token_source was rejected (HTTP 401: expired or revoked?); polling anonymously from now on. Renew it: docs/runbooks/github-token.md"
+      else
+        warn "HTTP 401 without a token, retrying in ${wait_s}s"
+      fi
       ;;
     403 | 429)
       reset="$(header x-ratelimit-reset || true)"

@@ -23,27 +23,30 @@
 # built on main and nightly only, and the emulator job `android-it` runs
 # nightly on main (schedule) and on manual runs only (TD-104: no commit-message
 # trigger). A red nightly is stop-the-line: fixed before the next merge.
-# Docs-only fast path (TD-104): a push whose diff against its merge-base on main
-# touches only docs (spec/, technical-planning/, docs/, PROCESS.md, PROGRESS.md,
+# When CI runs (TD-108): pushes to merge/** only (the commits merge-step.sh
+# builds; main moves only when `ci` is green on that exact commit), pull
+# requests (Dependabot), the nightly schedule on main and manual runs
+# (workflow_dispatch, any branch). Pushing a step branch starts nothing.
+# Docs-only fast path (TD-104, TD-108): a merge/** push whose diff against its
+# merge-base on main (= exactly what it lands) touches only docs
+# (technical-planning/, docs/, .claude/**/*.md, PROCESS.md, PROGRESS.md,
 # README.md and other root *.md, research-notes.md) runs `changes` (with the
-# PROGRESS.md check) and skips every heavy job; the `ci` gate accepts those
-# skips. Any other path, main, merge/*, pull requests, schedule and manual runs
-# keep the full run.
-# Every other job runs on every push, with one exception (TD-060, supersedes
-# S01 A2): on step branches that change nothing the Android build can depend on
-# (`changes` job), `android` is skipped, so a backend-only branch doesn't wait
-# for it. main, merge/*, pull requests, schedule and manual runs always run it.
+# PROGRESS.md check) and skips every heavy job; the `ci` gate accepts those skips. spec/ is not in the
+# list: `make trace` (dart job) validates it. Pull requests, schedule and
+# manual runs always run everything, and so does any merge with a non-docs path
+# (`android` included: TD-060's step-branch skip retired with step-branch
+# pushes, TD-108).
 # Actions are pinned to full commit SHAs; Dependabot (github-actions) bumps them.
 name: CI
 
 on:
   push:
-    # Dependabot branches run via pull_request. main is excluded: merge-step.sh
-    # pushes the exact squash commit to merge/<ID> first and moves main only when
-    # `ci` is green on that same commit, so a second run on main repeated the
-    # same tree. main still gets the
-    # nightly schedule run (2026-10-29).
-    branches: ['**', '!dependabot/**', '!main']
+    # Only merge-step.sh's merge/<ID>, merge/docs-…, merge/chore-… and
+    # merge/group-… branches (TD-108). main is not here: it only ever moves to
+    # a commit whose merge/** run was green, so a run on main would repeat the
+    # same tree; main gets the nightly schedule run. Dependabot runs via
+    # pull_request.
+    branches: ['merge/**']
   pull_request:
   workflow_dispatch:
   schedule:
@@ -56,8 +59,9 @@ permissions:
   contents: read
 
 concurrency:
-  # One run per branch or PR: a newer push cancels the older run. On main every
-  # run gets its own group (run_id), so nothing there is cancelled or dropped.
+  # One run per branch or PR: a newer push cancels the older run (a merge
+  # rebuilt on a new main replaces its stale attempt). On main every run gets
+  # its own group (run_id), so nothing there is cancelled or dropped.
   group: ci-${{ github.ref }}${{ github.ref == 'refs/heads/main' && format('-{0}', github.run_id) || '' }}
   cancel-in-progress: true
 
@@ -66,9 +70,10 @@ defaults:
     shell: bash # bash -eo pipefail
 
 jobs:
-  # Does this branch touch anything the Android jobs build or check? Compared
-  # with its merge-base on main, so a branch that touched the app once keeps
-  # running them. Any doubt (no merge-base, a full-run ref) means yes.
+  # Does this merge change only docs (TD-104, TD-108)? Compared with its
+  # merge-base on main, i.e. exactly what the merge lands. Any doubt (no
+  # merge-base, an empty diff, any event other than a merge/** push) means a
+  # full run.
   changes:
     name: changes
     runs-on: ubuntu-24.04
@@ -83,7 +88,9 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Android-relevant changes?
+      # Outputs: docs_only (skip every heavy job) and android (false only on a
+      # docs-only merge; kept separate so the `ci` gate logic stays as it was).
+      - name: Docs-only merge?
         id: android
         env:
           EVENT: ${{ github.event_name }}
@@ -91,17 +98,24 @@ jobs:
         run: |
           android=true
           docs_only=false
-          if [[ "$EVENT" == push && "$REF" != refs/heads/main && "$REF" != refs/heads/merge/* ]] \
+          if [[ "$EVENT" == push && "$REF" == refs/heads/merge/* ]] \
             && base="$(git merge-base origin/main HEAD 2>/dev/null)"; then
-            relevant='^(apps/mobile/|packages/|contracts/|data/|tools/catalog/|pubspec\.(yaml|lock)$|analysis_options\.yaml$|\.fvmrc$|Makefile$|\.github/workflows/ci\.yml$|tools/scripts/(build-android|android-defines|setup-android|patrol-android|android-|session-|test_session_|apk_hardening|apk-hardening|testdata/apk-hardening/))'
-            if ! git diff --name-only "$base" HEAD | grep -Eq "$relevant"; then
-              android=false
-            fi
-            # Docs only (TD-104): every changed path is documentation. An empty
-            # diff is not docs-only, so nothing is skipped on a doubt.
-            docs='^(spec/|technical-planning/|docs/|PROCESS\.md$|PROGRESS\.md$|research-notes\.md$|[^/]+\.md$)'
-            changed="$(git diff --name-only "$base" HEAD)"
-            if [[ -n "$changed" ]] && ! grep -Evq "$docs" <<<"$changed"; then
+            # Docs only: every changed path is documentation. An empty diff is
+            # not docs-only, so nothing is skipped on a doubt. No spec/: the
+            # dart job's `make trace` checks it.
+            docs='^(technical-planning/|docs/|\.claude/.+\.md$|PROCESS\.md$|PROGRESS\.md$|research-notes\.md$|[^/]+\.md$)'
+            # --no-renames: a rename is listed as its deletion AND its addition,
+            # so code moved into docs/ still counts as a code change (with
+            # rename detection only the docs/ destination would show). -z: NUL
+            # separated, so no path name can split into two. A failing diff
+            # fails the step (written to a file first, not a pipe).
+            git diff --no-renames --name-only -z "$base" HEAD >"$RUNNER_TEMP/changed-paths"
+            count=0 other=0
+            while IFS= read -r -d '' path; do
+              count=$((count + 1))
+              [[ "$path" =~ $docs ]] || other=$((other + 1))
+            done <"$RUNNER_TEMP/changed-paths"
+            if ((count > 0 && other == 0)); then
               docs_only=true
               android=false
             fi
@@ -119,6 +133,11 @@ jobs:
             echo "::error file=PROGRESS.md,title=PROGRESS.md is stale::run 'make progress' and commit PROGRESS.md"
             exit 1
           fi
+
+      # The docs-only decision above, run against a throwaway repo (renames,
+      # spec/, event and ref rules; TD-108). Seconds, python3 + git only.
+      - name: Docs-only detection self-test
+        run: PYTHONDONTWRITEBYTECODE=1 python3 -I -m unittest discover -s tools/scripts -p test_ci_changes.py
 
   # Food catalog (A05 D11): `make catalog-check` validates data/, checks the ID
   # lock against the merge base on origin/main (an ID may never change or
@@ -559,7 +578,9 @@ jobs:
           echo "name=$flavor" >>"$GITHUB_OUTPUT"
 
       # The AAB (every ABI, for Play) only on main, nightly and manual runs
-      # (TD-086); step and merge branches build the arm64 APK the checks need.
+      # (TD-086); merge branches and pull requests build the arm64 APK the
+      # checks need. Staging (the signed staging APK artifact) is what a manual
+      # run on a step branch builds; step-branch pushes no longer run CI (TD-108).
       - name: Build the selected release APK (arm64), + AAB on main and nightly
         env:
           FB_BUILD_AAB: ${{ (github.ref == 'refs/heads/main' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && '1' || '0' }}
@@ -858,10 +879,11 @@ jobs:
           done
 
   # The one required status check. Fails unless every needed job succeeded.
-  # The only allowed skips: android when `changes` says the branch doesn't touch
-  # Android (TD-060), android-it (nightly and manual only, TD-104), and every
-  # heavy job when `changes` says the push changed only docs (TD-104). Any other
-  # failure, cancel or skip fails it.
+  # The only allowed skips: android-it (nightly and manual only, TD-104), and
+  # every heavy job (android included) when `changes` says the merge changed
+  # only docs (TD-104, TD-108). The android=false rule below is TD-060's; since
+  # TD-108 `changes` sets it only together with docs_only. Any other failure,
+  # cancel or skip fails it.
   ci:
     name: ci
     if: always()
