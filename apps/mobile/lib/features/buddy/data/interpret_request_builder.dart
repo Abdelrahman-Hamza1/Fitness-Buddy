@@ -29,6 +29,9 @@ abstract final class InterpretBounds {
 
   /// A serving amount (exclusive of 0).
   static const double serving = 100000;
+
+  /// Lines of the active card (A22b E1).
+  static const activeCardLines = 30;
 }
 
 /// One interpret request, frozen when it's first sent: Try again replays
@@ -60,8 +63,11 @@ final class PreparedInterpret {
 /// default key; `window` when the slot has one), and the personal foods
 /// whose normalized names or aliases share a word with the message. Saved
 /// meals, open batches, memory, recent entries and custom exercises stay
-/// empty (A25–A27, A37); Ramadan is inactive (A41); no active proposal
-/// (A22b). No IDs other than row IDs, no account data.
+/// empty (A25–A27, A37); Ramadan is inactive (A41). A follow-up sends the
+/// open card as `activeProposal` + a bounded `context.activeCard` (A22b E1,
+/// D20): slot name, local time and each line's name, amount, unit and
+/// state, with no IDs and no nutrients. No IDs other than row IDs, no
+/// account data.
 abstract final class InterpretRequestBuilder {
   /// The request for message [requestId] with [text] (already sanitized:
   /// 1–1000 UTF-16 units, not blank) at [now].
@@ -72,6 +78,7 @@ abstract final class InterpretRequestBuilder {
     required Iterable<MealSlot> slots,
     required Iterable<PersonalFood> personalFoods,
     SlotMode mode = SlotMode.normal,
+    ProposalCard? activeCard,
   }) => PreparedInterpret(
     InterpretRequest(
       requestId: requestId,
@@ -83,7 +90,7 @@ abstract final class InterpretRequestBuilder {
         for (final slot in slots)
           if (slot.active && slot.mode == mode) ?_slot(slot),
       ].take(InterpretBounds.slots).toList(),
-      activeProposal: null,
+      activeProposal: activeCard?.id,
       context: BuddyContext(
         personalFoods: matchingFoods(text, personalFoods),
         savedMeals: const [],
@@ -91,9 +98,56 @@ abstract final class InterpretRequestBuilder {
         memory: const [],
         recentEntries: const [],
         customExercises: const [],
+        activeCard: activeCard == null ? null : activeCardOf(activeCard, slots),
       ),
     ),
   );
+
+  /// The bounded summary of [card] a follow-up sends (A22b E1, D20): the
+  /// slot's name (from [slots]), the local `HH:mm` time and at most
+  /// [InterpretBounds.activeCardLines] lines with name (cut to
+  /// [InterpretBounds.value] without splitting a surrogate pair), amount,
+  /// unit code and food state. No IDs, no nutrients. A line whose name is
+  /// blank is skipped.
+  static BuddyActiveCard activeCardOf(
+    ProposalCard card,
+    Iterable<MealSlot> slots,
+  ) {
+    final first = card.lines.firstOrNull?.entry;
+    final slot = slots.where((s) => s.id == first?.slotId).firstOrNull;
+    final slotName = (slot?.name ?? slot?.defaultKey ?? '').trim();
+    final time = switch (first?.when) {
+      EntryAt(:final time) => time.localDateTime.time.minuteOfDay,
+      _ => null,
+    };
+    return BuddyActiveCard(
+      slot: _fits(slotName) ? slotName : null,
+      time: time == null ? null : _hhmm(time),
+      lines: [
+        for (final line in card.lines)
+          if (_cut(line.entry.food.names.en.trim()) case final name
+              when name.isNotEmpty)
+            BuddyActiveCardLine(
+              name: name,
+              amount: line.entry.amount.input.amount > 0
+                  ? line.entry.amount.input.amount
+                  : null,
+              unitCode: line.entry.amount.input.unitCode,
+              state: line.selectedFood?.state.code,
+            ),
+      ].take(InterpretBounds.activeCardLines).toList(),
+    );
+  }
+
+  /// [value] cut to [InterpretBounds.value] UTF-16 units, never inside a
+  /// surrogate pair.
+  static String _cut(String value) {
+    if (value.length <= InterpretBounds.value) return value;
+    var end = InterpretBounds.value;
+    final unit = value.codeUnitAt(end - 1);
+    if (unit >= 0xD800 && unit <= 0xDBFF) end--;
+    return value.substring(0, end).trim();
+  }
 
   /// The personal foods to send for [text]: those sharing a normalized word
   /// (2+ characters) with it, most shared words first, then by ID; at most

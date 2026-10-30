@@ -269,9 +269,21 @@ final List<GallerySection> gallerySectionsBasics = [
       FbAnswerChip,
       FbQuickAddChip,
       FbQuickAddRow,
+      FbTargetChip,
       FbIconButton,
     ],
     states: (_) => [
+      GalleryState(
+        'target (follow-up)',
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: FbTargetChip(
+            label: _S.target,
+            clearTooltip: _S.targetClear,
+            onClear: () {},
+          ),
+        ),
+      ),
       GalleryState(
         'assumption',
         Align(

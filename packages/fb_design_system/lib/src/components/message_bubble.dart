@@ -12,8 +12,14 @@ class FbMessageBubble extends StatelessWidget {
     required this.fromUser,
     this.semanticLabel,
     this.leading,
+    this.textDirection,
     super.key,
   });
+
+  /// The message's own direction (an Arabic message inside an English UI,
+  /// D-080); the ambient direction when null. Placement still follows the
+  /// UI direction.
+  final TextDirection? textDirection;
 
   /// A decorative widget before the bubble, e.g. a 24 dp `FbBuddyAvatar`;
   /// not read out (the [semanticLabel] says who is talking).
@@ -43,6 +49,7 @@ class FbMessageBubble extends StatelessWidget {
         ),
         child: Text(
           text,
+          textDirection: textDirection,
           style: FbType.body.copyWith(
             color: fromUser ? scheme.onPrimaryContainer : scheme.onSurface,
           ),

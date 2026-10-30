@@ -8,12 +8,15 @@ import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dar
 import 'package:fb_mobile/features/buddy/application/buddy_thread_messages.dart';
 import 'package:fb_mobile/features/buddy/application/food_card_view.dart';
 import 'package:fb_mobile/features/buddy/presentation/cards/food_proposal_card.dart';
+import 'package:fb_mobile/features/buddy/presentation/message_direction.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Buddy's fixed English replies from ARB (A22 D7, D16; AI-143).
 BuddyReplyTexts buddyReplyTexts(AppLocalizations l10n) => BuddyReplyTexts(
   cards: l10n.buddyReplyCards,
+  updated: l10n.buddyReplyUpdated,
+  cardClosed: l10n.buddyReplyCardClosed,
   medical: l10n.buddyReplyMedical,
   notFood: l10n.buddyReplyNotFood,
   noCard: l10n.buddyReplyNoCard,
@@ -173,6 +176,7 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
         key: ValueKey(turn.userMessageId),
         text: userText,
         fromUser: true,
+        textDirection: messageDirection(userText),
         semanticLabel: l10n.buddyBubbleYou(userText),
       ),
       // The plain "here's your meal" line adds nothing above its cards; it
@@ -187,7 +191,9 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
           // Who is talking, as on the canvas (A44); decorative.
           leading: const FbBuddyAvatar(size: 24),
         ),
-      if (turn.phase == BuddyTurnPhase.sending)
+      // A follow-up updates its card in place ("Updating…" on the card), so
+      // it gets no skeleton of its own.
+      if (turn.phase == BuddyTurnPhase.sending && turn.followUpCardId == null)
         FbProposalCard.skeleton(semanticLabel: l10n.buddyWorking),
       if (turn.phase == BuddyTurnPhase.failed)
         _Failure(turn: turn, onSearch: onSearch),
@@ -199,6 +205,9 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
           view: FoodCardView.of(
             card,
             referenceDate: turn.message.time.localDate,
+            updating: ref
+                .read(buddyThreadControllerProvider)
+                .isUpdating(card.id),
           ),
         ),
     ];

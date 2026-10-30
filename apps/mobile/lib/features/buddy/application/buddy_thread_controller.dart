@@ -2,12 +2,16 @@ import 'dart:async';
 
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/events/domain_event_bus.dart';
+import 'package:fb_mobile/core/ids/id_generator.dart';
+import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_reply_texts.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
 import 'package:fb_mobile/features/buddy/application/send_buddy_message.dart';
 import 'package:fb_mobile/features/buddy/data/buddy_api.dart';
 import 'package:fb_mobile/features/buddy/data/interpret_request_builder.dart';
+import 'package:fb_mobile/features/buddy/data/proposal_input_loader.dart';
+import 'package:fb_mobile/features/foods/foods.dart' show FoodChoice;
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -61,6 +65,10 @@ final class BuddyCard {
     this.couldNotLog = false,
     this.logged,
     this.undoRefused,
+    this.origin,
+    this.removed = const [],
+    this.discardedFrom,
+    this.discardedAt,
   });
 
   /// The card's ID.
@@ -92,6 +100,21 @@ final class BuddyCard {
   /// then no longer offered.
   final UndoOutcome? undoRefused;
 
+  /// Where the card comes from since a follow-up rebuilt it (the follow-up's
+  /// answer and assistant row); `null`: its turn's.
+  final CardOrigin? origin;
+
+  /// Lines swiped away, newest last, each with its food name for the inline
+  /// "Removed … · Undo" (AI-042, A22b E6).
+  final List<RemovedLine> removed;
+
+  /// The session before Discard, so its Undo can put the card back (in
+  /// memory: a discard writes nothing in A22b, E8).
+  final ProposalSession? discardedFrom;
+
+  /// When it was discarded (UTC): Undo lasts the undo window from here.
+  final DateTime? discardedAt;
+
   /// The card itself.
   ProposalCard get card => session.cards.firstWhere((c) => c.id == id);
 
@@ -108,6 +131,10 @@ final class BuddyCard {
     bool? couldNotLog,
     LoggedSummary? logged,
     UndoOutcome? undoRefused,
+    CardOrigin? origin,
+    List<RemovedLine>? removed,
+    ProposalSession? discardedFrom,
+    DateTime? discardedAt,
   }) => BuddyCard(
     id: id,
     session: session ?? this.session,
@@ -118,10 +145,31 @@ final class BuddyCard {
     couldNotLog: couldNotLog ?? this.couldNotLog,
     logged: logged ?? this.logged,
     undoRefused: undoRefused ?? this.undoRefused,
+    origin: origin ?? this.origin,
+    removed: removed ?? this.removed,
+    discardedFrom: discardedFrom ?? this.discardedFrom,
+    discardedAt: discardedAt ?? this.discardedAt,
   );
 
   @override
   String toString() => 'BuddyCard($id, ${resolution.name})';
+}
+
+/// A line swiped off an open card: its ID and food name (for "Removed … ·
+/// Undo"). Holds user content: never logged.
+@immutable
+final class RemovedLine {
+  /// Line [id] of food [name].
+  const new(this.id, this.name);
+
+  /// The line's ID.
+  final String id;
+
+  /// The food's name.
+  final String name;
+
+  @override
+  String toString() => 'RemovedLine($id)';
 }
 
 /// What a confirm logged: the card's calories and the day after it.
@@ -165,6 +213,7 @@ final class BuddyTurn {
     this.assistantMessageId,
     this.interpretation,
     this.cards = const [],
+    this.followUpCardId,
   });
 
   /// The saved user message.
@@ -190,6 +239,9 @@ final class BuddyTurn {
 
   /// The cards, in order.
   final List<BuddyCard> cards;
+
+  /// The open card this message follows up on (AI-044), when it does.
+  final String? followUpCardId;
 
   /// The user row's ID.
   String get userMessageId => message.id;
@@ -219,6 +271,7 @@ final class BuddyTurn {
     assistantMessageId: assistantMessageId ?? this.assistantMessageId,
     interpretation: interpretation ?? this.interpretation,
     cards: cards ?? this.cards,
+    followUpCardId: followUpCardId,
   );
 
   @override
@@ -230,13 +283,37 @@ final class BuddyTurn {
 @immutable
 final class BuddyThread {
   /// The thread.
-  const new({this.turns = const [], this.composerRestore});
+  const new({this.turns = const [], this.composerRestore, this.followUpOff});
 
   /// The turns.
   final List<BuddyTurn> turns;
 
   /// Text the composer should take back, once.
   final String? composerRestore;
+
+  /// The open card the user said the next message isn't about (✕ on the
+  /// follow-up chip, D21).
+  final String? followUpOff;
+
+  /// Whether a follow-up about card [cardId] is in flight: the card is
+  /// read-only until its answer arrives, so the answer never overwrites an
+  /// edit made meanwhile (A22b review 1).
+  bool isUpdating(String cardId) => turns.any(
+    (t) => t.phase == BuddyTurnPhase.sending && t.followUpCardId == cardId,
+  );
+
+  /// The card the next message updates (AI-044, A22b E2): the newest open
+  /// card, unless the user turned it off.
+  BuddyCard? get followUpCard {
+    for (final turn in turns.reversed) {
+      for (final card in turn.cards.reversed) {
+        if (card.resolution == CardResolution.open) {
+          return card.id == followUpOff ? null : card;
+        }
+      }
+    }
+    return null;
+  }
 
   /// Whether a send is in flight (Send disabled, D7).
   bool get sending => turns.any((t) => t.phase == BuddyTurnPhase.sending);
@@ -297,14 +374,17 @@ class BuddyThreadController extends _$BuddyThreadController {
       _saving = false;
     }
     if (message == null) return;
+    // A message sent while a card is open updates that card (AI-044).
+    final target = state.followUpCard;
     state = BuddyThread(
       turns: [
         ...state.turns,
-        BuddyTurn(message: message),
+        BuddyTurn(message: message, followUpCardId: target?.id),
       ],
+      followUpOff: state.followUpOff,
     );
     try {
-      final request = await _send.prepare(message);
+      final request = await _send.prepare(message, followUp: target?.card);
       _update(message.id, (t) => t.copyWith(request: request));
       await _dispatch(message.id, texts);
       // A throw must never leave the turn "sending" (Send stays disabled
@@ -342,19 +422,166 @@ class BuddyThreadController extends _$BuddyThreadController {
   /// The composer's text to restore, once (then cleared).
   String? takeComposerRestore() {
     final text = state.composerRestore;
-    if (text != null) state = BuddyThread(turns: state.turns);
+    if (text != null) {
+      state = BuddyThread(turns: state.turns, followUpOff: state.followUpOff);
+    }
     return text;
+  }
+
+  /// The next message starts a new card instead of updating the open one
+  /// (✕ on the follow-up chip, D21).
+  void clearFollowUp() {
+    final card = state.followUpCard;
+    if (card == null) return;
+    state = BuddyThread(
+      turns: state.turns,
+      composerRestore: state.composerRestore,
+      followUpOff: card.id,
+    );
   }
 
   /// Applies a chip/answer [adjustment] to open card [cardId] and recomputes
   /// its session; nothing is written (AI-033, AI-034, AI-036).
   void adjust(String cardId, ProposalAdjustment adjustment) {
     final found = _card(cardId);
-    if (found == null || found.$2.resolution != CardResolution.open) return;
+    if (found == null ||
+        found.$2.resolution != CardResolution.open ||
+        state.isUpdating(cardId)) {
+      return;
+    }
     final update = ProposalEngine.recompute(found.$2.session, adjustment).value;
     if (update == null) return;
     _replaceSession(found.$1, found.$2.session, update.session, update.diff);
   }
+
+  /// − / + on an assumed amount (AI-040, A22b E3): the next amount from
+  /// [AmountStep], recomputed by the engine. Nothing is written.
+  void stepAmount(String cardId, String lineId, {required bool up}) {
+    final line = _line(cardId, lineId);
+    if (line == null) return;
+    final current = line.entry.amount.input;
+    final next = up ? AmountStep.up(current) : AmountStep.down(current);
+    if (next == null) return;
+    adjust(cardId, ProposalSetAmount(lineId, next));
+  }
+
+  /// Sets line [lineId]'s amount to [quantity] from the inline number pad
+  /// and unit chips (AI-040); the engine recomputes. Nothing is written.
+  void setAmount(String cardId, String lineId, Quantity quantity) {
+    if (quantity.amount <= 0 || _line(cardId, lineId) == null) return;
+    adjust(cardId, ProposalSetAmount(lineId, quantity));
+  }
+
+  /// Swaps line [lineId]'s food for [food] (an alternative or a food picked
+  /// in search, AI-041).
+  void swapFood(String cardId, String lineId, ProposalFood food) {
+    if (_line(cardId, lineId) == null) return;
+    adjust(cardId, ProposalSwap(lineId, food));
+  }
+
+  /// Adds [food] at [quantity] to open card [cardId] ("Add item", AI-042):
+  /// a new line with its own ID, computed by the engine.
+  void addFood(String cardId, ProposalFood food, Quantity quantity) {
+    if (quantity.amount <= 0) return;
+    final ids = ref.read(idGeneratorProvider);
+    adjust(
+      cardId,
+      ProposalAdd(
+        cardId,
+        ids.next(),
+        ProposalItem(
+          id: 'add',
+          displayName: food.names.en,
+          match: food,
+          quantity: quantity,
+          explicit: true,
+          alternatives: const [],
+          dimensions: const [],
+        ),
+        GeneratorProposalIds(ids),
+      ),
+    );
+  }
+
+  /// Swaps line [lineId] for the food [choice] picked in food search
+  /// (AI-041); a choice that's neither a catalog nor a personal food
+  /// changes nothing.
+  void swapPicked(String cardId, String lineId, FoodChoice choice) {
+    final food = ProposalInputLoader.proposalFoodOf(choice);
+    if (food != null) swapFood(cardId, lineId, food);
+  }
+
+  /// Adds the food [choice] picked in food search at [quantity] (AI-042).
+  void addPicked(String cardId, FoodChoice choice, Quantity quantity) {
+    final food = ProposalInputLoader.proposalFoodOf(choice);
+    if (food != null) addFood(cardId, food, quantity);
+  }
+
+  /// Swipes line [lineId] off open card [cardId] (AI-042); the card offers
+  /// "Removed … · Undo" ([restoreLine]).
+  void removeLine(String cardId, String lineId) {
+    final line = _line(cardId, lineId);
+    if (line == null) return;
+    adjust(cardId, ProposalSetRemoved(lineId, removed: true));
+    final found = _card(cardId);
+    if (found == null || found.$2.card.lines.any((l) => l.entry.id == lineId)) {
+      return;
+    }
+    _setCard(
+      found.$1.userMessageId,
+      found.$2.copyWith(
+        removed: [
+          ...found.$2.removed,
+          RemovedLine(lineId, line.entry.food.names.en),
+        ],
+      ),
+    );
+  }
+
+  /// Puts back a line removed from open card [cardId].
+  void restoreLine(String cardId, String lineId) {
+    final found = _card(cardId);
+    if (found == null || !found.$2.removed.any((r) => r.id == lineId)) return;
+    adjust(cardId, ProposalSetRemoved(lineId, removed: false));
+    final now = _card(cardId);
+    if (now == null || !now.$2.card.lines.any((l) => l.entry.id == lineId)) {
+      return;
+    }
+    _setCard(
+      now.$1.userMessageId,
+      now.$2.copyWith(
+        removed: [
+          for (final r in now.$2.removed)
+            if (r.id != lineId) r,
+        ],
+      ),
+    );
+  }
+
+  /// Moves open card [cardId] to meal [slotId] (AI-043).
+  void setSlot(String cardId, String slotId) =>
+      adjust(cardId, ProposalSetWhen(cardId, slotId: slotId));
+
+  /// Moves open card [cardId] to [time] on its day, in its own offset
+  /// (AI-043).
+  void setTime(String cardId, LocalTime time) {
+    final found = _card(cardId);
+    final when = found?.$2.card.lines.firstOrNull?.entry.when;
+    if (when is! EntryAt) return;
+    final current = when.time;
+    adjust(
+      cardId,
+      ProposalSetWhen(
+        cardId,
+        time: EntryTime.local(time.on(current.localDate), current.tzOffsetMin),
+      ),
+    );
+  }
+
+  ProposalLine? _line(String cardId, String lineId) =>
+      _card(cardId)?.$2.card.lines
+          .where((l) => l.entry.id == lineId)
+          .firstOrNull;
 
   /// Logs card [cardId] (one tap, UX-003). Single-flight: a second call
   /// while one applies, or for a card that can't be confirmed, does nothing.
@@ -362,7 +589,9 @@ class BuddyThreadController extends _$BuddyThreadController {
     final found = _card(cardId);
     if (found == null) return;
     final (turn, card) = found;
-    if (card.resolution != CardResolution.open || !card.card.canConfirm) {
+    if (card.resolution != CardResolution.open ||
+        !card.card.canConfirm ||
+        state.isUpdating(cardId)) {
       return;
     }
     final before = card.card;
@@ -372,7 +601,11 @@ class BuddyThreadController extends _$BuddyThreadController {
     );
     final ConfirmOutcome outcome;
     try {
-      outcome = await _resolution.confirm(card.session, cardId, _origin(turn));
+      outcome = await _resolution.confirm(
+        card.session,
+        cardId,
+        card.origin ?? _origin(turn),
+      );
       // A throw never leaves the card "confirming": it's open again with
       // "Couldn't log this card." (A22a review).
       // ignore: avoid_catches_without_on_clauses
@@ -410,7 +643,10 @@ class BuddyThreadController extends _$BuddyThreadController {
         );
         await _refreshOthersSafely(cardId);
       case CardRebuilt(:final session):
-        _setCard(turn.userMessageId, BuddyCard(id: cardId, session: session));
+        _setCard(
+          turn.userMessageId,
+          BuddyCard(id: cardId, session: session, origin: card.origin),
+        );
       case CardNotLogged():
         _setCard(
           turn.userMessageId,
@@ -422,7 +658,11 @@ class BuddyThreadController extends _$BuddyThreadController {
   /// Discards open card [cardId]; nothing is logged (AI-037).
   Future<void> discard(String cardId) async {
     final found = _card(cardId);
-    if (found == null || found.$2.resolution != CardResolution.open) return;
+    if (found == null ||
+        found.$2.resolution != CardResolution.open ||
+        state.isUpdating(cardId)) {
+      return;
+    }
     final ProposalSession? session;
     try {
       session = await _resolution.discard(found.$2.session, cardId);
@@ -435,8 +675,36 @@ class BuddyThreadController extends _$BuddyThreadController {
     _replaceSession(found.$1, found.$2.session, session, null);
     _setCard(
       found.$1.userMessageId,
-      _card(cardId)!.$2.copyWith(resolution: CardResolution.discarded),
+      _card(cardId)!.$2.copyWith(
+        resolution: CardResolution.discarded,
+        // Undo only while a discard writes nothing (no contributor ops; A23
+        // adds a resolve-undo before it registers any, E8).
+        discardedFrom: _resolution.discardUndoable ? found.$2.session : null,
+        discardedAt: ref.read(clockProvider).nowUtc(),
+      ),
     );
+  }
+
+  /// Undoes the Discard of [cardId] (backlog #142): the card is open again
+  /// as it was, with "today after this" refreshed. Nothing is written.
+  Future<void> restoreDiscarded(String cardId) async {
+    final found = _card(cardId);
+    final before = found?.$2.discardedFrom;
+    if (found == null ||
+        before == null ||
+        found.$2.resolution != CardResolution.discarded) {
+      return;
+    }
+    _setCard(
+      found.$1.userMessageId,
+      BuddyCard(
+        id: cardId,
+        session: before,
+        origin: found.$2.origin,
+        removed: found.$2.removed,
+      ),
+    );
+    await _refreshOpenCards();
   }
 
   /// Undoes logged card [cardId] once (D25). On success it's read-only
@@ -489,8 +757,61 @@ class BuddyThreadController extends _$BuddyThreadController {
 
   Future<void> _dispatch(String userMessageId, BuddyReplyTexts texts) async {
     final turn = _turn(userMessageId)!;
-    final reply = await _send.dispatch(turn.message, turn.request!, texts);
+    final target = switch (turn.followUpCardId) {
+      final id? => _card(id),
+      null => null,
+    };
+    final followUp =
+        target == null || target.$2.resolution != CardResolution.open
+        ? null
+        : FollowUpTarget(
+            card: target.$2.card,
+            referenceTime: target.$1.message.time,
+          );
+    final reply = await _send.dispatch(
+      turn.message,
+      turn.request!,
+      texts,
+      followUp: followUp,
+      // Logged or discarded before this (retried) follow-up: the card is
+      // left alone and the reply says so, never "Updated" (review 7).
+      followUpClosed: target != null && followUp == null,
+    );
     switch (reply) {
+      case BuddyFollowedUp(
+        :final assistantMessageId,
+        :final session,
+        :final diff,
+        :final interpretation,
+      ):
+        _update(
+          userMessageId,
+          (t) => t.copyWith(
+            phase: BuddyTurnPhase.replied,
+            assistantMessageId: assistantMessageId,
+            interpretation: interpretation,
+          ),
+        );
+        // The card stays where it is, rebuilt with the same ID and
+        // highlighted (UX-024). Logged or discarded meanwhile: left alone.
+        final now = _card(followUp!.card.id);
+        if (now != null && now.$2.resolution == CardResolution.open) {
+          _setCard(
+            now.$1.userMessageId,
+            BuddyCard(
+              id: now.$2.id,
+              session: session,
+              diff: diff,
+              changeToken: Object(),
+              removed: now.$2.removed,
+              origin: CardOrigin(
+                interpretation: interpretation,
+                messageId: assistantMessageId,
+                referenceTime: followUp.referenceTime,
+              ),
+            ),
+          );
+        }
       case BuddyReplied(:final assistantMessageId, :final session):
         _update(
           userMessageId,
@@ -523,6 +844,7 @@ class BuddyThreadController extends _$BuddyThreadController {
           state = BuddyThread(
             turns: state.turns,
             composerRestore: turn.message.text,
+            followUpOff: state.followUpOff,
           );
         }
       case BuddyReplyNotSaved():
@@ -584,6 +906,7 @@ class BuddyThreadController extends _$BuddyThreadController {
           if (t.userMessageId == userMessageId) change(t) else t,
       ],
       composerRestore: state.composerRestore,
+      followUpOff: state.followUpOff,
     );
   }
 

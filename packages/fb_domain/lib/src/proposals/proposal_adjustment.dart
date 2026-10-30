@@ -47,7 +47,8 @@ final class ProposalSwap extends ProposalAdjustment {
   List<Object?> get _values => [lineId, food];
 }
 
-/// Remove or restore the original item and its reserved oil component.
+/// Remove or restore an item (with its generated oil), or a generated oil
+/// line on its own.
 final class ProposalSetRemoved extends ProposalAdjustment {
   /// Removal is an absolute state.
   const new(this.lineId, {required this.removed});
@@ -133,6 +134,13 @@ final class _EngineState {
   final lifecycles = <String, ProposalLifecycle>{};
   final adds = <String, ProposalItem>{};
   final addOwners = <String, String>{};
+
+  /// Items whose amount Buddy assumed when first built: their lines keep
+  /// − / + after a user step or a follow-up states the amount (A22b E3).
+  final assumedAmounts = <String>{};
+
+  /// Items whose generated oil line was removed on its own (A22b review 4).
+  final removedComponents = <String>{};
   String identity(String key, ProposalIdSource? source) =>
       ids.putIfAbsent(key, () {
         if (!allocationsAllowed) throw const _Invalid();
@@ -158,7 +166,9 @@ final class _EngineState {
     ..origins.addAll(origins)
     ..lifecycles.addAll(lifecycles)
     ..adds.addAll(adds)
-    ..addOwners.addAll(addOwners);
+    ..addOwners.addAll(addOwners)
+    ..assumedAmounts.addAll(assumedAmounts)
+    ..removedComponents.addAll(removedComponents);
 }
 
 ProposalRequest _request(
@@ -273,21 +283,33 @@ ProposalUpdateResult _recompute(
             (food.source == .yours && food.personalVersion == null)) {
           throw const _Invalid();
         }
+        // The amount carries over when its unit works for the new food;
+        // otherwise the food's default portion (a serving or grams) is
+        // assumed, so the row stays editable with − / + (A22b review).
+        Quantity? fits(Quantity? q) =>
+            q != null && food.measures.resolve(q) is Resolved ? q : null;
         if (state.ids['oil:${i.id}'] == lineId) {
           final line = session.cards
               .expand((c) => c.lines)
               .firstWhere((l) => l.entry.id == lineId);
           state.components[i.id] = ProposalComponentEffect(
             food,
-            line.entry.amount.input,
+            fits(line.entry.amount.input) ??
+                DefaultPortion.choose(food.measures),
           );
           break;
+        }
+        final kept = fits(i.quantity);
+        if (i.quantity != null && kept == null) {
+          state.assumedAmounts.add(i.id);
         }
         state.items[i.id] = ProposalItem(
           id: i.id,
           displayName: i.displayName,
           match: food,
-          quantity: i.quantity,
+          quantity: i.quantity == null
+              ? null
+              : kept ?? DefaultPortion.choose(food.measures),
           explicit: i.explicit,
           alternatives: [
             if (i.match != null && i.match!.key != food.key) i.match!,
@@ -300,6 +322,16 @@ ProposalUpdateResult _recompute(
         state.choices.removeWhere((key, _) => key.startsWith('${i.id}/'));
       case ProposalSetRemoved(:final lineId, :final removed):
         final i = find(lineId);
+        // A generated oil line goes (or comes back) on its own; its item
+        // stays.
+        if (state.ids['oil:${i.id}'] == lineId) {
+          if (removed) {
+            state.removedComponents.add(i.id);
+          } else {
+            state.removedComponents.remove(i.id);
+          }
+          break;
+        }
         if (removed) {
           state.removed.add(i.id);
         } else {
@@ -531,6 +563,21 @@ ProposalUpdateResult _rebuild(ProposalCard previous, ProposalRequest fresh) {
   ).value!.budget.questions) {
     if (used.any((id) => q.dimensionId.startsWith('$id/'))) {
       state.issued.add(q.dimensionId);
+    }
+  }
+  // A follow-up that names no day or time, or no meal, keeps the card's
+  // (A22b review): even when every food changed, it's still that meal on
+  // that day ("swap it for rice" never moves lunch to breakfast time).
+  final prior = previous.lines.firstOrNull?.entry;
+  if (prior != null) {
+    for (final intent in intents) {
+      if (prior.when case EntryAt(:final time)
+          when intent.timeHint == null && intent.dateHint == null) {
+        state.times.putIfAbsent(intent.index, () => time);
+      }
+      if (prior.slotId case final slot? when intent.slotHint == null) {
+        state.slots.putIfAbsent(intent.index, () => slot);
+      }
     }
   }
   state.origins[previous.id] = previous.originMessageId;

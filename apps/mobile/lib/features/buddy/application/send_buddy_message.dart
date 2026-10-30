@@ -67,6 +67,52 @@ final class BuddyReplied extends BuddyReply {
   String toString() => 'BuddyReplied($assistantMessageId)';
 }
 
+/// A follow-up updated open card [FollowUpTarget.card] (AI-044, A22b E2):
+/// the user row is `done`, assistant row [assistantMessageId] holds the
+/// rebuilt [session]'s budget, and [diff] says what changed (UX-024). The
+/// card keeps its ID. Holds user content: never logged.
+final class BuddyFollowedUp extends BuddyReply {
+  /// The follow-up.
+  const new({
+    required this.assistantMessageId,
+    required this.session,
+    required this.diff,
+    required this.interpretation,
+  }) : super._();
+
+  /// The follow-up assistant row (the card's new `budgetMessageId`).
+  final String assistantMessageId;
+
+  /// The rebuilt card's session.
+  final ProposalSession session;
+
+  /// What the rebuild changed.
+  final ProposalDiff diff;
+
+  /// The answer, to rebuild the card again after a rejected confirm.
+  final Map<String, Object?> interpretation;
+
+  @override
+  String toString() => 'BuddyFollowedUp($assistantMessageId)';
+}
+
+/// The open card a message follows up on (A22b E2): the card and the time
+/// of the message it came from (the engine's reference time, so "today"
+/// stays the card's day). Holds user content: never logged.
+final class FollowUpTarget {
+  /// The target.
+  const new({required this.card, required this.referenceTime});
+
+  /// The open card.
+  final ProposalCard card;
+
+  /// The card's reference time.
+  final EntryTime referenceTime;
+
+  @override
+  String toString() => 'FollowUpTarget(${card.id})';
+}
+
 /// The call failed: the user row is `failed`.
 final class BuddyReplyFailed extends BuddyReply {
   /// Failed as [failure].
@@ -152,16 +198,29 @@ final class SendBuddyMessage {
     return SavedBuddyMessage(id: id, text: text, time: EntryTime.now(_clock));
   }
 
-  /// The request for [message], frozen for every retry.
-  Future<PreparedInterpret> prepare(SavedBuddyMessage message) => _reader
-      .prepare(requestId: message.id, text: message.text, now: message.time);
+  /// The request for [message], frozen for every retry; a follow-up on
+  /// [followUp] carries its bounded summary (A22b E1).
+  Future<PreparedInterpret> prepare(
+    SavedBuddyMessage message, {
+    ProposalCard? followUp,
+  }) => _reader.prepare(
+    requestId: message.id,
+    text: message.text,
+    now: message.time,
+    activeCard: followUp,
+  );
 
-  /// Sends [request] for [message] and saves the outcome (D6).
+  /// Sends [request] for [message] and saves the outcome (D6). With
+  /// [followUp], an answer with one meal for the card's slot rebuilds that
+  /// card ([BuddyFollowedUp]); anything else is a normal reply with its own
+  /// cards (D21).
   Future<BuddyReply> dispatch(
     SavedBuddyMessage message,
     PreparedInterpret request,
-    BuddyReplyTexts texts,
-  ) async {
+    BuddyReplyTexts texts, {
+    FollowUpTarget? followUp,
+    bool followUpClosed = false,
+  }) async {
     switch (await _api.interpret(request)) {
       case BuddyInterpretFailed(:final failure):
         if (failure == BuddySendFailure.rejected) {
@@ -174,6 +233,33 @@ final class SendBuddyMessage {
         return await _reply(message, texts.noCard, null, null, null);
       case BuddyInterpreted(:final json):
         final assistantId = _ids.next();
+        // The card this follow-up was about is already logged or
+        // discarded: nothing is rebuilt and no new card is made from the
+        // whole-meal answer (it would log the meal twice).
+        if (followUpClosed) {
+          return await _reply(message, texts.cardClosed, null, null, null);
+        }
+        if (followUp != null) {
+          final update = await _rebuild(json, assistantId, followUp);
+          if (update != null) {
+            final saved = await _reply(
+              message,
+              texts.updated,
+              update.session,
+              json,
+              assistantId,
+              followUp: followUp.card,
+            );
+            return saved is BuddyReplied
+                ? BuddyFollowedUp(
+                    assistantMessageId: assistantId,
+                    session: update.session,
+                    diff: update.diff,
+                    interpretation: json,
+                  )
+                : saved;
+          }
+        }
         final session = await _build(json, assistantId, message.time);
         if (session == null) {
           _report(const BuddyReplyUnusable());
@@ -217,13 +303,61 @@ final class SendBuddyMessage {
     }
   }
 
+  /// The follow-up's rebuild of [target]'s card (A22b E2): only for an
+  /// answer with exactly one meal, rebuilt by the engine (matched lines keep
+  /// their IDs and adjustments), whose slot is the card's unless the answer
+  /// names none. `null` otherwise: the answer becomes a normal reply.
+  Future<ProposalUpdate?> _rebuild(
+    Map<String, Object?> json,
+    String assistantId,
+    FollowUpTarget target,
+  ) async {
+    final intents = json['intents'];
+    if (intents is! List<Object?>) return null;
+    final meals = [
+      for (final i in intents)
+        if (i is Map<String, Object?> && i['kind'] == 'foodLog') i,
+    ];
+    if (meals.length != 1) return null;
+    try {
+      final request = await _loader.load(
+        interpretation: json,
+        messageId: assistantId,
+        idSource: GeneratorProposalIds(_ids),
+        referenceTime: target.referenceTime,
+        // The card's own day, which the answer may not name.
+        days: {target.card.preview.date},
+      );
+      final fresh = request.value;
+      if (fresh == null) return null;
+      final update = ProposalEngine.rebuild(target.card, fresh).value;
+      final card = update?.session.cards
+          .where((c) => c.id == target.card.id)
+          .firstOrNull;
+      if (update == null || card == null) return null;
+      // Another explicit slot is another meal: a new card (D21).
+      final hint = meals.single['slotHint'];
+      final slot = card.lines.firstOrNull?.entry.slotId;
+      final before = target.card.lines.firstOrNull?.entry.slotId;
+      if (hint is String && hint.trim().isNotEmpty && slot != before) {
+        return null;
+      }
+      return update;
+      // As in [_build]: a throw is an answer that can't update the card.
+      // ignore: avoid_catches_without_on_clauses
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<BuddyReply> _reply(
     SavedBuddyMessage message,
     String text,
     ProposalSession? session,
     Map<String, Object?>? json,
-    String? assistantId,
-  ) async {
+    String? assistantId, {
+    ProposalCard? followUp,
+  }) async {
     final user = await _messages.byId(message.id);
     if (user == null) return const BuddyReplyNotSaved();
     final id = assistantId ?? _ids.next();
@@ -256,7 +390,14 @@ final class SendBuddyMessage {
           ),
         ),
         if (session != null)
-          for (final c in _contributors) ...c.onReply(session, id),
+          for (final c in _contributors)
+            ...(followUp == null
+                ? c.onReply(session, id)
+                : c.onFollowUp(
+                    session.cards.firstWhere((x) => x.id == followUp.id),
+                    session,
+                    id,
+                  )),
       ], origin: Origin.system),
     );
     if (result is! Applied) return const BuddyReplyNotSaved();

@@ -6,7 +6,8 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/catalog/catalog.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/features/diary/diary.dart' show DiaryReads;
-import 'package:fb_mobile/features/foods/foods.dart' show personalFoodOf;
+import 'package:fb_mobile/features/foods/foods.dart'
+    show FoodChoice, personalFoodOf;
 import 'package:fb_text/fb_text.dart';
 
 /// Read-only, one-shot local adapter. The request owns every subsequent fact;
@@ -61,6 +62,9 @@ final class ProposalInputLoader {
   }
 
   /// Load before computation; never refresh config, contact a server or write.
+  /// [days] adds the confirmed totals of other days: a follow-up passes its
+  /// card's resolved day, so a card for an older day keeps that day's
+  /// preview even when the answer names no day (A22b review).
   Future<ProposalResult<ProposalRequest>> load({
     required Map<String, Object?> interpretation,
     required String messageId,
@@ -68,11 +72,13 @@ final class ProposalInputLoader {
     required EntryTime referenceTime,
     SlotMode mode = SlotMode.normal,
     int confirmedRevision = 0,
+    Set<LocalDate> days = const {},
   }) => _loadSnapshot(
     interpretation: interpretation,
     referenceTime: referenceTime,
     mode: mode,
     confirmedRevision: confirmedRevision,
+    days: days,
     build: (facts, context, config, json) {
       final request = ProposalRequest(
         interpretation: json,
@@ -159,24 +165,7 @@ final class ProposalInputLoader {
           )..where((t) => t.id.isIn(keys) & t.deletedAt.isNull())).get();
           for (final row in rows) {
             final food = personalFoodOf(row);
-            final d = food.draft;
-            personal[food.id] = ProposalFood(
-              key: food.id,
-              names: d.names,
-              state: d.state,
-              source: .yours,
-              per100: d.per100,
-              basis: d.basis,
-              origin: .localPersonal,
-              personalVersion: food.version,
-              servings: [
-                for (final s in d.servings)
-                  ProposalServing(s.unit, s.amount, d.basis, null, null),
-                if (d.entryServing case final s?)
-                  if (!d.servings.any((v) => v.unit == s.unit))
-                    ProposalServing(s.unit, s.amount, d.basis, null, null),
-              ],
-            );
+            personal[food.id] = _personalProposalFood(food);
           }
         }
         final attached = await _db.isCatalogAttached();
@@ -262,8 +251,41 @@ final class ProposalInputLoader {
     }
   }
 
+  /// The engine facts of a food picked in food search (AI-041 swap,
+  /// AI-042 add; A22b review 3): a catalog food or a personal food at the
+  /// version shown, read from the choice the search already loaded. `null`
+  /// for anything else (it can't be swapped in or added).
+  static ProposalFood? proposalFoodOf(FoodChoice choice) {
+    if (choice.personalFood case final personal?) {
+      return _personalProposalFood(personal);
+    }
+    if (choice.catalogFood case final catalog?) return _proposalFood(catalog);
+    return null;
+  }
+
   @override
   String toString() => 'ProposalInputLoader(redacted)';
+}
+
+ProposalFood _personalProposalFood(PersonalFood food) {
+  final d = food.draft;
+  return ProposalFood(
+    key: food.id,
+    names: d.names,
+    state: d.state,
+    source: .yours,
+    per100: d.per100,
+    basis: d.basis,
+    origin: .localPersonal,
+    personalVersion: food.version,
+    servings: [
+      for (final s in d.servings)
+        ProposalServing(s.unit, s.amount, d.basis, null, null),
+      if (d.entryServing case final s?)
+        if (!d.servings.any((v) => v.unit == s.unit))
+          ProposalServing(s.unit, s.amount, d.basis, null, null),
+    ],
+  );
 }
 
 /// The `dateHint`s of [interpretation]'s intents (bounded by the caller's

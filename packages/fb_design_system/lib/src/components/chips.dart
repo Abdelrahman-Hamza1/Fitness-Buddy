@@ -177,3 +177,34 @@ class FbQuickAddChip extends StatelessWidget {
     );
   }
 }
+
+/// A chip naming what the next action applies to, with a ✕ that cancels
+/// it: Buddy's "Updating Breakfast card ✕" above the composer (AI-044,
+/// UX-023). [clearTooltip] is the ✕'s tooltip and screen-reader label.
+class FbTargetChip extends StatelessWidget {
+  /// The chip.
+  const new({
+    required this.label,
+    required this.clearTooltip,
+    required this.onClear,
+    super.key,
+  });
+
+  /// What it applies to.
+  final String label;
+
+  /// The ✕'s (already translated) tooltip.
+  final String clearTooltip;
+
+  /// Called by the ✕.
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) => InputChip(
+    avatar: const Icon(FbIcons.edit, size: 18),
+    label: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+    onDeleted: onClear,
+    deleteIcon: const Icon(FbIcons.close, size: 18),
+    deleteButtonTooltipMessage: clearTooltip,
+  );
+}

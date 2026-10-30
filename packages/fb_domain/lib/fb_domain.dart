@@ -54,6 +54,7 @@ export 'src/nutrition/nutrient_field.dart';
 export 'src/nutrition/nutrients.dart';
 export 'src/nutrition/sanity.dart';
 export 'src/nutrition/yield.dart';
+export 'src/proposals/amount_step.dart';
 export 'src/proposals/assumption_code.dart';
 export 'src/proposals/day_hint.dart';
 export 'src/proposals/proposal_input.dart'

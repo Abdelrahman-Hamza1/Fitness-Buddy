@@ -42,6 +42,28 @@ final class FoodLineView {
 
   /// The stored assumption codes behind the line (`a1:` codes).
   List<String> get assumptions => line.entry.food.provenance.assumptions;
+
+  /// Buddy assumed the amount: the card shows − / + (A22b E3).
+  bool get amountAssumed => line.amountAssumed;
+
+  /// A generated component (the assumed oil) of the line [componentOf];
+  /// swiping it removes only it.
+  String? get componentOf => line.componentOf;
+
+  /// Other foods it could be (AI-041).
+  List<ProposalFood> get alternatives => line.alternatives;
+
+  /// The unit codes the inline pad offers (AI-040): as typed, the basis
+  /// unit (grams or millilitres) and the food's own servings.
+  List<String> get editUnits => {
+    amount.input.unitCode,
+    if (amount.basis == NutrientBasis.per100ml)
+      VolumeUnit.milliliter.code
+    else
+      MassUnit.gram.code,
+    for (final s in line.selectedFood?.servings ?? const <ProposalServing>[])
+      s.code,
+  }.toList();
 }
 
 /// A selected assumption the card shows as a chip (AI-033): the line it
@@ -118,14 +140,21 @@ final class FoodCardView {
     required this.changeToken,
     required this.couldNotLog,
     required this.logged,
+    required this.removed,
+    required this.discardUndoFrom,
     required this.undoEntryId,
     required this.undoRefused,
     required this.referenceDate,
+    required this.updating,
   });
 
   /// The view of [card] in the thread; [referenceDate] is the day of the
   /// message it answers (the day "today" meant when it was sent).
-  factory of(BuddyCard card, {LocalDate? referenceDate}) {
+  factory of(
+    BuddyCard card, {
+    LocalDate? referenceDate,
+    bool updating = false,
+  }) {
     final proposal = card.card;
     final asked = {for (final q in card.budget.questions) q.dimensionId: q};
     final lines = <FoodLineView>[];
@@ -196,9 +225,12 @@ final class FoodCardView {
       changeToken: card.changeToken,
       couldNotLog: card.couldNotLog,
       logged: card.logged,
+      removed: card.removed,
+      discardUndoFrom: card.discardedFrom == null ? null : card.discardedAt,
       undoEntryId: card.undoEntryId,
       undoRefused: card.undoRefused,
       referenceDate: referenceDate,
+      updating: updating,
     );
   }
 
@@ -245,6 +277,13 @@ final class FoodCardView {
   /// What was logged.
   final LoggedSummary? logged;
 
+  /// Lines swiped away, for "Removed … · Undo" (AI-042).
+  final List<RemovedLine> removed;
+
+  /// When it was discarded, while its Undo is offered (#142); null when a
+  /// discard can't be undone.
+  final DateTime? discardUndoFrom;
+
   /// The confirm's undo entry, while Undo is offered.
   final String? undoEntryId;
 
@@ -253,6 +292,10 @@ final class FoodCardView {
 
   /// The message's day, when known.
   final LocalDate? referenceDate;
+
+  /// A follow-up about this card is in flight: it's read-only until the
+  /// answer arrives ("Updating…", A22b review 1).
+  final bool updating;
 
   /// The day it would be logged to (or was).
   LocalDate get date => logged?.preview.date ?? card.preview.date;
@@ -280,7 +323,8 @@ final class FoodCardView {
   ProposalDayPreview get preview => card.preview;
 
   /// Log it is offered (an open card that can be confirmed).
-  bool get canLog => resolution == CardResolution.open && card.canConfirm;
+  bool get canLog =>
+      resolution == CardResolution.open && !updating && card.canConfirm;
 
   /// Some items are estimates, so the totals are too (SF-041, D-045).
   bool get isEstimate => logged?.estimate ?? lines.any((l) => l.isEstimate);

@@ -717,6 +717,48 @@ abstract class AppLocalizations {
   /// **'Here\'s your meal. Check it, then tap Log it.'**
   String get buddyReplyCards;
 
+  /// Screen-reader label of the chat sheet's drag handle: a tap opens the sheet to full height (UX-012).
+  ///
+  /// In en, this message translates to:
+  /// **'Expand chat'**
+  String get buddySheetExpand;
+
+  /// Screen-reader label of the chat sheet's drag handle when it's at full height: a tap brings it back down.
+  ///
+  /// In en, this message translates to:
+  /// **'Shrink chat'**
+  String get buddySheetCollapse;
+
+  /// Buddy's fixed English reply when a follow-up message updated the open proposal card (AI-044, AI-143).
+  ///
+  /// In en, this message translates to:
+  /// **'Updated your card. Check it, then tap Log it.'**
+  String get buddyReplyUpdated;
+
+  /// Buddy's fixed English reply when a follow-up's card was logged or discarded before the answer arrived (AI-044, AI-143).
+  ///
+  /// In en, this message translates to:
+  /// **'That card was already logged or discarded, so I left it as it is.'**
+  String get buddyReplyCardClosed;
+
+  /// Chip above the composer: the next message will update this open card (AI-044, UX-023).
+  ///
+  /// In en, this message translates to:
+  /// **'Updating {slot} card'**
+  String buddyFollowUpTarget(String slot);
+
+  /// Chip above the composer when the open card's meal has no name.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating the open card'**
+  String get buddyFollowUpTargetNoSlot;
+
+  /// Tooltip and screen-reader label of the ✕ on the follow-up chip: the next message starts a new card.
+  ///
+  /// In en, this message translates to:
+  /// **'Send as a new message'**
+  String get buddyFollowUpClear;
+
   /// Buddy's fixed English reply to a medical question (A22 D16).
   ///
   /// In en, this message translates to:
@@ -854,6 +896,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Logged {kcal} kcal for {day}'**
   String proposalLoggedOnDay(String kcal, String day);
+
+  /// One-line state on a proposal card while a follow-up message about it is being answered; the card can't be changed meanwhile (AI-044).
+  ///
+  /// In en, this message translates to:
+  /// **'Updating…'**
+  String get proposalUpdating;
+
+  /// Text button at the bottom of a proposal card's items: pick a food in search and add it to the card (AI-042).
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get proposalAddItem;
+
+  /// Last option in the swap sheet: opens food search to pick another food for this item (AI-041).
+  ///
+  /// In en, this message translates to:
+  /// **'Search foods…'**
+  String get proposalSearchFoods;
+
+  /// Title of the food search sheet opened from a proposal card (swap or add an item); nothing is logged there.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a food'**
+  String get proposalPickerTitle;
+
+  /// Hint in the search field of the food picker opened from a proposal card.
+  ///
+  /// In en, this message translates to:
+  /// **'Search foods'**
+  String get proposalPickerHint;
+
+  /// A proposal line's amount while the user types it on the inline number pad: exactly what was typed so far, then the unit (AI-040).
+  ///
+  /// In en, this message translates to:
+  /// **'{typed} {unit}'**
+  String proposalAmountTyping(String typed, String unit);
+
+  /// Tooltip and screen-reader label of the − next to an assumed amount on a proposal card (AI-040).
+  ///
+  /// In en, this message translates to:
+  /// **'Less {food}'**
+  String proposalAmountLess(String food);
+
+  /// Tooltip and screen-reader label of the + next to an assumed amount on a proposal card (AI-040).
+  ///
+  /// In en, this message translates to:
+  /// **'More {food}'**
+  String proposalAmountMore(String food);
+
+  /// Swipe action (and screen-reader action) that takes an item off a proposal card before logging (AI-042).
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get proposalRemoveLine;
+
+  /// Inline row on a proposal card after an item was swiped off, next to Undo (AI-042).
+  ///
+  /// In en, this message translates to:
+  /// **'Removed {food}'**
+  String proposalLineRemoved(String food);
+
+  /// Title of the small sheet with up to three other foods an item could be (AI-041).
+  ///
+  /// In en, this message translates to:
+  /// **'Swap {food} for'**
+  String proposalSwapTitle(String food);
+
+  /// Title of the small sheet opened from a proposal card's header: pick another meal or change the time (AI-043).
+  ///
+  /// In en, this message translates to:
+  /// **'Meal and time'**
+  String get proposalWhenTitle;
+
+  /// Option in the meal-and-time sheet that opens the time picker (AI-043).
+  ///
+  /// In en, this message translates to:
+  /// **'Change time…'**
+  String get proposalWhenChangeTime;
 
   /// Undoes a logged proposal card (AI-035).
   ///

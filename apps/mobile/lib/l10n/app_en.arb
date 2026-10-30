@@ -580,6 +580,35 @@
   "@buddyReplyCards": {
     "description": "Buddy's fixed English reply above one or more proposal cards (AI-143)."
   },
+  "buddySheetExpand": "Expand chat",
+  "@buddySheetExpand": {
+    "description": "Screen-reader label of the chat sheet's drag handle: a tap opens the sheet to full height (UX-012)."
+  },
+  "buddySheetCollapse": "Shrink chat",
+  "@buddySheetCollapse": {
+    "description": "Screen-reader label of the chat sheet's drag handle when it's at full height: a tap brings it back down."
+  },
+  "buddyReplyUpdated": "Updated your card. Check it, then tap Log it.",
+  "@buddyReplyUpdated": {
+    "description": "Buddy's fixed English reply when a follow-up message updated the open proposal card (AI-044, AI-143)."
+  },
+  "buddyReplyCardClosed": "That card was already logged or discarded, so I left it as it is.",
+  "@buddyReplyCardClosed": {
+    "description": "Buddy's fixed English reply when a follow-up's card was logged or discarded before the answer arrived (AI-044, AI-143)."
+  },
+  "buddyFollowUpTarget": "Updating {slot} card",
+  "@buddyFollowUpTarget": {
+    "description": "Chip above the composer: the next message will update this open card (AI-044, UX-023).",
+    "placeholders": {"slot": {"type": "String", "example": "Breakfast"}}
+  },
+  "buddyFollowUpTargetNoSlot": "Updating the open card",
+  "@buddyFollowUpTargetNoSlot": {
+    "description": "Chip above the composer when the open card's meal has no name."
+  },
+  "buddyFollowUpClear": "Send as a new message",
+  "@buddyFollowUpClear": {
+    "description": "Tooltip and screen-reader label of the ✕ on the follow-up chip: the next message starts a new card."
+  },
   "buddyReplyMedical": "I can't help with medical questions. A doctor or pharmacist is the right person to ask.",
   "@buddyReplyMedical": {
     "description": "Buddy's fixed English reply to a medical question (A22 D16)."
@@ -731,6 +760,66 @@
         "type": "String"
       }
     }
+  },
+  "proposalUpdating": "Updating…",
+  "@proposalUpdating": {
+    "description": "One-line state on a proposal card while a follow-up message about it is being answered; the card can't be changed meanwhile (AI-044)."
+  },
+  "proposalAddItem": "Add item",
+  "@proposalAddItem": {
+    "description": "Text button at the bottom of a proposal card's items: pick a food in search and add it to the card (AI-042)."
+  },
+  "proposalSearchFoods": "Search foods…",
+  "@proposalSearchFoods": {
+    "description": "Last option in the swap sheet: opens food search to pick another food for this item (AI-041)."
+  },
+  "proposalPickerTitle": "Pick a food",
+  "@proposalPickerTitle": {
+    "description": "Title of the food search sheet opened from a proposal card (swap or add an item); nothing is logged there."
+  },
+  "proposalPickerHint": "Search foods",
+  "@proposalPickerHint": {
+    "description": "Hint in the search field of the food picker opened from a proposal card."
+  },
+  "proposalAmountTyping": "{typed} {unit}",
+  "@proposalAmountTyping": {
+    "description": "A proposal line's amount while the user types it on the inline number pad: exactly what was typed so far, then the unit (AI-040).",
+    "placeholders": {
+      "typed": {"type": "String", "example": "1."},
+      "unit": {"type": "String", "example": "pieces"}
+    }
+  },
+  "proposalAmountLess": "Less {food}",
+  "@proposalAmountLess": {
+    "description": "Tooltip and screen-reader label of the − next to an assumed amount on a proposal card (AI-040).",
+    "placeholders": {"food": {"type": "String", "example": "Olive oil"}}
+  },
+  "proposalAmountMore": "More {food}",
+  "@proposalAmountMore": {
+    "description": "Tooltip and screen-reader label of the + next to an assumed amount on a proposal card (AI-040).",
+    "placeholders": {"food": {"type": "String", "example": "Olive oil"}}
+  },
+  "proposalRemoveLine": "Remove",
+  "@proposalRemoveLine": {
+    "description": "Swipe action (and screen-reader action) that takes an item off a proposal card before logging (AI-042)."
+  },
+  "proposalLineRemoved": "Removed {food}",
+  "@proposalLineRemoved": {
+    "description": "Inline row on a proposal card after an item was swiped off, next to Undo (AI-042).",
+    "placeholders": {"food": {"type": "String", "example": "Cucumber"}}
+  },
+  "proposalSwapTitle": "Swap {food} for",
+  "@proposalSwapTitle": {
+    "description": "Title of the small sheet with up to three other foods an item could be (AI-041).",
+    "placeholders": {"food": {"type": "String", "example": "Labneh"}}
+  },
+  "proposalWhenTitle": "Meal and time",
+  "@proposalWhenTitle": {
+    "description": "Title of the small sheet opened from a proposal card's header: pick another meal or change the time (AI-043)."
+  },
+  "proposalWhenChangeTime": "Change time…",
+  "@proposalWhenChangeTime": {
+    "description": "Option in the meal-and-time sheet that opens the time picker (AI-043)."
   },
   "proposalUndo": "Undo",
   "@proposalUndo": {

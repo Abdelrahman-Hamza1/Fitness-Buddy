@@ -20,12 +20,14 @@ final class InterpretRequestReader {
 
   final AppDatabase _db;
 
-  /// The request for message [requestId] with [text] at [now].
+  /// The request for message [requestId] with [text] at [now]; a follow-up
+  /// on open card [activeCard] sends its bounded summary (A22b E1).
   Future<PreparedInterpret> prepare({
     required String requestId,
     required String text,
     required EntryTime now,
     SlotMode mode = SlotMode.normal,
+    ProposalCard? activeCard,
   }) => _db.readSnapshot(() async {
     final slots = await DiaryReads(_db).slots();
     final rows = await (_db.select(
@@ -46,6 +48,7 @@ final class InterpretRequestReader {
       slots: slots,
       personalFoods: foods,
       mode: mode,
+      activeCard: activeCard,
     );
   });
 

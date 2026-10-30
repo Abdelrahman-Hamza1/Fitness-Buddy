@@ -428,6 +428,7 @@ void main() {
         FbAnswerChip,
         FbQuickAddChip,
         FbQuickAddRow,
+        FbTargetChip,
         FbIconButton,
         FbEmptyState,
         FbEstimateMarker,

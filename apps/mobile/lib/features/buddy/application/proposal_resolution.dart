@@ -170,6 +170,7 @@ final class ProposalResolution {
           messageId: origin.messageId,
           idSource: GeneratorProposalIds(_ids),
           referenceTime: origin.referenceTime,
+          days: {card.preview.date},
         );
         final fresh = request.value;
         final rebuilt = fresh == null
@@ -198,6 +199,11 @@ final class ProposalResolution {
       ProposalSetLifecycle(card.id, ProposalLifecycle.discarded),
     ).value?.session;
   }
+
+  /// Whether a discard can be undone in memory: only while no contributor
+  /// could have written ops with it (A22b E8; A23 adds a resolve-undo
+  /// first).
+  bool get discardUndoable => _contributors.isEmpty;
 
   /// Undoes the confirm [undoEntryId] (the single undo of D25).
   Future<UndoOutcome> undo(String undoEntryId) => _undo.undo(undoEntryId);

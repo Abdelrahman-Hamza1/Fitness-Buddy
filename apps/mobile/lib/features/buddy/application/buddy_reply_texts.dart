@@ -2,9 +2,11 @@
 /// from ARB by the presentation layer and handed to the send path, which
 /// has no `BuildContext`. Never model text.
 final class BuddyReplyTexts {
-  /// The five templates.
+  /// The templates.
   const new({
     required this.cards,
+    required this.updated,
+    required this.cardClosed,
     required this.medical,
     required this.notFood,
     required this.noCard,
@@ -13,6 +15,13 @@ final class BuddyReplyTexts {
 
   /// A reply with one or more proposal cards.
   final String cards;
+
+  /// A follow-up that updated the open card (A22b E2): "Updated your card."
+  final String updated;
+
+  /// A follow-up whose card was logged or discarded before its answer could
+  /// be applied: the card is left as it is.
+  final String cardClosed;
 
   /// A medical question: "I can't help with medical questions. …".
   final String medical;

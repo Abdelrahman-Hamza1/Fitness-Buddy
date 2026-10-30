@@ -30,6 +30,9 @@ abstract final class FbIcons {
   /// Add (quick-add chips, add buttons).
   static const IconData add = Icons.add_rounded;
 
+  /// Minus: one step less (an amount stepper's −).
+  static const IconData remove = Icons.remove_rounded;
+
   /// A saved meal (the quick-add chip of a saved meal, the saved meals list).
   static const IconData meal = Icons.restaurant_rounded;
 

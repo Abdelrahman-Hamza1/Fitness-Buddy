@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
 import 'package:fb_mobile/features/buddy/presentation/composer.dart';
 import 'package:fb_mobile/features/buddy/presentation/message_list.dart';
+import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -87,6 +89,30 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
     );
   }
 
+  /// The sheet is at full height (from its size notifications, so the
+  /// handle's label follows drags and animations).
+  bool _expanded = false;
+
+  bool _onSize(DraggableScrollableNotification n) {
+    final expanded = n.extent > 0.99;
+    if (expanded != _expanded) setState(() => _expanded = expanded);
+    return false;
+  }
+
+  void _toggleSize() {
+    if (!_sheet.isAttached) return;
+    // Just above the resting size: a sheet that reaches its minimum size
+    // closes (shouldCloseOnMinExtent), and shrinking mustn't dismiss it.
+    final to = _expanded ? BuddySheet.restingSize + 0.001 : 1.0;
+    _sheet.animateTo(
+      to,
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? const Duration(milliseconds: 1)
+          : FbMotion.normal,
+      curve: Curves.easeOutCubic,
+    );
+  }
+
   void _search() {
     final navigator = ref.read(appNavigatorProvider);
     Navigator.of(context).pop();
@@ -115,50 +141,115 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
         padding: EdgeInsetsDirectional.only(
           bottom: MediaQuery.viewInsetsOf(context).bottom,
         ),
-        child: DraggableScrollableSheet(
-          controller: _sheet,
-          expand: false,
-          initialChildSize: BuddySheet.restingSize,
-          minChildSize: BuddySheet.restingSize,
-          snap: true,
-          builder: (context, scroll) => Column(
-            children: [
-              Padding(
-                padding: const EdgeInsetsDirectional.only(top: FbSpace.s2),
-                child: SizedBox(
-                  width: 32,
-                  height: 4,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: scheme.outlineVariant,
-                      borderRadius: BorderRadius.circular(FbRadius.sm),
+        child: NotificationListener<DraggableScrollableNotification>(
+          onNotification: _onSize,
+          child: DraggableScrollableSheet(
+            controller: _sheet,
+            expand: false,
+            initialChildSize: BuddySheet.restingSize,
+            minChildSize: BuddySheet.restingSize,
+            snap: true,
+            builder: (context, scroll) => Column(
+              children: [
+                // A tap (or a screen reader's activate) expands the sheet,
+                // or brings it back to its resting height (backlog #141).
+                Semantics(
+                  button: true,
+                  label: _expanded
+                      ? l10n.buddySheetCollapse
+                      : l10n.buddySheetExpand,
+                  excludeSemantics: true,
+                  onTap: _toggleSize,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: _toggleSize,
+                    child: SizedBox(
+                      width: 96,
+                      height: 48,
+                      child: Center(
+                        child: SizedBox(
+                          width: 32,
+                          height: 4,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: scheme.outlineVariant,
+                              borderRadius: BorderRadius.circular(FbRadius.sm),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: BuddyMessageList(
-                  controller: scroll,
-                  sheet: _sheet,
-                  onSearch: _search,
+                Expanded(
+                  child: BuddyMessageList(
+                    controller: scroll,
+                    sheet: _sheet,
+                    onSearch: _search,
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(
-                  FbSpace.s3,
-                  FbSpace.s1,
-                  FbSpace.s3,
-                  FbSpace.s3,
+                const _FollowUpChip(),
+                Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                    FbSpace.s3,
+                    FbSpace.s1,
+                    FbSpace.s3,
+                    FbSpace.s3,
+                  ),
+                  child: BuddyComposer(
+                    controller: _text,
+                    focusNode: _focus,
+                    onSend: sending ? null : _send,
+                    onSearch: _search,
+                  ),
                 ),
-                child: BuddyComposer(
-                  controller: _text,
-                  focusNode: _focus,
-                  onSend: sending ? null : _send,
-                  onSearch: _search,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "Updating {slot} card ✕" above the composer while a card is open
+/// (AI-044, UX-023, D21): the next message updates that card; ✕ makes it a
+/// new message.
+class _FollowUpChip extends ConsumerWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final target = ref.watch(
+      buddyThreadControllerProvider.select(
+        (t) => switch (t.followUpCard) {
+          final c? => (c.id, c.card.lines.firstOrNull?.entry.slotId),
+          null => null,
+        },
+      ),
+    );
+    if (target == null) return const SizedBox.shrink();
+    final l10n = context.l10n;
+    final slots = ref.watch(slotRecordsProvider).value ?? const [];
+    final slot = slots
+        .map((r) => r.slot)
+        .where((s) => s.id == target.$2)
+        .firstOrNull;
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(
+        start: FbSpace.s3,
+        end: FbSpace.s3,
+        top: FbSpace.s1,
+      ),
+      child: Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: FbTargetChip(
+          label: slot == null
+              ? l10n.buddyFollowUpTargetNoSlot
+              : l10n.buddyFollowUpTarget(slotLabel(l10n, slot)),
+          clearTooltip: l10n.buddyFollowUpClear,
+          onClear: () =>
+              ref.read(buddyThreadControllerProvider.notifier).clearFollowUp(),
         ),
       ),
     );

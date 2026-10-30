@@ -394,6 +394,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buddyReplyCards => 'Here\'s your meal. Check it, then tap Log it.';
 
   @override
+  String get buddySheetExpand => 'Expand chat';
+
+  @override
+  String get buddySheetCollapse => 'Shrink chat';
+
+  @override
+  String get buddyReplyUpdated =>
+      'Updated your card. Check it, then tap Log it.';
+
+  @override
+  String get buddyReplyCardClosed =>
+      'That card was already logged or discarded, so I left it as it is.';
+
+  @override
+  String buddyFollowUpTarget(String slot) {
+    return 'Updating $slot card';
+  }
+
+  @override
+  String get buddyFollowUpTargetNoSlot => 'Updating the open card';
+
+  @override
+  String get buddyFollowUpClear => 'Send as a new message';
+
+  @override
   String get buddyReplyMedical =>
       'I can\'t help with medical questions. A doctor or pharmacist is the right person to ask.';
 
@@ -485,6 +510,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String proposalLoggedOnDay(String kcal, String day) {
     return 'Logged $kcal kcal for $day';
   }
+
+  @override
+  String get proposalUpdating => 'Updating…';
+
+  @override
+  String get proposalAddItem => 'Add item';
+
+  @override
+  String get proposalSearchFoods => 'Search foods…';
+
+  @override
+  String get proposalPickerTitle => 'Pick a food';
+
+  @override
+  String get proposalPickerHint => 'Search foods';
+
+  @override
+  String proposalAmountTyping(String typed, String unit) {
+    return '$typed $unit';
+  }
+
+  @override
+  String proposalAmountLess(String food) {
+    return 'Less $food';
+  }
+
+  @override
+  String proposalAmountMore(String food) {
+    return 'More $food';
+  }
+
+  @override
+  String get proposalRemoveLine => 'Remove';
+
+  @override
+  String proposalLineRemoved(String food) {
+    return 'Removed $food';
+  }
+
+  @override
+  String proposalSwapTitle(String food) {
+    return 'Swap $food for';
+  }
+
+  @override
+  String get proposalWhenTitle => 'Meal and time';
+
+  @override
+  String get proposalWhenChangeTime => 'Change time…';
 
   @override
   String get proposalUndo => 'Undo';

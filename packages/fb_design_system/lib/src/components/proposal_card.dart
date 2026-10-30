@@ -111,9 +111,31 @@ class FbProposalCard extends StatelessWidget {
           if (header.isEmpty)
             const SizedBox.shrink()
           else if (onHeaderTap case final onTap?)
+            // A 48 dp tap target however short the text (UX-040).
             Align(
               alignment: AlignmentDirectional.centerStart,
-              child: InkWell(onTap: onTap, child: headerText),
+              child: Semantics(
+                button: true,
+                child: InkWell(
+                  onTap: onTap,
+                  borderRadius: BorderRadius.circular(FbRadius.sm),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 48),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: FbSpace.s1,
+                      children: [
+                        Flexible(child: headerText),
+                        Icon(
+                          FbIcons.expand,
+                          size: 18,
+                          color: scheme.onSurfaceVariant,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             )
           else
             headerText,
@@ -146,6 +168,11 @@ class FbProposalCard extends StatelessWidget {
 /// ([marker]: an `FbSourceBadge` or an `FbEstimateMarker`). Tappable when
 /// [onTap] is set. [note] is a short line under the amount (an assumption
 /// the item rests on).
+///
+/// With [onDecrease] or [onIncrease] the amount sits between − and +
+/// buttons (an assumed amount adjusted in place, AI-040); a null one is
+/// disabled. [onNameTap] makes the name tappable (swap the food, AI-041),
+/// [onAmountTap] the amount (its number pad, AI-040).
 class FbProposalLine extends StatelessWidget {
   /// A line.
   const new({
@@ -155,6 +182,13 @@ class FbProposalLine extends StatelessWidget {
     required this.marker,
     this.note,
     this.onTap,
+    this.onNameTap,
+    this.onAmountTap,
+    this.onDecrease,
+    this.onIncrease,
+    this.decreaseTooltip,
+    this.increaseTooltip,
+    this.stepper = false,
     super.key,
   });
 
@@ -176,11 +210,85 @@ class FbProposalLine extends StatelessWidget {
   /// Called on tap.
   final VoidCallback? onTap;
 
+  /// Called when the name is tapped.
+  final VoidCallback? onNameTap;
+
+  /// Called when the amount is tapped (open its number pad, AI-040).
+  final VoidCallback? onAmountTap;
+
+  /// One step less; null disables − (already the smallest amount).
+  final VoidCallback? onDecrease;
+
+  /// One step more.
+  final VoidCallback? onIncrease;
+
+  /// The −'s (already translated) tooltip and screen-reader label.
+  final String? decreaseTooltip;
+
+  /// The +'s (already translated) tooltip and screen-reader label.
+  final String? increaseTooltip;
+
+  /// Shows the − / + around the amount.
+  final bool stepper;
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final small = FbType.numeric(FbType.bodySmall)
         .copyWith(color: scheme.onSurfaceVariant);
+    final nameText = Text(
+      name,
+      style: FbType.body.copyWith(color: scheme.onSurface),
+    );
+    Widget tappable(Widget child) => switch (onAmountTap) {
+      final onTap? => Semantics(
+        button: true,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(FbRadius.sm),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48),
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              widthFactor: 1,
+              child: child,
+            ),
+          ),
+        ),
+      ),
+      null => child,
+    };
+    final amountText = stepper
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton.filledTonal(
+                tooltip: decreaseTooltip,
+                onPressed: onDecrease,
+                icon: const Icon(FbIcons.remove, size: 18),
+              ),
+              Flexible(
+                child: tappable(
+                  Padding(
+                    padding: const EdgeInsetsDirectional.symmetric(
+                      horizontal: FbSpace.s2,
+                    ),
+                    child: Text(
+                      amount,
+                      style: FbType.numeric(FbType.label)
+                          .copyWith(color: scheme.onSurface),
+                    ),
+                  ),
+                ),
+              ),
+              IconButton.filledTonal(
+                tooltip: increaseTooltip,
+                onPressed: onIncrease,
+                icon: const Icon(FbIcons.add, size: 18),
+              ),
+            ],
+          )
+        : tappable(Text(amount, style: small));
     final row = Padding(
       padding: const EdgeInsetsDirectional.symmetric(vertical: FbSpace.s1),
       child: Row(
@@ -189,11 +297,24 @@ class FbProposalLine extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name,
-                  style: FbType.body.copyWith(color: scheme.onSurface),
-                ),
-                Text(amount, style: small),
+                if (onNameTap case final onNameTap?)
+                  Semantics(
+                    button: true,
+                    child: InkWell(
+                      onTap: onNameTap,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 48),
+                        child: Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          widthFactor: 1,
+                          child: nameText,
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  nameText,
+                amountText,
                 if (note case final note?) Text(note, style: small),
               ],
             ),

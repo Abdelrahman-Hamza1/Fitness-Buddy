@@ -104,8 +104,12 @@ final class ProposalLine extends ProposalValue {
     this.yieldNote,
     this.selectedFood,
     Iterable<ProposalDimension> dimensions = const [],
+    this.amountAssumed = false,
+    Iterable<ProposalFood> alternatives = const [],
+    this.componentOf,
   }) : chips = List.unmodifiable(chips),
-       dimensions = List.unmodifiable(dimensions);
+       dimensions = List.unmodifiable(dimensions),
+       alternatives = List.unmodifiable(alternatives);
 
   /// Fully resolved diary entry input with stable row ID, time and slot.
   final NewDiaryEntry entry;
@@ -130,6 +134,20 @@ final class ProposalLine extends ProposalValue {
 
   /// Exact state conversion; A22 localizes it.
   final YieldNote? yieldNote;
+
+  /// The amount wasn't stated: Buddy assumed it (a default portion, a
+  /// generated oil line). Stays true after the user changes it, so the card
+  /// keeps its − / + (A22b E3).
+  final bool amountAssumed;
+
+  /// Up to three other foods the item could be (AI-041): distinct, never the
+  /// selected one. Empty for generated oil lines.
+  final List<ProposalFood> alternatives;
+
+  /// For a generated component (the assumed cooking oil), the line ID of the
+  /// item it belongs to; `null` for an item of its own. Removing a component
+  /// removes only it; removing its item removes both (A22b review 4).
+  final String? componentOf;
   @override
   List<Object?> get _values => [
     entry,
@@ -138,6 +156,9 @@ final class ProposalLine extends ProposalValue {
     selectedFood,
     chips,
     dimensions,
+    amountAssumed,
+    alternatives,
+    componentOf,
     range,
     yieldNote?.fromState,
     yieldNote?.toState,
@@ -353,6 +374,8 @@ abstract final class ProposalEngine {
           final oilId = state.identity('oil:${original.id}', request.idSource);
           if (state.removed.contains(original.id)) continue;
           final item = state.items[original.id] ?? original;
+          if (!original.explicit) state.assumedAmounts.add(original.id);
+          final assumed = state.assumedAmounts.contains(original.id);
           try {
             final selections = <String, ProposalOption>{};
             final origins = <String, ProposalChoiceOrigin>{};
@@ -411,6 +434,12 @@ abstract final class ProposalEngine {
                   hasExplicitFat,
                   {...context.choices, ...state.choices},
                   state.components[item.id],
+                  // Eligibility is remembered apart from "explicit": a
+                  // stepped or restated amount keeps its − / +.
+                  amountAssumed: assumed,
+                  componentRemoved: state.removedComponents.contains(
+                    original.id,
+                  ),
                 );
             final lines = calculate(selections);
             final cookingFat =
@@ -443,6 +472,9 @@ abstract final class ProposalEngine {
                   dimensions: line.dimensions,
                   range: line.range,
                   yieldNote: line.yieldNote,
+                  amountAssumed: line.amountAssumed,
+                  alternatives: line.alternatives,
+                  componentOf: line.componentOf,
                 ),
               );
             }
@@ -638,8 +670,10 @@ List<ProposalLine> _calculate(
   Set<String> cookingFatIds,
   bool hasExplicitFat,
   Map<String, String> directChoices,
-  ProposalComponentEffect? componentOverride,
-) {
+  ProposalComponentEffect? componentOverride, {
+  bool amountAssumed = false,
+  bool componentRemoved = false,
+}) {
   var food = item.match;
   var quantity = item.quantity;
   ProposalComponentEffect? component;
@@ -799,9 +833,11 @@ List<ProposalLine> _calculate(
       range: absoluteRange,
       yieldNote: yieldNote,
       dimensions: [...item.dimensions, if (oil) retentionDimension],
+      amountAssumed: amountAssumed,
+      alternatives: _alternatives(item, food),
     ),
   ];
-  if (!hasExplicitFat && component?.food != null) {
+  if (!hasExplicitFat && component?.food != null && !componentRemoved) {
     component = componentOverride ?? component;
     final oilFood = component!.food!;
     final q = component.quantity!;
@@ -849,10 +885,21 @@ List<ProposalLine> _calculate(
         selectedFood: oilFood,
         chips: oilChips,
         dimensions: [retentionDimension],
+        amountAssumed: true,
+        componentOf: id,
       ),
     );
   }
   return lines;
+}
+
+/// At most three alternatives of [item]: distinct foods, never [selected].
+List<ProposalFood> _alternatives(ProposalItem item, ProposalFood? selected) {
+  final seen = <String>{?selected?.key};
+  return [
+    for (final f in item.alternatives)
+      if (seen.add(f.key)) f,
+  ].take(3).toList();
 }
 
 Nutrients _sum(Iterable<Nutrients> values) {

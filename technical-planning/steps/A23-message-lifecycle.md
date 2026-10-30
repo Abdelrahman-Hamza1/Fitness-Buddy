@@ -81,6 +81,13 @@ Binding for A23's plan (from A22a's build and reviews):
 - **Contributor seam:** `proposalPersistenceContributorsProvider` (`onReply`, `onConfirm`, `onDiscard`) returns ops appended to the same change set as A22's own; A23 adds proposal create/resolve/outcome and assistant-message budget ops there, never a second transaction. **Whichever of A22b/A23 merges second wires `onFollowUp`** (shared files `send_buddy_message.dart`, `proposal_resolution.dart`, `message_list.dart`).
 - The thread controller refreshes open cards on non-proposal diary change sets (domain events); A23's restored cards should join that path.
 
+## A22b handoff (2026-10-29, A22b close)
+
+- **The draft codec must carry `assumedAmounts` and `removedComponents`** (engine state added by A22b: stepper eligibility kept apart from "explicit", and a generated oil removed on its own) **before** restore by `budgetMessageId`; otherwise a restored card brings a removed oil back and loses its − / +. Codec version bump + corpus (backlog #163).
+- **`onFollowUp` is wired** (A22b merged first): the follow-up's assistant row and the rebuilt card share one change set; A23 adds its proposal/budget ops there.
+- **Discard Undo is in memory** and enabled only while `ProposalResolution.discardUndoable` (no contributors). Before A23 registers contributors that write on discard, add a resolve-undo or Discard Undo turns off.
+- A card is read-only while its follow-up is in flight (`BuddyThread.isUpdating`); a retried follow-up on a logged/discarded card gets a fixed reply and no new card. Keep both when turns become durable.
+
 ## Progress log
 
 - 2026-10-24 · A21 architect review PA1/PA2 persistence handoff applied (orchestrator accepted): A23 owns Risky proposals migration, atomic resolution/outcomes and B18 sync consumption; size L and B18 (contract) dependency recorded. Compact per-card/shared-budget restore and 32 KiB versus 512 KiB limits specified. Planning only; B18 board row and full A23 plan remain with the orchestrator.

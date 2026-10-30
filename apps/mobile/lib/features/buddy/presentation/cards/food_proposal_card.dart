@@ -9,6 +9,7 @@ import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
 import 'package:fb_mobile/features/buddy/application/food_card_view.dart';
+import 'package:fb_mobile/features/buddy/presentation/cards/food_picker_sheet.dart';
 import 'package:fb_mobile/features/buddy/presentation/cards/proposal_labels.dart';
 import 'package:fb_mobile/features/buddy/presentation/cards/proposal_line_row.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
@@ -43,10 +44,7 @@ class FoodProposalCard extends ConsumerWidget {
           text: l10n.proposalUndone,
         );
       case CardResolution.discarded:
-        return FbProposalResolvedRow(
-          icon: FbIcons.info,
-          text: l10n.proposalDiscarded,
-        );
+        return _DiscardedRow(view: view);
       case CardResolution.open || CardResolution.confirming:
         break;
     }
@@ -76,6 +74,8 @@ class FoodProposalCard extends ConsumerWidget {
     final String? reason;
     if (confirming) {
       reason = l10n.proposalLogging;
+    } else if (view.updating) {
+      reason = l10n.proposalUpdating;
     } else if (view.couldNotLog) {
       reason = l10n.proposalCouldNotLog;
     } else if (!view.canLog) {
@@ -85,18 +85,65 @@ class FoodProposalCard extends ConsumerWidget {
     }
     final totals = view.totals;
     final scheme = Theme.of(context).colorScheme;
+    // Read-only while it's being logged or a follow-up about it is in
+    // flight (A22b review 1).
+    final editable = !confirming && !view.updating;
     return FbProposalCard(
       header: header,
+      onHeaderTap: editable
+          ? () => unawaited(_editWhen(context, ref, slots, time))
+          : null,
       title: view.dishName,
       details: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (final line in view.lines)
             FbChangeHighlight(
+              // Keyed by line: a swiped-off row's state never moves to the
+              // next line.
+              key: ValueKey(line.id),
               token: view.changedLineIds.contains(line.id)
                   ? view.changeToken
                   : null,
-              child: ProposalLineRow(line: line, system: system),
+              child: _swipeable(
+                context,
+                editable,
+                () => thread.removeLine(view.id, line.id),
+                ProposalLineRow(
+                  line: line,
+                  system: system,
+                  onStep: editable
+                      ? (up) => thread.stepAmount(view.id, line.id, up: up)
+                      : null,
+                  onSwap: editable
+                      ? () => unawaited(_swap(context, ref, line))
+                      : null,
+                  onSetAmount: editable
+                      ? (q) => thread.setAmount(view.id, line.id, q)
+                      : null,
+                ),
+              ),
+            ),
+          // Swiped-off items, each with its Undo (AI-042).
+          for (final removed in view.removed)
+            FbProposalResolvedRow(
+              icon: FbIcons.delete,
+              text: l10n.proposalLineRemoved(removed.name),
+              undoLabel: editable ? l10n.proposalUndo : null,
+              onUndo: editable
+                  ? () => thread.restoreLine(view.id, removed.id)
+                  : null,
+            ),
+          // Add an item picked in food search (AI-042); adding by text is
+          // a follow-up message.
+          if (editable)
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: FbButton.text(
+                label: l10n.proposalAddItem,
+                icon: FbIcons.add,
+                onPressed: () => unawaited(_add(context, ref)),
+              ),
             ),
         ],
       ),
@@ -106,7 +153,7 @@ class FoodProposalCard extends ConsumerWidget {
             cardId: view.id,
             chip: chip,
             system: system,
-            enabled: !confirming,
+            enabled: editable,
           ),
       ],
       questions: view.questions.isEmpty
@@ -119,7 +166,7 @@ class FoodProposalCard extends ConsumerWidget {
                   _Question(
                     question: question,
                     system: system,
-                    onAnswer: confirming
+                    onAnswer: !editable
                         ? null
                         : (optionId) => thread.adjust(
                             view.id,
@@ -186,7 +233,7 @@ class FoodProposalCard extends ConsumerWidget {
         discardLabel: l10n.proposalDiscard,
         confirmLabel: l10n.proposalLogIt,
         reason: reason,
-        onDiscard: confirming ? null : () => unawaited(thread.discard(view.id)),
+        onDiscard: editable ? () => unawaited(thread.discard(view.id)) : null,
         onConfirm: view.canLog
             ? () {
                 unawaited(HapticFeedback.lightImpact());
@@ -195,6 +242,103 @@ class FoodProposalCard extends ConsumerWidget {
             : null,
       ),
     );
+  }
+
+  Widget _swipeable(
+    BuildContext context,
+    bool enabled,
+    VoidCallback onRemove,
+    Widget child,
+  ) => enabled
+      ? FbSwipeActions(
+          dismissAction: FbSwipeAction(
+            label: context.l10n.proposalRemoveLine,
+            icon: FbIcons.delete,
+            onTriggered: onRemove,
+          ),
+          child: child,
+        )
+      : child;
+
+  /// The alternatives of [line] (at most three) and "Search foods…" in a
+  /// small sheet (AI-041); picking one swaps the food and recomputes the
+  /// card. Search opens the food picker over the card.
+  Future<void> _swap(
+    BuildContext context,
+    WidgetRef ref,
+    FoodLineView line,
+  ) async {
+    final l10n = context.l10n;
+    final alternatives = line.alternatives;
+    const search = -1;
+    final picked = await showFbOptionSheet<int>(
+      context,
+      title: l10n.proposalSwapTitle(line.food.names.en),
+      selected: null,
+      options: [
+        for (final (i, food) in alternatives.indexed)
+          FbOption(value: i, label: food.names.en),
+        FbOption(value: search, label: l10n.proposalSearchFoods),
+      ],
+    );
+    if (picked == null || !context.mounted) return;
+    final thread = ref.read(buddyThreadControllerProvider.notifier);
+    if (picked != search) {
+      if (picked < alternatives.length) {
+        thread.swapFood(view.id, line.id, alternatives[picked]);
+      }
+      return;
+    }
+    final row = await showBuddyFoodPicker(context);
+    if (row != null) thread.swapPicked(view.id, line.id, row.choice);
+  }
+
+  /// "Add item": a food picked in search, at its default portion (AI-042).
+  Future<void> _add(BuildContext context, WidgetRef ref) async {
+    final row = await showBuddyFoodPicker(context);
+    if (row == null) return;
+    ref
+        .read(buddyThreadControllerProvider.notifier)
+        .addPicked(view.id, row.choice, row.defaultPortion);
+  }
+
+  /// The header's meal-and-time sheet (AI-043): another active meal, or the
+  /// time picker.
+  Future<void> _editWhen(
+    BuildContext context,
+    WidgetRef ref,
+    List<SlotRecord> slots,
+    LocalDateTime? time,
+  ) async {
+    final l10n = context.l10n;
+    const changeTime = '';
+    final picked = await showFbOptionSheet<String>(
+      context,
+      title: l10n.proposalWhenTitle,
+      selected: view.slotId,
+      options: [
+        for (final record in slots)
+          if (record.slot.active)
+            FbOption(
+              value: record.slot.id,
+              label: slotLabel(l10n, record.slot),
+            ),
+        FbOption(value: changeTime, label: l10n.proposalWhenChangeTime),
+      ],
+    );
+    if (picked == null || !context.mounted) return;
+    final thread = ref.read(buddyThreadControllerProvider.notifier);
+    if (picked != changeTime) {
+      if (picked != view.slotId) thread.setSlot(view.id, picked);
+      return;
+    }
+    final now = time ?? LocalTime(12).on(view.date);
+    final chosen = await showFbTimePicker(
+      context,
+      initialTime: TimeOfDay(hour: now.hour, minute: now.minute),
+    );
+    if (chosen == null) return;
+    thread.setTime(view.id, LocalTime(chosen.hour, chosen.minute));
   }
 
   static String _grams(AppLocalizations l10n, double grams) =>
@@ -370,6 +514,59 @@ class _LoggedRowState extends ConsumerState<_LoggedRow> {
       onUndo: canUndo
           ? () => unawaited(
               ref.read(buddyThreadControllerProvider.notifier).undo(view.id),
+            )
+          : null,
+    );
+  }
+}
+
+/// The discarded card: "Discarded" and, for the undo window, Undo that puts
+/// the card back as it was (backlog #142; nothing was written).
+class _DiscardedRow extends ConsumerStatefulWidget {
+  const new({required this.view});
+
+  final FoodCardView view;
+
+  @override
+  ConsumerState<_DiscardedRow> createState() => _DiscardedRowState();
+}
+
+class _DiscardedRowState extends ConsumerState<_DiscardedRow> {
+  Timer? _window;
+  bool _offered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final at = widget.view.discardUndoFrom;
+    if (at == null) return;
+    final left =
+        FbMotion.undoWindow - ref.read(clockProvider).nowUtc().difference(at);
+    if (left <= Duration.zero) return;
+    _offered = true;
+    _window = Timer(left, () {
+      if (mounted) setState(() => _offered = false);
+    });
+  }
+
+  @override
+  void dispose() {
+    _window?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return FbProposalResolvedRow(
+      icon: FbIcons.info,
+      text: l10n.proposalDiscarded,
+      undoLabel: _offered ? l10n.proposalUndo : null,
+      onUndo: _offered
+          ? () => unawaited(
+              ref
+                  .read(buddyThreadControllerProvider.notifier)
+                  .restoreDiscarded(widget.view.id),
             )
           : null,
     );

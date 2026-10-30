@@ -13,6 +13,7 @@ import 'package:fb_mobile/core/changes/row_ops.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/events/domain_event_bus.dart';
+import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
@@ -46,6 +47,8 @@ export '../../../helpers/fake_http.dart';
 /// The fixed reply templates.
 const texts = BuddyReplyTexts(
   cards: 'Here is your meal.',
+  updated: 'UPDATED-TEMPLATE',
+  cardClosed: 'CARD-CLOSED-TEMPLATE',
   medical: 'MEDICAL-TEMPLATE',
   notFood: 'NOT-FOOD-TEMPLATE',
   noCard: 'NO-CARD-TEMPLATE',
@@ -192,6 +195,7 @@ final class BuddyHarness {
         undoStackProvider.overrideWithValue(undo),
         domainEventBusProvider.overrideWithValue(bus),
         clockProvider.overrideWithValue(clock),
+        idGeneratorProvider.overrideWithValue(ids),
       ],
     );
   }

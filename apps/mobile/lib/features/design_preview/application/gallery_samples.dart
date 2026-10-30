@@ -19,6 +19,8 @@ abstract final class GallerySamples {
   static const String delete = 'Delete';
   static const String longButton = 'Add this meal to the diary for dinner';
   static const String assumption = 'Assumed 1 cup of rice';
+  static const String target = 'Updating Breakfast card';
+  static const String targetClear = 'Send as a new message';
   static const String small = 'Small';
   static const String medium = 'Medium';
   static const String large = 'Large';
