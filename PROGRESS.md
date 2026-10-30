@@ -15,8 +15,8 @@ App 36/64 · Backend 14/23 · Foundation 7/7
 | ✅ | **M1** Dogfood 1 | `▓▓▓▓▓` 14/14 | — |
 | ✅ | **M2** Targets & weight | `▓▓▓▓▓` 9/9 | — |
 | 🟨 | **M5** Accounts & sync | `▓▓▓▓░` 16/19 | A34 A35 B21 |
-| 🟨 | **M2b** Solid app (no AI) | `▓▓░░░` 10/24 | A17 A18 A19 A28a A30 A37c +11 |
-| 🟨 | **M3** Buddy on the laptop | `▓░░░░` 1/3 | A23b A49 #148 #149 #150 #151 |
+| 🟨 | **M2b** Solid app (no AI) | `▓▓░░░` 10/23 | A17 A18 A19 A28a A30 A37c +10 |
+| 🟨 | **M3** Buddy on the laptop | `▓░░░░` 1/4 | A23b A48 A49 #148 #149 #150 #151 |
 | ⬜ | **M4** Dogfood 2 | `░░░░░` 0/8 | A25 A26 A27 A28b A29 A31 +2 |
 | ⬜ | **M6** Workouts, review &… | `░░░░░` 0/4 | A37b A39b A41b B12 |
 | ⬜ | **M7** Production | `░░░░░` 0/3 | A43 B13 B14 |
@@ -32,7 +32,7 @@ Not started, every dependency done; earliest milestone first:
 - [A17](technical-planning/steps/dish-batches.md) Dish batch 2: main dishes A · M2b
 - [A37c](technical-planning/steps/A37-workout-logging.md) Workouts without AI: plans, muscle map & progress (starter plans, templates, exercise page; split from A37) · M2b
 - [A38](technical-planning/steps/A38-adaptive-targets.md) Adaptive targets & weekly check-in · M2b
-- [A48](technical-planning/steps/A48-local-brands.md) Local brands & packaged foods · M2b
+- [A50](technical-planning/steps/A50-google-sign-in.md) Google sign-in on the phone (backlog #200) · M2b
 
 ## Waiting on you
 

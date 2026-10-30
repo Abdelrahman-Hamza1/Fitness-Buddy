@@ -23,19 +23,19 @@
 1. Pick the batch list. Check what's already covered by USDA basics.
 2. For each dish: a typical home recipe (whole pot) from **≥ 1 cited source** (2 when they disagree), variants, cooked total weight, portions with grams + ranges for each local portion word, names EN/AR + common Arabizi spellings, notes on variation (oil!).
 3. `make catalog` → validation + sanity + per-100 g + AT-003 name resolution.
-4. **Owner skim** (≈ 15 min): "does a plate of this look right for how your family cooks it?" Adjust if needed. TQ-08: the owner's family recipes override generic ones.
-5. Mark `review.status: reviewed`. Commit as `data(dishes): Axx …`.
+4. **Independent number check** (D-087): a Codex task, never the authoring agent, checks the numbers (grams, kcal and macros per portion, yields, sanity). Fix what it finds. TQ-08: the owner's family recipes override generic ones when reported.
+5. The orchestrator flips `review.status` / `reviewed_by` to `ai-verified`, runs `make catalog`, then commits as `data(dishes): Axx …`.
 
 ## Exit criteria (per batch)
 - [ ] Every dish in the batch validates, passes the sanity checks, and resolves by EN, AR and Arabizi.
-- [ ] Owner skim done. Notes recorded in the dish files.
+- [ ] Independent number check done (D-087). Notes recorded in the dish files.
 - [ ] After **A32**: **AT-003 green** across the whole must-cover list.
 
 ## Read first
 `07-food-data.md` §4 · `spec/11-foods-and-data-quality.md` §6 · A03 Outcome (format, time per dish)
 
 ## Owner involvement
-≈ 15 min skim per batch. Family recipes if you want them used (TQ-08).
+None required; the owner reports issues found in use (D-087).
 
 ---
 

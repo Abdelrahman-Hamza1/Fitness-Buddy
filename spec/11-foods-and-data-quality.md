@@ -55,7 +55,7 @@ Restaurants in the region publish no nutrition data, and most home food is mixed
 - **FD-052** `[R1]` Every item on the must-cover list below exists as a reference dish or a database food before R1 is done (see `40-acceptance-criteria.md`).
 - **FD-053** `[R2]` Users can say "my version": save a reference dish with their own changes (e.g. "my mom's maqluba uses less oil"), which becomes their own food.
 
-### Must-cover list (draft — the owner may skim; D-075)
+### Must-cover list (draft — the owner may skim; D-075; dishes ship after an independent AI number check, D-087)
 
 **Main dishes:** maqluba (chicken / cauliflower / eggplant) · musakhan (piece, roll) · mansaf · mujaddara · maftoul · freekeh with chicken · mloukhiyeh with rice · rice with vermicelli (ruz bi sh'arieh) · chicken & rice · kabsa · sumaqiyyeh · qidra · waraq dawali (stuffed grape leaves) · mahshi (kousa, eggplant) · kofta bil tahini / siniyyeh · fasoulia with rice · bamia with rice · bazella with rice · shish tawook · kebab · grilled chicken (quarter / half / whole) · fatteh (hummus fatteh) · lentil soup (shorbat adas) · freekeh soup · pasta / spaghetti with sauce
 

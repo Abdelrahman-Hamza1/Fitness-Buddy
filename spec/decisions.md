@@ -443,3 +443,12 @@ _Entries marked **(provisional)** apply Claude's recommendation to a question th
 - Status: Accepted. Amends AI-101 (adds AI-103), D-072.
 - Decision: When a shared dish is logged without an amount ("had maqluba with the family"), Buddy assumes **one person's typical portion**, shown as an assumption with −/+ on the card. An explicit amount ("half the pot", "big plate", "we were 6") overrides it. Buddy asks only when it's truly ambiguous.
 - Why: A sensible default with an easy fix is faster than a question every time, and keeps the "nothing logged without confirmation" rule. Step A49.
+
+## D-087 — Acceptance by use; dish batches self-approved; A48 and A37b postponed
+- Date / Source: 2026-10-30 · owner Q&A ("what about A37B and about local brands? Let's postpone that. This is not super important. And … anything related to dish batches, just auto approve yourself, and based on practice, once everything's ready, I will use the application myself, and if I find any issues, I will let you know.")
+- Status: Accepted. Supersedes the owner-skim step for dish batches (D-075 "the owner may skim" stays true, but nothing waits on it). Amends TD-105 (waves).
+- Decision:
+  - **(a) Dish batches self-approved.** Dish batches (A17, A18, A19, A30, A32) need no owner skim. After an independent AI number check (a Codex task, never the authoring agent), the orchestrator marks the dishes `reviewed_by: ai-verified` and they ship in the pack. The owner's family recipes still override generic ones when they report them (TQ-08).
+  - **(b) Acceptance by use.** Owner skims and device checks are optional. The owner accepts features by using the app and reports issues; steps don't wait for owner checks (device benchmarks such as backlog #219 become optional notes).
+  - **(c) Postponed.** A48 (local brands) and A37b (workout logging by chat) leave the active phase-1 waves. A37b stays in phase 2. A48 moves to "later (postponed by owner)".
+- Why: The owner is the only reviewer and wants to judge the finished app by living with it, not by reviewing data and checklists. Local brands and chat workout logging are not important for the first release.
