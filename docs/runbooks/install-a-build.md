@@ -48,6 +48,9 @@ make install-android FLAVOR=prod    # adb install -r: updates, keeps data
 - Export your data before an update that changes the database (see above).
   Never uninstall to get past an install error.
 - `dev` and `staging` are separate apps with their own data; use `prod` daily.
+- Google sign-in (A50) needs this laptop build (it reads the private Google
+  client file) or a CI build after the optional `FB_GOOGLE_SERVER_CLIENT_ID`
+  secret is set; other builds hide the button and offer email only.
 
 ## Android backup and exports
 

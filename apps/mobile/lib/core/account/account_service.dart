@@ -20,10 +20,11 @@ enum AccountFailureKind {
   /// Too many attempts; try again later.
   throttled,
 
-  /// Google sign-in isn't configured on this build.
+  /// Google sign-in isn't configured on this build, or can't run on this
+  /// phone (A50 D7).
   googleUnavailable,
 
-  /// The server refused (validation, forbidden, unknown).
+  /// The server or Google refused (validation, forbidden, unknown).
   rejected,
 
   /// The sign-in flow was cancelled or replaced; nothing changed.
@@ -227,7 +228,19 @@ final class SignInFlow {
     if (!_service._google.isAvailable) {
       throw const AccountFailure(AccountFailureKind.googleUnavailable);
     }
-    final idToken = await _service._google.idToken();
+    final String? idToken;
+    try {
+      idToken = await _service._google.idToken();
+    } on GoogleIdTokenException catch (failure) {
+      // Before any server call: nothing changed, the guest stays (AC-002).
+      _ensureOpen();
+      throw AccountFailure(switch (failure.kind) {
+        GoogleIdTokenFailure.unavailable ||
+        GoogleIdTokenFailure.misconfigured =>
+          AccountFailureKind.googleUnavailable,
+        GoogleIdTokenFailure.failed => AccountFailureKind.rejected,
+      });
+    }
     _ensureOpen();
     if (idToken == null) return AccountOutcome.cancelled;
     final identity = _hash('google|$idToken');
@@ -252,6 +265,7 @@ final class SignInFlow {
           : _service._identity.signInGoogle(
               body: GoogleSignInRequest(idToken: idToken),
             ),
+      refused: AccountFailureKind.rejected,
     );
     _ensureIssuedStillOpen(tokens);
     if (tokens == null) {
@@ -349,7 +363,12 @@ final class AccountService {
     } on Object {
       // Best effort; the local credentials are forgotten below either way.
     }
-    await _google.signOut();
+    try {
+      // Bounded and best effort in the adapter too (A50 D8).
+      await _google.signOut();
+    } on Object {
+      // Google keeps its account choice; the app signs out regardless.
+    }
     await _transitions.signOut(keep: choice == SignOutChoice.keep);
   }
 
@@ -440,15 +459,23 @@ final class AccountService {
   }
 
   /// Null when the server reports an identity conflict (409).
-  Future<AuthTokens?> _conflictAware(Future<AuthTokens> Function() call) async {
+  Future<AuthTokens?> _conflictAware(
+    Future<AuthTokens> Function() call, {
+    AccountFailureKind refused = AccountFailureKind.invalidCode,
+  }) async {
     try {
-      return await _call(call);
+      return await _call(call, refused: refused);
     } on _Conflict {
       return null;
     }
   }
 
-  Future<T> _call<T>(Future<T> Function() call) async {
+  /// [refused] is what a 400/401 means: a wrong email code, or (Google) a
+  /// token the server rejected (A50 review).
+  Future<T> _call<T>(
+    Future<T> Function() call, {
+    AccountFailureKind refused = AccountFailureKind.invalidCode,
+  }) async {
     try {
       return await call();
     } on DioException catch (error) {
@@ -457,8 +484,7 @@ final class AccountService {
       final type = data is Map ? data['type'] : null;
       throw switch ((response?.statusCode ?? 0, type)) {
         (409, ProblemTypes.identityConflict) => const _Conflict(),
-        (400, _) ||
-        (401, _) => const AccountFailure(AccountFailureKind.invalidCode),
+        (400, _) || (401, _) => AccountFailure(refused),
         (429, _) => const AccountFailure(AccountFailureKind.throttled),
         (0, _) ||
         (>= 500, _) => const AccountFailure(AccountFailureKind.offline),

@@ -37,7 +37,7 @@ class AndroidCiTest(unittest.TestCase):
         self.assertIn('flavor=staging', android)
         self.assertIn('"$GITHUB_REF" == refs/heads/main || "$GITHUB_REF" == refs/heads/merge/*', android)
         self.assertIn('flavor=prod', android)
-        for key in ('FB_API_BASE_URL', 'FB_SENTRY_DSN'):
+        for key in ('FB_API_BASE_URL', 'FB_SENTRY_DSN', 'FB_GOOGLE_SERVER_CLIENT_ID'):
             self.assertIn(key + ': ${{ secrets.' + key + ' }}', android)
             self.assertNotIn('vars.' + key, text)
         self.assertIn('app-*-release*.apk', android)

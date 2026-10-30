@@ -56,6 +56,7 @@ GitHub repo → **Settings** → **Secrets and variables** → **Actions** → *
 | `FB_API_BASE_URL` | Laptop API HTTPS origin only (host and optional port, no path, query, fragment or credentials). Set as an Actions secret, never a variable; keep the value out of logs and the repo. |
 | `FB_SENTRY_DSN` | EU ingest client DSN. Add **only after WP2 emulator sink evidence passes**; see [crash-reports.md](crash-reports.md). Unset means reporting off. |
 | `FB_ANDROID_KEY_PASSWORD` | The text after `FB_ANDROID_KEY_PASSWORD=` in `release.env` (the same password) |
+| `FB_GOOGLE_SERVER_CLIENT_ID` | **Optional** (A50). The `WebClientId` from `~/.local/share/fitness-buddy/identity/google-clients.json` (the web/server client, not the Android one). Unset means CI-built APKs hide Google sign-in; laptop builds read the file themselves. |
 
 Paste without a trailing space or newline. GitHub never shows a secret again; to change one, overwrite it.
 
@@ -108,6 +109,15 @@ assignments: export them privately in the shell first. Dev and android-it do
 not consume these overrides. Empty/unavailable CI secrets use the placeholders.
 These values are kept private in source/logs but can be extracted from an APK;
 the owner accepted the public-artifact exposure (A11 Q1).
+
+**Google sign-in client ID (A50 D4).** `FB_GOOGLE_SERVER_CLIENT_ID` is compiled
+in only for staging/prod **release builds signed with the release key** (the
+registered Android OAuth client matches that certificate). Source order: the
+environment (CI: the optional secret), else `WebClientId` from
+`${FB_GOOGLE_CLIENTS_FILE:-~/.local/share/fitness-buddy/identity/google-clients.json}`,
+else `""`. Debug builds, debug-key release builds and dev always get `""`, so
+the Google button stays hidden there. The value is validated and never printed;
+the build logs only "Google sign-in: on/off" and the source.
 
 CI builds **one flavor**: prod on main/merge branches, staging elsewhere. Only
 main uploads signed prod APKs (30 days); merge branches only verify. Signed

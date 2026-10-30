@@ -40,6 +40,10 @@ dependencies:
   # A20 PA1/PA2: native barrier maps this exact release; re-audit before bumping.
   flutter_secure_storage: 11.2.0
   go_router: ^18.0.2
+  # A50 D1: Google sign-in (Credential Manager on Android), BSD-3, flutter.dev.
+  # Exact pin like the other auth-sensitive plugin; used only in
+  # lib/core/account/google_plugin_id_token_source.dart.
+  google_sign_in: 7.2.0
   intl: ^0.20.2
   material_ui: 1.6.0
   # X-App-Version and the update gate read the installed version.

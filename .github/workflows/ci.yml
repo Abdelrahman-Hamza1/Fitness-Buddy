@@ -570,6 +570,8 @@ jobs:
           FLAVOR: ${{ steps.flavor.outputs.name }}
           FB_API_BASE_URL: ${{ secrets.FB_API_BASE_URL }}
           FB_SENTRY_DSN: ${{ secrets.FB_SENTRY_DSN }}
+          # A50 D4: optional; unset = Google sign-in hidden in CI-built APKs.
+          FB_GOOGLE_SERVER_CLIENT_ID: ${{ secrets.FB_GOOGLE_SERVER_CLIENT_ID }}
           FB_KEYSTORE_PATH: ${{ steps.key.outputs.keystore }}
           FB_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.FB_ANDROID_KEYSTORE_PASSWORD }}
           FB_ANDROID_KEY_ALIAS: fitnessbuddy

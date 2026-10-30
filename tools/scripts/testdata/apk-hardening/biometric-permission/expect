@@ -1,0 +1,2 @@
+fail
+uses-permission android.permission.USE_BIOMETRIC must be removed (tools:node="remove")

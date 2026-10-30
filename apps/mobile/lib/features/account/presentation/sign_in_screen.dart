@@ -39,7 +39,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       AccountFailureKind.offline => l10n.signInErrorOffline,
       AccountFailureKind.invalidCode => l10n.signInErrorCode,
       AccountFailureKind.throttled => l10n.signInErrorThrottled,
-      AccountFailureKind.googleUnavailable ||
+      AccountFailureKind.googleUnavailable => l10n.signInErrorGoogleUnavailable,
       AccountFailureKind.rejected ||
       AccountFailureKind.cancelled => l10n.signInErrorOther,
     };

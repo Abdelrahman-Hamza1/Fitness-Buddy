@@ -183,6 +183,9 @@ def resource_files(resources, res_id):
 # --- Rules ------------------------------------------------------------------------
 
 
+UNWANTED_PERMISSIONS = {"android.permission.USE_BIOMETRIC", "android.permission.USE_FINGERPRINT"}
+
+
 def check(dumps, flavor):
     """Returns (problems, facts): the rules broken and what was seen."""
     problems, facts = [], []
@@ -195,6 +198,13 @@ def check(dumps, flavor):
     if len(manifest) != 1 or manifest[0].name != "manifest" or len(apps) != 1:
         return problems + ["the manifest does not have exactly one <manifest><application>"], facts
     app = apps[0].attrs
+
+    # A50: androidx.credentials pulls androidx.biometric, whose manifest asks
+    # for these; Google sign-in doesn't need them (removed in the app manifest).
+    granted = {re.match(r'"?([^"\s]*)', c.attrs.get("android:name", "")).group(1)
+               for c in manifest[0].children if c.name == "uses-permission"}
+    for permission in sorted(granted & UNWANTED_PERMISSIONS):
+        problems.append(f"uses-permission {permission} must be removed (tools:node=\"remove\")")
 
     for attr in ("android:debuggable", "android:usesCleartextTraffic"):
         raw = app.get(attr)

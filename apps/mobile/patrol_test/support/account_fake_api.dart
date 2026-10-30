@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:fb_mobile/core/account/google_id_token_source.dart';
 import 'package:fb_mobile/core/api/api_providers.dart';
 import 'package:fb_mobile/core/session/session_providers.dart';
 import 'package:fb_mobile/core/storage/secure_session_store.dart';
@@ -16,6 +17,31 @@ const accountJourneyGuestAccess = 'synthetic-guest-access';
 
 /// The code the fake "sends".
 const accountJourneyCode = '123456';
+
+/// The synthetic Google ID token [FakeGoogleIdTokenSource] returns (A50).
+const accountJourneyGoogleToken = 'synthetic-google-id-token';
+
+/// Google sign-in without the plugin (A50 D10): the real plugin needs the
+/// release certificate, so journeys get a synthetic ID token instead.
+final class FakeGoogleIdTokenSource implements GoogleIdTokenSource {
+  /// How often the app asked for a token / for Google sign-out.
+  int tokenRequests = 0;
+
+  /// See [tokenRequests].
+  int signOuts = 0;
+
+  @override
+  bool get isAvailable => true;
+
+  @override
+  Future<String?> idToken() async {
+    tokenRequests++;
+    return accountJourneyGoogleToken;
+  }
+
+  @override
+  Future<void> signOut() async => signOuts++;
+}
 
 Map<String, Object?> _tokens({required bool anonymous, required String tag}) {
   final now = DateTime.now().toUtc();
@@ -48,7 +74,8 @@ final class AccountFakeAuthAdapter extends _FakeAdapter {
 }
 
 /// The API Dio's fake: the guest-upgrade link start (only with the guest's
-/// bearer), the email link (same user id, now registered) and logout.
+/// bearer), the email and Google links (same user id, now registered) and
+/// logout.
 /// Everything else is offline, as in `app_test`. Nothing leaves the device.
 final class AccountFakeApiAdapter extends _FakeAdapter {
   /// `METHOD path (bearer)` per request, synthetic values only.
@@ -81,6 +108,13 @@ final class AccountFakeApiAdapter extends _FakeAdapter {
           return _json({'type': '/errors/unauthorized'}, status: 401);
         }
         return _json(_tokens(anonymous: false, tag: 'registered'));
+      case '/v1/auth/link/google':
+        final body = await _body(options, requestStream);
+        if (bearer != 'Bearer $accountJourneyGuestAccess' ||
+            body['idToken'] != accountJourneyGoogleToken) {
+          return _json({'type': '/errors/unauthorized'}, status: 401);
+        }
+        return _json(_tokens(anonymous: false, tag: 'google'));
       case '/v1/auth/logout':
         return ResponseBody.fromString('', 204);
       default:

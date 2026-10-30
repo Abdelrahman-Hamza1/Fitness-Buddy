@@ -11,6 +11,7 @@ import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/me/me.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:patrol/patrol.dart';
@@ -94,46 +95,61 @@ Future<void> _waitOrDump(
   );
 }
 
-/// AC-001 AC-003 AC-004 on the device (A33): the real app on a throw-away
-/// profile, the guest session and the email link served by in-app fakes on
-/// both HTTP clients, an in-memory session store. The device's real profile
+/// Boots the real app on a throw-away profile with the fakes (plus
+/// [extra] overrides), saving and restoring the device's profile registry;
+/// waits for the guest session and logs one food.
+Future<ProviderContainer> _bootGuest(
+  PatrolIntegrationTester $,
+  AccountFakeApiAdapter api,
+  String profileKey, {
+  List<Override> extra = const [],
+}) async {
+  final prefs = SharedPreferencesAsync();
+  final savedRegistry = await prefs.getString(ProfileRegistry.storageKey);
+  await prefs.remove(ProfileRegistry.storageKey);
+  addTearDown(() async {
+    if (savedRegistry == null) {
+      await prefs.remove(ProfileRegistry.storageKey);
+    } else {
+      await prefs.setString(ProfileRegistry.storageKey, savedRegistry);
+    }
+  });
+
+  final container = await bootApp(
+    $,
+    profileKey,
+    rootName: 'fb_account_it',
+    overrides: [
+      ...accountFakeApi(api, auth: AccountFakeAuthAdapter()),
+      ...extra,
+    ],
+  );
+
+  // The guest session arrives in the background after the first frame.
+  await waitUntil(
+    $.tester,
+    () =>
+        container.read(sessionStateProvider).status == SessionStatus.anonymous,
+    'the guest session',
+  );
+  expect(await _logBanana(container), isA<FoodLogged>());
+  expect(await _liveEntries(container), 1);
+  return container;
+}
+
+/// AC-001 AC-003 AC-004 on the device (A33, A50): the real app on a
+/// throw-away profile, the guest session and the email and Google links
+/// served by in-app fakes on both HTTP clients (Google through a fake token
+/// source), an in-memory session store. The device's real profile
 /// registry is saved and restored; no profile files are deleted.
 void main() {
   patrolTest(
     'AC-003 AC-004 guest logs food, upgrades with an email code, keeps the '
     'same data and user id, then signs out keeping a read-only copy',
     ($) async {
-      final prefs = SharedPreferencesAsync();
-      final savedRegistry = await prefs.getString(ProfileRegistry.storageKey);
-      await prefs.remove(ProfileRegistry.storageKey);
-      addTearDown(() async {
-        if (savedRegistry == null) {
-          await prefs.remove(ProfileRegistry.storageKey);
-        } else {
-          await prefs.setString(ProfileRegistry.storageKey, savedRegistry);
-        }
-      });
-
       final api = AccountFakeApiAdapter();
-      final auth = AccountFakeAuthAdapter();
-      final container = await bootApp(
-        $,
-        'it-account',
-        rootName: 'fb_account_it',
-        overrides: accountFakeApi(api, auth: auth),
-      );
+      final container = await _bootGuest($, api, 'it-account');
       final tester = $.tester;
-
-      // The guest session arrives in the background after the first frame.
-      await waitUntil(
-        tester,
-        () =>
-            container.read(sessionStateProvider).status ==
-            SessionStatus.anonymous,
-        'the guest session',
-      );
-      expect(await _logBanana(container), isA<FoodLogged>());
-      expect(await _liveEntries(container), 1);
 
       // Me › Account › Sign in: email, then the code.
       await _openMeRow(tester, 'Sign in or create an account');
@@ -209,6 +225,61 @@ void main() {
         isNot(SessionStatus.registered),
       );
       expect(find.byType(FbListRow), findsWidgets);
+    },
+  );
+
+  patrolTest(
+    'AC-001 AC-003 guest upgrades with Google via a fake token source, keeps '
+    'data and user id',
+    ($) async {
+      final api = AccountFakeApiAdapter();
+      final google = FakeGoogleIdTokenSource();
+      final container = await _bootGuest(
+        $,
+        api,
+        'it-account-google',
+        extra: [googleIdTokenSourceProvider.overrideWithValue(google)],
+      );
+      final tester = $.tester;
+
+      // Me › Account › Sign in › Continue with Google (A50).
+      await _openMeRow(tester, 'Sign in or create an account');
+      await waitUntil(
+        tester,
+        () => find.byType(SignInScreen).evaluate().isNotEmpty,
+        'the sign-in screen',
+      );
+      await tapExactly(
+        tester,
+        find.text('Continue with Google'),
+        'Continue with Google',
+      );
+      await _waitOrDump(
+        tester,
+        container,
+        api,
+        () => find.text("You're signed in").evaluate().isNotEmpty,
+        'the signed-in step',
+      );
+
+      // The guest's own bearer linked Google: same user, now registered.
+      expect(google.tokenRequests, 1);
+      expect(
+        api.calls,
+        contains(
+          'POST /v1/auth/link/google (Bearer $accountJourneyGuestAccess)',
+        ),
+      );
+      final envelope = await container
+          .read(secureSessionStoreProvider)
+          .readActive();
+      expect(envelope!.userId, accountJourneyUserId);
+      expect(envelope.kind, SessionKind.registered);
+      final registry = container.read(profileRegistryProvider);
+      final active = (await registry.read()).active;
+      expect(active.kind, ProfileKind.registered);
+      expect(active.ownerRef, registry.ownerRefFor(accountJourneyUserId));
+      expect(await _liveEntries(container), 1, reason: 'same data');
     },
   );
 }

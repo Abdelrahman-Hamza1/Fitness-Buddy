@@ -11,7 +11,7 @@ Flutter app, Android in R1 (D-081), cross-platform code only. Architecture: `tec
 | `lib/core/` | Shared plumbing: `api/` (dio + the generated `FbApi`, client headers, 426 → update gate), `config/` (flavor config, `/v1/config` cache + refresh, app version, update gate), `errors/` (`Failure` + mapping from problem types, Sentry + PII scrubber), `storage/` (shared_preferences: device id, config cache), `ids/` (ID generator port), `navigation/` (typed `AppRoute`s + the `AppNavigator` port features use), `l10n/` (`context.l10n`). Screens never import `core/api/` (plan A3). |
 | `lib/features/<feature>/` | One folder per feature. Others import only its barrel `<feature>.dart`; features never import `app/`. |
 | `lib/l10n/app_en.arb` | Every user-facing string. `gen/` is generated. |
-| `config/<flavor>.json` | Per-flavor defines: `FB_FLAVOR`, `FB_API_BASE_URL`, `FB_SENTRY_DSN`. |
+| `config/<flavor>.json` | Per-flavor defines: `FB_FLAVOR`, `FB_API_BASE_URL`, `FB_SENTRY_DSN`, `FB_GOOGLE_SERVER_CLIENT_ID` (`""`; release-key builds merge it in, A50). |
 | `test/` | Widget, unit and golden tests; `goldens/ci/` holds the golden images. |
 | `patrol_test/` | Integration tests on a device or emulator (Patrol): the real app, plugins and network. `android/app/src/androidTest/` holds Patrol's Android runner. |
 

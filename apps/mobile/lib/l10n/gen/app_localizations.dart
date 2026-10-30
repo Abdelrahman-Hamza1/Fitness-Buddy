@@ -6654,6 +6654,12 @@ abstract class AppLocalizations {
   /// **'Couldn\'t sign in. Try again.'**
   String get signInErrorOther;
 
+  /// Sign-in failure: Google sign-in can't run on this phone or build (no Google provider, client refused). Points the user to the email path (A50 D7).
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in isn\'t available on this phone. Use your email instead.'**
+  String get signInErrorGoogleUnavailable;
+
   /// Sign-in conflict: merge refused because a kept copy of the account exists on the device (A33 review 7). Both copies stay.
   ///
   /// In en, this message translates to:

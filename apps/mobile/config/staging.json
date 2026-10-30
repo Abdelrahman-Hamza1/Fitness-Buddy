@@ -1,5 +1,6 @@
 {
   "FB_FLAVOR": "staging",
   "FB_API_BASE_URL": "https://api.staging.invalid",
-  "FB_SENTRY_DSN": ""
+  "FB_SENTRY_DSN": "",
+  "FB_GOOGLE_SERVER_CLIENT_ID": ""
 }

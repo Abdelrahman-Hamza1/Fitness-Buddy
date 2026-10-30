@@ -55,12 +55,16 @@ final class ProfileRegistryProvider
 
 String _$profileRegistryHash() => r'5762609c4ec261da3f4f9d22528f7d55c0eb52f8';
 
-/// Google ID tokens: unconfigured until the owner sets up OAuth (A33 D7).
+/// Google ID tokens (A33 D7, A50 D4/D6): the plugin when this build has the
+/// web client ID and runs on Android, else hidden. Construction does nothing:
+/// the plugin initializes on the first sign-in.
 
 @ProviderFor(googleIdTokenSource)
 final googleIdTokenSourceProvider = GoogleIdTokenSourceProvider._();
 
-/// Google ID tokens: unconfigured until the owner sets up OAuth (A33 D7).
+/// Google ID tokens (A33 D7, A50 D4/D6): the plugin when this build has the
+/// web client ID and runs on Android, else hidden. Construction does nothing:
+/// the plugin initializes on the first sign-in.
 
 final class GoogleIdTokenSourceProvider
     extends
@@ -70,7 +74,9 @@ final class GoogleIdTokenSourceProvider
           GoogleIdTokenSource
         >
     with $Provider<GoogleIdTokenSource> {
-  /// Google ID tokens: unconfigured until the owner sets up OAuth (A33 D7).
+  /// Google ID tokens (A33 D7, A50 D4/D6): the plugin when this build has the
+  /// web client ID and runs on Android, else hidden. Construction does nothing:
+  /// the plugin initializes on the first sign-in.
   GoogleIdTokenSourceProvider._()
     : super(
         from: null,
@@ -106,7 +112,7 @@ final class GoogleIdTokenSourceProvider
 }
 
 String _$googleIdTokenSourceHash() =>
-    r'706cb2fe6a2dc8e8282d73926a772560e5ca5924';
+    r'54b39514d07e2558aead0afb13db7241cecd0e57';
 
 /// The account transition lifecycle (A33 §6). Construction does no I/O.
 

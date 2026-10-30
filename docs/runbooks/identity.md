@@ -3,7 +3,10 @@
 Identity is disabled by default. The private laptop uses the owner-approved TD-077 boundary,
 a separately provisioned wrapping key and email-code pepper, and only the web/server Google client
 ID as an accepted token audience. Android OAuth registration uses the existing release certificate;
-never generate a new app signing key. App integration belongs to A20/A33.
+never generate a new app signing key. App integration belongs to A20/A33; the Google
+sign-in plugin is A50: laptop release builds (`make build-android FLAVOR=prod`) read `WebClientId`
+from the file below and compile it in as the app's `serverClientId` (see
+[android-signing.md](android-signing.md), "A11 build configuration").
 
 ## Private laptop activation
 

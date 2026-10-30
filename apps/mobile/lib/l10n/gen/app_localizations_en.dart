@@ -4544,6 +4544,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signInErrorOther => 'Couldn\'t sign in. Try again.';
 
   @override
+  String get signInErrorGoogleUnavailable =>
+      'Google sign-in isn\'t available on this phone. Use your email instead.';
+
+  @override
   String get signInMergeBlocked =>
       'This account already has a copy on this phone, so the two can\'t be combined yet. Your guest data stays here. You can discard it to open your account, or go back.';
 

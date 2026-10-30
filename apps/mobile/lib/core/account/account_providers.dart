@@ -2,6 +2,7 @@ import 'package:fb_api_client/fb_api_client.dart';
 import 'package:fb_mobile/core/account/account_service.dart';
 import 'package:fb_mobile/core/account/account_transitions.dart';
 import 'package:fb_mobile/core/account/google_id_token_source.dart';
+import 'package:fb_mobile/core/account/google_plugin_id_token_source.dart';
 import 'package:fb_mobile/core/account/open_profile_host.dart';
 import 'package:fb_mobile/core/account/profile_generation.dart';
 import 'package:fb_mobile/core/account/profile_registry.dart';
@@ -28,10 +29,15 @@ ProfileRegistry profileRegistry(Ref ref) {
   );
 }
 
-/// Google ID tokens: unconfigured until the owner sets up OAuth (A33 D7).
+/// Google ID tokens (A33 D7, A50 D4/D6): the plugin when this build has the
+/// web client ID and runs on Android, else hidden. Construction does nothing:
+/// the plugin initializes on the first sign-in.
 @Riverpod(keepAlive: true)
-GoogleIdTokenSource googleIdTokenSource(Ref ref) =>
-    const UnconfiguredGoogleIdTokenSource();
+GoogleIdTokenSource googleIdTokenSource(Ref ref) {
+  final clientId = ref.watch(appConfigProvider).googleServerClientId;
+  final source = PluginGoogleIdTokenSource(serverClientId: clientId);
+  return source.isAvailable ? source : const UnconfiguredGoogleIdTokenSource();
+}
 
 /// The account transition lifecycle (A33 §6). Construction does no I/O.
 @Riverpod(keepAlive: true)

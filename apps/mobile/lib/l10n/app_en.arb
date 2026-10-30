@@ -5753,6 +5753,10 @@
   "@signInErrorOther": {
     "description": "Sign-in failure: other."
   },
+  "signInErrorGoogleUnavailable": "Google sign-in isn't available on this phone. Use your email instead.",
+  "@signInErrorGoogleUnavailable": {
+    "description": "Sign-in failure: Google sign-in can't run on this phone or build (no Google provider, client refused). Points the user to the email path (A50 D7)."
+  },
   "signInMergeBlocked": "This account already has a copy on this phone, so the two can't be combined yet. Your guest data stays here. You can discard it to open your account, or go back.",
   "@signInMergeBlocked": {
     "description": "Sign-in conflict: merge refused because a kept copy of the account exists on the device (A33 review 7). Both copies stay."

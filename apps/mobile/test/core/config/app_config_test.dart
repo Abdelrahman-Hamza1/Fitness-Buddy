@@ -16,6 +16,7 @@ const Map<String, String> _valid = {
   AppConfig.flavorKey: 'staging',
   AppConfig.apiBaseUrlKey: 'https://api.example.test',
   AppConfig.sentryDsnKey: 'https://key@o123.ingest.de.sentry.io/1',
+  AppConfig.googleServerClientIdKey: '',
 };
 
 void main() {
@@ -29,6 +30,8 @@ void main() {
         expect(config.flavor.name, name);
         // No Sentry project yet (A11): reporting is off in every flavor.
         expect(config.sentryDsn, isEmpty, reason: name);
+        // A50 D4: the Google ID is merged in by release-key builds only.
+        expect(config.googleServerClientId, isEmpty, reason: name);
       }
     });
 
@@ -74,6 +77,57 @@ void main() {
         );
       }
     }
+  });
+
+  test('A50 AppConfig accepts an empty or a well-formed Google server client '
+      'id and rejects others', () {
+    for (final flavor in AppFlavor.values) {
+      for (final id in [
+        '',
+        '1234567890-abc123def.apps.googleusercontent.com',
+      ]) {
+        expect(
+          AppConfig.fromDefines({
+            ..._valid,
+            AppConfig.flavorKey: flavor.name,
+            AppConfig.apiBaseUrlKey: flavor == AppFlavor.dev
+                ? 'http://127.0.0.1:5198'
+                : 'https://api.example.test',
+            AppConfig.googleServerClientIdKey: id,
+          }).googleServerClientId,
+          id,
+        );
+      }
+    }
+    for (final id in [
+      'abc-123.apps.googleusercontent.com',
+      '123-ABC.apps.googleusercontent.com',
+      '123-abc.apps.googleusercontent.com.evil.test',
+      ' 123-abc.apps.googleusercontent.com',
+      '123-abc.apps.googleusercontent.com\n',
+      '123-abc',
+    ]) {
+      expect(
+        () => AppConfig.fromDefines({
+          ..._valid,
+          AppConfig.googleServerClientIdKey: id,
+        }),
+        throwsA(isA<AppConfigException>()),
+        reason: id,
+      );
+    }
+    expect(
+      () => AppConfig.fromDefines(
+        {..._valid}..remove(AppConfig.googleServerClientIdKey),
+      ),
+      throwsA(
+        isA<AppConfigException>().having(
+          (e) => e.message,
+          'message',
+          contains('${AppConfig.googleServerClientIdKey} is missing'),
+        ),
+      ),
+    );
   });
 
   test(

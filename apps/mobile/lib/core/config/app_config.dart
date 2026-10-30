@@ -36,6 +36,7 @@ final class AppConfig {
     required this.flavor,
     required this.apiBaseUrl,
     required this.sentryDsn,
+    this.googleServerClientId = '',
   });
 
   /// Reads the defines compiled into this build.
@@ -54,15 +55,18 @@ final class AppConfig {
       sentryDsnKey: bool.hasEnvironment(sentryDsnKey)
           ? String.fromEnvironment(sentryDsnKey)
           : null,
+      googleServerClientIdKey: bool.hasEnvironment(googleServerClientIdKey)
+          ? String.fromEnvironment(googleServerClientIdKey)
+          : null,
     }),
   );
 
   /// Parses the defines in [defines] (the keys of `config/<flavor>.json`).
   ///
-  /// [sentryDsnKey] may be empty (error reporting off); the other keys must
-  /// be set. The API URL must be `https`, except in the [AppFlavor.dev]
-  /// flavor (the local API, S06 plan D6, A8). Throws [AppConfigException]
-  /// otherwise.
+  /// [sentryDsnKey] and [googleServerClientIdKey] may be empty (error
+  /// reporting off, Google sign-in hidden); the other keys must be set. The
+  /// API URL must be `https`, except in the [AppFlavor.dev] flavor (the local
+  /// API, S06 plan D6, A8). Throws [AppConfigException] otherwise.
   factory fromDefines(Map<String, String> defines) {
     String required(String key) {
       final value = defines[key];
@@ -122,10 +126,24 @@ final class AppConfig {
         '$sentryDsnKey must be an HTTPS EU ingest DSN.',
       );
     }
+    final googleServerClientId = defines[googleServerClientIdKey];
+    if (googleServerClientId == null) {
+      throw const AppConfigException(
+        '$googleServerClientIdKey is missing (use "" to hide Google sign-in).',
+      );
+    }
+    if (googleServerClientId.isNotEmpty &&
+        !_googleClientIdPattern.hasMatch(googleServerClientId)) {
+      throw const AppConfigException(
+        '$googleServerClientIdKey must be a Google OAuth web client ID '
+        '(<number>-<id>.apps.googleusercontent.com).',
+      );
+    }
     return AppConfig(
       flavor: flavor,
       apiBaseUrl: apiBaseUrl,
       sentryDsn: sentryDsn,
+      googleServerClientId: googleServerClientId,
     );
   }
 
@@ -144,8 +162,21 @@ final class AppConfig {
   /// Define key of [sentryDsn].
   static const sentryDsnKey = 'FB_SENTRY_DSN';
 
+  /// Define key of [googleServerClientId] (A50 D4).
+  static const googleServerClientIdKey = 'FB_GOOGLE_SERVER_CLIENT_ID';
+
   /// Every define key the app reads; each `config/*.json` has exactly these.
-  static const Set<String> keys = {flavorKey, apiBaseUrlKey, sentryDsnKey};
+  static const Set<String> keys = {
+    flavorKey,
+    apiBaseUrlKey,
+    sentryDsnKey,
+    googleServerClientIdKey,
+  };
+
+  /// Same shape as the B04 identity setup (`phone-server.py`).
+  static final _googleClientIdPattern = RegExp(
+    r'^[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com$',
+  );
 
   /// The build flavor.
   final AppFlavor flavor;
@@ -155,6 +186,11 @@ final class AppConfig {
 
   /// Sentry DSN; empty turns error reporting off.
   final String sentryDsn;
+
+  /// The Google OAuth **web** client ID: the `serverClientId` of Google
+  /// sign-in and the ID token's audience (A50 D2). Empty hides Google
+  /// sign-in. Only release-key builds get it (A50 D4).
+  final String googleServerClientId;
 }
 
 /// The app's [AppConfig]. `main` overrides it with

@@ -192,9 +192,13 @@ final class FakeIdentity implements IdentityClient {
   bool offline = false;
   Completer<void>? hold;
 
+  /// Thrown by every token-issuing call (e.g. a 401 problem).
+  DioException? refuse;
+
   Future<AuthTokens> _issue(String name) async {
     calls.add(name);
     await hold?.future;
+    if (refuse case final error?) throw error;
     if (offline) {
       throw DioException(requestOptions: RequestOptions(path: '/v1/auth'));
     }
@@ -268,12 +272,25 @@ final class FakeGoogle implements GoogleIdTokenSource {
   final bool available;
   String? token = canaryToken;
 
+  /// Thrown by [idToken] instead of returning [token] (A50 D7).
+  GoogleIdTokenException? failure;
+
+  /// Thrown by [signOut] (A50 D8: sign-out must still complete).
+  Object? signOutError;
+  int signOuts = 0;
+
   @override
   bool get isAvailable => available;
 
   @override
-  Future<String?> idToken() async => token;
+  Future<String?> idToken() async {
+    if (failure case final failure?) throw failure;
+    return token;
+  }
 
   @override
-  Future<void> signOut() async {}
+  Future<void> signOut() async {
+    signOuts++;
+    if (signOutError case final error?) await Future<void>.error(error);
+  }
 }

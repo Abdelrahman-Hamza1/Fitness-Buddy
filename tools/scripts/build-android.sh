@@ -7,6 +7,11 @@
 #   MODE          release | debug                 (default release)
 #   BUILD_NUMBER  versionCode; empty = pubspec's  (CI: the run number)
 #   FB_API_BASE_URL, FB_SENTRY_DSN  private environment overrides (staging/prod)
+#   FB_GOOGLE_SERVER_CLIENT_ID  Google web client ID (A50 D4), else WebClientId
+#                 from FB_GOOGLE_CLIENTS_FILE (default ~/.local/share/
+#                 fitness-buddy/identity/google-clients.json). Compiled in only
+#                 for staging/prod release builds signed with the release key;
+#                 every other build gets "" (Google sign-in hidden).
 #   FB_RELEASE_ENV  file with the release signing variables (default
 #                 ~/.fitness-buddy/keys/release.env; empty = don't read one)
 #   FB_BUILD_AAB  1 (default) builds the AAB too; 0 builds the APK only. CI
@@ -157,8 +162,20 @@ check_catalog_pack() {
   log "catalog pack: no drafts"
 }
 
+# Writes the staging/prod defines (private overrides merged, A11 D13) to a
+# mode-600 temp file and points $define at it. Dev keeps its committed config
+# (Google always off). Pass --google for a release-key build (A50 D4).
+define=""
+write_defines() {
+  [[ "$FLAVOR" != dev ]] || return 0
+  defines_file="$(umask 077 && mktemp "${TMPDIR:-/tmp}/fb-android-defines.XXXXXXXX.json")"
+  python3 -I "$REPO_ROOT/tools/scripts/android-defines.py" "$@" \
+    "$app/config/$FLAVOR.json" "$defines_file" "$FLAVOR"
+  define="--dart-define-from-file=$defines_file"
+}
+
 main() {
-  local define="--dart-define-from-file=config/$FLAVOR.json"
+  define="--dart-define-from-file=config/$FLAVOR.json"
   local number=()
   [[ -n "$BUILD_NUMBER" ]] && number=(--build-number="$BUILD_NUMBER")
   local apk_dir="$app/build/app/outputs/flutter-apk"
@@ -168,15 +185,10 @@ main() {
   trap cleanup EXIT
   trap 'exit 130' INT
   trap 'exit 143' TERM
-  if [[ "$FLAVOR" != dev ]]; then
-    defines_file="$(umask 077 && mktemp "${TMPDIR:-/tmp}/fb-android-defines.XXXXXXXX.json")"
-    python3 -I "$REPO_ROOT/tools/scripts/android-defines.py" \
-      "$app/config/$FLAVOR.json" "$defines_file" "$FLAVOR"
-    define="--dart-define-from-file=$defines_file"
-  fi
   cd "$app"
 
   if [[ "$MODE" == debug ]]; then
+    write_defines
     log "flutter build apk --debug --flavor $FLAVOR (arm64)"
     SECONDS=0
     "$FLUTTER" build apk --debug --flavor "$FLAVOR" --target-platform android-arm64 "$define" "${number[@]}"
@@ -193,6 +205,12 @@ main() {
   else
     # Gradle refuses a release build without the key unless told it's on purpose.
     export FB_ALLOW_DEBUG_SIGNING=1
+  fi
+  # A50 D4: only the release key matches the registered Android OAuth client.
+  if [[ "$signed" == true ]]; then
+    write_defines --google
+  else
+    write_defines
   fi
   # Outputs of an earlier build with the other key must not be mistaken for this one.
   rm -f -- "$apk" "$apk.sha1" "$aab" "${apk%.apk}-debugkey.apk" "${aab%.aab}-debugkey.aab"

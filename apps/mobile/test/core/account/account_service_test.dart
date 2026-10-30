@@ -264,6 +264,93 @@ void main() {
     );
   });
 
+  test('AC-003 google link keeps the same user id and re-owns the guest '
+      'profile', () async {
+    service = build(google: FakeGoogle());
+    expect(service.googleAvailable, isTrue);
+
+    expect(await flow().signInWithGoogle(), AccountOutcome.upgraded);
+
+    expect(identity.calls, ['link:google']);
+    expect(session.accepted, [userA]);
+    final active = (await registry.read()).active;
+    expect(active.profileKey, ProfileRegistry.guestKey);
+    expect(active.kind, ProfileKind.registered);
+    expect(active.ownerRef, registry.ownerRefFor(userA));
+    expect(host.activated, isEmpty, reason: 'same database stays open');
+  });
+
+  test('AC-002 a Google failure leaves the guest untouched', () async {
+    final google = FakeGoogle();
+    service = build(google: google);
+    final before = await registry.read();
+    for (final (kind, expected) in [
+      (GoogleIdTokenFailure.unavailable, AccountFailureKind.googleUnavailable),
+      (
+        GoogleIdTokenFailure.misconfigured,
+        AccountFailureKind.googleUnavailable,
+      ),
+      (GoogleIdTokenFailure.failed, AccountFailureKind.rejected),
+    ]) {
+      google.failure = GoogleIdTokenException(kind);
+      await expectLater(
+        service.newFlow().signInWithGoogle(),
+        throwsA(isA<AccountFailure>().having((f) => f.kind, 'kind', expected)),
+      );
+    }
+
+    expect(identity.calls, isEmpty, reason: 'no server call');
+    expect(session.accepted, isEmpty);
+    expect(log.events, isEmpty);
+    final after = await registry.read();
+    expect(after.activeKey, before.activeKey);
+    expect(after.active.kind, ProfileKind.guest);
+  });
+
+  test('AC-001 a Google token the server refuses is a sign-in failure, not a '
+      'wrong code', () async {
+    service = build(google: FakeGoogle());
+    for (final status in [400, 401]) {
+      identity.refuse = problem(status, '/errors/unauthorized');
+      await expectLater(
+        service.newFlow().signInWithGoogle(),
+        throwsA(
+          isA<AccountFailure>().having(
+            (f) => f.kind,
+            'kind',
+            AccountFailureKind.rejected,
+          ),
+        ),
+      );
+    }
+    // Email keeps its own meaning for the same status.
+    final f = service.newFlow();
+    final challenge = await f.startEmail(canaryEmail);
+    await expectLater(
+      f.verifyEmail(challenge, '000000'),
+      throwsA(
+        isA<AccountFailure>().having(
+          (e) => e.kind,
+          'kind',
+          AccountFailureKind.invalidCode,
+        ),
+      ),
+    );
+    expect(session.accepted, isEmpty);
+  });
+
+  test('AC-004 sign-out completes when Google sign-out throws', () async {
+    final google = FakeGoogle()..signOutError = StateError('plugin fault');
+    service = build(google: google);
+    await flow().signInWithGoogle();
+
+    await service.signOut(SignOutChoice.keep);
+
+    expect(google.signOuts, 1);
+    expect(session.ended, 1);
+    expect((await registry.read()).active.readOnly, isTrue);
+  });
+
   test('Rule:09.4-no-content-logging failures, challenges and the registry '
       'carry no email, id or token', () async {
     identity.offline = true;
