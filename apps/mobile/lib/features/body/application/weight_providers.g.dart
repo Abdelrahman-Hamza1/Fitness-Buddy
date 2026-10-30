@@ -208,3 +208,49 @@ final class BodyWeightReaderProvider
 }
 
 String _$bodyWeightReaderHash() => r'6adc9973d4aa497ddb0ba06eeb0247a6c680df3e';
+
+/// [WeighInsReader] over the stored weigh-ins.
+
+@ProviderFor(weighInsReader)
+final weighInsReaderProvider = WeighInsReaderProvider._();
+
+/// [WeighInsReader] over the stored weigh-ins.
+
+final class WeighInsReaderProvider
+    extends $FunctionalProvider<WeighInsReader, WeighInsReader, WeighInsReader>
+    with $Provider<WeighInsReader> {
+  /// [WeighInsReader] over the stored weigh-ins.
+  WeighInsReaderProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'weighInsReaderProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$weighInsReaderHash();
+
+  @$internal
+  @override
+  $ProviderElement<WeighInsReader> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  WeighInsReader create(Ref ref) {
+    return weighInsReader(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(WeighInsReader value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<WeighInsReader>(value),
+    );
+  }
+}
+
+String _$weighInsReaderHash() => r'b6d958b9857e3e34ba38de3f062e05c1add0e8b8';

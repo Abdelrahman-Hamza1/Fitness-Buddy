@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fb_mobile/app/bootstrap/app_bootstrap.dart';
 import 'package:fb_mobile/core/catalog/catalog.dart';
+import 'package:fb_mobile/features/adaptive/adaptive.dart';
 import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -36,6 +37,8 @@ void main() {
         buddyThreadControllerProvider.overrideWith(
           () => _RecordingThread(calls),
         ),
+        // A38's weekly check-in reads the database; not this test's subject.
+        weeklyCheckInProvider.overrideWith((ref) async => CheckInRun.none),
       ],
     );
     final bootstrap = container.read(appBootstrapProvider);

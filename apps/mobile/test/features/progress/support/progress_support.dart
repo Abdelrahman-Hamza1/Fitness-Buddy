@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_domain/testing.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/features/adaptive/adaptive.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/progress/application/progress_providers.dart';
 import 'package:fb_mobile/features/progress/application/weight_graph_providers.dart';
@@ -114,6 +115,7 @@ List<WeighIn> progressWeighIns() {
 List<Override> progressOverrides({
   List<DayLog>? logs,
   bool Function()? failLogs,
+  Future<CheckInRun> Function()? checkIn,
 }) {
   final all = logs ?? progressLogs();
   return [
@@ -144,6 +146,25 @@ List<Override> progressOverrides({
             ],
     ),
     trainingShiftProvider.overrideWith((ref, range) async => null),
+    // A38: no check-in run or stored answers; the estimate reads [all].
+    weeklyCheckInProvider.overrideWith(
+      (ref) => checkIn?.call() ?? Future.value(CheckInRun.none),
+    ),
+    targetChangeRowsProvider.overrideWith((ref) => Stream.value(const [])),
+    dayIncompleteRowsProvider.overrideWith((ref) => Stream.value(const [])),
+    checkInModeProvider.overrideWith((ref) => Stream.value(CheckInMode.ask)),
+    adaptiveIntakeProvider.overrideWith(
+      (ref, range) async => [
+        for (final log in all)
+          if (!log.date.isBefore(range.$1) && !log.date.isAfter(range.$2))
+            IntakeDay(
+              date: log.date,
+              kcal: log.totals.kcal,
+              entryCount: log.entryCount,
+              incomplete: log.incomplete,
+            ),
+      ],
+    ),
     progressEarliestDateProvider.overrideWith(
       (ref) async => LocalDate(2026, 6, 1),
     ),

@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart' show Value;
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/changes/apply_result.dart';
 import 'package:fb_mobile/core/changes/op_handler.dart';
 import 'package:fb_mobile/core/changes/row_ops.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
@@ -12,7 +13,8 @@ String settingRowId(String key) => naturalId(settingEntity, key);
 
 /// Turns [SettingsOp]s into `settings_kv` writes (A01 D16): a put upserts
 /// the key's row (reviving it after a reset), a reset tombstones it. Both
-/// emit [SettingsChanged], also when undone.
+/// emit [SettingsChanged], also when undone. An expect writes nothing and
+/// rejects the change set when the stored value differs.
 final class SettingsOpHandler extends ChangeOpHandler<SettingsOp> {
   /// The handler, writing the settings [table] of the profile's database.
   const new(this.table);
@@ -41,6 +43,12 @@ final class SettingsOpHandler extends ChangeOpHandler<SettingsOp> {
           events: changed,
           revertEvents: changed,
         );
+      case SettingsExpect(:final valueJson):
+        final row = await tx.liveRow(table, id);
+        if (row?.valueJson != valueJson) {
+          throw const ChangeRejected(InvalidOp('settingChanged'));
+        }
+        return OpPlan(const []);
       case SettingsReset():
         final meta = await tx.meta(table, id);
         // Already at its default: nothing to write, nothing changed.

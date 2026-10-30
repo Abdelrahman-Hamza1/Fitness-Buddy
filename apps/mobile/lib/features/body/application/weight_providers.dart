@@ -41,3 +41,12 @@ BodyWeightReader bodyWeightReader(Ref ref) {
   return (date) async =>
       TrendWeight().compute(await repository.readLive()).trendOn(date);
 }
+
+/// Every live weigh-in, from one read (A38's weekly check-in runs outside
+/// any screen, like [bodyWeightReader]).
+typedef WeighInsReader = Future<List<WeighIn>> Function();
+
+/// [WeighInsReader] over the stored weigh-ins.
+@Riverpod(keepAlive: true)
+WeighInsReader weighInsReader(Ref ref) =>
+    ref.watch(weighInRepositoryProvider).readLive;

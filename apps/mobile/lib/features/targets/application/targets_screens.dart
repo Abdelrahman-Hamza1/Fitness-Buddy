@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/body/body.dart';
+import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/application/body_weight.dart';
 import 'package:fb_mobile/features/targets/application/setup_input.dart';
@@ -222,6 +223,7 @@ final class TargetsView {
     required this.calendar,
     required this.explanation,
     required this.trendKg,
+    this.adapted = false,
   });
 
   /// Today.
@@ -249,6 +251,10 @@ final class TargetsView {
   /// A14's trend weight today, or null.
   final double? trendKg;
 
+  /// Whether today's version is the one a weekly check-in wrote (A38 D4):
+  /// the base was adjusted to the user's results, not the formula's.
+  final bool adapted;
+
   /// The version in effect today.
   TargetSettingsRecord get version => day.version;
 
@@ -262,10 +268,12 @@ final class TargetsView {
 
   /// "Recalculate with your current weight" is offered (D5, D14): a
   /// generated version whose basis weight differs from the trend weight by
-  /// at least 0.1 kg.
+  /// at least 0.1 kg. Not for an [adapted] base: recalculating would throw
+  /// away what the check-ins learned (A38 D4).
   bool get recalculateOffered {
     final trend = usableWeight(trendKg);
     return !version.manual &&
+        !adapted &&
         trend != null &&
         (trend - version.basisWeightKg).abs() >= .05;
   }
@@ -313,6 +321,7 @@ Future<TargetsView?> targetsView(Ref ref) async {
   final unitsFuture = ref.watch(unitSystemProvider.future);
   final weekStartFuture = ref.watch(weekStartProvider.future);
   final trendFuture = ref.watch(bodyWeightProvider(today).future);
+  final adaptedFuture = ref.watch(adaptedVersionsProvider.future);
   final data = await dataFuture;
   final day = await dayFuture;
   final explanation = await explanationFuture;
@@ -332,5 +341,26 @@ Future<TargetsView?> targetsView(Ref ref) async {
     calendar: WeekCalendar(weekStart: weekStart),
     explanation: explanation,
     trendKg: trend,
+    adapted:
+        !day.version.manual &&
+        (await adaptedFuture).contains((day.version.id, day.version.revision)),
   );
 }
+
+/// The settings versions weekly check-ins wrote, as (ID, revision) (A38
+/// D4): from the confirmed `targetChange` rows. Live.
+@riverpod
+Stream<Set<(String, int)>> adaptedVersions(Ref ref) => ref
+    .watch(proposalRepositoryProvider)
+    .watchKind(targetChangeKind)
+    .map(
+      (rows) => {
+        for (final r in rows)
+          if (r.status == ProposalStatus.confirmed)
+            if (TargetChangeDraft.tryParse(r.draftJson) case TargetChangeDraft(
+              :final appliedVersionId?,
+              :final appliedRevision?,
+            ))
+              (appliedVersionId, appliedRevision),
+      },
+    );

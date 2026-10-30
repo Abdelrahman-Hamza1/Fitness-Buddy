@@ -11,6 +11,11 @@ sealed class SettingsOp implements ChangeOp {
   /// Set [key] back to its default (the row is tombstoned).
   factory reset(String key) = SettingsReset._;
 
+  /// Writes nothing: refuses the change set unless [key] is stored as
+  /// [valueJson] (A38: an automatic check-in rechecks its setting inside the
+  /// transaction).
+  factory expect(String key, String valueJson) = SettingsExpect._;
+
   new _(this.key) {
     if (!isKey(key)) {
       throw ArgumentError.value(
@@ -76,6 +81,26 @@ final class SettingsReset extends SettingsOp {
 
   @override
   String toString() => 'SettingsOp.reset($key)';
+}
+
+/// See [SettingsOp.expect].
+final class SettingsExpect extends SettingsOp {
+  new _(super.key, this.valueJson) : super._();
+
+  /// The value the stored row must hold, as JSON text.
+  final String valueJson;
+
+  @override
+  bool operator ==(Object other) =>
+      other is SettingsExpect &&
+      other.key == key &&
+      other.valueJson == valueJson;
+
+  @override
+  int get hashCode => Object.hash(SettingsExpect, key, valueJson);
+
+  @override
+  String toString() => 'SettingsOp.expect($key)';
 }
 
 /// Settings [keys] changed (put or reset).

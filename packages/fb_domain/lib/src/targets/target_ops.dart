@@ -112,3 +112,44 @@ final class PutTargetSettings extends TargetsOp {
   @override
   int get hashCode => Object.hash(PutTargetSettings, record, expectedVersion);
 }
+
+/// Writes nothing: refuses the whole change set (`InvalidOp('targetsChanged')`)
+/// unless the settings version in effect on the change set's day is
+/// [versionId] at domain [revision], and, with [generatedOnly], not the
+/// user's own target. Checked inside the applier's transaction, so a
+/// version that arrived by sync after a command read the targets can't be
+/// overridden (A38 review 1, 2).
+final class ExpectCurrentSettings extends TargetsOp {
+  /// Expects [versionId] at [revision].
+  new(this.versionId, this.revision, {this.generatedOnly = false})
+    : super._(null) {
+    if (!isUuidV7(versionId)) throw ArgumentError('version ID must be UUIDv7');
+    if (revision < 1) throw ArgumentError.value(revision, 'revision');
+  }
+
+  /// The version that must be in effect.
+  final String versionId;
+
+  /// Its domain revision.
+  final int revision;
+
+  /// Whether a manual (user's own) version is refused too.
+  final bool generatedOnly;
+
+  @override
+  TargetsPart get part => TargetsPart.settings;
+
+  @override
+  String get _kind => 'expectCurrentSettings';
+
+  @override
+  bool operator ==(Object other) =>
+      other is ExpectCurrentSettings &&
+      other.versionId == versionId &&
+      other.revision == revision &&
+      other.generatedOnly == generatedOnly;
+
+  @override
+  int get hashCode =>
+      Object.hash(ExpectCurrentSettings, versionId, revision, generatedOnly);
+}

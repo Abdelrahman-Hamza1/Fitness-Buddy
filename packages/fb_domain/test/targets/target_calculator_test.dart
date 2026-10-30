@@ -317,4 +317,27 @@ void main() {
       throwsArgumentError,
     );
   });
+
+  test('TG-030 TG-036 a learned expenditure replaces resting × activity; '
+      'the floor and the SF-011 cap stay', () {
+    final p = profile();
+    final learned = TargetCalculator.calculate(
+      profile: p,
+      goal: goal(GoalExpression.weekly(-.5)),
+      date: date,
+      expenditureKcal: 2600,
+    );
+    expect(learned.expenditureKcal, 2600);
+    expect(learned.restingKcal, 1750);
+    expect(learned.kcal, closeTo(2600 - .5 * 7700 / 7, 1e-9));
+    final floored = TargetCalculator.calculate(
+      profile: p,
+      goal: goal(GoalExpression.weekly(-1)),
+      date: date,
+      expenditureKcal: 1900,
+    );
+    expect(floored.kcal, floored.floorKcal);
+    expect(floored.warnings, contains(TargetWarning.lossRateCapped));
+    expect(floored.warnings, contains(TargetWarning.calorieFloorApplied));
+  });
 }

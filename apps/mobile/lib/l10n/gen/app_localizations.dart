@@ -8093,6 +8093,228 @@ abstract class AppLocalizations {
   /// **'Each name can have at most {max} characters'**
   String workoutCustomAliasTooLong(int max);
 
+  /// Progress: the expenditure card heading (IN-005).
+  ///
+  /// In en, this message translates to:
+  /// **'Expenditure'**
+  String get adaptiveTitle;
+
+  /// Progress: what the adaptive targets need (TG-031).
+  ///
+  /// In en, this message translates to:
+  /// **'Your targets adapt to your results once there\'s enough data: 14 days of logging and 3 weigh-ins over 10 days.'**
+  String get adaptiveIntro;
+
+  /// Progress: weigh-ins still needed before targets adapt (TG-031).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 more weigh-in until your targets can adapt} other{{count} more weigh-ins until your targets can adapt}}'**
+  String adaptiveWeighInsToGo(int count);
+
+  /// Progress: logged (complete) days still needed before targets adapt (TG-031).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Log 1 more day until your targets can adapt} other{Log {count} more days until your targets can adapt}}'**
+  String adaptiveDaysToGo(int count);
+
+  /// Progress: the weigh-ins must spread over 10 days; days still to go (TG-031).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Keep weighing in: 1 more day until your targets can adapt} other{Keep weighing in: {count} more days until your targets can adapt}}'**
+  String adaptiveSpanToGo(int count);
+
+  /// Progress: the estimated daily expenditure (TG-030).
+  ///
+  /// In en, this message translates to:
+  /// **'About {kcal} kcal a day'**
+  String adaptiveEstimate(int kcal);
+
+  /// Progress: the estimate's confidence (TG-033): little or noisy data.
+  ///
+  /// In en, this message translates to:
+  /// **'Low confidence'**
+  String get adaptiveConfidenceLow;
+
+  /// Progress: the estimate's confidence (TG-033).
+  ///
+  /// In en, this message translates to:
+  /// **'Medium confidence'**
+  String get adaptiveConfidenceMedium;
+
+  /// Progress: the estimate's confidence (TG-033): plenty of consistent data.
+  ///
+  /// In en, this message translates to:
+  /// **'High confidence'**
+  String get adaptiveConfidenceHigh;
+
+  /// Progress: how the expenditure is estimated (TG-030, TG-036).
+  ///
+  /// In en, this message translates to:
+  /// **'From what you logged and how your weight changed over the last 4 weeks. Exercise isn\'t added: it\'s already in your results.'**
+  String get adaptiveExplain;
+
+  /// Progress: what the expenditure chart shows, for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated expenditure per week with its likely range, latest {kcal} kcal a day'**
+  String adaptiveChartSemantics(int kcal);
+
+  /// Progress: the expenditure chart before any estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'The chart starts once your targets can adapt'**
+  String get adaptiveChartEmpty;
+
+  /// Progress: switch for the weekly check-in: off means each change is proposed first (TG-034).
+  ///
+  /// In en, this message translates to:
+  /// **'Apply weekly changes automatically'**
+  String get adaptiveAutomatic;
+
+  /// Progress: what the automatic check-in switch does (TG-034).
+  ///
+  /// In en, this message translates to:
+  /// **'Off: each week\'s change waits for you. On: it\'s applied, and you can change it back.'**
+  String get adaptiveAutomaticHint;
+
+  /// Progress: the weekly check-in card header (TG-034, AI-056).
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly check-in'**
+  String get checkInTitle;
+
+  /// Progress: the proposed target change, before → after (UX-026).
+  ///
+  /// In en, this message translates to:
+  /// **'{from} → {to} kcal a day'**
+  String checkInChange(int from, int to);
+
+  /// Progress: why the check-in proposes a change (TG-030, TG-035). confidence is e.g. 'medium confidence'.
+  ///
+  /// In en, this message translates to:
+  /// **'Your results suggest you use about {kcal} kcal a day ({confidence}). Changes are limited to 150 kcal a week.'**
+  String checkInWhy(int kcal, String confidence);
+
+  /// Progress: check-in button that keeps the current target (the proposal is discarded).
+  ///
+  /// In en, this message translates to:
+  /// **'Keep current'**
+  String get checkInKeep;
+
+  /// Progress: check-in button that applies the (adjusted) target.
+  ///
+  /// In en, this message translates to:
+  /// **'Use {kcal} kcal'**
+  String checkInUse(int kcal);
+
+  /// Progress: check-in adjust button (tooltip).
+  ///
+  /// In en, this message translates to:
+  /// **'Lower by 50 kcal'**
+  String get checkInLower;
+
+  /// Progress: check-in adjust button (tooltip).
+  ///
+  /// In en, this message translates to:
+  /// **'Raise by 50 kcal'**
+  String get checkInRaise;
+
+  /// Progress: the check-in was made against targets the user changed since.
+  ///
+  /// In en, this message translates to:
+  /// **'Your targets changed since this check-in, so it no longer applies.'**
+  String get checkInStale;
+
+  /// Progress: closes a check-in that no longer applies (keeps the current target).
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get checkInDismiss;
+
+  /// Progress: an automatic weekly check-in was applied (TG-034).
+  ///
+  /// In en, this message translates to:
+  /// **'Your target changed from {from} to {to} kcal a day, based on your results.'**
+  String checkInApplied(int from, int to);
+
+  /// Progress: restores the target an automatic check-in replaced. Undoable.
+  ///
+  /// In en, this message translates to:
+  /// **'Change back'**
+  String get checkInChangeBack;
+
+  /// Progress: hides the note about an automatic check-in.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get checkInGotIt;
+
+  /// Snackbar after accepting a weekly check-in, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Target updated'**
+  String get checkInAcceptedDone;
+
+  /// Snackbar after keeping the current target, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept your current target'**
+  String get checkInKeptDone;
+
+  /// Snackbar after changing an automatic check-in back, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Target changed back'**
+  String get checkInChangedBackDone;
+
+  /// Snackbar: the check-in no longer matches the targets.
+  ///
+  /// In en, this message translates to:
+  /// **'Your targets changed since. Nothing was saved.'**
+  String get checkInFailedStale;
+
+  /// Snackbar: the adjusted target is beyond ±150 kcal or below the safety floor (TG-035, SF-010).
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s outside what this check-in can change. Nothing was saved.'**
+  String get checkInFailedRange;
+
+  /// Snackbar: a check-in or suggestion command failed; nothing was written.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save this. Try again.'**
+  String get checkInFailed;
+
+  /// Progress: header of the incomplete-day suggestion (DY-004).
+  ///
+  /// In en, this message translates to:
+  /// **'Was this a full day?'**
+  String get incompleteDayTitle;
+
+  /// Progress: why a day looks incomplete (DY-004). date is e.g. 'Wed, Oct 28'.
+  ///
+  /// In en, this message translates to:
+  /// **'{date}: {kcal} kcal logged in {meals, plural, =1{1 meal} other{{meals} meals}}, under half of the day\'s target. Incomplete days are left out when your targets adapt.'**
+  String incompleteDayBody(String date, int kcal, int meals);
+
+  /// Progress: answers the suggestion; the day keeps counting. Undoable.
+  ///
+  /// In en, this message translates to:
+  /// **'It was complete'**
+  String get incompleteDayComplete;
+
+  /// Snackbar after answering that a day was complete, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'The day keeps counting'**
+  String get incompleteDayConfirmedDone;
+
+  /// Targets: the explanation when the weekly check-in changed the target (TG-030).
+  ///
+  /// In en, this message translates to:
+  /// **'Adjusted to your results: {kcal} kcal a day. The starting estimate below was {calculated} kcal a day.'**
+  String targetsAdjustedNote(int kcal, int calculated);
+
   /// Barcode scanner (A28a): screen title.
   ///
   /// In en, this message translates to:
@@ -8380,6 +8602,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Barcode scanning uses Google ML Kit on this phone. ML Kit doesn\'t send camera images or the barcodes it reads to Google; Google may receive an installation ID, device and app information, and diagnostics (developers.google.com/ml-kit/android-data-disclosure). To find a product, the barcode is sent to the Fitness Buddy server.'**
   String get aboutMlKitDisclosure;
+
+  /// Snackbar after turning on the automatic check-in, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly changes apply automatically'**
+  String get adaptiveAutomaticOn;
+
+  /// Snackbar after turning off the automatic check-in, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly changes wait for you'**
+  String get adaptiveAutomaticOff;
+
+  /// Progress: the automatic check-in waits because some logged days look like errors.
+  ///
+  /// In en, this message translates to:
+  /// **'Not applied automatically: some days look unusually high.'**
+  String get checkInHeldAnomaly;
+
+  /// Progress: the automatic check-in waits because the estimate is unsure (TG-033).
+  ///
+  /// In en, this message translates to:
+  /// **'Not applied automatically: the estimate\'s confidence is low.'**
+  String get checkInHeldLowConfidence;
+
+  /// Progress: days whose logged intake looks like an error. days is a list of dates, e.g. 'Wed, Oct 28'.
+  ///
+  /// In en, this message translates to:
+  /// **'Unusually high: {days}. If it\'s a mistake, fix the entry on that day; if it\'s right, confirm it.'**
+  String checkInAnomalyDays(String days);
+
+  /// Progress: confirms the unusually high days are correct. Undoable.
+  ///
+  /// In en, this message translates to:
+  /// **'They\'re right'**
+  String get checkInConfirmDays;
+
+  /// Snackbar after confirming unusually high days, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Days confirmed'**
+  String get checkInConfirmedDaysDone;
 }
 
 class _AppLocalizationsDelegate

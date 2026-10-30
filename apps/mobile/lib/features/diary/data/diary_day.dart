@@ -40,8 +40,11 @@ final class DiaryDay {
 
 /// The stored-precision totals of one day, from the range query (A06 D12).
 final class DailyTotals {
-  /// [date] has [entryCount] live entries adding up to [totals].
-  const new(this.date, this.totals, this.entryCount);
+  /// [date] has [entryCount] live entries in [mealCount] meals (distinct
+  /// slots; defaults to [entryCount], an upper bound) adding up to
+  /// [totals].
+  const new(this.date, this.totals, this.entryCount, {int? mealCount})
+    : mealCount = mealCount ?? entryCount;
 
   /// The day.
   final LocalDate date;
@@ -51,6 +54,10 @@ final class DailyTotals {
 
   /// How many live entries.
   final int entryCount;
+
+  /// How many meals (distinct slots) have them (DY-004's "fewer than 2
+  /// meals", A38 D3).
+  final int mealCount;
 
   @override
   String toString() => 'DailyTotals($date, $entryCount entries)';

@@ -361,14 +361,26 @@ class _HowCalculated extends ConsumerWidget {
               ),
               style: FbType.body.copyWith(color: scheme.onSurface),
             )
-          else
+          else ...[
+            if (view.adapted)
+              Text(
+                l10n.targetsAdjustedNote(
+                  DisplayRounding.kcal(version.baseKcal),
+                  DisplayRounding.kcal(explanation.calculated.kcal),
+                ),
+                key: const ValueKey('targets-adapted'),
+                style: FbType.body.copyWith(color: scheme.onSurface),
+              ),
             TargetExplanationView(
               calculation: explanation.calculated,
               activity: view.profile.activity,
               units: view.units,
-              weeklyKcal: view.day.day.week?.budgetKcal,
+              // The formula's own numbers only: the weekly budget follows
+              // the adjusted base.
+              weeklyKcal: view.adapted ? null : view.day.day.week?.budgetKcal,
               showGoal: explanation.goal != null,
             ),
+          ],
         ],
         if (view.recalculateOffered) ...[
           _Muted(

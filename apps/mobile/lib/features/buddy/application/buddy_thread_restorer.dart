@@ -72,8 +72,10 @@ final class BuddyThreadRestorer {
     final turns = <String, _TurnDraft>{};
     final orphans = <UnrestorableCard>[
       // No message refs (a synced row not made by chat): nowhere to show.
+      // Other kinds without refs belong elsewhere (A38's weekly check-in
+      // shows on Progress), not in the chat.
       for (final r in pending)
-        if (r.budgetMessageId == null)
+        if (r.budgetMessageId == null && r.kind == foodLogKind)
           UnrestorableCard(record: r, issue: ProposalIssue.invalidInput),
     ];
     var membership = const SessionMembership();

@@ -5631,6 +5631,221 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get adaptiveTitle => 'Expenditure';
+
+  @override
+  String get adaptiveIntro =>
+      'Your targets adapt to your results once there\'s enough data: 14 days of logging and 3 weigh-ins over 10 days.';
+
+  @override
+  String adaptiveWeighInsToGo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count more weigh-ins until your targets can adapt',
+      one: '1 more weigh-in until your targets can adapt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adaptiveDaysToGo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Log $count more days until your targets can adapt',
+      one: 'Log 1 more day until your targets can adapt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adaptiveSpanToGo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Keep weighing in: $count more days until your targets can adapt',
+      one: 'Keep weighing in: 1 more day until your targets can adapt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adaptiveEstimate(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'About $kcalString kcal a day';
+  }
+
+  @override
+  String get adaptiveConfidenceLow => 'Low confidence';
+
+  @override
+  String get adaptiveConfidenceMedium => 'Medium confidence';
+
+  @override
+  String get adaptiveConfidenceHigh => 'High confidence';
+
+  @override
+  String get adaptiveExplain =>
+      'From what you logged and how your weight changed over the last 4 weeks. Exercise isn\'t added: it\'s already in your results.';
+
+  @override
+  String adaptiveChartSemantics(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Estimated expenditure per week with its likely range, latest $kcalString kcal a day';
+  }
+
+  @override
+  String get adaptiveChartEmpty =>
+      'The chart starts once your targets can adapt';
+
+  @override
+  String get adaptiveAutomatic => 'Apply weekly changes automatically';
+
+  @override
+  String get adaptiveAutomaticHint =>
+      'Off: each week\'s change waits for you. On: it\'s applied, and you can change it back.';
+
+  @override
+  String get checkInTitle => 'Weekly check-in';
+
+  @override
+  String checkInChange(int from, int to) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+    final intl.NumberFormat toNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String toString = toNumberFormat.format(to);
+
+    return '$fromString → $toString kcal a day';
+  }
+
+  @override
+  String checkInWhy(int kcal, String confidence) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Your results suggest you use about $kcalString kcal a day ($confidence). Changes are limited to 150 kcal a week.';
+  }
+
+  @override
+  String get checkInKeep => 'Keep current';
+
+  @override
+  String checkInUse(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Use $kcalString kcal';
+  }
+
+  @override
+  String get checkInLower => 'Lower by 50 kcal';
+
+  @override
+  String get checkInRaise => 'Raise by 50 kcal';
+
+  @override
+  String get checkInStale =>
+      'Your targets changed since this check-in, so it no longer applies.';
+
+  @override
+  String get checkInDismiss => 'Dismiss';
+
+  @override
+  String checkInApplied(int from, int to) {
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+    final intl.NumberFormat toNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String toString = toNumberFormat.format(to);
+
+    return 'Your target changed from $fromString to $toString kcal a day, based on your results.';
+  }
+
+  @override
+  String get checkInChangeBack => 'Change back';
+
+  @override
+  String get checkInGotIt => 'OK';
+
+  @override
+  String get checkInAcceptedDone => 'Target updated';
+
+  @override
+  String get checkInKeptDone => 'Kept your current target';
+
+  @override
+  String get checkInChangedBackDone => 'Target changed back';
+
+  @override
+  String get checkInFailedStale =>
+      'Your targets changed since. Nothing was saved.';
+
+  @override
+  String get checkInFailedRange =>
+      'That\'s outside what this check-in can change. Nothing was saved.';
+
+  @override
+  String get checkInFailed => 'Couldn\'t save this. Try again.';
+
+  @override
+  String get incompleteDayTitle => 'Was this a full day?';
+
+  @override
+  String incompleteDayBody(String date, int kcal, int meals) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      meals,
+      locale: localeName,
+      other: '$meals meals',
+      one: '1 meal',
+    );
+    return '$date: $kcalString kcal logged in $_temp0, under half of the day\'s target. Incomplete days are left out when your targets adapt.';
+  }
+
+  @override
+  String get incompleteDayComplete => 'It was complete';
+
+  @override
+  String get incompleteDayConfirmedDone => 'The day keeps counting';
+
+  @override
+  String targetsAdjustedNote(int kcal, int calculated) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+    final intl.NumberFormat calculatedNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String calculatedString = calculatedNumberFormat.format(calculated);
+
+    return 'Adjusted to your results: $kcalString kcal a day. The starting estimate below was $calculatedString kcal a day.';
+  }
+
+  @override
   String get barcodeScanTitle => 'Scan a barcode';
 
   @override
@@ -5817,4 +6032,29 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get aboutMlKitDisclosure =>
       'Barcode scanning uses Google ML Kit on this phone. ML Kit doesn\'t send camera images or the barcodes it reads to Google; Google may receive an installation ID, device and app information, and diagnostics (developers.google.com/ml-kit/android-data-disclosure). To find a product, the barcode is sent to the Fitness Buddy server.';
+
+  @override
+  String get adaptiveAutomaticOn => 'Weekly changes apply automatically';
+
+  @override
+  String get adaptiveAutomaticOff => 'Weekly changes wait for you';
+
+  @override
+  String get checkInHeldAnomaly =>
+      'Not applied automatically: some days look unusually high.';
+
+  @override
+  String get checkInHeldLowConfidence =>
+      'Not applied automatically: the estimate\'s confidence is low.';
+
+  @override
+  String checkInAnomalyDays(String days) {
+    return 'Unusually high: $days. If it\'s a mistake, fix the entry on that day; if it\'s right, confirm it.';
+  }
+
+  @override
+  String get checkInConfirmDays => 'They\'re right';
+
+  @override
+  String get checkInConfirmedDaysDone => 'Days confirmed';
 }

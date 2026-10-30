@@ -42,12 +42,32 @@ final class TargetsOpHandler extends ChangeOpHandler<TargetsOp> {
       PutProfile() => await _profile(op, tx, context.today),
       PutGoalPhase() => await _goalPhase(op, tx, context.today),
       PutTargetSettings() => await _settings(op, tx, context.origin),
+      ExpectCurrentSettings() => await _expectCurrent(op, tx, context.today),
     };
     if (rows.isEmpty) return OpPlan(const []);
     final changed = [
       TargetsChanged({op.part}),
     ];
     return OpPlan(rows, events: changed, revertEvents: changed);
+  }
+
+  /// A38 review 1: the version in effect [today], read in the transaction.
+  Future<List<RowOp>> _expectCurrent(
+    ExpectCurrentSettings op,
+    TxReader tx,
+    LocalDate today,
+  ) async {
+    final current = TargetsTimeline.versionOn([
+      for (final row in await _live(tx, db.targetSettingsRows))
+        ?targetSettingsOf(row),
+    ], today);
+    if (current == null ||
+        current.id != op.versionId ||
+        current.revision != op.revision ||
+        (op.generatedOnly && current.manual)) {
+      throw const ChangeRejected(InvalidOp('targetsChanged'));
+    }
+    return const [];
   }
 
   Future<List<RowOp>> _profile(

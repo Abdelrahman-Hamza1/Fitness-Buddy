@@ -26,16 +26,30 @@ final class ProposalRepository {
   Future<List<ProposalRecord>> byBudgetMessage(String messageId) async =>
       _read(await _live((t) => t.budgetMessageId.equals(messageId)).get());
 
-  /// Every live pending card, oldest first (restore, the pending strip).
-  Future<List<ProposalRecord>> pending() async => _read(await _pending().get());
+  /// Every live pending card, oldest first (restore, the pending strip);
+  /// with [kind], only that kind.
+  Future<List<ProposalRecord>> pending({String? kind}) async =>
+      _read(await _pending(kind).get());
 
   /// [pending], re-emitted on every change.
-  Stream<List<ProposalRecord>> watchPending() => _pending().watch().map(_read);
+  Stream<List<ProposalRecord>> watchPending({String? kind}) =>
+      _pending(kind).watch().map(_read);
+
+  /// Every live row of [kind], any status, oldest first (A38: the weekly
+  /// check-ins and the answered incomplete-day suggestions), re-emitted on
+  /// every change.
+  Stream<List<ProposalRecord>> watchKind(String kind) =>
+      _live((t) => t.kind.equals(kind)).watch().map(_read);
+
+  /// [watchKind] once.
+  Future<List<ProposalRecord>> byKind(String kind) async =>
+      _read(await _live((t) => t.kind.equals(kind)).get());
 
   /// The live confirmed and discarded cards resolved at or after [since]
   /// (all of them without it), oldest resolution first: A26's learning
-  /// source. Pending and superseded cards are never returned (`06` §5).
-  Future<List<ProposalRecord>> resolved({DateTime? since}) async {
+  /// source (pass `kind: foodLogKind`: A38 writes other kinds). Pending and
+  /// superseded cards are never returned (`06` §5).
+  Future<List<ProposalRecord>> resolved({DateTime? since, String? kind}) async {
     final query = _db.select(_db.proposals)
       ..where(
         (t) =>
@@ -48,7 +62,8 @@ final class ProposalRepository {
                 ? const Constant(true)
                 : t.resolvedAt.isBiggerOrEqualValue(
                     since.toUtc().millisecondsSinceEpoch,
-                  )),
+                  )) &
+            (kind == null ? const Constant(true) : t.kind.equals(kind)),
       )
       ..orderBy([
         (t) => OrderingTerm(expression: t.resolvedAt),
@@ -57,8 +72,12 @@ final class ProposalRepository {
     return _read(await query.get());
   }
 
-  SimpleSelectStatement<$ProposalsTable, ProposalRow> _pending() =>
-      _live((t) => t.status.equals(ProposalStatus.pending.code));
+  SimpleSelectStatement<$ProposalsTable, ProposalRow> _pending(String? kind) =>
+      _live(
+        (t) =>
+            t.status.equals(ProposalStatus.pending.code) &
+            (kind == null ? const Constant(true) : t.kind.equals(kind)),
+      );
 
   SimpleSelectStatement<$ProposalsTable, ProposalRow> _live(
     Expression<bool> Function($ProposalsTable t) filter,

@@ -1,6 +1,7 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/features/adaptive/adaptive.dart';
 import 'package:fb_mobile/features/progress/application/progress_providers.dart';
 import 'package:fb_mobile/features/progress/presentation/calories_section.dart';
 import 'package:fb_mobile/features/progress/presentation/goal_progress_card.dart';
@@ -16,8 +17,10 @@ import 'package:material_ui/material_ui.dart';
 /// The Progress tab (UX-010, IN-002–IN-009, SC-5): opens on this week. An
 /// ordered list of sections (A16 D13): the current-week card → the period
 /// selector → calories (+ the selected bar's details) → macros → weight →
-/// goal progress → Measurements → exercise progress (A37c) → [A38: the
-/// expenditure chart]. Later steps add one entry. Local data only: no
+/// goal progress → Measurements → exercise progress (A37c) → the
+/// expenditure card (A38). This week's check-in and the incomplete-day
+/// suggestion (A38, until A39a's weekly summary) sit under the week card
+/// when there is one. Later steps add one entry. Local data only: no
 /// spinner beyond skeleton cards, errors inline with Try again (UX-050–052).
 /// No streaks, scores or micronutrients (IN-020, IN-021).
 class ProgressScreen extends ConsumerStatefulWidget {
@@ -36,8 +39,18 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
     super.initState();
     // Back from the background the day (or the zone) may have changed.
     _lifecycle = AppLifecycleListener(
-      onResume: () => ref.invalidate(todayProvider),
+      onResume: () {
+        ref
+          ..invalidate(todayProvider)
+          ..invalidate(weeklyCheckInProvider);
+      },
     );
+    // Opening Progress retries a check-in skipped earlier (data synced or
+    // logged since); the run is serialized and once a week (A38 review 7).
+    // After the first frame: a provider can't be invalidated mid-build.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.invalidate(weeklyCheckInProvider);
+    });
   }
 
   @override
@@ -50,6 +63,14 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final view = ref.watch(progressViewProvider);
+    // This week's check-in (A38 D4): local, once a week, never awaited;
+    // retried whenever the user comes back to this tab (the indexed stack
+    // keeps this screen; A38 review round 2).
+    ref
+      ..listen(weeklyCheckInProvider, (_, _) {})
+      ..listen(tabActivationProvider, (_, next) {
+        if (next?.tab == AppTab.progress) ref.invalidate(weeklyCheckInProvider);
+      });
     const gap = SizedBox(height: FbDensity.cardGap);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.tabProgress)),
@@ -66,6 +87,8 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
           children: [
             const ProgressWeekHeader(),
             gap,
+            const CheckInCard(),
+            const IncompleteDayCard(),
             ...switch (view) {
               AsyncData(:final value) => [
                 ProgressPeriodBar(view: value),
@@ -119,6 +142,8 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
                     .push(const ProgressExercisesRoute()),
               ),
             ),
+            gap,
+            const ExpenditureCard(),
           ],
         ),
       ),

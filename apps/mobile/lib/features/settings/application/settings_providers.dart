@@ -24,6 +24,11 @@ Stream<DayOfWeek> weekStart(Ref ref) =>
 Stream<double?> trainingDayWeight(Ref ref) =>
     ref.watch(settingsStoreProvider).watch(AppSettings.trainingDayWeight);
 
+/// Ask or apply the weekly check-in automatically (TG-034).
+@riverpod
+Stream<CheckInMode> checkInMode(Ref ref) =>
+    ref.watch(settingsStoreProvider).watch(AppSettings.checkInMode);
+
 /// One shared calendar for future weekly views.
 @riverpod
 WeekCalendar weekCalendar(Ref ref) => WeekCalendar(

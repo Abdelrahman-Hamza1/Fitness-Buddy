@@ -9,6 +9,7 @@ import 'package:fb_mobile/core/errors/error_reporting.dart';
 import 'package:fb_mobile/core/export/export_providers.dart';
 import 'package:fb_mobile/core/session/session_providers.dart';
 import 'package:fb_mobile/core/session/session_state.dart';
+import 'package:fb_mobile/features/adaptive/adaptive.dart';
 import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
     show ProviderSubscription;
@@ -21,7 +22,8 @@ part 'app_bootstrap.g.dart';
 /// then the background pack update (A24),
 /// public `/v1/config` refresh, API session startup (A20 D9) and, once the
 /// catalog is attached and any account transition recovered, Buddy's
-/// pending cards read back (A23 D12).
+/// pending cards read back (A23 D12) and this week's adaptive check-in
+/// (A38 D4, local only).
 ///
 /// The app widget (`FitnessBuddyApp`) calls [afterFirstFrame] from a
 /// post-frame callback; nothing awaits it, so the UI never waits for the
@@ -129,6 +131,15 @@ final class AppBootstrap {
         await _ref
             .read(buddyThreadControllerProvider.notifier)
             .ensureRestored(_ref.read(profileGenerationProvider));
+      }),
+    );
+    // A38 D4: this week's check-in, against the recovered profile, and
+    // again whenever the day changes (a new week may start while the app
+    // stays open); local reads and one change set, never the network.
+    unawaited(
+      _contained(() async {
+        await recovered;
+        if (_ref.mounted) _ref.listen(weeklyCheckInProvider, (_, _) {});
       }),
     );
   }

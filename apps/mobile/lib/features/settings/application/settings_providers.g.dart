@@ -128,6 +128,50 @@ final class TrainingDayWeightProvider
 
 String _$trainingDayWeightHash() => r'8ae477ec2985d9cdbdcca93b4cd7184dc736aa78';
 
+/// Ask or apply the weekly check-in automatically (TG-034).
+
+@ProviderFor(checkInMode)
+final checkInModeProvider = CheckInModeProvider._();
+
+/// Ask or apply the weekly check-in automatically (TG-034).
+
+final class CheckInModeProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<CheckInMode>,
+          CheckInMode,
+          Stream<CheckInMode>
+        >
+    with $FutureModifier<CheckInMode>, $StreamProvider<CheckInMode> {
+  /// Ask or apply the weekly check-in automatically (TG-034).
+  CheckInModeProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'checkInModeProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$checkInModeHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<CheckInMode> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<CheckInMode> create(Ref ref) {
+    return checkInMode(ref);
+  }
+}
+
+String _$checkInModeHash() => r'82dd2f71e6cdd9efdb80996d828865f3efb8647c';
+
 /// One shared calendar for future weekly views.
 
 @ProviderFor(weekCalendar)

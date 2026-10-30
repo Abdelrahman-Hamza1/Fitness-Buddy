@@ -62,6 +62,18 @@ class TabReselectNotifier extends _$TabReselectNotifier {
   void fire(AppTab tab) => state = TabReselect(tab, (state?.serial ?? 0) + 1);
 }
 
+/// The latest switch to a tab from another tab (A38 review round 2): the
+/// router fires it; a screen the indexed stack keeps alive (Progress)
+/// refreshes on its own tab. [TabReselect.serial] counts the switches.
+@Riverpod(keepAlive: true)
+class TabActivationNotifier extends _$TabActivationNotifier {
+  @override
+  TabReselect? build() => null;
+
+  /// Reports a switch to [tab].
+  void fire(AppTab tab) => state = TabReselect(tab, (state?.serial ?? 0) + 1);
+}
+
 /// Scrolls a tab's main list to the top when its tab is tapped again while
 /// it shows its root screen (UX-010, A45 D13).
 ///

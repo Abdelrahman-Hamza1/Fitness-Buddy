@@ -425,6 +425,27 @@ void main() {
     },
   );
 
+  test('A38 a weekly check-in row (no message refs, another kind) is not '
+      'a chat orphan', () async {
+    final (h, _) = await _personal();
+    final checkIn = h.ids.next();
+    await h.applier.apply(
+      ChangeSet([
+        CreateProposal(
+          checkIn,
+          const ProposalRowDraft(
+            kind: targetChangeKind,
+            codecVersion: adaptiveDraftCodecVersion,
+            draftJson: '{}',
+          ),
+        ),
+      ], origin: Origin.system),
+    );
+    final restored = await _restart(h);
+    expect(restored.turns.single.cards, hasLength(2));
+    expect(restored.orphans, isEmpty);
+  });
+
   // rule: A23 placeholder-answer
   test('A23 discarding the last unrestorable card of a message clears its '
       'answer', () async {

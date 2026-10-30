@@ -53,6 +53,7 @@ final class AppRouter implements AppNavigator {
     required ValueListenable<bool> updateRequired,
     bool designPreview = false,
     this.onReselect,
+    this.onActivate,
     this.unsavedEdits,
   }) : assert(tabs.length == AppTab.values.length, 'one AppTab per tab') {
     config = _createConfig(updateRequired, designPreview: designPreview);
@@ -60,6 +61,10 @@ final class AppRouter implements AppNavigator {
 
   /// Called with the tab tapped again while it shows its root screen.
   final ValueChanged<AppTab>? onReselect;
+
+  /// Called with a tab the user switches to from another tab (screens kept
+  /// by the indexed stack refresh on it, e.g. A38's check-in retry).
+  final ValueChanged<AppTab>? onActivate;
 
   /// The screens holding unsaved edits, by navigator.
   final UnsavedEdits? unsavedEdits;
@@ -181,6 +186,7 @@ final class AppRouter implements AppNavigator {
       atRoot: !(navigator?.canPop() ?? false),
       holdsEdits: unsavedEdits?.holds(navigator) ?? false,
     );
+    if (index != shell.currentIndex) onActivate?.call(AppTab.values[index]);
     switch (action) {
       case TabTapAction.goRoot:
         shell.goBranch(index, initialLocation: true);
@@ -583,6 +589,7 @@ AppRouter appRouter(Ref ref) {
     // The design preview exists in the dev flavor only (A02 D15).
     designPreview: ref.read(appConfigProvider).flavor == AppFlavor.dev,
     onReselect: ref.read(tabReselectProvider.notifier).fire,
+    onActivate: ref.read(tabActivationProvider.notifier).fire,
     unsavedEdits: ref.read(unsavedEditsProvider),
   );
   ref.onDispose(() {

@@ -94,6 +94,10 @@ final class SettingsActions {
   Future<SettingsOutcome> setTheme(ThemePreference value) =>
       _set(AppSettings.theme, value);
 
+  /// Ask, or apply the weekly check-in automatically (TG-034).
+  Future<SettingsOutcome> setCheckInMode(CheckInMode value) =>
+      _set(AppSettings.checkInMode, value);
+
   /// Set a validated city identity.
   Future<SettingsOutcome> setCity(String value) => AppSettings.isCityId(value)
       ? _set(AppSettings.cityId, value)

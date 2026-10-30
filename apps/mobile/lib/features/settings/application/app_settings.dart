@@ -13,6 +13,16 @@ enum ThemePreference {
   dark,
 }
 
+/// How the weekly adaptive check-in changes targets (TG-034, A38 D3).
+/// Stored enum names are permanent synced values.
+enum CheckInMode {
+  /// Propose the change; the user accepts, adjusts or keeps (default).
+  ask,
+
+  /// Apply it through the single writer; Progress offers Change back.
+  automatic,
+}
+
 /// Permanent key names participate in UUIDv5 row identities (A10 D2).
 abstract final class AppSettings {
   /// LC-010 display preference.
@@ -73,6 +83,13 @@ abstract final class AppSettings {
     defaultValue: null,
   );
 
+  /// TG-034: ask (default) or apply the weekly check-in automatically.
+  static final SettingKey<CheckInMode> checkInMode = SettingKey.enumeration(
+    'targets.checkInMode',
+    CheckInMode.values,
+    defaultValue: CheckInMode.ask,
+  );
+
   /// Complete setting vocabulary for export's natural-id reverse lookup.
   static final List<SettingKey<Object?>> all = [
     unitSystem,
@@ -81,6 +98,7 @@ abstract final class AppSettings {
     theme,
     cityId,
     trainingDayWeight,
+    checkInMode,
   ];
 
   /// Accepted GeoNames identity format, without including input in errors.

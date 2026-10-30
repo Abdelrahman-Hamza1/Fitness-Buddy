@@ -146,4 +146,53 @@ final class TargetsViewProvider
   }
 }
 
-String _$targetsViewHash() => r'975a4384d8bc8532a407b865227ef52200685dca';
+String _$targetsViewHash() => r'd764fd72d2445867412ebf495e3ff4550fd19bea';
+
+/// The settings versions weekly check-ins wrote, as (ID, revision) (A38
+/// D4): from the confirmed `targetChange` rows. Live.
+
+@ProviderFor(adaptedVersions)
+final adaptedVersionsProvider = AdaptedVersionsProvider._();
+
+/// The settings versions weekly check-ins wrote, as (ID, revision) (A38
+/// D4): from the confirmed `targetChange` rows. Live.
+
+final class AdaptedVersionsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Set<(String, int)>>,
+          Set<(String, int)>,
+          Stream<Set<(String, int)>>
+        >
+    with
+        $FutureModifier<Set<(String, int)>>,
+        $StreamProvider<Set<(String, int)>> {
+  /// The settings versions weekly check-ins wrote, as (ID, revision) (A38
+  /// D4): from the confirmed `targetChange` rows. Live.
+  AdaptedVersionsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'adaptedVersionsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$adaptedVersionsHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<Set<(String, int)>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<Set<(String, int)>> create(Ref ref) {
+    return adaptedVersions(ref);
+  }
+}
+
+String _$adaptedVersionsHash() => r'bc8b8db77977d035d05776664ee4fad3fb43e327';

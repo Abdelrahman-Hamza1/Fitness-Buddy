@@ -21,13 +21,18 @@ void main() {
       expect(reset, isNot(put));
     });
 
-    test('SettingsOp is exhaustive over put and reset', () {
+    test('SettingsOp is exhaustive over put, reset and expect', () {
       String describe(SettingsOp op) => switch (op) {
         SettingsPut(:final key, :final valueJson) => 'put $key=$valueJson',
         SettingsReset(:final key) => 'reset $key',
+        SettingsExpect(:final key, :final valueJson) =>
+          'expect $key=$valueJson',
       };
       expect(describe(SettingsOp.put('a.b', '1')), 'put a.b=1');
       expect(describe(SettingsOp.reset('a.b')), 'reset a.b');
+      expect(describe(SettingsOp.expect('a.b', '1')), 'expect a.b=1');
+      expect(SettingsOp.expect('a.b', '1'), SettingsOp.expect('a.b', '1'));
+      expect('${SettingsOp.expect('a.b', '"x"')}', isNot(contains('x"')));
     });
 
     test('toString names the key, never the value', () {

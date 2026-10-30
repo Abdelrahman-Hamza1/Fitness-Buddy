@@ -34,7 +34,8 @@ final class DiaryReads {
   static const String dailyTotalsSql =
       'SELECT local_date, SUM(kcal) AS kcal, SUM(protein_g) AS protein_g, '
       'SUM(carbs_g) AS carbs_g, SUM(fat_g) AS fat_g, SUM(fiber_g) AS fiber_g, '
-      'COUNT(*) AS n FROM diary_entries WHERE local_date BETWEEN ? AND ? '
+      'COUNT(*) AS n, COUNT(DISTINCT slot_id) AS meals '
+      'FROM diary_entries WHERE local_date BETWEEN ? AND ? '
       'AND deleted_at IS NULL GROUP BY local_date ORDER BY local_date';
 
   /// The SQL of [firstDiaryDate]: the earlier of the first live entry and
@@ -152,6 +153,7 @@ final class DiaryReads {
             fiber: row.read<double>('fiber_g'),
           ).rounded(),
           row.read<int>('n'),
+          mealCount: row.read<int>('meals'),
         ),
     ];
   }

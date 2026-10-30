@@ -38,18 +38,24 @@ abstract final class TargetCalculator {
 
   /// Builds typed numeric explanation fields. Below-limit manual targets
   /// require acknowledgement; WeeklyBudget never accepts a below-floor base.
+  ///
+  /// [expenditureKcal] replaces the formula's resting energy × activity
+  /// with an estimate learned from intake and weight (TG-030, A38 D2); the
+  /// floor, the SF-011 cap and the goal energy stay the same. Exercise is
+  /// never added (TG-036).
   static TargetCalculation calculate({
     required TargetProfile profile,
     required ResolvedGoal goal,
     required LocalDate date,
     double? manualKcal,
     bool acknowledged = false,
+    double? expenditureKcal,
     TargetDefaults defaults = const TargetDefaults(),
   }) {
     final restingKcal = resting(profile, date);
     final floor = TargetCalculator.floor(profile, date, defaults: defaults);
     final factor = defaults.activityFactor(profile.activity);
-    final expenditure = restingKcal * factor;
+    final expenditure = expenditureKcal ?? restingKcal * factor;
     // An impossible formula profile must not produce negative expenditure.
     checkTargetNumber(expenditure);
     final maxLoss = profile.weightKg * defaults.maxLossFraction;

@@ -211,6 +211,8 @@ void main() {
       (_day, 2),
       (LocalDate(2026, 10, 18), 1),
     ]);
+    // Two entries in one meal: one meal (A38 D3, DY-004).
+    expect(totals.map((t) => t.mealCount), [1, 1]);
     final expected = DiaryTotals.day(entries);
     final actual = totals.first.totals;
     expect(actual.kcal, expected.kcal);

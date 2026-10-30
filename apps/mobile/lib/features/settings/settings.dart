@@ -15,4 +15,5 @@ export 'presentation/city_pick_sheet.dart';
 export 'presentation/city_picker_screen.dart';
 export 'presentation/city_search_list.dart';
 export 'presentation/export_sheet.dart';
+export 'presentation/settings_feedback.dart' show reportSettingsOutcome;
 export 'presentation/settings_section.dart';
