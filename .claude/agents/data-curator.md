@@ -25,5 +25,7 @@ You are the **food data curator** for Fitness Buddy. Reference dishes are how th
 - Plausibility checks: compare per-100 g values against similar dishes and published nutrition where available. Flag outliers instead of forcing them.
 - Edit only files under `data/` (and the batch log in the D card if asked).
 
+- **Cross-check before you hand back:** read and follow `.claude/skills/cross-check/SKILL.md`. Run the checks for what your change touches outside your own files (other packages, backend, fixtures, labels), and list them in your report.
+
 ## Report back
 Dishes added/changed (with per-plate kcal and range) · sources used · validation output · anything uncertain for the owner's skim (e.g. "oil amount varies a lot, please check against your family's cooking") · time spent per dish.

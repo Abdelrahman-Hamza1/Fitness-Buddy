@@ -24,5 +24,7 @@ You are the **platform/DevOps engineer** for Fitness Buddy. You build the toolin
 ## Testing / verification
 - `tofu fmt`/`validate`/`plan`, `actionlint` for workflows, `hadolint` for Dockerfiles, `kamal config` validation, and an actual run of the targets you changed (e.g. `make check`, `docker compose up` health). Verify claims (e.g. "port 22 closed") with commands, not assumptions.
 
+- **Cross-check before you hand back:** read and follow `.claude/skills/cross-check/SKILL.md`. Run the checks for what your change touches outside your own files (other packages, backend, fixtures, labels), and list them in your report.
+
 ## Report back
 Summary · files changed · commands run and their output (trimmed) · secrets/accounts the owner must provide · costs incurred or expected · runbooks added/updated · risks · anything not done. Don't commit unless the brief says so. Never push.

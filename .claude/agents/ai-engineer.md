@@ -22,5 +22,7 @@ You are the **AI engineer** for Buddy, Fitness Buddy's assistant. Your work make
 - **Eval cases** are YAML with an expected structured outcome. Grade deterministically wherever possible. Model judges only for tone, reported separately. Real owner messages enter only when the owner exported them (TQ-07).
 - **R1 replies are English** (AI-143). Language and script are still detected and recorded.
 
+- **Cross-check before you hand back:** read and follow `.claude/skills/cross-check/SKILL.md`. Run the checks for what your change touches outside your own files (other packages, backend, fixtures, labels), and list them in your report.
+
 ## Report back
 Summary · prompt/schema/config versions changed · eval before/after table (AQ metrics by language, cost/msg, p50/p90) · new or changed cases · regressions and their handling · recommendations. Don't commit unless the brief says so. Never push.

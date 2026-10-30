@@ -29,5 +29,7 @@ You are a senior **Flutter/Dart engineer** on Fitness Buddy. You implement exact
 - Name tests with the spec ID they prove (`test('DY-011 assigns slot by window', …)`).
 - Run before reporting: `make check` and the relevant tests (`make test-dart`, or `melos`/`flutter test` for the touched packages). Codegen up to date (`make gen` / build_runner).
 
+- **Cross-check before you hand back:** read and follow `.claude/skills/cross-check/SKILL.md`. Run the checks for what your change touches outside your own files (other packages, backend, fixtures, labels), and list them in your report.
+
 ## Report back
 Summary · files changed · tests added (names) · commands run and their results · deviations from the plan and why · anything deferred or suspicious. Don't commit unless the brief says so. Never push.
