@@ -67,6 +67,60 @@ final Map<String, Widget Function()> _states = {
   },
 };
 
+/// A23 D13: a reopened card whose food facts can't be verified any more.
+BuddyCard _stale() {
+  final s = f.session(f.message());
+  final restored = ProposalDraftCodec.restore(
+    ProposalDraftCodec.encodeMessageBudget(s),
+    [ProposalDraftCodec.encodeCard(s, s.cards.single.id)],
+    context: f.context(),
+    trustedFacts: TrustedFoodFacts(),
+  ).value!;
+  return BuddyCard(id: restored.cards.single.id, session: restored);
+}
+
+/// A23 D15: a card whose stored draft is over the sync bound (a removed
+/// item with a very long name still counts), shown with its note.
+BuddyCard _tooLarge() {
+  final s = f.session(
+    f.message([
+      f.intent([
+        f.item(),
+        f.item(match: f.food(key: 'usda:long')..['nameEn'] = 'x' * 33000),
+      ]),
+    ]),
+  );
+  final long = s.cards.single.lines.last.entry.id;
+  final shown = ProposalEngine.recompute(
+    s,
+    ProposalSetRemoved(long, removed: true),
+  ).value!.session;
+  return BuddyCard(id: shown.cards.single.id, session: shown);
+}
+
+/// The A23 recovery states (D13, D15).
+final Map<String, Widget Function()> _recovery = {
+  'food details changed': () => FoodProposalCard(
+    view: FoodCardView.of(_stale(), turnAnswer: f.message()),
+  ),
+  'could not reopen': () => UnrestorableCardRow(
+    card: UnrestorableCard(
+      record: ProposalRecord(
+        id: '019a1b2c-0000-7000-8000-000000000001',
+        version: 1,
+        createdAt: DateTime.utc(2026, 10, 30),
+        kind: 'foodLog',
+        status: ProposalStatus.pending,
+        codecVersion: 99,
+        draftJson: '{}',
+      ),
+      issue: ProposalIssue.unsupportedCodecVersion,
+    ),
+  ),
+  'too large to sync': () =>
+      FoodProposalCard(view: FoodCardView.of(_tooLarge())),
+};
+
 /// Metric units and the four default meals.
 final List<Override> _overrides = [
   unitSystemProvider.overrideWith((ref) => Stream.value(UnitSystem.metric)),
@@ -101,9 +155,21 @@ Widget _cell(Widget card, Brightness brightness, double scale) => SizedBox(
 );
 
 Future<void> main() async {
-  for (final MapEntry(key: state, value: card) in _states.entries) {
+  for (final (prefix, states) in [
+    ('AI-030 AI-032 AI-034 AI-035 A22', _states),
+    ('A23', _recovery),
+  ]) {
+    await _goldens(prefix, states);
+  }
+}
+
+Future<void> _goldens(
+  String prefix,
+  Map<String, Widget Function()> states,
+) async {
+  for (final MapEntry(key: state, value: card) in states.entries) {
     await goldenTest(
-      'AI-030 AI-032 AI-034 AI-035 A22 food card: $state',
+      '$prefix food card: $state',
       fileName: 'food_card_${state.replaceAll(' ', '_')}',
       builder: () => GoldenTestGroup(
         columns: 4,

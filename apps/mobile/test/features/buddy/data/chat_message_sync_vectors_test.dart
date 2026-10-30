@@ -68,6 +68,22 @@ void main() {
       }
       final original = payload! as Map<String, Object?>;
       final row = _read(payload, n, deleted: deleted);
+      // A23 D16: a tombstone that still holds content is refused on push
+      // (the delete op owns scrubbing), never leaked or fixed here.
+      if (deleted &&
+          (original['text'] != '' || original['budgetJson'] != null)) {
+        expect(
+          () => chatMessageSyncPayload(row),
+          throwsA(isA<ChatMessageMappingError>()),
+          reason: id,
+        );
+        if (accepted) {
+          await runAuthorizedWrite(() => db.into(db.chatMessages).insert(row));
+          stored++;
+        }
+        read++;
+        continue;
+      }
       final back = chatMessageSyncPayload(row);
       expect(back.keys.toList(), chatMessageSyncKeys, reason: id);
       // Value-exact (a whole `1.0` comes back as the integer `1`) and

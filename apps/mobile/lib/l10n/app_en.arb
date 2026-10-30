@@ -825,13 +825,33 @@
   "@proposalUndo": {
     "description": "Undoes a logged proposal card (AI-035)."
   },
-  "proposalUndone": "Undone. Type it again or search to log it.",
-  "@proposalUndone": {
-    "description": "A logged card after Undo: read-only (A22 D25)."
-  },
   "proposalDiscarded": "Discarded. Nothing was logged.",
   "@proposalDiscarded": {
     "description": "A discarded proposal card (AI-037)."
+  },
+  "proposalSuperseded": "No longer current. Nothing was logged.",
+  "@proposalSuperseded": {
+    "description": "A historical proposal card another phone replaced; read-only (A23 D13)."
+  },
+  "proposalFactsChanged": "Food details changed since.",
+  "@proposalFactsChanged": {
+    "description": "A reopened proposal card whose food details changed since it was made; it can't be logged as it is (A23 D13)."
+  },
+  "proposalUpdateCard": "Update card",
+  "@proposalUpdateCard": {
+    "description": "Button on a reopened card whose food details changed: rebuild it with the current details (A23 D13)."
+  },
+  "proposalUnrestorable": "This card couldn't be reopened.",
+  "@proposalUnrestorable": {
+    "description": "Placeholder for a saved proposal card that can't be shown any more; it can be discarded (A23 D13)."
+  },
+  "proposalTooLargeToSync": "Too large to sync to your other phones. It stays on this phone.",
+  "@proposalTooLargeToSync": {
+    "description": "Note on a proposal card too large to sync to the user's other phones; it is kept on this phone and works as usual (A23 D15)."
+  },
+  "buddyCardUpdatedNote": "I updated this card with your current food details.",
+  "@buddyCardUpdatedNote": {
+    "description": "Note under a proposal card Buddy rebuilt with the current food details (A23 D11)."
   },
   "proposalCouldNotLog": "Couldn't log this card.",
   "@proposalCouldNotLog": {

@@ -111,10 +111,33 @@ The Buddy chat transcript (A22): what you typed and Buddy's replies.
 | `chat-messages.reply_to_message_id` | text | On a Buddy reply, the id of the message it answers; else null. |
 | `chat-messages.codec_version` | integer | Version of the `budget_json` format, or null. |
 | `chat-messages.budget_json` | JSON value | On a Buddy reply, the open questions of its proposal cards (ids and counts only), or null. |
+| `chat-messages.request_json` | JSON value | On your message while it waits to be processed, the request saved for sending it; null once it's done or failed. Kept on this phone only (never synced). User content. |
+| `chat-messages.answer_json` | JSON value | On a Buddy reply with cards still waiting, Buddy's answer, kept so a card can be updated offline; null once no card of it waits. Kept on this phone only (never synced). User content. |
 | `chat-messages.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
 | `chat-messages.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
 | `chat-messages.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
 | `chat-messages.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
+## proposals (`proposal`, `proposals`)
+
+Buddy's cards (A23): one per meal, waiting for you or already logged or discarded. A waiting card never counts in your totals.
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `proposals.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `proposals.kind` | text | What the card proposes: `foodLog` (a meal). |
+| `proposals.status` | text | `pending` (waiting for you), `confirmed` (logged), `discarded` or `superseded` (history only). |
+| `proposals.outcome` | text | How it ended: `unchanged`, `adjusted` (you changed it first) or `discarded`; null while waiting. |
+| `proposals.resolved_at` | UTC ISO-8601 | When you logged or discarded it; null while waiting. |
+| `proposals.origin_message_id` | text | The Buddy reply that first showed the card. |
+| `proposals.budget_message_id` | text | The Buddy reply whose questions the card belongs to now (a follow-up moves it). |
+| `proposals.codec_version` | integer | Version of the `interpretation_json` and `draft_json` format. |
+| `proposals.interpretation_json` | JSON value | What Buddy understood for this card (foods, amounts, hints). User content. |
+| `proposals.draft_json` | JSON value | The card as you left it: food details, your choices, edits and times. User content. |
+| `proposals.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `proposals.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `proposals.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `proposals.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
 
 ## dish-groups (`dishGroup`, `dish_groups`)
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:drift/drift.dart' show Value;
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/db/tables/sync_columns.dart';
@@ -68,6 +69,9 @@ void main() {
       'reply_to_message_id',
       'codec_version',
       'budget_json',
+      // Local-only (TD-102, A23): never synced, see the A23 test below.
+      'request_json',
+      'answer_json',
     });
 
     // Inbound: attachment fields and other extras are rejected.
@@ -172,5 +176,40 @@ void main() {
     expect(columns.budgetJson.value, isNull);
     expect(columns.version.present, isFalse);
     expect(columns.origin.present, isFalse);
+  });
+
+  // rule: A23 local-columns
+  test('A23 chatMessage sync omits the local request and answer columns', () {
+    const request = '{"text":"CANARY-A23-REQUEST"}';
+    const answer = '{"intents":["CANARY-A23-ANSWER"]}';
+    final row = _row(_payload()).copyWith(
+      requestJson: const Value(request),
+      answerJson: const Value(answer),
+    );
+    final payload = chatMessageSyncPayload(row);
+    expect(payload.keys.toList(), chatMessageSyncKeys);
+    expect(jsonEncode(payload), isNot(contains('CANARY-A23')));
+    expect(payload.keys, isNot(contains('requestJson')));
+    expect(payload.keys, isNot(contains('answerJson')));
+    // Inbound: the local columns aren't wire fields, so a payload naming
+    // them is rejected and a pulled row never sets them.
+    for (final extra in ['requestJson', 'answerJson']) {
+      expect(
+        () => _row(_payload({extra: '{}'})),
+        throwsA(isA<ChatMessageMappingError>()),
+        reason: extra,
+      );
+    }
+    final pulled = _row(_payload());
+    expect(pulled.requestJson, isNull);
+    expect(pulled.answerJson, isNull);
+    // The new-row columns carry the local answer only when given.
+    final columns = chatMessageColumns(
+      _id,
+      chatMessageOf(pulled).draft,
+      answerJson: answer,
+    );
+    expect(columns.answerJson.value, answer);
+    expect(columns.requestJson.present, isFalse);
   });
 }

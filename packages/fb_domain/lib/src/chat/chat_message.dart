@@ -26,7 +26,11 @@ enum InvalidChatMessage {
   budget('chatMessageBudget'),
 
   /// A user row with a budget: only the assistant row carries it.
-  userBudget('chatMessageUserBudget');
+  userBudget('chatMessageUserBudget'),
+
+  /// The local interpret answer (A23 D14) on a user row, or not a
+  /// well-formed JSON object within the local input bound.
+  answer('chatMessageAnswer');
 
   new(this.code);
 

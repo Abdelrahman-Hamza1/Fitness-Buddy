@@ -22,7 +22,7 @@ import 'package:flutter_riverpod/misc.dart';
 /// system clock and ID generator (the only import of
 /// `fb_domain/system.dart`) and the change-op handlers of every feature
 /// (A01 §3.2: the settings handler; A06: the diary's; A13: targets; A14:
-/// weigh-ins; A22: chat messages).
+/// weigh-ins; A22: chat messages; A23: proposals).
 ///
 /// Used by `main` and by tests that pump the whole app.
 List<Override> appOverrides(AppConfig config) => [
@@ -51,6 +51,7 @@ List<Override> appOverrides(AppConfig config) => [
       TargetsOpHandler(db),
       WeighInOpHandler(db),
       ChatMessageOpHandler(db),
+      ProposalOpHandler(db),
       WorkoutOpHandler(db),
     ],
   ),

@@ -25,11 +25,15 @@ import 'package:material_ui/material_ui.dart';
 ///
 /// Every tap goes to the thread controller; nothing here writes.
 class FoodProposalCard extends ConsumerWidget {
-  /// The card of [view].
-  const new({required this.view, super.key});
+  /// The card of [view]; [onSearch] opens food search (a stale card
+  /// without its answer offers it, A23 D13).
+  const new({required this.view, this.onSearch, super.key});
 
   /// What the card shows.
   final FoodCardView view;
+
+  /// Closes the sheet and opens food search.
+  final VoidCallback? onSearch;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,13 +42,13 @@ class FoodProposalCard extends ConsumerWidget {
     switch (view.resolution) {
       case CardResolution.logged:
         return _LoggedRow(view: view);
-      case CardResolution.undone:
-        return FbProposalResolvedRow(
-          icon: FbIcons.info,
-          text: l10n.proposalUndone,
-        );
       case CardResolution.discarded:
         return _DiscardedRow(view: view);
+      case CardResolution.superseded:
+        return FbProposalResolvedRow(
+          icon: FbIcons.info,
+          text: l10n.proposalSuperseded,
+        );
       case CardResolution.open || CardResolution.confirming:
         break;
     }
@@ -71,8 +75,13 @@ class FoodProposalCard extends ConsumerWidget {
     final header = day == null ? when : l10n.proposalOnDay(day, when);
     final confirming = view.resolution == CardResolution.confirming;
     final blocked = view.blockedBy;
+    // A reopened card whose food details changed: a read-only preview with
+    // Update card (or Search) and Discard (A23 D13).
+    final stale = view.factsChanged;
     final String? reason;
-    if (confirming) {
+    if (stale && !confirming && !view.updating) {
+      reason = l10n.proposalFactsChanged;
+    } else if (confirming) {
       reason = l10n.proposalLogging;
     } else if (view.updating) {
       reason = l10n.proposalUpdating;
@@ -87,7 +96,8 @@ class FoodProposalCard extends ConsumerWidget {
     final scheme = Theme.of(context).colorScheme;
     // Read-only while it's being logged or a follow-up about it is in
     // flight (A22b review 1).
-    final editable = !confirming && !view.updating;
+    final editable = !confirming && !view.updating && !stale;
+    final discardable = !confirming && !view.updating;
     return FbProposalCard(
       header: header,
       onHeaderTap: editable
@@ -133,6 +143,18 @@ class FoodProposalCard extends ConsumerWidget {
               onUndo: editable
                   ? () => thread.restoreLine(view.id, removed.id)
                   : null,
+            ),
+          // Rebuilt with current details into its own message (A23 D11).
+          if (view.rebuilt)
+            FbProposalResolvedRow(
+              icon: FbIcons.info,
+              text: l10n.buddyCardUpdatedNote,
+            ),
+          // Kept on this phone until it fits (A23 D15).
+          if (view.tooLargeToSync)
+            FbProposalResolvedRow(
+              icon: FbIcons.info,
+              text: l10n.proposalTooLargeToSync,
             ),
           // Add an item picked in food search (AI-042); adding by text is
           // a follow-up message.
@@ -231,10 +253,22 @@ class FoodProposalCard extends ConsumerWidget {
       ),
       actions: FbProposalActions(
         discardLabel: l10n.proposalDiscard,
-        confirmLabel: l10n.proposalLogIt,
+        confirmLabel: !stale
+            ? l10n.proposalLogIt
+            : view.canUpdate
+            ? l10n.proposalUpdateCard
+            : l10n.proposalSearchFoods,
         reason: reason,
-        onDiscard: editable ? () => unawaited(thread.discard(view.id)) : null,
-        onConfirm: view.canLog
+        onDiscard: discardable
+            ? () => unawaited(thread.discard(view.id))
+            : null,
+        onConfirm: stale
+            ? (!discardable
+                  ? null
+                  : view.canUpdate
+                  ? () => unawaited(thread.updateCard(view.id))
+                  : onSearch)
+            : view.canLog
             ? () {
                 unawaited(HapticFeedback.lightImpact());
                 unawaited(thread.confirm(view.id));
@@ -521,7 +555,7 @@ class _LoggedRowState extends ConsumerState<_LoggedRow> {
 }
 
 /// The discarded card: "Discarded" and, for the undo window, Undo that puts
-/// the card back as it was (backlog #142; nothing was written).
+/// the card back as stored (backlog #142, A23 D10); a refused Undo says so.
 class _DiscardedRow extends ConsumerStatefulWidget {
   const new({required this.view});
 
@@ -558,17 +592,99 @@ class _DiscardedRowState extends ConsumerState<_DiscardedRow> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final refused = widget.view.undoRefused;
+    final canUndo = _offered && refused == null;
     return FbProposalResolvedRow(
       icon: FbIcons.info,
       text: l10n.proposalDiscarded,
-      undoLabel: _offered ? l10n.proposalUndo : null,
-      onUndo: _offered
+      note: switch (refused) {
+        UndoOutcome.expired => l10n.diaryUndoExpired,
+        UndoOutcome.conflict => l10n.diaryUndoConflict,
+        _ => null,
+      },
+      undoLabel: canUndo ? l10n.proposalUndo : null,
+      onUndo: canUndo
           ? () => unawaited(
               ref
                   .read(buddyThreadControllerProvider.notifier)
                   .restoreDiscarded(widget.view.id),
             )
           : null,
+    );
+  }
+}
+
+/// A stored card that couldn't be reopened (A23 D13): "This card couldn't
+/// be reopened." with Discard (its row alone); once discarded, "Discarded"
+/// with Undo for the undo window.
+class UnrestorableCardRow extends ConsumerStatefulWidget {
+  /// The row of [card].
+  const new({required this.card, super.key});
+
+  /// The placeholder.
+  final UnrestorableCard card;
+
+  @override
+  ConsumerState<UnrestorableCardRow> createState() =>
+      _UnrestorableCardRowState();
+}
+
+class _UnrestorableCardRowState extends ConsumerState<UnrestorableCardRow> {
+  Timer? _window;
+  bool _offered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _arm();
+  }
+
+  @override
+  void didUpdateWidget(UnrestorableCardRow old) {
+    super.didUpdateWidget(old);
+    if (old.card.discardedAt != widget.card.discardedAt) _arm();
+  }
+
+  void _arm() {
+    _window?.cancel();
+    final at = widget.card.discardedAt;
+    _offered = false;
+    if (at == null || widget.card.undoEntryId == null) return;
+    final left =
+        FbMotion.undoWindow - ref.read(clockProvider).nowUtc().difference(at);
+    if (left <= Duration.zero) return;
+    _offered = true;
+    _window = Timer(left, () {
+      if (mounted) setState(() => _offered = false);
+    });
+  }
+
+  @override
+  void dispose() {
+    _window?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final thread = ref.read(buddyThreadControllerProvider.notifier);
+    final card = widget.card;
+    if (card.discarded) {
+      return FbProposalResolvedRow(
+        icon: FbIcons.info,
+        text: l10n.proposalDiscarded,
+        undoLabel: _offered ? l10n.proposalUndo : null,
+        onUndo: _offered
+            ? () => unawaited(thread.restoreUnrestorable(card.id))
+            : null,
+      );
+    }
+    return FbProposalResolvedRow(
+      icon: FbIcons.info,
+      text: l10n.proposalUnrestorable,
+      undoLabel: l10n.proposalDiscard,
+      onUndo: () => unawaited(thread.discardUnrestorable(card.id)),
     );
   }
 }

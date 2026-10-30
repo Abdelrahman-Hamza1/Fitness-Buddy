@@ -158,6 +158,8 @@ void main() {
     String describe(ChatMessageOp op) => switch (op) {
       CreateChatMessage(:final id) => 'create $id',
       SetChatMessageStatus(:final status) => 'status ${status.code}',
+      SetChatMessageBudget(:final id) => 'budget $id',
+      ReleaseChatMessageAnswer(:final id) => 'release $id',
     };
     expect(describe(create), 'create $_v7');
     expect(describe(status), 'status done');

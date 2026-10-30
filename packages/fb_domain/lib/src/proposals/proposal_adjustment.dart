@@ -113,6 +113,22 @@ final class ProposalSetLifecycle extends ProposalAdjustment {
   List<Object?> get _values => [cardId, lifecycle];
 }
 
+/// Gives open card [cardId] fresh line and dish identities from [idSource]
+/// (A23 D10): after an Undo of its confirm, the old entry IDs are diary
+/// tombstones and can't be logged again. Not a user adjustment.
+final class ProposalReidentify extends ProposalAdjustment {
+  /// Engine emits no writer; the caller persists the result.
+  const new(this.cardId, this.idSource);
+
+  /// Stable card.
+  final String cardId;
+
+  /// Where the new identities come from.
+  final ProposalIdSource idSource;
+  @override
+  List<Object?> get _values => [cardId, idSource];
+}
+
 final class _EngineState {
   late ProposalRequest request;
   bool allocationsAllowed = true;
@@ -141,6 +157,10 @@ final class _EngineState {
 
   /// Items whose generated oil line was removed on its own (A22b review 4).
   final removedComponents = <String>{};
+
+  /// Cards the user adjusted (a chip, amount, swap, add, removal or time),
+  /// kept across rebuilds: the confirmed outcome's `adjusted` (A23 D9).
+  final userAdjusted = <String>{};
   String identity(String key, ProposalIdSource? source) =>
       ids.putIfAbsent(key, () {
         if (!allocationsAllowed) throw const _Invalid();
@@ -168,7 +188,8 @@ final class _EngineState {
     ..adds.addAll(adds)
     ..addOwners.addAll(addOwners)
     ..assumedAmounts.addAll(assumedAmounts)
-    ..removedComponents.addAll(removedComponents);
+    ..removedComponents.addAll(removedComponents)
+    ..userAdjusted.addAll(userAdjusted);
 }
 
 ProposalRequest _request(
@@ -223,6 +244,8 @@ ProposalUpdateResult _recompute(
     final state = session._state.copy()..allocationsAllowed = false;
     var interpretation = state.request.interpretation.value!;
     final originals = [for (final i in interpretation.intents) ...i.items];
+    // The card a user adjustment touched; null for lifecycle and refreshes.
+    String? touched;
     ProposalItem find(String lineId) {
       final original = originals
           .where(
@@ -240,6 +263,7 @@ ProposalUpdateResult _recompute(
           ProposalLifecycle.active) {
         throw const _Invalid();
       }
+      touched = state.intentCards[owner.index];
       return state.items[original.id] ?? original;
     }
 
@@ -253,6 +277,10 @@ ProposalUpdateResult _recompute(
         if (d == null || !d.options.any((o) => o.id == optionId)) {
           throw const _Invalid();
         }
+        touched = session.cards
+            .where((c) => c.lines.any((l) => l.dimensions.contains(d)))
+            .firstOrNull
+            ?.id;
         if (d.kind == .fat) {
           for (final original in originals) {
             final item = state.items[original.id] ?? original;
@@ -343,6 +371,7 @@ ProposalUpdateResult _recompute(
         :final item,
         :final idSource,
       ):
+        touched = cardId;
         final foods = <ProposalFood>[];
         final normalized = _writeItem(item, foods);
         _bound([
@@ -390,11 +419,27 @@ ProposalUpdateResult _recompute(
                 ))) {
           throw const _Invalid();
         }
+        touched = cardId;
         for (final i in interpretation.intents.where(
           (i) => state.intentCards[i.index] == cardId,
         )) {
           if (time != null) state.times[i.index] = time;
           if (slotId != null) state.slots[i.index] = slotId;
+        }
+
+      case ProposalReidentify(:final cardId, :final idSource):
+        final card = session.cards.where((c) => c.id == cardId).firstOrNull;
+        if (card == null || card.lifecycle != .active) throw const _Invalid();
+        for (final i in interpretation.intents.where(
+          (i) => state.intentCards[i.index] == cardId,
+        )) {
+          for (final item in i.items) {
+            state.ids['item:${item.id}'] = _id(idSource);
+            state.ids['oil:${item.id}'] = _id(idSource);
+          }
+          if (state.ids.containsKey('group:${i.index}')) {
+            state.ids['group:${i.index}'] = _id(idSource);
+          }
         }
 
       case ProposalSetLifecycle(:final cardId, :final lifecycle):
@@ -412,7 +457,10 @@ ProposalUpdateResult _recompute(
     );
     if (result.issue case final issue?) return ProposalResult.failure(issue);
     final diff = _diff(session, result.value!);
-    if (!diff.isEmpty) state.revision++;
+    if (!diff.isEmpty) {
+      state.revision++;
+      if (touched case final card?) state.userAdjusted.add(card);
+    }
     return ProposalResult.success(ProposalUpdate(result.value!, diff));
   } on _Invalid catch (e) {
     return ProposalResult.failure(e.issue);

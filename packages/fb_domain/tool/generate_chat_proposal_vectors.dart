@@ -9,7 +9,9 @@ import '../test/proposals/proposal_fixtures.dart';
 /// (`contracts/testdata/README.md`). `serverAccepts` and `appReads` are
 /// declarations: C# checks the first against the embedded registry, the Dart
 /// tests check the second against the fb_domain sync surface. Codec payloads
-/// are real A21 `syncProjection` output; nothing here copies codec logic.
+/// are real `syncProjection` output (codec v2, A23 D2), except the two
+/// pathological sessions it refuses (A23 D3), which come from the same raw
+/// encoders; nothing here copies codec logic.
 Map<String, Object?> chatProposalVectors() {
   final payloads = <Map<String, Object?>>[];
   final asymmetric = <String>[];
@@ -83,7 +85,11 @@ Map<String, Object?> chatProposalVectors() {
     final rejected = name.startsWith('worst-') && name != 'worst-choices-128';
     var budget = '';
     for (final (i, card) in s.cards.indexed) {
-      final p = ProposalDraftCodec.syncProjection(s, card.id).value!;
+      // syncProjection refuses the two pathological sessions (A23 D3), so
+      // their payloads come from the raw encoders the projection wraps.
+      final p = rejected
+          ? _rawProjection(s, card.id)
+          : ProposalDraftCodec.syncProjection(s, card.id).value!;
       budget = p.messageBudget;
       final status = ProposalStatus.ofLifecycle(card.lifecycle);
       add(
@@ -91,6 +97,7 @@ Map<String, Object?> chatProposalVectors() {
         'proposal',
         {
           ..._proposalBase,
+          'codecVersion': ProposalDraftCodec.version,
           'status': status.code,
           'outcome': switch (status) {
             .confirmed => ProposalOutcome.unchanged.code,
@@ -110,6 +117,7 @@ Map<String, Object?> chatProposalVectors() {
     }
     add('codec-$name-message', 'chatMessage', {
       ..._chatBase,
+      'codecVersion': ProposalDraftCodec.version,
       'budgetJson': budget,
     }, source: 'codec');
   }
@@ -117,6 +125,7 @@ Map<String, Object?> chatProposalVectors() {
   final m1 = sessions['follow-up-m1']!;
   add('codec-follow-up-m1-moved-message', 'chatMessage', {
     ..._chatBase,
+    'codecVersion': ProposalDraftCodec.version,
     'budgetJson': jsonEncode(
       ProposalDraftCodec.encodeMessageBudget(
         m1,
@@ -337,6 +346,7 @@ Map<String, Object?> chatProposalVectors() {
       ('duplicate-key', '{"a":1,"a":2}'),
       ('number-below-decimal', '{"a":1e-30}'),
       ('number-above-decimal', '{"a":1e30}'),
+      ('number-beyond-decimal-scale', '{"a":1.00000000000000000000000000001}'),
       ('nul-in-string', r'{"a":"x\u0000"}'),
       ('nul-in-key', r'{"x\u0000":1}'),
     ]) {
@@ -428,11 +438,11 @@ Map<String, Object?> chatProposalVectors() {
     }),
   });
   chat('budget-unknown-version', {
-    'budgetJson': jsonEncode({...sixBudget, 'codecVersion': 2}),
+    'budgetJson': jsonEncode({...sixBudget, 'codecVersion': _unknownVersion}),
   });
   proposal('draft-unknown-version', {
     'interpretationJson': _field(six, 'interpretationJson'),
-    'draftJson': jsonEncode({...sixDraft, 'codecVersion': 2}),
+    'draftJson': jsonEncode({...sixDraft, 'codecVersion': _unknownVersion}),
   });
   proposal('draft-deep-object', {'draftJson': '${'{"a":' * 23}{}${'}' * 23}'});
 
@@ -534,8 +544,8 @@ Map<String, ProposalSession> chatProposalSessions() {
     for (final (dimension, option) in all.take(count)) {
       s = recompute(s, ProposalSelect(dimension, option));
     }
-    final draft = ProposalDraftCodec.syncProjection(s, s.cards.single.id);
-    final choices = (jsonDecode(draft.value!.draft) as Map)['choices'] as Map;
+    final draft = ProposalDraftCodec.encodeCard(s, s.cards.single.id);
+    final choices = draft['choices']! as Map;
     if (choices.length != count) throw StateError('choices probe drifted');
     return s;
   }
@@ -694,6 +704,20 @@ const _scenarios = <(String, String, List<String>, String)>[
     'unsupportedCodecVersion',
   ),
 ];
+
+/// The next codec version after the current one: not restorable.
+const int _unknownVersion = ProposalDraftCodec.version + 1;
+
+/// [ProposalDraftCodec.syncProjection]'s fields without its sync checks.
+ProposalSyncProjection _rawProjection(ProposalSession s, String cardId) {
+  final card = ProposalDraftCodec.encodeCard(s, cardId);
+  final interpretation = jsonEncode(card.remove('interpretation'));
+  return ProposalSyncProjection(
+    interpretation,
+    jsonEncode(card),
+    jsonEncode(ProposalDraftCodec.encodeMessageBudget(s)),
+  );
+}
 
 const _m1 = '019a1b2c-0000-7000-8000-000000009999';
 const _m2 = '019a1b2c-0000-7000-8000-000000008888';

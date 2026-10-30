@@ -45,7 +45,61 @@ class ChatMessages extends Table with SyncColumns {
 
   /// The shared question budget, on the assistant row only. Bounded JSON.
   TextColumn get budgetJson => text().nullable()();
+
+  /// Local-only (TD-102, A23 D4): the frozen interpret request of a user row
+  /// while it waits (A23b), nulled at a terminal status. Never synced or
+  /// logged; exported as the user's own data.
+  TextColumn get requestJson => text().nullable()();
+
+  /// Local-only (TD-102, A23 D14): the raw interpret answer of an assistant
+  /// row, so a stale restored card rebuilds offline; nulled once no card of
+  /// the message is pending. Never synced or logged; exported.
+  TextColumn get answerJson => text().nullable()();
 }
 
 /// Sync registry name (`chatMessage` v1, B18).
 const chatMessageEntity = 'chatMessage';
+
+/// One Buddy card per meal (A23 D4, `05` §2.3), synced as `proposal` v1.
+///
+/// Exactly the contract's content fields. Status and outcome mirror the
+/// closed wire codes; there are no pairing CHECKs (the server checks none),
+/// the op handler enforces them locally. The JSON fields hold the full local
+/// draft, which may exceed the 32768-unit sync bound (the mapper parks such a
+/// row, A23 D15). User content: never logged.
+@DataClassName('ProposalRow')
+class Proposals extends Table with SyncColumns {
+  /// The open kind vocabulary (`foodLog`).
+  TextColumn get kind => text()();
+
+  /// `pending`, `confirmed`, `discarded` or `superseded`.
+  TextColumn get status => text().check(
+    status.isIn(const ['pending', 'confirmed', 'discarded', 'superseded']),
+  )();
+
+  /// `unchanged`, `adjusted`, `discarded`, or `null` while pending.
+  TextColumn get outcome => text().nullable().check(
+    outcome.isIn(const ['unchanged', 'adjusted', 'discarded']),
+  )();
+
+  /// When it was resolved, UTC ms; `null` while pending.
+  IntColumn get resolvedAt => integer().nullable()();
+
+  /// The creating assistant message; immutable.
+  TextColumn get originMessageId => text().nullable()();
+
+  /// The assistant message whose budget the card belongs to now.
+  TextColumn get budgetMessageId => text().nullable()();
+
+  /// Version of the engine JSON format.
+  IntColumn get codecVersion => integer()();
+
+  /// This card's normalized intents.
+  TextColumn get interpretationJson => text().nullable()();
+
+  /// The compact card draft.
+  TextColumn get draftJson => text()();
+}
+
+/// Sync registry name (`proposal` v1, B18).
+const proposalEntity = 'proposal';

@@ -38,6 +38,13 @@ final class BuddyReplyTexts {
   /// "Buddy can't do that in this version yet. …".
   final String unsupported;
 
+  /// The transcript text of a card rebuilt with current food details into
+  /// its own assistant row (A23 D11, fixed English like every reply,
+  /// D-080). Stored, never shown as a bubble: the card's turn shows the
+  /// ARB note `buddyCardUpdatedNote` instead.
+  static const cardRebuiltRecord =
+      'I updated this card with your current food details.';
+
   @override
   String toString() => 'BuddyReplyTexts';
 }

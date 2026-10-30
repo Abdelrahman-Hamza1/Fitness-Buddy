@@ -65,5 +65,11 @@ _Written in Phase B._
 - Tombstones carry the full payload under the live rules. A scrubbed targets tombstone must stay wire-valid (no zeroed `heightCm`/`baseKcal`/`basisWeightKg`, expression fields intact); a scrubbed `weighIn` v2 tombstone sends `kg` 0, `inputValue` 0, `note` null and keeps the rest (B19 D11, backlog #136).
 - The corpus lists `serverRejectsAppTolerates` and `serverAcceptsAppSkips` (in `contracts/testdata/sync/body-targets-validation-vectors.json`) name the rows the server rejects permanently or the app skips on read: never retry them endlessly (#111).
 
+
+**A23 handoff (2026-10-30, A23 plan review, TD-102):**
+- Remote apply preserves the local-only `chat_messages` columns `request_json` and `answer_json`: never overwrite or null them from a pulled row; a pulled tombstone (and clear history) nulls them.
+- After a remote apply touches `chatMessage`/`proposal` rows, re-run the Buddy thread's `ensureRestored` for those sessions (A23 D12).
+- Park `proposal` rows whose mapper returns `tooLarge` (A23 D15; never push, never ack) and refuse unscrubbed tombstones (`unscrubbedTombstone`, A23 D16).
+
 ## Outcome
 _Written in Phase E._

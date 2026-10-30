@@ -61,6 +61,32 @@ final class ProposalInputLoader {
     );
   }
 
+  /// Whether any of [ids] is a live diary entry or dish group (A23 D10): a
+  /// card whose entry IDs are only tombstones (an undone confirm) can be
+  /// given fresh ones; a live one means it's already logged.
+  Future<bool> anyLiveDiaryRow(Set<String> ids) async {
+    if (ids.isEmpty) return false;
+    final entries =
+        await (_db.selectOnly(_db.diaryEntries)
+              ..addColumns([_db.diaryEntries.id])
+              ..where(
+                _db.diaryEntries.id.isIn(ids) &
+                    _db.diaryEntries.deletedAt.isNull(),
+              )
+              ..limit(1))
+            .get();
+    if (entries.isNotEmpty) return true;
+    final groups =
+        await (_db.selectOnly(_db.dishGroups)
+              ..addColumns([_db.dishGroups.id])
+              ..where(
+                _db.dishGroups.id.isIn(ids) & _db.dishGroups.deletedAt.isNull(),
+              )
+              ..limit(1))
+            .get();
+    return groups.isNotEmpty;
+  }
+
   /// Load before computation; never refresh config, contact a server or write.
   /// [days] adds the confirmed totals of other days: a follow-up passes its
   /// card's resolved day, so a card for an older day keeps that day's

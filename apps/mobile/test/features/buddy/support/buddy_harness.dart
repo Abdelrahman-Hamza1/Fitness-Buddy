@@ -20,9 +20,12 @@ import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_issues.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_reply_texts.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
+import 'package:fb_mobile/features/buddy/application/buddy_thread_restorer.dart';
+import 'package:fb_mobile/features/buddy/application/durable_proposals.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_persistence_contributor.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
 import 'package:fb_mobile/features/buddy/application/send_buddy_message.dart';
+import 'package:fb_mobile/features/buddy/application/session_membership.dart';
 import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:fb_mobile/features/buddy/data/buddy_api.dart';
 import 'package:fb_mobile/features/buddy/data/interpret_request_reader.dart';
@@ -40,7 +43,7 @@ import '../../../core/db/support/db_support.dart';
 import '../../../helpers/fake_http.dart';
 
 export '../../../../../../packages/fb_domain/test/proposals/proposal_fixtures.dart'
-    show food, intent, item, message;
+    show food, intent, item, message, riceItem;
 export '../../../core/changes/support/test_db.dart' show ScriptOp;
 export '../../../helpers/fake_http.dart';
 
@@ -91,13 +94,21 @@ final class TestContributor extends ProposalPersistenceContributor {
   }
 
   @override
-  List<ChangeOp> onConfirm(ProposalCard card, ProposalSession session) {
+  List<ChangeOp> onConfirm(
+    ProposalCard card,
+    ProposalSession resolved,
+    SessionMembership membership,
+  ) {
     calls.add('confirm');
     return confirm;
   }
 
   @override
-  List<ChangeOp> onDiscard(ProposalCard card, ProposalSession session) {
+  List<ChangeOp> onDiscard(
+    ProposalCard card,
+    ProposalSession resolved,
+    SessionMembership membership,
+  ) {
     calls.add('discard');
     return discard;
   }
@@ -128,6 +139,7 @@ final class BuddyHarness {
       tables: db.syncedTables,
       handlers: (db) => [
         ChatMessageOpHandler(db),
+        ProposalOpHandler(db),
         DiaryOpHandler(db),
         MealSlotOpHandler(db),
         PersonalFoodOpHandler(db),
@@ -147,14 +159,21 @@ final class BuddyHarness {
           ? throw StateError('config unreadable (test)')
           : ClientConfigRepository.defaults,
     );
-    undo = UndoStack(revert: applier.revert, clock: clock);
+    undo = UndoStack(
+      revert: (inverse) async {
+        await beforeRevert?.call();
+        return await applier.revert(inverse);
+      },
+      clock: clock,
+    );
     addTearDown(undo.dispose);
-    Future<ApplyResult> apply(ChangeSet set) {
+    Future<ApplyResult> apply(ChangeSet set) async {
       if (throwOnApply?.call(set) ?? false) {
         throw StateError('applier failed (test)');
       }
       applied.add(set);
-      return applier.apply(set);
+      await beforeApply?.call(set);
+      return await applier.apply(set);
     }
 
     send = SendBuddyMessage(
@@ -182,28 +201,44 @@ final class BuddyHarness {
       contributors: contributors,
       report: issues.add,
     );
-    container = ProviderContainer.test(
-      overrides: [
-        sendBuddyMessageProvider.overrideWithValue(send),
-        proposalResolutionProvider.overrideWithValue(resolution),
-        // What the sheet and cards read.
-        appDatabaseProvider.overrideWithValue(db),
-        unitSystemProvider.overrideWith(
-          (ref) => Stream.value(UnitSystem.metric),
-        ),
-        appNavigatorProvider.overrideWithValue(navigator),
-        undoStackProvider.overrideWithValue(undo),
-        domainEventBusProvider.overrideWithValue(bus),
-        clockProvider.overrideWithValue(clock),
-        idGeneratorProvider.overrideWithValue(ids),
-      ],
+    restorer = BuddyThreadRestorer(
+      messages: ChatMessageRepository(db),
+      proposals: ProposalRepository(db),
+      loader: loader,
+      clock: clock,
+      report: issues.add,
     );
+    container = _container();
   }
+
+  ProviderContainer _container() => ProviderContainer.test(
+    overrides: [
+      sendBuddyMessageProvider.overrideWithValue(send),
+      proposalResolutionProvider.overrideWithValue(resolution),
+      buddyThreadRestorerProvider.overrideWithValue(restorer),
+      // What the sheet and cards read.
+      appDatabaseProvider.overrideWithValue(db),
+      unitSystemProvider.overrideWith((ref) => Stream.value(UnitSystem.metric)),
+      appNavigatorProvider.overrideWithValue(navigator),
+      undoStackProvider.overrideWithValue(undo),
+      domainEventBusProvider.overrideWithValue(bus),
+      clockProvider.overrideWithValue(clock),
+      idGeneratorProvider.overrideWithValue(ids),
+    ],
+  );
+
+  /// A fresh app process over the same database (A23 restore): a new
+  /// thread controller, the use cases kept.
+  /// (The old container is disposed at the test's end.)
+  void restart() => container = _container();
 
   final AppDatabase db = memoryDatabase();
 
-  /// The contributors the send path and resolution call; tests add to it.
-  final List<ProposalPersistenceContributor> contributors = [];
+  /// The contributors the send path and resolution call: the app's
+  /// durable proposals (A23), as in production; tests add to it or clear it.
+  final List<ProposalPersistenceContributor> contributors = [
+    const DurableProposals(),
+  ];
   final DomainEventBus bus = DomainEventBus();
   final ManualClock clock = ManualClock(DateTime.utc(2026, 10, 17, 8));
   late final UuidV7Generator ids = UuidV7Generator(clock, Random(5));
@@ -217,6 +252,12 @@ final class BuddyHarness {
   /// The applier throws for the change sets this matches.
   bool Function(ChangeSet)? throwOnApply;
 
+  /// Awaited before each change set is applied (holds a write in flight).
+  Future<void> Function(ChangeSet)? beforeApply;
+
+  /// Awaited before each undo's revert is applied.
+  Future<void> Function()? beforeRevert;
+
   /// Routes the sheet pushed (food search).
   final RecordingAppNavigator navigator = RecordingAppNavigator();
   late final ChangeSetApplier<AppDatabase> applier;
@@ -224,7 +265,8 @@ final class BuddyHarness {
   late final UndoStack undo;
   late final SendBuddyMessage send;
   late final ProposalResolution resolution;
-  late final ProviderContainer container;
+  late final BuddyThreadRestorer restorer;
+  late ProviderContainer container;
 
   /// The thread controller.
   BuddyThreadController get thread =>
@@ -269,4 +311,53 @@ final class BuddyHarness {
 
   /// The diary entries.
   Future<List<DiaryEntryRow>> entries() => db.select(db.diaryEntries).get();
+
+  /// A new personal food (100 kcal per 100 g unless [kcal]): restore trusts
+  /// its stored row, unlike answer foods without a catalog pack.
+  Future<String> personalFood({double kcal = 100}) async {
+    final key = ids.next();
+    final created = await applier.apply(
+      ChangeSet([
+        CreatePersonalFood(
+          key,
+          PersonalFoodDraft(
+            names: FoodNames('Private'),
+            per100: Nutrients(
+              kcal: kcal,
+              protein: 1,
+              carbs: 1,
+              fat: 1,
+              fiber: 0,
+            ),
+          ),
+        ),
+      ], origin: Origin.direct),
+    );
+    expect(created, isA<Applied>());
+    return key;
+  }
+
+  /// An answer with 100 g of personal food [key] for each of [slots].
+  static Map<String, Object?> personalMeals(
+    String key, {
+    List<String> slots = const ['breakfast', 'lunch'],
+  }) => message([
+    for (final slot in slots)
+      intent([
+        item(
+          match: food(key: key, source: 'personal'),
+          amount: 100,
+          unit: 'g',
+        ),
+      ], slot: slot),
+  ]);
+
+  /// Every proposal row, oldest first.
+  Future<List<ProposalRow>> proposals() => (db.select(
+    db.proposals,
+  )..orderBy([(t) => OrderingTerm(expression: t.createdAt)])).get();
+
+  /// Proposal row [id].
+  Future<ProposalRow> proposal(String id) =>
+      (db.select(db.proposals)..where((t) => t.id.equals(id))).getSingle();
 }

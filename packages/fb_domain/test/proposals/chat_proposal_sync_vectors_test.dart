@@ -127,6 +127,17 @@ ProposalBuildResult _restore(Map<String, Object?> scenario) {
   );
 }
 
+/// The fields syncProjection would return without its sync checks.
+ProposalSyncProjection _rawProjection(ProposalSession s, String cardId) {
+  final card = ProposalDraftCodec.encodeCard(s, cardId);
+  final interpretation = jsonEncode(card.remove('interpretation'));
+  return ProposalSyncProjection(
+    interpretation,
+    jsonEncode(card),
+    jsonEncode(ProposalDraftCodec.encodeMessageBudget(s)),
+  );
+}
+
 final List<Map<String, Object?>> _scenarios = [
   for (final s in _vectors['restoreScenarios']! as List<Object?>) _object(s),
 ];
@@ -156,7 +167,9 @@ void main() {
       for (final (i, card) in s.cards.indexed) {
         final id = 'codec-$name-card-${i + 1}';
         final row = _raw(id);
-        final live = ProposalDraftCodec.syncProjection(s, card.id).value!;
+        final live = rejects.contains(id)
+            ? _rawProjection(s, card.id)
+            : ProposalDraftCodec.syncProjection(s, card.id).value!;
         expect(row['draftJson'], live.draft, reason: id);
         expect(row['interpretationJson'], live.interpretation, reason: id);
         expect(row['originMessageId'], card.originMessageId, reason: id);
@@ -170,7 +183,12 @@ void main() {
           row['codecVersion'],
           _object(jsonDecode(live.draft))['codecVersion'],
         );
+        expect(row['codecVersion'], ProposalDraftCodec.version);
         expect(_raw('codec-$name-message')['budgetJson'], live.messageBudget);
+        expect(
+          _raw('codec-$name-message')['codecVersion'],
+          ProposalDraftCodec.version,
+        );
         expect(_byId[id]!['source'], 'codec');
         expect(_byId[id]!['appReads'], isTrue, reason: id);
         expect(_byId[id]!['serverAccepts'], !rejects.contains(id), reason: id);
@@ -439,4 +457,91 @@ void main() {
       }
     },
   );
+
+  // rule: A23 sync-shape
+  test(
+    'A23 sync projection refuses exactly the two codecServerRejects sessions',
+    () {
+      final rejects = (_vectors['codecServerRejects']! as List).toSet();
+      final refused = <String>{};
+      for (final MapEntry(key: name, value: s)
+          in chatProposalSessions().entries) {
+        for (final (i, card) in s.cards.indexed) {
+          final id = 'codec-$name-card-${i + 1}';
+          final p = ProposalDraftCodec.syncProjection(s, card.id);
+          if (p.issue != null) {
+            expect(p.issue, ProposalIssue.syncPayloadTooLarge, reason: id);
+            refused.add(id);
+          }
+          // Every refused field is one the server rejects, and back.
+          final raw = _rawProjection(s, card.id);
+          final fits = [
+            raw.interpretation,
+            raw.draft,
+            raw.messageBudget,
+          ].every(ProposalDraftCodec.fitsSync);
+          expect(fits, p.issue == null, reason: id);
+        }
+      }
+      expect(refused, rejects);
+      expect(refused, {
+        'codec-worst-choices-129-card-1',
+        'codec-worst-tiny-amount-card-1',
+      });
+      // The generic-limit asymmetry rows are exactly what fitsSyncShape
+      // refuses among the opaque JSON probes.
+      for (final p in _payloads) {
+        final id = p['id']! as String;
+        final match = RegExp(
+          '^(chat|proposal)-(budgetJson|interpretationJson|draftJson)-'
+          '(depth|members|items|key|number|nul|duplicate)-',
+        ).firstMatch(id);
+        if (match == null) continue;
+        final value = _raw(id)[match.group(2)]! as String;
+        expect(
+          ProposalDraftCodec.fitsSyncShape(value),
+          p['serverAccepts'],
+          reason: id,
+        );
+      }
+    },
+  );
+
+  // rule: A23 card-only-interpretation
+  test('A23 proposal interpretation contains only card intents without '
+      'duplicate facts', () {
+    final s = chatProposalSessions()['multi-card']!;
+    expect(s.cards, hasLength(3));
+    final seen = <int>{};
+    for (final (i, card) in s.cards.indexed) {
+      final row = _raw('codec-multi-card-card-${i + 1}');
+      final interpretation =
+          jsonDecode(row['interpretationJson']! as String) as List<Object?>;
+      final draft = _object(jsonDecode(row['draftJson']! as String));
+      // Only this card's intents, each once across the message.
+      expect(interpretation, hasLength(1));
+      for (final intent in interpretation.cast<List<Object?>>()) {
+        expect(intent, hasLength(6));
+        expect(seen.add(intent[0]! as int), isTrue);
+        // Items refer to the card's fact table by index, never inline facts.
+        for (final item in (intent[4]! as List).cast<List<Object?>>()) {
+          expect(item[1], isA<int>());
+          expect((item[1]! as int) < (draft['foods']! as List).length, isTrue);
+        }
+      }
+      // Facts live once in the draft, never in the interpretation.
+      expect(row['interpretationJson'], isNot(contains('Synthetic food')));
+      final names = [
+        for (final f in (draft['foods']! as List).cast<List<Object?>>()) f[0],
+      ];
+      expect(names.toSet().length, names.length);
+      expect(draft.containsKey('interpretation'), isFalse);
+      // The message budget is never copied into a card row.
+      for (final key in ['issued', 'open', 'policy', 'departed']) {
+        expect(draft.containsKey(key), isFalse, reason: key);
+      }
+      expect(card.budgetMessageId, row['budgetMessageId']);
+    }
+    expect(seen, hasLength(3));
+  });
 }

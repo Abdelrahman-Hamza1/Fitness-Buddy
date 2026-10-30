@@ -27,6 +27,19 @@ final class ChatMessageRepository {
   Future<ChatMessage?> byId(String id) async =>
       _read(await _byIds({id}).get()).firstOrNull;
 
+  /// The local-only interpret answer of live assistant message [id]
+  /// (A23 D14), or `null` once it was cleared or for any other row. User
+  /// content: never log it.
+  Future<String?> answerOf(String id) async {
+    final query = _db.selectOnly(_db.chatMessages)
+      ..addColumns([_db.chatMessages.answerJson])
+      ..where(
+        _db.chatMessages.id.equals(id) & _db.chatMessages.deletedAt.isNull(),
+      );
+    final row = await query.getSingleOrNull();
+    return row?.read(_db.chatMessages.answerJson);
+  }
+
   SimpleSelectStatement<$ChatMessagesTable, ChatMessageRow> _byIds(
     Set<String> ids,
   ) => _db.select(_db.chatMessages)

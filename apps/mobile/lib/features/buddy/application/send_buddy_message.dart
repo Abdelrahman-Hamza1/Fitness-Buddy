@@ -8,6 +8,8 @@ import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_issues.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_reply_texts.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_persistence_contributor.dart';
+import 'package:fb_mobile/features/buddy/application/proposal_session_writer.dart';
+import 'package:fb_mobile/features/buddy/application/session_membership.dart';
 import 'package:fb_mobile/features/buddy/data/buddy_api.dart';
 import 'package:fb_mobile/features/buddy/data/chat_message_repository.dart';
 import 'package:fb_mobile/features/buddy/data/interpret_request_builder.dart';
@@ -96,22 +98,44 @@ final class BuddyFollowedUp extends BuddyReply {
   String toString() => 'BuddyFollowedUp($assistantMessageId)';
 }
 
-/// The open card a message follows up on (A22b E2): the card and the time
-/// of the message it came from (the engine's reference time, so "today"
-/// stays the card's day). Holds user content: never logged.
+/// The open card a message follows up on (A22b E2): the card, the session
+/// that holds it and the time of the message it came from (the engine's
+/// reference time, so "today" stays the card's day). Holds user content:
+/// never logged.
 final class FollowUpTarget {
   /// The target.
-  const new({required this.card, required this.referenceTime});
+  const new({
+    required this.card,
+    required this.session,
+    required this.referenceTime,
+    this.membership = const SessionMembership(),
+  });
 
   /// The open card.
   final ProposalCard card;
 
+  /// The message session the card belongs to now (its remaining members are
+  /// written with the follow-up, A23 D7).
+  final ProposalSession session;
+
   /// The card's reference time.
   final EntryTime referenceTime;
+
+  /// Which cards already left their messages.
+  final SessionMembership membership;
 
   @override
   String toString() => 'FollowUpTarget(${card.id})';
 }
+
+/// Where a follow-up's card stands when its answer is saved (A23 D7): the
+/// open card with its latest session, or `closed` when it was logged or
+/// discarded meanwhile. Read inside the write lane, never earlier.
+typedef FollowUpState = ({FollowUpTarget? target, bool closed});
+
+/// Runs the saving part of a dispatch as one job of the thread's write lane
+/// (A23 D7): after the answer arrives, never around the network call.
+typedef ReplyLane = Future<BuddyReply> Function(Future<BuddyReply> Function());
 
 /// The call failed: the user row is `failed`.
 final class BuddyReplyFailed extends BuddyReply {
@@ -210,18 +234,33 @@ final class SendBuddyMessage {
     activeCard: followUp,
   );
 
-  /// Sends [request] for [message] and saves the outcome (D6). With
-  /// [followUp], an answer with one meal for the card's slot rebuilds that
-  /// card ([BuddyFollowedUp]); anything else is a normal reply with its own
-  /// cards (D21).
+  /// Sends [request] for [message] and saves the outcome (D6). With a
+  /// [followUp] target, an answer with one meal for the card's slot rebuilds
+  /// that card ([BuddyFollowedUp]); anything else is a normal reply with its
+  /// own cards (D21). Everything after the answer arrives runs through
+  /// [lane] (A23 D7), where [followUp] is read: a card logged or discarded
+  /// meanwhile gets the fixed "card closed" reply.
   Future<BuddyReply> dispatch(
     SavedBuddyMessage message,
     PreparedInterpret request,
     BuddyReplyTexts texts, {
-    FollowUpTarget? followUp,
-    bool followUpClosed = false,
+    FollowUpState Function()? followUp,
+    ReplyLane? lane,
   }) async {
-    switch (await _api.interpret(request)) {
+    final answer = await _api.interpret(request);
+    Future<BuddyReply> save() =>
+        _save(message, answer, texts, followUp?.call());
+    return lane == null ? await save() : await lane(save);
+  }
+
+  Future<BuddyReply> _save(
+    SavedBuddyMessage message,
+    BuddyInterpretResult answer,
+    BuddyReplyTexts texts,
+    FollowUpState? state,
+  ) async {
+    final followUp = state?.target;
+    switch (answer) {
       case BuddyInterpretFailed(:final failure):
         if (failure == BuddySendFailure.rejected) {
           _report(const BuddyRequestRejected());
@@ -236,7 +275,7 @@ final class SendBuddyMessage {
         // The card this follow-up was about is already logged or
         // discarded: nothing is rebuilt and no new card is made from the
         // whole-meal answer (it would log the meal twice).
-        if (followUpClosed) {
+        if (state?.closed ?? false) {
           return await _reply(message, texts.cardClosed, null, null, null);
         }
         if (followUp != null) {
@@ -248,9 +287,12 @@ final class SendBuddyMessage {
               update.session,
               json,
               assistantId,
-              followUp: followUp.card,
+              followUp: followUp,
+              closedText: texts.cardClosed,
             );
-            return saved is BuddyReplied
+            // Without a session: the card was resolved in the database
+            // meanwhile and the "card closed" reply was saved (rec R7).
+            return saved is BuddyReplied && saved.session != null
                 ? BuddyFollowedUp(
                     assistantMessageId: assistantId,
                     session: update.session,
@@ -356,19 +398,25 @@ final class SendBuddyMessage {
     ProposalSession? session,
     Map<String, Object?>? json,
     String? assistantId, {
-    ProposalCard? followUp,
+    FollowUpTarget? followUp,
+    String? closedText,
   }) async {
     final user = await _messages.byId(message.id);
     if (user == null) return const BuddyReplyNotSaved();
     final id = assistantId ?? _ids.next();
-    String? budget;
-    if (session != null && session.cards.isNotEmpty) {
-      budget = jsonEncode(ProposalDraftCodec.encodeMessageBudget(session));
-      if (!ProposalDraftCodec.fitsSyncString(budget)) {
-        budget = null;
-        _report(const BuddyBudgetTooLarge());
-      }
+    final cards = session != null && session.cards.isNotEmpty;
+    // The budget itself is written by the contributors (A23 D7: the session
+    // writer is its only producer); a reply whose budget can't sync keeps
+    // its text only.
+    if (session != null &&
+        cards &&
+        followUp == null &&
+        !ProposalSessionWriter.budgetFits(session)) {
+      _report(const BuddyBudgetTooLarge());
     }
+    // The raw answer stays on this phone so a stale card can be rebuilt
+    // offline (A23 D14); never synced or logged.
+    final answer = cards && json != null ? jsonEncode(json) : null;
     final result = await _apply(
       ChangeSet([
         SetChatMessageStatus(
@@ -385,21 +433,31 @@ final class SendBuddyMessage {
             status: ChatMessageStatus.done,
             language: ChatLanguage.english,
             replyToMessageId: user.id,
-            codecVersion: budget == null ? null : 1,
-            budgetJson: budget,
           ),
+          answerJson: answer != null && isLocalJsonObject(answer)
+              ? answer
+              : null,
         ),
         if (session != null)
           for (final c in _contributors)
             ...(followUp == null
                 ? c.onReply(session, id)
                 : c.onFollowUp(
-                    session.cards.firstWhere((x) => x.id == followUp.id),
+                    session.cards.firstWhere((x) => x.id == followUp.card.id),
                     session,
                     id,
+                    from: followUp.session,
+                    membership: followUp.membership,
                   )),
       ], origin: Origin.system),
     );
+    if (result is Rejected &&
+        closedText != null &&
+        result.failure == const InvalidOp('proposalResolved')) {
+      // The follow-up's card was logged or discarded in the database before
+      // its answer could move it (rec R7): the fixed reply, no card.
+      return await _reply(message, closedText, null, null, id);
+    }
     if (result is! Applied) return const BuddyReplyNotSaved();
     return BuddyReplied(
       assistantMessageId: id,

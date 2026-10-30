@@ -56,7 +56,7 @@ void main() {
       expect(user.codecVersion, isNull);
       expect(user.budgetJson, isNull);
       expect(assistant.id, turn.assistantMessageId);
-      expect(assistant.codecVersion, 1);
+      expect(assistant.codecVersion, ProposalDraftCodec.version);
       expect(
         assistant.budgetJson,
         jsonEncode(ProposalDraftCodec.encodeMessageBudget(session)),

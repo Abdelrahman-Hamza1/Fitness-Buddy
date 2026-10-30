@@ -3,6 +3,8 @@ import 'package:test/test.dart';
 
 import 'proposal_codec_test.dart' show cardRows, roundTrip;
 import 'proposal_fixtures.dart';
+import 'proposal_rebuild_test.dart' show follow;
+import 'proposal_recompute_test.dart' show decodedItem, update;
 
 void main() {
   // rule: A22 date-hint
@@ -584,6 +586,156 @@ void main() {
       expect(chip.origin, ProposalChoiceOrigin.fallback);
       expect(question.optionIds.first, chip.optionId);
     }
+  });
+  // rule: A23 outcome-user-state
+  test('A23 a card counts as adjusted after any user change or follow-up', () {
+    final ids = FixedIds();
+    final s = session(
+      message([
+        intent([
+          riceItem(),
+          item(explicit: false, dimensions: [fatDimension()]),
+        ]),
+        intent([item()], slot: 'dinner'),
+      ]),
+      ids: ids,
+    );
+    final first = s.cards.first.id;
+    final second = s.cards.last.id;
+    bool adjusted(ProposalSession x, String id) =>
+        ProposalEngine.hasUserState(x, id);
+    expect(adjusted(s, first), isFalse);
+    expect(adjusted(s, second), isFalse);
+    expect(adjusted(s, 'unknown'), isFalse);
+
+    final lines = s.cards.first.lines;
+    final q = s.budget.questions.first;
+    final fat = lines.last.dimensions.firstWhere((d) => d.kind == .fat);
+    final changes = <ProposalAdjustment>[
+      ProposalSelect(q.dimensionId, q.optionIds.last),
+      ProposalSelect(fat.id, fat.options.last.id),
+      ProposalSetAmount(lines.first.entry.id, Quantity(321, 'g')),
+      ProposalSwap(lines.last.entry.id, localFood(key: 'usda:swap')),
+      ProposalSetRemoved(lines.first.entry.id, removed: true),
+      ProposalAdd(first, 'added', decodedItem(item()), ids),
+      ProposalSetWhen(first, time: EntryTime(DateTime.utc(2026, 10, 17, 6), 0)),
+      ProposalSetWhen(first, slotId: DefaultSlots.lunch.id),
+    ];
+    for (final change in changes) {
+      final changed = update(s, change).session;
+      expect(adjusted(changed, first), isTrue, reason: '$change');
+      expect(adjusted(changed, second), isFalse, reason: '$change');
+      // Kept through the codec.
+      expect(adjusted(roundTrip(changed), first), isTrue, reason: '$change');
+    }
+    // Removing a generated oil line Buddy assumed is a user change too.
+    final fatKind = 'fat:${lines.last.entry.food.ref.id}';
+    final saved = session(
+      message([
+        intent([
+          riceItem(),
+          item(explicit: false, dimensions: [fatDimension()]),
+        ]),
+        intent([item()], slot: 'dinner'),
+      ]),
+      ids: FixedIds(),
+      ctx: context(defaults: {fatKind: fat.options.last.id}),
+    );
+    final oil = saved.cards.first.lines.firstWhere(
+      (l) => l.componentOf != null,
+    );
+    expect(adjusted(saved, first), isFalse);
+    expect(
+      adjusted(
+        update(saved, ProposalSetRemoved(oil.entry.id, removed: true)).session,
+        first,
+      ),
+      isTrue,
+    );
+
+    // Lifecycle changes, context refreshes and rebuilds alone never count.
+    final refreshed = update(
+      s,
+      ProposalSetLifecycle(first, ProposalLifecycle.active),
+      ctx: context(defaults: {'state:rice': 'cooked'}),
+    ).session;
+    expect(adjusted(refreshed, first), isFalse);
+    final confirmed = update(
+      s,
+      ProposalSetLifecycle(second, ProposalLifecycle.confirmed),
+    ).session;
+    expect(adjusted(confirmed, second), isFalse);
+    final rebuilt = ProposalEngine.rebuild(
+      s.cards.first,
+      follow(
+        message([
+          intent([riceItem(amount: 300)]),
+        ]),
+        ids,
+      ),
+    ).value!.session;
+    expect(adjusted(rebuilt, first), isFalse);
+    // A user change survives a later rebuild of the card.
+    final edited = update(
+      s,
+      ProposalSetAmount(lines.first.entry.id, Quantity(321, 'g')),
+    ).session;
+    final carried = ProposalEngine.rebuild(
+      edited.cards.first,
+      follow(
+        message([
+          intent([riceItem(amount: 300)]),
+        ]),
+        ids,
+      ),
+    ).value!.session;
+    expect(adjusted(carried, first), isTrue);
+  });
+
+  // rule: A23 reidentify
+  test('A23 an undone card gets fresh line and dish identities', () {
+    final ids = FixedIds();
+    final s = session(
+      message([
+        intent([
+          item(),
+          item(dimensions: [fatDimension()]),
+        ], group: 'dish'),
+        intent([item()], slot: 'dinner'),
+      ]),
+      ids: ids,
+    );
+    final [a, b] = s.cards;
+    final before = {for (final l in a.lines) l.entry.id};
+    final r = ProposalEngine.recompute(s, ProposalReidentify(a.id, ids));
+    expect(r.issue, isNull);
+    final next = r.value!.session;
+    final after = next.cards.first;
+    final fresh = {for (final l in after.lines) l.entry.id};
+    expect(fresh.intersection(before), isEmpty);
+    expect(
+      after.lines.map((l) => l.entry.amount),
+      a.lines.map((l) => l.entry.amount),
+    );
+    final group = after.draftOps.whereType<CreateDishGroup>().single.id;
+    expect(group, isNot(a.draftOps.whereType<CreateDishGroup>().single.id));
+    // The sibling keeps its identities; not a user adjustment; restorable.
+    expect(next.cards.last.lines, b.lines);
+    expect(ProposalEngine.hasUserState(next, a.id), isFalse);
+    expect(roundTrip(next), next);
+    // Only an open card can be re-identified.
+    final confirmed = ProposalEngine.recompute(
+      next,
+      ProposalSetLifecycle(a.id, ProposalLifecycle.confirmed),
+    ).value!.session;
+    expect(
+      ProposalEngine.recompute(confirmed, ProposalReidentify(a.id, ids)).issue,
+      isNotNull,
+    );
+    expect(
+      ProposalEngine.recompute(s, ProposalReidentify('unknown', ids)).issue,
+      isNotNull,
+    );
   });
 }
 

@@ -149,4 +149,23 @@ abstract final class ChatProposalSyncBounds {
 
   /// Largest `codecVersion` (a signed 32-bit integer).
   static const codecVersionMax = 2147483647;
+
+  // The server's generic nested pass over every `*Json` field
+  // (`SyncPayloads.Representable`); not contract fields, so they stay out of
+  // the corpus `constants` (A23 D3). `ProposalDraftCodec.fitsSyncShape`.
+
+  /// Most nested containers (`JsonDocumentOptions.MaxDepth`).
+  static const nestedDepth = 24;
+
+  /// Most members of one object.
+  static const members = 128;
+
+  /// Most items of one array.
+  static const items = 500;
+
+  /// Longest object key.
+  static const key = 256;
+
+  /// Most fractional digits of a number (a C# `decimal`'s scale).
+  static const decimalScale = 28;
 }

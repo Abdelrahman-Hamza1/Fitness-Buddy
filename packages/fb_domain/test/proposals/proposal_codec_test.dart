@@ -304,7 +304,7 @@ void main() {
     expect(
       ProposalDraftCodec.restore(
         trustedFacts: trustedSession(s, ctx: context()),
-        copyJson(budget)..['codecVersion'] = 2,
+        copyJson(budget)..['codecVersion'] = 3,
         cardRows(s),
         context: context(),
       ).issue,
@@ -682,5 +682,311 @@ void main() {
       trustedFacts: TrustedFoodFacts(),
     );
     expect(empty.issue, ProposalIssue.sessionIncomplete);
+  });
+
+  // rule: A23 codec-v2
+  test('A23 codec v2 round trips day hints assumed amounts and removed '
+      'components', () {
+    var s = session(
+      message([
+        intent([
+          item(explicit: false, dimensions: [fatDimension()]),
+          item(match: food(key: 'usda:bread'), explicit: false),
+        ], date: 'daysAgo:3'),
+      ]),
+    );
+    final d = s.cards.single.lines.first.dimensions.first;
+    s = update(s, ProposalSelect(d.id, d.options.last.id)).session;
+    final oil = s.cards.single.lines.firstWhere((l) => l.componentOf != null);
+    s = update(s, ProposalSetRemoved(oil.entry.id, removed: true)).session;
+    final bread = s.cards.single.lines.last;
+    s = update(
+      s,
+      ProposalSetAmount(bread.entry.id, Quantity(3, 'piece')),
+    ).session;
+    final row = cardRows(s).single;
+    final budget = ProposalDraftCodec.encodeMessageBudget(s);
+    expect(row['codecVersion'], ProposalDraftCodec.version);
+    expect(budget['codecVersion'], ProposalDraftCodec.version);
+    expect(ProposalDraftCodec.version, 2);
+    final interpretation = row['interpretation']! as List<Object?>;
+    expect((interpretation.single! as List<Object?>)[5], 'daysAgo:3');
+    final assumed = row['assumed']! as List<Object?>;
+    expect(assumed, hasLength(2));
+    expect(assumed, [...assumed]..sort());
+    expect(row['removedComponents'], hasLength(1));
+    expect(row['adjusted'], isTrue);
+    final restored = roundTrip(s);
+    expect(restored, s);
+    expect(ProposalEngine.hasUserState(restored, s.cards.single.id), isTrue);
+    expect(restored.cards.single.lines.every((l) => l.amountAssumed), isTrue);
+  });
+
+  // rule: A23 codec-v2
+  test('A23 restored card keeps a removed generated oil removed and its '
+      'stepper', () {
+    var s = session(
+      message([
+        intent([
+          item(explicit: false, dimensions: [fatDimension()]),
+        ]),
+      ]),
+    );
+    final d = s.cards.single.lines.first.dimensions.first;
+    s = update(s, ProposalSelect(d.id, d.options.last.id)).session;
+    final oil = s.cards.single.lines.last;
+    expect(oil.componentOf, isNotNull);
+    s = update(s, ProposalSetRemoved(oil.entry.id, removed: true)).session;
+    final egg = s.cards.single.lines.single;
+    s = update(
+      s,
+      ProposalSetAmount(egg.entry.id, Quantity(2, 'piece')),
+    ).session;
+    final restored = roundTrip(s);
+    final line = restored.cards.single.lines.single;
+    expect(line.entry.id, egg.entry.id);
+    expect(line.amountAssumed, isTrue);
+    // The oil comes back only when the user asks for it.
+    final back = update(
+      restored,
+      ProposalSetRemoved(oil.entry.id, removed: false),
+    ).session;
+    expect(back.cards.single.lines, hasLength(2));
+    // Without the v2 fields the oil would return and the − / + go.
+    final v1Like = copyJson(cardRows(s).single)
+      ..['assumed'] = <Object?>[]
+      ..['removedComponents'] = <Object?>[];
+    final lost = ProposalDraftCodec.restore(
+      copyJson(ProposalDraftCodec.encodeMessageBudget(s)),
+      [v1Like],
+      context: context(),
+      trustedFacts: trustedSession(s),
+    ).value!;
+    expect(lost.cards.single.lines, hasLength(2));
+  });
+
+  // rule: A23 codec-v2
+  test('A23 restored card keeps the day its day hint named', () {
+    LocalDate dayOf(ProposalSession s) =>
+        (s.cards.single.lines.single.entry.when as EntryAt).time.localDate;
+    for (final (hint, day) in [
+      ('daysAgo:3', LocalDate(2026, 10, 14)),
+      ('lastWeekday:mon', LocalDate(2026, 10, 12)),
+      ('date:10-03', LocalDate(2026, 10, 3)),
+    ]) {
+      final s = session(
+        message([
+          intent([item()], date: hint),
+        ]),
+      );
+      expect(dayOf(s), day, reason: hint);
+      expect(dayOf(roundTrip(s)), day, reason: hint);
+      expect(roundTrip(s), s);
+    }
+    // A stored hint outside the grammar is corrupt input, never a guess.
+    final s = session(
+      message([
+        intent([item()], date: 'yesterday'),
+      ]),
+    );
+    final row = copyJson(cardRows(s).single);
+    ((row['interpretation']! as List).single as List)[5] = 'tomorrow';
+    expect(
+      ProposalDraftCodec.restore(
+        copyJson(ProposalDraftCodec.encodeMessageBudget(s)),
+        [row],
+        context: context(),
+        trustedFacts: trustedSession(s),
+      ).issue,
+      ProposalIssue.invalidInput,
+    );
+  });
+
+  // rule: A23 codec-v2
+  test('A23 codec rejects any other version as unsupported', () {
+    final s = session(message());
+    final budget = ProposalDraftCodec.encodeMessageBudget(s);
+    for (final version in <Object?>[1, 3, 0, null, '2', 2.5]) {
+      expect(
+        ProposalDraftCodec.restore(
+          copyJson(budget)..['codecVersion'] = version,
+          cardRows(s).map(copyJson),
+          context: context(),
+          trustedFacts: trustedSession(s),
+        ).issue,
+        ProposalIssue.unsupportedCodecVersion,
+        reason: 'budget $version',
+      );
+      expect(
+        ProposalDraftCodec.restore(
+          copyJson(budget),
+          [copyJson(cardRows(s).single)..['codecVersion'] = version],
+          context: context(),
+          trustedFacts: trustedSession(s),
+        ).issue,
+        ProposalIssue.unsupportedCodecVersion,
+        reason: 'card $version',
+      );
+    }
+    // A v1 card (no v2 keys) is not restorable either.
+    final v1 = copyJson(cardRows(s).single)
+      ..['codecVersion'] = 1
+      ..remove('assumed')
+      ..remove('removedComponents')
+      ..remove('adjusted');
+    expect(
+      ProposalDraftCodec.restore(
+        copyJson(budget),
+        [v1],
+        context: context(),
+        trustedFacts: trustedSession(s),
+      ).issue,
+      ProposalIssue.unsupportedCodecVersion,
+    );
+  });
+
+  // rule: A23 sync-bounds
+  test('A23 compact proposal JSON respects B18 32768 UTF-16 unit bounds', () {
+    ProposalSession six(String name) => session(
+      message([
+        intent([
+          riceItem(),
+          riceItem(),
+          item(dimensions: [fatDimension()]),
+          item(),
+          item(),
+          item(match: food(key: 'usda:pad')..['nameEn'] = name),
+        ], group: 'dish'),
+      ]),
+    );
+    ProposalResult<ProposalSyncProjection> project(String name) {
+      final s = six(name);
+      return ProposalDraftCodec.syncProjection(s, s.cards.single.id);
+    }
+
+    final base = project('p').value!.draft.length;
+    final fill = 1 + ProposalDraftCodec.syncStringLimit - base;
+    final atLimit = project('p' * fill);
+    expect(atLimit.issue, isNull);
+    expect(atLimit.value!.draft.length, 32768);
+    expect(project('p' * (fill + 1)).issue, ProposalIssue.syncPayloadTooLarge);
+    // A supplementary character straddling the bound counts two units: one
+    // code point fewer than 32769 units still doesn't fit.
+    final straddle = '${'p' * (fill - 1)}😀';
+    expect(straddle.runes.length, fill);
+    expect(project(straddle).issue, ProposalIssue.syncPayloadTooLarge);
+    final inside = project('${'p' * (fill - 2)}😀');
+    expect(inside.issue, isNull);
+    expect(inside.value!.draft.length, 32768);
+    // The local session keeps every item either way.
+    expect(
+      six(straddle).cards.single.lines,
+      hasLength(six('p').cards.single.lines.length),
+    );
+    expect(six(straddle).cards.single.canConfirm, isTrue);
+  });
+
+  // rule: A23 sync-shape
+  test("A23 sync projection refuses shapes the server's generic limits "
+      'reject', () {
+    String members(int n) =>
+        '{${[for (var i = 0; i < n; i++) '"k$i":0'].join(',')}}';
+    final accepted = <String>[
+      '{}',
+      '${'[' * 24}0${']' * 24}',
+      '${'{"a":' * 23}{}${'}' * 23}',
+      members(128),
+      '[${List.filled(500, 0).join(',')}]',
+      '{"${'k' * 256}":0}',
+      '{"a":0.30000000000000004}',
+      '{"a":1e-7}',
+      '{"a":-0.0}',
+      '{"a":7.9e28}',
+      '{"a":1e-28}',
+      '{"a":9007199254740991}',
+      '"😀"',
+      '"${'x' * 32768}"',
+      // The same name in different objects, escaped quotes in names.
+      '{"a":{"a":1},"b":[{"a":2},{"a":3}]}',
+      r'{"a\"b":1,"a":2,"c":"x\"y"}',
+      '{"a":1.0000000000000000000000000001}',
+      '{"a":79228162514264337593543950335}',
+    ];
+    final rejected = <String>[
+      '${'[' * 25}0${']' * 25}',
+      '${'[' * 25}${']' * 25}',
+      members(129),
+      '[${List.filled(501, 0).join(',')}]',
+      '{"${'k' * 257}":0}',
+      '{"a":1e-29}',
+      '{"a":1e-30}',
+      '{"a":1e30}',
+      '{"a":8e28}',
+      r'{"a":"x\u0000"}',
+      r'{"x\u0000":1}',
+      r'{"a":"\ud800"}',
+      r'{"a":"\udc00x"}',
+      r'{"\ud800":1}',
+      r'"\udc00\ud800"',
+      '{"a":"${'x' * 32769}"}',
+      // Raw-text checks (decoding would collapse or round these).
+      '{"a":1,"a":2}',
+      '[{"b":{"a":2,"a":3}}]',
+      r'{"a\"b":1,"a\"b":2}',
+      '{"a":1.00000000000000000000000000001}',
+      '{"a":79228162514264337593543950336}',
+      '{"a":${'1' * 129}}',
+      '{',
+      '',
+    ];
+    for (final json in accepted) {
+      expect(ProposalDraftCodec.fitsSyncShape(json), isTrue, reason: json);
+    }
+    for (final json in rejected) {
+      expect(ProposalDraftCodec.fitsSyncShape(json), isFalse, reason: json);
+    }
+    expect(ChatProposalSyncBounds.nestedDepth, 24);
+    expect(ChatProposalSyncBounds.members, 128);
+    expect(ChatProposalSyncBounds.items, 500);
+    expect(ChatProposalSyncBounds.key, 256);
+    expect(ChatProposalSyncBounds.decimalScale, 28);
+
+    // Draft: an amount below decimal range; the local card still works.
+    final single = session(message());
+    final tiny = update(
+      single,
+      ProposalSetAmount(
+        single.cards.single.lines.single.entry.id,
+        Quantity(1e-30, 'g'),
+      ),
+    ).session;
+    expect(
+      ProposalDraftCodec.syncProjection(tiny, tiny.cards.single.id).issue,
+      ProposalIssue.syncPayloadTooLarge,
+    );
+    expect(roundTrip(tiny), tiny);
+    // Message budget: a policy value below decimal range.
+    final policy = ProposalEngine.build(
+      ProposalRequest(
+        interpretation: message(),
+        messageId: '019a1b2c-0000-7000-8000-000000009999',
+        idSource: FixedIds(),
+        context: context(),
+        facts: ProposalFacts(),
+        policy: ProposalPolicy.fromThresholds({
+          'proposalQuestionRelativeDelta': 1e-30,
+        }),
+      ),
+    ).value!;
+    expect(
+      ProposalDraftCodec.syncProjection(policy, policy.cards.single.id).issue,
+      ProposalIssue.syncPayloadTooLarge,
+    );
+    expect(
+      ProposalDraftCodec.fitsSync(
+        jsonEncode(ProposalDraftCodec.encodeMessageBudget(policy)),
+      ),
+      isFalse,
+    );
   });
 }

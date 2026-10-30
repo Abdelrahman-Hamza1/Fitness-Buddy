@@ -146,6 +146,9 @@ final class FoodCardView {
     required this.undoRefused,
     required this.referenceDate,
     required this.updating,
+    required this.rebuilt,
+    required this.tooLargeToSync,
+    required this.canUpdate,
   });
 
   /// The view of [card] in the thread; [referenceDate] is the day of the
@@ -154,6 +157,7 @@ final class FoodCardView {
     BuddyCard card, {
     LocalDate? referenceDate,
     bool updating = false,
+    Map<String, Object?>? turnAnswer,
   }) {
     final proposal = card.card;
     final asked = {for (final q in card.budget.questions) q.dimensionId: q};
@@ -226,11 +230,19 @@ final class FoodCardView {
       couldNotLog: card.couldNotLog,
       logged: card.logged,
       removed: card.removed,
-      discardUndoFrom: card.discardedFrom == null ? null : card.discardedAt,
+      discardUndoFrom: card.undoEntryId == null ? null : card.discardedAt,
       undoEntryId: card.undoEntryId,
       undoRefused: card.undoRefused,
       referenceDate: referenceDate,
       updating: updating,
+      rebuilt: card.rebuilt,
+      // A23 D15: kept on this phone; the mapper parks it for sync.
+      tooLargeToSync:
+          card.resolution == CardResolution.open &&
+          ProposalDraftCodec.syncProjection(card.session, card.id).issue ==
+              ProposalIssue.syncPayloadTooLarge,
+      canUpdate:
+          (card.origin?.interpretation ?? turnAnswer)?.isNotEmpty ?? false,
     );
   }
 
@@ -296,6 +308,24 @@ final class FoodCardView {
   /// A follow-up about this card is in flight: it's read-only until the
   /// answer arrives ("Updating…", A22b review 1).
   final bool updating;
+
+  /// Rebuilt with the current food details into its own message (A23 D11):
+  /// the note says so.
+  final bool rebuilt;
+
+  /// Too large to sync to other phones (A23 D15): the note says how to fix
+  /// it.
+  final bool tooLargeToSync;
+
+  /// Its answer is stored, so a stale card can be updated offline (A23
+  /// D13).
+  final bool canUpdate;
+
+  /// Its food details changed since it was made (a reopened card, A23 D13):
+  /// read-only, "Update card" or Discard.
+  bool get factsChanged => card.issues.any(
+    (i) => i == ProposalIssue.staleFacts || i == ProposalIssue.factsMismatch,
+  );
 
   /// The day it would be logged to (or was).
   LocalDate get date => logged?.preview.date ?? card.preview.date;

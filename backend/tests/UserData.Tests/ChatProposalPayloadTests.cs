@@ -102,7 +102,7 @@ public sealed class ChatProposalPayloadTests
         var items = root.GetProperty("payloads").EnumerateArray().ToArray();
         var ids = items.Select(c => c.GetProperty("id").GetString()!).ToArray();
         Assert.Equal(ids.Length, ids.Distinct(StringComparer.Ordinal).Count());
-        Assert.Equal(232, items.Length);
+        Assert.Equal(235, items.Length);
         // One readable failure listing every disagreeing case, live or tombstone.
         var disagreements = ChatProposalCases.Corpus()
             .SelectMany(c => LiveAndTombstone.Where(t => (c.Valid ? null : "invalidPayload") != Admit(c.Entity, c.Raw, t)).Select(t => $"{c.Id}{(t ? " (tombstone)" : "")}"))

@@ -1,3 +1,4 @@
+import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/errors/error_reporting.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -47,6 +48,19 @@ final class BuddyRefreshFailed extends BuddyIssue {
 
   @override
   String toString() => 'BuddyRefreshFailed';
+}
+
+/// A stored card or session couldn't be reopened as it was (A23 D13):
+/// only the [issue] type is reported, never its content.
+final class BuddyRestoreIssue extends BuddyIssue {
+  /// The issue.
+  const new(this.issue) : super._();
+
+  /// Why (`sessionIncomplete`, `staleFacts`, …).
+  final ProposalIssue issue;
+
+  @override
+  String toString() => 'BuddyRestoreIssue(${issue.name})';
 }
 
 /// Where Buddy issues go.

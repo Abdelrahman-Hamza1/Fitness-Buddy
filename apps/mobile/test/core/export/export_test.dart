@@ -143,6 +143,15 @@ Future<void> _seed(AppDatabase db, {int diaryRows = 1}) async {
             'message_text': 'حمص 🍎',
           });
         }
+        if (spec.entity == 'proposal') {
+          values.addAll({
+            'kind': 'foodLog',
+            'status': 'pending',
+            'outcome': null,
+            'resolved_at': null,
+            'interpretation_json': '[[0,null,null,null,[],null]]',
+          });
+        }
         if (spec.entity == 'personalFood') {
           values.addAll({
             'entry_serving_unit': null,
@@ -287,6 +296,43 @@ void main() {
           c.name,
       ],
     );
+  });
+
+  // rule: A23 proposal-export
+  test('A23 export includes proposals and the local chat columns', () async {
+    final db = memoryDatabase();
+    await _seed(db);
+    final files = _build(await _read(db));
+    final data = _json(files)['data'] as Map;
+    final proposals = data['proposal'] as List;
+    expect(proposals, hasLength(1));
+    final row = proposals.single as Map<String, dynamic>;
+    expect(row['id'], 'proposal-live');
+    expect(row['kind'], 'foodLog');
+    expect(row['status'], 'pending');
+    expect(row['outcome'], null);
+    expect(row['draft_json'], {'sugar': 1.2});
+    expect(row['interpretation_json'], [
+      [0, null, null, null, <Object?>[], null],
+    ]);
+    expect(row.keys, isNot(contains('device_id')));
+    final csv = files.singleWhere((f) => f.name.endsWith('-proposals.csv'));
+    final header = _csv(csv).first;
+    expect(
+      [header.first.replaceFirst('\uFEFF', ''), ...header.skip(1)],
+      [
+        for (final c
+            in exportRegistryV1
+                .singleWhere((s) => s.entity == 'proposal')
+                .columns
+                .where((c) => c.name != 'version' && c.name != 'origin'))
+          c.name,
+      ],
+    );
+    // The local-only chat columns are the user's own data: exported.
+    final chat = (data['chatMessage'] as List).single as Map<String, dynamic>;
+    expect(chat['request_json'], {'sugar': 1.2});
+    expect(chat['answer_json'], {'sugar': 1.2});
   });
 
   test('AC-030 every synced table has an export spec', () {

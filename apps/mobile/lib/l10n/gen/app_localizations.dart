@@ -981,17 +981,47 @@ abstract class AppLocalizations {
   /// **'Undo'**
   String get proposalUndo;
 
-  /// A logged card after Undo: read-only (A22 D25).
-  ///
-  /// In en, this message translates to:
-  /// **'Undone. Type it again or search to log it.'**
-  String get proposalUndone;
-
   /// A discarded proposal card (AI-037).
   ///
   /// In en, this message translates to:
   /// **'Discarded. Nothing was logged.'**
   String get proposalDiscarded;
+
+  /// A historical proposal card another phone replaced; read-only (A23 D13).
+  ///
+  /// In en, this message translates to:
+  /// **'No longer current. Nothing was logged.'**
+  String get proposalSuperseded;
+
+  /// A reopened proposal card whose food details changed since it was made; it can't be logged as it is (A23 D13).
+  ///
+  /// In en, this message translates to:
+  /// **'Food details changed since.'**
+  String get proposalFactsChanged;
+
+  /// Button on a reopened card whose food details changed: rebuild it with the current details (A23 D13).
+  ///
+  /// In en, this message translates to:
+  /// **'Update card'**
+  String get proposalUpdateCard;
+
+  /// Placeholder for a saved proposal card that can't be shown any more; it can be discarded (A23 D13).
+  ///
+  /// In en, this message translates to:
+  /// **'This card couldn\'t be reopened.'**
+  String get proposalUnrestorable;
+
+  /// Note on a proposal card too large to sync to the user's other phones; it is kept on this phone and works as usual (A23 D15).
+  ///
+  /// In en, this message translates to:
+  /// **'Too large to sync to your other phones. It stays on this phone.'**
+  String get proposalTooLargeToSync;
+
+  /// Note under a proposal card Buddy rebuilt with the current food details (A23 D11).
+  ///
+  /// In en, this message translates to:
+  /// **'I updated this card with your current food details.'**
+  String get buddyCardUpdatedNote;
 
   /// Proposal card: Log it wrote nothing (A22 D25).
   ///

@@ -1,7 +1,12 @@
 import 'dart:async';
 
+import 'package:drift/drift.dart' show Value;
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/db/write_guard.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
+import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
+import 'package:fb_mobile/features/buddy/buddy.dart';
+import 'package:fb_mobile/features/buddy/data/proposal_mappers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -121,4 +126,100 @@ void main() {
       }
     }
   });
+
+  // rule: A23 privacy-canaries
+  test(
+    'A23 proposal persistence never logs drafts answers or results',
+    () async {
+      for (final canary in _canaries) {
+        final reply = {
+          ...message([
+            intent([
+              {...item(), 'mention': canary},
+            ], slot: 'breakfast'),
+            intent([
+              {...item(), 'mention': canary},
+            ], slot: 'lunch'),
+          ]),
+          'model': canary,
+        };
+        final scenarios = <String, Future<BuddyHarness> Function()>{
+          'reply, confirm, discard, undo, restore': () async {
+            final h = BuddyHarness()..answer(reply);
+            await h.thread.send(canary, texts);
+            final [a, b] = h.state.turns.single.cards;
+            await h.thread.confirm(a.id);
+            await h.thread.undo(a.id);
+            await h.thread.discard(b.id);
+            await h.thread.restoreDiscarded(b.id);
+            h.restart();
+            await h.thread.ensureRestored(0);
+            expect(h.state.turns.single.cards, hasLength(2));
+            return h;
+          },
+          'rejected resolve': () async {
+            final h = BuddyHarness()..answer(reply);
+            await h.thread.send(canary, texts);
+            final a = h.state.turns.single.cards.first;
+            await h.thread.discard(a.id);
+            // A stale copy of the card confirms against a resolved row.
+            await h.resolution.confirm(
+              a.session,
+              a.id,
+              CardOrigin(
+                interpretation: h.state.turns.single.interpretation!,
+                messageId: h.state.turns.single.assistantMessageId!,
+                referenceTime: h.state.turns.single.message.time,
+              ),
+            );
+            return h;
+          },
+          'unrestorable and mapper errors': () async {
+            final h = BuddyHarness()..answer(reply);
+            await h.thread.send(canary, texts);
+            final m = h.state.turns.single.assistantMessageId!;
+            await runAuthorizedWrite(
+              () => h.db.customStatement(
+                'UPDATE chat_messages SET budget_json = ? WHERE id = ?',
+                ['{"x":"$canary"}', m],
+              ),
+            );
+            h.restart();
+            await h.thread.ensureRestored(0);
+            expect(h.state.turns.single.unrestorable, hasLength(2));
+            for (final row in await h.proposals()) {
+              final tomb = row.copyWith(deletedAt: const Value(1));
+              expect(
+                () => proposalToSync(tomb),
+                throwsA(
+                  isA<ProposalMappingError>().having(
+                    (e) => '$e',
+                    'text',
+                    isNot(contains(canary)),
+                  ),
+                ),
+              );
+            }
+            return h;
+          },
+        };
+        for (final MapEntry(key: name, value: run) in scenarios.entries) {
+          late BuddyHarness h;
+          final lines = await _captured(() async => h = await run());
+          for (final text in [
+            ...lines,
+            ..._strings(h),
+            for (final t in h.state.turns) ...t.unrestorable.map((u) => '$u'),
+            for (final r in await ProposalRepository(h.db).pending()) '$r',
+          ]) {
+            expect(
+              text,
+              isNot(contains(canary)),
+              reason: '$name leaked into "$text"',
+            );
+          }
+        }
+      }
+    },
+  );
 }

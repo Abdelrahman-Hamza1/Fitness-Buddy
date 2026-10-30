@@ -436,3 +436,24 @@ CREATE TRIGGER weekly_plan_days_no_delete BEFORE DELETE ON weekly_plan_days
 BEGIN
   SELECT RAISE(ABORT, 'tombstone, never delete');
 END;
+
+-- proposals (entity 'proposal', A23)
+CREATE TRIGGER proposals_outbox_ai AFTER INSERT ON proposals
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('proposal', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER proposals_outbox_au AFTER UPDATE ON proposals
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('proposal', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER proposals_no_delete BEFORE DELETE ON proposals
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;

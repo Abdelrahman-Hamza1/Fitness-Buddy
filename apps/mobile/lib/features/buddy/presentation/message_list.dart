@@ -82,6 +82,9 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
             style: FbType.body.copyWith(color: scheme.onSurfaceVariant),
           ),
         ),
+      // Stored cards with no turn to show them in (A23 D13).
+      for (final card in thread.orphans)
+        UnrestorableCardRow(key: ValueKey(card.id), card: card),
       for (final turn in thread.turns) ..._turn(context, ref, turn, rows),
     ];
     _follow(thread, rows.length);
@@ -202,14 +205,19 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
           key: index == 0
               ? _firstCards.putIfAbsent(card.id, GlobalKey.new)
               : ValueKey(card.id),
+          onSearch: onSearch,
           view: FoodCardView.of(
             card,
             referenceDate: turn.message.time.localDate,
             updating: ref
                 .read(buddyThreadControllerProvider)
                 .isUpdating(card.id),
+            turnAnswer: turn.interpretation,
           ),
         ),
+      // Stored cards that couldn't be reopened (A23 D13).
+      for (final card in turn.unrestorable)
+        UnrestorableCardRow(key: ValueKey(card.id), card: card),
     ];
   }
 }

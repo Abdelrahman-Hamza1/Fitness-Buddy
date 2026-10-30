@@ -50,9 +50,20 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
   final _focus = FocusNode();
   final _sheet = DraggableScrollableController();
 
+  /// The thread, kept to flush its adjusted cards when the sheet goes away.
+  late final BuddyThreadController _thread;
+
+  /// Pausing the app with the sheet open writes the adjusted cards too
+  /// (A23 D8).
+  late final AppLifecycleListener _lifecycle;
+
   @override
   void initState() {
     super.initState();
+    _thread = ref.read(buddyThreadControllerProvider.notifier);
+    _lifecycle = AppLifecycleListener(
+      onPause: () => unawaited(_thread.flush()),
+    );
     // Text handed back while the sheet was closed (a second 503) is there
     // when it opens again (after this frame: taking it changes the thread).
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -73,6 +84,9 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
 
   @override
   void dispose() {
+    // Dismissing the sheet writes every adjusted card (A23 D8).
+    unawaited(_thread.flush());
+    _lifecycle.dispose();
     _text.dispose();
     _focus.dispose();
     _sheet.dispose();

@@ -5416,6 +5416,28 @@ class $ChatMessagesTable extends ChatMessages
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _requestJsonMeta = const VerificationMeta(
+    'requestJson',
+  );
+  @override
+  late final GeneratedColumn<String> requestJson = GeneratedColumn<String>(
+    'request_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _answerJsonMeta = const VerificationMeta(
+    'answerJson',
+  );
+  @override
+  late final GeneratedColumn<String> answerJson = GeneratedColumn<String>(
+    'answer_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -5433,6 +5455,8 @@ class $ChatMessagesTable extends ChatMessages
     replyToMessageId,
     codecVersion,
     budgetJson,
+    requestJson,
+    answerJson,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5563,6 +5587,21 @@ class $ChatMessagesTable extends ChatMessages
         budgetJson.isAcceptableOrUnknown(data['budget_json']!, _budgetJsonMeta),
       );
     }
+    if (data.containsKey('request_json')) {
+      context.handle(
+        _requestJsonMeta,
+        requestJson.isAcceptableOrUnknown(
+          data['request_json']!,
+          _requestJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('answer_json')) {
+      context.handle(
+        _answerJsonMeta,
+        answerJson.isAcceptableOrUnknown(data['answer_json']!, _answerJsonMeta),
+      );
+    }
     return context;
   }
 
@@ -5632,6 +5671,14 @@ class $ChatMessagesTable extends ChatMessages
         DriftSqlType.string,
         data['${effectivePrefix}budget_json'],
       ),
+      requestJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}request_json'],
+      ),
+      answerJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}answer_json'],
+      ),
     );
   }
 
@@ -5689,6 +5736,16 @@ class ChatMessageRow extends DataClass implements Insertable<ChatMessageRow> {
 
   /// The shared question budget, on the assistant row only. Bounded JSON.
   final String? budgetJson;
+
+  /// Local-only (TD-102, A23 D4): the frozen interpret request of a user row
+  /// while it waits (A23b), nulled at a terminal status. Never synced or
+  /// logged; exported as the user's own data.
+  final String? requestJson;
+
+  /// Local-only (TD-102, A23 D14): the raw interpret answer of an assistant
+  /// row, so a stale restored card rebuilds offline; nulled once no card of
+  /// the message is pending. Never synced or logged; exported.
+  final String? answerJson;
   const ChatMessageRow({
     required this.id,
     required this.createdAt,
@@ -5705,6 +5762,8 @@ class ChatMessageRow extends DataClass implements Insertable<ChatMessageRow> {
     this.replyToMessageId,
     this.codecVersion,
     this.budgetJson,
+    this.requestJson,
+    this.answerJson,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -5733,6 +5792,12 @@ class ChatMessageRow extends DataClass implements Insertable<ChatMessageRow> {
     }
     if (!nullToAbsent || budgetJson != null) {
       map['budget_json'] = Variable<String>(budgetJson);
+    }
+    if (!nullToAbsent || requestJson != null) {
+      map['request_json'] = Variable<String>(requestJson);
+    }
+    if (!nullToAbsent || answerJson != null) {
+      map['answer_json'] = Variable<String>(answerJson);
     }
     return map;
   }
@@ -5764,6 +5829,12 @@ class ChatMessageRow extends DataClass implements Insertable<ChatMessageRow> {
       budgetJson: budgetJson == null && nullToAbsent
           ? const Value.absent()
           : Value(budgetJson),
+      requestJson: requestJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(requestJson),
+      answerJson: answerJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(answerJson),
     );
   }
 
@@ -5788,6 +5859,8 @@ class ChatMessageRow extends DataClass implements Insertable<ChatMessageRow> {
       replyToMessageId: serializer.fromJson<String?>(json['replyToMessageId']),
       codecVersion: serializer.fromJson<int?>(json['codecVersion']),
       budgetJson: serializer.fromJson<String?>(json['budgetJson']),
+      requestJson: serializer.fromJson<String?>(json['requestJson']),
+      answerJson: serializer.fromJson<String?>(json['answerJson']),
     );
   }
   @override
@@ -5809,6 +5882,8 @@ class ChatMessageRow extends DataClass implements Insertable<ChatMessageRow> {
       'replyToMessageId': serializer.toJson<String?>(replyToMessageId),
       'codecVersion': serializer.toJson<int?>(codecVersion),
       'budgetJson': serializer.toJson<String?>(budgetJson),
+      'requestJson': serializer.toJson<String?>(requestJson),
+      'answerJson': serializer.toJson<String?>(answerJson),
     };
   }
 
@@ -5828,6 +5903,8 @@ class ChatMessageRow extends DataClass implements Insertable<ChatMessageRow> {
     Value<String?> replyToMessageId = const Value.absent(),
     Value<int?> codecVersion = const Value.absent(),
     Value<String?> budgetJson = const Value.absent(),
+    Value<String?> requestJson = const Value.absent(),
+    Value<String?> answerJson = const Value.absent(),
   }) => ChatMessageRow(
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
@@ -5846,6 +5923,8 @@ class ChatMessageRow extends DataClass implements Insertable<ChatMessageRow> {
         : this.replyToMessageId,
     codecVersion: codecVersion.present ? codecVersion.value : this.codecVersion,
     budgetJson: budgetJson.present ? budgetJson.value : this.budgetJson,
+    requestJson: requestJson.present ? requestJson.value : this.requestJson,
+    answerJson: answerJson.present ? answerJson.value : this.answerJson,
   );
   ChatMessageRow copyWithCompanion(ChatMessagesCompanion data) {
     return ChatMessageRow(
@@ -5876,6 +5955,12 @@ class ChatMessageRow extends DataClass implements Insertable<ChatMessageRow> {
       budgetJson: data.budgetJson.present
           ? data.budgetJson.value
           : this.budgetJson,
+      requestJson: data.requestJson.present
+          ? data.requestJson.value
+          : this.requestJson,
+      answerJson: data.answerJson.present
+          ? data.answerJson.value
+          : this.answerJson,
     );
   }
 
@@ -5896,7 +5981,9 @@ class ChatMessageRow extends DataClass implements Insertable<ChatMessageRow> {
           ..write('language: $language, ')
           ..write('replyToMessageId: $replyToMessageId, ')
           ..write('codecVersion: $codecVersion, ')
-          ..write('budgetJson: $budgetJson')
+          ..write('budgetJson: $budgetJson, ')
+          ..write('requestJson: $requestJson, ')
+          ..write('answerJson: $answerJson')
           ..write(')'))
         .toString();
   }
@@ -5918,6 +6005,8 @@ class ChatMessageRow extends DataClass implements Insertable<ChatMessageRow> {
     replyToMessageId,
     codecVersion,
     budgetJson,
+    requestJson,
+    answerJson,
   );
   @override
   bool operator ==(Object other) =>
@@ -5937,7 +6026,9 @@ class ChatMessageRow extends DataClass implements Insertable<ChatMessageRow> {
           other.language == this.language &&
           other.replyToMessageId == this.replyToMessageId &&
           other.codecVersion == this.codecVersion &&
-          other.budgetJson == this.budgetJson);
+          other.budgetJson == this.budgetJson &&
+          other.requestJson == this.requestJson &&
+          other.answerJson == this.answerJson);
 }
 
 class ChatMessagesCompanion extends UpdateCompanion<ChatMessageRow> {
@@ -5956,6 +6047,8 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessageRow> {
   final Value<String?> replyToMessageId;
   final Value<int?> codecVersion;
   final Value<String?> budgetJson;
+  final Value<String?> requestJson;
+  final Value<String?> answerJson;
   final Value<int> rowid;
   const ChatMessagesCompanion({
     this.id = const Value.absent(),
@@ -5973,6 +6066,8 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessageRow> {
     this.replyToMessageId = const Value.absent(),
     this.codecVersion = const Value.absent(),
     this.budgetJson = const Value.absent(),
+    this.requestJson = const Value.absent(),
+    this.answerJson = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ChatMessagesCompanion.insert({
@@ -5991,6 +6086,8 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessageRow> {
     this.replyToMessageId = const Value.absent(),
     this.codecVersion = const Value.absent(),
     this.budgetJson = const Value.absent(),
+    this.requestJson = const Value.absent(),
+    this.answerJson = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        createdAt = Value(createdAt),
@@ -6017,6 +6114,8 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessageRow> {
     Expression<String>? replyToMessageId,
     Expression<int>? codecVersion,
     Expression<String>? budgetJson,
+    Expression<String>? requestJson,
+    Expression<String>? answerJson,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -6035,6 +6134,8 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessageRow> {
       if (replyToMessageId != null) 'reply_to_message_id': replyToMessageId,
       if (codecVersion != null) 'codec_version': codecVersion,
       if (budgetJson != null) 'budget_json': budgetJson,
+      if (requestJson != null) 'request_json': requestJson,
+      if (answerJson != null) 'answer_json': answerJson,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -6055,6 +6156,8 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessageRow> {
     Value<String?>? replyToMessageId,
     Value<int?>? codecVersion,
     Value<String?>? budgetJson,
+    Value<String?>? requestJson,
+    Value<String?>? answerJson,
     Value<int>? rowid,
   }) {
     return ChatMessagesCompanion(
@@ -6073,6 +6176,8 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessageRow> {
       replyToMessageId: replyToMessageId ?? this.replyToMessageId,
       codecVersion: codecVersion ?? this.codecVersion,
       budgetJson: budgetJson ?? this.budgetJson,
+      requestJson: requestJson ?? this.requestJson,
+      answerJson: answerJson ?? this.answerJson,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -6125,6 +6230,12 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessageRow> {
     if (budgetJson.present) {
       map['budget_json'] = Variable<String>(budgetJson.value);
     }
+    if (requestJson.present) {
+      map['request_json'] = Variable<String>(requestJson.value);
+    }
+    if (answerJson.present) {
+      map['answer_json'] = Variable<String>(answerJson.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -6149,6 +6260,1028 @@ class ChatMessagesCompanion extends UpdateCompanion<ChatMessageRow> {
           ..write('replyToMessageId: $replyToMessageId, ')
           ..write('codecVersion: $codecVersion, ')
           ..write('budgetJson: $budgetJson, ')
+          ..write('requestJson: $requestJson, ')
+          ..write('answerJson: $answerJson, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ProposalsTable extends Proposals
+    with TableInfo<$ProposalsTable, ProposalRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProposalsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+    'origin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedByUserMeta = const VerificationMeta(
+    'editedByUser',
+  );
+  @override
+  late final GeneratedColumn<bool> editedByUser = GeneratedColumn<bool>(
+    'edited_by_user',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_by_user" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    check: () =>
+        status.isIn(const ['pending', 'confirmed', 'discarded', 'superseded']),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _outcomeMeta = const VerificationMeta(
+    'outcome',
+  );
+  @override
+  late final GeneratedColumn<String> outcome = GeneratedColumn<String>(
+    'outcome',
+    aliasedName,
+    true,
+    check: () => outcome.isIn(const ['unchanged', 'adjusted', 'discarded']),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _resolvedAtMeta = const VerificationMeta(
+    'resolvedAt',
+  );
+  @override
+  late final GeneratedColumn<int> resolvedAt = GeneratedColumn<int>(
+    'resolved_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _originMessageIdMeta = const VerificationMeta(
+    'originMessageId',
+  );
+  @override
+  late final GeneratedColumn<String> originMessageId = GeneratedColumn<String>(
+    'origin_message_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _budgetMessageIdMeta = const VerificationMeta(
+    'budgetMessageId',
+  );
+  @override
+  late final GeneratedColumn<String> budgetMessageId = GeneratedColumn<String>(
+    'budget_message_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _codecVersionMeta = const VerificationMeta(
+    'codecVersion',
+  );
+  @override
+  late final GeneratedColumn<int> codecVersion = GeneratedColumn<int>(
+    'codec_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _interpretationJsonMeta =
+      const VerificationMeta('interpretationJson');
+  @override
+  late final GeneratedColumn<String> interpretationJson =
+      GeneratedColumn<String>(
+        'interpretation_json',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _draftJsonMeta = const VerificationMeta(
+    'draftJson',
+  );
+  @override
+  late final GeneratedColumn<String> draftJson = GeneratedColumn<String>(
+    'draft_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    kind,
+    status,
+    outcome,
+    resolvedAt,
+    originMessageId,
+    budgetMessageId,
+    codecVersion,
+    interpretationJson,
+    draftJson,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'proposals';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ProposalRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedHlcMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('origin')) {
+      context.handle(
+        _originMeta,
+        origin.isAcceptableOrUnknown(data['origin']!, _originMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originMeta);
+    }
+    if (data.containsKey('edited_by_user')) {
+      context.handle(
+        _editedByUserMeta,
+        editedByUser.isAcceptableOrUnknown(
+          data['edited_by_user']!,
+          _editedByUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('outcome')) {
+      context.handle(
+        _outcomeMeta,
+        outcome.isAcceptableOrUnknown(data['outcome']!, _outcomeMeta),
+      );
+    }
+    if (data.containsKey('resolved_at')) {
+      context.handle(
+        _resolvedAtMeta,
+        resolvedAt.isAcceptableOrUnknown(data['resolved_at']!, _resolvedAtMeta),
+      );
+    }
+    if (data.containsKey('origin_message_id')) {
+      context.handle(
+        _originMessageIdMeta,
+        originMessageId.isAcceptableOrUnknown(
+          data['origin_message_id']!,
+          _originMessageIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('budget_message_id')) {
+      context.handle(
+        _budgetMessageIdMeta,
+        budgetMessageId.isAcceptableOrUnknown(
+          data['budget_message_id']!,
+          _budgetMessageIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('codec_version')) {
+      context.handle(
+        _codecVersionMeta,
+        codecVersion.isAcceptableOrUnknown(
+          data['codec_version']!,
+          _codecVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_codecVersionMeta);
+    }
+    if (data.containsKey('interpretation_json')) {
+      context.handle(
+        _interpretationJsonMeta,
+        interpretationJson.isAcceptableOrUnknown(
+          data['interpretation_json']!,
+          _interpretationJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('draft_json')) {
+      context.handle(
+        _draftJsonMeta,
+        draftJson.isAcceptableOrUnknown(data['draft_json']!, _draftJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_draftJsonMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ProposalRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProposalRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      origin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin'],
+      )!,
+      editedByUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited_by_user'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      outcome: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}outcome'],
+      ),
+      resolvedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}resolved_at'],
+      ),
+      originMessageId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin_message_id'],
+      ),
+      budgetMessageId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}budget_message_id'],
+      ),
+      codecVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}codec_version'],
+      )!,
+      interpretationJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}interpretation_json'],
+      ),
+      draftJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}draft_json'],
+      )!,
+    );
+  }
+
+  @override
+  $ProposalsTable createAlias(String alias) {
+    return $ProposalsTable(attachedDatabase, alias);
+  }
+}
+
+class ProposalRow extends DataClass implements Insertable<ProposalRow> {
+  /// UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys
+  /// (`core/db/natural_id.dart`). Lowercase canonical text.
+  final String id;
+
+  /// When the row was first written, UTC ms (0 for seeds).
+  final int createdAt;
+
+  /// The hybrid logical clock of the last write (`fb_domain` `Hlc` text).
+  final String updatedHlc;
+
+  /// 1 on insert, +1 per write: the local optimistic concurrency check.
+  final int version;
+
+  /// The tombstone, UTC ms. Synced rows are never hard-deleted.
+  final int? deletedAt;
+
+  /// The install that made the last write (the HLC's node id, TD-053).
+  final String deviceId;
+
+  /// `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`.
+  final String origin;
+
+  /// Provenance: the user overrode a value that came from another source
+  /// (AI-072, the "edited by you" badge). Set only by ops.
+  final bool editedByUser;
+
+  /// The open kind vocabulary (`foodLog`).
+  final String kind;
+
+  /// `pending`, `confirmed`, `discarded` or `superseded`.
+  final String status;
+
+  /// `unchanged`, `adjusted`, `discarded`, or `null` while pending.
+  final String? outcome;
+
+  /// When it was resolved, UTC ms; `null` while pending.
+  final int? resolvedAt;
+
+  /// The creating assistant message; immutable.
+  final String? originMessageId;
+
+  /// The assistant message whose budget the card belongs to now.
+  final String? budgetMessageId;
+
+  /// Version of the engine JSON format.
+  final int codecVersion;
+
+  /// This card's normalized intents.
+  final String? interpretationJson;
+
+  /// The compact card draft.
+  final String draftJson;
+  const ProposalRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedHlc,
+    required this.version,
+    this.deletedAt,
+    required this.deviceId,
+    required this.origin,
+    required this.editedByUser,
+    required this.kind,
+    required this.status,
+    this.outcome,
+    this.resolvedAt,
+    this.originMessageId,
+    this.budgetMessageId,
+    required this.codecVersion,
+    this.interpretationJson,
+    required this.draftJson,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
+    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['device_id'] = Variable<String>(deviceId);
+    map['origin'] = Variable<String>(origin);
+    map['edited_by_user'] = Variable<bool>(editedByUser);
+    map['kind'] = Variable<String>(kind);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || outcome != null) {
+      map['outcome'] = Variable<String>(outcome);
+    }
+    if (!nullToAbsent || resolvedAt != null) {
+      map['resolved_at'] = Variable<int>(resolvedAt);
+    }
+    if (!nullToAbsent || originMessageId != null) {
+      map['origin_message_id'] = Variable<String>(originMessageId);
+    }
+    if (!nullToAbsent || budgetMessageId != null) {
+      map['budget_message_id'] = Variable<String>(budgetMessageId);
+    }
+    map['codec_version'] = Variable<int>(codecVersion);
+    if (!nullToAbsent || interpretationJson != null) {
+      map['interpretation_json'] = Variable<String>(interpretationJson);
+    }
+    map['draft_json'] = Variable<String>(draftJson);
+    return map;
+  }
+
+  ProposalsCompanion toCompanion(bool nullToAbsent) {
+    return ProposalsCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
+      version: Value(version),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deviceId: Value(deviceId),
+      origin: Value(origin),
+      editedByUser: Value(editedByUser),
+      kind: Value(kind),
+      status: Value(status),
+      outcome: outcome == null && nullToAbsent
+          ? const Value.absent()
+          : Value(outcome),
+      resolvedAt: resolvedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(resolvedAt),
+      originMessageId: originMessageId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(originMessageId),
+      budgetMessageId: budgetMessageId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(budgetMessageId),
+      codecVersion: Value(codecVersion),
+      interpretationJson: interpretationJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(interpretationJson),
+      draftJson: Value(draftJson),
+    );
+  }
+
+  factory ProposalRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProposalRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
+      version: serializer.fromJson<int>(json['version']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      origin: serializer.fromJson<String>(json['origin']),
+      editedByUser: serializer.fromJson<bool>(json['editedByUser']),
+      kind: serializer.fromJson<String>(json['kind']),
+      status: serializer.fromJson<String>(json['status']),
+      outcome: serializer.fromJson<String?>(json['outcome']),
+      resolvedAt: serializer.fromJson<int?>(json['resolvedAt']),
+      originMessageId: serializer.fromJson<String?>(json['originMessageId']),
+      budgetMessageId: serializer.fromJson<String?>(json['budgetMessageId']),
+      codecVersion: serializer.fromJson<int>(json['codecVersion']),
+      interpretationJson: serializer.fromJson<String?>(
+        json['interpretationJson'],
+      ),
+      draftJson: serializer.fromJson<String>(json['draftJson']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
+      'version': serializer.toJson<int>(version),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'origin': serializer.toJson<String>(origin),
+      'editedByUser': serializer.toJson<bool>(editedByUser),
+      'kind': serializer.toJson<String>(kind),
+      'status': serializer.toJson<String>(status),
+      'outcome': serializer.toJson<String?>(outcome),
+      'resolvedAt': serializer.toJson<int?>(resolvedAt),
+      'originMessageId': serializer.toJson<String?>(originMessageId),
+      'budgetMessageId': serializer.toJson<String?>(budgetMessageId),
+      'codecVersion': serializer.toJson<int>(codecVersion),
+      'interpretationJson': serializer.toJson<String?>(interpretationJson),
+      'draftJson': serializer.toJson<String>(draftJson),
+    };
+  }
+
+  ProposalRow copyWith({
+    String? id,
+    int? createdAt,
+    String? updatedHlc,
+    int? version,
+    Value<int?> deletedAt = const Value.absent(),
+    String? deviceId,
+    String? origin,
+    bool? editedByUser,
+    String? kind,
+    String? status,
+    Value<String?> outcome = const Value.absent(),
+    Value<int?> resolvedAt = const Value.absent(),
+    Value<String?> originMessageId = const Value.absent(),
+    Value<String?> budgetMessageId = const Value.absent(),
+    int? codecVersion,
+    Value<String?> interpretationJson = const Value.absent(),
+    String? draftJson,
+  }) => ProposalRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+    version: version ?? this.version,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deviceId: deviceId ?? this.deviceId,
+    origin: origin ?? this.origin,
+    editedByUser: editedByUser ?? this.editedByUser,
+    kind: kind ?? this.kind,
+    status: status ?? this.status,
+    outcome: outcome.present ? outcome.value : this.outcome,
+    resolvedAt: resolvedAt.present ? resolvedAt.value : this.resolvedAt,
+    originMessageId: originMessageId.present
+        ? originMessageId.value
+        : this.originMessageId,
+    budgetMessageId: budgetMessageId.present
+        ? budgetMessageId.value
+        : this.budgetMessageId,
+    codecVersion: codecVersion ?? this.codecVersion,
+    interpretationJson: interpretationJson.present
+        ? interpretationJson.value
+        : this.interpretationJson,
+    draftJson: draftJson ?? this.draftJson,
+  );
+  ProposalRow copyWithCompanion(ProposalsCompanion data) {
+    return ProposalRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
+      version: data.version.present ? data.version.value : this.version,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      editedByUser: data.editedByUser.present
+          ? data.editedByUser.value
+          : this.editedByUser,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      status: data.status.present ? data.status.value : this.status,
+      outcome: data.outcome.present ? data.outcome.value : this.outcome,
+      resolvedAt: data.resolvedAt.present
+          ? data.resolvedAt.value
+          : this.resolvedAt,
+      originMessageId: data.originMessageId.present
+          ? data.originMessageId.value
+          : this.originMessageId,
+      budgetMessageId: data.budgetMessageId.present
+          ? data.budgetMessageId.value
+          : this.budgetMessageId,
+      codecVersion: data.codecVersion.present
+          ? data.codecVersion.value
+          : this.codecVersion,
+      interpretationJson: data.interpretationJson.present
+          ? data.interpretationJson.value
+          : this.interpretationJson,
+      draftJson: data.draftJson.present ? data.draftJson.value : this.draftJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProposalRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('kind: $kind, ')
+          ..write('status: $status, ')
+          ..write('outcome: $outcome, ')
+          ..write('resolvedAt: $resolvedAt, ')
+          ..write('originMessageId: $originMessageId, ')
+          ..write('budgetMessageId: $budgetMessageId, ')
+          ..write('codecVersion: $codecVersion, ')
+          ..write('interpretationJson: $interpretationJson, ')
+          ..write('draftJson: $draftJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    kind,
+    status,
+    outcome,
+    resolvedAt,
+    originMessageId,
+    budgetMessageId,
+    codecVersion,
+    interpretationJson,
+    draftJson,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProposalRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc &&
+          other.version == this.version &&
+          other.deletedAt == this.deletedAt &&
+          other.deviceId == this.deviceId &&
+          other.origin == this.origin &&
+          other.editedByUser == this.editedByUser &&
+          other.kind == this.kind &&
+          other.status == this.status &&
+          other.outcome == this.outcome &&
+          other.resolvedAt == this.resolvedAt &&
+          other.originMessageId == this.originMessageId &&
+          other.budgetMessageId == this.budgetMessageId &&
+          other.codecVersion == this.codecVersion &&
+          other.interpretationJson == this.interpretationJson &&
+          other.draftJson == this.draftJson);
+}
+
+class ProposalsCompanion extends UpdateCompanion<ProposalRow> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<String> updatedHlc;
+  final Value<int> version;
+  final Value<int?> deletedAt;
+  final Value<String> deviceId;
+  final Value<String> origin;
+  final Value<bool> editedByUser;
+  final Value<String> kind;
+  final Value<String> status;
+  final Value<String?> outcome;
+  final Value<int?> resolvedAt;
+  final Value<String?> originMessageId;
+  final Value<String?> budgetMessageId;
+  final Value<int> codecVersion;
+  final Value<String?> interpretationJson;
+  final Value<String> draftJson;
+  final Value<int> rowid;
+  const ProposalsCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
+    this.version = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.editedByUser = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.status = const Value.absent(),
+    this.outcome = const Value.absent(),
+    this.resolvedAt = const Value.absent(),
+    this.originMessageId = const Value.absent(),
+    this.budgetMessageId = const Value.absent(),
+    this.codecVersion = const Value.absent(),
+    this.interpretationJson = const Value.absent(),
+    this.draftJson = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ProposalsCompanion.insert({
+    required String id,
+    required int createdAt,
+    required String updatedHlc,
+    required int version,
+    this.deletedAt = const Value.absent(),
+    required String deviceId,
+    required String origin,
+    this.editedByUser = const Value.absent(),
+    required String kind,
+    required String status,
+    this.outcome = const Value.absent(),
+    this.resolvedAt = const Value.absent(),
+    this.originMessageId = const Value.absent(),
+    this.budgetMessageId = const Value.absent(),
+    required int codecVersion,
+    this.interpretationJson = const Value.absent(),
+    required String draftJson,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedHlc = Value(updatedHlc),
+       version = Value(version),
+       deviceId = Value(deviceId),
+       origin = Value(origin),
+       kind = Value(kind),
+       status = Value(status),
+       codecVersion = Value(codecVersion),
+       draftJson = Value(draftJson);
+  static Insertable<ProposalRow> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<String>? updatedHlc,
+    Expression<int>? version,
+    Expression<int>? deletedAt,
+    Expression<String>? deviceId,
+    Expression<String>? origin,
+    Expression<bool>? editedByUser,
+    Expression<String>? kind,
+    Expression<String>? status,
+    Expression<String>? outcome,
+    Expression<int>? resolvedAt,
+    Expression<String>? originMessageId,
+    Expression<String>? budgetMessageId,
+    Expression<int>? codecVersion,
+    Expression<String>? interpretationJson,
+    Expression<String>? draftJson,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
+      if (version != null) 'version': version,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deviceId != null) 'device_id': deviceId,
+      if (origin != null) 'origin': origin,
+      if (editedByUser != null) 'edited_by_user': editedByUser,
+      if (kind != null) 'kind': kind,
+      if (status != null) 'status': status,
+      if (outcome != null) 'outcome': outcome,
+      if (resolvedAt != null) 'resolved_at': resolvedAt,
+      if (originMessageId != null) 'origin_message_id': originMessageId,
+      if (budgetMessageId != null) 'budget_message_id': budgetMessageId,
+      if (codecVersion != null) 'codec_version': codecVersion,
+      if (interpretationJson != null) 'interpretation_json': interpretationJson,
+      if (draftJson != null) 'draft_json': draftJson,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ProposalsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<String>? updatedHlc,
+    Value<int>? version,
+    Value<int?>? deletedAt,
+    Value<String>? deviceId,
+    Value<String>? origin,
+    Value<bool>? editedByUser,
+    Value<String>? kind,
+    Value<String>? status,
+    Value<String?>? outcome,
+    Value<int?>? resolvedAt,
+    Value<String?>? originMessageId,
+    Value<String?>? budgetMessageId,
+    Value<int>? codecVersion,
+    Value<String?>? interpretationJson,
+    Value<String>? draftJson,
+    Value<int>? rowid,
+  }) {
+    return ProposalsCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
+      version: version ?? this.version,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deviceId: deviceId ?? this.deviceId,
+      origin: origin ?? this.origin,
+      editedByUser: editedByUser ?? this.editedByUser,
+      kind: kind ?? this.kind,
+      status: status ?? this.status,
+      outcome: outcome ?? this.outcome,
+      resolvedAt: resolvedAt ?? this.resolvedAt,
+      originMessageId: originMessageId ?? this.originMessageId,
+      budgetMessageId: budgetMessageId ?? this.budgetMessageId,
+      codecVersion: codecVersion ?? this.codecVersion,
+      interpretationJson: interpretationJson ?? this.interpretationJson,
+      draftJson: draftJson ?? this.draftJson,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (editedByUser.present) {
+      map['edited_by_user'] = Variable<bool>(editedByUser.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (outcome.present) {
+      map['outcome'] = Variable<String>(outcome.value);
+    }
+    if (resolvedAt.present) {
+      map['resolved_at'] = Variable<int>(resolvedAt.value);
+    }
+    if (originMessageId.present) {
+      map['origin_message_id'] = Variable<String>(originMessageId.value);
+    }
+    if (budgetMessageId.present) {
+      map['budget_message_id'] = Variable<String>(budgetMessageId.value);
+    }
+    if (codecVersion.present) {
+      map['codec_version'] = Variable<int>(codecVersion.value);
+    }
+    if (interpretationJson.present) {
+      map['interpretation_json'] = Variable<String>(interpretationJson.value);
+    }
+    if (draftJson.present) {
+      map['draft_json'] = Variable<String>(draftJson.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProposalsCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('kind: $kind, ')
+          ..write('status: $status, ')
+          ..write('outcome: $outcome, ')
+          ..write('resolvedAt: $resolvedAt, ')
+          ..write('originMessageId: $originMessageId, ')
+          ..write('budgetMessageId: $budgetMessageId, ')
+          ..write('codecVersion: $codecVersion, ')
+          ..write('interpretationJson: $interpretationJson, ')
+          ..write('draftJson: $draftJson, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -20405,6 +21538,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'ix_chat_messages_reply',
     'CREATE INDEX ix_chat_messages_reply ON chat_messages (reply_to_message_id) WHERE reply_to_message_id IS NOT NULL AND deleted_at IS NULL',
   );
+  late final $ProposalsTable proposals = $ProposalsTable(this);
+  late final Index ixProposalsBudget = Index(
+    'ix_proposals_budget',
+    'CREATE INDEX ix_proposals_budget ON proposals (budget_message_id) WHERE deleted_at IS NULL',
+  );
+  late final Index ixProposalsPending = Index(
+    'ix_proposals_pending',
+    'CREATE INDEX ix_proposals_pending ON proposals (created_at) WHERE status = \'pending\' AND deleted_at IS NULL',
+  );
   late final $WeighInsTable weighIns = $WeighInsTable(this);
   late final Index ixWeighInsLive = Index(
     'ix_weigh_ins_live',
@@ -20700,6 +21842,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'CREATE TRIGGER weekly_plan_days_no_delete BEFORE DELETE ON weekly_plan_days BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
     'weekly_plan_days_no_delete',
   );
+  late final Trigger proposalsOutboxAi = Trigger(
+    'CREATE TRIGGER proposals_outbox_ai AFTER INSERT ON proposals WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'proposal\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'proposals_outbox_ai',
+  );
+  late final Trigger proposalsOutboxAu = Trigger(
+    'CREATE TRIGGER proposals_outbox_au AFTER UPDATE ON proposals WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'proposal\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'proposals_outbox_au',
+  );
+  late final Trigger proposalsNoDelete = Trigger(
+    'CREATE TRIGGER proposals_no_delete BEFORE DELETE ON proposals BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'proposals_no_delete',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -20721,6 +21875,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     chatMessages,
     ixChatMessagesOrder,
     ixChatMessagesReply,
+    proposals,
+    ixProposalsBudget,
+    ixProposalsPending,
     weighIns,
     ixWeighInsLive,
     goalPhases,
@@ -20805,6 +21962,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     weeklyPlanDaysOutboxAi,
     weeklyPlanDaysOutboxAu,
     weeklyPlanDaysNoDelete,
+    proposalsOutboxAi,
+    proposalsOutboxAu,
+    proposalsNoDelete,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -21224,6 +22384,27 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'weekly_plan_days',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'proposals',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'proposals',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'proposals',
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [],

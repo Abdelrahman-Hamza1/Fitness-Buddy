@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
+import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/buddy_harness.dart';
@@ -57,7 +59,7 @@ void main() {
     final rows = await h.chat();
     final assistant = rows.singleWhere((r) => r.id == m2);
     expect(assistant.messageText, texts.updated);
-    expect(assistant.codecVersion, 1);
+    expect(assistant.codecVersion, ProposalDraftCodec.version);
     expect(assistant.budgetJson, isNotNull);
     expect(rows.where((r) => r.role == 'user').map((r) => r.status).toSet(), {
       'done',
@@ -201,5 +203,111 @@ void main() {
     expect(after.id, card.id);
     expect(after.preview.date, day);
     expect(after.preview.eaten?.kcal, 216);
+  });
+
+  // rule: A23 follow-up-membership
+  test('A23 follow-up moves the card to the new message in one change '
+      'set', () async {
+    final h = BuddyHarness()..answer(twoMeals());
+    await h.thread.send('an egg for breakfast and one for lunch', texts);
+    final m1 = h.state.turns.single.assistantMessageId!;
+    final [breakfast, lunch] = h.state.turns.single.cards;
+    h.answer(
+      message([
+        intent([item(amount: 2)], slot: 'lunch'),
+      ]),
+    );
+    await h.thread.send('make it 2 eggs', texts);
+    final m2 = h.state.turns.last.assistantMessageId!;
+    // One change set: the reply, the moved card, both budgets, M1's
+    // remaining member.
+    final set = h.applied.last;
+    final ops = set.ops;
+    expect(ops.whereType<CreateChatMessage>().single.id, m2);
+    final saves = ops.whereType<SaveProposalDraft>().toList();
+    final moved = saves.singleWhere((o) => o.id == lunch.id);
+    expect(moved.expectedBudgetMessageId, m1);
+    expect(moved.budgetMessageId, m2);
+    expect(moved.requirePending, isTrue);
+    final kept = saves.singleWhere((o) => o.id == breakfast.id);
+    expect(kept.budgetMessageId, m1);
+    expect(ops.whereType<SetChatMessageBudget>().map((o) => o.id), [m2, m1]);
+    // Stored: the card bound to M2 with its origin kept; M1's budget lists
+    // it as departed; each message at one revision.
+    final card = await h.proposal(lunch.id);
+    expect(card.budgetMessageId, m2);
+    expect(card.originMessageId, m1);
+    final b1 = jsonDecode((await h.row(m1)).budgetJson!) as Map;
+    expect(b1['cards'], [breakfast.id]);
+    expect(b1['departed'], [lunch.id]);
+    expect(
+      proposalRevisionOf((await h.proposal(breakfast.id)).draftJson),
+      b1['revision'],
+    );
+    final b2 = jsonDecode((await h.row(m2)).budgetJson!) as Map;
+    expect(b2['cards'], [lunch.id]);
+    expect(proposalRevisionOf(card.draftJson), b2['revision']);
+    expect((await h.row(m2)).answerJson, isNotNull);
+    expect(h.state.membership.departedFrom(m1), {lunch.id});
+    expect(h.state.membership.isFollowUp(m2), isTrue);
+    // Both messages restore as stored sessions.
+    final time = h.state.turns.first.message.time;
+    final r1 = await h.restorer.session(m1, referenceTime: time);
+    final r2 = await h.restorer.session(m2, referenceTime: time);
+    expect(r1.issue, isNull);
+    expect(r1.value!.cards.map((c) => c.id), [breakfast.id]);
+    expect(r2.issue, isNull);
+    expect(r2.value!.cards.single.id, lunch.id);
+    expect(r2.value!.cards.single.originMessageId, m1);
+    // Confirming the moved card counts as adjusted (a follow-up rebuilt it).
+    await h.thread.confirm(lunch.id);
+    expect((await h.proposal(lunch.id)).outcome, 'adjusted');
+  });
+
+  // rule: A23 follow-up-race
+  test('A23 a follow-up that loses the race with confirm saves a card-closed '
+      'reply', () async {
+    final h = BuddyHarness()..answer(twoMeals());
+    await h.thread.send('an egg for breakfast and one for lunch', texts);
+    final first = h.state.turns.single;
+    final lunch = first.cards.last;
+    final gate = Completer<void>();
+    final answer = json(
+      message([
+        intent([item(amount: 2)], slot: 'lunch'),
+      ]),
+    );
+    h.adapter.respond = (request) async {
+      await gate.future;
+      return await answer(request);
+    };
+    final sending = h.thread.send('make it 2 eggs', texts);
+    await pumpEventQueue();
+    // Logged meanwhile on another path (a restored copy, another phone).
+    final logged = await h.resolution.confirm(
+      lunch.session,
+      lunch.id,
+      CardOrigin(
+        interpretation: first.interpretation!,
+        messageId: first.assistantMessageId!,
+        referenceTime: first.message.time,
+      ),
+    );
+    expect(logged, isA<CardLogged>());
+    gate.complete();
+    await sending;
+    final reply = h.state.turns.last;
+    expect(reply.phase, BuddyTurnPhase.replied);
+    expect(reply.cards, isEmpty);
+    final row = (await h.chat()).singleWhere(
+      (r) => r.id == reply.assistantMessageId,
+    );
+    expect(row.messageText, texts.cardClosed);
+    expect(row.budgetJson, isNull);
+    // The logged card stayed where it was: confirmed, bound to M1.
+    final card = await h.proposal(lunch.id);
+    expect(card.status, 'confirmed');
+    expect(card.budgetMessageId, first.assistantMessageId);
+    expect(await h.entries(), hasLength(lunch.card.lines.length));
   });
 }

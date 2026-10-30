@@ -209,17 +209,22 @@ void main() {
     await unmountBuddy(tester, h);
   });
 
-  // rule: A22 undone-read-only
-  testWidgets('A22 log it after undo is not offered', (tester) async {
+  // rule: A23 undo-reopens
+  testWidgets('A23 undo opens the logged card again with Log it', (
+    tester,
+  ) async {
     final h = await showCard(tester, message());
     await tapInSheet(tester, find.text('Log it'));
     await settleBuddy(tester);
     await tapInSheet(tester, find.text('Undo'));
     await settleBuddy(tester);
-    expect(find.text('Undone. Type it again or search to log it.'), findsOne);
+    // A23 D10: pending again, as it was before Log it.
+    expect(find.text('Log it'), findsOneWidget);
     expect(find.text('Undo'), findsNothing);
-    expect(find.text('Log it'), findsNothing);
     expect((await h.entries()).where((e) => e.deletedAt == null), isEmpty);
+    await tapInSheet(tester, find.text('Log it'));
+    await settleBuddy(tester);
+    expect(find.text('Logged 72 kcal · 72 eaten today'), findsOneWidget);
     await unmountBuddy(tester, h);
   });
 

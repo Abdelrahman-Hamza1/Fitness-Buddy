@@ -23,6 +23,13 @@ abstract final class ProposalDraftCodec {
   /// B18 measures .NET string.Length, the same as Dart UTF-16 length.
   static const syncStringLimit = 32768;
 
+  /// The only version [restore] accepts, used for both the card and the
+  /// message budget. v2 (A23 D2) adds the intent `dateHint` and the card's
+  /// `assumed`, `removedComponents` and `adjusted`. No v1 card was ever
+  /// persisted, so there is no upgrader; a future bump ships upgraders for
+  /// every version that can have pending rows (TD-083).
+  static const version = 2;
+
   /// Canonical local projection; [syncProjection] separately enforces B18 size.
   static Map<String, Object?> encodeCard(
     ProposalSession session,
@@ -52,7 +59,7 @@ abstract final class ProposalDraftCodec {
         if (s.addOwners[e.key] == cardId) [e.key, _writeItem(e.value, foods)],
     ];
     return {
-      'codecVersion': 1,
+      'codecVersion': version,
       'id': cardId,
       'originMessageId': card.originMessageId,
       'budgetMessageId': card.budgetMessageId,
@@ -69,6 +76,10 @@ abstract final class ProposalDraftCodec {
       'components': components,
       'adds': adds,
       'removed': s.removed.where(itemIds.contains).toList(),
+      'assumed': s.assumedAmounts.where(itemIds.contains).toList()..sort(),
+      'removedComponents': s.removedComponents.where(itemIds.contains).toList()
+        ..sort(),
+      'adjusted': s.userAdjusted.contains(cardId),
       'choices': {
         for (final e in s.choices.entries)
           if (itemIds.any((id) => e.key.startsWith('$id/'))) e.key: e.value,
@@ -103,7 +114,7 @@ abstract final class ProposalDraftCodec {
       throw const _Invalid();
     }
     return {
-      'codecVersion': 1,
+      'codecVersion': version,
       'messageId': session._state.request.messageId,
       'revision': session._state.revision,
       'policy': [
@@ -136,7 +147,7 @@ abstract final class ProposalDraftCodec {
     final interpretation = jsonEncode(card.remove('interpretation'));
     final draft = jsonEncode(card);
     final message = jsonEncode(encodeMessageBudget(session));
-    if (![interpretation, draft, message].every(fitsSyncString)) {
+    if (![interpretation, draft, message].every(fitsSync)) {
       return const ProposalResult.failure(ProposalIssue.syncPayloadTooLarge);
     }
     return ProposalResult.success(
@@ -146,6 +157,33 @@ abstract final class ProposalDraftCodec {
 
   /// Public boundary helper pins supplementary characters to UTF-16 units.
   static bool fitsSyncString(String value) => value.length <= syncStringLimit;
+
+  /// Whether the server admits [json] as an opaque `*Json` sync field: its
+  /// UTF-16 length ([fitsSyncString]) and [fitsSyncShape].
+  static bool fitsSync(String json) =>
+      fitsSyncString(json) && fitsSyncShape(json);
+
+  /// Mirrors the server's generic nested pass over a `*Json` field
+  /// (`SyncPayloads.Representable`, A23 D3): at most
+  /// [ChatProposalSyncBounds.nestedDepth] nested containers, objects of at
+  /// most [ChatProposalSyncBounds.members] members, arrays of at most
+  /// [ChatProposalSyncBounds.items] items, keys of at most
+  /// [ChatProposalSyncBounds.key] UTF-16 units, nested strings of at most
+  /// [ChatProposalSyncBounds.json] units, no U+0000 and no unpaired surrogate
+  /// in any string or key, and every number exactly representable as a C#
+  /// `decimal`, and no object with a duplicate member. Malformed JSON
+  /// fails. Numbers and member names are checked on the raw text, as the
+  /// server reads it (decoding would round numbers and collapse duplicate
+  /// members).
+  static bool fitsSyncShape(String json) {
+    final Object? root;
+    try {
+      root = jsonDecode(json);
+    } on FormatException {
+      return false;
+    }
+    return _representable(root, 0) && _rawTokensRepresentable(json);
+  }
 
   /// Inverse of [syncProjection] for one synced `proposal` row: the card map
   /// [restore] takes. Any failure is a fixed issue and never throws: an
@@ -326,6 +364,9 @@ abstract final class ProposalDraftCodec {
           'slots',
           'cookingFatIds',
           'environment',
+          'assumed',
+          'removedComponents',
+          'adjusted',
         ]);
         environment = row['environment'];
         final cardEnvironment = _readEnvironment(environment, context);
@@ -428,6 +469,16 @@ abstract final class ProposalDraftCodec {
         final removed = _strings(row['removed']);
         if (!removed.every(itemIds.contains)) throw const _Invalid();
         state.removed.addAll(removed);
+        final assumed = _strings(row['assumed']);
+        final removedComponents = _strings(row['removedComponents']);
+        if (!assumed.every(itemIds.contains) ||
+            !removedComponents.every(itemIds.contains) ||
+            row['adjusted'] is! bool) {
+          throw const _Invalid();
+        }
+        state.assumedAmounts.addAll(assumed);
+        state.removedComponents.addAll(removedComponents);
+        if (row['adjusted'] == true) state.userAdjusted.add(id);
         final choices = _stringMap(row['choices']);
         if (!choices.keys.every(
           (k) => itemIds.any((i) => k.startsWith('$i/')),
@@ -542,6 +593,134 @@ int _jsonSize(Object? value) {
   return value.toString().length;
 }
 
+// The server's `Representable` walk over decoded JSON (A23 D3). A container
+// at depth `nestedDepth` would be one level more than the server parses.
+bool _representable(Object? value, int depth) => switch (value) {
+  Map<String, Object?>() =>
+    depth < ChatProposalSyncBounds.nestedDepth &&
+        value.length <= ChatProposalSyncBounds.members &&
+        value.entries.every(
+          (e) =>
+              e.key.length <= ChatProposalSyncBounds.key &&
+              _wellFormedText(e.key) &&
+              _representable(e.value, depth + 1),
+        ),
+  List<Object?>() =>
+    depth < ChatProposalSyncBounds.nestedDepth &&
+        value.length <= ChatProposalSyncBounds.items &&
+        value.every((v) => _representable(v, depth + 1)),
+  String() =>
+    value.length <= ChatProposalSyncBounds.json && _wellFormedText(value),
+  num() => true,
+  null || bool() => true,
+  _ => false,
+};
+
+// No U+0000 and no unpaired surrogate (the server can't read either).
+bool _wellFormedText(String text) {
+  for (var i = 0; i < text.length; i++) {
+    final unit = text.codeUnitAt(i);
+    if (unit == 0) return false;
+    if (unit >= 0xD800 && unit <= 0xDBFF) {
+      if (i + 1 >= text.length) return false;
+      final next = text.codeUnitAt(i + 1);
+      if (next < 0xDC00 || next > 0xDFFF) return false;
+      i++;
+    } else if (unit >= 0xDC00 && unit <= 0xDFFF) {
+      return false;
+    }
+  }
+  return true;
+}
+
+final BigInt _decimalMax = BigInt.two.pow(96) - BigInt.one;
+
+// Exactly a C# `decimal` (G29 round trip) for the raw number [text]: a
+// 96-bit integer significand and at most `decimalScale` fractional digits
+// once trailing zeros are dropped, within the server's 128-character bound.
+bool _decimalText(String text) {
+  if (text.length > 128) return false;
+  final parts = text.toLowerCase().split('e');
+  var exponent = parts.length > 1 ? int.tryParse(parts[1]) : 0;
+  if (exponent == null || exponent.abs() > 1000) return false;
+  final significand = parts[0].replaceFirst('-', '');
+  final point = significand.indexOf('.');
+  if (point >= 0) exponent -= significand.length - point - 1;
+  var digits = significand
+      .replaceFirst('.', '')
+      .replaceFirst(RegExp('^0+'), '');
+  if (digits.isEmpty) return true;
+  final trimmed = digits.replaceFirst(RegExp(r'0+$'), '');
+  exponent += digits.length - trimmed.length;
+  digits = trimmed;
+  if (exponent < -ChatProposalSyncBounds.decimalScale) return false;
+  if (exponent > 29) return false;
+  final magnitude = exponent >= 0
+      ? BigInt.parse(digits) * BigInt.from(10).pow(exponent)
+      : BigInt.parse(digits);
+  return magnitude <= _decimalMax;
+}
+
+// The server's checks that need the raw text of well-formed JSON [json]:
+// every number token is a decimal (`_decimalText`) and no object repeats a
+// member name.
+bool _rawTokensRepresentable(String json) {
+  final objects = <Set<String>?>[];
+  var expectKey = false;
+  var i = 0;
+  while (i < json.length) {
+    final c = json[i];
+    switch (c) {
+      case '{':
+        objects.add(<String>{});
+        expectKey = true;
+        i++;
+      case '[':
+        objects.add(null);
+        expectKey = false;
+        i++;
+      case '}' || ']':
+        objects.removeLast();
+        expectKey = false;
+        i++;
+      case ',':
+        expectKey = objects.isNotEmpty && objects.last != null;
+        i++;
+      case '"':
+        var end = i + 1;
+        while (json[end] != '"') {
+          end += json[end] == r'\' ? 2 : 1;
+        }
+        if (expectKey) {
+          final name = jsonDecode(json.substring(i, end + 1)) as String;
+          if (!objects.last!.add(name)) return false;
+          expectKey = false;
+        }
+        i = end + 1;
+      case '-' ||
+          '0' ||
+          '1' ||
+          '2' ||
+          '3' ||
+          '4' ||
+          '5' ||
+          '6' ||
+          '7' ||
+          '8' ||
+          '9':
+        var end = i;
+        while (end < json.length && '+-.eE0123456789'.contains(json[end])) {
+          end++;
+        }
+        if (!_decimalText(json.substring(i, end))) return false;
+        i = end;
+      default:
+        i++;
+    }
+  }
+  return true;
+}
+
 void _keys(Map<String, Object?> m, List<String> keys) {
   if (m.length != keys.length || !m.keys.every(keys.contains)) {
     throw const _Invalid();
@@ -549,7 +728,7 @@ void _keys(Map<String, Object?> m, List<String> keys) {
 }
 
 void _version(Map<String, Object?> m) {
-  if (m['codecVersion'] != 1) {
+  if (m['codecVersion'] != ProposalDraftCodec.version) {
     throw const _Invalid(ProposalIssue.unsupportedCodecVersion);
   }
 }
@@ -871,9 +1050,12 @@ List<Object?> _writeIntent(ProposalIntent i, List<ProposalFood> foods) => [
   i.slotHint,
   i.dishGroup,
   [for (final item in i.items) _writeItem(item, foods)],
+  i.dateHint,
 ];
 ProposalIntent _readIntent(Object? value, List<ProposalFood> foods) {
-  final v = _array(value, 5);
+  final v = _array(value, 6);
+  final day = _optionalString(v[5]);
+  if (day != null && !DayHint.isValid(day)) throw const _Invalid();
   return ProposalIntent(
     index: _integer(v[0]),
     kind: 'foodLog',
@@ -881,6 +1063,7 @@ ProposalIntent _readIntent(Object? value, List<ProposalFood> foods) {
     slotHint: _optionalString(v[2]),
     dishGroup: _optionalString(v[3]),
     items: [for (final i in _array(v[4])) _readItem(i, foods)],
+    dateHint: day,
   );
 }
 

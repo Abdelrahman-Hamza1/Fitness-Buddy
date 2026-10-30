@@ -1,13 +1,12 @@
 # Fitness Buddy: progress
 
-**42 of 72 steps done** · `▓▓▓▓▓░░░░░` 58%
+**43 of 73 steps done** · `▓▓▓▓▓░░░░░` 58%
 
-App 29/52 · Backend 13/20 · Foundation 7/7
+App 30/53 · Backend 13/20 · Foundation 7/7
 
 ## Now
 
 - 🟦 planning [A15b](technical-planning/steps/A15-weight-graph-measurements.md) Weight history entry & measurements (split from A15) · M2
-- 🟨 building [A23](technical-planning/steps/A23-message-lifecycle.md) Message lifecycle, pending & failures · M3
 
 ## Milestones
 
@@ -15,7 +14,7 @@ App 29/52 · Backend 13/20 · Foundation 7/7
 |---|---|---|---|
 | ✅ | **M1** Dogfood 1 | `▓▓▓▓▓` 14/14 | — |
 | 🟨 | **M2** Targets & weight | `▓▓▓░░` 7/9 | A15b A16 |
-| 🟨 | **M3** Buddy on the laptop | `▓▓▓▓░` 14/15 | A23 #148 #149 #150 #151 |
+| 🟨 | **M3** Buddy on the laptop | `▓▓▓▓░` 15/16 | A23b #148 #149 #150 #151 |
 | 🟨 | **M4** Dogfood 2 | `░░░░░` 1/9 | A25 A26 A27 A28 A29 A31 +2 |
 | 🟨 | **M5** Accounts & sync | `▓▓▓░░` 4/6 | A34 A35 |
 | 🟨 | **M6** Workouts, insights &… | `▓░░░░` 2/8 | A37 A38 A39 A40 A41 B12 |
@@ -28,11 +27,11 @@ App 29/52 · Backend 13/20 · Foundation 7/7
 
 Not started, every dependency done; earliest milestone first:
 
+- [A23b](technical-planning/steps/A23-message-lifecycle.md) Message queue, failures & pending strip (split from A23) · M3
+- [A26](technical-planning/steps/A26-memory-user-model.md) Memory & user model (app) · M4
 - [B10](technical-planning/steps/B10-barcode-vision-import.md) Barcode lookup, label & meal photos, paste import · M4
 - [B11](technical-planning/steps/B11-buddy-qa-suggestions.md) Buddy Q&A & suggestions · M4
 - [A34](technical-planning/steps/A34-sync-engine-app.md) Sync engine (app) · M5
-- [B12](technical-planning/steps/B12-buddy-workouts-review-ramadan.md) Buddy workouts, weekly review & Ramadan · M6
-- [B13](technical-planning/steps/B13-staging-infrastructure.md) Staging on Hetzner & deploy pipeline · M7
 
 ## Waiting on you
 

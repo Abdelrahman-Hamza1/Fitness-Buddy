@@ -612,6 +612,14 @@ abstract final class ProposalEngine {
     ProposalContext? context,
   }) => _recompute(session, adjustment, context);
 
+  /// Whether the user changed card [cardId] in [session]: a chip, an amount,
+  /// a swap, an added or removed line (a generated oil line too) or its time
+  /// or meal (A23 D9). Kept across follow-up and fact rebuilds and through
+  /// the codec; a rebuild, a context refresh or a lifecycle change alone
+  /// never counts. Unknown cards are false.
+  static bool hasUserState(ProposalSession session, String cardId) =>
+      session._state.userAdjusted.contains(cardId);
+
   /// Replace an open card using a follow-up interpretation and new budget.
   static ProposalUpdateResult rebuild(
     ProposalCard previousCard,

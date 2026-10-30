@@ -564,10 +564,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get proposalUndo => 'Undo';
 
   @override
-  String get proposalUndone => 'Undone. Type it again or search to log it.';
+  String get proposalDiscarded => 'Discarded. Nothing was logged.';
 
   @override
-  String get proposalDiscarded => 'Discarded. Nothing was logged.';
+  String get proposalSuperseded => 'No longer current. Nothing was logged.';
+
+  @override
+  String get proposalFactsChanged => 'Food details changed since.';
+
+  @override
+  String get proposalUpdateCard => 'Update card';
+
+  @override
+  String get proposalUnrestorable => 'This card couldn\'t be reopened.';
+
+  @override
+  String get proposalTooLargeToSync =>
+      'Too large to sync to your other phones. It stays on this phone.';
+
+  @override
+  String get buddyCardUpdatedNote =>
+      'I updated this card with your current food details.';
 
   @override
   String get proposalCouldNotLog => 'Couldn\'t log this card.';

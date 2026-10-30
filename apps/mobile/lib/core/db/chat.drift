@@ -9,3 +9,11 @@ CREATE INDEX ix_chat_messages_order ON chat_messages (created_at, id)
 -- Replies grouped by the user message they answer.
 CREATE INDEX ix_chat_messages_reply ON chat_messages (reply_to_message_id)
   WHERE reply_to_message_id IS NOT NULL AND deleted_at IS NULL;
+
+-- Proposal cards by the assistant message whose budget they belong to (A23).
+CREATE INDEX ix_proposals_budget ON proposals (budget_message_id)
+  WHERE deleted_at IS NULL;
+
+-- Pending cards in creation order (restore, the pending strip).
+CREATE INDEX ix_proposals_pending ON proposals (created_at)
+  WHERE status = 'pending' AND deleted_at IS NULL;

@@ -16,7 +16,8 @@ final class ChatMessageMappingError implements Exception {
 
 /// The `chatMessage` v1 payload keys (`contracts/openapi/sync-entities.json`),
 /// in contract order: the explicit allowlist both sync directions use, so a
-/// later local-only column (attachments, A28/A29) can never leak.
+/// local-only column (`request_json`, `answer_json`, TD-102; attachments,
+/// A28/A29) can never leak.
 const chatMessageSyncKeys = [
   'createdAtMs',
   'origin',
@@ -61,36 +62,49 @@ ChatMessage chatMessageOf(ChatMessageRow row) {
   }
 }
 
-/// The content columns of [draft] for a new row [id]; the applier stamps the
-/// sync metadata.
-ChatMessagesCompanion chatMessageColumns(String id, ChatMessageDraft draft) =>
-    ChatMessagesCompanion(
-      id: Value(id),
-      role: Value(draft.role.code),
-      messageText: Value(draft.text),
-      status: Value(draft.status.code),
-      language: Value(draft.language?.code),
-      replyToMessageId: Value(draft.replyToMessageId),
-      codecVersion: Value(draft.codecVersion),
-      budgetJson: Value(draft.budgetJson),
-    );
+/// The content columns of [draft] for a new row [id], with the local-only
+/// interpret [answerJson] of an assistant row (A23 D14); the applier stamps
+/// the sync metadata.
+ChatMessagesCompanion chatMessageColumns(
+  String id,
+  ChatMessageDraft draft, {
+  String? answerJson,
+}) => ChatMessagesCompanion(
+  id: Value(id),
+  role: Value(draft.role.code),
+  messageText: Value(draft.text),
+  status: Value(draft.status.code),
+  language: Value(draft.language?.code),
+  replyToMessageId: Value(draft.replyToMessageId),
+  codecVersion: Value(draft.codecVersion),
+  budgetJson: Value(draft.budgetJson),
+  answerJson: Value(answerJson),
+);
 
-/// The `chatMessage` v1 payload of [row]: exactly [chatMessageSyncKeys].
-/// Holds user content: never log it. Tombstone scrubbing (`text: ""`,
-/// `budgetJson: null`) is the delete op's job (A23), so the payload always
-/// mirrors the row.
-Map<String, Object?> chatMessageSyncPayload(ChatMessageRow row) => {
-  'createdAtMs': row.createdAt,
-  'origin': row.origin,
-  'editedByUser': row.editedByUser,
-  'role': row.role,
-  'text': row.messageText,
-  'status': row.status,
-  'language': row.language,
-  'replyToMessageId': row.replyToMessageId,
-  'codecVersion': row.codecVersion,
-  'budgetJson': row.budgetJson,
-};
+/// The `chatMessage` v1 payload of [row]: exactly [chatMessageSyncKeys],
+/// never the local-only columns. Holds user content: never log it.
+/// Tombstone scrubbing (`text: ""`, `budgetJson: null`) is the delete op's
+/// job (A23 D16, PA10), so the payload mirrors the row, and a tombstone that
+/// still holds content is refused with [ChatMessageMappingError] rather than
+/// leaked or fixed here.
+Map<String, Object?> chatMessageSyncPayload(ChatMessageRow row) {
+  if (row.deletedAt != null &&
+      (row.messageText.isNotEmpty || row.budgetJson != null)) {
+    throw const ChatMessageMappingError();
+  }
+  return {
+    'createdAtMs': row.createdAt,
+    'origin': row.origin,
+    'editedByUser': row.editedByUser,
+    'role': row.role,
+    'text': row.messageText,
+    'status': row.status,
+    'language': row.language,
+    'replyToMessageId': row.replyToMessageId,
+    'codecVersion': row.codecVersion,
+    'budgetJson': row.budgetJson,
+  };
+}
 
 /// Reads a synced `chatMessage` v1 [payload] into row [id] with the given
 /// sync metadata. Throws [ChatMessageMappingError] unless [payload] has

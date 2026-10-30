@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fb_mobile/core/account/account_providers.dart';
+import 'package:fb_mobile/core/account/profile_generation.dart';
 import 'package:fb_mobile/core/catalog/catalog.dart';
 import 'package:fb_mobile/core/config/client_config.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
@@ -8,6 +9,7 @@ import 'package:fb_mobile/core/errors/error_reporting.dart';
 import 'package:fb_mobile/core/export/export_providers.dart';
 import 'package:fb_mobile/core/session/session_providers.dart';
 import 'package:fb_mobile/core/session/session_state.dart';
+import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
     show ProviderSubscription;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -17,7 +19,9 @@ part 'app_bootstrap.g.dart';
 /// The work deferred until the first frame is on screen (UX-001, S06 plan
 /// D9, D12, A1): independent error reporting, catalog pack install (A05 D9)
 /// then the background pack update (A24),
-/// public `/v1/config` refresh and API session startup (A20 D9).
+/// public `/v1/config` refresh, API session startup (A20 D9) and, once the
+/// catalog is attached and any account transition recovered, Buddy's
+/// pending cards read back (A23 D12).
 ///
 /// The app widget (`FitnessBuddyApp`) calls [afterFirstFrame] from a
 /// post-frame callback; nothing awaits it, so the UI never waits for the
@@ -28,8 +32,13 @@ final class AppBootstrap {
 
   final Ref _ref;
   bool _started = false;
+  Future<void>? _installed;
 
-  Future<void> _installCatalog() async {
+  /// The catalog install, once (the update and the Buddy restore wait for
+  /// it: a restored card verifies its facts against the attached pack).
+  Future<void> _installCatalog() => _installed ??= _install();
+
+  Future<void> _install() async {
     try {
       await installAndAttachCatalog(
         _ref.read(catalogPackInstallerProvider),
@@ -100,13 +109,26 @@ final class AppBootstrap {
         await _ref.read(clientConfigProvider.notifier).refresh();
       }),
     );
+    final recovered = _contained(
+      () => _ref.read(accountTransitionsProvider).recover(),
+    );
     unawaited(
       _contained(() async {
         // A33 §6: finish or roll back an interrupted account transition
         // before the API session may acquire anything; acquisition stays
         // suspended while a journal remains.
-        await _contained(() => _ref.read(accountTransitionsProvider).recover());
+        await recovered;
         await _contained(() => _ref.read(sessionLifecycleProvider).start());
+      }),
+    );
+    // A23 D12: pending Buddy cards come back after the first frame, against
+    // the attached catalog and the recovered profile; local reads only.
+    unawaited(
+      _contained(() async {
+        await Future.wait([_installCatalog(), recovered]);
+        await _ref
+            .read(buddyThreadControllerProvider.notifier)
+            .ensureRestored(_ref.read(profileGenerationProvider));
       }),
     );
   }
