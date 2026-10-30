@@ -54,6 +54,8 @@ export 'src/food/search/osa_distance.dart';
 export 'src/food/search/search_candidate.dart';
 export 'src/ids/hlc.dart';
 export 'src/ids/uuid_v7.dart';
+export 'src/insights/goal_progress.dart';
+export 'src/insights/progress_series.dart';
 export 'src/location/city_ranker.dart';
 export 'src/math/rounding.dart';
 export 'src/nutrition/calculator.dart';

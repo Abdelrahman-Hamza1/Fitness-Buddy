@@ -37,6 +37,15 @@ final class DiaryReads {
       'COUNT(*) AS n FROM diary_entries WHERE local_date BETWEEN ? AND ? '
       'AND deleted_at IS NULL GROUP BY local_date ORDER BY local_date';
 
+  /// The SQL of [firstDiaryDate]: the earlier of the first live entry and
+  /// the first live day mark (the date indexes serve each MIN).
+  static const String firstDiaryDateSql =
+      'SELECT MIN(first_date) AS first_date FROM ( '
+      'SELECT MIN(local_date) AS first_date FROM diary_entries '
+      'WHERE deleted_at IS NULL '
+      'UNION ALL SELECT MIN(local_date) AS first_date FROM day_marks '
+      'WHERE deleted_at IS NULL)';
+
   /// The tables the day read depends on.
   Set<TableInfo<Table, Object?>> get dayTables => {
     db.diaryEntries,
@@ -145,6 +154,20 @@ final class DiaryReads {
           row.read<int>('n'),
         ),
     ];
+  }
+
+  /// The earliest day with a live entry or a live day mark, or null without
+  /// either (A16 D14): a day that only has a mark (or whose entries were
+  /// all deleted but stays marked) is still reachable in Progress.
+  Future<LocalDate?> firstDiaryDate() async {
+    final row = await db
+        .customSelect(
+          firstDiaryDateSql,
+          readsFrom: {db.diaryEntries, db.dayMarks},
+        )
+        .getSingle();
+    final text = row.read<String?>('first_date');
+    return text == null ? null : LocalDate.tryParse(text);
   }
 
   /// Consistent parent/item snapshot, ordered for list and guarded logging.

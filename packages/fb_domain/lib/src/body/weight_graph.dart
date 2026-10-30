@@ -276,13 +276,13 @@ final class WeightStats {
     if (now == null) return empty;
     final phase = history?.at(today);
     final reference = phase?.start ?? trend.points.first.localDate;
-    final start = _startPoint(trend, reference, today);
+    final start = startPoint(trend, reference, today);
 
     final monthStart = LocalDate(today.year, today.month, 1);
     final phaseThisMonth = phase != null && !phase.start.isBefore(monthStart);
     final monthBase = phaseThisMonth
         ? start
-        : _startPoint(trend, monthStart.plusDays(-1), today);
+        : startPoint(trend, monthStart.plusDays(-1), today);
     double? monthTarget;
     if (phase != null && monthTargetKgPerWeek != null) {
       final full = monthlyKgFromWeeklyRate(monthTargetKgPerWeek, monthStart);
@@ -313,8 +313,9 @@ final class WeightStats {
 
   /// The trend point a change is measured from at [date]: the last on or
   /// before it, unless that is more than the stale limit earlier (or there
-  /// is none), then the first after it, up to [today] (PA11).
-  static TrendPoint? _startPoint(
+  /// is none), then the first after it, up to [today] (PA11). A16's goal
+  /// progress measures from the same point.
+  static TrendPoint? startPoint(
     WeightTrend trend,
     LocalDate date,
     LocalDate today,

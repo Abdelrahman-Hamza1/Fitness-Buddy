@@ -175,6 +175,11 @@ final class DiaryRepository {
   Stream<List<DailyTotals>> watchDailyTotals(LocalDate from, LocalDate to) =>
       _watch({_db.diaryEntries}, () => _reads.dailyTotals(from, to));
 
+  /// The earliest day with a live entry or a live day mark, or null
+  /// (Progress's earliest period, A16 D14).
+  Stream<LocalDate?> watchFirstDiaryDate() =>
+      _watch({_db.diaryEntries, _db.dayMarks}, _reads.firstDiaryDate);
+
   /// Live row versions for guarded editing, in deterministic order.
   Stream<List<SlotRecord>> watchSlotRecords([
     SlotMode mode = SlotMode.normal,

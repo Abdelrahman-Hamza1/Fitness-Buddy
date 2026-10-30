@@ -322,6 +322,16 @@ A15b D13–D16 (WB-040–042, TD-103 Proposed). Code: `lib/src/body/measurement*
 - **Series** (`MeasurementSeries.of`, WB-041/042): every measurement is a point (by measured time); the day choice is the earliest of each date (ties by ID); the trend is `smoothDaily` over the day choices, shown only from 5 entries (points, not days). No rate, no projection. `latest`, `first` and `change` feed the header.
 - `toString` never shows a value or a name.
 
+## Progress series
+
+A16 D4–D6, D9 (IN-002, IN-003, IN-007, IN-009, DY-004). Code: `lib/src/insights/`. Derived per read, never stored (G10). A39a's weekly summary joins this folder.
+
+- **Series** (`ProgressSeries.build`): one `ProgressDay` per date from `from` to `min(to, today)` with the day's intake (`DayLog`: totals, entry count, incomplete mark), its `DayStatus` and its target. The target is `TargetsTimeline.day` **per date** with the same inputs as the app's `dayTargetsProvider` (the trend weight on that date, that week's earlier days, the week calendar, the training input), so a chart's target for a day is what Today shows for it. `logs` must start at the first week's start. Days before the first settings version (or without a profile) have no target.
+- **Status** (`ProgressSeries.statusOf`): a mark wins (`incomplete`), then today (`inProgress`), then entries (`logged`), else `unknown` (TG-032: missing is never zero). Only `logged` days count in averages.
+- **Buckets** (`ProgressBuckets.of`): ≤ 62 days → daily bars, ≤ 366 → weekly bars aligned to the week start (the first may be partial), longer → calendar months. A daily bucket keeps its day's actual intake and target whatever the status (an incomplete day draws its hatched bar, PA1); a week or month bucket averages intake, targets and nutrients over its counted days only, and is empty without one (`countedDays` / `uncountedDays` say why).
+- **Goal progress** (`GoalProgress.of(phase, trend, today)`): from A15a's stale-start point (`WeightStats.startPoint`) at the phase start to the trend at `min(phase end, today)`; `fraction` toward the target weight clamped to 0…1 (moving away is 0, never negative, IN-020), null without a target or a trend or when the start is the target; `reached` at 1; `weeklyKg` after 14 days, for rate-only goals.
+- `toString` never shows a value.
+
 ## Tests
 
 Property tests use `glados` with `propertyRuns` (1,000 runs, from

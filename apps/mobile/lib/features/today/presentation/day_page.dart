@@ -6,7 +6,6 @@ import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/today/presentation/today_numbers.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -59,6 +58,7 @@ class DayPage extends ConsumerWidget {
                   date: date,
                   isToday: isToday,
                   totals: totals,
+                  incomplete: data.raw.mark?.incomplete ?? false,
                 ),
                 EmptyHintRow(:final isToday) => EmptyDayHint(
                   key: key,
@@ -111,20 +111,23 @@ class DayPage extends ConsumerWidget {
 }
 
 /// The top of a day page, as an ordered list (A14 §3.5): the day's numbers →
-/// [A22: the to-confirm strip] → the weight card → the account banner (A33,
-/// Today only) → [A37: the workout hint].
+/// the incomplete-day note (A16 D11, a marked day only) → [A22: the
+/// to-confirm strip] → the weight card → the account banner (A33, Today
+/// only) → [A37: the workout hint].
 /// Later steps add one entry here instead of nesting widgets.
 class _DayHeader extends StatelessWidget {
   const new({
     required this.date,
     required this.isToday,
     required this.totals,
+    this.incomplete = false,
     super.key,
   });
 
   final LocalDate date;
   final bool isToday;
   final Nutrients totals;
+  final bool incomplete;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -132,10 +135,48 @@ class _DayHeader extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       TodayNumbers(date: date, isToday: isToday, totals: totals),
+      if (incomplete) _IncompleteNote(date: date),
       WeightCard(date: date, isToday: isToday),
       if (isToday) const AccountTodayBanner(),
     ],
   );
+}
+
+/// A day marked incomplete says so, with Count this day again (DY-004).
+class _IncompleteNote extends StatelessWidget {
+  const new({required this.date});
+
+  final LocalDate date;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      key: const ValueKey('today-incomplete-note'),
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        FbSpace.s4,
+        0,
+        FbSpace.s4,
+        FbDensity.cardGap,
+      ),
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: FbSpace.s2,
+        children: [
+          Text(
+            l10n.todayIncompleteNote,
+            style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
+          ),
+          FbButton.text(
+            key: const ValueKey('today-count-again'),
+            label: l10n.diaryCountAgain,
+            onPressed: () => markDayWithUndo(context, date, incomplete: false),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 bool _isOpen(DiaryViewChoices choices, DiaryEntry entry) =>

@@ -5,6 +5,7 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/progress/application/graph_window.dart';
+import 'package:fb_mobile/features/progress/application/weight_chart_parts.dart';
 import 'package:fb_mobile/features/progress/application/weight_graph_providers.dart';
 import 'package:fb_mobile/features/progress/presentation/graph_range_chips.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
@@ -150,23 +151,15 @@ class _Graph extends ConsumerWidget {
               : null,
           onRangeChanged: (r) => controller.setPanStart(r.start),
           series: [
-            FbSeries(
-              style: FbSeriesStyle.points,
-              tone: FbSeriesTone.muted,
-              selectable: true,
+            weighInSeries(
+              model.weighIns,
+              unit,
               semanticLabel: l10n.weightGraphLegendRaw,
-              points: [
-                for (final w in model.weighIns)
-                  FbPoint(chartTimeOf(w), weightIn(w.kg, unit), key: w.id),
-              ],
             ),
-            FbSeries(
-              style: FbSeriesStyle.line,
+            trendSeries(
+              model.trend,
+              unit,
               semanticLabel: l10n.weightGraphLegendTrend,
-              points: [
-                for (final p in model.trend.points)
-                  FbPoint(chartDay(p.localDate), weightIn(p.trendKg, unit)),
-              ],
             ),
             if (shown != null)
               FbSeries(

@@ -225,3 +225,71 @@ class FbChartRange {
   @override
   int get hashCode => Object.hash(start, end);
 }
+
+/// How one bar of an `FbBarChart` is drawn (A16 D5). Meaning never rests on
+/// colour alone (UX-071): the fill pattern tells the kinds apart.
+enum FbBarStyle {
+  /// A counted value: solid fill.
+  solid,
+
+  /// Not counted (e.g. a day marked incomplete): outlined and hatched, still
+  /// as tall as its value.
+  hatched,
+
+  /// Still in progress (e.g. today so far): a lighter fill.
+  faint,
+}
+
+/// Which token colour the bars of an `FbBarChart` take.
+enum FbBarTone {
+  /// The brand colour (calories).
+  primary,
+
+  /// The protein colour.
+  protein,
+
+  /// The carbs colour.
+  carbs,
+
+  /// The fat colour.
+  fat,
+
+  /// The fibre colour.
+  fiber,
+}
+
+/// One bar of an `FbBarChart`: a category (usually a day) with an optional
+/// value and target.
+@immutable
+class FbBar {
+  /// Creates a bar. A null [value] draws a short baseline tick (no data,
+  /// never zero) unless the bar is a [placeholder].
+  const new({
+    required this.at,
+    this.value,
+    this.target,
+    this.style = FbBarStyle.solid,
+    this.placeholder = false,
+    this.key,
+  });
+
+  /// The bar's moment (naive wall-clock, see [FbPoint]), e.g. its day.
+  final DateTime at;
+
+  /// The bar's height, or null when there is no value.
+  final double? value;
+
+  /// A target drawn as a short mark across the bar; the part of [value]
+  /// above it takes the neutral over-target colour (never red).
+  final double? target;
+
+  /// How the bar is drawn.
+  final FbBarStyle style;
+
+  /// A slot still to come (e.g. a later day of this week): nothing is drawn
+  /// and it can't be selected.
+  final bool placeholder;
+
+  /// The caller's identity of the bar.
+  final Object? key;
+}

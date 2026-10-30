@@ -144,6 +144,27 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
 
   void _comingSoon() => showFbSnackBar(context, context.l10n.devComingSoon);
 
+  /// The day menu (A16 D11): Mark day incomplete, or Count this day again
+  /// on a marked day (DY-004, undoable). A41 adds "not fasting" here.
+  Future<void> _openDayMenu(LocalDate viewed, LocalDate today) async {
+    final l10n = context.l10n;
+    final marked =
+        ref.read(dayViewProvider(viewed)).value?.raw.mark?.incomplete ?? false;
+    final incomplete = await showFbOptionSheet<bool>(
+      context,
+      title: dayLabel(context, viewed, today),
+      options: [
+        FbOption(
+          value: !marked,
+          label: marked ? l10n.diaryCountAgain : l10n.diaryMarkIncomplete,
+        ),
+      ],
+      selected: null,
+    );
+    if (incomplete == null || !mounted) return;
+    await markDayWithUndo(context, viewed, incomplete: incomplete);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -184,6 +205,12 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
               onPrevious: controller.previous,
               onNext: pager.canGoNext(viewed) ? controller.next : null,
               onLabelTap: () => unawaited(_pickDate(viewed, today)),
+              trailing: FbIconButton(
+                key: const ValueKey('today-day-menu'),
+                icon: FbIcons.more,
+                tooltip: l10n.todayDayMenu,
+                onPressed: () => unawaited(_openDayMenu(viewed, today)),
+              ),
             ),
             Expanded(
               child: PageView.builder(

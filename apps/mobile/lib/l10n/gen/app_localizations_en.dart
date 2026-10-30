@@ -4452,4 +4452,266 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountTransitionBusy => 'Updating your account…';
+
+  @override
+  String progressWeekHeader(String range) {
+    return 'This week · $range';
+  }
+
+  @override
+  String progressDateRange(String start, String end) {
+    return '$start – $end';
+  }
+
+  @override
+  String progressWeekUnder(String amount) {
+    return '$amount kcal under budget';
+  }
+
+  @override
+  String progressWeekOver(String amount) {
+    return '$amount kcal over budget';
+  }
+
+  @override
+  String get progressWeekOnBudget => 'On budget so far';
+
+  @override
+  String progressWeekAverage(String eaten, String target) {
+    return 'Average $eaten of $target kcal';
+  }
+
+  @override
+  String get progressWeekNoDays => 'First day of the week';
+
+  @override
+  String progressWeekCounted(int counted, int elapsed) {
+    return '$counted of $elapsed days counted';
+  }
+
+  @override
+  String progressWeekTrend(String change) {
+    return '$change this week';
+  }
+
+  @override
+  String get progressPeriodWeek => 'Week';
+
+  @override
+  String get progressPeriodMonth => 'Month';
+
+  @override
+  String get progressPeriodPhase => 'Phase';
+
+  @override
+  String get progressPeriodPrevious => 'Earlier period';
+
+  @override
+  String get progressPeriodNext => 'Later period';
+
+  @override
+  String get progressCaloriesTitle => 'Calories';
+
+  @override
+  String progressCaloriesSemantics(String period) {
+    return 'Calories eaten against the target, $period';
+  }
+
+  @override
+  String get progressLegendTarget => 'Target';
+
+  @override
+  String get progressLegendOver => 'Over target';
+
+  @override
+  String get progressLegendNotCounted => 'Not counted';
+
+  @override
+  String get progressLegendToday => 'Today so far';
+
+  @override
+  String progressWeekOf(String date) {
+    return 'Week of $date';
+  }
+
+  @override
+  String progressBarValue(String label, String eaten, String target) {
+    return '$label: $eaten of $target kcal';
+  }
+
+  @override
+  String progressBarValueNoTarget(String label, String eaten) {
+    return '$label: $eaten kcal';
+  }
+
+  @override
+  String progressBarNothing(String label) {
+    return '$label: nothing logged';
+  }
+
+  @override
+  String progressBarNotCounted(String bar) {
+    return '$bar, not counted';
+  }
+
+  @override
+  String progressBarSoFar(String bar) {
+    return '$bar, so far';
+  }
+
+  @override
+  String progressDetailsKcal(String eaten, String target) {
+    return '$eaten / $target kcal';
+  }
+
+  @override
+  String progressDetailsKcalNoTarget(String eaten) {
+    return '$eaten kcal';
+  }
+
+  @override
+  String progressDetailsMacros(
+    String protein,
+    String carbs,
+    String fat,
+    String fiber,
+  ) {
+    return 'Protein $protein g · Carbs $carbs g · Fat $fat g · Fiber $fiber g';
+  }
+
+  @override
+  String get progressDetailsNothing => 'Nothing logged';
+
+  @override
+  String get progressDetailsNotCounted =>
+      'Marked incomplete: not counted in averages or targets';
+
+  @override
+  String get progressDetailsSoFar => 'Today so far';
+
+  @override
+  String progressDetailsAverage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Average of $count counted days',
+      one: 'Average of 1 counted day',
+      zero: 'No counted days',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String progressDetailsUncounted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days not counted',
+      one: '1 day not counted',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get diaryMarkIncomplete => 'Mark day incomplete';
+
+  @override
+  String get diaryCountAgain => 'Count this day again';
+
+  @override
+  String get diaryDayMarkedIncomplete => 'Day marked incomplete';
+
+  @override
+  String get diaryDayCounted => 'Day counted again';
+
+  @override
+  String get progressMacrosTitle => 'Macros';
+
+  @override
+  String progressMacroSemantics(String macro, String period) {
+    return '$macro per day against the target, $period';
+  }
+
+  @override
+  String progressMacroSemanticsNoTarget(String macro, String period) {
+    return '$macro per day, $period';
+  }
+
+  @override
+  String progressGramsValue(String label, String amount) {
+    return '$label: $amount g';
+  }
+
+  @override
+  String get progressWeightTitle => 'Weight';
+
+  @override
+  String get progressFullGraph => 'Full graph';
+
+  @override
+  String get progressWeightEmpty => 'No weigh-ins in this period';
+
+  @override
+  String get progressGoalCardTitle => 'Goal progress';
+
+  @override
+  String get progressGoalNoTrend => 'Log a weigh-in to see your progress';
+
+  @override
+  String progressGoalPath(String start, String now, String goal) {
+    return '$start → $now → $goal';
+  }
+
+  @override
+  String progressGoalPathNoTarget(String start, String now) {
+    return '$start → $now';
+  }
+
+  @override
+  String progressGoalPercent(String percent) {
+    return '$percent% of the way';
+  }
+
+  @override
+  String get progressGoalReached => 'Goal weight reached';
+
+  @override
+  String progressGoalChange(String change, String date) {
+    return '$change since $date';
+  }
+
+  @override
+  String progressGoalRate(String rate) {
+    return '$rate per week on average';
+  }
+
+  @override
+  String progressGoalThisMonth(String change, String target) {
+    return 'This month: $change of $target';
+  }
+
+  @override
+  String progressGoalThisMonthNoTarget(String change) {
+    return 'This month: $change';
+  }
+
+  @override
+  String progressGoalEnded(String date) {
+    return 'Ended $date';
+  }
+
+  @override
+  String get progressLoadFailed => 'Couldn\'t load your progress.';
+
+  @override
+  String get todayDayMenu => 'Day options';
+
+  @override
+  String get todayIncompleteNote =>
+      'Marked incomplete: this day isn\'t counted';
+
+  @override
+  String progressGramsValueTarget(String label, String amount, String target) {
+    return '$label: $amount of $target g';
+  }
 }

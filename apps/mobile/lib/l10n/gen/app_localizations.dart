@@ -6629,6 +6629,371 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Updating your account…'**
   String get accountTransitionBusy;
+
+  /// Progress: the current-week card's heading with the week's dates, e.g. "This week · Sat 24 – Fri 30 Oct" (A16 D10).
+  ///
+  /// In en, this message translates to:
+  /// **'This week · {range}'**
+  String progressWeekHeader(String range);
+
+  /// Progress: a range of two dates, e.g. "Sat 24 – Fri 30 Oct".
+  ///
+  /// In en, this message translates to:
+  /// **'{start} – {end}'**
+  String progressDateRange(String start, String end);
+
+  /// Progress week card: the earlier days of this week are under their plan (HM-002). Neutral wording.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} kcal under budget'**
+  String progressWeekUnder(String amount);
+
+  /// Progress week card: the earlier days of this week are over their plan (HM-002). Neutral wording, never alarming.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} kcal over budget'**
+  String progressWeekOver(String amount);
+
+  /// Progress week card: the earlier days of this week add up to their plan, rounded (HM-002).
+  ///
+  /// In en, this message translates to:
+  /// **'On budget so far'**
+  String get progressWeekOnBudget;
+
+  /// Progress week card, fixed daily targets: the average eaten against the average target over the counted days.
+  ///
+  /// In en, this message translates to:
+  /// **'Average {eaten} of {target} kcal'**
+  String progressWeekAverage(String eaten, String target);
+
+  /// Progress week card: today is the week's first day, so nothing is counted yet.
+  ///
+  /// In en, this message translates to:
+  /// **'First day of the week'**
+  String get progressWeekNoDays;
+
+  /// Progress week card: earlier days of this week that count (food logged, not marked incomplete).
+  ///
+  /// In en, this message translates to:
+  /// **'{counted} of {elapsed} days counted'**
+  String progressWeekCounted(int counted, int elapsed);
+
+  /// Progress week card: the trend weight change since the week started, e.g. "−0.4 kg this week".
+  ///
+  /// In en, this message translates to:
+  /// **'{change} this week'**
+  String progressWeekTrend(String change);
+
+  /// Progress period selector: one week (IN-009).
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get progressPeriodWeek;
+
+  /// Progress period selector: one calendar month (IN-009).
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get progressPeriodMonth;
+
+  /// Progress period selector: one goal phase (IN-009).
+  ///
+  /// In en, this message translates to:
+  /// **'Phase'**
+  String get progressPeriodPhase;
+
+  /// Progress period stepper: tooltip of the back arrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier period'**
+  String get progressPeriodPrevious;
+
+  /// Progress period stepper: tooltip of the forward arrow (disabled at the current period).
+  ///
+  /// In en, this message translates to:
+  /// **'Later period'**
+  String get progressPeriodNext;
+
+  /// Progress: calories chart heading (IN-002).
+  ///
+  /// In en, this message translates to:
+  /// **'Calories'**
+  String get progressCaloriesTitle;
+
+  /// Progress: what the calories chart shows, for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories eaten against the target, {period}'**
+  String progressCaloriesSemantics(String period);
+
+  /// Progress calories legend: the short mark across each bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get progressLegendTarget;
+
+  /// Progress calories legend: the grey part of a bar above its target. Neutral wording.
+  ///
+  /// In en, this message translates to:
+  /// **'Over target'**
+  String get progressLegendOver;
+
+  /// Progress calories legend: hatched bars, days marked incomplete (DY-004).
+  ///
+  /// In en, this message translates to:
+  /// **'Not counted'**
+  String get progressLegendNotCounted;
+
+  /// Progress calories legend: today's lighter bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Today so far'**
+  String get progressLegendToday;
+
+  /// Progress: a weekly bar's label in a long period, e.g. "Week of 3 Aug".
+  ///
+  /// In en, this message translates to:
+  /// **'Week of {date}'**
+  String progressWeekOf(String date);
+
+  /// Progress chart, screen readers: one bar with a target.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}: {eaten} of {target} kcal'**
+  String progressBarValue(String label, String eaten, String target);
+
+  /// Progress chart, screen readers: one bar without a target.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}: {eaten} kcal'**
+  String progressBarValueNoTarget(String label, String eaten);
+
+  /// Progress chart, screen readers: a day without food logged (unknown, never zero).
+  ///
+  /// In en, this message translates to:
+  /// **'{label}: nothing logged'**
+  String progressBarNothing(String label);
+
+  /// Progress chart, screen readers: a bar of a day marked incomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'{bar}, not counted'**
+  String progressBarNotCounted(String bar);
+
+  /// Progress chart, screen readers: today's bar.
+  ///
+  /// In en, this message translates to:
+  /// **'{bar}, so far'**
+  String progressBarSoFar(String bar);
+
+  /// Progress bar details: eaten against the target.
+  ///
+  /// In en, this message translates to:
+  /// **'{eaten} / {target} kcal'**
+  String progressDetailsKcal(String eaten, String target);
+
+  /// Progress bar details: eaten, no target set for that day.
+  ///
+  /// In en, this message translates to:
+  /// **'{eaten} kcal'**
+  String progressDetailsKcalNoTarget(String eaten);
+
+  /// Progress bar details: the day's macros.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein {protein} g · Carbs {carbs} g · Fat {fat} g · Fiber {fiber} g'**
+  String progressDetailsMacros(
+    String protein,
+    String carbs,
+    String fat,
+    String fiber,
+  );
+
+  /// Progress bar details: a day without food logged.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing logged'**
+  String get progressDetailsNothing;
+
+  /// Progress bar details: a day marked incomplete (DY-004).
+  ///
+  /// In en, this message translates to:
+  /// **'Marked incomplete: not counted in averages or targets'**
+  String get progressDetailsNotCounted;
+
+  /// Progress bar details: today, still in progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Today so far'**
+  String get progressDetailsSoFar;
+
+  /// Progress bar details: a weekly or monthly bar averages its counted days.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No counted days} =1{Average of 1 counted day} other{Average of {count} counted days}}'**
+  String progressDetailsAverage(int count);
+
+  /// Progress bar details: days of a weekly or monthly bar left out (no food logged, marked incomplete, or today).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day not counted} other{{count} days not counted}}'**
+  String progressDetailsUncounted(int count);
+
+  /// Button: marks the day incomplete, so it isn't counted (DY-004). Undoable.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark day incomplete'**
+  String get diaryMarkIncomplete;
+
+  /// Button: removes the day's incomplete mark (DY-004). Undoable.
+  ///
+  /// In en, this message translates to:
+  /// **'Count this day again'**
+  String get diaryCountAgain;
+
+  /// Snackbar after marking a day incomplete, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Day marked incomplete'**
+  String get diaryDayMarkedIncomplete;
+
+  /// Snackbar after removing a day's incomplete mark, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Day counted again'**
+  String get diaryDayCounted;
+
+  /// Progress: macros charts heading (IN-003).
+  ///
+  /// In en, this message translates to:
+  /// **'Macros'**
+  String get progressMacrosTitle;
+
+  /// Progress: what a macro chart shows, for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'{macro} per day against the target, {period}'**
+  String progressMacroSemantics(String macro, String period);
+
+  /// Progress: what a macro chart without a target shows, for screen readers.
+  ///
+  /// In en, this message translates to:
+  /// **'{macro} per day, {period}'**
+  String progressMacroSemanticsNoTarget(String macro, String period);
+
+  /// Progress macro chart, screen readers: one bar.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}: {amount} g'**
+  String progressGramsValue(String label, String amount);
+
+  /// Progress: weight chart heading (IN-004).
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get progressWeightTitle;
+
+  /// Progress: opens the full weight graph.
+  ///
+  /// In en, this message translates to:
+  /// **'Full graph'**
+  String get progressFullGraph;
+
+  /// Progress: the weight chart has nothing to draw.
+  ///
+  /// In en, this message translates to:
+  /// **'No weigh-ins in this period'**
+  String get progressWeightEmpty;
+
+  /// Progress: goal progress card heading (IN-007).
+  ///
+  /// In en, this message translates to:
+  /// **'Goal progress'**
+  String get progressGoalCardTitle;
+
+  /// Progress goal card: no trend weight in the phase yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Log a weigh-in to see your progress'**
+  String get progressGoalNoTrend;
+
+  /// Progress goal card: start, latest trend and target weights.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} → {now} → {goal}'**
+  String progressGoalPath(String start, String now, String goal);
+
+  /// Progress goal card: start and latest trend weights of a goal without a target weight.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} → {now}'**
+  String progressGoalPathNoTarget(String start, String now);
+
+  /// Progress goal card: how far towards the target weight. Never negative.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% of the way'**
+  String progressGoalPercent(String percent);
+
+  /// Progress goal card: the target weight is reached.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal weight reached'**
+  String get progressGoalReached;
+
+  /// Progress goal card, goals without a target weight: the change since the phase started.
+  ///
+  /// In en, this message translates to:
+  /// **'{change} since {date}'**
+  String progressGoalChange(String change, String date);
+
+  /// Progress goal card: the average weekly change since the phase started.
+  ///
+  /// In en, this message translates to:
+  /// **'{rate} per week on average'**
+  String progressGoalRate(String rate);
+
+  /// Progress goal card: this month's trend change against the monthly target change (IN-007).
+  ///
+  /// In en, this message translates to:
+  /// **'This month: {change} of {target}'**
+  String progressGoalThisMonth(String change, String target);
+
+  /// Progress goal card: this month's trend change, no monthly target.
+  ///
+  /// In en, this message translates to:
+  /// **'This month: {change}'**
+  String progressGoalThisMonthNoTarget(String change);
+
+  /// Progress goal card: a past phase's last day.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended {date}'**
+  String progressGoalEnded(String date);
+
+  /// Progress: a section failed to load (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your progress.'**
+  String get progressLoadFailed;
+
+  /// Today: tooltip of the date header's menu button (A16 D11).
+  ///
+  /// In en, this message translates to:
+  /// **'Day options'**
+  String get todayDayMenu;
+
+  /// Today: a note on a day marked incomplete (DY-004).
+  ///
+  /// In en, this message translates to:
+  /// **'Marked incomplete: this day isn\'t counted'**
+  String get todayIncompleteNote;
+
+  /// Progress macro chart, screen readers: one bar with its target (protein, fiber).
+  ///
+  /// In en, this message translates to:
+  /// **'{label}: {amount} of {target} g'**
+  String progressGramsValueTarget(String label, String amount, String target);
 }
 
 class _AppLocalizationsDelegate

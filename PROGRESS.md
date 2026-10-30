@@ -1,8 +1,8 @@
 # Fitness Buddy: progress
 
-**48 of 86 steps done** · `▓▓▓▓▓░░░░░` 55%
+**49 of 86 steps done** · `▓▓▓▓▓░░░░░` 56%
 
-App 34/63 · Backend 14/23 · Foundation 7/7
+App 35/63 · Backend 14/23 · Foundation 7/7
 
 ## Now
 
@@ -13,9 +13,9 @@ App 34/63 · Backend 14/23 · Foundation 7/7
 | | Milestone | Done | Open |
 |---|---|---|---|
 | ✅ | **M1** Dogfood 1 | `▓▓▓▓▓` 14/14 | — |
-| 🟨 | **M2** Targets & weight | `▓▓▓▓░` 8/9 | A16 |
+| ✅ | **M2** Targets & weight | `▓▓▓▓▓` 9/9 | — |
 | 🟨 | **M5** Accounts & sync | `▓▓▓▓░` 16/19 | A34 A35 B21 |
-| 🟨 | **M2b** Solid app (no AI) | `▓░░░░` 9/23 | A17 A18 A19 A28a A30 A37a +12 |
+| 🟨 | **M2b** Solid app (no AI) | `▓░░░░` 9/23 | A17 A18 A19 A28a A30 A37a +11 |
 | 🟨 | **M3** Buddy on the laptop | `▓░░░░` 1/3 | A23b A49 #148 #149 #150 #151 |
 | ⬜ | **M4** Dogfood 2 | `░░░░░` 0/8 | A25 A26 A27 A28b A29 A31 +2 |
 | ⬜ | **M6** Workouts, review &… | `░░░░░` 0/4 | A37b A39b A41b B12 |
@@ -28,14 +28,15 @@ App 34/63 · Backend 14/23 · Foundation 7/7
 
 Not started, every dependency done; earliest milestone first:
 
-- [A16](technical-planning/steps/A16-progress-tab.md) Progress tab v1 · M2
 - [B21](technical-planning/steps/B21-workout-sync.md) Workout sync entities (server; backlog #189) · M5
 - [A17](technical-planning/steps/dish-batches.md) Dish batch 2: main dishes A · M2b
 - [A37a](technical-planning/steps/A37-workout-logging.md) Workouts without AI: muscle map, form, optional starter plans, history & PRs (split from A37, 2026-10-30) · M2b
+- [A38](technical-planning/steps/A38-adaptive-targets.md) Adaptive targets & weekly check-in · M2b
 - [A48](technical-planning/steps/A48-local-brands.md) Local brands & packaged foods · M2b
 
 ## Waiting on you
 
+- **#219** ⚠️ Owner A55 check: with the phone connected over adb, run flutter test…
 - **#185** ⚠️ Owner/A55 check: pack update end to end against the laptop server: publish a new…
 - **#164** ⚠️ Owner A55 check: a profile-mode pan of the weight graph over two years of daily…
 - **#154** ⚠️ Owner-gated live smoke of interpret-v2 (≤ 10 sends, ≈ $0.01): proves strict-mode…
@@ -45,8 +46,7 @@ Not started, every dependency done; earliest milestone first:
 - **#124** On the A55: Me > Your data > Export your data with Android font size at the largest…
 - **#123** At the A22 phone session: run A21 §6's A55 profile benchmark (UI-free), then at least…
 - **#115** On the A55: set real settings (imperial/metric, theme dark/light, week start, halal…
-- **#104** A09b owner check: use the chips for a few days on the A55: right items at the right…
-- …and 35 more owner items in the [backlog](technical-planning/steps/backlog.md)
+- …and 36 more owner items in the [backlog](technical-planning/steps/backlog.md)
 
 ---
 

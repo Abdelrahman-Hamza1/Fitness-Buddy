@@ -61,6 +61,12 @@ enum DiaryActionKind {
 
   /// Source meal saved.
   mealSaved,
+
+  /// A day marked incomplete (DY-004).
+  dayMarkedIncomplete,
+
+  /// A day counted again (its incomplete mark removed).
+  dayMarkedComplete,
 }
 
 /// Command result without display text.
@@ -232,6 +238,22 @@ class DiaryActionsController extends _$DiaryActionsController {
       {'name': entry.food.names.en, 'field': values.keys.first},
     );
   }
+
+  /// Marks [date] incomplete, or counts it again (DY-004 manual, A16 D11):
+  /// one direct change set through the single writer, with Undo. A day
+  /// already as asked writes nothing ([DiaryActionUnchanged]); a future day
+  /// is refused by the handler ([DiaryActionFailure.invalid]).
+  Future<DiaryActionOutcome> markDay(
+    LocalDate date, {
+    required bool incomplete,
+  }) => _command(
+    ['day:$date'],
+    MarkDay(date, incomplete: incomplete),
+    incomplete
+        ? DiaryActionKind.dayMarkedIncomplete
+        : DiaryActionKind.dayMarkedComplete,
+    {'date': date},
+  );
 
   List<DiaryEntry> _entries(SlotSection section) => [
     for (final item in section.items)

@@ -7,7 +7,8 @@ import 'package:material_ui/material_ui.dart';
 /// The day header with previous/next navigation (HM-009). [label] is the
 /// formatted date ("Today", "Fri 17 Oct"). [onNext] null disables the next
 /// button (e.g. on today). [onLabelTap] makes the label a button that opens
-/// a date picker (HM-009). The chevrons mirror in right-to-left layouts.
+/// a date picker (HM-009). [trailing] (e.g. a day menu button, A16 D11)
+/// sits after the next button. The chevrons mirror in right-to-left layouts.
 class FbDateHeader extends StatelessWidget {
   /// Creates the header.
   const new({
@@ -15,6 +16,7 @@ class FbDateHeader extends StatelessWidget {
     required this.onPrevious,
     this.onNext,
     this.onLabelTap,
+    this.trailing,
     super.key,
   });
 
@@ -30,6 +32,9 @@ class FbDateHeader extends StatelessWidget {
   /// Called when the date is tapped (to pick another day); null leaves the
   /// label as plain text.
   final VoidCallback? onLabelTap;
+
+  /// A widget after the next button, or null for none.
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +54,7 @@ class FbDateHeader extends StatelessWidget {
           tooltip: l10n.fbDateNext,
           icon: const Icon(FbIcons.next),
         ),
+        ?trailing,
       ],
     );
   }

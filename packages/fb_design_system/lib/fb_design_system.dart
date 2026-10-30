@@ -7,6 +7,7 @@ export 'src/brand/brand_lockup.dart';
 export 'src/brand/brand_mark.dart' show FbBrandMark, FbMarkColourway;
 export 'src/brand/brand_path.dart' show parseFbMarkPath;
 export 'src/brand/buddy_avatar.dart';
+export 'src/charts/bar_chart.dart';
 export 'src/charts/chart_types.dart';
 export 'src/charts/time_series_chart.dart';
 export 'src/components/amount_display.dart';

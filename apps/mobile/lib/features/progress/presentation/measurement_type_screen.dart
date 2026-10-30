@@ -10,8 +10,10 @@ import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/progress/application/graph_window.dart';
 import 'package:fb_mobile/features/progress/application/measurement_graph_providers.dart';
+import 'package:fb_mobile/features/progress/application/weight_graph_providers.dart';
 import 'package:fb_mobile/features/progress/presentation/graph_range_chips.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
+import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
@@ -253,6 +255,8 @@ class _Body extends ConsumerWidget {
     final first = series.first!;
     final percent = unit == MeasurementUnit.percent;
     final trend = series.trend;
+    // Goal phases shaded like the weight graph (A16 D12, TG-012).
+    final phases = ref.watch(goalHistoryProvider).value ?? GoalPhases(const []);
     return ListView(
       padding: const EdgeInsetsDirectional.all(FbSpace.s4),
       children: [
@@ -318,6 +322,12 @@ class _Body extends ConsumerWidget {
                 ],
               ),
           ],
+          periods: phasePeriods(
+            phases.records,
+            phases.history,
+            today.plusDays(800),
+            (record) => goalPhaseLabel(l10n, record),
+          ),
           selected: selected == null
               ? null
               : FbPointRef(series: 0, key: selected.id),
