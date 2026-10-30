@@ -4731,5 +4731,578 @@
   "weightGraphUseForTrendChanged": "That day's weigh-ins changed. Check the point and try again.",
   "@weightGraphUseForTrendChanged": {"description": "Snack bar: Use for trend was refused because the day's weigh-ins changed meanwhile (nothing was written)."},
   "weightGraphUseForTrendFailed": "Couldn't change the trend weigh-in. Try again.",
-  "@weightGraphUseForTrendFailed": {"description": "Snack bar: Use for trend was refused (nothing was written)."}
+  "@weightGraphUseForTrendFailed": {"description": "Snack bar: Use for trend was refused (nothing was written)."},
+  "meProfileGoal": "Profile & goal",
+  "@meProfileGoal": {
+    "description": "Me, You section: opens Profile & goal (A13c D13)."
+  },
+  "meTargets": "Targets",
+  "@meTargets": {
+    "description": "Me, You section: opens Targets (A13c D14)."
+  },
+  "profileGoalTitle": "Profile & goal",
+  "@profileGoalTitle": {
+    "description": "Profile & goal screen title (A13c D13)."
+  },
+  "profileSectionAbout": "About you",
+  "@profileSectionAbout": {
+    "description": "Profile & goal: section header above sex, birth year, height, activity and current weight."
+  },
+  "profileActivityLabel": "Activity",
+  "@profileActivityLabel": {
+    "description": "Profile & goal: the activity row title and its edit sheet title (TG-001)."
+  },
+  "profileCurrentWeight": "Current weight",
+  "@profileCurrentWeight": {
+    "description": "Profile & goal: the current weight row (A14's trend); opens the weigh-in sheet (PA1)."
+  },
+  "profileCurrentWeightNone": "Log a weigh-in",
+  "@profileCurrentWeightNone": {
+    "description": "Profile & goal: current weight row subtitle before any weigh-in."
+  },
+  "profileUpdated": "Profile updated",
+  "@profileUpdated": {
+    "description": "Undo snackbar after a profile edit (UX-030)."
+  },
+  "profileUpdatedTarget": "Profile updated. Target now {kcal} kcal a day.",
+  "@profileUpdatedTarget": {
+    "description": "Undo snackbar after a profile edit that recomputed the calculated target (D5).",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsChangedReload": "This changed. Reload.",
+  "@targetsChangedReload": {
+    "description": "Edit sheets in Profile & goal: the row changed elsewhere since the sheet opened; Reload keeps what was typed (UX-052)."
+  },
+  "targetsReload": "Reload",
+  "@targetsReload": {
+    "description": "Edit sheets in Profile & goal: loads the row as it is now and keeps what was typed (UX-052)."
+  },
+  "targetsSave": "Save",
+  "@targetsSave": {
+    "description": "Profile, goal and target sheets: the button that saves."
+  },
+  "targetsSaveFailed": "Couldn't save just now. Nothing you entered was lost. Try again.",
+  "@targetsSaveFailed": {
+    "description": "Profile, goal and target sheets: the save failed (UX-052)."
+  },
+  "goalSectionTitle": "Goal",
+  "@goalSectionTitle": {
+    "description": "Profile & goal: section header of the current goal."
+  },
+  "goalSince": "Since {date}",
+  "@goalSince": {
+    "description": "Profile & goal: when the current goal started.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "goalNoneToday": "No goal set for today.",
+  "@goalNoneToday": {
+    "description": "Profile & goal: no goal phase covers today."
+  },
+  "goalEdit": "Edit goal",
+  "@goalEdit": {
+    "description": "Profile & goal: edits the current goal (D13)."
+  },
+  "goalStartNew": "Start a new goal",
+  "@goalStartNew": {
+    "description": "Profile & goal: starts a new goal from today; the current one ends yesterday (TG-012)."
+  },
+  "goalEditTitle": "Edit goal",
+  "@goalEditTitle": {
+    "description": "Goal sheet title when editing the current goal."
+  },
+  "goalStartTitle": "New goal from today",
+  "@goalStartTitle": {
+    "description": "Goal sheet title when starting a new goal; the current goal ends yesterday."
+  },
+  "goalStartNote": "Your current goal ends yesterday and moves to Past goals.",
+  "@goalStartNote": {
+    "description": "Goal sheet: what starting a new goal does (TG-012)."
+  },
+  "goalUpdated": "Goal updated",
+  "@goalUpdated": {
+    "description": "Undo snackbar after editing the goal (UX-030)."
+  },
+  "goalUpdatedTarget": "Goal updated. Target now {kcal} kcal a day.",
+  "@goalUpdatedTarget": {
+    "description": "Undo snackbar after a goal edit that recomputed the calculated target (D5).",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "goalStarted": "New goal started",
+  "@goalStarted": {
+    "description": "Undo snackbar after starting a new goal (UX-030)."
+  },
+  "goalStartedTarget": "New goal started. Target now {kcal} kcal a day.",
+  "@goalStartedTarget": {
+    "description": "Undo snackbar after starting a new goal that recomputed the calculated target (D5).",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "goalPastTitle": "Past goals",
+  "@goalPastTitle": {
+    "description": "Profile & goal: section header of ended goals (TG-012)."
+  },
+  "goalPastRange": "{from} – {to}",
+  "@goalPastRange": {
+    "description": "Past goals: the dates of an ended goal, e.g. '3 Jan 2026 – 30 Apr 2026'.",
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "goalPastNone": "Goals you finish show up here.",
+  "@goalPastNone": {
+    "description": "Past goals: empty state (UX-050)."
+  },
+  "goalRename": "Rename",
+  "@goalRename": {
+    "description": "Goal rows: opens the rename sheet (TG-012)."
+  },
+  "goalRenameTitle": "Rename goal",
+  "@goalRenameTitle": {
+    "description": "Rename sheet title."
+  },
+  "goalNameLabel": "Name",
+  "@goalNameLabel": {
+    "description": "Rename sheet: the name field."
+  },
+  "goalNameHint": "Leave empty to use \"{label}\".",
+  "@goalNameHint": {
+    "description": "Rename sheet: an empty name means the default label of the goal type.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "goalNameRange": "Use up to 40 characters.",
+  "@goalNameRange": {
+    "description": "Rename sheet: the name is too long or has characters that can't be used."
+  },
+  "goalRenamed": "Goal renamed",
+  "@goalRenamed": {
+    "description": "Undo snackbar after renaming a goal (UX-030)."
+  },
+  "profileHeightValueCm": "{cm} cm",
+  "@profileHeightValueCm": {
+    "description": "Profile & goal: the stored height in centimetres.",
+    "placeholders": {
+      "cm": {
+        "type": "int"
+      }
+    }
+  },
+  "profileHeightValueFtIn": "{feet} ft {inches} in",
+  "@profileHeightValueFtIn": {
+    "description": "Profile & goal: the stored height in feet and inches.",
+    "placeholders": {
+      "feet": {
+        "type": "int"
+      },
+      "inches": {
+        "type": "int"
+      }
+    }
+  },
+  "targetsNotSetUpMessage": "Answer a few questions and the app works out your daily and weekly targets. It takes about 2 minutes.",
+  "@targetsNotSetUpMessage": {
+    "description": "Profile & goal and Targets before setup (UX-050)."
+  },
+  "targetsLoadFailed": "Couldn't load your profile and targets.",
+  "@targetsLoadFailed": {
+    "description": "Profile & goal and Targets: reading the stored rows failed (UX-052)."
+  },
+  "targetsTryAgain": "Try again",
+  "@targetsTryAgain": {
+    "description": "Profile & goal and Targets: retries a failed read."
+  },
+  "targetsTitle": "Targets",
+  "@targetsTitle": {
+    "description": "Me › Targets screen title (A13c D14)."
+  },
+  "targetsSectionWeek": "Today and this week",
+  "@targetsSectionWeek": {
+    "description": "Targets: section header of today's target, the weekly budget and the planned days."
+  },
+  "targetsTodayKcal": "{kcal} kcal",
+  "@targetsTodayKcal": {
+    "description": "Targets: today's target, the big number.",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsTodayCaption": "Your target today",
+  "@targetsTodayCaption": {
+    "description": "Targets: caption under today's target."
+  },
+  "targetsWeeklyBudget": "Weekly budget: {kcal} kcal",
+  "@targetsWeeklyBudget": {
+    "description": "Targets: the week's calorie budget (TG-040).",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsPlannedDay": "{kcal} kcal",
+  "@targetsPlannedDay": {
+    "description": "Targets: a day's planned target in the week list.",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsCarryNote": "The rest of this week is already at its limit (25% above or below your usual target), so not all of the difference can be spread out.",
+  "@targetsCarryNote": {
+    "description": "Targets (TG-042, D7): rebalancing can't absorb the whole difference; neutral."
+  },
+  "targetsSectionHow": "How it's calculated",
+  "@targetsSectionHow": {
+    "description": "Targets: section header of the plain-language explanation (TG-021)."
+  },
+  "targetsManualNote": "You set this yourself: {manual} kcal a day. The calculated target is {calculated} kcal a day.",
+  "@targetsManualNote": {
+    "description": "Targets: the explanation of a manual target (TG-021).",
+    "placeholders": {
+      "manual": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "calculated": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsManualNeedsReview": "Your own target is below your safety floor now, so the floor of {floor} kcal is used. Set a new target or use the calculated one.",
+  "@targetsManualNeedsReview": {
+    "description": "Targets (SF-012, manualNeedsReview): a manual target below a risen floor; neutral.",
+    "placeholders": {
+      "floor": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsGoalNeedsUpdate": "Your goal needs an update. Your targets stay as they are until then.",
+  "@targetsGoalNeedsUpdate": {
+    "description": "Targets (PA3, goalNeedsUpdate): the goal can't be resolved any more; neutral."
+  },
+  "targetsGoalUpdateAction": "Update goal",
+  "@targetsGoalUpdateAction": {
+    "description": "Targets: opens Profile & goal to start a new goal (PA3)."
+  },
+  "targetsRecalculate": "Recalculate with your current weight",
+  "@targetsRecalculate": {
+    "description": "Targets (D5): writes a new calculated target from the current weight trend."
+  },
+  "targetsRecalculateHint": "Your target was worked out at {basis}. Your current weight is {current}.",
+  "@targetsRecalculateHint": {
+    "description": "Targets (D5): why Recalculate is offered.",
+    "placeholders": {
+      "basis": {
+        "type": "String"
+      },
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "targetsUpdated": "Targets updated",
+  "@targetsUpdated": {
+    "description": "Undo snackbar after a target settings change (UX-030)."
+  },
+  "targetsSectionBudget": "Budget",
+  "@targetsSectionBudget": {
+    "description": "Targets: section header of the mode, rebalancing and higher-calorie days (TG-041–044)."
+  },
+  "targetsModeWeekly": "Weekly budget",
+  "@targetsModeWeekly": {
+    "description": "Targets: mode option, the week's total counts (TG-041)."
+  },
+  "targetsModeWeeklyHint": "Days can go up or down; the week's total is what counts.",
+  "@targetsModeWeeklyHint": {
+    "description": "Targets: weekly budget option subtitle."
+  },
+  "targetsModeFixed": "Same every day",
+  "@targetsModeFixed": {
+    "description": "Targets: mode option, a fixed daily target (TG-044)."
+  },
+  "targetsModeFixedHint": "One target for every day, no weekly budget.",
+  "@targetsModeFixedHint": {
+    "description": "Targets: fixed option subtitle."
+  },
+  "targetsRebalancing": "Rebalancing",
+  "@targetsRebalancing": {
+    "description": "Targets: switch, spreads a day's difference over the rest of the week (TG-042)."
+  },
+  "targetsRebalancingHint": "Spreads what you ate over or under across the rest of the week.",
+  "@targetsRebalancingHint": {
+    "description": "Targets: rebalancing switch subtitle."
+  },
+  "targetsForcedFixedNote": "Below the safety floor the same target applies every day and weekly rebalancing is off.",
+  "@targetsForcedFixedNote": {
+    "description": "Targets (PA7, SF-012): why mode, rebalancing and higher-calorie days are off for an acknowledged below-floor target."
+  },
+  "targetsShifting": "Higher-calorie days",
+  "@targetsShifting": {
+    "description": "Targets: row and sheet title, weekdays with a higher share of the weekly budget (TG-043)."
+  },
+  "targetsShiftingNone": "None",
+  "@targetsShiftingNone": {
+    "description": "Targets: no higher-calorie days."
+  },
+  "targetsShiftingHint": "The weekly total stays the same: the other days get a little less.",
+  "@targetsShiftingHint": {
+    "description": "Shifting sheet: what a higher-calorie day does (TG-043)."
+  },
+  "targetsShiftNormal": "Usual",
+  "@targetsShiftNormal": {
+    "description": "Shifting sheet: a day without a shift."
+  },
+  "targetsShiftLittle": "A little more",
+  "@targetsShiftLittle": {
+    "description": "Shifting sheet: a day 15% above the others."
+  },
+  "targetsShiftMore": "More",
+  "@targetsShiftMore": {
+    "description": "Shifting sheet: a day 30% above the others."
+  },
+  "targetsShiftDayPlanned": "{day}: {kcal} kcal",
+  "@targetsShiftDayPlanned": {
+    "description": "Shifting sheet: a weekday and its planned target with this choice.",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsSectionMacros": "Macros",
+  "@targetsSectionMacros": {
+    "description": "Targets: section header of the macro settings (TG-054)."
+  },
+  "targetsMacroSettings": "Macro targets",
+  "@targetsMacroSettings": {
+    "description": "Targets: row that opens the macro settings sheet (TG-054)."
+  },
+  "targetsMacroSettingsDefault": "Default",
+  "@targetsMacroSettingsDefault": {
+    "description": "Targets: the macro settings are the defaults."
+  },
+  "targetsMacroSettingsCustom": "Your own settings",
+  "@targetsMacroSettingsCustom": {
+    "description": "Targets: some macro settings were changed."
+  },
+  "targetsMacroProtein": "Protein",
+  "@targetsMacroProtein": {
+    "description": "Macro sheet: protein row."
+  },
+  "targetsMacroFat": "Fat",
+  "@targetsMacroFat": {
+    "description": "Macro sheet: fat row."
+  },
+  "targetsMacroCarbs": "Carbs",
+  "@targetsMacroCarbs": {
+    "description": "Macro sheet: carbs row."
+  },
+  "targetsMacroFiber": "Fiber",
+  "@targetsMacroFiber": {
+    "description": "Macro sheet: fiber row."
+  },
+  "targetsMacroDefault": "Default",
+  "@targetsMacroDefault": {
+    "description": "Macro sheet: use the app's default for this macro."
+  },
+  "targetsMacroGramsChoice": "Grams",
+  "@targetsMacroGramsChoice": {
+    "description": "Macro sheet: a fixed amount in grams."
+  },
+  "targetsMacroPercentChoice": "% of calories",
+  "@targetsMacroPercentChoice": {
+    "description": "Macro sheet: a share of the calorie target."
+  },
+  "targetsMacroGramsUnit": "g",
+  "@targetsMacroGramsUnit": {
+    "description": "Macro sheet: grams unit after the number."
+  },
+  "targetsMacroPercentUnit": "%",
+  "@targetsMacroPercentUnit": {
+    "description": "Macro sheet: percent unit after the number."
+  },
+  "targetsMacroGramsRange": "Enter 0 to {max} g.",
+  "@targetsMacroGramsRange": {
+    "description": "Macro sheet: grams out of range.",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "targetsMacroPercentRange": "Enter 0 to 100%.",
+  "@targetsMacroPercentRange": {
+    "description": "Macro sheet: percent out of range."
+  },
+  "targetsMacroProteinOnly": "Calories and protein only",
+  "@targetsMacroProteinOnly": {
+    "description": "Macro sheet: switch, no carb and fat targets (TG-054)."
+  },
+  "targetsMacroProteinOnlyHint": "Carbs and fat are shown without a target.",
+  "@targetsMacroProteinOnlyHint": {
+    "description": "Macro sheet: calories and protein only subtitle."
+  },
+  "targetsMacroEnergyAbove": "Your macros add up to about {kcal} kcal more than your calorie target.",
+  "@targetsMacroEnergyAbove": {
+    "description": "Targets: neutral note when macro energy is more than 50 kcal above the calorie target (TG-054).",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsMacroEnergyBelow": "Your macros add up to about {kcal} kcal less than your calorie target.",
+  "@targetsMacroEnergyBelow": {
+    "description": "Targets: neutral note when macro energy is more than 50 kcal below the calorie target (TG-054).",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsChangedTryAgain": "This changed. Check it and try again.",
+  "@targetsChangedTryAgain": {
+    "description": "Targets: a settings change was refused because the targets changed meanwhile (UX-052)."
+  },
+  "targetsSectionOwn": "Your own target",
+  "@targetsSectionOwn": {
+    "description": "Targets: section header of the manual target (SF-012)."
+  },
+  "targetsSetOwn": "Set my own target",
+  "@targetsSetOwn": {
+    "description": "Targets: opens the manual target sheet (SF-012)."
+  },
+  "targetsSetOwnHint": "Use a daily number you choose instead of the calculated one.",
+  "@targetsSetOwnHint": {
+    "description": "Targets: subtitle of 'Set my own target'."
+  },
+  "targetsUseCalculated": "Use the calculated target",
+  "@targetsUseCalculated": {
+    "description": "Targets: back to the calculated target from a manual one (TG-021)."
+  },
+  "targetsManualLabel": "Daily target",
+  "@targetsManualLabel": {
+    "description": "Manual target sheet: the number field."
+  },
+  "targetsManualUnit": "kcal",
+  "@targetsManualUnit": {
+    "description": "Manual target sheet: unit after the number."
+  },
+  "targetsManualRange": "Enter a number from 500 to 10,000.",
+  "@targetsManualRange": {
+    "description": "Manual target sheet: out of range (D15)."
+  },
+  "targetsManualApply": "Use this target",
+  "@targetsManualApply": {
+    "description": "Manual target sheet: applies the number."
+  },
+  "targetsWarningTitle": "Before you use this target",
+  "@targetsWarningTitle": {
+    "description": "Warning screen title (SF-012); calm, no alarm."
+  },
+  "targetsWarningFloor": "{kcal} kcal a day is below your safety floor of {floor} kcal (your estimated resting energy). The app never suggests a target this low. Eating this little for a long time can leave you tired and make it harder to keep going. If you're unsure, talk to a health professional.",
+  "@targetsWarningFloor": {
+    "description": "Warning screen (SF-012, D16): a manual target below the floor. No moral words.",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "floor": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsWarningRate": "{kcal} kcal a day means losing about {rate} a week, more than 1% of your weight. Plans the app makes stay within 1% a week. Losing faster for a long time can leave you tired and make it harder to keep going.",
+  "@targetsWarningRate": {
+    "description": "Warning screen (SF-011, D16): a manual target implying loss above 1% of body weight a week.",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "targetsWarningFixed": "Below the floor the same target applies every day and weekly rebalancing is off.",
+  "@targetsWarningFixed": {
+    "description": "Warning screen (SF-012, D16): what applying a below-floor target changes."
+  },
+  "targetsWarningAcknowledge": "I understand and want to use {kcal} kcal a day",
+  "@targetsWarningAcknowledge": {
+    "description": "Warning screen: the acknowledgement checkbox (SF-012).",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsWarningUse": "Use {kcal} kcal",
+  "@targetsWarningUse": {
+    "description": "Warning screen: primary, disabled until the box is checked (SF-012).",
+    "placeholders": {
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "targetsWarningBack": "Go back",
+  "@targetsWarningBack": {
+    "description": "Warning screen: leaves without changing anything."
+  },
+  "goalEditNote": "This changes your current goal, which started on {date}. To begin a new goal from today instead, use Start a new goal.",
+  "@goalEditNote": {
+    "description": "Goal sheet when editing (D13): editing rewrites the current phase from its start; a new phase starts today.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  }
 }

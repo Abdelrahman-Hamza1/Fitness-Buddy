@@ -13,6 +13,7 @@ export 'src/components/amount_display.dart';
 export 'src/components/big_number.dart';
 export 'src/components/button.dart';
 export 'src/components/card.dart';
+export 'src/components/checkbox_row.dart';
 export 'src/components/chips.dart';
 export 'src/components/choice_chip.dart';
 export 'src/components/composer.dart';

@@ -12,8 +12,8 @@ import 'package:material_ui/material_ui.dart';
 /// The Me tab (UX-010, A10 D8): one scrolling list of sections in a fixed
 /// order, each shown once its step exists. Today that is You ("Set up
 /// profile & targets" until setup has run, A13 D10; "Update the app" for a
-/// profile this version can't read; Profile & goal and Targets come with
-/// A13c), Food (Your foods and Saved meals, A09 D10), Settings (units, week
+/// profile this version can't read; Profile & goal and Targets once set
+/// up, A13c), Food (Your foods and Saved meals, A09 D10), Settings (units, week
 /// start, halal, theme, city and the energy unit), Your data (Export your
 /// data, A11 D9) and About; Buddy remembers (A26) and Account (A33) add their
 /// own sections. A section with no rows is not shown. In the dev flavor a
@@ -39,6 +39,10 @@ class MeScreen extends ConsumerWidget {
                   _Row(l10n.meSetUpTargets, const SetupRoute()),
                 if (setup == SetupStatus.profileUnreadable)
                   _Row(l10n.setupUpdateTitle, const SetupRoute()),
+                if (setup == SetupStatus.setUp)
+                  _Row(l10n.meProfileGoal, const ProfileRoute()),
+                if (setup == SetupStatus.setUp)
+                  _Row(l10n.meTargets, const TargetsRoute()),
               ]),
               ..._group(l10n.meSectionFood, open, [
                 _Row(l10n.meYourFoods, const PersonalFoodsRoute()),

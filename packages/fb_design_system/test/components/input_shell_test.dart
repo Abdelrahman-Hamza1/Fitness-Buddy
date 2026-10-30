@@ -457,6 +457,7 @@ void main() {
         FbDateHeader,
         FbDisclosureRow,
         FbSwitchRow,
+        FbCheckboxRow,
         FbOption,
         FbOptionList,
         FbSwipeActions,

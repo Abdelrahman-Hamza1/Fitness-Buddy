@@ -160,7 +160,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A12](A12-targets-engine.md) | Targets engine | **Codex** | A06 | M | S19 |  | ✅ |
 | [A13a](A13-targets-ui-onboarding.md) | Targets storage & commands (split from A13, 2026-10-28) | Claude | A10a, A10b, A12 | L | S20 part |  | ✅ |
 | [A13b](A13-targets-ui-onboarding.md) | Onboarding & Today numbers (split from A13) | Claude | A13a, A14 | M | S20 part |  | ✅ |
-| [A13c](A13-targets-ui-onboarding.md) | Profile, goal & targets screens (split from A13) | Claude | A13b | M | S20 part |  | ⬜ |
+| [A13c](A13-targets-ui-onboarding.md) | Profile, goal & targets screens (split from A13) | Claude | A13b | M | S20 part |  | ✅ |
 | [A14](A14-weigh-ins-trend.md) | Weigh-ins & trend | Claude | A08a | L | S21 |  | ✅ |
 | [A15a](A15-weight-graph-measurements.md) | Weight graph (split from A15, 2026-10-28) | Claude | A12, A13a, A14 | L | S22 part |  | ✅ |
 | [A15b](A15-weight-graph-measurements.md) | Weight history entry & measurements (split from A15) | Claude | A15a | L | S22 part |  | ⬜ |

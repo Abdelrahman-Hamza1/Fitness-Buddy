@@ -616,7 +616,7 @@ jobs:
     # (TD-086); the gate below treats a skipped android-it as passed.
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[it]')
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 70
     env:
       EMULATOR_OPTIONS: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
     steps:
@@ -716,7 +716,9 @@ jobs:
       - name: Patrol tests on the emulator
         id: it1
         continue-on-error: true
-        timeout-minutes: 15
+        # The suite grew to 24 journeys (A13c, A15a, A24 together): the
+        # build plus ~10 min of tests no longer fit 15 minutes.
+        timeout-minutes: 25
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: 34
@@ -735,7 +737,7 @@ jobs:
       - name: Patrol tests on the emulator (the one automatic retry, plan A7)
         id: it2
         if: steps.it1.outcome == 'failure'
-        timeout-minutes: 12
+        timeout-minutes: 22
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: 34

@@ -282,6 +282,32 @@ final class WeightGraphRoute extends AppRoute {
   String get location => path;
 }
 
+/// Me › Profile & goal (A13c D13, TG-001/010–012): a detail screen of the
+/// Me tab.
+final class ProfileRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/profile';
+
+  @override
+  String get location => path;
+}
+
+/// Me › Targets (A13c D14, TG-021/040–044/054, SF-012): a detail screen of
+/// the Me tab.
+final class TargetsRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/targets';
+
+  @override
+  String get location => path;
+}
+
 /// About (A10 D14, SF-040): a detail screen of the Me tab.
 final class AboutRoute extends AppRoute {
   /// Creates the route.

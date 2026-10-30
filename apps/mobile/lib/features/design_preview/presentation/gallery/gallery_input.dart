@@ -39,6 +39,17 @@ final List<GallerySection> gallerySectionsInput = [
     ],
   ),
   GallerySection(
+    name: 'FbCheckboxRow',
+    covers: const [FbCheckboxRow],
+    states: (_) => const [
+      GalleryState('tap to check', _CheckboxDemo()),
+      GalleryState(
+        'disabled',
+        FbCheckboxRow(title: _S.halalTitle, value: false, onChanged: null),
+      ),
+    ],
+  ),
+  GallerySection(
     name: 'FbSwitchRow',
     covers: const [FbSwitchRow],
     states: (_) => const [
@@ -653,6 +664,25 @@ class _SwitchDemoState extends State<_SwitchDemo> {
   Widget build(BuildContext context) => FbSwitchRow(
     title: _S.halalTitle,
     subtitle: widget.withSubtitle ? _S.halalSubtitle : null,
+    value: _on,
+    onChanged: (value) => setState(() => _on = value),
+  );
+}
+
+/// A checkbox row that checks and unchecks.
+class _CheckboxDemo extends StatefulWidget {
+  const new();
+
+  @override
+  State<_CheckboxDemo> createState() => _CheckboxDemoState();
+}
+
+class _CheckboxDemoState extends State<_CheckboxDemo> {
+  bool _on = false;
+
+  @override
+  Widget build(BuildContext context) => FbCheckboxRow(
+    title: _S.halalTitle,
     value: _on,
     onChanged: (value) => setState(() => _on = value),
   );

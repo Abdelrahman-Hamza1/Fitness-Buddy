@@ -14,6 +14,7 @@ import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
+import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter/foundation.dart';
@@ -88,6 +89,8 @@ final class AppRouter implements AppNavigator {
                       _savedMealsRoute(),
                       _goRoute(const MealSlotsRoute(), nested: true),
                       _goRoute(const CityPickerRoute(), nested: true),
+                      _goRoute(const ProfileRoute(), nested: true),
+                      _goRoute(const TargetsRoute(), nested: true),
                       _goRoute(const AboutRoute(), nested: true),
                       if (designPreview)
                         _goRoute(const DesignPreviewRoute(), nested: true),
@@ -269,6 +272,8 @@ final class AppRouter implements AppNavigator {
     TodayWeightGraphRoute() || WeightGraphRoute() => const WeightGraphScreen(),
     UpdateRequiredRoute() => const UpdateRequiredScreen(),
     SetupRoute() => const SetupScreen(),
+    ProfileRoute() => const ProfileGoalScreen(),
+    TargetsRoute() => const TargetsScreen(),
   };
 
   @override

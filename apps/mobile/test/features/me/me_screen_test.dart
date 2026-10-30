@@ -11,7 +11,9 @@ Finder _header(String title) => find.widgetWithText(FbSectionHeader, title);
 
 void main() {
   testWidgets('UX-060 UX-010 Me shows "Set up profile & targets" under You, '
-      'first, until setup has run; the row opens setup', (tester) async {
+      'first, until setup has run; the row opens setup; then Profile & goal', (
+    tester,
+  ) async {
     final c = await pumpAt(tester);
     await openMe(tester);
     expect(
@@ -27,9 +29,12 @@ void main() {
     await run.next('Save');
     await settleWrites(tester);
     await openMe(tester);
-    // A13c adds Profile & goal and Targets; until then You has no rows.
+    // Once set up, You has Profile & goal and Targets (A13c).
     expect(find.text('Set up profile & targets'), findsNothing);
-    expect(_header('You'), findsNothing);
+    expect(_header('You'), findsOneWidget);
+    await tester.tap(find.widgetWithText(FbListRow, 'Profile & goal'));
+    await tester.pumpAndSettle();
+    expect(find.byType(ProfileGoalScreen), findsOneWidget);
     await unmountApp(tester, c);
   });
 

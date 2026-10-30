@@ -215,9 +215,11 @@ void main() {
     Future<void> exportAndWait(String bannerText) async {
       await tester.tap(find.widgetWithText(FilledButton, 'Export'));
       await tester.pump();
+      // Up to 20 s of real time: the encoding isolate and the file writes
+      // grow with the export tables (A36 added several) and a loaded runner.
       for (
         var i = 0;
-        i < 100 && find.text(bannerText).evaluate().isEmpty;
+        i < 400 && find.text(bannerText).evaluate().isEmpty;
         i++
       ) {
         await tester.runAsync(
@@ -237,7 +239,7 @@ void main() {
     await tester.pump();
     for (
       var i = 0;
-      i < 100 &&
+      i < 400 &&
           find.textContaining('Handed to the share sheet:').evaluate().isEmpty;
       i++
     ) {

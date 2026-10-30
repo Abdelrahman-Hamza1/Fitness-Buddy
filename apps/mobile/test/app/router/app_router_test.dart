@@ -10,6 +10,7 @@ import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
+import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -42,6 +43,8 @@ import '../../helpers/pump_app.dart';
   WeightGraphRoute() => (WeightGraphScreen, true),
   UpdateRequiredRoute() => (UpdateRequiredScreen, false),
   SetupRoute() => (SetupScreen, false),
+  ProfileRoute() => (ProfileGoalScreen, true),
+  TargetsRoute() => (TargetsScreen, true),
 };
 
 /// An entry ID for the change-food routes.
@@ -66,6 +69,8 @@ const List<AppRoute> _allRoutes = [
   AboutRoute(),
   UpdateRequiredRoute(),
   SetupRoute(),
+  ProfileRoute(),
+  TargetsRoute(),
 ];
 
 void main() {
@@ -96,6 +101,8 @@ void main() {
         const AboutRoute(),
         const TodayWeightGraphRoute(),
         const WeightGraphRoute(),
+        const ProfileRoute(),
+        const TargetsRoute(),
       ].map((r) => r.location),
       unorderedEquals(_allRoutes.map((r) => r.location)),
     );

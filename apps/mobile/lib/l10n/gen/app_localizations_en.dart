@@ -3497,4 +3497,457 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get weightGraphUseForTrendFailed =>
       'Couldn\'t change the trend weigh-in. Try again.';
+
+  @override
+  String get meProfileGoal => 'Profile & goal';
+
+  @override
+  String get meTargets => 'Targets';
+
+  @override
+  String get profileGoalTitle => 'Profile & goal';
+
+  @override
+  String get profileSectionAbout => 'About you';
+
+  @override
+  String get profileActivityLabel => 'Activity';
+
+  @override
+  String get profileCurrentWeight => 'Current weight';
+
+  @override
+  String get profileCurrentWeightNone => 'Log a weigh-in';
+
+  @override
+  String get profileUpdated => 'Profile updated';
+
+  @override
+  String profileUpdatedTarget(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Profile updated. Target now $kcalString kcal a day.';
+  }
+
+  @override
+  String get targetsChangedReload => 'This changed. Reload.';
+
+  @override
+  String get targetsReload => 'Reload';
+
+  @override
+  String get targetsSave => 'Save';
+
+  @override
+  String get targetsSaveFailed =>
+      'Couldn\'t save just now. Nothing you entered was lost. Try again.';
+
+  @override
+  String get goalSectionTitle => 'Goal';
+
+  @override
+  String goalSince(String date) {
+    return 'Since $date';
+  }
+
+  @override
+  String get goalNoneToday => 'No goal set for today.';
+
+  @override
+  String get goalEdit => 'Edit goal';
+
+  @override
+  String get goalStartNew => 'Start a new goal';
+
+  @override
+  String get goalEditTitle => 'Edit goal';
+
+  @override
+  String get goalStartTitle => 'New goal from today';
+
+  @override
+  String get goalStartNote =>
+      'Your current goal ends yesterday and moves to Past goals.';
+
+  @override
+  String get goalUpdated => 'Goal updated';
+
+  @override
+  String goalUpdatedTarget(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Goal updated. Target now $kcalString kcal a day.';
+  }
+
+  @override
+  String get goalStarted => 'New goal started';
+
+  @override
+  String goalStartedTarget(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'New goal started. Target now $kcalString kcal a day.';
+  }
+
+  @override
+  String get goalPastTitle => 'Past goals';
+
+  @override
+  String goalPastRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get goalPastNone => 'Goals you finish show up here.';
+
+  @override
+  String get goalRename => 'Rename';
+
+  @override
+  String get goalRenameTitle => 'Rename goal';
+
+  @override
+  String get goalNameLabel => 'Name';
+
+  @override
+  String goalNameHint(String label) {
+    return 'Leave empty to use \"$label\".';
+  }
+
+  @override
+  String get goalNameRange => 'Use up to 40 characters.';
+
+  @override
+  String get goalRenamed => 'Goal renamed';
+
+  @override
+  String profileHeightValueCm(int cm) {
+    return '$cm cm';
+  }
+
+  @override
+  String profileHeightValueFtIn(int feet, int inches) {
+    return '$feet ft $inches in';
+  }
+
+  @override
+  String get targetsNotSetUpMessage =>
+      'Answer a few questions and the app works out your daily and weekly targets. It takes about 2 minutes.';
+
+  @override
+  String get targetsLoadFailed => 'Couldn\'t load your profile and targets.';
+
+  @override
+  String get targetsTryAgain => 'Try again';
+
+  @override
+  String get targetsTitle => 'Targets';
+
+  @override
+  String get targetsSectionWeek => 'Today and this week';
+
+  @override
+  String targetsTodayKcal(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '$kcalString kcal';
+  }
+
+  @override
+  String get targetsTodayCaption => 'Your target today';
+
+  @override
+  String targetsWeeklyBudget(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Weekly budget: $kcalString kcal';
+  }
+
+  @override
+  String targetsPlannedDay(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '$kcalString kcal';
+  }
+
+  @override
+  String get targetsCarryNote =>
+      'The rest of this week is already at its limit (25% above or below your usual target), so not all of the difference can be spread out.';
+
+  @override
+  String get targetsSectionHow => 'How it\'s calculated';
+
+  @override
+  String targetsManualNote(int manual, int calculated) {
+    final intl.NumberFormat manualNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String manualString = manualNumberFormat.format(manual);
+    final intl.NumberFormat calculatedNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String calculatedString = calculatedNumberFormat.format(calculated);
+
+    return 'You set this yourself: $manualString kcal a day. The calculated target is $calculatedString kcal a day.';
+  }
+
+  @override
+  String targetsManualNeedsReview(int floor) {
+    final intl.NumberFormat floorNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String floorString = floorNumberFormat.format(floor);
+
+    return 'Your own target is below your safety floor now, so the floor of $floorString kcal is used. Set a new target or use the calculated one.';
+  }
+
+  @override
+  String get targetsGoalNeedsUpdate =>
+      'Your goal needs an update. Your targets stay as they are until then.';
+
+  @override
+  String get targetsGoalUpdateAction => 'Update goal';
+
+  @override
+  String get targetsRecalculate => 'Recalculate with your current weight';
+
+  @override
+  String targetsRecalculateHint(String basis, String current) {
+    return 'Your target was worked out at $basis. Your current weight is $current.';
+  }
+
+  @override
+  String get targetsUpdated => 'Targets updated';
+
+  @override
+  String get targetsSectionBudget => 'Budget';
+
+  @override
+  String get targetsModeWeekly => 'Weekly budget';
+
+  @override
+  String get targetsModeWeeklyHint =>
+      'Days can go up or down; the week\'s total is what counts.';
+
+  @override
+  String get targetsModeFixed => 'Same every day';
+
+  @override
+  String get targetsModeFixedHint =>
+      'One target for every day, no weekly budget.';
+
+  @override
+  String get targetsRebalancing => 'Rebalancing';
+
+  @override
+  String get targetsRebalancingHint =>
+      'Spreads what you ate over or under across the rest of the week.';
+
+  @override
+  String get targetsForcedFixedNote =>
+      'Below the safety floor the same target applies every day and weekly rebalancing is off.';
+
+  @override
+  String get targetsShifting => 'Higher-calorie days';
+
+  @override
+  String get targetsShiftingNone => 'None';
+
+  @override
+  String get targetsShiftingHint =>
+      'The weekly total stays the same: the other days get a little less.';
+
+  @override
+  String get targetsShiftNormal => 'Usual';
+
+  @override
+  String get targetsShiftLittle => 'A little more';
+
+  @override
+  String get targetsShiftMore => 'More';
+
+  @override
+  String targetsShiftDayPlanned(String day, int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '$day: $kcalString kcal';
+  }
+
+  @override
+  String get targetsSectionMacros => 'Macros';
+
+  @override
+  String get targetsMacroSettings => 'Macro targets';
+
+  @override
+  String get targetsMacroSettingsDefault => 'Default';
+
+  @override
+  String get targetsMacroSettingsCustom => 'Your own settings';
+
+  @override
+  String get targetsMacroProtein => 'Protein';
+
+  @override
+  String get targetsMacroFat => 'Fat';
+
+  @override
+  String get targetsMacroCarbs => 'Carbs';
+
+  @override
+  String get targetsMacroFiber => 'Fiber';
+
+  @override
+  String get targetsMacroDefault => 'Default';
+
+  @override
+  String get targetsMacroGramsChoice => 'Grams';
+
+  @override
+  String get targetsMacroPercentChoice => '% of calories';
+
+  @override
+  String get targetsMacroGramsUnit => 'g';
+
+  @override
+  String get targetsMacroPercentUnit => '%';
+
+  @override
+  String targetsMacroGramsRange(int max) {
+    return 'Enter 0 to $max g.';
+  }
+
+  @override
+  String get targetsMacroPercentRange => 'Enter 0 to 100%.';
+
+  @override
+  String get targetsMacroProteinOnly => 'Calories and protein only';
+
+  @override
+  String get targetsMacroProteinOnlyHint =>
+      'Carbs and fat are shown without a target.';
+
+  @override
+  String targetsMacroEnergyAbove(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Your macros add up to about $kcalString kcal more than your calorie target.';
+  }
+
+  @override
+  String targetsMacroEnergyBelow(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Your macros add up to about $kcalString kcal less than your calorie target.';
+  }
+
+  @override
+  String get targetsChangedTryAgain => 'This changed. Check it and try again.';
+
+  @override
+  String get targetsSectionOwn => 'Your own target';
+
+  @override
+  String get targetsSetOwn => 'Set my own target';
+
+  @override
+  String get targetsSetOwnHint =>
+      'Use a daily number you choose instead of the calculated one.';
+
+  @override
+  String get targetsUseCalculated => 'Use the calculated target';
+
+  @override
+  String get targetsManualLabel => 'Daily target';
+
+  @override
+  String get targetsManualUnit => 'kcal';
+
+  @override
+  String get targetsManualRange => 'Enter a number from 500 to 10,000.';
+
+  @override
+  String get targetsManualApply => 'Use this target';
+
+  @override
+  String get targetsWarningTitle => 'Before you use this target';
+
+  @override
+  String targetsWarningFloor(int kcal, int floor) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+    final intl.NumberFormat floorNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String floorString = floorNumberFormat.format(floor);
+
+    return '$kcalString kcal a day is below your safety floor of $floorString kcal (your estimated resting energy). The app never suggests a target this low. Eating this little for a long time can leave you tired and make it harder to keep going. If you\'re unsure, talk to a health professional.';
+  }
+
+  @override
+  String targetsWarningRate(int kcal, String rate) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '$kcalString kcal a day means losing about $rate a week, more than 1% of your weight. Plans the app makes stay within 1% a week. Losing faster for a long time can leave you tired and make it harder to keep going.';
+  }
+
+  @override
+  String get targetsWarningFixed =>
+      'Below the floor the same target applies every day and weekly rebalancing is off.';
+
+  @override
+  String targetsWarningAcknowledge(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'I understand and want to use $kcalString kcal a day';
+  }
+
+  @override
+  String targetsWarningUse(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Use $kcalString kcal';
+  }
+
+  @override
+  String get targetsWarningBack => 'Go back';
+
+  @override
+  String goalEditNote(String date) {
+    return 'This changes your current goal, which started on $date. To begin a new goal from today instead, use Start a new goal.';
+  }
 }

@@ -33,29 +33,32 @@ void main() {
       final clock = container.read(clockProvider);
       final today = EntryTime.now(clock).localDate;
 
-      // 730 days before today, 08:00 local, one change set.
-      await tester.runAsync(
-        () => container
-            .read(changeSetApplierProvider)
-            .apply(
-              ChangeSet([
-                for (var i = 1; i <= 730; i++)
-                  CreateWeighIn(
-                    _id(i),
-                    WeighInDraft(
-                      time: EntryTime.fromLocal(
-                        LocalDateTime(today.plusDays(-i), hour: 8),
-                        clock,
-                      ),
-                      input: WeighInInput(
-                        ((90 + i * 0.01 + (i % 7) * 0.1) * 10).round() / 10,
-                        MassUnit.kilogram,
+      // 730 days before today, 08:00 local, in two change sets (a change
+      // set holds at most 500 ops).
+      for (final (from, to) in const [(1, 365), (366, 730)]) {
+        await tester.runAsync(
+          () => container
+              .read(changeSetApplierProvider)
+              .apply(
+                ChangeSet([
+                  for (var i = from; i <= to; i++)
+                    CreateWeighIn(
+                      _id(i),
+                      WeighInDraft(
+                        time: EntryTime.fromLocal(
+                          LocalDateTime(today.plusDays(-i), hour: 8),
+                          clock,
+                        ),
+                        input: WeighInInput(
+                          ((90 + i * 0.01 + (i % 7) * 0.1) * 10).round() / 10,
+                          MassUnit.kilogram,
+                        ),
                       ),
                     ),
-                  ),
-              ], origin: Origin.direct),
-            ),
-      );
+                ], origin: Origin.direct),
+              ),
+        );
+      }
 
       // Today's weight card, third row.
       final row = find.descendant(

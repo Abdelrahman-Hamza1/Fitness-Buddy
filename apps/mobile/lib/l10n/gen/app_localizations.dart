@@ -5159,6 +5159,636 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t change the trend weigh-in. Try again.'**
   String get weightGraphUseForTrendFailed;
+
+  /// Me, You section: opens Profile & goal (A13c D13).
+  ///
+  /// In en, this message translates to:
+  /// **'Profile & goal'**
+  String get meProfileGoal;
+
+  /// Me, You section: opens Targets (A13c D14).
+  ///
+  /// In en, this message translates to:
+  /// **'Targets'**
+  String get meTargets;
+
+  /// Profile & goal screen title (A13c D13).
+  ///
+  /// In en, this message translates to:
+  /// **'Profile & goal'**
+  String get profileGoalTitle;
+
+  /// Profile & goal: section header above sex, birth year, height, activity and current weight.
+  ///
+  /// In en, this message translates to:
+  /// **'About you'**
+  String get profileSectionAbout;
+
+  /// Profile & goal: the activity row title and its edit sheet title (TG-001).
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get profileActivityLabel;
+
+  /// Profile & goal: the current weight row (A14's trend); opens the weigh-in sheet (PA1).
+  ///
+  /// In en, this message translates to:
+  /// **'Current weight'**
+  String get profileCurrentWeight;
+
+  /// Profile & goal: current weight row subtitle before any weigh-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Log a weigh-in'**
+  String get profileCurrentWeightNone;
+
+  /// Undo snackbar after a profile edit (UX-030).
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated'**
+  String get profileUpdated;
+
+  /// Undo snackbar after a profile edit that recomputed the calculated target (D5).
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated. Target now {kcal} kcal a day.'**
+  String profileUpdatedTarget(int kcal);
+
+  /// Edit sheets in Profile & goal: the row changed elsewhere since the sheet opened; Reload keeps what was typed (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'This changed. Reload.'**
+  String get targetsChangedReload;
+
+  /// Edit sheets in Profile & goal: loads the row as it is now and keeps what was typed (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Reload'**
+  String get targetsReload;
+
+  /// Profile, goal and target sheets: the button that saves.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get targetsSave;
+
+  /// Profile, goal and target sheets: the save failed (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save just now. Nothing you entered was lost. Try again.'**
+  String get targetsSaveFailed;
+
+  /// Profile & goal: section header of the current goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal'**
+  String get goalSectionTitle;
+
+  /// Profile & goal: when the current goal started.
+  ///
+  /// In en, this message translates to:
+  /// **'Since {date}'**
+  String goalSince(String date);
+
+  /// Profile & goal: no goal phase covers today.
+  ///
+  /// In en, this message translates to:
+  /// **'No goal set for today.'**
+  String get goalNoneToday;
+
+  /// Profile & goal: edits the current goal (D13).
+  ///
+  /// In en, this message translates to:
+  /// **'Edit goal'**
+  String get goalEdit;
+
+  /// Profile & goal: starts a new goal from today; the current one ends yesterday (TG-012).
+  ///
+  /// In en, this message translates to:
+  /// **'Start a new goal'**
+  String get goalStartNew;
+
+  /// Goal sheet title when editing the current goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit goal'**
+  String get goalEditTitle;
+
+  /// Goal sheet title when starting a new goal; the current goal ends yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'New goal from today'**
+  String get goalStartTitle;
+
+  /// Goal sheet: what starting a new goal does (TG-012).
+  ///
+  /// In en, this message translates to:
+  /// **'Your current goal ends yesterday and moves to Past goals.'**
+  String get goalStartNote;
+
+  /// Undo snackbar after editing the goal (UX-030).
+  ///
+  /// In en, this message translates to:
+  /// **'Goal updated'**
+  String get goalUpdated;
+
+  /// Undo snackbar after a goal edit that recomputed the calculated target (D5).
+  ///
+  /// In en, this message translates to:
+  /// **'Goal updated. Target now {kcal} kcal a day.'**
+  String goalUpdatedTarget(int kcal);
+
+  /// Undo snackbar after starting a new goal (UX-030).
+  ///
+  /// In en, this message translates to:
+  /// **'New goal started'**
+  String get goalStarted;
+
+  /// Undo snackbar after starting a new goal that recomputed the calculated target (D5).
+  ///
+  /// In en, this message translates to:
+  /// **'New goal started. Target now {kcal} kcal a day.'**
+  String goalStartedTarget(int kcal);
+
+  /// Profile & goal: section header of ended goals (TG-012).
+  ///
+  /// In en, this message translates to:
+  /// **'Past goals'**
+  String get goalPastTitle;
+
+  /// Past goals: the dates of an ended goal, e.g. '3 Jan 2026 – 30 Apr 2026'.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} – {to}'**
+  String goalPastRange(String from, String to);
+
+  /// Past goals: empty state (UX-050).
+  ///
+  /// In en, this message translates to:
+  /// **'Goals you finish show up here.'**
+  String get goalPastNone;
+
+  /// Goal rows: opens the rename sheet (TG-012).
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get goalRename;
+
+  /// Rename sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename goal'**
+  String get goalRenameTitle;
+
+  /// Rename sheet: the name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get goalNameLabel;
+
+  /// Rename sheet: an empty name means the default label of the goal type.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to use \"{label}\".'**
+  String goalNameHint(String label);
+
+  /// Rename sheet: the name is too long or has characters that can't be used.
+  ///
+  /// In en, this message translates to:
+  /// **'Use up to 40 characters.'**
+  String get goalNameRange;
+
+  /// Undo snackbar after renaming a goal (UX-030).
+  ///
+  /// In en, this message translates to:
+  /// **'Goal renamed'**
+  String get goalRenamed;
+
+  /// Profile & goal: the stored height in centimetres.
+  ///
+  /// In en, this message translates to:
+  /// **'{cm} cm'**
+  String profileHeightValueCm(int cm);
+
+  /// Profile & goal: the stored height in feet and inches.
+  ///
+  /// In en, this message translates to:
+  /// **'{feet} ft {inches} in'**
+  String profileHeightValueFtIn(int feet, int inches);
+
+  /// Profile & goal and Targets before setup (UX-050).
+  ///
+  /// In en, this message translates to:
+  /// **'Answer a few questions and the app works out your daily and weekly targets. It takes about 2 minutes.'**
+  String get targetsNotSetUpMessage;
+
+  /// Profile & goal and Targets: reading the stored rows failed (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your profile and targets.'**
+  String get targetsLoadFailed;
+
+  /// Profile & goal and Targets: retries a failed read.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get targetsTryAgain;
+
+  /// Me › Targets screen title (A13c D14).
+  ///
+  /// In en, this message translates to:
+  /// **'Targets'**
+  String get targetsTitle;
+
+  /// Targets: section header of today's target, the weekly budget and the planned days.
+  ///
+  /// In en, this message translates to:
+  /// **'Today and this week'**
+  String get targetsSectionWeek;
+
+  /// Targets: today's target, the big number.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal'**
+  String targetsTodayKcal(int kcal);
+
+  /// Targets: caption under today's target.
+  ///
+  /// In en, this message translates to:
+  /// **'Your target today'**
+  String get targetsTodayCaption;
+
+  /// Targets: the week's calorie budget (TG-040).
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly budget: {kcal} kcal'**
+  String targetsWeeklyBudget(int kcal);
+
+  /// Targets: a day's planned target in the week list.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal'**
+  String targetsPlannedDay(int kcal);
+
+  /// Targets (TG-042, D7): rebalancing can't absorb the whole difference; neutral.
+  ///
+  /// In en, this message translates to:
+  /// **'The rest of this week is already at its limit (25% above or below your usual target), so not all of the difference can be spread out.'**
+  String get targetsCarryNote;
+
+  /// Targets: section header of the plain-language explanation (TG-021).
+  ///
+  /// In en, this message translates to:
+  /// **'How it\'s calculated'**
+  String get targetsSectionHow;
+
+  /// Targets: the explanation of a manual target (TG-021).
+  ///
+  /// In en, this message translates to:
+  /// **'You set this yourself: {manual} kcal a day. The calculated target is {calculated} kcal a day.'**
+  String targetsManualNote(int manual, int calculated);
+
+  /// Targets (SF-012, manualNeedsReview): a manual target below a risen floor; neutral.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own target is below your safety floor now, so the floor of {floor} kcal is used. Set a new target or use the calculated one.'**
+  String targetsManualNeedsReview(int floor);
+
+  /// Targets (PA3, goalNeedsUpdate): the goal can't be resolved any more; neutral.
+  ///
+  /// In en, this message translates to:
+  /// **'Your goal needs an update. Your targets stay as they are until then.'**
+  String get targetsGoalNeedsUpdate;
+
+  /// Targets: opens Profile & goal to start a new goal (PA3).
+  ///
+  /// In en, this message translates to:
+  /// **'Update goal'**
+  String get targetsGoalUpdateAction;
+
+  /// Targets (D5): writes a new calculated target from the current weight trend.
+  ///
+  /// In en, this message translates to:
+  /// **'Recalculate with your current weight'**
+  String get targetsRecalculate;
+
+  /// Targets (D5): why Recalculate is offered.
+  ///
+  /// In en, this message translates to:
+  /// **'Your target was worked out at {basis}. Your current weight is {current}.'**
+  String targetsRecalculateHint(String basis, String current);
+
+  /// Undo snackbar after a target settings change (UX-030).
+  ///
+  /// In en, this message translates to:
+  /// **'Targets updated'**
+  String get targetsUpdated;
+
+  /// Targets: section header of the mode, rebalancing and higher-calorie days (TG-041–044).
+  ///
+  /// In en, this message translates to:
+  /// **'Budget'**
+  String get targetsSectionBudget;
+
+  /// Targets: mode option, the week's total counts (TG-041).
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly budget'**
+  String get targetsModeWeekly;
+
+  /// Targets: weekly budget option subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Days can go up or down; the week\'s total is what counts.'**
+  String get targetsModeWeeklyHint;
+
+  /// Targets: mode option, a fixed daily target (TG-044).
+  ///
+  /// In en, this message translates to:
+  /// **'Same every day'**
+  String get targetsModeFixed;
+
+  /// Targets: fixed option subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One target for every day, no weekly budget.'**
+  String get targetsModeFixedHint;
+
+  /// Targets: switch, spreads a day's difference over the rest of the week (TG-042).
+  ///
+  /// In en, this message translates to:
+  /// **'Rebalancing'**
+  String get targetsRebalancing;
+
+  /// Targets: rebalancing switch subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Spreads what you ate over or under across the rest of the week.'**
+  String get targetsRebalancingHint;
+
+  /// Targets (PA7, SF-012): why mode, rebalancing and higher-calorie days are off for an acknowledged below-floor target.
+  ///
+  /// In en, this message translates to:
+  /// **'Below the safety floor the same target applies every day and weekly rebalancing is off.'**
+  String get targetsForcedFixedNote;
+
+  /// Targets: row and sheet title, weekdays with a higher share of the weekly budget (TG-043).
+  ///
+  /// In en, this message translates to:
+  /// **'Higher-calorie days'**
+  String get targetsShifting;
+
+  /// Targets: no higher-calorie days.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get targetsShiftingNone;
+
+  /// Shifting sheet: what a higher-calorie day does (TG-043).
+  ///
+  /// In en, this message translates to:
+  /// **'The weekly total stays the same: the other days get a little less.'**
+  String get targetsShiftingHint;
+
+  /// Shifting sheet: a day without a shift.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual'**
+  String get targetsShiftNormal;
+
+  /// Shifting sheet: a day 15% above the others.
+  ///
+  /// In en, this message translates to:
+  /// **'A little more'**
+  String get targetsShiftLittle;
+
+  /// Shifting sheet: a day 30% above the others.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get targetsShiftMore;
+
+  /// Shifting sheet: a weekday and its planned target with this choice.
+  ///
+  /// In en, this message translates to:
+  /// **'{day}: {kcal} kcal'**
+  String targetsShiftDayPlanned(String day, int kcal);
+
+  /// Targets: section header of the macro settings (TG-054).
+  ///
+  /// In en, this message translates to:
+  /// **'Macros'**
+  String get targetsSectionMacros;
+
+  /// Targets: row that opens the macro settings sheet (TG-054).
+  ///
+  /// In en, this message translates to:
+  /// **'Macro targets'**
+  String get targetsMacroSettings;
+
+  /// Targets: the macro settings are the defaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get targetsMacroSettingsDefault;
+
+  /// Targets: some macro settings were changed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own settings'**
+  String get targetsMacroSettingsCustom;
+
+  /// Macro sheet: protein row.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein'**
+  String get targetsMacroProtein;
+
+  /// Macro sheet: fat row.
+  ///
+  /// In en, this message translates to:
+  /// **'Fat'**
+  String get targetsMacroFat;
+
+  /// Macro sheet: carbs row.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbs'**
+  String get targetsMacroCarbs;
+
+  /// Macro sheet: fiber row.
+  ///
+  /// In en, this message translates to:
+  /// **'Fiber'**
+  String get targetsMacroFiber;
+
+  /// Macro sheet: use the app's default for this macro.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get targetsMacroDefault;
+
+  /// Macro sheet: a fixed amount in grams.
+  ///
+  /// In en, this message translates to:
+  /// **'Grams'**
+  String get targetsMacroGramsChoice;
+
+  /// Macro sheet: a share of the calorie target.
+  ///
+  /// In en, this message translates to:
+  /// **'% of calories'**
+  String get targetsMacroPercentChoice;
+
+  /// Macro sheet: grams unit after the number.
+  ///
+  /// In en, this message translates to:
+  /// **'g'**
+  String get targetsMacroGramsUnit;
+
+  /// Macro sheet: percent unit after the number.
+  ///
+  /// In en, this message translates to:
+  /// **'%'**
+  String get targetsMacroPercentUnit;
+
+  /// Macro sheet: grams out of range.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter 0 to {max} g.'**
+  String targetsMacroGramsRange(int max);
+
+  /// Macro sheet: percent out of range.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter 0 to 100%.'**
+  String get targetsMacroPercentRange;
+
+  /// Macro sheet: switch, no carb and fat targets (TG-054).
+  ///
+  /// In en, this message translates to:
+  /// **'Calories and protein only'**
+  String get targetsMacroProteinOnly;
+
+  /// Macro sheet: calories and protein only subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbs and fat are shown without a target.'**
+  String get targetsMacroProteinOnlyHint;
+
+  /// Targets: neutral note when macro energy is more than 50 kcal above the calorie target (TG-054).
+  ///
+  /// In en, this message translates to:
+  /// **'Your macros add up to about {kcal} kcal more than your calorie target.'**
+  String targetsMacroEnergyAbove(int kcal);
+
+  /// Targets: neutral note when macro energy is more than 50 kcal below the calorie target (TG-054).
+  ///
+  /// In en, this message translates to:
+  /// **'Your macros add up to about {kcal} kcal less than your calorie target.'**
+  String targetsMacroEnergyBelow(int kcal);
+
+  /// Targets: a settings change was refused because the targets changed meanwhile (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'This changed. Check it and try again.'**
+  String get targetsChangedTryAgain;
+
+  /// Targets: section header of the manual target (SF-012).
+  ///
+  /// In en, this message translates to:
+  /// **'Your own target'**
+  String get targetsSectionOwn;
+
+  /// Targets: opens the manual target sheet (SF-012).
+  ///
+  /// In en, this message translates to:
+  /// **'Set my own target'**
+  String get targetsSetOwn;
+
+  /// Targets: subtitle of 'Set my own target'.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a daily number you choose instead of the calculated one.'**
+  String get targetsSetOwnHint;
+
+  /// Targets: back to the calculated target from a manual one (TG-021).
+  ///
+  /// In en, this message translates to:
+  /// **'Use the calculated target'**
+  String get targetsUseCalculated;
+
+  /// Manual target sheet: the number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily target'**
+  String get targetsManualLabel;
+
+  /// Manual target sheet: unit after the number.
+  ///
+  /// In en, this message translates to:
+  /// **'kcal'**
+  String get targetsManualUnit;
+
+  /// Manual target sheet: out of range (D15).
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a number from 500 to 10,000.'**
+  String get targetsManualRange;
+
+  /// Manual target sheet: applies the number.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this target'**
+  String get targetsManualApply;
+
+  /// Warning screen title (SF-012); calm, no alarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Before you use this target'**
+  String get targetsWarningTitle;
+
+  /// Warning screen (SF-012, D16): a manual target below the floor. No moral words.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal a day is below your safety floor of {floor} kcal (your estimated resting energy). The app never suggests a target this low. Eating this little for a long time can leave you tired and make it harder to keep going. If you\'re unsure, talk to a health professional.'**
+  String targetsWarningFloor(int kcal, int floor);
+
+  /// Warning screen (SF-011, D16): a manual target implying loss above 1% of body weight a week.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal a day means losing about {rate} a week, more than 1% of your weight. Plans the app makes stay within 1% a week. Losing faster for a long time can leave you tired and make it harder to keep going.'**
+  String targetsWarningRate(int kcal, String rate);
+
+  /// Warning screen (SF-012, D16): what applying a below-floor target changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Below the floor the same target applies every day and weekly rebalancing is off.'**
+  String get targetsWarningFixed;
+
+  /// Warning screen: the acknowledgement checkbox (SF-012).
+  ///
+  /// In en, this message translates to:
+  /// **'I understand and want to use {kcal} kcal a day'**
+  String targetsWarningAcknowledge(int kcal);
+
+  /// Warning screen: primary, disabled until the box is checked (SF-012).
+  ///
+  /// In en, this message translates to:
+  /// **'Use {kcal} kcal'**
+  String targetsWarningUse(int kcal);
+
+  /// Warning screen: leaves without changing anything.
+  ///
+  /// In en, this message translates to:
+  /// **'Go back'**
+  String get targetsWarningBack;
+
+  /// Goal sheet when editing (D13): editing rewrites the current phase from its start; a new phase starts today.
+  ///
+  /// In en, this message translates to:
+  /// **'This changes your current goal, which started on {date}. To begin a new goal from today instead, use Start a new goal.'**
+  String goalEditNote(String date);
 }
 
 class _AppLocalizationsDelegate
