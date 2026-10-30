@@ -11,6 +11,8 @@
 #             contract (reuses the Release build of the job; runs before the
 #             tests, so a server-only drift shows the conformance message
 #             first, not a Contract.Tests failure)
+# `changes` also checks that PROGRESS.md matches the step board (`make
+# progress-check`, python3 only).
 # Every check runs exactly once. The gate job `ci` always runs and passes only if
 # every job it `needs` succeeded; it is the only check the `main` ruleset requires
 # (S01 A1). New gates (eval) are added as jobs here and to
@@ -91,6 +93,16 @@ jobs:
           fi
           echo "android=$android" >>"$GITHUB_OUTPUT"
           echo "Android jobs run: $android" >>"$GITHUB_STEP_SUMMARY"
+
+      # The owner's progress page is generated from the step board and backlog;
+      # a board change without `make progress` fails here, in seconds (python3
+      # stdlib only, no toolchain). Runs after the output above is set.
+      - name: PROGRESS.md is up to date (make progress)
+        run: |
+          if ! make progress-check; then
+            echo "::error file=PROGRESS.md,title=PROGRESS.md is stale::run 'make progress' and commit PROGRESS.md"
+            exit 1
+          fi
 
   # Food catalog (A05 D11): `make catalog-check` validates data/, checks the ID
   # lock against the merge base on origin/main (an ID may never change or

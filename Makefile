@@ -420,6 +420,25 @@ RELEASE ?= R1
 trace: ## Print the requirement coverage report (RELEASE=R1|R2|R3|Later|all, default R1)
 	@cd '$(REPO_ROOT)' && '$(DART)' run tools/trace/bin/trace.dart --root . --release '$(RELEASE)'
 
+##@ Progress page (PROGRESS.md)
+
+# PROGRESS.md is generated from the status board and milestones in
+# technical-planning/steps/README.md and the owner items in steps/backlog.md.
+# Python 3 stdlib only, so CI checks it in the `changes` job (no toolchain).
+PROGRESS_PY := PYTHONDONTWRITEBYTECODE=1 python3 -I -B '$(REPO_ROOT)/tools/scripts/progress.py' '$(REPO_ROOT)'
+
+.PHONY: progress
+progress: ## Regenerate PROGRESS.md from the step board and backlog (run after changing either, then commit it)
+	@$(PROGRESS_PY) >'$(REPO_ROOT)/PROGRESS.md.tmp' && mv '$(REPO_ROOT)/PROGRESS.md.tmp' '$(REPO_ROOT)/PROGRESS.md' \
+	  || { rm -f '$(REPO_ROOT)/PROGRESS.md.tmp'; exit 1; }
+	@echo "progress: wrote PROGRESS.md"
+
+.PHONY: progress-check
+progress-check: ## Self-test the generator, then fail if the committed PROGRESS.md is stale (fix: make progress)
+	@out="$$(PYTHONDONTWRITEBYTECODE=1 python3 -I -B -m unittest discover -s '$(REPO_ROOT)/tools/scripts' -p 'test_progress.py' 2>&1)" \
+	  || { printf '%s\n' "$$out" >&2; echo "progress: error: the generator self-test failed" >&2; exit 1; }
+	@$(PROGRESS_PY) --check
+
 ##@ Food catalog (A03, A05)
 
 # USDA_DIR=<dir with sr_legacy/ and foundation/> reuses an earlier download.

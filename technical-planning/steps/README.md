@@ -163,7 +163,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A13c](A13-targets-ui-onboarding.md) | Profile, goal & targets screens (split from A13) | Claude | A13b | M | S20 part |  | ✅ |
 | [A14](A14-weigh-ins-trend.md) | Weigh-ins & trend | Claude | A08a | L | S21 |  | ✅ |
 | [A15a](A15-weight-graph-measurements.md) | Weight graph (split from A15, 2026-10-28) | Claude | A12, A13a, A14 | L | S22 part |  | ✅ |
-| [A15b](A15-weight-graph-measurements.md) | Weight history entry & measurements (split from A15) | Claude | A15a | L | S22 part |  | ⬜ |
+| [A15b](A15-weight-graph-measurements.md) | Weight history entry & measurements (split from A15) | Claude | A15a | L | S22 part |  | 🟦 |
 | [A16](A16-progress-tab.md) | Progress tab v1 | Claude | A13c, A15 | M | S23 | **M2** | ⬜ |
 | [A17](dish-batches.md) | Dish batch 2: main dishes A | Claude | A04 | S | D2 |  | ⏸ deferred (TD-074): after A41 |
 | [A18](dish-batches.md) | Dish batch 3: out & street food | Claude | A17 | S | D3 |  | ⏸ deferred (TD-074): after A41 |
@@ -173,7 +173,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A22a](A22-chat-proposal-card.md) | Chat sheet, message storage & proposal card (split from A22, 2026-10-28) | Claude | A08b, A20, A21, **B08**, **B18**, **B09a** WP0 | L | S33 part |  | ✅ |
 | [A22b](A22-chat-proposal-card.md) | Card adjustments & follow-up (split from A22) | Claude | A22a, **B09a** (contract) | M | S33 part |  |✅ |
 | [A44](A44-brand-identity.md) | Brand identity & theme ("Embrace"; runs after A22a, owner 2026-10-29) | Claude | A22a | L | new |  | ✅ (phone checks: backlog #155) |
-| [A23](A23-message-lifecycle.md) | Message lifecycle, pending & failures | Claude | A22a, **B18** (contract) | L | S34 | **M3** | ⬜ |
+| [A23](A23-message-lifecycle.md) | Message lifecycle, pending & failures | Claude | A22a, **B18** (contract) | L | S34 | **M3** | 🟨 |
 | [A24](A24-online-search-pack-updates.md) | Online search & pack updates (app) | Claude | A07, **B07** | M | S30 app part |  | ✅ |
 | [A25](A25-diary-edits-by-chat.md) | Diary edits by chat (app) | Claude | A23, **B09a** (contract) | M | S35 app part |  | ⬜ |
 | [A26](A26-memory-user-model.md) | Memory & user model (app) | Claude | A23, **B09a** (contract) | M | S36 app part |  | ⬜ |
