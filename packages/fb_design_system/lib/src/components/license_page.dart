@@ -4,15 +4,15 @@ import 'package:fb_design_system/src/tokens/spacing.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Opens Flutter's open-source licence page for the app, with the brand mark
-/// as its icon and the licences of the bundled fonts added (see
-/// `registerFbFontLicenses`). The page is shown on the root navigator, above
+/// as its icon and the licences of the bundled fonts and artwork added (see
+/// `registerFbLicenses`). The page is shown on the root navigator, above
 /// the app shell, and its words come from the app's Material localizations.
 Future<void> showFbLicensePage(
   BuildContext context, {
   required String applicationName,
   required String applicationVersion,
 }) {
-  registerFbFontLicenses();
+  registerFbLicenses();
   return Navigator.of(context, rootNavigator: true).push<void>(
     MaterialPageRoute<void>(
       builder: (_) => LicensePage(

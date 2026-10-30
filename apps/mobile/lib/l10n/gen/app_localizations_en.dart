@@ -3751,6 +3751,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weightHistoryTryAgain => 'Try again';
 
   @override
+  String get progressExercises => 'Exercise progress';
+
+  @override
   String get measurementsTitle => 'Measurements';
 
   @override
@@ -4860,6 +4863,329 @@ class AppLocalizationsEn extends AppLocalizations {
     });
     return '$_temp0';
   }
+
+  @override
+  String workoutMuscleMapMain(String muscle) {
+    return 'Muscle map. Main muscle: $muscle.';
+  }
+
+  @override
+  String workoutMuscleMapMainSecondary(String muscle, String muscles) {
+    return 'Muscle map. Main muscle: $muscle. Secondary: $muscles.';
+  }
+
+  @override
+  String get workoutMuscleMapNone => 'Muscle map. No main muscle.';
+
+  @override
+  String workoutMuscleMapNoneSecondary(String muscles) {
+    return 'Muscle map. No main muscle. Secondary: $muscles.';
+  }
+
+  @override
+  String get workoutExercisesTitle => 'Exercises';
+
+  @override
+  String get workoutsAllExercises => 'All exercises';
+
+  @override
+  String get workoutExerciseRemovedMessage => 'This exercise was deleted.';
+
+  @override
+  String workoutExerciseMain(String muscle) {
+    return 'Main: $muscle';
+  }
+
+  @override
+  String workoutExerciseSecondary(String muscles) {
+    return 'Secondary: $muscles';
+  }
+
+  @override
+  String get workoutExerciseNoSessions => 'Not logged yet';
+
+  @override
+  String get workoutExerciseNoSessionsMessage =>
+      'Log this exercise and its progress shows up here.';
+
+  @override
+  String get workoutExerciseHeaviest => 'Heaviest set';
+
+  @override
+  String get workoutExerciseE1rm => 'Est. 1RM';
+
+  @override
+  String get workoutExerciseMostReps => 'Most reps';
+
+  @override
+  String get workoutExerciseLongest => 'Longest';
+
+  @override
+  String get workoutExerciseFarthest => 'Farthest';
+
+  @override
+  String workoutExerciseKg(String kg) {
+    return '$kg kg';
+  }
+
+  @override
+  String workoutExerciseKm(String km) {
+    return '$km km';
+  }
+
+  @override
+  String get workoutExerciseHistory => 'Past sessions';
+
+  @override
+  String workoutExerciseMetric(String metric) {
+    String _temp0 = intl.Intl.selectLogic(metric, {
+      'heaviest': 'Heaviest set',
+      'e1rm': 'Estimated 1RM',
+      'mostReps': 'Most reps',
+      'longest': 'Longest set',
+      'other': 'Progress',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String workoutExerciseGraph(String name, String metric, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sessions',
+      one: '1 session',
+    );
+    return '$name: $metric, $_temp0';
+  }
+
+  @override
+  String workoutTodayPlanned(String name) {
+    return '$name day today';
+  }
+
+  @override
+  String workoutDayPlanned(String name) {
+    return '$name day';
+  }
+
+  @override
+  String workoutsWeekPlanned(String day, String name) {
+    return '$day, $name planned';
+  }
+
+  @override
+  String get workoutsStartFromPlan => 'Start from a plan';
+
+  @override
+  String workoutsPlanCardLog(String name) {
+    return 'Log $name';
+  }
+
+  @override
+  String get workoutsPlanSection => 'Plan & templates';
+
+  @override
+  String get workoutsWeeklyPlanRow => 'Weekly plan';
+
+  @override
+  String workoutsWeeklyPlanDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days a week',
+      one: '1 day a week',
+      zero: 'No plan',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get workoutsStarterPlansRow => 'Starter plans';
+
+  @override
+  String get workoutsNewTemplate => 'New template';
+
+  @override
+  String get workoutsTemplateLog => 'Log';
+
+  @override
+  String workoutsTemplateSummary(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count exercises',
+      one: '1 exercise',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get workoutLogSaveAsTemplate => 'Save as template';
+
+  @override
+  String get workoutTemplateNewTitle => 'New template';
+
+  @override
+  String get workoutTemplateEditTitle => 'Edit template';
+
+  @override
+  String get workoutTemplateName => 'Name';
+
+  @override
+  String get workoutTemplateNameHint => 'e.g. Push';
+
+  @override
+  String get workoutTemplateNameError => 'Enter a name';
+
+  @override
+  String get workoutTemplateExercises => 'Exercises';
+
+  @override
+  String get workoutTemplateEmptyError => 'Add at least one exercise';
+
+  @override
+  String get workoutTemplateDelete => 'Delete template';
+
+  @override
+  String get workoutTemplateSets => 'Sets';
+
+  @override
+  String workoutTemplateLess(String label) {
+    return 'Decrease $label';
+  }
+
+  @override
+  String workoutTemplateMore(String label) {
+    return 'Increase $label';
+  }
+
+  @override
+  String get workoutTemplateCreated => 'Template saved';
+
+  @override
+  String get workoutTemplateUpdated => 'Template updated';
+
+  @override
+  String get workoutTemplateDeleted => 'Template deleted';
+
+  @override
+  String get workoutPlanTitle => 'Weekly plan';
+
+  @override
+  String get workoutPlanIntro =>
+      'Optional. Pick a workout for any weekday; the other days are rest days.';
+
+  @override
+  String get workoutPlanRest => 'Rest';
+
+  @override
+  String get workoutPlanUpdated => 'Plan updated';
+
+  @override
+  String get workoutStarterIntro =>
+      'Pick one to copy its workouts and weekdays. You can edit everything afterwards, and nothing changes until you pick.';
+
+  @override
+  String workoutStarterPlan(String plan) {
+    String _temp0 = intl.Intl.selectLogic(plan, {
+      'fullBody': 'Full body',
+      'upperLower': 'Upper/Lower',
+      'pushPullLegs': 'Push/Pull/Legs',
+      'other': 'Plan',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String workoutStarterPlanInfo(String plan) {
+    String _temp0 = intl.Intl.selectLogic(plan, {
+      'fullBody': '3 days a week, two full-body workouts',
+      'upperLower': '4 days a week, upper and lower body',
+      'pushPullLegs': '3 to 6 days a week, push, pull and legs',
+      'other': '',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String workoutStarterTemplate(String template) {
+    String _temp0 = intl.Intl.selectLogic(template, {
+      'fullBodyA': 'Full body A',
+      'fullBodyB': 'Full body B',
+      'upperA': 'Upper A',
+      'lowerA': 'Lower A',
+      'upperB': 'Upper B',
+      'lowerB': 'Lower B',
+      'push': 'Push',
+      'pull': 'Pull',
+      'legs': 'Legs',
+      'other': 'Workout',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get workoutStarterOwn => 'Build my own';
+
+  @override
+  String get workoutStarterOwnInfo => 'Start from an empty template';
+
+  @override
+  String workoutStarterDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Pick $count days',
+      one: 'Pick 1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String workoutStarterDaysRange(int min, int max) {
+    return 'Pick $min to $max days';
+  }
+
+  @override
+  String get workoutStarterApply => 'Use this plan';
+
+  @override
+  String get workoutStarterApplied => 'Plan added';
+
+  @override
+  String get workoutStarterReplaceTitle => 'Replace your weekly plan?';
+
+  @override
+  String get workoutStarterReplaceMessage => 'Your templates stay.';
+
+  @override
+  String get workoutStarterReplace => 'Replace plan';
+
+  @override
+  String get workoutStarterKeep => 'Keep my plan';
+
+  @override
+  String workoutTemplateOfferTitle(String name) {
+    return 'Update the $name template with these changes?';
+  }
+
+  @override
+  String get workoutTemplateOfferMessage =>
+      'Its exercises, sets and reps will match this workout. Weights aren\'t part of a template.';
+
+  @override
+  String get workoutTemplateOfferUpdate => 'Update template';
+
+  @override
+  String get workoutTemplateOfferSkip => 'Not now';
+
+  @override
+  String get workoutSavedTemplateUpdated => 'Workout saved, template updated';
+
+  @override
+  String get workoutSavedTemplateNotUpdated =>
+      'Workout saved. The template changed meanwhile, so it wasn\'t updated.';
 
   @override
   String workoutExerciseType(String type) {

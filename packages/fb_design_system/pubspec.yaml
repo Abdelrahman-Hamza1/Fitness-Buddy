@@ -18,6 +18,9 @@ dependencies:
   intl: ^0.20.2
   # Same exact pin as the app (TD-014). Bumped on purpose, in both places.
   material_ui: 1.6.0
+  # SVG path syntax for the vendored muscle-map outline (A37 D16). Flutter
+  # team, BSD-3, pure Dart (Android and iOS).
+  path_parsing: 1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -45,3 +48,5 @@ flutter:
     - assets/fonts/OFL-Inter.txt
     - assets/fonts/OFL-Nunito.txt
     - assets/fonts/OFL-NotoSansArabic.txt
+    # Vendored artwork licences (assets/licenses/SOURCES.md).
+    - assets/licenses/MIT-react-native-body-highlighter.txt

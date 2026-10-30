@@ -17,4 +17,16 @@ void main() {
       expect(pubspec, contains('- assets/fonts/$file'), reason: file);
     }
   });
+
+  test('WO-007 the licence registry carries the muscle map outline MIT '
+      'notice', () {
+    final pubspec = File('pubspec.yaml').readAsStringSync();
+    expect(fbArtworkLicenses, isNotEmpty);
+    for (final (_, file) in fbArtworkLicenses) {
+      final text = File('assets/licenses/$file').readAsStringSync();
+      expect(text, contains('MIT License'), reason: file);
+      expect(text, contains('Copyright (c) 2022 ELABBASSI Hicham'));
+      expect(pubspec, contains('- assets/licenses/$file'), reason: file);
+    }
+  });
 }

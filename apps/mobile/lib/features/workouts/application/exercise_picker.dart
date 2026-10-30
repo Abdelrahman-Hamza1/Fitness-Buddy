@@ -42,11 +42,12 @@ final class ExercisePickerState {
 }
 
 /// The exercise picker (WO-001): search, chip and multi-select in order.
-/// One per picker screen.
+/// One per picker screen: [scope] is the screen's own key, so pickers open
+/// in two tabs (or a picker and an "All exercises" list) never share state.
 @riverpod
 class ExercisePicker extends _$ExercisePicker {
   @override
-  ExercisePickerState build() => ExercisePickerState();
+  ExercisePickerState build(Object scope) => ExercisePickerState();
 
   /// The search text changed.
   void search(String query) => state = state.copyWith(query: query);

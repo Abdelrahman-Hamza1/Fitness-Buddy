@@ -7,8 +7,9 @@ import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The current week on the Workouts tab (A37 D19, WO-024): a filled dot on
-/// days with a session and nothing else, never a "missed" day. A37c adds
-/// plan hints.
+/// days with a session; with a weekly plan, today and later planned days
+/// show the template's initial, muted (A37c). Past planned days without a
+/// session look like any other day: never a "missed" day.
 class WorkoutWeekStrip extends ConsumerWidget {
   /// The week containing [today].
   const new({required this.today, super.key});
@@ -29,15 +30,25 @@ class WorkoutWeekStrip extends ConsumerWidget {
         for (final day in week.days)
           Expanded(
             child: _Day(
+              key: ValueKey('workouts-week-$day'),
               label: weekday.format(DateTime(day.year, day.month, day.day)),
               number: '${day.day}',
               isToday: day == today,
               trained: week.trained.contains(day),
-              semantics: week.trained.contains(day)
-                  ? context.l10n.workoutsWeekTrained(
-                      full.format(DateTime(day.year, day.month, day.day)),
-                    )
-                  : null,
+              planned: week.planned[day],
+              semantics: switch ((
+                week.trained.contains(day),
+                week.planned[day],
+              )) {
+                (true, _) => context.l10n.workoutsWeekTrained(
+                  full.format(DateTime(day.year, day.month, day.day)),
+                ),
+                (false, final name?) => context.l10n.workoutsWeekPlanned(
+                  full.format(DateTime(day.year, day.month, day.day)),
+                  name,
+                ),
+                _ => null,
+              },
               theme: theme,
             ),
           ),
@@ -52,14 +63,19 @@ class _Day extends StatelessWidget {
     required this.number,
     required this.isToday,
     required this.trained,
+    required this.planned,
     required this.semantics,
     required this.theme,
+    super.key,
   });
 
   final String label;
   final String number;
   final bool isToday;
   final bool trained;
+
+  /// The planned template's name (today and later only), or `null`.
+  final String? planned;
   final String? semantics;
   final ThemeData theme;
 
@@ -82,17 +98,26 @@ class _Day extends StatelessWidget {
             style: theme.textTheme.titleSmall?.copyWith(color: emphasis),
           ),
           const SizedBox(height: FbSpace.s1),
-          SizedBox.square(
-            dimension: FbSpace.s2,
-            child: trained
-                ? DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: scheme.primary,
-                      shape: BoxShape.circle,
-                    ),
-                  )
-                : null,
-          ),
+          if (!trained && planned != null)
+            // The plan hint: the template's initial, muted.
+            Text(
+              String.fromCharCode(planned!.runes.first).toUpperCase(),
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
+            )
+          else
+            SizedBox.square(
+              dimension: FbSpace.s2,
+              child: trained
+                  ? DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: scheme.primary,
+                        shape: BoxShape.circle,
+                      ),
+                    )
+                  : null,
+            ),
         ],
       ),
     );

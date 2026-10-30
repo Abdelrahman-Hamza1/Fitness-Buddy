@@ -32,7 +32,14 @@ import '../../helpers/pump_app.dart';
   WorkoutLogRoute() => (WorkoutLogScreen, true),
   WorkoutSessionRoute() => (WorkoutLogScreen, true),
   WorkoutHistoryRoute() => (WorkoutHistoryScreen, true),
+  WorkoutPlanRoute() => (WeeklyPlanScreen, true),
+  WorkoutStarterPlansRoute() => (StarterPlansScreen, true),
+  WorkoutExercisesRoute() => (ExercisePickerScreen, true),
+  WorkoutExerciseRoute() => (ExerciseScreen, true),
+  ProgressExercisesRoute() => (ExercisePickerScreen, true),
+  ProgressExerciseRoute() => (ExerciseScreen, true),
   TodayWorkoutSessionRoute() => (WorkoutLogScreen, true),
+  TodayWorkoutLogRoute() => (WorkoutLogScreen, true),
   MeRoute() => (MeScreen, true),
   DesignPreviewRoute() => (DesignPreviewScreen, true),
   FoodSearchRoute() => (FoodSearchScreen, true),
@@ -66,7 +73,14 @@ const List<AppRoute> _allRoutes = [
   WorkoutLogRoute(),
   WorkoutSessionRoute(id: _entryId),
   WorkoutHistoryRoute(),
+  WorkoutPlanRoute(),
+  WorkoutStarterPlansRoute(),
+  WorkoutExercisesRoute(),
+  WorkoutExerciseRoute(_entryId),
+  ProgressExercisesRoute(),
+  ProgressExerciseRoute(_entryId),
   TodayWorkoutSessionRoute(id: _entryId),
+  TodayWorkoutLogRoute(template: _entryId),
   MeRoute(),
   DesignPreviewRoute(),
   FoodSearchRoute(),
@@ -130,7 +144,14 @@ void main() {
         const WorkoutLogRoute(),
         const WorkoutSessionRoute(id: _entryId),
         const WorkoutHistoryRoute(),
+        const WorkoutPlanRoute(),
+        const WorkoutStarterPlansRoute(),
+        const WorkoutExercisesRoute(),
+        const WorkoutExerciseRoute(_entryId),
+        const ProgressExercisesRoute(),
+        const ProgressExerciseRoute(_entryId),
         const TodayWorkoutSessionRoute(id: _entryId),
+        const TodayWorkoutLogRoute(template: _entryId),
       ].map((r) => r.location),
       unorderedEquals(_allRoutes.map((r) => r.location)),
     );
@@ -149,9 +170,11 @@ void main() {
       showRoute(container, route);
       await tester.pumpAndSettle();
 
+      // The matched location has no query string (A37c: the Today log
+      // route always carries its template there).
       expect(
         router.config.state.matchedLocation,
-        route.location,
+        Uri.parse(route.location).path,
         reason: '$route',
       );
       expect(find.byType(screen), findsOneWidget, reason: '$route');

@@ -3,6 +3,8 @@ import 'package:fb_mobile/core/changes/apply_result.dart';
 import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
+import 'package:fb_mobile/features/workouts/data/workout_op_handler.dart'
+    show planDayId;
 import 'package:fb_mobile/features/workouts/data/workout_repository.dart';
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -68,6 +70,21 @@ abstract final class WorkoutActionLabels {
 
   /// A custom exercise was deleted.
   static const String exerciseDeleted = 'customExerciseDeleted';
+
+  /// A template was created.
+  static const String templateCreated = 'templateCreated';
+
+  /// A template was edited.
+  static const String templateUpdated = 'templateUpdated';
+
+  /// A template was deleted.
+  static const String templateDeleted = 'templateDeleted';
+
+  /// A weekday's plan changed.
+  static const String planDaySet = 'planDaySet';
+
+  /// A starter plan was copied.
+  static const String starterPlanApplied = 'starterPlanApplied';
 }
 
 /// Direct workout actions with undo (WO-003, D15), through the single
@@ -132,6 +149,72 @@ final class WorkoutActions {
       [DeleteCustomExercise(exercise.ref)],
       WorkoutActionLabels.exerciseDeleted,
       exercise.ref.id,
+    );
+  }
+
+  /// Saves a template (A37 D17: an explicit Save with its normal undo): a
+  /// new one when [template] is `null`, else an edit of it.
+  Future<WorkoutActionOutcome> saveTemplate(
+    Stored<WorkoutTemplateDraft>? template,
+    WorkoutTemplateDraft draft,
+  ) {
+    if (template == null) {
+      final id = ids.next();
+      return _run(
+        [CreateWorkoutTemplate(id, draft)],
+        WorkoutActionLabels.templateCreated,
+        id,
+      );
+    }
+    if (draft == template.draft) {
+      return Future.value(const WorkoutActionUnchanged());
+    }
+    return _run(
+      [UpdateWorkoutTemplate(template.ref, draft)],
+      WorkoutActionLabels.templateUpdated,
+      template.ref.id,
+    );
+  }
+
+  /// Deletes [template]; plan days using it become rest days in the same
+  /// change set, sessions keep pointing at it (A36). Undo restores both.
+  Future<WorkoutActionOutcome> deleteTemplate(
+    Stored<WorkoutTemplateDraft> template,
+  ) => _run(
+    [DeleteWorkoutTemplate(template.ref)],
+    WorkoutActionLabels.templateDeleted,
+    template.ref.id,
+  );
+
+  /// [weekday] trains [templateId], or rests when `null` (WO-021).
+  Future<WorkoutActionOutcome> setPlanDay(
+    DayOfWeek weekday,
+    String? templateId,
+  ) => _run(
+    [SetPlanDay(weekday, templateId)],
+    WorkoutActionLabels.planDaySet,
+    planDayId(weekday),
+  );
+
+  /// Copies [plan]'s templates and assigns them to [days] (every other day
+  /// rests) in **one** change set (A37 D18, PA4): all of it or nothing, one
+  /// undo. Templates are named by [nameOf]; existing templates stay.
+  Future<WorkoutActionOutcome> applyStarterPlan(
+    StarterPlan plan, {
+    required Iterable<DayOfWeek> days,
+    required DayOfWeek weekStart,
+    required String Function(StarterTemplate template) nameOf,
+  }) {
+    final ops = plan.ops(
+      days: days,
+      weekStart: weekStart,
+      ids: ids,
+      nameOf: nameOf,
+    );
+    return _run(
+      ops,
+      WorkoutActionLabels.starterPlanApplied,
+      ops.whereType<CreateWorkoutTemplate>().first.id,
     );
   }
 

@@ -31,6 +31,8 @@ export 'src/components/license_page.dart';
 export 'src/components/list_row.dart';
 export 'src/components/macro_bars.dart';
 export 'src/components/message_bubble.dart';
+export 'src/components/muscle_map.dart'
+    show FbBodyRegion, FbBodyView, FbMuscleMap;
 export 'src/components/number_field.dart';
 export 'src/components/number_pad.dart';
 export 'src/components/option_sheet.dart';

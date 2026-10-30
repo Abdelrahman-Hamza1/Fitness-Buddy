@@ -16,7 +16,7 @@ import 'package:material_ui/material_ui.dart';
 /// The Progress tab (UX-010, IN-002–IN-009, SC-5): opens on this week. An
 /// ordered list of sections (A16 D13): the current-week card → the period
 /// selector → calories (+ the selected bar's details) → macros → weight →
-/// goal progress → Measurements → [A37a: exercise progress] → [A38: the
+/// goal progress → Measurements → exercise progress (A37c) → [A38: the
 /// expenditure chart]. Later steps add one entry. Local data only: no
 /// spinner beyond skeleton cards, errors inline with Try again (UX-050–052).
 /// No streaks, scores or micronutrients (IN-020, IN-021).
@@ -103,6 +103,20 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
                 onTap: () => ref
                     .read(appNavigatorProvider)
                     .push(const MeasurementsRoute()),
+              ),
+            ),
+            gap,
+            // Exercise progress (IN-006, A37 D13): every exercise's page.
+            FbCard(
+              padding: EdgeInsetsDirectional.zero,
+              child: FbListRow(
+                key: const ValueKey('progress-exercises'),
+                leading: const Icon(FbIcons.navWorkouts),
+                title: l10n.progressExercises,
+                trailing: const Icon(FbIcons.next),
+                onTap: () => ref
+                    .read(appNavigatorProvider)
+                    .push(const ProgressExercisesRoute()),
               ),
             ),
           ],

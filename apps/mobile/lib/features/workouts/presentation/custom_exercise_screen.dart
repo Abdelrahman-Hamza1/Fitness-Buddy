@@ -4,6 +4,7 @@ import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/workouts/application/custom_exercise_form.dart';
 import 'package:fb_mobile/features/workouts/application/workout_actions.dart';
+import 'package:fb_mobile/features/workouts/presentation/exercise_muscle_map.dart';
 import 'package:fb_mobile/features/workouts/presentation/workout_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
@@ -168,6 +169,15 @@ class _CustomState extends ConsumerState<CustomExerciseScreen> {
                   label: l10n.equipment,
                   selected: (e) => e == form.equipment,
                   onTap: _form.setEquipment,
+                ),
+                const SizedBox(height: FbSpace.s4),
+                // Live: redraws as the muscles below change (WO-007).
+                Center(
+                  child: ExerciseMuscleMap(
+                    key: const ValueKey('workout-custom-map'),
+                    primary: form.primary,
+                    secondaries: form.secondaries,
+                  ),
                 ),
                 FbSectionHeader(title: l10n.workoutCustomPrimary),
                 _Chips<Muscle>(

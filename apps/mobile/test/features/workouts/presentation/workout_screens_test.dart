@@ -185,4 +185,119 @@ void main() {
     expect(rig.navigator.pushed.single, isA<WorkoutSessionRoute>());
     await rig.unmount(tester);
   });
+
+  /// A Push template (2 × 12 of exercise 1), a past session (8 @ 80 kg) for
+  /// hints, and a new session from the template with both sets accepted
+  /// (8, 8: it differs), left with Done. Returns the rig at the offer sheet.
+  Future<_Rig> leaveDifferingTemplateVisit(WidgetTester tester) async {
+    final rig = _Rig();
+    await rig.seed(tester, [
+      CreateCustomExercise(wid(1), benchDraft()),
+      LogWorkoutSession(wid(10), sessionDraft(date: today.plusDays(-2))),
+      CreateWorkoutTemplate(
+        wid(70),
+        WorkoutTemplateDraft(
+          name: 'Push',
+          items: [
+            TemplateItemDraft(
+              id: wid(71),
+              exerciseId: wid(1),
+              sets: 2,
+              reps: 12,
+            ),
+          ],
+        ),
+      ),
+    ]);
+    await rig.pump(tester, WorkoutLogScreen.newSession(template: wid(70)));
+    for (final row in tester.widgetList<SetRow>(find.byType(SetRow)).toList()) {
+      await tester.tap(find.byKey(ValueKey('workout-set-done-${row.row.id}')));
+      await tester.pump();
+    }
+    await tester.tap(find.byKey(const ValueKey('workout-log-done')));
+    await rig.settle(tester);
+    expect(
+      find.byKey(const ValueKey('workout-template-offer-update')),
+      findsOneWidget,
+    );
+    return rig;
+  }
+
+  Future<List<int>> templateReps(WidgetTester tester, _Rig rig) async => [
+    for (final i in (await tester.runAsync(
+      () => rig.h.repository.watchTemplates().first,
+    ))!.single.draft.items)
+      i.reps,
+  ];
+
+  Future<int> sessionCount(WidgetTester tester, _Rig rig) async =>
+      (await tester.runAsync(rig.h.repository.allSessions))!.length;
+
+  /// Taps the snackbar's Undo and lets the database answer.
+  Future<void> tapUndo(WidgetTester tester, _Rig rig) async {
+    await tester.tap(find.byType(SnackBarAction));
+    await rig.settle(tester);
+  }
+
+  testWidgets('WO-022 Update writes the template; its Undo also undoes the '
+      'workout', (tester) async {
+    final rig = await leaveDifferingTemplateVisit(tester);
+    await tester.tap(
+      find.byKey(const ValueKey('workout-template-offer-update')),
+    );
+    await rig.settle(tester);
+    expect(await templateReps(tester, rig), [8]);
+    expect(await sessionCount(tester, rig), 2);
+    await tapUndo(tester, rig);
+    // The template update and the new session are both undone.
+    expect(await templateReps(tester, rig), [12]);
+    expect(await sessionCount(tester, rig), 1);
+    await rig.unmount(tester);
+  });
+
+  testWidgets('WO-022 a refused Update keeps the workout Undo', (tester) async {
+    final rig = await leaveDifferingTemplateVisit(tester);
+    // The template changes elsewhere while the question is open.
+    final template = (await tester.runAsync(
+      () => rig.h.repository.watchTemplates().first,
+    ))!.single;
+    await rig.seed(tester, [
+      UpdateWorkoutTemplate(
+        template.ref,
+        WorkoutTemplateDraft(
+          name: 'Push',
+          items: [
+            TemplateItemDraft(
+              id: wid(71),
+              exerciseId: wid(1),
+              sets: 2,
+              reps: 15,
+            ),
+          ],
+        ),
+      ),
+    ]);
+    await tester.tap(
+      find.byKey(const ValueKey('workout-template-offer-update')),
+    );
+    await rig.settle(tester);
+    expect(await templateReps(tester, rig), [15]);
+    expect(await sessionCount(tester, rig), 2);
+    await tapUndo(tester, rig);
+    expect(await sessionCount(tester, rig), 1);
+    expect(await templateReps(tester, rig), [15]);
+    await rig.unmount(tester);
+  });
+
+  testWidgets('WO-022 Not now leaves the template and keeps the workout '
+      'Undo', (tester) async {
+    final rig = await leaveDifferingTemplateVisit(tester);
+    await tester.tap(find.byKey(const ValueKey('workout-template-offer-skip')));
+    await rig.settle(tester);
+    expect(await templateReps(tester, rig), [12]);
+    expect(await sessionCount(tester, rig), 2);
+    await tapUndo(tester, rig);
+    expect(await sessionCount(tester, rig), 1);
+    await rig.unmount(tester);
+  });
 }

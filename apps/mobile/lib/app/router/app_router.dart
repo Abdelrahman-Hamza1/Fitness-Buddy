@@ -102,6 +102,7 @@ final class AppRouter implements AppNavigator {
                         TodayRoute.path,
                         (id) => TodayWorkoutSessionRoute(id: id),
                       ),
+                      _todayWorkoutLogRoute(),
                     ],
                     if (route is WorkoutsRoute) ...[
                       _workoutLogRoute(),
@@ -111,10 +112,24 @@ final class AppRouter implements AppNavigator {
                         (id) => WorkoutSessionRoute(id: id),
                       ),
                       _goRoute(const WorkoutHistoryRoute(), nested: true),
+                      _goRoute(const WorkoutPlanRoute(), nested: true),
+                      _goRoute(const WorkoutStarterPlansRoute(), nested: true),
+                      _exercisesRoute(
+                        WorkoutExercisesRoute.path,
+                        WorkoutExerciseRoute.path,
+                        const WorkoutExercisesRoute(),
+                        WorkoutExerciseRoute.new,
+                      ),
                     ],
                     if (route is ProgressRoute) ...[
                       _goRoute(const WeightGraphRoute(), nested: true),
                       _measurementsRoute(),
+                      _exercisesRoute(
+                        ProgressExercisesRoute.path,
+                        ProgressExerciseRoute.path,
+                        const ProgressExercisesRoute(),
+                        ProgressExerciseRoute.new,
+                      ),
                     ],
                     if (route is MeRoute) ...[
                       _personalFoodsRoute(),
@@ -272,6 +287,41 @@ final class AppRouter implements AppNavigator {
     ],
   );
 
+  // Every exercise and one exercise's page (A37 D13), in the Workouts or
+  // the Progress tab; a malformed exercise ID goes back to the list.
+  static GoRoute _exercisesRoute(
+    String listPath,
+    String pagePath,
+    AppRoute list,
+    AppRoute Function(String id) page,
+  ) => GoRoute(
+    path: listPath.split('/').last,
+    name: listPath,
+    builder: (_, _) => _screen(list),
+    routes: [
+      GoRoute(
+        path: ':id',
+        name: pagePath,
+        redirect: (_, state) =>
+            isExerciseId(state.pathParameters['id'] ?? '') ? null : listPath,
+        builder: (_, state) => _screen(page(state.pathParameters['id']!)),
+      ),
+    ],
+  );
+
+  /// Whether [id] is a catalog exercise ID or a UUID.
+  @visibleForTesting
+  static bool isExerciseId(String id) {
+    try {
+      checkExerciseId(id, 'id');
+      return true;
+      // A malformed ID is turned away, never guessed.
+      // ignore: avoid_catching_errors
+    } on ArgumentError {
+      return false;
+    }
+  }
+
   // A new workout (A37 D13): the date and the session to repeat come from
   // the query string; malformed ones are ignored (today, no repeat).
   static GoRoute _workoutLogRoute() => GoRoute(
@@ -280,31 +330,37 @@ final class AppRouter implements AppNavigator {
     builder: (_, state) => _screen(workoutLogRouteOf(state.uri)),
   );
 
+  // A new workout from Today's planned row (A37 D13, D20); without a valid
+  // template it goes back to Today.
+  static GoRoute _todayWorkoutLogRoute() => GoRoute(
+    path: TodayWorkoutLogRoute.path.split('/').last,
+    name: TodayWorkoutLogRoute.path,
+    redirect: (_, state) =>
+        workoutLogRouteOf(state.uri).template == null ? TodayRoute.path : null,
+    builder: (_, state) {
+      final log = workoutLogRouteOf(state.uri);
+      return _screen(
+        TodayWorkoutLogRoute(template: log.template!, date: log.date),
+      );
+    },
+  );
+
   /// The [WorkoutLogRoute] a location stands for.
   @visibleForTesting
   static WorkoutLogRoute workoutLogRouteOf(Uri location) {
     final params = location.queryParameters;
     final date = params[WorkoutLogRoute.dateParam];
     final repeat = params[WorkoutLogRoute.repeatParam];
-    bool isExercise(String id) {
-      try {
-        checkExerciseId(id, 'id');
-        return true;
-        // A malformed ID is dropped, never guessed.
-        // ignore: avoid_catching_errors
-      } on ArgumentError {
-        return false;
-      }
-    }
-
+    final template = params[WorkoutLogRoute.templateParam];
     return WorkoutLogRoute(
       date: date == null ? null : LocalDate.tryParse(date),
       repeat: repeat != null && isUuid(repeat) ? repeat : null,
+      template: template != null && isUuid(template) ? template : null,
       exercises: [
         for (final id in (params[WorkoutLogRoute.exercisesParam] ?? '').split(
           ',',
         ))
-          if (isExercise(id)) id,
+          if (isExerciseId(id)) id,
       ],
     );
   }
@@ -397,11 +453,23 @@ final class AppRouter implements AppNavigator {
     TodayRoute() => const TodayScreen(),
     ProgressRoute() => const ProgressScreen(),
     WorkoutsRoute() => const WorkoutsScreen(),
-    WorkoutLogRoute(:final date, :final repeat, :final exercises) =>
+    WorkoutLogRoute(
+      :final date,
+      :final repeat,
+      :final template,
+      :final exercises,
+    ) =>
       WorkoutLogScreen.newSession(
         date: date,
         repeatOf: repeat,
+        template: template,
         exercises: exercises,
+      ),
+    TodayWorkoutLogRoute(:final date, :final template) =>
+      WorkoutLogScreen.newSession(
+        date: date,
+        template: template,
+        inToday: true,
       ),
     WorkoutSessionRoute(:final id) => WorkoutLogScreen.session(id),
     TodayWorkoutSessionRoute(:final id) => WorkoutLogScreen.session(
@@ -409,6 +477,22 @@ final class AppRouter implements AppNavigator {
       inToday: true,
     ),
     WorkoutHistoryRoute() => const WorkoutHistoryScreen(),
+    WorkoutPlanRoute() => const WeeklyPlanScreen(),
+    WorkoutStarterPlansRoute() => const StarterPlansScreen(),
+    WorkoutExercisesRoute() => const ExercisePickerScreen.browse(
+      tab: ExerciseBrowseTab.workouts,
+    ),
+    WorkoutExerciseRoute(:final id) => ExerciseScreen(
+      exerciseId: id,
+      tab: ExerciseBrowseTab.workouts,
+    ),
+    ProgressExercisesRoute() => const ExercisePickerScreen.browse(
+      tab: ExerciseBrowseTab.progress,
+    ),
+    ProgressExerciseRoute(:final id) => ExerciseScreen(
+      exerciseId: id,
+      tab: ExerciseBrowseTab.progress,
+    ),
     MeRoute() => const MeScreen(),
     DesignPreviewRoute() => const DesignPreviewScreen(),
     FoodSearchRoute(:final date, :final slotId, :final replace) =>

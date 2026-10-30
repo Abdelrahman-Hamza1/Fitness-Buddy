@@ -173,6 +173,66 @@ final class WorkoutRevertProvider
 
 String _$workoutRevertHash() => r'7c80507d8936a86a655903f58dd849d995153c94';
 
+/// Reads the live templates once (the template-update offer, D21);
+/// injectable so tests can delay it.
+
+@ProviderFor(workoutTemplatesOnce)
+final workoutTemplatesOnceProvider = WorkoutTemplatesOnceProvider._();
+
+/// Reads the live templates once (the template-update offer, D21);
+/// injectable so tests can delay it.
+
+final class WorkoutTemplatesOnceProvider
+    extends
+        $FunctionalProvider<
+          Future<List<Stored<WorkoutTemplateDraft>>> Function(),
+          Future<List<Stored<WorkoutTemplateDraft>>> Function(),
+          Future<List<Stored<WorkoutTemplateDraft>>> Function()
+        >
+    with $Provider<Future<List<Stored<WorkoutTemplateDraft>>> Function()> {
+  /// Reads the live templates once (the template-update offer, D21);
+  /// injectable so tests can delay it.
+  WorkoutTemplatesOnceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'workoutTemplatesOnceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$workoutTemplatesOnceHash();
+
+  @$internal
+  @override
+  $ProviderElement<Future<List<Stored<WorkoutTemplateDraft>>> Function()>
+  $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+
+  @override
+  Future<List<Stored<WorkoutTemplateDraft>>> Function() create(Ref ref) {
+    return workoutTemplatesOnce(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(
+    Future<List<Stored<WorkoutTemplateDraft>>> Function() value,
+  ) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<
+            Future<List<Stored<WorkoutTemplateDraft>>> Function()
+          >(value),
+    );
+  }
+}
+
+String _$workoutTemplatesOnceHash() =>
+    r'3c6c9b77166d36ac33cef1c36e69645e0e2fca6b';
+
 /// The log form (WO-034, A37 D7-D9, PA1-PA3): its cards and set rows,
 /// "saves as you type" through the applier (debounced, one write in flight,
 /// coalescing to the newest form), one Undo per visit as a compensating
@@ -231,7 +291,7 @@ final class WorkoutLogControllerProvider
 }
 
 String _$workoutLogControllerHash() =>
-    r'd40ad2da6f82df2a44815bb024d911588de4beb2';
+    r'eb1128b1e8e2901092f9719d1de1152786cd7064';
 
 /// The log form (WO-034, A37 D7-D9, PA1-PA3): its cards and set rows,
 /// "saves as you type" through the applier (debounced, one write in flight,

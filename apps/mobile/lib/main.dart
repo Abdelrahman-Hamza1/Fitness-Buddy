@@ -11,8 +11,8 @@ import 'package:material_ui/material_ui.dart';
 /// the config is compiled in.
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  // Lazy: the font licences are read only when the licence page opens.
-  registerFbFontLicenses();
+  // Lazy: the licence texts are read only when the licence page opens.
+  registerFbLicenses();
   final container = ProviderContainer(
     overrides: appOverrides(AppConfig.fromEnvironment()),
   );

@@ -9,6 +9,8 @@ const _allowedDependencies = <String>{
   'flutter_localizations',
   'intl',
   'material_ui',
+  // Parses the vendored muscle-map paths (A37 D16): Flutter team, BSD-3.
+  'path_parsing',
 };
 
 /// Imports that would tie pure presentation to I/O, state management, the

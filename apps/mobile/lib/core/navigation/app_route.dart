@@ -72,10 +72,13 @@ final class WorkoutsRoute extends AppRoute {
 /// IDs and the date travel in the URL.
 final class WorkoutLogRoute extends AppRoute {
   /// Creates the route.
-  const new({this.date, this.repeat, this.exercises = const []});
+  const new({this.date, this.repeat, this.template, this.exercises = const []});
 
   /// The route's path pattern.
   static const path = '/workouts/log';
+
+  /// The query parameter holding [template].
+  static const templateParam = 'template';
 
   /// The query parameter holding [date] (`YYYY-MM-DD`).
   static const dateParam = 'date';
@@ -92,6 +95,9 @@ final class WorkoutLogRoute extends AppRoute {
   /// The session to repeat, or null.
   final String? repeat;
 
+  /// The template to start from, or null (A37c D20).
+  final String? template;
+
   /// The picked exercise IDs, in order.
   final List<String> exercises;
 
@@ -100,6 +106,7 @@ final class WorkoutLogRoute extends AppRoute {
     final query = {
       dateParam: ?date?.toString(),
       repeatParam: ?repeat,
+      templateParam: ?template,
       if (exercises.isNotEmpty) exercisesParam: exercises.join(','),
     };
     return Uri(
@@ -136,6 +143,88 @@ final class WorkoutHistoryRoute extends AppRoute {
 
   @override
   String get location => path;
+}
+
+/// The optional weekly plan (WO-021, A37 D13): a detail screen of the
+/// Workouts tab.
+final class WorkoutPlanRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/workouts/plan';
+
+  @override
+  String get location => path;
+}
+
+/// The starter plans gallery (WO-023, A37 D13, D18): a detail screen of
+/// the Workouts tab.
+final class WorkoutStarterPlansRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/workouts/starter-plans';
+
+  @override
+  String get location => path;
+}
+
+/// Every exercise, to browse and open one (WO-041, A37 D13): a detail
+/// screen of the Workouts tab.
+final class WorkoutExercisesRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/workouts/exercises';
+
+  @override
+  String get location => path;
+}
+
+/// One exercise's page (WO-041): muscle map, graph, records and history,
+/// nested under [WorkoutExercisesRoute]. [id] is a catalog ID or a custom
+/// exercise's UUID.
+final class WorkoutExerciseRoute extends AppRoute {
+  /// Creates the route for exercise [id].
+  const new(this.id);
+
+  /// The route's path pattern.
+  static const path = '/workouts/exercises/:id';
+
+  /// The exercise.
+  final String id;
+
+  @override
+  String get location =>
+      '${WorkoutExercisesRoute.path}/${Uri.encodeComponent(id)}';
+}
+
+/// A new session from Today's planned row (HM-006, A37 D13, D20): the log
+/// form started from [template] on [date], nested in the Today tab.
+final class TodayWorkoutLogRoute extends AppRoute {
+  /// Creates the route.
+  const new({required this.template, this.date});
+
+  /// The route's path pattern.
+  static const path = '/today/workout-log';
+
+  /// The template to start from.
+  final String template;
+
+  /// The training day; null for today.
+  final LocalDate? date;
+
+  @override
+  String get location => Uri(
+    path: path,
+    queryParameters: {
+      WorkoutLogRoute.templateParam: template,
+      WorkoutLogRoute.dateParam: ?date?.toString(),
+    },
+  ).toString();
 }
 
 /// One logged session opened from Today's workout row (HM-006, A37 D13):
@@ -401,6 +490,36 @@ final class MeasurementTypeRoute extends AppRoute {
   @override
   String get location =>
       '${MeasurementsRoute.path}/${Uri.encodeComponent(key)}';
+}
+
+/// Exercise progress from the Progress tab (IN-006, A37 D13): the same
+/// list as [WorkoutExercisesRoute], nested in the Progress tab.
+final class ProgressExercisesRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/progress/exercises';
+
+  @override
+  String get location => path;
+}
+
+/// One exercise's page from the Progress tab (IN-006): the same screen as
+/// [WorkoutExerciseRoute], nested under [ProgressExercisesRoute].
+final class ProgressExerciseRoute extends AppRoute {
+  /// Creates the route for exercise [id].
+  const new(this.id);
+
+  /// The route's path pattern.
+  static const path = '/progress/exercises/:id';
+
+  /// The exercise.
+  final String id;
+
+  @override
+  String get location =>
+      '${ProgressExercisesRoute.path}/${Uri.encodeComponent(id)}';
 }
 
 /// Past weigh-ins as rows (A15b D17): full screen outside the tabs, opened

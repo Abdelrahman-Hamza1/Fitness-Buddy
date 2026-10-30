@@ -40,6 +40,16 @@ Future<ApplyResult> Function(ChangeSet) workoutApply(Ref ref) =>
 Future<ApplyResult> Function(InverseChangeSet) workoutRevert(Ref ref) =>
     ref.watch(changeSetApplierProvider).revert;
 
+/// Reads the live templates once (the template-update offer, D21);
+/// injectable so tests can delay it.
+@riverpod
+Future<List<Stored<WorkoutTemplateDraft>>> Function() workoutTemplatesOnce(
+  Ref ref,
+) {
+  final repository = ref.watch(workoutRepositoryProvider);
+  return () => repository.watchTemplates().first;
+}
+
 /// The SQL name of the session table, for `Applied.versionAfter`.
 const String _sessionTable = 'workout_sessions';
 
@@ -77,6 +87,10 @@ class WorkoutLogController extends _$WorkoutLogController {
 
   /// The first change set this visit wrote (the undo entry's ID).
   String? _firstWrite;
+
+  /// The visit's Undo, held back while a template-update offer is asked
+  /// (D21): recorded by [recordVisitUndo].
+  ChangeSet? _pendingUndo;
   bool _created = false;
   bool _compensationDropped = false;
   bool _finished = false;
@@ -87,6 +101,10 @@ class WorkoutLogController extends _$WorkoutLogController {
   /// The final delete that a re-check must undo before anything else is
   /// written (its restore failed once; retried by the next write).
   Applied? _deleteToRestore;
+
+  /// The visit is closing after its final write (D21's template lookup
+  /// runs): edits are ignored, so what was written is final.
+  bool _closing = false;
 
   Timer? _timer;
   Future<_SaveOutcome>? _inFlight;
@@ -106,13 +124,41 @@ class WorkoutLogController extends _$WorkoutLogController {
         if (stored == null) throw StateError('the session is gone');
         _baseline = stored.draft;
         return _opened(stored, today);
-      case NewLog(:final date, :final repeatOf, :final exercises):
+      case NewLog(
+        :final date,
+        :final repeatOf,
+        :final templateId,
+        :final exercises,
+      ):
         final ids = ref.read(idGeneratorProvider);
         final day = date.isAfter(today) ? today : date;
         final source = repeatOf == null
             ? null
             : all.where((s) => s.ref.id == repeatOf).firstOrNull;
         final sessionId = ids.next();
+        final template = source != null || templateId == null
+            ? null
+            : (await repository.watchTemplates().first)
+                  .where((t) => t.ref.id == templateId)
+                  .firstOrNull;
+        if (template != null) {
+          // From a template (D10, D20): its name and ID, its exercises with
+          // the target set counts, last time's numbers as hints.
+          final empty = LogFormState(
+            sessionId: sessionId,
+            date: day,
+            today: today,
+            name: template.draft.name,
+            templateId: template.ref.id,
+            exercises: const [],
+          );
+          return empty.copyWith(
+            exercises: [
+              for (final item in template.draft.items)
+                _newCard(item.exerciseId, ids, empty, sets: item.sets),
+            ],
+          );
+        }
         if (source == null) {
           final empty = LogFormState(
             sessionId: sessionId,
@@ -203,8 +249,24 @@ class WorkoutLogController extends _$WorkoutLogController {
 
   LogFormState get _form => state.requireValue;
 
+  /// What "Save as template" copies (WO-020): the session after writing
+  /// any pending autosave, or `null` before the first write, after a
+  /// conflict or a failed write (the banner says why).
+  Future<WorkoutSessionDraft?> templateSource() async {
+    if (!ref.mounted || state.value == null) return null;
+    _timer?.cancel();
+    _timer = null;
+    final outcome = await _drain();
+    if (!ref.mounted || outcome != _SaveOutcome.saved) return null;
+    if (_form.saveState != LogSaveState.idle &&
+        _form.saveState != LogSaveState.saving) {
+      return null;
+    }
+    return _lastSaved;
+  }
+
   void _update(LogFormState next, {bool save = true}) {
-    if (_finished || _discarding) return;
+    if (_finished || _discarding || _closing) return;
     state = AsyncData(next);
     if (save) _schedule();
   }
@@ -249,20 +311,23 @@ class WorkoutLogController extends _$WorkoutLogController {
     );
   }
 
+  /// A card for [exerciseId]: [sets] rows (a template's target), else last
+  /// time's set count, else one.
   LogExerciseCard _newCard(
     String exerciseId,
     IdGenerator ids,
-    LogFormState form,
-  ) {
+    LogFormState form, {
+    int? sets,
+  }) {
     final hints = LastPerformance.of(
       _history,
       exerciseId,
       date: form.date,
       sessionId: form.sessionId,
     );
-    final count = hints.isEmpty
-        ? 1
-        : hints.length.clamp(1, WorkoutSetBounds.maxSets);
+    final count =
+        sets ??
+        (hints.isEmpty ? 1 : hints.length.clamp(1, WorkoutSetBounds.maxSets));
     return LogExerciseCard(
       id: ids.next(),
       exerciseId: exerciseId,
@@ -685,7 +750,19 @@ class WorkoutLogController extends _$WorkoutLogController {
             break;
         }
         if (!ref.mounted) return const VisitUnchanged();
-        if (!(_form.persisted && _form.savedDraft == null)) return _close();
+        if (!(_form.persisted && _form.savedDraft == null)) {
+          // Freeze the form before the lookup (no await since the drain):
+          // the session as written is final and the offer derives from it.
+          _closing = true;
+          TemplateUpdateOffer? offer;
+          try {
+            offer = await _templateOffer();
+          } on Exception {
+            // No offer: the session is saved either way.
+            offer = null;
+          }
+          return _close(offer: offer);
+        }
         // No checked set left: the final delete, serialized with writes.
         final deleted = await _exclusive(_deleteEmpty);
         if (deleted != null) return deleted;
@@ -828,35 +905,75 @@ class WorkoutLogController extends _$WorkoutLogController {
     }
   }
 
-  /// Ends the visit and records its Undo (D9).
-  VisitResult _close() {
+  /// The template-update offer of this visit (WO-022, D21): only when it
+  /// wrote, the session has a live template, and the saved session
+  /// differs from it.
+  Future<TemplateUpdateOffer?> _templateOffer() async {
+    final templateId = _form.templateId;
+    final saved = _lastSaved;
+    if (templateId == null || saved == null || _firstWrite == null) {
+      return null;
+    }
+    final templates = await ref.read(workoutTemplatesOnceProvider)();
+    if (!ref.mounted) return null;
+    final template = templates.where((t) => t.ref.id == templateId).firstOrNull;
+    if (template == null) return null;
+    final targets = templateUpdateFor(template.draft, saved, _library.typeOf);
+    if (targets == null) return null;
+    return TemplateUpdateOffer(
+      template: template,
+      draft: templateWithTargets(
+        template.draft,
+        targets,
+        ref.read(idGeneratorProvider),
+      ),
+    );
+  }
+
+  /// Records the visit's Undo held back by a template-update offer (D21)
+  /// and returns its entry ID; `null` when there's none (already recorded,
+  /// or dropped by a conflict). Its window starts now.
+  String? recordVisitUndo() {
+    final compensation = _pendingUndo;
+    if (compensation == null) return null;
+    _pendingUndo = null;
+    return ref
+        .read(undoStackProvider)
+        .recordCompensation(
+          _firstWrite!,
+          UndoLabel(
+            _baseline == null
+                ? WorkoutUndoLabels.saved
+                : WorkoutUndoLabels.updated,
+          ),
+          compensation,
+        )
+        .id;
+  }
+
+  /// Ends the visit and records its Undo (D9); with an [offer], holds the
+  /// Undo back for [recordVisitUndo].
+  VisitResult _close({TemplateUpdateOffer? offer}) {
     _timer?.cancel();
     _timer = null;
     _finished = true;
     final first = _firstWrite;
     if (first == null) return const VisitUnchanged();
     if (_compensationDropped) {
-      return VisitSaved(created: _created, undoId: null);
+      return VisitSaved(created: _created, undoId: null, offer: offer);
     }
     final baseline = _baseline;
     final session = VersionedId(_form.sessionId, _version!);
-    final entry = ref
-        .read(undoStackProvider)
-        .recordCompensation(
-          first,
-          UndoLabel(
-            baseline == null
-                ? WorkoutUndoLabels.saved
-                : WorkoutUndoLabels.updated,
-          ),
-          ChangeSet([
-            if (baseline == null)
-              DeleteWorkoutSession(session)
-            else
-              UpdateWorkoutSession(session, baseline),
-          ], origin: Origin.undo(first)),
-        );
-    return VisitSaved(created: baseline == null, undoId: entry.id);
+    _pendingUndo = ChangeSet([
+      if (baseline == null)
+        DeleteWorkoutSession(session)
+      else
+        UpdateWorkoutSession(session, baseline),
+    ], origin: Origin.undo(first));
+    if (offer != null) {
+      return VisitSaved(created: baseline == null, undoId: null, offer: offer);
+    }
+    return VisitSaved(created: baseline == null, undoId: recordVisitUndo());
   }
 
   /// Deletes the session (⋮ Delete, D14) as a direct action with its

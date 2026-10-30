@@ -10,12 +10,13 @@ import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/workouts/application/exercise_library.dart';
 import 'package:fb_mobile/features/workouts/application/set_input.dart';
+import 'package:fb_mobile/features/workouts/application/workout_actions.dart';
 import 'package:fb_mobile/features/workouts/application/workout_log_controller.dart';
 import 'package:fb_mobile/features/workouts/application/workout_log_state.dart';
 import 'package:fb_mobile/features/workouts/application/workout_views.dart';
 import 'package:fb_mobile/features/workouts/data/workout_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/misc.dart' show ProviderListenable;
+import 'package:flutter_riverpod/misc.dart' show Override, ProviderListenable;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/workout_harness.dart';
@@ -78,7 +79,7 @@ LibraryExercise _exercise(
 
 /// A controller harness: the real applier over an in-memory database.
 final class _Log {
-  new() {
+  new({List<Override> extra = const []}) {
     h = WorkoutHarness();
     undo = UndoStack(
       revert: h.applier.revert,
@@ -109,6 +110,7 @@ final class _Log {
         weekStartProvider.overrideWith(
           (ref) => Stream.value(DayOfWeek.saturday),
         ),
+        ...extra,
       ],
     );
     addTearDown(container.dispose);
@@ -605,10 +607,12 @@ void main() {
     ]);
     // The live query notices the new rows.
     await pumpEventQueue(times: 100);
-    final row = (await log.read<TodayWorkout?>(
-      todayWorkoutProvider(today).future,
-      todayWorkoutProvider(today),
-    ))!;
+    final row =
+        (await log.read<TodayWorkout?>(
+              todayWorkoutProvider(today).future,
+              todayWorkoutProvider(today),
+            ))!
+            as TodayWorkoutLogged;
     expect(row.summary.id, wid(11));
     expect(row.summary.exerciseCount, 1);
     expect(row.summary.prCount, 1);
@@ -879,6 +883,274 @@ void main() {
         expect(sets.single.values, const SetValues(reps: 8, kg: 80));
       },
     );
+  });
+
+  /// Template `wid(70)` "Push" (2 × 8 of exercise 1, 3 × 10 of exercise 2)
+  /// on [days].
+  Future<void> seedPlan(_Log log, List<DayOfWeek> days) => log.h.apply([
+    CreateWorkoutTemplate(
+      wid(70),
+      WorkoutTemplateDraft(
+        name: 'Push',
+        items: [
+          TemplateItemDraft(id: wid(71), exerciseId: wid(1), sets: 2, reps: 8),
+          TemplateItemDraft(id: wid(72), exerciseId: wid(2), sets: 3, reps: 10),
+        ],
+      ),
+    ),
+    for (final day in days) SetPlanDay(day, wid(70)),
+  ]);
+
+  test(
+    'WO-024 past planned days without a session render like rest days',
+    () async {
+      final log = _Log();
+      await log.seed();
+      // 2026-10-29 is a Thursday; the week runs Saturday 10-24 to Friday 10-30.
+      await seedPlan(log, [
+        DayOfWeek.tuesday,
+        DayOfWeek.thursday,
+        DayOfWeek.friday,
+      ]);
+      final week = await log.read<WorkoutWeek>(
+        workoutWeekProvider(today).future,
+        workoutWeekProvider(today),
+      );
+      // Tuesday 10-27 was planned and skipped: no hint, nothing "missed".
+      expect(week.planned, {
+        LocalDate(2026, 10, 29): 'Push',
+        LocalDate(2026, 10, 30): 'Push',
+      });
+      expect(week.trained, isEmpty);
+    },
+  );
+
+  test("HM-006 planned branch shows today's template only for today or "
+      'later', () async {
+    final log = _Log();
+    await log.seed();
+    await seedPlan(log, [
+      DayOfWeek.tuesday,
+      DayOfWeek.thursday,
+      DayOfWeek.friday,
+    ]);
+    Future<TodayWorkout?> row(LocalDate date) => log.read<TodayWorkout?>(
+      todayWorkoutProvider(date).future,
+      todayWorkoutProvider(date),
+    );
+    expect(
+      (await row(today) as TodayWorkoutPlanned?)?.template.ref.id,
+      wid(70),
+    );
+    expect(await row(today.plusDays(1)), isA<TodayWorkoutPlanned>());
+    // A past planned day without a session shows nothing.
+    expect(await row(LocalDate(2026, 10, 27)), isNull);
+    // Not planned: nothing (no-plan days stay quiet).
+    expect(await row(today.plusDays(2)), isNull);
+    // Once logged, the logged branch wins.
+    await log.h.apply([LogWorkoutSession(wid(10), sessionDraft())]);
+    await pumpEventQueue(times: 100);
+    expect(await row(today), isA<TodayWorkoutLogged>());
+  });
+
+  test('WO-020 a template starts the form with its exercises, set counts '
+      'and name', () async {
+    final log = _Log();
+    await log.seed();
+    await seedPlan(log, const []);
+    final launch = NewLog(visitId: 't1', date: today, templateId: wid(70));
+    await log.open(launch);
+    final form = log.state(launch);
+    expect(form.name, 'Push');
+    expect(form.templateId, wid(70));
+    expect(form.exercises.map((e) => e.exerciseId), [wid(1), wid(2)]);
+    expect(form.exercises.map((e) => e.sets.length), [2, 3]);
+  });
+
+  /// Logs a visit from template `wid(70)` with [reps] per exercise card
+  /// (60 kg each) and leaves it.
+  Future<(_Log, VisitSaved)> templateVisit(List<List<int>> reps) async {
+    final log = _Log();
+    await log.seed();
+    await seedPlan(log, const []);
+    final launch = NewLog(visitId: 'o1', date: today, templateId: wid(70));
+    final c = await log.open(launch);
+    for (final (i, card) in log.state(launch).exercises.indexed) {
+      while (log.state(launch).exercises[i].sets.length < reps[i].length) {
+        c.addSet(card.id);
+      }
+      for (final (j, set) in log.state(launch).exercises[i].sets.indexed) {
+        if (j >= reps[i].length) {
+          c.removeSet(card.id, set.id);
+          continue;
+        }
+        c
+          ..editSet(
+            card.id,
+            set.id,
+            SetInput(weight: '60', reps: '${reps[i][j]}'),
+          )
+          ..toggleSet(card.id, set.id);
+      }
+    }
+    return (log, await c.finishVisit() as VisitSaved);
+  }
+
+  test('WO-022 offer appears only when the session differs from its '
+      'template', () async {
+    // As planned (2 × 8, 3 × 10, the last set a rep short): no offer, and
+    // the visit's Undo is recorded at once.
+    final (_, same) = await templateVisit([
+      [8, 8],
+      [10, 10, 9],
+    ]);
+    expect(same.offer, isNull);
+    expect(same.undoId, isNotNull);
+
+    // A third set of the first exercise: offer, Undo held back.
+    final (log, differs) = await templateVisit([
+      [8, 8, 8],
+      [10, 10, 10],
+    ]);
+    final offer = differs.offer!;
+    expect(offer.template.ref.id, wid(70));
+    expect(offer.draft.name, 'Push');
+    expect(offer.draft.items.map((i) => i.sets), [3, 3]);
+    // Kept exercises keep their item rows.
+    expect(offer.draft.items.map((i) => i.id), [wid(71), wid(72)]);
+    expect(differs.undoId, isNull);
+    // Nothing was written to the template by asking.
+    final stored = (await log.h.repository.watchTemplates().first).single;
+    expect(stored.draft.items.map((i) => i.sets), [2, 3]);
+    // Not now: the visit's Undo is recorded then, once.
+    final c = log.container.read(
+      workoutLogControllerProvider(
+        NewLog(visitId: 'o1', date: today, templateId: wid(70)),
+      ).notifier,
+    );
+    expect(c.recordVisitUndo(), isNotNull);
+    expect(c.recordVisitUndo(), isNull);
+  });
+
+  test('WO-022 offer is absent for sessions without a template', () async {
+    final log = _Log();
+    await log.seed();
+    await seedPlan(log, const []);
+    final launch = _new('n1');
+    final c = await log.open(launch);
+    await c.addExercises([wid(1)]);
+    final card = log.state(launch).exercises.single;
+    c
+      ..editSet(
+        card.id,
+        card.sets.single.id,
+        const SetInput(weight: '80', reps: '8'),
+      )
+      ..toggleSet(card.id, card.sets.single.id);
+    final result = await c.finishVisit() as VisitSaved;
+    expect(result.offer, isNull);
+    expect(result.undoId, isNotNull);
+  });
+
+  test('WO-022 Update writes the template with undo', () async {
+    final (log, differs) = await templateVisit([
+      [8, 8, 8],
+      [10, 10, 10],
+    ]);
+    final offer = differs.offer!;
+    final actions = WorkoutActions(
+      apply: log.h.applier.apply,
+      undoStack: log.undo,
+      ids: SequenceIdGenerator(startMs: 0x0199e3c50000),
+      repository: log.h.repository,
+    );
+    final outcome = await actions.saveTemplate(
+      offer.template,
+      offer.draft,
+    ) as WorkoutActionDone;
+    var stored = (await log.h.repository.watchTemplates().first).single;
+    expect(stored.draft.items.map((i) => i.sets), [3, 3]);
+    expect(await log.undo.undo(outcome.undoId), UndoOutcome.undone);
+    stored = (await log.h.repository.watchTemplates().first).single;
+    expect(stored.draft.items.map((i) => i.sets), [2, 3]);
+  });
+
+  test('WO-022 edits during the template lookup on exit are ignored, never '
+      'half-written', () async {
+    // The lookup waits until released, like a slow database.
+    final release = Completer<void>();
+    var started = false;
+    late final _Log log;
+    log = _Log(
+      extra: [
+        workoutTemplatesOnceProvider.overrideWithValue(() async {
+          started = true;
+          await release.future;
+          return await log.h.repository.watchTemplates().first;
+        }),
+      ],
+    );
+    await log.seed();
+    await seedPlan(log, const []);
+    final launch = NewLog(visitId: 'g1', date: today, templateId: wid(70));
+    final c = await log.open(launch);
+    for (final card in log.state(launch).exercises) {
+      for (final set in card.sets) {
+        c
+          ..editSet(card.id, set.id, const SetInput(weight: '60', reps: '9'))
+          ..toggleSet(card.id, set.id);
+      }
+    }
+    final leaving = c.finishVisit();
+    while (!started) {
+      await pumpEventQueue();
+    }
+    final written = (await log.sessions()).single;
+    // In the gap: an edit, and every set unchecked (the last one too).
+    final form = log.state(launch);
+    final first = form.exercises.first;
+    c.editSet(
+      first.id,
+      first.sets.first.id,
+      const SetInput(weight: '99', reps: '1'),
+    );
+    for (final card in form.exercises) {
+      for (final set in card.sets) {
+        c.toggleSet(card.id, set.id);
+      }
+    }
+    release.complete();
+    final result = await leaving as VisitSaved;
+    // The form was frozen: what's stored is what the form shows, and the
+    // session wasn't deleted behind the user's back.
+    expect(log.state(launch).exercises.first.sets.first.checked, isTrue);
+    final stored = (await log.sessions()).single;
+    expect(stored.draft, written.draft);
+    expect(stored.ref, written.ref);
+    // The offer derives from the final saved session (9 reps beat the
+    // template's 8: it differs).
+    expect(result.offer, isNotNull);
+    expect(result.offer!.draft.items.first.reps, 9);
+  });
+
+  test('WO-020 Save as template writes a pending autosave first', () async {
+    final log = _Log();
+    await log.seed();
+    await log.h.apply([LogWorkoutSession(wid(10), sessionDraft())]);
+    final launch = EditLog(wid(10), visitId: 's1');
+    final c = await log.open(launch);
+    final card = log.state(launch).exercises.single;
+    // A checked set edited: the save is pending, the debounce hasn't fired.
+    c.editSet(
+      card.id,
+      card.sets.first.id,
+      const SetInput(weight: '80', reps: '10'),
+    );
+    final source = (await c.templateSource())!;
+    expect(source.exercises.single.sets.first.values.reps, 10);
+    // And it's what the database holds.
+    final stored = (await log.sessions()).single;
+    expect(stored.draft.exercises.single.sets.first.values.reps, 10);
   });
 
   group('review round 3', () {

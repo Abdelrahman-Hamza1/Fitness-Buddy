@@ -5436,6 +5436,12 @@ abstract class AppLocalizations {
   /// **'Try again'**
   String get weightHistoryTryAgain;
 
+  /// Progress tab row opening every exercise's progress (IN-006, A37 D13).
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise progress'**
+  String get progressExercises;
+
   /// Measurements screen title and the Progress row that opens it (A15b D18).
   ///
   /// In en, this message translates to:
@@ -7060,6 +7066,438 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{muscle, select, chest{Chest} shoulders{Shoulders} biceps{Biceps} triceps{Triceps} forearms{Forearms} traps{Traps} upperBack{Upper back} lowerBack{Lower back} abs{Abs} obliques{Obliques} quadriceps{Quads} hamstrings{Hamstrings} glutes{Glutes} calves{Calves} adductors{Adductors} other{Other}}'**
   String workoutMuscle(String muscle);
+
+  /// Screen-reader label of an exercise's muscle map with no secondary muscles (WO-007).
+  ///
+  /// In en, this message translates to:
+  /// **'Muscle map. Main muscle: {muscle}.'**
+  String workoutMuscleMapMain(String muscle);
+
+  /// Screen-reader label of an exercise's muscle map (WO-007); muscles is a comma-separated list.
+  ///
+  /// In en, this message translates to:
+  /// **'Muscle map. Main muscle: {muscle}. Secondary: {muscles}.'**
+  String workoutMuscleMapMainSecondary(String muscle, String muscles);
+
+  /// Screen-reader label of a muscle map without muscles: the neutral body (WO-007, A37 D2).
+  ///
+  /// In en, this message translates to:
+  /// **'Muscle map. No main muscle.'**
+  String get workoutMuscleMapNone;
+
+  /// Screen-reader label of a muscle map with secondary muscles only (WO-007).
+  ///
+  /// In en, this message translates to:
+  /// **'Muscle map. No main muscle. Secondary: {muscles}.'**
+  String workoutMuscleMapNoneSecondary(String muscles);
+
+  /// Title of the list of every exercise, to browse and open one (WO-041, A37 D13).
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises'**
+  String get workoutExercisesTitle;
+
+  /// Workouts tab row opening the list of every exercise (A37 D13).
+  ///
+  /// In en, this message translates to:
+  /// **'All exercises'**
+  String get workoutsAllExercises;
+
+  /// Exercise page of an exercise that no longer exists (A37 D15).
+  ///
+  /// In en, this message translates to:
+  /// **'This exercise was deleted.'**
+  String get workoutExerciseRemovedMessage;
+
+  /// Exercise page, under the muscle map: the main muscle (WO-007).
+  ///
+  /// In en, this message translates to:
+  /// **'Main: {muscle}'**
+  String workoutExerciseMain(String muscle);
+
+  /// Exercise page, under the muscle map: the secondary muscles, comma-separated (WO-007).
+  ///
+  /// In en, this message translates to:
+  /// **'Secondary: {muscles}'**
+  String workoutExerciseSecondary(String muscles);
+
+  /// Exercise page without any logged session (WO-041).
+  ///
+  /// In en, this message translates to:
+  /// **'Not logged yet'**
+  String get workoutExerciseNoSessions;
+
+  /// Exercise page without any logged session (WO-041).
+  ///
+  /// In en, this message translates to:
+  /// **'Log this exercise and its progress shows up here.'**
+  String get workoutExerciseNoSessionsMessage;
+
+  /// Exercise page: the graph's main line and the record tile, the heaviest weight of a set (WO-041).
+  ///
+  /// In en, this message translates to:
+  /// **'Heaviest set'**
+  String get workoutExerciseHeaviest;
+
+  /// Exercise page: the estimated one-rep max toggle and record tile (Epley, WO-041).
+  ///
+  /// In en, this message translates to:
+  /// **'Est. 1RM'**
+  String get workoutExerciseE1rm;
+
+  /// Exercise page record tile: most reps in one set (WO-042).
+  ///
+  /// In en, this message translates to:
+  /// **'Most reps'**
+  String get workoutExerciseMostReps;
+
+  /// Exercise page record tile: the longest set (time, cardio).
+  ///
+  /// In en, this message translates to:
+  /// **'Longest'**
+  String get workoutExerciseLongest;
+
+  /// Exercise page record tile: the longest distance (cardio).
+  ///
+  /// In en, this message translates to:
+  /// **'Farthest'**
+  String get workoutExerciseFarthest;
+
+  /// A weight in kilograms.
+  ///
+  /// In en, this message translates to:
+  /// **'{kg} kg'**
+  String workoutExerciseKg(String kg);
+
+  /// A distance in kilometres.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km'**
+  String workoutExerciseKm(String km);
+
+  /// Exercise page: header of the sessions with this exercise, newest first.
+  ///
+  /// In en, this message translates to:
+  /// **'Past sessions'**
+  String get workoutExerciseHistory;
+
+  /// What the exercise graph shows, for screen readers (WO-041).
+  ///
+  /// In en, this message translates to:
+  /// **'{metric, select, heaviest{Heaviest set} e1rm{Estimated 1RM} mostReps{Most reps} longest{Longest set} other{Progress}}'**
+  String workoutExerciseMetric(String metric);
+
+  /// Screen-reader label of an exercise's graph (WO-041).
+  ///
+  /// In en, this message translates to:
+  /// **'{name}: {metric}, {count, plural, =1{1 session} other{{count} sessions}}'**
+  String workoutExerciseGraph(String name, String metric, int count);
+
+  /// Today row and Workouts tab card: today's planned template (HM-006, A37 D20), e.g. 'Push day today'.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} day today'**
+  String workoutTodayPlanned(String name);
+
+  /// Today row on a later day with a planned template (A37 D20).
+  ///
+  /// In en, this message translates to:
+  /// **'{name} day'**
+  String workoutDayPlanned(String name);
+
+  /// Week strip day with a planned template, for screen readers (A37 D19).
+  ///
+  /// In en, this message translates to:
+  /// **'{day}, {name} planned'**
+  String workoutsWeekPlanned(String day, String name);
+
+  /// Workouts tab first visit: opens the optional starter plans (WO-023).
+  ///
+  /// In en, this message translates to:
+  /// **'Start from a plan'**
+  String get workoutsStartFromPlan;
+
+  /// Workouts tab plan card button: logs today's planned template (A37 D20).
+  ///
+  /// In en, this message translates to:
+  /// **'Log {name}'**
+  String workoutsPlanCardLog(String name);
+
+  /// Workouts tab section header: weekly plan, starter plans and templates.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan & templates'**
+  String get workoutsPlanSection;
+
+  /// Row opening the optional weekly plan (WO-021).
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly plan'**
+  String get workoutsWeeklyPlanRow;
+
+  /// Weekly plan row subtitle: how many weekdays have a template.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No plan} =1{1 day a week} other{{count} days a week}}'**
+  String workoutsWeeklyPlanDays(int count);
+
+  /// Row and title of the starter plans gallery (WO-023).
+  ///
+  /// In en, this message translates to:
+  /// **'Starter plans'**
+  String get workoutsStarterPlansRow;
+
+  /// Row opening an empty template editor (WO-020).
+  ///
+  /// In en, this message translates to:
+  /// **'New template'**
+  String get workoutsNewTemplate;
+
+  /// Template row button: logs a workout from the template.
+  ///
+  /// In en, this message translates to:
+  /// **'Log'**
+  String get workoutsTemplateLog;
+
+  /// A template's size.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 exercise} other{{count} exercises}}'**
+  String workoutsTemplateSummary(int count);
+
+  /// Workout menu: makes a template from this session (WO-020).
+  ///
+  /// In en, this message translates to:
+  /// **'Save as template'**
+  String get workoutLogSaveAsTemplate;
+
+  /// Template editor title (new).
+  ///
+  /// In en, this message translates to:
+  /// **'New template'**
+  String get workoutTemplateNewTitle;
+
+  /// Template editor title (edit).
+  ///
+  /// In en, this message translates to:
+  /// **'Edit template'**
+  String get workoutTemplateEditTitle;
+
+  /// Template name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get workoutTemplateName;
+
+  /// Template name field hint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Push'**
+  String get workoutTemplateNameHint;
+
+  /// Template name missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a name'**
+  String get workoutTemplateNameError;
+
+  /// Template editor section header.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises'**
+  String get workoutTemplateExercises;
+
+  /// Template without exercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one exercise'**
+  String get workoutTemplateEmptyError;
+
+  /// Template editor delete button.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete template'**
+  String get workoutTemplateDelete;
+
+  /// Template line: target sets stepper label.
+  ///
+  /// In en, this message translates to:
+  /// **'Sets'**
+  String get workoutTemplateSets;
+
+  /// Stepper minus button tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease {label}'**
+  String workoutTemplateLess(String label);
+
+  /// Stepper plus button tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase {label}'**
+  String workoutTemplateMore(String label);
+
+  /// Undo snackbar after creating a template.
+  ///
+  /// In en, this message translates to:
+  /// **'Template saved'**
+  String get workoutTemplateCreated;
+
+  /// Undo snackbar after editing a template.
+  ///
+  /// In en, this message translates to:
+  /// **'Template updated'**
+  String get workoutTemplateUpdated;
+
+  /// Undo snackbar after deleting a template.
+  ///
+  /// In en, this message translates to:
+  /// **'Template deleted'**
+  String get workoutTemplateDeleted;
+
+  /// Weekly plan screen title (WO-021).
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly plan'**
+  String get workoutPlanTitle;
+
+  /// Weekly plan screen intro (D-085: a plan is never required).
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. Pick a workout for any weekday; the other days are rest days.'**
+  String get workoutPlanIntro;
+
+  /// A weekday without a template.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest'**
+  String get workoutPlanRest;
+
+  /// Undo snackbar after changing a weekday.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan updated'**
+  String get workoutPlanUpdated;
+
+  /// Starter plans intro (WO-023).
+  ///
+  /// In en, this message translates to:
+  /// **'Pick one to copy its workouts and weekdays. You can edit everything afterwards, and nothing changes until you pick.'**
+  String get workoutStarterIntro;
+
+  /// A starter plan's name (WO-023).
+  ///
+  /// In en, this message translates to:
+  /// **'{plan, select, fullBody{Full body} upperLower{Upper/Lower} pushPullLegs{Push/Pull/Legs} other{Plan}}'**
+  String workoutStarterPlan(String plan);
+
+  /// A starter plan's description.
+  ///
+  /// In en, this message translates to:
+  /// **'{plan, select, fullBody{3 days a week, two full-body workouts} upperLower{4 days a week, upper and lower body} pushPullLegs{3 to 6 days a week, push, pull and legs} other{}}'**
+  String workoutStarterPlanInfo(String plan);
+
+  /// The name a starter plan's template gets when copied (editable afterwards).
+  ///
+  /// In en, this message translates to:
+  /// **'{template, select, fullBodyA{Full body A} fullBodyB{Full body B} upperA{Upper A} lowerA{Lower A} upperB{Upper B} lowerB{Lower B} push{Push} pull{Pull} legs{Legs} other{Workout}}'**
+  String workoutStarterTemplate(String template);
+
+  /// Starter plans: start from an empty template.
+  ///
+  /// In en, this message translates to:
+  /// **'Build my own'**
+  String get workoutStarterOwn;
+
+  /// Build my own description.
+  ///
+  /// In en, this message translates to:
+  /// **'Start from an empty template'**
+  String get workoutStarterOwnInfo;
+
+  /// Starter plan sheet: how many weekdays to pick.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Pick 1 day} other{Pick {count} days}}'**
+  String workoutStarterDays(int count);
+
+  /// Starter plan sheet: how many weekdays to pick (PPL).
+  ///
+  /// In en, this message translates to:
+  /// **'Pick {min} to {max} days'**
+  String workoutStarterDaysRange(int min, int max);
+
+  /// Starter plan sheet button: copies the templates and weekdays.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this plan'**
+  String get workoutStarterApply;
+
+  /// Undo snackbar after copying a starter plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan added'**
+  String get workoutStarterApplied;
+
+  /// Asked before a starter plan replaces an existing plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace your weekly plan?'**
+  String get workoutStarterReplaceTitle;
+
+  /// Replace question detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Your templates stay.'**
+  String get workoutStarterReplaceMessage;
+
+  /// Replace question: replace.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace plan'**
+  String get workoutStarterReplace;
+
+  /// Replace question: keep (dominant).
+  ///
+  /// In en, this message translates to:
+  /// **'Keep my plan'**
+  String get workoutStarterKeep;
+
+  /// Asked after a session that differs from its template (WO-022, A37 D21).
+  ///
+  /// In en, this message translates to:
+  /// **'Update the {name} template with these changes?'**
+  String workoutTemplateOfferTitle(String name);
+
+  /// Template-update question detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Its exercises, sets and reps will match this workout. Weights aren\'t part of a template.'**
+  String get workoutTemplateOfferMessage;
+
+  /// Template-update question: update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update template'**
+  String get workoutTemplateOfferUpdate;
+
+  /// Template-update question: keep the template as it is.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get workoutTemplateOfferSkip;
+
+  /// Snackbar after leaving a workout and tapping Update template; its Undo reverts both (WO-022, A37 D21).
+  ///
+  /// In en, this message translates to:
+  /// **'Workout saved, template updated'**
+  String get workoutSavedTemplateUpdated;
+
+  /// Snackbar when the template update was refused; its Undo reverts the workout visit (WO-022).
+  ///
+  /// In en, this message translates to:
+  /// **'Workout saved. The template changed meanwhile, so it wasn\'t updated.'**
+  String get workoutSavedTemplateNotUpdated;
 
   /// What an exercise logs per set (WO-004).
   ///

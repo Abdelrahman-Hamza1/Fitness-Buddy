@@ -7,9 +7,10 @@ import 'package:fb_mobile/features/workouts/presentation/workout_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Today's workout row (HM-006, A37 D20; A37a: the logged branch): "Push ✓ ·
-/// 5 exercises · 1 PR" when [date] has a session, nothing otherwise (no-plan
-/// users see nothing until they log). Tap opens the session.
+/// Today's workout row (HM-006, A37 D20): "Push ✓ · 5 exercises · 1 PR"
+/// when [date] has a session (tap opens it); "Push day today" when today
+/// or a later day is planned (tap starts the log form with that template);
+/// nothing otherwise (no-plan users see nothing until they log).
 class WorkoutTodayRow extends ConsumerWidget {
   /// The row of [date].
   const new({required this.date, super.key});
@@ -22,14 +23,29 @@ class WorkoutTodayRow extends ConsumerWidget {
     final row = ref.watch(todayWorkoutProvider(date)).value;
     if (row == null) return const SizedBox.shrink();
     final l10n = context.l10n;
-    final summary = row.summary;
-    final text = [
-      l10n.workoutTodayRow(
-        l10n.sessionTitle(summary.title),
-        summary.exerciseCount,
+    final navigator = ref.read(appNavigatorProvider);
+    final (String text, String? more, VoidCallback onTap) = switch (row) {
+      TodayWorkoutLogged(:final summary, :final more) => (
+        [
+          l10n.workoutTodayRow(
+            l10n.sessionTitle(summary.title),
+            summary.exerciseCount,
+          ),
+          if (summary.prCount > 0) l10n.workoutPrCount(summary.prCount),
+        ].join(' · '),
+        more > 0 ? l10n.workoutTodayMore(more) : null,
+        () => navigator.push(TodayWorkoutSessionRoute(id: summary.id)),
       ),
-      if (summary.prCount > 0) l10n.workoutPrCount(summary.prCount),
-    ].join(' · ');
+      TodayWorkoutPlanned(:final template) => (
+        date == ref.watch(workoutTodayProvider)
+            ? l10n.workoutTodayPlanned(template.draft.name)
+            : l10n.workoutDayPlanned(template.draft.name),
+        null,
+        () => navigator.push(
+          TodayWorkoutLogRoute(template: template.ref.id, date: date),
+        ),
+      ),
+    };
     return Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(
         FbSpace.s4,
@@ -39,15 +55,16 @@ class WorkoutTodayRow extends ConsumerWidget {
       ),
       child: FbCard(
         key: const ValueKey('workout-today-row'),
-        onTap: () => ref
-            .read(appNavigatorProvider)
-            .push(TodayWorkoutSessionRoute(id: summary.id)),
+        onTap: onTap,
         child: Row(
           children: [
             const Icon(FbIcons.navWorkouts),
             const SizedBox(width: FbSpace.s2),
             Expanded(child: Text(text)),
-            if (row.more > 0) Text(l10n.workoutTodayMore(row.more)),
+            ?switch (more) {
+              final m? => Text(m),
+              null => null,
+            },
           ],
         ),
       ),

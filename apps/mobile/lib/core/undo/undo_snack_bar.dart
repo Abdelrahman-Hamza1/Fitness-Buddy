@@ -20,26 +20,39 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// that is about to leave the tree takes them before it does (the root
 /// navigator's context, `Navigator.of(context, rootNavigator: true).context`,
 /// outlives it).
+///
+/// [thenUndoEntryIds] are undone after [undoEntryId], in order, for one
+/// message about several actions (A37c D21: "Workout saved, template
+/// updated"); the first one that can't be undone stops the rest.
 FbSnackBarHandle showUndoFeedback(
   BuildContext context, {
   required String message,
   required String undoEntryId,
+  List<String> thenUndoEntryIds = const [],
 }) {
   final container = ProviderScope.containerOf(context);
   final host = Navigator.of(context, rootNavigator: true).context;
   return showFbUndoSnackBar(
     host,
     message: message,
-    onUndo: () => unawaited(_undo(host, container, undoEntryId)),
+    onUndo: () =>
+        unawaited(_undo(host, container, [undoEntryId, ...thenUndoEntryIds])),
   );
 }
 
 Future<void> _undo(
   BuildContext host,
   ProviderContainer container,
-  String undoEntryId,
+  List<String> undoEntryIds,
 ) async {
-  final outcome = await container.read(undoStackProvider).undo(undoEntryId);
+  final stack = container.read(undoStackProvider);
+  var outcome = UndoOutcome.unknown;
+  for (final id in undoEntryIds) {
+    outcome = await stack.undo(id);
+    if (outcome == UndoOutcome.conflict || outcome == UndoOutcome.expired) {
+      break;
+    }
+  }
   if (!host.mounted) return;
   switch (outcome) {
     case UndoOutcome.undone || UndoOutcome.unknown:

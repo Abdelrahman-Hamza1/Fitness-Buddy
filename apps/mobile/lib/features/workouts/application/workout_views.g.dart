@@ -239,14 +239,109 @@ final class RecentWorkoutsProvider
 
 String _$recentWorkoutsHash() => r'b4e07af2a371a12e583d772ccc53cbad79c76e15';
 
-/// The week containing [today], with trained days only (WO-024: no
-/// "missed" days, ever).
+/// The live templates, by name (WO-020).
+
+@ProviderFor(workoutTemplates)
+final workoutTemplatesProvider = WorkoutTemplatesProvider._();
+
+/// The live templates, by name (WO-020).
+
+final class WorkoutTemplatesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Stored<WorkoutTemplateDraft>>>,
+          List<Stored<WorkoutTemplateDraft>>,
+          Stream<List<Stored<WorkoutTemplateDraft>>>
+        >
+    with
+        $FutureModifier<List<Stored<WorkoutTemplateDraft>>>,
+        $StreamProvider<List<Stored<WorkoutTemplateDraft>>> {
+  /// The live templates, by name (WO-020).
+  WorkoutTemplatesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'workoutTemplatesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$workoutTemplatesHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<List<Stored<WorkoutTemplateDraft>>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Stored<WorkoutTemplateDraft>>> create(Ref ref) {
+    return workoutTemplates(ref);
+  }
+}
+
+String _$workoutTemplatesHash() => r'909c01463eb082a764ba2f563e5adce05bde39f0';
+
+/// The weekly plan: each planned weekday's live template (WO-021). Empty
+/// without a plan: a plan is never required (D-085).
+
+@ProviderFor(workoutPlan)
+final workoutPlanProvider = WorkoutPlanProvider._();
+
+/// The weekly plan: each planned weekday's live template (WO-021). Empty
+/// without a plan: a plan is never required (D-085).
+
+final class WorkoutPlanProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Map<DayOfWeek, String>>,
+          Map<DayOfWeek, String>,
+          Stream<Map<DayOfWeek, String>>
+        >
+    with
+        $FutureModifier<Map<DayOfWeek, String>>,
+        $StreamProvider<Map<DayOfWeek, String>> {
+  /// The weekly plan: each planned weekday's live template (WO-021). Empty
+  /// without a plan: a plan is never required (D-085).
+  WorkoutPlanProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'workoutPlanProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$workoutPlanHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<Map<DayOfWeek, String>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<Map<DayOfWeek, String>> create(Ref ref) {
+    return workoutPlan(ref);
+  }
+}
+
+String _$workoutPlanHash() => r'136c00f3867b78eeca6b6fa451d2c9a24c66aada';
+
+/// The week containing [today]: trained days, and plan hints for today and
+/// later (WO-024: no "missed" days, ever).
 
 @ProviderFor(workoutWeek)
 final workoutWeekProvider = WorkoutWeekFamily._();
 
-/// The week containing [today], with trained days only (WO-024: no
-/// "missed" days, ever).
+/// The week containing [today]: trained days, and plan hints for today and
+/// later (WO-024: no "missed" days, ever).
 
 final class WorkoutWeekProvider
     extends
@@ -256,8 +351,8 @@ final class WorkoutWeekProvider
           FutureOr<WorkoutWeek>
         >
     with $FutureModifier<WorkoutWeek>, $FutureProvider<WorkoutWeek> {
-  /// The week containing [today], with trained days only (WO-024: no
-  /// "missed" days, ever).
+  /// The week containing [today]: trained days, and plan hints for today and
+  /// later (WO-024: no "missed" days, ever).
   WorkoutWeekProvider._({
     required WorkoutWeekFamily super.from,
     required LocalDate super.argument,
@@ -302,10 +397,10 @@ final class WorkoutWeekProvider
   }
 }
 
-String _$workoutWeekHash() => r'e8dc3501bf07cf504266ce4a36d5db373f897cfc';
+String _$workoutWeekHash() => r'c2f0634d8aa32a105e6c0543544af11426cdae68';
 
-/// The week containing [today], with trained days only (WO-024: no
-/// "missed" days, ever).
+/// The week containing [today]: trained days, and plan hints for today and
+/// later (WO-024: no "missed" days, ever).
 
 final class WorkoutWeekFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<WorkoutWeek>, LocalDate> {
@@ -318,8 +413,8 @@ final class WorkoutWeekFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The week containing [today], with trained days only (WO-024: no
-  /// "missed" days, ever).
+  /// The week containing [today]: trained days, and plan hints for today and
+  /// later (WO-024: no "missed" days, ever).
 
   WorkoutWeekProvider call(LocalDate today) =>
       WorkoutWeekProvider._(argument: today, from: this);
@@ -328,14 +423,16 @@ final class WorkoutWeekFamily extends $Family
   String toString() => r'workoutWeekProvider';
 }
 
-/// The workout row of [date] (D20, A37a: the logged branch only), or `null`
-/// without a session (no-plan users see nothing until they log).
+/// The workout row of [date] (D20): its latest session; else, for today or
+/// a later day, its planned template; else `null` (no-plan users see
+/// nothing until they log; past days are never "missed").
 
 @ProviderFor(todayWorkout)
 final todayWorkoutProvider = TodayWorkoutFamily._();
 
-/// The workout row of [date] (D20, A37a: the logged branch only), or `null`
-/// without a session (no-plan users see nothing until they log).
+/// The workout row of [date] (D20): its latest session; else, for today or
+/// a later day, its planned template; else `null` (no-plan users see
+/// nothing until they log; past days are never "missed").
 
 final class TodayWorkoutProvider
     extends
@@ -345,8 +442,9 @@ final class TodayWorkoutProvider
           FutureOr<TodayWorkout?>
         >
     with $FutureModifier<TodayWorkout?>, $FutureProvider<TodayWorkout?> {
-  /// The workout row of [date] (D20, A37a: the logged branch only), or `null`
-  /// without a session (no-plan users see nothing until they log).
+  /// The workout row of [date] (D20): its latest session; else, for today or
+  /// a later day, its planned template; else `null` (no-plan users see
+  /// nothing until they log; past days are never "missed").
   TodayWorkoutProvider._({
     required TodayWorkoutFamily super.from,
     required LocalDate super.argument,
@@ -391,10 +489,11 @@ final class TodayWorkoutProvider
   }
 }
 
-String _$todayWorkoutHash() => r'04cbcda5e12f4b37d0f3566313f9fd55e1f42ac7';
+String _$todayWorkoutHash() => r'76ca12cef83def06f467fbb867c5f0304a326498';
 
-/// The workout row of [date] (D20, A37a: the logged branch only), or `null`
-/// without a session (no-plan users see nothing until they log).
+/// The workout row of [date] (D20): its latest session; else, for today or
+/// a later day, its planned template; else `null` (no-plan users see
+/// nothing until they log; past days are never "missed").
 
 final class TodayWorkoutFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<TodayWorkout?>, LocalDate> {
@@ -407,12 +506,307 @@ final class TodayWorkoutFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The workout row of [date] (D20, A37a: the logged branch only), or `null`
-  /// without a session (no-plan users see nothing until they log).
+  /// The workout row of [date] (D20): its latest session; else, for today or
+  /// a later day, its planned template; else `null` (no-plan users see
+  /// nothing until they log; past days are never "missed").
 
   TodayWorkoutProvider call(LocalDate date) =>
       TodayWorkoutProvider._(argument: date, from: this);
 
   @override
   String toString() => r'todayWorkoutProvider';
+}
+
+/// The page of exercise [exerciseId], or `null` when the library doesn't
+/// know it (a removed custom exercise, D15).
+
+@ProviderFor(exerciseProgress)
+final exerciseProgressProvider = ExerciseProgressFamily._();
+
+/// The page of exercise [exerciseId], or `null` when the library doesn't
+/// know it (a removed custom exercise, D15).
+
+final class ExerciseProgressProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ExerciseProgressView?>,
+          ExerciseProgressView?,
+          FutureOr<ExerciseProgressView?>
+        >
+    with
+        $FutureModifier<ExerciseProgressView?>,
+        $FutureProvider<ExerciseProgressView?> {
+  /// The page of exercise [exerciseId], or `null` when the library doesn't
+  /// know it (a removed custom exercise, D15).
+  ExerciseProgressProvider._({
+    required ExerciseProgressFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'exerciseProgressProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$exerciseProgressHash();
+
+  @override
+  String toString() {
+    return r'exerciseProgressProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ExerciseProgressView?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ExerciseProgressView?> create(Ref ref) {
+    final argument = this.argument as String;
+    return exerciseProgress(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ExerciseProgressProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$exerciseProgressHash() => r'260a8e5da1f77650c1167d0ebed055019aaaa966';
+
+/// The page of exercise [exerciseId], or `null` when the library doesn't
+/// know it (a removed custom exercise, D15).
+
+final class ExerciseProgressFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<ExerciseProgressView?>, String> {
+  ExerciseProgressFamily._()
+    : super(
+        retry: null,
+        name: r'exerciseProgressProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The page of exercise [exerciseId], or `null` when the library doesn't
+  /// know it (a removed custom exercise, D15).
+
+  ExerciseProgressProvider call(String exerciseId) =>
+      ExerciseProgressProvider._(argument: exerciseId, from: this);
+
+  @override
+  String toString() => r'exerciseProgressProvider';
+}
+
+/// Whether exercise [exerciseId]'s graph shows the estimated 1RM instead
+/// of the heaviest set (WO-041: a toggle; the heaviest set by default).
+
+@ProviderFor(ExerciseGraphE1rm)
+final exerciseGraphE1rmProvider = ExerciseGraphE1rmFamily._();
+
+/// Whether exercise [exerciseId]'s graph shows the estimated 1RM instead
+/// of the heaviest set (WO-041: a toggle; the heaviest set by default).
+final class ExerciseGraphE1rmProvider
+    extends $NotifierProvider<ExerciseGraphE1rm, bool> {
+  /// Whether exercise [exerciseId]'s graph shows the estimated 1RM instead
+  /// of the heaviest set (WO-041: a toggle; the heaviest set by default).
+  ExerciseGraphE1rmProvider._({
+    required ExerciseGraphE1rmFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'exerciseGraphE1rmProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$exerciseGraphE1rmHash();
+
+  @override
+  String toString() {
+    return r'exerciseGraphE1rmProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  ExerciseGraphE1rm create() => ExerciseGraphE1rm();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ExerciseGraphE1rmProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$exerciseGraphE1rmHash() => r'9c9b503723bbca056d4b0fbb092e4fab227c3eae';
+
+/// Whether exercise [exerciseId]'s graph shows the estimated 1RM instead
+/// of the heaviest set (WO-041: a toggle; the heaviest set by default).
+
+final class ExerciseGraphE1rmFamily extends $Family
+    with $ClassFamilyOverride<ExerciseGraphE1rm, bool, bool, bool, String> {
+  ExerciseGraphE1rmFamily._()
+    : super(
+        retry: null,
+        name: r'exerciseGraphE1rmProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Whether exercise [exerciseId]'s graph shows the estimated 1RM instead
+  /// of the heaviest set (WO-041: a toggle; the heaviest set by default).
+
+  ExerciseGraphE1rmProvider call(String exerciseId) =>
+      ExerciseGraphE1rmProvider._(argument: exerciseId, from: this);
+
+  @override
+  String toString() => r'exerciseGraphE1rmProvider';
+}
+
+/// Whether exercise [exerciseId]'s graph shows the estimated 1RM instead
+/// of the heaviest set (WO-041: a toggle; the heaviest set by default).
+
+abstract class _$ExerciseGraphE1rm extends $Notifier<bool> {
+  late final _$args = ref.$arg as String;
+  String get exerciseId => _$args;
+
+  bool build(String exerciseId);
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, () => build(_$args));
+  }
+}
+
+/// The workouts of the week starting on [weekStart] (WO-043, A37 D22):
+/// sessions done, planned days only with a plan, PRs. For the weekly
+/// summary and review (A39a); no display here.
+
+@ProviderFor(weeklyWorkoutSummary)
+final weeklyWorkoutSummaryProvider = WeeklyWorkoutSummaryFamily._();
+
+/// The workouts of the week starting on [weekStart] (WO-043, A37 D22):
+/// sessions done, planned days only with a plan, PRs. For the weekly
+/// summary and review (A39a); no display here.
+
+final class WeeklyWorkoutSummaryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<WeeklyWorkoutSummary>,
+          WeeklyWorkoutSummary,
+          FutureOr<WeeklyWorkoutSummary>
+        >
+    with
+        $FutureModifier<WeeklyWorkoutSummary>,
+        $FutureProvider<WeeklyWorkoutSummary> {
+  /// The workouts of the week starting on [weekStart] (WO-043, A37 D22):
+  /// sessions done, planned days only with a plan, PRs. For the weekly
+  /// summary and review (A39a); no display here.
+  WeeklyWorkoutSummaryProvider._({
+    required WeeklyWorkoutSummaryFamily super.from,
+    required LocalDate super.argument,
+  }) : super(
+         retry: null,
+         name: r'weeklyWorkoutSummaryProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$weeklyWorkoutSummaryHash();
+
+  @override
+  String toString() {
+    return r'weeklyWorkoutSummaryProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<WeeklyWorkoutSummary> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<WeeklyWorkoutSummary> create(Ref ref) {
+    final argument = this.argument as LocalDate;
+    return weeklyWorkoutSummary(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WeeklyWorkoutSummaryProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$weeklyWorkoutSummaryHash() =>
+    r'1b6705a4e7bd76db983e81e259e15260349573b1';
+
+/// The workouts of the week starting on [weekStart] (WO-043, A37 D22):
+/// sessions done, planned days only with a plan, PRs. For the weekly
+/// summary and review (A39a); no display here.
+
+final class WeeklyWorkoutSummaryFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<WeeklyWorkoutSummary>, LocalDate> {
+  WeeklyWorkoutSummaryFamily._()
+    : super(
+        retry: null,
+        name: r'weeklyWorkoutSummaryProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The workouts of the week starting on [weekStart] (WO-043, A37 D22):
+  /// sessions done, planned days only with a plan, PRs. For the weekly
+  /// summary and review (A39a); no display here.
+
+  WeeklyWorkoutSummaryProvider call(LocalDate weekStart) =>
+      WeeklyWorkoutSummaryProvider._(argument: weekStart, from: this);
+
+  @override
+  String toString() => r'weeklyWorkoutSummaryProvider';
 }

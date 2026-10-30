@@ -1,5 +1,6 @@
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/features/workouts/application/set_input.dart';
+import 'package:fb_mobile/features/workouts/data/workout_repository.dart';
 import 'package:flutter/foundation.dart' show immutable;
 
 /// How the log form was opened (A37 D13, D14).
@@ -8,14 +9,16 @@ sealed class LogLaunch {
   const new _();
 }
 
-/// A new session: with the [exercises] just picked, or a Repeat of
-/// [repeatOf]. [visitId] makes each visit its own form.
+/// A new session: with the [exercises] just picked, a Repeat of
+/// [repeatOf], or started from template [templateId] (A37c D20). [visitId]
+/// makes each visit its own form.
 final class NewLog extends LogLaunch {
   /// A new session on [date] (clamped to today), one per [visitId].
   new({
     required this.visitId,
     required this.date,
     this.repeatOf,
+    this.templateId,
     Iterable<String> exercises = const [],
   }) : exercises = List.unmodifiable(exercises),
        super._();
@@ -29,7 +32,10 @@ final class NewLog extends LogLaunch {
   /// The session to repeat (WO-024), or `null`.
   final String? repeatOf;
 
-  /// The picked exercises, in order (ignored by a Repeat).
+  /// The template to start from (WO-020), or `null`. Ignored by a Repeat.
+  final String? templateId;
+
+  /// The picked exercises, in order (ignored by a Repeat or a template).
   final List<String> exercises;
 
   @override
@@ -38,11 +44,18 @@ final class NewLog extends LogLaunch {
       other.visitId == visitId &&
       other.date == date &&
       other.repeatOf == repeatOf &&
+      other.templateId == templateId &&
       other.exercises.join(',') == exercises.join(',');
 
   @override
-  int get hashCode =>
-      Object.hash(NewLog, visitId, date, repeatOf, Object.hashAll(exercises));
+  int get hashCode => Object.hash(
+    NewLog,
+    visitId,
+    date,
+    repeatOf,
+    templateId,
+    Object.hashAll(exercises),
+  );
 
   @override
   String toString() => 'NewLog($visitId)';
@@ -264,17 +277,40 @@ final class VisitUnchanged extends VisitResult {
   const new() : super._();
 }
 
+/// "Update the Push template with these changes?" (WO-022, A37 D21): the
+/// session's template and what it would become. Nothing is written until
+/// the user taps Update.
+@immutable
+final class TemplateUpdateOffer {
+  /// An offer to give [template] the content [draft].
+  const new({required this.template, required this.draft});
+
+  /// The live template the session was started from.
+  final Stored<WorkoutTemplateDraft> template;
+
+  /// The template with the session's lines (same name).
+  final WorkoutTemplateDraft draft;
+}
+
 /// The visit saved a new session ([created]) or updated one. [undoId] is
-/// its one Undo, or `null` after a conflict dropped it (PA3).
+/// its one Undo, or `null` after a conflict dropped it (PA3) or while an
+/// [offer] is pending: the screen asks first, then records the Undo
+/// (`WorkoutLogController.recordVisitUndo`), so the question never uses up
+/// the undo window.
 final class VisitSaved extends VisitResult {
   /// Saved; undo with [undoId].
-  const new({required this.created, required this.undoId}) : super._();
+  const new({required this.created, required this.undoId, this.offer})
+    : super._();
 
   /// Whether the session is new.
   final bool created;
 
   /// The undo entry, or `null`.
   final String? undoId;
+
+  /// The template-update offer (WO-022), or `null` when the session has no
+  /// template or matches it.
+  final TemplateUpdateOffer? offer;
 }
 
 /// The visit ended with no checked set, so the session was deleted (D8);
