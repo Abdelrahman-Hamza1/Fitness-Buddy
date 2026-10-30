@@ -319,6 +319,11 @@ public sealed class ChatProposalPayloadTests
                 if (!isString || field.Value.TryGetProperty("enum", out _) || field.Value.TryGetProperty("format", out _)) { continue; }
                 // personalFood.createdFrom is an ASCII-letters code (A09 §3.0), so no pair control can pass.
                 if (entity.Name == "personalFood" && field.Name == "createdFrom") { continue; }
+                // B21 D13: the workout code and list fields have row-local wire rules (W1 muscle codes, W2
+                // aliases as strings, W4 exercise IDs) that the generic controls break; the workout corpus
+                // covers lone surrogates in them instead.
+                if (entity.Name == "customExercise" && field.Name is "secondaryMusclesJson" or "aliasesJson" ||
+                    field.Name == "exerciseId" && entity.Name is "sessionExercise" or "workoutTemplateItem") { continue; }
                 if (field.Name.EndsWith("Json", StringComparison.Ordinal))
                 {
                     if (entity.Name == "personalFood") { continue; }

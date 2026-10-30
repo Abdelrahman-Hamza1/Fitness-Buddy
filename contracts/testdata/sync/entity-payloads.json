@@ -236,5 +236,70 @@
     "value": 92.5,
     "inputValue": 92.5,
     "inputUnit": "cm"
+  },
+  "customExercise": {
+    "createdAtMs": 0,
+    "origin": "synthetic",
+    "editedByUser": false,
+    "name": "Incline dumbbell press",
+    "aliasesJson": "[\"incline db press\"]",
+    "exerciseType": "weight_reps",
+    "equipment": "dumbbell",
+    "primaryMuscle": "chest",
+    "secondaryMusclesJson": "[\"shoulders\",\"triceps\"]"
+  },
+  "workoutSession": {
+    "createdAtMs": 0,
+    "origin": "synthetic",
+    "editedByUser": false,
+    "localDate": "1970-01-01",
+    "name": "Push",
+    "startMinute": 1080,
+    "durationMinutes": 55,
+    "templateId": "0199e3c2-5b1a-7c3d-8e4f-0123456789c1"
+  },
+  "sessionExercise": {
+    "createdAtMs": 0,
+    "origin": "synthetic",
+    "editedByUser": false,
+    "sessionId": "0199e3c2-5b1a-7c3d-8e4f-0123456789c2",
+    "exerciseId": "ex:bench_press",
+    "position": 0
+  },
+  "workoutSet": {
+    "createdAtMs": 0,
+    "origin": "synthetic",
+    "editedByUser": false,
+    "sessionExerciseId": "0199e3c2-5b1a-7c3d-8e4f-0123456789c3",
+    "position": 0,
+    "reps": 8,
+    "kg": 79.83225712,
+    "inputValue": 176,
+    "inputUnit": "lb",
+    "durationSeconds": null,
+    "distanceMeters": null
+  },
+  "workoutTemplate": {
+    "createdAtMs": 0,
+    "origin": "synthetic",
+    "editedByUser": false,
+    "name": "Push"
+  },
+  "workoutTemplateItem": {
+    "createdAtMs": 0,
+    "origin": "synthetic",
+    "editedByUser": false,
+    "templateId": "0199e3c2-5b1a-7c3d-8e4f-0123456789c1",
+    "exerciseId": "ex:bench_press",
+    "position": 0,
+    "targetSets": 3,
+    "targetReps": 8
+  },
+  "weeklyPlanDay": {
+    "createdAtMs": 0,
+    "origin": "synthetic",
+    "editedByUser": false,
+    "weekday": 6,
+    "templateId": "0199e3c2-5b1a-7c3d-8e4f-0123456789c1"
   }
 }

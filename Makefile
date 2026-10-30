@@ -566,3 +566,7 @@ gen-body-targets-vectors: ## Regenerate the shared synthetic body & targets vali
 .PHONY: gen-measurement-vectors
 gen-measurement-vectors: ## Regenerate the shared synthetic measurement validation corpus (B20)
 	cd '$(REPO_ROOT)/packages/fb_domain' && '$(DART)' run tool/generate_measurement_vectors.dart
+
+.PHONY: gen-workout-vectors
+gen-workout-vectors: ## Regenerate the shared synthetic workout validation corpus (B21)
+	cd '$(REPO_ROOT)/packages/fb_domain' && '$(DART)' run tool/generate_workout_vectors.dart

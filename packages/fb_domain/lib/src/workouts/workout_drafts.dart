@@ -1,11 +1,11 @@
 import 'package:fb_domain/src/diary/diary_entry.dart';
-import 'package:fb_domain/src/ids/uuid_v7.dart';
 import 'package:fb_domain/src/time/local_date.dart';
 import 'package:fb_domain/src/time/local_time.dart';
 import 'package:fb_domain/src/units/units.dart';
 import 'package:fb_domain/src/workouts/exercise_type.dart';
 import 'package:fb_domain/src/workouts/muscle.dart';
 import 'package:fb_domain/src/workouts/workout_set.dart';
+import 'package:fb_domain/src/workouts/workout_wire_rules.dart';
 
 /// Limits of workout drafts (A36), for local writes only.
 abstract final class WorkoutLimits {
@@ -22,12 +22,11 @@ abstract final class WorkoutLimits {
   static const int durationMinutesMax = 24 * 60;
 }
 
-final RegExp _catalogExerciseId = RegExp(r'^ex:[a-z0-9_]{1,60}$');
-
 /// Checks [id] is an exercise ID: a built-in catalog ID (`ex:…`) or a custom
-/// exercise's UUID. Returns it; throws an `ArgumentError` otherwise.
+/// exercise's UUID (wire rule W4, [WorkoutWireRules.isExerciseRef]). Returns
+/// it; throws an `ArgumentError` otherwise.
 String checkExerciseId(String id, String name) {
-  if (_catalogExerciseId.hasMatch(id) || isUuid(id)) return id;
+  if (WorkoutWireRules.isExerciseRef(id)) return id;
   throw ArgumentError.value(id, name, 'must be a catalog ID or a UUID');
 }
 

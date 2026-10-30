@@ -239,7 +239,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [B18](B18-chat-proposal-sync.md) | chatMessage & proposal sync entities (server) | B05, **A21** (WP4 codec shape and size budget) | M | new (A21 plan review) |  | ✅ |
 | [B19](B19-body-targets-sync.md) | Body & targets sync entities (server) | B05, B18, **A13a** (contract), **A14** | M | new (A13 plan review) |  | ✅ |
 | [B20](B20-measurement-sync.md) | Measurement sync entities (server) | B05, B19, **A15b** (contract) | M | new (A15b plan) |  | ✅ |
-| [B21](B21-workout-sync.md) | Workout sync entities (server; backlog #189) | B05, B20, **A36** | M | new (A36 D6) |  | ⬜ wave 2 (TD-105) |
+| [B21](B21-workout-sync.md) | Workout sync entities (server; backlog #189) | B05, B20, **A36**, **A37a** | M–L | new (A36 D6) |  | ✅ closed, awaiting merge (Codex APPROVE, 0 findings) |
 
 ```mermaid
 flowchart LR

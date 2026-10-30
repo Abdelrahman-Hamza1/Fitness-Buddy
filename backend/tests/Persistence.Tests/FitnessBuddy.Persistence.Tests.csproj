@@ -9,12 +9,14 @@
     <Compile Include="../UserData.Tests/ChatProposalCases.cs" Link="ChatProposalCases.cs" />
     <Compile Include="../UserData.Tests/BodyTargetsCases.cs" Link="BodyTargetsCases.cs" />
     <Compile Include="../UserData.Tests/MeasurementCases.cs" Link="MeasurementCases.cs" />
+    <Compile Include="../UserData.Tests/WorkoutCases.cs" Link="WorkoutCases.cs" />
     <Compile Include="../UserData.Tests/SyncTestIds.cs" Link="SyncTestIds.cs" />
     <None Include="../../../contracts/testdata/sync/personal-food-validation-vectors.json" Link="personal-food-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../../contracts/testdata/sync/chat-proposal-validation-vectors.json" Link="chat-proposal-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../../contracts/testdata/sync/body-targets-validation-vectors.json" Link="body-targets-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../../contracts/testdata/sync/measurement-validation-vectors.json" Link="measurement-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../../contracts/testdata/sync/measurement-payload-variants.json" Link="measurement-payload-variants.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../../contracts/testdata/sync/workout-validation-vectors.json" Link="workout-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../../contracts/openapi/sync-entities.json" Link="sync-entities.json" CopyToOutputDirectory="PreserveNewest" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="Testcontainers.PostgreSql" />

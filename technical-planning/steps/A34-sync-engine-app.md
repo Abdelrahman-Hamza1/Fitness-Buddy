@@ -72,6 +72,14 @@ _Written in Phase B._
 - Read whole `num` as `int` for `measuredAtUtc`, `tzOffsetMin` and `createdAtMs` (the server admits `180.0`).
 - A pulled measurement whose type is missing or tombstoned stays stored and hidden (A15b D25); the server never cascades a type tombstone.
 
+**B21 handoff (2026-10-30, B21 WP4 §9):** upload the seven workout entities v1 (`customExercise`, `workoutSession`, `sessionExercise`, `workoutSet`, `workoutTemplate`, `workoutTemplateItem`, `weeklyPlanDay`) only after B21 is deployed (server-first, TD-080).
+- Each payload is the table's content columns as they are; the muscle list is `secondaryMusclesJson` (the column's JSON string), not an array member.
+- Plan days keep their natural IDs (`planDayId`, W5); a plan-day row with another ID is rejected permanently.
+- A revived session exercise or set (A37a D25) is pushed as the row's current content at its current HLC; never re-stamp a revival older than the tombstone (TD-049).
+- Scrubbed tombstones (#136) must keep W1–W5: a scrubbed `workoutSet` may zero its numbers but keeps its null pattern; a scrubbed `customExercise` may send `name` `""` with empty lists and no primary muscle.
+- The corpus's `serverRejectsAppTolerates` rows (`contracts/testdata/sync/workout-validation-vectors.json`: legacy or unknown muscle codes, non-string aliases, set shapes the app reads tolerantly, a plan day under another weekday's ID) are rejected permanently: never retry them endlessly (#111). `serverAcceptsAppSkips` lists the rows the app hides on read (orphans, names past 80 code points, app write bounds).
+- Read whole `num` as `int` for integer fields (`weekday`, `reps`, `position`, `createdAtMs`; the server admits `3.0`).
+
 **A23 handoff (2026-10-30, A23 plan review, TD-102):**
 - Remote apply preserves the local-only `chat_messages` columns `request_json` and `answer_json`: never overwrite or null them from a pulled row; a pulled tombstone (and clear history) nulls them.
 - After a remote apply touches `chatMessage`/`proposal` rows, re-run the Buddy thread's `ensureRestored` for those sessions (A23 D12).

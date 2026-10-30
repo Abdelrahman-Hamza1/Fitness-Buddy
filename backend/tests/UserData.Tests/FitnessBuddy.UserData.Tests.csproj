@@ -12,6 +12,7 @@
     <Content Include="../../../contracts/testdata/sync/body-targets-validation-vectors.json" Link="body-targets-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../contracts/testdata/sync/measurement-validation-vectors.json" Link="measurement-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../contracts/testdata/sync/measurement-payload-variants.json" Link="measurement-payload-variants.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../contracts/testdata/sync/workout-validation-vectors.json" Link="workout-validation-vectors.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../contracts/README.md" Link="contracts-README.md" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../../technical-planning/steps/A09-personal-foods-quick-add.md" Link="A09-personal-foods-quick-add.md" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
