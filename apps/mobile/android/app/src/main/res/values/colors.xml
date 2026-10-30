@@ -4,7 +4,8 @@
          and staging source sets override it, so the flavors are told apart
          on the home screen. -->
     <color name="ic_launcher_background">#FF0B6E5F</color>
-    <!-- The launch window and splash background in day and night (A44 D7):
-         the dark theme's surface, so a fresh install never flashes light. -->
-    <color name="fb_window_background">#FF0C1412</color>
+    <!-- The launch window and splash background in day and night (TD-107,
+         A45 D7): the light theme's surface, since the app opens in light by
+         default (D-083). A stored Dark switches once after the first frame. -->
+    <color name="fb_window_background">#FFFAF9F4</color>
 </resources>

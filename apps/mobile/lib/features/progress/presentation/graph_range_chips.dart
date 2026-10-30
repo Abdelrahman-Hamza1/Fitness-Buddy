@@ -7,6 +7,10 @@ import 'package:intl/intl.dart';
 /// The range chips of every graph (WB-020, A15a D5; shared by the weight
 /// and measurement graphs, A15b D24): 1M · 3M · 6M · 1Y · All, plus a
 /// "Today" chip once the window was panned.
+///
+/// The row never changes size (A45 D4): the chips are steady and the Today
+/// chip's slot is always laid out, hidden (no taps, no semantics) until the
+/// window is panned, so it never wraps the row and pushes the graph down.
 class GraphRangeChips extends StatelessWidget {
   /// Chips with [range] selected; [onRange] picks another. With [panned]
   /// the Today chip shows and calls [onToday].
@@ -44,12 +48,17 @@ class GraphRangeChips extends StatelessWidget {
             dropdown: false,
             onTap: () => onRange(r),
           ),
-        if (panned)
-          FbChoiceChip(
+        Visibility(
+          visible: panned,
+          maintainSize: true,
+          maintainAnimation: true,
+          maintainState: true,
+          child: FbChoiceChip(
             label: l10n.weightGraphToday,
             dropdown: false,
             onTap: onToday,
           ),
+        ),
       ],
     );
   }

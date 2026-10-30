@@ -46,6 +46,18 @@ void main() {
       expect(pairs.where((p) => p.kind == FbContrastKind.ui), isNotEmpty);
     });
 
+    test('UX-071 the selected chip border contrasts at least 3:1 with the '
+        'chip fill and the surface ($name)', () {
+      final border = [
+        for (final pair in pairs)
+          if (pair.name.startsWith('selected chip border')) pair,
+      ];
+      expect(border, hasLength(2));
+      for (final pair in border) {
+        expect(pair.ratio, greaterThanOrEqualTo(3), reason: '$pair');
+      }
+    });
+
     test('UX-071 mint is never a text role: no contrast pair uses mint as '
         'text ($name)', () {
       final mint = FbPalette.of(brightness).mint;

@@ -183,7 +183,7 @@ void main() {
       SheetRig(catalogChoice(riceCooked, siblings: [riceDry], yields: yields)),
     );
     // 1 cup of cooked rice is 158 g.
-    await tester.tap(find.widgetWithText(ChoiceChip, 'g'));
+    await tester.tap(find.widgetWithText(FbChoiceChip, 'g'));
     await tester.tap(find.byType(FbAmountDisplay));
     await tester.pump();
     await tapKeys(tester, '100');
@@ -249,7 +249,7 @@ void main() {
   ) async {
     final rig = SheetRig(catalogChoice(pita));
     await openSheet(tester, rig);
-    await tester.tap(find.widgetWithText(ChoiceChip, 'oz'));
+    await tester.tap(find.widgetWithText(FbChoiceChip, 'oz'));
     await tester.tap(find.widgetWithText(FilledButton, 'Add'));
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 100)),

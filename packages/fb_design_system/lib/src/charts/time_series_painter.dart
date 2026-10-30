@@ -154,7 +154,8 @@ final class ChartLabelCache {
 }
 
 /// Draws an `FbTimeSeriesChart` (TD-012: `CustomPainter`, no library).
-/// Repaints on [offset] (the transient pan, in ms) without a rebuild.
+/// Repaints on [range] (the eased window, A45 D5) and [offset] (the transient
+/// pan, in ms) without a rebuild.
 final class TimeSeriesPainter extends CustomPainter {
   /// Creates the painter.
   new({
@@ -170,7 +171,7 @@ final class TimeSeriesPainter extends CustomPainter {
     required this.direction,
     required this.formatValue,
     required this.formatDate,
-  }) : super(repaint: offset);
+  }) : super(repaint: Listenable.merge([range, offset]));
 
   /// What to draw.
   final List<FbSeries> series;
@@ -187,8 +188,9 @@ final class TimeSeriesPainter extends CustomPainter {
   /// The selected point and its tone, always drawn (A15 PA8).
   final (FbPoint, FbSeriesTone)? selected;
 
-  /// The window before the transient [offset].
-  final FbChartRange range;
+  /// The window before the transient [offset]; it moves while the chart
+  /// eases from one range to the next.
+  final ValueListenable<FbChartRange> range;
 
   /// The transient pan offset in ms.
   final ValueListenable<double> offset;
@@ -215,6 +217,11 @@ final class TimeSeriesPainter extends CustomPainter {
   /// overlap, A15 PA8).
   final List<Rect> timeLabelRects = [];
 
+  /// The window on screen: [range] moved by the transient [offset].
+  @visibleForTesting
+  FbChartRange get shownWindow =>
+      range.value.shift(Duration(milliseconds: offset.value.round()));
+
   /// Line width of the main series.
   static const double lineWidth = 2.5;
 
@@ -223,8 +230,9 @@ final class TimeSeriesPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final startMs = range.start.millisecondsSinceEpoch + offset.value;
-    final endMs = range.end.millisecondsSinceEpoch + offset.value;
+    final window = range.value;
+    final startMs = window.start.millisecondsSinceEpoch + offset.value;
+    final endMs = window.end.millisecondsSinceEpoch + offset.value;
 
     // The value scale from what's visible (A15 D6).
     final values = <double>[];

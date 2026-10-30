@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Android 12+ splash (A44 D12): the reversed mark on the flavor's
-         plate colour, on the dark window background. The window background
-         is a solid colour, not the pre-12 layer-list, so no second mark
-         shows behind the system splash. -->
-    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+         plate colour, on the light window background (TD-107, A45 D7). The
+         window background is a solid colour, not the pre-12 layer-list, so
+         no second mark shows behind the system splash. -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowSplashScreenBackground">@color/fb_window_background</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>
         <item name="android:windowBackground">@color/fb_window_background</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@color/fb_window_background</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

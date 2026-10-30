@@ -1,4 +1,5 @@
 import 'package:fb_design_system/l10n/gen/fb_localizations.dart';
+import 'package:fb_design_system/src/components/choice_chip.dart';
 import 'package:fb_design_system/src/tokens/icons.dart';
 import 'package:fb_design_system/src/tokens/spacing.dart';
 import 'package:fb_design_system/src/tokens/typography.dart';
@@ -261,7 +262,9 @@ class FbUnitOption {
   final String label;
 }
 
-/// A row of units, one selected (AI-040).
+/// A row of units, one selected (AI-040). Each unit is a steady
+/// [FbChoiceChip], so moving the selection never changes the row's width
+/// (A45 D2).
 class FbUnitPicker extends StatelessWidget {
   /// Creates the picker. [selected] is an [FbUnitOption.id].
   const new({
@@ -286,17 +289,11 @@ class FbUnitPicker extends StatelessWidget {
     runSpacing: FbSpace.s2,
     children: [
       for (final unit in units)
-        Semantics(
+        FbChoiceChip(
           label: unit.label,
           selected: unit.id == selected,
-          button: true,
-          excludeSemantics: true,
+          dropdown: false,
           onTap: () => onSelected(unit.id),
-          child: ChoiceChip(
-            label: Text(unit.label),
-            selected: unit.id == selected,
-            onSelected: (_) => onSelected(unit.id),
-          ),
         ),
     ],
   );

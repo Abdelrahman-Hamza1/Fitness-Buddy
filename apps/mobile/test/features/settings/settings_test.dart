@@ -86,10 +86,11 @@ final class GateHandler extends ChangeOpHandler<SettingsOp> {
 }
 
 void main() {
-  test('LC-010 LC-021 FD-080 UX-040 setting keys: names pinned '
+  test('LC-010 LC-021 FD-080 UX-040 D-083 setting keys: names pinned '
       '(units.system, calendar.weekStart, food.halal, '
       'appearance.theme, location.cityId) and defaults metric, '
-      'saturday, true, dark (D-082), unset', () async {
+      'saturday, true, light, unset; an unset theme reads Light, stored '
+      'Dark and System keep their meaning', () async {
     expect(
       [
         AppSettings.unitSystem.name,
@@ -110,7 +111,7 @@ void main() {
     expect(await r.store.read(AppSettings.unitSystem), UnitSystem.metric);
     expect(await r.store.read(AppSettings.weekStart), DayOfWeek.saturday);
     expect(await r.store.read(AppSettings.halal), isTrue);
-    expect(await r.store.read(AppSettings.theme), ThemePreference.dark);
+    expect(await r.store.read(AppSettings.theme), ThemePreference.light);
     expect(await r.store.read(AppSettings.cityId), isNull);
     final c = r.container();
     final units = c.listen(unitSystemProvider, (_, _) {});
@@ -123,9 +124,13 @@ void main() {
     addTearDown(city.close);
     expect(await c.read(unitSystemProvider.future), UnitSystem.metric);
     expect(await c.read(halalProvider.future), isTrue);
-    expect(await c.read(themePreferenceProvider.future), ThemePreference.dark);
+    expect(await c.read(themePreferenceProvider.future), ThemePreference.light);
     expect(await c.read(cityIdProvider.future), isNull);
     expect(c.read(settingsActionsProvider), isA<SettingsActions>());
+    for (final stored in [ThemePreference.dark, ThemePreference.system]) {
+      expect(await r.actions.setTheme(stored), isA<SettingsDone>());
+      expect(await r.store.read(AppSettings.theme), stored);
+    }
   });
   test(
     'optionalString codec: round-trip, null, a malformed value reads as unset',
@@ -177,7 +182,7 @@ void main() {
     );
     expect(await r.actions.setHalal(true), isA<SettingsUnchanged>());
     expect(
-      await r.actions.setTheme(ThemePreference.dark),
+      await r.actions.setTheme(ThemePreference.light),
       isA<SettingsUnchanged>(),
     );
     expect(await r.actions.clearCity(), isA<SettingsUnchanged>());
@@ -372,8 +377,8 @@ void main() {
     for (final action in [
       () => r.actions.setWeekStart(DayOfWeek.monday),
       () => r.actions.setHalal(false),
-      // Dark is the default (D-082): Light is a change.
-      () => r.actions.setTheme(ThemePreference.light),
+      // Light is the default (D-083): Dark is a change.
+      () => r.actions.setTheme(ThemePreference.dark),
       () => r.actions.setCity('city:282615'),
     ]) {
       final outcome = await action() as SettingsDone;

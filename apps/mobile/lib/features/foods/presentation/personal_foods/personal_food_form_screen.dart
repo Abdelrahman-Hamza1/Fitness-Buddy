@@ -308,12 +308,9 @@ class _PersonalFoodFormScreenState
     }
   }
 
-  Future<void> _confirmLeave() async {
-    final discard = await showDiscardChangesSheet(context);
-    if (!discard || !mounted) return;
-    setState(() => _leaving = true);
-    ref.read(appNavigatorProvider).pop();
-  }
+  /// Asks whether to discard the unsaved edits; the guard (back) or the
+  /// tab bar (re-tap, A45 D12) closes the form on true.
+  Future<bool> _confirmDiscard() => showDiscardChangesSheet(context);
 
   void _reload() {
     _controller.reload();
@@ -377,11 +374,9 @@ class _PersonalFoodFormScreenState
     final editing = widget.id != null;
     final food = form?.original;
     final removed = form?.staleness == PersonalFoodStaleness.removed;
-    return PopScope(
-      canPop: _leaving || !dirty,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) unawaited(_confirmLeave());
-      },
+    return UnsavedEditsGuard(
+      dirty: dirty && !_leaving,
+      confirmDiscard: _confirmDiscard,
       child: Scaffold(
         appBar: AppBar(
           title: Text(

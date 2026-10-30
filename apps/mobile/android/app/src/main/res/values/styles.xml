@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Theme of the Android window while the process starts (API 26-30; 31+
-         is in values-v31). Dark in day and night (A44 D7): the app opens in
-         its dark theme by default, so a light window would flash. -->
-    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+         is in values-v31). Light in day and night (TD-107, A45 D7): the app
+         opens in its light theme by default, so a dark window would flash.
+         The status bar takes the window colour with dark icons. -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <!-- The splash: removed when the Flutter engine draws its first frame. -->
         <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@color/fb_window_background</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
     <!-- Theme of the window once the process has started: the colour behind
          the Flutter UI while it initializes and while it runs. -->
-    <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">@color/fb_window_background</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@color/fb_window_background</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

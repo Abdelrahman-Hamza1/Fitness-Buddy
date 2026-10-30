@@ -798,6 +798,19 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String weightRowSummary(String weight, String trend) {
+    return '$weight · Trend $trend';
+  }
+
+  @override
+  String weightRowSemantics(String weight, String trend) {
+    return 'Weight $weight, trend $trend. Opens the weight graph';
+  }
+
+  @override
+  String get weightRowAdd => 'Log a weigh-in';
+
+  @override
   String weightCardTrend(String weight) {
     return 'Trend $weight';
   }

@@ -52,8 +52,9 @@ class FbAssumptionChip extends StatelessWidget {
 }
 
 /// One answer to a clarifying question (AI-034). [selected] shows the chosen
-/// one; [isDefault] marks the answer assumed if the user doesn't pick, with
-/// a text label (not colour alone).
+/// one with the theme's tint and 2 dp border (no check mark, so the chip
+/// keeps its width, A45 D2); [isDefault] marks the answer assumed if the
+/// user doesn't pick, with a text label (not colour alone).
 class FbAnswerChip extends StatelessWidget {
   /// Creates the chip.
   const new({
@@ -89,7 +90,6 @@ class FbAnswerChip extends StatelessWidget {
       child: ChoiceChip(
         selected: selected,
         onSelected: (_) => onTap(),
-        showCheckmark: selected,
         label: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

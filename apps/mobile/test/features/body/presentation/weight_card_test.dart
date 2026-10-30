@@ -66,20 +66,21 @@ void main() {
       'the latest raw weigh-in smaller', (tester) async {
     final rig = SheetRig();
     // Weekly, each moving the trend halfway (D1): 98 → 97.75 → 97.375 →
-    // 96.9375 → 96.46875; rate (96.47 − 98) / 4 = −0.38 kg/week.
+    // 96.9375 → 96.46875; rate (96.47 − 98) / 4 = −0.38 kg/week. The last
+    // one yesterday: a day with a weigh-in shows the slim row (A45 D9).
     await rig.seed(
       tester,
-      weekly([28, 21, 14, 7, 0], [98, 97.5, 97, 96.5, 96]),
+      weekly([29, 22, 15, 8, 1], [98, 97.5, 97, 96.5, 96]),
     );
     await pumpCard(tester, rig);
     final texts = cardTexts(tester);
     // The trend is the title line, the rate its own line (m4).
     expect(texts.take(3), ['Weight', 'Trend 96.5 kg', '${minus}0.4 kg/week']);
-    expect(texts, contains('Last weigh-in 96.0 kg · Today'));
+    expect(texts, contains('Last weigh-in 96.0 kg · Yesterday'));
     final main = tester.widget<Text>(find.text('Trend 96.5 kg'));
     final rate = tester.widget<Text>(find.text('${minus}0.4 kg/week'));
     final last = tester.widget<Text>(
-      find.text('Last weigh-in 96.0 kg · Today'),
+      find.text('Last weigh-in 96.0 kg · Yesterday'),
     );
     expect(rate.style!.fontSize, lessThan(main.style!.fontSize!));
     expect(last.style!.fontSize, lessThan(rate.style!.fontSize!));
@@ -92,7 +93,7 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.bySemanticsLabel('Last weigh-in 96.0 kilograms, Today. Edit'),
+      find.bySemanticsLabel('Last weigh-in 96.0 kilograms, Yesterday. Edit'),
       findsOneWidget,
     );
     await unmount(tester, rig);
@@ -144,7 +145,7 @@ void main() {
     final untouched = MemoryTipStore();
     await frequent.seed(tester, [
       for (var i = 0; i < 8; i++)
-        weighInDraft(97, date: day17.plusDays(-i * 3)),
+        weighInDraft(97, date: day17.plusDays(-i * 3 - 1)),
     ]);
     await pumpCard(tester, frequent, tips: untouched);
     expect(find.textContaining('in 4 weeks'), findsNothing);
@@ -179,14 +180,15 @@ void main() {
 
   testWidgets('the last weigh-in row opens it for editing', (tester) async {
     final rig = SheetRig();
+    final yesterday = day17.plusDays(-1);
     await rig.seed(tester, [
-      weighInDraft(97.2, hour: 6),
-      weighInDraft(97.8, hour: 9),
+      weighInDraft(97.2, date: yesterday, hour: 6),
+      weighInDraft(97.8, date: yesterday, hour: 9),
     ]);
     await pumpCard(tester, rig);
     // The latest of the day, not the trend's choice (the earliest).
     expect(cardTexts(tester), contains('Trend 97.2 kg'));
-    await tester.tap(find.text('Last weigh-in 97.8 kg · Today'));
+    await tester.tap(find.text('Last weigh-in 97.8 kg · Yesterday'));
     await settle(tester);
     expect(find.text('Edit weigh-in'), findsOneWidget);
     expect(shownAmount(tester), '97.8');

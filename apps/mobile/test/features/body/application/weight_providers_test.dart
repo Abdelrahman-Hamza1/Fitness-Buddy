@@ -1,5 +1,6 @@
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
+import 'package:fb_mobile/features/body/application/weight_card_state.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show ProviderListenable;
@@ -104,5 +105,66 @@ void main() {
       (v) => v.points.length == 1,
     );
     expect(after.latest!.trendKg, 98);
+  });
+
+  test('HM-005 D-084 weightCard: weighedInOnDay only for a readable weigh-in '
+      'on that day', () async {
+    final h = WeighInHarness();
+    await h.seed([
+      weighInDraft(98, date: day17.plusDays(-7)),
+      weighInDraft(97.5, date: day17.plusDays(-1)),
+    ]);
+    final container = ProviderContainer.test(
+      overrides: [appDatabaseProvider.overrideWithValue(h.db)],
+    );
+    final today = weightCardProvider(day17, isToday: true);
+    final past = weightCardProvider(day17.plusDays(-3), isToday: false);
+    final yesterday = weightCardProvider(day17.plusDays(-1), isToday: false);
+    for (final provider in [today, past, yesterday]) {
+      final sub = container.listen(provider, (_, _) {});
+      addTearDown(sub.close);
+    }
+
+    // Yesterday's weigh-in: not on today's page.
+    expect(
+      (await settled<WeightCardState>(
+        container,
+        today,
+        (s) => !s.isEmpty,
+      )).weighedInOnDay,
+      isFalse,
+    );
+    // A past page whose latest weigh-in is days before it, and the page of
+    // the weigh-in itself.
+    expect(
+      (await settled<WeightCardState>(
+        container,
+        past,
+        (s) => !s.isEmpty,
+      )).weighedInOnDay,
+      isFalse,
+    );
+    expect(
+      (await settled<WeightCardState>(
+        container,
+        yesterday,
+        (s) => !s.isEmpty,
+      )).weighedInOnDay,
+      isTrue,
+    );
+
+    // One today: today's page turns slim; a later weigh-in leaves the
+    // past pages as they were.
+    await h.apply([CreateWeighIn(fixtureId(9), weighInDraft(97))]);
+    expect(
+      (await settled<WeightCardState>(
+        container,
+        today,
+        (s) => s.weighedInOnDay,
+      )).showTip,
+      isFalse,
+    );
+    expect(container.read(past).requireValue.weighedInOnDay, isFalse);
+    expect(container.read(yesterday).requireValue.weighedInOnDay, isTrue);
   });
 }

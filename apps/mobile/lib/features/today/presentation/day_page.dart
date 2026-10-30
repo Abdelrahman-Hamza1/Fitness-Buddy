@@ -1,6 +1,7 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
@@ -38,66 +39,73 @@ class DayPage extends ConsumerWidget {
     final keys = [for (final row in rows) _keyOf(row)];
     final indexOfKey = {for (final (i, key) in keys.indexed) key: i};
     final slots = data.raw.slots;
-    return CustomScrollView(
-      // Several pages exist while swiping: none takes the primary controller.
-      primary: false,
-      slivers: [
-        SliverList.builder(
-          itemCount: rows.length,
-          findChildIndexCallback: (key) => indexOfKey[key],
-          itemBuilder: (context, i) {
-            final key = keys[i];
-            return switch (rows[i]) {
-              NumbersRow(:final totals) => _DayHeader(
-                key: key,
-                date: date,
-                isToday: isToday,
-                totals: totals,
-              ),
-              EmptyHintRow(:final isToday) => EmptyDayHint(
-                key: key,
-                isToday: isToday,
-              ),
-              SlotHeaderRow(:final section, :final expanded) => SlotHeaderTile(
-                key: key,
-                section: section,
-                date: date,
-                expanded: expanded,
-              ),
-              SlotMacrosRow(:final section) => SlotMacrosLine(
-                key: key,
-                section: section,
-              ),
-              GroupHeaderRow(:final item, :final expanded) => DishGroupTile(
-                key: key,
-                item: item,
-                expanded: expanded,
-              ),
-              EntryRow(:final entry) => DiaryEntryTile(
-                key: key,
-                entry: entry,
-                slots: slots,
-                expanded: _isOpen(choices, entry),
-              ),
-              GroupMemberRow(:final entry) => DiaryEntryTile(
-                key: key,
-                entry: entry,
-                slots: slots,
-                expanded: _isOpen(choices, entry),
-                indented: true,
-              ),
-              EntryDetailsRow(:final entry) => EntryDetailsPanel(
-                key: key,
-                entry: entry,
-                slots: slots,
-              ),
-            };
-          },
-        ),
-        const SliverPadding(
-          padding: EdgeInsetsDirectional.only(bottom: FbSpace.s5),
-        ),
-      ],
+    // A re-tap of the Today tab scrolls the page to the top (A45 D13). Several
+    // pages exist while swiping: none takes the primary controller, so each
+    // owns one (all mounted pages scroll, which is harmless).
+    return ScrollToTopOnTabReselect.builder(
+      tab: AppTab.today,
+      builder: (context, controller) => CustomScrollView(
+        controller: controller,
+        primary: false,
+        slivers: [
+          SliverList.builder(
+            itemCount: rows.length,
+            findChildIndexCallback: (key) => indexOfKey[key],
+            itemBuilder: (context, i) {
+              final key = keys[i];
+              return switch (rows[i]) {
+                NumbersRow(:final totals) => _DayHeader(
+                  key: key,
+                  date: date,
+                  isToday: isToday,
+                  totals: totals,
+                ),
+                EmptyHintRow(:final isToday) => EmptyDayHint(
+                  key: key,
+                  isToday: isToday,
+                ),
+                SlotHeaderRow(:final section, :final expanded) =>
+                  SlotHeaderTile(
+                    key: key,
+                    section: section,
+                    date: date,
+                    expanded: expanded,
+                  ),
+                SlotMacrosRow(:final section) => SlotMacrosLine(
+                  key: key,
+                  section: section,
+                ),
+                GroupHeaderRow(:final item, :final expanded) => DishGroupTile(
+                  key: key,
+                  item: item,
+                  expanded: expanded,
+                ),
+                EntryRow(:final entry) => DiaryEntryTile(
+                  key: key,
+                  entry: entry,
+                  slots: slots,
+                  expanded: _isOpen(choices, entry),
+                ),
+                GroupMemberRow(:final entry) => DiaryEntryTile(
+                  key: key,
+                  entry: entry,
+                  slots: slots,
+                  expanded: _isOpen(choices, entry),
+                  indented: true,
+                ),
+                EntryDetailsRow(:final entry) => EntryDetailsPanel(
+                  key: key,
+                  entry: entry,
+                  slots: slots,
+                ),
+              };
+            },
+          ),
+          const SliverPadding(
+            padding: EdgeInsetsDirectional.only(bottom: FbSpace.s5),
+          ),
+        ],
+      ),
     );
   }
 }

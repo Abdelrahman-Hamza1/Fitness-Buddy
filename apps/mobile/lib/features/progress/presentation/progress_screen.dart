@@ -16,28 +16,33 @@ class ProgressScreen extends ConsumerWidget {
     final l10n = context.l10n;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.tabProgress)),
-      body: ListView(
-        children: [
-          FbListRow(
-            leading: const Icon(FbIcons.chart),
-            title: l10n.weightGraphTitle,
-            trailing: const Icon(FbIcons.next),
-            onTap: () =>
-                ref.read(appNavigatorProvider).push(const WeightGraphRoute()),
-          ),
-          FbListRow(
-            leading: const Icon(FbIcons.progress),
-            title: l10n.measurementsTitle,
-            trailing: const Icon(FbIcons.next),
-            onTap: () =>
-                ref.read(appNavigatorProvider).push(const MeasurementsRoute()),
-          ),
-          FbEmptyState(
-            icon: FbIcons.progress,
-            title: l10n.progressEmptyTitle,
-            message: l10n.progressPlaceholder,
-          ),
-        ],
+      // A re-tap of the tab scrolls this list to the top (A45 D13).
+      body: ScrollToTopOnTabReselect(
+        tab: AppTab.progress,
+        child: ListView(
+          children: [
+            FbListRow(
+              leading: const Icon(FbIcons.chart),
+              title: l10n.weightGraphTitle,
+              trailing: const Icon(FbIcons.next),
+              onTap: () =>
+                  ref.read(appNavigatorProvider).push(const WeightGraphRoute()),
+            ),
+            FbListRow(
+              leading: const Icon(FbIcons.progress),
+              title: l10n.measurementsTitle,
+              trailing: const Icon(FbIcons.next),
+              onTap: () => ref
+                  .read(appNavigatorProvider)
+                  .push(const MeasurementsRoute()),
+            ),
+            FbEmptyState(
+              icon: FbIcons.progress,
+              title: l10n.progressEmptyTitle,
+              message: l10n.progressPlaceholder,
+            ),
+          ],
+        ),
       ),
     );
   }

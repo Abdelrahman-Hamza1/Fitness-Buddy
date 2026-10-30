@@ -1180,6 +1180,34 @@
       }
     }
   },
+  "weightRowSummary": "{weight} · Trend {trend}",
+  "@weightRowSummary": {
+    "description": "Today, the slim weight row on a day with a weigh-in (HM-005, D-084): that day's latest weigh-in, then the trend: \"97.4 kg · Trend 97.6 kg\".",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      },
+      "trend": {
+        "type": "String"
+      }
+    }
+  },
+  "weightRowSemantics": "Weight {weight}, trend {trend}. Opens the weight graph",
+  "@weightRowSemantics": {
+    "description": "Today, the slim weight row, screen readers: the day's latest weigh-in and the trend, units in full, and what a tap does.",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      },
+      "trend": {
+        "type": "String"
+      }
+    }
+  },
+  "weightRowAdd": "Log a weigh-in",
+  "@weightRowAdd": {
+    "description": "Today, the slim weight row: tooltip and screen-reader label of the plus button that opens the weigh-in sheet."
+  },
   "weightCardTrend": "Trend {weight}",
   "@weightCardTrend": {
     "description": "Weight card: the trend weight, the main number (WB-011): \"Trend 97.6 kg\".",

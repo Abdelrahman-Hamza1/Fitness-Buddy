@@ -22,9 +22,17 @@ import 'package:material_ui/material_ui.dart';
 /// The first row logs a weigh-in on [date] (2 taps from Today: this row,
 /// then Save); the second edits the latest weigh-in. Neutral throughout: a
 /// change is a signed number, never a colour or a judgement.
+///
+/// **Slim row** (HM-005, D-084, A45 D9/D10): on a day with a weigh-in the
+/// card shrinks to one row, "{weight} · Trend {trend}", which opens the
+/// weight graph, with a ＋ ([slimAddKey]) that logs another weigh-in (still
+/// 2 taps). The change between the two eases its size.
 class WeightCard extends ConsumerWidget {
   /// The card of [date]; [isToday] adds the cadence note and suggestion.
   const new({required this.date, required this.isToday, super.key});
+
+  /// The ＋ of the slim row.
+  static const Key slimAddKey = ValueKey('weightCard.slimAdd');
 
   /// The page's day.
   final LocalDate date;
@@ -51,6 +59,9 @@ class WeightCard extends ConsumerWidget {
     } else {
       child = const FbSkeleton.card(height: 72);
     }
+    // Card ↔ slim row eases its size. Not with reduced motion: a zero-length
+    // AnimatedSize re-dirties itself during layout.
+    final motion = FbMotion.of(context);
     return Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(
         FbSpace.s4,
@@ -58,11 +69,19 @@ class WeightCard extends ConsumerWidget {
         FbSpace.s4,
         FbDensity.cardGap,
       ),
-      child: child,
+      child: motion == Duration.zero
+          ? child
+          : AnimatedSize(
+              duration: motion,
+              curve: FbMotion.curve,
+              alignment: AlignmentDirectional.topStart,
+              child: child,
+            ),
     );
   }
 
   Widget _content(BuildContext context, WidgetRef ref, WeightCardState state) {
+    if (state.weighedInOnDay) return _slim(context, ref, state);
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
     final muted = FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant);
@@ -223,6 +242,81 @@ class WeightCard extends ConsumerWidget {
       ),
     );
   }
+
+  /// The slim row of a day with a weigh-in (D10): the day's latest
+  /// weigh-in and the trend, opening the graph; ＋ logs another weigh-in.
+  Widget _slim(BuildContext context, WidgetRef ref, WeightCardState state) {
+    final l10n = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final unit = state.units.bodyMass;
+    final latestKg = state.latest!.kg;
+    final trendKg = state.asOf.trendKg!;
+    return FbCard(
+      padding: EdgeInsetsDirectional.zero,
+      child: Row(
+        children: [
+          Expanded(
+            child: Semantics(
+              button: true,
+              label: l10n.weightRowSemantics(
+                weightSpoken(l10n, latestKg, unit),
+                weightSpoken(l10n, trendKg, unit),
+              ),
+              excludeSemantics: true,
+              onTap: () => _openGraph(ref),
+              child: InkWell(
+                onTap: () => _openGraph(ref),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: FbSpace.s7),
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.symmetric(
+                      horizontal: FbSpace.s4,
+                      vertical: FbSpace.s3,
+                    ),
+                    child: Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: l10n.weightTitle,
+                            style: FbType.label.copyWith(
+                              color: scheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const WidgetSpan(child: SizedBox(width: FbSpace.s3)),
+                          TextSpan(
+                            text: l10n.weightRowSummary(
+                              weightText(l10n, latestKg, unit),
+                              weightText(l10n, trendKg, unit),
+                            ),
+                            style: FbType.numeric(FbType.body)
+                                .copyWith(color: scheme.onSurface),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsetsDirectional.only(end: FbSpace.s1),
+            child: FbIconButton(
+              key: slimAddKey,
+              icon: FbIcons.add,
+              tooltip: l10n.weightRowAdd,
+              onPressed: () => unawaited(
+                showWeighInSheet(context, date: isToday ? null : date),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openGraph(WidgetRef ref) =>
+      ref.read(appNavigatorProvider).push(const TodayWeightGraphRoute());
 
   /// Records that the suggestion showed today, after this frame (never
   /// inside a build, A14 D10). Idempotent: the same day writes nothing.

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fb_domain/fb_domain.dart' show LocalDate, VersionedId, isUuid;
+import 'package:fb_mobile/app/router/tab_tap.dart';
 import 'package:fb_mobile/app/shell/app_shell.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
 import 'package:fb_mobile/core/account/profile_generation.dart';
@@ -30,9 +31,12 @@ part 'app_router.g.dart';
 /// The app's router (S06 plan D2, A2): go_router behind the [AppNavigator]
 /// port. `package:go_router` is imported only in `lib/app/router/`.
 ///
-/// Four tabs in a `StatefulShellRoute` (each tab keeps its own navigation
-/// stack and state, UX-010), the detail screens nested in a tab (only the dev
-/// flavor's design preview so far) and the screens outside the tabs.
+/// Four tabs in a `StatefulShellRoute`, the detail screens nested in their
+/// tab and the screens outside the tabs. **Tab taps** (UX-010, A45 D11):
+/// another tab opens at its root screen, unless a screen in it holds
+/// unsaved edits, which it keeps; the current tab goes back to its root
+/// (asking first when a screen holds unsaved edits, [UnsavedEdits]), and at
+/// its root scrolls to the top ([AppTab], `ScrollToTopOnTabReselect`).
 ///
 /// The update gate (S06 plan D10, A1) is a redirect: while an update is
 /// required every location shows [UpdateRequiredRoute]; once it is lifted
@@ -42,12 +46,24 @@ final class AppRouter implements AppNavigator {
   /// update gate; the router re-checks its redirect when it changes.
   /// [designPreview] registers the [DesignPreviewRoute] (dev flavor only,
   /// A02 D15).
+  /// [onReselect] hears a re-tap of the current tab at its root;
+  /// [unsavedEdits] tells which tabs hold a screen with unsaved edits.
   new({
     required ValueListenable<bool> updateRequired,
     bool designPreview = false,
-  }) : config = _createConfig(updateRequired, designPreview: designPreview);
+    this.onReselect,
+    this.unsavedEdits,
+  }) : assert(tabs.length == AppTab.values.length, 'one AppTab per tab') {
+    config = _createConfig(updateRequired, designPreview: designPreview);
+  }
 
-  static GoRouter _createConfig(
+  /// Called with the tab tapped again while it shows its root screen.
+  final ValueChanged<AppTab>? onReselect;
+
+  /// The screens holding unsaved edits, by navigator.
+  final UnsavedEdits? unsavedEdits;
+
+  GoRouter _createConfig(
     ValueListenable<bool> gate, {
     required bool designPreview,
   }) => GoRouter(
@@ -64,11 +80,7 @@ final class AppRouter implements AppNavigator {
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => AppShell(
           currentIndex: shell.currentIndex,
-          // Tapping the selected tab again returns to its first screen.
-          onTabSelected: (index) => shell.goBranch(
-            index,
-            initialLocation: index == shell.currentIndex,
-          ),
+          onTabSelected: (index) => _selectTab(shell, index),
           child: shell,
         ),
         // Order = the tab order in AppShell.
@@ -127,7 +139,42 @@ final class AppRouter implements AppNavigator {
   ];
 
   /// The go_router configuration, for `MaterialApp.router`.
-  final GoRouter config;
+  late final GoRouter config;
+
+  /// Runs the tab rules ([tabTapAction]) for a tap on tab [index].
+  void _selectTab(StatefulNavigationShell shell, int index) {
+    // A branch never visited has no navigator yet: it is at its root.
+    final navigator = shell.route.branches[index].navigatorKey.currentState;
+    final action = tabTapAction(
+      sameTab: index == shell.currentIndex,
+      atRoot: !(navigator?.canPop() ?? false),
+      holdsEdits: unsavedEdits?.holds(navigator) ?? false,
+    );
+    switch (action) {
+      case TabTapAction.goRoot:
+        shell.goBranch(index, initialLocation: true);
+      case TabTapAction.keepStack:
+        shell.goBranch(index);
+      case TabTapAction.scrollTop:
+        onReselect?.call(AppTab.values[index]);
+      case TabTapAction.confirmThenRoot:
+        unawaited(_confirmThenRoot(shell, index, navigator!));
+    }
+  }
+
+  /// Asks the screen with unsaved edits in tab [index]; goes to the tab's
+  /// root only on a confirmed discard, and only if the tab is still shown.
+  Future<void> _confirmThenRoot(
+    StatefulNavigationShell shell,
+    int index,
+    NavigatorState navigator,
+  ) async {
+    if (!await unsavedEdits!.confirm(navigator)) return;
+    final tab = tabs[index].location;
+    final path = config.routerDelegate.currentConfiguration.uri.path;
+    if (path != tab && !path.startsWith('$tab/')) return;
+    shell.goBranch(index, initialLocation: true);
+  }
 
   /// Where to send [location] instead, or null to show it (the update gate).
   static String? redirect(String location, {required bool updateRequired}) {
@@ -336,6 +383,8 @@ AppRouter appRouter(Ref ref) {
     updateRequired: updateRequired,
     // The design preview exists in the dev flavor only (A02 D15).
     designPreview: ref.read(appConfigProvider).flavor == AppFlavor.dev,
+    onReselect: ref.read(tabReselectProvider.notifier).fire,
+    unsavedEdits: ref.read(unsavedEditsProvider),
   );
   ref.onDispose(() {
     // After the current frame's work: on a generation switch the old

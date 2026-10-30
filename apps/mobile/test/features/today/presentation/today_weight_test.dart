@@ -1,5 +1,6 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/body/data/weigh_in_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,6 +42,12 @@ Finder todayCard() => find.descendant(
   matching: find.byType(WeightCard),
 );
 
+/// The ＋ of today's slim weight row.
+Finder slimAdd() => find.descendant(
+  of: todayCard(),
+  matching: find.byKey(WeightCard.slimAddKey),
+);
+
 void main() {
   testWidgets('WB-001 UX-005 a weigh-in is logged in 3 taps from Today', (
     tester,
@@ -71,20 +78,13 @@ void main() {
     expect(live.last.localDate, testToday);
     expect(live.last.kg, 97.4);
     expect(find.text('Weigh-in saved: 97.4 kg'), findsOneWidget);
-    expect(
-      find.descendant(
-        of: todayCard(),
-        matching: find.text('Last weigh-in 97.4 kg · Today'),
-      ),
-      findsOneWidget,
-    );
+    // Weighed in today: the slim row (D-084), whose ＋ logs again.
+    expect(slimAdd(), findsOneWidget);
 
     // With an unusual value the in-sheet confirm is the third tap (the
     // digits typed on the pad are not counted).
     taps = 0;
-    await tap(
-      find.descendant(of: todayCard(), matching: find.text('Trend 97.4 kg')),
-    );
+    await tap(slimAdd());
     await pad(tester, '101');
     await tap(button('Save'));
     expect(find.textContaining("That's +3.6 kg"), findsOneWidget);
@@ -95,6 +95,37 @@ void main() {
     expect(taps, 3);
     live = await stored(tester, rig);
     expect(live.map((w) => w.kg), contains(101));
+    await unmount(tester, rig);
+  });
+
+  testWidgets('HM-005 Today shows the slim row after a weigh-in and the full '
+      'card before; the row opens the weight graph and ＋ opens the weigh-in '
+      'sheet', (tester) async {
+    final rig = await todayWithWeighIn(tester);
+    // Only yesterday's weigh-in: the full card, no slim row.
+    expect(todayCard(), findsOneWidget);
+    expect(slimAdd(), findsNothing);
+    final fullHeight = tester.getSize(todayCard()).height;
+
+    await tester.runAsync(
+      () => rig.diary.apply([
+        CreateWeighIn(fixtureId(501), weighInDraft(97, date: testToday)),
+      ]),
+    );
+    await settle(tester);
+    expect(slimAdd(), findsOneWidget);
+    expect(tester.getSize(todayCard()).height, lessThan(fullHeight));
+
+    // The row (everything but the ＋) opens the weight graph.
+    await tester.tap(
+      find.descendant(of: todayCard(), matching: find.byType(InkWell)).first,
+    );
+    await settle(tester);
+    expect(rig.navigator.pushed, [const TodayWeightGraphRoute()]);
+
+    await tester.tap(slimAdd());
+    await settle(tester);
+    expect(find.byType(FbAmountDisplay), findsOneWidget);
     await unmount(tester, rig);
   });
 }

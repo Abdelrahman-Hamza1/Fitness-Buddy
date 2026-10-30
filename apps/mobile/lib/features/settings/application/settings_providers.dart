@@ -35,7 +35,7 @@ WeekCalendar weekCalendar(Ref ref) => WeekCalendar(
 Stream<bool> halal(Ref ref) =>
     ref.watch(settingsStoreProvider).watch(AppSettings.halal);
 
-/// Lazy persisted theme; callers use the default (dark) before the first
+/// Lazy persisted theme; callers use the default (light) before the first
 /// emission.
 @riverpod
 Stream<ThemePreference> themePreference(Ref ref) =>

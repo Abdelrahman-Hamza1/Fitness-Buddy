@@ -31,42 +31,46 @@ class MeScreen extends ConsumerWidget {
     final setup = ref.watch(setupStatusProvider).value;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.tabMe)),
-      body: CustomScrollView(
-        slivers: [
-          SliverList.list(
-            children: [
-              ..._group(l10n.meSectionYou, open, [
-                if (setup == SetupStatus.notSetUp)
-                  _Row(l10n.meSetUpTargets, const SetupRoute()),
-                if (setup == SetupStatus.profileUnreadable)
-                  _Row(l10n.setupUpdateTitle, const SetupRoute()),
-                if (setup == SetupStatus.setUp)
-                  _Row(l10n.meProfileGoal, const ProfileRoute()),
-                if (setup == SetupStatus.setUp)
-                  _Row(l10n.meTargets, const TargetsRoute()),
-              ]),
-              ..._group(l10n.meSectionFood, open, [
-                _Row(l10n.meYourFoods, const PersonalFoodsRoute()),
-                _Row(l10n.meSavedMeals, const SavedMealsRoute()),
-              ]),
-              const SettingsSection(),
-              FbSectionHeader(title: l10n.meSectionYourData),
-              FbListRow(
-                title: l10n.meExportData,
-                trailing: const Icon(FbIcons.next),
-                onTap: () => unawaited(showExportSheet(context)),
-              ),
-              const AccountSection(),
-              ..._group(l10n.meSectionAbout, open, [
-                _Row(l10n.meAbout, const AboutRoute()),
-              ]),
-              ..._group(l10n.meSectionDeveloper, open, [
-                if (isDev)
-                  _Row(l10n.meDesignPreview, const DesignPreviewRoute()),
-              ]),
-            ],
-          ),
-        ],
+      // A re-tap of the tab scrolls this list to the top (A45 D13).
+      body: ScrollToTopOnTabReselect(
+        tab: AppTab.me,
+        child: CustomScrollView(
+          slivers: [
+            SliverList.list(
+              children: [
+                ..._group(l10n.meSectionYou, open, [
+                  if (setup == SetupStatus.notSetUp)
+                    _Row(l10n.meSetUpTargets, const SetupRoute()),
+                  if (setup == SetupStatus.profileUnreadable)
+                    _Row(l10n.setupUpdateTitle, const SetupRoute()),
+                  if (setup == SetupStatus.setUp)
+                    _Row(l10n.meProfileGoal, const ProfileRoute()),
+                  if (setup == SetupStatus.setUp)
+                    _Row(l10n.meTargets, const TargetsRoute()),
+                ]),
+                ..._group(l10n.meSectionFood, open, [
+                  _Row(l10n.meYourFoods, const PersonalFoodsRoute()),
+                  _Row(l10n.meSavedMeals, const SavedMealsRoute()),
+                ]),
+                const SettingsSection(),
+                FbSectionHeader(title: l10n.meSectionYourData),
+                FbListRow(
+                  title: l10n.meExportData,
+                  trailing: const Icon(FbIcons.next),
+                  onTap: () => unawaited(showExportSheet(context)),
+                ),
+                const AccountSection(),
+                ..._group(l10n.meSectionAbout, open, [
+                  _Row(l10n.meAbout, const AboutRoute()),
+                ]),
+                ..._group(l10n.meSectionDeveloper, open, [
+                  if (isDev)
+                    _Row(l10n.meDesignPreview, const DesignPreviewRoute()),
+                ]),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

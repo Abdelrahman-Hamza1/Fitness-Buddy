@@ -199,7 +199,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A41b](A41-ramadan.md) | Ramadan Buddy parts (split from A41) | Claude | A41a, A39b, **B12** (contract) | S | S46 app part | **M6** | ⬜ phase 2 |
 | [A42](A42-performance-a11y-offline.md) | Performance, accessibility & offline acceptance | Claude | A41a, A35 (TD-105) | M | S48 | **M2b** · **R1** | ⬜ wave 5, the last phase-1 step |
 | [A43](A43-play-internal-release.md) | Play internal testing release | Claude | A42, **B14** | S | S29 app part | **M7** | ⬜ production |
-| [A45](A45-ux-polish.md) | UX polish: steady chips, light default, slim weight row, tab reset | Claude | A15b, A44 | M | new (owner phone feedback) |  | ⬜ wave 1 (TD-105) |
+| [A45](A45-ux-polish.md) | UX polish: steady chips, light default, slim weight row, tab reset | Claude | A15b, A44 | M | new (owner phone feedback) |  | ✅ |
 | [A46](A46-test-diet.md) | Test diet (one-time cut, TD-104) | Claude | — | M | new |  | ✅ |
 | [A47](A47-food-basics-expansion.md) | Food basics expansion (~250 → ~600) | Claude | A05 | M | new |  | ✅ |
 | [A48](A48-local-brands.md) | Local brands & packaged foods | Claude | A47 | M | new |  | ⬜ wave 2 (TD-105) |

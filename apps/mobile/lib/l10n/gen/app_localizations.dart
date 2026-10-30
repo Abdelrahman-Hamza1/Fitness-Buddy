@@ -1370,6 +1370,24 @@ abstract class AppLocalizations {
   /// **'{rate} {unit}/week'**
   String weightCardRate(String rate, String unit);
 
+  /// Today, the slim weight row on a day with a weigh-in (HM-005, D-084): that day's latest weigh-in, then the trend: "97.4 kg · Trend 97.6 kg".
+  ///
+  /// In en, this message translates to:
+  /// **'{weight} · Trend {trend}'**
+  String weightRowSummary(String weight, String trend);
+
+  /// Today, the slim weight row, screen readers: the day's latest weigh-in and the trend, units in full, and what a tap does.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight {weight}, trend {trend}. Opens the weight graph'**
+  String weightRowSemantics(String weight, String trend);
+
+  /// Today, the slim weight row: tooltip and screen-reader label of the plus button that opens the weigh-in sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Log a weigh-in'**
+  String get weightRowAdd;
+
   /// Weight card: the trend weight, the main number (WB-011): "Trend 97.6 kg".
   ///
   /// In en, this message translates to:

@@ -67,8 +67,10 @@ CardThemeData fbCardTheme(ColorScheme scheme) => CardThemeData(
 );
 
 /// Chips (assumption, answer, quick-add): radius 12 on the raised tonal
-/// fill, no border; selected = the brand tint plus a check mark, so colour
-/// is never the only cue (UX-071).
+/// fill. Selected = the brand tint plus a 2 dp brand border, so colour is
+/// never the only cue (UX-071). There is no check mark and the border is
+/// always 2 dp (transparent when not selected), so selecting a chip never
+/// changes its size (A45 D2).
 ChipThemeData fbChipTheme(ColorScheme scheme) => ChipThemeData(
   backgroundColor: scheme.surfaceContainerHigh,
   selectedColor: scheme.primaryContainer,
@@ -76,8 +78,12 @@ ChipThemeData fbChipTheme(ColorScheme scheme) => ChipThemeData(
   labelStyle: FbType.chip.copyWith(color: scheme.onSurface),
   secondaryLabelStyle: FbType.chip.copyWith(color: scheme.onPrimaryContainer),
   checkmarkColor: scheme.onPrimaryContainer,
-  showCheckmark: true,
-  side: BorderSide.none,
+  showCheckmark: false,
+  side: WidgetStateBorderSide.resolveWith(
+    (states) => states.contains(WidgetState.selected)
+        ? BorderSide(color: scheme.primary, width: 2)
+        : const BorderSide(color: _clear, width: 2),
+  ),
   shape: const RoundedRectangleBorder(borderRadius: FbRadius.mdAll),
   padding: const EdgeInsetsDirectional.symmetric(horizontal: FbSpace.s2),
   // A little air above and below a label that wraps at large text.

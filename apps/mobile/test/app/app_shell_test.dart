@@ -5,6 +5,7 @@ import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
+import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -69,20 +70,29 @@ void main() {
     expect(find.byType(WorkoutsScreen), findsOneWidget);
   });
 
-  testWidgets('UX-040 a fresh install opens in dark, even when the system is '
-      'light', (tester) async {
+  testWidgets('UX-040 D-083 a fresh install opens in Light, even when the '
+      'system is dark; the system bars follow the app', (tester) async {
     addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
-    tester.platformDispatcher.platformBrightnessTestValue = Brightness.light;
+    tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
     await pumpApp(tester);
-    expect(_shown(tester), Brightness.dark);
+    expect(_shown(tester), Brightness.light);
     expect(
       Theme.of(tester.element(find.byType(TodayScreen))).colorScheme,
-      AppTheme.dark.colorScheme,
+      AppTheme.light.colorScheme,
     );
     expect(
       tester.widget<MaterialApp>(find.byType(MaterialApp)).themeMode,
-      ThemeMode.dark,
+      ThemeMode.light,
     );
+    // Dark icons on the light app, whatever the phone's theme.
+    final bars = tester
+        .widgetList<AnnotatedRegion<SystemUiOverlayStyle>>(
+          find.byType(AnnotatedRegion<SystemUiOverlayStyle>),
+        )
+        .first
+        .value;
+    expect(bars.statusBarIconBrightness, Brightness.dark);
+    expect(bars.systemNavigationBarIconBrightness, Brightness.dark);
   });
 
   testWidgets('UX-040 with System chosen, the app follows the system '
@@ -106,15 +116,15 @@ void main() {
     );
   });
 
-  testWidgets('UX-001 UX-040 the first frame is dark and reads no storage; a '
-      'stored Light applies after it without animation', (tester) async {
+  testWidgets('UX-001 UX-040 the first frame is light and reads no storage; '
+      'a stored Dark applies after it without animation', (tester) async {
     final read = <String>[];
     await tester.pumpWidget(
       testApp(
         overrides: [
           themePreferenceProvider.overrideWith((ref) {
             read.add('theme');
-            return Stream.value(ThemePreference.light);
+            return Stream.value(ThemePreference.dark);
           }),
         ],
       ),
@@ -122,13 +132,13 @@ void main() {
     // Frame 1: the default, and the setting is not read yet.
     expect(read, isEmpty);
     final first = tester.widget<MaterialApp>(find.byType(MaterialApp));
-    expect(first.themeMode, ThemeMode.dark);
+    expect(first.themeMode, ThemeMode.light);
     expect(first.themeAnimationDuration, Duration.zero);
 
     await tester.pumpAndSettle();
     expect(read, ['theme']);
     final settled = tester.widget<MaterialApp>(find.byType(MaterialApp));
-    expect(settled.themeMode, ThemeMode.light);
+    expect(settled.themeMode, ThemeMode.dark);
     expect(settled.themeAnimationDuration, Duration.zero);
     await unmountApp(tester);
   });

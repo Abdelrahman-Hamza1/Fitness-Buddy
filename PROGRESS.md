@@ -1,8 +1,8 @@
 # Fitness Buddy: progress
 
-**47 of 86 steps done** · `▓▓▓▓▓░░░░░` 54%
+**48 of 86 steps done** · `▓▓▓▓▓░░░░░` 55%
 
-App 33/63 · Backend 14/23 · Foundation 7/7
+App 34/63 · Backend 14/23 · Foundation 7/7
 
 ## Now
 
@@ -15,7 +15,7 @@ App 33/63 · Backend 14/23 · Foundation 7/7
 | ✅ | **M1** Dogfood 1 | `▓▓▓▓▓` 14/14 | — |
 | 🟨 | **M2** Targets & weight | `▓▓▓▓░` 8/9 | A16 |
 | 🟨 | **M5** Accounts & sync | `▓▓▓▓░` 16/19 | A34 A35 B21 |
-| 🟨 | **M2b** Solid app (no AI) | `▓░░░░` 8/23 | A17 A18 A19 A28a A30 A37a +13 |
+| 🟨 | **M2b** Solid app (no AI) | `▓░░░░` 9/23 | A17 A18 A19 A28a A30 A37a +12 |
 | 🟨 | **M3** Buddy on the laptop | `▓░░░░` 1/3 | A23b A49 #148 #149 #150 #151 |
 | ⬜ | **M4** Dogfood 2 | `░░░░░` 0/8 | A25 A26 A27 A28b A29 A31 +2 |
 | ⬜ | **M6** Workouts, review &… | `░░░░░` 0/4 | A37b A39b A41b B12 |
@@ -32,7 +32,7 @@ Not started, every dependency done; earliest milestone first:
 - [B21](technical-planning/steps/B21-workout-sync.md) Workout sync entities (server; backlog #189) · M5
 - [A17](technical-planning/steps/dish-batches.md) Dish batch 2: main dishes A · M2b
 - [A37a](technical-planning/steps/A37-workout-logging.md) Workouts without AI: muscle map, form, optional starter plans, history & PRs (split from A37, 2026-10-30) · M2b
-- [A45](technical-planning/steps/A45-ux-polish.md) UX polish: steady chips, light default, slim weight row, tab reset · M2b
+- [A48](technical-planning/steps/A48-local-brands.md) Local brands & packaged foods · M2b
 
 ## Waiting on you
 

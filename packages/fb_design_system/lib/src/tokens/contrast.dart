@@ -146,6 +146,20 @@ List<FbContrastPair> fbContrastPairs(FbPalette palette) {
       p.brandContainer,
       FbContrastKind.text,
     ),
+    // A selected chip: its 2 dp brand border is the non-colour cue (A45 D1),
+    // so it must stand out from the chip's own fill and from the surface.
+    FbContrastPair(
+      'selected chip border (brand) on brandContainer',
+      p.brand,
+      p.brandContainer,
+      FbContrastKind.ui,
+    ),
+    FbContrastPair(
+      'selected chip border (brand) on surface',
+      p.brand,
+      p.surface,
+      FbContrastKind.ui,
+    ),
     FbContrastPair(
       'wordmark (onBrandContainer) on surface',
       p.onBrandContainer,

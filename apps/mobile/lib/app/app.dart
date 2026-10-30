@@ -38,7 +38,8 @@ class FitnessBuddyApp extends ConsumerStatefulWidget {
 class _FitnessBuddyAppState extends ConsumerState<FitnessBuddyApp> {
   /// Whether the first frame is done. The theme setting is read only after
   /// it (UX-001: no storage before the first frame), so that frame uses the
-  /// setting's default: dark (A44 D7), like the Android launch window.
+  /// setting's default: light (D-083, TD-107), like the Android launch
+  /// window.
   bool _firstFrameDone = false;
 
   /// Whether the first stored theme has been applied. It applies without the
@@ -56,7 +57,7 @@ class _FitnessBuddyAppState extends ConsumerState<FitnessBuddyApp> {
   }
 
   ThemeMode _themeMode() {
-    // Not read yet, loading or unreadable: the default (dark), never storage.
+    // Not read yet, loading or unreadable: the default (light), never storage.
     if (!_firstFrameDone) return _modeOf(AppSettings.theme.defaultValue);
     final preference = ref.watch(themePreferenceProvider);
     if (preference.hasValue && !_themeSettled) {
@@ -72,11 +73,11 @@ class _FitnessBuddyAppState extends ConsumerState<FitnessBuddyApp> {
   };
 
   /// The system bars follow the app's theme, not the phone's (A44 D8): the
-  /// native window is dark, and Today has no app bar to set them. The status
-  /// bar is transparent. Below Android 15 the app isn't edge-to-edge, so the
-  /// navigation bar gets the theme's bottom-bar colour (a transparent one
-  /// would show the dark window behind Light's dark icons); Android 15+
-  /// ignores the colour. Icons contrast with the theme.
+  /// native window is light (TD-107), and Today has no app bar to set them.
+  /// The status bar is transparent. Below Android 15 the app isn't
+  /// edge-to-edge, so the navigation bar gets the theme's bottom-bar colour
+  /// (a transparent one would show the light window behind Dark's light
+  /// icons); Android 15+ ignores the colour. Icons contrast with the theme.
   static Widget _systemBars(BuildContext context, Widget? child) =>
       AccountBusyScope(child: _bars(context, child));
 
@@ -110,7 +111,7 @@ class _FitnessBuddyAppState extends ConsumerState<FitnessBuddyApp> {
       onGenerateTitle: (context) => context.l10n.appTitle,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      // The stored choice (UX-040); the default (dark) until it is read.
+      // The stored choice (UX-040); the default (light) until it is read.
       themeMode: _themeMode(),
       themeAnimationDuration: _themeSettled
           ? kThemeAnimationDuration

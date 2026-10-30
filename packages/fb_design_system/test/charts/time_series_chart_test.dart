@@ -110,6 +110,88 @@ void main() {
     });
   });
 
+  testWidgets('A45 FbTimeSeriesChart eases a range change and lands exactly; '
+      'a pan end does not move; a drag mid-tween starts from the target; '
+      'reduced motion jumps', (tester) async {
+    final month = _range();
+    final quarter = FbChartRange(
+      start: _t0.subtract(const Duration(days: 60)),
+      end: month.end,
+    );
+    final ranges = <FbChartRange>[];
+    Future<void> pump(FbChartRange range, {bool reduced = false}) => pumpFb(
+      tester,
+      disableAnimations: reduced,
+      FbTimeSeriesChart(
+        series: [FbSeries(points: _points())],
+        range: range,
+        panBounds: FbChartRange(
+          start: _t0.subtract(const Duration(days: 200)),
+          end: _t0.add(const Duration(days: 200)),
+        ),
+        onRangeChanged: ranges.add,
+      ),
+    );
+    FbChartRange shown() =>
+        (tester.widget<CustomPaint>(_paint()).painter! as TimeSeriesPainter)
+            .shownWindow;
+
+    // Eases: half-way the window is strictly between, then lands exactly.
+    await pump(month);
+    await pump(quarter);
+    await tester.pump(FbMotion.slow ~/ 2);
+    expect(shown().start.isBefore(month.start), isTrue);
+    expect(shown().start.isAfter(quarter.start), isTrue);
+    expect(shown().end, quarter.end);
+    await tester.pump(FbMotion.slow);
+    expect(shown(), quarter);
+
+    // A pan end hands back the window on screen: adopting it moves nothing.
+    await tester.drag(find.byType(FbTimeSeriesChart), const Offset(60, 0));
+    await tester.pump();
+    final panned = ranges.single;
+    final beforeAdopt = shown();
+    await pump(panned);
+    expect(shown(), beforeAdopt);
+    expect(shown(), panned);
+    await tester.pump(FbMotion.slow ~/ 2);
+    expect(shown(), panned, reason: 'no zoom started');
+
+    // A drag mid-zoom first lands on the target, then pans from it at the
+    // target's scale, even before the next paint: recognition and the move
+    // arrive with no pump between them.
+    ranges.clear();
+    await pump(month);
+    await tester.pump(FbMotion.slow ~/ 2);
+    expect(shown().duration, isNot(month.duration));
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byType(FbTimeSeriesChart)),
+    );
+    await gesture.moveBy(const Offset(30, 0)); // past the slop: recognised
+    expect(shown().duration, month.duration);
+    await gesture.moveBy(const Offset(40, 0));
+    await gesture.up();
+    await tester.pump(FbMotion.slow);
+    expect(shown().duration, month.duration, reason: 'the zoom stopped');
+    final map =
+        (tester.widget<CustomPaint>(_paint()).painter! as TimeSeriesPainter)
+            .lastMapping!;
+    final perPixel = month.duration.inMilliseconds / map.plot.width;
+    // Towards the end edge (LTR): the whole 70 px drag (the recognising move
+    // counts too) moves the window earlier at the target's scale.
+    expect(ranges, hasLength(1));
+    expect(ranges.single.duration, month.duration);
+    expect(
+      month.start.difference(ranges.single.start).inMilliseconds,
+      closeTo(70 * perPixel, 1),
+    );
+
+    // Reduced motion: the new range is there in the same frame.
+    await pump(month, reduced: true);
+    await pump(quarter, reduced: true);
+    expect(shown(), quarter);
+  });
+
   group('selection', () {
     testWidgets('WB-022 a tap within 24 dp selects the nearest point of a '
         'selectable series; a tap on empty space clears it', (tester) async {

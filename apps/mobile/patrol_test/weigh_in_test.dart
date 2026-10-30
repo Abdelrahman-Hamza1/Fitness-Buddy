@@ -30,6 +30,12 @@ Finder _cardText(LocalDate date, String text) => find.descendant(
   matching: find.text(text),
 );
 
+/// The ＋ of [date]'s slim weight row (a day with a weigh-in, D-084).
+Finder _slimAdd(LocalDate date) => find.descendant(
+  of: find.descendant(of: dayPage(date), matching: find.byType(WeightCard)),
+  matching: find.byKey(WeightCard.slimAddKey),
+);
+
 /// Waits for the snackbar that starts with [prefix].
 Future<void> _waitForSnackBar(WidgetTester tester, String prefix) => waitUntil(
   tester,
@@ -95,16 +101,13 @@ void main() {
     expect((await _stored(container)).single.kg, 97.4);
     await waitUntil(
       tester,
-      () => _cardText(
-        today,
-        'Last weigh-in 97.4 kg · Today',
-      ).evaluate().isNotEmpty,
-      'the card to show the weigh-in',
+      () => _slimAdd(today).evaluate().isNotEmpty,
+      'the slim weight row',
     );
 
     // The same value again: 2 taps, no typing (the pad is prefilled).
     taps = 0;
-    await tap(_cardText(today, 'Trend 97.4 kg'), 'the weight card');
+    await tap(_slimAdd(today), 'the slim row plus');
     await waitUntil(
       tester,
       () => save.evaluate().isNotEmpty,
@@ -120,7 +123,7 @@ void main() {
 
     // An unusual value: the in-sheet confirm is the third tap.
     taps = 0;
-    await tap(_cardText(today, 'Trend 97.4 kg'), 'the weight card');
+    await tap(_slimAdd(today), 'the slim row plus');
     await waitUntil(
       tester,
       () => find.byType(FbNumberPad).evaluate().isNotEmpty,

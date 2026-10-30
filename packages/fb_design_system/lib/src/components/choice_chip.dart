@@ -1,4 +1,5 @@
 import 'package:fb_design_system/src/tokens/icons.dart';
+import 'package:fb_design_system/src/tokens/motion.dart';
 import 'package:fb_design_system/src/tokens/spacing.dart';
 import 'package:fb_design_system/src/tokens/typography.dart';
 import 'package:material_ui/material_ui.dart';
@@ -10,10 +11,15 @@ import 'package:material_ui/material_ui.dart';
 /// Without a [value] it is a plain labelled chip (e.g. "Log as Rice, raw"),
 /// and [dropdown] can be turned off when the tap does not open a list.
 ///
-/// The chip is at least 48 dp high, wraps its text at large text sizes and
+/// The chip is at least 48 × 48 dp, wraps its text at large text sizes and
 /// uses start/end only. For a screen reader it is one button that reads the
-/// label, then the value. A null [onTap] disables it. [selected] fills it
-/// with the brand tint; the check mark keeps it from relying on colour alone.
+/// label, then the value. A null [onTap] disables it.
+///
+/// **Steady:** its size never depends on [selected] (A45 D1). A selected chip
+/// gets the brand tint and a 2 dp brand border, which the shape paints
+/// without taking layout room; the border weight keeps the choice from
+/// relying on colour alone (UX-071). The fill and border ease over
+/// [FbMotion.fast] (none with reduced motion).
 class FbChoiceChip extends StatelessWidget {
   /// Creates a chip.
   const new({
@@ -67,7 +73,11 @@ class FbChoiceChip extends StatelessWidget {
     final muted = selected
         ? scheme.onPrimaryContainer
         : scheme.onSurfaceVariant;
-    final border = enabled ? scheme.outline : scheme.outlineVariant;
+    final side = !enabled
+        ? BorderSide(color: scheme.outlineVariant)
+        : selected
+        ? BorderSide(color: scheme.primary, width: 2)
+        : BorderSide(color: scheme.outline);
     return Semantics(
       button: true,
       enabled: enabled,
@@ -77,14 +87,23 @@ class FbChoiceChip extends StatelessWidget {
       onTap: onTap,
       excludeSemantics: true,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: FbSpace.s7),
-        child: Material(
-          color: background,
-          shape: RoundedRectangleBorder(
-            borderRadius: FbRadius.mdAll,
-            side: BorderSide(color: border),
+        constraints: const BoxConstraints(
+          minWidth: FbSpace.s7,
+          minHeight: FbSpace.s7,
+        ),
+        child: TweenAnimationBuilder<_ChipLook>(
+          tween: _ChipLookTween(end: _ChipLook(background, side)),
+          duration: FbMotion.of(context, FbMotion.fast),
+          curve: FbMotion.curve,
+          builder: (context, look, child) => Material(
+            color: look.background,
+            shape: RoundedRectangleBorder(
+              borderRadius: FbRadius.mdAll,
+              side: look.side,
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: child,
           ),
-          clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,
             child: Padding(
@@ -94,18 +113,18 @@ class FbChoiceChip extends StatelessWidget {
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (selected) ...[
-                    Icon(FbIcons.check, size: 18, color: primary),
-                    const SizedBox(width: FbSpace.s2),
-                  ] else if (icon != null) ...[
+                  if (icon != null) ...[
                     Icon(icon, size: 18, color: enabled ? primary : muted),
                     const SizedBox(width: FbSpace.s2),
                   ],
                   Flexible(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: hasValue
+                          ? CrossAxisAlignment.start
+                          : CrossAxisAlignment.center,
                       children: [
                         Text(
                           label,
@@ -135,6 +154,29 @@ class FbChoiceChip extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// The animated part of a chip: its fill and its border.
+@immutable
+class _ChipLook {
+  const new(this.background, this.side);
+
+  final Color background;
+  final BorderSide side;
+}
+
+class _ChipLookTween extends Tween<_ChipLook> {
+  new({super.end});
+
+  @override
+  _ChipLook lerp(double t) {
+    final a = begin ?? end!;
+    final b = end!;
+    return _ChipLook(
+      Color.lerp(a.background, b.background, t)!,
+      BorderSide.lerp(a.side, b.side, t),
     );
   }
 }

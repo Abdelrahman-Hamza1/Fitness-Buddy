@@ -3,6 +3,7 @@ import 'package:fb_design_system/src/charts/chart_geometry.dart';
 import 'package:fb_design_system/src/charts/chart_types.dart';
 import 'package:fb_design_system/src/charts/time_series_painter.dart';
 import 'package:fb_design_system/src/tokens/icons.dart';
+import 'package:fb_design_system/src/tokens/motion.dart';
 import 'package:fb_design_system/src/tokens/spacing.dart';
 import 'package:fb_design_system/src/tokens/typography.dart';
 import 'package:material_ui/material_ui.dart';
@@ -19,6 +20,12 @@ import 'package:material_ui/material_ui.dart';
 /// offset kept inside the chart, which repaints only itself; on drag end it
 /// calls [onRangeChanged] once with the moved window (a continuous start).
 /// The next [range] the parent passes resets the offset.
+///
+/// **Range changes ease** (A45 D5): a new [range] zooms from the window on
+/// screen to the new one over [FbMotion.slow] (a jump with reduced motion).
+/// A pan's own drag end hands back the window on screen, so it doesn't move.
+/// A drag that starts mid-zoom first lands on the new [range], so the pan,
+/// its limits and the reported window share one base (A45 PA1).
 ///
 /// **Selection** (WB-022): a tap within 24 dp of a point of a selectable
 /// series calls [onSelect] with it; a tap elsewhere calls it with null. The
@@ -93,19 +100,71 @@ class FbTimeSeriesChart extends StatefulWidget {
   State<FbTimeSeriesChart> createState() => _FbTimeSeriesChartState();
 }
 
-class _FbTimeSeriesChartState extends State<FbTimeSeriesChart> {
+class _FbTimeSeriesChartState extends State<FbTimeSeriesChart>
+    with SingleTickerProviderStateMixin {
   final ValueNotifier<double> _offset = ValueNotifier(0);
+  late final ValueNotifier<FbChartRange> _window = ValueNotifier(widget.range);
+  late final AnimationController _zoom = AnimationController(vsync: this)
+    ..addListener(_zoomTick);
   final ChartLabelCache _labels = ChartLabelCache();
   TimeSeriesPainter? _painter;
+
+  /// Where the running zoom started.
+  FbChartRange? _zoomFrom;
 
   @override
   void didUpdateWidget(FbTimeSeriesChart oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.range != widget.range) _offset.value = 0;
+    if (oldWidget.range == widget.range) return;
+    // From the window on screen, pan included, to the new range.
+    final from = _window.value.shift(
+      Duration(milliseconds: _offset.value.round()),
+    );
+    _offset.value = 0;
+    final duration = FbMotion.of(context, FbMotion.slow);
+    if (from == widget.range || duration == Duration.zero) {
+      _commitZoom();
+      return;
+    }
+    _zoomFrom = from;
+    _zoom
+      ..duration = duration
+      ..forward(from: 0);
+  }
+
+  void _zoomTick() {
+    final from = _zoomFrom;
+    final to = widget.range;
+    if (from == null || _zoom.value >= 1) {
+      _window.value = to;
+      return;
+    }
+    final t = FbMotion.curve.transform(_zoom.value);
+    DateTime lerp(DateTime a, DateTime b) =>
+        DateTime.fromMillisecondsSinceEpoch(
+          a.millisecondsSinceEpoch +
+              ((b.millisecondsSinceEpoch - a.millisecondsSinceEpoch) * t)
+                  .round(),
+          isUtc: b.isUtc,
+        );
+    final start = lerp(from.start, to.start);
+    final end = lerp(from.end, to.end);
+    _window.value = start.isBefore(end)
+        ? FbChartRange(start: start, end: end)
+        : to;
+  }
+
+  /// Stops a running zoom and shows the target range.
+  void _commitZoom() {
+    _zoom.stop();
+    _zoomFrom = null;
+    _window.value = widget.range;
   }
 
   @override
   void dispose() {
+    _zoom.dispose();
+    _window.dispose();
     _offset.dispose();
     _labels.clear();
     super.dispose();
@@ -128,13 +187,20 @@ class _FbTimeSeriesChartState extends State<FbTimeSeriesChart> {
     return null;
   }
 
+  void _dragStart() {
+    if (_zoom.isAnimating) _commitZoom();
+  }
+
   void _drag(DragUpdateDetails details, TextDirection direction) {
     final bounds = widget.panBounds;
     final map = _painter?.lastMapping;
     if (bounds == null || map == null) return;
     final sign = direction == TextDirection.ltr ? 1 : -1;
+    // The scale of the range the drag pans (the target, A45 PA1), not of the
+    // last paint, which may still show a window of a zoom the drag stopped.
+    final msPerPixel = widget.range.duration.inMilliseconds / map.plot.width;
     // Dragging towards the end edge shows earlier times.
-    final next = _offset.value - details.delta.dx * sign * map.msPerPixel;
+    final next = _offset.value - details.delta.dx * sign * msPerPixel;
     final min =
         bounds.start.millisecondsSinceEpoch -
         widget.range.start.millisecondsSinceEpoch;
@@ -227,7 +293,7 @@ class _FbTimeSeriesChartState extends State<FbTimeSeriesChart> {
       periods: widget.periods,
       goal: widget.goal,
       selected: selected,
-      range: widget.range,
+      range: _window,
       offset: _offset,
       colors: ChartColors.of(scheme),
       labels: _labels,
@@ -267,6 +333,9 @@ class _FbTimeSeriesChartState extends State<FbTimeSeriesChart> {
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTapUp: widget.onSelect == null ? null : _tap,
+          onHorizontalDragStart: widget.panBounds == null
+              ? null
+              : (_) => _dragStart(),
           onHorizontalDragUpdate: widget.panBounds == null
               ? null
               : (d) => _drag(d, direction),

@@ -7,25 +7,69 @@ import 'package:material_ui/material_ui.dart';
 import 'android_xml.dart';
 
 void main() {
-  test('A44-D7 the Android window background colour equals the dark surface '
-      'token', () {
+  test('TD-107 the Android window, splash and window background are the '
+      'light surface, with light parents, a light status bar, and the plate '
+      'under the mark before Android 12', () {
     final colors = readAndroid('main/res/values/colors.xml');
     expect(
       colorResource(colors, 'fb_window_background'),
-      FbPalette.of(Brightness.dark).surface.toARGB32(),
+      FbPalette.of(Brightness.light).surface.toARGB32(),
     );
-    // Dark in day and night: no night-only resources.
+    // Light in day and night: no night-only resources.
     expect(Directory('$androidSrc/main/res/values-night').existsSync(), false);
+
     final styles = readAndroid('main/res/values/styles.xml');
+    final v31 = readAndroid('main/res/values-v31/styles.xml');
+    final themes = {
+      'NormalTheme': styleItems(styles, 'NormalTheme'),
+      'LaunchTheme': styleItems(styles, 'LaunchTheme'),
+      'LaunchTheme v31': styleItems(v31, 'LaunchTheme'),
+    };
+    for (final MapEntry(key: name, value: items) in themes.entries) {
+      expect(
+        items['android:statusBarColor'],
+        '@color/fb_window_background',
+        reason: name,
+      );
+      expect(items['android:windowLightStatusBar'], 'true', reason: name);
+      expect(
+        items['android:windowDrawsSystemBarBackgrounds'],
+        'true',
+        reason: name,
+      );
+    }
+    for (final xml in [styles, v31]) {
+      final parents = RegExp(r'<style name="\w+" parent="([^"]+)"')
+          .allMatches(xml)
+          .map((m) => m[1]);
+      expect(parents, isNotEmpty);
+      expect(parents, everyElement('@android:style/Theme.Light.NoTitleBar'));
+    }
     expect(
-      styleItems(styles, 'NormalTheme')['android:windowBackground'],
+      themes['NormalTheme']!['android:windowBackground'],
       '@color/fb_window_background',
     );
     expect(
-      styleItems(styles, 'LaunchTheme')['android:windowBackground'],
+      themes['LaunchTheme']!['android:windowBackground'],
       '@drawable/launch_background',
     );
-    expect(styles, isNot(contains('Theme.Light')));
+    expect(
+      themes['LaunchTheme v31']!['android:windowSplashScreenBackground'],
+      '@color/fb_window_background',
+    );
+
+    // Before Android 12 the reversed mark sits on a plate, not on cream.
+    final launch = readAndroid('main/res/drawable/launch_background.xml');
+    expect(launch, contains('android:shape="oval"'));
+    expect(
+      xmlElements(launch, 'solid').single['android:color'],
+      '@color/ic_launcher_background',
+    );
+    expect(
+      launch.indexOf('android:shape="oval"'),
+      lessThan(launch.indexOf('@drawable/ic_launcher_foreground')),
+      reason: 'the plate is drawn under the mark',
+    );
   });
 
   test('A44-D11 every flavor has a launcher plate colour, and the adaptive '

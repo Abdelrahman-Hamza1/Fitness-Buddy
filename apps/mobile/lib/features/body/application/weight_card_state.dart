@@ -17,6 +17,7 @@ final class WeightCardState {
     this.cadence,
     this.showTip = false,
     this.hasHistory = false,
+    this.weighedInOnDay = false,
   });
 
   /// The trend, weekly rate (or none: too little history, or stale) and
@@ -43,12 +44,19 @@ final class WeightCardState {
   /// a past page invites one for that day rather than the "first" one).
   final bool hasHistory;
 
+  /// Whether a readable weigh-in was logged on the day itself: then the
+  /// page shows the slim weight row instead of the full card (HM-005,
+  /// D-084, A45 D9), on every day page alike.
+  final bool weighedInOnDay;
+
   /// No weigh-in on or before the day.
   bool get isEmpty => asOf.trendKg == null;
 
   /// Never the values.
   @override
-  String toString() => 'WeightCardState(empty: $isEmpty, tip: $showTip)';
+  String toString() =>
+      'WeightCardState(empty: $isEmpty, tip: $showTip, '
+      'weighedInOnDay: $weighedInOnDay)';
 }
 
 /// The weight card's state for [date] (A14 D9). [isToday] adds the
@@ -96,12 +104,15 @@ AsyncValue<WeightCardState> weightCard(
     if (weighIn.localDate.isAfter(date) || !weighIn.isReadable) continue;
     if (latest == null || _isLater(weighIn, latest)) latest = weighIn;
   }
+  final weighedInOnDay = latest?.localDate == date;
   WeighInCadence? cadence;
   var showTip = false;
   // While the rate is not available yet (under 2 weeks of history) the card
   // says so, and the cadence line and the suggestion wait (M2). Stale has no
   // rate either, and no line: the trend row already says "from {date}".
-  if (isToday && asOf.weeklyRateKg != null) {
+  // The slim row (a weigh-in on the day) has neither: the suggestion is not
+  // shown, so it is not marked shown either (A45 D10).
+  if (isToday && asOf.weeklyRateKg != null && !weighedInOnDay) {
     cadence = WeighInCadence.of([
       for (final p in trend.points) p.localDate,
     ], date);
@@ -118,6 +129,7 @@ AsyncValue<WeightCardState> weightCard(
       cadence: cadence,
       showTip: showTip,
       hasHistory: true,
+      weighedInOnDay: weighedInOnDay,
     ),
   );
 }
