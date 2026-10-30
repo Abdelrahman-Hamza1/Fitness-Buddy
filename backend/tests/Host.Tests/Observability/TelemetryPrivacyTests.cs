@@ -25,6 +25,19 @@ public sealed partial class TelemetryPrivacyTests
     internal static readonly string[] Canaries = ["CANARY-BODY", "CANARY-QUERY", "CANARY-EXCEPTION", "CANARY-AUTH", "cafecafe-0000-7000-8000-00000000ca11"];
 
     [Fact]
+    public void Outbound_client_spans_keep_only_the_origin()
+    {
+        // B10a D7: an upstream path can carry request data (the barcode in Open Food Facts' product path).
+        using var activity = new Activity("client").SetIdFormat(ActivityIdFormat.W3C);
+        activity.SetTag("url.full", "https://world.openfoodfacts.org/api/v2/product/CANARY-QUERY?fields=x");
+        activity.SetTag("url.path", "/api/v2/product/CANARY-QUERY"); activity.SetTag("url.query", "fields=x"); activity.SetTag("server.address", "world.openfoodfacts.org");
+        HttpActivityPrivacy.SanitizeClient(activity);
+        Assert.Equal("https://world.openfoodfacts.org", activity.GetTagItem("url.full"));
+        Assert.Null(activity.GetTagItem("url.path")); Assert.Null(activity.GetTagItem("url.query"));
+        Assert.Equal("world.openfoodfacts.org", activity.GetTagItem("server.address"));
+    }
+
+    [Fact]
     public async Task No_canary_reaches_logs_activity_tags_events_status_or_metric_tags_for_200_400_426_429_500()
     {
         var capture = new CapturingLoggerProvider();

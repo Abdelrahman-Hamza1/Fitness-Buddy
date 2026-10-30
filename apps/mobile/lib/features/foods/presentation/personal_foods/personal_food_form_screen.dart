@@ -6,6 +6,7 @@ import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
+import 'package:fb_mobile/features/foods/application/barcode_providers.dart';
 import 'package:fb_mobile/features/foods/application/food_choice.dart';
 import 'package:fb_mobile/features/foods/application/food_search_row.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
@@ -42,13 +43,16 @@ enum _MenuAction { merge, delete }
 /// one tab never shows up in a new form opened in another.
 class PersonalFoodFormScreen extends ConsumerStatefulWidget {
   /// Creates the form; [id] is null for a new food.
-  const new({this.id, this.addTo, super.key});
+  const new({this.id, this.addTo, this.fromScan = false, super.key});
 
   /// The food to edit; null for a new one.
   final String? id;
 
-  /// Set when the form was opened from the add-food search.
+  /// Set when the form was opened from the add-food search or the scanner.
   final FoodAddTarget? addTo;
+
+  /// Opened from the barcode scanner: prefilled from the scan (A28a D9).
+  final bool fromScan;
 
   @override
   ConsumerState<PersonalFoodFormScreen> createState() =>
@@ -58,7 +62,9 @@ class PersonalFoodFormScreen extends ConsumerStatefulWidget {
 class _PersonalFoodFormScreenState
     extends ConsumerState<PersonalFoodFormScreen> {
   final PersonalFoodInputs _inputs = PersonalFoodInputs();
-  late final PersonalFoodFormKey _key = PersonalFoodFormKey(widget.id);
+  late final PersonalFoodFormKey _key = widget.fromScan && widget.id == null
+      ? PersonalFoodFormKey.scan()
+      : PersonalFoodFormKey(widget.id);
   bool _attempted = false;
   bool _leaving = false;
   bool _moreOpen = false;
@@ -176,6 +182,14 @@ class _PersonalFoodFormScreenState
     if (!mounted) return;
     switch (outcome) {
       case PersonalFoodDone(:final undoId, :final args, :final foodId):
+        // Saved from the scanner: its waiting scan is done (review fix 3).
+        if (widget.fromScan) {
+          unawaited(
+            ref
+                .read(pendingScansProvider.notifier)
+                .removeAll(form.validation.draft?.barcodes ?? const []),
+          );
+        }
         setState(() => _leaving = true);
         navigator.pop();
         final saved = l10n.personalFoodSavedMessage('${args['name']}');
@@ -505,6 +519,23 @@ class _PersonalFoodFormScreenState
                   ),
                   BarcodesSection(binding: binding),
                 ],
+                // A food saved from a barcode scan carries OFF data (ODbL).
+                if (OffOrigin.decode(
+                      form.original?.createdFrom ?? form.newCreatedFrom,
+                    ) !=
+                    null)
+                  Padding(
+                    padding: const EdgeInsetsDirectional.symmetric(
+                      horizontal: FbSpace.s4,
+                      vertical: FbSpace.s2,
+                    ),
+                    child: Text(
+                      l10n.personalFoodOffSource,
+                      style: FbType.bodySmall.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),

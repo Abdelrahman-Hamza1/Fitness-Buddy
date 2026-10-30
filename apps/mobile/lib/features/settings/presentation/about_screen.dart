@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fb_design_system/fb_design_system.dart';
+import 'package:fb_mobile/core/catalog/barcode_coverage.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/settings/application/about_info.dart';
@@ -89,6 +90,11 @@ class AboutScreen extends ConsumerWidget {
                     )
                 else
                   Text(l10n.aboutCreditsUnavailable, style: muted),
+                // Barcode lookups show Open Food Facts data (ODbL, `07` §3).
+                Text(
+                  l10n.aboutCredit(l10n.aboutOffName, l10n.aboutOffCredit),
+                  style: FbType.body.copyWith(color: scheme.onSurface),
+                ),
               ],
             ),
           ),
@@ -110,6 +116,27 @@ class AboutScreen extends ConsumerWidget {
             padding: const EdgeInsetsDirectional.all(FbSpace.s4),
             child: Text(l10n.aboutNotMedical, style: muted),
           ),
+          // A28a review fix 8: what the barcode scanner's ML Kit may send.
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              FbSpace.s4,
+              0,
+              FbSpace.s4,
+              FbSpace.s4,
+            ),
+            child: Text(l10n.aboutMlKitDisclosure, style: muted),
+          ),
+          // TD-064: the real barcode hit rate from daily use, on this phone.
+          if (ref.watch(barcodeCoverageCountsProvider).value case final c?)
+            Padding(
+              padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: FbSpace.s4,
+              ),
+              child: Text(
+                l10n.aboutBarcodeCoverage(c.found, c.incomplete, c.notFound),
+                style: muted,
+              ),
+            ),
         ],
       ),
     );

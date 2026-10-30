@@ -93,6 +93,8 @@ export 'models/catalog_nutrient_range.dart';
 export 'models/catalog_serving.dart';
 export 'models/catalog_food.dart';
 export 'models/catalog_search_page.dart';
+export 'models/barcode_nutrients.dart';
+export 'models/barcode_product.dart';
 export 'models/catalog_pack.dart';
 export 'models/client_config.dart';
 export 'models/buddy_food_log_kind.dart';

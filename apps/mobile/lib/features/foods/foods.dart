@@ -1,6 +1,8 @@
 /// Offline food search and the structured add command.
 library;
 
+export 'application/barcode_lookup.dart';
+export 'application/barcode_providers.dart';
 export 'application/food_amount_controller.dart';
 export 'application/food_choice.dart';
 export 'application/food_search_controller.dart';
@@ -16,6 +18,7 @@ export 'data/personal_food_mappers.dart'
     show PersonalFoodMappingError, personalFoodOf;
 export 'data/personal_food_op_handler.dart';
 export 'data/personal_food_repository.dart';
+export 'presentation/barcode/barcode_scan_screen.dart';
 export 'presentation/food_result_row.dart';
 export 'presentation/food_search_screen.dart';
 export 'presentation/food_sheet.dart';

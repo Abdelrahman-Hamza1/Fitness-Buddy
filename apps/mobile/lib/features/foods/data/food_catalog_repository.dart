@@ -32,6 +32,10 @@ class FoodCatalogRepository {
   Future<Map<String, List<CatalogFood>>> foodsByIds(Iterable<String> ids) =>
       catalog.foodsByIds(ids);
 
+  /// The pack food with barcode [code], or null (the pack has no barcodes
+  /// until local brands ship, A48).
+  Future<CatalogFood?> byBarcode(String code) => catalog.byBarcode(code);
+
   /// Potential siblings, checked for compatibility by the loader.
   Future<List<CatalogFood>> foodsInYieldGroup(String group) =>
       catalog.foodsInYieldGroup(group);

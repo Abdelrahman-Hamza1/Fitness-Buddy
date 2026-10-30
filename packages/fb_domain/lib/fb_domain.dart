@@ -41,6 +41,8 @@ export 'src/diary/slot_assigner.dart';
 export 'src/diary/totals.dart';
 export 'src/food/food_state.dart';
 export 'src/food/gtin.dart';
+export 'src/food/halal_check.dart';
+export 'src/food/off_origin.dart';
 export 'src/food/personal_food.dart';
 export 'src/food/personal_food_merge.dart';
 export 'src/food/personal_food_ops.dart';

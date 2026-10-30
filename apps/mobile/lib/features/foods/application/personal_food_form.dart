@@ -1,4 +1,7 @@
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/features/foods/application/barcode_lookup.dart'
+    show ScanPrefill;
+import 'package:fb_mobile/features/foods/application/barcode_providers.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
 import 'package:fb_mobile/features/foods/application/new_food_prefill.dart';
 import 'package:fb_mobile/features/foods/application/personal_food_actions.dart';
@@ -131,11 +134,19 @@ final class PersonalFoodServingInput {
 /// "New food" forms (one per tab of the indexed stack) never share typed
 /// input; each screen makes one key and keeps it for its lifetime.
 final class PersonalFoodFormKey {
-  /// A form for the food [id], or for a new food when null.
-  new([this.id]);
+  /// A form for the food [id], or for a new food when null. [fromScan]: a
+  /// new food opened from the barcode scanner, prefilled from the scan
+  /// (A28a D9).
+  new([this.id]) : fromScan = false;
+
+  /// A new-food form opened from the barcode scanner.
+  new scan() : id = null, fromScan = true;
 
   /// The food being edited; null for a new one.
   final String? id;
+
+  /// Opened by "Add it yourself" / "Add the missing values".
+  final bool fromScan;
 
   @override
   String toString() => 'PersonalFoodFormKey';
@@ -208,6 +219,7 @@ final class PersonalFoodFormState {
     this.staleness = PersonalFoodStaleness.current,
     this.duplicate,
     this.submitting = false,
+    this.newCreatedFrom = 'form',
   }) : fields = Map.unmodifiable(fields),
        touched = Set.unmodifiable(touched),
        servings = List.unmodifiable(servings);
@@ -255,6 +267,10 @@ final class PersonalFoodFormState {
 
   /// Whether a save is in flight.
   final bool submitting;
+
+  /// The creation code of a new food: `form`, or the OFF origin of a scan
+  /// prefill (review fix 2). An edited food keeps its own.
+  final String newCreatedFrom;
 
   /// Reads a field without inventing a default number.
   String text(PersonalFoodField field) => fields[field] ?? '';
@@ -309,6 +325,7 @@ final class PersonalFoodFormState {
     bool clearDuplicate = false,
     bool? submitting,
   }) => PersonalFoodFormState(
+    newCreatedFrom: newCreatedFrom,
     original: original ?? this.original,
     latest: latest ?? this.latest,
     fields: fields ?? this.fields,
@@ -546,7 +563,7 @@ PersonalFoodFormValidation _validate(PersonalFoodFormState s) {
         ? old.servings
         : servings,
     entryServing: entryServing,
-    createdFrom: old?.createdFrom ?? 'form',
+    createdFrom: _createdFrom(s, old, reinterpret: reinterpret),
   );
   if ((newValues ? draft.validate() : draft.validateWire()) != null) {
     errors[PersonalFoodField.nutrients] = PersonalFoodFieldError.bounds;
@@ -602,6 +619,39 @@ PersonalFoodFormState _initial(PersonalFood? food, {String? name}) {
   );
 }
 
+/// A new food prefilled from a scan (A28a D9): the barcode, and the name,
+/// brand, per-100 values and serving Open Food Facts has; the rest is typed.
+/// "More details" opens because a barcode is set.
+PersonalFoodFormState _initialFromScan(ScanPrefill p) => PersonalFoodFormState(
+  // Review fix 2: a prefill from OFF keeps the origin and the scan's halal
+  // flags; the fiber mark is decided from the field at save.
+  newCreatedFrom: switch (p.halal) {
+    final halal? => OffOrigin(halal: halal).encode(),
+    null => 'form',
+  },
+  basis: p.perMl ? NutrientBasis.per100ml : NutrientBasis.per100g,
+  servings: [
+    if (p.servingQuantity case final q?
+        when q >= PersonalFoodBounds.minServing &&
+            q <= PersonalFoodBounds.maxServing)
+      PersonalFoodServingInput('serving', _display(q)),
+  ],
+  fields: {
+    PersonalFoodField.name: p.name ?? '',
+    PersonalFoodField.nameAr: p.nameAr ?? '',
+    PersonalFoodField.brand: p.brand ?? '',
+    PersonalFoodField.aliases: '',
+    PersonalFoodField.barcodes: p.code,
+    PersonalFoodField.servingSize: '',
+    PersonalFoodField.kcal: _display(p.kcal),
+    PersonalFoodField.protein: _display(p.protein),
+    PersonalFoodField.carbs: _display(p.carbs),
+    PersonalFoodField.fat: _display(p.fat),
+    PersonalFoodField.fiber: _display(p.fiber),
+    for (final extra in _extras.keys) extra: '',
+  },
+);
+
 /// How a form's typed numbers are meant: per 100 or per one serving of a
 /// size, on a basis. The serving is null per 100, or when the typed size
 /// can't be read.
@@ -633,6 +683,24 @@ _Reading _readingOf(PersonalFoodFormState s) {
   return (mode: s.mode, basis: s.basis, serving: serving);
 }
 
+/// The saved creation code. A food from an OFF scan keeps its origin; its
+/// "fiber stored as 0" mark follows the fiber field once that is typed
+/// (empty means 0 again).
+String _createdFrom(
+  PersonalFoodFormState s,
+  PersonalFoodDraft? old, {
+  required bool reinterpret,
+}) {
+  final base = old?.createdFrom ?? s.newCreatedFrom;
+  final off = OffOrigin.decode(base);
+  final fiberTyped =
+      old == null || reinterpret || s.touched.contains(PersonalFoodField.fiber);
+  if (off == null || !fiberTyped) return base;
+  return off
+      .withFiberAssumed(assumed: s.text(PersonalFoodField.fiber).trim().isEmpty)
+      .encode();
+}
+
 /// Disposable per-form state; only submit calls the application commands.
 /// Each open form passes its own [PersonalFoodFormKey].
 @riverpod
@@ -649,8 +717,16 @@ class PersonalFoodFormController extends _$PersonalFoodFormController {
       // Consume the handoff after provider initialization; Riverpod forbids
       // updating another notifier during the synchronous build phase.
       await Future<void>.value();
+      final scan = key.fromScan
+          ? ref.read(scanFoodPrefillProvider.notifier).take()
+          : null;
       return _duplicate(
-        _initial(null, name: ref.read(newFoodPrefillProvider.notifier).take()),
+        scan != null
+            ? _initialFromScan(scan)
+            : _initial(
+                null,
+                name: ref.read(newFoodPrefillProvider.notifier).take(),
+              ),
         ref.read(personalFoodsProvider).value ?? [],
       );
     }

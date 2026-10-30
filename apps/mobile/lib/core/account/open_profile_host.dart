@@ -17,7 +17,12 @@ final class OpenProfileHost implements ProfileHost {
     required this._select,
     required this._fallbackRoot,
     required this._activeKey,
+    this._onDeleted,
   });
+
+  /// Removes device-local state kept per profile outside its directory
+  /// (A28a review fix 1: the pending-scan list), after the files went.
+  final Future<void> Function(String profileKey)? _onDeleted;
 
   final OpenProfileHandles _handles;
   final void Function(String profileKey) _select;
@@ -57,6 +62,7 @@ final class OpenProfileHost implements ProfileHost {
     if (profileKey == await _activeKey()) throw StateError('active_profile');
     final root = _handles.location ?? _fallbackRoot();
     await root.deleteProfileDirectory(profileKey);
+    await _onDeleted?.call(profileKey);
   }
 
   @override

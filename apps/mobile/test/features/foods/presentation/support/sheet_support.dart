@@ -204,6 +204,9 @@ final class SheetRig {
   late final UndoStack stack;
   late final PopNavigator navigator;
 
+  /// Replaces [navigator] in [overrides] (a test that records pushes).
+  AppNavigator? appNavigator;
+
   FoodSearchRow get row => rowFor(choice);
 
   List<Override> get overrides => [
@@ -212,7 +215,7 @@ final class SheetRig {
     foodSlotsProvider.overrideWith((ref) => Stream.value(DefaultSlots.all)),
     clockProvider.overrideWithValue(diary.clock),
     undoStackProvider.overrideWithValue(stack),
-    appNavigatorProvider.overrideWithValue(navigator),
+    appNavigatorProvider.overrideWithValue(appNavigator ?? navigator),
     diaryRepositoryProvider.overrideWithValue(DiaryRepository(diary.db)),
     replaceEntryFoodProvider.overrideWith(
       (ref) => ReplaceEntryFood(

@@ -1,8 +1,9 @@
-# Catalog (B07)
+# Catalog (B07, B10a)
 
 Global reference data, imported from an A05 release; no user content or model-generated nutrition.
-The module owns `catalog.*`. Application credentials have SELECT only. OFF data is reserved in
-`off_cache`, never imported or merged into release foods (B10).
+The module owns `catalog.*`. Application credentials have SELECT only on release tables; since B10a
+they also write `off_cache`, the licence-isolated Open Food Facts cache, which is never imported or
+merged into release foods (`07` §3).
 
 `CatalogModule.ImportAsync` is the operator boundary used by the migrate role under recovery
 maintenance. `Catalog:ImportDirectory` points to the build root containing `catalog.db` and `release/`.
@@ -14,7 +15,7 @@ rather than silently relabelled (add an explicit HTTP basis before supporting th
 
 `Contracts.IFoodResolver` is the only Buddy seam. EN/AR candidates union by key and best score;
 state/kind are strict filters. Candidate scores combine the same source and matching priority as search, never confidence in nutrients.
-No user history or OFF input exists here. The implementation does not use the network.
+No user history or OFF input exists here. Release search and import do not use the network.
 
 Search keys use explicit TD-030 tables, every shared YAML golden case and fixed point is tested.
 One alias table uses GIN trigram and simple-token indexes. SQL parameters carry queries, filters
@@ -34,3 +35,18 @@ Tests: `make test-dotnet` builds the non-mutating A05 catalog then runs shared n
 synthetic dish/import/paging/auth fixtures and real full-catalog import/relevance/p95 checks.
 `make check-catalog-schemas` proves the embedded release validator matches `contracts/catalog`.
 Operations: [catalog runbook](../../../../docs/runbooks/catalog.md).
+
+## Barcode lookup (B10a)
+
+`GET /v1/foods/barcode/{code}` (any live principal): GTIN-8/12/13/14 with a valid check digit, keyed in
+OFF's 13-digit form. `BarcodeLookup` reads `catalog.off_cache` (products 30 days, unknown codes 1 day),
+else one Open Food Facts v2 read through `OpenFoodFactsClient`: `User-Agent` from
+`Catalog:OpenFoodFacts:UserAgent`, no identity or cookies, no redirects, 5 s timeout, 1 MB cap, the
+framework's HttpClient logs removed (they would print the barcode). `OffGate` (singleton) enforces a
+process-wide budget (`ReadsPerMinute`, default 10), a per-account budget for upstream fetches
+(`UserFetchesPerHour`, default 30; cache hits are free), a cool-down after OFF answers 429/503 and
+one in-flight read per code. While OFF can't be asked, an expired product is served for 7 more days,
+then 503 with `Retry-After`. `OffCacheExpiryJob` (`catalog.off-cache-expiry`, daily 03:17 UTC, a
+DI-registered `JobSchedule`) deletes rows past that window. Logs carry outcome codes only; outbound
+client spans keep only the origin. `Catalog:OpenFoodFacts:Enabled=false` answers 503 without calling OFF.
+Tests: `Persistence.Tests/BarcodeLookupTests` (fake OFF handler, Testcontainers).

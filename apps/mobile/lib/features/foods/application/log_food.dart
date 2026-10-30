@@ -62,7 +62,9 @@ final class LogFood {
     String? slotId,
   }) async {
     if (input.amount <= 0) return const FoodLogFailed('invalidAmount');
+    final create = choice.pendingCreate;
     if (choice.ref.kind == FoodRefKind.personal &&
+        create == null &&
         (choice.guard == null || choice.guard!.id != choice.ref.id)) {
       return const FoodLogFailed('removed');
     }
@@ -84,7 +86,11 @@ final class LogFood {
     try {
       result = await apply(
         ChangeSet([
-          if (choice.ref.kind == FoodRefKind.personal)
+          // A scanned product (A28a D8): the personal food and the entry are
+          // one direct action, so one Undo removes both.
+          if (create != null)
+            CreatePersonalFood(choice.ref.id!, create)
+          else if (choice.ref.kind == FoodRefKind.personal)
             RequirePersonalFood(choice.guard!),
           LogEntries([entry]),
         ], origin: Origin.direct),

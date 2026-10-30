@@ -1,6 +1,7 @@
 /// The bundled offline catalog: pack installer and read access (A05).
 library;
 
+export 'barcode_coverage.dart';
 export 'catalog_api_mapping.dart';
 export 'catalog_attach.dart';
 export 'catalog_models.dart';

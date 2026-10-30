@@ -30,4 +30,19 @@ abstract final class PreferenceKeys {
   /// account" prompt last showed (AC-002, A33 D8): display state, not user
   /// data, never synced.
   static const guestPrompt = 'fb.guest_prompt.v1';
+
+  /// Barcode lookups found / incomplete / not found on this phone (A28a
+  /// D12, TD-064): a debug counter shown on About, never synced or sent.
+  static const barcodeCoverage = 'fb.barcode_coverage.v1';
+
+  /// Prefix of the barcodes scanned while the lookup couldn't run (offline,
+  /// server unavailable), waiting for a later lookup (A28a D10, OF-02).
+  /// Device state, never synced; one list per environment and local profile
+  /// (`<prefix>|<namespace>|<profileKey>`), deleted with the profile.
+  static const pendingScans = 'fb.pending_scans.v1';
+
+  /// The pending-scan list of [profileKey] in the [namespace] environment
+  /// (`flavor|apiBaseUrl`, as the profile registry's).
+  static String pendingScansFor(String namespace, String profileKey) =>
+      '$pendingScans|$namespace|$profileKey';
 }

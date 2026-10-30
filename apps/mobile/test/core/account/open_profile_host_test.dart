@@ -55,14 +55,18 @@ void main() {
     () async {
       final dir = Directory('${root.path}/profiles/acct-0123456789abcdef')
         ..createSync(recursive: true);
+      final deleted = <String>[];
       final host = OpenProfileHost(
         handles: OpenProfileHandles(),
         select: (_) {},
         fallbackRoot: () => locationOf('local'),
         activeKey: () async => 'local',
+        // A28a review fix 1: per-profile device state goes with the files.
+        onDeleted: (key) async => deleted.add(key),
       );
       await host.deleteFiles('acct-0123456789abcdef');
       expect(dir.existsSync(), isFalse);
+      expect(deleted, ['acct-0123456789abcdef']);
       await expectLater(host.deleteFiles('../escape'), throwsArgumentError);
     },
   );

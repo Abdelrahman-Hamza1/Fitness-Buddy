@@ -44,6 +44,8 @@ import '../../helpers/pump_app.dart';
   DesignPreviewRoute() => (DesignPreviewScreen, true),
   FoodSearchRoute() => (FoodSearchScreen, true),
   NewFoodFromSearchRoute() => (PersonalFoodFormScreen, true),
+  BarcodeScanRoute() => (BarcodeScanScreen, true),
+  NewFoodFromScanRoute() => (PersonalFoodFormScreen, true),
   PersonalFoodsRoute() => (PersonalFoodsScreen, true),
   PersonalFoodRoute() => (PersonalFoodFormScreen, true),
   SavedMealsRoute() => (SavedMealsScreen, true),
@@ -85,6 +87,8 @@ const List<AppRoute> _allRoutes = [
   DesignPreviewRoute(),
   FoodSearchRoute(),
   NewFoodFromSearchRoute(),
+  BarcodeScanRoute(),
+  NewFoodFromScanRoute(),
   PersonalFoodsRoute(),
   PersonalFoodRoute(),
   SavedMealsRoute(),
@@ -128,6 +132,8 @@ void main() {
         const DesignPreviewRoute(),
         const FoodSearchRoute(),
         const NewFoodFromSearchRoute(),
+        const BarcodeScanRoute(),
+        const NewFoodFromScanRoute(),
         const PersonalFoodsRoute(),
         const PersonalFoodRoute(),
         const SavedMealsRoute(),
@@ -161,7 +167,10 @@ void main() {
       'router', (tester) async {
     final container = await pumpApp(
       tester,
-      overrides: [searchOverride(FakeFoodSearch())],
+      overrides: [
+        searchOverride(FakeFoodSearch()),
+        barcodeCameraEnabledProvider.overrideWithValue(false),
+      ],
     );
     final router = container.read(appRouterProvider);
 

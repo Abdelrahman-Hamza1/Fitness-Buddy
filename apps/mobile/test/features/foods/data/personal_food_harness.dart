@@ -27,13 +27,13 @@ export '../../diary/support/diary_harness.dart' show newEntry, newId, today;
 
 /// Real applier, including both new families; all fixture writes use it too.
 final class PersonalHarness {
-  new({bool failRelink = false}) {
+  new({bool failRelink = false, bool failLog = false}) {
     addTearDown(bus.close);
     applier = ChangeSetApplier(
       db: db,
       tables: db.syncedTables,
       handlers: (db) => [
-        RejectRelinkHandler(db, failRelink: failRelink),
+        RejectRelinkHandler(db, failRelink: failRelink, failLog: failLog),
         PersonalFoodOpHandler(db),
         const ScriptHandler(),
       ],
@@ -210,14 +210,17 @@ PersonalFoodDraft draft(
 /// Fault injection at the second family boundary, after food writes were
 /// queued.
 final class RejectRelinkHandler extends ChangeOpHandler<DiaryOp> {
-  const new(this.db, {required this.failRelink});
+  const new(this.db, {required this.failRelink, this.failLog = false});
   final AppDatabase db;
   final bool failRelink;
+
+  /// Rejects every LogEntries (A28a: a scanned food's create must roll back).
+  final bool failLog;
   @override
   String get family => DiaryOp.familyName;
   @override
   Future<OpPlan> plan(DiaryOp op, TxReader tx, ApplyContext context) {
-    if (failRelink && op is RelinkFoodRefs) {
+    if ((failRelink && op is RelinkFoodRefs) || (failLog && op is LogEntries)) {
       throw const ChangeRejected(InvalidOp('injectedFailure'));
     }
     return DiaryOpHandler(db).plan(op, tx, context);

@@ -3237,7 +3237,7 @@
   },
   "devComingSoon": "Coming soon",
   "@devComingSoon": {
-    "description": "Dev builds only: the camera and barcode buttons do nothing yet."
+    "description": "Dev builds only: the camera button does nothing yet."
   },
   "diaryChipMeal": "Meal",
   "@diaryChipMeal": {
@@ -6258,5 +6258,258 @@
   "workoutCustomAliasesTooMany": "At most {max} other names",
   "@workoutCustomAliasesTooMany": {"description": "Custom exercise form: too many aliases.", "placeholders": {"max": {"type": "int"}}},
   "workoutCustomAliasTooLong": "Each name can have at most {max} characters",
-  "@workoutCustomAliasTooLong": {"description": "Custom exercise form: an alias is too long.", "placeholders": {"max": {"type": "int"}}}
+  "@workoutCustomAliasTooLong": {"description": "Custom exercise form: an alias is too long.", "placeholders": {"max": {"type": "int"}}},
+  "barcodeScanTitle": "Scan a barcode",
+  "@barcodeScanTitle": {
+    "description": "Barcode scanner (A28a): screen title."
+  },
+  "barcodeScanHint": "Point the camera at the barcode on the package.",
+  "@barcodeScanHint": {
+    "description": "Barcode scanner: hint under the camera while nothing is found yet."
+  },
+  "barcodeTypeCode": "Type the code",
+  "@barcodeTypeCode": {
+    "description": "Barcode scanner: app-bar action to enter the barcode number by hand (no camera needed)."
+  },
+  "barcodeTypeCodeTitle": "Barcode number",
+  "@barcodeTypeCodeTitle": {
+    "description": "Barcode scanner: title of the sheet for typing a barcode."
+  },
+  "barcodeTypeCodeLabel": "Barcode",
+  "@barcodeTypeCodeLabel": {
+    "description": "Barcode scanner: label of the barcode number field."
+  },
+  "barcodeTypeCodeHint": "The 8 to 14 digits under the bars",
+  "@barcodeTypeCodeHint": {
+    "description": "Barcode scanner: hint of the barcode number field."
+  },
+  "barcodeLookUp": "Look up",
+  "@barcodeLookUp": {
+    "description": "Barcode scanner: button that looks up the typed barcode."
+  },
+  "barcodeLookingUp": "Looking it up…",
+  "@barcodeLookingUp": {
+    "description": "Barcode scanner: screen-reader text while a scanned code is looked up."
+  },
+  "barcodeInvalid": "That doesn't look like a product barcode.",
+  "@barcodeInvalid": {
+    "description": "Barcode scanner: snackbar when the code is not an EAN/UPC product code (bad check digit or length)."
+  },
+  "barcodeNotFoundTitle": "We don't know this product yet",
+  "@barcodeNotFoundTitle": {
+    "description": "Barcode scanner: no product is known for the scanned code (FD-032)."
+  },
+  "barcodeNotFoundBody": "Add it once and your next scan finds it.",
+  "@barcodeNotFoundBody": {
+    "description": "Barcode scanner: body under the not-found title."
+  },
+  "barcodeAddYourself": "Add it yourself",
+  "@barcodeAddYourself": {
+    "description": "Barcode scanner: opens the new-food form with the barcode filled in."
+  },
+  "barcodeScanAnother": "Scan another",
+  "@barcodeScanAnother": {
+    "description": "Barcode scanner: dismisses the result and scans again."
+  },
+  "barcodeWaitingTitle": "Can't look it up right now",
+  "@barcodeWaitingTitle": {
+    "description": "Barcode scanner: the lookup could not run (offline or server unavailable); the scan waits (OF-02)."
+  },
+  "barcodeWaitingBody": "We'll try again when you're back online, or you can add it yourself now.",
+  "@barcodeWaitingBody": {
+    "description": "Barcode scanner: body under the waiting title."
+  },
+  "barcodeIncompleteTitle": "Some values are missing",
+  "@barcodeIncompleteTitle": {
+    "description": "Barcode scanner: the product is known but lacks values needed to log it (FD-033)."
+  },
+  "barcodeIncompleteBody": "We found {name}, but not all its values. Add the missing ones to log it.",
+  "@barcodeIncompleteBody": {
+    "description": "Barcode scanner: body for an incomplete product with a name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "barcodeIncompleteBodyNoName": "We found this product, but not its name or all its values. Add the missing ones to log it.",
+  "@barcodeIncompleteBodyNoName": {
+    "description": "Barcode scanner: body for an incomplete product without a name."
+  },
+  "barcodeAddMissing": "Add the missing values",
+  "@barcodeAddMissing": {
+    "description": "Barcode scanner: opens the new-food form prefilled with what is known about the product."
+  },
+  "barcodeCameraDenied": "Camera access is off. You can type the code instead.",
+  "@barcodeCameraDenied": {
+    "description": "Barcode scanner: shown in place of the camera when the permission is denied."
+  },
+  "barcodeCameraUnavailable": "The camera isn't available. You can type the code instead.",
+  "@barcodeCameraUnavailable": {
+    "description": "Barcode scanner: shown in place of the camera when there is no usable camera."
+  },
+  "barcodePendingTitle": "Scanned earlier",
+  "@barcodePendingTitle": {
+    "description": "Barcode scanner: section of scans that waited for a connection (A28a D10)."
+  },
+  "barcodePendingWaiting": "Waiting to look up",
+  "@barcodePendingWaiting": {
+    "description": "Barcode scanner: a waiting scan that has not been looked up yet."
+  },
+  "barcodePendingReady": "Found · tap to log",
+  "@barcodePendingReady": {
+    "description": "Barcode scanner: a waiting scan whose product was found later."
+  },
+  "barcodePendingNotFound": "Not found · tap to add it yourself",
+  "@barcodePendingNotFound": {
+    "description": "Barcode scanner: a waiting scan whose product was not found later."
+  },
+  "barcodePendingRemove": "Remove",
+  "@barcodePendingRemove": {
+    "description": "Barcode scanner: tooltip of the button that removes a waiting scan."
+  },
+  "barcodeProductCode": "Barcode {code}",
+  "@barcodeProductCode": {
+    "description": "Barcode scanner: name of a waiting scan before its product is known.",
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "scannedBrand": "Brand: {brand}",
+  "@scannedBrand": {
+    "description": "Food sheet after a scan: the product's brand.",
+    "placeholders": {
+      "brand": {
+        "type": "String"
+      }
+    }
+  },
+  "scannedPerServing": "{serving}: {kcal} kcal · {protein} protein · {carbs} carbs · {fat} fat",
+  "@scannedPerServing": {
+    "description": "Food sheet after a scan: values of one serving (FD-030); the macros are already formatted with their unit.",
+    "placeholders": {
+      "serving": {
+        "type": "String"
+      },
+      "kcal": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "protein": {
+        "type": "String"
+      },
+      "carbs": {
+        "type": "String"
+      },
+      "fat": {
+        "type": "String"
+      }
+    }
+  },
+  "scannedServing": "1 serving ({amount})",
+  "@scannedServing": {
+    "description": "Food sheet after a scan: one serving, the amount already formatted with its unit (\"30 g\", \"250 ml\", \"1.1 oz\").",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "scannedFiberMissing": "Fiber isn't listed for this product, so it's counted as 0.",
+  "@scannedFiberMissing": {
+    "description": "Food sheet after a scan: the product has no fiber value (A28a D9)."
+  },
+  "offAttribution": "© Open Food Facts contributors",
+  "@offAttribution": {
+    "description": "Attribution required wherever Open Food Facts data is shown (ODbL). Keep the © and the name."
+  },
+  "halalCheckMessage": "Halal check: {items}.",
+  "@halalCheckMessage": {
+    "description": "Halal warning (FD-081): a warning, never a block. items is a list like \"may contain pork; gelatin or emulsifiers of unknown source\".",
+    "placeholders": {
+      "items": {
+        "type": "String"
+      }
+    }
+  },
+  "halalMayContainPork": "may contain pork",
+  "@halalMayContainPork": {
+    "description": "Halal warning item: the name or ingredients mention pork."
+  },
+  "halalMayContainAlcohol": "may contain alcohol",
+  "@halalMayContainAlcohol": {
+    "description": "Halal warning item: the name or ingredients mention alcohol."
+  },
+  "halalUnknownSource": "gelatin or emulsifiers of unknown source",
+  "@halalUnknownSource": {
+    "description": "Halal warning item: worded as unknown, never as non-halal."
+  },
+  "halalItemSeparator": "; ",
+  "@halalItemSeparator": {
+    "description": "Separator between halal warning items."
+  },
+  "foodResultHalalSubtitle": "{subtitle} · {halal}",
+  "@foodResultHalalSubtitle": {
+    "description": "Add-food result row: the usual second line followed by the halal note.",
+    "placeholders": {
+      "subtitle": {
+        "type": "String"
+      },
+      "halal": {
+        "type": "String"
+      }
+    }
+  },
+  "personalFoodOffSource": "Values from Open Food Facts · © Open Food Facts contributors",
+  "@personalFoodOffSource": {
+    "description": "Personal-food form: shown for a food saved from a barcode scan (ODbL attribution)."
+  },
+  "aboutOffName": "Open Food Facts",
+  "@aboutOffName": {
+    "description": "About: name of the barcode data source."
+  },
+  "aboutOffCredit": "barcode product data © Open Food Facts contributors, under the Open Database License",
+  "@aboutOffCredit": {
+    "description": "About: credit line for Open Food Facts."
+  },
+  "aboutBarcodeCoverage": "Barcode lookups on this phone: {found} found · {incomplete} incomplete · {notFound} not found",
+  "@aboutBarcodeCoverage": {
+    "description": "About: debug line with the on-device barcode coverage counter (TD-064).",
+    "placeholders": {
+      "found": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "incomplete": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "notFound": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "barcodePendingReadyOff": "Found · tap to log · © Open Food Facts contributors",
+  "@barcodePendingReadyOff": {
+    "description": "Barcode scanner: a waiting scan found later in Open Food Facts (ODbL credit included)."
+  },
+  "barcodeWhichKind": "Which barcode is it?",
+  "@barcodeWhichKind": {
+    "description": "Barcode scanner: title when a typed 8-digit code is valid both as EAN-8 and as UPC-E."
+  },
+  "barcodeKindEan8": "EAN-8 (8 digits under the bars)",
+  "@barcodeKindEan8": {
+    "description": "Barcode scanner: choice for an ambiguous typed code read as EAN-8."
+  },
+  "barcodeKindUpcE": "UPC-E (short US/Canada code)",
+  "@barcodeKindUpcE": {
+    "description": "Barcode scanner: choice for an ambiguous typed code read as UPC-E."
+  },
+  "aboutMlKitDisclosure": "Barcode scanning uses Google ML Kit on this phone. ML Kit doesn't send camera images or the barcodes it reads to Google; Google may receive an installation ID, device and app information, and diagnostics (developers.google.com/ml-kit/android-data-disclosure). To find a product, the barcode is sent to the Fitness Buddy server.",
+  "@aboutMlKitDisclosure": {
+    "description": "About: what Google's ML Kit (barcode scanner) may send. Keep it factual; the link text is Google's disclosure page."
+  }
 }

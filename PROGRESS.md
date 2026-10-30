@@ -1,8 +1,8 @@
 # Fitness Buddy: progress
 
-**57 of 87 steps done** · `▓▓▓▓▓▓░░░░` 65%
+**59 of 87 steps done** · `▓▓▓▓▓▓░░░░` 67%
 
-App 42/64 · Backend 15/23 · Foundation 7/7
+App 43/64 · Backend 16/23 · Foundation 7/7
 
 ## Now
 
@@ -15,7 +15,7 @@ App 42/64 · Backend 15/23 · Foundation 7/7
 | ✅ | **M1** Dogfood 1 | `▓▓▓▓▓` 14/14 | — |
 | ✅ | **M2** Targets & weight | `▓▓▓▓▓` 9/9 | — |
 | 🟨 | **M5** Accounts & sync | `▓▓▓▓░` 18/20 | A34 A35 |
-| 🟨 | **M2b** Solid app (no AI) | `▓▓▓░░` 15/22 | A28a A38 A39a A40 A41a A42 +3 |
+| 🟨 | **M2b** Solid app (no AI) | `▓▓▓░░` 17/22 | A38 A39a A40 A41a A42 A34 +1 |
 | 🟨 | **M3** Buddy on the laptop | `▓░░░░` 1/4 | A23b A48 A49 #148 #149 #150 #151 |
 | ⬜ | **M4** Dogfood 2 | `░░░░░` 0/8 | A25 A26 A27 A28b A29 A31 +2 |
 | ⬜ | **M6** Workouts, review &… | `░░░░░` 0/4 | A37b A39b A41b B12 |
@@ -30,9 +30,9 @@ Not started, every dependency done; earliest milestone first:
 
 - [A34](technical-planning/steps/A34-sync-engine-app.md) Sync engine (app) · M5
 - [A38](technical-planning/steps/A38-adaptive-targets.md) Adaptive targets & weekly check-in · M2b
-- [B10a](technical-planning/steps/B10-barcode-vision-import.md) Barcode lookup (server, no AI; split from B10, 2026-10-30) · M2b
 - [A23b](technical-planning/steps/A23-message-lifecycle.md) Message queue, failures & pending strip (split from A23) · M3
 - [A26](technical-planning/steps/A26-memory-user-model.md) Memory & user model (app) · M4
+- [B10b](technical-planning/steps/B10-barcode-vision-import.md) Label & meal photos, paste import (split from B10) · M4
 
 ## Waiting on you
 
@@ -46,7 +46,7 @@ Not started, every dependency done; earliest milestone first:
 - **#124** On the A55: Me > Your data > Export your data with Android font size at the largest…
 - **#123** At the A22 phone session: run A21 §6's A55 profile benchmark (UI-free), then at least…
 - **#115** On the A55: set real settings (imperial/metric, theme dark/light, week start, halal…
-- …and 36 more owner items in the [backlog](technical-planning/steps/backlog.md)
+- …and 37 more owner items in the [backlog](technical-planning/steps/backlog.md)
 
 ---
 

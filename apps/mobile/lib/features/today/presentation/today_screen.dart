@@ -5,9 +5,12 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
+import 'package:fb_mobile/features/foods/foods.dart'
+    show barcodeLookupProvider, pendingScansProvider, processPendingScans;
 import 'package:fb_mobile/features/quick_add/quick_add.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/today/application/today_controller.dart';
@@ -57,7 +60,14 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     // Back from the background: the day may have changed, and so may the
     // time zone (A08 D4).
     _lifecycle = AppLifecycleListener(
-      onResume: () => ref.invalidate(todayProvider),
+      onResume: () {
+        ref.invalidate(todayProvider);
+        // Scans that waited for a connection get another try (A28a D10).
+        processPendingScans(
+          () => ref.read(pendingScansProvider.notifier),
+          () => ref.read(barcodeLookupProvider),
+        );
+      },
     );
     _afterFrame(_syncWindow);
   }
@@ -248,9 +258,12 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
               child: FbInputBar(
                 hint: l10n.todayInputHint,
                 onTap: () => unawaited(showBuddySheet(context, date: viewed)),
-                // Not built yet (A22, A28): in the dev flavor only.
+                // Not built yet (A22): in the dev flavor only.
                 onCamera: dev ? _comingSoon : null,
-                onBarcode: dev ? _comingSoon : null,
+                // The barcode scanner (A28a D14).
+                onBarcode: () => ref
+                    .read(appNavigatorProvider)
+                    .push(BarcodeScanRoute(date: viewed)),
               ),
             ),
           ],

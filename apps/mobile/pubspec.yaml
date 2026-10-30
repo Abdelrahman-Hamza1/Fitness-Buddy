@@ -46,6 +46,11 @@ dependencies:
   google_sign_in: 7.2.0
   intl: ^0.20.2
   material_ui: 1.6.0
+  # A28a D13: barcode scanner (CameraX + bundled ML Kit barcode model, so the
+  # first scan works offline), BSD-3. Adds android.permission.CAMERA
+  # (asked at first use; camera hardware not required). Exact pin; used only
+  # in lib/features/foods/presentation/barcode/.
+  mobile_scanner: 7.4.2
   # X-App-Version and the update gate read the installed version.
   package_info_plus: ^10.2.2
   # The profile database directory (A01 D13).

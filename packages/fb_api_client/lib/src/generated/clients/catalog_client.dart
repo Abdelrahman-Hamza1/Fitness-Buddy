@@ -8,6 +8,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 
+import '../models/barcode_product.dart';
 import '../models/catalog_food.dart';
 import '../models/catalog_pack.dart';
 import '../models/catalog_search_page.dart';
@@ -27,6 +28,12 @@ abstract class CatalogClient {
     @Query('limit') required int limit,
     @Query('cursor') String? cursor,
   });
+
+  /// Look up a packaged food by barcode.
+  ///
+  /// Any authenticated account, including guests. The code is a GTIN-8, -12, -13 or -14 with a valid check digit (UPC-E is expanded by the app); anything else returns 400. GTIN-12 and zero-padded GTIN-14 are answered under their 13-digit form. The answer comes from the server's licence-isolated Open Food Facts cache (30 days for products, 1 day for unknown codes) or one rate-limited Open Food Facts read; an expired product is served for up to 7 more days while Open Food Facts is unavailable. 404: unknown code. 429: this account's upstream lookups are spent for now. 503 (with Retry-After): Open Food Facts can't be asked right now; retry later. When source is "off", show "© Open Food Facts contributors" with the data (ODbL). complete is true only when all five core nutrients are present; nutrients are per 100 g (basis "g") or per 100 ml (basis "ml"), kcal derived from kJ when only kJ is published. Values are Open Food Facts data, never model output.
+  @GET('/v1/foods/barcode/{code}')
+  Future<BarcodeProduct> getFoodByBarcode({@Path('code') required String code});
 
   /// Get a catalog food by stable ID.
   ///

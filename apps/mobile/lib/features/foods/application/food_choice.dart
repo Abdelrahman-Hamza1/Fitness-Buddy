@@ -30,7 +30,12 @@ final class FoodChoice {
     this.lastUsed,
     this.siblings = const [],
     this.yields,
+    this.pendingCreate,
   });
+
+  /// A scanned product not saved yet (A28a D8): logging it creates this
+  /// personal food (with [ref]'s ID) and the entry in one change set.
+  final PersonalFoodDraft? pendingCreate;
 
   /// The food snapshot selected for the next log.
   final EntryFood food;
@@ -199,7 +204,17 @@ FoodChoice historyChoice(FoodHistoryItem item, {VersionedId? guard}) =>
 /// Loader expands only compatible state siblings with an actual yield factor.
 final class FoodChoiceLoader {
   /// Creates this structured value.
-  new(this.repository, this.history, {this.personalFoods, this.onlineFood});
+  new(
+    this.repository,
+    this.history, {
+    this.personalFoods,
+    this.onlineFood,
+    this.scannedFood,
+  });
+
+  /// Scanned products not saved yet (A28a D8), by their reserved personal
+  /// ID; used only when no live personal row has that ID.
+  final FoodChoice? Function(String id)? scannedFood;
 
   /// Foods seen in online results (A24 D4), used when the pack lacks the ID.
   final CatalogFood? Function(String id)? onlineFood;
@@ -226,7 +241,9 @@ final class FoodChoiceLoader {
           ?.call()
           .where((f) => f.id == ref.food.id)
           .firstOrNull;
-      return personal == null ? null : personalChoice(personal, history: used);
+      return personal == null
+          ? scannedFood?.call(ref.food.id!)
+          : personalChoice(personal, history: used);
     }
     final food = ref.food.kind == FoodRefKind.catalog
         ? (await repository.foodsByIds([
@@ -302,3 +319,18 @@ FoodChoice personalChoice(PersonalFood food, {FoodHistoryItem? history}) =>
       guard: VersionedId(food.id, food.version),
       lastUsed: history,
     );
+
+/// A scanned product that becomes a personal food when logged (A28a D8):
+/// the same units and default portion as a saved one, no guard (the food is
+/// created in the log's change set), [id] reserved for it.
+FoodChoice scannedChoice(String id, PersonalFoodDraft draft) {
+  final virtual = personalChoice(
+    PersonalFood(id: id, version: 1, draft: draft),
+  );
+  return FoodChoice(
+    food: virtual.food,
+    measures: virtual.measures,
+    personalFood: virtual.personalFood,
+    pendingCreate: draft,
+  );
+}

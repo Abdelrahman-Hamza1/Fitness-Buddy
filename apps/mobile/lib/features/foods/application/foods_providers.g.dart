@@ -173,7 +173,7 @@ final class FoodChoiceProvider
   }
 }
 
-String _$foodChoiceHash() => r'ab94e2655515fbd1776fd6e30658eb6c25572199';
+String _$foodChoiceHash() => r'ec92183e1a0a890c0fb4726605e8f6087e18bf62';
 
 /// Loads the selected food using fresh history and current metadata.
 

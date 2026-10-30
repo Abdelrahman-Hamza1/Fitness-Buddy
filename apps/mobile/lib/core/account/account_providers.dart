@@ -55,6 +55,18 @@ AccountTransitions accountTransitions(Ref ref) => AccountTransitions(
     fallbackRoot: () => DatabaseLocation.appSupport('local'),
     activeKey: () async =>
         (await ref.read(profileRegistryProvider).read()).activeKey,
+    // A28a review fix 1: a deleted profile's pending scans go with it.
+    onDeleted: (key) {
+      final config = ref.read(appConfigProvider);
+      return ref
+          .read(sharedPreferencesProvider)
+          .remove(
+            PreferenceKeys.pendingScansFor(
+              '${config.flavor.name}|${config.apiBaseUrl}',
+              key,
+            ),
+          );
+    },
   ),
   newTag: ref.watch(idGeneratorProvider).next,
   onBusy: ({required busy}) =>

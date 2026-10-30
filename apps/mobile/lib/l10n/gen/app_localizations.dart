@@ -3270,7 +3270,7 @@ abstract class AppLocalizations {
   /// **'Too late to undo.'**
   String get diaryUndoExpired;
 
-  /// Dev builds only: the camera and barcode buttons do nothing yet.
+  /// Dev builds only: the camera button does nothing yet.
   ///
   /// In en, this message translates to:
   /// **'Coming soon'**
@@ -8092,6 +8092,294 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Each name can have at most {max} characters'**
   String workoutCustomAliasTooLong(int max);
+
+  /// Barcode scanner (A28a): screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a barcode'**
+  String get barcodeScanTitle;
+
+  /// Barcode scanner: hint under the camera while nothing is found yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Point the camera at the barcode on the package.'**
+  String get barcodeScanHint;
+
+  /// Barcode scanner: app-bar action to enter the barcode number by hand (no camera needed).
+  ///
+  /// In en, this message translates to:
+  /// **'Type the code'**
+  String get barcodeTypeCode;
+
+  /// Barcode scanner: title of the sheet for typing a barcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode number'**
+  String get barcodeTypeCodeTitle;
+
+  /// Barcode scanner: label of the barcode number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode'**
+  String get barcodeTypeCodeLabel;
+
+  /// Barcode scanner: hint of the barcode number field.
+  ///
+  /// In en, this message translates to:
+  /// **'The 8 to 14 digits under the bars'**
+  String get barcodeTypeCodeHint;
+
+  /// Barcode scanner: button that looks up the typed barcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Look up'**
+  String get barcodeLookUp;
+
+  /// Barcode scanner: screen-reader text while a scanned code is looked up.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking it up…'**
+  String get barcodeLookingUp;
+
+  /// Barcode scanner: snackbar when the code is not an EAN/UPC product code (bad check digit or length).
+  ///
+  /// In en, this message translates to:
+  /// **'That doesn\'t look like a product barcode.'**
+  String get barcodeInvalid;
+
+  /// Barcode scanner: no product is known for the scanned code (FD-032).
+  ///
+  /// In en, this message translates to:
+  /// **'We don\'t know this product yet'**
+  String get barcodeNotFoundTitle;
+
+  /// Barcode scanner: body under the not-found title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add it once and your next scan finds it.'**
+  String get barcodeNotFoundBody;
+
+  /// Barcode scanner: opens the new-food form with the barcode filled in.
+  ///
+  /// In en, this message translates to:
+  /// **'Add it yourself'**
+  String get barcodeAddYourself;
+
+  /// Barcode scanner: dismisses the result and scans again.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan another'**
+  String get barcodeScanAnother;
+
+  /// Barcode scanner: the lookup could not run (offline or server unavailable); the scan waits (OF-02).
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t look it up right now'**
+  String get barcodeWaitingTitle;
+
+  /// Barcode scanner: body under the waiting title.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll try again when you\'re back online, or you can add it yourself now.'**
+  String get barcodeWaitingBody;
+
+  /// Barcode scanner: the product is known but lacks values needed to log it (FD-033).
+  ///
+  /// In en, this message translates to:
+  /// **'Some values are missing'**
+  String get barcodeIncompleteTitle;
+
+  /// Barcode scanner: body for an incomplete product with a name.
+  ///
+  /// In en, this message translates to:
+  /// **'We found {name}, but not all its values. Add the missing ones to log it.'**
+  String barcodeIncompleteBody(String name);
+
+  /// Barcode scanner: body for an incomplete product without a name.
+  ///
+  /// In en, this message translates to:
+  /// **'We found this product, but not its name or all its values. Add the missing ones to log it.'**
+  String get barcodeIncompleteBodyNoName;
+
+  /// Barcode scanner: opens the new-food form prefilled with what is known about the product.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the missing values'**
+  String get barcodeAddMissing;
+
+  /// Barcode scanner: shown in place of the camera when the permission is denied.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera access is off. You can type the code instead.'**
+  String get barcodeCameraDenied;
+
+  /// Barcode scanner: shown in place of the camera when there is no usable camera.
+  ///
+  /// In en, this message translates to:
+  /// **'The camera isn\'t available. You can type the code instead.'**
+  String get barcodeCameraUnavailable;
+
+  /// Barcode scanner: section of scans that waited for a connection (A28a D10).
+  ///
+  /// In en, this message translates to:
+  /// **'Scanned earlier'**
+  String get barcodePendingTitle;
+
+  /// Barcode scanner: a waiting scan that has not been looked up yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting to look up'**
+  String get barcodePendingWaiting;
+
+  /// Barcode scanner: a waiting scan whose product was found later.
+  ///
+  /// In en, this message translates to:
+  /// **'Found · tap to log'**
+  String get barcodePendingReady;
+
+  /// Barcode scanner: a waiting scan whose product was not found later.
+  ///
+  /// In en, this message translates to:
+  /// **'Not found · tap to add it yourself'**
+  String get barcodePendingNotFound;
+
+  /// Barcode scanner: tooltip of the button that removes a waiting scan.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get barcodePendingRemove;
+
+  /// Barcode scanner: name of a waiting scan before its product is known.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode {code}'**
+  String barcodeProductCode(String code);
+
+  /// Food sheet after a scan: the product's brand.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand: {brand}'**
+  String scannedBrand(String brand);
+
+  /// Food sheet after a scan: values of one serving (FD-030); the macros are already formatted with their unit.
+  ///
+  /// In en, this message translates to:
+  /// **'{serving}: {kcal} kcal · {protein} protein · {carbs} carbs · {fat} fat'**
+  String scannedPerServing(
+    String serving,
+    int kcal,
+    String protein,
+    String carbs,
+    String fat,
+  );
+
+  /// Food sheet after a scan: one serving, the amount already formatted with its unit ("30 g", "250 ml", "1.1 oz").
+  ///
+  /// In en, this message translates to:
+  /// **'1 serving ({amount})'**
+  String scannedServing(String amount);
+
+  /// Food sheet after a scan: the product has no fiber value (A28a D9).
+  ///
+  /// In en, this message translates to:
+  /// **'Fiber isn\'t listed for this product, so it\'s counted as 0.'**
+  String get scannedFiberMissing;
+
+  /// Attribution required wherever Open Food Facts data is shown (ODbL). Keep the © and the name.
+  ///
+  /// In en, this message translates to:
+  /// **'© Open Food Facts contributors'**
+  String get offAttribution;
+
+  /// Halal warning (FD-081): a warning, never a block. items is a list like "may contain pork; gelatin or emulsifiers of unknown source".
+  ///
+  /// In en, this message translates to:
+  /// **'Halal check: {items}.'**
+  String halalCheckMessage(String items);
+
+  /// Halal warning item: the name or ingredients mention pork.
+  ///
+  /// In en, this message translates to:
+  /// **'may contain pork'**
+  String get halalMayContainPork;
+
+  /// Halal warning item: the name or ingredients mention alcohol.
+  ///
+  /// In en, this message translates to:
+  /// **'may contain alcohol'**
+  String get halalMayContainAlcohol;
+
+  /// Halal warning item: worded as unknown, never as non-halal.
+  ///
+  /// In en, this message translates to:
+  /// **'gelatin or emulsifiers of unknown source'**
+  String get halalUnknownSource;
+
+  /// Separator between halal warning items.
+  ///
+  /// In en, this message translates to:
+  /// **'; '**
+  String get halalItemSeparator;
+
+  /// Add-food result row: the usual second line followed by the halal note.
+  ///
+  /// In en, this message translates to:
+  /// **'{subtitle} · {halal}'**
+  String foodResultHalalSubtitle(String subtitle, String halal);
+
+  /// Personal-food form: shown for a food saved from a barcode scan (ODbL attribution).
+  ///
+  /// In en, this message translates to:
+  /// **'Values from Open Food Facts · © Open Food Facts contributors'**
+  String get personalFoodOffSource;
+
+  /// About: name of the barcode data source.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Food Facts'**
+  String get aboutOffName;
+
+  /// About: credit line for Open Food Facts.
+  ///
+  /// In en, this message translates to:
+  /// **'barcode product data © Open Food Facts contributors, under the Open Database License'**
+  String get aboutOffCredit;
+
+  /// About: debug line with the on-device barcode coverage counter (TD-064).
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode lookups on this phone: {found} found · {incomplete} incomplete · {notFound} not found'**
+  String aboutBarcodeCoverage(int found, int incomplete, int notFound);
+
+  /// Barcode scanner: a waiting scan found later in Open Food Facts (ODbL credit included).
+  ///
+  /// In en, this message translates to:
+  /// **'Found · tap to log · © Open Food Facts contributors'**
+  String get barcodePendingReadyOff;
+
+  /// Barcode scanner: title when a typed 8-digit code is valid both as EAN-8 and as UPC-E.
+  ///
+  /// In en, this message translates to:
+  /// **'Which barcode is it?'**
+  String get barcodeWhichKind;
+
+  /// Barcode scanner: choice for an ambiguous typed code read as EAN-8.
+  ///
+  /// In en, this message translates to:
+  /// **'EAN-8 (8 digits under the bars)'**
+  String get barcodeKindEan8;
+
+  /// Barcode scanner: choice for an ambiguous typed code read as UPC-E.
+  ///
+  /// In en, this message translates to:
+  /// **'UPC-E (short US/Canada code)'**
+  String get barcodeKindUpcE;
+
+  /// About: what Google's ML Kit (barcode scanner) may send. Keep it factual; the link text is Google's disclosure page.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode scanning uses Google ML Kit on this phone. ML Kit doesn\'t send camera images or the barcodes it reads to Google; Google may receive an installation ID, device and app information, and diagnostics (developers.google.com/ml-kit/android-data-disclosure). To find a product, the barcode is sent to the Fitness Buddy server.'**
+  String get aboutMlKitDisclosure;
 }
 
 class _AppLocalizationsDelegate

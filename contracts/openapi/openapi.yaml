@@ -68,6 +68,8 @@ paths:
     $ref: './modules/userdata.yaml#/paths/~1v1~1sync~1history~1{entity}~1{id}'
   /v1/foods/search:
     $ref: './modules/catalog.yaml#/paths/~1v1~1foods~1search'
+  /v1/foods/barcode/{code}:
+    $ref: './modules/catalog.yaml#/paths/~1v1~1foods~1barcode~1{code}'
   /v1/foods/{id}:
     $ref: './modules/catalog.yaml#/paths/~1v1~1foods~1{id}'
   /v1/catalog/packs/latest:

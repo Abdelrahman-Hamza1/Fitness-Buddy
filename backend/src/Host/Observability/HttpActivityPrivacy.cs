@@ -11,8 +11,20 @@ internal sealed class HttpActivityPrivacy : BaseProcessor<Activity>
 
     public override void OnEnd(Activity data)
     {
+        if (data.Kind == ActivityKind.Client) { SanitizeClient(data); return; }
         if (data.Kind != ActivityKind.Server) { return; }
         Sanitize(data, data.GetTagItem("http.route") as string);
+    }
+
+    /// <summary>Outbound calls keep only the origin: an upstream path can carry request data (B10a: the barcode in
+    /// Open Food Facts' product path).</summary>
+    internal static void SanitizeClient(Activity activity)
+    {
+        if (activity.GetTagItem("url.full") is string full)
+        {
+            activity.SetTag("url.full", Uri.TryCreate(full, UriKind.Absolute, out var uri) ? uri.GetLeftPart(UriPartial.Authority) : null);
+        }
+        foreach (var tag in new[] { "url.path", "url.query", "url.template", "http.url", "http.target" }) { activity.SetTag(tag, null); }
     }
 
     internal static void Sanitize(Activity activity, string? route)

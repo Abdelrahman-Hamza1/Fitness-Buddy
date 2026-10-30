@@ -18,6 +18,9 @@ internal sealed partial class DatabaseWorker(IServiceScopeFactory scopes, TimePr
                 if (!registered)
                 {
                     await scheduler.RegisterAsync(new JobSchedule("ops.cleanup", "*/5 * * * *", OpsCleanupJob.Type), stoppingToken);
+                    // Global module schedules (e.g. B10a's OFF cache expiry) are DI-registered JobSchedules.
+                    foreach (var schedule in scope.ServiceProvider.GetServices<JobSchedule>())
+                    { await scheduler.RegisterAsync(schedule, stoppingToken); }
                     registered = true;
                 }
                 work = await scheduler.TickAsync(stoppingToken);

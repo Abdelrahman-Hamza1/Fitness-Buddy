@@ -103,6 +103,102 @@
         "description": "Any authenticated account, including guests. Limit 1\u201350. Cursor is opaque and bound to the normalized query and current release; invalid, stale or mismatched cursors return 400. Empty normalized queries return no results. Results are deduplicated before pagination: verified basics, then reference variants; exact, prefix, token, substring and typo matches within each group, stable ID breaks ties. Personal results are merged on the phone (A24)."
       }
     },
+    "/v1/foods/barcode/{code}": {
+      "get": {
+        "tags": [
+          "Catalog"
+        ],
+        "operationId": "getFoodByBarcode",
+        "summary": "Look up a packaged food by barcode",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/AppVersion"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/Platform"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/DeviceId"
+          },
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Look up a packaged food by barcode",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BarcodeProduct"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "../components/problems.yaml#/components/responses/ValidationFailed"
+          },
+          "426": {
+            "$ref": "../components/problems.yaml#/components/responses/UpgradeRequired"
+          },
+          "429": {
+            "$ref": "../components/problems.yaml#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "../components/problems.yaml#/components/responses/InternalError"
+          },
+          "503": {
+            "$ref": "../components/problems.yaml#/components/responses/ServiceUnavailable"
+          },
+          "401": {
+            "description": "Invalid credentials or inactive session.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No product is known for this barcode.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "description": "Any authenticated account, including guests. The code is a GTIN-8, -12, -13 or -14 with a valid check digit (UPC-E is expanded by the app); anything else returns 400. GTIN-12 and zero-padded GTIN-14 are answered under their 13-digit form. The answer comes from the server's licence-isolated Open Food Facts cache (30 days for products, 1 day for unknown codes) or one rate-limited Open Food Facts read; an expired product is served for up to 7 more days while Open Food Facts is unavailable. 404: unknown code. 429: this account's upstream lookups are spent for now. 503 (with Retry-After): Open Food Facts can't be asked right now; retry later. When source is \"off\", show \"\u00a9 Open Food Facts contributors\" with the data (ODbL). complete is true only when all five core nutrients are present; nutrients are per 100 g (basis \"g\") or per 100 ml (basis \"ml\"), kcal derived from kJ when only kJ is published. Values are Open Food Facts data, never model output."
+      }
+    },
     "/v1/foods/{id}": {
       "get": {
         "tags": [
@@ -628,6 +724,130 @@
           "schemaVersion": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "BarcodeNutrients": {
+        "type": "object",
+        "required": [
+          "kcal",
+          "proteinG",
+          "carbsG",
+          "fatG",
+          "fiberG"
+        ],
+        "properties": {
+          "kcal": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "proteinG": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "carbsG": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "fatG": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "fiberG": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "BarcodeProduct": {
+        "type": "object",
+        "required": [
+          "code",
+          "source",
+          "complete",
+          "name",
+          "nameAr",
+          "brand",
+          "basis",
+          "per100",
+          "servingQuantity",
+          "servingLabel",
+          "ingredientsText",
+          "labels"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "complete": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "nameAr": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "brand": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "basis": {
+            "type": "string"
+          },
+          "per100": {
+            "$ref": "#/components/schemas/BarcodeNutrients"
+          },
+          "servingQuantity": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "servingLabel": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "ingredientsText": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "labels": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       }

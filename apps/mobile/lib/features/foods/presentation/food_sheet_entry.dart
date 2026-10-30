@@ -4,6 +4,7 @@ import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/app_navigator.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
+import 'package:fb_mobile/features/foods/application/barcode_lookup.dart';
 import 'package:fb_mobile/features/foods/application/food_search_row.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
 import 'package:fb_mobile/features/foods/application/log_food.dart';
@@ -22,7 +23,12 @@ final class FoodPick {
     this.slotId,
     this.carried,
     this.replacing,
+    this.scanned,
   });
+
+  /// The barcode scan this pick came from (A28a): the sheet shows the
+  /// product header (brand, serving values, halal, attribution).
+  final ScannedProduct? scanned;
 
   /// The tapped result; its `choiceRef` is what the sheet loads.
   final FoodSearchRow row;

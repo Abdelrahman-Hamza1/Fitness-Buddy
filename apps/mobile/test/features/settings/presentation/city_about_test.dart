@@ -195,8 +195,10 @@ void main() {
     expect(find.text('Food data version 1'), findsOneWidget);
     expect(find.text('USDA: USDA credit'), findsOneWidget);
     expect(find.text('GeoNames: GeoNames credit'), findsOneWidget);
-    // Not active yet, and never the note or the licence text.
-    expect(find.textContaining('Open Food Facts'), findsNothing);
+    // A reserved pack source stays hidden, and never the note or the licence
+    // text. Open Food Facts is credited by the app itself since A28a (barcode
+    // lookups), not from the pack.
+    expect(find.textContaining('Open Food Facts credit'), findsNothing);
     expect(find.textContaining('private note'), findsNothing);
     expect(find.textContaining('not displayed'), findsNothing);
     expect(

@@ -50,6 +50,30 @@ final class PersonalFoodRepository {
     return row == null ? null : _read(row);
   }
 
+  /// The live food whose barcodes include [code] (compared in GTIN
+  /// normalized form, so `036000291452` matches `0036000291452`), or null
+  /// (A28a, chain step 1). A string pre-filter keeps the scan cheap.
+  Future<PersonalFood?> byBarcode(String code) async {
+    final normalized = Gtin.normalize(code);
+    if (normalized == null) return null;
+    final tail = normalized.substring(1);
+    final rows =
+        await (_db.select(_db.personalFoods)
+              ..where(
+                (t) => t.deletedAt.isNull() & t.barcodesJson.like('%$tail%'),
+              )
+              ..orderBy([(t) => OrderingTerm(expression: t.id)]))
+            .get();
+    for (final row in rows) {
+      final food = _read(row);
+      if (food != null &&
+          food.barcodes.any((b) => Gtin.normalize(b) == normalized)) {
+        return food;
+      }
+    }
+    return null;
+  }
+
   /// Definition changes, with immediate initial data.
   Stream<PersonalFood?> watchFood(String id) =>
       _watch({_db.personalFoods}, () => byId(id));

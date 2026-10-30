@@ -10,6 +10,7 @@ import 'package:fb_mobile/features/foods/application/food_amount_controller.dart
 import 'package:fb_mobile/features/foods/application/food_choice.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
 import 'package:fb_mobile/features/foods/application/log_food.dart';
+import 'package:fb_mobile/features/foods/presentation/barcode/scanned_product_header.dart';
 import 'package:fb_mobile/features/foods/presentation/food_sheet_entry.dart';
 import 'package:flutter/scheduler.dart' show SchedulerBinding;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -227,6 +228,8 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
       spacing: FbSpace.s3,
       children: [
         _Header(food: food),
+        if (widget.pick.scanned case final scanned?)
+          ScannedProductHeader(product: scanned, food: food),
         if (live != null)
           StaleEntryBanner(freshness: live.freshness, onReload: live.reload),
         if (food.sanity == CatalogSanity.warn)

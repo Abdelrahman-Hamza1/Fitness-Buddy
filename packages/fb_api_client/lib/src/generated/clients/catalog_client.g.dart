@@ -57,6 +57,33 @@ class _CatalogClient implements CatalogClient {
   }
 
   @override
+  Future<BarcodeProduct> getFoodByBarcode({required String code}) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<BarcodeProduct>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/foods/barcode/${code}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, Object?>>(_options);
+    late BarcodeProduct _value;
+    try {
+      _value = BarcodeProduct.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<CatalogFood> getFood({required String id}) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

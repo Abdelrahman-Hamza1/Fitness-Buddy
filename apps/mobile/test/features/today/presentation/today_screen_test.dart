@@ -123,13 +123,12 @@ void main() {
       expect(route.slotId, isNull);
     });
 
-    testWidgets('HM-008 camera and barcode are not in staging or prod', (
-      tester,
-    ) async {
+    testWidgets('HM-008 the camera is not in staging or prod; the barcode '
+        'scanner is (A28a)', (tester) async {
       await pumpToday(tester, fakeToday());
 
       expect(find.byTooltip('Take a photo'), findsNothing);
-      expect(find.byTooltip('Scan a barcode'), findsNothing);
+      expect(find.byTooltip('Scan a barcode'), findsOneWidget);
     });
   });
 

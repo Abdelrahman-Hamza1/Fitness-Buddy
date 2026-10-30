@@ -179,7 +179,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A25](A25-diary-edits-by-chat.md) | Diary edits by chat (app) | Claude | A23, **B09a** (contract) | M | S35 app part |  | ⬜ phase 2 |
 | [A26](A26-memory-user-model.md) | Memory & user model (app) | Claude | A23a, **B09a** (contract) | M | S36 app part |  | ⬜ phase 2 |
 | [A27](A27-batches-chat-foods.md) | Batches, personal foods & saved meals by chat (app) | Claude | A09b, A23, **B09a** (contract) | L | S37 app part |  | ⬜ phase 2 |
-| [A28a](A28-barcode-label-scan.md) | Barcode scanning (app, no AI; split from A28, 2026-10-30) | Claude | A09a, A24, **B10a** (contract) | M | S38 app part |  | ⬜ wave 3 (TD-105) |
+| [A28a](A28-barcode-label-scan.md) | Barcode scanning (app, no AI; split from A28, 2026-10-30) | Claude | A09a, A24, **B10a** (contract) | M | S38 app part |  | ✅ closed, awaiting review/merge (built with B10a as one step, owner 2026-10-30) |
 | [A28b](A28-barcode-label-scan.md) | Label scan (app; split from A28) | Claude | A28a, A23b, **B10b** (contract) | M | S38 app part |  | ⬜ phase 2 |
 | [A29](A29-photo-body-import.md) | Photo logging, body data by chat & paste import (app) | Claude | A15, A23, **B10b** (contract) | M | S39 app part |  | ⬜ phase 2 |
 | [A30](dish-batches.md) | Dish batch 5: sweets, drinks & Ramadan staples | Claude | A19 | S | D5 |  | ✅ (with A19) |
@@ -227,7 +227,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [B08](B08-buddy-interpret-service.md) | Buddy interpret service | B02, B07 | L | S31 |  | ✅ |
 | [B09a](B09-buddy-intents-edits-memory-batches.md) | Buddy intents server: contract, v2 grammar & resolver (split from B09) | B08, **A21** | L | S35–S37 server parts |  | ✅ (live smoke WP7: owner-gated, moved to B09b) |
 | [B09b](B09-buddy-intents-edits-memory-batches.md) | Full AQ metrics with the real ProposalEngine (M3 eval half; split from B09) | B09a | M | S35–S37 server parts | **M3** eval | ✅ (AQ metrics built and measured; M3 gate not yet met: 25 known misses → density chore, estimate-portion policy, resolver match quality, A17, A32; live smoke WP7 owner-gated) |
-| [B10a](B10-barcode-vision-import.md) | Barcode lookup (server, no AI; split from B10, 2026-10-30) | B07 | M | S38 server part |  | ⬜ wave 3 (TD-105) |
+| [B10a](B10-barcode-vision-import.md) | Barcode lookup (server, no AI; split from B10, 2026-10-30) | B07 | M | S38 server part |  | ✅ closed, awaiting review/merge (built with A28a as one step; migration `202610300001_OffCacheWrites`) |
 | [B10b](B10-barcode-vision-import.md) | Label & meal photos, paste import (split from B10) | B10a, B08 | L | S38–S39 server parts |  | ⬜ phase 2 |
 | [B11](B11-buddy-qa-suggestions.md) | Buddy Q&A & suggestions | B08 | M | S40 server part |  | ⬜ phase 2 |
 | [B12](B12-buddy-workouts-review-ramadan.md) | Buddy workouts, weekly review & Ramadan | B08 | M | S42, S44, S46 server parts |  | ⬜ phase 2 |

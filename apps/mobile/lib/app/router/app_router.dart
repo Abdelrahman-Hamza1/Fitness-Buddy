@@ -96,6 +96,7 @@ final class AppRouter implements AppNavigator {
                   children: [
                     if (route is TodayRoute) ...[
                       _foodSearchRoute(),
+                      _barcodeScanRoute(),
                       _goRoute(const TodayWeightGraphRoute(), nested: true),
                       _sessionRoute(
                         TodayWorkoutSessionRoute.path,
@@ -241,6 +242,31 @@ final class AppRouter implements AppNavigator {
         path: NewFoodFromSearchRoute.path.split('/').last,
         name: NewFoodFromSearchRoute.path,
         builder: (_, state) => _screen(newFoodRouteOf(state.uri)),
+      ),
+    ],
+  );
+
+  // The barcode scanner (A28a D14) and its "Add it yourself" form; both read
+  // only the day and the meal from the query string, like the search.
+  static GoRoute _barcodeScanRoute() => GoRoute(
+    path: BarcodeScanRoute.path.split('/').last,
+    name: BarcodeScanRoute.path,
+    builder: (_, state) {
+      final search = foodSearchRouteOf(state.uri);
+      return _screen(
+        BarcodeScanRoute(date: search.date, slotId: search.slotId),
+      );
+    },
+    routes: [
+      GoRoute(
+        path: NewFoodFromScanRoute.path.split('/').last,
+        name: NewFoodFromScanRoute.path,
+        builder: (_, state) {
+          final search = foodSearchRouteOf(state.uri);
+          return _screen(
+            NewFoodFromScanRoute(date: search.date, slotId: search.slotId),
+          );
+        },
       ),
     ],
   );
@@ -499,6 +525,14 @@ final class AppRouter implements AppNavigator {
       FoodSearchScreen(date: date, slotId: slotId, replace: replace),
     NewFoodFromSearchRoute(:final date, :final slotId) =>
       PersonalFoodFormScreen(addTo: (date: date, slotId: slotId)),
+    BarcodeScanRoute(:final date, :final slotId) => BarcodeScanScreen(
+      date: date,
+      slotId: slotId,
+    ),
+    NewFoodFromScanRoute(:final date, :final slotId) => PersonalFoodFormScreen(
+      addTo: (date: date, slotId: slotId),
+      fromScan: true,
+    ),
     PersonalFoodsRoute() => const PersonalFoodsScreen(),
     PersonalFoodRoute(:final id) => PersonalFoodFormScreen(id: id),
     SavedMealsRoute() => const SavedMealsScreen(),

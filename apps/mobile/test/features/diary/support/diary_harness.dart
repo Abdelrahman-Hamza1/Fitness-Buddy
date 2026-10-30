@@ -12,6 +12,7 @@ import 'package:fb_mobile/features/body/data/weigh_in_op_handler.dart';
 import 'package:fb_mobile/features/diary/data/diary_op_handler.dart';
 import 'package:fb_mobile/features/diary/data/diary_reads.dart';
 import 'package:fb_mobile/features/diary/data/meal_slot_op_handler.dart';
+import 'package:fb_mobile/features/foods/data/personal_food_op_handler.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../core/changes/support/test_db.dart'
@@ -48,6 +49,8 @@ final class DiaryHarness {
         DiaryOpHandler(db),
         MealSlotOpHandler(db),
         WeighInOpHandler(db),
+        // A28a: a scanned product is saved with its first log.
+        PersonalFoodOpHandler(db),
         const ScriptHandler(),
       ],
       clock: clock,

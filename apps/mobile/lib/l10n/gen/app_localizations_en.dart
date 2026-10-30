@@ -5629,4 +5629,192 @@ class AppLocalizationsEn extends AppLocalizations {
   String workoutCustomAliasTooLong(int max) {
     return 'Each name can have at most $max characters';
   }
+
+  @override
+  String get barcodeScanTitle => 'Scan a barcode';
+
+  @override
+  String get barcodeScanHint =>
+      'Point the camera at the barcode on the package.';
+
+  @override
+  String get barcodeTypeCode => 'Type the code';
+
+  @override
+  String get barcodeTypeCodeTitle => 'Barcode number';
+
+  @override
+  String get barcodeTypeCodeLabel => 'Barcode';
+
+  @override
+  String get barcodeTypeCodeHint => 'The 8 to 14 digits under the bars';
+
+  @override
+  String get barcodeLookUp => 'Look up';
+
+  @override
+  String get barcodeLookingUp => 'Looking it up…';
+
+  @override
+  String get barcodeInvalid => 'That doesn\'t look like a product barcode.';
+
+  @override
+  String get barcodeNotFoundTitle => 'We don\'t know this product yet';
+
+  @override
+  String get barcodeNotFoundBody => 'Add it once and your next scan finds it.';
+
+  @override
+  String get barcodeAddYourself => 'Add it yourself';
+
+  @override
+  String get barcodeScanAnother => 'Scan another';
+
+  @override
+  String get barcodeWaitingTitle => 'Can\'t look it up right now';
+
+  @override
+  String get barcodeWaitingBody =>
+      'We\'ll try again when you\'re back online, or you can add it yourself now.';
+
+  @override
+  String get barcodeIncompleteTitle => 'Some values are missing';
+
+  @override
+  String barcodeIncompleteBody(String name) {
+    return 'We found $name, but not all its values. Add the missing ones to log it.';
+  }
+
+  @override
+  String get barcodeIncompleteBodyNoName =>
+      'We found this product, but not its name or all its values. Add the missing ones to log it.';
+
+  @override
+  String get barcodeAddMissing => 'Add the missing values';
+
+  @override
+  String get barcodeCameraDenied =>
+      'Camera access is off. You can type the code instead.';
+
+  @override
+  String get barcodeCameraUnavailable =>
+      'The camera isn\'t available. You can type the code instead.';
+
+  @override
+  String get barcodePendingTitle => 'Scanned earlier';
+
+  @override
+  String get barcodePendingWaiting => 'Waiting to look up';
+
+  @override
+  String get barcodePendingReady => 'Found · tap to log';
+
+  @override
+  String get barcodePendingNotFound => 'Not found · tap to add it yourself';
+
+  @override
+  String get barcodePendingRemove => 'Remove';
+
+  @override
+  String barcodeProductCode(String code) {
+    return 'Barcode $code';
+  }
+
+  @override
+  String scannedBrand(String brand) {
+    return 'Brand: $brand';
+  }
+
+  @override
+  String scannedPerServing(
+    String serving,
+    int kcal,
+    String protein,
+    String carbs,
+    String fat,
+  ) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '$serving: $kcalString kcal · $protein protein · $carbs carbs · $fat fat';
+  }
+
+  @override
+  String scannedServing(String amount) {
+    return '1 serving ($amount)';
+  }
+
+  @override
+  String get scannedFiberMissing =>
+      'Fiber isn\'t listed for this product, so it\'s counted as 0.';
+
+  @override
+  String get offAttribution => '© Open Food Facts contributors';
+
+  @override
+  String halalCheckMessage(String items) {
+    return 'Halal check: $items.';
+  }
+
+  @override
+  String get halalMayContainPork => 'may contain pork';
+
+  @override
+  String get halalMayContainAlcohol => 'may contain alcohol';
+
+  @override
+  String get halalUnknownSource => 'gelatin or emulsifiers of unknown source';
+
+  @override
+  String get halalItemSeparator => '; ';
+
+  @override
+  String foodResultHalalSubtitle(String subtitle, String halal) {
+    return '$subtitle · $halal';
+  }
+
+  @override
+  String get personalFoodOffSource =>
+      'Values from Open Food Facts · © Open Food Facts contributors';
+
+  @override
+  String get aboutOffName => 'Open Food Facts';
+
+  @override
+  String get aboutOffCredit =>
+      'barcode product data © Open Food Facts contributors, under the Open Database License';
+
+  @override
+  String aboutBarcodeCoverage(int found, int incomplete, int notFound) {
+    final intl.NumberFormat foundNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String foundString = foundNumberFormat.format(found);
+    final intl.NumberFormat incompleteNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String incompleteString = incompleteNumberFormat.format(incomplete);
+    final intl.NumberFormat notFoundNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String notFoundString = notFoundNumberFormat.format(notFound);
+
+    return 'Barcode lookups on this phone: $foundString found · $incompleteString incomplete · $notFoundString not found';
+  }
+
+  @override
+  String get barcodePendingReadyOff =>
+      'Found · tap to log · © Open Food Facts contributors';
+
+  @override
+  String get barcodeWhichKind => 'Which barcode is it?';
+
+  @override
+  String get barcodeKindEan8 => 'EAN-8 (8 digits under the bars)';
+
+  @override
+  String get barcodeKindUpcE => 'UPC-E (short US/Canada code)';
+
+  @override
+  String get aboutMlKitDisclosure =>
+      'Barcode scanning uses Google ML Kit on this phone. ML Kit doesn\'t send camera images or the barcodes it reads to Google; Google may receive an installation ID, device and app information, and diagnostics (developers.google.com/ml-kit/android-data-disclosure). To find a product, the barcode is sent to the Fitness Buddy server.';
 }

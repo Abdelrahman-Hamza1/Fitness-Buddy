@@ -9,6 +9,7 @@ import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
+import 'package:fb_mobile/features/foods/application/barcode_providers.dart';
 import 'package:fb_mobile/features/foods/application/food_choice.dart';
 import 'package:fb_mobile/features/foods/application/food_search_service.dart';
 import 'package:fb_mobile/features/foods/application/log_food.dart';
@@ -73,6 +74,7 @@ Future<FoodChoice?> foodChoice(Ref ref, FoodChoiceRef choice) async {
     () => service.history,
     personalFoods: () => service.personalFoods,
     onlineFood: (id) => ref.read(onlineFoodCacheProvider)[id],
+    scannedFood: (id) => ref.read(scannedFoodRegistryProvider)[id],
   ).load(choice);
 }
 

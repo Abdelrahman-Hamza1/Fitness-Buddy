@@ -1,3 +1,4 @@
+using FitnessBuddy.BuildingBlocks.Jobs;
 using FitnessBuddy.BuildingBlocks.Messaging;
 using FitnessBuddy.BuildingBlocks.Persistence;
 using FitnessBuddy.BuildingBlocks.Web.Modules;
@@ -11,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FitnessBuddy.Modules.Catalog;
 
-/// <summary>Global, release-published food catalog. OFF stays isolated until B10.</summary>
+/// <summary>Global, release-published food catalog, plus the licence-isolated Open Food Facts barcode cache (B10a).</summary>
 public sealed class CatalogModule : IModule
 {
     public string Name => "Catalog";
@@ -22,6 +23,15 @@ public sealed class CatalogModule : IModule
         services.AddValidation();
         services.AddScoped<ICatalogStore, PostgresCatalogStore>(); services.AddScoped<CatalogQueries>();
         services.AddScoped<IFoodResolver>(p => p.GetRequiredService<CatalogQueries>());
+        services.AddOptions<OffOptions>().Bind(configuration.GetSection("Catalog:OpenFoodFacts"))
+            .Validate(o => o.IsValid(), "Invalid bounded Open Food Facts configuration.").ValidateOnStart();
+        services.AddHttpClient(OpenFoodFactsClient.HttpClientName, client => client.Timeout = Timeout.InfiniteTimeSpan)
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false, UseCookies = false })
+            // The framework's request logs would print the product path, which carries the barcode (B10a D7).
+            .RemoveAllLoggers();
+        services.AddSingleton<OffGate>();
+        services.AddScoped<IOffClient, OpenFoodFactsClient>(); services.AddScoped<IOffCache, PostgresOffCache>(); services.AddScoped<BarcodeLookup>();
+        services.AddScoped<IJobHandler, OffCacheExpiryJob>(); services.AddSingleton(OffCacheExpiryJob.Schedule);
         services.AddSingleton(new ModuleMigration("catalog", connection => new CatalogContext(DatabaseConfiguration.ContextOptions<CatalogContext>(connection, "catalog"))));
     }
     public void MapEndpoints(RouteGroupBuilder group) => CatalogEndpoints.Map(group);

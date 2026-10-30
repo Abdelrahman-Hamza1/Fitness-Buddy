@@ -345,6 +345,66 @@ final class NewFoodFromSearchRoute extends AppRoute {
   }
 }
 
+/// The barcode scanner (FD-030, A28a D14): a detail screen of the Today tab,
+/// opened by the input bar's barcode button. [date] and [slotId] are where a
+/// scanned product is logged (today and the time's meal when null).
+final class BarcodeScanRoute extends AppRoute {
+  /// Creates the route.
+  const new({this.date, this.slotId});
+
+  /// The route's path pattern.
+  static const path = '/today/scan';
+
+  /// The diary day to add to; null for today.
+  final LocalDate? date;
+
+  /// The meal slot to add to; null to choose by the time of day.
+  final String? slotId;
+
+  @override
+  String get location {
+    final query = {
+      FoodSearchRoute.dateParam: ?date?.toString(),
+      FoodSearchRoute.slotParam: ?slotId,
+    };
+    return Uri(
+      path: path,
+      queryParameters: query.isEmpty ? null : query,
+    ).toString();
+  }
+}
+
+/// "Add it yourself" from the scanner (A28a D9, D10): the new personal-food
+/// form, nested under the scanner, prefilled with the barcode (and what Open
+/// Food Facts knows for an incomplete product) through a one-shot provider;
+/// nothing private travels in the URL. Once saved, the food sheet opens for
+/// [date] and [slotId].
+final class NewFoodFromScanRoute extends AppRoute {
+  /// Creates the route.
+  const new({this.date, this.slotId});
+
+  /// The route's path pattern.
+  static const path = '/today/scan/new-food';
+
+  /// The diary day the scan was adding to; null for today.
+  final LocalDate? date;
+
+  /// The meal slot the scan was adding to; null for the time of day.
+  final String? slotId;
+
+  @override
+  String get location {
+    final query = {
+      FoodSearchRoute.dateParam: ?date?.toString(),
+      FoodSearchRoute.slotParam: ?slotId,
+    };
+    return Uri(
+      path: path,
+      queryParameters: query.isEmpty ? null : query,
+    ).toString();
+  }
+}
+
 /// Your foods (A09 D10): the list of the user's own foods, a detail screen of
 /// the Me tab.
 final class PersonalFoodsRoute extends AppRoute {
