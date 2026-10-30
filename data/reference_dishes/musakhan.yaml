@@ -31,8 +31,8 @@ portions:
   piece: {g: 350, range: [280, 450]}
   small_piece: {g: 235, range: [180, 290]}
 review:
-  status: draft
-  reviewed_by: claude-draft
+  status: reviewed
+  reviewed_by: ai-verified
   sources:
     - "Gulf News, Palestinian chicken musakhan (serves 4): https://gulfnews.com/food/cooking-cuisines/palestinian-chicken-musakhan-1.1621941750675"
     - "CPT, Recipes from our PalestineTeam, Musakhan (serves 6, about 1/2 cup oil for the onions): https://cpt.org/suppers/recipes-from-palestine"
@@ -43,5 +43,5 @@ review:
     News); small_piece is the pot divided by 6 (CPT). The sources disagree on onions per person and on oil
     (Gulf News about 32 g oil per serving; CPT just over 1/2 cup, about 18 g per serving, for the onions plus an unmeasured drizzle on the chicken), and oil
     is the biggest uncertainty: please check against your family's cooking. Roasting juices soak into the bread,
-    so the fat of the chicken is counted in full. Yogurt, salad and the bread dipped in oil at the side are not included.
+    so the fat of the chicken is counted in full. Yogurt, salad and the bread dipped in oil at the side are not included. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
 time_min: 15

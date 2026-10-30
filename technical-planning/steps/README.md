@@ -165,8 +165,8 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A15a](A15-weight-graph-measurements.md) | Weight graph (split from A15, 2026-10-28) | Claude | A12, A13a, A14 | L | S22 part |  | ✅ |
 | [A15b](A15-weight-graph-measurements.md) | Weight history entry & measurements (split from A15; owner real-history sign-off pending, #213) | Claude | A15a | L | S22 part |  | ✅ |
 | [A16](A16-progress-tab.md) | Progress tab v1 | Claude | A13c, A15 | L | S23 | **M2** | ✅ |
-| [A17](dish-batches.md) | Dish batch 2: main dishes A | Claude | A04 | S | D2 |  | ⬜ wave 1 (TD-105) |
-| [A18](dish-batches.md) | Dish batch 3: out & street food | Claude | A17 | S | D3 |  | ⬜ wave 1 (TD-105) |
+| [A17](dish-batches.md) | Dish batch 2: main dishes A | Claude | A04 | S | D2 |  | ✅ (ai-verified, D-087) |
+| [A18](dish-batches.md) | Dish batch 3: out & street food | Claude | A17 | S | D3 |  | ✅ (ai-verified, D-087) |
 | [A19](dish-batches.md) | Dish batch 4: main dishes B, salads & sides | Claude | A18 | S | D4 |  | ⬜ wave 2 (TD-105) |
 | [A20](A20-api-session.md) | API session: anonymous identity & auth interceptor | **Codex** | **B04** (contract) | S | S25 part |  | ✅ |
 | [A21](A21-proposal-engine.md) | ProposalEngine | **Codex** | A07, A12, **B08** | L | S32 |  | ✅ |

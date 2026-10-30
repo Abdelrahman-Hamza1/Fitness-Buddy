@@ -1,0 +1,70 @@
+schema: 1
+id: ref:chicken_and_rice
+names:
+  en: [Chicken and rice, Chicken with rice, Riz a djej, Spiced chicken rice]
+  ar: [دجاج مع رز, رز مع دجاج, رز بالدجاج, رز على دجاج]
+  arabizi: [djaj ma ruz, dajaj ma3 ruz, ruz ma djaj, ruz bil djaj, riz a djej, riz 3a djej, ruz 3ala djaj, rice with chicken]
+state: cooked
+variants:
+  - id: chicken
+    default: true
+    names:
+      en: [Chicken and rice with nuts]
+      ar: [رز بالدجاج والمكسرات]
+      arabizi: [ruz djaj w mkasarat]
+    recipe:
+      - {food: usda:rice_white_long_grain_raw, grams: 370, range: [330, 410], note: "2 cups long-grain rice (The Matbakh, serves 6)"}
+      - {food: usda:chicken_whole_raw, grams: 900, range: [700, 1100], note: "1 whole chicken, 1.5 kg; skin and meat edible weight about 60% (bones excluded); poached, shredded on top"}
+      - {food: usda:olive_oil, grams: 28, range: [15, 55], note: "2 tbsp olive oil or butter for the rice; the biggest uncertainty"}
+      - {food: usda:butter_unsalted, grams: 14, note: "1 tbsp for toasting the nuts"}
+      - {food: usda:almonds, grams: 30, range: [0, 60], note: "part of the 1 cup mixed nuts (The Matbakh), half the amount here for the plain pot"}
+      - {food: usda:pine_nuts_dried, grams: 15, range: [0, 40]}
+      - {food: usda:onion_raw, grams: 150, note: "one onion boiled with the chicken, one in the rice"}
+      - {food: usda:allspice_ground, grams: 3}
+      - {food: usda:cinnamon_ground, grams: 2}
+      - {food: usda:black_pepper, grams: 2}
+      - {food: usda:salt_table, grams: 12}
+    cooked_total_g: 1900
+    cooked_total_range: [1650, 2150]
+  - id: with_mince
+    default: false
+    names:
+      en: [Riz a djej with minced meat and nuts, Lebanese chicken and rice]
+      ar: [رز على دجاج مع لحمة مفرومة وصنوبر]
+      arabizi: [ruz 3ala djaj ma lahme mafroume, riz a djej bi lahme, hashweh ruz djaj]
+    recipe:
+      - {food: usda:rice_white_long_grain_raw, grams: 370, range: [330, 410]}
+      - {food: usda:chicken_whole_raw, grams: 900, range: [700, 1100]}
+      - {food: usda:beef_ground_80_raw, grams: 225, range: [200, 450], note: "0.5 lb minced beef or lamb (The Matbakh); Feel Good Foodie uses 1 lb"}
+      - {food: usda:olive_oil, grams: 28, range: [15, 55]}
+      - {food: usda:butter_unsalted, grams: 14}
+      - {food: usda:almonds, grams: 50, range: [30, 60], note: "1 cup mixed nuts is about 140 g (almonds, pine nuts, cashews)"}
+      - {food: usda:pine_nuts_dried, grams: 40, range: [20, 60]}
+      - {food: usda:cashews_raw, grams: 50, range: [0, 60]}
+      - {food: usda:onion_raw, grams: 150}
+      - {food: usda:allspice_ground, grams: 3}
+      - {food: usda:cinnamon_ground, grams: 2}
+      - {food: usda:nutmeg_ground, grams: 1}
+      - {food: usda:black_pepper, grams: 2}
+      - {food: usda:salt_table, grams: 12}
+    cooked_total_g: 2050
+    cooked_total_range: [1800, 2300]
+portions:
+  plate: {g: 350, range: [280, 450]}
+  small_plate: {g: 250, range: [200, 320]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "The Matbakh, Lebanese chicken and rice, riz a djej (serves 6: 1.5 kg chicken, 0.5 lb minced beef or lamb, 2 cups long-grain rice, 2 tbsp olive oil or butter, 1 cup mixed nuts, 4 cups stock): https://thematbakh.com/wprm_print/lebanese-chicken-and-rice-riz-a-djej"
+    - "Feel Good Foodie, Lebanese chicken and rice (1 lb ground beef, 2 tbsp butter; snippet only, page blocked): https://feelgoodfoodie.net/recipe/lebanese-chicken-and-rice"
+    - "Falasteeni Foodie, Chicken maqluba (rice cooked in 6 cups of the chicken broth; used for the broth to rice ratio only): https://falasteenifoodie.com/chicken-maqluba-flipped-upside-down/"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    The catalog name "chicken and rice" covers the home pot of spiced rice with poached chicken pieces on top (djaj ma
+    ruz); no Palestinian source with grams was found, so the Levantine riz a djej recipe is used (a Lebanese recipe: the
+    Palestinian home version is close but often has no mince). Maqluba (layered, flipped), kabsa and mansaf are separate
+    dishes. Chicken is skin-on and its fat is counted in full although most of the poaching fat stays in the stock (the rice takes only 4
+    cups), so a skinless version is about 150 kcal per plate lighter. Cooked weight is modelled (rice about 2.7x plus the
+    shredded chicken at 0.75), not weighed. Fat for the rice and the nuts are the biggest uncertainties. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 14

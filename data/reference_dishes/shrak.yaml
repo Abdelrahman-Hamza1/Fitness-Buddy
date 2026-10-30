@@ -1,0 +1,47 @@
+schema: 1
+id: ref:shrak
+names:
+  en: [Shrak, Shrak bread, Markook, Markouk, Saj bread]
+  ar: [شراك, خبز شراك, مرقوق, خبز مرقوق, خبز صاج]
+  arabizi: [shrak, shraak, shrak bread, markouk, markook, marqooq, khubz marqooq, shrak ruqaq, khubz saj]
+state: cooked
+variants:
+  - id: white
+    default: true
+    recipe:
+      - {food: usda:wheat_flour_white, grams: 500, range: [450, 550], note: "500 g flour for 6 breads (Soul Spoon shrak)"}
+      - {food: usda:olive_oil, grams: 10, range: [0, 20], note: "1 tbsp in one recipe; the classic dough is only flour, water and salt"}
+      - {food: usda:salt_table, grams: 6}
+    cooked_total_g: 730
+    cooked_total_range: [680, 780]
+  - id: half_whole_wheat
+    default: false
+    names:
+      en: [Whole wheat shrak]
+      ar: [شراك قمح كامل, خبز شراك أسمر]
+      arabizi: [shrak asmar, shrak qamh kamel]
+    recipe:
+      - {food: usda:wheat_flour_white, grams: 250, range: [200, 300]}
+      - {food: usda:wheat_flour_whole, grams: 250, range: [200, 300], note: "Milk Street mixes about half whole wheat flour"}
+      - {food: usda:olive_oil, grams: 10, range: [0, 20]}
+      - {food: usda:salt_table, grams: 6}
+    cooked_total_g: 730
+    cooked_total_range: [680, 780]
+portions:
+  piece: {g: 110, range: [60, 140]}
+  half: {g: 55, range: [30, 70]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Soul Spoon, Shrak (Jordan): 500 g plain flour, 1 tsp salt, 1 tbsp olive oil, about 300 ml warm water, makes 6 breads: https://soul-spoon.pages.dev/r/cuisine/jordan/side-dishes/shrak"
+    - "Milk Street, Jordanian Bedouin flatbread (shrak) (about half whole wheat flour; recipe paywalled, composition from the search summary): https://www.177milkstreet.com/recipes/jordanian-bedouin-flatbread-shrak"
+    - "Gaza dough note: flour, salt and lukewarm water, sometimes semolina (Al-Monitor, Gaza Palestinian traditional bread): https://www.al-monitor.com/index.php/originals/2015/12/gaza-palestinian-traditional-bread.html"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    Shrak (markook) is a very thin bread stretched over a saj (domed griddle). One piece is one large sheet (about 811 g
+    dough in 6 pieces is 135 g raw, less about 10% on the saj, so 110-120 g); another recipe uses 80 g dough balls, so a
+    sheet can be as small as 60-70 g. The sheets are also folded into quarters, which is the half/piece confusion to
+    watch. Water only sets the cooked weight. The same bread under the mansaf platter is counted in ref:mansaf. This is
+    the plain home bread, not the whole wheat or yeasted pita-style versions that some blogs call shrak. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 12

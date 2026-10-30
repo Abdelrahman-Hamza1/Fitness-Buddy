@@ -1,0 +1,73 @@
+schema: 1
+id: ref:qidra
+names:
+  en: [Qidra, Qidreh, Hebron qidra, Spiced lamb and rice with chickpeas]
+  ar: [قدرة, قدرة خليلية, قدرة لحم, قدرة الخليل]
+  arabizi: [qidra, qidreh, gidra, qidrah, qidreh khalilieh, 2idra, qedra, ouzi qidra]
+state: cooked
+variants:
+  - id: lamb
+    default: true
+    names:
+      en: [Lamb qidra, Hebron lamb qidra]
+      ar: [قدرة لحم خروف, قدرة خليلية بلحم]
+      arabizi: [qidra lahme, qidra lahm kharouf, qidreh lamb]
+    recipe:
+      - {food: usda:lamb_leg_raw, grams: 900, range: [700, 1200], note: "4 lb bone-in lamb shoulder (Falasteeni Foodie) is about 1.1-1.2 kg edible with its fat; 900 g after trimming, and the leg entry (1/4 inch fat) is used for trimmed pieces; the fat is counted"}
+      - {food: usda:rice_white_long_grain_raw, grams: 280, range: [250, 380], note: "1.5 cups basmati (Falasteeni Foodie); Urban Farm and Kitchen uses 2.25 cups; Hebron-style 500 g for 2 kg lamb"}
+      - {food: usda:chickpeas_canned_drained, grams: 250, range: [200, 300], note: "1 can (15 oz) drained"}
+      - {food: usda:ghee, grams: 70, range: [40, 110], note: "1/4 cup (55 g) for the rice plus part of the 2 tbsp for the lamb; the biggest uncertainty"}
+      - {food: usda:olive_oil, grams: 15, range: [0, 40], note: "2 tbsp for the lamb, partly left in the broth"}
+      - {food: usda:onion_raw, grams: 150, range: [100, 250]}
+      - {food: usda:garlic_raw, grams: 40, range: [25, 80], note: "8-12 whole cloves (Falasteeni Foodie); some recipes use 18"}
+      - {food: usda:turmeric_ground, grams: 2}
+      - {food: usda:coriander_seed, grams: 3}
+      - {food: usda:cardamom, grams: 4}
+      - {food: usda:cinnamon_ground, grams: 2}
+      - {food: usda:allspice_ground, grams: 5, note: "stands in for 7 spice"}
+      - {food: usda:black_pepper, grams: 4}
+      - {food: usda:salt_table, grams: 12}
+    cooked_total_g: 1700
+    cooked_total_range: [1500, 1950]
+  - id: chicken
+    default: false
+    names:
+      en: [Chicken qidra]
+      ar: [قدرة دجاج]
+      arabizi: [qidra djaj, qidra dajaj]
+    recipe:
+      - {food: usda:chicken_thigh_raw, grams: 900, range: [700, 1100], note: "assumption: same pot with chicken pieces instead of lamb"}
+      - {food: usda:rice_white_long_grain_raw, grams: 280, range: [250, 380]}
+      - {food: usda:chickpeas_canned_drained, grams: 250, range: [200, 300]}
+      - {food: usda:ghee, grams: 70, range: [40, 110]}
+      - {food: usda:olive_oil, grams: 15, range: [0, 40]}
+      - {food: usda:onion_raw, grams: 150, range: [100, 250]}
+      - {food: usda:garlic_raw, grams: 40, range: [25, 80]}
+      - {food: usda:turmeric_ground, grams: 2}
+      - {food: usda:coriander_seed, grams: 3}
+      - {food: usda:cardamom, grams: 4}
+      - {food: usda:cinnamon_ground, grams: 2}
+      - {food: usda:allspice_ground, grams: 5}
+      - {food: usda:black_pepper, grams: 4}
+      - {food: usda:salt_table, grams: 12}
+    cooked_total_g: 1750
+    cooked_total_range: [1550, 2000]
+portions:
+  plate: {g: 420, range: [330, 550]}
+  small_plate: {g: 300, range: [240, 380]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Falasteeni Foodie, Palestinian qidreh, spiced lamb and rice (serves 4: 4 lb lamb shoulder, 1.5 cups basmati, 15 oz chickpeas, 1/4 cup ghee, 8-12 garlic cloves, 3 cups lamb broth): https://falasteenifoodie.com/palestinian-qidreh-spiced-lamb-and-rice/"
+    - "Urban Farm and Kitchen, Qidreh (2.25 cups basmati, 14 oz chickpeas, 18 garlic cloves; snippet only): https://urbanfarmandkitchen.com/qidreh-palestinian-spiced-lamb-and-rice-recipe/"
+    - "Wikipedia, Qidreh (Hebron origin, lamb, rice, chickpeas, cooked in a brass or clay pot): https://en.wikipedia.org/wiki/Qidreh"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    The pot is 4 plates (420 g, source serves 4); lamb pieces on top of the rice make a plate heavier on meat than
+    this average, so a plate with 2-3 pieces of lamb is nearer to 600 kcal of meat alone. The cooked weight is modelled
+    (rice takes 3 cups of broth for 1.5 cups, lamb loses a third of its weight), not weighed. Lamb fat and ghee are the biggest
+    uncertainties: all lamb fat is counted although the broth is skimmed in many homes, so a plate can be about 150-250 kcal
+    lower. The default is a plate of about 1000 kcal, high for a 420 g plate, so please check it first. Hebron-style qidra (plain, few spices) and versions with whole garlic and chickpeas are both covered by the
+    same numbers. Yogurt and salad at the side are not included. Please check against your family's cooking. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 14

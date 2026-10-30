@@ -1,0 +1,68 @@
+schema: 1
+id: ref:kaak_al_quds
+names:
+  en: [Ka'ak al-Quds, Jerusalem sesame bread, Ka'ek al-Quds, Jerusalem bagel]
+  ar: [كعك القدس, كعك مقدسي, كعك بالسمسم]
+  arabizi: [kaak al quds, kaak al-quds, ka3k al quds, kaek al quds, kaak maqdesi, kaak alquds, kaak quds, ka3ak el 2ods]
+state: cooked
+variants:
+  - id: plain
+    default: true
+    names:
+      en: [Plain ka'ak al-Quds, Ka'ak al-Quds bread]
+      ar: [كعك القدس ساده]
+      arabizi: [kaak al quds sada, kaak quds plain]
+    recipe:
+      - {food: usda:wheat_flour_white, grams: 500, range: [450, 550], note: "4.5 cups (500 g) for 6 breads (Smithsonian)"}
+      - {food: usda:milk_whole, grams: 360, range: [330, 380], note: "350 ml warm milk"}
+      - {food: usda:sesame_seeds, grams: 130, range: [90, 200], note: "150 g in the recipe for the coating; not all of it sticks (assumption)"}
+      - {food: usda:olive_oil, grams: 20, range: [10, 55], note: "brushed and kneaded in; the recipe gives no amount, Palestine in a Dish uses 54 g per 780 g flour"}
+      - {food: usda:molasses, grams: 20, range: [10, 30], note: "1-2 tbsp grape or date molasses for the sesame (Smithsonian)"}
+      - {food: usda:sugar_granulated, grams: 25}
+      - {food: usda:yeast_bakers, grams: 9}
+      - {food: usda:salt_table, grams: 12}
+    cooked_total_g: 950
+    cooked_total_range: [880, 1020]
+  - id: with_egg
+    default: false
+    names:
+      en: [Ka'ak al-Quds with egg, Ka'ek al-Quds and eggs, Jerusalem bread with boiled egg and zaatar]
+      ar: [كعك القدس مع بيض, كعك القدس بالبيض والزعتر]
+      arabizi: [kaak al quds ma3 bayd, kaak al quds bil bayd w zaatar, kaek al quds and eggs]
+    recipe:
+      - {food: usda:wheat_flour_white, grams: 500, range: [450, 550]}
+      - {food: usda:milk_whole, grams: 360, range: [330, 380]}
+      - {food: usda:sesame_seeds, grams: 130, range: [90, 200]}
+      - {food: usda:olive_oil, grams: 20, range: [10, 55]}
+      - {food: usda:molasses, grams: 20, range: [10, 30]}
+      - {food: usda:sugar_granulated, grams: 25}
+      - {food: usda:yeast_bakers, grams: 9}
+      - {food: usda:salt_table, grams: 12}
+      - {food: usda:egg_whole_hard_boiled, grams: 600, range: [300, 900], note: "2 boiled eggs per bread, 12 eggs for 6 breads (Another Pantry: 8 eggs for 4 breads); some stalls use 1 egg"}
+      - {food: ref:zaatar_mix, grams: 36, range: [18, 60], note: "about 1 tbsp (6 g) per bread (Another Pantry: 1 tbsp for 4 breads), 6 g mix per bread is our assumption"}
+      - {food: usda:olive_oil, grams: 30, range: [10, 60], note: "dip or drizzle with the zaatar; the biggest uncertainty for the filling"}
+    cooked_total_g: 1620
+    cooked_total_range: [1400, 1900]
+    portions:
+      piece: {g: 270, range: [190, 380]}
+      half: {g: 135, range: [95, 190]}
+      sandwich: {g: 270, range: [190, 380]}
+portions:
+  piece: {g: 160, range: [110, 250]}
+  half: {g: 80, range: [55, 125]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Smithsonian Folklife Festival, Palestinian recipe: Ka'ak al-Quds sesame ring bread (500 g flour, 350 ml milk, 150 g sesame, molasses; yields 6 breads): https://festival.si.edu/blog/palestinian-recipe-kaak-al-quds-sesame-ring-bread"
+    - "Palestine in a Dish, Ka'ek al-Quds (about 780 g flour, 227 g sesame, 54 g olive oil, 5 breads): https://palestineinadish.com/recipes/kaek-al-quds-a-crusty-and-simple-jerusalem-sesame-bread/print/3010/"
+    - "Another Pantry, Ka'ek al-Quds and eggs (400 g flour for 4 breads, 2 eggs per bread, 1 tbsp za'atar for 4): https://www.anotherpantry.co.uk/recipes/kaek-al-quds-and-eggs/"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    Sizes disagree by a factor of 2: the Smithsonian dough gives about 160 g per baked bread (6 from 500 g flour), Palestine in a Dish
+    about 250 g (5 from 780 g flour), Another Pantry about 150 g. We take the Smithsonian size; real street ka'ak is often
+    larger, so use the range. The with_egg variant is one bread, 2 sliced boiled eggs and a spoon of zaatar and oil
+    (the Jerusalem street breakfast); its pot is 6 sandwiches (about 270 g each). Sesame
+    uptake and any oil or salt in the filling are the main uncertainties. Water only sets the cooked weight (about 10% is lost in
+    baking). Ka'ak with falafel waits for the falafel batch. Yeast is modelled with the compressed baker's yeast entry (usda:yeast_bakers) at the dry-yeast weight in the recipe; dry yeast is about 3 times denser, so energy is understated by under 15 kcal per pot (below 0.5%). AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 18

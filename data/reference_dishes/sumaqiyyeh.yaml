@@ -1,0 +1,56 @@
+schema: 1
+id: ref:sumaqiyyeh
+names:
+  en: [Sumaqiyyeh, Sumagiyya, Sumaghiyyeh, Sumac stew]
+  ar: [سماقية, سماقية غزة, سماقية بالسلق]
+  arabizi: [sumaqiyyeh, sumaghiyyeh, sumaqiyya, sumagiyya, sumagia, sumaqiye, somaqiyyeh, sumakia]
+state: cooked
+variants:
+  - id: lamb
+    default: true
+    names:
+      en: [Lamb sumaqiyyeh, Gaza sumaqiyyeh with lamb and chard]
+      ar: [سماقية لحم, سماقية غزاوية]
+      arabizi: [sumaqiyyeh lahme, sumaqiyyeh ghazzawiyyeh, sumaqiyyeh lahm]
+    recipe:
+      - {food: usda:lamb_shoulder_raw, grams: 1000, range: [800, 1200], note: "1 kg lamb or veal shoulder, cubed (Asif); the fat is counted"}
+      - {food: usda:onion_raw, grams: 250, range: [200, 300], note: "2 onions"}
+      - {food: usda:olive_oil, grams: 109, range: [60, 130], note: "1/2 cup (120 ml) (Asif); the biggest uncertainty"}
+      - {food: usda:chickpeas_cooked, grams: 330, range: [250, 400], note: "2 cups cooked chickpeas"}
+      - {food: usda:swiss_chard_raw, grams: 600, range: [400, 800], note: "3 bundles, stems removed"}
+      - {food: ref:sumac, grams: 25, range: [10, 50], note: "50 g ground sumac is steeped in boiling water and strained: we count half"}
+      - {food: usda:tahini, grams: 125, range: [100, 150], note: "1/2 cup raw tahini"}
+      - {food: usda:wheat_flour_white, grams: 140, range: [100, 140], note: "1 cup / 140 g flour to thicken"}
+      - {food: usda:garlic_raw, grams: 40, note: "1 head"}
+      - {food: usda:hot_pepper_green_raw, grams: 25}
+      - {food: usda:coriander_seed, grams: 7}
+      - {food: usda:caraway_seed, grams: 12, note: "2 tbsp ein jarada (dill seeds); USDA has no dill seed, caraway seed stands in (similar energy per 100 g)"}
+      - {food: usda:allspice_ground, grams: 3}
+      - {food: usda:cumin_seed, grams: 3}
+      - {food: usda:black_pepper, grams: 1}
+      - {food: usda:salt_table, grams: 6}
+    cooked_total_g: 4100
+    cooked_total_range: [3700, 4400]
+portions:
+  bowl: {g: 450, range: [320, 600]}
+  small_bowl: {g: 300, range: [220, 400]}
+  ladle: {g: 150, range: [110, 190]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Asif, Sumaqiyya, recipe by Rawhiyah Eltayeb (Gaza: 1 kg lamb shoulder, 2 onions, 120 ml oil, 2 cups chickpeas, 3 bundles chard, 50 g sumac, 1 garlic head, 140 g flour, 1/2 cup tahini, 2 tbsp dill seeds, water 120 ml for browning, 1 litre for the stew and 720 ml for steeping the sumac; serves 6-10): https://asif.org/en/recipes/sumaqiyya/"
+    - "Wikipedia, Sumaghiyyeh (sumac, chard, slow-stewed beef, chickpeas, tahini; red tahini in Gaza): https://en.wikipedia.org/wiki/Sumaghiyyeh"
+    - "Laila El-Haddad and Maggie Schmitt, The Gaza Kitchen (Taste adaptation; not read in detail): https://tastecooking.com/?p=106633"
+    - "ref:sumac (this catalog); USDA FoodData Central (SR Legacy) for every other ingredient"
+  notes: >-
+    Rebuilt after the number check (2026-10-30). Serves 6-10 in the source; the pot is taken as 8 bowls of about 510 g (bowl
+    450 g, a large stew bowl). Cooked weight is an explicit water balance, not a weighed yield: ingredient rows 2.68 kg
+    plus the water that stays in the pot (1 litre for the stew and about 90% of the 720 ml of boiling sumac water, strained and added back, so about 1.65 kg)
+    is 4.33 kg; the initial 120 ml of water evaporates during browning and is not counted; the meat, chard and chickpeas release their water into the stew and nothing else
+    leaves it except steam (about 0.2 kg lost over a covered 1.5-hour simmer, assumed) and the strained sumac residue (about 30 g). That gives about 4.1 kg
+    (range 3.7-4.4 kg), 142 kcal per 100 g. Only half the sumac (25 of 50 g) is counted since the solids are strained out. Oil (about 110 g, 14 g per
+    bowl) and the lamb fat are the biggest uncertainties; Gazan versions often use beef, oxtail or no meat at all (a lighter
+    pot) and some families use red tahini. Dill seed is modelled with caraway. Pita and rice at the side are not included.
+    A thicker stew (more evaporation) weighs less per bowl and is richer per 100 g. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 12

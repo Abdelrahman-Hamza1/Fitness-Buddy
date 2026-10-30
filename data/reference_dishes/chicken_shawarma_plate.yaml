@@ -1,0 +1,41 @@
+schema: 1
+id: ref:chicken_shawarma_plate
+names:
+  en: [Chicken shawarma plate, Chicken shawarma platter, Shawarma plate]
+  ar: [صحن شاورما دجاج, شاورما دجاج صحن, وجبة شاورما دجاج]
+  arabizi: [sahen shawarma djaj, shawarma djaj sahen, shawarma plate, shawarma meal, wajbet shawarma djaj, shawarma chicken plate]
+state: cooked
+variants:
+  - id: with_fries
+    default: true
+    recipe:
+      - {food: usda:chicken_thigh_roasted, grams: 400, range: [300, 500], note: "cooked weight, 200 g per plate (nutrition-app listings: 150-200 g chicken per plate)"}
+      - {food: usda:olive_oil, grams: 20, range: [10, 40], note: "marinade oil left on the meat"}
+      - {food: usda:yogurt_plain_whole, grams: 20}
+      - {food: usda:fries_fast_food, grams: 200, range: [120, 300], note: "100 g per plate (listings: 80-90 g)"}
+      - {food: usda:pita_white, grams: 120, range: [60, 240], note: "one thin bread per plate"}
+      - {food: usda:vegetable_oil_soybean, grams: 45, range: [25, 80], note: "garlic sauce (toum), about 30 g sauce per plate; shops often give 40 ml; the biggest uncertainty"}
+      - {food: usda:garlic_raw, grams: 10}
+      - {food: usda:lemon_juice_raw, grams: 5}
+      - {food: usda:pickled_cucumber_dill, grams: 80, range: [40, 120]}
+      - {food: usda:tomato_raw, grams: 100, range: [40, 160]}
+      - {food: usda:lettuce_romaine_raw, grams: 60, range: [0, 120]}
+      - {food: usda:onion_raw, grams: 30}
+    cooked_total_g: 1090
+    cooked_total_range: [900, 1300]
+portions:
+  plate: {g: 545, range: [420, 650]}
+  small_plate: {g: 420, range: [320, 500]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Go Healthy Ever After, Mediterranean chicken shawarma plate (serves 4: 500 g boneless thighs, about 125 g raw per plate, rice, sauces and a cucumber salad per plate; no fries): https://www.gohealthyeverafter.com/chicken-shawarma-plate/"
+    - "Palestine in a Dish and Nick's Kitchen for the chicken marinade and toum (see ref:chicken_shawarma_arabi); the plate weights (chicken 200 g cooked, fries 100 g, one bread, 30 g toum) are assumptions, not from a published source"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    No published recipe or menu gives gram weights for a Palestinian shawarma plate; the composition (200 g cooked chicken, 100 g fries, 30 g garlic sauce, one bread,
+    pickles and salad, 545 g) is a stated assumption (the Go Healthy Ever After plate has about 90 g cooked chicken and no fries, so ours is a shop-size plate). Plates
+    with rice instead of fries are not modelled. Garlic sauce and fries are the biggest
+    uncertainties. The sandwich is in ref:chicken_shawarma_arabi. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 10

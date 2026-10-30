@@ -1,0 +1,58 @@
+schema: 1
+id: ref:mujaddara
+names:
+  en: [Mujaddara, Mujadara, Lentils and rice with caramelized onions]
+  ar: [مجدرة, مجدرة عدس ورز, مجدرة أرز]
+  arabizi: [mujaddara, mjaddara, mujadara, mjadara, moujaddara, mudardara, majadra, mujaddarah, mjadra]
+state: cooked
+variants:
+  - id: rice
+    default: true
+    names:
+      en: [Mujaddara with rice, Brown lentil and rice mujaddara]
+      ar: [مجدرة بالرز, مجدرة عدس بني ورز]
+      arabizi: [mujaddara bil ruz, mjaddara ruz, mjaddara ma3 ruz]
+    recipe:
+      - {food: usda:lentils_dry, grams: 250, range: [200, 300], note: "brown or green lentils (Herbivoracious: about 3 cups cooked, 600 g)"}
+      - {food: usda:rice_white_long_grain_raw, grams: 250, range: [200, 300], note: "Mai Storied Recipe uses 1.5 cups short grain rice for 3 cups lentils; equal weights are our assumption"}
+      - {food: usda:onion_raw, grams: 900, range: [600, 1360], note: "3-4 large onions (1.36 kg in Herbivoracious), fried until dark brown; they lose most of their weight"}
+      - {food: usda:vegetable_oil_soybean, grams: 110, range: [60, 160], note: "1/4 cup in Herbivoracious, up to 1/2 cup plus 3 tbsp in Mai's recipe; the biggest uncertainty"}
+      - {food: usda:cumin_seed, grams: 4}
+      - {food: usda:salt_table, grams: 12}
+    cooked_total_g: 1750
+    cooked_total_range: [1550, 1950]
+  - id: bulgur
+    default: false
+    names:
+      en: [Mujaddara with bulgur, Mujaddara hamra, Red mujaddara]
+      ar: [مجدرة برغل, مجدرة حمرا, مجدرة حمراء]
+      arabizi: [mujaddara burghul, mjaddara hamra, mujaddara hamra, mjaddara bourghol]
+    recipe:
+      - {food: usda:lentils_dry, grams: 250, range: [200, 300]}
+      - {food: usda:bulgur_dry, grams: 250, range: [200, 300], note: "coarse bulgur replaces the rice"}
+      - {food: usda:onion_raw, grams: 900, range: [600, 1360]}
+      - {food: usda:vegetable_oil_soybean, grams: 110, range: [60, 160]}
+      - {food: usda:cumin_seed, grams: 4}
+      - {food: usda:salt_table, grams: 12}
+    cooked_total_g: 1800
+    cooked_total_range: [1600, 2000]
+portions:
+  plate: {g: 350, range: [250, 450]}
+  small_plate: {g: 250, range: [180, 320]}
+  ladle: {g: 120, range: [90, 160]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Mai Storied Recipe, Mujadarah safra, Palestinian lentils and rice (serves 8: 3 cups red lentils, 1.5 cups rice, 3 tbsp plus 1/2 cup olive oil, 4 large onions): https://thestoriedrecipe.com/mujadarah-safra/print/40676/"
+    - "Herbivoracious, Mujadara (3 lb onions, 1/4 cup oil, 3 cups cooked brown or green lentils, 6 cups cooked rice): https://herbivoracious.com/2011/07/mujadara-middle-eastern-rice-and-lentil-pilaf-recipe/"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    The two sources differ on the grain-to-lentil ratio (Mai: 1 part rice to 2 of lentils, red lentils; Herbivoracious: 2 parts
+    rice to 1 of lentils); the default uses equal dry weights, which is the usual home pot. The pot is about 6 plates
+    (350 g). The oil is the biggest uncertainty: the onions are fried in 60-160 g and the oil that stays in the pot is
+    counted, but some cooks drain the fried onions and keep the oil. The onions lose 70-80% of their weight when browned
+    (modelled in the cooked weight, not weighed); the cooked weight (1.75 kg) is modelled from the dry lentils and
+    rice absorbing water at about 3:1 and 2.8:1. Yogurt and salad at the side are not included. The `ladle` is one
+    serving spoon (about 120 g), not a plate. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 12

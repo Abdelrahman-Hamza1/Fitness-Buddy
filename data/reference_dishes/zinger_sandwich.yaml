@@ -1,0 +1,42 @@
+schema: 1
+id: ref:zinger_sandwich
+names:
+  en: [Zinger, Zinger sandwich, Zinger burger, Spicy crispy chicken burger]
+  ar: [زنجر, سندويشة زنجر, ساندويش زنجر, برغر زنجر, برجر زنجر]
+  arabizi: [zinger, zinger sandwich, zinger burger, zenger, zinjer, zinger berger, zinger sandwitch]
+state: fried
+variants:
+  - id: breast
+    default: true
+    recipe:
+      - {food: usda:chicken_breast_skinless_raw, grams: 500, range: [440, 600], note: "4 boneless fillets, 125 g raw each (Izzy Cooking uses thighs or breast)"}
+      - {food: usda:wheat_flour_white, grams: 100, range: [80, 125], note: "about 1 cup flour dredge, 3/4 sticks to the chicken (assumption)"}
+      - {food: usda:cornstarch, grams: 20}
+      - {food: usda:buttermilk_lowfat, grams: 60, note: "marinade that stays on the chicken (assumption)"}
+      - {food: usda:vegetable_oil_soybean, grams: 55, range: [30, 90], note: "frying oil absorbed by the coating; the biggest uncertainty"}
+      - {food: usda:bread_roll_burger, grams: 280, range: [200, 340], note: "4 sesame buns of about 70 g (the USDA roll portion is 44 g; shop buns are bigger)"}
+      - {food: usda:mayonnaise, grams: 80, range: [40, 120], note: "burger sauce 1/2 cup for 4 (Izzy Cooking), shops mostly use garlic mayo"}
+      - {food: usda:ketchup, grams: 20}
+      - {food: usda:lettuce_iceberg_raw, grams: 40}
+      - {food: usda:cayenne_pepper, grams: 2}
+      - {food: usda:salt_table, grams: 5}
+    cooked_total_g: 1000
+    cooked_total_range: [900, 1150]
+portions:
+  sandwich: {g: 250, range: [200, 320]}
+  small_sandwich: {g: 190, range: [150, 230]}
+  large_sandwich: {g: 320, range: [270, 400]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Izzy Cooking, Homemade KFC zinger burger (serves 4: 4 boneless chicken thighs or breasts, buttermilk, 1 cup flour, 2.5 tbsp cornstarch, 1/2 cup mayonnaise, 4 sesame buns, lettuce): https://izzycooking.com/wprm_print/homemade-kfc-zinger-burger-recipe"
+    - "SideChef, Homemade KFC zinger chicken (garlic mayonnaise and iceberg lettuce; its own panel of 1271 kcal per serving looks too high and is not used): https://www.sidechef.com/recipes/10868/Homemade_KFC_Zinger_Chicken"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    The basic usda:chicken_sandwich_crispy (152 g, 276 kcal per 100 g, US chain sandwich) already carries the names "zinger sandwich"
+    and "سندويشة زنجر", so this dish uses only "zinger" and "برغر زنجر" to keep names unique; this is the local, larger
+    shop sandwich (250 g with plenty of mayonnaise). The cooked weight is modelled from the fried fillet (about 170 g
+    with coating) plus bun and sauce, not weighed. Oil uptake and mayonnaise are the biggest uncertainties (shops: 100-200 kcal more
+    or less). Fries and a drink in a combo are not included (fries are a basic, usda:fries_fast_food). AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 12

@@ -87,10 +87,12 @@ internal sealed record CatalogRelease(JsonElement Manifest, byte[] Pack, IReadOn
                 || dish.GetProperty("catalog_version").GetInt32() > Version || !variants.Contains(dish.GetProperty("default_variant_id").GetString(), StringComparer.Ordinal)
                 || variants.Distinct(StringComparer.Ordinal).Count() != variants.Length
                 || variants.Any(v => !foods.TryGetValue(v, out var f) || f.GetProperty("dish_id").GetString() != id)) { throw new InvalidDataException("Invalid dish variants."); }
+            // An ingredient is a released food or another released dish (a component such as za'atar mix,
+            // computed from its default variant by the catalog tool).
             foreach (var variant in dish.GetProperty("variants").EnumerateArray())
             {
                 var recipe = variant.GetProperty("recipe");
-                if (recipe.ValueKind == JsonValueKind.Array && recipe.EnumerateArray().Any(i => !foods.ContainsKey(i.GetProperty("food").GetString()!))) { throw new InvalidDataException("Unknown recipe ingredient."); }
+                if (recipe.ValueKind == JsonValueKind.Array && recipe.EnumerateArray().Any(i => i.GetProperty("food").GetString() is not { } ingredient || !foods.ContainsKey(ingredient) && !(dishes.ContainsKey(ingredient) && ingredient != id))) { throw new InvalidDataException("Unknown recipe ingredient."); }
             }
         }
         foreach (var food in foods.Values.Where(f => f.GetProperty("kind").GetString() != "basic"))

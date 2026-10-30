@@ -1,0 +1,40 @@
+schema: 1
+id: ref:manakeesh_zaatar
+names:
+  en: [Manakeesh zaatar, Zaatar manakish, Zaatar manousheh, Zaatar flatbread]
+  ar: [مناقيش زعتر, منقوشة زعتر, مناقيش بالزعتر]
+  arabizi: [manakish zaatar, manousheh zaatar, mankousheh zaatar, mana2eesh za3tar, manaqish zaatar]
+state: cooked
+variants:
+  - id: bakery
+    default: true
+    recipe:
+      - {food: usda:wheat_flour_white, grams: 315, range: [250, 420], note: "2.25 cups all-purpose flour, 315 g (Urban Farm and Kitchen, 6 flatbreads)"}
+      - {food: usda:wheat_flour_whole, grams: 105, range: [0, 210], note: "0.75 cup whole wheat flour, 105 g; many bakeries use only white flour"}
+      - {food: usda:olive_oil, grams: 53, range: [30, 70], note: "1/4 cup in the dough (Urban Farm and Kitchen)"}
+      - {food: usda:yeast_bakers, grams: 6}
+      - {food: usda:sugar_granulated, grams: 4}
+      - {food: usda:salt_table, grams: 6}
+      - {food: ref:zaatar_mix, grams: 50, range: [24, 70], note: "Urban Farm and Kitchen 1/2-3/4 cup; Splendid Table 24 g for 4 pieces (6 g per piece), our value is about 8 g per piece"}
+      - {food: usda:olive_oil, grams: 100, range: [63, 110], note: "topping oil mixed with the zaatar: 106 g in Urban Farm and Kitchen for 6, 63 g for 4 in Splendid Table (16 g per piece); bakery versions are oilier; the biggest uncertainty"}
+    cooked_total_g: 800
+    cooked_total_range: [720, 880]
+portions:
+  piece: {g: 130, range: [90, 200]}
+  large_piece: {g: 190, range: [150, 260]}
+  half: {g: 65, range: [45, 100]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Urban Farm and Kitchen, Manakish zaatar flatbread (315 g all-purpose and 105 g whole wheat flour, 53 g oil in the dough, 106 g oil and 1/2-3/4 cup zaatar topping, 6 flatbreads; seen via search snippet): https://urbanfarmandkitchen.com/manakish-zaatar-flatbread/"
+    - "The Splendid Table, Zaatar manakeesh (24 g za'atar and 63 g olive oil topping for 4 breads, 20 cm baked): https://www.splendidtable.org/story/2025/10/31/zaatar-manakeesh"
+    - "ref:zaatar_mix (this catalog); USDA FoodData Central (SR Legacy) for flour, oil, yeast, sugar and salt"
+  notes: >-
+    One piece (130 g) is the pot of 6 home-sized flatbreads (about 14 cm); a bakery manousheh is bigger (large_piece
+    190 g) and folded or rolled with cheese or vegetables inside the sandwich. The dough water is not an ingredient
+    row (it only sets the cooked weight: about 55% of the flour, with about 10% lost as steam on baking, modelled, not
+    weighed). Oil is the biggest uncertainty: the dough has 9 g per piece and the zaatar-oil topping 17 g per piece
+    here, and bakery pieces are often oilier (a piece can be 100-150 kcal higher). Cucumber, tomato and mint sold
+    with it are not included. Yeast is modelled with the compressed baker's yeast entry (usda:yeast_bakers) at the dry-yeast weight in the recipe; dry yeast is about 3 times denser, so energy is understated by under 15 kcal per pot (below 0.5%). AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 12

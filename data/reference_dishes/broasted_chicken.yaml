@@ -1,0 +1,43 @@
+schema: 1
+id: ref:broasted_chicken
+names:
+  en: [Broasted chicken meal, Broasted meal, Broasted chicken with fries]
+  ar: [وجبة بروستد, وجبة بروستد دجاج, بروستد]
+  arabizi: [broasted, brosted, broast, wajbet broasted, broasted chicken meal]
+state: fried
+variants:
+  - id: two_piece_meal
+    default: true
+    names:
+      en: [Two-piece broasted chicken meal]
+      ar: [وجبة بروستد قطعتين]
+      arabizi: [wajbet broasted qet3ateen, broasted 2 pieces]
+    recipe:
+      - {food: usda:fried_chicken_breast, grams: 160, range: [130, 205], note: "one breast piece, edible meat and skin; USDA fried breast with skin is 203 g, scaled down for a broasted piece (assumption)"}
+      - {food: usda:fried_chicken_thigh, grams: 110, range: [85, 140], note: "one thigh piece, edible (USDA with skin 136 g)"}
+      - {food: usda:fries_fast_food, grams: 150, range: [100, 200]}
+      - {food: usda:pita_white, grams: 60, range: [40, 120], note: "one bread or bun"}
+      - {food: usda:vegetable_oil_soybean, grams: 22, range: [10, 40], note: "garlic sauce (toum), about 25 g sauce; the biggest uncertainty with the coating"}
+      - {food: usda:garlic_raw, grams: 6}
+      - {food: usda:lemon_juice_raw, grams: 2}
+      - {food: usda:coleslaw, grams: 80, range: [50, 120]}
+      - {food: usda:pickled_cucumber_dill, grams: 30}
+    cooked_total_g: 620
+    cooked_total_range: [520, 720]
+portions:
+  meal: {g: 620, range: [520, 720]}
+  plate: {g: 620, range: [520, 720]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Texas Chicken Bahrain, Chicken meals menu (broasted chicken served with fries or mashed potato, bun or biscuit and coleslaw; no weights): https://bahrain.texaschicken.com/Menu/ChickenMeals/TexSampler"
+    - "The Donut Whole, Is broasted chicken good for a diet? (boneless skinless broasted breast about 230 kcal, 12 g fat, 24 g protein): https://www.thedonutwhole.com/is-broasted-chicken-good-for-a-diet/"
+    - "USDA FoodData Central (SR Legacy) fried chicken, fries and coleslaw entries (usda:fried_chicken_breast, usda:fried_chicken_thigh, usda:fries_fast_food, usda:coleslaw)"
+  notes: >-
+    No published recipe or weights exist for the Levantine broasted meal; the meal (2 pieces, fries, bread, garlic sauce, coleslaw,
+    pickles, about 620 g) is assembled from the chain-menu pattern with assumed weights, and the chicken uses the USDA
+    fried-chicken entries as a stand-in for pressure-fried broasted pieces. Single pieces (usda:fried_chicken_*) and fries
+    are basics. The meal is about 1600 kcal, in line with a rough estimate of 1300-1700; the pieces chosen (breast and
+    thigh) and the toum are the biggest uncertainties (drumstick and wing meals are lighter). Drink not included. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 10

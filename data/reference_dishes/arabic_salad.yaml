@@ -1,0 +1,57 @@
+schema: 1
+id: ref:arabic_salad
+names:
+  en: [Arabic salad, Palestinian salad, Chopped salad, Salata arabiyeh]
+  ar: [سلطة عربية, سلطة فلسطينية, سلطة خيار وبندورة, سلطة بلدية]
+  arabizi: [salata arabiyeh, salata arabieh, salata 3arabiyeh, salata falasteeniyeh, salata baladiyeh, salatet khyar w banadoura, arabic salad]
+state: raw
+variants:
+  - id: classic
+    default: true
+    recipe:
+      - {food: usda:cucumber_raw, grams: 200, range: [150, 300], note: "2 small cucumbers (Chef in Disguise)"}
+      - {food: usda:tomato_raw, grams: 370, range: [250, 450], note: "3 tomatoes"}
+      - {food: usda:onion_raw, grams: 70, range: [0, 100], note: "1 small onion, optional"}
+      - {food: usda:spring_onion_raw, grams: 15, range: [0, 60]}
+      - {food: usda:parsley_fresh, grams: 8, range: [5, 100], note: "2 tbsp minced here; Palestine in a Dish uses 4 oz"}
+      - {food: usda:mint_fresh, grams: 5, range: [0, 57]}
+      - {food: usda:lemon_juice_raw, grams: 50, range: [30, 62], note: "juice of 1 lemon, 3-4 tbsp"}
+      - {food: usda:olive_oil, grams: 34, range: [27, 40], note: "2-3 tbsp"}
+      - {food: usda:salt_table, grams: 3}
+    cooked_total_g: 755
+    cooked_total_range: [650, 850]
+  - id: herb_heavy
+    default: false
+    names:
+      en: [Herby Palestinian salad, Salata frangyeh]
+      ar: [سلطة فرنجية, سلطة بقدونس ونعنع]
+      arabizi: [salata franjiyeh, salata frangyeh, salata ba2doonis w na3na3]
+    recipe:
+      - {food: usda:cucumber_raw, grams: 200, range: [150, 300], note: "2 Persian cucumbers"}
+      - {food: usda:tomato_raw, grams: 250, range: [200, 350], note: "2 Roma tomatoes"}
+      - {food: usda:spring_onion_raw, grams: 113}
+      - {food: usda:parsley_fresh, grams: 113}
+      - {food: usda:mint_fresh, grams: 57}
+      - {food: usda:lemon_juice_raw, grams: 62}
+      - {food: usda:olive_oil, grams: 27, range: [27, 40]}
+      - {food: usda:salt_table, grams: 2}
+    cooked_total_g: 820
+    cooked_total_range: [700, 900]
+portions:
+  bowl: {g: 200, range: [120, 300]}
+  small_bowl: {g: 120, range: [80, 160]}
+  plate: {g: 300, range: [200, 400]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Chef in Disguise, Palestinian peasant salad (serves 2: 2 cucumbers, 3 tomatoes, 1 spring onion, 1 onion, 2 tbsp parsley and mint, 2-3 tbsp oil, 1 lemon): https://chefindisguise.com/2018/01/01/palestinian-peasant-salad/"
+    - "Palestine in a Dish, Salata frangyeh (serves 2: 2 Persian cucumbers, 2 Roma tomatoes, 4 oz green onions and parsley, 2 oz mint, 60 ml lemon juice, 2 tbsp oil): https://palestineinadish.com/recipes/salata-frangyeh-is-a-simple-basic-salad/print/2723/"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    Both recipes serve 2, but the whole bowl (about 750 g) is more than most people eat as a side, so a bowl is 200 g and
+    a plate 300 g. The salad is raw, so the cooked weight is the sum of the ingredients. The dressing oil is the main
+    variable (2-3 tbsp in the pot, 5-9 g per bowl); restaurant versions are oilier and often add sumac. Bread and
+    olive oil poured over at the table are not included. The herb_heavy variant (salata frangyeh) is a parsley-and-mint
+    salad and is much lower in energy per 100 g. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 8

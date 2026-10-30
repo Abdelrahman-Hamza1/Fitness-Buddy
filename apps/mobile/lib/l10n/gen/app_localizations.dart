@@ -1988,6 +1988,66 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{small plate} other{small plates}}'**
   String unitSmallPlate(num count);
 
+  /// Unit label (small bowl), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{small bowl} other{small bowls}}'**
+  String unitSmallBowl(num count);
+
+  /// Unit label (half), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{half} other{halves}}'**
+  String unitHalf(num count);
+
+  /// Unit label (half loaf), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{half loaf} other{half loaves}}'**
+  String unitHalfLoaf(num count);
+
+  /// Unit label (large piece), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{large piece} other{large pieces}}'**
+  String unitLargePiece(num count);
+
+  /// Unit label (small piece), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{small piece} other{small pieces}}'**
+  String unitSmallPiece(num count);
+
+  /// Unit label (large sandwich), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{large sandwich} other{large sandwiches}}'**
+  String unitLargeSandwich(num count);
+
+  /// Unit label (small sandwich), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{small sandwich} other{small sandwiches}}'**
+  String unitSmallSandwich(num count);
+
+  /// Unit label (meal), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{meal} other{meals}}'**
+  String unitMeal(num count);
+
+  /// Unit label (pan), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{pan} other{pans}}'**
+  String unitPan(num count);
+
+  /// Unit label (two-piece serving), singular for 1 and plural otherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{two-piece serving} other{two-piece servings}}'**
+  String unitTwoPieces(num count);
+
   /// Unit label (large plate), singular for 1 and plural otherwise.
   ///
   /// In en, this message translates to:

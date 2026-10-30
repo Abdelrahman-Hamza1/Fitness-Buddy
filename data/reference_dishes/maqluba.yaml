@@ -75,8 +75,8 @@ portions:
   small_plate: {g: 280, range: [230, 330]}
   large_plate: {g: 500, range: [430, 620]}
 review:
-  status: draft
-  reviewed_by: claude-draft
+  status: reviewed
+  reviewed_by: ai-verified
   sources:
     - "Christian Peacemaker Teams (CPT), Recipes from our PalestineTeam, Maqluba with Chicken (serves 6-8): https://cpt.org/suppers/recipes-from-palestine"
     - "Dumplings and More, Maqluba / Maklouba (500 g rice, 4 chicken thighs, 1 cauliflower, 2 eggplants, 2 potatoes, serves 8): https://dumplingsandmore.fr/?p=53209"
@@ -88,5 +88,5 @@ review:
     to shallow fry the vegetables 0.5-1 cm deep and give no total, so 90-140 g retained in the pot is our assumption
     (range 55-200 g). All weights are edible (no bones); the pot's cooked weight (2.35 kg) and the plate sizes are
     modelled (pot divided by 6-8 servings, CPT), not weighed. Chicken is skin-on thigh and its fat stays in the broth
-    that cooks the rice, so a skimmed or skinless version will be lighter. Restaurant and lamb maqluba are not covered.
+    that cooks the rice, so a skimmed or skinless version will be lighter. Restaurant and lamb maqluba are not covered. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
 time_min: 20

@@ -1,0 +1,40 @@
+schema: 1
+id: ref:msabbaha
+names:
+  en: [Msabbaha, Musabaha, Masabacha, Warm chickpeas in tahini]
+  ar: [مسبحة, مسبحة حمص, مسبحه, حمص مسبحة]
+  arabizi: [msabbaha, musabaha, msabaha, masabacha, mesabaha, msabbha, musabbaha, hummus msabbaha, mesabha]
+state: as_sold
+variants:
+  - id: classic
+    default: true
+    recipe:
+      - {food: usda:chickpeas_dry, grams: 250, range: [200, 300], note: "250 g dried chickpeas, cooked whole (Soul Spoon)"}
+      - {food: usda:tahini, grams: 180, range: [130, 220], note: "80 g in the smooth purée plus 100 g in the drizzle sauce"}
+      - {food: usda:lemon_juice_raw, grams: 110, range: [80, 130], note: "60 ml plus 50 ml"}
+      - {food: usda:garlic_raw, grams: 12}
+      - {food: usda:olive_oil, grams: 41, range: [27, 60], note: "3 tbsp to finish; the biggest uncertainty"}
+      - {food: usda:cumin_seed, grams: 4}
+      - {food: usda:parsley_fresh, grams: 5}
+      - {food: usda:salt_table, grams: 10}
+    cooked_total_g: 1000
+    cooked_total_range: [900, 1100]
+portions:
+  bowl: {g: 300, range: [220, 400]}
+  plate: {g: 300, range: [220, 400]}
+  small_bowl: {g: 200, range: [150, 260]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Soul Spoon, Msabaha (Palestinian breakfast hummus): 250 g dried chickpeas, 80 g plus 100 g tahini, 110 ml lemon juice, 3 tbsp olive oil, cumin, parsley: https://soul-spoon.pages.dev/r/cuisine/palestinian/side-dishes/msabaha"
+    - "La Boite, Msabbaha (a rich recipe with substantial tahini and olive oil; used as a second source for the rich version, not read in detail): https://www.laboiteny.com/blogs/recipes/msabbaha"
+    - "Pulses.org, Hummus moussabaha (250 g dried chickpeas, 30 ml tahini, 100 ml yoghurt, 25 ml olive oil; serves 4; a much lighter version): https://pulses.org/recipes/recipe/353-hummus-moussabaha"
+    - "Wikipedia, Msabbaha (whole chickpeas in tahini and lemon): https://en.wikipedia.org/wiki/Msabbaha"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    The two sources disagree on tahini by a factor of 6 (Soul Spoon 180 g, Pulses.org about 30 g plus yoghurt); the shop
+    version (rich in tahini, as in Soul Spoon and La Boite) is modelled; the Pulses.org version is much lighter (about 150 kcal less per bowl, from 30 ml tahini and yoghurt) and is not represented by the ranges. About 3.3 bowls of 300 g come from the pot (cooked weight about 1 kg, modelled from the
+    chickpea yield 2.3 plus the water in the sauces, not weighed). Tahini and the oil on top are the biggest uncertainties
+    (a bowl is 11-14 g oil). Bread, pickles and raw onion on the side are not included. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 10

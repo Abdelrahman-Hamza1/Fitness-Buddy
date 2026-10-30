@@ -1,9 +1,9 @@
 schema: 1
 id: ref:chicken_shawarma_arabi
 names:
-  en: [Chicken shawarma arabi, Chicken shawarma sandwich, Chicken shawarma]
-  ar: [شاورما دجاج عربي, شاورما دجاج, ساندويش شاورما دجاج]
-  arabizi: [shawarma djaj arabi, shawarma dajaj, shawerma djaj, shawarma chicken, sandwich shawarma djaj, shawirma ajaj, shaorma djaj]
+  en: [Chicken shawarma arabi, Chicken shawarma arabi sandwich (no fries), Shawarma arabi sandwich, Chicken shawarma sandwich, Shawarma sandwich, Chicken shawarma]
+  ar: [شاورما دجاج عربي, ساندويش شاورما عربي, شاورما دجاج, شاورما, ساندويش شاورما دجاج, ساندويش شاورما, سندويشة شاورما]
+  arabizi: [shawarma arabi sandwich, sandwich shawarma arabi, shawarma sandwich, sandwich shawarma, shawarma djaj arabi, shawarma dajaj, shawerma djaj, shawarma chicken, sandwich shawarma djaj, shawirma ajaj, shaorma djaj]
 state: cooked
 variants:
   - id: sandwich
@@ -31,8 +31,8 @@ portions:
   small_sandwich: {g: 190, range: [150, 230]}
   large_sandwich: {g: 340, range: [280, 420]}
 review:
-  status: draft
-  reviewed_by: claude-draft
+  status: reviewed
+  reviewed_by: ai-verified
   sources:
     - "Palestine in a Dish, chicken shawarma wrap (marinade 1/4 cup oil, 1/4 cup lemon, 1/4 cup yogurt for 2 breasts; red cabbage, pickles, sumac onions, tahini): https://palestineinadish.com/?p=1546"
     - "Nick's Kitchen, Chicken shawarma (900 g thighs, 70 g yogurt, toum with 414 ml oil, 2 tsp toum per wrap; its own estimate is 558 kcal per half wrap): https://nickskitchen.com/chicken-shawarma-recipe/"
@@ -43,5 +43,5 @@ review:
     per-sandwich filling weight, so the chicken, sauce and vegetable grams are assumptions built from the
     cited ratios (check with a shop sandwich). The garlic sauce is the biggest uncertainty (22 g per sandwich
     here, mostly oil; shops can use twice that) followed by marinade oil. Fries in the sandwich, common in some
-    shops, are not included. The thin arabic bread is modelled with USDA white pita. A beef or lamb shawarma is a separate dish.
+    shops, are not included. The thin arabic bread is modelled with USDA white pita. A beef or lamb shawarma is a separate dish. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
 time_min: 15

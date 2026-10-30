@@ -1,0 +1,60 @@
+schema: 1
+id: ref:ful_medames
+names:
+  en: [Ful medames, Foul, Fava bean stew, Ful mdammas]
+  ar: [فول مدمس, فول, فول بزيت وليمون]
+  arabizi: [ful medames, foul medames, ful mudammas, ful mdammas, foul mdammas, ful, foul, fool, fuul]
+state: as_sold
+variants:
+  - id: classic
+    default: true
+    recipe:
+      - {food: usda:fava_beans_canned, grams: 850, range: [700, 900], note: "2 cans (15 oz) fava beans with their liquid (America's Test Kitchen)"}
+      - {food: usda:garlic_raw, grams: 12, note: "4 cloves"}
+      - {food: usda:olive_oil, grams: 40, range: [20, 60], note: "1 tbsp cooking plus 2 tbsp poured on top at the table; the biggest uncertainty"}
+      - {food: usda:lemon_juice_raw, grams: 30}
+      - {food: usda:cumin_seed, grams: 2}
+      - {food: usda:tomato_raw, grams: 120, range: [0, 200]}
+      - {food: usda:onion_raw, grams: 60, range: [0, 100]}
+      - {food: usda:parsley_fresh, grams: 8}
+      - {food: usda:salt_table, grams: 5}
+    cooked_total_g: 1090
+    cooked_total_range: [950, 1200]
+  - id: with_tahini_and_egg
+    default: false
+    names:
+      en: [Ful medames with tahini and boiled egg]
+      ar: [فول بالطحينة والبيض]
+      arabizi: [ful bil tahini w bayd, foul bi tahine]
+    recipe:
+      - {food: usda:fava_beans_canned, grams: 850, range: [700, 900]}
+      - {food: usda:garlic_raw, grams: 12}
+      - {food: usda:olive_oil, grams: 40, range: [20, 60]}
+      - {food: usda:lemon_juice_raw, grams: 30}
+      - {food: usda:tahini, grams: 45, range: [0, 80], note: "3 tbsp (America's Test Kitchen)"}
+      - {food: usda:cumin_seed, grams: 2}
+      - {food: usda:tomato_raw, grams: 120}
+      - {food: usda:onion_raw, grams: 60}
+      - {food: usda:parsley_fresh, grams: 8}
+      - {food: usda:egg_whole_hard_boiled, grams: 100, range: [50, 150], note: "2 chopped boiled eggs"}
+      - {food: usda:salt_table, grams: 5}
+    cooked_total_g: 1235
+    cooked_total_range: [1100, 1350]
+portions:
+  plate: {g: 300, range: [200, 400]}
+  bowl: {g: 250, range: [180, 350]}
+  small_bowl: {g: 180, range: [130, 240]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "America's Test Kitchen, Ful medames (serves 4-6: 2 cans fava beans, 3 tbsp tahini, 4 garlic cloves, 2 tbsp lemon juice, 1 tbsp olive oil, tomato, onion, parsley, 2 boiled eggs): https://www.americastestkitchen.com/recipes/14615-ful-medames"
+    - "Tin and Thyme, Ful medames (beans heated with cumin, garlic, lemon and salt, partly mashed; snippet only, page blocked): https://tinandthyme.uk/2022/09/ful-medames/"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    No Palestinian source with grams was found; the Levantine and Egyptian pattern (cooked fava, cumin, garlic, lemon, oil) is the
+    same in homes and shops. The default is without tahini and egg (the plainest breakfast); the with_tahini_and_egg variant follows ATK. The pot
+    is about 4 bowls of 250 g. Oil is the biggest uncertainty (poured on at the table, 10-20 g per bowl here; shop ful is often
+    much oilier). The canned fava entry is counted with its liquid (71 kcal per 100 g); dried beans cooked soft are denser. Bread is not
+    included, nor chickpeas (the ful-and-hummus mix is not modelled). AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 8

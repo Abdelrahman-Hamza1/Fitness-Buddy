@@ -1,0 +1,39 @@
+schema: 1
+id: ref:makdous
+names:
+  en: [Makdous, Makdous eggplant, Stuffed pickled baby eggplant in oil]
+  ar: [مكدوس, مكدوس باذنجان]
+  arabizi: [makdous, makdoos, maqdous, makdus, mkdous, magdous, makdous batinjan]
+state: as_sold
+variants:
+  - id: walnut
+    default: true
+    recipe:
+      - {food: usda:eggplant_raw, grams: 2000, range: [1800, 2200], note: "about 40 baby eggplants, 2 kg (Zaatar and Zaytoun); Falasteeni Foodie uses 20 for 1.5 lb"}
+      - {food: usda:walnuts, grams: 300, range: [200, 400], note: "3 cups chopped walnuts (Zaatar and Zaytoun); Orange Blossom Water uses 500 g per about 2.5 kg"}
+      - {food: usda:bell_pepper_red_raw, grams: 450, range: [250, 600], note: "2 red bell peppers plus 4 long red peppers (Zaatar and Zaytoun)"}
+      - {food: usda:hot_pepper_green_raw, grams: 20, range: [0, 40], note: "3 hot chilies"}
+      - {food: usda:garlic_raw, grams: 20, range: [15, 60], note: "6 cloves (Zaatar and Zaytoun), 10 cloves (Falasteeni Foodie)"}
+      - {food: usda:olive_oil, grams: 250, range: [150, 450], note: "oil that stays in the eggplants and filling when drained from the jar; the jar holds about 1.4 kg (1.5 litres); the biggest uncertainty"}
+      - {food: usda:salt_table, grams: 40, range: [20, 60]}
+    cooked_total_g: 2250
+    cooked_total_range: [2000, 2500]
+portions:
+  piece: {g: 55, range: [35, 75]}
+  two_pieces: {g: 110, range: [70, 150]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Zaatar and Zaytoun, Lebanese makdous (about 40 baby eggplants, 2 kg; 3 cups walnuts; 2 red bell and 4 long red peppers; about 1.5 litres oil): https://zaatarandzaytoun.com/makdous"
+    - "Falasteeni Foodie, Makdous (20 baby eggplants, about 1.5-1.75 lb; 1 cup walnuts; 10 garlic cloves; shatta; olive oil to cover): https://falasteenifoodie.com/makdous/"
+    - "Orange Blossom Water, Makdous al-bathenjan (500 g walnuts, 250 g red pepper, filling oil 100 ml; certificate expired when opened, composition from the search summary): https://orangeblossomwater.net/index.php/2010/04/09/makdous-al-bathenjan/"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    Counted for the drained eggplants and their filling (40 pieces of about 55 g each; the eggplants are boiled, pressed and
+    lose about a third of their weight, so 2 kg raw becomes about 1.3 kg). The amount of oil each piece soaks up from the
+    jar (about 6 g per piece here) is the biggest uncertainty (range 4-11 g); pieces taken straight from the jar and
+    not drained are oilier. Walnut and pepper amounts vary widely between families, and the Palestinian makdous
+    often uses shatta (chili paste), not counted here. Olive oil in the jar that is not eaten is not counted. Nutrients are
+    estimated from raw eggplant (the boiling loss is in the cooked weight, not in the ingredient). AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 15

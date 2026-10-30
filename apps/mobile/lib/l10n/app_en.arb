@@ -1875,6 +1875,96 @@
       }
     }
   },
+  "unitSmallBowl": "{count, plural, =1{small bowl} other{small bowls}}",
+  "@unitSmallBowl": {
+    "description": "Unit label (small bowl), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitHalf": "{count, plural, =1{half} other{halves}}",
+  "@unitHalf": {
+    "description": "Unit label (half), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitHalfLoaf": "{count, plural, =1{half loaf} other{half loaves}}",
+  "@unitHalfLoaf": {
+    "description": "Unit label (half loaf), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitLargePiece": "{count, plural, =1{large piece} other{large pieces}}",
+  "@unitLargePiece": {
+    "description": "Unit label (large piece), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitSmallPiece": "{count, plural, =1{small piece} other{small pieces}}",
+  "@unitSmallPiece": {
+    "description": "Unit label (small piece), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitLargeSandwich": "{count, plural, =1{large sandwich} other{large sandwiches}}",
+  "@unitLargeSandwich": {
+    "description": "Unit label (large sandwich), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitSmallSandwich": "{count, plural, =1{small sandwich} other{small sandwiches}}",
+  "@unitSmallSandwich": {
+    "description": "Unit label (small sandwich), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitMeal": "{count, plural, =1{meal} other{meals}}",
+  "@unitMeal": {
+    "description": "Unit label (meal), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitPan": "{count, plural, =1{pan} other{pans}}",
+  "@unitPan": {
+    "description": "Unit label (pan), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "unitTwoPieces": "{count, plural, =1{two-piece serving} other{two-piece servings}}",
+  "@unitTwoPieces": {
+    "description": "Unit label (two-piece serving), singular for 1 and plural otherwise.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
   "unitLargePlate": "{count, plural, =1{large plate} other{large plates}}",
   "@unitLargePlate": {
     "description": "Unit label (large plate), singular for 1 and plural otherwise.",

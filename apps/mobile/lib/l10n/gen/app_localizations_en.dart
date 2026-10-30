@@ -1244,6 +1244,116 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String unitSmallBowl(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'small bowls',
+      one: 'small bowl',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unitHalf(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'halves',
+      one: 'half',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unitHalfLoaf(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'half loaves',
+      one: 'half loaf',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unitLargePiece(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'large pieces',
+      one: 'large piece',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unitSmallPiece(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'small pieces',
+      one: 'small piece',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unitLargeSandwich(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'large sandwiches',
+      one: 'large sandwich',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unitSmallSandwich(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'small sandwiches',
+      one: 'small sandwich',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unitMeal(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'meals',
+      one: 'meal',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unitPan(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'pans',
+      one: 'pan',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String unitTwoPieces(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'two-piece servings',
+      one: 'two-piece serving',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String unitLargePlate(num count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

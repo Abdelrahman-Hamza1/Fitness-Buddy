@@ -1,0 +1,78 @@
+schema: 1
+id: ref:lahm_bi_ajeen
+names:
+  en: [Lahm bi ajeen, Sfiha, Sfeeha, Meat pies, Lamb flatbread]
+  ar: [لحم بعجين, صفيحة, صفيحة لحم]
+  arabizi: [lahm bi ajeen, lahm b ajeen, lahme bi 3ajeen, lahm ba3jin, sfiha, sfeeha, sfiha lahme, safiha, lahm bi ajin]
+state: cooked
+variants:
+  - id: large
+    default: true
+    names:
+      en: [Lahm bi ajeen (large pie), Open meat pie]
+      ar: [لحم بعجين كبير, لحم بعجين مفتوح]
+      arabizi: [lahm bi ajeen kbeer, lahm bi ajeen maftouh]
+    recipe:
+      - {food: usda:wheat_flour_white, grams: 375, range: [340, 420], note: "3 cups all-purpose flour (Cooklang, 8 pies)"}
+      - {food: usda:olive_oil, grams: 27, range: [14, 40], note: "2 tbsp in the dough"}
+      - {food: usda:yeast_bakers, grams: 5}
+      - {food: usda:salt_table, grams: 8}
+      - {food: usda:lamb_ground_raw, grams: 340, range: [250, 450], note: "12 oz ground lamb; bakeries often use beef or a beef and lamb mix with extra fat"}
+      - {food: usda:onion_raw, grams: 150, range: [100, 200]}
+      - {food: usda:tomato_raw, grams: 250, range: [150, 300], note: "2 ripe tomatoes"}
+      - {food: usda:tomato_paste_canned, grams: 16}
+      - {food: usda:molasses, grams: 20, note: "1 tbsp pomegranate molasses; stands in with plain molasses (similar sugar per 100 g)"}
+      - {food: usda:pine_nuts_dried, grams: 18, range: [0, 30]}
+      - {food: usda:allspice_ground, grams: 3}
+      - {food: usda:paprika, grams: 3, note: "stands in for Aleppo pepper"}
+      - {food: usda:salt_table, grams: 5}
+    cooked_total_g: 1230
+    cooked_total_range: [1100, 1350]
+  - id: sfiha_small
+    default: false
+    names:
+      en: [Sfiha small meat pies, Mini lahm bi ajeen]
+      ar: [صفيحة صغيرة, صفايح لحم صغيرة, صفيحة بعلبكية]
+      arabizi: [sfiha sghira, sfayeh lahme, sfeeha small]
+    recipe:
+      - {food: usda:wheat_flour_white, grams: 500, range: [450, 550], note: "500 g plain flour for 24 pies (Soul Spoon)"}
+      - {food: usda:olive_oil, grams: 27, range: [14, 40]}
+      - {food: usda:yeast_bakers, grams: 7}
+      - {food: usda:sugar_granulated, grams: 13}
+      - {food: usda:salt_table, grams: 6}
+      - {food: usda:lamb_ground_raw, grams: 500, range: [400, 600], note: "500 g lamb mince, shoulder, slightly fatty"}
+      - {food: usda:onion_raw, grams: 150}
+      - {food: usda:tomato_raw, grams: 150, note: "2 small tomatoes, deseeded"}
+      - {food: usda:tomato_paste_canned, grams: 30}
+      - {food: usda:molasses, grams: 60, note: "3 tbsp pomegranate molasses"}
+      - {food: usda:pine_nuts_dried, grams: 25, range: [0, 40]}
+      - {food: usda:parsley_fresh, grams: 8}
+      - {food: usda:paprika, grams: 6}
+      - {food: usda:allspice_ground, grams: 2}
+      - {food: usda:cinnamon_ground, grams: 1}
+      - {food: usda:salt_table, grams: 6}
+    cooked_total_g: 1510
+    cooked_total_range: [1350, 1650]
+    portions:
+      piece: {g: 63, range: [45, 85]}
+      half: {g: 32, range: [22, 43]}
+      plate: {g: 190, range: [130, 260]}
+portions:
+  piece: {g: 150, range: [100, 220]}
+  half: {g: 75, range: [50, 110]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Cooklang recipes, Lahm bi ajeen (3 cups flour, 12 oz ground lamb, 2 tomatoes, 1 onion, pine nuts; makes 8 pies): https://recipes.cooklang.org/recipes/7796"
+    - "Soul Spoon, Sfeeha (500 g flour, 500 g lamb mince, 3 tbsp pomegranate molasses; 24 pies of 9 cm): https://soul-spoon.pages.dev/r/cuisine/syria/side-dishes/sfeeha"
+    - "Orange Blossom Water, Lahm bi-'ajin / Sfiha (meat mixture of about 1.2 kg; snippet only, certificate expired): https://orangeblossomwater.net/?p=11806"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    The two recipes differ in size by a factor of 2.5: the default is the large open pie (8 from 375 g flour, about 150 g
+    each after baking, close to a bakery piece); sfiha_small is the 9 cm party pie (24, about 63 g each; a plate of
+    3 is 190 g). Cooked weights are modelled (about 10% of the dough and 20% of the topping is lost on baking), not weighed. Lamb
+    fat is counted in full although some drips off in the oven; bakery pies use more fat and less tomato (a bakery
+    piece can be 100-150 kcal higher). Pomegranate molasses is modelled with plain molasses. Ayran or salad at the side
+    are not included. Yeast is modelled with the compressed baker's yeast entry (usda:yeast_bakers) at the dry-yeast weight in the recipe; dry yeast is about 3 times denser, so energy is understated by under 15 kcal per pot (below 0.5%). AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 15

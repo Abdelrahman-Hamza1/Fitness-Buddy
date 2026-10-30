@@ -29,9 +29,9 @@
       "report": "m3",
       "metric": "AQ-02",
       "unit": "T07#0",
-      "code": "cardIssue:needsConversion",
+      "code": "key:ref:maqluba/chicken",
       "class": "policy",
-      "fixingStep": "estimate-portion-policy"
+      "fixingStep": "A49 dish-variant-ask (A17/A18 released dishes now resolve to the default variant instead of the expected question)"
     },
     {
       "report": "m3",
@@ -45,9 +45,9 @@
       "report": "m3",
       "metric": "AQ-02",
       "unit": "T39#2",
-      "code": "cardIssue:needsConversion",
+      "code": "key:ref:meat_shawarma/beef",
       "class": "policy",
-      "fixingStep": "estimate-portion-policy"
+      "fixingStep": "A49 dish-variant-ask (A17/A18 released dishes now resolve to the default variant instead of the expected question)"
     },
     {
       "report": "m3",
@@ -77,9 +77,9 @@
       "report": "m3",
       "metric": "AQ-02",
       "unit": "T10#0",
-      "code": "key:usda:mango_raw",
-      "class": "resolver",
-      "fixingStep": "resolver-match-quality"
+      "code": "key:ref:mansaf/lamb",
+      "class": "policy",
+      "fixingStep": "A49 dish-variant-ask (A17/A18 released dishes now resolve to the default variant instead of the expected question)"
     },
     {
       "report": "m3",
@@ -149,9 +149,9 @@
       "report": "b09",
       "metric": "AQ-02",
       "unit": "DY-045#0",
-      "code": "cardIssue:needsConversion",
+      "code": "key:ref:maqluba/chicken",
       "class": "policy",
-      "fixingStep": "estimate-portion-policy"
+      "fixingStep": "A49 dish-variant-ask (A17/A18 released dishes now resolve to the default variant instead of the expected question)"
     }
   ]
 }

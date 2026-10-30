@@ -1,0 +1,53 @@
+schema: 1
+id: ref:rice_with_vermicelli
+names:
+  en: [Rice with vermicelli, Vermicelli rice, Rice with toasted vermicelli]
+  ar: [رز بشعرية, أرز بالشعيرية, رز بالشعيرية]
+  arabizi: [ruz bi sh'arieh, ruz bil shaareyeh, ruz bil shi3riyeh, ruz bi sha3reyeh, riz bil shariyeh, roz bel shaghria, ruz sh3ayriyeh, vermicelli rice]
+state: cooked
+variants:
+  - id: long_grain
+    default: true
+    names:
+      en: [Rice with vermicelli (long grain), Jasmine rice with vermicelli]
+      ar: [رز بشعرية حبة طويلة]
+      arabizi: [ruz sha3reyeh tawil, ruz basmati bi sh3ayriyeh]
+    recipe:
+      - {food: usda:rice_white_long_grain_raw, grams: 370, range: [330, 410], note: "2 cups jasmine rice (Falasteeni Foodie)"}
+      - {food: usda:pasta_dry, grams: 45, range: [30, 70], note: "1/3 to 1/2 cup vermicelli, toasted in the fat; dry pasta stands in for vermicelli (same flour product)"}
+      - {food: usda:ghee, grams: 14, range: [0, 28], note: "1 tbsp ghee or butter"}
+      - {food: usda:vegetable_oil_soybean, grams: 14, range: [7, 30], note: "1 tbsp oil; Falastin uses 35 g butter and no oil; the biggest uncertainty"}
+      - {food: usda:salt_table, grams: 12}
+    cooked_total_g: 1100
+    cooked_total_range: [1000, 1200]
+  - id: short_grain
+    default: false
+    names:
+      en: [Rice with vermicelli (short grain, Egyptian rice)]
+      ar: [رز بشعرية حبة قصيرة, رز مصري بالشعيرية]
+      arabizi: [ruz sha3reyeh masri, ruz 2aseer bi sh3ayriyeh]
+    recipe:
+      - {food: usda:rice_short_grain_raw, grams: 400, range: [350, 450], note: "short grain absorbs the water at 1:2 in Palestine in a Dish"}
+      - {food: usda:pasta_dry, grams: 40, range: [30, 60]}
+      - {food: usda:ghee, grams: 28, range: [14, 40]}
+      - {food: usda:salt_table, grams: 10}
+    cooked_total_g: 1100
+    cooked_total_range: [1000, 1200]
+portions:
+  plate: {g: 250, range: [180, 350]}
+  small_plate: {g: 170, range: [120, 220]}
+  cup: {g: 160, range: [140, 190]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Falasteeni Foodie, Middle Eastern vermicelli rice, ruz bil shi'iriya (serves 5: 2 cups jasmine rice, 3 cups water, 1 tbsp ghee or butter, 1 tbsp oil, 1/3-1/2 cup vermicelli): https://falasteenifoodie.com/?p=16182"
+    - "Palestine in a Dish, Perfect rice with toasted vermicelli (1 cup short-grain rice, 1 tbsp ghee; snippet only): https://palestineinadish.com/recipes/perfect-rice-with-toasted-vermicelli-an-important-side-dish/"
+    - "Sami Tamimi, Falastin, Buttery rice with toasted vermicelli (35 g butter; snippet only): https://thehappyfoodie.co.uk/recipes/buttery-rice-with-toasted-vermicelli-ruz-bil-sharieh/"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    A side rice for about 5 plates of 220 g; plate is 250 g (rice dishes are often served with a large spoon, a cup
+    is about 160 g). The 1100 g cooked weight is modelled from the rice taking 3 parts water to 2 of rice minus steam,
+    not weighed. The fat (2 tbsp in the first source, 35 g butter in Falastin) is the biggest uncertainty: some
+    families use up to twice as much. Rice dishes with meat, stew or vegetables (maqluba, mloukhiyeh) are separate dishes. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 8

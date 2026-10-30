@@ -1,0 +1,43 @@
+schema: 1
+id: ref:kabsa
+names:
+  en: [Kabsa, Chicken kabsa, Kabsa rice with chicken]
+  ar: [كبسة, كبسة دجاج, رز كبسة]
+  arabizi: [kabsa, kabseh, kabsah, makbous, majboos, chicken kabsa, kabsa djaj, kabsa dajaj]
+state: cooked
+variants:
+  - id: chicken
+    default: true
+    recipe:
+      - {food: usda:rice_white_long_grain_raw, grams: 280, range: [250, 330], note: "1.5 cups basmati (Manu's Menu, serves 4-6)"}
+      - {food: usda:chicken_thigh_raw, grams: 420, range: [350, 600], note: "600 g chicken pieces with bones and skin (Manu's Menu) is about 420 g edible meat and skin"}
+      - {food: usda:vegetable_oil_soybean, grams: 70, range: [45, 90], note: "1/3 cup oil (Manu's Menu); the biggest uncertainty"}
+      - {food: usda:onion_raw, grams: 300, range: [200, 350], note: "2 cups chopped onions"}
+      - {food: usda:tomato_raw, grams: 360, range: [250, 450], note: "2 cups finely chopped tomatoes"}
+      - {food: usda:tomato_paste_canned, grams: 15}
+      - {food: usda:carrot_raw, grams: 220, range: [100, 260], note: "2 cups shredded carrots"}
+      - {food: usda:almonds, grams: 45, range: [20, 60], note: "1/3 cup blanched almonds"}
+      - {food: usda:raisins_dark, grams: 50, range: [30, 60], note: "1/3 cup raisins"}
+      - {food: usda:cardamom, grams: 2}
+      - {food: usda:cinnamon_ground, grams: 1}
+      - {food: usda:black_pepper, grams: 3}
+      - {food: usda:salt_table, grams: 15}
+    cooked_total_g: 1750
+    cooked_total_range: [1550, 1950]
+portions:
+  plate: {g: 380, range: [300, 500]}
+  small_plate: {g: 280, range: [220, 340]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Manu's Menu, Chicken kabsa (serves 4-6: 600 g chicken pieces, 1.5 cups rice, 1/3 cup oil, 2 cups onions, 2 cups tomatoes, 2 cups carrots, almonds, raisins, 1 litre water): https://www.manusmenu.com/wprm_print/chicken-kabsa"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    Only one gram-based recipe was read (other kabsa pages were reached by search only and agree on the pattern: rice,
+    chicken, tomato, carrot, raisins, almonds); Gulf kabsa is also made with whole chicken or lamb, and Palestinian
+    families often make the lighter spiced chicken rice (see ref:chicken_and_rice). The pot is about 4.6 plates (380 g);
+    the cooked weight is an explicit balance, not weighed: ingredient rows 1.78 kg plus 1 litre of water is 2.78 kg in the pot; the rice absorbs only about 0.5 kg of water (1.5 cups of rice need about 2 cups) and the vegetables release their own water, so about 1.0 kg (37%) boils off or is left unserved, giving about 1.75 kg (range 1.55-1.95 kg).
+    Oil is the biggest uncertainty (some cooks fry the chicken first in ghee, which adds fat). Restaurant kabsa and
+    lamb kabsa are not covered; sauce (daqqus) and salad are not included. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 10

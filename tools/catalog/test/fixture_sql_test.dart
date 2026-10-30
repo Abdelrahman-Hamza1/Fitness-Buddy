@@ -70,9 +70,11 @@ void main() {
       // WP5 (release v7): two name rows, the EN aliases "Rice" and
       // "Rice, raw" on the fixture's white long-grain rice.
       // Re-pinned by A37a: the exercises table gains secondary_muscles.
+      // Re-pinned by A17/A18: the fixture's mloukhiyeh dish is released
+      // (ai-verified), its bare names move to stew_only, plate aliases added.
       expect(
         sha256.convert(utf8.encode(withoutCities)).toString(),
-        '5cc34d5e43f1f92af09601ff1ef65f4c5e96279dd1a65c38999db3a2cfd37e0f',
+        '436ae0dfa56fdc6eb090c80eb44b00d918d0a17417e52d619ddaa9d27d9ef767',
       );
     },
   );

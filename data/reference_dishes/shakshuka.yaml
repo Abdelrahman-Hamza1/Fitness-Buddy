@@ -1,0 +1,40 @@
+schema: 1
+id: ref:shakshuka
+names:
+  en: [Shakshuka, Shakshouka, Eggs in tomato sauce, Palestinian shakshuka]
+  ar: [شكشوكة, شكشوكه, بيض بالطماطم]
+  arabizi: [shakshuka, shakshouka, shakshoka, chakchouka, shaksouka, shakshuka bayd, bayd bil banadoura]
+state: cooked
+variants:
+  - id: classic
+    default: true
+    recipe:
+      - {food: usda:tomato_raw, grams: 600, range: [450, 800], note: "4 large very red tomatoes, cubed (Cookpad Nablus)"}
+      - {food: usda:onion_raw, grams: 150, range: [100, 200]}
+      - {food: usda:bell_pepper_red_raw, grams: 120, range: [80, 200], note: "1 large red pepper (Cookpad Nablus); the Mediterranean Dish uses 2 green peppers"}
+      - {food: usda:garlic_raw, grams: 9}
+      - {food: usda:olive_oil, grams: 54, range: [40, 80], note: "4 tbsp (Cookpad Nablus); 3 tbsp in the Mediterranean Dish; the biggest uncertainty"}
+      - {food: usda:egg_whole_raw, grams: 200, range: [150, 250], note: "4 large eggs for a pan of 2 servings"}
+      - {food: usda:cumin_seed, grams: 1}
+      - {food: usda:black_pepper, grams: 1}
+      - {food: usda:salt_table, grams: 5}
+    cooked_total_g: 800
+    cooked_total_range: [700, 900]
+portions:
+  plate: {g: 400, range: [300, 520]}
+  small_plate: {g: 280, range: [200, 340]}
+  pan: {g: 800, range: [700, 900]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Cookpad (Palestinian breakfast shakshuka from Nablus: 4 tbsp olive oil, 1 large onion, 1 large red pepper, 3 garlic cloves, 4 large tomatoes, 3-4 eggs): https://cookpad.wasmer.app/us/recipes/874240"
+    - "The Mediterranean Dish, Shakshuka (3 tbsp olive oil, 1 large onion, 2 green peppers, 2 cloves garlic; seen via search snippet): https://www.themediterraneandish.com/shakshuka-recipe/"
+    - "Laila El-Haddad, The Gaza Kitchen (eggs in hot tomato sauce, serves 2-4; no amounts used): https://app.ckbk.com/recipe/gaza70968c05s001ss001r006/eggs-in-hot-tomato-sauce"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    A pan with 4 eggs is the model (the Cookpad recipe says 3-4); a plate is 2 eggs and half of the tomato sauce (400 g). The
+    pan loses about 40% of the tomato and onion weight as steam (modelled, not weighed). Oil (54 g in the whole pan,
+    13 g per tbsp) is the biggest uncertainty; family pans are often oilier. Bread to dip is not included. Eggs are counted
+    raw at their cooked weight, which is close because they poach in the sauce. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 10

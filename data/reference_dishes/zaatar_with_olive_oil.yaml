@@ -1,0 +1,42 @@
+schema: 1
+id: ref:zaatar_with_olive_oil
+names:
+  en: [Zaatar with olive oil, Zaatar and oil, Zaatar and olive oil dip]
+  ar: [زعتر وزيت, زعتر بالزيت, زعتر مع زيت زيتون]
+  arabizi: [zaatar w zeit, zaatar wa zeit, zaatar bi zeit, zeit w zaatar, zaatar ma zeit, zaatar and oil, zeit u zaatar]
+state: as_sold
+variants:
+  - id: classic
+    default: true
+    recipe:
+      - {food: ref:zaatar_mix, grams: 12, range: [6, 20], note: "2 tbsp (Kvalifood)"}
+      - {food: usda:olive_oil, grams: 41, range: [27, 70], note: "3 tbsp (Kvalifood); the biggest uncertainty"}
+    cooked_total_g: 53
+    cooked_total_range: [35, 90]
+  - id: oily
+    default: false
+    names:
+      en: [Zaatar with lots of olive oil]
+      ar: [زعتر مع زيت كثير]
+      arabizi: [zaatar w zeit kteer]
+    recipe:
+      - {food: ref:zaatar_mix, grams: 6, range: [4, 12], note: "1 tbsp: Zaytoun's 3 tbsp oil to 1 tbsp zaatar"}
+      - {food: usda:olive_oil, grams: 41, range: [27, 70]}
+    cooked_total_g: 47
+    cooked_total_range: [31, 82]
+portions:
+  serving: {g: 25, range: [12, 45]}
+  tbsp: {g: 14, range: [10, 17]}
+  bowl: {g: 53, range: [35, 90]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Kvalifood, Za'atar and Oil (serves 2: 2 tbsp za'atar blend, 3 tbsp extra virgin olive oil): https://kvalifood.com/posts/zaatar-and-oil/"
+    - "Zaytoun, Zaatar flyer (classic Palestinian dip, 3 tbsp olive oil to 1 tbsp za'atar): https://zaytoun.uk/wp-content/uploads/2025/05/Zaatar-A5-flyer_May2025.pdf"
+    - "ref:zaatar_mix (this catalog) for the blend; USDA FoodData Central (SR Legacy) for olive oil"
+  notes: >-
+    One bowl is the dip a person or two make for breakfast (53 g); the serving (25 g) is what ends up on the bread, since
+    some oil stays in the bowl. How much oil is eaten is the biggest uncertainty (people re-dip): please check against your
+    family's habit. The bread (taboon, pita, ka'ak) is logged separately. The tbsp is the mixed paste, not dry zaatar. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 6

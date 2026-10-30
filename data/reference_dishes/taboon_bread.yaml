@@ -1,0 +1,56 @@
+schema: 1
+id: ref:taboon_bread
+names:
+  en: [Taboon bread, Taboon, Taboun bread, Palestinian taboon flatbread]
+  ar: [خبز طابون, طابون, خبز الطابون]
+  arabizi: [khubz taboon, khubz tabun, taboon bread, khubz taboun]
+state: cooked
+variants:
+  - id: mixed_flour
+    default: true
+    names:
+      en: [Taboon bread, white and whole wheat taboon]
+      ar: [خبز طابون أبيض وأسمر]
+      arabizi: [khubz taboon abyad w asmar]
+    recipe:
+      - {food: usda:wheat_flour_white, grams: 360, range: [300, 480], note: "360 g all-purpose flour (The Mediterranean Dish)"}
+      - {food: usda:wheat_flour_whole, grams: 120, range: [0, 240], note: "120 g whole wheat flour; some cooks use none, some all whole wheat"}
+      - {food: usda:olive_oil, grams: 27, range: [15, 53], note: "2 tbsp in the dough (Mediterranean Dish); Urban Farm and Kitchen uses 53 g"}
+      - {food: usda:yeast_bakers, grams: 7}
+      - {food: usda:sugar_granulated, grams: 6}
+      - {food: usda:salt_table, grams: 9}
+    cooked_total_g: 740
+    cooked_total_range: [680, 800]
+  - id: white
+    default: false
+    names:
+      en: [White taboon bread]
+      ar: [خبز طابون أبيض]
+      arabizi: [khubz taboon abyad]
+    recipe:
+      - {food: usda:wheat_flour_white, grams: 480, range: [420, 520], note: "Urban Farm and Kitchen: 420 g flour with 53 g oil, 240 g liquid"}
+      - {food: usda:olive_oil, grams: 40, range: [27, 55]}
+      - {food: usda:yeast_bakers, grams: 8}
+      - {food: usda:sugar_granulated, grams: 8}
+      - {food: usda:salt_table, grams: 8}
+    cooked_total_g: 740
+    cooked_total_range: [680, 800]
+portions:
+  loaf: {g: 185, range: [80, 250]}
+  half_loaf: {g: 92, range: [40, 125]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "The Mediterranean Dish, Taboon Palestinian flatbread (makes 4 loaves; 360 g all-purpose + 120 g whole wheat flour, about 11 oz water, 2 tbsp olive oil, yeast, sugar, salt; quantities seen via search snippet because the page blocked fetching): https://www.themediterraneandish.com/taboon-palestinian-flatbread/"
+    - "Urban Farm and Kitchen, Taboon bread (420 g flour, 53 g olive oil, 240 g water and milk, yeast, sugar, salt; seen via search snippet): https://urbanfarmandkitchen.com/taboon-bread-palestinian-flatbread/"
+    - "Amira's Pantry, Palestinian taboon bread (250 g all-purpose + 65 g whole wheat flour, dough divided into 3 large balls; snippet): https://amiraspantry.com/palestinian-taboon-bread"
+    - "Gulf News, Palestinian chicken musakhan (4 taboon breads weigh about 330 g, so about 83 g each): https://gulfnews.com/food/cooking-cuisines/palestinian-chicken-musakhan-1.1621941750675"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    Home oven version of the bread baked in a taboon (clay oven). The baked weight is modelled as 740 g (about 840 g of
+    dough, flour 480 g and water about 310 g, less roughly 12% lost as steam), not weighed. The Mediterranean Dish divides its dough
+    into 4 loaves, so a loaf is 185 g; Amira's Pantry divides 315 g of flour into 3 large balls (about 190 g baked each), Gulf News
+    implies about 83 g, and bakery taboon loaves are often larger, hence the wide range. Water is not an ingredient row (it only
+    sets the cooked weight). Not the same as the bakery pita (usda:pita_white, 60 g per loaf), which is thinner and lighter. Yeast is modelled with the compressed baker's yeast entry (usda:yeast_bakers) at the dry-yeast weight in the recipe; dry yeast is about 3 times denser, so energy is understated by under 15 kcal per pot (below 0.5%). AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 15

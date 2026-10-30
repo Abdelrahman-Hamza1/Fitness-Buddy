@@ -2,8 +2,8 @@ schema: 1
 id: ref:mloukhiyeh_rice
 names:
   en: [Mloukhiyeh with rice, Mulukhiyah with rice, Jute mallow stew with rice]
-  ar: [ملوخية بالرز, ملوخية بالدجاج والرز, ملوخية]
-  arabizi: [mloukhiyeh, mloukhieh, molokhia, molokhiya, mulukhiyah, mulukhia, mlokhia, mloukhiya, mloukhiyeh bil ruz]
+  ar: [ملوخية بالرز, ملوخية بالدجاج والرز, ملوخية مع رز, صحن ملوخية, صحن ملوخية مع رز]
+  arabizi: [mloukhiyeh bil ruz, mloukhiyeh ma ruz, mloukhiyeh ma3 ruz, sahen mloukhiyeh]
 state: cooked
 variants:
   - id: chicken
@@ -11,7 +11,7 @@ variants:
     names:
       en: [Chicken mloukhiyeh with vermicelli rice]
       ar: [ملوخية دجاج مع رز بالشعيرية]
-      arabizi: [mloukhiyeh djaj, molokhia ma3 ruz]
+      arabizi: [mloukhiyeh djaj ma ruz, molokhia ma3 ruz]
     recipe:
       - {food: usda:jute_potherb_raw, grams: 175, range: [125, 220], note: "5 cups tightly packed fresh leaves (Falasteeni Foodie); USDA gives 28 g per loose cup, so tight packing is our assumption; frozen or dried leaves give less"}
       - {food: usda:garlic_raw, grams: 33, range: [24, 40], note: "8 large cloves plus 1 tbsp garlic powder, counted as fresh garlic"}
@@ -33,8 +33,8 @@ variants:
     default: false
     names:
       en: [Mloukhiyeh stew without rice, Mulukhiyah soup]
-      ar: [ملوخية بدون رز, شوربة ملوخية]
-      arabizi: [mloukhiyeh bidoun ruz, molokhia soup, mloukhiyeh shorbet]
+      ar: [ملوخية, ملوخية بدون رز, شوربة ملوخية]
+      arabizi: [mloukhiyeh, mloukhieh, molokhia, molokhiya, mulukhiyah, mulukhia, mlokhia, mloukhiya, mloukhiyeh djaj, mloukhiyeh bidoun ruz, molokhia soup, mloukhiyeh shorbet]
     recipe:
       - {food: usda:jute_potherb_raw, grams: 175, range: [125, 220]}
       - {food: usda:garlic_raw, grams: 33, range: [24, 40]}
@@ -53,8 +53,8 @@ portions:
   plate: {g: 370, range: [300, 450]}
   small_plate: {g: 270, range: [220, 330]}
 review:
-  status: draft
-  reviewed_by: claude-draft
+  status: reviewed
+  reviewed_by: ai-verified
   sources:
     - "Falasteeni Foodie, Mulukhiyah Stew (Jute Mallow Stew) with vermicelli rice (serves 5): https://falasteenifoodie.com/mulukhiyah-stew-jute-mallow-stew/"
     - "Handmade Palestine, Molokhiya recipe, a taste of Palestine's summer tradition (frozen leaves, chicken broth, garlic in olive oil, served over rice; no rice or serving amounts): https://handmadepalestine.com/blogs/news/molokhiya-recipe-a-taste-of-palestine-s-summer-tradition"
@@ -66,5 +66,5 @@ review:
     water for the stew and the rice's absorption, not weighed. Palestinian mloukhiyeh is the soupy kind, so a
     plate is rice with stew poured over. Oil (garlic and vermicelli, 54 g in total) is the biggest uncertainty;
     family pots often use more, and with whole skin-on chicken pieces and fat in the broth. Lemon juice and bread
-    on the side are not included. The stew_only variant has bowl and ladle portions (a ladle is about 1/2 cup).
+    on the side are not included. The stew_only variant has bowl and ladle portions (a ladle is about 1/2 cup). AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
 time_min: 15

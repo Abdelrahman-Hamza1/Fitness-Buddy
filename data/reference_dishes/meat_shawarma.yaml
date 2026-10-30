@@ -1,0 +1,63 @@
+schema: 1
+id: ref:meat_shawarma
+names:
+  en: [Meat shawarma, Beef shawarma, Meat shawarma sandwich]
+  ar: [شاورما لحم, شاورما لحمة, شاورما لحم عربي, ساندويش شاورما لحم]
+  arabizi: [shawarma lahme, shawarma lahm, shawerma lahme, shawarma lahmeh, shawarma beef, shawarma lahme arabi, sandwich shawarma lahme]
+state: cooked
+variants:
+  - id: beef
+    default: true
+    names:
+      en: [Beef shawarma in arabic bread]
+      ar: [شاورما لحم بقر, شاورما لحم عجل]
+      arabizi: [shawarma lahme baqar, shawarma beef arabi]
+    recipe:
+      - {food: usda:beef_chuck_braised, grams: 440, range: [360, 520], note: "cooked weight, about 110 g per sandwich; Gulf News marinates 1.8 kg beef for 10-12 portions (about 150 g raw each); cooked with its own fat on the grill"}
+      - {food: usda:vegetable_oil_soybean, grams: 25, range: [10, 50], note: "fat for the stack or pan (Gulf News: butter, ghee or shortening); the biggest uncertainty"}
+      - {food: usda:pita_white, grams: 280, range: [240, 340], note: "4 thin arabic breads of about 70 g"}
+      - {food: usda:tahini, grams: 80, range: [40, 120], note: "Gulf News drizzles tahini but gives no amount; 20 g per sandwich is our assumption"}
+      - {food: usda:lemon_juice_raw, grams: 12}
+      - {food: usda:pickled_cucumber_dill, grams: 60, range: [30, 100], note: "pickles"}
+      - {food: usda:onion_raw, grams: 40, note: "sumac onions"}
+      - {food: usda:tomato_raw, grams: 60, range: [0, 120]}
+      - {food: usda:parsley_fresh, grams: 8}
+    cooked_total_g: 1000
+    cooked_total_range: [900, 1150]
+  - id: lamb
+    default: false
+    names:
+      en: [Lamb shawarma, Lamb shawarma in arabic bread]
+      ar: [شاورما لحم غنم, شاورما خروف]
+      arabizi: [shawarma lahme ghanam, shawarma kharouf]
+    recipe:
+      - {food: usda:lamb_mixed_cuts_cooked, grams: 440, range: [360, 520]}
+      - {food: usda:vegetable_oil_soybean, grams: 15, range: [0, 40], note: "lamb gives off its own fat"}
+      - {food: usda:pita_white, grams: 280, range: [240, 340]}
+      - {food: usda:tahini, grams: 80, range: [40, 120]}
+      - {food: usda:lemon_juice_raw, grams: 12}
+      - {food: usda:pickled_cucumber_dill, grams: 60, range: [30, 100]}
+      - {food: usda:onion_raw, grams: 40}
+      - {food: usda:tomato_raw, grams: 60, range: [0, 120]}
+      - {food: usda:parsley_fresh, grams: 8}
+    cooked_total_g: 990
+    cooked_total_range: [890, 1140]
+portions:
+  sandwich: {g: 250, range: [190, 320]}
+  small_sandwich: {g: 175, range: [140, 215]}
+  large_sandwich: {g: 320, range: [260, 400]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Gulf News, Here's how to make beef shawarma (1.8 kg beef marinated in lemon juice, serves 10-12, tahini and pickles in arabic bread): https://gulfnews.com/food/cooking-cuisines/heres-how-to-make-beef-shawarma-1.1609755833644"
+    - "Handmade Palestine, What is shawarma, with Almond and Fig recipe (shawarma in arabic or saj bread with tahini, pickles; snippet only): https://handmadepalestine.com/blogs/news/what-is-shawarma-plus-a-delicious-homemade-shawarma-recipe-by-almond-fig"
+    - "Same bread, pickles and sandwich scale as ref:chicken_shawarma_arabi (this catalog)"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    No Palestinian source gives sandwich weights, so the sandwich follows the chicken shawarma (4 sandwiches, about 110 g cooked
+    meat each, 250 g per sandwich) and only the meat and sauce change (tahini, not toum). Shop meat shawarma is cut from a
+    stack of beef and lamb with sheep tail fat, so a shop sandwich can be 100-200 kcal higher than this. The meat fat
+    and the frying fat are the biggest uncertainties. A plate (meat, bread, fries and salad) is not modelled for meat. Fries
+    inside the sandwich are not included. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 12

@@ -778,8 +778,8 @@ foods:
     state: as_sold
     names:
       en: ["Fava beans, canned (ful)"]
-      ar: ["فول معلب", "فول مدمس"]
-      arabizi: ["ful mu3allab", "ful mudammas", "foul medames"]
+      ar: ["فول معلب", "فول مدمس معلب"]
+      arabizi: ["ful mu3allab", "canned ful", "canned foul"]
     servings: [{unit: cup, g: 256}]
   - id: usda:white_beans_dry
     fdc_id: 175202
@@ -4976,11 +4976,11 @@ foods:
     fdc_id: 170318
     state: as_sold
     names:
-      en: ["Crispy chicken sandwich (lettuce, mayo)"]
-      ar: ["سندويش كرسبي", "سندويشة زنجر"]
-      arabizi: ["crispy sandwich", "zinger sandwich"]
+      en: ["Crispy chicken sandwich (US chain, lettuce, mayo)"]
+      ar: ["سندويش كرسبي", "ساندويش دجاج كرسبي (أمريكي)"]
+      arabizi: ["crispy sandwich", "crispy chicken sandwich us"]
     servings: [{unit: sandwich, g: 152}, {unit: piece, g: 152}]
-    notes: "USDA crispy chicken sandwich with lettuce and mayonnaise; local zinger size/spice varies. One piece is one whole sandwich (USDA FDC 170318: 152 g), not a chicken fillet. Not counted as the must-cover zinger until separately approved."
+    notes: "USDA crispy chicken sandwich with lettuce and mayonnaise; local zinger size/spice varies. One piece is one whole sandwich (USDA FDC 170318: 152 g), not a chicken fillet. The local zinger names now belong to ref:zinger_sandwich (A18 number check, 2026-10-30)."
   - id: usda:chicken_sandwich_grilled
     fdc_id: 170368
     state: as_sold

@@ -1,9 +1,9 @@
 schema: 1
 id: ref:falafel_sandwich
 names:
-  en: [Falafel sandwich, Falafel wrap]
-  ar: [ساندويش فلافل, سندويشة فلافل]
-  arabizi: [falafel sandwich, sandwich falafel, sandwitch falafel, sandwich flafel, falafel sandwish, falafel wrap, sandwichet falafel]
+  en: [Falafel sandwich, Sandwich falafel, Falafel wrap]
+  ar: [ساندويش فلافل, سندويش فلافل, سندويشة فلافل, ساندوتش فلافل]
+  arabizi: [falafel sandwich, sandwitch falafel, sandwich falafil, sandawich falafel, sandwich flafel, falafel sandwish, falafel wrap, sandwichet falafel]
 state: cooked
 variants:
   - id: sandwich
@@ -54,8 +54,8 @@ portions:
   small_sandwich: {g: 200, range: [160, 240]}
   large_sandwich: {g: 380, range: [320, 450]}
 review:
-  status: draft
-  reviewed_by: claude-draft
+  status: reviewed
+  reviewed_by: ai-verified
   sources:
     - "cooked.wiki, Traditional Crispy and Fluffy Palestinian Falafel (1 cup dry chickpeas, herbs, onion, garlic, spices, tahini sauce, garnish): https://cooked.wiki/saved/2e283df1-46af-49bb-a735-c7534ab75e22"
     - "Once Upon a Chef, Falafel (2 cups dry chickpeas make 20-24 falafel; oil absorption note): https://www.onceuponachef.com/recipes/falafel.html"
@@ -69,5 +69,5 @@ review:
     count but not the grams. Absorbed frying oil (55 g, range 30-80) is the biggest uncertainty; it is anchored by
     the USDA home-prepared falafel at 17.8 g fat per 100 g (the balls variant comes out close). Fillings are tahini
     sauce, tomato, pickles and lettuce; shop sandwiches with fries, hummus or extra tahini are heavier. The cooked
-    weight includes about 60 g of water in the tahini sauce. The balls variant has its own piece and plate portions.
+    weight includes about 60 g of water in the tahini sauce. The balls variant has its own piece and plate portions. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
 time_min: 20

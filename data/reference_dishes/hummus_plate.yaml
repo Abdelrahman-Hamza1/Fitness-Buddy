@@ -1,0 +1,59 @@
+schema: 1
+id: ref:hummus_plate
+names:
+  en: [Hummus plate, Hummus, Hummus bi tahini, Plate of hummus]
+  ar: [صحن حمص, حمص, حمص بطحينة, صحن حمص بالطحينة]
+  arabizi: [sahen hummus, sahn hummus, hummus, hommos, hummos, hummus bi tahini, hommos bi tahine, sahen hommos]
+state: as_sold
+variants:
+  - id: plate
+    default: true
+    names:
+      en: [Hummus with olive oil]
+      ar: [حمص بزيت الزيتون]
+      arabizi: [hummus bi zeit]
+    recipe:
+      - {food: usda:chickpeas_dry, grams: 227, range: [200, 250], note: "8 oz dried chickpeas (CIA Foodies), soaked and cooked until very soft"}
+      - {food: usda:tahini, grams: 90, range: [70, 130], note: "6 tbsp (CIA Foodies); restaurants use more"}
+      - {food: usda:lemon_juice_raw, grams: 60, range: [40, 70], note: "juice of 2 lemons"}
+      - {food: usda:garlic_raw, grams: 6}
+      - {food: usda:olive_oil, grams: 54, range: [27, 80], note: "1/4 cup, 3 plates' worth drizzled on top (18 g each); the biggest uncertainty"}
+      - {food: usda:salt_table, grams: 6}
+    cooked_total_g: 810
+    cooked_total_range: [720, 900]
+  - id: with_pita
+    default: false
+    names:
+      en: [Hummus plate with pita, Hummus with bread]
+      ar: [صحن حمص مع خبز]
+      arabizi: [sahen hummus ma khubz, hummus ma3 khubz]
+    recipe:
+      - {food: usda:chickpeas_dry, grams: 227, range: [200, 250]}
+      - {food: usda:tahini, grams: 90, range: [70, 130]}
+      - {food: usda:lemon_juice_raw, grams: 60, range: [40, 70]}
+      - {food: usda:garlic_raw, grams: 6}
+      - {food: usda:olive_oil, grams: 54, range: [27, 80]}
+      - {food: usda:salt_table, grams: 6}
+      - {food: usda:pita_white, grams: 180, range: [120, 300], note: "one bread (60 g) per plate, as served in shops; the range covers 2 breads"}
+    cooked_total_g: 990
+    cooked_total_range: [880, 1150]
+    portions:
+      plate: {g: 330, range: [260, 450]}
+portions:
+  plate: {g: 250, range: [180, 350]}
+  small_plate: {g: 150, range: [100, 200]}
+  tbsp: {g: 20, range: [15, 30]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "CIA Foodies, Hummus bi tahini (8 oz dried chickpeas, juice of 2 lemons, 2 garlic cloves, 6 tbsp tahini, 1/4 cup olive oil; snippet only): https://www.ciafoodies.com/?p=7205"
+    - "Palestine in a Dish, Hummus (1 can chickpeas, 1/4 cup tahini, 1/4 cup water, 1 lemon, 1 garlic clove; canned-chickpea version, used to cross-check tahini per chickpea): https://palestineinadish.com/?p=200"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    The pot (810 g after cooking chickpeas at 2.3 times plus about 80 g water) makes 3 plates of about 250 g. The 2 sources differ
+    on tahini (Palestine in a Dish is lighter: about 25 g tahini per 100 g of chickpeas, CIA 40 g); shops use more
+    tahini and a lot of oil (a restaurant plate can be 400-600 kcal). Oil on top is the biggest uncertainty (18 g per plate here).
+    Pita is not in the default plate (the with_pita variant adds one 60 g bread). Pickles, olives and
+    falafel on the plate are not included. Cooked weight modelled, not weighed. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 10

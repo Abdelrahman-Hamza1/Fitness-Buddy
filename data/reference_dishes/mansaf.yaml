@@ -1,0 +1,84 @@
+schema: 1
+id: ref:mansaf
+names:
+  en: [Mansaf, Jordanian mansaf, Mansaf with yogurt sauce]
+  ar: [منسف, منسف لحم, منسف باللبن]
+  arabizi: [mansaf, mansaaf, mensaf, mansaf lahme, manssaf]
+state: cooked
+variants:
+  - id: lamb
+    default: true
+    names:
+      en: [Lamb mansaf]
+      ar: [منسف لحم خروف, منسف لحمة]
+      arabizi: [mansaf lahmeh, mansaf lahme kharouf, mansaf lahm]
+    recipe:
+      - {food: usda:lamb_shoulder_raw, grams: 1500, range: [1200, 1900], note: "7 lb bone-in shoulder (Falasteeni Foodie) is about 1.9 kg edible; we assume 1.5 kg after trimming fat; the fat that renders into the broth is counted with the meat"}
+      - {food: usda:rice_white_medium_grain_raw, grams: 600, range: [450, 650], note: "3 cups Calrose rice (Falasteeni Foodie); Palestine in a Dish uses 2 cups"}
+      - {food: usda:yogurt_plain_whole, grams: 500, range: [350, 700], note: "yogurt-only sauce (no jameed): about 1.2 kg of sauce is served over the platter (Palestine in a Dish: 2 cups liquid jameed plus 3 cups broth, about 1.2 kg for 2 cups rice; Observatory wiki: 1 litre of sauce per 500 g rice); half of it is whole milk yogurt"}
+      - {food: usda:buttermilk_lowfat, grams: 400, range: [250, 600], note: "the other third of the sauce, as the Observatory wiki suggests yogurt with buttermilk; no amounts are published, so the split is our assumption"}
+      - {food: usda:pita_white, grams: 400, range: [200, 600], note: "shrak bread under the rice, 1-2 sheets per person; pita as proxy for shrak (see ref:shrak)"}
+      - {food: usda:almonds, grams: 80, range: [40, 140], note: "toasted in ghee; Palestine in a Dish uses 1 cup"}
+      - {food: usda:pine_nuts_dried, grams: 40, range: [0, 80]}
+      - {food: usda:ghee, grams: 45, range: [30, 90], note: "1 tbsp in the broth and rice plus ghee for frying the nuts (Falasteeni Foodie); the biggest uncertainty after the lamb fat"}
+      - {food: usda:vegetable_oil_soybean, grams: 15, range: [0, 40]}
+      - {food: usda:onion_raw, grams: 100}
+      - {food: usda:parsley_fresh, grams: 20}
+      - {food: usda:turmeric_ground, grams: 5}
+      - {food: usda:cardamom, grams: 6}
+      - {food: usda:cinnamon_ground, grams: 3}
+      - {food: usda:black_pepper, grams: 5}
+      - {food: usda:salt_table, grams: 20}
+    cooked_total_g: 4230
+    cooked_total_range: [3800, 4700]
+  - id: chicken
+    default: false
+    names:
+      en: [Chicken mansaf]
+      ar: [منسف دجاج]
+      arabizi: [mansaf djaj, mansaf dajaj]
+    recipe:
+      - {food: usda:chicken_thigh_raw, grams: 1400, range: [1100, 1700], note: "skin-on pieces, about 2 kg bone-in; assumption: home chicken mansaf replaces the lamb with the same weight of meat"}
+      - {food: usda:rice_white_medium_grain_raw, grams: 600, range: [450, 650]}
+      - {food: usda:yogurt_plain_whole, grams: 500, range: [350, 700]}
+      - {food: usda:buttermilk_lowfat, grams: 400, range: [250, 600]}
+      - {food: usda:pita_white, grams: 400, range: [200, 600]}
+      - {food: usda:almonds, grams: 80, range: [40, 140]}
+      - {food: usda:pine_nuts_dried, grams: 40, range: [0, 80]}
+      - {food: usda:ghee, grams: 45, range: [30, 90]}
+      - {food: usda:vegetable_oil_soybean, grams: 15, range: [0, 40]}
+      - {food: usda:onion_raw, grams: 100}
+      - {food: usda:parsley_fresh, grams: 20}
+      - {food: usda:turmeric_ground, grams: 5}
+      - {food: usda:cardamom, grams: 6}
+      - {food: usda:cinnamon_ground, grams: 3}
+      - {food: usda:black_pepper, grams: 5}
+      - {food: usda:salt_table, grams: 20}
+    cooked_total_g: 4350
+    cooked_total_range: [3900, 4800]
+portions:
+  plate: {g: 530, range: [400, 700]}
+  small_plate: {g: 400, range: [320, 500]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Falasteeni Foodie, Authentic mansaf (serves 8: 7 lb lamb shoulder, 3 cups Calrose rice with 4 cups water, 2 lb dry jameed plus 8 cups yogurt drink, optional 1 lb labneh, ghee, shrak, nuts): https://falasteenifoodie.com/authentic-mansaf/"
+    - "Palestine in a Dish, Mansaf (about 3 lb lamb, 2 cups short-grain rice with 2 cups water, 2 cups liquid jameed plus 3 cups lamb broth as the sauce, 1 shrak, 1 cup almonds): https://palestineinadish.com/recipes/main-dishes/mansaf-recipe/"
+    - "Observatory wiki, Mansaf (1.5 kg lamb, 1 litre of jameed sauce or a yoghurt and buttermilk substitute, 500 g basmati, 2 flatbreads, 75 g nuts): http://observatory.wiki/Recipe:Middle_Eastern/Mansaf"
+    - "ICARDA, Nutritional and food safety characteristics of jameed (dry jameed: total solids 84.6%, salt 15.7%; no protein or fat per 100 g could be read): https://icarda.org/node/18607"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    Rebuilt after the number check (2026-10-30). The catalog has no verifiable jameed composition (the 2024 MDPI and Angor
+    papers could not be read; ICARDA gives only solids 84.6% and salt 15.7%), so jameed is not modelled. The sauce is an
+    explicit yogurt-only model: about 1.2 kg served over the platter (Palestine in a Dish: 2 cups jameed plus 3 cups broth for 2
+    cups of rice; Observatory: 1 litre per 500 g rice), made of 500 g whole yogurt and 400 g lowfat buttermilk (the rest is broth
+    or water, counted in the cooked weight, and the broth fat is already in the lamb rows). The sauce is about 39 kcal per 100 g;
+    a real sauce from rehydrated dry jameed (Falasteeni Foodie uses 2 lb for 8 plates) is saltier and probably higher in
+    energy and protein, so a plate with real jameed may be higher by an unknown amount; please keep this in mind when a
+    plate is logged. The pot is the whole platter: shrak (as pita) on the bottom, rice (600 g raw, cooked about 2.5x in 4 cups
+    of water per 3 cups), lamb (1.5 kg edible raw, cooked at 0.62, so about 930 g), the sauce and nuts: about 4.2 kg
+    for 8 servings, so 530 g per plate. A plate varies by a factor of 2 (a wedding platter is far larger). All lamb fat is
+    counted; many homes skim it, which would lower a plate by 100-250 kcal. The Falasteeni Foodie page itself lists
+    485 kcal per serving, which is not reachable with these quantities; we do not use it. Salad and extra sauce at the table are not included. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 20

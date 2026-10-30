@@ -1,0 +1,42 @@
+schema: 1
+id: ref:manakeesh_cheese
+names:
+  en: [Manakeesh cheese, Cheese manakish, Cheese manousheh, Jibneh manakeesh]
+  ar: [مناقيش جبنة, منقوشة جبنة, مناقيش بالجبنة]
+  arabizi: [manakish jibneh, manakeesh jibneh, manakeesh jebneh, manousheh jebneh, mana2eesh jibne, manakeesh cheese, manakish cheese, manakish jebne]
+state: cooked
+variants:
+  - id: akkawi_mozzarella
+    default: true
+    recipe:
+      - {food: usda:wheat_flour_white, grams: 315, range: [250, 420], note: "same dough as zaatar manakeesh (Urban Farm and Kitchen)"}
+      - {food: usda:wheat_flour_whole, grams: 105, range: [0, 210]}
+      - {food: usda:olive_oil, grams: 53, range: [30, 70]}
+      - {food: usda:yeast_bakers, grams: 6}
+      - {food: usda:sugar_granulated, grams: 4}
+      - {food: usda:salt_table, grams: 6}
+      - {food: ref:akkawi_cheese, grams: 120, range: [70, 200], note: "Hadia's Lebanese Cuisine: 250 g akkawi per 1 kg flour; blends are 2:1 akkawi to mozzarella (Feel Good Foodie) or equal volumes (The Matbakh); we use about 1.2:1 by weight"}
+      - {food: usda:cheese_mozzarella_whole_milk, grams: 100, range: [50, 200], note: "melting cheese; The Matbakh 1 cup akawi plus 1 cup mozzarella for 10 pieces (about 23 g per piece), our value is 37 g of cheese per piece"}
+      - {food: usda:olive_oil, grams: 15, range: [0, 30], note: "brushed on the dough"}
+    cooked_total_g: 880
+    cooked_total_range: [780, 980]
+portions:
+  piece: {g: 145, range: [100, 220]}
+  large_piece: {g: 200, range: [160, 280]}
+  half: {g: 72, range: [50, 110]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "The Matbakh, Cheese manakish (4 cups flour dough with egg, milk and 1/2 cup oil; 1 cup shredded akawi plus 1 cup mozzarella for 10 manakish): https://thematbakh.com/wprm_print/cheese-manakish-manakeesh"
+    - "Hadia's Lebanese Cuisine, Manakish (1 kg flour dough; 250 g akkawi cheese topping option): https://hadiaslebanesecuisine.com/blog/wprm_print/manakish"
+    - "Hungry Paprikas, Manakish cheese and zaatar (340 g mozzarella and 200 g feta for 10 pieces; snippet only): https://www.hungrypaprikas.com/print/manakish-cheese-and-zaatar"
+    - "Urban Farm and Kitchen, Manakish zaatar flatbread (dough, 6 flatbreads; snippet only): https://urbanfarmandkitchen.com/manakish-zaatar-flatbread/"
+    - "ref:akkawi_cheese (this catalog); USDA FoodData Central (SR Legacy) for the rest"
+  notes: >-
+    Dough is the same as for zaatar manakeesh (6 home pieces); the sources differ widely on cheese (23-54 g per piece), so
+    37 g per piece is a midpoint and the range is large. The Matbakh's dough is much richer (egg, milk, 1/2 cup oil), which
+    would add about 40 kcal per piece. A bakery cheese manousheh is bigger and cheesier (large_piece 200 g, often 300-400 kcal
+    more than a home piece). The dough water only sets the cooked weight (modelled). Cheese sold as akkawi is often
+    a blend; vegetables and mint on the side are not included. Yeast is modelled with the compressed baker's yeast entry (usda:yeast_bakers) at the dry-yeast weight in the recipe; dry yeast is about 3 times denser, so energy is understated by under 15 kcal per pot (below 0.5%). AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 12

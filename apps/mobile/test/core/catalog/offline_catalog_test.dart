@@ -90,7 +90,7 @@ void main() {
     expect(variant.kind, CatalogFoodKind.variant);
     expect(variant.dishId, 'ref:mloukhiyeh_rice');
     expect(variant.badge, CatalogBadge.reference);
-    expect(variant.isDraft, isTrue);
+    expect(variant.isDraft, isFalse); // released as ai-verified (A17/A18)
     final viaDish = await catalog.byId('ref:mloukhiyeh_rice');
     expect(viaDish, isNotNull);
     expect(viaDish!.dishId, 'ref:mloukhiyeh_rice');

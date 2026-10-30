@@ -1,0 +1,65 @@
+schema: 1
+id: ref:maftoul
+names:
+  en: [Maftoul, Maftool, Palestinian couscous with chicken and chickpeas]
+  ar: [مفتول, مفتول بالدجاج, مفتول فلسطيني]
+  arabizi: [maftoul, maftool, mftoul, maftul, mafthoul, maftoul bil djaj, maftoul djaj, mouftoul]
+state: cooked
+variants:
+  - id: chicken
+    default: true
+    names:
+      en: [Chicken maftoul, Maftoul with chicken and chickpeas]
+      ar: [مفتول بالدجاج والحمص]
+      arabizi: [maftoul dajaj, maftoul ma3 djaj, maftoul bil djaj w hummus]
+    recipe:
+      - {food: usda:couscous_dry, grams: 270, range: [200, 340], note: "1.5 cups packaged maftoul (Falasteeni Foodie); stands in for hand-rolled bulgur maftoul, which USDA lacks (similar energy per 100 g)"}
+      - {food: usda:chicken_thigh_raw, grams: 650, range: [500, 800], note: "3 skin-on leg quarters, 2-2.5 lb bone-in (Falasteeni Foodie) is about 650 g edible meat and skin"}
+      - {food: usda:chickpeas_canned_drained, grams: 200, range: [150, 300], note: "1.25 cups canned chickpeas"}
+      - {food: usda:onion_raw, grams: 330, range: [250, 450], note: "1 onion in the broth, 1 chopped onion, plus 8 oz pearl onions"}
+      - {food: usda:carrot_raw, grams: 100, range: [0, 150], note: "optional"}
+      - {food: usda:ghee, grams: 45, range: [30, 75], note: "3 tbsp across the recipe; ghee is the biggest uncertainty with the skin fat"}
+      - {food: usda:olive_oil, grams: 40, range: [20, 55], note: "3 tbsp in the chicken broth; part of it is skimmed (assumption)"}
+      - {food: usda:cumin_seed, grams: 3}
+      - {food: usda:coriander_seed, grams: 2}
+      - {food: usda:allspice_ground, grams: 3, note: "stands in for 7 spice"}
+      - {food: usda:salt_table, grams: 14}
+    cooked_total_g: 1800
+    cooked_total_range: [1550, 2100]
+  - id: vegetable
+    default: false
+    names:
+      en: [Maftoul with chickpeas and vegetables, Vegetarian maftoul]
+      ar: [مفتول بالحمص والخضار, مفتول نباتي]
+      arabizi: [maftoul bil hummus, maftoul khudar, maftoul nabati]
+    recipe:
+      - {food: usda:couscous_dry, grams: 270, range: [200, 340]}
+      - {food: usda:chickpeas_canned_drained, grams: 350, range: [250, 450]}
+      - {food: usda:onion_raw, grams: 400, range: [300, 500]}
+      - {food: usda:carrot_raw, grams: 150, range: [0, 250]}
+      - {food: usda:ghee, grams: 45, range: [30, 75]}
+      - {food: usda:olive_oil, grams: 40, range: [20, 55]}
+      - {food: usda:cumin_seed, grams: 3}
+      - {food: usda:coriander_seed, grams: 2}
+      - {food: usda:allspice_ground, grams: 3}
+      - {food: usda:salt_table, grams: 14}
+    cooked_total_g: 1500
+    cooked_total_range: [1300, 1700]
+portions:
+  plate: {g: 450, range: [350, 600]}
+  small_plate: {g: 300, range: [230, 380]}
+review:
+  status: reviewed
+  reviewed_by: ai-verified
+  sources:
+    - "Falasteeni Foodie, Authentic Palestinian maftoul (3 chicken leg quarters, 1.5 cups maftoul, 2-3 tbsp ghee, 3 tbsp olive oil, 1.25 cups chickpeas, 8 oz pearl onions; serves 3): https://falasteenifoodie.com/authentic-palestinian-maftoul-recipe/"
+    - "Saveur, Palestinian couscous with chicken and chickpeas (serves 4; quantities not read): https://www.saveur.com/article/Recipes/Maftoul-Palestinian-Couscous-With-Chicken/"
+    - "USDA FoodData Central (SR Legacy) for every ingredient"
+  notes: >-
+    Falasteeni Foodie says serves 3 but the quantities are closer to 4 plates (450 g); small_plate is the pot divided by 6.
+    The cooked weight (1.8 kg) is modelled, not weighed: maftoul absorbs about 2.5 times its weight in broth. The grain
+    is modelled with couscous (USDA lacks maftoul). The two fat entries and the chicken skin make up about 45% of the
+    energy; ghee and olive oil amounts vary widely and some of the oil goes into discarded broth, so the plate may be
+    100-200 kcal lower or higher. Please check against your family's cooking (many pots use more ghee on the
+    maftoul and no olive oil in the broth). Yogurt and salad at the side are not included. AI verification 2026-10-30 (A17/A18 number check, D-087): every variant independently recalculated from the catalog ingredients by a second agent; plate and range judged plausible, and the review findings (aliases, provenance, notes) were fixed.
+time_min: 14
