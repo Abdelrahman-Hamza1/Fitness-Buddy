@@ -56,11 +56,37 @@ final class OpenProfileHandles {
   /// The open database, if one was built.
   AppDatabase? database;
 
-  /// The open location, if one was built.
+  /// The last location built. Only its root is used (to find the profiles
+  /// directory): it may still belong to a profile that was just switched
+  /// away from, so never ask it which profile is open.
   DatabaseLocation? location;
 
   /// Waits for the open applier's queued writes, if an applier was built.
-  Future<void> Function()? idle;
+  Future<void> Function()? get idle => _idle;
+  Future<void> Function()? _idle;
+  Object? _idleOwner;
+
+  /// Registers the open applier's [idle]; the returned token unregisters
+  /// exactly this registration (a newer applier's survives).
+  Object registerIdle(Future<void> Function() idle) {
+    final owner = Object();
+    _idle = idle;
+    _idleOwner = owner;
+    return owner;
+  }
+
+  /// Clears the registration made with [owner], if it is still current.
+  void unregisterIdle(Object owner) {
+    if (!identical(_idleOwner, owner)) return;
+    _idle = null;
+    _idleOwner = null;
+  }
+
+  /// Clears whatever applier is registered (a profile switch).
+  void clearIdle() {
+    _idle = null;
+    _idleOwner = null;
+  }
 }
 
 /// The one [OpenProfileHandles] (no dependencies).
@@ -79,8 +105,11 @@ AppDatabase appDatabase(Ref ref) {
     onCatalogError: (error, _) =>
         ref.read(errorReportingProvider).reportKind(error),
   );
-  ref.onDispose(() => unawaited(closeDatabase(db)));
-  ref.read(openProfileHandlesProvider).database = db;
+  final handles = ref.read(openProfileHandlesProvider)..database = db;
+  ref.onDispose(() {
+    if (identical(handles.database, db)) handles.database = null;
+    unawaited(closeDatabase(db));
+  });
   return db;
 }
 

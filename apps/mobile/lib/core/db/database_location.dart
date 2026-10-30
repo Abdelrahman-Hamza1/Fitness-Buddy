@@ -88,9 +88,17 @@ final class DatabaseLocation {
   /// directory names. Never resolves the profile itself: crash recovery runs
   /// inside the resolver (A33 §6).
   Future<void> deleteOtherProfile(String otherKey) async {
-    if (!_profileKey.hasMatch(otherKey)) throw ArgumentError('profileKey');
     if (otherKey == _resolvedKey) throw StateError('active_profile');
-    final dir = Directory('${await _root()}/profiles/$otherKey');
+    await deleteProfileDirectory(otherKey);
+  }
+
+  /// Deletes `profiles/<key>/` under this location's root, whichever
+  /// profile this location itself belongs to: the caller guarantees [key]
+  /// is not open (A33 cleanup, after the switch and the close). Refuses keys
+  /// that aren't plain directory names.
+  Future<void> deleteProfileDirectory(String key) async {
+    if (!_profileKey.hasMatch(key)) throw ArgumentError('profileKey');
+    final dir = Directory('${await _root()}/profiles/$key');
     if (dir.existsSync()) await dir.delete(recursive: true);
   }
 

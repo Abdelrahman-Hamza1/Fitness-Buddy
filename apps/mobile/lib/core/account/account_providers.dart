@@ -2,6 +2,7 @@ import 'package:fb_api_client/fb_api_client.dart';
 import 'package:fb_mobile/core/account/account_service.dart';
 import 'package:fb_mobile/core/account/account_transitions.dart';
 import 'package:fb_mobile/core/account/google_id_token_source.dart';
+import 'package:fb_mobile/core/account/open_profile_host.dart';
 import 'package:fb_mobile/core/account/profile_generation.dart';
 import 'package:fb_mobile/core/account/profile_registry.dart';
 import 'package:fb_mobile/core/account/profile_write_gate.dart';
@@ -37,7 +38,18 @@ GoogleIdTokenSource googleIdTokenSource(Ref ref) =>
 AccountTransitions accountTransitions(Ref ref) => AccountTransitions(
   registry: ref.watch(profileRegistryProvider),
   session: _SessionAdapter(ref.watch(sessionServiceProvider)),
-  host: _RiverpodProfileHost(ref),
+  host: OpenProfileHost(
+    handles: ref.watch(openProfileHandlesProvider),
+    select: (key) {
+      // A new generation first: everything bound to the old profile
+      // (appliers, open forms, the app's widget tree) is stale from here on.
+      ref.read(profileGenerationProvider.notifier).bump();
+      ref.read(profileKeyProvider.notifier).select(key);
+    },
+    fallbackRoot: () => DatabaseLocation.appSupport('local'),
+    activeKey: () async =>
+        (await ref.read(profileRegistryProvider).read()).activeKey,
+  ),
   newTag: ref.watch(idGeneratorProvider).next,
   onBusy: ({required busy}) =>
       ref.read(accountBusyProvider.notifier).publish(busy: busy),
@@ -103,45 +115,4 @@ final class _SessionAdapter implements AccountSession {
 
   @override
   Future<void> reconcile() => _service.reconcileStorage();
-}
-
-/// Switches the open database by key; deletes a closed profile's files.
-final class _RiverpodProfileHost implements ProfileHost {
-  new(this._ref);
-
-  final Ref _ref;
-  final _closing = <Future<void>>[];
-
-  // Never read the database, location or applier providers from here: they
-  // depend on the account transitions (resolver, write gate), so that would
-  // be a circular dependency. They register themselves in the handles.
-  OpenProfileHandles get _handles => _ref.read(openProfileHandlesProvider);
-
-  @override
-  Future<void> activate(String profileKey) async {
-    final old = _handles.database;
-    // A new generation first: everything bound to the old profile (appliers,
-    // open forms, the app's widget tree) is stale from here on.
-    _ref.read(profileGenerationProvider.notifier).bump();
-    _ref.read(profileKeyProvider.notifier).select(profileKey);
-    if (old == null) return;
-    // The same future the provider's dispose uses (one close per database).
-    final closing = closeDatabase(old);
-    _closing.add(closing);
-    await closing;
-  }
-
-  @override
-  Future<void> deleteFiles(String profileKey) async {
-    // Never delete under an open SQLite connection.
-    await Future.wait(_closing);
-    final location =
-        _handles.location ?? DatabaseLocation.appSupport(profileKey);
-    await location.deleteOtherProfile(profileKey);
-  }
-
-  @override
-  Future<void> quiesce() async {
-    if (_handles.idle case final idle?) await idle();
-  }
 }

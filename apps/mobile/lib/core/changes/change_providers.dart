@@ -41,10 +41,13 @@ ChangeSetApplier<AppDatabase> changeSetApplier(Ref ref) {
   );
   // A33: the account transitions reach the open profile through these
   // handles, never through this provider (a circular dependency).
-  ref.read(openProfileHandlesProvider)
+  // The database provider owns the database registration (and its
+  // unregistering); registering it here too covers an overridden database.
+  final handles = ref.read(openProfileHandlesProvider)
     ..database = db
-    ..location = location
-    ..idle = applier.idle;
+    ..location = location;
+  final owner = handles.registerIdle(applier.idle);
+  ref.onDispose(() => handles.unregisterIdle(owner));
   return applier;
 }
 

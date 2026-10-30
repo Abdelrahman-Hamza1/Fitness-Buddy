@@ -120,7 +120,7 @@ final class ChangeSetApplierProvider
   }
 }
 
-String _$changeSetApplierHash() => r'df37aa36b79cee13ccf4370a9de2241180756958';
+String _$changeSetApplierHash() => r'82bded94179a7eedbbe8c89b153501c66ad46494';
 
 /// A33 §6: the write gate (transition, read-only copy, inactive profile).
 /// Null (always writable) unless the app wiring overrides it.

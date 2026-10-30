@@ -159,7 +159,7 @@ final class AccountTransitionsProvider
 }
 
 String _$accountTransitionsHash() =>
-    r'3f76c0fad91815bbb34ddb365f6e40106a713ee7';
+    r'8d25a0ddbda5a05c87d785c2c0ad602b67b426fa';
 
 /// True while an account transition with a journal runs (sign-in, sign-out,
 /// recovery of an interrupted one): the app shows a calm blocking state so
