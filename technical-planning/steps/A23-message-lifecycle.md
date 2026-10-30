@@ -83,7 +83,7 @@ Binding for A23's plan (from A22a's build and reviews):
 
 ## A22b handoff (2026-10-29, A22b close)
 
-- **The draft codec must carry `assumedAmounts` and `removedComponents`** (engine state added by A22b: stepper eligibility kept apart from "explicit", and a generated oil removed on its own) **before** restore by `budgetMessageId`; otherwise a restored card brings a removed oil back and loses its − / +. Codec version bump + corpus (backlog #163).
+- **The draft codec must carry `assumedAmounts` and `removedComponents`** (engine state added by A22b: stepper eligibility kept apart from "explicit", and a generated oil removed on its own) **before** restore by `budgetMessageId`; otherwise a restored card brings a removed oil back and loses its − / +. Codec version bump + corpus (backlog #194).
 - **`onFollowUp` is wired** (A22b merged first): the follow-up's assistant row and the rebuilt card share one change set; A23 adds its proposal/budget ops there.
 - **Discard Undo is in memory** and enabled only while `ProposalResolution.discardUndoable` (no contributors). Before A23 registers contributors that write on discard, add a resolve-undo or Discard Undo turns off.
 - A card is read-only while its follow-up is in flight (`BuddyThread.isUpdating`); a retried follow-up on a logged/discarded card gets a fixed reply and no new card. Keep both when turns become durable.

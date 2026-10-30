@@ -14,7 +14,7 @@ import 'support/patrol_support.dart';
 void main() {
   // Skipped (batch merge 2026-10-29): on the emulator the search field is
   // not found after opening search with the fake session; not reproducible
-  // by reading the code. Widget tests cover FD-020/021. Backlog #183.
+  // by reading the code. Widget tests cover FD-020/021. Backlog #199.
   patrolTest(
     'FD-020 FD-021 online results append after local rows without '
     'duplicates',

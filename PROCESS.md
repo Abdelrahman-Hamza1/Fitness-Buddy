@@ -23,6 +23,13 @@ _The one-page process (TD-075, amended by TD-085, TD-087 and TD-095). Part A is 
 10. **Budget.** The plan states the expected size; the Outcome records the actual size and review findings. If the owner's weekly limit runs low, finish open steps first and move Normal-step implementation to Sonnet, telling the owner.
 11. **Owner messages:** short and plain, result or decision first; every question comes with a recommendation answerable with "ok".
 
+### Owner rules, 2026-10-30 (testing and merging)
+
+- **No local test runs by default.** Locally run only codegen and `make check-dart` / `check-dotnet` / `dotnet build`. CI is the evidence. On a CI failure, reproduce only the failing tests through `tools/scripts/heavy.sh`, each with a `timeout 600`, so a hang can't hold the heavy lock.
+- **One merge at a time.** Never run two `merge-step.sh` runs concurrently.
+- **Batch merges (owner, 2026-10-29).** When several finished steps are waiting, they may land with ONE CI run: an integration branch merges each step branch in order, then one squash commit per step (`<ID>: <name>`) is stacked on `main`, and CI runs on the top commit. `main` fast-forwards only when `ci` is green. Fixes found by that run fold into the last step's commit.
+- **Emulator job budget.** The `android-it` job gets 25 minutes per attempt (the suite grew past 15). Patrol journeys that have never been green on the emulator are expected to need a fix round.
+
 ## B. Models and reviews (TD-085)
 
 **Opus by default for everything that needs judgment**: the orchestrator, planning, plan review, implementation on every tier, code review, security review, UX review, research, data curation and verification. **Sonnet only for mechanical work**, by a per-brief `model: sonnet` override:

@@ -19,7 +19,7 @@ _Old ID: S30 app part (renumbered by TD-063, 2026-10-16). The server side is B07
 
 ## Exit criteria
 - [x] The app merges online + offline results without duplicates (integration test): Patrol `patrol_test/online_search_test.dart`.
-- [x] Pack update E2E: host integration test through the generated client with real pack bytes and real ATTACH (diary entries unaffected); the laptop-server run is owner/A55 check #157.
+- [x] Pack update E2E: host integration test through the generated client with real pack bytes and real ATTACH (diary entries unaffected); the laptop-server run is owner/A55 check #185.
 - [x] A corrupted download is rejected and the old pack stays (test): unit + host integration tests, incl. a valid SQLite file with the right hash but no catalog tables.
 
 ## Read first
@@ -68,7 +68,7 @@ _Written 2026-10-29 by the A24 engineer (time-boxed session; architecture + code
 - 2026-10-29 15:45: CI on 75c7676 (WP1) showed `dart-test (app:3/3)` failing; logs unreadable (anonymous GitHub API rate limit). Likely cause: the online-leg Timer left pending in widget tests, or online requests on TestPhone logs. Fix e4ee33f: decide synchronously before scheduling (no timer when online search is unavailable) and test phones switch online search off (`onlineFoodSearchEnabledProvider`). **Next session: read CI on e4ee33f first**; if app:3/3 is still red, check `online_search_test.dart` (controller-leg tests use real 10 ms delays) and the food-search widget tests.
 - 2026-10-29 (review round 1, Codex review): merged origin/main (A44) into the branch; a rebase would have needed a force push, so I merged instead. #1 downloaded pack validated with real SQLite before promotion (`core/db/catalog/catalog_pack_validator.dart`: quick_check, all pack tables readable, meta schema + catalog version = manifest) + host integration test through the generated client (34c1303). #2 online failure (null) vs answer (list, empty included): only answers cached; failures retried 2/5/15 s for the same query; #4 waits via `onlineSearchWaitProvider`, no global `onlineDelay`, no real-time waits (34b16b0). #5 TestPhone `onlineSearch`/`packUpdates` opt-ins (94bb0d3). #6 one pack-check retry when the session next becomes ready (6c0a58c). #3a Patrol `patrol_test/online_search_test.dart` with `CatalogFakeAdapter` + Buddy's auth fake (`buddyFakeApi` now takes any adapter + flavor); #3b host integration test (in #1); laptop E2E recorded as an owner/A55 check (Owner involvement). Last commit tagged `[it]`.
 - 2026-10-29 (Codex fix check): validator checks all schema-v1 columns per table; `OneRetry` with the listener registered before the attempt; online retry budget and deadline kept per normalized query across same-query refreshes (`OnlineSearchTime`, virtual time in tests).
-- 2026-10-29 · Close: Outcome written, board ✅, backlog #157–#159; merge via `merge-step.sh` (CI incl. `[it]`).
+- 2026-10-29 · Close: Outcome written, board ✅, backlog #185–#187; merge via `merge-step.sh` (CI incl. `[it]`).
 
 ## Outcome
 **Built (2026-10-29).** Search now also asks the server catalog, and the offline pack updates itself in the background, safely.
@@ -80,10 +80,10 @@ _Written 2026-10-29 by the A24 engineer (time-boxed session; architecture + code
 - `onlineFoodSearchEnabledProvider` / `catalogPackUpdatesEnabledProvider` (on in the app) with TestPhone opt-ins (`onlineSearch`, `packUpdates`, default off): existing startup/session tests assert exact request logs; `realNetwork` tests can opt in.
 - The validator lives in `core/db/` because only `core/db/` may open a SQLite connection (rule 11); it is read-only.
 - Review round 1 merged `origin/main` into the branch instead of rebasing: a rebase needs a force push, which the permission system blocks; the squash merge makes the history moot.
-- Laptop-server E2E can't run in CI → owner/A55 check #157; CI evidence is the host integration test.
+- Laptop-server E2E can't run in CI → owner/A55 check #185; CI evidence is the host integration test.
 - `buddyFakeApi` (A22a Patrol support) now takes any adapter and a store flavor, reused for the catalog fake.
 
-**Follow-ups:** #157 (owner/A55 laptop-server pack E2E), #158 (no retry on resume/connectivity), #159 (stream large pack downloads, B14).
+**Follow-ups:** #185 (owner/A55 laptop-server pack E2E), #186 (no retry on resume/connectivity), #187 (stream large pack downloads, B14).
 
 **TDs:** none (within card scope; no spec or Accepted-TD change).
 
