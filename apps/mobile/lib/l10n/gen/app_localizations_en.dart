@@ -3359,4 +3359,142 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get foodSheetSlotChoose => 'Choose a meal';
+
+  @override
+  String get weightGraphTitle => 'Weight graph';
+
+  @override
+  String get weightGraphRange1M => '1M';
+
+  @override
+  String get weightGraphRange3M => '3M';
+
+  @override
+  String get weightGraphRange6M => '6M';
+
+  @override
+  String get weightGraphRange1Y => '1Y';
+
+  @override
+  String get weightGraphRangeAll => 'All';
+
+  @override
+  String get weightGraphToday => 'Today';
+
+  @override
+  String weightGraphSemantics(String count, String trend) {
+    return 'Weight graph, $count weigh-ins. Trend $trend.';
+  }
+
+  @override
+  String weightGraphGoal(String weight) {
+    return 'Goal $weight';
+  }
+
+  @override
+  String get weightGraphTapHint => 'Tap a point to see details';
+
+  @override
+  String weightGraphTrendThatDay(String weight) {
+    return 'Trend $weight that day';
+  }
+
+  @override
+  String get weightGraphNotUsed => 'Not used for the trend';
+
+  @override
+  String get weightGraphUseForTrend => 'Use for trend';
+
+  @override
+  String get weightGraphEdit => 'Edit';
+
+  @override
+  String get weightGraphLegendRaw => 'Weigh-ins';
+
+  @override
+  String get weightGraphLegendTrend => 'Trend';
+
+  @override
+  String get weightGraphLegendProjection =>
+      'Projection, likely range at the current rate';
+
+  @override
+  String get weightGraphStatsTitle => 'Summary';
+
+  @override
+  String weightGraphChangeSince(String date) {
+    return 'Change since $date';
+  }
+
+  @override
+  String get weightGraphThisMonth => 'This month';
+
+  @override
+  String weightGraphThisMonthSince(String date) {
+    return 'Since $date';
+  }
+
+  @override
+  String weightGraphMonthValue(String change, String target) {
+    return '$change of $target';
+  }
+
+  @override
+  String weightGraphAverageSince(String date) {
+    return 'Average since $date';
+  }
+
+  @override
+  String weightGraphPerWeek(String change) {
+    return '$change per week';
+  }
+
+  @override
+  String weightGraphGoalAround(String month) {
+    return 'Goal around $month at your current trend';
+  }
+
+  @override
+  String get weightGraphNone => '—';
+
+  @override
+  String get weightGraphAfterTwoWeeks => 'Shows after 2 weeks of weigh-ins';
+
+  @override
+  String get weightGraphNoMonthTarget => 'Set a goal to see a monthly target';
+
+  @override
+  String get weightGraphEmptyTitle => 'No weigh-ins yet';
+
+  @override
+  String get weightGraphEmptyMessage =>
+      'Log a weigh-in and your graph starts here.';
+
+  @override
+  String get weightGraphLog => 'Log weigh-in';
+
+  @override
+  String get weightGraphError => 'Couldn\'t load your weight';
+
+  @override
+  String get weightGraphTryAgain => 'Try again';
+
+  @override
+  String get weightGraphRamadan => 'Ramadan';
+
+  @override
+  String get weightGraphGoalNeedsUpdate =>
+      'Update your goal to see a monthly target';
+
+  @override
+  String get weightGraphManualNeedsReview =>
+      'Review your manual target to see a monthly target';
+
+  @override
+  String get weightGraphUseForTrendChanged =>
+      'That day\'s weigh-ins changed. Check the point and try again.';
+
+  @override
+  String get weightGraphUseForTrendFailed =>
+      'Couldn\'t change the trend weigh-in. Try again.';
 }

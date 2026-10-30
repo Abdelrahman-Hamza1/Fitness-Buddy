@@ -4,6 +4,7 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/body/application/weight_card_state.dart';
 import 'package:fb_mobile/features/body/application/weight_providers.dart';
@@ -197,6 +198,23 @@ class WeightCard extends ConsumerWidget {
                   last,
                   style: FbType.numeric(FbType.bodySmall)
                       .copyWith(color: scheme.onSurface),
+                ),
+              ],
+            ),
+          ],
+          // Row 3 (A15 D12, HM-005): the weight graph, on every day page.
+          if (state.hasHistory) ...[
+            Divider(height: 1, color: scheme.outlineVariant),
+            _CardRow(
+              semanticLabel: l10n.weightGraphTitle,
+              icon: FbIcons.chart,
+              onTap: () => ref
+                  .read(appNavigatorProvider)
+                  .push(const TodayWeightGraphRoute()),
+              children: [
+                Text(
+                  l10n.weightGraphTitle,
+                  style: FbType.bodySmall.copyWith(color: scheme.onSurface),
                 ),
               ],
             ),

@@ -58,7 +58,10 @@
   "fbDateChoose": "Choose a date",
   "@fbDateChoose": { "description": "Screen-reader hint on the tappable date in the day header: what a tap does (opens the date picker)." },
 
-  "fbChartPlaceholder": "Chart coming soon",
+  "fbChartNoData": "No data yet",
+  "@fbChartNoData": { "description": "Shown inside an empty chart when there is nothing to draw." },
+  "fbChartPointValue": "{date}, {value}",
+  "@fbChartPointValue": { "description": "Screen-reader value of the selected chart point: its date, then its value (both already formatted).", "placeholders": { "date": { "type": "String" }, "value": { "type": "String" } } },
   "fbSheetDragHandle": "Drag handle",
   "fbLoading": "Loading"
 }

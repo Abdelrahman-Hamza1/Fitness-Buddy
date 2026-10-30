@@ -386,7 +386,7 @@ void main() {
   });
 
   group('chart', () {
-    testWidgets('IN-004 chart placeholder keeps its aspect ratio and accepts '
+    testWidgets('IN-004 the chart keeps its aspect ratio and accepts '
         'series, bands and a goal line', (tester) async {
       final t0 = DateTime.utc(2026, 10);
       await pumpFb(
@@ -406,13 +406,11 @@ void main() {
             FbBand(points: [FbBandPoint(t0, lower: 79, upper: 81)]),
           ],
           goal: const FbGoalLine(value: 75, label: 'Goal'),
-          tooltip: (p) => '${p.value}',
           aspectRatio: 2,
         ),
       );
       final size = tester.getSize(find.byType(FbTimeSeriesChart));
       expect(size.width / size.height, closeTo(2, 0.01));
-      expect(find.text('Chart coming soon'), findsOneWidget);
     });
   });
 
@@ -471,6 +469,12 @@ void main() {
         FbBandPoint,
         FbGoalLine,
         FbChartRange,
+        FbPeriod,
+        FbPeriodTone,
+        FbPointRef,
+        FbSeriesTone,
+        FbTimeStep,
+        FbGoalEdge,
         FbTheme,
         FbColors,
         FbType,

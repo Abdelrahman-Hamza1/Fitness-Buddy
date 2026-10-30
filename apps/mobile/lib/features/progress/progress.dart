@@ -3,3 +3,4 @@
 library;
 
 export 'presentation/progress_screen.dart';
+export 'presentation/weight_graph_screen.dart' show WeightGraphScreen;

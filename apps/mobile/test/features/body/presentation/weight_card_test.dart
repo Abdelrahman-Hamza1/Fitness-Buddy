@@ -320,7 +320,9 @@ void main() {
     // n4: the date shows once, on the trend row; no extra honesty line.
     expect(texts, contains('Last weigh-in 97.0 kg'));
     expect(texts.where((t) => t.contains('Sep 14')), hasLength(1));
-    expect(texts, hasLength(3));
+    // Row 3 opens the weight graph (A15a D12).
+    expect(texts, hasLength(4));
+    expect(texts.last, 'Weight graph');
     await unmount(tester, rig);
 
     // Exactly 28 days since the last weigh-in: outside the last 4 weeks.
@@ -340,9 +342,12 @@ void main() {
     final rig = SheetRig();
     await rig.seed(tester, weekly([7, 0], [98, 97]));
     await pumpCard(tester, rig, date: day17.plusDays(-10));
+    // The graph row shows on every day page once there are weigh-ins
+    // (A15a D12).
     expect(cardTexts(tester), [
       'Weight',
       'No weigh-ins by this day. Tap to add one.',
+      'Weight graph',
     ]);
     expect(
       find.bySemanticsLabel(

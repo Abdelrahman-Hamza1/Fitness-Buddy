@@ -162,7 +162,8 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A13b](A13-targets-ui-onboarding.md) | Onboarding & Today numbers (split from A13) | Claude | A13a, A14 | M | S20 part |  | ✅ |
 | [A13c](A13-targets-ui-onboarding.md) | Profile, goal & targets screens (split from A13) | Claude | A13b | M | S20 part |  | ⬜ |
 | [A14](A14-weigh-ins-trend.md) | Weigh-ins & trend | Claude | A08a | L | S21 |  | ✅ |
-| [A15](A15-weight-graph-measurements.md) | Weight graph & measurements | Claude | A12, A14 | L | S22 |  | ⬜ |
+| [A15a](A15-weight-graph-measurements.md) | Weight graph (split from A15, 2026-10-28) | Claude | A12, A13a, A14 | L | S22 part |  | ✅ |
+| [A15b](A15-weight-graph-measurements.md) | Weight history entry & measurements (split from A15) | Claude | A15a | L | S22 part |  | ⬜ |
 | [A16](A16-progress-tab.md) | Progress tab v1 | Claude | A13c, A15 | M | S23 | **M2** | ⬜ |
 | [A17](dish-batches.md) | Dish batch 2: main dishes A | Claude | A04 | S | D2 |  | ⏸ deferred (TD-074): after A41 |
 | [A18](dish-batches.md) | Dish batch 3: out & street food | Claude | A17 | S | D3 |  | ⏸ deferred (TD-074): after A41 |

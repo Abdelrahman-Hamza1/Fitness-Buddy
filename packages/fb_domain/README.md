@@ -292,6 +292,13 @@ here does I/O, and the trend is derived, never stored (`05` §2.2).
   weigh-in days (`points`), not on arbitrary dates, since `trendOn` is a
   step function and a window edge between weigh-ins sees a held value.
 
+## Weight projection
+
+A15a D7, D10 (WB-021, WB-023, TD-099 Proposed). Code: `lib/src/body/weight_graph.dart`. Derived, never stored.
+
+- **`WeightProjection.of({trend, today, goalKg})`** returns a `WeightProjection` or `NoProjection(reason)` (`noGoal`, `stale`, `noRate`, `flat`, `awayFromGoal`, `reached`, `tooFewPoints`). Centre from the latest trend point along the weight card's weekly rate; σ the OLS slope standard error of the day choices in the 56 days ending there (floor 0.1 kg/week); `at(date)` gives lower/centre/upper = centre ± 1.28·σ·t/7, each clamped at the goal; `drawUntil` is where the slow edge reaches the goal (≤ 730 days); `reachDate` where the centre does (none past 730 days). Rate uncertainty only: never shown as a probability. Constants: `ProjectionConfig`.
+- **`WeightStats.of({trend, today, history, monthTargetKgPerWeek})`**: change since the active phase's start (else the first weigh-in; a start more than 28 days after the last weigh-in uses the first trend point after it), this month's change (from the 1st, or a phase start this month), this month's target from the rate the targets show (TG-011, SF-011-capped; pro-rated when the phase started this month), and the average weekly rate after 14 days ("Average since {date}"). `toString` carries no values.
+
 ## Tests
 
 Property tests use `glados` with `propertyRuns` (1,000 runs, from

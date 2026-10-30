@@ -77,7 +77,12 @@ final class AppRouter implements AppNavigator {
                   // Detail screens nest in their tab, so the tab bar stays
                   // and the tab keeps its stack.
                   children: [
-                    if (route is TodayRoute) _foodSearchRoute(),
+                    if (route is TodayRoute) ...[
+                      _foodSearchRoute(),
+                      _goRoute(const TodayWeightGraphRoute(), nested: true),
+                    ],
+                    if (route is ProgressRoute)
+                      _goRoute(const WeightGraphRoute(), nested: true),
                     if (route is MeRoute) ...[
                       _personalFoodsRoute(),
                       _savedMealsRoute(),
@@ -261,6 +266,7 @@ final class AppRouter implements AppNavigator {
     MealSlotsRoute() => const MealSlotsScreen(),
     CityPickerRoute() => const CityPickerScreen(),
     AboutRoute() => const AboutScreen(),
+    TodayWeightGraphRoute() || WeightGraphRoute() => const WeightGraphScreen(),
     UpdateRequiredRoute() => const UpdateRequiredScreen(),
     SetupRoute() => const SetupScreen(),
   };

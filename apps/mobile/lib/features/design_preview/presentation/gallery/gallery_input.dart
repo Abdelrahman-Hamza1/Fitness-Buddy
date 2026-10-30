@@ -313,23 +313,92 @@ final List<GallerySection> gallerySectionsInput = [
       FbBand,
       FbBandPoint,
       FbGoalLine,
+      FbGoalEdge,
       FbChartRange,
+      FbPeriod,
+      FbPeriodTone,
+      FbPointRef,
+      FbSeriesTone,
+      FbTimeStep,
     ],
     states: (_) => [
       GalleryState(
-        'placeholder',
+        'line',
         FbTimeSeriesChart(
           series: [
             FbSeries(
               points: [
-                FbPoint(DateTime(2026, 10), 80),
-                FbPoint(DateTime(2026, 10, 8), 79.5),
+                FbPoint(DateTime.utc(2026, 10), 80),
+                FbPoint(DateTime.utc(2026, 10, 8), 79.5),
               ],
             ),
           ],
           range: FbChartRange(
-            start: DateTime(2026, 10),
-            end: DateTime(2026, 10, 8),
+            start: DateTime.utc(2026, 10),
+            end: DateTime.utc(2026, 10, 8),
+          ),
+        ),
+      ),
+      GalleryState(
+        'overlays',
+        FbTimeSeriesChart(
+          series: [
+            FbSeries(
+              style: FbSeriesStyle.points,
+              tone: FbSeriesTone.muted,
+              selectable: true,
+              points: [
+                for (var i = 0; i < 28; i++)
+                  FbPoint(
+                    DateTime.utc(2026, 10, 1 + i),
+                    80.4 - i * 0.05 + (i.isEven ? 0.3 : -0.3),
+                    key: i,
+                  ),
+              ],
+            ),
+            FbSeries(
+              style: FbSeriesStyle.line,
+              points: [
+                FbPoint(DateTime.utc(2026, 10), 80.4),
+                FbPoint(DateTime.utc(2026, 10, 28), 79),
+              ],
+            ),
+            FbSeries(
+              style: FbSeriesStyle.dashedLine,
+              points: [
+                FbPoint(DateTime.utc(2026, 10, 28), 79),
+                FbPoint(DateTime.utc(2026, 11, 10), 78.4),
+              ],
+            ),
+          ],
+          bands: [
+            FbBand(
+              points: [
+                FbBandPoint(DateTime.utc(2026, 10, 28), lower: 79, upper: 79),
+                FbBandPoint(
+                  DateTime.utc(2026, 11, 10),
+                  lower: 78.1,
+                  upper: 78.7,
+                ),
+              ],
+            ),
+          ],
+          periods: [
+            FbPeriod(
+              start: DateTime.utc(2026, 10, 12),
+              end: DateTime.utc(2026, 11, 10),
+              tone: FbPeriodTone.phaseB,
+            ),
+          ],
+          goal: const FbGoalLine(value: 78),
+          selected: const FbPointRef(series: 0, key: 10),
+          onSelect: (_) {},
+          formatDate: (at, step) => step == FbTimeStep.day
+              ? '${at.day}/${at.month}'
+              : '${at.month}/${at.year}',
+          range: FbChartRange(
+            start: DateTime.utc(2026, 10),
+            end: DateTime.utc(2026, 11, 10),
           ),
         ),
       ),

@@ -4931,6 +4931,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose a meal'**
   String get foodSheetSlotChoose;
+
+  /// Weight graph screen title and the Today/Progress row that opens it.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight graph'**
+  String get weightGraphTitle;
+
+  /// Weight graph range chip: one month.
+  ///
+  /// In en, this message translates to:
+  /// **'1M'**
+  String get weightGraphRange1M;
+
+  /// Weight graph range chip: three months.
+  ///
+  /// In en, this message translates to:
+  /// **'3M'**
+  String get weightGraphRange3M;
+
+  /// Weight graph range chip: six months.
+  ///
+  /// In en, this message translates to:
+  /// **'6M'**
+  String get weightGraphRange6M;
+
+  /// Weight graph range chip: one year.
+  ///
+  /// In en, this message translates to:
+  /// **'1Y'**
+  String get weightGraphRange1Y;
+
+  /// Weight graph range chip: the whole history.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get weightGraphRangeAll;
+
+  /// Weight graph chip shown after panning: back to the window ending today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get weightGraphToday;
+
+  /// Screen-reader summary of the weight chart.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight graph, {count} weigh-ins. Trend {trend}.'**
+  String weightGraphSemantics(String count, String trend);
+
+  /// Label of the dashed goal-weight line on the chart.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal {weight}'**
+  String weightGraphGoal(String weight);
+
+  /// Hint under the weight chart when no point is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a point to see details'**
+  String get weightGraphTapHint;
+
+  /// Selected weigh-in details: the trend on its day.
+  ///
+  /// In en, this message translates to:
+  /// **'Trend {weight} that day'**
+  String weightGraphTrendThatDay(String weight);
+
+  /// Selected weigh-in details: another weigh-in that day feeds the trend.
+  ///
+  /// In en, this message translates to:
+  /// **'Not used for the trend'**
+  String get weightGraphNotUsed;
+
+  /// Button: make the selected weigh-in its day's trend value (undoable).
+  ///
+  /// In en, this message translates to:
+  /// **'Use for trend'**
+  String get weightGraphUseForTrend;
+
+  /// Button: edit the selected weigh-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get weightGraphEdit;
+
+  /// Legend: the faint dots are the raw weigh-ins.
+  ///
+  /// In en, this message translates to:
+  /// **'Weigh-ins'**
+  String get weightGraphLegendRaw;
+
+  /// Legend: the solid line is the trend.
+  ///
+  /// In en, this message translates to:
+  /// **'Trend'**
+  String get weightGraphLegendTrend;
+
+  /// Legend: the dashed line and shaded cone. Never a probability.
+  ///
+  /// In en, this message translates to:
+  /// **'Projection, likely range at the current rate'**
+  String get weightGraphLegendProjection;
+
+  /// Weight graph stats card title.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get weightGraphStatsTitle;
+
+  /// Stats row label: trend change since the phase start or first weigh-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Change since {date}'**
+  String weightGraphChangeSince(String date);
+
+  /// Stats row label: trend change this month.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get weightGraphThisMonth;
+
+  /// Stats row label: change this month when the phase started this month.
+  ///
+  /// In en, this message translates to:
+  /// **'Since {date}'**
+  String weightGraphThisMonthSince(String date);
+
+  /// Stats value: this month's change against its target.
+  ///
+  /// In en, this message translates to:
+  /// **'{change} of {target}'**
+  String weightGraphMonthValue(String change, String target);
+
+  /// Stats row label: average weekly change.
+  ///
+  /// In en, this message translates to:
+  /// **'Average since {date}'**
+  String weightGraphAverageSince(String date);
+
+  /// Stats value: an average weekly change.
+  ///
+  /// In en, this message translates to:
+  /// **'{change} per week'**
+  String weightGraphPerWeek(String change);
+
+  /// Stats line: projected month the trend meets the goal. Neutral, not a promise.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal around {month} at your current trend'**
+  String weightGraphGoalAround(String month);
+
+  /// Stats value when a number isn't available yet.
+  ///
+  /// In en, this message translates to:
+  /// **'—'**
+  String get weightGraphNone;
+
+  /// Stats reason: not enough history yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows after 2 weeks of weigh-ins'**
+  String get weightGraphAfterTwoWeeks;
+
+  /// Stats reason: no active goal rate.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a goal to see a monthly target'**
+  String get weightGraphNoMonthTarget;
+
+  /// Weight graph empty state title.
+  ///
+  /// In en, this message translates to:
+  /// **'No weigh-ins yet'**
+  String get weightGraphEmptyTitle;
+
+  /// Weight graph empty state message.
+  ///
+  /// In en, this message translates to:
+  /// **'Log a weigh-in and your graph starts here.'**
+  String get weightGraphEmptyMessage;
+
+  /// Weight graph empty state button.
+  ///
+  /// In en, this message translates to:
+  /// **'Log weigh-in'**
+  String get weightGraphLog;
+
+  /// Weight graph error state.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your weight'**
+  String get weightGraphError;
+
+  /// Weight graph error retry button.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get weightGraphTryAgain;
+
+  /// Label of a highlighted Ramadan period on charts (A41 supplies the dates).
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan'**
+  String get weightGraphRamadan;
+
+  /// Stats reason: the active goal can't be resolved (deadline passed or target reached).
+  ///
+  /// In en, this message translates to:
+  /// **'Update your goal to see a monthly target'**
+  String get weightGraphGoalNeedsUpdate;
+
+  /// Stats reason: the manual calorie target needs review, so no monthly weight target is shown.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your manual target to see a monthly target'**
+  String get weightGraphManualNeedsReview;
+
+  /// Snack bar: Use for trend was refused because the day's weigh-ins changed meanwhile (nothing was written).
+  ///
+  /// In en, this message translates to:
+  /// **'That day\'s weigh-ins changed. Check the point and try again.'**
+  String get weightGraphUseForTrendChanged;
+
+  /// Snack bar: Use for trend was refused (nothing was written).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t change the trend weigh-in. Try again.'**
+  String get weightGraphUseForTrendFailed;
 }
 
 class _AppLocalizationsDelegate

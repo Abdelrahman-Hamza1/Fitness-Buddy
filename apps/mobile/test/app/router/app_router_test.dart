@@ -38,6 +38,8 @@ import '../../helpers/pump_app.dart';
   MealSlotsRoute() => (MealSlotsScreen, true),
   CityPickerRoute() => (CityPickerScreen, true),
   AboutRoute() => (AboutScreen, true),
+  TodayWeightGraphRoute() => (WeightGraphScreen, true),
+  WeightGraphRoute() => (WeightGraphScreen, true),
   UpdateRequiredRoute() => (UpdateRequiredScreen, false),
   SetupRoute() => (SetupScreen, false),
 };
@@ -58,6 +60,8 @@ const List<AppRoute> _allRoutes = [
   SavedMealsRoute(),
   SavedMealRoute(id: _entryId),
   MealSlotsRoute(),
+  TodayWeightGraphRoute(),
+  WeightGraphRoute(),
   CityPickerRoute(),
   AboutRoute(),
   UpdateRequiredRoute(),
@@ -90,6 +94,8 @@ void main() {
         const MealSlotsRoute(),
         const CityPickerRoute(),
         const AboutRoute(),
+        const TodayWeightGraphRoute(),
+        const WeightGraphRoute(),
       ].map((r) => r.location),
       unorderedEquals(_allRoutes.map((r) => r.location)),
     );

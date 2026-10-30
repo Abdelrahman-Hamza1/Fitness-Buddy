@@ -103,7 +103,12 @@ class FbLocalizationsEn extends FbLocalizations {
   String get fbDateChoose => 'Choose a date';
 
   @override
-  String get fbChartPlaceholder => 'Chart coming soon';
+  String get fbChartNoData => 'No data yet';
+
+  @override
+  String fbChartPointValue(String date, String value) {
+    return '$date, $value';
+  }
 
   @override
   String get fbSheetDragHandle => 'Drag handle';

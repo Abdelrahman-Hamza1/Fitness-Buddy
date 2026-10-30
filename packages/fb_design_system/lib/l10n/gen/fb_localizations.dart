@@ -268,11 +268,17 @@ abstract class FbLocalizations {
   /// **'Choose a date'**
   String get fbDateChoose;
 
-  /// No description provided for @fbChartPlaceholder.
+  /// Shown inside an empty chart when there is nothing to draw.
   ///
   /// In en, this message translates to:
-  /// **'Chart coming soon'**
-  String get fbChartPlaceholder;
+  /// **'No data yet'**
+  String get fbChartNoData;
+
+  /// Screen-reader value of the selected chart point: its date, then its value (both already formatted).
+  ///
+  /// In en, this message translates to:
+  /// **'{date}, {value}'**
+  String fbChartPointValue(String date, String value);
 
   /// No description provided for @fbSheetDragHandle.
   ///
