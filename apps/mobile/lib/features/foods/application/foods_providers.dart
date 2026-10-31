@@ -87,10 +87,23 @@ LogFood logFood(Ref ref) => LogFood(
   ids: ref.watch(idGeneratorProvider),
 );
 
-/// Active normal meal slots for the amount sheet.
+/// The meal slots the amount sheet offers on [date] (DY-012, A41a D6): the
+/// day's mode (Ramadan on a fasting day) with its windows, removed ones
+/// included (a sheet open on one drops it).
+/// Every slot in the list is of the day's mode ([slotModeOf]).
 @riverpod
-Stream<List<MealSlot>> foodSlots(Ref ref) =>
-    ref.watch(diaryRepositoryProvider).watchSlots();
+Stream<List<MealSlot>> foodSlots(Ref ref, LocalDate date) async* {
+  final day = await ref.watch(daySlotsProvider(date).future);
+  yield [
+    for (final s in day.slots)
+      if (s.mode == day.mode) s,
+  ];
+}
+
+/// The mode of a [foodSlots] list (one mode only): Ramadan when it holds
+/// Ramadan slots.
+SlotMode slotModeOf(Iterable<MealSlot> slots) =>
+    slots.firstOrNull?.mode ?? SlotMode.normal;
 
 /// Replace-mode command with the same applier and undo history.
 @riverpod

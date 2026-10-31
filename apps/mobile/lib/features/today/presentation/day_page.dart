@@ -5,6 +5,7 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
+import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/sync/sync.dart';
 import 'package:fb_mobile/features/today/presentation/today_numbers.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
@@ -138,6 +139,8 @@ class _DayHeader extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       TodayNumbers(date: date, isToday: isToday, totals: totals),
+      if (isToday) const RamadanProposalCard(),
+      _NotFastingNote(date: date),
       if (incomplete) _IncompleteNote(date: date),
       WeightCard(date: date, isToday: isToday),
       WorkoutTodayRow(date: date),
@@ -177,6 +180,48 @@ class _IncompleteNote extends StatelessWidget {
             key: const ValueKey('today-count-again'),
             label: l10n.diaryCountAgain,
             onPressed: () => markDayWithUndo(context, date, incomplete: false),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A Ramadan day marked not fasting says so, with Fasting today (LC-034).
+class _NotFastingNote extends ConsumerWidget {
+  const new({required this.date});
+
+  final LocalDate date;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final slots = ref.watch(daySlotsProvider(date)).value;
+    if (slots == null || slots.ramadan == null || !slots.notFasting) {
+      return const SizedBox.shrink();
+    }
+    final l10n = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      key: const ValueKey('today-not-fasting-note'),
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        FbSpace.s4,
+        0,
+        FbSpace.s4,
+        FbDensity.cardGap,
+      ),
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: FbSpace.s2,
+        children: [
+          Text(
+            l10n.ramadanNotFastingNote,
+            style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
+          ),
+          FbButton.text(
+            key: const ValueKey('today-fasting-again'),
+            label: l10n.ramadanMarkFasting,
+            onPressed: () =>
+                markNotFastingWithUndo(context, date, notFasting: false),
           ),
         ],
       ),

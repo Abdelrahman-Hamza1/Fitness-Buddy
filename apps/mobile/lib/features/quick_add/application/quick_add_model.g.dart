@@ -56,7 +56,7 @@ final class QuickAddContextProvider
   }
 }
 
-String _$quickAddContextHash() => r'2ebdf37079389557769efc31d646b7abf0dd76ed';
+String _$quickAddContextHash() => r'e2d7ffad6a8933fc59920f5a2b64078337d19d4c';
 
 /// Rebuildable 60-day usage input, never subscribed before the day's first
 /// data frame has been drawn.
@@ -342,7 +342,7 @@ final class QuickAddChipsProvider
   }
 }
 
-String _$quickAddChipsHash() => r'e5d7508f6129cda196a8cdf6c0625d37d13934c0';
+String _$quickAddChipsHash() => r'ec82859807cc041b1184250a3620bc4dcf31b971';
 
 /// Scoped to the viewed day; its raw entries independently drive suppression.
 

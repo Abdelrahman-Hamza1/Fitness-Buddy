@@ -41,10 +41,13 @@ class FoodSheet extends ConsumerStatefulWidget {
 }
 
 class _FoodSheetState extends ConsumerState<FoodSheet> {
+  late final LocalDate _date =
+      widget.pick.date ?? EntryTime.now(ref.read(clockProvider)).localDate;
+
   late final FoodAmountControllerProvider _provider =
       foodAmountControllerProvider(
         widget.pick.row.choiceRef,
-        widget.pick.date ?? EntryTime.now(ref.read(clockProvider)).localDate,
+        _date,
         slotId: widget.pick.slotId,
         carried: widget.pick.carried,
         replacing: widget.pick.replacing,
@@ -108,7 +111,7 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
         builder: (context, ref, _) => Column(
           children: [
             for (final slot
-                in (ref.watch(foodSlotsProvider).value ?? slots).where(
+                in (ref.watch(foodSlotsProvider(_date)).value ?? slots).where(
                   (s) => s.active,
                 ))
               FbListRow(
@@ -138,7 +141,7 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
             onAction: () {
               ref
                 ..invalidate(foodChoiceProvider(widget.pick.row.choiceRef))
-                ..invalidate(foodSlotsProvider)
+                ..invalidate(foodSlotsProvider(_date))
                 ..invalidate(_provider);
             },
           ),
@@ -212,7 +215,8 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
       system: state.system,
     );
     final slots = [
-      for (final slot in ref.watch(foodSlotsProvider).value ?? <MealSlot>[])
+      for (final slot
+          in ref.watch(foodSlotsProvider(_date)).value ?? <MealSlot>[])
         if (slot.active) slot,
     ];
     final slot = slots.where((s) => s.id == state.slotId).firstOrNull;

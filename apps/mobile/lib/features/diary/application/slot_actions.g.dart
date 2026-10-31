@@ -44,7 +44,7 @@ final class SlotActionsProvider
   }
 }
 
-String _$slotActionsHash() => r'9c0602c7ec79f83f783870dbe11a9071c0122232';
+String _$slotActionsHash() => r'900f5937317758e080cab5eb5e7aa6522904c666';
 
 /// Session-lived commands with reactive per-slot pending identities.
 

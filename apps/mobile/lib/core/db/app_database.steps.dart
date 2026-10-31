@@ -10776,6 +10776,1212 @@ i1.GeneratedColumn<String> _column_163(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NULL',
     );
+
+final class Schema13 extends i0.VersionedSchema {
+  Schema13({required super.database}) : super(version: 13);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    workoutSessions,
+    ixWorkoutSessionsDate,
+    sessionExercises,
+    ixSessionExercisesSession,
+    ixSessionExercisesExercise,
+    workoutSets,
+    ixWorkoutSetsExercise,
+    workoutTemplateItems,
+    ixWorkoutTemplateItemsTemplate,
+    weeklyPlanDays,
+    uxWeeklyPlanDaysWeekday,
+    customExercises,
+    workoutTemplates,
+    chatMessages,
+    ixChatMessagesOrder,
+    ixChatMessagesReply,
+    proposals,
+    ixProposalsBudget,
+    ixProposalsPending,
+    ixProposalsKind,
+    weighIns,
+    ixWeighInsLive,
+    measurements,
+    ixMeasurementsLive,
+    measurementTypes,
+    goalPhases,
+    ixGoalPhasesStart,
+    targetSettings,
+    ixTargetSettingsEffective,
+    profile,
+    diaryEntries,
+    ixDiaryEntriesLive,
+    ixDiaryEntriesGroup,
+    dishGroups,
+    ixDishGroupsLive,
+    savedMealItems,
+    ixSavedMealItemsMeal,
+    dayMarks,
+    ixDayMarksDate,
+    ixDiaryEntriesFood,
+    ixSavedMealItemsFood,
+    mealSlots,
+    savedMeals,
+    settingsKv,
+    syncState,
+    syncOutbox,
+    settingsKvOutboxAi,
+    settingsKvOutboxAu,
+    settingsKvNoDelete,
+    mealSlotsOutboxAi,
+    mealSlotsOutboxAu,
+    mealSlotsNoDelete,
+    dishGroupsOutboxAi,
+    dishGroupsOutboxAu,
+    dishGroupsNoDelete,
+    diaryEntriesOutboxAi,
+    diaryEntriesOutboxAu,
+    diaryEntriesNoDelete,
+    dayMarksOutboxAi,
+    dayMarksOutboxAu,
+    dayMarksNoDelete,
+    savedMealsOutboxAi,
+    savedMealsOutboxAu,
+    savedMealsNoDelete,
+    savedMealItemsOutboxAi,
+    savedMealItemsOutboxAu,
+    savedMealItemsNoDelete,
+    personalFoods,
+    personalFoodsOutboxAi,
+    personalFoodsOutboxAu,
+    personalFoodsNoDelete,
+    profileOutboxAi,
+    profileOutboxAu,
+    profileNoDelete,
+    goalPhasesOutboxAi,
+    goalPhasesOutboxAu,
+    goalPhasesNoDelete,
+    targetSettingsOutboxAi,
+    targetSettingsOutboxAu,
+    targetSettingsNoDelete,
+    weighInsOutboxAi,
+    weighInsOutboxAu,
+    weighInsNoDelete,
+    measurementTypesOutboxAi,
+    measurementTypesOutboxAu,
+    measurementTypesNoDelete,
+    measurementsOutboxAi,
+    measurementsOutboxAu,
+    measurementsNoDelete,
+    chatMessagesOutboxAi,
+    chatMessagesOutboxAu,
+    chatMessagesNoDelete,
+    customExercisesOutboxAi,
+    customExercisesOutboxAu,
+    customExercisesNoDelete,
+    workoutSessionsOutboxAi,
+    workoutSessionsOutboxAu,
+    workoutSessionsNoDelete,
+    sessionExercisesOutboxAi,
+    sessionExercisesOutboxAu,
+    sessionExercisesNoDelete,
+    workoutSetsOutboxAi,
+    workoutSetsOutboxAu,
+    workoutSetsNoDelete,
+    workoutTemplatesOutboxAi,
+    workoutTemplatesOutboxAu,
+    workoutTemplatesNoDelete,
+    workoutTemplateItemsOutboxAi,
+    workoutTemplateItemsOutboxAu,
+    workoutTemplateItemsNoDelete,
+    weeklyPlanDaysOutboxAi,
+    weeklyPlanDaysOutboxAu,
+    weeklyPlanDaysNoDelete,
+    proposalsOutboxAi,
+    proposalsOutboxAu,
+    proposalsNoDelete,
+    syncParked,
+    syncDeferred,
+    syncDisplaced,
+  ];
+  late final Shape15 workoutSessions = Shape15(
+    source: i0.VersionedTable(
+      entityName: 'workout_sessions',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_41,
+        _column_52,
+        _column_122,
+        _column_123,
+        _column_124,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixWorkoutSessionsDate = i1.Index(
+    'ix_workout_sessions_date',
+    'CREATE INDEX ix_workout_sessions_date ON workout_sessions (local_date, id) WHERE deleted_at IS NULL',
+  );
+  late final Shape16 sessionExercises = Shape16(
+    source: i0.VersionedTable(
+      entityName: 'session_exercises',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_125,
+        _column_126,
+        _column_127,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixSessionExercisesSession = i1.Index(
+    'ix_session_exercises_session',
+    'CREATE INDEX ix_session_exercises_session ON session_exercises (session_id, position) WHERE deleted_at IS NULL',
+  );
+  final i1.Index ixSessionExercisesExercise = i1.Index(
+    'ix_session_exercises_exercise',
+    'CREATE INDEX ix_session_exercises_exercise ON session_exercises (exercise_id) WHERE deleted_at IS NULL',
+  );
+  late final Shape17 workoutSets = Shape17(
+    source: i0.VersionedTable(
+      entityName: 'workout_sets',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_128,
+        _column_127,
+        _column_129,
+        _column_130,
+        _column_131,
+        _column_132,
+        _column_133,
+        _column_134,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixWorkoutSetsExercise = i1.Index(
+    'ix_workout_sets_exercise',
+    'CREATE INDEX ix_workout_sets_exercise ON workout_sets (session_exercise_id, position) WHERE deleted_at IS NULL',
+  );
+  late final Shape18 workoutTemplateItems = Shape18(
+    source: i0.VersionedTable(
+      entityName: 'workout_template_items',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_135,
+        _column_126,
+        _column_127,
+        _column_136,
+        _column_137,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixWorkoutTemplateItemsTemplate = i1.Index(
+    'ix_workout_template_items_template',
+    'CREATE INDEX ix_workout_template_items_template ON workout_template_items (template_id, position) WHERE deleted_at IS NULL',
+  );
+  late final Shape19 weeklyPlanDays = Shape19(
+    source: i0.VersionedTable(
+      entityName: 'weekly_plan_days',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_138,
+        _column_124,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index uxWeeklyPlanDaysWeekday = i1.Index(
+    'ux_weekly_plan_days_weekday',
+    'CREATE UNIQUE INDEX ux_weekly_plan_days_weekday ON weekly_plan_days (weekday) WHERE deleted_at IS NULL',
+  );
+  late final Shape24 customExercises = Shape24(
+    source: i0.VersionedTable(
+      entityName: 'custom_exercises',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_46,
+        _column_139,
+        _column_140,
+        _column_141,
+        _column_157,
+        _column_158,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 workoutTemplates = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'workout_templates',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_46,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape21 chatMessages = Shape21(
+    source: i0.VersionedTable(
+      entityName: 'chat_messages',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_115,
+        _column_116,
+        _column_117,
+        _column_118,
+        _column_119,
+        _column_120,
+        _column_121,
+        _column_142,
+        _column_143,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixChatMessagesOrder = i1.Index(
+    'ix_chat_messages_order',
+    'CREATE INDEX ix_chat_messages_order ON chat_messages (created_at, id) WHERE deleted_at IS NULL',
+  );
+  final i1.Index ixChatMessagesReply = i1.Index(
+    'ix_chat_messages_reply',
+    'CREATE INDEX ix_chat_messages_reply ON chat_messages (reply_to_message_id) WHERE reply_to_message_id IS NOT NULL AND deleted_at IS NULL',
+  );
+  late final Shape22 proposals = Shape22(
+    source: i0.VersionedTable(
+      entityName: 'proposals',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_144,
+        _column_145,
+        _column_146,
+        _column_147,
+        _column_148,
+        _column_149,
+        _column_150,
+        _column_151,
+        _column_152,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixProposalsBudget = i1.Index(
+    'ix_proposals_budget',
+    'CREATE INDEX ix_proposals_budget ON proposals (budget_message_id) WHERE deleted_at IS NULL',
+  );
+  final i1.Index ixProposalsPending = i1.Index(
+    'ix_proposals_pending',
+    'CREATE INDEX ix_proposals_pending ON proposals (created_at) WHERE status = \'pending\' AND deleted_at IS NULL',
+  );
+  final i1.Index ixProposalsKind = i1.Index(
+    'ix_proposals_kind',
+    'CREATE INDEX ix_proposals_kind ON proposals (kind) WHERE deleted_at IS NULL',
+  );
+  late final Shape13 weighIns = Shape13(
+    source: i0.VersionedTable(
+      entityName: 'weigh_ins',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_109,
+        _column_43,
+        _column_41,
+        _column_110,
+        _column_111,
+        _column_112,
+        _column_113,
+        _column_114,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixWeighInsLive = i1.Index(
+    'ix_weigh_ins_live',
+    'CREATE INDEX ix_weigh_ins_live ON weigh_ins (local_date, measured_at_utc) WHERE deleted_at IS NULL',
+  );
+  late final Shape23 measurements = Shape23(
+    source: i0.VersionedTable(
+      entityName: 'measurements',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_153,
+        _column_154,
+        _column_109,
+        _column_43,
+        _column_41,
+        _column_155,
+        _column_111,
+        _column_156,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixMeasurementsLive = i1.Index(
+    'ix_measurements_live',
+    'CREATE INDEX ix_measurements_live ON measurements (kind, custom_type_id, local_date, measured_at_utc) WHERE deleted_at IS NULL',
+  );
+  late final Shape8 measurementTypes = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'measurement_types',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_46,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape10 goalPhases = Shape10(
+    source: i0.VersionedTable(
+      entityName: 'goal_phases',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_71,
+        _column_52,
+        _column_72,
+        _column_73,
+        _column_74,
+        _column_75,
+        _column_76,
+        _column_77,
+        _column_78,
+        _column_79,
+        _column_80,
+        _column_81,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixGoalPhasesStart = i1.Index(
+    'ix_goal_phases_start',
+    'CREATE INDEX ix_goal_phases_start ON goal_phases (start_date) WHERE deleted_at IS NULL',
+  );
+  late final Shape11 targetSettings = Shape11(
+    source: i0.VersionedTable(
+      entityName: 'target_settings',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_71,
+        _column_82,
+        _column_83,
+        _column_84,
+        _column_85,
+        _column_86,
+        _column_87,
+        _column_88,
+        _column_89,
+        _column_90,
+        _column_91,
+        _column_92,
+        _column_93,
+        _column_94,
+        _column_95,
+        _column_96,
+        _column_97,
+        _column_98,
+        _column_99,
+        _column_100,
+        _column_101,
+        _column_102,
+        _column_103,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixTargetSettingsEffective = i1.Index(
+    'ix_target_settings_effective',
+    'CREATE INDEX ix_target_settings_effective ON target_settings (effective_from) WHERE deleted_at IS NULL',
+  );
+  late final Shape12 profile = Shape12(
+    source: i0.VersionedTable(
+      entityName: 'profile',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_104,
+        _column_105,
+        _column_106,
+        _column_107,
+        _column_108,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape3 diaryEntries = Shape3(
+    source: i0.VersionedTable(
+      entityName: 'diary_entries',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_16,
+        _column_17,
+        _column_18,
+        _column_19,
+        _column_20,
+        _column_21,
+        _column_22,
+        _column_23,
+        _column_24,
+        _column_25,
+        _column_26,
+        _column_27,
+        _column_28,
+        _column_29,
+        _column_30,
+        _column_31,
+        _column_32,
+        _column_33,
+        _column_34,
+        _column_35,
+        _column_36,
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+        _column_41,
+        _column_42,
+        _column_43,
+        _column_44,
+        _column_45,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixDiaryEntriesLive = i1.Index(
+    'ix_diary_entries_live',
+    'CREATE INDEX ix_diary_entries_live ON diary_entries (local_date, slot_id) WHERE deleted_at IS NULL',
+  );
+  final i1.Index ixDiaryEntriesGroup = i1.Index(
+    'ix_diary_entries_group',
+    'CREATE INDEX ix_diary_entries_group ON diary_entries (dish_group_id) WHERE dish_group_id IS NOT NULL AND deleted_at IS NULL',
+  );
+  late final Shape4 dishGroups = Shape4(
+    source: i0.VersionedTable(
+      entityName: 'dish_groups',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_46,
+        _column_41,
+        _column_44,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixDishGroupsLive = i1.Index(
+    'ix_dish_groups_live',
+    'CREATE INDEX ix_dish_groups_live ON dish_groups (local_date) WHERE deleted_at IS NULL',
+  );
+  late final Shape5 savedMealItems = Shape5(
+    source: i0.VersionedTable(
+      entityName: 'saved_meal_items',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_16,
+        _column_17,
+        _column_18,
+        _column_19,
+        _column_20,
+        _column_21,
+        _column_22,
+        _column_23,
+        _column_24,
+        _column_25,
+        _column_26,
+        _column_27,
+        _column_28,
+        _column_29,
+        _column_30,
+        _column_31,
+        _column_32,
+        _column_33,
+        _column_34,
+        _column_35,
+        _column_36,
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+        _column_47,
+        _column_48,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixSavedMealItemsMeal = i1.Index(
+    'ix_saved_meal_items_meal',
+    'CREATE INDEX ix_saved_meal_items_meal ON saved_meal_items (saved_meal_id) WHERE deleted_at IS NULL',
+  );
+  late final Shape6 dayMarks = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'day_marks',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_41,
+        _column_49,
+        _column_50,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ixDayMarksDate = i1.Index(
+    'ix_day_marks_date',
+    'CREATE INDEX ix_day_marks_date ON day_marks (local_date) WHERE deleted_at IS NULL',
+  );
+  final i1.Index ixDiaryEntriesFood = i1.Index(
+    'ix_diary_entries_food',
+    'CREATE INDEX ix_diary_entries_food ON diary_entries (food_kind, food_id) WHERE deleted_at IS NULL',
+  );
+  final i1.Index ixSavedMealItemsFood = i1.Index(
+    'ix_saved_meal_items_food',
+    'CREATE INDEX ix_saved_meal_items_food ON saved_meal_items (food_kind, food_id) WHERE deleted_at IS NULL',
+  );
+  late final Shape7 mealSlots = Shape7(
+    source: i0.VersionedTable(
+      entityName: 'meal_slots',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK((window_start_min IS NULL)=(window_end_min IS NULL))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_51,
+        _column_52,
+        _column_48,
+        _column_53,
+        _column_54,
+        _column_55,
+        _column_56,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 savedMeals = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'saved_meals',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_46,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape0 settingsKv = Shape0(
+    source: i0.VersionedTable(
+      entityName: 'settings_kv',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_8,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape1 syncState = Shape1(
+    source: i0.VersionedTable(
+      entityName: 'sync_state',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY("key")'],
+      columns: [_column_9, _column_10],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape2 syncOutbox = Shape2(
+    source: i0.VersionedTable(
+      entityName: 'sync_outbox',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_11, _column_12, _column_13, _column_14, _column_15],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger settingsKvOutboxAi = i1.Trigger(
+    'CREATE TRIGGER settings_kv_outbox_ai AFTER INSERT ON settings_kv WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'setting\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'settings_kv_outbox_ai',
+  );
+  final i1.Trigger settingsKvOutboxAu = i1.Trigger(
+    'CREATE TRIGGER settings_kv_outbox_au AFTER UPDATE ON settings_kv WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'setting\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'settings_kv_outbox_au',
+  );
+  final i1.Trigger settingsKvNoDelete = i1.Trigger(
+    'CREATE TRIGGER settings_kv_no_delete BEFORE DELETE ON settings_kv BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'settings_kv_no_delete',
+  );
+  final i1.Trigger mealSlotsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER meal_slots_outbox_ai AFTER INSERT ON meal_slots WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'mealSlot\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'meal_slots_outbox_ai',
+  );
+  final i1.Trigger mealSlotsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER meal_slots_outbox_au AFTER UPDATE ON meal_slots WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'mealSlot\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'meal_slots_outbox_au',
+  );
+  final i1.Trigger mealSlotsNoDelete = i1.Trigger(
+    'CREATE TRIGGER meal_slots_no_delete BEFORE DELETE ON meal_slots BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'meal_slots_no_delete',
+  );
+  final i1.Trigger dishGroupsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER dish_groups_outbox_ai AFTER INSERT ON dish_groups WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'dishGroup\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'dish_groups_outbox_ai',
+  );
+  final i1.Trigger dishGroupsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER dish_groups_outbox_au AFTER UPDATE ON dish_groups WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'dishGroup\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'dish_groups_outbox_au',
+  );
+  final i1.Trigger dishGroupsNoDelete = i1.Trigger(
+    'CREATE TRIGGER dish_groups_no_delete BEFORE DELETE ON dish_groups BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'dish_groups_no_delete',
+  );
+  final i1.Trigger diaryEntriesOutboxAi = i1.Trigger(
+    'CREATE TRIGGER diary_entries_outbox_ai AFTER INSERT ON diary_entries WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'diaryEntry\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'diary_entries_outbox_ai',
+  );
+  final i1.Trigger diaryEntriesOutboxAu = i1.Trigger(
+    'CREATE TRIGGER diary_entries_outbox_au AFTER UPDATE ON diary_entries WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'diaryEntry\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'diary_entries_outbox_au',
+  );
+  final i1.Trigger diaryEntriesNoDelete = i1.Trigger(
+    'CREATE TRIGGER diary_entries_no_delete BEFORE DELETE ON diary_entries BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'diary_entries_no_delete',
+  );
+  final i1.Trigger dayMarksOutboxAi = i1.Trigger(
+    'CREATE TRIGGER day_marks_outbox_ai AFTER INSERT ON day_marks WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'dayMark\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'day_marks_outbox_ai',
+  );
+  final i1.Trigger dayMarksOutboxAu = i1.Trigger(
+    'CREATE TRIGGER day_marks_outbox_au AFTER UPDATE ON day_marks WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'dayMark\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'day_marks_outbox_au',
+  );
+  final i1.Trigger dayMarksNoDelete = i1.Trigger(
+    'CREATE TRIGGER day_marks_no_delete BEFORE DELETE ON day_marks BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'day_marks_no_delete',
+  );
+  final i1.Trigger savedMealsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER saved_meals_outbox_ai AFTER INSERT ON saved_meals WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'savedMeal\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'saved_meals_outbox_ai',
+  );
+  final i1.Trigger savedMealsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER saved_meals_outbox_au AFTER UPDATE ON saved_meals WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'savedMeal\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'saved_meals_outbox_au',
+  );
+  final i1.Trigger savedMealsNoDelete = i1.Trigger(
+    'CREATE TRIGGER saved_meals_no_delete BEFORE DELETE ON saved_meals BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'saved_meals_no_delete',
+  );
+  final i1.Trigger savedMealItemsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER saved_meal_items_outbox_ai AFTER INSERT ON saved_meal_items WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'savedMealItem\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'saved_meal_items_outbox_ai',
+  );
+  final i1.Trigger savedMealItemsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER saved_meal_items_outbox_au AFTER UPDATE ON saved_meal_items WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'savedMealItem\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'saved_meal_items_outbox_au',
+  );
+  final i1.Trigger savedMealItemsNoDelete = i1.Trigger(
+    'CREATE TRIGGER saved_meal_items_no_delete BEFORE DELETE ON saved_meal_items BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'saved_meal_items_no_delete',
+  );
+  late final Shape9 personalFoods = Shape9(
+    source: i0.VersionedTable(
+      entityName: 'personal_foods',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK((entry_serving_unit IS NULL)=(entry_serving_amount IS NULL))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_19,
+        _column_20,
+        _column_57,
+        _column_58,
+        _column_59,
+        _column_30,
+        _column_60,
+        _column_61,
+        _column_62,
+        _column_63,
+        _column_64,
+        _column_65,
+        _column_66,
+        _column_67,
+        _column_68,
+        _column_69,
+        _column_70,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger personalFoodsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER personal_foods_outbox_ai AFTER INSERT ON personal_foods WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'personalFood\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'personal_foods_outbox_ai',
+  );
+  final i1.Trigger personalFoodsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER personal_foods_outbox_au AFTER UPDATE ON personal_foods WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'personalFood\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'personal_foods_outbox_au',
+  );
+  final i1.Trigger personalFoodsNoDelete = i1.Trigger(
+    'CREATE TRIGGER personal_foods_no_delete BEFORE DELETE ON personal_foods BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'personal_foods_no_delete',
+  );
+  final i1.Trigger profileOutboxAi = i1.Trigger(
+    'CREATE TRIGGER profile_outbox_ai AFTER INSERT ON profile WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'profile\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'profile_outbox_ai',
+  );
+  final i1.Trigger profileOutboxAu = i1.Trigger(
+    'CREATE TRIGGER profile_outbox_au AFTER UPDATE ON profile WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'profile\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'profile_outbox_au',
+  );
+  final i1.Trigger profileNoDelete = i1.Trigger(
+    'CREATE TRIGGER profile_no_delete BEFORE DELETE ON profile BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'profile_no_delete',
+  );
+  final i1.Trigger goalPhasesOutboxAi = i1.Trigger(
+    'CREATE TRIGGER goal_phases_outbox_ai AFTER INSERT ON goal_phases WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'goalPhase\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'goal_phases_outbox_ai',
+  );
+  final i1.Trigger goalPhasesOutboxAu = i1.Trigger(
+    'CREATE TRIGGER goal_phases_outbox_au AFTER UPDATE ON goal_phases WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'goalPhase\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'goal_phases_outbox_au',
+  );
+  final i1.Trigger goalPhasesNoDelete = i1.Trigger(
+    'CREATE TRIGGER goal_phases_no_delete BEFORE DELETE ON goal_phases BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'goal_phases_no_delete',
+  );
+  final i1.Trigger targetSettingsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER target_settings_outbox_ai AFTER INSERT ON target_settings WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'targetSettings\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'target_settings_outbox_ai',
+  );
+  final i1.Trigger targetSettingsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER target_settings_outbox_au AFTER UPDATE ON target_settings WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'targetSettings\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'target_settings_outbox_au',
+  );
+  final i1.Trigger targetSettingsNoDelete = i1.Trigger(
+    'CREATE TRIGGER target_settings_no_delete BEFORE DELETE ON target_settings BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'target_settings_no_delete',
+  );
+  final i1.Trigger weighInsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER weigh_ins_outbox_ai AFTER INSERT ON weigh_ins WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'weighIn\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'weigh_ins_outbox_ai',
+  );
+  final i1.Trigger weighInsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER weigh_ins_outbox_au AFTER UPDATE ON weigh_ins WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'weighIn\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'weigh_ins_outbox_au',
+  );
+  final i1.Trigger weighInsNoDelete = i1.Trigger(
+    'CREATE TRIGGER weigh_ins_no_delete BEFORE DELETE ON weigh_ins BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'weigh_ins_no_delete',
+  );
+  final i1.Trigger measurementTypesOutboxAi = i1.Trigger(
+    'CREATE TRIGGER measurement_types_outbox_ai AFTER INSERT ON measurement_types WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'measurementType\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'measurement_types_outbox_ai',
+  );
+  final i1.Trigger measurementTypesOutboxAu = i1.Trigger(
+    'CREATE TRIGGER measurement_types_outbox_au AFTER UPDATE ON measurement_types WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'measurementType\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'measurement_types_outbox_au',
+  );
+  final i1.Trigger measurementTypesNoDelete = i1.Trigger(
+    'CREATE TRIGGER measurement_types_no_delete BEFORE DELETE ON measurement_types BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'measurement_types_no_delete',
+  );
+  final i1.Trigger measurementsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER measurements_outbox_ai AFTER INSERT ON measurements WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'measurement\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'measurements_outbox_ai',
+  );
+  final i1.Trigger measurementsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER measurements_outbox_au AFTER UPDATE ON measurements WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'measurement\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'measurements_outbox_au',
+  );
+  final i1.Trigger measurementsNoDelete = i1.Trigger(
+    'CREATE TRIGGER measurements_no_delete BEFORE DELETE ON measurements BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'measurements_no_delete',
+  );
+  final i1.Trigger chatMessagesOutboxAi = i1.Trigger(
+    'CREATE TRIGGER chat_messages_outbox_ai AFTER INSERT ON chat_messages WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'chatMessage\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'chat_messages_outbox_ai',
+  );
+  final i1.Trigger chatMessagesOutboxAu = i1.Trigger(
+    'CREATE TRIGGER chat_messages_outbox_au AFTER UPDATE ON chat_messages WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'chatMessage\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'chat_messages_outbox_au',
+  );
+  final i1.Trigger chatMessagesNoDelete = i1.Trigger(
+    'CREATE TRIGGER chat_messages_no_delete BEFORE DELETE ON chat_messages BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'chat_messages_no_delete',
+  );
+  final i1.Trigger customExercisesOutboxAi = i1.Trigger(
+    'CREATE TRIGGER custom_exercises_outbox_ai AFTER INSERT ON custom_exercises WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'customExercise\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'custom_exercises_outbox_ai',
+  );
+  final i1.Trigger customExercisesOutboxAu = i1.Trigger(
+    'CREATE TRIGGER custom_exercises_outbox_au AFTER UPDATE ON custom_exercises WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'customExercise\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'custom_exercises_outbox_au',
+  );
+  final i1.Trigger customExercisesNoDelete = i1.Trigger(
+    'CREATE TRIGGER custom_exercises_no_delete BEFORE DELETE ON custom_exercises BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'custom_exercises_no_delete',
+  );
+  final i1.Trigger workoutSessionsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER workout_sessions_outbox_ai AFTER INSERT ON workout_sessions WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'workoutSession\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'workout_sessions_outbox_ai',
+  );
+  final i1.Trigger workoutSessionsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER workout_sessions_outbox_au AFTER UPDATE ON workout_sessions WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'workoutSession\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'workout_sessions_outbox_au',
+  );
+  final i1.Trigger workoutSessionsNoDelete = i1.Trigger(
+    'CREATE TRIGGER workout_sessions_no_delete BEFORE DELETE ON workout_sessions BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'workout_sessions_no_delete',
+  );
+  final i1.Trigger sessionExercisesOutboxAi = i1.Trigger(
+    'CREATE TRIGGER session_exercises_outbox_ai AFTER INSERT ON session_exercises WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'sessionExercise\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'session_exercises_outbox_ai',
+  );
+  final i1.Trigger sessionExercisesOutboxAu = i1.Trigger(
+    'CREATE TRIGGER session_exercises_outbox_au AFTER UPDATE ON session_exercises WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'sessionExercise\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'session_exercises_outbox_au',
+  );
+  final i1.Trigger sessionExercisesNoDelete = i1.Trigger(
+    'CREATE TRIGGER session_exercises_no_delete BEFORE DELETE ON session_exercises BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'session_exercises_no_delete',
+  );
+  final i1.Trigger workoutSetsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER workout_sets_outbox_ai AFTER INSERT ON workout_sets WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'workoutSet\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'workout_sets_outbox_ai',
+  );
+  final i1.Trigger workoutSetsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER workout_sets_outbox_au AFTER UPDATE ON workout_sets WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'workoutSet\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'workout_sets_outbox_au',
+  );
+  final i1.Trigger workoutSetsNoDelete = i1.Trigger(
+    'CREATE TRIGGER workout_sets_no_delete BEFORE DELETE ON workout_sets BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'workout_sets_no_delete',
+  );
+  final i1.Trigger workoutTemplatesOutboxAi = i1.Trigger(
+    'CREATE TRIGGER workout_templates_outbox_ai AFTER INSERT ON workout_templates WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'workoutTemplate\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'workout_templates_outbox_ai',
+  );
+  final i1.Trigger workoutTemplatesOutboxAu = i1.Trigger(
+    'CREATE TRIGGER workout_templates_outbox_au AFTER UPDATE ON workout_templates WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'workoutTemplate\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'workout_templates_outbox_au',
+  );
+  final i1.Trigger workoutTemplatesNoDelete = i1.Trigger(
+    'CREATE TRIGGER workout_templates_no_delete BEFORE DELETE ON workout_templates BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'workout_templates_no_delete',
+  );
+  final i1.Trigger workoutTemplateItemsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER workout_template_items_outbox_ai AFTER INSERT ON workout_template_items WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'workoutTemplateItem\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'workout_template_items_outbox_ai',
+  );
+  final i1.Trigger workoutTemplateItemsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER workout_template_items_outbox_au AFTER UPDATE ON workout_template_items WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'workoutTemplateItem\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'workout_template_items_outbox_au',
+  );
+  final i1.Trigger workoutTemplateItemsNoDelete = i1.Trigger(
+    'CREATE TRIGGER workout_template_items_no_delete BEFORE DELETE ON workout_template_items BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'workout_template_items_no_delete',
+  );
+  final i1.Trigger weeklyPlanDaysOutboxAi = i1.Trigger(
+    'CREATE TRIGGER weekly_plan_days_outbox_ai AFTER INSERT ON weekly_plan_days WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'weeklyPlanDay\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'weekly_plan_days_outbox_ai',
+  );
+  final i1.Trigger weeklyPlanDaysOutboxAu = i1.Trigger(
+    'CREATE TRIGGER weekly_plan_days_outbox_au AFTER UPDATE ON weekly_plan_days WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'weeklyPlanDay\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'weekly_plan_days_outbox_au',
+  );
+  final i1.Trigger weeklyPlanDaysNoDelete = i1.Trigger(
+    'CREATE TRIGGER weekly_plan_days_no_delete BEFORE DELETE ON weekly_plan_days BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'weekly_plan_days_no_delete',
+  );
+  final i1.Trigger proposalsOutboxAi = i1.Trigger(
+    'CREATE TRIGGER proposals_outbox_ai AFTER INSERT ON proposals WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'proposal\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'proposals_outbox_ai',
+  );
+  final i1.Trigger proposalsOutboxAu = i1.Trigger(
+    'CREATE TRIGGER proposals_outbox_au AFTER UPDATE ON proposals WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'proposal\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'proposals_outbox_au',
+  );
+  final i1.Trigger proposalsNoDelete = i1.Trigger(
+    'CREATE TRIGGER proposals_no_delete BEFORE DELETE ON proposals BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'proposals_no_delete',
+  );
+  late final Shape25 syncParked = Shape25(
+    source: i0.VersionedTable(
+      entityName: 'sync_parked',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(entity, row_id, hlc)'],
+      columns: [_column_12, _column_13, _column_14, _column_159, _column_160],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape26 syncDeferred = Shape26(
+    source: i0.VersionedTable(
+      entityName: 'sync_deferred',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(entity, row_id, hlc)'],
+      columns: [_column_12, _column_13, _column_14, _column_161, _column_159],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape27 syncDisplaced = Shape27(
+    source: i0.VersionedTable(
+      entityName: 'sync_displaced',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(entity, row_id, hlc)'],
+      columns: [_column_12, _column_13, _column_14, _column_162, _column_163],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+}
+
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
@@ -10788,6 +11994,7 @@ i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema10 schema) from9To10,
   required Future<void> Function(i1.Migrator m, Schema11 schema) from10To11,
   required Future<void> Function(i1.Migrator m, Schema12 schema) from11To12,
+  required Future<void> Function(i1.Migrator m, Schema13 schema) from12To13,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -10846,6 +12053,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from11To12(migrator, schema);
         return 12;
+      case 12:
+        final schema = Schema13(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from12To13(migrator, schema);
+        return 13;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -10864,6 +12076,7 @@ i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema10 schema) from9To10,
   required Future<void> Function(i1.Migrator m, Schema11 schema) from10To11,
   required Future<void> Function(i1.Migrator m, Schema12 schema) from11To12,
+  required Future<void> Function(i1.Migrator m, Schema13 schema) from12To13,
 }) => i0.VersionedSchema.stepByStepHelper(
   step: migrationSteps(
     from1To2: from1To2,
@@ -10877,5 +12090,6 @@ i1.OnUpgrade stepByStep({
     from9To10: from9To10,
     from10To11: from10To11,
     from11To12: from11To12,
+    from12To13: from12To13,
   ),
 );

@@ -8,6 +8,7 @@ import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
+import 'package:fb_mobile/features/diary/application/day_slots.dart';
 import 'package:fb_mobile/features/diary/application/saved_meal_actions.dart';
 import 'package:fb_mobile/features/diary/application/saved_meals.dart';
 import 'package:fb_mobile/features/diary/presentation/entry_row.dart';
@@ -50,18 +51,19 @@ class _SavedMealScreenState extends ConsumerState<SavedMealScreen> {
 
   LocalDate get _today => EntryTime.now(ref.read(clockProvider)).localDate;
 
+  /// The chosen day's meals (DY-012: Ramadan on a fasting day).
+  SlotMode get _mode =>
+      ref.read(daySlotsProvider(_day ?? _today)).value?.mode ?? SlotMode.normal;
+
   /// The meal a log lands in: the chosen one, else the meal of the current
   /// time, else the first one.
   String? _targetSlot(List<MealSlot> slots) {
     final chosen = _slotId;
     if (chosen != null && slots.any((s) => s.id == chosen)) return chosen;
     final now = EntryTime.now(ref.read(clockProvider)).localDateTime;
-    return const SlotAssigner().assign(
-          now.minuteOfDay,
-          slots,
-          SlotMode.normal,
-        ) ??
-        movableSlots(slots).firstOrNull?.id;
+    final day = ref.read(daySlotsProvider(_day ?? _today)).value;
+    return day?.assign(now.minuteOfDay) ??
+        movableSlots(slots, _mode).firstOrNull?.id;
   }
 
   Future<void> _pickDay() async {
@@ -83,7 +85,7 @@ class _SavedMealScreenState extends ConsumerState<SavedMealScreen> {
       context,
       title: l10n.savedMealPickMealTitle,
       builder: (sheet) => MoveToSlotList(
-        slots: movableSlots(slots),
+        slots: movableSlots(slots, _mode),
         currentSlotId: target ?? '',
         onPick: (slot) => Navigator.of(sheet).pop(slot),
       ),
@@ -226,6 +228,8 @@ class _SavedMealScreenState extends ConsumerState<SavedMealScreen> {
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
     final slots = ref.watch(savedMealSlotsProvider).value ?? const [];
+    // Rebuild when the chosen day's meals load or change.
+    ref.watch(daySlotsProvider(_day ?? _today));
     final today = _today;
     final slotId = _targetSlot(slots);
     final slot = slots.where((s) => s.id == slotId).firstOrNull;

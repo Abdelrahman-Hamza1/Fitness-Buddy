@@ -4,7 +4,9 @@ import 'package:fb_mobile/core/changes/apply_result.dart';
 import 'package:fb_mobile/core/changes/op_handler.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/db/tables/diary_tables.dart';
+import 'package:fb_mobile/core/settings/settings_op_handler.dart';
 import 'package:fb_mobile/features/diary/data/diary_mappers.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 
 /// The reads of the diary op handler inside a change set (A06 D1, D9): one
 /// query per kind of row, batched with `IN (...)`, tombstones excluded.
@@ -39,9 +41,33 @@ final class DiaryTxReads {
     return rows.map(mealSlotOf).toList();
   }
 
-  /// The usable slot [slotId] (A06 plan 3.3): it exists, is active and is of
-  /// the normal mode. Rejects `InvalidOp('unknownSlot')` or
-  /// `InvalidOp('inactiveSlot')`.
+  /// The slots an entry without an explicit slot is assigned among on
+  /// [date] (A41a D6): the date's mode (Ramadan on a fasting day, from the
+  /// stored seasons and their not-fasting days) and, for Ramadan, the
+  /// Suhoor/Iftar fallback windows. The screens pick with the prayer-time
+  /// windows and send an explicit slot; this is the handler's fallback.
+  Future<(SlotMode, List<MealSlot>)> assignableOn(LocalDate date) async {
+    final all = await slots();
+    final setting = await tx.liveRow(
+      db.settingsKv,
+      settingRowId(AppSettings.ramadanSeasons.name),
+    );
+    final key = AppSettings.fastingMark(date);
+    final mark = await tx.liveRow(db.settingsKv, settingRowId(key.name));
+    final calendar = RamadanCalendar(
+      AppSettings.ramadanSeasons.valueOf(setting?.valueJson),
+      notFasting: [
+        if (key.valueOf(mark?.valueJson) == FastingMark.notFasting) date,
+      ],
+    );
+    final mode = calendar.slotModeOn(date);
+    return mode == SlotMode.ramadan
+        ? (mode, RamadanSlots.withPrayerWindows(all))
+        : (mode, all);
+  }
+
+  /// The usable slot [slotId] (A06 plan 3.3): it exists and is active.
+  /// Rejects `InvalidOp('unknownSlot')` or `InvalidOp('inactiveSlot')`.
   Future<MealSlot> requireSlot(String slotId) async =>
       requireUsableSlot(await slots(), slotId);
 
@@ -158,14 +184,17 @@ void checkVersion(String entity, String id, int actual, int expected) {
   }
 }
 
-/// The slot [slotId] of [slots], if it is usable for logging: active and of
-/// the normal mode. Rejects `InvalidOp('unknownSlot')` when there is no such
-/// slot and `InvalidOp('inactiveSlot')` when it is inactive or of another
-/// mode.
+/// The slot [slotId] of [slots], if it is usable for logging: active, of
+/// either mode. Which mode's slots a day offers is the screens' choice
+/// (A41a D6: a Ramadan day offers Suhoor/Iftar/Snacks, a not-fasting day
+/// the normal ones); an explicit active slot is always a valid target, and
+/// the day layout shows any slot that holds food. Rejects
+/// `InvalidOp('unknownSlot')` when there is no such slot and
+/// `InvalidOp('inactiveSlot')` when it is inactive.
 MealSlot requireUsableSlot(Iterable<MealSlot> slots, String slotId) {
   for (final slot in slots) {
     if (slot.id != slotId) continue;
-    if (!slot.active || slot.mode != SlotMode.normal) {
+    if (!slot.active) {
       throw const ChangeRejected(InvalidOp('inactiveSlot'));
     }
     return slot;

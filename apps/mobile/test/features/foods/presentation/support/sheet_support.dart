@@ -178,7 +178,7 @@ List<Override> displayOverrides(FoodChoice choice) => [
   foodChoiceProvider(rowFor(choice).choiceRef)
       .overrideWith((ref) async => choice),
   unitSystemProvider.overrideWith((ref) => Stream.value(UnitSystem.metric)),
-  foodSlotsProvider.overrideWith((ref) => Stream.value(DefaultSlots.all)),
+  foodSlotsProvider.overrideWith((ref, _) => Stream.value(DefaultSlots.all)),
   clockProvider.overrideWithValue(ManualClock(DateTime.utc(2026, 10, 17, 12))),
 ];
 
@@ -212,7 +212,7 @@ final class SheetRig {
   List<Override> get overrides => [
     foodChoiceProvider(row.choiceRef).overrideWith((ref) async => choice),
     units.override,
-    foodSlotsProvider.overrideWith((ref) => Stream.value(DefaultSlots.all)),
+    foodSlotsProvider.overrideWith((ref, _) => Stream.value(DefaultSlots.all)),
     clockProvider.overrideWithValue(diary.clock),
     undoStackProvider.overrideWithValue(stack),
     appNavigatorProvider.overrideWithValue(appNavigator ?? navigator),

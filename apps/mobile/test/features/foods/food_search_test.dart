@@ -524,7 +524,9 @@ void main() {
         unitSystemProvider.overrideWith(
           (ref) => Stream.value(UnitSystem.metric),
         ),
-        foodSlotsProvider.overrideWith((ref) => Stream.value(DefaultSlots.all)),
+        foodSlotsProvider.overrideWith(
+          (ref, _) => Stream.value(DefaultSlots.all),
+        ),
         clockProvider.overrideWithValue(harness.clock),
         logFoodProvider.overrideWith(
           (ref) => LogFood(

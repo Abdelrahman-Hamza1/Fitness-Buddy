@@ -64,13 +64,13 @@ class WeightSection extends ConsumerWidget {
   }
 }
 
-class _Chart extends StatelessWidget {
+class _Chart extends ConsumerWidget {
   const new({required this.view});
 
   final ProgressWeightView view;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final graph = view.graph;
     final unit = graph.unit;
@@ -104,12 +104,22 @@ class _Chart extends StatelessWidget {
               value: weightIn(goal, unit),
               label: l10n.weightGraphGoal(weightText(l10n, goal, unit)),
             ),
-      periods: phasePeriods(
-        graph.phases,
-        GoalHistory([for (final r in graph.phases) r.value.toPhase()]),
-        graph.today,
-        (record) => goalPhaseLabel(l10n, record),
-      ),
+      periods: [
+        ...phasePeriods(
+          graph.phases,
+          GoalHistory([for (final r in graph.phases) r.value.toPhase()]),
+          graph.today,
+          (record) => goalPhaseLabel(l10n, record),
+        ),
+        // WB-021: Ramadans with the mode on (A41a D9).
+        for (final h in ref.watch(chartHighlightPeriodsProvider))
+          FbPeriod(
+            start: chartDay(h.start),
+            end: chartDay(h.end.plusDays(1)),
+            tone: FbPeriodTone.highlight,
+            label: l10n.weightGraphRamadan,
+          ),
+      ],
       formatValue: (v) => weightNumber(l10n, v),
       formatDate: (at, step) => graphTickLabel(l10n, at, step),
       semanticLabel: l10n.weightGraphSemantics(

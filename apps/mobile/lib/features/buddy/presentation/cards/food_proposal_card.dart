@@ -53,7 +53,8 @@ class FoodProposalCard extends ConsumerWidget {
         break;
     }
     final system = ref.watch(unitSystemProvider).value ?? UnitSystem.metric;
-    final slots = ref.watch(slotRecordsProvider).value ?? const [];
+    final slots =
+        ref.watch(slotRecordsProvider(SlotMode.normal)).value ?? const [];
     final slot = slots
         .map((r) => r.slot)
         .where((s) => s.id == view.slotId)

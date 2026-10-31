@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:fb_domain/fb_domain.dart'
-    show LocalDate, VersionedId, checkExerciseId, isUuid;
+    show LocalDate, SlotMode, VersionedId, checkExerciseId, isUuid;
 import 'package:fb_mobile/app/router/tab_tap.dart';
 import 'package:fb_mobile/app/shell/app_shell.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
@@ -19,6 +19,7 @@ import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/notifications/notifications.dart';
 import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
+import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/today/today.dart';
@@ -166,6 +167,8 @@ final class AppRouter implements AppNavigator {
                       _personalFoodsRoute(),
                       _savedMealsRoute(),
                       _goRoute(const MealSlotsRoute(), nested: true),
+                      _goRoute(const RamadanRoute(), nested: true),
+                      _goRoute(const RamadanMealSlotsRoute(), nested: true),
                       _goRoute(const CityPickerRoute(), nested: true),
                       _goRoute(const ProfileRoute(), nested: true),
                       _goRoute(const TargetsRoute(), nested: true),
@@ -610,6 +613,8 @@ final class AppRouter implements AppNavigator {
     SavedMealsRoute() => const SavedMealsScreen(),
     SavedMealRoute(:final id) => SavedMealScreen(id: id),
     MealSlotsRoute() => const MealSlotsScreen(),
+    RamadanRoute() => const RamadanScreen(),
+    RamadanMealSlotsRoute() => const MealSlotsScreen(mode: SlotMode.ramadan),
     CityPickerRoute() => const CityPickerScreen(),
     AboutRoute() => const AboutScreen(),
     NotificationSettingsRoute() => const NotificationSettingsScreen(),

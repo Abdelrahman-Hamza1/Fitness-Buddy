@@ -45,7 +45,7 @@ open(
         ),
       ),
       foodSlotsProvider.overrideWith(
-        (ref) => DiaryRepository(h.db).watchSlots(),
+        (ref, _) => DiaryRepository(h.db).watchSlots(),
       ),
       unit.override,
       clockProvider.overrideWithValue(h.clock),

@@ -23,7 +23,16 @@ final class MealSlotOpHandler extends ChangeOpHandler<MealSlotOp> {
     final all = await (tx.db.select(
       db.mealSlots,
     )..where((t) => t.deletedAt.isNull())).get();
-    final active = all.where((s) => s.active && s.mode == 'normal').toList()
+    // Each mode's set is edited on its own (DY-012, A41a): the op's mode
+    // for an add, else the mode of the slot it names.
+    String modeOfRow(String id) =>
+        all.where((s) => s.id == id).firstOrNull?.mode ?? SlotMode.normal.code;
+    final mode = switch (op) {
+      AddMealSlot(:final mode) => mode.code,
+      UpdateMealSlot(:final id) || RemoveMealSlot(:final id) => modeOfRow(id),
+      ReorderMealSlots(:final order) => modeOfRow(order.first.id),
+    };
+    final active = all.where((s) => s.active && s.mode == mode).toList()
       ..sort((a, b) {
         final order = a.sortOrder.compareTo(b.sortOrder);
         return order != 0 ? order : a.id.compareTo(b.id);
@@ -39,7 +48,7 @@ final class MealSlotOpHandler extends ChangeOpHandler<MealSlotOp> {
       }
       checkVersion(mealSlotEntity, id, row.version, version);
       if (!row.active) _reject('inactiveSlot');
-      if (row.mode != 'normal') _reject('wrongMode');
+      if (row.mode != mode) _reject('wrongMode');
       return row;
     }
 
@@ -66,8 +75,10 @@ final class MealSlotOpHandler extends ChangeOpHandler<MealSlotOp> {
         if (!MealSlotRules.validName(op.name)) _reject('nameInvalid');
         // A caller-generated identity must never overwrite history.
         if (await tx.row(db.mealSlots, op.id) != null) _reject('duplicateId');
+        // Ramadan's Suhoor/Iftar follow prayer times (no stored window):
+        // place a new meal by their typical windows (A41a D5).
         final index = MealSlotRules.insertIndex(
-          active.map(mealSlotOf).toList(),
+          RamadanSlots.withPrayerWindows(active.map(mealSlotOf)),
           op.window,
         );
         final ids = [
@@ -85,7 +96,7 @@ final class MealSlotOpHandler extends ChangeOpHandler<MealSlotOp> {
               sortOrder: Value(index),
               windowStartMin: Value(op.window?.startMin),
               windowEndMin: Value(op.window?.endMin),
-              mode: const Value('normal'),
+              mode: Value(mode),
               active: const Value(true),
             ),
           ),
@@ -184,7 +195,7 @@ final class MealSlotOpHandler extends ChangeOpHandler<MealSlotOp> {
           final dest = all.where((s) => s.id == target.id).firstOrNull;
           if (dest == null ||
               !dest.active ||
-              dest.mode != 'normal' ||
+              dest.mode != mode ||
               dest.id == row.id) {
             _reject('badTarget');
           }
@@ -244,14 +255,14 @@ final class MealSlotOpHandler extends ChangeOpHandler<MealSlotOp> {
           // Count the whole inverse, including multiple removals and additions.
           // Per-op checks alone could each pass and together exceed the cap.
           final activeIds = (await reads.slots())
-              .where((s) => s.active && s.mode == SlotMode.normal)
+              .where((s) => s.active && s.mode.code == mode)
               .map((s) => s.id)
               .toSet();
           for (final inverse in inverseRows) {
             if (inverse.table != db.mealSlots) continue;
             if (inverse is RestoreRow &&
                 inverse.snapshot['active'] == 1 &&
-                inverse.snapshot['mode'] == 'normal' &&
+                inverse.snapshot['mode'] == mode &&
                 inverse.snapshot['deleted_at'] == null) {
               activeIds.add(inverse.id);
             } else {

@@ -16,11 +16,15 @@ import 'package:material_ui/material_ui.dart';
 /// Opens the sheet that edits [record], or adds a meal when it is null
 /// (DY-010, A10 D13). The undo snackbar for a saved change shows on the root
 /// messenger, so it outlives the sheet.
-Future<void> showSlotEditSheet(BuildContext context, {SlotRecord? record}) =>
-    showFbStatefulSheet<void>(
-      context,
-      builder: (_) => SlotEditSheet(record: record),
-    );
+/// A new meal joins [mode]'s set (DY-012: the Ramadan set is separate).
+Future<void> showSlotEditSheet(
+  BuildContext context, {
+  SlotRecord? record,
+  SlotMode mode = SlotMode.normal,
+}) => showFbStatefulSheet<void>(
+  context,
+  builder: (_) => SlotEditSheet(record: record, mode: mode),
+);
 
 /// The edit and add sheet of a meal: name, an optional time window, Save and
 /// (for an existing meal) Remove, pinned under the form so they stay
@@ -30,10 +34,16 @@ Future<void> showSlotEditSheet(BuildContext context, {SlotRecord? record}) =>
 /// value).
 class SlotEditSheet extends ConsumerStatefulWidget {
   /// Creates the sheet for [record], or for a new meal.
-  const new({this.record, super.key});
+  const new({this.record, this.mode = SlotMode.normal, super.key});
 
   /// The meal as rendered when the sheet opened; null to add one.
   final SlotRecord? record;
+
+  /// The set a new meal joins (an existing meal keeps its own).
+  final SlotMode mode;
+
+  /// The set this sheet edits.
+  SlotMode get setMode => record?.slot.mode ?? mode;
 
   @override
   ConsumerState<SlotEditSheet> createState() => _SlotEditSheetState();
@@ -194,7 +204,11 @@ class _SlotEditSheetState extends ConsumerState<SlotEditSheet> {
     });
     if (_adding) {
       label = _typed;
-      outcome = await actions.addSlot(_typed, window: window);
+      outcome = await actions.addSlot(
+        _typed,
+        window: window,
+        mode: widget.setMode,
+      );
     } else {
       final nameDirty = _nameDirty(context);
       final patchName = nameDirty ? _patchName(context) : null;
@@ -256,7 +270,7 @@ class _SlotEditSheetState extends ConsumerState<SlotEditSheet> {
     _initialise(context);
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
-    final recordsAsync = ref.watch(slotRecordsProvider);
+    final recordsAsync = ref.watch(slotRecordsProvider(widget.setMode));
     final records = recordsAsync.value ?? const [];
     final active = [
       for (final r in records)
@@ -326,7 +340,8 @@ class _SlotEditSheetState extends ConsumerState<SlotEditSheet> {
                 kind: FbInlineBannerKind.error,
                 message: l10n.mealTimesLoadFailed,
                 actionLabel: l10n.mealTimesTryAgain,
-                onAction: () => ref.invalidate(slotRecordsProvider),
+                onAction: () =>
+                    ref.invalidate(slotRecordsProvider(widget.setMode)),
               ),
             if (removed)
               FbInlineBanner(

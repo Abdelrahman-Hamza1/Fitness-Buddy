@@ -2,6 +2,7 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/features/diary/application/day_slots.dart';
 import 'package:fb_mobile/features/diary/application/diary_actions.dart';
 import 'package:fb_mobile/features/diary/application/slot_providers.dart';
 import 'package:fb_mobile/features/diary/presentation/entry_actions.dart';
@@ -88,6 +89,10 @@ class _MoveEntrySheetState extends ConsumerState<MoveEntrySheet> {
       // The live meals, so a meal removed while the sheet is open leaves the
       // list (A10 D12a); the meals it was opened with until they load.
       final slots = ref.watch(liveSlotsProvider).value ?? widget.slots;
+      // The entry's day decides the meals offered (DY-012).
+      final mode =
+          ref.watch(daySlotsProvider(live.entry.localDate)).value?.mode ??
+          SlotMode.normal;
       return Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -111,7 +116,7 @@ class _MoveEntrySheetState extends ConsumerState<MoveEntrySheet> {
               message: l10n.diaryItemChanged,
             ),
           MoveToSlotList(
-            slots: movableSlots(slots),
+            slots: movableSlots(slots, mode),
             currentSlotId: live.entry.slotId,
             enabled: usable,
             onPick: (slot) => _pick(live, slot),

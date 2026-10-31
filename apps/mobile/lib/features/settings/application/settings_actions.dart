@@ -102,6 +102,36 @@ final class SettingsActions {
   Future<SettingsOutcome> setNotificationPrefs(NotificationPrefs value) =>
       _set(AppSettings.notificationPrefs, value);
 
+  /// Store [season]'s decision (LC-030/031, TG-060), replacing that Hijri
+  /// year's; the other years stay as they are.
+  Future<SettingsOutcome> setRamadanSeason(RamadanSeason season) async {
+    final current = await store.read(AppSettings.ramadanSeasons);
+    return await _set(AppSettings.ramadanSeasons, current.withSeason(season));
+  }
+
+  /// Marks [date] "not fasting", or fasting again (LC-034, A41a fix rounds
+  /// 1–2): a per-date setting, for a day of a Ramadan with the mode on
+  /// (refused outside one), never on the diary's day marks.
+  Future<SettingsOutcome> setNotFasting(
+    LocalDate date, {
+    required bool notFasting,
+  }) async {
+    final seasons = await store.read(AppSettings.ramadanSeasons);
+    if (RamadanCalendar(seasons).onPeriodContaining(date) == null) {
+      return const SettingsFailed(SettingsFailure.invalid);
+    }
+    // Its own key (fix round 2): "fasting" is written explicitly when a
+    // not-fasting day is switched back, so the newer decision wins a sync.
+    return await _set(
+      AppSettings.fastingMark(date),
+      notFasting ? FastingMark.notFasting : FastingMark.fasting,
+    );
+  }
+
+  /// How prayer times are computed (LC-033).
+  Future<SettingsOutcome> setPrayerMethod(PrayerMethod value) =>
+      _set(AppSettings.prayerMethod, value);
+
   /// Set a validated city identity.
   Future<SettingsOutcome> setCity(String value) => AppSettings.isCityId(value)
       ? _set(AppSettings.cityId, value)

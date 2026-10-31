@@ -24,7 +24,15 @@ enum NotificationType {
   proteinCheck(6, 20 * 60, enabledByDefault: false),
 
   /// NT-007: monthly.
-  measurement(7, 9 * 60, enabledByDefault: false);
+  measurement(7, 9 * 60, enabledByDefault: false),
+
+  /// NT-008: 45 minutes before Fajr on Ramadan fasting days (A41a D10);
+  /// timed by the prayer times, allowed in quiet hours, outside the cap.
+  suhoor(8, null, enabledByDefault: true),
+
+  /// NT-009: 90 minutes after Maghrib on Ramadan fasting days; timed by the
+  /// prayer times, outside the cap.
+  iftar(9, null, enabledByDefault: false);
 
   new(this.code, this.defaultMinute, {required this.enabledByDefault});
 

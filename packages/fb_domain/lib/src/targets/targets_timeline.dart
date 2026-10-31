@@ -74,6 +74,7 @@ final class DayTargets {
     required this.raisedToFloor,
     required Set<TargetIssue> issues,
     required this.week,
+    this.ramadanMaintain = false,
   }) : issues = Set.unmodifiable(issues);
 
   /// The engine's day: calories, macros, the week (weekly mode).
@@ -96,6 +97,10 @@ final class DayTargets {
 
   /// The weekly line; null in fixed mode (TG-044).
   final WeekPosition? week;
+
+  /// Whether "maintain during Ramadan" changed the base on this date
+  /// (TG-060): the goal's deficit or surplus is left out.
+  final bool ramadanMaintain;
 
   @override
   String toString() => 'DayTargets';
@@ -196,10 +201,12 @@ abstract final class TargetsTimeline {
     WeekCalendar calendar = const WeekCalendar(),
     TargetDefaults defaults = const TargetDefaults(),
     TrainingShiftInput? training,
+    bool ramadanMaintain = false,
   }) {
     final version = versionOn(settings, date);
     if (profile == null || version == null) return null;
     final weight = bodyWeightKg ?? version.basisWeightKg;
+    final phase = phaseOn(goals, date);
     final floor = _tryEngine(
       () => TargetCalculator.floor(
         profile.toProfile(weight),
@@ -208,7 +215,35 @@ abstract final class TargetsTimeline {
       ),
     );
     if (floor == null) return null;
-    final versionPlan = _tryEngine(() => version.toPlan(floor));
+    final storedPlan = _tryEngine(() => version.toPlan(floor));
+    if (storedPlan == null) return null;
+    // TG-060: on a Ramadan day of a "maintain" season, a generated base
+    // drops the goal's energy (the SF-011-capped rate), never below the
+    // floor. A manual base is the user's own number and stays.
+    final maintainBase = ramadanMaintain && !version.manual && phase != null
+        ? _maintainBase(
+            storedPlan.baseKcal,
+            phase,
+            weight,
+            date,
+            floor,
+            defaults,
+          )
+        : null;
+    final versionPlan = maintainBase == null
+        ? storedPlan
+        : _tryEngine(
+            () => TargetPlan(
+              baseKcal: maintainBase,
+              floorKcal: storedPlan.floorKcal,
+              mode: storedPlan.mode,
+              rebalancing: storedPlan.rebalancing,
+              manual: storedPlan.manual,
+              acknowledged: storedPlan.acknowledged,
+              weights: storedPlan.weights,
+              macros: storedPlan.macros,
+            ),
+          );
     if (versionPlan == null) return null;
     // The weekly workout plan's training days shift the same weekly budget
     // (TG-043, WO-061, A36 D5); workouts never add calories (WO-060).
@@ -227,7 +262,6 @@ abstract final class TargetsTimeline {
             ),
           );
     if (plan == null) return null;
-    final phase = phaseOn(goals, date);
     final goalWeight = switch (phase?.expression) {
       TargetDateGoal(:final targetKg) ||
       TargetRateGoal(:final targetKg) => targetKg,
@@ -278,7 +312,7 @@ abstract final class TargetsTimeline {
       version: version,
       floorKcal: floor,
       weightKg: weight,
-      raisedToFloor: plan.baseKcal != version.baseKcal,
+      raisedToFloor: storedPlan.baseKcal != version.baseKcal,
       issues: {
         if (version.manual &&
             version.baseKcal < floor &&
@@ -289,7 +323,28 @@ abstract final class TargetsTimeline {
           TargetIssue.goalNeedsUpdate,
       },
       week: position,
+      ramadanMaintain: maintainBase != null,
     );
+  }
+
+  /// [base] without [phase]'s goal energy on [date] at [weightKg] (TG-060),
+  /// at least [floor]; null when the goal can't be resolved or has no
+  /// energy (maintain).
+  static double? _maintainBase(
+    double base,
+    GoalPhaseRecord phase,
+    double weightKg,
+    LocalDate date,
+    double floor,
+    TargetDefaults defaults,
+  ) {
+    final goal = resolve(phase, weightKg: weightKg, date: date);
+    if (goal == null || goal.requestedKgPerWeek == 0) return null;
+    final rate = goal.requestedKgPerWeek < -weightKg * defaults.maxLossFraction
+        ? -weightKg * defaults.maxLossFraction
+        : goal.requestedKgPerWeek;
+    final kcal = base - rate * defaults.kcalPerKg / 7;
+    return kcal < floor ? floor : kcal;
   }
 
   /// The explanation of the version in effect on [date], computed from its

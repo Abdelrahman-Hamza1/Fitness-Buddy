@@ -31,7 +31,7 @@ void main() {
     ]);
     final day = await repo.watchDay(_day).first;
     expect(day.entries.map((e) => e.id), [fixtureId(1), fixtureId(2)]);
-    expect(day.slots, hasLength(4));
+    expect(day.slots, hasLength(7));
     expect(day.groups, isEmpty);
     expect(day.mark, isNull);
     expect(day.toString(), isNot(contains('Food')));

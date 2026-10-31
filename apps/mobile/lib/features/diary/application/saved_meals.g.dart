@@ -135,14 +135,14 @@ final class SavedMealFamily extends $Family
   String toString() => r'savedMealProvider';
 }
 
-/// The meals a saved meal can be logged into (active, normal mode, in
-/// order), for the detail screen's Meal chip.
+/// Every live meal of both modes, for the detail screen's Meal chip (the
+/// chosen day's mode picks among them, DY-012).
 
 @ProviderFor(savedMealSlots)
 final savedMealSlotsProvider = SavedMealSlotsProvider._();
 
-/// The meals a saved meal can be logged into (active, normal mode, in
-/// order), for the detail screen's Meal chip.
+/// Every live meal of both modes, for the detail screen's Meal chip (the
+/// chosen day's mode picks among them, DY-012).
 
 final class SavedMealSlotsProvider
     extends
@@ -152,8 +152,8 @@ final class SavedMealSlotsProvider
           Stream<List<MealSlot>>
         >
     with $FutureModifier<List<MealSlot>>, $StreamProvider<List<MealSlot>> {
-  /// The meals a saved meal can be logged into (active, normal mode, in
-  /// order), for the detail screen's Meal chip.
+  /// Every live meal of both modes, for the detail screen's Meal chip (the
+  /// chosen day's mode picks among them, DY-012).
   SavedMealSlotsProvider._()
     : super(
         from: null,
@@ -180,4 +180,4 @@ final class SavedMealSlotsProvider
   }
 }
 
-String _$savedMealSlotsHash() => r'496cd918eec317c0a20064c1c929c3cd521f2d23';
+String _$savedMealSlotsHash() => r'8fadfdb35e784730857dd30688d74aa716a9f870';

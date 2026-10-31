@@ -4,6 +4,7 @@ import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/features/diary/application/day_slots.dart';
 import 'package:fb_mobile/features/diary/application/diary_actions.dart';
 import 'package:fb_mobile/features/diary/application/slot_providers.dart';
 import 'package:fb_mobile/features/diary/presentation/entry_actions.dart';
@@ -58,6 +59,10 @@ class _CopyMealSheetState extends ConsumerState<CopyMealSheet> {
 
   LocalDate get _today => EntryTime.now(ref.read(clockProvider)).localDate;
 
+  /// The target day's meals (DY-012: Ramadan on a fasting day).
+  SlotMode get _toMode =>
+      ref.read(daySlotsProvider(_toDate)).value?.mode ?? SlotMode.normal;
+
   LocalDate _defaultDay() {
     final next = widget.date.plusDays(1);
     final today = EntryTime.now(ref.read(clockProvider)).localDate;
@@ -70,7 +75,7 @@ class _CopyMealSheetState extends ConsumerState<CopyMealSheet> {
   /// meal, on the next day. A source without a meal (the "Other" section)
   /// starts on the first meal.
   String? _targetSlot(LiveMeal live) {
-    final slots = movableSlots(live.slots);
+    final slots = movableSlots(live.slots, _toMode);
     // Pick the default once; later removal requires an explicit new choice.
     if (!_targetInitialised && live.slots.isNotEmpty) {
       _targetInitialised = true;
@@ -111,7 +116,10 @@ class _CopyMealSheetState extends ConsumerState<CopyMealSheet> {
       title: l10n.diaryCopySlotTitle,
       builder: (sheet) => Consumer(
         builder: (context, ref, _) => MoveToSlotList(
-          slots: movableSlots(ref.watch(liveSlotsProvider).value ?? live.slots),
+          slots: movableSlots(
+            ref.watch(liveSlotsProvider).value ?? live.slots,
+            _toMode,
+          ),
           currentSlotId: target ?? '',
           onPick: (slot) => Navigator.of(sheet).pop(slot),
         ),
@@ -162,7 +170,13 @@ class _CopyMealSheetState extends ConsumerState<CopyMealSheet> {
   }
 
   @override
-  Widget build(BuildContext context) => LiveMealBuilder(
+  Widget build(BuildContext context) {
+    // Rebuild when the target day's meals load or change (DY-012).
+    ref.watch(daySlotsProvider(_toDate));
+    return _build(context);
+  }
+
+  Widget _build(BuildContext context) => LiveMealBuilder(
     opened: widget.section,
     date: widget.date,
     builder: _content,

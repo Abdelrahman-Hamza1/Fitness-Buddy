@@ -108,7 +108,7 @@ class _SlotRemoveSheetState extends ConsumerState<SlotRemoveSheet> {
           // What the user sees now becomes the base of the next try: the
           // same meal, at its current version.
           _destination = ref
-              .read(slotRecordsProvider)
+              .read(slotRecordsProvider(widget.record.slot.mode))
               .value
               ?.where((r) => r.slot.active && r.slot.id == destination?.slot.id)
               .firstOrNull;
@@ -127,7 +127,9 @@ class _SlotRemoveSheetState extends ConsumerState<SlotRemoveSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final recordsAsync = ref.watch(slotRecordsProvider);
+    final recordsAsync = ref.watch(
+      slotRecordsProvider(widget.record.slot.mode),
+    );
     final records = recordsAsync.value;
     final contentsAsync = ref.watch(slotContentsProvider(_id));
     final contents = contentsAsync.value;
@@ -198,7 +200,7 @@ class _SlotRemoveSheetState extends ConsumerState<SlotRemoveSheet> {
                 actionLabel: l10n.mealTimesTryAgain,
                 onAction: () {
                   ref
-                    ..invalidate(slotRecordsProvider)
+                    ..invalidate(slotRecordsProvider(widget.record.slot.mode))
                     ..invalidate(slotContentsProvider(_id));
                 },
               ),

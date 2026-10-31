@@ -12,9 +12,23 @@ import 'package:fb_mobile/core/db/seed_rows.dart';
 Future<void> seedDefaultSlots<T extends Table, D>(
   DatabaseConnectionUser db,
   TableInfo<T, D> table,
+) => _seedSlots(db, table, DefaultSlots.all);
+
+/// Seeds the three Ramadan meal slots (DY-012, A41a D5) like
+/// [seedDefaultSlots]: Suhoor, Iftar and Snacks of mode `ramadan`, used by
+/// the v13 migration and by `onCreate`. An existing row is kept.
+Future<void> seedRamadanSlots<T extends Table, D>(
+  DatabaseConnectionUser db,
+  TableInfo<T, D> table,
+) => _seedSlots(db, table, RamadanSlots.all);
+
+Future<void> _seedSlots<T extends Table, D>(
+  DatabaseConnectionUser db,
+  TableInfo<T, D> table,
+  List<MealSlot> slots,
 ) {
   final rows = <Insertable<D>>[];
-  for (final slot in DefaultSlots.all) {
+  for (final slot in slots) {
     final key = DefaultSlots.naturalKey(slot.defaultKey!, mode: slot.mode);
     if (naturalId('mealSlot', key) != slot.id) {
       throw StateError('DefaultSlots id of ${slot.defaultKey} is stale');

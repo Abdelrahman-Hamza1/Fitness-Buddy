@@ -3,6 +3,7 @@ import 'package:fb_mobile/features/adaptive/application/adaptive_inputs.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
+import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/today/today.dart';
@@ -102,12 +103,15 @@ Future<ExpenditureView?> expenditureView(Ref ref) async {
   ];
   final from = ends.first.plusDays(1 - adaptiveWindowDays);
   final days = await ref.watch(adaptiveIntakeProvider(from, yesterday).future);
+  // TG-037 (#232): weigh-ins in a Ramadan with the mode on count half.
+  final ramadan = await ref.watch(ramadanCalendarProvider.future);
   AdaptiveResult? at(LocalDate end) => adaptiveResultFor(
     end: end,
     data: data,
     days: days,
     weighIns: weighIns,
     trend: trend,
+    isRamadan: ramadan.isOn,
   );
   final latest = at(yesterday);
   if (latest == null) return null;

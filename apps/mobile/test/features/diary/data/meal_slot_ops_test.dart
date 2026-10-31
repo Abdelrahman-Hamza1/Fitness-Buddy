@@ -614,11 +614,18 @@ void main() {
       AddMealSlot(lunch, 'Duplicate'),
       equals(const InvalidOp('duplicateId')),
     );
+    // A slot is edited within its own mode's set (A41a D5): a reorder of
+    // the normal set can no longer name it.
     await h.editSlot(lunch, const MealSlotsCompanion(mode: Value('ramadan')));
     await refuses(
       h,
-      UpdateMealSlot(lunch, 2, MealSlotPatch(setName: true)),
-      equals(const InvalidOp('wrongMode')),
+      ReorderMealSlots([
+        VersionedId(DefaultSlots.breakfastId, 1),
+        VersionedId(lunch, 2),
+        VersionedId(DefaultSlots.dinnerId, 1),
+        VersionedId(DefaultSlots.snacksId, 1),
+      ]),
+      equals(const InvalidOp('sourceChanged')),
     );
     await h.editSlot(lunch, const MealSlotsCompanion(active: Value(false)));
     await refuses(

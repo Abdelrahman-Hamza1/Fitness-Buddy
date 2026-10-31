@@ -42,6 +42,14 @@ class SettingsSection extends ConsumerWidget {
               ref.read(appNavigatorProvider).push(const MealSlotsRoute()),
         ),
         FbListRow(
+          key: const ValueKey('settings-ramadan'),
+          title: l10n.ramadanTitle,
+          subtitle: l10n.ramadanSettingsHint,
+          trailing: const Icon(FbIcons.next),
+          onTap: () =>
+              ref.read(appNavigatorProvider).push(const RamadanRoute()),
+        ),
+        FbListRow(
           key: const ValueKey('settings-notifications'),
           title: l10n.settingsNotifications,
           trailing: const Icon(FbIcons.next),

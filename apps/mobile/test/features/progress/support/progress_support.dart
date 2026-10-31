@@ -16,6 +16,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:material_ui/material_ui.dart';
 
+import '../../../helpers/ramadan_off.dart';
 import '../../body/support/weigh_in_harness.dart'
     show storedWeighIn, weighInDraft;
 import '../../today/presentation/support/today_support.dart' show phoneApp;
@@ -124,6 +125,7 @@ List<Override> progressOverrides({
     ),
     todayProvider.overrideWith((ref) => Stream.value(progressToday)),
     weekStartProvider.overrideWith((ref) => Stream.value(DayOfWeek.saturday)),
+    ramadanOff,
     targetsDataProvider.overrideWith(
       (ref) => Stream.value(
         TargetsData(

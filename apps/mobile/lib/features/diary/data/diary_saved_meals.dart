@@ -56,7 +56,18 @@ Future<OpPlan> planLogSavedMeal(
     checkVersion(savedMealItemEntity, row.id, row.version, expected[row.id]!);
   }
   final slots = await reads.slots();
-  final slot = op.slotId == null ? null : requireUsableSlot(slots, op.slotId!);
+  final stored = op.slotId == null
+      ? null
+      : requireUsableSlot(slots, op.slotId!);
+  // The slot as the target day uses it (a Ramadan Suhoor/Iftar window).
+  final onDay = switch (op.when) {
+    EntryAt(:final time) => time.localDate,
+    EntryOnDay(:final date) => date,
+  };
+  final (dayMode, daySlots) = await reads.assignableOn(onDay);
+  final slot = stored == null
+      ? null
+      : daySlots.firstWhere((s) => s.id == stored.id, orElse: () => stored);
   final now = localDateTimeOf(
     context.nowUtc,
     context.clock.offsetMinutesAt(context.nowUtc),
@@ -81,8 +92,8 @@ Future<OpPlan> planLogSavedMeal(
       op.slotId ??
       const SlotAssigner().assign(
         time.localDateTime.minuteOfDay,
-        slots,
-        SlotMode.normal,
+        daySlots,
+        dayMode,
       );
   if (slotId == null) throw const ChangeRejected(InvalidOp('noSlot'));
   final ids = [for (final row in items) op.entryIds[row.id]!];

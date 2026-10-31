@@ -69,14 +69,14 @@ abstract class _$WeightGraphWindowController
   }
 }
 
-/// Highlighted periods for every chart (WB-021): empty for now. **A41
-/// supplies Ramadan periods here**, labelled "Ramadan" by the screen.
+/// Highlighted periods for every chart (WB-021): the Ramadans whose mode
+/// was on (A41a D9), labelled "Ramadan" by the screen.
 
 @ProviderFor(chartHighlightPeriods)
 final chartHighlightPeriodsProvider = ChartHighlightPeriodsProvider._();
 
-/// Highlighted periods for every chart (WB-021): empty for now. **A41
-/// supplies Ramadan periods here**, labelled "Ramadan" by the screen.
+/// Highlighted periods for every chart (WB-021): the Ramadans whose mode
+/// was on (A41a D9), labelled "Ramadan" by the screen.
 
 final class ChartHighlightPeriodsProvider
     extends
@@ -86,8 +86,8 @@ final class ChartHighlightPeriodsProvider
           List<({LocalDate end, LocalDate start})>
         >
     with $Provider<List<({LocalDate end, LocalDate start})>> {
-  /// Highlighted periods for every chart (WB-021): empty for now. **A41
-  /// supplies Ramadan periods here**, labelled "Ramadan" by the screen.
+  /// Highlighted periods for every chart (WB-021): the Ramadans whose mode
+  /// was on (A41a D9), labelled "Ramadan" by the screen.
   ChartHighlightPeriodsProvider._()
     : super(
         from: null,
@@ -124,7 +124,7 @@ final class ChartHighlightPeriodsProvider
 }
 
 String _$chartHighlightPeriodsHash() =>
-    r'cf9aaa3aa57ad5c331d4e129ed68e8f0b061ab5b';
+    r'4ff1a0ddea140ffa12da99e41a0811f9e2f4cfb9';
 
 /// The [WeightGraphModel] from the weigh-ins, the trend, the goal phases and
 /// the targets' TG-011 rate. Follows Today's local date

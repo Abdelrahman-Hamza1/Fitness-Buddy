@@ -11,6 +11,7 @@ import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/notifications/notifications.dart';
 import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
+import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/today/today.dart';
@@ -54,6 +55,8 @@ import '../../helpers/pump_app.dart';
   SavedMealsRoute() => (SavedMealsScreen, true),
   SavedMealRoute() => (SavedMealScreen, true),
   MealSlotsRoute() => (MealSlotsScreen, true),
+  RamadanRoute() => (RamadanScreen, true),
+  RamadanMealSlotsRoute() => (MealSlotsScreen, true),
   CityPickerRoute() => (CityPickerScreen, true),
   AboutRoute() => (AboutScreen, true),
   TodayWeightGraphRoute() => (WeightGraphScreen, true),
@@ -100,6 +103,8 @@ final List<AppRoute> _allRoutes = [
   const SavedMealsRoute(),
   const SavedMealRoute(id: _entryId),
   const MealSlotsRoute(),
+  const RamadanRoute(),
+  const RamadanMealSlotsRoute(),
   const TodayWeightGraphRoute(),
   const WeightGraphRoute(),
   const WeightHistoryRoute(),
@@ -146,6 +151,8 @@ void main() {
         const SavedMealsRoute(),
         const SavedMealRoute(id: _entryId),
         const MealSlotsRoute(),
+        const RamadanRoute(),
+        const RamadanMealSlotsRoute(),
         const CityPickerRoute(),
         const AboutRoute(),
         const TodayWeightGraphRoute(),

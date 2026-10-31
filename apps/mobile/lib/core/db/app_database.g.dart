@@ -24347,6 +24347,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'ix_proposals_pending',
     'CREATE INDEX ix_proposals_pending ON proposals (created_at) WHERE status = \'pending\' AND deleted_at IS NULL',
   );
+  late final Index ixProposalsKind = Index(
+    'ix_proposals_kind',
+    'CREATE INDEX ix_proposals_kind ON proposals (kind) WHERE deleted_at IS NULL',
+  );
   late final $WeighInsTable weighIns = $WeighInsTable(this);
   late final Index ixWeighInsLive = Index(
     'ix_weigh_ins_live',
@@ -24713,6 +24717,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     proposals,
     ixProposalsBudget,
     ixProposalsPending,
+    ixProposalsKind,
     weighIns,
     ixWeighInsLive,
     measurements,

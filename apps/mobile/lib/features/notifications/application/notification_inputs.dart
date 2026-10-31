@@ -6,6 +6,7 @@ import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/notifications/application/notification_scheduler.dart';
 import 'package:fb_mobile/features/notifications/data/notification_profile.dart';
+import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
@@ -24,6 +25,7 @@ final class NotificationInputs {
     required this.state,
     required this.generation,
     required this.profileTag,
+    this.extra = const [],
   });
 
   /// The profile generation the inputs were read in (A40 review 1).
@@ -43,6 +45,9 @@ final class NotificationInputs {
 
   /// The data the skip rules read.
   final NotificationState state;
+
+  /// The suhoor and iftar reminders of the horizon (A41a D10).
+  final List<NotificationCandidate> extra;
 
   @override
   String toString() => 'NotificationInputs($today)';
@@ -90,6 +95,7 @@ Future<NotificationInputs> notificationInputs(Ref ref) async {
     loggedWorkoutDatesProvider(from, today.plusDays(7)).future,
   );
   final pendingFuture = ref.watch(_pendingCardsProvider.future);
+  final extraFuture = _ramadanReminders(ref, today);
   final totals = await totalsFuture;
   final marks = await marksFuture;
   final targets = await targetsFuture;
@@ -98,6 +104,7 @@ Future<NotificationInputs> notificationInputs(Ref ref) async {
   final plan = await planFuture;
   final workouts = await workoutsFuture;
   final pending = await pendingFuture;
+  final extra = await extraFuture;
   final todayTotals = totals.where((t) => t.date == today).firstOrNull;
   final weighInDates = {for (final w in weighIns) w.localDate};
   return NotificationInputs(
@@ -106,6 +113,7 @@ Future<NotificationInputs> notificationInputs(Ref ref) async {
     calendar: calendar,
     generation: generation,
     profileTag: profileTag,
+    extra: extra,
     state: NotificationState(
       mealsToday: todayTotals?.mealCount ?? 0,
       proteinToday: todayTotals?.totals.protein ?? 0,
@@ -131,6 +139,38 @@ Future<NotificationInputs> notificationInputs(Ref ref) async {
           if (!d.isAfter(today)) d,
       },
     ),
+  );
+}
+
+/// The suhoor and iftar candidates from [today] over the horizon
+/// (NT-008, NT-009, NT-026): fasting days of a Ramadan with the mode on,
+/// not marked not fasting, timed by the chosen city's prayer instants and
+/// placed on the device's days by the clock (A41a fix round 1).
+Future<List<NotificationCandidate>> _ramadanReminders(
+  Ref ref,
+  LocalDate today,
+) async {
+  final calendar = await ref.watch(ramadanCalendarProvider.future);
+  // The city's fasting days whose reminders can fall in the device's
+  // horizon: the horizon and a day either side (fix round 2).
+  final dates = [
+    for (var i = -1; i <= NotificationPlanner.horizonDays; i++)
+      today.plusDays(i),
+  ];
+  if (!dates.any(calendar.isFastingDay)) return const [];
+  final times = <LocalDate, FajrMaghrib>{};
+  for (final date in dates) {
+    if (!calendar.isFastingDay(date)) continue;
+    final t = await ref.watch(prayerTimesProvider(date).future);
+    if (t != null) {
+      times[date] = (fajrUtc: t.day.fajrUtc, maghribUtc: t.day.maghribUtc);
+    }
+  }
+  return RamadanReminders.candidates(
+    calendar: calendar,
+    today: today,
+    prayer: (date) => times[date],
+    clock: ref.read(clockProvider),
   );
 }
 

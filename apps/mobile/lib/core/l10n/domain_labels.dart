@@ -16,6 +16,8 @@ String slotLabel(AppLocalizations l10n, MealSlot slot) =>
       'lunch' => l10n.todaySlotLunch,
       'snacks' => l10n.todaySlotSnacks,
       'dinner' => l10n.todaySlotDinner,
+      'suhoor' => l10n.todaySlotSuhoor,
+      'iftar' => l10n.todaySlotIftar,
       final key? => key,
       null => '',
     };

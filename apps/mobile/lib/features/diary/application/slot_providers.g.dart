@@ -8,16 +8,18 @@ part of 'slot_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Every normal meal with the version a sheet renders, in order, live (A10
-/// D12). Includes removed (inactive) meals, so a sheet open on one can say
-/// so; lists show [activeSlotRecords].
+/// Every meal of [mode] with the version a sheet renders, in order, live
+/// (A10 D12; the Ramadan set is edited separately, A41a D5). Includes
+/// removed (inactive) meals, so a sheet open on one can say so; lists show
+/// [activeSlotRecords].
 
 @ProviderFor(slotRecords)
-final slotRecordsProvider = SlotRecordsProvider._();
+final slotRecordsProvider = SlotRecordsFamily._();
 
-/// Every normal meal with the version a sheet renders, in order, live (A10
-/// D12). Includes removed (inactive) meals, so a sheet open on one can say
-/// so; lists show [activeSlotRecords].
+/// Every meal of [mode] with the version a sheet renders, in order, live
+/// (A10 D12; the Ramadan set is edited separately, A41a D5). Includes
+/// removed (inactive) meals, so a sheet open on one can say so; lists show
+/// [activeSlotRecords].
 
 final class SlotRecordsProvider
     extends
@@ -27,22 +29,30 @@ final class SlotRecordsProvider
           Stream<List<SlotRecord>>
         >
     with $FutureModifier<List<SlotRecord>>, $StreamProvider<List<SlotRecord>> {
-  /// Every normal meal with the version a sheet renders, in order, live (A10
-  /// D12). Includes removed (inactive) meals, so a sheet open on one can say
-  /// so; lists show [activeSlotRecords].
-  SlotRecordsProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'slotRecordsProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  /// Every meal of [mode] with the version a sheet renders, in order, live
+  /// (A10 D12; the Ramadan set is edited separately, A41a D5). Includes
+  /// removed (inactive) meals, so a sheet open on one can say so; lists show
+  /// [activeSlotRecords].
+  SlotRecordsProvider._({
+    required SlotRecordsFamily super.from,
+    required SlotMode super.argument,
+  }) : super(
+         retry: null,
+         name: r'slotRecordsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$slotRecordsHash();
+
+  @override
+  String toString() {
+    return r'slotRecordsProvider'
+        ''
+        '($argument)';
+  }
 
   @$internal
   @override
@@ -52,18 +62,57 @@ final class SlotRecordsProvider
 
   @override
   Stream<List<SlotRecord>> create(Ref ref) {
-    return slotRecords(ref);
+    final argument = this.argument as SlotMode;
+    return slotRecords(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SlotRecordsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
   }
 }
 
-String _$slotRecordsHash() => r'f2d0451d71323b88dff0ab2fdb4af0b71e243ff1';
+String _$slotRecordsHash() => r'89ad07d5e7c2475ebfff5939deda180e1e3b1534';
 
-/// The meals in use, in order, with their versions.
+/// Every meal of [mode] with the version a sheet renders, in order, live
+/// (A10 D12; the Ramadan set is edited separately, A41a D5). Includes
+/// removed (inactive) meals, so a sheet open on one can say so; lists show
+/// [activeSlotRecords].
+
+final class SlotRecordsFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<SlotRecord>>, SlotMode> {
+  SlotRecordsFamily._()
+    : super(
+        retry: null,
+        name: r'slotRecordsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Every meal of [mode] with the version a sheet renders, in order, live
+  /// (A10 D12; the Ramadan set is edited separately, A41a D5). Includes
+  /// removed (inactive) meals, so a sheet open on one can say so; lists show
+  /// [activeSlotRecords].
+
+  SlotRecordsProvider call(SlotMode mode) =>
+      SlotRecordsProvider._(argument: mode, from: this);
+
+  @override
+  String toString() => r'slotRecordsProvider';
+}
+
+/// The meals of [mode] in use, in order, with their versions.
 
 @ProviderFor(activeSlotRecords)
-final activeSlotRecordsProvider = ActiveSlotRecordsProvider._();
+final activeSlotRecordsProvider = ActiveSlotRecordsFamily._();
 
-/// The meals in use, in order, with their versions.
+/// The meals of [mode] in use, in order, with their versions.
 
 final class ActiveSlotRecordsProvider
     extends
@@ -73,20 +122,27 @@ final class ActiveSlotRecordsProvider
           AsyncValue<List<SlotRecord>>
         >
     with $Provider<AsyncValue<List<SlotRecord>>> {
-  /// The meals in use, in order, with their versions.
-  ActiveSlotRecordsProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'activeSlotRecordsProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  /// The meals of [mode] in use, in order, with their versions.
+  ActiveSlotRecordsProvider._({
+    required ActiveSlotRecordsFamily super.from,
+    required SlotMode super.argument,
+  }) : super(
+         retry: null,
+         name: r'activeSlotRecordsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$activeSlotRecordsHash();
+
+  @override
+  String toString() {
+    return r'activeSlotRecordsProvider'
+        ''
+        '($argument)';
+  }
 
   @$internal
   @override
@@ -96,7 +152,8 @@ final class ActiveSlotRecordsProvider
 
   @override
   AsyncValue<List<SlotRecord>> create(Ref ref) {
-    return activeSlotRecords(ref);
+    final argument = this.argument as SlotMode;
+    return activeSlotRecords(ref, argument);
   }
 
   /// {@macro riverpod.override_with_value}
@@ -106,9 +163,41 @@ final class ActiveSlotRecordsProvider
       providerOverride: $SyncValueProvider<AsyncValue<List<SlotRecord>>>(value),
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ActiveSlotRecordsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
 }
 
-String _$activeSlotRecordsHash() => r'9832ac3fe2ae53ea1bb191652f07185cf270095c';
+String _$activeSlotRecordsHash() => r'8727bfcab4dd3912f91ba0c1b14e274f42eff687';
+
+/// The meals of [mode] in use, in order, with their versions.
+
+final class ActiveSlotRecordsFamily extends $Family
+    with $FunctionalFamilyOverride<AsyncValue<List<SlotRecord>>, SlotMode> {
+  ActiveSlotRecordsFamily._()
+    : super(
+        retry: null,
+        name: r'activeSlotRecordsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The meals of [mode] in use, in order, with their versions.
+
+  ActiveSlotRecordsProvider call(SlotMode mode) =>
+      ActiveSlotRecordsProvider._(argument: mode, from: this);
+
+  @override
+  String toString() => r'activeSlotRecordsProvider';
+}
 
 /// How many live entries each meal holds (by meal ID; absent means none).
 
@@ -288,30 +377,40 @@ final class LiveSlotsProvider
   }
 }
 
-String _$liveSlotsHash() => r'f120c5ad3fdf967e7d7294cacb313422e3307eba';
+String _$liveSlotsHash() => r'd0f52ef718776bde877e86b1810e6b07a937c648';
 
-/// The Meal times list's local order while a drag is being written (D12).
+/// The Meal times list's local order while a drag is being written (D12),
+/// per mode.
 
 @ProviderFor(MealTimesEditor)
-final mealTimesEditorProvider = MealTimesEditorProvider._();
+final mealTimesEditorProvider = MealTimesEditorFamily._();
 
-/// The Meal times list's local order while a drag is being written (D12).
+/// The Meal times list's local order while a drag is being written (D12),
+/// per mode.
 final class MealTimesEditorProvider
     extends $NotifierProvider<MealTimesEditor, SlotEditorState> {
-  /// The Meal times list's local order while a drag is being written (D12).
-  MealTimesEditorProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'mealTimesEditorProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  /// The Meal times list's local order while a drag is being written (D12),
+  /// per mode.
+  MealTimesEditorProvider._({
+    required MealTimesEditorFamily super.from,
+    required SlotMode super.argument,
+  }) : super(
+         retry: null,
+         name: r'mealTimesEditorProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$mealTimesEditorHash();
+
+  @override
+  String toString() {
+    return r'mealTimesEditorProvider'
+        ''
+        '($argument)';
+  }
 
   @$internal
   @override
@@ -324,14 +423,59 @@ final class MealTimesEditorProvider
       providerOverride: $SyncValueProvider<SlotEditorState>(value),
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is MealTimesEditorProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
 }
 
-String _$mealTimesEditorHash() => r'e18810608ebac76c353a933596f69b74e927f71e';
+String _$mealTimesEditorHash() => r'7d935e6bd1d6b8605edff5035b1d96ff2f7c8227';
 
-/// The Meal times list's local order while a drag is being written (D12).
+/// The Meal times list's local order while a drag is being written (D12),
+/// per mode.
+
+final class MealTimesEditorFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          MealTimesEditor,
+          SlotEditorState,
+          SlotEditorState,
+          SlotEditorState,
+          SlotMode
+        > {
+  MealTimesEditorFamily._()
+    : super(
+        retry: null,
+        name: r'mealTimesEditorProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The Meal times list's local order while a drag is being written (D12),
+  /// per mode.
+
+  MealTimesEditorProvider call(SlotMode mode) =>
+      MealTimesEditorProvider._(argument: mode, from: this);
+
+  @override
+  String toString() => r'mealTimesEditorProvider';
+}
+
+/// The Meal times list's local order while a drag is being written (D12),
+/// per mode.
 
 abstract class _$MealTimesEditor extends $Notifier<SlotEditorState> {
-  SlotEditorState build();
+  late final _$args = ref.$arg as SlotMode;
+  SlotMode get mode => _$args;
+
+  SlotEditorState build(SlotMode mode);
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
@@ -344,6 +488,6 @@ abstract class _$MealTimesEditor extends $Notifier<SlotEditorState> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    return element.handleCreate(ref, () => build(_$args));
   }
 }

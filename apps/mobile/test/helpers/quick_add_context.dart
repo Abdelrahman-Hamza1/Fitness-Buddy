@@ -11,8 +11,9 @@ import 'package:flutter_riverpod/misc.dart';
 Override quickAddContextWithoutTimer() =>
     quickAddContextProvider.overrideWith((ref) {
       final clock = ref.watch(clockProvider);
-      final slots = ref.watch(foodSlotsProvider).value ?? const <MealSlot>[];
       final local = EntryTime.now(clock).localDateTime;
+      final slots =
+          ref.watch(foodSlotsProvider(local.date)).value ?? const <MealSlot>[];
       return QuickAddContext(
         now: local,
         weekday: local.date.weekday,

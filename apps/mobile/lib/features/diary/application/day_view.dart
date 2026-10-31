@@ -1,8 +1,10 @@
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/features/diary/application/day_slots.dart';
 import 'package:fb_mobile/features/diary/application/diary_actions.dart';
 import 'package:fb_mobile/features/diary/application/diary_providers.dart';
 import 'package:fb_mobile/features/diary/application/diary_view_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 part 'day_view.g.dart';
 
 /// Raw evidence and the optimistically filtered display model.
@@ -29,6 +31,8 @@ AsyncValue<DayView> dayView(Ref ref, LocalDate date) {
   });
   final raw = ref.watch(dayProvider(date));
   final hidden = ref.watch(diaryActionsControllerProvider).hidden;
+  // DY-012: a Ramadan fasting day shows Suhoor / Iftar / Snacks.
+  final mode = ref.watch(daySlotsProvider(date)).value?.mode ?? SlotMode.normal;
   return raw.whenData(
     (day) => DayView(
       raw: day,
@@ -38,6 +42,7 @@ AsyncValue<DayView> dayView(Ref ref, LocalDate date) {
         day.entries.where(
           (e) => !hidden.any((m) => m.id == e.id && m.version == e.version),
         ),
+        mode: mode,
       ),
     ),
   );

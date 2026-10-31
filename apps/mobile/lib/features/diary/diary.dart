@@ -3,6 +3,7 @@
 library;
 
 export 'application/day_rows.dart';
+export 'application/day_slots.dart';
 export 'application/day_view.dart';
 export 'application/diary_actions.dart';
 export 'application/diary_providers.dart';

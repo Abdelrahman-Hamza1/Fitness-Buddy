@@ -136,16 +136,17 @@ void main() {
       );
     });
 
-    test('DY-011 an inactive or other-mode slot is InvalidOp(inactiveSlot) in '
+    // An active slot of the other mode is accepted (A41a D6:
+    // ramadan_diary_ops_test).
+    test('DY-011 an inactive slot is InvalidOp(inactiveSlot) in '
         'log, update, move', () async {
       final h = DiaryHarness();
       await h.apply([
         LogEntries([newEntry(1)]),
       ]);
       await h.editSlot(_dinner, const MealSlotsCompanion(active: Value(false)));
-      await h.addSlot(fixtureId(80), mode: 'ramadan');
       const inactive = InvalidOp('inactiveSlot');
-      for (final slot in [_dinner, fixtureId(80)]) {
+      for (final slot in [_dinner]) {
         expect(
           await h.reject([
             LogEntries([newEntry(2, slotId: slot)]),

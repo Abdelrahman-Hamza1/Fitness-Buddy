@@ -27,6 +27,17 @@ final class SettingsStore {
   Stream<T> watch<T>(SettingKey<T> key) =>
       _row(key).watchSingleOrNull().map((row) => _valueOf(key, row)).distinct();
 
+  /// The stored JSON values of the settings [names] (unset or reset ones
+  /// left out), now and on each change: for per-date keys read as a set
+  /// (A41a fix round 2).
+  Stream<Map<String, String>> watchValues(Iterable<String> names) {
+    final byId = {for (final n in names) settingRowId(n): n};
+    return (_db.select(_db.settingsKv)
+          ..where((t) => t.id.isIn(byId.keys) & t.deletedAt.isNull()))
+        .watch()
+        .map((rows) => {for (final r in rows) byId[r.id]!: r.valueJson});
+  }
+
   /// The value of [key].
   Future<T> read<T>(SettingKey<T> key) =>
       _row(key).getSingleOrNull().then((row) => _valueOf(key, row));

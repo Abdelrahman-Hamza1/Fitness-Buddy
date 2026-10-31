@@ -251,6 +251,11 @@ final class DiaryRepository {
         ];
       });
 
+  /// Every live slot of both modes (removed ones included), by
+  /// `sort_order` (A41a D6).
+  Stream<List<MealSlot>> watchAllSlots() =>
+      _watch({_db.mealSlots}, _reads.slots);
+
   /// The day marks from [from] to [to] (inclusive).
   Stream<List<DayMark>> watchDayMarks(LocalDate from, LocalDate to) =>
       _watch({_db.dayMarks}, () => _reads.marksBetween(from, to));

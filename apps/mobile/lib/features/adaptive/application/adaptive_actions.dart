@@ -170,12 +170,17 @@ final class AdaptiveActions {
     final days = await _intake(from, end);
     final weighIns = await readWeighIns();
     final trend = TrendWeight().compute(weighIns);
+    // TG-037 (#232): weigh-ins in a Ramadan with the mode on count half.
+    final ramadan = RamadanCalendar(
+      await settings.read(AppSettings.ramadanSeasons),
+    );
     final estimate = adaptiveResultFor(
       end: end,
       data: data,
       days: days,
       weighIns: weighIns,
       trend: trend,
+      isRamadan: ramadan.isOn,
       defaults: defaults,
     )?.estimate;
     if (estimate == null) return CheckInRun.none;

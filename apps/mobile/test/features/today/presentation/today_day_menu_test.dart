@@ -17,7 +17,7 @@ Future<void> _settle(WidgetTester tester) async {
 
 /// The menu's one option.
 Finder get _option => find.descendant(
-  of: find.byType(FbOptionList<bool>),
+  of: find.byWidgetPredicate((w) => w is FbOptionList),
   matching: find.byType(ListTile),
 );
 

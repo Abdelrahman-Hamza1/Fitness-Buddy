@@ -65,7 +65,7 @@ final class NotificationInputsProvider
 }
 
 String _$notificationInputsHash() =>
-    r'52bf0cd6ba0b9599cb74cb510f3bfe16ab4b9cc2';
+    r'a5d0ea8c34d5b7d1f8f6a07eb9b1fa72b3cafda6';
 
 @ProviderFor(_totals)
 final _totalsProvider = _TotalsFamily._();

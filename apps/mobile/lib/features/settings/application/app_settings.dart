@@ -90,6 +90,47 @@ abstract final class AppSettings {
     defaultValue: CheckInMode.ask,
   );
 
+  /// LC-030/031, TG-060: the user's decision per Ramadan (on/off, the
+  /// ±1-day shifts, "maintain during Ramadan"), by Hijri year. Unreadable
+  /// years are skipped, never an error.
+  static final ramadanSeasons = SettingKey<RamadanSettings>(
+    'ramadan.seasons',
+    codec: SettingCodec(
+      toJson: (value) => value.toJson(),
+      fromJson: RamadanSettings.fromJson,
+    ),
+    defaultValue: RamadanSettings.none,
+  );
+
+  /// LC-034: [date]'s fasting decision (A41a fix round 2), one synced key
+  /// per date (`ramadan.fasting.d<yyyymmdd>`), so marks on different days
+  /// and season preferences never overwrite each other. Unset reads as
+  /// fasting.
+  static SettingKey<FastingMark> fastingMark(LocalDate date) =>
+      SettingKey.enumeration(
+        RamadanFasting.keyName(date),
+        FastingMark.values,
+        defaultValue: FastingMark.fasting,
+      );
+
+  /// Every per-date fasting key a Ramadan of the calendar table can use,
+  /// for export's natural-id reverse lookup.
+  static Iterable<String> get fastingKeyNames sync* {
+    final calendar = RamadanCalendar(RamadanSettings.none);
+    for (final year in UmmAlQura.ramadan.keys) {
+      for (final d in RamadanFasting.datesOf(calendar.calendarPeriod(year)!)) {
+        yield RamadanFasting.keyName(d);
+      }
+    }
+  }
+
+  /// LC-033 / G12: how Fajr and Maghrib are computed (A41a D2).
+  static final SettingKey<PrayerMethod> prayerMethod = SettingKey.enumeration(
+    'prayer.method',
+    PrayerMethod.values,
+    defaultValue: PrayerMethod.muslimWorldLeague,
+  );
+
   /// NT-020/NT-021: the local reminders (A40 D3), one value; unreadable
   /// fields read as their `spec/17` defaults.
   static final notificationPrefs = SettingKey<NotificationPrefs>(
@@ -110,6 +151,8 @@ abstract final class AppSettings {
     cityId,
     trainingDayWeight,
     checkInMode,
+    ramadanSeasons,
+    prayerMethod,
     notificationPrefs,
   ];
 

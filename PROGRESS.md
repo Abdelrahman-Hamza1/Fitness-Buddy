@@ -1,8 +1,8 @@
 # Fitness Buddy: progress
 
-**64 of 87 steps done** · `▓▓▓▓▓▓▓░░░` 73%
+**65 of 87 steps done** · `▓▓▓▓▓▓▓░░░` 74%
 
-App 48/64 · Backend 16/23 · Foundation 7/7
+App 49/64 · Backend 16/23 · Foundation 7/7
 
 ## Now
 
@@ -15,7 +15,7 @@ App 48/64 · Backend 16/23 · Foundation 7/7
 | ✅ | **M1** Dogfood 1 | `▓▓▓▓▓` 14/14 | — |
 | ✅ | **M2** Targets & weight | `▓▓▓▓▓` 9/9 | — |
 | ✅ | **M5** Accounts & sync | `▓▓▓▓▓` 20/20 | — |
-| 🟨 | **M2b** Solid app (no AI) | `▓▓▓▓░` 20/22 | A41a A42 |
+| 🟨 | **M2b** Solid app (no AI) | `▓▓▓▓░` 21/22 | A42 |
 | 🟨 | **M3** Buddy on the laptop | `▓░░░░` 1/4 | A23b A48 A49 #148 #149 #150 #151 |
 | ⬜ | **M4** Dogfood 2 | `░░░░░` 0/8 | A25 A26 A27 A28b A29 A31 +2 |
 | ⬜ | **M6** Workouts, review &… | `░░░░░` 0/4 | A37b A39b A41b B12 |
@@ -28,7 +28,7 @@ App 48/64 · Backend 16/23 · Foundation 7/7
 
 Not started, every dependency done; earliest milestone first:
 
-- [A41a](technical-planning/steps/A41-ramadan.md) Ramadan mode without Buddy (split from A41, 2026-10-30) · M2b
+- [A42](technical-planning/steps/A42-performance-a11y-offline.md) Performance, accessibility & offline acceptance · M2b
 - [A23b](technical-planning/steps/A23-message-lifecycle.md) Message queue, failures & pending strip (split from A23) · M3
 - [A26](technical-planning/steps/A26-memory-user-model.md) Memory & user model (app) · M4
 - [B10b](technical-planning/steps/B10-barcode-vision-import.md) Label & meal photos, paste import (split from B10) · M4
@@ -46,7 +46,7 @@ Not started, every dependency done; earliest milestone first:
 - **#124** On the A55: Me > Your data > Export your data with Android font size at the largest…
 - **#123** At the A22 phone session: run A21 §6's A55 profile benchmark (UI-free), then at least…
 - **#115** On the A55: set real settings (imperial/metric, theme dark/light, week start, halal…
-- …and 43 more owner items in the [backlog](technical-planning/steps/backlog.md)
+- …and 45 more owner items in the [backlog](technical-planning/steps/backlog.md)
 
 ---
 

@@ -24,6 +24,8 @@ void main() {
         NotificationType.workout: (false, 18 * 60),
         NotificationType.proteinCheck: (false, 20 * 60),
         NotificationType.measurement: (false, 9 * 60),
+        NotificationType.suhoor: (true, 0),
+        NotificationType.iftar: (false, 0),
       },
     );
   });

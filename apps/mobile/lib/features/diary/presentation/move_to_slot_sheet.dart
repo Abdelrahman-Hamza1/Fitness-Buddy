@@ -4,11 +4,14 @@ import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// The meals an item can move to: the active ones of the normal mode, in
-/// order (the mode switch arrives with A41).
-List<MealSlot> movableSlots(Iterable<MealSlot> slots) => [
+/// The meals an item can move to: the active ones of [mode] (the target
+/// day's: Ramadan on a fasting day, DY-012), in order.
+List<MealSlot> movableSlots(
+  Iterable<MealSlot> slots, [
+  SlotMode mode = SlotMode.normal,
+]) => [
   for (final slot in slots)
-    if (slot.active && slot.mode == SlotMode.normal) slot,
+    if (slot.active && slot.mode == mode) slot,
 ]..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 
 /// The meals as rows (DY-022): the current one is checked and does nothing,

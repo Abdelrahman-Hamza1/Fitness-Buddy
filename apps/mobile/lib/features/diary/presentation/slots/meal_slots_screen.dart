@@ -18,17 +18,27 @@ import 'package:material_ui/material_ui.dart';
 /// its name and times or to remove it; Add meal adds one. Every change is a
 /// direct action with Undo (UX-030).
 class MealSlotsScreen extends ConsumerWidget {
-  /// Creates the screen.
-  const new({super.key});
+  /// Creates the screen of [mode]'s meals (DY-012: the Ramadan set is
+  /// customized separately).
+  const new({this.mode = SlotMode.normal, super.key});
+
+  /// The set shown.
+  final SlotMode mode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final records = ref.watch(activeSlotRecordsProvider);
+    final records = ref.watch(activeSlotRecordsProvider(mode));
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.mealTimesTitle)),
+      appBar: AppBar(
+        title: Text(
+          mode == SlotMode.ramadan
+              ? l10n.ramadanMealTimes
+              : l10n.mealTimesTitle,
+        ),
+      ),
       body: switch (records) {
-        AsyncData(:final value) => _Meals(stored: value),
+        AsyncData(:final value) => _Meals(stored: value, mode: mode),
         AsyncError() => Padding(
           padding: const EdgeInsetsDirectional.all(FbSpace.s4),
           child: Align(
@@ -37,7 +47,7 @@ class MealSlotsScreen extends ConsumerWidget {
               kind: FbInlineBannerKind.error,
               message: l10n.mealTimesLoadFailed,
               actionLabel: l10n.mealTimesTryAgain,
-              onAction: () => ref.invalidate(slotRecordsProvider),
+              onAction: () => ref.invalidate(slotRecordsProvider(mode)),
             ),
           ),
         ),
@@ -66,10 +76,13 @@ class _Skeleton extends StatelessWidget {
 }
 
 class _Meals extends ConsumerWidget {
-  const new({required this.stored});
+  const new({required this.stored, required this.mode});
 
   /// The active meals as stored, in order.
   final List<SlotRecord> stored;
+
+  /// The set shown.
+  final SlotMode mode;
 
   Future<void> _reorder(
     BuildContext context,
@@ -80,7 +93,7 @@ class _Meals extends ConsumerWidget {
   ) async {
     final host = Navigator.of(context, rootNavigator: true).context;
     final outcome = await ref
-        .read(mealTimesEditorProvider.notifier)
+        .read(mealTimesEditorProvider(mode).notifier)
         .reorder(shown, oldIndex, newIndex);
     if (!host.mounted) return;
     switch (outcome) {
@@ -100,7 +113,7 @@ class _Meals extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final editor = ref.watch(mealTimesEditorProvider);
+    final editor = ref.watch(mealTimesEditorProvider(mode));
     final counts = ref.watch(slotEntryCountsProvider).value ?? const {};
     final busy = ref.watch(slotActionsProvider).isNotEmpty;
     final shown = arrangedSlots(stored, editor);
@@ -127,7 +140,9 @@ class _Meals extends ConsumerWidget {
             itemBuilder: (context, record, handle) => FbListRow(
               title: slotLabel(l10n, record.slot),
               subtitle: l10n.mealTimesRowSubtitle(
-                windowText(context, record.slot.window),
+                RamadanSlots.followsPrayerTimes(record.slot)
+                    ? l10n.mealTimesFollowsPrayer
+                    : windowText(context, record.slot.window),
                 l10n.slotItemsCount(counts[record.slot.id] ?? 0),
               ),
               trailing: handle,
@@ -163,7 +178,7 @@ class _Meals extends ConsumerWidget {
                   expand: true,
                   onPressed: atLimit || busy
                       ? null
-                      : () => unawaited(showSlotEditSheet(context)),
+                      : () => unawaited(showSlotEditSheet(context, mode: mode)),
                 ),
               ],
             ),

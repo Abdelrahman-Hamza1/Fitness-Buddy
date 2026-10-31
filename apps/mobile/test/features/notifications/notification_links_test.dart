@@ -61,6 +61,8 @@ final _cases = <(NotificationCandidate, String, Type)>[
     '/progress/measurements',
     MeasurementsScreen,
   ),
+  (_c(NotificationType.suhoor), '/today', TodayScreen),
+  (_c(NotificationType.iftar), '/today', TodayScreen),
 ];
 
 void main() {

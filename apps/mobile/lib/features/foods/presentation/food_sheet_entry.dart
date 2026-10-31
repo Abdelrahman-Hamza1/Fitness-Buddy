@@ -3,6 +3,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/app_navigator.dart';
+import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/foods/application/barcode_lookup.dart';
 import 'package:fb_mobile/features/foods/application/food_search_row.dart';
@@ -74,7 +75,16 @@ Future<bool> openFoodSheet(BuildContext context, FoodPick pick) async {
             logged.nameEn,
             [
                   for (final slot
-                      in container.read(foodSlotsProvider).value ??
+                      in container
+                              .read(
+                                foodSlotsProvider(
+                                  pick.date ??
+                                      EntryTime.now(
+                                        container.read(clockProvider),
+                                      ).localDate,
+                                ),
+                              )
+                              .value ??
                           <MealSlot>[])
                     if (slot.id == logged.slotId) slotLabel(host.l10n, slot),
                 ].firstOrNull ??

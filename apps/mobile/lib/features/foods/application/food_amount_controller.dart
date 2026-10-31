@@ -138,21 +138,19 @@ class FoodAmountController extends _$FoodAmountController {
     final food = await ref.watch(foodChoiceProvider(choice).future);
     if (food == null) throw StateError('foodUnavailable');
     // Read once: slot edits must not rebuild the sheet or reset its input.
-    ref.listen(foodSlotsProvider, (previous, next) {
+    ref.listen(foodSlotsProvider(date), (previous, next) {
       final current = state.value;
       final slots = next.value;
       if (current != null &&
           current.replacing == null &&
           current.slotId != null &&
           slots != null &&
-          !slots.any(
-            (s) =>
-                s.id == current.slotId && s.active && s.mode == SlotMode.normal,
-          )) {
+          !slots.any((s) => s.id == current.slotId && s.active)) {
         state = AsyncData(current.copyWith(clearSlot: true));
       }
     });
-    final slots = await ref.read(foodSlotsProvider.future);
+    final slots = await ref.read(foodSlotsProvider(date).future);
+    final mode = slotModeOf(slots);
     final clock = ref.watch(clockProvider);
     final entry = replacing == null
         ? null
@@ -174,13 +172,13 @@ class FoodAmountController extends _$FoodAmountController {
           : entry?.amount.input,
       parsed: carried,
     );
-    final liveSlots = ref.read(foodSlotsProvider).value ?? slots;
+    final liveSlots = ref.read(foodSlotsProvider(date)).value ?? slots;
     final chosenSlot =
         slotId ??
         const SlotAssigner().assign(
           EntryTime.now(clock).localDateTime.time.minuteOfDay,
           slots,
-          SlotMode.normal,
+          mode,
         );
     return FoodAmountState(
       system: system,
@@ -191,10 +189,7 @@ class FoodAmountController extends _$FoodAmountController {
       unit: initial.unitCode,
       slotId:
           replacing != null ||
-              liveSlots.any(
-                (s) =>
-                    s.id == chosenSlot && s.active && s.mode == SlotMode.normal,
-              )
+              liveSlots.any((s) => s.id == chosenSlot && s.active)
           ? chosenSlot
           : null,
     );

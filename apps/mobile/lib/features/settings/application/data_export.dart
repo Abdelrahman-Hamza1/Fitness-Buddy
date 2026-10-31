@@ -63,7 +63,10 @@ class DataExportController extends _$DataExportController {
     final outcome = await ref
         .read(dataExportServiceProvider)
         .export(
-          settingNames: AppSettings.all.map((key) => key.name),
+          settingNames: [
+            ...AppSettings.all.map((key) => key.name),
+            ...AppSettings.fastingKeyNames,
+          ],
           isCancelled: () => attempt.cancelled,
         );
     if (!ref.mounted) return;

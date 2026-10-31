@@ -84,7 +84,12 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
         EntryAt(:final time) => time,
         EntryOnDay(:final date, :final time) => _timeOnDay(
           date,
-          time ?? _defaultTime(date, slotsById[explicitSlot], context),
+          time ??
+              _defaultTime(
+                date,
+                await _effectiveSlot(reads, date, explicitSlot),
+                context,
+              ),
           context,
         ),
       };
@@ -94,11 +99,7 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
       }
       final slotId =
           explicitSlot ??
-          const SlotAssigner().assign(
-            time.localDateTime.minuteOfDay,
-            slots,
-            SlotMode.normal,
-          ) ??
+          await _assign(reads, time) ??
           (throw const ChangeRejected(InvalidOp('noSlot')));
       if (group != null &&
           (group.localDate != '$date' || group.slotId != slotId)) {
@@ -309,6 +310,28 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
       revertEvents: [
         DayMarked(op.date, incomplete: existing?.incomplete ?? false),
       ],
+    );
+  }
+
+  /// The slot [slotId] as the day [date] uses it (a Ramadan Suhoor/Iftar
+  /// gets its window), or null for no slot.
+  static Future<MealSlot?> _effectiveSlot(
+    DiaryTxReads reads,
+    LocalDate date,
+    String? slotId,
+  ) async {
+    if (slotId == null) return null;
+    final (_, slots) = await reads.assignableOn(date);
+    return slots.where((s) => s.id == slotId).firstOrNull;
+  }
+
+  /// The slot for an entry at [time] without one (DY-011, A41a D6).
+  static Future<String?> _assign(DiaryTxReads reads, EntryTime time) async {
+    final (mode, slots) = await reads.assignableOn(time.localDate);
+    return const SlotAssigner().assign(
+      time.localDateTime.minuteOfDay,
+      slots,
+      mode,
     );
   }
 

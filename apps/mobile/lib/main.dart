@@ -1,7 +1,9 @@
 import 'package:fb_design_system/fb_design_system.dart';
+import 'package:fb_domain/fb_domain.dart' show UmmAlQura;
 import 'package:fb_mobile/app/app.dart';
 import 'package:fb_mobile/app/app_scope.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -13,6 +15,14 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   // Lazy: the licence texts are read only when the licence page opens.
   registerFbLicenses();
+  // The Umm al-Qura table's source licence (MIT, A41a fix round 1).
+  LicenseRegistry.addLicense(
+    () => Stream.value(
+      const LicenseEntryWithLineBreaks([
+        UmmAlQura.sourcePackage,
+      ], UmmAlQura.sourceLicence),
+    ),
+  );
   final container = ProviderContainer(
     overrides: appOverrides(AppConfig.fromEnvironment()),
   );

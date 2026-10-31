@@ -236,6 +236,7 @@ final class NotificationCoordinator {
       nowMinute: local.hour * 60 + local.minute,
       state: inputs.state,
       shownToday: shown,
+      extra: inputs.extra,
       nowUtc: now.occurredAtUtc,
     );
     await scheduler.sync(
@@ -247,6 +248,7 @@ final class NotificationCoordinator {
         prefs: inputs.prefs,
         today: today,
         state: inputs.state,
+        extra: inputs.extra,
       ),
       profileTag: inputs.profileTag,
       isCurrent: current,

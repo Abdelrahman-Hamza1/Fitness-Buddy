@@ -6458,4 +6458,246 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notifMeasurementBody =>
       'A good day for this month\'s measurements.';
+
+  @override
+  String get todaySlotSuhoor => 'Suhoor';
+
+  @override
+  String get todaySlotIftar => 'Iftar';
+
+  @override
+  String get ramadanMealTimes => 'Ramadan meal times';
+
+  @override
+  String get mealTimesFollowsPrayer => 'Follows prayer times';
+
+  @override
+  String get ramadanProposalTitle => 'Ramadan mode';
+
+  @override
+  String ramadanProposalBody(String date) {
+    return 'Ramadan is expected to start on $date. Switch on Ramadan mode for suhoor and iftar meals and reminders?';
+  }
+
+  @override
+  String get ramadanProposalStarted =>
+      'Ramadan has started. Switch on Ramadan mode for suhoor and iftar meals and reminders?';
+
+  @override
+  String get ramadanSwitchOn => 'Switch on';
+
+  @override
+  String get ramadanNotNow => 'Not now';
+
+  @override
+  String get ramadanSwitchedOn => 'Ramadan mode is on';
+
+  @override
+  String get ramadanNotNowDone => 'You can switch Ramadan mode on in Settings';
+
+  @override
+  String get ramadanTitle => 'Ramadan';
+
+  @override
+  String get ramadanSettingsHint => 'Ramadan mode, meal times and prayer times';
+
+  @override
+  String get ramadanOutsideTable =>
+      'Ramadan dates aren\'t available for this year.';
+
+  @override
+  String get ramadanLoadFailed => 'Couldn\'t load the Ramadan settings.';
+
+  @override
+  String get ramadanSaved => 'Ramadan setting changed';
+
+  @override
+  String ramadanSeasonHeader(int year) {
+    return 'Ramadan $year AH';
+  }
+
+  @override
+  String get ramadanMode => 'Ramadan mode';
+
+  @override
+  String ramadanExpected(String start, String end) {
+    return 'Expected $start to $end';
+  }
+
+  @override
+  String get ramadanFirstDay => 'First day';
+
+  @override
+  String get ramadanLastDay => 'Last day';
+
+  @override
+  String get ramadanShiftEarlier => 'A day earlier';
+
+  @override
+  String get ramadanShiftExpected => 'As expected';
+
+  @override
+  String get ramadanShiftLater => 'A day later';
+
+  @override
+  String get ramadanTargets => 'During Ramadan';
+
+  @override
+  String get ramadanTargetsKeep => 'Keep my goal';
+
+  @override
+  String get ramadanTargetsMaintain => 'Maintain my weight';
+
+  @override
+  String get ramadanTargetsMaintainHint =>
+      'Your goal pauses until Eid, then your normal targets come back';
+
+  @override
+  String get ramadanCalendarNote =>
+      'Dates follow the Umm al-Qura calendar. Moon sighting can differ by a day: change the first or last day if yours does.';
+
+  @override
+  String get ramadanPrayerTimes => 'Prayer times';
+
+  @override
+  String get ramadanNoCity => 'Choose your city for prayer times';
+
+  @override
+  String get ramadanTodayTimes => 'Today';
+
+  @override
+  String ramadanFajrMaghrib(String fajr, String maghrib) {
+    return 'Fajr $fajr · Maghrib $maghrib';
+  }
+
+  @override
+  String get ramadanPrayerMethod => 'Calculation method';
+
+  @override
+  String get ramadanReminders => 'Suhoor and iftar reminders';
+
+  @override
+  String get ramadanRemindersHint => 'In Notifications';
+
+  @override
+  String get prayerMethodMwl => 'Muslim World League';
+
+  @override
+  String get prayerMethodEgypt => 'Egyptian General Authority';
+
+  @override
+  String get prayerMethodJordan => 'Jordan Ministry of Awqaf';
+
+  @override
+  String get prayerMethodUmmAlQura => 'Umm al-Qura, Makkah';
+
+  @override
+  String get prayerMethodIsna => 'Islamic Society of North America';
+
+  @override
+  String get ramadanOfferTitle => 'Ramadan targets';
+
+  @override
+  String get ramadanOfferBody =>
+      'Keep your goal during Ramadan, or maintain your weight until Eid? Your normal targets come back after Ramadan.';
+
+  @override
+  String get ramadanOfferMaintain => 'Maintain during Ramadan';
+
+  @override
+  String get ramadanMaintainOn => 'Maintaining during Ramadan';
+
+  @override
+  String get ramadanKeepGoal => 'Keeping your goal';
+
+  @override
+  String get ramadanNotFastingNote => 'Not fasting today: normal meals';
+
+  @override
+  String get ramadanMarkFasting => 'Fasting today';
+
+  @override
+  String get ramadanMarkNotFasting => 'Not fasting today';
+
+  @override
+  String get ramadanMarkNotFastingHint =>
+      'Normal meals and no Ramadan reminders for this day';
+
+  @override
+  String get ramadanMarkedNotFasting => 'Normal meals for this day';
+
+  @override
+  String get ramadanMarkedFasting => 'Ramadan meals for this day';
+
+  @override
+  String ramadanDateLabel(String date, int day) {
+    return '$date · Ramadan $day';
+  }
+
+  @override
+  String get ramadanCompareTitle => 'Ramadan and the month before';
+
+  @override
+  String ramadanCompareSoFar(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'Ramadan, $days days',
+      one: 'Ramadan, 1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ramadanCompareRamadan => 'Ramadan';
+
+  @override
+  String get ramadanCompareBefore => '30 days before';
+
+  @override
+  String get ramadanCompareIntake => 'Average intake';
+
+  @override
+  String get ramadanCompareTrend => 'Weight trend';
+
+  @override
+  String get ramadanCompareWorkouts => 'Workouts a week';
+
+  @override
+  String ramadanCompareKcal(String kcal) {
+    return '$kcal kcal';
+  }
+
+  @override
+  String get ramadanCompareNone => '–';
+
+  @override
+  String ramadanCompareNote(int ramadan, int before) {
+    return 'Averages use logged days only ($ramadan and $before).';
+  }
+
+  @override
+  String get notifTypeSuhoor => 'Suhoor reminder';
+
+  @override
+  String get notifTypeSuhoorHint =>
+      '45 minutes before Fajr on Ramadan days, also in quiet hours';
+
+  @override
+  String get notifTypeIftar => 'Iftar log nudge';
+
+  @override
+  String get notifTypeIftarHint => '90 minutes after Maghrib on Ramadan days';
+
+  @override
+  String get notifSuhoorTitle => 'Suhoor';
+
+  @override
+  String get notifSuhoorBody => 'Time for suhoor. Log it when you\'re ready.';
+
+  @override
+  String get notifIftarTitle => 'Iftar';
+
+  @override
+  String get notifIftarBody => 'Log your iftar when you have a moment.';
 }

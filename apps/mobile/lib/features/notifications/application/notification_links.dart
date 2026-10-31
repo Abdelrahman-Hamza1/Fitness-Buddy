@@ -21,6 +21,7 @@ AppRoute notificationRoute(
     null => const WorkoutsRoute(),
   },
   NotificationType.measurement => const MeasurementsRoute(),
+  NotificationType.suhoor || NotificationType.iftar => const TodayRoute(),
 };
 
 /// A notification's neutral words (NT-025): no numbers, names or food on
@@ -56,5 +57,13 @@ AppRoute notificationRoute(
   NotificationType.measurement => (
     title: l10n.notifMeasurementTitle,
     body: l10n.notifMeasurementBody,
+  ),
+  NotificationType.suhoor => (
+    title: l10n.notifSuhoorTitle,
+    body: l10n.notifSuhoorBody,
+  ),
+  NotificationType.iftar => (
+    title: l10n.notifIftarTitle,
+    body: l10n.notifIftarBody,
   ),
 };

@@ -60,9 +60,12 @@ FoodChoice quickAddChoice(FoodCandidate candidate, FoodChoice current) =>
 @riverpod
 QuickAddContext quickAddContext(Ref ref) {
   final clock = ref.watch(clockProvider);
-  final slots = ref.watch(foodSlotsProvider).value ?? const <MealSlot>[];
   final now = EntryTime.now(clock);
   final local = now.localDateTime;
+  // The day's meals (DY-012: Ramadan's Suhoor/Iftar on a fasting day).
+  final slots =
+      ref.watch(foodSlotsProvider(local.date)).value ?? const <MealSlot>[];
+  final mode = slotModeOf(slots);
   var delay = const Duration(minutes: 30);
   final midnight = nextDayStartUtc(
     local.date,
@@ -70,7 +73,7 @@ QuickAddContext quickAddContext(Ref ref) {
   ).difference(now.occurredAtUtc);
   if (midnight > Duration.zero && midnight < delay) delay = midnight;
   for (final slot in slots) {
-    if (!slot.active || slot.mode != SlotMode.normal || slot.window == null) {
+    if (!slot.active || slot.mode != mode || slot.window == null) {
       continue;
     }
     for (final minute in [slot.window!.startMin, slot.window!.endMin]) {
@@ -92,11 +95,7 @@ QuickAddContext quickAddContext(Ref ref) {
   return QuickAddContext(
     now: local,
     weekday: local.date.weekday,
-    slotId: const SlotAssigner().assign(
-      local.minuteOfDay,
-      slots,
-      SlotMode.normal,
-    ),
+    slotId: const SlotAssigner().assign(local.minuteOfDay, slots, mode),
     targetDate: local.date,
   );
 }
@@ -144,7 +143,7 @@ AsyncValue<List<QuickAddChip>> quickAddChips(Ref ref, LocalDate viewedDate) {
   final window = ref.watch(quickAddWindowProvider(context.now.date));
   final meals = ref.watch(savedMealsProvider);
   final personal = ref.watch(personalFoodsProvider);
-  final slots = ref.watch(foodSlotsProvider);
+  final slots = ref.watch(foodSlotsProvider(context.now.date));
   for (final input in <AsyncValue<Object?>>[window, meals, personal, slots]) {
     if (input.hasError) return AsyncError(input.error!, input.stackTrace!);
     if (input.value == null) return const AsyncLoading();

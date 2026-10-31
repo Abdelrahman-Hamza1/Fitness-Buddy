@@ -9,17 +9,18 @@ export 'package:fb_mobile/features/diary/data/diary_repository.dart'
 
 part 'slot_providers.g.dart';
 
-/// Every normal meal with the version a sheet renders, in order, live (A10
-/// D12). Includes removed (inactive) meals, so a sheet open on one can say
-/// so; lists show [activeSlotRecords].
+/// Every meal of [mode] with the version a sheet renders, in order, live
+/// (A10 D12; the Ramadan set is edited separately, A41a D5). Includes
+/// removed (inactive) meals, so a sheet open on one can say so; lists show
+/// [activeSlotRecords].
 @riverpod
-Stream<List<SlotRecord>> slotRecords(Ref ref) =>
-    ref.watch(diaryRepositoryProvider).watchSlotRecords();
+Stream<List<SlotRecord>> slotRecords(Ref ref, SlotMode mode) =>
+    ref.watch(diaryRepositoryProvider).watchSlotRecords(mode);
 
-/// The meals in use, in order, with their versions.
+/// The meals of [mode] in use, in order, with their versions.
 @riverpod
-AsyncValue<List<SlotRecord>> activeSlotRecords(Ref ref) => ref
-    .watch(slotRecordsProvider)
+AsyncValue<List<SlotRecord>> activeSlotRecords(Ref ref, SlotMode mode) => ref
+    .watch(slotRecordsProvider(mode))
     .whenData(
       (records) => [
         for (final record in records)
@@ -42,15 +43,16 @@ Stream<SlotContents> slotContents(Ref ref, String slotId) =>
 /// choice of meal and must drop a removed one (A10 D12a).
 @riverpod
 Stream<List<MealSlot>> liveSlots(Ref ref) =>
-    ref.watch(diaryRepositoryProvider).watchSlots();
+    ref.watch(diaryRepositoryProvider).watchAllSlots();
 
-/// The Meal times list's local order while a drag is being written (D12).
+/// The Meal times list's local order while a drag is being written (D12),
+/// per mode.
 @riverpod
 class MealTimesEditor extends _$MealTimesEditor {
   @override
-  SlotEditorState build() {
+  SlotEditorState build(SlotMode mode) {
     // A stored order that matches the dropped one acknowledges it.
-    ref.listen(activeSlotRecordsProvider, (_, next) {
+    ref.listen(activeSlotRecordsProvider(mode), (_, next) {
       final records = next.value;
       if (records == null) return;
       state = state.onEmission([for (final r in records) r.slot.id]);

@@ -16,6 +16,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../core/db/support/db_support.dart' show memoryDatabase;
 import 'quick_add_context.dart';
+import 'ramadan_off.dart';
 import 'test_phone.dart';
 
 export 'test_phone.dart' show TestPhone, testConfig;
@@ -32,6 +33,8 @@ List<Override> todayOverrides() => [
   quickAddContextWithoutTimer(),
   // Today's workout row (A37 D20) is the workouts tests' business (R7).
   todayWorkoutProvider.overrideWith((ref, date) => null),
+  // No Ramadan decision: no settings stream for the day's meals (A41a).
+  ramadanOff,
 ];
 
 /// This app's scope closes with the widget tree, inside fake async: no

@@ -247,7 +247,8 @@ class _FollowUpChip extends ConsumerWidget {
     );
     if (target == null) return const SizedBox.shrink();
     final l10n = context.l10n;
-    final slots = ref.watch(slotRecordsProvider).value ?? const [];
+    final slots =
+        ref.watch(slotRecordsProvider(SlotMode.normal)).value ?? const [];
     final slot = slots
         .map((r) => r.slot)
         .where((s) => s.id == target.$2)

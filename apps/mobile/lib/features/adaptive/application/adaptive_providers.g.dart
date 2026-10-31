@@ -400,7 +400,7 @@ final class ExpenditureViewProvider
   }
 }
 
-String _$expenditureViewHash() => r'c73a601d535a6f87c0551917fb97ce919c1a2a6b';
+String _$expenditureViewHash() => r'0e67788bf26c584b310e9f1c4679df45ff334e6b';
 
 /// This week's pending check-in card (or a stale one), or null; the
 /// automatic change's note is [appliedCheckInCard].

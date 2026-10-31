@@ -17,3 +17,8 @@ CREATE INDEX ix_proposals_budget ON proposals (budget_message_id)
 -- Pending cards in creation order (restore, the pending strip).
 CREATE INDEX ix_proposals_pending ON proposals (created_at)
   WHERE status = 'pending' AND deleted_at IS NULL;
+
+-- Proposals by kind (A38's weekly check-in and day suggestions read them by
+-- kind; backlog #235, added with A41a's migration).
+CREATE INDEX ix_proposals_kind ON proposals (kind)
+  WHERE deleted_at IS NULL;

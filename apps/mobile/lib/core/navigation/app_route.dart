@@ -521,6 +521,33 @@ final class MealSlotsRoute extends AppRoute {
   String get location => path;
 }
 
+/// Settings › Ramadan (A41a): Ramadan mode for this year, the ±1-day
+/// shifts, Ramadan targets, prayer times and the method. A detail screen of
+/// the Me tab. No parameters.
+final class RamadanRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/ramadan';
+
+  @override
+  String get location => path;
+}
+
+/// The Ramadan meal times (DY-012: Suhoor, Iftar, Snacks, customized
+/// separately). A detail screen of the Me tab. No parameters.
+final class RamadanMealSlotsRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/ramadan-meal-times';
+
+  @override
+  String get location => path;
+}
+
 /// The weight graph opened from Today's weight card (A15 D12): a detail
 /// screen of the Today tab, so Back returns to Today. No parameters.
 final class TodayWeightGraphRoute extends AppRoute {

@@ -80,7 +80,11 @@ class SlotActions extends _$SlotActions {
   Set<String> build() => const {};
 
   /// Add using a caller-generated UUID and normalized name.
-  Future<SlotOutcome> addSlot(String name, {TimeWindow? window}) {
+  Future<SlotOutcome> addSlot(
+    String name, {
+    TimeWindow? window,
+    SlotMode mode = SlotMode.normal,
+  }) {
     if (!MealSlotRules.validName(MealSlotRules.normalizeName(name))) {
       return Future.value(
         const SlotFailed(SlotFailure.invalid, code: 'nameInvalid'),
@@ -88,7 +92,7 @@ class SlotActions extends _$SlotActions {
     }
     final id = ref.read(idGeneratorProvider).next();
     return _run(
-      AddMealSlot(id, name, window: window),
+      AddMealSlot(id, name, window: window, mode: mode),
       [id],
       SlotKind.slotAdded,
       {'name': MealSlotRules.normalizeName(name)},

@@ -2,6 +2,7 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/progress/application/graph_window.dart';
+import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/today/today.dart';
@@ -30,11 +31,14 @@ class WeightGraphWindowController extends _$WeightGraphWindowController {
   void reset() => state = (range: state.range, panStart: null);
 }
 
-/// Highlighted periods for every chart (WB-021): empty for now. **A41
-/// supplies Ramadan periods here**, labelled "Ramadan" by the screen.
+/// Highlighted periods for every chart (WB-021): the Ramadans whose mode
+/// was on (A41a D9), labelled "Ramadan" by the screen.
 @riverpod
-List<({LocalDate start, LocalDate end})> chartHighlightPeriods(Ref ref) =>
-    const [];
+List<({LocalDate start, LocalDate end})> chartHighlightPeriods(Ref ref) => [
+  for (final p
+      in ref.watch(ramadanOnPeriodsProvider).value ?? const <RamadanPeriod>[])
+    (start: p.start, end: p.end),
+];
 
 /// Everything the weight graph draws, independent of the window (A15 PA4):
 /// recomputed once per data change, never per drag.

@@ -25,6 +25,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../helpers/quick_add_context.dart';
+import '../../../../helpers/ramadan_off.dart';
 import '../../../../helpers/unit_feed.dart';
 import '../../../body/support/memory_tip_store.dart';
 import '../../../diary/support/diary_fixtures.dart' show fixtureId;
@@ -261,6 +262,11 @@ List<Override> fakeToday({
   appNavigatorProvider.overrideWithValue(navigator ?? RecordingNavigator()),
   // No database stream to close at the end of a widget test.
   unitSystemProvider.overrideWith((ref) => Stream.value(units)),
+  // Normal meals, no Ramadan (A41a): no settings or slot stream.
+  ramadanOff,
+  daySlotsProvider.overrideWith(
+    (ref, date) async => DaySlots.normal(DefaultSlots.all),
+  ),
   if (fakeDays)
     dayViewProvider.overrideWith(
       (ref, date) => AsyncData(fakeView(days[date] ?? fakeDay(date))),
@@ -332,6 +338,7 @@ final class TodayRig {
     // targets until a test stores some.
     targetsRepositoryProvider.overrideWithValue(TargetsRepository(diary.db)),
     weekStartProvider.overrideWith((ref) => Stream.value(DayOfWeek.saturday)),
+    ramadanOff,
     // The workout row (A37 D20) is the workouts tests' business (R7).
     todayWorkoutProvider.overrideWith((ref, date) => null),
   ];

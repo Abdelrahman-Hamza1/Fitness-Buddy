@@ -1,5 +1,6 @@
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
+import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/application/body_weight.dart';
 import 'package:fb_mobile/features/targets/data/targets_repository.dart';
@@ -118,6 +119,9 @@ Future<DayTargets?> dayTargets(Ref ref, LocalDate date) async {
       ? await ref.watch(_weekIntakeProvider(from, date.plusDays(-1)).future)
       : const <DayIntake>[];
   final training = await trainingFuture;
+  // TG-060: "maintain during Ramadan" on a fasting day of that season.
+  final ramadan = await ref.watch(ramadanCalendarProvider.future);
+  final maintain = ramadan.maintainOn(date);
   return TargetsTimeline.day(
     date: date,
     settings: settings,
@@ -127,6 +131,7 @@ Future<DayTargets?> dayTargets(Ref ref, LocalDate date) async {
     intake: intake,
     calendar: calendar,
     training: training,
+    ramadanMaintain: maintain,
   );
 }
 

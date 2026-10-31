@@ -9268,6 +9268,432 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A good day for this month\'s measurements.'**
   String get notifMeasurementBody;
+
+  /// Name of the default Ramadan meal before dawn (DY-012).
+  ///
+  /// In en, this message translates to:
+  /// **'Suhoor'**
+  String get todaySlotSuhoor;
+
+  /// Name of the default Ramadan meal at sunset (DY-012).
+  ///
+  /// In en, this message translates to:
+  /// **'Iftar'**
+  String get todaySlotIftar;
+
+  /// Title of the Ramadan meal times screen and its row in Settings › Ramadan.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan meal times'**
+  String get ramadanMealTimes;
+
+  /// Meal times row: Suhoor/Iftar without a set window follow Fajr/Maghrib.
+  ///
+  /// In en, this message translates to:
+  /// **'Follows prayer times'**
+  String get mealTimesFollowsPrayer;
+
+  /// Header of the switch-on proposal card on Today (LC-031).
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan mode'**
+  String get ramadanProposalTitle;
+
+  /// Proposal card before Ramadan (LC-031). date: e.g. Wed, Feb 18.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan is expected to start on {date}. Switch on Ramadan mode for suhoor and iftar meals and reminders?'**
+  String ramadanProposalBody(String date);
+
+  /// Proposal card when Ramadan already started and the user hasn't decided.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan has started. Switch on Ramadan mode for suhoor and iftar meals and reminders?'**
+  String get ramadanProposalStarted;
+
+  /// Proposal card: switch Ramadan mode on.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch on'**
+  String get ramadanSwitchOn;
+
+  /// Proposal card: decline (can be switched on later in Settings).
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get ramadanNotNow;
+
+  /// Undo snackbar after switching Ramadan mode on.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan mode is on'**
+  String get ramadanSwitchedOn;
+
+  /// Undo snackbar after declining the proposal.
+  ///
+  /// In en, this message translates to:
+  /// **'You can switch Ramadan mode on in Settings'**
+  String get ramadanNotNowDone;
+
+  /// Title of Settings › Ramadan and its row.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan'**
+  String get ramadanTitle;
+
+  /// Subtitle of the Ramadan row in Settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan mode, meal times and prayer times'**
+  String get ramadanSettingsHint;
+
+  /// Settings › Ramadan beyond the calendar table.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan dates aren\'t available for this year.'**
+  String get ramadanOutsideTable;
+
+  /// Settings › Ramadan load error.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the Ramadan settings.'**
+  String get ramadanLoadFailed;
+
+  /// Undo snackbar after a Ramadan or prayer setting change.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan setting changed'**
+  String get ramadanSaved;
+
+  /// Section header with the Hijri year.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan {year} AH'**
+  String ramadanSeasonHeader(int year);
+
+  /// Switch row: Ramadan mode for this Ramadan (LC-030).
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan mode'**
+  String get ramadanMode;
+
+  /// Subtitle: the Ramadan dates after the user's shifts.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected {start} to {end}'**
+  String ramadanExpected(String start, String end);
+
+  /// Row and sheet title: Ramadan's first day (±1 day).
+  ///
+  /// In en, this message translates to:
+  /// **'First day'**
+  String get ramadanFirstDay;
+
+  /// Row and sheet title: Ramadan's last day (±1 day).
+  ///
+  /// In en, this message translates to:
+  /// **'Last day'**
+  String get ramadanLastDay;
+
+  /// Shift option subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A day earlier'**
+  String get ramadanShiftEarlier;
+
+  /// Shift option subtitle: the calendar's date.
+  ///
+  /// In en, this message translates to:
+  /// **'As expected'**
+  String get ramadanShiftExpected;
+
+  /// Shift option subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A day later'**
+  String get ramadanShiftLater;
+
+  /// Row and sheet title: the Ramadan targets choice (TG-060).
+  ///
+  /// In en, this message translates to:
+  /// **'During Ramadan'**
+  String get ramadanTargets;
+
+  /// Ramadan targets choice: same goal and budget.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep my goal'**
+  String get ramadanTargetsKeep;
+
+  /// Ramadan targets choice: maintain during Ramadan.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintain my weight'**
+  String get ramadanTargetsMaintain;
+
+  /// Hint under the maintain option (TG-061).
+  ///
+  /// In en, this message translates to:
+  /// **'Your goal pauses until Eid, then your normal targets come back'**
+  String get ramadanTargetsMaintainHint;
+
+  /// Note under the Ramadan settings (LC-030).
+  ///
+  /// In en, this message translates to:
+  /// **'Dates follow the Umm al-Qura calendar. Moon sighting can differ by a day: change the first or last day if yours does.'**
+  String get ramadanCalendarNote;
+
+  /// Section header (LC-033).
+  ///
+  /// In en, this message translates to:
+  /// **'Prayer times'**
+  String get ramadanPrayerTimes;
+
+  /// City row when no city is chosen.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your city for prayer times'**
+  String get ramadanNoCity;
+
+  /// Row title for today's Fajr and Maghrib.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get ramadanTodayTimes;
+
+  /// Today's prayer times, e.g. Fajr 4:58 AM · Maghrib 5:29 PM.
+  ///
+  /// In en, this message translates to:
+  /// **'Fajr {fajr} · Maghrib {maghrib}'**
+  String ramadanFajrMaghrib(String fajr, String maghrib);
+
+  /// Row and sheet title: prayer time calculation method.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculation method'**
+  String get ramadanPrayerMethod;
+
+  /// Row linking to the notification settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Suhoor and iftar reminders'**
+  String get ramadanReminders;
+
+  /// Subtitle of the reminders row.
+  ///
+  /// In en, this message translates to:
+  /// **'In Notifications'**
+  String get ramadanRemindersHint;
+
+  /// Prayer time method (Fajr 18°).
+  ///
+  /// In en, this message translates to:
+  /// **'Muslim World League'**
+  String get prayerMethodMwl;
+
+  /// Prayer time method (Fajr 19.5°).
+  ///
+  /// In en, this message translates to:
+  /// **'Egyptian General Authority'**
+  String get prayerMethodEgypt;
+
+  /// Prayer time method (Fajr 18°, Maghrib +5 min).
+  ///
+  /// In en, this message translates to:
+  /// **'Jordan Ministry of Awqaf'**
+  String get prayerMethodJordan;
+
+  /// Prayer time method (Fajr 18.5°).
+  ///
+  /// In en, this message translates to:
+  /// **'Umm al-Qura, Makkah'**
+  String get prayerMethodUmmAlQura;
+
+  /// Prayer time method (Fajr 15°).
+  ///
+  /// In en, this message translates to:
+  /// **'Islamic Society of North America'**
+  String get prayerMethodIsna;
+
+  /// Header of the targets offer in the weekly summary (TG-060).
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan targets'**
+  String get ramadanOfferTitle;
+
+  /// Targets offer text (TG-060/061).
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your goal during Ramadan, or maintain your weight until Eid? Your normal targets come back after Ramadan.'**
+  String get ramadanOfferBody;
+
+  /// Targets offer: choose maintain.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintain during Ramadan'**
+  String get ramadanOfferMaintain;
+
+  /// Undo snackbar after choosing maintain.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintaining during Ramadan'**
+  String get ramadanMaintainOn;
+
+  /// Undo snackbar after keeping the goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeping your goal'**
+  String get ramadanKeepGoal;
+
+  /// Note on a Ramadan day marked not fasting (LC-034).
+  ///
+  /// In en, this message translates to:
+  /// **'Not fasting today: normal meals'**
+  String get ramadanNotFastingNote;
+
+  /// Day menu / note action: mark the day fasting again.
+  ///
+  /// In en, this message translates to:
+  /// **'Fasting today'**
+  String get ramadanMarkFasting;
+
+  /// Day menu action (LC-034).
+  ///
+  /// In en, this message translates to:
+  /// **'Not fasting today'**
+  String get ramadanMarkNotFasting;
+
+  /// Day menu hint under Not fasting today.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal meals and no Ramadan reminders for this day'**
+  String get ramadanMarkNotFastingHint;
+
+  /// Undo snackbar after marking a day not fasting.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal meals for this day'**
+  String get ramadanMarkedNotFasting;
+
+  /// Undo snackbar after marking a day fasting again.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan meals for this day'**
+  String get ramadanMarkedFasting;
+
+  /// Today's date header during Ramadan (LC-020): the date and the day of Ramadan.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · Ramadan {day}'**
+  String ramadanDateLabel(String date, int day);
+
+  /// Title of the Ramadan comparison card (IN-008).
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan and the month before'**
+  String get ramadanCompareTitle;
+
+  /// Column header while Ramadan is going on.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =1{Ramadan, 1 day} other{Ramadan, {days} days}}'**
+  String ramadanCompareSoFar(int days);
+
+  /// Column header after Ramadan.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan'**
+  String get ramadanCompareRamadan;
+
+  /// Column header: the month before Ramadan.
+  ///
+  /// In en, this message translates to:
+  /// **'30 days before'**
+  String get ramadanCompareBefore;
+
+  /// Row: average calories on logged days.
+  ///
+  /// In en, this message translates to:
+  /// **'Average intake'**
+  String get ramadanCompareIntake;
+
+  /// Row: trend weight change.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight trend'**
+  String get ramadanCompareTrend;
+
+  /// Row: workouts per week.
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts a week'**
+  String get ramadanCompareWorkouts;
+
+  /// A calorie value in the comparison.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal'**
+  String ramadanCompareKcal(String kcal);
+
+  /// No data for a comparison cell.
+  ///
+  /// In en, this message translates to:
+  /// **'–'**
+  String get ramadanCompareNone;
+
+  /// Footnote: logged days in each column.
+  ///
+  /// In en, this message translates to:
+  /// **'Averages use logged days only ({ramadan} and {before}).'**
+  String ramadanCompareNote(int ramadan, int before);
+
+  /// Notification settings row (NT-008).
+  ///
+  /// In en, this message translates to:
+  /// **'Suhoor reminder'**
+  String get notifTypeSuhoor;
+
+  /// Hint (NT-008, NT-021).
+  ///
+  /// In en, this message translates to:
+  /// **'45 minutes before Fajr on Ramadan days, also in quiet hours'**
+  String get notifTypeSuhoorHint;
+
+  /// Notification settings row (NT-009).
+  ///
+  /// In en, this message translates to:
+  /// **'Iftar log nudge'**
+  String get notifTypeIftar;
+
+  /// Hint (NT-009).
+  ///
+  /// In en, this message translates to:
+  /// **'90 minutes after Maghrib on Ramadan days'**
+  String get notifTypeIftarHint;
+
+  /// Notification NT-008 title (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'Suhoor'**
+  String get notifSuhoorTitle;
+
+  /// Notification NT-008 text (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'Time for suhoor. Log it when you\'re ready.'**
+  String get notifSuhoorBody;
+
+  /// Notification NT-009 title (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'Iftar'**
+  String get notifIftarTitle;
+
+  /// Notification NT-009 text (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'Log your iftar when you have a moment.'**
+  String get notifIftarBody;
 }
 
 class _AppLocalizationsDelegate

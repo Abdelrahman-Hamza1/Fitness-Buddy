@@ -154,6 +154,11 @@ class NotificationSettingsScreen extends ConsumerWidget {
         l10n.notifTypeMeasurement,
         l10n.notifTypeMeasurementHint,
       ),
+      NotificationType.suhoor => (
+        l10n.notifTypeSuhoor,
+        l10n.notifTypeSuhoorHint,
+      ),
+      NotificationType.iftar => (l10n.notifTypeIftar, l10n.notifTypeIftarHint),
     };
 
 String _time(BuildContext context, int minute) =>

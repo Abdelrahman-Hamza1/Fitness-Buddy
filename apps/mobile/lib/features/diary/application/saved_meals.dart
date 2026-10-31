@@ -14,8 +14,8 @@ Stream<List<SavedMeal>> savedMeals(Ref ref) =>
 Stream<SavedMeal?> savedMeal(Ref ref, String id) =>
     ref.watch(diaryRepositoryProvider).watchSavedMeal(id);
 
-/// The meals a saved meal can be logged into (active, normal mode, in
-/// order), for the detail screen's Meal chip.
+/// Every live meal of both modes, for the detail screen's Meal chip (the
+/// chosen day's mode picks among them, DY-012).
 @riverpod
 Stream<List<MealSlot>> savedMealSlots(Ref ref) =>
-    ref.watch(diaryRepositoryProvider).watchSlots();
+    ref.watch(diaryRepositoryProvider).watchAllSlots();

@@ -13,6 +13,7 @@ import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart'
     show barcodeLookupProvider, pendingScansProvider, processPendingScans;
 import 'package:fb_mobile/features/quick_add/quick_add.dart';
+import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/today/application/today_controller.dart';
 import 'package:fb_mobile/features/today/application/today_date.dart';
@@ -185,24 +186,48 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   void _comingSoon() => showFbSnackBar(context, context.l10n.devComingSoon);
 
   /// The day menu (A16 D11): Mark day incomplete, or Count this day again
-  /// on a marked day (DY-004, undoable). A41 adds "not fasting" here.
+  /// on a marked day (DY-004, undoable); on a Ramadan day also Not fasting
+  /// today / Fasting today (LC-034, A41a D7).
   Future<void> _openDayMenu(LocalDate viewed, LocalDate today) async {
     final l10n = context.l10n;
     final marked =
         ref.read(dayViewProvider(viewed)).value?.raw.mark?.incomplete ?? false;
-    final incomplete = await showFbOptionSheet<bool>(
+    final slots = ref.read(daySlotsProvider(viewed)).value;
+    final notFasting = slots?.notFasting ?? false;
+    final picked = await showFbOptionSheet<_DayAction>(
       context,
       title: dayLabel(context, viewed, today),
       options: [
         FbOption(
-          value: !marked,
+          value: marked ? _DayAction.countAgain : _DayAction.incomplete,
           label: marked ? l10n.diaryCountAgain : l10n.diaryMarkIncomplete,
         ),
+        if (slots?.ramadan != null)
+          FbOption(
+            value: notFasting ? _DayAction.fasting : _DayAction.notFasting,
+            label: notFasting
+                ? l10n.ramadanMarkFasting
+                : l10n.ramadanMarkNotFasting,
+            subtitle: notFasting ? null : l10n.ramadanMarkNotFastingHint,
+          ),
       ],
       selected: null,
     );
-    if (incomplete == null || !mounted) return;
-    await markDayWithUndo(context, viewed, incomplete: incomplete);
+    if (picked == null || !mounted) return;
+    switch (picked) {
+      case _DayAction.incomplete || _DayAction.countAgain:
+        await markDayWithUndo(
+          context,
+          viewed,
+          incomplete: picked == _DayAction.incomplete,
+        );
+      case _DayAction.notFasting || _DayAction.fasting:
+        await markNotFastingWithUndo(
+          context,
+          viewed,
+          notFasting: picked == _DayAction.notFasting,
+        );
+    }
   }
 
   @override
@@ -241,7 +266,14 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
         child: Column(
           children: [
             FbDateHeader(
-              label: dayLabel(context, viewed, today),
+              // LC-020: the Hijri date alongside during Ramadan.
+              label: switch (ref.watch(ramadanDayProvider(viewed)).value) {
+                final r? => l10n.ramadanDateLabel(
+                  dayLabel(context, viewed, today),
+                  r.day,
+                ),
+                null => dayLabel(context, viewed, today),
+              },
               onPrevious: controller.previous,
               onNext: pager.canGoNext(viewed) ? controller.next : null,
               onLabelTap: () => unawaited(_pickDate(viewed, today)),
@@ -302,3 +334,6 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     );
   }
 }
+
+/// The day menu's choices.
+enum _DayAction { incomplete, countAgain, notFasting, fasting }

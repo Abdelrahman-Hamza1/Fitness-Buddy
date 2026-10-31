@@ -336,7 +336,9 @@ void main() {
       overrides: [
         settingsStoreProvider.overrideWithValue(r.store),
         foodChoiceProvider(ref).overrideWith((ref) async => choice),
-        foodSlotsProvider.overrideWith((ref) => Stream.value(DefaultSlots.all)),
+        foodSlotsProvider.overrideWith(
+          (ref, _) => Stream.value(DefaultSlots.all),
+        ),
         // The clock always comes from the application port.
         clockProvider.overrideWithValue(r.clock),
       ],

@@ -18,6 +18,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../helpers/ramadan_off.dart';
 import '../../diary/support/diary_harness.dart' show foodOf;
 import '../../foods/data/personal_food_harness.dart';
 import '../../foods/food_search_test.dart' show fixtureService;
@@ -76,8 +77,9 @@ final class Setup {
           dayProvider(key).overrideWith((_) => value),
         if (windowInput != null)
           quickAddWindowProvider.overrideWith((_, today) => windowInput(today)),
+        ramadanOff,
         if (slotsInput != null)
-          foodSlotsProvider.overrideWith((_) => slotsInput),
+          foodSlotsProvider.overrideWith((_, _) => slotsInput),
         if (mealsInput != null)
           savedMealsProvider.overrideWith((_) => mealsInput),
         if (personalInput != null)

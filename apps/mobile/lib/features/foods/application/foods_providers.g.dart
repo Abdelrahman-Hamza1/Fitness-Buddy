@@ -243,12 +243,18 @@ final class LogFoodProvider
 
 String _$logFoodHash() => r'7a36100d2eb9fc79a7fa52a27113a1a7b94a5e59';
 
-/// Active normal meal slots for the amount sheet.
+/// The meal slots the amount sheet offers on [date] (DY-012, A41a D6): the
+/// day's mode (Ramadan on a fasting day) with its windows, removed ones
+/// included (a sheet open on one drops it).
+/// Every slot in the list is of the day's mode ([slotModeOf]).
 
 @ProviderFor(foodSlots)
-final foodSlotsProvider = FoodSlotsProvider._();
+final foodSlotsProvider = FoodSlotsFamily._();
 
-/// Active normal meal slots for the amount sheet.
+/// The meal slots the amount sheet offers on [date] (DY-012, A41a D6): the
+/// day's mode (Ramadan on a fasting day) with its windows, removed ones
+/// included (a sheet open on one drops it).
+/// Every slot in the list is of the day's mode ([slotModeOf]).
 
 final class FoodSlotsProvider
     extends
@@ -258,20 +264,30 @@ final class FoodSlotsProvider
           Stream<List<MealSlot>>
         >
     with $FutureModifier<List<MealSlot>>, $StreamProvider<List<MealSlot>> {
-  /// Active normal meal slots for the amount sheet.
-  FoodSlotsProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'foodSlotsProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  /// The meal slots the amount sheet offers on [date] (DY-012, A41a D6): the
+  /// day's mode (Ramadan on a fasting day) with its windows, removed ones
+  /// included (a sheet open on one drops it).
+  /// Every slot in the list is of the day's mode ([slotModeOf]).
+  FoodSlotsProvider._({
+    required FoodSlotsFamily super.from,
+    required LocalDate super.argument,
+  }) : super(
+         retry: null,
+         name: r'foodSlotsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$foodSlotsHash();
+
+  @override
+  String toString() {
+    return r'foodSlotsProvider'
+        ''
+        '($argument)';
+  }
 
   @$internal
   @override
@@ -281,11 +297,50 @@ final class FoodSlotsProvider
 
   @override
   Stream<List<MealSlot>> create(Ref ref) {
-    return foodSlots(ref);
+    final argument = this.argument as LocalDate;
+    return foodSlots(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is FoodSlotsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
   }
 }
 
-String _$foodSlotsHash() => r'643277c2f250336ab8782998c5fb7a4fbdb84335';
+String _$foodSlotsHash() => r'11344cccfd005c33a97c7560bcfde64b2b3fb276';
+
+/// The meal slots the amount sheet offers on [date] (DY-012, A41a D6): the
+/// day's mode (Ramadan on a fasting day) with its windows, removed ones
+/// included (a sheet open on one drops it).
+/// Every slot in the list is of the day's mode ([slotModeOf]).
+
+final class FoodSlotsFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<MealSlot>>, LocalDate> {
+  FoodSlotsFamily._()
+    : super(
+        retry: null,
+        name: r'foodSlotsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The meal slots the amount sheet offers on [date] (DY-012, A41a D6): the
+  /// day's mode (Ramadan on a fasting day) with its windows, removed ones
+  /// included (a sheet open on one drops it).
+  /// Every slot in the list is of the day's mode ([slotModeOf]).
+
+  FoodSlotsProvider call(LocalDate date) =>
+      FoodSlotsProvider._(argument: date, from: this);
+
+  @override
+  String toString() => r'foodSlotsProvider';
+}
 
 /// Replace-mode command with the same applier and undo history.
 

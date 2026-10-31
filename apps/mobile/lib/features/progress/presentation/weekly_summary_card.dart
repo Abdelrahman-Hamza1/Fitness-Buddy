@@ -7,6 +7,7 @@ import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/progress/application/weekly_summary_providers.dart';
 import 'package:fb_mobile/features/progress/presentation/progress_retry.dart';
 import 'package:fb_mobile/features/progress/presentation/progress_text.dart';
+import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
@@ -32,6 +33,8 @@ class WeeklySummaryCard extends ConsumerWidget {
         WeeklySummaryBlock(weekStart: start, current: true),
         // The check-in belongs to the summary of its week (backlog #231).
         const CheckInCard(),
+        // TG-060: the Ramadan targets offer, in the first Ramadan week.
+        const RamadanTargetsOfferCard(),
         if (hasPast)
           FbListRow(
             key: const ValueKey('weekly-summary-past'),

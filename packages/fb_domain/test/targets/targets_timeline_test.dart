@@ -811,4 +811,57 @@ void main() {
       );
     });
   });
+
+  group('TG-060 maintain during Ramadan', () {
+    DayTargets? maintain(
+      List<GoalPhaseRecord> goals, {
+      TargetSettingsRecord? version,
+      bool on = true,
+    }) => TargetsTimeline.day(
+      date: _wed,
+      settings: [version ?? _version(mode: TargetMode.fixed)],
+      profile: _profile,
+      goals: goals,
+      ramadanMaintain: on,
+    );
+
+    test("a loss goal's deficit is left out of a generated base", () {
+      final goals = [_goal(GoalExpression.weekly(-.5))];
+      final normal = maintain(goals, on: false)!;
+      final ramadan = maintain(goals)!;
+      expect(normal.day.kcal, closeTo(2000, .01));
+      expect(ramadan.day.kcal, closeTo(2000 + .5 * 7700 / 7, .01));
+      expect(ramadan.ramadanMaintain, isTrue);
+      expect(normal.ramadanMaintain, isFalse);
+    });
+
+    test('the SF-011 cap limits what is added back', () {
+      // 1 % of 80 kg = 0.8 kg/week.
+      final ramadan = maintain([_goal(GoalExpression.weekly(-1.2))])!;
+      expect(ramadan.day.kcal, closeTo(2000 + .8 * 7700 / 7, .01));
+    });
+
+    test("a gain goal's surplus is removed, never below the floor", () {
+      final goals = [_goal(GoalExpression.weekly(.1), type: GoalType.gain)];
+      expect(maintain(goals)!.day.kcal, closeTo(2000 - .1 * 7700 / 7, .01));
+      final low = maintain(
+        goals,
+        version: _version(mode: TargetMode.fixed, base: 1800),
+      )!;
+      expect(low.day.kcal, closeTo(1750, .01), reason: 'the floor');
+    });
+
+    test('a manual base, a maintain goal or no goal stay unchanged', () {
+      final manual = maintain([
+        _goal(GoalExpression.weekly(-.5)),
+      ], version: _version(mode: TargetMode.fixed, manual: true))!;
+      expect(manual.day.kcal, closeTo(2000, .01));
+      expect(manual.ramadanMaintain, isFalse);
+      expect(maintain(const [])!.ramadanMaintain, isFalse);
+      final kept = maintain([
+        _goal(GoalExpression.weekly(0), type: GoalType.maintain),
+      ])!;
+      expect(kept.ramadanMaintain, isFalse);
+    });
+  });
 }

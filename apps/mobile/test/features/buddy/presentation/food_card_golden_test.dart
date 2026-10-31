@@ -42,7 +42,7 @@ final Map<String, Widget Function()> _states = {
 /// Metric units and the four default meals.
 final List<Override> _overrides = [
   unitSystemProvider.overrideWith((ref) => Stream.value(UnitSystem.metric)),
-  slotRecordsProvider.overrideWith(
+  slotRecordsProvider(SlotMode.normal).overrideWith(
     (ref) => Stream.value([
       for (final slot in [
         DefaultSlots.breakfast,

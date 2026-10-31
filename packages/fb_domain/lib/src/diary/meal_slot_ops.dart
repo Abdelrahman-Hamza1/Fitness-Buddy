@@ -14,10 +14,11 @@ sealed class MealSlotOp implements ChangeOp {
   String get family => familyName;
 }
 
-/// Add a custom normal meal with a caller-generated identity.
+/// Add a custom meal with a caller-generated identity, to the normal set
+/// or (A41a, DY-012 "customizable separately") the Ramadan set.
 final class AddMealSlot extends MealSlotOp {
   /// Names are normalized before validation.
-  new(this.id, String name, {this.window})
+  new(this.id, String name, {this.window, this.mode = SlotMode.normal})
     : name = MealSlotRules.normalizeName(name) {
     checkUuid(id, 'id');
     if (!MealSlotRules.validName(this.name)) throw ArgumentError('nameInvalid');
@@ -31,14 +32,18 @@ final class AddMealSlot extends MealSlotOp {
 
   /// Optional assignment window.
   final TimeWindow? window;
+
+  /// The set the meal joins.
+  final SlotMode mode;
   @override
   bool operator ==(Object other) =>
       other is AddMealSlot &&
       id == other.id &&
       name == other.name &&
-      window == other.window;
+      window == other.window &&
+      mode == other.mode;
   @override
-  int get hashCode => Object.hash(id, name, window);
+  int get hashCode => Object.hash(id, name, window, mode);
   @override
   String toString() => 'AddMealSlot($id)';
 }
@@ -111,7 +116,7 @@ final class UpdateMealSlot extends MealSlotOp {
   String toString() => 'UpdateMealSlot($id@$expectedVersion)';
 }
 
-/// Full observed active normal set, in the requested order.
+/// Full observed active set of one mode, in the requested order.
 final class ReorderMealSlots extends MealSlotOp {
   /// Nonempty, distinct versioned identities.
   new(Iterable<VersionedId> order) : order = List.unmodifiable(order) {

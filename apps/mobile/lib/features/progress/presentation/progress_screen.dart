@@ -8,6 +8,7 @@ import 'package:fb_mobile/features/progress/presentation/goal_progress_card.dart
 import 'package:fb_mobile/features/progress/presentation/macros_section.dart';
 import 'package:fb_mobile/features/progress/presentation/progress_period_bar.dart';
 import 'package:fb_mobile/features/progress/presentation/progress_retry.dart';
+import 'package:fb_mobile/features/progress/presentation/ramadan_comparison_card.dart';
 import 'package:fb_mobile/features/progress/presentation/weekly_summary_card.dart';
 import 'package:fb_mobile/features/progress/presentation/weight_section.dart';
 import 'package:fb_mobile/features/today/today.dart';
@@ -112,6 +113,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
             gap,
             const WeightSection(),
             gap,
+            const RamadanComparisonCard(),
             const GoalProgressCard(),
             gap,
             FbCard(

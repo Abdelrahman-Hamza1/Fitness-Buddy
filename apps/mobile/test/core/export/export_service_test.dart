@@ -196,7 +196,11 @@ void main() {
     expect((done.outcome as Shared).rowCount, 0);
     expect(offlineClient.requests, isEmpty);
     expect(sharer.files, hasLength(exportRegistryV1.length + 1));
-    expect(seenKeys, AppSettings.all.map((k) => k.name));
+    expect(seenKeys, [
+      ...AppSettings.all.map((k) => k.name),
+      // A41a: the per-date fasting keys of every Ramadan in the table.
+      ...AppSettings.fastingKeyNames,
+    ]);
   });
   test('export dir is wiped before each export', () async {
     final dir = Directory('${root.path}/export')..createSync();

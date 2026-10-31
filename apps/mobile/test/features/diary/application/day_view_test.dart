@@ -9,6 +9,7 @@ import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../helpers/ramadan_off.dart';
 import '../support/diary_fixtures.dart';
 import '../support/diary_harness.dart';
 
@@ -19,6 +20,7 @@ ProviderContainer setup(DiaryHarness h) {
       changeSetApplierProvider.overrideWithValue(h.applier),
       clockProvider.overrideWithValue(h.clock),
       diaryApplyProvider.overrideWithValue(h.applier.apply),
+      ramadanOff,
     ],
   );
   addTearDown(container.dispose);
@@ -35,6 +37,7 @@ void setApply(
     changeSetApplierProvider.overrideWithValue(h.applier),
     clockProvider.overrideWithValue(h.clock),
     diaryApplyProvider.overrideWithValue(apply),
+    ramadanOff,
   ]);
 }
 
