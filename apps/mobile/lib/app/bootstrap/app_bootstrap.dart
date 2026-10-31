@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fb_mobile/app/router/app_router.dart';
 import 'package:fb_mobile/core/account/account_providers.dart';
 import 'package:fb_mobile/core/account/profile_generation.dart';
 import 'package:fb_mobile/core/catalog/catalog.dart';
@@ -7,12 +8,14 @@ import 'package:fb_mobile/core/config/client_config.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/errors/error_reporting.dart';
 import 'package:fb_mobile/core/export/export_providers.dart';
+import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/session/session_providers.dart';
 import 'package:fb_mobile/core/session/session_state.dart';
 import 'package:fb_mobile/core/sync/sync_providers.dart';
 import 'package:fb_mobile/features/adaptive/adaptive.dart';
 import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:fb_mobile/features/notifications/notifications.dart';
+import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
     show ProviderSubscription;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -26,7 +29,8 @@ part 'app_bootstrap.g.dart';
 /// scheduling (A34 D10) and, once the
 /// catalog is attached and any account transition recovered, Buddy's
 /// pending cards read back (A23 D12), this week's adaptive check-in
-/// (A38 D4, local only) and the local notifications (A40 D6).
+/// (A38 D4, local only), the local notifications (A40 D6) and the first
+/// run on a fresh install (A51, TD-110).
 ///
 /// The app widget (`FitnessBuddyApp`) calls [afterFirstFrame] from a
 /// post-frame callback; nothing awaits it, so the UI never waits for the
@@ -148,6 +152,26 @@ final class AppBootstrap {
       _contained(() async {
         await recovered;
         if (_ref.mounted) _ref.listen(weeklyCheckInProvider, (_, _) {});
+      }),
+    );
+    // A51 TD-110: the first run on a fresh install, against the recovered
+    // profile; local reads only. It never replaces a screen the user
+    // already opened.
+    unawaited(
+      _contained(() async {
+        await recovered;
+        if (!_ref.mounted) return;
+        final generation = _ref.read(profileGenerationProvider);
+        if (!await _ref.read(firstRunGateProvider).shouldShow()) return;
+        if (!_ref.mounted) return;
+        if (_ref.read(profileGenerationProvider) != generation) return;
+        final router = _ref.read(appRouterProvider);
+        // Only over a bare Today: never over a sheet, a dialog or another
+        // screen the user already opened.
+        final root = router.config.routerDelegate.navigatorKey.currentState;
+        if (root == null || root.canPop()) return;
+        if (router.config.state.uri.path != TodayRoute.path) return;
+        router.go(const WelcomeRoute());
       }),
     );
     // A40 D6: plan and schedule the local reminders against the recovered

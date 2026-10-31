@@ -18,7 +18,7 @@ The product principles (PR-1 to PR-12 in `00-vision-and-scope.md`) apply everywh
 
 ## 2. Navigation
 
-- **UX-010** `[R1]` Four tabs: **Today** (home), **Progress**, **Workouts**, **Me** (profile, goals, targets, "Buddy remembers", settings).
+- **UX-010** `[R1]` Four tabs: **Today** (home), **Progress**, **Workouts**, **Me** (account status, a targets summary, then grouped subpages: targets & goal, food & meals, workouts, Ramadan, preferences, notifications, account & data, help; "Buddy remembers" when it exists; D-088).
 - **UX-011** `[R1]` The input bar lives on Today and Workouts. Typing opens Buddy's chat as a **bottom sheet**, so the screen behind stays visible and its numbers update live when a proposal is confirmed.
 - **UX-012** `[R1]` The chat sheet can be pulled up to full height to see history, or swiped down to dismiss. Pending proposals survive dismissal (AI-045).
 - **UX-013** `[R1]` Nothing important is more than **2 taps** from Today.
@@ -54,7 +54,7 @@ The product principles (PR-1 to PR-12 in `00-vision-and-scope.md`) apply everywh
 
 ## 7. Onboarding
 
-- **UX-060** `[R1]` R1 (owner): minimal setup: profile (TG-001), goal (TG-010/011), units, halal, week start, city. Under 2 minutes.
+- **UX-060** `[R1]` R1: on a fresh install a short first run (D-088): welcome, then one question per screen, each skippable: goal (TG-010/011), profile (TG-001, with units), activity, training, the resulting plan, and an optional account offer last. Setup from Today or Me asks the same questions without the welcome and account steps. Week start and halal live in settings; the city is asked where prayer times need it. Under 2 minutes.
 - **UX-061** `[R2]` R2: guided onboarding for new users: the same steps plus age gate (SF-001), health questions (SF-002), a short "how logging with Buddy works" demo with a sample proposal card, and optional paste-import of weight history (WB-030).
 
 ## 8. Accessibility

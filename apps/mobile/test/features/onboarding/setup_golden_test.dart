@@ -1,5 +1,7 @@
 import 'package:alchemist/alchemist.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,44 +9,55 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../today/presentation/support/today_support.dart' show phoneApp;
+import '../today/presentation/support/today_support.dart'
+    show RecordingNavigator, phoneApp;
 
-/// Setup on a fixed draft (no database).
+/// The question screens on a fixed draft (no database).
 class _Fixed extends SetupFlow {
   new(this.draft);
 
   final SetupDraft draft;
 
   @override
-  Future<SetupDraft> build() async => draft;
+  Future<SetupDraft> build(SetupMode mode) async => draft;
 }
 
 /// A filled-in metric draft on [page].
-SetupDraft _draft(SetupPage page) => SetupDraft(
-  today: LocalDate(2026, 10, 29),
-  units: UnitSystem.metric,
-  weekStart: DayOfWeek.saturday,
-  halal: true,
-  page: page,
-  sex: FormulaSex.male,
-  birthYear: '1990',
-  height: const HeightDraft(cm: '180'),
-  weight: const BodyWeightDraft(text: '90'),
-  activity: ActivityLevel.moderate,
-  goal: const GoalDraft().withType(GoalType.lose),
-  touched: true,
-);
+SetupDraft _draft(SetupPage page, {SetupMode mode = SetupMode.setup}) =>
+    SetupDraft(
+      today: LocalDate(2026, 10, 29),
+      units: UnitSystem.metric,
+      weekStart: DayOfWeek.saturday,
+      halal: true,
+      mode: mode,
+      page: page,
+      sex: FormulaSex.male,
+      birthYear: '1990',
+      height: const HeightDraft(cm: '180'),
+      weight: const BodyWeightDraft(text: '90'),
+      activity: ActivityLevel.moderate,
+      goal: const GoalDraft().withType(GoalType.lose),
+      training: TrainingChoice.mixItUp,
+      touched: true,
+    );
 
-/// Setup on [page]'s fixed draft, not set up yet.
-List<Override> _overrides(SetupPage page) => [
-  setupFlowProvider.overrideWith(() => _Fixed(_draft(page))),
+/// The fixed [draft], not set up yet, a guest with Google available.
+List<Override> _overrides(SetupDraft draft) => [
+  setupFlowProvider.overrideWith2((_) => _Fixed(draft)),
   setupStatusProvider.overrideWith((ref) async => SetupStatus.notSetUp),
+  accountStatusProvider.overrideWith((ref) async => AccountStatus.guest),
+  googleSignInAvailableProvider.overrideWithValue(true),
+  appNavigatorProvider.overrideWithValue(RecordingNavigator()),
 ];
 
-Future<void> _golden(SetupPage page) => goldenTest(
-  'UX-060 UX-070 setup page ${page.index + 1} (${page.name}), light/dark at '
-  'text scale 1.0 and 2.0',
-  fileName: 'setup_${page.name}',
+Future<void> _golden(
+  String description,
+  String file,
+  Widget screen,
+  List<Override> overrides,
+) => goldenTest(
+  description,
+  fileName: file,
   builder: () => GoldenTestGroup(
     columns: 4,
     children: [
@@ -59,9 +72,9 @@ Future<void> _golden(SetupPage page) => goldenTest(
               width: 360,
               height: 760,
               child: ProviderScope(
-                overrides: _overrides(page),
+                overrides: overrides,
                 child: phoneApp(
-                  const SetupScreen(),
+                  screen,
                   brightness: brightness,
                   textScale: scale,
                 ),
@@ -73,6 +86,31 @@ Future<void> _golden(SetupPage page) => goldenTest(
 );
 
 Future<void> main() async {
-  // Only the first page is a key screen (TD-104).
-  await _golden(SetupPage.you);
+  // The key screens only (TD-104): the welcome, a question, the plan and
+  // the account step.
+  await _golden(
+    'D-088 UX-070 first run welcome, light/dark at text scale 1.0 and 2.0',
+    'first_run_welcome',
+    const WelcomeScreen(),
+    _overrides(_draft(SetupPage.goal)),
+  );
+  await _golden(
+    'UX-060 UX-070 setup goal question, light/dark at text scale 1.0 and 2.0',
+    'setup_goal',
+    const SetupScreen(),
+    _overrides(_draft(SetupPage.goal)),
+  );
+  await _golden(
+    'UX-060 TG-021 UX-070 setup plan, light/dark at text scale 1.0 and 2.0',
+    'setup_plan',
+    const SetupScreen(),
+    _overrides(_draft(SetupPage.plan)),
+  );
+  await _golden(
+    'D-088 AC-002 UX-070 first run account step, light/dark at text scale '
+        '1.0 and 2.0',
+    'first_run_account',
+    const SetupScreen(mode: SetupMode.firstRun),
+    _overrides(_draft(SetupPage.account, mode: SetupMode.firstRun)),
+  );
 }

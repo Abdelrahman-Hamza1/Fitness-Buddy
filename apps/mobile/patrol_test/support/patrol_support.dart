@@ -6,6 +6,7 @@ import 'package:fb_mobile/app/app_scope.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/db/database_location.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
+import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:fb_mobile/features/quick_add/quick_add.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -215,6 +216,8 @@ Future<ProviderContainer> bootApp(
       databaseLocationProvider.overrideWithValue(
         isolatedLocation(profileKey, root.path),
       ),
+      // A51 TD-110: the journeys start on Today, not the first run.
+      firstRunEnabledProvider.overrideWithValue(false),
       ...overrides,
     ],
   );

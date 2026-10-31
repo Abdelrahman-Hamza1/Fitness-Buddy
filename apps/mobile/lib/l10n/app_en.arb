@@ -2140,33 +2140,9 @@
   "@setupBack": {
     "description": "Setup: goes to the previous page; what was typed is kept."
   },
-  "setupNext": "Next",
-  "@setupNext": {
-    "description": "Setup: goes to the next page; off until the page's required fields are valid."
-  },
-  "setupSave": "Save",
-  "@setupSave": {
-    "description": "Setup: saves the profile, goal, first weigh-in and targets (last page)."
-  },
-  "setupPageYou": "About you",
-  "@setupPageYou": {
-    "description": "Setup page 1 title (TG-001)."
-  },
   "setupPageActivity": "How active are you?",
   "@setupPageActivity": {
     "description": "Setup page 2 title (TG-001)."
-  },
-  "setupPageGoal": "Your goal",
-  "@setupPageGoal": {
-    "description": "Setup page 3 title (TG-010/011)."
-  },
-  "setupPagePreferences": "Preferences",
-  "@setupPagePreferences": {
-    "description": "Setup page 4 title (UX-060)."
-  },
-  "setupPageTargets": "Your targets",
-  "@setupPageTargets": {
-    "description": "Setup page 5 title: the calculated targets."
   },
   "setupWeightHint": "Saved as your first weigh-in.",
   "@setupWeightHint": {
@@ -2175,42 +2151,6 @@
   "setupActivityHint": "Pick the one closest to a usual week.",
   "@setupActivityHint": {
     "description": "Setup page 2: under the title."
-  },
-  "setupPreferencesHint": "These are filled in from your settings. You can change them here or later in Me.",
-  "@setupPreferencesHint": {
-    "description": "Setup page 4: under the title."
-  },
-  "setupTargetsDaily": "{kcal} kcal a day",
-  "@setupTargetsDaily": {
-    "description": "Setup page 5: the daily target, the big number.",
-    "placeholders": {
-      "kcal": {
-        "type": "int",
-        "format": "decimalPattern"
-      }
-    }
-  },
-  "setupTargetsWeekly": "{kcal} kcal a week",
-  "@setupTargetsWeekly": {
-    "description": "Setup page 5: the weekly budget, under the daily target.",
-    "placeholders": {
-      "kcal": {
-        "type": "int",
-        "format": "decimalPattern"
-      }
-    }
-  },
-  "setupTargetsHow": "How it's calculated",
-  "@setupTargetsHow": {
-    "description": "Setup page 5: heading above the plain-language explanation (TG-021)."
-  },
-  "setupTargetsMacros": "Macros",
-  "@setupTargetsMacros": {
-    "description": "Setup page 5: heading above the macro targets."
-  },
-  "setupTargetsMode": "Your weekly budget adjusts the rest of the week when a day is over or under. You can change this later in Me.",
-  "@setupTargetsMode": {
-    "description": "Setup page 5: how the targets are applied by default."
   },
   "setupLeaveTitle": "Leave setup?",
   "@setupLeaveTitle": {
@@ -2247,6 +2187,268 @@
   "setupUpdateMessage": "Your profile was saved by a newer version of Fitness Buddy. Update the app to see and change it.",
   "@setupUpdateMessage": {
     "description": "Setup: the message under 'Update the app'."
+  },
+  "welcomeTitle": "Food and training, tracked your way.",
+  "@welcomeTitle": {
+    "description": "First run welcome (D-088): the headline."
+  },
+  "welcomeMessage": "A few quick questions set your targets. Skip any of them: the app works without answers and without an account.",
+  "@welcomeMessage": {
+    "description": "First run welcome: the line under the headline."
+  },
+  "welcomeLogTitle": "Log meals in seconds",
+  "@welcomeLogTitle": {
+    "description": "First run welcome: first benefit."
+  },
+  "welcomeLogBody": "Arabic and local dishes included",
+  "@welcomeLogBody": {
+    "description": "First run welcome: first benefit's detail."
+  },
+  "welcomeTargetsTitle": "Targets that adapt to you",
+  "@welcomeTargetsTitle": {
+    "description": "First run welcome: second benefit."
+  },
+  "welcomeTargetsBody": "Based on your real weigh-ins",
+  "@welcomeTargetsBody": {
+    "description": "First run welcome: second benefit's detail."
+  },
+  "welcomeWorkoutsTitle": "Workouts with or without a plan",
+  "@welcomeWorkoutsTitle": {
+    "description": "First run welcome: third benefit."
+  },
+  "welcomeWorkoutsBody": "Your data stays on your phone",
+  "@welcomeWorkoutsBody": {
+    "description": "First run welcome: third benefit's detail."
+  },
+  "welcomeStart": "Get started",
+  "@welcomeStart": {
+    "description": "First run welcome: the main button, opens the questions."
+  },
+  "welcomeSkip": "Skip setup, I'll look around",
+  "@welcomeSkip": {
+    "description": "First run welcome: skip every question and go to Today."
+  },
+  "welcomeSignIn": "Already have an account? Sign in",
+  "@welcomeSignIn": {
+    "description": "First run welcome: opens sign-in."
+  },
+  "setupSkip": "Skip",
+  "@setupSkip": {
+    "description": "Setup questions (D-088): skip this question; its answer isn't used."
+  },
+  "setupContinue": "Continue",
+  "@setupContinue": {
+    "description": "Setup questions: go to the next question."
+  },
+  "setupGoalTitle": "What brings you here?",
+  "@setupGoalTitle": {
+    "description": "Setup goal question: the title."
+  },
+  "setupGoalHint": "Sets your daily target. Change it any time.",
+  "@setupGoalHint": {
+    "description": "Setup goal question: the line under the title."
+  },
+  "setupGoalLose": "Lose weight",
+  "@setupGoalLose": {
+    "description": "Setup goal answer."
+  },
+  "setupGoalLoseHint": "A steady, safe pace",
+  "@setupGoalLoseHint": {
+    "description": "Setup goal answer: detail for Lose weight."
+  },
+  "setupGoalKeep": "Keep my weight",
+  "@setupGoalKeep": {
+    "description": "Setup goal answer."
+  },
+  "setupGoalKeepHint": "Eat well and stay where I am",
+  "@setupGoalKeepHint": {
+    "description": "Setup goal answer: detail for Keep my weight."
+  },
+  "setupGoalGain": "Gain weight or muscle",
+  "@setupGoalGain": {
+    "description": "Setup goal answer."
+  },
+  "setupGoalGainHint": "With enough protein",
+  "@setupGoalGainHint": {
+    "description": "Setup goal answer: detail for Gain."
+  },
+  "setupGoalTrack": "Just see what I eat",
+  "@setupGoalTrack": {
+    "description": "Setup goal answer: no calorie target."
+  },
+  "setupGoalTrackHint": "No target for now",
+  "@setupGoalTrackHint": {
+    "description": "Setup goal answer: detail for Just see what I eat."
+  },
+  "setupYouTitle": "A bit about you",
+  "@setupYouTitle": {
+    "description": "Setup body question: the title."
+  },
+  "setupYouHint": "Used only to estimate your energy needs. Stays on this phone.",
+  "@setupYouHint": {
+    "description": "Setup body question: the line under the title."
+  },
+  "setupToImperialAsk": "Using pounds or feet?",
+  "@setupToImperialAsk": {
+    "description": "Setup body question: offer to switch units (now metric)."
+  },
+  "setupToImperial": "Switch to imperial",
+  "@setupToImperial": {
+    "description": "Setup body question: switches the inputs to pounds and feet."
+  },
+  "setupToMetricAsk": "Using kilograms or centimetres?",
+  "@setupToMetricAsk": {
+    "description": "Setup body question: offer to switch units (now imperial)."
+  },
+  "setupToMetric": "Switch to metric",
+  "@setupToMetric": {
+    "description": "Setup body question: switches the inputs to kilograms and centimetres."
+  },
+  "setupTrainingTitle": "Do you work out?",
+  "@setupTrainingTitle": {
+    "description": "Setup training question: the title."
+  },
+  "setupTrainingHint": "No plan needed. You can always just log what you did.",
+  "@setupTrainingHint": {
+    "description": "Setup training question: the line under the title."
+  },
+  "setupTrainingNotNow": "Not right now",
+  "@setupTrainingNotNow": {
+    "description": "Setup training answer."
+  },
+  "setupTrainingNotNowHint": "Set it up later in the Workouts tab",
+  "@setupTrainingNotNowHint": {
+    "description": "Setup training answer: detail for Not right now."
+  },
+  "setupTrainingMix": "Yes, I mix it up",
+  "@setupTrainingMix": {
+    "description": "Setup training answer: no plan, log what you do."
+  },
+  "setupTrainingMixHint": "I'll log what I do each time",
+  "@setupTrainingMixHint": {
+    "description": "Setup training answer: detail."
+  },
+  "setupTrainingPlan": "Yes, I want a plan",
+  "@setupTrainingPlan": {
+    "description": "Setup training answer: the starter plans open after setup."
+  },
+  "setupTrainingPlanHint": "Pick a plan after this, then its exercises",
+  "@setupTrainingPlanHint": {
+    "description": "Setup training answer: detail for wanting a plan."
+  },
+  "setupPlanTitle": "Here's your plan",
+  "@setupPlanTitle": {
+    "description": "Setup plan page: the title."
+  },
+  "setupPlanEat": "Eat about",
+  "@setupPlanEat": {
+    "description": "Setup plan page: above the daily calories."
+  },
+  "setupPlanKcal": "kcal a day",
+  "@setupPlanKcal": {
+    "description": "Setup plan page: under the daily calories."
+  },
+  "setupPlanKeep": "Keep your weight around {weight}",
+  "@setupPlanKeep": {
+    "description": "Setup plan page: the goal line for keeping the weight.",
+    "placeholders": {
+      "weight": {
+        "type": "String",
+        "example": "82 kg"
+      }
+    }
+  },
+  "setupPlanLose": "Lose about {rate} a week",
+  "@setupPlanLose": {
+    "description": "Setup plan page: the goal line for losing.",
+    "placeholders": {
+      "rate": {
+        "type": "String",
+        "example": "0.5 kg"
+      }
+    }
+  },
+  "setupPlanGain": "Gain about {rate} a week",
+  "@setupPlanGain": {
+    "description": "Setup plan page: the goal line for gaining.",
+    "placeholders": {
+      "rate": {
+        "type": "String",
+        "example": "0.25 kg"
+      }
+    }
+  },
+  "setupPlanHow": "How is this worked out?",
+  "@setupPlanHow": {
+    "description": "Setup plan page: opens the explanation."
+  },
+  "setupPlanLater": "Want more on gym days or Fridays? Set any day's number later in Targets.",
+  "@setupPlanLater": {
+    "description": "Setup plan page: where to change single days later."
+  },
+  "setupPlanConfirm": "Looks good",
+  "@setupPlanConfirm": {
+    "description": "Setup plan page: saves the plan."
+  },
+  "setupPlanChange": "Change the numbers",
+  "@setupPlanChange": {
+    "description": "Setup plan page: opens the goal pace and activity."
+  },
+  "setupPlanChangeDone": "Done",
+  "@setupPlanChangeDone": {
+    "description": "Setup plan page: closes Change the numbers."
+  },
+  "setupPlanUnavailable": "These answers don't give a plan yet. Go back to check them, or skip for now.",
+  "@setupPlanUnavailable": {
+    "description": "Setup plan page: when the engine can't work out targets from the answers."
+  },
+  "setupPlanSkip": "Skip for now",
+  "@setupPlanSkip": {
+    "description": "Setup plan page: finish without targets."
+  },
+  "setupAccountTitle": "Keep your data safe?",
+  "@setupAccountTitle": {
+    "description": "First run account step: the title."
+  },
+  "setupAccountHint": "Optional. Everything works without an account, and your data stays on this phone.",
+  "@setupAccountHint": {
+    "description": "First run account step: the line under the title."
+  },
+  "setupAccountBackup": "Backed up",
+  "@setupAccountBackup": {
+    "description": "First run account step: first benefit."
+  },
+  "setupAccountBackupBody": "Lose or change your phone and keep every log.",
+  "@setupAccountBackupBody": {
+    "description": "First run account step: first benefit's detail."
+  },
+  "setupAccountSync": "Synced",
+  "@setupAccountSync": {
+    "description": "First run account step: second benefit."
+  },
+  "setupAccountSyncBody": "Your diary and workouts on any phone you sign in on.",
+  "@setupAccountSyncBody": {
+    "description": "First run account step: second benefit's detail."
+  },
+  "setupAccountPrivate": "Private",
+  "@setupAccountPrivate": {
+    "description": "First run account step: third benefit."
+  },
+  "setupAccountPrivateBody": "No ads, no selling data. Delete it all any time.",
+  "@setupAccountPrivateBody": {
+    "description": "First run account step: third benefit's detail."
+  },
+  "setupAccountNotNow": "Not now",
+  "@setupAccountNotNow": {
+    "description": "First run account step: finish without an account."
+  },
+  "setupAccountDone": "You're signed in. Your data is backed up.",
+  "@setupAccountDone": {
+    "description": "First run account step: after signing in."
+  },
+  "setupAccountFinish": "Continue",
+  "@setupAccountFinish": {
+    "description": "First run account step: finish after signing in."
   },
   "profileSexLabel": "Sex",
   "@profileSexLabel": {
@@ -3517,17 +3719,9 @@
       }
     }
   },
-  "meSectionYou": "You",
-  "@meSectionYou": {
-    "description": "Me tab: the heading of the section with the profile and targets (A13)."
-  },
   "meSetUpTargets": "Set up profile & targets",
   "@meSetUpTargets": {
     "description": "Me tab: the row that opens setup while no profile and targets exist (A13 D10)."
-  },
-  "meSectionFood": "Food",
-  "@meSectionFood": {
-    "description": "Me tab: the heading of the section with the food lists (Your foods)."
   },
   "meYourFoods": "Your foods",
   "@meYourFoods": {
@@ -4167,10 +4361,6 @@
   "@quickAddRowSemantics": {
     "description": "Screen-reader label of the row of quick-add chips above the input bar on Today."
   },
-  "meSectionSettings": "Settings",
-  "@meSectionSettings": {
-    "description": "Me tab: heading of the settings rows (units, week start, halal, theme, city)."
-  },
   "meSectionYourData": "Your data",
   "@meSectionYourData": {
     "description": "Me tab: heading of the section for the user's own data (export)."
@@ -4179,17 +4369,140 @@
   "@meExportData": {
     "description": "Me tab: row that opens the export sheet (AC-030). Also the sheet's title."
   },
-  "meSectionAbout": "About",
-  "@meSectionAbout": {
-    "description": "Me tab: heading of the About section."
-  },
   "meSectionDeveloper": "Developer",
   "@meSectionDeveloper": {
     "description": "Me tab: heading of the developer-only rows (dev flavor)."
   },
-  "meAbout": "About Fitness Buddy",
-  "@meAbout": {
-    "description": "Me tab: row that opens the About screen."
+  "settingsLanguage": "Language",
+  "@settingsLanguage": {
+    "description": "Me › Preferences (A51): the app language row, information only in R1."
+  },
+  "settingsLanguageEnglish": "English",
+  "@settingsLanguageEnglish": {
+    "description": "Me › Preferences: the app language (D-080: English UI in R1)."
+  },
+  "meGuest": "Guest",
+  "@meGuest": {
+    "description": "Me account card (A51, D-088): a guest's title."
+  },
+  "meGuestDetail": "Data on this phone only, not backed up",
+  "@meGuestDetail": {
+    "description": "Me account card: a guest's line."
+  },
+  "meReadOnly": "Read-only copy",
+  "@meReadOnly": {
+    "description": "Me account card: the title for a read-only copy kept after sign-out (AC-004)."
+  },
+  "meSignIn": "Sign in",
+  "@meSignIn": {
+    "description": "Me account card: opens sign-in."
+  },
+  "meSummaryKcal": "kcal today",
+  "@meSummaryKcal": {
+    "description": "Me targets summary: under today's calorie target."
+  },
+  "meSummaryProtein": "protein",
+  "@meSummaryProtein": {
+    "description": "Me targets summary: under today's protein target."
+  },
+  "meSummaryGoal": "goal",
+  "@meSummaryGoal": {
+    "description": "Me targets summary: under the goal."
+  },
+  "meSummaryNone": "No targets yet. You can still log everything.",
+  "@meSummaryNone": {
+    "description": "Me targets summary: before setup."
+  },
+  "meSectionPlan": "Your plan",
+  "@meSectionPlan": {
+    "description": "Me: the first group of rows."
+  },
+  "meSectionApp": "App",
+  "@meSectionApp": {
+    "description": "Me: the second group of rows."
+  },
+  "meTargetsGoal": "Targets & goal",
+  "@meTargetsGoal": {
+    "description": "Me row and subpage title."
+  },
+  "meTargetsGoalHint": "Calories, macros, profile and goal",
+  "@meTargetsGoalHint": {
+    "description": "Me row subtitle for Targets & goal once set up."
+  },
+  "meTargetsGoalNotSet": "Not set up yet",
+  "@meTargetsGoalNotSet": {
+    "description": "Me row subtitle for Targets & goal before setup."
+  },
+  "meFoodMeals": "Food & meals",
+  "@meFoodMeals": {
+    "description": "Me row and subpage title."
+  },
+  "meFoodMealsHint": "Your foods, saved meals, meal times, halal",
+  "@meFoodMealsHint": {
+    "description": "Me row subtitle for Food & meals."
+  },
+  "meWorkouts": "Workouts",
+  "@meWorkouts": {
+    "description": "Me row and subpage title."
+  },
+  "meWorkoutsHint": "Weekly plan, starter plans, exercises",
+  "@meWorkoutsHint": {
+    "description": "Me row subtitle for Workouts."
+  },
+  "meWorkoutsNote": "These open in the Workouts tab.",
+  "@meWorkoutsNote": {
+    "description": "Me › Workouts: the line above the rows."
+  },
+  "meStarterPlans": "Starter plans",
+  "@meStarterPlans": {
+    "description": "Me › Workouts: opens the starter plans."
+  },
+  "mePreferences": "Preferences",
+  "@mePreferences": {
+    "description": "Me row and subpage title."
+  },
+  "mePreferencesValues": "{units} · {theme} theme · Week starts {day}",
+  "@mePreferencesValues": {
+    "description": "Me row subtitle for Preferences: the current values.",
+    "placeholders": {
+      "units": {
+        "type": "String",
+        "example": "Metric"
+      },
+      "theme": {
+        "type": "String",
+        "example": "System"
+      },
+      "day": {
+        "type": "String",
+        "example": "Saturday"
+      }
+    }
+  },
+  "meNotificationsOn": "{count, plural, =0{All reminders off} =1{1 reminder on} other{{count} reminders on}}",
+  "@meNotificationsOn": {
+    "description": "Me row subtitle for Notifications.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "meAccountData": "Account & data",
+  "@meAccountData": {
+    "description": "Me row and subpage title."
+  },
+  "meAccountDataHint": "Sign in, sync, export, delete",
+  "@meAccountDataHint": {
+    "description": "Me row subtitle for Account & data."
+  },
+  "meHelpAbout": "Help & about",
+  "@meHelpAbout": {
+    "description": "Me row: opens About."
+  },
+  "meExportDataHint": "Your diary, foods and settings as files",
+  "@meExportDataHint": {
+    "description": "Me › Account & data: the export row's subtitle."
   },
   "settingsUnits": "Units",
   "@settingsUnits": {
@@ -4242,10 +4555,6 @@
   "settingsCity": "City",
   "@settingsCity": {
     "description": "Settings row: the city used for prayer times and local suggestions."
-  },
-  "settingsCityNotSet": "Not set",
-  "@settingsCityNotSet": {
-    "description": "Settings row: shown when no city is chosen."
   },
   "settingsEnergy": "Energy",
   "@settingsEnergy": {
@@ -5685,14 +5994,6 @@
       }
     }
   },
-  "meSectionAccount": "Account",
-  "@meSectionAccount": {
-    "description": "Me tab: Account section header (A33)."
-  },
-  "accountGuest": "You're using Fitness Buddy as a guest. Your data stays on this phone.",
-  "@accountGuest": {
-    "description": "Me › Account: guest status line (AC-002)."
-  },
   "accountSignedIn": "Signed in",
   "@accountSignedIn": {
     "description": "Me › Account: signed-in status line. No email or id is shown."
@@ -5746,10 +6047,6 @@
   "signInEmailLabel": "Email",
   "@signInEmailLabel": {
     "description": "Sign-in screen: email field label."
-  },
-  "signInSendCode": "Send code",
-  "@signInSendCode": {
-    "description": "Sign-in screen: button that emails a 6-digit code."
   },
   "signInCodeLabel": "6-digit code",
   "@signInCodeLabel": {
@@ -5810,6 +6107,66 @@
   "signInDoneButton": "Done",
   "@signInDoneButton": {
     "description": "Sign-in success: closes the sign-in screen."
+  },
+  "signInBenefit": "Back up your logs and use them on any phone. What's already on this phone comes with you.",
+  "@signInBenefit": {
+    "description": "Sign-in (A51, D-088): the line under the title."
+  },
+  "signInOr": "or",
+  "@signInOr": {
+    "description": "Sign-in: between the Google button and the email field."
+  },
+  "signInEmailHint": "you@example.com",
+  "@signInEmailHint": {
+    "description": "Sign-in: example address in the empty email field."
+  },
+  "signInEmailNote": "We'll send a 6-digit code. No password needed.",
+  "@signInEmailNote": {
+    "description": "Sign-in: under the email field."
+  },
+  "signInEmailButton": "Continue with email",
+  "@signInEmailButton": {
+    "description": "Sign-in and the first run's account step: sends a code to the email."
+  },
+  "signInWithoutAccount": "Keep using without an account",
+  "@signInWithoutAccount": {
+    "description": "Sign-in: closes the screen; the app stays a guest (AC-002)."
+  },
+  "signInCodeTitle": "Check your email",
+  "@signInCodeTitle": {
+    "description": "Sign-in code step: the title."
+  },
+  "signInCodeSent": "We sent a 6-digit code to {email}. It works for 10 minutes.",
+  "@signInCodeSent": {
+    "description": "Sign-in code step: where the code went and how long it works.",
+    "placeholders": {
+      "email": {
+        "type": "String",
+        "example": "you@example.com"
+      }
+    }
+  },
+  "signInCodePaste": "Pasting the code fills all six boxes. It continues on its own.",
+  "@signInCodePaste": {
+    "description": "Sign-in code step: under the code boxes."
+  },
+  "signInResendIn": "Resend in {time}",
+  "@signInResendIn": {
+    "description": "Sign-in code step: the resend countdown.",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "0:42"
+      }
+    }
+  },
+  "signInResend": "Resend code",
+  "@signInResend": {
+    "description": "Sign-in code step: sends a new code."
+  },
+  "signInChangeEmail": "Use a different email",
+  "@signInChangeEmail": {
+    "description": "Sign-in code step: back to the email field."
   },
   "guestPromptBody": "You're using Fitness Buddy as a guest. Create a free account and everything you've logged comes with you.",
   "@guestPromptBody": {

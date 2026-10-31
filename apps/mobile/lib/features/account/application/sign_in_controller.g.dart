@@ -138,7 +138,7 @@ final class SignInControllerProvider
   }
 }
 
-String _$signInControllerHash() => r'8448d2a77ed7f43a125c9fdd156e01b0f6b6022e';
+String _$signInControllerHash() => r'8616433473533ccbd9b08cf2cbda4233deaa5441';
 
 /// Orchestrates the sign-in screen (A33 D4–D5, D9).
 

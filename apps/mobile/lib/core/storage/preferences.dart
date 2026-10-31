@@ -60,6 +60,11 @@ abstract final class PreferenceKeys {
   /// synced or sent.
   static const accountRemovedNote = 'fb.account_removed_note.v1';
 
+  /// Whether this phone has had its first run (D-088, TD-110): set when the
+  /// welcome screen is left, or at once on a phone that already holds data.
+  /// Device state, never synced.
+  static const firstRun = 'fb.first_run.v1';
+
   /// The pending-scan list of [profileKey] in the [namespace] environment
   /// (`flavor|apiBaseUrl`, as the profile registry's).
   static String pendingScansFor(String namespace, String profileKey) =>

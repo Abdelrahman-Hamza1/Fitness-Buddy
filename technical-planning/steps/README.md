@@ -179,34 +179,35 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A25](A25-diary-edits-by-chat.md) | Diary edits by chat (app) | Claude | A23, **B09a** (contract) | M | S35 app part |  | ⬜ phase 2 |
 | [A26](A26-memory-user-model.md) | Memory & user model (app) | Claude | A23a, **B09a** (contract) | M | S36 app part |  | ⬜ phase 2 |
 | [A27](A27-batches-chat-foods.md) | Batches, personal foods & saved meals by chat (app) | Claude | A09b, A23, **B09a** (contract) | L | S37 app part |  | ⬜ phase 2 |
-| [A28a](A28-barcode-label-scan.md) | Barcode scanning (app, no AI; split from A28, 2026-10-30) | Claude | A09a, A24, **B10a** (contract) | M | S38 app part |  | ✅ closed, awaiting review/merge (built with B10a as one step, owner 2026-10-30) |
+| [A28a](A28-barcode-label-scan.md) | Barcode scanning (app, no AI; split from A28, 2026-10-30) | Claude | A09a, A24, **B10a** (contract) | M | S38 app part |  | ✅ |
 | [A28b](A28-barcode-label-scan.md) | Label scan (app; split from A28) | Claude | A28a, A23b, **B10b** (contract) | M | S38 app part |  | ⬜ phase 2 |
 | [A29](A29-photo-body-import.md) | Photo logging, body data by chat & paste import (app) | Claude | A15, A23, **B10b** (contract) | M | S39 app part |  | ⬜ phase 2 |
 | [A30](dish-batches.md) | Dish batch 5: sweets, drinks & Ramadan staples | Claude | A19 | S | D5 |  | ✅ (with A19) |
 | [A31](A31-qa-suggestions-halal.md) | Q&A, suggestions & halal (app) | Claude | A26, **B11** (contract) | M | S40 app part |  | ⬜ phase 2 |
 | [A32](dish-batches.md) | Dish batch 6: gap fill from dogfooding | Claude | A30 | S | D6 |  | ⏸ gap fill once dogfooding shows the misses (TD-105) |
 | [A33](A33-sign-in-guest-app.md) | Sign-in & guest upgrade | Claude | A20, **B04** | M | S25 |  | ✅ |
-| [A34](A34-sync-engine-app.md) | Sync engine (app) | Claude | A33, **B05**, **B17**, **B18**, **B19**, **B20**, **B21** | L | S27 |  | ✅ closed, awaiting review/merge (built with A35 as one step, owner 2026-10-30) |
-| [A35](A35-account-deletion-app.md) | Account deletion (app) | Claude | A34, **B06** | S | S28 deletion part | **M5** | ✅ closed, awaiting review/merge (built with A34 as one step) |
+| [A34](A34-sync-engine-app.md) | Sync engine (app) | Claude | A33, **B05**, **B17**, **B18**, **B19**, **B20**, **B21** | L | S27 |  | ✅ |
+| [A35](A35-account-deletion-app.md) | Account deletion (app) | Claude | A34, **B06** | S | S28 deletion part | **M5** | ✅ |
 | [A36](A36-workout-domain.md) | Workout domain, library & templates | Claude | A05b, A06, A12 | M | S41 |  | ✅ |
 | [A37a](A37-workout-logging.md) | Workouts without AI: log & history (no plan needed, last-time numbers, autosave, Repeat, PRs, Today row; split from A37, 2026-10-30) | Claude | A36, A15a | L | S42 app part |  | ✅ |
 | [A37c](A37-workout-logging.md) | Workouts without AI: plans, muscle map & progress (starter plans, templates, exercise page; split from A37) | Claude | A37a · soft: A16 (Progress entry) | M–L | S42 app part |  | ✅ |
 | [A37b](A37-workout-logging.md) | Workout logging by chat (split from A37) | Claude | A37c, A23b, **B12** (contract) | M | S42 app part |  | ⬜ phase 2 |
-| [A38](A38-adaptive-targets.md) | Adaptive targets & weekly check-in | Claude | A16, A23a (proposal storage) | M | S43 |  | ✅ closed, awaiting review/merge |
-| [A39a](A39-weekly-review.md) | Weekly summary (numbers, no Buddy; split from A39, 2026-10-30) | Claude | A37c, A38 | M | S44 app part |  | ✅ closed, awaiting review/merge (with A40) |
+| [A38](A38-adaptive-targets.md) | Adaptive targets & weekly check-in | Claude | A16, A23a (proposal storage) | M | S43 |  | ✅ |
+| [A39a](A39-weekly-review.md) | Weekly summary (numbers, no Buddy; split from A39, 2026-10-30) | Claude | A37c, A38 | M | S44 app part |  | ✅ |
 | [A39b](A39-weekly-review.md) | Buddy weekly review (split from A39) | Claude | A39a, A23b, **B12** (contract) | S | S44 app part |  | ⬜ phase 2 |
-| [A40](A40-notifications.md) | Notifications | Claude | A37c, A39a (TD-105; see card) | M | S45 |  | ✅ closed, awaiting review/merge (with A39a) |
-| [A41a](A41-ramadan.md) | Ramadan mode without Buddy (split from A41, 2026-10-30) | Claude | A05b, A15, A38, A40 | L | S46 app part |  | ✅ closed, awaiting review/merge |
+| [A40](A40-notifications.md) | Notifications | Claude | A37c, A39a (TD-105; see card) | M | S45 |  | ✅ |
+| [A41a](A41-ramadan.md) | Ramadan mode without Buddy (split from A41, 2026-10-30) | Claude | A05b, A15, A38, A40 | L | S46 app part |  | ✅ |
 | [A41b](A41-ramadan.md) | Ramadan Buddy parts (split from A41) | Claude | A41a, A39b, **B12** (contract) | S | S46 app part | **M6** | ⬜ phase 2 |
-| [A42](A42-performance-a11y-offline.md) | Performance, accessibility & offline acceptance | Claude | A41a, A35 (TD-105) | M | S48 | **M2b** · **R1** | ✅ closed, awaiting review/merge (A41a merged in, its screens swept) |
+| [A42](A42-performance-a11y-offline.md) | Performance, accessibility & offline acceptance | Claude | A41a, A35 (TD-105) | M | S48 | **M2b** · **R1** | ✅ |
 | [A43](A43-play-internal-release.md) | Play internal testing release | Claude | A42, **B14** | S | S29 app part | **M7** | ⬜ production |
 | [A45](A45-ux-polish.md) | UX polish: steady chips, light default, slim weight row, tab reset | Claude | A15b, A44 | M | new (owner phone feedback) |  | ✅ |
 | [A46](A46-test-diet.md) | Test diet (one-time cut, TD-104) | Claude | — | M | new |  | ✅ |
 | [A47](A47-food-basics-expansion.md) | Food basics expansion (~250 → ~600) | Claude | A05 | M | new |  | ✅ |
 | [A48](A48-local-brands.md) | Local brands & packaged foods | Claude | A47 | M | new |  | ⏸ postponed (owner, D-087) |
 | [A49](A49-buddy-accuracy.md) | Buddy accuracy (backlog #148–#151) | Claude | A23b, **B09b** | M | new |  | ⬜ phase 2 |
-| [A50](A50-google-sign-in.md) | Google sign-in on the phone (backlog #200) | Claude | A33 | S | new |  | ✅ closed, awaiting merge (pulled forward by the owner, 2026-10-30) |
-| [A52](A52-workouts-ux.md) | Workouts UX overhaul (tab, logging maps, picker popularity, plans choose exercises) | Claude | A37a, A37c | L | new (owner UX critique 2026-10-31) |  | ✅ closed, awaiting merge |
+| [A50](A50-google-sign-in.md) | Google sign-in on the phone (backlog #200) | Claude | A33 | S | new |  | ✅ |
+| [A51](A51-first-run-me.md) | First run, sign-in screens & Me overhaul (UX overhaul 2026-10-31) | Claude | A13b, A33, A50 | L | new |  | ✅ closed, awaiting merge |
+| [A52](A52-workouts-ux.md) | Workouts UX overhaul (tab, logging maps, picker popularity, plans choose exercises) | Claude | A37a, A37c | L | new (owner UX critique 2026-10-31) |  | ✅ |
 
 **A44 runs right after A22 (owner request, 2026-10-29):** the "Embrace" identity (palette, fonts, icon) lands before the remaining screens are built, an exception to "the number is the order" like the dish batches below.
 
@@ -228,7 +229,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [B08](B08-buddy-interpret-service.md) | Buddy interpret service | B02, B07 | L | S31 |  | ✅ |
 | [B09a](B09-buddy-intents-edits-memory-batches.md) | Buddy intents server: contract, v2 grammar & resolver (split from B09) | B08, **A21** | L | S35–S37 server parts |  | ✅ (live smoke WP7: owner-gated, moved to B09b) |
 | [B09b](B09-buddy-intents-edits-memory-batches.md) | Full AQ metrics with the real ProposalEngine (M3 eval half; split from B09) | B09a | M | S35–S37 server parts | **M3** eval | ✅ (AQ metrics built and measured; M3 gate not yet met: 25 known misses → density chore, estimate-portion policy, resolver match quality, A17, A32; live smoke WP7 owner-gated) |
-| [B10a](B10-barcode-vision-import.md) | Barcode lookup (server, no AI; split from B10, 2026-10-30) | B07 | M | S38 server part |  | ✅ closed, awaiting review/merge (built with A28a as one step; migration `202610300001_OffCacheWrites`) |
+| [B10a](B10-barcode-vision-import.md) | Barcode lookup (server, no AI; split from B10, 2026-10-30) | B07 | M | S38 server part |  | ✅ |
 | [B10b](B10-barcode-vision-import.md) | Label & meal photos, paste import (split from B10) | B10a, B08 | L | S38–S39 server parts |  | ⬜ phase 2 |
 | [B11](B11-buddy-qa-suggestions.md) | Buddy Q&A & suggestions | B08 | M | S40 server part |  | ⬜ phase 2 |
 | [B12](B12-buddy-workouts-review-ramadan.md) | Buddy workouts, weekly review & Ramadan | B08 | M | S42, S44, S46 server parts |  | ⬜ phase 2 |
@@ -240,7 +241,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [B18](B18-chat-proposal-sync.md) | chatMessage & proposal sync entities (server) | B05, **A21** (WP4 codec shape and size budget) | M | new (A21 plan review) |  | ✅ |
 | [B19](B19-body-targets-sync.md) | Body & targets sync entities (server) | B05, B18, **A13a** (contract), **A14** | M | new (A13 plan review) |  | ✅ |
 | [B20](B20-measurement-sync.md) | Measurement sync entities (server) | B05, B19, **A15b** (contract) | M | new (A15b plan) |  | ✅ |
-| [B21](B21-workout-sync.md) | Workout sync entities (server; backlog #189) | B05, B20, **A36**, **A37a** | M–L | new (A36 D6) |  | ✅ closed, awaiting merge (Codex APPROVE, 0 findings) |
+| [B21](B21-workout-sync.md) | Workout sync entities (server; backlog #189) | B05, B20, **A36**, **A37a** | M–L | new (A36 D6) |  | ✅ |
 
 ```mermaid
 flowchart LR

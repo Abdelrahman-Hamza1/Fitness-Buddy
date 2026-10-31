@@ -164,6 +164,11 @@ final class AppRouter implements AppNavigator {
                       ),
                     ],
                     if (route is MeRoute) ...[
+                      _goRoute(const MeTargetsGoalRoute(), nested: true),
+                      _goRoute(const MeFoodRoute(), nested: true),
+                      _goRoute(const MeWorkoutsRoute(), nested: true),
+                      _goRoute(const MePreferencesRoute(), nested: true),
+                      _goRoute(const MeAccountRoute(), nested: true),
                       _personalFoodsRoute(),
                       _savedMealsRoute(),
                       _goRoute(const MealSlotsRoute(), nested: true),
@@ -184,6 +189,13 @@ final class AppRouter implements AppNavigator {
         ],
       ),
       for (final route in outsideTabs) _goRoute(route),
+      _signInRoute(),
+      // The first run (D-088, TD-110): the questions sit above the welcome,
+      // so Back on the first question returns to it.
+      _goRoute(
+        const WelcomeRoute(),
+        children: [_goRoute(const FirstRunSetupRoute(), nested: true)],
+      ),
     ],
   );
 
@@ -199,7 +211,6 @@ final class AppRouter implements AppNavigator {
   static const List<AppRoute> outsideTabs = [
     UpdateRequiredRoute(),
     SetupRoute(),
-    SignInRoute(),
     DeleteAccountRoute(),
     WeightHistoryRoute(),
   ];
@@ -263,6 +274,20 @@ final class AppRouter implements AppNavigator {
     builder: (_, state) =>
         _screen(route is TodayRoute ? todayRouteOf(state.uri) : route),
     routes: children,
+  );
+
+  // Sign-in (A33), optionally starting with Google (A51): the provider
+  // comes from the query string; an unknown one is ignored.
+  static GoRoute _signInRoute() => GoRoute(
+    path: SignInRoute.path,
+    name: SignInRoute.path,
+    builder: (_, state) => _screen(signInRouteOf(state.uri)),
+  );
+
+  /// The [SignInRoute] a location stands for.
+  @visibleForTesting
+  static SignInRoute signInRouteOf(Uri location) => SignInRoute(
+    withGoogle: location.queryParameters[SignInRoute.withParam] == 'google',
   );
 
   /// The [TodayRoute] a location stands for: an unknown `open` is ignored.
@@ -624,7 +649,14 @@ final class AppRouter implements AppNavigator {
     MeasurementTypeRoute(:final key) => MeasurementTypeScreen(typeKey: key),
     UpdateRequiredRoute() => const UpdateRequiredScreen(),
     SetupRoute() => const SetupScreen(),
-    SignInRoute() => const SignInScreen(),
+    WelcomeRoute() => const WelcomeScreen(),
+    FirstRunSetupRoute() => const SetupScreen(mode: SetupMode.firstRun),
+    SignInRoute(:final withGoogle) => SignInScreen(startWithGoogle: withGoogle),
+    MeTargetsGoalRoute() => const MeTargetsGoalScreen(),
+    MeFoodRoute() => const MeFoodScreen(),
+    MeWorkoutsRoute() => const MeWorkoutsScreen(),
+    MePreferencesRoute() => const MePreferencesScreen(),
+    MeAccountRoute() => const MeAccountScreen(),
     DeleteAccountRoute() => const DeleteAccountScreen(),
     ProfileRoute() => const ProfileGoalScreen(),
     TargetsRoute() => const TargetsScreen(),

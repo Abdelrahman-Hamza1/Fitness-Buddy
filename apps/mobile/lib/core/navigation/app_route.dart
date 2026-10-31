@@ -736,15 +736,110 @@ final class SetupRoute extends AppRoute {
 }
 
 /// Sign in or create an account (AC-001, AC-003, A33): a full screen
-/// outside the tabs, opened from Me › Account, the guest prompt and the
-/// session-expired banner. Never a startup redirect (signing in is never
-/// required). No parameters.
+/// outside the tabs, opened from Me, the guest prompt, the session-expired
+/// banner and the first run's account step. Never a startup redirect
+/// (signing in is never required). With [withGoogle] it starts Google
+/// sign-in right away (the first run's "Continue with Google", A51):
+/// `/sign-in?with=google`.
 final class SignInRoute extends AppRoute {
+  /// Creates the route.
+  const new({this.withGoogle = false});
+
+  /// The route's path pattern.
+  static const path = '/sign-in';
+
+  /// The query parameter naming the provider to start with.
+  static const withParam = 'with';
+
+  /// Start Google sign-in when the screen opens.
+  final bool withGoogle;
+
+  @override
+  String get location => withGoogle ? '$path?$withParam=google' : path;
+}
+
+/// The first run's welcome (D-088, A51): outside the tabs, shown once on a
+/// fresh install after the first frame (TD-110), never by a redirect.
+final class WelcomeRoute extends AppRoute {
   /// Creates the route.
   const new();
 
   /// The route's path pattern.
-  static const path = '/sign-in';
+  static const path = '/welcome';
+
+  @override
+  String get location => path;
+}
+
+/// The first run's questions and account step (D-088, A51), above the
+/// welcome screen, so Back on the first question returns to it.
+final class FirstRunSetupRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/welcome/setup';
+
+  @override
+  String get location => path;
+}
+
+/// Me › Targets & goal (A51 D8): targets, profile & goal, or setup.
+final class MeTargetsGoalRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/targets-goal';
+
+  @override
+  String get location => path;
+}
+
+/// Me › Food & meals (A51 D8): your foods, saved meals, meal times, halal.
+final class MeFoodRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/food';
+
+  @override
+  String get location => path;
+}
+
+/// Me › Workouts (A51 D8): links into the Workouts tab.
+final class MeWorkoutsRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/workouts';
+
+  @override
+  String get location => path;
+}
+
+/// Me › Preferences (A51 D8): units, theme, week start, language, energy.
+final class MePreferencesRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/preferences';
+
+  @override
+  String get location => path;
+}
+
+/// Me › Account & data (A51 D8): sign-in, sync, export, sign-out and
+/// deletion.
+final class MeAccountRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/account';
 
   @override
   String get location => path;

@@ -27,6 +27,7 @@ import 'package:fb_mobile/core/db/database_location.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter/foundation.dart';
@@ -85,6 +86,8 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         ...appOverrides(config),
+        // A51 TD-110: start on Today, not the first run.
+        firstRunEnabledProvider.overrideWithValue(false),
         databaseLocationProvider.overrideWithValue(
           DatabaseLocation(
             profileKey: 'perf-jank',

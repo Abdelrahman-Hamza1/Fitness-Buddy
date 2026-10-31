@@ -1,6 +1,9 @@
 /// Account feature (A33): sign-in, guest upgrade, sign-out, Me › Account.
 library;
 
+export 'application/sign_in_controller.dart'
+    show AccountStatus, accountStatusProvider, googleSignInAvailableProvider;
+
 export 'presentation/account_busy_scope.dart';
 export 'presentation/account_section.dart';
 export 'presentation/account_today_banner.dart';

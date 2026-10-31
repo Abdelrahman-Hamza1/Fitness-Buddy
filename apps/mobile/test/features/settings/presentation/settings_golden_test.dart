@@ -1,8 +1,11 @@
 import 'package:alchemist/alchemist.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
+import 'package:fb_mobile/features/account/account.dart';
+import 'package:fb_mobile/features/me/application/me_summary.dart';
 import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
+import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -59,15 +62,29 @@ Future<void> main() async {
     citySearchProvider.overrideWith((ref) async => CitySearch(sampleCities)),
   ];
   await _golden(
-    'LC-010 LC-033 UX-010 UX-070 me: settings',
+    'D-088 UX-010 UX-070 me: account card, targets summary, grouped rows',
     'me_settings',
     const MeScreen(),
     [
-      ...fakeToday(units: UnitSystem.imperial),
+      ...fakeToday(units: UnitSystem.imperial, setup: SetupStatus.setUp),
       ...base,
       ...fakeSettings(city: nablus),
+      accountStatusProvider.overrideWith((ref) async => AccountStatus.guest),
+      meTargetsSummaryProvider.overrideWith(
+        (ref) async => const MeTargetsSummary(
+          kcal: 2150,
+          proteinGrams: 150,
+          goal: GoalType.maintain,
+        ),
+      ),
     ],
     height: 900,
+  );
+  await _golden(
+    'LC-010 UX-010 UX-070 me: preferences',
+    'me_preferences',
+    const MePreferencesScreen(),
+    [...fakeToday(units: UnitSystem.imperial), ...base, ...fakeSettings()],
   );
   await _golden('SF-040 UX-070 about', 'about', const AboutScreen(), [
     ...base,

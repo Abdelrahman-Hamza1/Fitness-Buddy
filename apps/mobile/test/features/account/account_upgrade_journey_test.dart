@@ -58,12 +58,16 @@ Future<void> _until(
   }
 }
 
-Future<void> _tapMeRow(WidgetTester tester, String row) async {
+Future<void> _tapMeRow(
+  WidgetTester tester,
+  String row, {
+  Type screen = MeScreen,
+}) async {
   final me = find.descendant(
-    of: find.byType(MeScreen),
+    of: find.byType(screen),
     matching: find.byType(Scrollable),
   );
-  await _until(tester, () => me.evaluate().isNotEmpty, 'Me');
+  await _until(tester, () => me.evaluate().isNotEmpty, '$screen');
   for (var i = 0; i < 20 && find.text(row).evaluate().isEmpty; i++) {
     await tester.drag(me.first, const Offset(0, -200));
     await tester.pump(const Duration(milliseconds: 100));
@@ -90,23 +94,23 @@ void main() {
       'the guest session',
     );
 
-    // Me › Account › Sign in (pushed, as on the device).
+    // Me's account card › Sign in (pushed, as on the device).
     showRoute(c, const MeRoute());
-    await _tapMeRow(tester, 'Sign in or create an account');
+    await _tapMeRow(tester, 'Sign in');
     await _until(
       tester,
       () => find.byType(SignInScreen).evaluate().isNotEmpty,
       'the sign-in screen',
     );
     await tester.enterText(find.byType(TextField), 'journey@example.invalid');
-    await tester.tap(find.text('Send code'));
+    await tester.tap(find.text('Continue with email'));
     await _until(
       tester,
-      () => find.text('6-digit code').evaluate().isNotEmpty,
-      'the code field',
+      () => find.text('Check your email').evaluate().isNotEmpty,
+      'the code boxes',
     );
+    // The sixth digit continues on its own.
     await tester.enterText(find.byType(TextField), accountJourneyCode);
-    await tester.tap(find.text('Continue'));
     await _until(
       tester,
       () => find.text("You're signed in").evaluate().isNotEmpty,
@@ -132,7 +136,8 @@ void main() {
       () => find.byType(SignInScreen).evaluate().isEmpty,
       'sign-in to close',
     );
-    await _tapMeRow(tester, 'Sign out');
+    await _tapMeRow(tester, 'Account & data');
+    await _tapMeRow(tester, 'Sign out', screen: MeAccountScreen);
     await _until(
       tester,
       () => find.text('Keep a copy on this phone').evaluate().isNotEmpty,
@@ -191,7 +196,7 @@ void main() {
     expect(seeded, hasLength(1));
 
     showRoute(c, const MeRoute());
-    await _tapMeRow(tester, 'Sign in or create an account');
+    await _tapMeRow(tester, 'Sign in');
     await _until(
       tester,
       () => find.byType(SignInScreen).evaluate().isNotEmpty,

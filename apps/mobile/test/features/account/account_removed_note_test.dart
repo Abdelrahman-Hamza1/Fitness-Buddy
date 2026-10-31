@@ -5,7 +5,6 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/storage/preferences.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/account/application/account_removed_note.dart';
-import 'package:fb_mobile/features/account/application/sign_in_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';

@@ -7,6 +7,7 @@ import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
+import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -70,7 +71,13 @@ void main() {
       'bread, white first and once, add 1 loaf, it is in the diary, Undo '
       'removes it', ($) async {
     final config = AppConfig.fromEnvironment();
-    final container = ProviderContainer(overrides: appOverrides(config));
+    final container = ProviderContainer(
+      overrides: [
+        ...appOverrides(config),
+        // A51 TD-110: start on Today, not the first run.
+        firstRunEnabledProvider.overrideWithValue(false),
+      ],
+    );
     addTearDown(container.dispose);
     final tester = $.tester;
 

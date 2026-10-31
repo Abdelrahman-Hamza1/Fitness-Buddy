@@ -128,4 +128,55 @@ abstract final class FbIcons {
 
   /// Me tab, selected.
   static const IconData navMeSelected = Icons.person_rounded;
+
+  /// Goal: lose weight (A51).
+  static const IconData goalLose = Icons.trending_down_rounded;
+
+  /// Goal: keep the weight (A51).
+  static const IconData goalKeep = Icons.balance_rounded;
+
+  /// Goal: gain weight or muscle (A51).
+  static const IconData goalGain = Icons.trending_up_rounded;
+
+  /// Goal: just see what I eat (A51).
+  static const IconData goalTrack = Icons.visibility_outlined;
+
+  /// Targets and goal.
+  static const IconData target = Icons.track_changes_rounded;
+
+  /// Food and meals.
+  static const IconData food = Icons.restaurant_menu_rounded;
+
+  /// Ramadan (a crescent moon).
+  static const IconData ramadan = Icons.nightlight_outlined;
+
+  /// Preferences.
+  static const IconData preferences = Icons.tune_rounded;
+
+  /// Notifications.
+  static const IconData notifications = Icons.notifications_none_rounded;
+
+  /// Account and data.
+  static const IconData account = Icons.shield_outlined;
+
+  /// Help and about.
+  static const IconData help = Icons.help_outline_rounded;
+
+  /// Email.
+  static const IconData email = Icons.mail_outline_rounded;
+
+  /// Backed up to the account.
+  static const IconData backedUp = Icons.cloud_done_outlined;
+
+  /// Data on this phone only.
+  static const IconData phoneOnly = Icons.smartphone_rounded;
+
+  /// Synced across phones.
+  static const IconData devices = Icons.devices_rounded;
+
+  /// Private.
+  static const IconData privacy = Icons.lock_outline_rounded;
+
+  /// Fast (log in seconds).
+  static const IconData fast = Icons.bolt_rounded;
 }

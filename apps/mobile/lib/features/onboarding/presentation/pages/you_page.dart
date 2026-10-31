@@ -6,10 +6,11 @@ import 'package:fb_mobile/features/onboarding/presentation/pages/page_parts.dart
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter/services.dart' show TextInputAction;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Theme;
 
-/// Page 1, "About you" (D9, TG-001/002): units (prefilled from the setting;
-/// they drive the inputs), sex, birth year, height and current weight (the
-/// first weigh-in, WB-001).
+/// "A bit about you" (D9, TG-001/002, D-088): sex, birth year, height and
+/// current weight (the first weigh-in, WB-001), in the units of the
+/// setting, with a quiet switch to the other system.
 class YouPage extends StatelessWidget {
   /// Creates the page.
   const new({
@@ -19,14 +20,13 @@ class YouPage extends StatelessWidget {
     super.key,
   });
 
-  /// What setup holds.
+  /// What the flow holds.
   final SetupDraft draft;
 
   /// The view model.
   final SetupFlow flow;
 
-  /// Keys of the required inputs, so a refused Next can scroll to the first
-  /// problem.
+  /// Keys of the required inputs, so a refused Continue can scroll there.
   final Map<SetupField, GlobalKey> fieldKeys;
 
   Widget _keyed(SetupField field, Widget child) =>
@@ -35,58 +35,64 @@ class YouPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final imperial = draft.units == UnitSystem.imperial;
+    final large = MediaQuery.textScalerOf(context).scale(1) > 1.3;
+    final year = _keyed(
+      SetupField.birthYear,
+      BirthYearField(
+        text: draft.birthYear,
+        today: draft.today,
+        onChanged: flow.setBirthYear,
+        showError: draft.showErrors,
+      ),
+    );
+    final height = _keyed(
+      SetupField.height,
+      HeightField(
+        draft: draft.height,
+        onChanged: flow.setHeight,
+        showError: draft.showErrors,
+      ),
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: FbSpace.s4,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: FbSpace.s2,
-          children: [
-            SetupLabel(l10n.settingsUnits),
-            Wrap(
-              spacing: FbSpace.s2,
-              runSpacing: FbSpace.s2,
-              children: [
-                for (final (units, label) in [
-                  (UnitSystem.metric, l10n.settingsUnitsMetric),
-                  (UnitSystem.imperial, l10n.settingsUnitsImperial),
-                ])
-                  FbChoiceChip(
-                    label: label,
-                    selected: draft.units == units,
-                    dropdown: false,
-                    onTap: () => flow.setUnits(units),
-                  ),
-              ],
-            ),
-          ],
-        ),
+        SetupHeader(title: l10n.setupYouTitle, hint: l10n.setupYouHint),
         _keyed(
           SetupField.sex,
-          SexField(
-            selected: draft.sex,
-            onSelected: flow.setSex,
-            showError: draft.showErrors,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: FbSpace.s2,
+            children: [
+              SetupLabel(l10n.profileSexLabel),
+              FbSegmented<FormulaSex>(
+                options: [
+                  for (final sex in FormulaSex.values)
+                    FbOption(value: sex, label: sexLabel(l10n, sex)),
+                ],
+                selected: draft.sex,
+                onSelected: flow.setSex,
+              ),
+              if (draft.showErrors && draft.sex == null)
+                ChoiceError(l10n.targetsChooseOne),
+            ],
           ),
         ),
-        _keyed(
-          SetupField.birthYear,
-          BirthYearField(
-            text: draft.birthYear,
-            today: draft.today,
-            onChanged: flow.setBirthYear,
-            showError: draft.showErrors,
+        // Side by side on a phone; stacked at large text (UX-070) and for
+        // feet + inches, which need the room.
+        if (large || imperial) ...[
+          year,
+          height,
+        ] else
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: FbSpace.s3,
+            children: [
+              Expanded(child: year),
+              Expanded(child: height),
+            ],
           ),
-        ),
-        _keyed(
-          SetupField.height,
-          HeightField(
-            draft: draft.height,
-            onChanged: flow.setHeight,
-            showError: draft.showErrors,
-          ),
-        ),
         _keyed(
           SetupField.weight,
           Column(
@@ -103,7 +109,37 @@ class YouPage extends StatelessWidget {
             ],
           ),
         ),
+        _UnitsSwitch(
+          ask: imperial ? l10n.setupToMetricAsk : l10n.setupToImperialAsk,
+          action: imperial ? l10n.setupToMetric : l10n.setupToImperial,
+          onTap: () =>
+              flow.setUnits(imperial ? UnitSystem.metric : UnitSystem.imperial),
+        ),
       ],
     );
   }
+}
+
+/// "Using pounds or feet? Switch to imperial" (TG-002).
+class _UnitsSwitch extends StatelessWidget {
+  const new({required this.ask, required this.action, required this.onTap});
+
+  final String ask;
+  final String action;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Wrap(
+    crossAxisAlignment: WrapCrossAlignment.center,
+    spacing: FbSpace.s1,
+    children: [
+      Text(
+        ask,
+        style: FbType.bodySmall.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      ),
+      FbButton.text(label: action, onPressed: onTap),
+    ],
+  );
 }

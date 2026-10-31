@@ -284,6 +284,12 @@ List<AppRoute> everyRoute(SeededProfile s) => [
   const SignInRoute(),
   const DeleteAccountRoute(),
   const UpdateRequiredRoute(),
+  const WelcomeRoute(),
+  const MeTargetsGoalRoute(),
+  const MeFoodRoute(),
+  const MeWorkoutsRoute(),
+  const MePreferencesRoute(),
+  const MeAccountRoute(),
 ];
 
 /// The screen [route] must show. The exhaustive switch makes this file fail
@@ -328,6 +334,13 @@ Type screenOf(AppRoute route) => switch (route) {
   UpdateRequiredRoute() => UpdateRequiredScreen,
   SetupRoute() => SetupScreen,
   SignInRoute() => SignInScreen,
+  WelcomeRoute() => WelcomeScreen,
+  FirstRunSetupRoute() => SetupScreen,
+  MeTargetsGoalRoute() => MeTargetsGoalScreen,
+  MeFoodRoute() => MeFoodScreen,
+  MeWorkoutsRoute() => MeWorkoutsScreen,
+  MePreferencesRoute() => MePreferencesScreen,
+  MeAccountRoute() => MeAccountScreen,
   DeleteAccountRoute() => DeleteAccountScreen,
   ProfileRoute() => ProfileGoalScreen,
   TargetsRoute() => TargetsScreen,
@@ -354,10 +367,12 @@ Set<String> registeredPaths(GoRouter router) {
   return paths;
 }
 
-/// The paths the route sweep doesn't visit on a set-up profile: setup
-/// ([visitSetupPages] covers it) and the dev-only design preview.
+/// The paths the route sweep doesn't visit on a set-up profile: setup and
+/// the first run's questions ([visitSetupPages] covers them) and the
+/// dev-only design preview.
 final Set<String> _notInRouteSweep = {
   SetupRoute.path,
+  FirstRunSetupRoute.path,
   const DesignPreviewRoute().location,
 };
 
@@ -583,14 +598,14 @@ Future<void> visitStates(
 
 /// Setup's pages on a fresh, unconfigured profile (a set-up one closes
 /// setup): each page required, checked and scrolled through, then the next
-/// with the minimal answers, up to "Your targets". [overrides] as for the
-/// route sweep (theme).
+/// with the minimal answers, up to "Here's your plan"; then the first run's
+/// account step (A51). [overrides] as for the route sweep (theme).
 Future<void> visitSetupPages(
   WidgetTester tester,
   List<Override> overrides,
   Future<void> Function(String where) check,
 ) async {
-  final container = await openSetup(tester, overrides: overrides);
+  var container = await openSetup(tester, overrides: overrides);
   final run = SetupRun(tester);
   Future<void> page(int n) async {
     final screen = find.byType(SetupScreen);
@@ -599,19 +614,34 @@ Future<void> visitSetupPages(
   }
 
   await page(1);
-  await run.you();
-  await page(1);
-  await run.next();
-  await page(2);
-  await run.tap('Moderately active');
-  await run.next();
-  await page(3);
   await run.tap('Lose weight');
   await run.next();
+  await page(2);
+  await run.you();
+  await page(2);
+  await run.next();
+  await page(3);
+  await run.tap('Moderately active');
+  await run.next();
   await page(4);
+  await run.tap('Not right now');
   await run.next();
   await page(5);
-  expect(find.text('Save'), findsOneWidget, reason: 'the last page');
+  expect(find.text('Looks good'), findsOneWidget, reason: 'the plan page');
+  await unmountApp(tester, container);
+
+  // The first run's account step, by the shortest path.
+  container = await openSetup(
+    tester,
+    overrides: overrides,
+    route: const FirstRunSetupRoute(),
+  );
+  await run.tap('Just see what I eat');
+  await run.next();
+  await run.tap('Not right now');
+  await run.next();
+  expect(find.text('Keep your data safe?'), findsOneWidget);
+  await page(6);
   await unmountApp(tester, container);
 }
 

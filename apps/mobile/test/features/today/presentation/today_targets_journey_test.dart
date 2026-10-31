@@ -94,8 +94,8 @@ void main() {
     await tester.tap(find.text('Set up your targets'));
     await tester.pumpAndSettle();
     final run = SetupRun(tester);
-    await run.toTargets();
-    await run.next('Save');
+    await run.toPlan();
+    await run.next('Looks good');
     await settleWrites(tester);
     expect(find.text('Set up your targets'), findsNothing);
     var engine = await _engine(tester, c, saturday, const []);

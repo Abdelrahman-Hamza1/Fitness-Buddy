@@ -53,7 +53,7 @@ void main() {
         ...fakeSettings(),
       ],
     );
-    await openMe(tester);
+    await openMePage(tester, 'Account & data');
     await tester.tap(find.widgetWithText(FbListRow, 'Export your data'));
     await tester.pumpAndSettle();
 
@@ -130,7 +130,7 @@ void main() {
         ...fakeSettings(),
       ],
     );
-    await openMe(tester);
+    await openMePage(tester, 'Account & data');
     await tester.tap(find.widgetWithText(FbListRow, 'Export your data'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Export'));
@@ -188,7 +188,7 @@ void main() {
           ...fakeSettings(),
         ],
       );
-      await openMe(tester);
+      await openMePage(tester, 'Account & data');
       await tester.tap(find.widgetWithText(FbListRow, 'Export your data'));
       await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(FilledButton, 'Export'));

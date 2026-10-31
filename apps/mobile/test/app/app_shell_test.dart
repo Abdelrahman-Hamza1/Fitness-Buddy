@@ -35,7 +35,7 @@ void main() {
       final tabs = {
         'Progress': (1, ProgressScreen, 'Charts appear after'),
         'Workouts': (2, WorkoutsScreen, 'Your workouts will'),
-        'Me': (3, MeScreen, 'Your foods'),
+        'Me': (3, MeScreen, 'Food & meals'),
         'Today': (0, TodayScreen, 'Tell Buddy what you ate'),
       };
       for (final MapEntry(key: label, value: (index, screen, text))

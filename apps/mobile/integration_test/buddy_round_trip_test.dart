@@ -8,6 +8,7 @@ import 'package:fb_mobile/core/db/database_location.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
 import 'package:fb_mobile/features/buddy/presentation/buddy_sheet.dart';
+import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -79,6 +80,8 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         ...appOverrides(config),
+        // A51 TD-110: start on Today, not the first run.
+        firstRunEnabledProvider.overrideWithValue(false),
         // A throw-away profile: the phone's real diary is never touched.
         databaseLocationProvider.overrideWithValue(
           DatabaseLocation(

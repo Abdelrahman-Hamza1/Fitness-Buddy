@@ -139,7 +139,7 @@ void main() {
       expect(f.auth.creates, 1);
       await tester.tap(find.text('Me'));
       await tester.pumpAndSettle();
-      expect(find.text('Your foods'), findsOneWidget);
+      expect(find.text('Food & meals'), findsOneWidget);
       await tester.tap(find.text('Today'));
       await tester.pumpAndSettle();
       expect(find.byType(TodayScreen), findsOneWidget);
@@ -183,7 +183,7 @@ void main() {
     expect(find.byType(TodayScreen), findsOneWidget);
     await tester.tap(find.text('Me'));
     await tester.pumpAndSettle();
-    expect(find.text('Your foods'), findsOneWidget);
+    expect(find.text('Food & meals'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

@@ -122,8 +122,11 @@ void main() {
   testWidgets('LC-033 city picker: empty query shows the current city then '
       'PS/JO suggestions; typing "nab" shows Nablus first; a tap sets it, '
       'pops, shows Undo; the row shows "Nablus"', (tester) async {
-    final container = await _openAt(tester, const MeRoute());
-    expect(_in(_rowOf('City'), 'Not set'), findsOneWidget);
+    final container = await _openAt(tester, const RamadanRoute());
+    expect(
+      _in(_rowOf('City'), 'Choose your city for prayer times'),
+      findsOneWidget,
+    );
 
     // Hebron is chosen first, so that it leads the suggestions, checked.
     await tester.tap(_rowOf('City'));
@@ -253,7 +256,7 @@ void main() {
     final gate = Completer<void>();
     final container = await _openAt(
       tester,
-      const MeRoute(),
+      const RamadanRoute(),
       overrides: [_gatedSettingsWrites(gate)],
     );
     await tester.tap(_rowOf('City'));
@@ -281,7 +284,7 @@ void main() {
     final gate = Completer<void>();
     final container = await _openAt(
       tester,
-      const MeRoute(),
+      const RamadanRoute(),
       overrides: [_gatedSettingsWrites(gate)],
     );
     await tester.tap(_rowOf('City'));

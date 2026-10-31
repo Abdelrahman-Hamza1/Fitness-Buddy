@@ -6,6 +6,7 @@ import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/config/package_info.dart';
 import 'package:fb_mobile/core/storage/preferences.dart';
 import 'package:fb_mobile/features/notifications/notifications.dart';
+import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,6 +43,7 @@ final class TestPhone {
     this.onlineSearch = false,
     this.packUpdates = false,
     this.notifications = false,
+    this.firstRun = false,
   }) : config = config ?? testConfig {
     adapter.onRequest = (r) => events.add('${r.method} ${r.path}');
   }
@@ -63,6 +65,10 @@ final class TestPhone {
 
   /// Whether the app plans and schedules notifications (A40).
   final bool notifications;
+
+  /// Whether the first run may show (A51, TD-110): off unless a test is
+  /// about it, so other tests start on Today.
+  final bool firstRun;
 
   /// The phone's notifications.
   final FakeNotificationPlatform notificationPlatform =
@@ -108,6 +114,7 @@ final class TestPhone {
     notificationSchedulingEnabledProvider.overrideWithValue(notifications),
     notificationPlatformProvider.overrideWithValue(notificationPlatform),
     notificationDeviceStoreProvider.overrideWithValue(notificationStore),
+    firstRunEnabledProvider.overrideWithValue(firstRun),
     packageInfoProvider.overrideWith((ref) async {
       events.add('package info');
       return PackageInfo(

@@ -33,7 +33,7 @@ void main() {
   testWidgets('LC-010 the Units sheet checks the current choice; Imperial '
       'sets it with Undo, and Undo restores Metric', (tester) async {
     final container = await pumpAt(tester);
-    await openMe(tester);
+    await openMePage(tester, 'Preferences');
     await tester.tap(_rowOf('Units'));
     await tester.pumpAndSettle();
     expect(
@@ -66,7 +66,7 @@ void main() {
   testWidgets('FD-080 LC-040 Halal switch on by default; turning it off '
       'shows Undo', (tester) async {
     final container = await pumpAt(tester);
-    await openMe(tester);
+    await openMePage(tester, 'Food & meals');
     expect(tester.widget<Switch>(find.byType(Switch)).value, isTrue);
 
     await tester.tap(find.text('Halal food'));
@@ -97,7 +97,7 @@ void main() {
       phone: phone,
       overrides: [appDatabaseProvider.overrideWithValue(db)],
     );
-    await openMe(tester);
+    await openMePage(tester, 'Preferences');
     // The default (D-083), though the test platform is dark.
     expect(_brightness(tester), Brightness.light);
     expect(_in(_rowOf('Theme'), 'Light'), findsOneWidget);
@@ -127,7 +127,7 @@ void main() {
       Duration.zero,
     );
 
-    await openMe(tester);
+    await openMePage(tester, 'Preferences');
     await tester.tap(_rowOf('Theme'));
     await tester.pumpAndSettle();
     await tester.tap(_sheet('Light'));

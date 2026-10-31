@@ -2,6 +2,7 @@ import 'package:alchemist/alchemist.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/account/application/sign_in_controller.dart';
+import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/sync/sync.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -23,7 +24,8 @@ final class _FixedSignIn extends SignInController {
 /// The overrides every scenario needs, plus [extra].
 List<Override> _base(List<Override> extra) => [
   appNavigatorProvider.overrideWithValue(RecordingNavigator()),
-  googleSignInAvailableProvider.overrideWithValue(false),
+  if (!extra.any((o) => o.origin == googleSignInAvailableProvider))
+    googleSignInAvailableProvider.overrideWithValue(false),
   ...extra,
 ];
 
@@ -82,10 +84,9 @@ const _synced = SyncView(
 Future<void> main() async {
   for (final status in [AccountStatus.guest, AccountStatus.signedIn]) {
     await _golden(
-      'AC-002 AC-004 UX-070 Me › Account (${status.name})',
-      'account_section_${status.name}',
-      () =>
-          const Scaffold(body: SingleChildScrollView(child: AccountSection())),
+      'AC-002 AC-004 UX-070 Me › Account & data (${status.name})',
+      'account_data_${status.name}',
+      () => const MeAccountScreen(),
       overrides: [
         accountStatusProvider.overrideWith((ref) async => status),
         // A34: the sync line shows a settled state.
@@ -100,8 +101,26 @@ Future<void> main() async {
     'sign_in_email',
     () => const SignInScreen(),
     overrides: [
+      googleSignInAvailableProvider.overrideWithValue(true),
       signInControllerProvider.overrideWith(
         () => _FixedSignIn(const SignInState()),
+      ),
+    ],
+  );
+
+  await _golden(
+    'AC-001 UX-070 sign-in: code step',
+    'sign_in_code',
+    () => const SignInScreen(),
+    overrides: [
+      signInControllerProvider.overrideWith(
+        () => _FixedSignIn(
+          const SignInState(
+            step: SignInStep.code,
+            email: 'you@example.com',
+            codesSent: 1,
+          ),
+        ),
       ),
     ],
   );

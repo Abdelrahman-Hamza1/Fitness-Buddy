@@ -1552,65 +1552,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setupBack => 'Back';
 
   @override
-  String get setupNext => 'Next';
-
-  @override
-  String get setupSave => 'Save';
-
-  @override
-  String get setupPageYou => 'About you';
-
-  @override
   String get setupPageActivity => 'How active are you?';
-
-  @override
-  String get setupPageGoal => 'Your goal';
-
-  @override
-  String get setupPagePreferences => 'Preferences';
-
-  @override
-  String get setupPageTargets => 'Your targets';
 
   @override
   String get setupWeightHint => 'Saved as your first weigh-in.';
 
   @override
   String get setupActivityHint => 'Pick the one closest to a usual week.';
-
-  @override
-  String get setupPreferencesHint =>
-      'These are filled in from your settings. You can change them here or later in Me.';
-
-  @override
-  String setupTargetsDaily(int kcal) {
-    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
-    final String kcalString = kcalNumberFormat.format(kcal);
-
-    return '$kcalString kcal a day';
-  }
-
-  @override
-  String setupTargetsWeekly(int kcal) {
-    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
-    final String kcalString = kcalNumberFormat.format(kcal);
-
-    return '$kcalString kcal a week';
-  }
-
-  @override
-  String get setupTargetsHow => 'How it\'s calculated';
-
-  @override
-  String get setupTargetsMacros => 'Macros';
-
-  @override
-  String get setupTargetsMode =>
-      'Your weekly budget adjusts the rest of the week when a day is over or under. You can change this later in Me.';
 
   @override
   String get setupLeaveTitle => 'Leave setup?';
@@ -1640,6 +1588,205 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get setupUpdateMessage =>
       'Your profile was saved by a newer version of Fitness Buddy. Update the app to see and change it.';
+
+  @override
+  String get welcomeTitle => 'Food and training, tracked your way.';
+
+  @override
+  String get welcomeMessage =>
+      'A few quick questions set your targets. Skip any of them: the app works without answers and without an account.';
+
+  @override
+  String get welcomeLogTitle => 'Log meals in seconds';
+
+  @override
+  String get welcomeLogBody => 'Arabic and local dishes included';
+
+  @override
+  String get welcomeTargetsTitle => 'Targets that adapt to you';
+
+  @override
+  String get welcomeTargetsBody => 'Based on your real weigh-ins';
+
+  @override
+  String get welcomeWorkoutsTitle => 'Workouts with or without a plan';
+
+  @override
+  String get welcomeWorkoutsBody => 'Your data stays on your phone';
+
+  @override
+  String get welcomeStart => 'Get started';
+
+  @override
+  String get welcomeSkip => 'Skip setup, I\'ll look around';
+
+  @override
+  String get welcomeSignIn => 'Already have an account? Sign in';
+
+  @override
+  String get setupSkip => 'Skip';
+
+  @override
+  String get setupContinue => 'Continue';
+
+  @override
+  String get setupGoalTitle => 'What brings you here?';
+
+  @override
+  String get setupGoalHint => 'Sets your daily target. Change it any time.';
+
+  @override
+  String get setupGoalLose => 'Lose weight';
+
+  @override
+  String get setupGoalLoseHint => 'A steady, safe pace';
+
+  @override
+  String get setupGoalKeep => 'Keep my weight';
+
+  @override
+  String get setupGoalKeepHint => 'Eat well and stay where I am';
+
+  @override
+  String get setupGoalGain => 'Gain weight or muscle';
+
+  @override
+  String get setupGoalGainHint => 'With enough protein';
+
+  @override
+  String get setupGoalTrack => 'Just see what I eat';
+
+  @override
+  String get setupGoalTrackHint => 'No target for now';
+
+  @override
+  String get setupYouTitle => 'A bit about you';
+
+  @override
+  String get setupYouHint =>
+      'Used only to estimate your energy needs. Stays on this phone.';
+
+  @override
+  String get setupToImperialAsk => 'Using pounds or feet?';
+
+  @override
+  String get setupToImperial => 'Switch to imperial';
+
+  @override
+  String get setupToMetricAsk => 'Using kilograms or centimetres?';
+
+  @override
+  String get setupToMetric => 'Switch to metric';
+
+  @override
+  String get setupTrainingTitle => 'Do you work out?';
+
+  @override
+  String get setupTrainingHint =>
+      'No plan needed. You can always just log what you did.';
+
+  @override
+  String get setupTrainingNotNow => 'Not right now';
+
+  @override
+  String get setupTrainingNotNowHint => 'Set it up later in the Workouts tab';
+
+  @override
+  String get setupTrainingMix => 'Yes, I mix it up';
+
+  @override
+  String get setupTrainingMixHint => 'I\'ll log what I do each time';
+
+  @override
+  String get setupTrainingPlan => 'Yes, I want a plan';
+
+  @override
+  String get setupTrainingPlanHint =>
+      'Pick a plan after this, then its exercises';
+
+  @override
+  String get setupPlanTitle => 'Here\'s your plan';
+
+  @override
+  String get setupPlanEat => 'Eat about';
+
+  @override
+  String get setupPlanKcal => 'kcal a day';
+
+  @override
+  String setupPlanKeep(String weight) {
+    return 'Keep your weight around $weight';
+  }
+
+  @override
+  String setupPlanLose(String rate) {
+    return 'Lose about $rate a week';
+  }
+
+  @override
+  String setupPlanGain(String rate) {
+    return 'Gain about $rate a week';
+  }
+
+  @override
+  String get setupPlanHow => 'How is this worked out?';
+
+  @override
+  String get setupPlanLater =>
+      'Want more on gym days or Fridays? Set any day\'s number later in Targets.';
+
+  @override
+  String get setupPlanConfirm => 'Looks good';
+
+  @override
+  String get setupPlanChange => 'Change the numbers';
+
+  @override
+  String get setupPlanChangeDone => 'Done';
+
+  @override
+  String get setupPlanUnavailable =>
+      'These answers don\'t give a plan yet. Go back to check them, or skip for now.';
+
+  @override
+  String get setupPlanSkip => 'Skip for now';
+
+  @override
+  String get setupAccountTitle => 'Keep your data safe?';
+
+  @override
+  String get setupAccountHint =>
+      'Optional. Everything works without an account, and your data stays on this phone.';
+
+  @override
+  String get setupAccountBackup => 'Backed up';
+
+  @override
+  String get setupAccountBackupBody =>
+      'Lose or change your phone and keep every log.';
+
+  @override
+  String get setupAccountSync => 'Synced';
+
+  @override
+  String get setupAccountSyncBody =>
+      'Your diary and workouts on any phone you sign in on.';
+
+  @override
+  String get setupAccountPrivate => 'Private';
+
+  @override
+  String get setupAccountPrivateBody =>
+      'No ads, no selling data. Delete it all any time.';
+
+  @override
+  String get setupAccountNotNow => 'Not now';
+
+  @override
+  String get setupAccountDone => 'You\'re signed in. Your data is backed up.';
+
+  @override
+  String get setupAccountFinish => 'Continue';
 
   @override
   String get profileSexLabel => 'Sex';
@@ -2593,13 +2740,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get meSectionYou => 'You';
-
-  @override
   String get meSetUpTargets => 'Set up profile & targets';
-
-  @override
-  String get meSectionFood => 'Food';
 
   @override
   String get meYourFoods => 'Your foods';
@@ -3076,22 +3217,108 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quickAddRowSemantics => 'Quick add';
 
   @override
-  String get meSectionSettings => 'Settings';
-
-  @override
   String get meSectionYourData => 'Your data';
 
   @override
   String get meExportData => 'Export your data';
 
   @override
-  String get meSectionAbout => 'About';
-
-  @override
   String get meSectionDeveloper => 'Developer';
 
   @override
-  String get meAbout => 'About Fitness Buddy';
+  String get settingsLanguage => 'Language';
+
+  @override
+  String get settingsLanguageEnglish => 'English';
+
+  @override
+  String get meGuest => 'Guest';
+
+  @override
+  String get meGuestDetail => 'Data on this phone only, not backed up';
+
+  @override
+  String get meReadOnly => 'Read-only copy';
+
+  @override
+  String get meSignIn => 'Sign in';
+
+  @override
+  String get meSummaryKcal => 'kcal today';
+
+  @override
+  String get meSummaryProtein => 'protein';
+
+  @override
+  String get meSummaryGoal => 'goal';
+
+  @override
+  String get meSummaryNone => 'No targets yet. You can still log everything.';
+
+  @override
+  String get meSectionPlan => 'Your plan';
+
+  @override
+  String get meSectionApp => 'App';
+
+  @override
+  String get meTargetsGoal => 'Targets & goal';
+
+  @override
+  String get meTargetsGoalHint => 'Calories, macros, profile and goal';
+
+  @override
+  String get meTargetsGoalNotSet => 'Not set up yet';
+
+  @override
+  String get meFoodMeals => 'Food & meals';
+
+  @override
+  String get meFoodMealsHint => 'Your foods, saved meals, meal times, halal';
+
+  @override
+  String get meWorkouts => 'Workouts';
+
+  @override
+  String get meWorkoutsHint => 'Weekly plan, starter plans, exercises';
+
+  @override
+  String get meWorkoutsNote => 'These open in the Workouts tab.';
+
+  @override
+  String get meStarterPlans => 'Starter plans';
+
+  @override
+  String get mePreferences => 'Preferences';
+
+  @override
+  String mePreferencesValues(String units, String theme, String day) {
+    return '$units · $theme theme · Week starts $day';
+  }
+
+  @override
+  String meNotificationsOn(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reminders on',
+      one: '1 reminder on',
+      zero: 'All reminders off',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get meAccountData => 'Account & data';
+
+  @override
+  String get meAccountDataHint => 'Sign in, sync, export, delete';
+
+  @override
+  String get meHelpAbout => 'Help & about';
+
+  @override
+  String get meExportDataHint => 'Your diary, foods and settings as files';
 
   @override
   String get settingsUnits => 'Units';
@@ -3132,9 +3359,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsCity => 'City';
-
-  @override
-  String get settingsCityNotSet => 'Not set';
 
   @override
   String get settingsEnergy => 'Energy';
@@ -4500,13 +4724,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get meSectionAccount => 'Account';
-
-  @override
-  String get accountGuest =>
-      'You\'re using Fitness Buddy as a guest. Your data stays on this phone.';
-
-  @override
   String get accountSignedIn => 'Signed in';
 
   @override
@@ -4555,9 +4772,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signInEmailLabel => 'Email';
-
-  @override
-  String get signInSendCode => 'Send code';
 
   @override
   String get signInCodeLabel => '6-digit code';
@@ -4609,6 +4823,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signInDoneButton => 'Done';
+
+  @override
+  String get signInBenefit =>
+      'Back up your logs and use them on any phone. What\'s already on this phone comes with you.';
+
+  @override
+  String get signInOr => 'or';
+
+  @override
+  String get signInEmailHint => 'you@example.com';
+
+  @override
+  String get signInEmailNote =>
+      'We\'ll send a 6-digit code. No password needed.';
+
+  @override
+  String get signInEmailButton => 'Continue with email';
+
+  @override
+  String get signInWithoutAccount => 'Keep using without an account';
+
+  @override
+  String get signInCodeTitle => 'Check your email';
+
+  @override
+  String signInCodeSent(String email) {
+    return 'We sent a 6-digit code to $email. It works for 10 minutes.';
+  }
+
+  @override
+  String get signInCodePaste =>
+      'Pasting the code fills all six boxes. It continues on its own.';
+
+  @override
+  String signInResendIn(String time) {
+    return 'Resend in $time';
+  }
+
+  @override
+  String get signInResend => 'Resend code';
+
+  @override
+  String get signInChangeEmail => 'Use a different email';
 
   @override
   String get guestPromptBody =>

@@ -4,6 +4,7 @@ import 'package:fb_mobile/core/api/client_config_repository.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/config/client_config.dart';
 import 'package:fb_mobile/features/me/me.dart';
+import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
@@ -29,7 +30,13 @@ void main() {
       // Wired like lib/main.dart, from the flavor's compile-time config.
       final config = AppConfig.fromEnvironment();
       expect(config.flavor, AppFlavor.dev);
-      final container = ProviderContainer(overrides: appOverrides(config));
+      final container = ProviderContainer(
+        overrides: [
+          ...appOverrides(config),
+          // A51 TD-110: this run is about the tabs, not the first run.
+          firstRunEnabledProvider.overrideWithValue(false),
+        ],
+      );
       addTearDown(container.dispose);
 
       // Loading skeletons pulse continuously, so settling could stall; wait
@@ -71,7 +78,7 @@ void main() {
       final tabs = {
         'Progress': (ProgressScreen, 'Charts appear after'),
         'Workouts': (WorkoutsScreen, 'Your workouts will show up'),
-        'Me': (MeScreen, 'Your foods'),
+        'Me': (MeScreen, 'Food & meals'),
         'Today': (TodayScreen, 'Tell Buddy what you ate'),
       };
       for (final MapEntry(key: label, value: (screen, text)) in tabs.entries) {

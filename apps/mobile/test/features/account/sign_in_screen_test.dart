@@ -57,10 +57,12 @@ void main() {
     identity.linkConflicts = true;
     await pump(tester);
     await tester.enterText(find.byType(TextField), canaryEmail);
-    await tester.tap(find.text('Send code'));
+    await tester.tap(find.text('Continue with email'));
     await tester.pumpAndSettle();
+    expect(find.text('Check your email'), findsOneWidget);
+    expect(find.textContaining(canaryEmail), findsOneWidget);
+    // Six digits continue on their own.
     await tester.enterText(find.byType(TextField), '123456');
-    await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
     expect(find.text('This account already exists'), findsOneWidget);
     expect(find.text('Add it to my account'), findsOneWidget);
@@ -72,9 +74,32 @@ void main() {
     expect(identity.calls.last, 'start:signIn');
     identity.offline = true;
     await tester.enterText(find.byType(TextField), '654321');
-    await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
     expect(find.textContaining("You're offline"), findsOneWidget);
+  });
+
+  testWidgets('AC-001 the code step: a paste fills the boxes, resend waits '
+      'out its countdown, "Use a different email" goes back', (tester) async {
+    await pump(tester);
+    await tester.enterText(find.byType(TextField), canaryEmail);
+    await tester.tap(find.text('Continue with email'));
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Resend in 0:30'), findsOneWidget);
+    expect(identity.calls, ['start:link']);
+    await tester.pump(const Duration(seconds: 12));
+    expect(find.text('Resend in 0:18'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 18));
+    await tester.tap(find.text('Resend code'));
+    await tester.pump();
+    await tester.pump();
+    expect(identity.calls, ['start:link', 'start:link']);
+    expect(find.text('Resend in 0:30'), findsOneWidget);
+
+    await tester.tap(find.text('Use a different email'));
+    await tester.pumpAndSettle();
+    expect(find.text('Sign in or create an account'), findsOneWidget);
+    expect(find.text('Continue with email'), findsOneWidget);
   });
 
   testWidgets('AC-001 the Google button shows only when available; '

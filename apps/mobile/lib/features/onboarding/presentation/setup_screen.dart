@@ -5,26 +5,33 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
+import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/onboarding/application/setup_flow.dart';
+import 'package:fb_mobile/features/onboarding/presentation/pages/account_page.dart';
 import 'package:fb_mobile/features/onboarding/presentation/pages/activity_page.dart';
 import 'package:fb_mobile/features/onboarding/presentation/pages/goal_page.dart';
-import 'package:fb_mobile/features/onboarding/presentation/pages/preferences_page.dart';
-import 'package:fb_mobile/features/onboarding/presentation/pages/targets_page.dart';
+import 'package:fb_mobile/features/onboarding/presentation/pages/plan_page.dart';
+import 'package:fb_mobile/features/onboarding/presentation/pages/training_page.dart';
 import 'package:fb_mobile/features/onboarding/presentation/pages/you_page.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// R1 setup (UX-060, A13 D9/D10): five pages on one screen outside the
-/// tabs, "Step 2 of 5", Back and Next pinned at the bottom (UX-070), all
-/// input kept in memory until Save. Fully offline. Save writes one change
-/// set (profile, first weigh-in, goal, targets, changed preferences), goes
-/// to Today and offers Undo. Closing with something typed asks first
-/// (UX-052). A profile this app version can't read shows "Update the app"
-/// instead (A13a security review #3).
+/// The question screens (UX-060, D-088, A51): one topic per page outside
+/// the tabs, a segmented progress bar, Skip on every question, Continue
+/// pinned at the bottom (UX-070), every answer kept in memory until the
+/// plan is confirmed. Fully offline. "Looks good" writes one change set
+/// (profile, first weigh-in, goal, targets, units) and offers Undo; then
+/// the first run shows the optional account step, setup goes to Today (or
+/// the starter plans for "I want a plan"). Closing with something answered
+/// asks first (UX-052). A profile this app version can't read shows
+/// "Update the app" instead (A13a security review #3).
 class SetupScreen extends ConsumerWidget {
-  /// Creates the screen.
-  const new({super.key});
+  /// Creates the screen for [mode].
+  const new({this.mode = SetupMode.setup, super.key});
+
+  /// Setup from Today or Me, or the first run.
+  final SetupMode mode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,7 +39,7 @@ class SetupScreen extends ConsumerWidget {
     if (status == SetupStatus.profileUnreadable) {
       return const _UpdateNeeded();
     }
-    final draft = ref.watch(setupFlowProvider).value;
+    final draft = ref.watch(setupFlowProvider(mode)).value;
     // Local reads only: the first frame has the bar and no body, never a
     // spinner.
     if (draft == null) return const _Shell();
@@ -134,19 +141,36 @@ class _Flow extends ConsumerStatefulWidget {
 }
 
 class _FlowState extends ConsumerState<_Flow> {
-  /// The required inputs, so a refused Next scrolls to the first problem.
+  /// The required inputs, so a refused Continue scrolls to the first
+  /// problem.
   final Map<SetupField, GlobalKey> _fieldKeys = {
     for (final field in SetupField.values) field: GlobalKey(),
   };
 
   SetupDraft get draft => widget.draft;
 
-  /// Next: the following page, or this page's messages and a scroll to the
-  /// first problem (UX-052).
-  void _next() {
-    ref.read(setupFlowProvider.notifier).next();
-    final now = ref.read(setupFlowProvider).value;
-    final problem = now?.page == draft.page ? now?.firstProblem : null;
+  SetupFlow get _flow => ref.read(setupFlowProvider(draft.mode).notifier);
+
+  /// Continue: the next page, the end of the flow, or this page's messages
+  /// and a scroll to the first problem (UX-052).
+  void _continue() {
+    switch (_flow.next()) {
+      case SetupMove.finished:
+        _finish();
+      case SetupMove.moved:
+        break;
+      case SetupMove.refused:
+        _showProblem();
+    }
+  }
+
+  void _skip() {
+    if (_flow.skip() == SetupMove.finished) _finish();
+  }
+
+  void _showProblem() {
+    final now = ref.read(setupFlowProvider(draft.mode)).value;
+    final problem = now?.firstProblem;
     if (problem == null) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final target = _fieldKeys[problem]?.currentContext;
@@ -160,26 +184,50 @@ class _FlowState extends ConsumerState<_Flow> {
     });
   }
 
-  Future<void> _leave(BuildContext context, WidgetRef ref) async {
+  /// Back one page; on the first page the flow closes (asking first when
+  /// something was answered); after the save it ends.
+  void _back() {
+    if (_flow.back()) return;
+    if (draft.saved) {
+      _finish();
+    } else {
+      unawaited(_leave());
+    }
+  }
+
+  Future<void> _leave() async {
     if (draft.touched) {
       final leave = await showFbSheet<bool>(
         context,
         title: context.l10n.setupLeaveTitle,
         builder: (_) => const _LeaveSheet(),
       );
-      if (leave != true || !context.mounted) return;
+      if (leave != true || !mounted) return;
     }
     _Flow._close(context, ref);
   }
 
-  Future<void> _save(BuildContext context, WidgetRef ref) async {
+  /// The flow is over: the starter plans for "I want a plan" (A52 owns
+  /// them), else Today.
+  void _finish() {
+    // The flow's state now (a Skip just before may have changed it).
+    final now = ref.read(setupFlowProvider(draft.mode)).value ?? draft;
+    ref
+        .read(appNavigatorProvider)
+        .go(
+          now.wantsPlan ? const WorkoutStarterPlansRoute() : const TodayRoute(),
+        );
+  }
+
+  Future<void> _save() async {
     final host = Navigator.of(context, rootNavigator: true).context;
-    final outcome = await ref.read(setupFlowProvider.notifier).save();
+    final outcome = await _flow.save();
     if (outcome == null || !host.mounted) return;
     final l10n = host.l10n;
     switch (outcome) {
       case TargetsDone(:final undoEntryId):
-        ref.read(appNavigatorProvider).go(const TodayRoute());
+        // The first run goes on to the account step; setup ends here.
+        if (draft.mode == SetupMode.setup) _finish();
         showUndoFeedback(
           host,
           message: l10n.setupSaved,
@@ -202,46 +250,143 @@ class _FlowState extends ConsumerState<_Flow> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final scheme = Theme.of(context).colorScheme;
-    final flow = ref.read(setupFlowProvider.notifier);
-    final first = draft.page == SetupPage.you;
-    final last = draft.page == SetupPage.targets;
-    final title = switch (draft.page) {
-      SetupPage.you => l10n.setupPageYou,
-      SetupPage.activity => l10n.setupPageActivity,
-      SetupPage.goal => l10n.setupPageGoal,
-      SetupPage.preferences => l10n.setupPagePreferences,
-      SetupPage.targets => l10n.setupPageTargets,
+    final flow = _flow;
+    final pages = draft.pages;
+    final question = switch (draft.page) {
+      SetupPage.goal ||
+      SetupPage.you ||
+      SetupPage.activity ||
+      SetupPage.training => true,
+      SetupPage.plan || SetupPage.account => false,
     };
+    final signedIn =
+        ref.watch(accountStatusProvider).value == AccountStatus.signedIn;
     final page = switch (draft.page) {
+      SetupPage.goal => GoalPage(
+        draft: draft,
+        flow: flow,
+        fieldKeys: _fieldKeys,
+      ),
       SetupPage.you => YouPage(draft: draft, flow: flow, fieldKeys: _fieldKeys),
       SetupPage.activity => ActivityPage(
         draft: draft,
         flow: flow,
         fieldKeys: _fieldKeys,
       ),
-      SetupPage.goal => GoalPage(
+      SetupPage.training => TrainingPage(
         draft: draft,
         flow: flow,
         fieldKeys: _fieldKeys,
       ),
-      SetupPage.preferences => PreferencesPage(draft: draft, flow: flow),
-      SetupPage.targets => TargetsPage(draft: draft),
-    } as Widget;
+      SetupPage.plan => PlanPage(draft: draft),
+      SetupPage.account => AccountPage(signedIn: signedIn),
+    };
+    final first = draft.before == null;
+    final leading = draft.saved
+        ? null
+        : IconButton(
+            icon: Icon(
+              first && draft.mode == SetupMode.setup
+                  ? FbIcons.close
+                  : FbIcons.previous,
+            ),
+            tooltip: first && draft.mode == SetupMode.setup
+                ? l10n.setupClose
+                : l10n.setupBack,
+            onPressed: _back,
+          );
+    final actions = _Actions(
+      children: switch (draft.page) {
+        SetupPage.goal ||
+        SetupPage.you ||
+        SetupPage.activity ||
+        SetupPage.training => [
+          FbButton.primary(
+            label: l10n.setupContinue,
+            expand: true,
+            // Always on (UX-052): a refused Continue says what's
+            // missing.
+            onPressed: _continue,
+          ),
+        ],
+        SetupPage.plan => [
+          if (draft.preview?.calculation != null || draft.saving)
+            FbButton.primary(
+              label: l10n.setupPlanConfirm,
+              expand: true,
+              onPressed: draft.canSave ? () => unawaited(_save()) : null,
+            )
+          else
+            FbButton.primary(
+              label: l10n.setupPlanSkip,
+              expand: true,
+              onPressed: _skip,
+            ),
+          FbButton.text(
+            label: l10n.setupPlanChange,
+            expand: true,
+            onPressed: draft.saving
+                ? null
+                : () => unawaited(showChangeNumbers(context, draft.mode)),
+          ),
+        ],
+        SetupPage.account when signedIn => [
+          FbButton.primary(
+            label: l10n.setupAccountFinish,
+            expand: true,
+            onPressed: _finish,
+          ),
+        ],
+        SetupPage.account => [
+          if (ref.watch(googleSignInAvailableProvider))
+            FbGoogleButton(
+              label: l10n.signInGoogle,
+              onPressed: () => ref
+                  .read(appNavigatorProvider)
+                  .push(const SignInRoute(withGoogle: true)),
+            ),
+          FbButton.secondary(
+            label: l10n.signInEmailButton,
+            icon: FbIcons.email,
+            expand: true,
+            onPressed: () =>
+                ref.read(appNavigatorProvider).push(const SignInRoute()),
+          ),
+          FbButton.text(
+            label: l10n.setupAccountNotNow,
+            expand: true,
+            onPressed: _finish,
+          ),
+        ],
+      },
+    );
     return PopScope(
       canPop: false,
       // The system back goes one page back; on the first page it closes,
-      // asking first when something was typed.
+      // asking first when something was answered.
       onPopInvokedWithResult: (didPop, _) {
-        if (didPop) return;
-        if (first) {
-          unawaited(_leave(context, ref));
-        } else {
-          flow.back();
-        }
+        if (!didPop) _back();
       },
       child: Scaffold(
-        appBar: _bar(context, onClose: () => unawaited(_leave(context, ref))),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          leading: leading,
+          titleSpacing: leading == null ? FbSpace.s4 : 0,
+          title: FbStepBar(
+            count: pages.length,
+            current: draft.step,
+            semanticsLabel: l10n.setupStep(draft.step + 1, pages.length),
+          ),
+          actions: [
+            if (question)
+              FbButton.text(label: l10n.setupSkip, onPressed: _skip)
+            else
+              const SizedBox(width: FbSpace.s4),
+          ],
+        ),
+        // The plan's and account step's buttons sit under the body, so the
+        // Undo snackbar of the save floats above them instead of over them.
+        bottomNavigationBar: question ? null : SafeArea(child: actions),
         body: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -249,59 +394,18 @@ class _FlowState extends ConsumerState<_Flow> {
               Expanded(
                 child: SingleChildScrollView(
                   key: ValueKey(draft.page),
-                  padding: const EdgeInsetsDirectional.all(FbSpace.s4),
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                    FbSpace.s4,
+                    FbSpace.s3,
+                    FbSpace.s4,
+                    FbSpace.s5,
+                  ),
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: FbSpace.s4,
-                    children: [
-                      // The brand on the first page only (A44 D14a): there
-                      // is no separate welcome screen.
-                      if (first)
-                        Align(
-                          alignment: AlignmentDirectional.centerStart,
-                          child: FbBrandLockup(
-                            name: l10n.appTitle,
-                            size: FbLockupSize.large,
-                          ),
-                        ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: FbSpace.s1,
-                        children: [
-                          Text(
-                            l10n.setupStep(draft.step, SetupDraft.steps),
-                            style: FbType.caption.copyWith(
-                              color: scheme.onSurfaceVariant,
-                            ),
-                          ),
-                          Semantics(
-                            header: true,
-                            child: Text(
-                              title,
-                              style: FbType.title.copyWith(
-                                color: scheme.onSurface,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      page,
-                    ],
-                  ),
+                  child: page,
                 ),
               ),
-              _Buttons(
-                back: first ? null : flow.back,
-                label: last ? l10n.setupSave : l10n.setupNext,
-                // Always on (UX-052): a refused Next says what's missing.
-                onNext: draft.saving
-                    ? null
-                    : last
-                    ? () => unawaited(_save(context, ref))
-                    : _next,
-              ),
+              if (question) actions,
             ],
           ),
         ),
@@ -310,63 +414,28 @@ class _FlowState extends ConsumerState<_Flow> {
   }
 }
 
-/// Back and Next (or Save), pinned under the page so they stay on screen at
-/// any text size (UX-070); stacked when the text is large.
-class _Buttons extends StatelessWidget {
-  const new({required this.back, required this.label, required this.onNext});
+/// The page's buttons, pinned under it so they stay on screen at any text
+/// size (UX-070).
+class _Actions extends StatelessWidget {
+  const new({required this.children});
 
-  final VoidCallback? back;
-  final String label;
-  final VoidCallback? onNext;
+  final List<Widget> children;
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final scheme = Theme.of(context).colorScheme;
-    final next = FbButton.primary(
-      label: label,
-      expand: true,
-      onPressed: onNext,
-    );
-    final previous = back == null
-        ? null
-        : FbButton.secondary(
-            label: l10n.setupBack,
-            expand: true,
-            onPressed: back,
-          );
-    final large = MediaQuery.textScalerOf(context).scale(1) > 1.5;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        border: BorderDirectional(
-          top: BorderSide(color: scheme.outlineVariant),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsetsDirectional.fromSTEB(
-          FbSpace.s4,
-          FbSpace.s3,
-          FbSpace.s4,
-          FbSpace.s3,
-        ),
-        child: large
-            ? Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: FbSpace.s2,
-                children: [next, ?previous],
-              )
-            : Row(
-                spacing: FbSpace.s3,
-                children: [
-                  if (previous != null) Expanded(child: previous),
-                  Expanded(child: next),
-                ],
-              ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsetsDirectional.fromSTEB(
+      FbSpace.s4,
+      FbSpace.s2,
+      FbSpace.s4,
+      FbSpace.s3,
+    ),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: FbSpace.s2,
+      children: children,
+    ),
+  );
 }
 
 /// "Leave setup?": keep going (the dominant choice) or leave.

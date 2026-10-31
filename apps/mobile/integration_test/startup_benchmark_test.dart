@@ -31,6 +31,7 @@ import 'package:fb_mobile/core/db/database_location.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/buddy/presentation/buddy_sheet.dart';
+import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:fb_mobile/features/targets/application/targets_providers.dart';
 import 'package:fb_mobile/features/today/presentation/today_numbers.dart';
 import 'package:fb_mobile/features/today/today.dart';
@@ -67,6 +68,8 @@ ProviderContainer _container(AppConfig config, String root) =>
     ProviderContainer(
       overrides: [
         ...appOverrides(config),
+        // A51 TD-110: start on Today, not the first run.
+        firstRunEnabledProvider.overrideWithValue(false),
         databaseLocationProvider.overrideWithValue(
           DatabaseLocation(
             profileKey: 'perf-startup',

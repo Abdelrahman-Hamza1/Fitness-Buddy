@@ -6,3 +6,4 @@ export 'application/sync_view.dart'
     show EarlierVersion, SyncProblem, SyncView, syncViewProvider;
 export 'presentation/earlier_versions_sheet.dart';
 export 'presentation/sync_sheet.dart';
+export 'presentation/sync_text.dart' show syncStatusText;

@@ -3,109 +3,122 @@ import 'dart:async';
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/day_label.dart';
-import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
-import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/settings/application/app_settings.dart';
 import 'package:fb_mobile/features/settings/application/settings_providers.dart';
 import 'package:fb_mobile/features/settings/presentation/settings_feedback.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// The Settings section of the Me tab (UX-010, A10 D8): Units, Week starts
-/// on, Halal food, Theme, City and the "Energy: kcal" info row (LC-012).
-/// Every setting is two taps from Today. Choices open an option sheet on the
-/// root navigator; Halal is a switch in the row. Each change is a direct
-/// action with Undo (UX-030).
-class SettingsSection extends ConsumerWidget {
-  /// Creates the section.
+// The setting rows of Me (UX-010, A10 D8, A51 D8): Preferences has units,
+// theme, week start, language and energy; Food & meals has halal. Every
+// setting is three taps from Today at most. Choices open an option sheet on
+// the root navigator; Halal is a switch in the row. Each change is a direct
+// action with Undo (UX-030).
+
+/// Units, with the current system as its subtitle.
+class UnitsSettingRow extends ConsumerWidget {
+  /// Creates the row.
+  const new({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final system = ref.watch(unitSystemProvider).value ?? UnitSystem.metric;
+    return FbListRow(
+      title: context.l10n.settingsUnits,
+      subtitle: unitsName(context, system),
+      trailing: const Icon(FbIcons.next),
+      onTap: () => unawaited(_pickUnits(context, ref, system)),
+    );
+  }
+}
+
+/// Week starts on, with the current day as its subtitle.
+class WeekStartSettingRow extends ConsumerWidget {
+  /// Creates the row.
+  const new({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final weekStart = ref.watch(weekStartProvider).value ?? DayOfWeek.saturday;
+    return FbListRow(
+      title: context.l10n.settingsWeekStart,
+      subtitle: weekdayName(context, weekStart),
+      trailing: const Icon(FbIcons.next),
+      onTap: () => unawaited(_pickWeekStart(context, ref, weekStart)),
+    );
+  }
+}
+
+/// Halal food, a switch.
+class HalalSettingRow extends ConsumerWidget {
+  /// Creates the row.
   const new({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final system = ref.watch(unitSystemProvider).value ?? UnitSystem.metric;
-    final weekStart = ref.watch(weekStartProvider).value ?? DayOfWeek.saturday;
     final halal = ref.watch(halalProvider).value ?? true;
-    final theme =
-        ref.watch(themePreferenceProvider).value ??
-        AppSettings.theme.defaultValue;
-    final city = ref.watch(selectedCityProvider).value;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        FbSectionHeader(title: l10n.meSectionSettings),
-        FbListRow(
-          title: l10n.settingsMealTimes,
-          trailing: const Icon(FbIcons.next),
-          onTap: () =>
-              ref.read(appNavigatorProvider).push(const MealSlotsRoute()),
-        ),
-        FbListRow(
-          key: const ValueKey('settings-ramadan'),
-          title: l10n.ramadanTitle,
-          subtitle: l10n.ramadanSettingsHint,
-          trailing: const Icon(FbIcons.next),
-          onTap: () =>
-              ref.read(appNavigatorProvider).push(const RamadanRoute()),
-        ),
-        FbListRow(
-          key: const ValueKey('settings-notifications'),
-          title: l10n.settingsNotifications,
-          trailing: const Icon(FbIcons.next),
-          onTap: () => ref
-              .read(appNavigatorProvider)
-              .push(const NotificationSettingsRoute()),
-        ),
-        FbListRow(
-          title: l10n.settingsUnits,
-          subtitle: _unitsName(context, system),
-          trailing: const Icon(FbIcons.next),
-          onTap: () => unawaited(_pickUnits(context, ref, system)),
-        ),
-        FbListRow(
-          title: l10n.settingsWeekStart,
-          subtitle: weekdayName(context, weekStart),
-          trailing: const Icon(FbIcons.next),
-          onTap: () => unawaited(_pickWeekStart(context, ref, weekStart)),
-        ),
-        FbSwitchRow(
-          title: l10n.settingsHalal,
-          subtitle: l10n.settingsHalalHint,
-          value: halal,
-          onChanged: (value) => unawaited(_setHalal(context, ref, value)),
-        ),
-        FbListRow(
-          title: l10n.settingsTheme,
-          subtitle: _themeName(context, theme),
-          trailing: const Icon(FbIcons.next),
-          onTap: () => unawaited(_pickTheme(context, ref, theme)),
-        ),
-        FbListRow(
-          title: l10n.settingsCity,
-          subtitle: city == null
-              ? l10n.settingsCityNotSet
-              : cityLabel(l10n, city),
-          trailing: const Icon(FbIcons.next),
-          onTap: () =>
-              ref.read(appNavigatorProvider).push(const CityPickerRoute()),
-        ),
-        // Information only (LC-012: kJ is a later option), so not tappable.
-        FbListRow(
-          title: l10n.settingsEnergy,
-          trailing: Text(l10n.diaryUnitKcal),
-        ),
-      ],
+    return FbSwitchRow(
+      title: l10n.settingsHalal,
+      subtitle: l10n.settingsHalalHint,
+      value: halal,
+      onChanged: (value) => unawaited(_setHalal(context, ref, value)),
     );
   }
 }
 
-String _unitsName(BuildContext context, UnitSystem system) => switch (system) {
+/// Theme, with the current choice as its subtitle.
+class ThemeSettingRow extends ConsumerWidget {
+  /// Creates the row.
+  const new({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme =
+        ref.watch(themePreferenceProvider).value ??
+        AppSettings.theme.defaultValue;
+    return FbListRow(
+      title: context.l10n.settingsTheme,
+      subtitle: themeName(context, theme),
+      trailing: const Icon(FbIcons.next),
+      onTap: () => unawaited(_pickTheme(context, ref, theme)),
+    );
+  }
+}
+
+/// "Energy: kcal", information only (LC-012: kJ is a later option).
+class EnergySettingRow extends StatelessWidget {
+  /// Creates the row.
+  const new({super.key});
+
+  @override
+  Widget build(BuildContext context) => FbListRow(
+    title: context.l10n.settingsEnergy,
+    trailing: Text(context.l10n.diaryUnitKcal),
+  );
+}
+
+/// "Language: English", information only (D-080: English UI in R1).
+class LanguageSettingRow extends StatelessWidget {
+  /// Creates the row.
+  const new({super.key});
+
+  @override
+  Widget build(BuildContext context) => FbListRow(
+    title: context.l10n.settingsLanguage,
+    trailing: Text(context.l10n.settingsLanguageEnglish),
+  );
+}
+
+/// The name of [system] ("Metric").
+String unitsName(BuildContext context, UnitSystem system) => switch (system) {
   UnitSystem.metric => context.l10n.settingsUnitsMetric,
   UnitSystem.imperial => context.l10n.settingsUnitsImperial,
 };
 
-String _themeName(BuildContext context, ThemePreference theme) =>
+/// The name of [theme] ("System").
+String themeName(BuildContext context, ThemePreference theme) =>
     switch (theme) {
       ThemePreference.system => context.l10n.settingsThemeSystem,
       ThemePreference.light => context.l10n.settingsThemeLight,
@@ -196,7 +209,7 @@ Future<void> _pickTheme(
     selected: current,
     options: [
       for (final theme in ThemePreference.values)
-        FbOption(value: theme, label: _themeName(context, theme)),
+        FbOption(value: theme, label: themeName(context, theme)),
     ],
   );
   if (picked == null || !host.mounted) return;
@@ -216,6 +229,6 @@ Future<void> applyTheme(
   reportSettingsOutcome(
     host,
     outcome,
-    () => host.l10n.settingsThemeSet(_themeName(host, theme)),
+    () => host.l10n.settingsThemeSet(themeName(host, theme)),
   );
 }

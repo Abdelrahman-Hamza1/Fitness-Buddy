@@ -48,17 +48,26 @@ Future<LogFoodOutcome> _logBanana(ProviderContainer container) async {
   );
 }
 
-Future<void> _openMeRow(WidgetTester tester, String row) async {
-  await tapExactly(
-    tester,
-    find.descendant(of: find.byType(NavigationBar), matching: find.text('Me')),
-    'the Me tab',
-  );
+Future<void> _openMeRow(
+  WidgetTester tester,
+  String row, {
+  Type screen = MeScreen,
+}) async {
+  if (screen == MeScreen) {
+    await tapExactly(
+      tester,
+      find.descendant(
+        of: find.byType(NavigationBar),
+        matching: find.text('Me'),
+      ),
+      'the Me tab',
+    );
+  }
   final me = find.descendant(
-    of: find.byType(MeScreen),
+    of: find.byType(screen),
     matching: find.byType(Scrollable),
   );
-  await waitUntil(tester, () => me.evaluate().isNotEmpty, 'the Me screen');
+  await waitUntil(tester, () => me.evaluate().isNotEmpty, 'the $screen');
   for (var i = 0; i < 20 && find.text(row).evaluate().isEmpty; i++) {
     await tester.drag(me.first, const Offset(0, -200));
     await pumpFor(tester, const Duration(milliseconds: 200));
@@ -151,22 +160,26 @@ void main() {
       final container = await _bootGuest($, api, 'it-account');
       final tester = $.tester;
 
-      // Me › Account › Sign in: email, then the code.
-      await _openMeRow(tester, 'Sign in or create an account');
+      // Me's account card › Sign in: email, then the code.
+      await _openMeRow(tester, 'Sign in');
       await waitUntil(
         tester,
         () => find.byType(SignInScreen).evaluate().isNotEmpty,
         'the sign-in screen',
       );
       await tester.enterText(find.byType(TextField), 'journey@example.invalid');
-      await tapExactly(tester, find.text('Send code'), 'Send code');
+      await tapExactly(
+        tester,
+        find.text('Continue with email'),
+        'Continue with email',
+      );
       await waitUntil(
         tester,
-        () => find.text('6-digit code').evaluate().isNotEmpty,
-        'the code field',
+        () => find.text('Check your email').evaluate().isNotEmpty,
+        'the code boxes',
       );
+      // The sixth digit continues on its own.
       await tester.enterText(find.byType(TextField), accountJourneyCode);
-      await tapExactly(tester, find.text('Continue'), 'Continue');
       await _waitOrDump(
         tester,
         container,
@@ -199,7 +212,9 @@ void main() {
       await pumpFor(tester, const Duration(milliseconds: 500));
 
       // Sign out, keeping a read-only copy: data visible, editing refused.
-      await _openMeRow(tester, 'Sign out');
+      await _openMeRow(tester, 'Account & data');
+      await pumpFor(tester, const Duration(milliseconds: 500));
+      await _openMeRow(tester, 'Sign out', screen: MeAccountScreen);
       await _waitOrDump(
         tester,
         container,
@@ -243,7 +258,7 @@ void main() {
       final tester = $.tester;
 
       // Me › Account › Sign in › Continue with Google (A50).
-      await _openMeRow(tester, 'Sign in or create an account');
+      await _openMeRow(tester, 'Sign in');
       await waitUntil(
         tester,
         () => find.byType(SignInScreen).evaluate().isNotEmpty,

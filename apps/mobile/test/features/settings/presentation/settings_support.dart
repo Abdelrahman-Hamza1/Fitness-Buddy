@@ -1,3 +1,4 @@
+import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/catalog/catalog_models.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
@@ -69,6 +70,15 @@ Future<void> openMe(WidgetTester tester) async {
   await tester.tap(
     find.descendant(of: find.byType(NavigationBar), matching: find.text('Me')),
   );
+  await tester.pumpAndSettle();
+}
+
+/// The Me subpage behind the row titled [row] (A51), opened from Today.
+Future<void> openMePage(WidgetTester tester, String row) async {
+  await openMe(tester);
+  final link = find.widgetWithText(FbListRow, row);
+  await tester.ensureVisible(link);
+  await tester.tap(link);
   await tester.pumpAndSettle();
 }
 

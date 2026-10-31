@@ -2168,47 +2168,11 @@ abstract class AppLocalizations {
   /// **'Back'**
   String get setupBack;
 
-  /// Setup: goes to the next page; off until the page's required fields are valid.
-  ///
-  /// In en, this message translates to:
-  /// **'Next'**
-  String get setupNext;
-
-  /// Setup: saves the profile, goal, first weigh-in and targets (last page).
-  ///
-  /// In en, this message translates to:
-  /// **'Save'**
-  String get setupSave;
-
-  /// Setup page 1 title (TG-001).
-  ///
-  /// In en, this message translates to:
-  /// **'About you'**
-  String get setupPageYou;
-
   /// Setup page 2 title (TG-001).
   ///
   /// In en, this message translates to:
   /// **'How active are you?'**
   String get setupPageActivity;
-
-  /// Setup page 3 title (TG-010/011).
-  ///
-  /// In en, this message translates to:
-  /// **'Your goal'**
-  String get setupPageGoal;
-
-  /// Setup page 4 title (UX-060).
-  ///
-  /// In en, this message translates to:
-  /// **'Preferences'**
-  String get setupPagePreferences;
-
-  /// Setup page 5 title: the calculated targets.
-  ///
-  /// In en, this message translates to:
-  /// **'Your targets'**
-  String get setupPageTargets;
 
   /// Setup page 1: under the current weight field (WB-001).
   ///
@@ -2221,42 +2185,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pick the one closest to a usual week.'**
   String get setupActivityHint;
-
-  /// Setup page 4: under the title.
-  ///
-  /// In en, this message translates to:
-  /// **'These are filled in from your settings. You can change them here or later in Me.'**
-  String get setupPreferencesHint;
-
-  /// Setup page 5: the daily target, the big number.
-  ///
-  /// In en, this message translates to:
-  /// **'{kcal} kcal a day'**
-  String setupTargetsDaily(int kcal);
-
-  /// Setup page 5: the weekly budget, under the daily target.
-  ///
-  /// In en, this message translates to:
-  /// **'{kcal} kcal a week'**
-  String setupTargetsWeekly(int kcal);
-
-  /// Setup page 5: heading above the plain-language explanation (TG-021).
-  ///
-  /// In en, this message translates to:
-  /// **'How it\'s calculated'**
-  String get setupTargetsHow;
-
-  /// Setup page 5: heading above the macro targets.
-  ///
-  /// In en, this message translates to:
-  /// **'Macros'**
-  String get setupTargetsMacros;
-
-  /// Setup page 5: how the targets are applied by default.
-  ///
-  /// In en, this message translates to:
-  /// **'Your weekly budget adjusts the rest of the week when a day is over or under. You can change this later in Me.'**
-  String get setupTargetsMode;
 
   /// Setup: title of the sheet shown when closing with something typed (UX-052).
   ///
@@ -2311,6 +2239,372 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your profile was saved by a newer version of Fitness Buddy. Update the app to see and change it.'**
   String get setupUpdateMessage;
+
+  /// First run welcome (D-088): the headline.
+  ///
+  /// In en, this message translates to:
+  /// **'Food and training, tracked your way.'**
+  String get welcomeTitle;
+
+  /// First run welcome: the line under the headline.
+  ///
+  /// In en, this message translates to:
+  /// **'A few quick questions set your targets. Skip any of them: the app works without answers and without an account.'**
+  String get welcomeMessage;
+
+  /// First run welcome: first benefit.
+  ///
+  /// In en, this message translates to:
+  /// **'Log meals in seconds'**
+  String get welcomeLogTitle;
+
+  /// First run welcome: first benefit's detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic and local dishes included'**
+  String get welcomeLogBody;
+
+  /// First run welcome: second benefit.
+  ///
+  /// In en, this message translates to:
+  /// **'Targets that adapt to you'**
+  String get welcomeTargetsTitle;
+
+  /// First run welcome: second benefit's detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on your real weigh-ins'**
+  String get welcomeTargetsBody;
+
+  /// First run welcome: third benefit.
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts with or without a plan'**
+  String get welcomeWorkoutsTitle;
+
+  /// First run welcome: third benefit's detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data stays on your phone'**
+  String get welcomeWorkoutsBody;
+
+  /// First run welcome: the main button, opens the questions.
+  ///
+  /// In en, this message translates to:
+  /// **'Get started'**
+  String get welcomeStart;
+
+  /// First run welcome: skip every question and go to Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip setup, I\'ll look around'**
+  String get welcomeSkip;
+
+  /// First run welcome: opens sign-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? Sign in'**
+  String get welcomeSignIn;
+
+  /// Setup questions (D-088): skip this question; its answer isn't used.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get setupSkip;
+
+  /// Setup questions: go to the next question.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get setupContinue;
+
+  /// Setup goal question: the title.
+  ///
+  /// In en, this message translates to:
+  /// **'What brings you here?'**
+  String get setupGoalTitle;
+
+  /// Setup goal question: the line under the title.
+  ///
+  /// In en, this message translates to:
+  /// **'Sets your daily target. Change it any time.'**
+  String get setupGoalHint;
+
+  /// Setup goal answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Lose weight'**
+  String get setupGoalLose;
+
+  /// Setup goal answer: detail for Lose weight.
+  ///
+  /// In en, this message translates to:
+  /// **'A steady, safe pace'**
+  String get setupGoalLoseHint;
+
+  /// Setup goal answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep my weight'**
+  String get setupGoalKeep;
+
+  /// Setup goal answer: detail for Keep my weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Eat well and stay where I am'**
+  String get setupGoalKeepHint;
+
+  /// Setup goal answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Gain weight or muscle'**
+  String get setupGoalGain;
+
+  /// Setup goal answer: detail for Gain.
+  ///
+  /// In en, this message translates to:
+  /// **'With enough protein'**
+  String get setupGoalGainHint;
+
+  /// Setup goal answer: no calorie target.
+  ///
+  /// In en, this message translates to:
+  /// **'Just see what I eat'**
+  String get setupGoalTrack;
+
+  /// Setup goal answer: detail for Just see what I eat.
+  ///
+  /// In en, this message translates to:
+  /// **'No target for now'**
+  String get setupGoalTrackHint;
+
+  /// Setup body question: the title.
+  ///
+  /// In en, this message translates to:
+  /// **'A bit about you'**
+  String get setupYouTitle;
+
+  /// Setup body question: the line under the title.
+  ///
+  /// In en, this message translates to:
+  /// **'Used only to estimate your energy needs. Stays on this phone.'**
+  String get setupYouHint;
+
+  /// Setup body question: offer to switch units (now metric).
+  ///
+  /// In en, this message translates to:
+  /// **'Using pounds or feet?'**
+  String get setupToImperialAsk;
+
+  /// Setup body question: switches the inputs to pounds and feet.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to imperial'**
+  String get setupToImperial;
+
+  /// Setup body question: offer to switch units (now imperial).
+  ///
+  /// In en, this message translates to:
+  /// **'Using kilograms or centimetres?'**
+  String get setupToMetricAsk;
+
+  /// Setup body question: switches the inputs to kilograms and centimetres.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to metric'**
+  String get setupToMetric;
+
+  /// Setup training question: the title.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you work out?'**
+  String get setupTrainingTitle;
+
+  /// Setup training question: the line under the title.
+  ///
+  /// In en, this message translates to:
+  /// **'No plan needed. You can always just log what you did.'**
+  String get setupTrainingHint;
+
+  /// Setup training answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Not right now'**
+  String get setupTrainingNotNow;
+
+  /// Setup training answer: detail for Not right now.
+  ///
+  /// In en, this message translates to:
+  /// **'Set it up later in the Workouts tab'**
+  String get setupTrainingNotNowHint;
+
+  /// Setup training answer: no plan, log what you do.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, I mix it up'**
+  String get setupTrainingMix;
+
+  /// Setup training answer: detail.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ll log what I do each time'**
+  String get setupTrainingMixHint;
+
+  /// Setup training answer: the starter plans open after setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, I want a plan'**
+  String get setupTrainingPlan;
+
+  /// Setup training answer: detail for wanting a plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a plan after this, then its exercises'**
+  String get setupTrainingPlanHint;
+
+  /// Setup plan page: the title.
+  ///
+  /// In en, this message translates to:
+  /// **'Here\'s your plan'**
+  String get setupPlanTitle;
+
+  /// Setup plan page: above the daily calories.
+  ///
+  /// In en, this message translates to:
+  /// **'Eat about'**
+  String get setupPlanEat;
+
+  /// Setup plan page: under the daily calories.
+  ///
+  /// In en, this message translates to:
+  /// **'kcal a day'**
+  String get setupPlanKcal;
+
+  /// Setup plan page: the goal line for keeping the weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your weight around {weight}'**
+  String setupPlanKeep(String weight);
+
+  /// Setup plan page: the goal line for losing.
+  ///
+  /// In en, this message translates to:
+  /// **'Lose about {rate} a week'**
+  String setupPlanLose(String rate);
+
+  /// Setup plan page: the goal line for gaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Gain about {rate} a week'**
+  String setupPlanGain(String rate);
+
+  /// Setup plan page: opens the explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'How is this worked out?'**
+  String get setupPlanHow;
+
+  /// Setup plan page: where to change single days later.
+  ///
+  /// In en, this message translates to:
+  /// **'Want more on gym days or Fridays? Set any day\'s number later in Targets.'**
+  String get setupPlanLater;
+
+  /// Setup plan page: saves the plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks good'**
+  String get setupPlanConfirm;
+
+  /// Setup plan page: opens the goal pace and activity.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the numbers'**
+  String get setupPlanChange;
+
+  /// Setup plan page: closes Change the numbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get setupPlanChangeDone;
+
+  /// Setup plan page: when the engine can't work out targets from the answers.
+  ///
+  /// In en, this message translates to:
+  /// **'These answers don\'t give a plan yet. Go back to check them, or skip for now.'**
+  String get setupPlanUnavailable;
+
+  /// Setup plan page: finish without targets.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now'**
+  String get setupPlanSkip;
+
+  /// First run account step: the title.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your data safe?'**
+  String get setupAccountTitle;
+
+  /// First run account step: the line under the title.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. Everything works without an account, and your data stays on this phone.'**
+  String get setupAccountHint;
+
+  /// First run account step: first benefit.
+  ///
+  /// In en, this message translates to:
+  /// **'Backed up'**
+  String get setupAccountBackup;
+
+  /// First run account step: first benefit's detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Lose or change your phone and keep every log.'**
+  String get setupAccountBackupBody;
+
+  /// First run account step: second benefit.
+  ///
+  /// In en, this message translates to:
+  /// **'Synced'**
+  String get setupAccountSync;
+
+  /// First run account step: second benefit's detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Your diary and workouts on any phone you sign in on.'**
+  String get setupAccountSyncBody;
+
+  /// First run account step: third benefit.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get setupAccountPrivate;
+
+  /// First run account step: third benefit's detail.
+  ///
+  /// In en, this message translates to:
+  /// **'No ads, no selling data. Delete it all any time.'**
+  String get setupAccountPrivateBody;
+
+  /// First run account step: finish without an account.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get setupAccountNotNow;
+
+  /// First run account step: after signing in.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re signed in. Your data is backed up.'**
+  String get setupAccountDone;
+
+  /// First run account step: finish after signing in.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get setupAccountFinish;
 
   /// Profile form: label of the formula sex choice (TG-001).
   ///
@@ -3558,23 +3852,11 @@ abstract class AppLocalizations {
   /// **'Replacing {name}'**
   String foodSearchReplacing(String name);
 
-  /// Me tab: the heading of the section with the profile and targets (A13).
-  ///
-  /// In en, this message translates to:
-  /// **'You'**
-  String get meSectionYou;
-
   /// Me tab: the row that opens setup while no profile and targets exist (A13 D10).
   ///
   /// In en, this message translates to:
   /// **'Set up profile & targets'**
   String get meSetUpTargets;
-
-  /// Me tab: the heading of the section with the food lists (Your foods).
-  ///
-  /// In en, this message translates to:
-  /// **'Food'**
-  String get meSectionFood;
 
   /// Me tab: the row that opens the list of foods the user made.
   ///
@@ -4302,12 +4584,6 @@ abstract class AppLocalizations {
   /// **'Quick add'**
   String get quickAddRowSemantics;
 
-  /// Me tab: heading of the settings rows (units, week start, halal, theme, city).
-  ///
-  /// In en, this message translates to:
-  /// **'Settings'**
-  String get meSectionSettings;
-
   /// Me tab: heading of the section for the user's own data (export).
   ///
   /// In en, this message translates to:
@@ -4320,23 +4596,179 @@ abstract class AppLocalizations {
   /// **'Export your data'**
   String get meExportData;
 
-  /// Me tab: heading of the About section.
-  ///
-  /// In en, this message translates to:
-  /// **'About'**
-  String get meSectionAbout;
-
   /// Me tab: heading of the developer-only rows (dev flavor).
   ///
   /// In en, this message translates to:
   /// **'Developer'**
   String get meSectionDeveloper;
 
-  /// Me tab: row that opens the About screen.
+  /// Me › Preferences (A51): the app language row, information only in R1.
   ///
   /// In en, this message translates to:
-  /// **'About Fitness Buddy'**
-  String get meAbout;
+  /// **'Language'**
+  String get settingsLanguage;
+
+  /// Me › Preferences: the app language (D-080: English UI in R1).
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get settingsLanguageEnglish;
+
+  /// Me account card (A51, D-088): a guest's title.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get meGuest;
+
+  /// Me account card: a guest's line.
+  ///
+  /// In en, this message translates to:
+  /// **'Data on this phone only, not backed up'**
+  String get meGuestDetail;
+
+  /// Me account card: the title for a read-only copy kept after sign-out (AC-004).
+  ///
+  /// In en, this message translates to:
+  /// **'Read-only copy'**
+  String get meReadOnly;
+
+  /// Me account card: opens sign-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get meSignIn;
+
+  /// Me targets summary: under today's calorie target.
+  ///
+  /// In en, this message translates to:
+  /// **'kcal today'**
+  String get meSummaryKcal;
+
+  /// Me targets summary: under today's protein target.
+  ///
+  /// In en, this message translates to:
+  /// **'protein'**
+  String get meSummaryProtein;
+
+  /// Me targets summary: under the goal.
+  ///
+  /// In en, this message translates to:
+  /// **'goal'**
+  String get meSummaryGoal;
+
+  /// Me targets summary: before setup.
+  ///
+  /// In en, this message translates to:
+  /// **'No targets yet. You can still log everything.'**
+  String get meSummaryNone;
+
+  /// Me: the first group of rows.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan'**
+  String get meSectionPlan;
+
+  /// Me: the second group of rows.
+  ///
+  /// In en, this message translates to:
+  /// **'App'**
+  String get meSectionApp;
+
+  /// Me row and subpage title.
+  ///
+  /// In en, this message translates to:
+  /// **'Targets & goal'**
+  String get meTargetsGoal;
+
+  /// Me row subtitle for Targets & goal once set up.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories, macros, profile and goal'**
+  String get meTargetsGoalHint;
+
+  /// Me row subtitle for Targets & goal before setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set up yet'**
+  String get meTargetsGoalNotSet;
+
+  /// Me row and subpage title.
+  ///
+  /// In en, this message translates to:
+  /// **'Food & meals'**
+  String get meFoodMeals;
+
+  /// Me row subtitle for Food & meals.
+  ///
+  /// In en, this message translates to:
+  /// **'Your foods, saved meals, meal times, halal'**
+  String get meFoodMealsHint;
+
+  /// Me row and subpage title.
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts'**
+  String get meWorkouts;
+
+  /// Me row subtitle for Workouts.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly plan, starter plans, exercises'**
+  String get meWorkoutsHint;
+
+  /// Me › Workouts: the line above the rows.
+  ///
+  /// In en, this message translates to:
+  /// **'These open in the Workouts tab.'**
+  String get meWorkoutsNote;
+
+  /// Me › Workouts: opens the starter plans.
+  ///
+  /// In en, this message translates to:
+  /// **'Starter plans'**
+  String get meStarterPlans;
+
+  /// Me row and subpage title.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get mePreferences;
+
+  /// Me row subtitle for Preferences: the current values.
+  ///
+  /// In en, this message translates to:
+  /// **'{units} · {theme} theme · Week starts {day}'**
+  String mePreferencesValues(String units, String theme, String day);
+
+  /// Me row subtitle for Notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{All reminders off} =1{1 reminder on} other{{count} reminders on}}'**
+  String meNotificationsOn(int count);
+
+  /// Me row and subpage title.
+  ///
+  /// In en, this message translates to:
+  /// **'Account & data'**
+  String get meAccountData;
+
+  /// Me row subtitle for Account & data.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in, sync, export, delete'**
+  String get meAccountDataHint;
+
+  /// Me row: opens About.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & about'**
+  String get meHelpAbout;
+
+  /// Me › Account & data: the export row's subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your diary, foods and settings as files'**
+  String get meExportDataHint;
 
   /// Settings row and sheet title: metric or imperial display units.
   ///
@@ -4415,12 +4847,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'City'**
   String get settingsCity;
-
-  /// Settings row: shown when no city is chosen.
-  ///
-  /// In en, this message translates to:
-  /// **'Not set'**
-  String get settingsCityNotSet;
 
   /// Settings info row: what energy is shown in.
   ///
@@ -6522,18 +6948,6 @@ abstract class AppLocalizations {
   /// **'This changes your current goal, which started on {date}. To begin a new goal from today instead, use Start a new goal.'**
   String goalEditNote(String date);
 
-  /// Me tab: Account section header (A33).
-  ///
-  /// In en, this message translates to:
-  /// **'Account'**
-  String get meSectionAccount;
-
-  /// Me › Account: guest status line (AC-002).
-  ///
-  /// In en, this message translates to:
-  /// **'You\'re using Fitness Buddy as a guest. Your data stays on this phone.'**
-  String get accountGuest;
-
   /// Me › Account: signed-in status line. No email or id is shown.
   ///
   /// In en, this message translates to:
@@ -6624,12 +7038,6 @@ abstract class AppLocalizations {
   /// **'Email'**
   String get signInEmailLabel;
 
-  /// Sign-in screen: button that emails a 6-digit code.
-  ///
-  /// In en, this message translates to:
-  /// **'Send code'**
-  String get signInSendCode;
-
   /// Sign-in screen: code field label.
   ///
   /// In en, this message translates to:
@@ -6719,6 +7127,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Done'**
   String get signInDoneButton;
+
+  /// Sign-in (A51, D-088): the line under the title.
+  ///
+  /// In en, this message translates to:
+  /// **'Back up your logs and use them on any phone. What\'s already on this phone comes with you.'**
+  String get signInBenefit;
+
+  /// Sign-in: between the Google button and the email field.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get signInOr;
+
+  /// Sign-in: example address in the empty email field.
+  ///
+  /// In en, this message translates to:
+  /// **'you@example.com'**
+  String get signInEmailHint;
+
+  /// Sign-in: under the email field.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll send a 6-digit code. No password needed.'**
+  String get signInEmailNote;
+
+  /// Sign-in and the first run's account step: sends a code to the email.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with email'**
+  String get signInEmailButton;
+
+  /// Sign-in: closes the screen; the app stays a guest (AC-002).
+  ///
+  /// In en, this message translates to:
+  /// **'Keep using without an account'**
+  String get signInWithoutAccount;
+
+  /// Sign-in code step: the title.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your email'**
+  String get signInCodeTitle;
+
+  /// Sign-in code step: where the code went and how long it works.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a 6-digit code to {email}. It works for 10 minutes.'**
+  String signInCodeSent(String email);
+
+  /// Sign-in code step: under the code boxes.
+  ///
+  /// In en, this message translates to:
+  /// **'Pasting the code fills all six boxes. It continues on its own.'**
+  String get signInCodePaste;
+
+  /// Sign-in code step: the resend countdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend in {time}'**
+  String signInResendIn(String time);
+
+  /// Sign-in code step: sends a new code.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code'**
+  String get signInResend;
+
+  /// Sign-in code step: back to the email field.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a different email'**
+  String get signInChangeEmail;
 
   /// Today: the gentle guest prompt (AC-002), at most once a week after the first week.
   ///

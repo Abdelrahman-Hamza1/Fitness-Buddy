@@ -65,6 +65,8 @@ final class SignInState {
     this.failure,
     this.outcome,
     this.mergeBlocked = false,
+    this.email,
+    this.codesSent = 0,
   });
 
   /// Current step.
@@ -81,6 +83,14 @@ final class SignInState {
 
   /// Merge was refused because a kept copy of the account is on the phone.
   final bool mergeBlocked;
+
+  /// The address the code went to, shown on the code step (memory only;
+  /// never in [toString]).
+  final String? email;
+
+  /// How many codes this screen has sent: a new one restarts the resend
+  /// countdown (A51).
+  final int codesSent;
 
   @override
   String toString() => 'SignInState(${step.name}, busy: $busy)';
@@ -104,10 +114,30 @@ class SignInController extends _$SignInController {
 
   /// Sends a code to [email].
   Future<void> submitEmail(String email) => _run(() async {
-    _email = email;
-    _challenge = await _flow.startEmail(email);
-    return const SignInState(step: SignInStep.code);
+    final address = email.trim();
+    _email = address;
+    _challenge = await _flow.startEmail(address);
+    return SignInState(
+      step: SignInStep.code,
+      email: address,
+      codesSent: state.codesSent + 1,
+    );
   });
+
+  /// Sends a new code to the same address (A51: "Resend code").
+  Future<void> resend() async {
+    final email = _email;
+    if (email == null || state.step != SignInStep.code) return;
+    await submitEmail(email);
+  }
+
+  /// Back to the email step ("Use a different email"): the pending code
+  /// is dropped.
+  void changeEmail() {
+    if (state.busy) return;
+    _challenge = null;
+    state = SignInState(codesSent: state.codesSent);
+  }
 
   /// Verifies [code].
   Future<void> submitCode(String code) => _run(() async {
@@ -129,7 +159,11 @@ class SignInController extends _$SignInController {
     final email = _email;
     if (email == null) return const SignInState();
     _challenge = await _flow.startEmail(email);
-    return const SignInState(step: SignInStep.code);
+    return SignInState(
+      step: SignInStep.code,
+      email: email,
+      codesSent: state.codesSent + 1,
+    );
   });
 
   SignInState _after(AccountOutcome outcome) {
@@ -142,19 +176,36 @@ class SignInController extends _$SignInController {
         step: SignInStep.conflict,
         mergeBlocked: true,
       ),
-      AccountOutcome.cancelled => SignInState(step: state.step),
+      AccountOutcome.cancelled => SignInState(
+        step: state.step,
+        email: state.email,
+        codesSent: state.codesSent,
+      ),
       _ => SignInState(step: SignInStep.done, outcome: outcome),
     };
   }
 
   Future<void> _run(Future<SignInState> Function() action) async {
-    state = SignInState(step: state.step, busy: true);
+    final before = state;
+    state = SignInState(
+      step: before.step,
+      busy: true,
+      email: before.email,
+      codesSent: before.codesSent,
+      mergeBlocked: before.mergeBlocked,
+    );
     try {
       final next = await action();
       if (ref.mounted) state = next;
     } on AccountFailure catch (failure) {
       if (ref.mounted) {
-        state = SignInState(step: state.step, failure: failure.kind);
+        state = SignInState(
+          step: before.step,
+          failure: failure.kind,
+          email: before.email,
+          codesSent: before.codesSent,
+          mergeBlocked: before.mergeBlocked,
+        );
       }
     }
   }
