@@ -6,7 +6,9 @@ export 'application/workout_providers.dart';
 export 'application/workout_views.dart'
     show
         TodayWorkout,
+        TodayWorkoutLast,
         TodayWorkoutLogged,
+        TodayWorkoutNone,
         TodayWorkoutPlanned,
         allWorkoutSessionsProvider,
         todayWorkoutProvider,
@@ -20,5 +22,5 @@ export 'presentation/starter_plans_screen.dart' show StarterPlansScreen;
 export 'presentation/weekly_plan_screen.dart' show WeeklyPlanScreen;
 export 'presentation/workout_history_screen.dart';
 export 'presentation/workout_log_screen.dart';
-export 'presentation/workout_today_row.dart';
+export 'presentation/workout_slide.dart';
 export 'presentation/workouts_screen.dart';

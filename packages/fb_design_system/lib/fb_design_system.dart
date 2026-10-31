@@ -48,9 +48,11 @@ export 'src/components/section_header.dart';
 export 'src/components/segmented.dart';
 export 'src/components/sheet.dart';
 export 'src/components/skeleton.dart';
+export 'src/components/slide_card.dart';
 export 'src/components/snack_bar.dart';
 export 'src/components/source_badge.dart'
     show FbSource, FbSourceBadge, showFbSourceLegend;
+export 'src/components/sparkline.dart';
 export 'src/components/step_bar.dart';
 export 'src/components/swipe_actions.dart';
 export 'src/components/switch_row.dart';

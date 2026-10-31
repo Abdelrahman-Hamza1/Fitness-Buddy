@@ -105,7 +105,7 @@ void main() {
       expect(bar, findsOneWidget);
       expect(
         tester.getBottomLeft(bar).dy,
-        greaterThan(tester.getBottomLeft(find.byType(PageView)).dy),
+        greaterThan(tester.getBottomLeft(find.byType(PageView).first).dy),
       );
       expect(find.text('Tell Buddy what you ate…'), findsOneWidget);
       // No suggestions, so no chip row (A09 D14).

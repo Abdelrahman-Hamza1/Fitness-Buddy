@@ -34,11 +34,11 @@ Top to bottom:
 - **HM-002** `[R1]` A small weekly line: "This week: X under / over" against the weekly budget (TG-045).
 - **HM-003** `[R1]` Macro progress for protein, carbs, fat (with targets) and fiber (smaller).
 - **HM-004** `[R1]` A "to confirm" strip appears only when proposals are pending (AI-045).
-- **HM-005** `[R1]` Weight on Today (D-084): with a weigh-in today, one slim row (weight · trend · ＋); tapping the row opens the graph, ＋ logs a weigh-in (WB-001). With no weigh-in today, the full weight card (trend, weekly rate, log a weigh-in).
-- **HM-006** `[R1]` A workout row appears only on a planned day ("Push day today", WO-021) or after a workout was logged that day ("Push ✓ · 5 exercises · 1 PR"). With no plan, nothing shows until you log (D-085). Tapping it opens logging for that template, or the logged session.
+- **HM-005** `[R1]` Today’s top is a card with slides: Nutrition, Weight, Workout (D-092). The Weight slide shows the as-of trend, weekly rate, last weigh-in and a small raw-value sparkline; tap the value area for the graph, or “+ Weigh in” to log on the viewed day (WB-001, two taps including Save). The last weigh-in remains editable; sparse-history and cadence notes remain.
+- **HM-006** `[R1]` The Workout slide always appears (D-092): the day’s logged session and counts, otherwise today’s planned workout (WO-021), otherwise the last session before the viewed day, otherwise “No workout logged”. “Log” starts the planned template; “Log a workout” starts a free session on the viewed day. Tapping a logged or last session opens it. Past days never show a missed-plan note.
 - **HM-007** `[R1]` Diary by slot (DY-020).
 - **HM-008** `[R1]` Quick-add chips and the input bar with camera and barcode buttons are always at the bottom.
-- **HM-009** `[R1]` Swiping left or right changes the day. The same layout shows past days.
+- **HM-009** `[R1]` Swiping left or right below the summary card changes the day. A drag starting on the card changes its slide, including at the edges; the day buttons and date picker still change the day. The slide selection follows across days for the session and resets to Nutrition on cold start (D-092). The same layout shows past days.
 - **HM-010** `[R2]` Steps for today shown as information only, read from Apple Health / Health Connect (D-068). They never affect the budget.
 
 ## 2. Progress tab

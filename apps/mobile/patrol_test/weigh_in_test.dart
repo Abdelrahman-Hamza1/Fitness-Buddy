@@ -26,14 +26,14 @@ Finder dayPage(LocalDate date) => find.byKey(ValueKey<LocalDate>(date));
 
 /// The weight card of [date]'s page, with the text [text].
 Finder _cardText(LocalDate date, String text) => find.descendant(
-  of: find.descendant(of: dayPage(date), matching: find.byType(WeightCard)),
+  of: find.descendant(of: dayPage(date), matching: find.byType(WeightSlide)),
   matching: find.text(text),
 );
 
 /// The ＋ of [date]'s slim weight row (a day with a weigh-in, D-084).
 Finder _slimAdd(LocalDate date) => find.descendant(
-  of: find.descendant(of: dayPage(date), matching: find.byType(WeightCard)),
-  matching: find.byKey(WeightCard.slimAddKey),
+  of: find.descendant(of: dayPage(date), matching: find.byType(WeightSlide)),
+  matching: find.byKey(const ValueKey('today-weigh-in')),
 );
 
 /// Waits for the snackbar that starts with [prefix].
@@ -78,6 +78,12 @@ void main() {
 
     final save = find.widgetWithText(FbButton, 'Save');
 
+    await tapExactly(
+      tester,
+      find.byKey(const ValueKey('fb-slide-dot-1')).first,
+      'Weight slide',
+    );
+    await pumpFor(tester, const Duration(milliseconds: 600));
     // No weigh-ins yet: the card invites the first one.
     const invite = 'Log your first weigh-in';
     await waitUntil(
@@ -88,7 +94,7 @@ void main() {
     expect(await _stored(container), isEmpty);
 
     // First weigh-in: card, type 97.4, Save.
-    await tap(_cardText(today, invite), 'the weight card');
+    await tap(_slimAdd(today), 'Weigh in');
     await waitUntil(
       tester,
       () => find.byType(FbNumberPad).evaluate().isNotEmpty,

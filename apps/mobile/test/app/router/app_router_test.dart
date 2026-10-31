@@ -136,6 +136,28 @@ final List<AppRoute> _allRoutes = [
 ];
 
 void main() {
+  // Covers: HM-006
+  testWidgets('A56 Today free workout URL builds the dated log screen', (
+    tester,
+  ) async {
+    final c = await pumpApp(tester);
+    final router = c.read(appRouterProvider);
+    router.config.go('/today/workout-log?date=2026-10-16');
+    await tester.pumpAndSettle();
+    final screen = tester.widget<WorkoutLogScreen>(
+      find.byType(WorkoutLogScreen),
+    );
+    expect(screen.template, isNull);
+    expect(screen.date, LocalDate(2026, 10, 16));
+    expect(screen.inToday, isTrue);
+    expect(router.config.state.matchedLocation, TodayWorkoutLogRoute.path);
+    router.config.go('/today/workout-log?template=not-a-uuid');
+    await tester.pumpAndSettle();
+    expect(router.config.state.matchedLocation, TodayRoute.path);
+    expect(find.byType(WorkoutLogScreen), findsNothing);
+    await unmountApp(tester, c);
+  });
+
   test('typed routes: locations are unique and tabs are in UX-010 order', () {
     expect(
       _allRoutes.map((r) => r.location).toSet(),
@@ -219,8 +241,7 @@ void main() {
       showRoute(container, route);
       await tester.pumpAndSettle();
 
-      // The matched location has no query string (A37c: the Today log
-      // route always carries its template there).
+      // The matched location excludes optional query parameters.
       expect(
         router.config.state.matchedLocation,
         Uri.parse(route.location).path,

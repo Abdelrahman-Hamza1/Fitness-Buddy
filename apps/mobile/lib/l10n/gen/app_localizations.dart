@@ -10744,6 +10744,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{day}, {count, plural, =0{no exercises} =1{1 exercise} other{{count} exercises}}'**
   String workoutSetupTabSemantics(String day, int count);
+
+  /// No description provided for @todaySlideNutrition.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition'**
+  String get todaySlideNutrition;
+
+  /// No description provided for @todaySlideWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get todaySlideWeight;
+
+  /// No description provided for @todaySlideWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout'**
+  String get todaySlideWorkout;
+
+  /// No description provided for @todaySlideSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}, {n} of {count}'**
+  String todaySlideSemantics(String name, int n, int count);
+
+  /// No description provided for @weightSlideAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Weigh in'**
+  String get weightSlideAdd;
+
+  /// No description provided for @workoutSlideLast.
+  ///
+  /// In en, this message translates to:
+  /// **'Last: {title} · {daysAgo} days ago'**
+  String workoutSlideLast(String title, int daysAgo);
+
+  /// No description provided for @workoutSlideNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No workout logged'**
+  String get workoutSlideNone;
+
+  /// No description provided for @workoutSlideLogNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Log a workout'**
+  String get workoutSlideLogNew;
+
+  /// No description provided for @workoutSlideLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Log'**
+  String get workoutSlideLog;
+
+  /// No description provided for @workoutSlideOpenSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Open {title}'**
+  String workoutSlideOpenSemantics(String title);
+
+  /// No description provided for @workoutSlideLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t load workouts.'**
+  String get workoutSlideLoadFailed;
 }
 
 class _AppLocalizationsDelegate

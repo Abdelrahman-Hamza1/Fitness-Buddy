@@ -280,11 +280,29 @@ final class TodayWorkoutPlanned extends TodayWorkout {
   final Stored<WorkoutTemplateDraft> template;
 }
 
+/// The last session strictly before the viewed day.
+final class TodayWorkoutLast extends TodayWorkout {
+  /// Creates the last-session summary.
+  const new({required this.summary, required this.daysAgo}) : super._();
+
+  /// The latest session strictly before the viewed day.
+  final SessionSummary summary;
+
+  /// Calendar days between the session and the viewed day.
+  final int daysAgo;
+}
+
+/// No sessions and no planned workout.
+final class TodayWorkoutNone extends TodayWorkout {
+  /// An empty workout summary.
+  const new() : super._();
+}
+
 /// The workout row of [date] (D20): its latest session; else, for today or
-/// a later day, its planned template; else `null` (no-plan users see
-/// nothing until they log; past days are never "missed").
+/// a later day, its planned template; else the last earlier session or an
+/// empty state. Past days are never "missed" (D-092).
 @riverpod
-Future<TodayWorkout?> todayWorkout(Ref ref, LocalDate date) async {
+Future<TodayWorkout> todayWorkout(Ref ref, LocalDate date) async {
   final historyFuture = ref.watch(workoutHistoryProvider.future);
   final planFuture = ref.watch(workoutPlanProvider.future);
   final templatesFuture = ref.watch(workoutTemplatesProvider.future);
@@ -299,11 +317,16 @@ Future<TodayWorkout?> todayWorkout(Ref ref, LocalDate date) async {
   if (day.isNotEmpty) {
     return TodayWorkoutLogged(summary: day.first, more: day.length - 1);
   }
-  if (date.isBefore(today)) return null;
-  return switch (plannedTemplate(date, plan, templates)) {
-    final template? => TodayWorkoutPlanned(template: template),
-    null => null,
-  };
+  if (!date.isBefore(today)) {
+    final template = plannedTemplate(date, plan, templates);
+    if (template != null) return TodayWorkoutPlanned(template: template);
+  }
+  final last = (await historyFuture)
+      .where((s) => s.date.isBefore(date))
+      .firstOrNull;
+  return last == null
+      ? const TodayWorkoutNone()
+      : TodayWorkoutLast(summary: last, daysAgo: last.date.daysUntil(date));
 }
 
 /// One exercise's page (WO-041, IN-006): the exercise and its progress.

@@ -7445,4 +7445,43 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$day, $_temp0';
   }
+
+  @override
+  String get todaySlideNutrition => 'Nutrition';
+
+  @override
+  String get todaySlideWeight => 'Weight';
+
+  @override
+  String get todaySlideWorkout => 'Workout';
+
+  @override
+  String todaySlideSemantics(String name, int n, int count) {
+    return '$name, $n of $count';
+  }
+
+  @override
+  String get weightSlideAdd => '+ Weigh in';
+
+  @override
+  String workoutSlideLast(String title, int daysAgo) {
+    return 'Last: $title · $daysAgo days ago';
+  }
+
+  @override
+  String get workoutSlideNone => 'No workout logged';
+
+  @override
+  String get workoutSlideLogNew => 'Log a workout';
+
+  @override
+  String get workoutSlideLog => 'Log';
+
+  @override
+  String workoutSlideOpenSemantics(String title) {
+    return 'Open $title';
+  }
+
+  @override
+  String get workoutSlideLoadFailed => 'Couldn’t load workouts.';
 }

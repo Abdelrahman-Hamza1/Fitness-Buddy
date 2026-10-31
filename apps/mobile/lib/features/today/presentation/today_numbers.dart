@@ -89,17 +89,9 @@ class TodayNumbers extends ConsumerWidget {
         ],
       ];
     }
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(
-        FbSpace.s4,
-        FbDensity.blockGap,
-        FbSpace.s4,
-        FbDensity.sectionGap,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: children,
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: children,
     );
   }
 

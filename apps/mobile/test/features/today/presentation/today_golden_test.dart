@@ -9,6 +9,16 @@ import 'package:material_ui/material_ui.dart';
 
 import 'support/today_support.dart';
 
+List<Override> _goldenOverrides(
+  Map<LocalDate, DiaryDay> days,
+  UnitSystem units,
+  DiaryViewChoices? choices,
+) => [
+  ...fakeToday(days: days, units: units),
+  if (choices != null)
+    diaryViewStateProvider.overrideWithBuild((ref, notifier) => choices),
+];
+
 /// Phone size of a screen golden cell, in dp.
 const double _width = 360;
 const double _height = 640;
@@ -26,11 +36,7 @@ Widget _phone(
   width: _width,
   height: height,
   child: ProviderScope(
-    overrides: <Override>[
-      ...fakeToday(days: days, units: units),
-      if (choices != null)
-        diaryViewStateProvider.overrideWithBuild((ref, notifier) => choices),
-    ],
+    overrides: [..._goldenOverrides(days, units, choices)],
     child: phoneApp(
       const TodayScreen(),
       brightness: brightness,

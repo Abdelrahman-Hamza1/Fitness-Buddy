@@ -234,13 +234,13 @@ final class WorkoutExerciseRoute extends AppRoute {
 /// form started from [template] on [date], nested in the Today tab.
 final class TodayWorkoutLogRoute extends AppRoute {
   /// Creates the route.
-  const new({required this.template, this.date});
+  const new({this.template, this.date});
 
   /// The route's path pattern.
   static const path = '/today/workout-log';
 
   /// The template to start from.
-  final String template;
+  final String? template;
 
   /// The training day; null for today.
   final LocalDate? date;
@@ -249,7 +249,7 @@ final class TodayWorkoutLogRoute extends AppRoute {
   String get location => Uri(
     path: path,
     queryParameters: {
-      WorkoutLogRoute.templateParam: template,
+      WorkoutLogRoute.templateParam: ?template,
       WorkoutLogRoute.dateParam: ?date?.toString(),
     },
   ).toString();

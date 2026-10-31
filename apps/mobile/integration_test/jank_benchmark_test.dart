@@ -185,7 +185,11 @@ void main() {
           .pixels;
       for (final dx in const <double>[300, 300, 300, -300, -300, -300]) {
         final before = page();
-        await tester.fling(pages, Offset(dx, 0), 2500);
+        await tester.flingFrom(
+          tester.getRect(pages).bottomCenter - const Offset(0, 24),
+          Offset(dx, 0),
+          2500,
+        );
         await _wait();
         expect(page(), isNot(before), reason: 'the day changed');
       }

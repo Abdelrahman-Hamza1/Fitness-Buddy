@@ -7667,4 +7667,19 @@
   "@workoutSetupIncomplete": {"description": "Plan setup: why Save plan is disabled."},
   "workoutSetupTabSemantics": "{day}, {count, plural, =0{no exercises} =1{1 exercise} other{{count} exercises}}",
   "@workoutSetupTabSemantics": {"description": "Plan setup: a day tab for a screen reader.", "placeholders": {"day": {"type": "String"}, "count": {"type": "int"}}}
+,
+  "todaySlideNutrition": "Nutrition",
+  "todaySlideWeight": "Weight",
+  "todaySlideWorkout": "Workout",
+  "todaySlideSemantics": "{name}, {n} of {count}",
+  "weightSlideAdd": "+ Weigh in",
+  "workoutSlideLast": "Last: {title} · {daysAgo} days ago",
+  "workoutSlideNone": "No workout logged",
+  "workoutSlideLogNew": "Log a workout",
+  "workoutSlideLog": "Log",
+  "workoutSlideOpenSemantics": "Open {title}",
+  "workoutSlideLoadFailed": "Couldn’t load workouts.",
+  "@todaySlideSemantics": {"placeholders": {"name": {"type": "String"}, "n": {"type": "int"}, "count": {"type": "int"}}},
+  "@workoutSlideLast": {"placeholders": {"title": {"type": "String"}, "daysAgo": {"type": "int"}}},
+  "@workoutSlideOpenSemantics": {"placeholders": {"title": {"type": "String"}}}
 }

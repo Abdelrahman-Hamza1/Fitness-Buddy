@@ -446,18 +446,20 @@ final class AppRouter implements AppNavigator {
         _visit(state.uri, _screen(workoutLogRouteOf(state.uri))),
   );
 
-  // A new workout from Today's planned row (A37 D13, D20); without a valid
-  // template it goes back to Today.
+  // A new workout on Today's stack, free or from a template (A56 D11).
+  // An absent template is valid; reject only a supplied malformed UUID.
   static GoRoute _todayWorkoutLogRoute() => GoRoute(
     path: TodayWorkoutLogRoute.path.split('/').last,
     name: TodayWorkoutLogRoute.path,
-    redirect: (_, state) =>
-        workoutLogRouteOf(state.uri).template == null ? TodayRoute.path : null,
+    redirect: (_, state) {
+      final template = state.uri.queryParameters[WorkoutLogRoute.templateParam];
+      return template != null && !isUuid(template) ? TodayRoute.path : null;
+    },
     builder: (_, state) {
       final log = workoutLogRouteOf(state.uri);
       return _visit(
         state.uri,
-        _screen(TodayWorkoutLogRoute(template: log.template!, date: log.date)),
+        _screen(TodayWorkoutLogRoute(template: log.template, date: log.date)),
       );
     },
   );

@@ -27,7 +27,7 @@ ProviderContainer containerOf(WidgetTester tester) =>
 Finder get skeleton => find.byType(FbSkeleton);
 
 void main() {
-  testWidgets('HM-009 swiping on the numbers goes to yesterday; › is '
+  testWidgets('HM-009 swiping below the summary goes to yesterday; › is '
       'disabled on today', (tester) async {
     await pumpToday(tester, fakeToday());
     IconButton next() => tester.widget<IconButton>(
@@ -36,7 +36,7 @@ void main() {
     expect(next().onPressed, isNull);
     expect(find.text('Today'), findsOneWidget);
 
-    await tester.drag(find.text('kcal eaten'), const Offset(400, 0));
+    await tester.dragFrom(const Offset(180, 480), const Offset(400, 0));
     await tester.pumpAndSettle();
 
     expect(find.text('Yesterday'), findsOneWidget);
@@ -46,7 +46,7 @@ void main() {
     await tester.tap(find.byTooltip('Next day'));
     await tester.pumpAndSettle();
     expect(find.text('Today'), findsOneWidget);
-    await tester.drag(find.text('kcal eaten'), const Offset(-400, 0));
+    await tester.dragFrom(const Offset(180, 480), const Offset(-400, 0));
     await tester.pumpAndSettle();
     expect(shownDate(tester), testToday);
     expect(find.text('Today'), findsOneWidget);

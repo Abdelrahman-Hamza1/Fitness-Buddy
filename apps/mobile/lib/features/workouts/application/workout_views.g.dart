@@ -518,27 +518,27 @@ String _$workoutPlanOverviewHash() =>
     r'9f9b3ab35764997628c5f189e42d2d3b252720d4';
 
 /// The workout row of [date] (D20): its latest session; else, for today or
-/// a later day, its planned template; else `null` (no-plan users see
-/// nothing until they log; past days are never "missed").
+/// a later day, its planned template; else the last earlier session or an
+/// empty state. Past days are never "missed" (D-092).
 
 @ProviderFor(todayWorkout)
 final todayWorkoutProvider = TodayWorkoutFamily._();
 
 /// The workout row of [date] (D20): its latest session; else, for today or
-/// a later day, its planned template; else `null` (no-plan users see
-/// nothing until they log; past days are never "missed").
+/// a later day, its planned template; else the last earlier session or an
+/// empty state. Past days are never "missed" (D-092).
 
 final class TodayWorkoutProvider
     extends
         $FunctionalProvider<
-          AsyncValue<TodayWorkout?>,
-          TodayWorkout?,
-          FutureOr<TodayWorkout?>
+          AsyncValue<TodayWorkout>,
+          TodayWorkout,
+          FutureOr<TodayWorkout>
         >
-    with $FutureModifier<TodayWorkout?>, $FutureProvider<TodayWorkout?> {
+    with $FutureModifier<TodayWorkout>, $FutureProvider<TodayWorkout> {
   /// The workout row of [date] (D20): its latest session; else, for today or
-  /// a later day, its planned template; else `null` (no-plan users see
-  /// nothing until they log; past days are never "missed").
+  /// a later day, its planned template; else the last earlier session or an
+  /// empty state. Past days are never "missed" (D-092).
   TodayWorkoutProvider._({
     required TodayWorkoutFamily super.from,
     required LocalDate super.argument,
@@ -562,12 +562,12 @@ final class TodayWorkoutProvider
 
   @$internal
   @override
-  $FutureProviderElement<TodayWorkout?> $createElement(
+  $FutureProviderElement<TodayWorkout> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<TodayWorkout?> create(Ref ref) {
+  FutureOr<TodayWorkout> create(Ref ref) {
     final argument = this.argument as LocalDate;
     return todayWorkout(ref, argument);
   }
@@ -583,14 +583,14 @@ final class TodayWorkoutProvider
   }
 }
 
-String _$todayWorkoutHash() => r'76ca12cef83def06f467fbb867c5f0304a326498';
+String _$todayWorkoutHash() => r'1796a81a54995cd67bfd256b41bf98addacf9018';
 
 /// The workout row of [date] (D20): its latest session; else, for today or
-/// a later day, its planned template; else `null` (no-plan users see
-/// nothing until they log; past days are never "missed").
+/// a later day, its planned template; else the last earlier session or an
+/// empty state. Past days are never "missed" (D-092).
 
 final class TodayWorkoutFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<TodayWorkout?>, LocalDate> {
+    with $FunctionalFamilyOverride<FutureOr<TodayWorkout>, LocalDate> {
   TodayWorkoutFamily._()
     : super(
         retry: null,
@@ -601,8 +601,8 @@ final class TodayWorkoutFamily extends $Family
       );
 
   /// The workout row of [date] (D20): its latest session; else, for today or
-  /// a later day, its planned template; else `null` (no-plan users see
-  /// nothing until they log; past days are never "missed").
+  /// a later day, its planned template; else the last earlier session or an
+  /// empty state. Past days are never "missed" (D-092).
 
   TodayWorkoutProvider call(LocalDate date) =>
       TodayWorkoutProvider._(argument: date, from: this);

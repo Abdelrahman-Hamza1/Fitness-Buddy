@@ -40,7 +40,8 @@ List<Override> _overrides(ThemePreference theme) => [
 /// Runs [check] on everything a user can reach, at the repo's phone size
 /// (360 × 800 dp, narrower than the A55), at text [scale], in [theme]:
 /// every route of a seeded profile scrolled through, Today's expanded meals
-/// and its sheets, setup's pages on a fresh profile, then Ramadan's screens
+/// and its sheets (including all three summary slides), setup's pages on a
+/// fresh profile, then Ramadan's screens
 /// and day states on a profile in Ramadan (A41a). Returns the
 /// number of places checked.
 Future<int> _sweep(

@@ -6,7 +6,6 @@ import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
-import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:fb_mobile/features/quick_add/quick_add.dart';
@@ -199,7 +198,13 @@ void main() {
 
     // 3. A weigh-in from Today's weight card.
     await pumpFor(tester, const Duration(seconds: 6)); // the snackbar goes
-    await tapExactly(tester, find.byType(WeightCard).first, 'the weight card');
+    await tester.tap(find.byKey(const ValueKey('fb-slide-dot-1')).first);
+    await pumpFor(tester, const Duration(milliseconds: 600));
+    await tapExactly(
+      tester,
+      find.byKey(const ValueKey('today-weigh-in')).first,
+      'the weight slide',
+    );
     await waitUntil(
       tester,
       () => find.byType(FbNumberPad).evaluate().isNotEmpty,

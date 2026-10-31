@@ -38,7 +38,7 @@ List<Override> todayOverrides() => [
   ),
   quickAddContextWithoutTimer(),
   // Today's workout row (A37 D20) is the workouts tests' business (R7).
-  todayWorkoutProvider.overrideWith((ref, date) => null),
+  todayWorkoutProvider.overrideWith((ref, date) => const TodayWorkoutNone()),
   // No Ramadan decision: no settings stream for the day's meals (A41a).
   ramadanOff,
   // No settings stream for the confirmed below-floor days (A53).

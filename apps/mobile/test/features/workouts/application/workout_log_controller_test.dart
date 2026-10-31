@@ -593,7 +593,7 @@ void main() {
         todayWorkoutProvider(today).future,
         todayWorkoutProvider(today),
       ),
-      isNull,
+      isA<TodayWorkoutNone>(),
     );
     await log.h.apply([
       LogWorkoutSession(
@@ -623,7 +623,7 @@ void main() {
         todayWorkoutProvider(today.plusDays(-1)).future,
         todayWorkoutProvider(today.plusDays(-1)),
       ),
-      isNull,
+      isA<TodayWorkoutLast>(),
     );
   });
 
@@ -944,9 +944,9 @@ void main() {
     );
     expect(await row(today.plusDays(1)), isA<TodayWorkoutPlanned>());
     // A past planned day without a session shows nothing.
-    expect(await row(LocalDate(2026, 10, 27)), isNull);
+    expect(await row(LocalDate(2026, 10, 27)), isA<TodayWorkoutNone>());
     // Not planned: nothing (no-plan days stay quiet).
-    expect(await row(today.plusDays(2)), isNull);
+    expect(await row(today.plusDays(2)), isA<TodayWorkoutNone>());
     // Once logged, the logged branch wins.
     await log.h.apply([LogWorkoutSession(wid(10), sessionDraft())]);
     await pumpEventQueue(times: 100);

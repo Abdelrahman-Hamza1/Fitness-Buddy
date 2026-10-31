@@ -102,14 +102,11 @@ void main() {
     // The first day of the week: the generated base, 2,162.5 kcal.
     expect(DisplayRounding.kcal(engine.day.kcal), 2163);
     _expectToday(tester, saturday, engine, 0, 'This week: on track');
-    // The typed weight is the first weigh-in, on A14's card below.
-    expect(
-      find.descendant(
-        of: find.byType(WeightCard),
-        matching: find.textContaining('80.0 kg'),
-      ),
-      findsWidgets,
-    );
+    await tester.tap(find.byKey(const ValueKey('fb-slide-dot-1')).first);
+    await settleWrites(tester);
+    expect(find.byType(WeightSlide), findsWidgets);
+    await tester.tap(find.byKey(const ValueKey('fb-slide-dot-0')).first);
+    await settleWrites(tester);
 
     // A 300 kcal lunch today.
     Future<void> log(int n, LocalDate date, double per100) async {

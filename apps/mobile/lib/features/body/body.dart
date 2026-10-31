@@ -37,6 +37,6 @@ export 'presentation/measurement_sheet.dart'
     show MeasurementSheet, showMeasurementSheet;
 export 'presentation/measurement_text.dart';
 export 'presentation/weigh_in_sheet.dart' show WeighInSheet, showWeighInSheet;
-export 'presentation/weight_card.dart' show WeightCard;
 export 'presentation/weight_history_screen.dart' show WeightHistoryScreen;
+export 'presentation/weight_slide.dart' show WeightSlide;
 export 'presentation/weight_text.dart';

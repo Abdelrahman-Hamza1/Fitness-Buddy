@@ -198,7 +198,11 @@ Future<void> _interact(
   recorder.place = 'Today: the days before';
   final pages = find.byType(PageView).first;
   for (var i = 0; i < 3; i++) {
-    await tester.fling(pages, const Offset(300, 0), 1500);
+    await tester.flingFrom(
+      tester.getRect(pages).bottomCenter - const Offset(0, 24),
+      const Offset(300, 0),
+      1500,
+    );
     await settle(tester);
   }
 

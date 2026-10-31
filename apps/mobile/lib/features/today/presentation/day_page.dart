@@ -3,18 +3,18 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/account/account.dart';
-import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart' show ReadyScansTodayHint;
 import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/sync/sync.dart';
-import 'package:fb_mobile/features/today/presentation/today_numbers.dart';
-import 'package:fb_mobile/features/workouts/workouts.dart';
+import 'package:fb_mobile/features/today/presentation/today_numbers.dart'
+    show EmptyDayHint;
+import 'package:fb_mobile/features/today/presentation/today_slide_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// One day of the pager (HM-009): the day's header (the numbers, then the
-/// weight card) on top, then the meals. A flat
+/// summary card) on top, then the meals. A flat
 /// sliver list of [DayRow]s, so only the rows on screen are built. A day that
 /// is not loaded yet shows meal skeletons; a prefetched one never does
 /// (UX-051). Today and past days look the same.
@@ -114,12 +114,8 @@ class DayPage extends ConsumerWidget {
   }
 }
 
-/// The top of a day page, as an ordered list (A14 §3.5): the day's numbers →
-/// the incomplete-day note (A16 D11, a marked day only) → [A22: the
-/// to-confirm strip] → the weight card → the workout row (A37 D20: after
-/// logging; A37c adds the planned day) → the ready-scans hint (#229) → the
-/// account banner (A33) → the sync line (Today only).
-/// Later steps add one entry here instead of nesting widgets.
+/// The summary card, Ramadan proposal and not-fasting note, incomplete-day
+/// note, ready-scans hint, account banner and sync line, in that order.
 class _DayHeader extends StatelessWidget {
   const new({
     required this.date,
@@ -139,12 +135,10 @@ class _DayHeader extends StatelessWidget {
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      TodayNumbers(date: date, isToday: isToday, totals: totals),
+      TodaySlideCard(date: date, isToday: isToday, totals: totals),
       if (isToday) const RamadanProposalCard(),
       _NotFastingNote(date: date),
       if (incomplete) _IncompleteNote(date: date),
-      WeightCard(date: date, isToday: isToday),
-      WorkoutTodayRow(date: date),
       if (isToday) const ReadyScansTodayHint(),
       if (isToday) const AccountTodayBanner(),
       if (isToday) const SyncTodayLine(),

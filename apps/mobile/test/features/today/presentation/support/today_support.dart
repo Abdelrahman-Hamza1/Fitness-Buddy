@@ -290,7 +290,7 @@ List<Override> fakeToday({
   dayTargetsProvider.overrideWith((ref, date) => targets[date]),
   setupStatusProvider.overrideWith((ref) => setup),
   // The workout row (A37 D20) is the workouts tests' business (R7): no row.
-  todayWorkoutProvider.overrideWith((ref, date) => null),
+  todayWorkoutProvider.overrideWith((ref, date) => const TodayWorkoutNone()),
 ];
 
 /// The providers of a Today screen on a real in-memory diary, with a real
@@ -354,7 +354,7 @@ final class TodayRig {
     ),
     ramadanOff,
     // The workout row (A37 D20) is the workouts tests' business (R7).
-    todayWorkoutProvider.overrideWith((ref, date) => null),
+    todayWorkoutProvider.overrideWith((ref, date) => const TodayWorkoutNone()),
   ];
 }
 

@@ -28,6 +28,13 @@ Future<TodayRig> todayWithWeighIn(WidgetTester tester) async {
   await pumpRig(tester, rig);
   useTallPhone(tester);
   await settle(tester);
+  await tester.tap(
+    find.descendant(
+      of: find.byKey(ValueKey<LocalDate>(testToday)),
+      matching: find.byKey(const ValueKey('fb-slide-dot-1')),
+    ),
+  );
+  await settle(tester);
   return rig;
 }
 
@@ -39,13 +46,13 @@ Future<List<WeighIn>> stored(WidgetTester tester, TodayRig rig) async =>
 /// The weight card of today's page.
 Finder todayCard() => find.descendant(
   of: find.byKey(ValueKey<LocalDate>(testToday)),
-  matching: find.byType(WeightCard),
+  matching: find.byType(WeightSlide),
 );
 
 /// The ＋ of today's slim weight row.
 Finder slimAdd() => find.descendant(
   of: todayCard(),
-  matching: find.byKey(WeightCard.slimAddKey),
+  matching: find.byKey(const ValueKey('today-weigh-in')),
 );
 
 void main() {
@@ -62,9 +69,7 @@ void main() {
 
     // Tap 1: the card's first row opens the pad, prefilled with 97.4 kg.
     expect(todayCard(), findsOneWidget);
-    await tap(
-      find.descendant(of: todayCard(), matching: find.text('Trend 97.4 kg')),
-    );
+    await tap(slimAdd());
     expect(find.text('Log weigh-in'), findsOneWidget);
     expect(
       tester.widget<FbAmountDisplay>(find.byType(FbAmountDisplay)).amount,
@@ -98,34 +103,46 @@ void main() {
     await unmount(tester, rig);
   });
 
-  testWidgets('HM-005 Today shows the slim row after a weigh-in and the full '
-      'card before; the row opens the weight graph and ＋ opens the weigh-in '
-      'sheet', (tester) async {
+  testWidgets(
+    'HM-005 the weight slide keeps its shape after logging and opens the graph',
+    (tester) async {
+      final rig = await todayWithWeighIn(tester);
+      final height = tester.getSize(todayCard()).height;
+      await tester.runAsync(
+        () => rig.diary.apply([
+          CreateWeighIn(fixtureId(501), weighInDraft(97, date: testToday)),
+        ]),
+      );
+      await settle(tester);
+      expect(tester.getSize(todayCard()).height, height);
+      await tester.tap(
+        find.descendant(of: todayCard(), matching: find.byType(InkWell)).first,
+      );
+      await settle(tester);
+      expect(rig.navigator.pushed, [const TodayWeightGraphRoute()]);
+      await tester.tap(slimAdd());
+      await settle(tester);
+      expect(find.byType(FbAmountDisplay), findsOneWidget);
+      await unmount(tester, rig);
+    },
+  );
+  testWidgets('HM-005 past weight slide logs on the viewed day', (
+    tester,
+  ) async {
     final rig = await todayWithWeighIn(tester);
-    // Only yesterday's weigh-in: the full card, no slim row.
-    expect(todayCard(), findsOneWidget);
-    expect(slimAdd(), findsNothing);
-    final fullHeight = tester.getSize(todayCard()).height;
-
-    await tester.runAsync(
-      () => rig.diary.apply([
-        CreateWeighIn(fixtureId(501), weighInDraft(97, date: testToday)),
-      ]),
+    await tester.tap(find.byTooltip('Previous day'));
+    await settle(tester);
+    final add = find.descendant(
+      of: find.byKey(ValueKey<LocalDate>(testYesterday)),
+      matching: find.byKey(const ValueKey('today-weigh-in')),
     );
+    await tester.tap(add);
     await settle(tester);
-    expect(slimAdd(), findsOneWidget);
-    expect(tester.getSize(todayCard()).height, lessThan(fullHeight));
-
-    // The row (everything but the ＋) opens the weight graph.
-    await tester.tap(
-      find.descendant(of: todayCard(), matching: find.byType(InkWell)).first,
-    );
+    await tester.tap(button('Save'));
     await settle(tester);
-    expect(rig.navigator.pushed, [const TodayWeightGraphRoute()]);
-
-    await tester.tap(slimAdd());
-    await settle(tester);
-    expect(find.byType(FbAmountDisplay), findsOneWidget);
+    final live = await stored(tester, rig);
+    expect(live, hasLength(2));
+    expect(live.every((w) => w.localDate == testYesterday), isTrue);
     await unmount(tester, rig);
   });
 }

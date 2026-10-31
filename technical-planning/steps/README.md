@@ -206,10 +206,11 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A48](A48-local-brands.md) | Local brands & packaged foods | Claude | A47 | M | new |  | ⏸ postponed (owner, D-087) |
 | [A49](A49-buddy-accuracy.md) | Buddy accuracy (backlog #148–#151) | Claude | A23b, **B09b** | M | new |  | ⬜ phase 2 |
 | [A50](A50-google-sign-in.md) | Google sign-in on the phone (backlog #200) | Claude | A33 | S | new |  | ✅ |
-| [A51](A51-first-run-me.md) | First run, sign-in screens & Me overhaul (UX overhaul 2026-10-31) | Claude | A13b, A33, A50 | L | new |  | ✅ closed, awaiting merge |
+| [A51](A51-first-run-me.md) | First run, sign-in screens & Me overhaul (UX overhaul 2026-10-31) | Claude | A13b, A33, A50 | L | new |  | ✅ |
 | [A52](A52-workouts-ux.md) | Workouts UX overhaul (tab, logging maps, picker popularity, plans choose exercises) | Claude | A37a, A37c | L | new (owner UX critique 2026-10-31) |  | ✅ |
-| [A53](A53-targets-food-names.md) | Targets redesign & food-name language (UX overhaul) | Claude | A38, A41a, A42 | L | new (owner sketches 2026-10-31) |  | ✅ closed, awaiting merge |
-| [A54](A54-catalog-expansion.md) | Catalog expansion: natural foods and generic store products (USDA only, ~+1,700 basics) | Claude | A47 | L | new (owner 2026-10-31) |  | ✅ closed, awaiting merge |
+| [A53](A53-targets-food-names.md) | Targets redesign & food-name language (UX overhaul) | Claude | A38, A41a, A42 | L | new (owner sketches 2026-10-31) |  | ✅ |
+| [A56](A56-today-summary-card.md) | Today summary card with slides (Nutrition, Weight, Workout; owner request 2026-10-31, backlog #74) | Claude plans, Codex builds | A45, A52, A53 | M | new (owner request) |  | 🟨 closed, awaiting review |
+| [A54](A54-catalog-expansion.md) | Catalog expansion: natural foods and generic store products (USDA only, ~+1,700 basics) | Claude | A47 | L | new (owner 2026-10-31) |  | ✅ |
 
 **A44 runs right after A22 (owner request, 2026-10-29):** the "Embrace" identity (palette, fonts, icon) lands before the remaining screens are built, an exception to "the number is the order" like the dish batches below.
 

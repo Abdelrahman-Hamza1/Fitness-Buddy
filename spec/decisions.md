@@ -494,3 +494,9 @@ _Entries marked **(provisional)** apply Claude's recommendation to a question th
   - Search still understands English, Arabic and Arabizi. When the match came from the other language or an alias, the result says "Matched <name>".
 - Why: A list in one language is easier to scan; the other names stay one tap away. Step A53.
 
+
+## D-092 — Today summary card with slides
+- Date: 2026-10-31
+- Status: Accepted by the owner’s direct feature request and A56 build brief. Amends HM-005, HM-006, HM-009 and the Today presentation in D-084/D-085.
+- Decision: Today’s top is a card with slides (Nutrition, Weight, Workout). Weight and workout are slides, not rows; the workout slide always shows (empty state “Log a workout”). Day swipe works below the card. A horizontal drag starting on the card changes slides. Buttons and the date picker continue changing days.
+- Reason: keep Today’s essentials compact while preserving weight and workout entry points. Slide selection is session-only, shared across viewed days, with Nutrition first on cold start; no startup network or persisted setting.
