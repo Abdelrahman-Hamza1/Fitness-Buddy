@@ -3,7 +3,6 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/workouts/application/exercise_library.dart';
-import 'package:fb_mobile/features/workouts/application/workout_views.dart';
 import 'package:fb_mobile/features/workouts/presentation/exercise_muscle_map.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

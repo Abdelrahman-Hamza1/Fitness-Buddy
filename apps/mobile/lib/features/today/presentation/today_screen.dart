@@ -7,6 +7,7 @@ import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/features/body/body.dart' show showWeighInSheet;
 import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart'
@@ -27,9 +28,16 @@ import 'package:material_ui/material_ui.dart';
 /// The screen keeps the viewed day and its two neighbours loaded (A08 D3), so
 /// a swipe finds the next page's data already there. It follows midnight and
 /// the app coming back to the front (A08 D4).
+///
+/// [open] (a notification's deep link, NT-024, A40 D9) opens the weigh-in
+/// pad or the Buddy sheet once, for today, and clears itself from the
+/// location so a later rebuild doesn't open it again.
 class TodayScreen extends ConsumerStatefulWidget {
   /// Creates the screen.
-  const new({super.key});
+  const new({this.open, super.key});
+
+  /// The sheet to open once, or null.
+  final TodayOpen? open;
 
   @override
   ConsumerState<TodayScreen> createState() => _TodayScreenState();
@@ -70,6 +78,28 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       },
     );
     _afterFrame(_syncWindow);
+    if (widget.open case final open?) _afterFrame(() => _openOnce(open));
+  }
+
+  @override
+  void didUpdateWidget(TodayScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.open case final open? when open != oldWidget.open) {
+      _afterFrame(() => _openOnce(open));
+    }
+  }
+
+  /// Opens [open]'s sheet for today (A40 D9): back on today's page first,
+  /// the location cleared, then the sheet.
+  void _openOnce(TodayOpen open) {
+    ref.read(appNavigatorProvider).go(const TodayRoute());
+    ref.read(todayControllerProvider.notifier).goTo(_today);
+    switch (open) {
+      case TodayOpen.weighIn:
+        unawaited(showWeighInSheet(context));
+      case TodayOpen.buddy:
+        unawaited(showBuddySheet(context, date: _today));
+    }
   }
 
   @override

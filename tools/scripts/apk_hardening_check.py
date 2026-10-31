@@ -13,6 +13,8 @@ Rules, for a release build of FLAVOR:
     trust anchors only <certificates src="system">; no other elements.
     staging/prod: no <domain-config>. dev: <domain-config> only for 127.0.0.1
     and localhost (the local API over adb reverse, plan D6), no subdomains.
+  - <uses-permission>: none of USE_BIOMETRIC / USE_FINGERPRINT (A50) or
+    SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM (A40 D7: reminders are inexact).
   - A11 PA5: packaged backup XML allows only local user.db/-wal/-shm for
     Android 12+ encrypted cloud/device transfer; legacy/cross-platform exclude all.
 
@@ -184,6 +186,9 @@ def resource_files(resources, res_id):
 
 
 UNWANTED_PERMISSIONS = {"android.permission.USE_BIOMETRIC", "android.permission.USE_FINGERPRINT"}
+# A40 D7: every local reminder is an inexact alarm, so no exact-alarm permission
+# (Play policy, battery). A41a revisits this if suhoor needs exact timing.
+EXACT_ALARM_PERMISSIONS = {"android.permission.SCHEDULE_EXACT_ALARM", "android.permission.USE_EXACT_ALARM"}
 
 
 def check(dumps, flavor):
@@ -205,6 +210,8 @@ def check(dumps, flavor):
                for c in manifest[0].children if c.name == "uses-permission"}
     for permission in sorted(granted & UNWANTED_PERMISSIONS):
         problems.append(f"uses-permission {permission} must be removed (tools:node=\"remove\")")
+    for permission in sorted(granted & EXACT_ALARM_PERMISSIONS):
+        problems.append(f"uses-permission {permission} is not allowed (reminders are inexact, A40 D7)")
 
     for attr in ("android:debuggable", "android:usesCleartextTraffic"):
         raw = app.get(attr)

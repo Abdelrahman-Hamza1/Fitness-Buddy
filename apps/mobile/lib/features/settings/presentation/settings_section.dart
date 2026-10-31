@@ -42,6 +42,14 @@ class SettingsSection extends ConsumerWidget {
               ref.read(appNavigatorProvider).push(const MealSlotsRoute()),
         ),
         FbListRow(
+          key: const ValueKey('settings-notifications'),
+          title: l10n.settingsNotifications,
+          trailing: const Icon(FbIcons.next),
+          onTap: () => ref
+              .read(appNavigatorProvider)
+              .push(const NotificationSettingsRoute()),
+        ),
+        FbListRow(
           title: l10n.settingsUnits,
           subtitle: _unitsName(context, system),
           trailing: const Icon(FbIcons.next),

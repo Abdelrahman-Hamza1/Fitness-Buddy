@@ -8,21 +8,20 @@ import 'package:fb_mobile/features/progress/presentation/goal_progress_card.dart
 import 'package:fb_mobile/features/progress/presentation/macros_section.dart';
 import 'package:fb_mobile/features/progress/presentation/progress_period_bar.dart';
 import 'package:fb_mobile/features/progress/presentation/progress_retry.dart';
-import 'package:fb_mobile/features/progress/presentation/progress_week_header.dart';
+import 'package:fb_mobile/features/progress/presentation/weekly_summary_card.dart';
 import 'package:fb_mobile/features/progress/presentation/weight_section.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// The Progress tab (UX-010, IN-002–IN-009, SC-5): opens on this week. An
-/// ordered list of sections (A16 D13): the current-week card → the period
-/// selector → calories (+ the selected bar's details) → macros → weight →
-/// goal progress → Measurements → exercise progress (A37c) → the
-/// expenditure card (A38). This week's check-in and the incomplete-day
-/// suggestion (A38, until A39a's weekly summary) sit under the week card
-/// when there is one. Later steps add one entry. Local data only: no
-/// spinner beyond skeleton cards, errors inline with Try again (UX-050–052).
-/// No streaks, scores or micronutrients (IN-020, IN-021).
+/// The Progress tab (UX-010, IN-001–IN-009, SC-5): opens on this week. An
+/// ordered list of sections (A16 D13): the weekly summary with this week's
+/// check-in and Past weeks (A39a D2) → the incomplete-day suggestion (A38)
+/// → the period selector → calories (+ the selected bar's details) →
+/// macros → weight → goal progress → Measurements → exercise progress
+/// (A37c) → the expenditure card (A38). Later steps add one entry. Local
+/// data only: no spinner beyond skeleton cards, errors inline with Try
+/// again (UX-050–052). No streaks, scores or micronutrients (IN-020, IN-021).
 class ProgressScreen extends ConsumerStatefulWidget {
   /// Creates the screen.
   const new({super.key});
@@ -85,9 +84,8 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
             FbSpace.s5,
           ),
           children: [
-            const ProgressWeekHeader(),
+            const WeeklySummaryCard(),
             gap,
-            const CheckInCard(),
             const IncompleteDayCard(),
             ...switch (view) {
               AsyncData(:final value) => [

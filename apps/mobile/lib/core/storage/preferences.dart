@@ -41,6 +41,20 @@ abstract final class PreferenceKeys {
   /// (`<prefix>|<namespace>|<profileKey>`), deleted with the profile.
   static const pendingScans = 'fb.pending_scans.v1';
 
+  /// What this install scheduled as local notifications and when (A40 D5):
+  /// IDs and times only, device state, never synced or sent.
+  static const notificationLedger = 'fb.notifications.ledger.v1';
+
+  /// The tag (a hash of the profile key, not the key) of the profile whose
+  /// notifications may be on the phone (A40 fix-check 1): device state,
+  /// never synced.
+  static const notificationOwner = 'fb.notifications.owner.v1';
+
+  /// Whether the app has asked for the notification permission once (A40
+  /// D8): device state, never synced.
+  static const notificationPermissionAsked =
+      'fb.notifications.permission_asked.v1';
+
   /// The pending-scan list of [profileKey] in the [namespace] environment
   /// (`flavor|apiBaseUrl`, as the profile registry's).
   static String pendingScansFor(String namespace, String profileKey) =>

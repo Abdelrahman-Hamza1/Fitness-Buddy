@@ -4615,19 +4615,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String progressWeekUnder(String amount) {
-    return '$amount kcal under budget';
-  }
-
-  @override
-  String progressWeekOver(String amount) {
-    return '$amount kcal over budget';
-  }
-
-  @override
-  String get progressWeekOnBudget => 'On budget so far';
-
-  @override
   String progressWeekAverage(String eaten, String target) {
     return 'Average $eaten of $target kcal';
   }
@@ -4638,11 +4625,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String progressWeekCounted(int counted, int elapsed) {
     return '$counted of $elapsed days counted';
-  }
-
-  @override
-  String progressWeekTrend(String change) {
-    return '$change this week';
   }
 
   @override
@@ -6281,4 +6263,199 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get checkInConfirmedDaysDone => 'Days confirmed';
+
+  @override
+  String get weeklySummaryTitle => 'Weekly summary';
+
+  @override
+  String get weeklySummaryPastWeeks => 'Past weeks';
+
+  @override
+  String get weeklySummaryNothingCounted => 'No counted days yet';
+
+  @override
+  String weeklySummaryWithinTarget(int within, int days) {
+    return '$within of $days days within target';
+  }
+
+  @override
+  String weeklySummaryProtein(int hit, int days) {
+    return 'Protein target reached on $hit of $days days';
+  }
+
+  @override
+  String weeklySummaryFiber(String grams) {
+    return 'Fiber $grams g a day on average';
+  }
+
+  @override
+  String weeklySummaryTrend(String change) {
+    return 'Trend $change';
+  }
+
+  @override
+  String weeklySummaryWorkoutsPlanned(int done, int planned) {
+    return '$done of $planned planned workouts';
+  }
+
+  @override
+  String weeklySummaryWorkouts(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count workouts',
+      one: '1 workout',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String weeklySummaryPrs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count new personal records',
+      one: '1 new personal record',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get settingsNotifications => 'Notifications';
+
+  @override
+  String get notifSettingsTitle => 'Notifications';
+
+  @override
+  String get notifMaster => 'Reminders';
+
+  @override
+  String get notifMasterHint => 'Made on this phone; nothing is sent anywhere';
+
+  @override
+  String get notifPermissionOff =>
+      'Notifications are off for this app in Android settings.';
+
+  @override
+  String get notifPermissionAllow => 'Allow';
+
+  @override
+  String get notifQuietHours => 'Quiet hours';
+
+  @override
+  String notifQuietRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get notifQuietFrom => 'Quiet from';
+
+  @override
+  String get notifQuietUntil => 'Quiet until';
+
+  @override
+  String get notifSectionTypes => 'Reminders';
+
+  @override
+  String get notifTime => 'Time';
+
+  @override
+  String get notifDay => 'Day';
+
+  @override
+  String get notifSaved => 'Notifications updated';
+
+  @override
+  String get notifTypeLogReminder => 'Log reminder';
+
+  @override
+  String get notifTypeLogReminderHint =>
+      'Only if fewer than 2 meals are logged';
+
+  @override
+  String get notifTypePendingProposal => 'Cards to confirm';
+
+  @override
+  String get notifTypePendingProposalHint =>
+      'Once, 30 minutes after a card is waiting';
+
+  @override
+  String get notifTypeWeighIn => 'Weigh-in';
+
+  @override
+  String get notifTypeWeighInHint => 'Once a week';
+
+  @override
+  String get notifTypeWeeklySummary => 'Weekly summary';
+
+  @override
+  String get notifTypeWeeklySummaryHint => 'When a new week starts';
+
+  @override
+  String get notifTypeWorkout => 'Workout';
+
+  @override
+  String get notifTypeWorkoutHint => 'On planned days';
+
+  @override
+  String get notifTypeProteinCheck => 'Protein check';
+
+  @override
+  String get notifTypeProteinCheckHint =>
+      'When protein is well under target late in the day';
+
+  @override
+  String get notifTypeMeasurement => 'Measurements';
+
+  @override
+  String get notifTypeMeasurementHint => 'On the 1st of each month';
+
+  @override
+  String get notifChannelName => 'Reminders';
+
+  @override
+  String get notifChannelDescription => 'Log, weigh-in and summary reminders';
+
+  @override
+  String get notifLogTitle => 'Today\'s log';
+
+  @override
+  String get notifLogBody => 'Anything to log from today?';
+
+  @override
+  String get notifPendingTitle => 'Waiting for your OK';
+
+  @override
+  String get notifPendingBody => 'A card from Buddy is ready to confirm.';
+
+  @override
+  String get notifWeighInTitle => 'Weigh-in day';
+
+  @override
+  String get notifWeighInBody => 'Step on the scale when it suits you.';
+
+  @override
+  String get notifSummaryTitle => 'Your weekly summary';
+
+  @override
+  String get notifSummaryBody => 'Last week\'s summary is ready.';
+
+  @override
+  String get notifWorkoutTitle => 'Workout day';
+
+  @override
+  String get notifWorkoutBody => 'A workout is planned for today.';
+
+  @override
+  String get notifProteinTitle => 'Protein';
+
+  @override
+  String get notifProteinBody => 'Room for some protein today?';
+
+  @override
+  String get notifMeasurementTitle => 'Measurements';
+
+  @override
+  String get notifMeasurementBody =>
+      'A good day for this month\'s measurements.';
 }

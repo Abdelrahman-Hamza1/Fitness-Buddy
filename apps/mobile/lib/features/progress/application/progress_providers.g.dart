@@ -579,52 +579,6 @@ abstract class _$SelectedProgressBar extends $Notifier<int?> {
   }
 }
 
-/// The [WeekGlance] of the week containing today. No automatic retry: the
-/// card shows the error with Try again (UX-052).
-
-@ProviderFor(weekGlance)
-final weekGlanceProvider = WeekGlanceProvider._();
-
-/// The [WeekGlance] of the week containing today. No automatic retry: the
-/// card shows the error with Try again (UX-052).
-
-final class WeekGlanceProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<WeekGlance>,
-          WeekGlance,
-          FutureOr<WeekGlance>
-        >
-    with $FutureModifier<WeekGlance>, $FutureProvider<WeekGlance> {
-  /// The [WeekGlance] of the week containing today. No automatic retry: the
-  /// card shows the error with Try again (UX-052).
-  WeekGlanceProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: _noAutomaticRetry,
-        name: r'weekGlanceProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$weekGlanceHash();
-
-  @$internal
-  @override
-  $FutureProviderElement<WeekGlance> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<WeekGlance> create(Ref ref) {
-    return weekGlance(ref);
-  }
-}
-
-String _$weekGlanceHash() => r'310681e9177be777f3b1aec1783a2f093edb259b';
-
 /// The [GoalProgressView] for the selected period, or null without a phase
 /// to show. No automatic retry: the card shows the error with Try again.
 

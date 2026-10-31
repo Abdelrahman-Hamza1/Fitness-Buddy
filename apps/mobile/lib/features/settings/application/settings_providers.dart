@@ -29,6 +29,11 @@ Stream<double?> trainingDayWeight(Ref ref) =>
 Stream<CheckInMode> checkInMode(Ref ref) =>
     ref.watch(settingsStoreProvider).watch(AppSettings.checkInMode);
 
+/// The notification settings (NT-020, A40 D3).
+@riverpod
+Stream<NotificationPrefs> notificationPrefs(Ref ref) =>
+    ref.watch(settingsStoreProvider).watch(AppSettings.notificationPrefs);
+
 /// One shared calendar for future weekly views.
 @riverpod
 WeekCalendar weekCalendar(Ref ref) => WeekCalendar(

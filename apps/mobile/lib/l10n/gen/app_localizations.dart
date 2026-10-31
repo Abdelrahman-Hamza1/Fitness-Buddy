@@ -6726,24 +6726,6 @@ abstract class AppLocalizations {
   /// **'{start} – {end}'**
   String progressDateRange(String start, String end);
 
-  /// Progress week card: the earlier days of this week are under their plan (HM-002). Neutral wording.
-  ///
-  /// In en, this message translates to:
-  /// **'{amount} kcal under budget'**
-  String progressWeekUnder(String amount);
-
-  /// Progress week card: the earlier days of this week are over their plan (HM-002). Neutral wording, never alarming.
-  ///
-  /// In en, this message translates to:
-  /// **'{amount} kcal over budget'**
-  String progressWeekOver(String amount);
-
-  /// Progress week card: the earlier days of this week add up to their plan, rounded (HM-002).
-  ///
-  /// In en, this message translates to:
-  /// **'On budget so far'**
-  String get progressWeekOnBudget;
-
   /// Progress week card, fixed daily targets: the average eaten against the average target over the counted days.
   ///
   /// In en, this message translates to:
@@ -6761,12 +6743,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{counted} of {elapsed} days counted'**
   String progressWeekCounted(int counted, int elapsed);
-
-  /// Progress week card: the trend weight change since the week started, e.g. "−0.4 kg this week".
-  ///
-  /// In en, this message translates to:
-  /// **'{change} this week'**
-  String progressWeekTrend(String change);
 
   /// Progress period selector: one week (IN-009).
   ///
@@ -8968,6 +8944,330 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Days confirmed'**
   String get checkInConfirmedDaysDone;
+
+  /// Past weekly summaries screen title (IN-001, A39a).
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly summary'**
+  String get weeklySummaryTitle;
+
+  /// Progress: row under this week's summary that opens earlier weeks (IN-001).
+  ///
+  /// In en, this message translates to:
+  /// **'Past weeks'**
+  String get weeklySummaryPastWeeks;
+
+  /// Weekly summary headline when no day of the week counts (nothing logged, or marked incomplete).
+  ///
+  /// In en, this message translates to:
+  /// **'No counted days yet'**
+  String get weeklySummaryNothingCounted;
+
+  /// Weekly summary: counted days whose calories were within 10% of the day's target. Neutral.
+  ///
+  /// In en, this message translates to:
+  /// **'{within} of {days} days within target'**
+  String weeklySummaryWithinTarget(int within, int days);
+
+  /// Weekly summary: counted days that reached the protein target.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein target reached on {hit} of {days} days'**
+  String weeklySummaryProtein(int hit, int days);
+
+  /// Weekly summary: average fiber over the counted days.
+  ///
+  /// In en, this message translates to:
+  /// **'Fiber {grams} g a day on average'**
+  String weeklySummaryFiber(String grams);
+
+  /// Weekly summary: the trend weight change over the week, e.g. "Trend −0.4 kg".
+  ///
+  /// In en, this message translates to:
+  /// **'Trend {change}'**
+  String weeklySummaryTrend(String change);
+
+  /// Weekly summary with a workout plan: sessions logged vs planned days (WO-043). Never phrased as missed.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {planned} planned workouts'**
+  String weeklySummaryWorkoutsPlanned(int done, int planned);
+
+  /// Weekly summary without a plan: sessions logged (WO-043).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 workout} other{{count} workouts}}'**
+  String weeklySummaryWorkouts(int count);
+
+  /// Weekly summary: exercises that set a personal record this week (WO-043).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 new personal record} other{{count} new personal records}}'**
+  String weeklySummaryPrs(int count);
+
+  /// Me › Settings row that opens the notification settings (NT-020).
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get settingsNotifications;
+
+  /// Notification settings screen title (NT-020).
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifSettingsTitle;
+
+  /// Notification settings: the master switch (NT-020).
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders'**
+  String get notifMaster;
+
+  /// Notification settings: under the master switch. Reminders are local (TD-013).
+  ///
+  /// In en, this message translates to:
+  /// **'Made on this phone; nothing is sent anywhere'**
+  String get notifMasterHint;
+
+  /// Notification settings: banner when the system blocks the app's notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are off for this app in Android settings.'**
+  String get notifPermissionOff;
+
+  /// Notification settings: asks Android for the notification permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow'**
+  String get notifPermissionAllow;
+
+  /// Notification settings: the time window with no reminders (NT-021).
+  ///
+  /// In en, this message translates to:
+  /// **'Quiet hours'**
+  String get notifQuietHours;
+
+  /// Notification settings: the quiet hours window, e.g. "23:00 – 07:00".
+  ///
+  /// In en, this message translates to:
+  /// **'{from} – {to}'**
+  String notifQuietRange(String from, String to);
+
+  /// Notification settings: picks when quiet hours start.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiet from'**
+  String get notifQuietFrom;
+
+  /// Notification settings: picks when quiet hours end.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiet until'**
+  String get notifQuietUntil;
+
+  /// Notification settings: the section header over the reminder types.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders'**
+  String get notifSectionTypes;
+
+  /// Notification settings: a reminder's time row.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get notifTime;
+
+  /// Notification settings: the weigh-in reminder's day row.
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get notifDay;
+
+  /// Snackbar after changing a notification setting, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications updated'**
+  String get notifSaved;
+
+  /// Notification type NT-001.
+  ///
+  /// In en, this message translates to:
+  /// **'Log reminder'**
+  String get notifTypeLogReminder;
+
+  /// Notification type NT-001: when it fires.
+  ///
+  /// In en, this message translates to:
+  /// **'Only if fewer than 2 meals are logged'**
+  String get notifTypeLogReminderHint;
+
+  /// Notification type NT-002.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards to confirm'**
+  String get notifTypePendingProposal;
+
+  /// Notification type NT-002: when it fires.
+  ///
+  /// In en, this message translates to:
+  /// **'Once, 30 minutes after a card is waiting'**
+  String get notifTypePendingProposalHint;
+
+  /// Notification type NT-003.
+  ///
+  /// In en, this message translates to:
+  /// **'Weigh-in'**
+  String get notifTypeWeighIn;
+
+  /// Notification type NT-003: when it fires.
+  ///
+  /// In en, this message translates to:
+  /// **'Once a week'**
+  String get notifTypeWeighInHint;
+
+  /// Notification type NT-004.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly summary'**
+  String get notifTypeWeeklySummary;
+
+  /// Notification type NT-004: when it fires.
+  ///
+  /// In en, this message translates to:
+  /// **'When a new week starts'**
+  String get notifTypeWeeklySummaryHint;
+
+  /// Notification type NT-005.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout'**
+  String get notifTypeWorkout;
+
+  /// Notification type NT-005: when it fires.
+  ///
+  /// In en, this message translates to:
+  /// **'On planned days'**
+  String get notifTypeWorkoutHint;
+
+  /// Notification type NT-006.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein check'**
+  String get notifTypeProteinCheck;
+
+  /// Notification type NT-006: when it fires.
+  ///
+  /// In en, this message translates to:
+  /// **'When protein is well under target late in the day'**
+  String get notifTypeProteinCheckHint;
+
+  /// Notification type NT-007.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurements'**
+  String get notifTypeMeasurement;
+
+  /// Notification type NT-007: when it fires.
+  ///
+  /// In en, this message translates to:
+  /// **'On the 1st of each month'**
+  String get notifTypeMeasurementHint;
+
+  /// Android notification channel name (system settings).
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders'**
+  String get notifChannelName;
+
+  /// Android notification channel description (system settings).
+  ///
+  /// In en, this message translates to:
+  /// **'Log, weigh-in and summary reminders'**
+  String get notifChannelDescription;
+
+  /// Notification NT-001 title. Neutral (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s log'**
+  String get notifLogTitle;
+
+  /// Notification NT-001 text. Neutral, never "you forgot" (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'Anything to log from today?'**
+  String get notifLogBody;
+
+  /// Notification NT-002 title (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for your OK'**
+  String get notifPendingTitle;
+
+  /// Notification NT-002 text (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'A card from Buddy is ready to confirm.'**
+  String get notifPendingBody;
+
+  /// Notification NT-003 title (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'Weigh-in day'**
+  String get notifWeighInTitle;
+
+  /// Notification NT-003 text. No numbers on the lock screen (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'Step on the scale when it suits you.'**
+  String get notifWeighInBody;
+
+  /// Notification NT-004 title (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'Your weekly summary'**
+  String get notifSummaryTitle;
+
+  /// Notification NT-004 text (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'Last week\'s summary is ready.'**
+  String get notifSummaryBody;
+
+  /// Notification NT-005 title (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'Workout day'**
+  String get notifWorkoutTitle;
+
+  /// Notification NT-005 text; never names the plan (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'A workout is planned for today.'**
+  String get notifWorkoutBody;
+
+  /// Notification NT-006 title (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'Protein'**
+  String get notifProteinTitle;
+
+  /// Notification NT-006 text. No numbers (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'Room for some protein today?'**
+  String get notifProteinBody;
+
+  /// Notification NT-007 title (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'Measurements'**
+  String get notifMeasurementTitle;
+
+  /// Notification NT-007 text (NT-025).
+  ///
+  /// In en, this message translates to:
+  /// **'A good day for this month\'s measurements.'**
+  String get notifMeasurementBody;
 }
 
 class _AppLocalizationsDelegate

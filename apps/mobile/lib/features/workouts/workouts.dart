@@ -8,6 +8,7 @@ export 'application/workout_views.dart'
         TodayWorkout,
         TodayWorkoutLogged,
         TodayWorkoutPlanned,
+        allWorkoutSessionsProvider,
         todayWorkoutProvider,
         weeklyWorkoutSummaryProvider;
 export 'data/workout_op_handler.dart' show WorkoutOpHandler, planDayId;

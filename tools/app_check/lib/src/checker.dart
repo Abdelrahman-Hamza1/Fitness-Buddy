@@ -11,6 +11,8 @@ const Set<String> ioPackages = {
   'dio',
   'drift*',
   'fb_api_client',
+  // A40: the local notifications plugin stays in features/notifications/data.
+  'flutter_local_notifications',
   'flutter_secure_storage',
   'http',
   'package_info_plus',

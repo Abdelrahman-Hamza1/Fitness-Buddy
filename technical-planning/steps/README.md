@@ -193,9 +193,9 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A37c](A37-workout-logging.md) | Workouts without AI: plans, muscle map & progress (starter plans, templates, exercise page; split from A37) | Claude | A37a · soft: A16 (Progress entry) | M–L | S42 app part |  | ✅ |
 | [A37b](A37-workout-logging.md) | Workout logging by chat (split from A37) | Claude | A37c, A23b, **B12** (contract) | M | S42 app part |  | ⬜ phase 2 |
 | [A38](A38-adaptive-targets.md) | Adaptive targets & weekly check-in | Claude | A16, A23a (proposal storage) | M | S43 |  | ✅ closed, awaiting review/merge |
-| [A39a](A39-weekly-review.md) | Weekly summary (numbers, no Buddy; split from A39, 2026-10-30) | Claude | A37c, A38 | M | S44 app part |  | ⬜ wave 4 (TD-105) |
+| [A39a](A39-weekly-review.md) | Weekly summary (numbers, no Buddy; split from A39, 2026-10-30) | Claude | A37c, A38 | M | S44 app part |  | ✅ closed, awaiting review/merge (with A40) |
 | [A39b](A39-weekly-review.md) | Buddy weekly review (split from A39) | Claude | A39a, A23b, **B12** (contract) | S | S44 app part |  | ⬜ phase 2 |
-| [A40](A40-notifications.md) | Notifications | Claude | A37c, A39a (TD-105; see card) | M | S45 |  | ⬜ wave 4 |
+| [A40](A40-notifications.md) | Notifications | Claude | A37c, A39a (TD-105; see card) | M | S45 |  | ✅ closed, awaiting review/merge (with A39a) |
 | [A41a](A41-ramadan.md) | Ramadan mode without Buddy (split from A41, 2026-10-30) | Claude | A05b, A15, A38, A40 | L | S46 app part |  | ⬜ wave 4 (TD-105) |
 | [A41b](A41-ramadan.md) | Ramadan Buddy parts (split from A41) | Claude | A41a, A39b, **B12** (contract) | S | S46 app part | **M6** | ⬜ phase 2 |
 | [A42](A42-performance-a11y-offline.md) | Performance, accessibility & offline acceptance | Claude | A41a, A35 (TD-105) | M | S48 | **M2b** · **R1** | ⬜ wave 5, the last phase-1 step |

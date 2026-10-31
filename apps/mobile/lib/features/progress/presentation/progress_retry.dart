@@ -1,4 +1,5 @@
 import 'package:fb_mobile/features/progress/application/progress_providers.dart';
+import 'package:fb_mobile/features/progress/application/weekly_summary_providers.dart';
 import 'package:fb_mobile/features/progress/application/weight_graph_providers.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +16,7 @@ void retryProgress(WidgetRef ref) => ref
   ..invalidate(progressEarliestDateProvider)
   ..invalidate(progressViewProvider)
   ..invalidate(dayTargetsProvider)
-  ..invalidate(weekGlanceProvider)
+  ..invalidate(weeklySummaryProvider)
   ..invalidate(weightGraphProvider)
   ..invalidate(goalProgressCardProvider)
   ..invalidate(progressWeightProvider);

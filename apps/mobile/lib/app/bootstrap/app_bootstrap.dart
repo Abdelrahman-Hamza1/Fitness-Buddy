@@ -12,6 +12,7 @@ import 'package:fb_mobile/core/session/session_state.dart';
 import 'package:fb_mobile/core/sync/sync_providers.dart';
 import 'package:fb_mobile/features/adaptive/adaptive.dart';
 import 'package:fb_mobile/features/buddy/buddy.dart';
+import 'package:fb_mobile/features/notifications/notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
     show ProviderSubscription;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -24,8 +25,8 @@ part 'app_bootstrap.g.dart';
 /// public `/v1/config` refresh, API session startup (A20 D9), sync
 /// scheduling (A34 D10) and, once the
 /// catalog is attached and any account transition recovered, Buddy's
-/// pending cards read back (A23 D12) and this week's adaptive check-in
-/// (A38 D4, local only).
+/// pending cards read back (A23 D12), this week's adaptive check-in
+/// (A38 D4, local only) and the local notifications (A40 D6).
 ///
 /// The app widget (`FitnessBuddyApp`) calls [afterFirstFrame] from a
 /// post-frame callback; nothing awaits it, so the UI never waits for the
@@ -147,6 +148,15 @@ final class AppBootstrap {
       _contained(() async {
         await recovered;
         if (_ref.mounted) _ref.listen(weeklyCheckInProvider, (_, _) {});
+      }),
+    );
+    // A40 D6: plan and schedule the local reminders against the recovered
+    // profile, and open a launch tap's deep link; no network (TD-013).
+    unawaited(
+      _contained(() async {
+        await recovered;
+        if (!_ref.mounted) return;
+        await _ref.read(notificationCoordinatorProvider).start();
       }),
     );
   }

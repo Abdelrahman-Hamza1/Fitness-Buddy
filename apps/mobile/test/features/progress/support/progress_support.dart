@@ -109,8 +109,8 @@ List<WeighIn> progressWeighIns() {
 }
 
 /// The Progress tab's providers without a database: [progressToday], a
-/// Saturday week, fixed targets, one phase, [logs], the weigh-ins, no
-/// workouts and a fixed week card. While [failLogs] returns true the diary
+/// Saturday week, fixed targets, one phase, [logs], the weigh-ins, and a
+/// fixed weekly workout summary. While [failLogs] returns true the diary
 /// read fails (error-state tests).
 List<Override> progressOverrides({
   List<DayLog>? logs,
@@ -168,17 +168,12 @@ List<Override> progressOverrides({
     progressEarliestDateProvider.overrideWith(
       (ref) async => LocalDate(2026, 6, 1),
     ),
-    weekGlanceProvider.overrideWith(
-      (ref) async => WeekGlance(
-        start: LocalDate(2026, 10, 17),
-        end: progressToday,
-        countedDays: 4,
-        elapsedDays: 6,
-        unit: MassUnit.kilogram,
-        averageEaten: 2200,
-        averageTarget: 2200,
-        trendChangeKg: -.4,
-      ),
+    // A39a: no logged sessions before the data (the summary's first week).
+    allWorkoutSessionsProvider.overrideWith((ref) => Stream.value(const [])),
+    // A39a: three sessions of a four-day plan and one PR, every week.
+    weeklyWorkoutSummaryProvider.overrideWith(
+      (ref, weekStart) async =>
+          const WeeklyWorkoutSummary(sessions: 3, planned: 4, prs: 1),
     ),
   ];
 }

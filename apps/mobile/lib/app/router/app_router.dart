@@ -16,6 +16,7 @@ import 'package:fb_mobile/features/design_preview/design_preview.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/me/me.dart';
+import 'package:fb_mobile/features/notifications/notifications.dart';
 import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
@@ -57,7 +58,22 @@ final class AppRouter implements AppNavigator {
     this.unsavedEdits,
   }) : assert(tabs.length == AppTab.values.length, 'one AppTab per tab') {
     config = _createConfig(updateRequired, designPreview: designPreview);
+    // Each tab keeps its own stack: remember where each one is.
+    config.routerDelegate.addListener(_recordLocation);
   }
+
+  /// The location each tab shows (its kept stack's top), by tab index.
+  final Map<int, String> _tabLocations = {};
+
+  void _recordLocation() {
+    final uri = config.routerDelegate.currentConfiguration.uri;
+    final index = _tabOf(uri.path);
+    if (index >= 0) _tabLocations[index] = uri.toString();
+  }
+
+  static int _tabOf(String path) => tabs.indexWhere(
+    (t) => path == t.location || path.startsWith('${t.location}/'),
+  );
 
   /// Called with the tab tapped again while it shows its root screen.
   final ValueChanged<AppTab>? onReselect;
@@ -68,6 +84,13 @@ final class AppRouter implements AppNavigator {
 
   /// The screens holding unsaved edits, by navigator.
   final UnsavedEdits? unsavedEdits;
+
+  /// Each tab's navigator, in tab order (a notification's link asks the
+  /// target tab's dirty screen first, [openLocation]).
+  final List<GlobalKey<NavigatorState>> _branchKeys = [
+    for (final route in tabs)
+      GlobalKey<NavigatorState>(debugLabel: route.location),
+  ];
 
   GoRouter _createConfig(
     ValueListenable<bool> gate, {
@@ -91,8 +114,9 @@ final class AppRouter implements AppNavigator {
         ),
         // Order = the tab order in AppShell.
         branches: [
-          for (final route in tabs)
+          for (final (index, route) in tabs.indexed)
             StatefulShellBranch(
+              navigatorKey: _branchKeys[index],
               routes: [
                 _goRoute(
                   route,
@@ -128,6 +152,7 @@ final class AppRouter implements AppNavigator {
                       ),
                     ],
                     if (route is ProgressRoute) ...[
+                      _weeklySummaryRoute(),
                       _goRoute(const WeightGraphRoute(), nested: true),
                       _measurementsRoute(),
                       _exercisesRoute(
@@ -145,6 +170,7 @@ final class AppRouter implements AppNavigator {
                       _goRoute(const ProfileRoute(), nested: true),
                       _goRoute(const TargetsRoute(), nested: true),
                       _goRoute(const AboutRoute(), nested: true),
+                      _goRoute(const NotificationSettingsRoute(), nested: true),
                       if (designPreview)
                         _goRoute(const DesignPreviewRoute(), nested: true),
                     ],
@@ -230,9 +256,37 @@ final class AppRouter implements AppNavigator {
     // A nested route's path is relative to its parent's.
     path: nested ? route.location.split('/').last : route.location,
     name: route.location,
-    builder: (_, _) => _screen(route),
+    // Today reads the sheet a notification asks it to open (A40 D9).
+    builder: (_, state) =>
+        _screen(route is TodayRoute ? todayRouteOf(state.uri) : route),
     routes: children,
   );
+
+  /// The [TodayRoute] a location stands for: an unknown `open` is ignored.
+  @visibleForTesting
+  static TodayRoute todayRouteOf(Uri location) => TodayRoute(
+    open: TodayOpen.of(location.queryParameters[TodayRoute.openParam]),
+  );
+
+  // One week's summary (A39a D2): a malformed date goes to the tab.
+  static GoRoute _weeklySummaryRoute() {
+    final parts = WeeklySummaryRoute.path.split('/');
+    return GoRoute(
+      path: parts.sublist(parts.length - 2).join('/'),
+      name: WeeklySummaryRoute.path,
+      redirect: (_, state) =>
+          weeklySummaryStartOf(state.uri) == null ? ProgressRoute.path : null,
+      builder: (_, state) =>
+          _screen(WeeklySummaryRoute(start: weeklySummaryStartOf(state.uri)!)),
+    );
+  }
+
+  /// The week start in a weekly summary location, or null when malformed.
+  @visibleForTesting
+  static LocalDate? weeklySummaryStartOf(Uri location) {
+    final segments = location.pathSegments;
+    return segments.length == 3 ? LocalDate.tryParse(segments.last) : null;
+  }
 
   // The one route with parameters so far: it rebuilds its typed route from
   // the query string (A07 D11), so the screen never parses a URL.
@@ -360,7 +414,8 @@ final class AppRouter implements AppNavigator {
   static GoRoute _workoutLogRoute() => GoRoute(
     path: WorkoutLogRoute.path.split('/').last,
     name: WorkoutLogRoute.path,
-    builder: (_, state) => _screen(workoutLogRouteOf(state.uri)),
+    builder: (_, state) =>
+        _visit(state.uri, _screen(workoutLogRouteOf(state.uri))),
   );
 
   // A new workout from Today's planned row (A37 D13, D20); without a valid
@@ -372,11 +427,19 @@ final class AppRouter implements AppNavigator {
         workoutLogRouteOf(state.uri).template == null ? TodayRoute.path : null,
     builder: (_, state) {
       final log = workoutLogRouteOf(state.uri);
-      return _screen(
-        TodayWorkoutLogRoute(template: log.template!, date: log.date),
+      return _visit(
+        state.uri,
+        _screen(TodayWorkoutLogRoute(template: log.template!, date: log.date)),
       );
     },
   );
+
+  /// A workout log screen keyed to its location: go_router keeps a
+  /// route's widget state across query or ID changes, so a link to another
+  /// visit (a notification) must build a fresh screen and controller, never
+  /// reuse the finished one (A40 fix-check).
+  static Widget _visit(Uri location, Widget screen) =>
+      KeyedSubtree(key: ValueKey('visit:$location'), child: screen);
 
   /// The [WorkoutLogRoute] a location stands for.
   @visibleForTesting
@@ -411,7 +474,8 @@ final class AppRouter implements AppNavigator {
       name: pattern,
       redirect: (_, state) =>
           isUuid(state.pathParameters['id'] ?? '') ? null : home,
-      builder: (_, state) => _screen(route(state.pathParameters['id']!)),
+      builder: (_, state) =>
+          _visit(state.uri, _screen(route(state.pathParameters['id']!))),
     );
   }
 
@@ -483,8 +547,9 @@ final class AppRouter implements AppNavigator {
 
   // Exhaustive: a new AppRoute without a screen doesn't compile.
   static Widget _screen(AppRoute route) => switch (route) {
-    TodayRoute() => const TodayScreen(),
+    TodayRoute(:final open) => TodayScreen(open: open),
     ProgressRoute() => const ProgressScreen(),
+    WeeklySummaryRoute(:final start) => WeeklySummaryScreen(start: start),
     WorkoutsRoute() => const WorkoutsScreen(),
     WorkoutLogRoute(
       :final date,
@@ -547,6 +612,7 @@ final class AppRouter implements AppNavigator {
     MealSlotsRoute() => const MealSlotsScreen(),
     CityPickerRoute() => const CityPickerScreen(),
     AboutRoute() => const AboutScreen(),
+    NotificationSettingsRoute() => const NotificationSettingsScreen(),
     TodayWeightGraphRoute() || WeightGraphRoute() => const WeightGraphScreen(),
     WeightHistoryRoute() => const WeightHistoryScreen(),
     MeasurementsRoute() => const MeasurementsScreen(),
@@ -564,6 +630,34 @@ final class AppRouter implements AppNavigator {
 
   @override
   void push(AppRoute route) => unawaited(config.push<void>(route.location));
+
+  /// Shows [location] (a notification's deep link, A40 D9); an unknown
+  /// one goes to Today (the config's `onException`). Going there replaces
+  /// the target tab's stack, so a screen in it with unsaved edits is asked
+  /// first, like a tab re-tap (A45 D12): a dirty form asks to discard, a
+  /// workout runs its visit's exit; keeping the edits cancels the link (A40
+  /// review 3). Other tabs keep their stacks. A link to where the app
+  /// already is does nothing; one to where a hidden tab already is just
+  /// brings that tab back.
+  Future<void> openLocation(String location) async {
+    // Already there (e.g. a second tap on the same workout reminder): keep
+    // the live screen and its visit (A40 fix-check).
+    if (config.state.uri.toString() == location) return;
+    final index = _tabOf(Uri.tryParse(location)?.path ?? location);
+    if (index >= 0 && _tabLocations[index] == location) {
+      // The target tab, hidden behind another, already shows it (a second
+      // tap on the same reminder from Me): bring the tab back with its
+      // live screen, never run its exit (A40 fix-check 2).
+      config.go(location);
+      return;
+    }
+    final navigator = index < 0 ? null : _branchKeys[index].currentState;
+    final edits = unsavedEdits;
+    if (edits != null && edits.holds(navigator)) {
+      if (!await edits.confirm(navigator!)) return;
+    }
+    config.go(location);
+  }
 
   @override
   void pop() {

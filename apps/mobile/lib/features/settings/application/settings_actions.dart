@@ -98,6 +98,10 @@ final class SettingsActions {
   Future<SettingsOutcome> setCheckInMode(CheckInMode value) =>
       _set(AppSettings.checkInMode, value);
 
+  /// Replace the notification settings (NT-020, A40 D3).
+  Future<SettingsOutcome> setNotificationPrefs(NotificationPrefs value) =>
+      _set(AppSettings.notificationPrefs, value);
+
   /// Set a validated city identity.
   Future<SettingsOutcome> setCity(String value) => AppSettings.isCityId(value)
       ? _set(AppSettings.cityId, value)

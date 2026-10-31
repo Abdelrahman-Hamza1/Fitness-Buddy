@@ -2,7 +2,7 @@
 
 | Track | Depends on | Size | Owner | Status |
 |---|---|---|---|---|
-| App | A39a: A37c, A38; A39b: A39a, A23b, **B12** (contract) | A39a M + A39b S (split 2026-10-30) | Claude | ⬜ A39a (wave 4) · ⬜ A39b (phase 2) |
+| App | A39a: A37c, A38; A39b: A39a, A23b, **B12** (contract) | A39a M + A39b S (split 2026-10-30) | Claude | ✅ A39a closed, awaiting review/merge (with A40) · ⬜ A39b (phase 2) |
 
 _Old ID: S44 app part (renumbered by TD-063, 2026-10-16)._
 
@@ -44,11 +44,12 @@ Read your first real weekly review. Tone feedback.
 ---
 
 ## Low-level plan
-_Written in Phase B._
+_A39a's plan is combined with A40's: see `A40-notifications.md` § Low-level plan (D1, D2: `WeeklySummary`, the Progress summary card with the check-in inside, past weeks). A39b is planned in phase 2._
 
 ## Progress log
 _One dated line per event, newest last (process §8a)._
 - 2026-10-30: split into a/b (TD-105, owner).
+- 2026-10-31: A39a planned and built together with A40 (one step, plan in A40's card).
 
 ## Outcome
-_Written in Phase E._
+_A39a (2026-10-31): built with A40 as one step; see `A40-notifications.md` § Outcome (fb_domain `WeeklySummary`, the Progress summary card with the A38 check-in inside it (backlog #231 done), past weeks at `/progress/week/:start`, the "weekly summary ready" notification). A39b: phase 2._

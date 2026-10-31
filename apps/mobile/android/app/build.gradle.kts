@@ -61,6 +61,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // A40 D7: flutter_local_notifications needs core library desugaring.
+        isCoreLibraryDesugaringEnabled = true
     }
 
     buildFeatures {
@@ -144,6 +146,8 @@ flutter {
 }
 
 dependencies {
+    // A40 D7: the desugaring library flutter_local_notifications 22 documents.
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     // PA2 same-store barrier ordering on the host JVM; no device required.
     testImplementation("junit:junit:4.13.2")
     // The test orchestrator above (Patrol's documented version; patrol_cli

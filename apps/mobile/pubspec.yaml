@@ -38,6 +38,11 @@ dependencies:
     sdk: flutter
   # Needed by the gen-l10n output (lib/l10n/gen). The app's delegates come
   # from material_ui (plan D15), not from this package.
+  # A40 D7: local reminders (BSD-3, maintained). Exact pin. Its manifest adds
+  # POST_NOTIFICATIONS and VIBRATE; the app adds RECEIVE_BOOT_COMPLETED and the
+  # plugin's receivers, and enables core library desugaring. Inexact alarms only.
+  # Used only in lib/features/notifications/data/notification_platform.dart.
+  flutter_local_notifications: 22.3.2
   flutter_localizations:
     sdk: flutter
   flutter_riverpod: ^3.4.3
@@ -70,6 +75,9 @@ dependencies:
   # 3.x bundles SQLite through build hooks (sqlite3_flutter_libs is EOL). Hook
   # overrides (user_defines) go in the root pubspec only (A01 plan §3.5).
   sqlite3: ^3.7.1
+  # A40 D7: the type flutter_local_notifications schedules with (TZDateTime); only
+  # tz.UTC is used, so no time-zone database is loaded. Exact pin.
+  timezone: 0.11.2
 
 dev_dependencies:
   alchemist: 0.14.1

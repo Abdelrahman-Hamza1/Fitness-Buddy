@@ -17,6 +17,7 @@ import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
+import 'package:fb_mobile/features/notifications/notifications.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter_riverpod/misc.dart';
@@ -33,6 +34,11 @@ import 'package:flutter_riverpod/misc.dart';
 List<Override> appOverrides(AppConfig config) => [
   appConfigProvider.overrideWithValue(config),
   appNavigatorProvider.overrideWith((ref) => ref.watch(appRouterProvider)),
+  // A notification's deep link is a router location (A40 D9).
+  notificationLinkOpenerProvider.overrideWith(
+    (ref) =>
+        (location) => ref.read(appRouterProvider).openLocation(location),
+  ),
   // The database attaches whichever pack the installer finds on disk (A05).
   catalogPackSourceProvider.overrideWith(
     (ref) => ref.watch(catalogPackInstallerProvider),

@@ -30,16 +30,44 @@ sealed class AppRoute {
   String get location;
 }
 
-/// The Today tab (home, UX-010).
+/// What Today opens once it shows, for a notification's deep link
+/// (NT-024, A40 D9). Stored names are part of the link.
+enum TodayOpen {
+  /// The weigh-in pad (NT-003).
+  weighIn('weigh-in'),
+
+  /// The Buddy sheet, where pending cards wait (NT-002).
+  buddy('buddy');
+
+  new(this.param);
+
+  /// The value in the query string.
+  final String param;
+
+  /// The [TodayOpen] of [param], or null.
+  static TodayOpen? of(String? param) =>
+      values.where((o) => o.param == param).firstOrNull;
+}
+
+/// The Today tab (home, UX-010). With [open], Today opens that sheet once
+/// (a notification's deep link, A40 D9): `/today?open=weigh-in`.
 final class TodayRoute extends AppRoute {
   /// Creates the route.
-  const new();
+  const new({this.open});
 
   /// The route's path pattern.
   static const path = '/today';
 
+  /// The query parameter holding [open].
+  static const openParam = 'open';
+
+  /// The sheet to open, or null.
+  final TodayOpen? open;
+
   @override
-  String get location => path;
+  String get location => open == null
+      ? path
+      : Uri(path: path, queryParameters: {openParam: open!.param}).toString();
 }
 
 /// The Progress tab (UX-010).
@@ -582,6 +610,26 @@ final class ProgressExerciseRoute extends AppRoute {
       '${ProgressExercisesRoute.path}/${Uri.encodeComponent(id)}';
 }
 
+/// One week's summary with ‹ › to the others (IN-001, A39a D2): a detail
+/// screen of the Progress tab, opened from Past weeks and by the "weekly
+/// summary ready" notification (NT-004).
+final class WeeklySummaryRoute extends AppRoute {
+  /// Creates the route for the week starting on [start].
+  const new({required this.start});
+
+  /// The route's path pattern.
+  static const path = '/progress/week/:start';
+
+  /// The path parameter holding [start] (`YYYY-MM-DD`).
+  static const startParam = 'start';
+
+  /// The week's first day.
+  final LocalDate start;
+
+  @override
+  String get location => '/progress/week/$start';
+}
+
 /// Past weigh-ins as rows (A15b D17): full screen outside the tabs, opened
 /// from the weight graph. No parameters.
 final class WeightHistoryRoute extends AppRoute {
@@ -616,6 +664,19 @@ final class TargetsRoute extends AppRoute {
 
   /// The route's path pattern.
   static const path = '/me/targets';
+
+  @override
+  String get location => path;
+}
+
+/// Me › Notifications (NT-020, A40 D10): the master switch, quiet hours
+/// and each reminder's switch and time; a detail screen of the Me tab.
+final class NotificationSettingsRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/notifications';
 
   @override
   String get location => path;

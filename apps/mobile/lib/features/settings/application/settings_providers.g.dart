@@ -172,6 +172,52 @@ final class CheckInModeProvider
 
 String _$checkInModeHash() => r'82dd2f71e6cdd9efdb80996d828865f3efb8647c';
 
+/// The notification settings (NT-020, A40 D3).
+
+@ProviderFor(notificationPrefs)
+final notificationPrefsProvider = NotificationPrefsProvider._();
+
+/// The notification settings (NT-020, A40 D3).
+
+final class NotificationPrefsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<NotificationPrefs>,
+          NotificationPrefs,
+          Stream<NotificationPrefs>
+        >
+    with
+        $FutureModifier<NotificationPrefs>,
+        $StreamProvider<NotificationPrefs> {
+  /// The notification settings (NT-020, A40 D3).
+  NotificationPrefsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'notificationPrefsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$notificationPrefsHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<NotificationPrefs> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<NotificationPrefs> create(Ref ref) {
+    return notificationPrefs(ref);
+  }
+}
+
+String _$notificationPrefsHash() => r'7140638d7bf9225fea2dd82c5fa80af6460319b1';
+
 /// One shared calendar for future weekly views.
 
 @ProviderFor(weekCalendar)

@@ -1,0 +1,2 @@
+fail
+uses-permission android.permission.SCHEDULE_EXACT_ALARM is not allowed (reminders are inexact, A40 D7)

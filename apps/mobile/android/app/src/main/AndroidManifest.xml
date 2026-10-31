@@ -12,6 +12,13 @@
          first use by the barcode scanner; denied = "Type the code") and
          android.hardware.camera with required="false". Barcode decoding runs on the
          phone (bundled ML Kit model); no image leaves it. -->
+    <!-- A40 D7: local reminders. flutter_local_notifications' manifest adds
+         POST_NOTIFICATIONS (asked once in context, A40 D8) and VIBRATE. Reminders are
+         rescheduled after a reboot or an app update (the boot receiver below), so
+         RECEIVE_BOOT_COMPLETED. Every reminder is inexact: no SCHEDULE_EXACT_ALARM or
+         USE_EXACT_ALARM (tools/scripts/apk_hardening_check.py fails a release that
+         asks for one). Nothing leaves the phone (TD-013). -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <!-- Hardening (S06 plan A8, backlog #32):
          - app_name comes from the flavor (resValue in app/build.gradle.kts).
@@ -63,6 +70,21 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- A40 D7: flutter_local_notifications shows scheduled reminders and
+             restores them after a reboot or an update. Not exported. -->
+        <receiver
+            android:exported="false"
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
+        <receiver
+            android:exported="false"
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
+            </intent-filter>
+        </receiver>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

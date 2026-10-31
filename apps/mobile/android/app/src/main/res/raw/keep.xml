@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A40 D7: the notifications plugin finds its small icon by name at run time, which
+     the resource shrinker can't see; keep it explicitly (the plugin's documented
+     advice). -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/ic_launcher_monochrome" />

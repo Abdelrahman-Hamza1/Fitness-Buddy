@@ -90,6 +90,17 @@ abstract final class AppSettings {
     defaultValue: CheckInMode.ask,
   );
 
+  /// NT-020/NT-021: the local reminders (A40 D3), one value; unreadable
+  /// fields read as their `spec/17` defaults.
+  static final notificationPrefs = SettingKey<NotificationPrefs>(
+    'notifications.prefs',
+    codec: SettingCodec(
+      toJson: (value) => value.toJson(),
+      fromJson: NotificationPrefs.fromJson,
+    ),
+    defaultValue: NotificationPrefs.defaults,
+  );
+
   /// Complete setting vocabulary for export's natural-id reverse lookup.
   static final List<SettingKey<Object?>> all = [
     unitSystem,
@@ -99,6 +110,7 @@ abstract final class AppSettings {
     cityId,
     trainingDayWeight,
     checkInMode,
+    notificationPrefs,
   ];
 
   /// Accepted GeoNames identity format, without including input in errors.

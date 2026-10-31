@@ -5,6 +5,7 @@ import 'package:fb_mobile/core/catalog/online_food_search.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/config/package_info.dart';
 import 'package:fb_mobile/core/storage/preferences.dart';
+import 'package:fb_mobile/features/notifications/notifications.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +13,7 @@ import 'package:shared_preferences_platform_interface/in_memory_shared_preferenc
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:shared_preferences_platform_interface/types.dart';
 
+import '../features/notifications/support/fake_notifications.dart';
 import 'fake_http.dart';
 
 /// The configuration the tests run with (the dev flavor's values).
@@ -39,6 +41,7 @@ final class TestPhone {
     AppConfig? config,
     this.onlineSearch = false,
     this.packUpdates = false,
+    this.notifications = false,
   }) : config = config ?? testConfig {
     adapter.onRequest = (r) => events.add('${r.method} ${r.path}');
   }
@@ -57,6 +60,17 @@ final class TestPhone {
 
   /// Whether the bootstrap checks for a newer catalog pack (A24).
   final bool packUpdates;
+
+  /// Whether the app plans and schedules notifications (A40).
+  final bool notifications;
+
+  /// The phone's notifications.
+  final FakeNotificationPlatform notificationPlatform =
+      FakeNotificationPlatform();
+
+  /// The notification ledger and permission flag.
+  final MemoryNotificationDeviceStore notificationStore =
+      MemoryNotificationDeviceStore();
 
   /// When set, the app can't open its preferences.
   bool preferencesBroken = false;
@@ -89,6 +103,11 @@ final class TestPhone {
     // A24: off unless the test opts in (each adds requests to the log).
     catalogPackUpdatesEnabledProvider.overrideWithValue(packUpdates),
     onlineFoodSearchEnabledProvider.overrideWithValue(onlineSearch),
+    // A40: no scheduling unless a test opts in; the fakes never touch a
+    // platform channel or the recorded preferences.
+    notificationSchedulingEnabledProvider.overrideWithValue(notifications),
+    notificationPlatformProvider.overrideWithValue(notificationPlatform),
+    notificationDeviceStoreProvider.overrideWithValue(notificationStore),
     packageInfoProvider.overrideWith((ref) async {
       events.add('package info');
       return PackageInfo(
