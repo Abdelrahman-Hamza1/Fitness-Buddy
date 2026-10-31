@@ -171,6 +171,7 @@ final class AppRouter implements AppNavigator {
     UpdateRequiredRoute(),
     SetupRoute(),
     SignInRoute(),
+    DeleteAccountRoute(),
     WeightHistoryRoute(),
   ];
 
@@ -553,6 +554,7 @@ final class AppRouter implements AppNavigator {
     UpdateRequiredRoute() => const UpdateRequiredScreen(),
     SetupRoute() => const SetupScreen(),
     SignInRoute() => const SignInScreen(),
+    DeleteAccountRoute() => const DeleteAccountScreen(),
     ProfileRoute() => const ProfileGoalScreen(),
     TargetsRoute() => const TargetsScreen(),
   };

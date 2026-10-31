@@ -23173,6 +23173,1120 @@ class PersonalFoodsCompanion extends UpdateCompanion<PersonalFoodRow> {
   }
 }
 
+class $SyncParkedTable extends SyncParked
+    with TableInfo<$SyncParkedTable, SyncParkedRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SyncParkedTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _entityMeta = const VerificationMeta('entity');
+  @override
+  late final GeneratedColumn<String> entity = GeneratedColumn<String>(
+    'entity',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rowIdMeta = const VerificationMeta('rowId');
+  @override
+  late final GeneratedColumn<String> rowId = GeneratedColumn<String>(
+    'row_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcMeta = const VerificationMeta('hlc');
+  @override
+  late final GeneratedColumn<String> hlc = GeneratedColumn<String>(
+    'hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _reasonMeta = const VerificationMeta('reason');
+  @override
+  late final GeneratedColumn<String> reason = GeneratedColumn<String>(
+    'reason',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _parkedAtMeta = const VerificationMeta(
+    'parkedAt',
+  );
+  @override
+  late final GeneratedColumn<int> parkedAt = GeneratedColumn<int>(
+    'parked_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [entity, rowId, hlc, reason, parkedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_parked';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SyncParkedRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('entity')) {
+      context.handle(
+        _entityMeta,
+        entity.isAcceptableOrUnknown(data['entity']!, _entityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityMeta);
+    }
+    if (data.containsKey('row_id')) {
+      context.handle(
+        _rowIdMeta,
+        rowId.isAcceptableOrUnknown(data['row_id']!, _rowIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_rowIdMeta);
+    }
+    if (data.containsKey('hlc')) {
+      context.handle(
+        _hlcMeta,
+        hlc.isAcceptableOrUnknown(data['hlc']!, _hlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcMeta);
+    }
+    if (data.containsKey('reason')) {
+      context.handle(
+        _reasonMeta,
+        reason.isAcceptableOrUnknown(data['reason']!, _reasonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_reasonMeta);
+    }
+    if (data.containsKey('parked_at')) {
+      context.handle(
+        _parkedAtMeta,
+        parkedAt.isAcceptableOrUnknown(data['parked_at']!, _parkedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_parkedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {entity, rowId, hlc};
+  @override
+  SyncParkedRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SyncParkedRow(
+      entity: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity'],
+      )!,
+      rowId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}row_id'],
+      )!,
+      hlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hlc'],
+      )!,
+      reason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reason'],
+      )!,
+      parkedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}parked_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SyncParkedTable createAlias(String alias) {
+    return $SyncParkedTable(attachedDatabase, alias);
+  }
+}
+
+class SyncParkedRow extends DataClass implements Insertable<SyncParkedRow> {
+  /// The entity wire name.
+  final String entity;
+
+  /// The row id.
+  final String rowId;
+
+  /// The parked version's HLC.
+  final String hlc;
+
+  /// A fixed reason code (`unsupported`, `invalidPayload`, `tooLarge`, a
+  /// codec code, `unknown`), never a message.
+  final String reason;
+
+  /// When it was parked, UTC ms.
+  final int parkedAt;
+  const SyncParkedRow({
+    required this.entity,
+    required this.rowId,
+    required this.hlc,
+    required this.reason,
+    required this.parkedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['entity'] = Variable<String>(entity);
+    map['row_id'] = Variable<String>(rowId);
+    map['hlc'] = Variable<String>(hlc);
+    map['reason'] = Variable<String>(reason);
+    map['parked_at'] = Variable<int>(parkedAt);
+    return map;
+  }
+
+  SyncParkedCompanion toCompanion(bool nullToAbsent) {
+    return SyncParkedCompanion(
+      entity: Value(entity),
+      rowId: Value(rowId),
+      hlc: Value(hlc),
+      reason: Value(reason),
+      parkedAt: Value(parkedAt),
+    );
+  }
+
+  factory SyncParkedRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SyncParkedRow(
+      entity: serializer.fromJson<String>(json['entity']),
+      rowId: serializer.fromJson<String>(json['rowId']),
+      hlc: serializer.fromJson<String>(json['hlc']),
+      reason: serializer.fromJson<String>(json['reason']),
+      parkedAt: serializer.fromJson<int>(json['parkedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'entity': serializer.toJson<String>(entity),
+      'rowId': serializer.toJson<String>(rowId),
+      'hlc': serializer.toJson<String>(hlc),
+      'reason': serializer.toJson<String>(reason),
+      'parkedAt': serializer.toJson<int>(parkedAt),
+    };
+  }
+
+  SyncParkedRow copyWith({
+    String? entity,
+    String? rowId,
+    String? hlc,
+    String? reason,
+    int? parkedAt,
+  }) => SyncParkedRow(
+    entity: entity ?? this.entity,
+    rowId: rowId ?? this.rowId,
+    hlc: hlc ?? this.hlc,
+    reason: reason ?? this.reason,
+    parkedAt: parkedAt ?? this.parkedAt,
+  );
+  SyncParkedRow copyWithCompanion(SyncParkedCompanion data) {
+    return SyncParkedRow(
+      entity: data.entity.present ? data.entity.value : this.entity,
+      rowId: data.rowId.present ? data.rowId.value : this.rowId,
+      hlc: data.hlc.present ? data.hlc.value : this.hlc,
+      reason: data.reason.present ? data.reason.value : this.reason,
+      parkedAt: data.parkedAt.present ? data.parkedAt.value : this.parkedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncParkedRow(')
+          ..write('entity: $entity, ')
+          ..write('rowId: $rowId, ')
+          ..write('hlc: $hlc, ')
+          ..write('reason: $reason, ')
+          ..write('parkedAt: $parkedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(entity, rowId, hlc, reason, parkedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SyncParkedRow &&
+          other.entity == this.entity &&
+          other.rowId == this.rowId &&
+          other.hlc == this.hlc &&
+          other.reason == this.reason &&
+          other.parkedAt == this.parkedAt);
+}
+
+class SyncParkedCompanion extends UpdateCompanion<SyncParkedRow> {
+  final Value<String> entity;
+  final Value<String> rowId;
+  final Value<String> hlc;
+  final Value<String> reason;
+  final Value<int> parkedAt;
+  final Value<int> rowid;
+  const SyncParkedCompanion({
+    this.entity = const Value.absent(),
+    this.rowId = const Value.absent(),
+    this.hlc = const Value.absent(),
+    this.reason = const Value.absent(),
+    this.parkedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SyncParkedCompanion.insert({
+    required String entity,
+    required String rowId,
+    required String hlc,
+    required String reason,
+    required int parkedAt,
+    this.rowid = const Value.absent(),
+  }) : entity = Value(entity),
+       rowId = Value(rowId),
+       hlc = Value(hlc),
+       reason = Value(reason),
+       parkedAt = Value(parkedAt);
+  static Insertable<SyncParkedRow> custom({
+    Expression<String>? entity,
+    Expression<String>? rowId,
+    Expression<String>? hlc,
+    Expression<String>? reason,
+    Expression<int>? parkedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (entity != null) 'entity': entity,
+      if (rowId != null) 'row_id': rowId,
+      if (hlc != null) 'hlc': hlc,
+      if (reason != null) 'reason': reason,
+      if (parkedAt != null) 'parked_at': parkedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SyncParkedCompanion copyWith({
+    Value<String>? entity,
+    Value<String>? rowId,
+    Value<String>? hlc,
+    Value<String>? reason,
+    Value<int>? parkedAt,
+    Value<int>? rowid,
+  }) {
+    return SyncParkedCompanion(
+      entity: entity ?? this.entity,
+      rowId: rowId ?? this.rowId,
+      hlc: hlc ?? this.hlc,
+      reason: reason ?? this.reason,
+      parkedAt: parkedAt ?? this.parkedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (entity.present) {
+      map['entity'] = Variable<String>(entity.value);
+    }
+    if (rowId.present) {
+      map['row_id'] = Variable<String>(rowId.value);
+    }
+    if (hlc.present) {
+      map['hlc'] = Variable<String>(hlc.value);
+    }
+    if (reason.present) {
+      map['reason'] = Variable<String>(reason.value);
+    }
+    if (parkedAt.present) {
+      map['parked_at'] = Variable<int>(parkedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncParkedCompanion(')
+          ..write('entity: $entity, ')
+          ..write('rowId: $rowId, ')
+          ..write('hlc: $hlc, ')
+          ..write('reason: $reason, ')
+          ..write('parkedAt: $parkedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SyncDeferredTable extends SyncDeferred
+    with TableInfo<$SyncDeferredTable, SyncDeferredRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SyncDeferredTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _entityMeta = const VerificationMeta('entity');
+  @override
+  late final GeneratedColumn<String> entity = GeneratedColumn<String>(
+    'entity',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rowIdMeta = const VerificationMeta('rowId');
+  @override
+  late final GeneratedColumn<String> rowId = GeneratedColumn<String>(
+    'row_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcMeta = const VerificationMeta('hlc');
+  @override
+  late final GeneratedColumn<String> hlc = GeneratedColumn<String>(
+    'hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _documentJsonMeta = const VerificationMeta(
+    'documentJson',
+  );
+  @override
+  late final GeneratedColumn<String> documentJson = GeneratedColumn<String>(
+    'document_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _reasonMeta = const VerificationMeta('reason');
+  @override
+  late final GeneratedColumn<String> reason = GeneratedColumn<String>(
+    'reason',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    entity,
+    rowId,
+    hlc,
+    documentJson,
+    reason,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_deferred';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SyncDeferredRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('entity')) {
+      context.handle(
+        _entityMeta,
+        entity.isAcceptableOrUnknown(data['entity']!, _entityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityMeta);
+    }
+    if (data.containsKey('row_id')) {
+      context.handle(
+        _rowIdMeta,
+        rowId.isAcceptableOrUnknown(data['row_id']!, _rowIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_rowIdMeta);
+    }
+    if (data.containsKey('hlc')) {
+      context.handle(
+        _hlcMeta,
+        hlc.isAcceptableOrUnknown(data['hlc']!, _hlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcMeta);
+    }
+    if (data.containsKey('document_json')) {
+      context.handle(
+        _documentJsonMeta,
+        documentJson.isAcceptableOrUnknown(
+          data['document_json']!,
+          _documentJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_documentJsonMeta);
+    }
+    if (data.containsKey('reason')) {
+      context.handle(
+        _reasonMeta,
+        reason.isAcceptableOrUnknown(data['reason']!, _reasonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_reasonMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {entity, rowId, hlc};
+  @override
+  SyncDeferredRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SyncDeferredRow(
+      entity: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity'],
+      )!,
+      rowId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}row_id'],
+      )!,
+      hlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hlc'],
+      )!,
+      documentJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}document_json'],
+      )!,
+      reason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reason'],
+      )!,
+    );
+  }
+
+  @override
+  $SyncDeferredTable createAlias(String alias) {
+    return $SyncDeferredTable(attachedDatabase, alias);
+  }
+}
+
+class SyncDeferredRow extends DataClass implements Insertable<SyncDeferredRow> {
+  /// The entity wire name.
+  final String entity;
+
+  /// The row id.
+  final String rowId;
+
+  /// The document's HLC.
+  final String hlc;
+
+  /// The document as pulled (JSON).
+  final String documentJson;
+
+  /// `unknownEntity`, `newerSchema` or `unreadable`.
+  final String reason;
+  const SyncDeferredRow({
+    required this.entity,
+    required this.rowId,
+    required this.hlc,
+    required this.documentJson,
+    required this.reason,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['entity'] = Variable<String>(entity);
+    map['row_id'] = Variable<String>(rowId);
+    map['hlc'] = Variable<String>(hlc);
+    map['document_json'] = Variable<String>(documentJson);
+    map['reason'] = Variable<String>(reason);
+    return map;
+  }
+
+  SyncDeferredCompanion toCompanion(bool nullToAbsent) {
+    return SyncDeferredCompanion(
+      entity: Value(entity),
+      rowId: Value(rowId),
+      hlc: Value(hlc),
+      documentJson: Value(documentJson),
+      reason: Value(reason),
+    );
+  }
+
+  factory SyncDeferredRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SyncDeferredRow(
+      entity: serializer.fromJson<String>(json['entity']),
+      rowId: serializer.fromJson<String>(json['rowId']),
+      hlc: serializer.fromJson<String>(json['hlc']),
+      documentJson: serializer.fromJson<String>(json['documentJson']),
+      reason: serializer.fromJson<String>(json['reason']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'entity': serializer.toJson<String>(entity),
+      'rowId': serializer.toJson<String>(rowId),
+      'hlc': serializer.toJson<String>(hlc),
+      'documentJson': serializer.toJson<String>(documentJson),
+      'reason': serializer.toJson<String>(reason),
+    };
+  }
+
+  SyncDeferredRow copyWith({
+    String? entity,
+    String? rowId,
+    String? hlc,
+    String? documentJson,
+    String? reason,
+  }) => SyncDeferredRow(
+    entity: entity ?? this.entity,
+    rowId: rowId ?? this.rowId,
+    hlc: hlc ?? this.hlc,
+    documentJson: documentJson ?? this.documentJson,
+    reason: reason ?? this.reason,
+  );
+  SyncDeferredRow copyWithCompanion(SyncDeferredCompanion data) {
+    return SyncDeferredRow(
+      entity: data.entity.present ? data.entity.value : this.entity,
+      rowId: data.rowId.present ? data.rowId.value : this.rowId,
+      hlc: data.hlc.present ? data.hlc.value : this.hlc,
+      documentJson: data.documentJson.present
+          ? data.documentJson.value
+          : this.documentJson,
+      reason: data.reason.present ? data.reason.value : this.reason,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncDeferredRow(')
+          ..write('entity: $entity, ')
+          ..write('rowId: $rowId, ')
+          ..write('hlc: $hlc, ')
+          ..write('documentJson: $documentJson, ')
+          ..write('reason: $reason')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(entity, rowId, hlc, documentJson, reason);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SyncDeferredRow &&
+          other.entity == this.entity &&
+          other.rowId == this.rowId &&
+          other.hlc == this.hlc &&
+          other.documentJson == this.documentJson &&
+          other.reason == this.reason);
+}
+
+class SyncDeferredCompanion extends UpdateCompanion<SyncDeferredRow> {
+  final Value<String> entity;
+  final Value<String> rowId;
+  final Value<String> hlc;
+  final Value<String> documentJson;
+  final Value<String> reason;
+  final Value<int> rowid;
+  const SyncDeferredCompanion({
+    this.entity = const Value.absent(),
+    this.rowId = const Value.absent(),
+    this.hlc = const Value.absent(),
+    this.documentJson = const Value.absent(),
+    this.reason = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SyncDeferredCompanion.insert({
+    required String entity,
+    required String rowId,
+    required String hlc,
+    required String documentJson,
+    required String reason,
+    this.rowid = const Value.absent(),
+  }) : entity = Value(entity),
+       rowId = Value(rowId),
+       hlc = Value(hlc),
+       documentJson = Value(documentJson),
+       reason = Value(reason);
+  static Insertable<SyncDeferredRow> custom({
+    Expression<String>? entity,
+    Expression<String>? rowId,
+    Expression<String>? hlc,
+    Expression<String>? documentJson,
+    Expression<String>? reason,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (entity != null) 'entity': entity,
+      if (rowId != null) 'row_id': rowId,
+      if (hlc != null) 'hlc': hlc,
+      if (documentJson != null) 'document_json': documentJson,
+      if (reason != null) 'reason': reason,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SyncDeferredCompanion copyWith({
+    Value<String>? entity,
+    Value<String>? rowId,
+    Value<String>? hlc,
+    Value<String>? documentJson,
+    Value<String>? reason,
+    Value<int>? rowid,
+  }) {
+    return SyncDeferredCompanion(
+      entity: entity ?? this.entity,
+      rowId: rowId ?? this.rowId,
+      hlc: hlc ?? this.hlc,
+      documentJson: documentJson ?? this.documentJson,
+      reason: reason ?? this.reason,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (entity.present) {
+      map['entity'] = Variable<String>(entity.value);
+    }
+    if (rowId.present) {
+      map['row_id'] = Variable<String>(rowId.value);
+    }
+    if (hlc.present) {
+      map['hlc'] = Variable<String>(hlc.value);
+    }
+    if (documentJson.present) {
+      map['document_json'] = Variable<String>(documentJson.value);
+    }
+    if (reason.present) {
+      map['reason'] = Variable<String>(reason.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncDeferredCompanion(')
+          ..write('entity: $entity, ')
+          ..write('rowId: $rowId, ')
+          ..write('hlc: $hlc, ')
+          ..write('documentJson: $documentJson, ')
+          ..write('reason: $reason, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SyncDisplacedTable extends SyncDisplaced
+    with TableInfo<$SyncDisplacedTable, SyncDisplacedRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SyncDisplacedTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _entityMeta = const VerificationMeta('entity');
+  @override
+  late final GeneratedColumn<String> entity = GeneratedColumn<String>(
+    'entity',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rowIdMeta = const VerificationMeta('rowId');
+  @override
+  late final GeneratedColumn<String> rowId = GeneratedColumn<String>(
+    'row_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcMeta = const VerificationMeta('hlc');
+  @override
+  late final GeneratedColumn<String> hlc = GeneratedColumn<String>(
+    'hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rowJsonMeta = const VerificationMeta(
+    'rowJson',
+  );
+  @override
+  late final GeneratedColumn<String> rowJson = GeneratedColumn<String>(
+    'row_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _parkedReasonMeta = const VerificationMeta(
+    'parkedReason',
+  );
+  @override
+  late final GeneratedColumn<String> parkedReason = GeneratedColumn<String>(
+    'parked_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    entity,
+    rowId,
+    hlc,
+    rowJson,
+    parkedReason,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_displaced';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SyncDisplacedRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('entity')) {
+      context.handle(
+        _entityMeta,
+        entity.isAcceptableOrUnknown(data['entity']!, _entityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityMeta);
+    }
+    if (data.containsKey('row_id')) {
+      context.handle(
+        _rowIdMeta,
+        rowId.isAcceptableOrUnknown(data['row_id']!, _rowIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_rowIdMeta);
+    }
+    if (data.containsKey('hlc')) {
+      context.handle(
+        _hlcMeta,
+        hlc.isAcceptableOrUnknown(data['hlc']!, _hlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcMeta);
+    }
+    if (data.containsKey('row_json')) {
+      context.handle(
+        _rowJsonMeta,
+        rowJson.isAcceptableOrUnknown(data['row_json']!, _rowJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_rowJsonMeta);
+    }
+    if (data.containsKey('parked_reason')) {
+      context.handle(
+        _parkedReasonMeta,
+        parkedReason.isAcceptableOrUnknown(
+          data['parked_reason']!,
+          _parkedReasonMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {entity, rowId, hlc};
+  @override
+  SyncDisplacedRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SyncDisplacedRow(
+      entity: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity'],
+      )!,
+      rowId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}row_id'],
+      )!,
+      hlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hlc'],
+      )!,
+      rowJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}row_json'],
+      )!,
+      parkedReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}parked_reason'],
+      ),
+    );
+  }
+
+  @override
+  $SyncDisplacedTable createAlias(String alias) {
+    return $SyncDisplacedTable(attachedDatabase, alias);
+  }
+}
+
+class SyncDisplacedRow extends DataClass
+    implements Insertable<SyncDisplacedRow> {
+  /// The entity wire name.
+  final String entity;
+
+  /// The row id.
+  final String rowId;
+
+  /// The displaced version's HLC.
+  final String hlc;
+
+  /// The row as it was (SQL column → raw value, JSON).
+  final String rowJson;
+
+  /// The parked reason when the server or the encoder refused it; `null`
+  /// while it waits to be pushed.
+  final String? parkedReason;
+  const SyncDisplacedRow({
+    required this.entity,
+    required this.rowId,
+    required this.hlc,
+    required this.rowJson,
+    this.parkedReason,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['entity'] = Variable<String>(entity);
+    map['row_id'] = Variable<String>(rowId);
+    map['hlc'] = Variable<String>(hlc);
+    map['row_json'] = Variable<String>(rowJson);
+    if (!nullToAbsent || parkedReason != null) {
+      map['parked_reason'] = Variable<String>(parkedReason);
+    }
+    return map;
+  }
+
+  SyncDisplacedCompanion toCompanion(bool nullToAbsent) {
+    return SyncDisplacedCompanion(
+      entity: Value(entity),
+      rowId: Value(rowId),
+      hlc: Value(hlc),
+      rowJson: Value(rowJson),
+      parkedReason: parkedReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(parkedReason),
+    );
+  }
+
+  factory SyncDisplacedRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SyncDisplacedRow(
+      entity: serializer.fromJson<String>(json['entity']),
+      rowId: serializer.fromJson<String>(json['rowId']),
+      hlc: serializer.fromJson<String>(json['hlc']),
+      rowJson: serializer.fromJson<String>(json['rowJson']),
+      parkedReason: serializer.fromJson<String?>(json['parkedReason']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'entity': serializer.toJson<String>(entity),
+      'rowId': serializer.toJson<String>(rowId),
+      'hlc': serializer.toJson<String>(hlc),
+      'rowJson': serializer.toJson<String>(rowJson),
+      'parkedReason': serializer.toJson<String?>(parkedReason),
+    };
+  }
+
+  SyncDisplacedRow copyWith({
+    String? entity,
+    String? rowId,
+    String? hlc,
+    String? rowJson,
+    Value<String?> parkedReason = const Value.absent(),
+  }) => SyncDisplacedRow(
+    entity: entity ?? this.entity,
+    rowId: rowId ?? this.rowId,
+    hlc: hlc ?? this.hlc,
+    rowJson: rowJson ?? this.rowJson,
+    parkedReason: parkedReason.present ? parkedReason.value : this.parkedReason,
+  );
+  SyncDisplacedRow copyWithCompanion(SyncDisplacedCompanion data) {
+    return SyncDisplacedRow(
+      entity: data.entity.present ? data.entity.value : this.entity,
+      rowId: data.rowId.present ? data.rowId.value : this.rowId,
+      hlc: data.hlc.present ? data.hlc.value : this.hlc,
+      rowJson: data.rowJson.present ? data.rowJson.value : this.rowJson,
+      parkedReason: data.parkedReason.present
+          ? data.parkedReason.value
+          : this.parkedReason,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncDisplacedRow(')
+          ..write('entity: $entity, ')
+          ..write('rowId: $rowId, ')
+          ..write('hlc: $hlc, ')
+          ..write('rowJson: $rowJson, ')
+          ..write('parkedReason: $parkedReason')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(entity, rowId, hlc, rowJson, parkedReason);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SyncDisplacedRow &&
+          other.entity == this.entity &&
+          other.rowId == this.rowId &&
+          other.hlc == this.hlc &&
+          other.rowJson == this.rowJson &&
+          other.parkedReason == this.parkedReason);
+}
+
+class SyncDisplacedCompanion extends UpdateCompanion<SyncDisplacedRow> {
+  final Value<String> entity;
+  final Value<String> rowId;
+  final Value<String> hlc;
+  final Value<String> rowJson;
+  final Value<String?> parkedReason;
+  final Value<int> rowid;
+  const SyncDisplacedCompanion({
+    this.entity = const Value.absent(),
+    this.rowId = const Value.absent(),
+    this.hlc = const Value.absent(),
+    this.rowJson = const Value.absent(),
+    this.parkedReason = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SyncDisplacedCompanion.insert({
+    required String entity,
+    required String rowId,
+    required String hlc,
+    required String rowJson,
+    this.parkedReason = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : entity = Value(entity),
+       rowId = Value(rowId),
+       hlc = Value(hlc),
+       rowJson = Value(rowJson);
+  static Insertable<SyncDisplacedRow> custom({
+    Expression<String>? entity,
+    Expression<String>? rowId,
+    Expression<String>? hlc,
+    Expression<String>? rowJson,
+    Expression<String>? parkedReason,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (entity != null) 'entity': entity,
+      if (rowId != null) 'row_id': rowId,
+      if (hlc != null) 'hlc': hlc,
+      if (rowJson != null) 'row_json': rowJson,
+      if (parkedReason != null) 'parked_reason': parkedReason,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SyncDisplacedCompanion copyWith({
+    Value<String>? entity,
+    Value<String>? rowId,
+    Value<String>? hlc,
+    Value<String>? rowJson,
+    Value<String?>? parkedReason,
+    Value<int>? rowid,
+  }) {
+    return SyncDisplacedCompanion(
+      entity: entity ?? this.entity,
+      rowId: rowId ?? this.rowId,
+      hlc: hlc ?? this.hlc,
+      rowJson: rowJson ?? this.rowJson,
+      parkedReason: parkedReason ?? this.parkedReason,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (entity.present) {
+      map['entity'] = Variable<String>(entity.value);
+    }
+    if (rowId.present) {
+      map['row_id'] = Variable<String>(rowId.value);
+    }
+    if (hlc.present) {
+      map['hlc'] = Variable<String>(hlc.value);
+    }
+    if (rowJson.present) {
+      map['row_json'] = Variable<String>(rowJson.value);
+    }
+    if (parkedReason.present) {
+      map['parked_reason'] = Variable<String>(parkedReason.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncDisplacedCompanion(')
+          ..write('entity: $entity, ')
+          ..write('rowId: $rowId, ')
+          ..write('hlc: $hlc, ')
+          ..write('rowJson: $rowJson, ')
+          ..write('parkedReason: $parkedReason, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   late final $WorkoutSessionsTable workoutSessions = $WorkoutSessionsTable(
@@ -23572,6 +24686,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'CREATE TRIGGER proposals_no_delete BEFORE DELETE ON proposals BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
     'proposals_no_delete',
   );
+  late final $SyncParkedTable syncParked = $SyncParkedTable(this);
+  late final $SyncDeferredTable syncDeferred = $SyncDeferredTable(this);
+  late final $SyncDisplacedTable syncDisplaced = $SyncDisplacedTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -23692,6 +24809,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     proposalsOutboxAi,
     proposalsOutboxAu,
     proposalsNoDelete,
+    syncParked,
+    syncDeferred,
+    syncDisplaced,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([

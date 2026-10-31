@@ -6564,24 +6564,6 @@ abstract class AppLocalizations {
   /// **'Continue as guest'**
   String get accountContinueAsGuest;
 
-  /// Me › Account: placeholder row until A34.
-  ///
-  /// In en, this message translates to:
-  /// **'Sync status'**
-  String get accountSyncPlaceholder;
-
-  /// Me › Account: placeholder row until A35.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete account'**
-  String get accountDeletePlaceholder;
-
-  /// Subtitle for placeholder rows.
-  ///
-  /// In en, this message translates to:
-  /// **'Coming soon'**
-  String get accountComingSoon;
-
   /// Sign-in screen: email field label.
   ///
   /// In en, this message translates to:
@@ -8602,6 +8584,318 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Barcode scanning uses Google ML Kit on this phone. ML Kit doesn\'t send camera images or the barcodes it reads to Google; Google may receive an installation ID, device and app information, and diagnostics (developers.google.com/ml-kit/android-data-disclosure). To find a product, the barcode is sent to the Fitness Buddy server.'**
   String get aboutMlKitDisclosure;
+
+  /// A day label and a clock time, like 'today, 10:42'.
+  ///
+  /// In en, this message translates to:
+  /// **'{day}, {time}'**
+  String syncInstant(String day, String time);
+
+  /// Earlier versions sheet: a diary entry version's food name and energy (like '250 kcal').
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · {energy}'**
+  String syncVersionSummary(String name, String energy);
+
+  /// Me › Account: the sync status row title.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync'**
+  String get syncRowTitle;
+
+  /// Sync status: nothing waiting.
+  ///
+  /// In en, this message translates to:
+  /// **'All changes synced'**
+  String get syncStatusSynced;
+
+  /// Sync status: a sync is running.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing…'**
+  String get syncStatusSyncing;
+
+  /// Sync status: the first sync on a new phone is restoring data (AC-011); count is items restored so far.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Restoring your data…} =1{Restoring your data… 1 item} other{Restoring your data… {count} items}}'**
+  String syncStatusRestoring(int count);
+
+  /// Sync status: changes not on the server yet.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 change waiting to sync} other{{count} changes waiting to sync}}'**
+  String syncStatusPending(int count);
+
+  /// Sync status: no connection; nothing is lost.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline. Changes sync when you\'re back online.'**
+  String get syncStatusOffline;
+
+  /// Sync status: the session ended.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in again to sync your changes.'**
+  String get syncStatusNeedsSignIn;
+
+  /// Sync status: the server refused changes from the future (phone clock ahead).
+  ///
+  /// In en, this message translates to:
+  /// **'Your phone\'s clock is ahead. Changes sync once the time is right.'**
+  String get syncStatusClockAhead;
+
+  /// Sync status: pulled changes are far ahead of the phone clock.
+  ///
+  /// In en, this message translates to:
+  /// **'Your phone\'s clock is behind. Check the date and time.'**
+  String get syncStatusClockBehind;
+
+  /// Sync status: another failure; automatic retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t sync. Trying again soon.'**
+  String get syncStatusError;
+
+  /// Sync sheet: changes the server refused; they stay on this phone.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 change couldn\'t sync} other{{count} changes couldn\'t sync}}'**
+  String syncStatusParked(int count);
+
+  /// Sync sheet: explanation under the couldn't-sync count.
+  ///
+  /// In en, this message translates to:
+  /// **'They stay on this phone. Try again after an app update.'**
+  String get syncParkedDetail;
+
+  /// Sync sheet: when the last sync finished; time is a day and clock time.
+  ///
+  /// In en, this message translates to:
+  /// **'Last sync: {time}'**
+  String syncLastSync(String time);
+
+  /// Sync sheet: no sync has finished on this phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Not synced yet'**
+  String get syncNeverSynced;
+
+  /// Sync sheet: button that syncs immediately.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync now'**
+  String get syncNow;
+
+  /// Sync sheet: retries changes that couldn't sync.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get syncTryAgain;
+
+  /// Today sync line: opens the sync sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get syncDetails;
+
+  /// Item details: opens the earlier versions of this item (online).
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier versions'**
+  String get syncEarlierVersions;
+
+  /// Earlier versions sheet: the server has none.
+  ///
+  /// In en, this message translates to:
+  /// **'No earlier versions of this item.'**
+  String get syncEarlierVersionsEmpty;
+
+  /// Earlier versions sheet: offline.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier versions need a connection.'**
+  String get syncEarlierVersionsOffline;
+
+  /// Earlier versions sheet: no session.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to see earlier versions.'**
+  String get syncEarlierVersionsSignedOut;
+
+  /// Earlier versions sheet: another failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load earlier versions.'**
+  String get syncEarlierVersionsFailed;
+
+  /// Earlier versions sheet: when a version was saved; time is a day and clock time.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {time}'**
+  String syncVersionSaved(String time);
+
+  /// Earlier versions sheet: a version that deleted the item.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted {time}'**
+  String syncVersionDeleted(String time);
+
+  /// Earlier versions sheet: restores this version (with Undo).
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get syncRestore;
+
+  /// Snackbar after restoring a version (with Undo).
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier version restored'**
+  String get syncRestored;
+
+  /// Earlier versions sheet: the restore was refused.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t restore that version: the item changed since.'**
+  String get syncRestoreRefused;
+
+  /// Me › Account: opens account deletion (signed in).
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get accountDeleteAccount;
+
+  /// Me › Account: a guest deletes the data on the phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete data on this phone'**
+  String get accountDeleteLocal;
+
+  /// Delete account screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccountTitle;
+
+  /// Delete screen title for a guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete data on this phone'**
+  String get deleteLocalTitle;
+
+  /// Delete account screen: what is deleted (AC-031).
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently deletes your account and everything in it: your diary, foods, weights, measurements, workouts, targets and Buddy chats, on our server and on this phone.'**
+  String get deleteAccountWhat;
+
+  /// Delete account screen: backups age out (08 §5).
+  ///
+  /// In en, this message translates to:
+  /// **'Our server backups are deleted within 30 days.'**
+  String get deleteAccountBackups;
+
+  /// Delete screen for a guest: what is removed.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes everything on this phone: your diary, foods, weights, measurements, workouts, targets and Buddy chats. You don\'t have an account, so nothing is stored anywhere else.'**
+  String get deleteLocalWhat;
+
+  /// Delete screen: suggests exporting first.
+  ///
+  /// In en, this message translates to:
+  /// **'Want a copy? Export your data first.'**
+  String get deleteExportFirst;
+
+  /// Delete screen: opens the export sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Export my data'**
+  String get deleteExport;
+
+  /// Delete screen: the destructive button (asks to confirm).
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteContinue;
+
+  /// Delete confirmation sheet for an account.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your account for good? This can\'t be undone.'**
+  String get deleteConfirmAccount;
+
+  /// Delete confirmation sheet for a guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove all data from this phone? This can\'t be undone.'**
+  String get deleteConfirmLocal;
+
+  /// Delete confirmation: confirms.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, delete'**
+  String get deleteConfirmYes;
+
+  /// Delete confirmation: cancels.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get deleteCancel;
+
+  /// Delete screen: deletion running.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting…'**
+  String get deleteInProgress;
+
+  /// Delete screen: no connection, nothing was deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting your account needs a connection. Try again when you\'re online.'**
+  String get deleteOffline;
+
+  /// Delete screen: the request may or may not have reached the server.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t confirm the deletion. Try again.'**
+  String get deleteUncertain;
+
+  /// Delete screen: a retry answered 401 after an unconfirmed attempt (B06: not proof of deletion).
+  ///
+  /// In en, this message translates to:
+  /// **'Your session ended, so we can\'t confirm the deletion. It has probably finished. You can remove the data on this phone now, or sign in again to check.'**
+  String get deleteSessionEnded;
+
+  /// Delete screen: wipes the device after an unconfirmed deletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove data from this phone'**
+  String get deleteRemoveLocal;
+
+  /// Delete screen: opens sign-in to check.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in again'**
+  String get deleteSignInAgain;
+
+  /// Delete screen: retries the deletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get deleteRetry;
+
+  /// Delete screen: wiping the phone failed (storage error).
+  ///
+  /// In en, this message translates to:
+  /// **'The data on this phone couldn\'t be removed. Try again.'**
+  String get deleteWipeFailed;
+
+  /// Delete screen: the session had already ended before the first attempt.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in again to delete your account.'**
+  String get deleteNeedsSignIn;
 
   /// Snackbar after turning on the automatic check-in, with Undo.
   ///

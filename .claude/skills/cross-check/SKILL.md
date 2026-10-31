@@ -22,6 +22,7 @@ Toolchains: dart and flutter at `~/development/flutter-3.47.7/bin`. Run .NET fro
 | `contracts/openapi/**` | Generated client and server conformance | `make gen`, `make check-contract`, the server's contract tests |
 | Sync payloads or entities (either side) | Wire-rule parity (fb_domain ↔ server corpus) and `tools/sync_sim` | the parity test files, plus the sim if the rules changed |
 | ARB strings or visible UI text | Patrol tests that find widgets by text, and goldens of affected screens | `grep -rn "<old text>" apps/mobile/patrol_test apps/mobile/test`; regenerate only the affected goldens, one at a time |
+| A presentation file that shows a food amount, a number with a unit, or a date | The app's presentation guard tests (food amounts only through `core/l10n/amount_text.dart`, D4) | `flutter test test/features/settings/presentation/unit_display_test.dart` |
 | Routes, tabs, app shell | Router test, app tabs test | `test/app/router/app_router_test.dart`, `test/app/app_tabs_test.dart` |
 | Shared core (`lib/core/**`, `fb_domain`, `fb_design_system`) | Direct users outside your feature | `grep -rln "<symbol>" apps packages --include=*.dart`, then run the 2–3 most direct test files |
 | Riverpod or drift annotations | Generated code is current | `make gen-app` produces no diff |

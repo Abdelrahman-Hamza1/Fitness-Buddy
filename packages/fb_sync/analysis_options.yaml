@@ -1,0 +1,8 @@
+include: ../../analysis_options.yaml
+
+analyzer:
+  errors:
+    # Value objects here are `final class`es with only final fields. Marking
+    # them `@immutable` needs package:meta as a runtime dependency, which the
+    # allowlist in test/dependencies_test.dart doesn't have.
+    avoid_equals_and_hash_code_on_mutable_classes: ignore

@@ -4511,15 +4511,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountContinueAsGuest => 'Continue as guest';
 
   @override
-  String get accountSyncPlaceholder => 'Sync status';
-
-  @override
-  String get accountDeletePlaceholder => 'Delete account';
-
-  @override
-  String get accountComingSoon => 'Coming soon';
-
-  @override
   String get signInEmailLabel => 'Email';
 
   @override
@@ -6032,6 +6023,211 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get aboutMlKitDisclosure =>
       'Barcode scanning uses Google ML Kit on this phone. ML Kit doesn\'t send camera images or the barcodes it reads to Google; Google may receive an installation ID, device and app information, and diagnostics (developers.google.com/ml-kit/android-data-disclosure). To find a product, the barcode is sent to the Fitness Buddy server.';
+
+  @override
+  String syncInstant(String day, String time) {
+    return '$day, $time';
+  }
+
+  @override
+  String syncVersionSummary(String name, String energy) {
+    return '$name · $energy';
+  }
+
+  @override
+  String get syncRowTitle => 'Sync';
+
+  @override
+  String get syncStatusSynced => 'All changes synced';
+
+  @override
+  String get syncStatusSyncing => 'Syncing…';
+
+  @override
+  String syncStatusRestoring(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Restoring your data… $count items',
+      one: 'Restoring your data… 1 item',
+      zero: 'Restoring your data…',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String syncStatusPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count changes waiting to sync',
+      one: '1 change waiting to sync',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncStatusOffline =>
+      'Offline. Changes sync when you\'re back online.';
+
+  @override
+  String get syncStatusNeedsSignIn => 'Sign in again to sync your changes.';
+
+  @override
+  String get syncStatusClockAhead =>
+      'Your phone\'s clock is ahead. Changes sync once the time is right.';
+
+  @override
+  String get syncStatusClockBehind =>
+      'Your phone\'s clock is behind. Check the date and time.';
+
+  @override
+  String get syncStatusError => 'Couldn\'t sync. Trying again soon.';
+
+  @override
+  String syncStatusParked(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count changes couldn\'t sync',
+      one: '1 change couldn\'t sync',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncParkedDetail =>
+      'They stay on this phone. Try again after an app update.';
+
+  @override
+  String syncLastSync(String time) {
+    return 'Last sync: $time';
+  }
+
+  @override
+  String get syncNeverSynced => 'Not synced yet';
+
+  @override
+  String get syncNow => 'Sync now';
+
+  @override
+  String get syncTryAgain => 'Try again';
+
+  @override
+  String get syncDetails => 'Details';
+
+  @override
+  String get syncEarlierVersions => 'Earlier versions';
+
+  @override
+  String get syncEarlierVersionsEmpty => 'No earlier versions of this item.';
+
+  @override
+  String get syncEarlierVersionsOffline =>
+      'Earlier versions need a connection.';
+
+  @override
+  String get syncEarlierVersionsSignedOut => 'Sign in to see earlier versions.';
+
+  @override
+  String get syncEarlierVersionsFailed => 'Couldn\'t load earlier versions.';
+
+  @override
+  String syncVersionSaved(String time) {
+    return 'Saved $time';
+  }
+
+  @override
+  String syncVersionDeleted(String time) {
+    return 'Deleted $time';
+  }
+
+  @override
+  String get syncRestore => 'Restore';
+
+  @override
+  String get syncRestored => 'Earlier version restored';
+
+  @override
+  String get syncRestoreRefused =>
+      'Couldn\'t restore that version: the item changed since.';
+
+  @override
+  String get accountDeleteAccount => 'Delete account';
+
+  @override
+  String get accountDeleteLocal => 'Delete data on this phone';
+
+  @override
+  String get deleteAccountTitle => 'Delete account';
+
+  @override
+  String get deleteLocalTitle => 'Delete data on this phone';
+
+  @override
+  String get deleteAccountWhat =>
+      'This permanently deletes your account and everything in it: your diary, foods, weights, measurements, workouts, targets and Buddy chats, on our server and on this phone.';
+
+  @override
+  String get deleteAccountBackups =>
+      'Our server backups are deleted within 30 days.';
+
+  @override
+  String get deleteLocalWhat =>
+      'This removes everything on this phone: your diary, foods, weights, measurements, workouts, targets and Buddy chats. You don\'t have an account, so nothing is stored anywhere else.';
+
+  @override
+  String get deleteExportFirst => 'Want a copy? Export your data first.';
+
+  @override
+  String get deleteExport => 'Export my data';
+
+  @override
+  String get deleteContinue => 'Delete';
+
+  @override
+  String get deleteConfirmAccount =>
+      'Delete your account for good? This can\'t be undone.';
+
+  @override
+  String get deleteConfirmLocal =>
+      'Remove all data from this phone? This can\'t be undone.';
+
+  @override
+  String get deleteConfirmYes => 'Yes, delete';
+
+  @override
+  String get deleteCancel => 'Cancel';
+
+  @override
+  String get deleteInProgress => 'Deleting…';
+
+  @override
+  String get deleteOffline =>
+      'Deleting your account needs a connection. Try again when you\'re online.';
+
+  @override
+  String get deleteUncertain => 'We couldn\'t confirm the deletion. Try again.';
+
+  @override
+  String get deleteSessionEnded =>
+      'Your session ended, so we can\'t confirm the deletion. It has probably finished. You can remove the data on this phone now, or sign in again to check.';
+
+  @override
+  String get deleteRemoveLocal => 'Remove data from this phone';
+
+  @override
+  String get deleteSignInAgain => 'Sign in again';
+
+  @override
+  String get deleteRetry => 'Try again';
+
+  @override
+  String get deleteWipeFailed =>
+      'The data on this phone couldn\'t be removed. Try again.';
+
+  @override
+  String get deleteNeedsSignIn => 'Sign in again to delete your account.';
 
   @override
   String get adaptiveAutomaticOn => 'Weekly changes apply automatically';

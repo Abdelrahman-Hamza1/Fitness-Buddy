@@ -9,6 +9,7 @@ import 'package:fb_mobile/core/errors/error_reporting.dart';
 import 'package:fb_mobile/core/export/export_providers.dart';
 import 'package:fb_mobile/core/session/session_providers.dart';
 import 'package:fb_mobile/core/session/session_state.dart';
+import 'package:fb_mobile/core/sync/sync_providers.dart';
 import 'package:fb_mobile/features/adaptive/adaptive.dart';
 import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
@@ -20,7 +21,8 @@ part 'app_bootstrap.g.dart';
 /// The work deferred until the first frame is on screen (UX-001, S06 plan
 /// D9, D12, A1): independent error reporting, catalog pack install (A05 D9)
 /// then the background pack update (A24),
-/// public `/v1/config` refresh, API session startup (A20 D9) and, once the
+/// public `/v1/config` refresh, API session startup (A20 D9), sync
+/// scheduling (A34 D10) and, once the
 /// catalog is attached and any account transition recovered, Buddy's
 /// pending cards read back (A23 D12) and this week's adaptive check-in
 /// (A38 D4, local only).
@@ -121,6 +123,11 @@ final class AppBootstrap {
         // suspended while a journal remains.
         await recovered;
         await _contained(() => _ref.read(sessionLifecycleProvider).start());
+        // A34 D10: sync scheduling starts here; its first run waits a few
+        // more seconds, so it never competes with the first frames.
+        await _contained(
+          () => _ref.read(syncControllerProvider.notifier).start(),
+        );
       }),
     );
     // A23 D12: pending Buddy cards come back after the first frame, against

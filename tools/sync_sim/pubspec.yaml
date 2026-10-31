@@ -1,5 +1,5 @@
 name: sync_sim
-description: B01 reusable synthetic-data sync engine and convergence harness.
+description: Real-API sync harness running the fb_sync production engine (B01, A34).
 publish_to: none
 resolution: workspace
 environment:
@@ -10,6 +10,8 @@ dependencies:
     path: ../../packages/fb_api_client
   fb_domain:
     path: ../../packages/fb_domain
+  fb_sync:
+    path: ../../packages/fb_sync
 dev_dependencies:
   test: 1.31.1
   yaml: ^3.1.3

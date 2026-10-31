@@ -396,7 +396,8 @@ jobs:
     needs: changes
     if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    # A34 D20: 1,000 real-API sync runs (~7 min) on nightly and manual runs.
+    timeout-minutes: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 30 || 15 }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -418,10 +419,12 @@ jobs:
           cache: true
           pub-cache-key: 'flutter-pub-:os:-:version:-:arch:'
 
-      - name: Real sync convergence, faults and throughput (B01)
+      - name: Real sync convergence, faults and throughput (B01, A34 production engine)
         env:
           SYNC_SPIKE_IMAGE: fitness-buddy-api:smoke
           SYNC_SPIKE_SKIP_BUILD: '1'
+          # A34 D20: 50 randomized real-API runs per build, 1,000 nightly/manual.
+          SYNC_SIM_RUNS: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && '1000' || '50' }}
         run: make deps-dart sync-spike FLUTTER=flutter DART=dart
 
   # Docker-only contract checks (S02 D13). Redocly, Spectral and oasdiff run as

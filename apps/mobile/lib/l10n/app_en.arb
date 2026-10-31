@@ -5703,18 +5703,6 @@
   "@accountContinueAsGuest": {
     "description": "Me › Account: leave the read-only copy and use a guest profile."
   },
-  "accountSyncPlaceholder": "Sync status",
-  "@accountSyncPlaceholder": {
-    "description": "Me › Account: placeholder row until A34."
-  },
-  "accountDeletePlaceholder": "Delete account",
-  "@accountDeletePlaceholder": {
-    "description": "Me › Account: placeholder row until A35."
-  },
-  "accountComingSoon": "Coming soon",
-  "@accountComingSoon": {
-    "description": "Subtitle for placeholder rows."
-  },
   "signInEmailLabel": "Email",
   "@signInEmailLabel": {
     "description": "Sign-in screen: email field label."
@@ -6585,6 +6573,260 @@
   "aboutMlKitDisclosure": "Barcode scanning uses Google ML Kit on this phone. ML Kit doesn't send camera images or the barcodes it reads to Google; Google may receive an installation ID, device and app information, and diagnostics (developers.google.com/ml-kit/android-data-disclosure). To find a product, the barcode is sent to the Fitness Buddy server.",
   "@aboutMlKitDisclosure": {
     "description": "About: what Google's ML Kit (barcode scanner) may send. Keep it factual; the link text is Google's disclosure page."
+  },
+  "syncInstant": "{day}, {time}",
+  "@syncInstant": {
+    "description": "A day label and a clock time, like 'today, 10:42'.",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "syncVersionSummary": "{name} · {energy}",
+  "@syncVersionSummary": {
+    "description": "Earlier versions sheet: a diary entry version's food name and energy (like '250 kcal').",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "energy": {
+        "type": "String"
+      }
+    }
+  },
+  "syncRowTitle": "Sync",
+  "@syncRowTitle": {
+    "description": "Me › Account: the sync status row title."
+  },
+  "syncStatusSynced": "All changes synced",
+  "@syncStatusSynced": {
+    "description": "Sync status: nothing waiting."
+  },
+  "syncStatusSyncing": "Syncing…",
+  "@syncStatusSyncing": {
+    "description": "Sync status: a sync is running."
+  },
+  "syncStatusRestoring": "{count, plural, =0{Restoring your data…} =1{Restoring your data… 1 item} other{Restoring your data… {count} items}}",
+  "@syncStatusRestoring": {
+    "description": "Sync status: the first sync on a new phone is restoring data (AC-011); count is items restored so far.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncStatusPending": "{count, plural, =1{1 change waiting to sync} other{{count} changes waiting to sync}}",
+  "@syncStatusPending": {
+    "description": "Sync status: changes not on the server yet.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncStatusOffline": "Offline. Changes sync when you're back online.",
+  "@syncStatusOffline": {
+    "description": "Sync status: no connection; nothing is lost."
+  },
+  "syncStatusNeedsSignIn": "Sign in again to sync your changes.",
+  "@syncStatusNeedsSignIn": {
+    "description": "Sync status: the session ended."
+  },
+  "syncStatusClockAhead": "Your phone's clock is ahead. Changes sync once the time is right.",
+  "@syncStatusClockAhead": {
+    "description": "Sync status: the server refused changes from the future (phone clock ahead)."
+  },
+  "syncStatusClockBehind": "Your phone's clock is behind. Check the date and time.",
+  "@syncStatusClockBehind": {
+    "description": "Sync status: pulled changes are far ahead of the phone clock."
+  },
+  "syncStatusError": "Couldn't sync. Trying again soon.",
+  "@syncStatusError": {
+    "description": "Sync status: another failure; automatic retry."
+  },
+  "syncStatusParked": "{count, plural, =1{1 change couldn't sync} other{{count} changes couldn't sync}}",
+  "@syncStatusParked": {
+    "description": "Sync sheet: changes the server refused; they stay on this phone.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncParkedDetail": "They stay on this phone. Try again after an app update.",
+  "@syncParkedDetail": {
+    "description": "Sync sheet: explanation under the couldn't-sync count."
+  },
+  "syncLastSync": "Last sync: {time}",
+  "@syncLastSync": {
+    "description": "Sync sheet: when the last sync finished; time is a day and clock time.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "syncNeverSynced": "Not synced yet",
+  "@syncNeverSynced": {
+    "description": "Sync sheet: no sync has finished on this phone."
+  },
+  "syncNow": "Sync now",
+  "@syncNow": {
+    "description": "Sync sheet: button that syncs immediately."
+  },
+  "syncTryAgain": "Try again",
+  "@syncTryAgain": {
+    "description": "Sync sheet: retries changes that couldn't sync."
+  },
+  "syncDetails": "Details",
+  "@syncDetails": {
+    "description": "Today sync line: opens the sync sheet."
+  },
+  "syncEarlierVersions": "Earlier versions",
+  "@syncEarlierVersions": {
+    "description": "Item details: opens the earlier versions of this item (online)."
+  },
+  "syncEarlierVersionsEmpty": "No earlier versions of this item.",
+  "@syncEarlierVersionsEmpty": {
+    "description": "Earlier versions sheet: the server has none."
+  },
+  "syncEarlierVersionsOffline": "Earlier versions need a connection.",
+  "@syncEarlierVersionsOffline": {
+    "description": "Earlier versions sheet: offline."
+  },
+  "syncEarlierVersionsSignedOut": "Sign in to see earlier versions.",
+  "@syncEarlierVersionsSignedOut": {
+    "description": "Earlier versions sheet: no session."
+  },
+  "syncEarlierVersionsFailed": "Couldn't load earlier versions.",
+  "@syncEarlierVersionsFailed": {
+    "description": "Earlier versions sheet: another failure."
+  },
+  "syncVersionSaved": "Saved {time}",
+  "@syncVersionSaved": {
+    "description": "Earlier versions sheet: when a version was saved; time is a day and clock time.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "syncVersionDeleted": "Deleted {time}",
+  "@syncVersionDeleted": {
+    "description": "Earlier versions sheet: a version that deleted the item.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "syncRestore": "Restore",
+  "@syncRestore": {
+    "description": "Earlier versions sheet: restores this version (with Undo)."
+  },
+  "syncRestored": "Earlier version restored",
+  "@syncRestored": {
+    "description": "Snackbar after restoring a version (with Undo)."
+  },
+  "syncRestoreRefused": "Couldn't restore that version: the item changed since.",
+  "@syncRestoreRefused": {
+    "description": "Earlier versions sheet: the restore was refused."
+  },
+  "accountDeleteAccount": "Delete account",
+  "@accountDeleteAccount": {
+    "description": "Me › Account: opens account deletion (signed in)."
+  },
+  "accountDeleteLocal": "Delete data on this phone",
+  "@accountDeleteLocal": {
+    "description": "Me › Account: a guest deletes the data on the phone."
+  },
+  "deleteAccountTitle": "Delete account",
+  "@deleteAccountTitle": {
+    "description": "Delete account screen title."
+  },
+  "deleteLocalTitle": "Delete data on this phone",
+  "@deleteLocalTitle": {
+    "description": "Delete screen title for a guest."
+  },
+  "deleteAccountWhat": "This permanently deletes your account and everything in it: your diary, foods, weights, measurements, workouts, targets and Buddy chats, on our server and on this phone.",
+  "@deleteAccountWhat": {
+    "description": "Delete account screen: what is deleted (AC-031)."
+  },
+  "deleteAccountBackups": "Our server backups are deleted within 30 days.",
+  "@deleteAccountBackups": {
+    "description": "Delete account screen: backups age out (08 §5)."
+  },
+  "deleteLocalWhat": "This removes everything on this phone: your diary, foods, weights, measurements, workouts, targets and Buddy chats. You don't have an account, so nothing is stored anywhere else.",
+  "@deleteLocalWhat": {
+    "description": "Delete screen for a guest: what is removed."
+  },
+  "deleteExportFirst": "Want a copy? Export your data first.",
+  "@deleteExportFirst": {
+    "description": "Delete screen: suggests exporting first."
+  },
+  "deleteExport": "Export my data",
+  "@deleteExport": {
+    "description": "Delete screen: opens the export sheet."
+  },
+  "deleteContinue": "Delete",
+  "@deleteContinue": {
+    "description": "Delete screen: the destructive button (asks to confirm)."
+  },
+  "deleteConfirmAccount": "Delete your account for good? This can't be undone.",
+  "@deleteConfirmAccount": {
+    "description": "Delete confirmation sheet for an account."
+  },
+  "deleteConfirmLocal": "Remove all data from this phone? This can't be undone.",
+  "@deleteConfirmLocal": {
+    "description": "Delete confirmation sheet for a guest."
+  },
+  "deleteConfirmYes": "Yes, delete",
+  "@deleteConfirmYes": {
+    "description": "Delete confirmation: confirms."
+  },
+  "deleteCancel": "Cancel",
+  "@deleteCancel": {
+    "description": "Delete confirmation: cancels."
+  },
+  "deleteInProgress": "Deleting…",
+  "@deleteInProgress": {
+    "description": "Delete screen: deletion running."
+  },
+  "deleteOffline": "Deleting your account needs a connection. Try again when you're online.",
+  "@deleteOffline": {
+    "description": "Delete screen: no connection, nothing was deleted."
+  },
+  "deleteUncertain": "We couldn't confirm the deletion. Try again.",
+  "@deleteUncertain": {
+    "description": "Delete screen: the request may or may not have reached the server."
+  },
+  "deleteSessionEnded": "Your session ended, so we can't confirm the deletion. It has probably finished. You can remove the data on this phone now, or sign in again to check.",
+  "@deleteSessionEnded": {
+    "description": "Delete screen: a retry answered 401 after an unconfirmed attempt (B06: not proof of deletion)."
+  },
+  "deleteRemoveLocal": "Remove data from this phone",
+  "@deleteRemoveLocal": {
+    "description": "Delete screen: wipes the device after an unconfirmed deletion."
+  },
+  "deleteSignInAgain": "Sign in again",
+  "@deleteSignInAgain": {
+    "description": "Delete screen: opens sign-in to check."
+  },
+  "deleteRetry": "Try again",
+  "@deleteRetry": {
+    "description": "Delete screen: retries the deletion."
+  },
+  "deleteWipeFailed": "The data on this phone couldn't be removed. Try again.",
+  "@deleteWipeFailed": {
+    "description": "Delete screen: wiping the phone failed (storage error)."
+  },
+  "deleteNeedsSignIn": "Sign in again to delete your account.",
+  "@deleteNeedsSignIn": {
+    "description": "Delete screen: the session had already ended before the first attempt."
   },
   "adaptiveAutomaticOn": "Weekly changes apply automatically",
   "@adaptiveAutomaticOn": {"description": "Snackbar after turning on the automatic check-in, with Undo."},

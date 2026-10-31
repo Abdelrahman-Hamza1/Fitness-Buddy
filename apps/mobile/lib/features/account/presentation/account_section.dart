@@ -5,11 +5,12 @@ import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/account/application/sign_in_controller.dart';
 import 'package:fb_mobile/features/account/presentation/sign_out_sheet.dart';
+import 'package:fb_mobile/features/sync/sync.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Me › Account (A33): the account state, sign in/out, and placeholders for
-/// sync status (A34) and delete (A35). Export is in "Your data" (A11).
+/// Me › Account (A33): the account state, sign in/out, the sync line (A34)
+/// and account deletion (A35). Export is in "Your data" (A11).
 class AccountSection extends ConsumerWidget {
   /// Creates the section.
   const new({super.key});
@@ -56,16 +57,27 @@ class AccountSection extends ConsumerWidget {
               if (choice != null) await actions.signOut(choice);
             },
           ),
-        if (status != AccountStatus.guest) ...[
+        // A34: the sync line for an account; A35: account deletion (a guest
+        // deletes the data on this phone).
+        if (status == AccountStatus.signedIn ||
+            status == AccountStatus.sessionExpired)
+          const SyncAccountRow(),
+        if (status == AccountStatus.signedIn)
           FbListRow(
-            title: l10n.accountSyncPlaceholder,
-            subtitle: l10n.accountComingSoon,
+            key: const ValueKey('account-delete-row'),
+            title: l10n.accountDeleteAccount,
+            trailing: const Icon(FbIcons.next),
+            onTap: () =>
+                ref.read(appNavigatorProvider).push(const DeleteAccountRoute()),
           ),
+        if (status == AccountStatus.guest)
           FbListRow(
-            title: l10n.accountDeletePlaceholder,
-            subtitle: l10n.accountComingSoon,
+            key: const ValueKey('account-delete-row'),
+            title: l10n.accountDeleteLocal,
+            trailing: const Icon(FbIcons.next),
+            onTap: () =>
+                ref.read(appNavigatorProvider).push(const DeleteAccountRoute()),
           ),
-        ],
       ],
     );
   }

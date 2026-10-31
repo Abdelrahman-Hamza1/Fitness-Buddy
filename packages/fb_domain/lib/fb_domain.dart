@@ -131,6 +131,7 @@ export 'src/quick_add/food_key.dart';
 export 'src/quick_add/quick_add_ranker.dart';
 export 'src/quick_add/saved_meal_matcher.dart';
 export 'src/settings/settings_ops.dart';
+export 'src/sync/document_upgraders.dart';
 export 'src/targets/adaptive_check_in.dart';
 export 'src/targets/adaptive_expenditure.dart';
 export 'src/targets/goals.dart';

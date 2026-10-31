@@ -45,3 +45,26 @@ final class ChangeSetApplied extends DomainEvent {
   @override
   String toString() => 'ChangeSetApplied($changeSetId, $origin, $entities)';
 }
+
+/// Sync applied rows pulled from the account (A34 D17): emitted by the app's
+/// sync engine after a pull page commits. Not a [ChangeSetApplied]: nothing
+/// local was confirmed, so it never schedules a push and has no undo.
+final class RemoteChangesApplied extends DomainEvent {
+  /// Rows of [entities] (wire names) were written from the server.
+  new(Iterable<String> entities) : entities = Set.unmodifiable(entities);
+
+  /// The entity wire names of the rows written. Unmodifiable.
+  final Set<String> entities;
+
+  @override
+  bool operator ==(Object other) =>
+      other is RemoteChangesApplied &&
+      other.entities.length == entities.length &&
+      other.entities.containsAll(entities);
+
+  @override
+  int get hashCode => Object.hashAllUnordered(entities);
+
+  @override
+  String toString() => 'RemoteChangesApplied($entities)';
+}

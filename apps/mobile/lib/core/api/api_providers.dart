@@ -3,6 +3,7 @@ import 'package:fb_api_client/fb_api_client.dart';
 import 'package:fb_mobile/core/api/auth_interceptor.dart';
 import 'package:fb_mobile/core/api/client_headers_interceptor.dart';
 import 'package:fb_mobile/core/api/dio_factory.dart';
+import 'package:fb_mobile/core/api/request_guard.dart';
 import 'package:fb_mobile/core/api/session_reachability_interceptor.dart';
 import 'package:fb_mobile/core/api/upgrade_required_interceptor.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
@@ -51,6 +52,9 @@ Dio dio(Ref ref) {
       session: () => ref.read(sessionServiceProvider),
     ),
   );
+  // A34 D12, A35: after the bearer is attached, refuse a guarded request
+  // (sync run, account deletion) whose profile is no longer current.
+  dio.interceptors.add(const RequestGuardInterceptor());
   dio.interceptors.add(
     SessionReachabilityInterceptor(
       apiBaseUrl: baseUrl,

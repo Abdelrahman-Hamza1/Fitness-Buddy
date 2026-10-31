@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/config/package_info.dart';
 import 'package:fb_mobile/core/errors/pii_scrubber.dart';
+import 'package:fb_mobile/core/errors/sync_issue_codes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -71,6 +72,32 @@ final class ErrorReporting {
       ),
     );
   }
+
+  /// Reports a sync data issue (A34 D5, D7, D18) as fixed codes only:
+  /// [issue] (`parked`, `deferred`), the entity wire name and the reason
+  /// code, each from [SyncIssueCodes] (else nothing is sent). The scrubber
+  /// keeps exactly that value (no ids, HLCs or content ever reach it).
+  void reportSyncIssue({
+    required String issue,
+    required String entity,
+    required String reason,
+  }) {
+    if (config.sentryDsn.isEmpty) return;
+    final value = SyncIssueCodes.value(issue, entity, reason);
+    if (value == null) return;
+    unawaited(Sentry.captureEvent(syncIssueEvent(value)));
+  }
+
+  /// The event of an allowlisted sync issue [value].
+  static SentryEvent syncIssueEvent(String value) => SentryEvent(
+    exceptions: [
+      SentryException(
+        type: SyncIssueCodes.type,
+        value: value,
+        mechanism: Mechanism(type: 'absorbed', handled: true),
+      ),
+    ],
+  );
 
   /// Sends synthetic handled and framework-unhandled errors (A11 D17).
   /// The second path runs on a later event-loop turn, through the installed

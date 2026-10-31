@@ -131,6 +131,27 @@ final class ChangeSetApplier<D extends WriteGuarded> {
     }),
   );
 
+  /// Runs [body] (sync's remote apply, A34 D9) in the same serial queue as
+  /// [apply] and [revert], behind the same write gate, then forgets the
+  /// in-memory HLC so the next change set continues from the
+  /// `sync_state['hlc.last']` the remote apply advanced: every later local
+  /// write is after every pulled version. Throws [RemoteApplyDenied] when
+  /// the gate denies writes (a transition, a read-only copy).
+  Future<T> runExclusive<T>(Future<T> Function() body) => _serial(() async {
+    if (_gate case final gate?) {
+      final profile = await _profileKey?.call();
+      if (await gate.denial(profile, generation: _generation)
+          case final reason?) {
+        throw RemoteApplyDenied(reason);
+      }
+    }
+    try {
+      return await body();
+    } finally {
+      _hlc = null;
+    }
+  });
+
   /// Completes when every apply/revert queued so far has finished (A33 §6:
   /// a transition suspends writes, then waits for this before switching).
   Future<void> idle() => _tail;
@@ -227,4 +248,17 @@ final class ChangeSetApplier<D extends WriteGuarded> {
       last: last,
     );
   }
+}
+
+/// The write gate refused a remote apply (A34 D9): an account transition is
+/// running or the profile is read-only. [reason] is the gate's fixed code.
+final class RemoteApplyDenied implements Exception {
+  /// Denied for [reason].
+  const new(this.reason);
+
+  /// The gate's fixed code.
+  final String reason;
+
+  @override
+  String toString() => 'RemoteApplyDenied($reason)';
 }

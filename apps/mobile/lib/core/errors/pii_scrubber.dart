@@ -1,3 +1,4 @@
+import 'package:fb_mobile/core/errors/sync_issue_codes.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 /// Removes anything that could carry user content or identify the user from
@@ -64,7 +65,13 @@ abstract final class PiiScrubber {
       event.message = SentryMessage(scrubbed);
     }
     for (final exception in event.exceptions ?? const <SentryException>[]) {
-      if (exception.value != null) exception.value = scrubbed;
+      final value = exception.value;
+      // A34 fix 8: only an allowlisted sync issue keeps its value.
+      final keep =
+          exception.type == SyncIssueCodes.type &&
+          value != null &&
+          SyncIssueCodes.allowed(value);
+      if (value != null && !keep) exception.value = scrubbed;
       final mechanism = exception.mechanism;
       if (mechanism != null) {
         mechanism

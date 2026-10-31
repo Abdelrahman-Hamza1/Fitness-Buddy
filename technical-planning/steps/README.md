@@ -186,8 +186,8 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A31](A31-qa-suggestions-halal.md) | Q&A, suggestions & halal (app) | Claude | A26, **B11** (contract) | M | S40 app part |  | ⬜ phase 2 |
 | [A32](dish-batches.md) | Dish batch 6: gap fill from dogfooding | Claude | A30 | S | D6 |  | ⏸ gap fill once dogfooding shows the misses (TD-105) |
 | [A33](A33-sign-in-guest-app.md) | Sign-in & guest upgrade | Claude | A20, **B04** | M | S25 |  | ✅ |
-| [A34](A34-sync-engine-app.md) | Sync engine (app) | Claude | A33, **B05**, **B17**, **B18**, **B19**, **B20**, **B21** | L | S27 |  | ⬜ wave 4 |
-| [A35](A35-account-deletion-app.md) | Account deletion (app) | Claude | A34, **B06** | S | S28 deletion part | **M5** | ⬜ wave 4 |
+| [A34](A34-sync-engine-app.md) | Sync engine (app) | Claude | A33, **B05**, **B17**, **B18**, **B19**, **B20**, **B21** | L | S27 |  | ✅ closed, awaiting review/merge (built with A35 as one step, owner 2026-10-30) |
+| [A35](A35-account-deletion-app.md) | Account deletion (app) | Claude | A34, **B06** | S | S28 deletion part | **M5** | ✅ closed, awaiting review/merge (built with A34 as one step) |
 | [A36](A36-workout-domain.md) | Workout domain, library & templates | Claude | A05b, A06, A12 | M | S41 |  | ✅ |
 | [A37a](A37-workout-logging.md) | Workouts without AI: log & history (no plan needed, last-time numbers, autosave, Repeat, PRs, Today row; split from A37, 2026-10-30) | Claude | A36, A15a | L | S42 app part |  | ✅ |
 | [A37c](A37-workout-logging.md) | Workouts without AI: plans, muscle map & progress (starter plans, templates, exercise page; split from A37) | Claude | A37a · soft: A16 (Progress entry) | M–L | S42 app part |  | ✅ |

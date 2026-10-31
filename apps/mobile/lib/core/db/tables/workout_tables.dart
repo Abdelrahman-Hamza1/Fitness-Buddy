@@ -176,7 +176,8 @@ class WeeklyPlanDays extends Table with SyncColumns {
   TextColumn get templateId => text().nullable()();
 }
 
-/// Sync entity names (A36 D6: not in the sync contract yet).
+/// Sync entity names (A36 D6; schema v1 in the sync contract since B21,
+/// TD-109).
 const customExerciseEntity = 'customExercise';
 
 /// See [customExerciseEntity].

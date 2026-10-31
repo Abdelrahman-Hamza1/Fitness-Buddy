@@ -2,6 +2,7 @@ import 'package:alchemist/alchemist.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/account/application/sign_in_controller.dart';
+import 'package:fb_mobile/features/sync/sync.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -64,6 +65,20 @@ Future<void> _golden(
   ),
 );
 
+/// Everything synced, last sync a minute ago.
+const _synced = SyncView(
+  enabled: true,
+  running: false,
+  restoring: false,
+  restoredRows: 0,
+  problem: SyncProblem.none,
+  pending: 0,
+  parked: 0,
+  lastSuccessMs: 1760351174567,
+  oldestPendingMs: null,
+  nowMs: 1760351234567,
+);
+
 Future<void> main() async {
   for (final status in [AccountStatus.guest, AccountStatus.signedIn]) {
     await _golden(
@@ -71,7 +86,11 @@ Future<void> main() async {
       'account_section_${status.name}',
       () =>
           const Scaffold(body: SingleChildScrollView(child: AccountSection())),
-      overrides: [accountStatusProvider.overrideWith((ref) async => status)],
+      overrides: [
+        accountStatusProvider.overrideWith((ref) async => status),
+        // A34: the sync line shows a settled state.
+        syncViewProvider.overrideWithValue(_synced),
+      ],
       height: 700,
     );
   }

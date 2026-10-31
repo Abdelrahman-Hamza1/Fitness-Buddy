@@ -2,8 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:fb_api_client/fb_api_client.dart';
+import 'package:fb_sync/testing.dart';
 import 'package:sync_sim/sync_sim.dart';
 
+/// The real-API run (B01, A34 D20): the production engine (`fb_sync`) with
+/// in-memory stores against the API container. `SYNC_SIM_RUNS` randomized
+/// runs (50 per CI build, 1,000 on nightly and manual runs).
 Future<void> main(List<String> args) async {
   if (args.length != 1) {
     throw ArgumentError(
@@ -14,8 +18,9 @@ Future<void> main(List<String> args) async {
   if (base.scheme != 'http' || base.host != '127.0.0.1') {
     throw ArgumentError('synthetic harness only permits loopback');
   }
+  final runs = int.tryParse(Platform.environment['SYNC_SIM_RUNS'] ?? '') ?? 50;
   final key = Platform.environment['SYNC_ACCESS_TOKEN']!;
-  final transport = ApiSyncTransport(
+  final transport = HarnessTransport(
     baseUrl: base.toString(),
     accessToken: key,
     deviceId: syntheticId(1),
@@ -31,9 +36,16 @@ Future<void> main(List<String> args) async {
       hlc: '${now.millisecondsSinceEpoch}-00000-${syntheticId(1)}',
       deviceId: syntheticId(1),
       deletedAt: null,
-      payload: syntheticPayload({'value': 'partial-body'}, now),
+      payload: syntheticWeighIn({'value': 'partial-body'}, now),
     );
-    final body = utf8.encode(jsonEncode(SyncPushRequest(changes: [row])));
+    final dataset = (await transport.pull(
+      cursor: '0',
+      limit: 1,
+      datasetId: null,
+    )).datasetId;
+    final body = utf8.encode(
+      jsonEncode(SyncPushRequest(changes: [row], datasetId: dataset)),
+    );
     final socket = await Socket.connect(base.host, base.port);
     socket
       ..write(
@@ -47,25 +59,65 @@ Future<void> main(List<String> args) async {
     await socket.flush();
     socket.destroy();
     require(
-      (await transport.pull('0', 500)).changes.isEmpty,
+      (await transport.pull(
+        cursor: '0',
+        limit: 500,
+        datasetId: dataset,
+      )).changes.isEmpty,
       'partial-body push committed',
     );
-    transport.datasetId = (await transport.pull('0', 1)).datasetId;
-    await transport.push([row]);
-    await transport.push([row]);
+    await transport.push([row], datasetId: dataset);
+    await transport.push([row], datasetId: dataset);
     require(
-      (await transport.pull('0', 500)).changes.length == 1,
+      (await transport.pull(
+            cursor: '0',
+            limit: 500,
+            datasetId: dataset,
+          )).changes.length ==
+          1,
       'partial-body retry duplicated data',
     );
-    await runFaults(transport, now);
+    var position = await serverPosition(transport, now);
+    await runFaults(
+      transport,
+      now,
+      faulty: FaultyTransport(transport),
+      startCursor: position.cursor,
+      datasetId: position.datasetId,
+    );
     stdout.writeln(
       'real API: partial-body drop, lost acknowledgement, duplicate, '
-      'crash and concurrent-edit faults passed',
+      'crash and concurrent-edit faults passed (production engine)',
     );
-    for (var seed = 0; seed < 50; seed++) {
-      await runScenario(transport, seed, now);
+    for (final (i, first) in [true, false].indexed) {
+      position = await serverPosition(transport, now);
+      await runOf03(
+        transport,
+        now,
+        9100000 + i,
+        firstSyncsFirst: first,
+        startCursor: position.cursor,
+        datasetId: position.datasetId,
+      );
+    }
+    stdout.writeln('real API: OF-03 passed in both sync orders');
+    position = await serverPosition(transport, now);
+    var cursor = position.cursor;
+    final timer = Stopwatch()..start();
+    for (var seed = 0; seed < runs; seed++) {
+      cursor = await runScenario(
+        transport,
+        seed,
+        now,
+        startCursor: cursor,
+        datasetId: position.datasetId,
+        history: () => transport.allHistory(position.datasetId),
+      );
       if ((seed + 1) % 10 == 0) {
-        stdout.writeln('real API: ${seed + 1}/50 randomized runs passed');
+        stdout.writeln(
+          'real API: ${seed + 1}/$runs randomized runs passed '
+          '(${timer.elapsed.inSeconds} s)',
+        );
       }
     }
     final timing = await benchmark(transport, now);

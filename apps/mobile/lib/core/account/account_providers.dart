@@ -107,6 +107,7 @@ AccountService accountService(Ref ref) => AccountService(
   registry: ref.watch(profileRegistryProvider),
   google: ref.watch(googleIdTokenSourceProvider),
   revoke: ref.watch(abandonedSessionRevokerProvider),
+  account: ref.watch(fbApiProvider).account,
 );
 
 final class _SessionAdapter implements AccountSession {

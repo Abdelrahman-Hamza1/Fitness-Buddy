@@ -5,6 +5,7 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
+import 'package:fb_mobile/features/sync/sync.dart';
 import 'package:fb_mobile/features/today/presentation/today_numbers.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -141,6 +142,7 @@ class _DayHeader extends StatelessWidget {
       WeightCard(date: date, isToday: isToday),
       WorkoutTodayRow(date: date),
       if (isToday) const AccountTodayBanner(),
+      if (isToday) const SyncTodayLine(),
     ],
   );
 }

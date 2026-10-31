@@ -8,6 +8,8 @@ import 'package:fb_mobile/core/account/account_transitions.dart';
 import 'package:fb_mobile/core/account/google_id_token_source.dart';
 import 'package:fb_mobile/core/account/profile_registry.dart';
 import 'package:fb_mobile/core/api/problem_types.dart';
+import 'package:fb_mobile/core/api/request_guard.dart';
+import 'package:fb_mobile/core/session/session_service.dart';
 
 /// Fixed account failures: no email, code, token or server text (A33 D10).
 enum AccountFailureKind {
@@ -326,9 +328,13 @@ final class AccountService {
     required this._registry,
     required this._google,
     required this._revoke,
+    this._account,
   });
 
   final IdentityClient _identity;
+
+  /// `DELETE /v1/me` (A35); `null` in tests that don't delete.
+  final AccountClient? _account;
   final AccountTransitions _transitions;
   final ProfileRegistry _registry;
   final GoogleIdTokenSource _google;
@@ -370,6 +376,115 @@ final class AccountService {
       // Google keeps its account choice; the app signs out regardless.
     }
     await _transitions.signOut(keep: choice == SignOutChoice.keep);
+  }
+
+  /// Deletes the account of profile [profileKey] (the one the user
+  /// confirmed, A35 D19, fix 2) and removes it from this phone. Bound to
+  /// that profile throughout: the deletion is recorded first (refused unless
+  /// it is the active registered profile), sign-in, sign-out and switches
+  /// are refused while `DELETE /v1/me` is in flight, the request is refused
+  /// after it has its credentials if that no longer holds, and on `204` one
+  /// journaled transition removes exactly that profile (credentials, its
+  /// `user.db` directory, caches), finished by recovery after a crash.
+  /// Independent of any screen.
+  ///
+  /// Throws [AccountDeletionFailure]: `offline` (nothing reached the
+  /// server), `uncertain` (a timeout, a dropped connection, a server
+  /// failure: retry), `sessionEnded` (a 401 or an expired session after an
+  /// earlier unconfirmed attempt: B06 says that is not proof of deletion,
+  /// so the user decides), `needsSignIn` (the session had ended before any
+  /// attempt reached the server), `localRemovalFailed` (the server account
+  /// is gone; removing it here failed and can be retried). Throws
+  /// [DeletionRefused] when [profileKey] isn't the active account profile.
+  Future<void> deleteAccount(String profileKey) async {
+    final account = _account;
+    if (account == null) throw StateError('no account client');
+    _flow?.cancel();
+    _flow = null;
+    final earlier = await _transitions.beginDeletion(profileKey);
+    try {
+      await runGuarded(
+        () => _transitions.deletionBoundTo(profileKey),
+        account.deleteAccount,
+      );
+    } on DioException catch (error) {
+      final kind = _deletionKind(error, earlier: earlier);
+      await _transitions.endDeletionAttempt(
+        profileKey,
+        forget:
+            kind == AccountDeletionKind.needsSignIn ||
+            (kind == AccountDeletionKind.offline && !earlier),
+      );
+      throw AccountDeletionFailure(kind);
+    } on Object {
+      await _transitions.endDeletionAttempt(profileKey, forget: false);
+      rethrow;
+    }
+    try {
+      await _transitions.removeProfile(profileKey);
+    } on Object {
+      throw const AccountDeletionFailure(
+        AccountDeletionKind.localRemovalFailed,
+      );
+    }
+    await _googleSignOut();
+  }
+
+  /// Removes profile [profileKey] from this phone without a server call
+  /// (A35): a guest's own data, the user's choice after an unconfirmed
+  /// deletion, or a retry after a failed local removal. Throws
+  /// [DeletionRefused] when [profileKey] isn't the active profile.
+  Future<void> removeLocalData(String profileKey) async {
+    _flow?.cancel();
+    _flow = null;
+    await _transitions.removeProfile(profileKey);
+    await _googleSignOut();
+  }
+
+  /// Keeps the account: drops an unconfirmed deletion record of
+  /// [profileKey] (e.g. before signing in again).
+  Future<void> cancelDeletion(String profileKey) =>
+      _transitions.endDeletionAttempt(profileKey, forget: true);
+
+  /// The recorded deletion, if any (an earlier attempt that wasn't
+  /// confirmed shows as "couldn't confirm" on the deletion screen).
+  Future<PendingDeletion?> pendingDeletion() => _transitions.pendingDeletion();
+
+  Future<void> _googleSignOut() async {
+    try {
+      // Bounded and best effort (A50 D8): the next sign-in asks again.
+      await _google.signOut();
+    } on Object {
+      // The phone is wiped regardless.
+    }
+  }
+
+  /// The deletion outcome of [error]; [earlier]: an unconfirmed attempt
+  /// was recorded before this one. The auth interceptor turns a 401 whose
+  /// refresh fails into a response-less error carrying a typed
+  /// [SessionFailure] (A35 fix 3).
+  static AccountDeletionKind _deletionKind(
+    DioException error, {
+    required bool earlier,
+  }) {
+    final status = error.response?.statusCode;
+    final session = switch (error.error) {
+      final SessionFailure failure => failure.kind,
+      _ => null,
+    };
+    if (status == 401 || session == SessionFailureKind.sessionExpired) {
+      return earlier
+          ? AccountDeletionKind.sessionEnded
+          : AccountDeletionKind.needsSignIn;
+    }
+    if (status != null || session != null) return AccountDeletionKind.uncertain;
+    return switch (error.type) {
+      // Nothing was sent: no connection, or the guard refused it.
+      DioExceptionType.connectionError ||
+      DioExceptionType.connectionTimeout ||
+      DioExceptionType.cancel => AccountDeletionKind.offline,
+      _ => AccountDeletionKind.uncertain,
+    };
   }
 
   /// Leaves a read-only copy and opens a guest profile.
@@ -492,6 +607,37 @@ final class AccountService {
       };
     }
   }
+}
+
+/// Why `DELETE /v1/me` didn't confirm (A35 D19).
+enum AccountDeletionKind {
+  /// No connection: nothing reached the server.
+  offline,
+
+  /// The request may or may not have been processed, or the server failed.
+  uncertain,
+
+  /// The session ended after an earlier unconfirmed attempt (a lost
+  /// `204` is likely, but B06 says not proof): the user decides.
+  sessionEnded,
+
+  /// The session had ended before any attempt reached the server.
+  needsSignIn,
+
+  /// The server account is gone; removing it from this phone failed.
+  localRemovalFailed,
+}
+
+/// `DELETE /v1/me` didn't confirm. A fixed kind, no details.
+final class AccountDeletionFailure implements Exception {
+  /// A failure of [kind].
+  const new(this.kind);
+
+  /// What happened.
+  final AccountDeletionKind kind;
+
+  @override
+  String toString() => 'AccountDeletionFailure(${kind.name})';
 }
 
 final class _Conflict implements Exception {

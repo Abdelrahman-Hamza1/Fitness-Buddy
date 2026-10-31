@@ -61,6 +61,7 @@ import '../../helpers/pump_app.dart';
   UpdateRequiredRoute() => (UpdateRequiredScreen, false),
   SetupRoute() => (SetupScreen, false),
   SignInRoute() => (SignInScreen, false),
+  DeleteAccountRoute() => (DeleteAccountScreen, false),
   ProfileRoute() => (ProfileGoalScreen, true),
   TargetsRoute() => (TargetsScreen, true),
 };
@@ -104,6 +105,7 @@ const List<AppRoute> _allRoutes = [
   UpdateRequiredRoute(),
   SetupRoute(),
   SignInRoute(),
+  DeleteAccountRoute(),
   ProfileRoute(),
   TargetsRoute(),
 ];

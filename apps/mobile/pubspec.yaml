@@ -27,6 +27,10 @@ dependencies:
     path: ../../packages/fb_design_system
   fb_domain:
     path: ../../packages/fb_domain
+  # The sync engine (A34 D1): pure Dart, the app implements its store with
+  # drift (core/db/sync/) and wires it in core/sync/.
+  fb_sync:
+    path: ../../packages/fb_sync
   # Query normalization for the offline catalog search (A05 D10).
   fb_text:
     path: ../../packages/fb_text

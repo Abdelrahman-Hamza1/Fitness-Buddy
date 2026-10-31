@@ -13,6 +13,7 @@ import 'package:fb_mobile/features/diary/presentation/entry_row.dart';
 import 'package:fb_mobile/features/diary/presentation/move_entry_sheet.dart';
 import 'package:fb_mobile/features/diary/presentation/nutrient_override_sheet.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
+import 'package:fb_mobile/features/sync/sync.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -231,6 +232,23 @@ class EntryDetailsPanel extends ConsumerWidget {
                       ? null
                       : () => unawaited(deleteEntryWithUndo(context, entry)),
                 ),
+                // G7 (A34 D14): the server's earlier versions, for an account.
+                if (ref.watch(syncViewProvider.select((v) => v.enabled)))
+                  FbButton.secondary(
+                    key: const ValueKey('entry-earlier-versions'),
+                    label: l10n.syncEarlierVersions,
+                    icon: FbIcons.pending,
+                    onPressed: pending
+                        ? null
+                        : () => unawaited(
+                            showEarlierVersionsSheet(
+                              context,
+                              entity: 'diaryEntry',
+                              id: entry.id,
+                              summary: _versionSummary,
+                            ),
+                          ),
+                  ),
               ],
             ),
           ],
@@ -238,6 +256,19 @@ class EntryDetailsPanel extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// A diary entry version's name and energy, from its payload (user
+/// content: shown, never logged).
+String? _versionSummary(BuildContext context, Map<String, Object?> payload) {
+  final name = payload['nameEn'];
+  final kcal = payload['kcal'];
+  if (name is! String || kcal is! num) return null;
+  final l10n = context.l10n;
+  return l10n.syncVersionSummary(
+    name,
+    l10n.foodSheetKcal(DisplayRounding.kcal(kcal.toDouble())),
+  );
 }
 
 String _sourceText(AppLocalizations l10n, DiaryEntry entry) {

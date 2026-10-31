@@ -12,6 +12,7 @@ import 'package:fb_mobile/core/events/domain_event_bus.dart';
 import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/storage/device_id_store.dart';
 import 'package:fb_mobile/core/storage/preferences.dart';
+import 'package:fb_mobile/core/sync/restore_version.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -102,6 +103,7 @@ void main() {
           ChatMessageOp.familyName,
           ProposalOp.familyName,
           WorkoutOp.familyName,
+          RestoreVersionOp.familyName,
         ],
       );
       expect(container.read(clockProvider), isA<SystemClock>());

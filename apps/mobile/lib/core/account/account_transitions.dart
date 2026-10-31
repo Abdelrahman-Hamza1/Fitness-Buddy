@@ -22,6 +22,17 @@ final class SignInNotCommitted implements Exception {
   String toString() => 'SignInNotCommitted(cancelled: $cancelled)';
 }
 
+/// An account deletion step was refused (A35 fix 2): the profile isn't the
+/// one confirmed, another transition is open, or a deletion request is in
+/// flight. Nothing changed.
+final class DeletionRefused implements Exception {
+  /// A refusal.
+  const new();
+
+  @override
+  String toString() => 'DeletionRefused';
+}
+
 /// The session side of a transition (adapter over A20's `SessionService`).
 abstract interface class AccountSession {
   /// Persists and publishes registered tokens (durable before it completes),
@@ -91,6 +102,20 @@ final class AccountTransitions {
 
   Future<void> _lock = Future<void>.value();
   int _running = 0;
+
+  /// The profile whose `DELETE /v1/me` is in flight (A35 fix 2): sign-in,
+  /// sign-out and switches are refused meanwhile, so the profile and its
+  /// credentials can't change under the request.
+  String? _deleting;
+
+  /// Whether an account deletion request is in flight (sync pauses).
+  bool get deleting => _deleting != null;
+
+  /// Whether a deletion request for [profileKey] may still be sent: it is
+  /// the one in flight and no transition runs (checked after the request
+  /// has its credentials, A35 fix 2).
+  bool deletionBoundTo(String profileKey) =>
+      _deleting == profileKey && !suspended;
 
   /// True while a live transition runs: writes are denied synchronously.
   bool get suspended => _running > 0;
@@ -174,6 +199,10 @@ final class AccountTransitions {
         // Inside the lock, before any commit: a flow cancelled (or replaced,
         // or signed out) while this waited must not sign back in.
         if (!stillValid()) throw const SignInNotCommitted(cancelled: true);
+        // A35: never while a deletion request is in flight.
+        if (_deleting != null) {
+          throw const SignInNotCommitted(cancelled: false);
+        }
         final snapshot = await _registry.read();
         final planned = plan(snapshot);
         if (planned == null) return;
@@ -187,7 +216,13 @@ final class AccountTransitions {
           discard: discard == target.profileKey ? null : discard,
         );
         if (!stillValid()) throw const SignInNotCommitted(cancelled: true);
-        await _registry.write(snapshot.copyWith(transition: transition));
+        // Signing in leaves an unconfirmed deletion behind (A35).
+        await _registry.write(
+          snapshot.copyWith(
+            transition: transition,
+            clearDeletion: !(snapshot.deletion?.confirmed ?? false),
+          ),
+        );
         // Recheck after the awaited journal write (A33 re-check 1): a
         // cancellation meanwhile rolls the preparation back. No await
         // between this check and the acceptance starting.
@@ -227,6 +262,7 @@ final class AccountTransitions {
   /// it and opens a new, distinct, empty guest profile. The profile state is
   /// persisted before the credentials are cleared.
   Future<void> signOut({required bool keep}) => _live(() async {
+    if (_deleting != null) throw const DeletionRefused();
     final snapshot = await _registry.read();
     final active = snapshot.active;
     final (guestKey, guestSeq) = snapshot.nextGuest();
@@ -247,14 +283,122 @@ final class AccountTransitions {
       snapshot.copyWith(
         transition: transition,
         guestSeq: keep ? null : guestSeq,
+        clearDeletion: !(snapshot.deletion?.confirmed ?? false),
       ),
     );
     await _advance(transition, live: true);
   });
 
+  // ---- account deletion (A35 fix 2) -------------------------------------
+
+  /// Records the deletion of account profile [profileKey] before
+  /// `DELETE /v1/me` is sent, and marks the request in flight. Refused
+  /// unless [profileKey] is the active, writable, registered profile and no
+  /// transition is open. Returns whether an unconfirmed deletion of it was
+  /// already recorded (an earlier attempt may have reached the server).
+  Future<bool> beginDeletion(String profileKey) => _exclusive(() async {
+    final snapshot = await _registry.read();
+    final active = snapshot.active;
+    if (_deleting != null ||
+        snapshot.transitionPending ||
+        active.profileKey != profileKey ||
+        active.kind != ProfileKind.registered ||
+        active.readOnly) {
+      throw const DeletionRefused();
+    }
+    final pending = snapshot.deletion;
+    if (pending != null && pending.profileKey != profileKey) {
+      throw const DeletionRefused();
+    }
+    if (pending == null) {
+      await _registry.write(
+        snapshot.copyWith(deletion: PendingDeletion(profileKey: profileKey)),
+      );
+    }
+    _deleting = profileKey;
+    return pending != null;
+  });
+
+  /// Ends the in-flight request of [profileKey] without removing anything;
+  /// [forget] also drops its unconfirmed record (nothing reached the server,
+  /// or the user keeps the account).
+  Future<void> endDeletionAttempt(String profileKey, {required bool forget}) =>
+      _exclusive(() async {
+        if (_deleting == profileKey) _deleting = null;
+        if (!forget) return;
+        final snapshot = await _registry.read();
+        final pending = snapshot.deletion;
+        if (pending != null &&
+            pending.profileKey == profileKey &&
+            !pending.confirmed) {
+          await _registry.write(snapshot.copyWith(clearDeletion: true));
+        }
+      });
+
+  /// The recorded deletion, if any.
+  Future<PendingDeletion?> pendingDeletion() async =>
+      (await _registry.read()).deletion;
+
+  /// Removes profile [profileKey] from the device (A35): after the server
+  /// confirmed the deletion, the user's explicit choice, or a guest's own
+  /// data. One write journals the confirmed deletion with an A33 "sign out,
+  /// remove" transition bound to that key (validated inside the lock: the
+  /// active profile must be it); recovery finishes it after a crash.
+  ///
+  /// The in-flight marker is released on every outcome (A35 fix round 2):
+  /// an unfinished cleanup stays journaled (and holds the session) for
+  /// recovery, but no longer blocks sign-in, sign-out or sync.
+  Future<void> removeProfile(String profileKey) async {
+    try {
+      await _live(() async {
+        final snapshot = await _registry.read();
+        if (snapshot.active.profileKey != profileKey) {
+          throw const DeletionRefused();
+        }
+        await _startRemoval(snapshot, profileKey);
+      });
+    } finally {
+      if (_deleting == profileKey) _deleting = null;
+    }
+  }
+
+  Future<void> _startRemoval(ProfilesSnapshot snapshot, String key) async {
+    final (guestKey, guestSeq) = snapshot.nextGuest();
+    final forgetRefs = await _session.storedCredentialRefs();
+    final transition = AccountTransition(
+      kind: TransitionKind.signOut,
+      phase: TransitionPhase.preparing,
+      fromKey: key,
+      target: LocalProfile(profileKey: guestKey, kind: ProfileKind.guest),
+      discard: key,
+      forgetRefs: forgetRefs,
+    );
+    await _registry.write(
+      snapshot.copyWith(
+        transition: transition,
+        guestSeq: guestSeq,
+        deletion: PendingDeletion(profileKey: key, confirmed: true),
+      ),
+    );
+    await _advance(transition, live: true);
+    await _clearFinishedDeletion();
+  }
+
+  /// Drops a confirmed deletion whose profile is gone.
+  Future<void> _clearFinishedDeletion() async {
+    final snapshot = await _registry.read();
+    final pending = snapshot.deletion;
+    if (pending == null || !pending.confirmed) return;
+    if (snapshot.profiles.any((p) => p.profileKey == pending.profileKey)) {
+      return;
+    }
+    await _registry.write(snapshot.copyWith(clearDeletion: true));
+  }
+
   /// Leaves a read-only copy for a guest profile: the existing guest's, or a
   /// new empty one. No credential changes.
   Future<void> continueAsGuest() => _live(() async {
+    if (_deleting != null) throw const DeletionRefused();
     final snapshot = await _registry.read();
     final guests = snapshot.profiles.where((p) => p.kind == ProfileKind.guest);
     final (newKey, newSeq) = snapshot.nextGuest();
@@ -294,7 +438,9 @@ final class AccountTransitions {
   /// first writes after launch are never refused.
   Future<void> recover() async {
     final snapshot = await _registry.read();
-    if (snapshot.transition == null && snapshot.reserved.isEmpty) {
+    if (snapshot.transition == null &&
+        snapshot.reserved.isEmpty &&
+        !(snapshot.deletion?.confirmed ?? false)) {
       await _session.reconcile();
       return;
     }
@@ -309,6 +455,20 @@ final class AccountTransitions {
     final transition = snapshot.transition;
     if (transition == null) {
       if (snapshot.reserved.isNotEmpty) await _cleanup();
+      // A35: a confirmed deletion whose removal never journaled (or whose
+      // record outlived it) is finished for that exact profile.
+      final pending = snapshot.deletion;
+      if (pending != null && pending.confirmed) {
+        final current = await _registry.read();
+        final present = current.profiles.any(
+          (p) => p.profileKey == pending.profileKey,
+        );
+        if (present && current.activeKey == pending.profileKey) {
+          await _startRemoval(current, pending.profileKey);
+        } else {
+          await _clearFinishedDeletion();
+        }
+      }
       return;
     }
     switch ((transition.kind, transition.phase)) {
@@ -326,9 +486,21 @@ final class AccountTransitions {
         TransitionKind.signOut || TransitionKind.switchProfile,
         TransitionPhase.preparing,
       ):
+        // A35: a removal journaled with a confirmed deletion rolls forward
+        // (the server account is gone or the user chose it); an ordinary
+        // sign-out that never started rolls back.
+        final pending = snapshot.deletion;
+        if (transition.kind == TransitionKind.signOut &&
+            pending != null &&
+            pending.confirmed &&
+            pending.profileKey == transition.fromKey) {
+          await _advance(transition, live: live);
+          return await _clearFinishedDeletion();
+        }
         return await _setTransition(null);
       case _:
-        return await _advance(transition, live: live);
+        await _advance(transition, live: live);
+        return await _clearFinishedDeletion();
     }
   }
 

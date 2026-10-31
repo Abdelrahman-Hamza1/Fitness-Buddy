@@ -156,6 +156,16 @@ B05 replaces experimental HTTP access with B04 bearer authentication: missing/re
 - History payloads expire30days after first archival, including stale incoming losers; replay never renews that horizon. Durable minimal per-version fingerprints preserve immutable retry identity after expiry. Tombstones compact30days after **server acceptance**, ignoring a client-forged old deletedAt. A `compacted:true` pull/history document has an empty payload and denotes a deletion fence, not a live entity payload; the app can remove/mark its older row without parsing it as live content. A newer HLC can explicitly restore the row; an older offline update cannot. Receipts/fences are user-owned, RLS-protected and included in B06 erasure.
 - Worker cleanup uses bounded user jobs and supplied transactions, including backfill for pre-B05 rows. API history cutoff applies even between sweeps. Metrics use only fixed operations/counts/durations. No payload, row/device/user/HLC/cursor/dataset values enter metric labels.
 
+### 5.6 Production client (A34)
+
+The engine is `packages/fb_sync` (pure Dart): the same `SyncEngine` runs on the phone over drift (`apps/mobile/lib/core/db/sync/drift_sync_store.dart`), in the 1,000-seed fake convergence test and against the real API in CI (`tools/sync_sim`, `make sync-spike`: 50 randomized runs per build, 1,000 nightly). Decisions D1–D20 are in `steps/A34-sync-engine-app.md`; the essentials:
+
+- **Run order:** discover the dataset (one-row unbound pull, nothing applied), **push first**, then pull until an empty page; a dataset reset pulls first (TD-066). Push-first sends every pending offline version before a newer remote one can overwrite it, so the loser lands in `row_history` (OF-03).
+- **Push:** the outbox coalesces per row; the change sent is the row as it is now. Batches ≤ 500 changes and ≤ 240 KiB; `413` splits, a single row still too large is parked. `accepted`/`stale`/`invalid:versionConflict` acknowledge `hlc <=` the sent version; `clockDrift` keeps it pending; `unsupported`/`invalidPayload` park it in `sync_parked` (kept locally, retried after an app update, daily, or with "Try again"; reported with entity and reason only).
+- **Pull:** pages of 100, applied atomically with the cursor, the dataset and `hlc.last`, inside the `ChangeSetApplier`'s serial queue with outbox capture off; LWW by HLC; a row whose current version is still pending or parked is first kept whole in `sync_displaced` and pushed later, so no confirmed edit is lost to a pull (the server archives it as a loser); applied rows bump `version` (open undos and forms conflict instead of overwriting); compacted fences tombstone older rows; unreadable documents (unknown entity, newer `schemaVersion`) wait in `sync_deferred`. Upgraders: `fb_domain` `SyncDocumentUpgraders` (`weighIn` v1→v2; upload v2).
+- **Scheduling:** after the first frame, debounced 3 s after change sets, on foreground, when the session becomes ready, and on "Sync now"; backoff 30 s × 2ⁿ (±20 %, ≤ 15 min), foreground only. A post-auth interceptor refuses a request of a run whose profile or generation is no longer current.
+- **Earlier versions (G7):** `GET /v1/sync/history/{entity}/{id}`, restored through the applier (`RestoreVersionOp`) with undo.
+
 ## 6. Guest mode & account lifecycle
 
 | Flow | Behaviour |

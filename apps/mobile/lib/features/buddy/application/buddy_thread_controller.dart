@@ -86,7 +86,21 @@ class BuddyThreadController extends _$BuddyThreadController {
               e.origin is! OriginProposal && e.entities.contains('diaryEntry'),
         )
         .listen((_) => unawaited(_refreshOpenCards()));
-    ref.onDispose(changes.cancel);
+    // A34 D17 (A23 handoff): rows pulled from another phone can add or
+    // resolve cards; read this profile's pending cards back again (merged
+    // by message ID, a turn in memory wins).
+    final remote = ref
+        .read(domainEventBusProvider)
+        .on<RemoteChangesApplied>()
+        .where(
+          (e) =>
+              e.entities.contains('chatMessage') ||
+              e.entities.contains('proposal'),
+        )
+        .listen((_) => unawaited(_restoreAgain()));
+    ref
+      ..onDispose(changes.cancel)
+      ..onDispose(remote.cancel);
     return const BuddyThread();
   }
 
@@ -107,6 +121,16 @@ class BuddyThreadController extends _$BuddyThreadController {
     _started = true;
     if (!ref.mounted || generation != _generation) return Future.value();
     return _restored ??= _restore(generation);
+  }
+
+  /// Re-runs the restore after a remote apply, once the first restore of
+  /// this generation ran (never before the first frame).
+  Future<void> _restoreAgain() {
+    if (!_started || !ref.mounted) return Future.value();
+    final gen = _generation;
+    return _restored = (_restored ?? Future.value()).then(
+      (_) => _current(gen) ? _restore(gen) : Future.value(),
+    );
   }
 
   Future<void> _restore(int gen) async {

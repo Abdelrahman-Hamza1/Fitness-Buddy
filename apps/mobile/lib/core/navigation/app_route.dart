@@ -662,6 +662,20 @@ final class SignInRoute extends AppRoute {
   String get location => path;
 }
 
+/// Account deletion (A35, AC-031): the explain screen, outside the tabs,
+/// opened from Me › Account. For a guest it deletes the data on this
+/// phone. No parameters.
+final class DeleteAccountRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/delete-account';
+
+  @override
+  String get location => path;
+}
+
 /// The "update needed" screen, outside the tabs (S06 plan D10).
 ///
 /// Only the router targets it (its update-gate redirect); features never

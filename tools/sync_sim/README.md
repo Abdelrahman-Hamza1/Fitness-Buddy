@@ -1,29 +1,28 @@
-# Sync feasibility harness (B01)
+# Real-API sync harness (B01, A34)
 
-Claude owns this package (TD-085; Codex wrote it). It is kept for B05/A34. It uses the generated
-API models and `fb_domain` HLC, with a transport port shared by an independent
-in-memory fake and the real container API. It contains synthetic data only.
+Claude owns this package (TD-085; Codex wrote the B01 version). Since A34 it runs the
+**production engine** from `packages/fb_sync` (in-memory stores, the same `SyncEngine`
+the phone runs over drift) against the real API container. Synthetic data only.
 
-- `make test-dart`: includes 1,000 reproducible seeded runs and fault tests.
-- `make sync-spike`: builds the API image, migrates ephemeral pinned Postgres,
-  exercises real HTTP connection loss/retries/crashes, runs 50 seeded scenarios,
-  and times 5,000 rows pushed then pulled on a fresh simulated device.
+- `make test-dart`: the 1,000 seeded fake-server runs, OF-03 and the fault tests live in
+  `packages/fb_sync/test/` now; this package keeps the TD-049 vector test and the B07
+  catalog client gate.
+- `make sync-spike`: builds the API image, migrates ephemeral pinned Postgres, then
+  `bin/sync_sim.dart` runs: a half-sent request body (no commit, idempotent retry), the
+  fault set (dropped push before/after commit, crash before the local acknowledgement,
+  a local edit while a push is in flight, a crash mid-page, a duplicate push), OF-03 in
+  both sync orders, `SYNC_SIM_RUNS` randomized multi-device runs (50 per CI build,
+  1,000 on nightly and manual runs, A34 D20) and a 10,000-row push then fresh pull.
 
-`SimStore.checkpoint/restore` models durable rows, immutable outbox versions,
-clock and cursor across engine restarts. `apply` stages the whole page before
-committing rows/cursor/clock together. A01/A34 must use actual SQLite
-transactions. This is a reusable protocol engine, not the production phone
-outbox or scheduler. Production sync/auth/schema validation/retention and
-reset detection remain B04/B05/A34.
+Each randomized run starts its devices at the server's current cursor (rows of different
+runs are disjoint), so a run doesn't re-pull every earlier run; the 10,000-row benchmark
+and the fault set still restore a fresh device from cursor `0`. The oracle reads the
+global history incrementally (`GET /v1/sync/history`, its own cursor).
 
-Protocol: `technical-planning/05-data-and-sync.md` §5.4. Keep that section and
-the B01 card log current whenever the wire format changes. Future-clock
-rejections remain pending; the tool does not silently repair or discard them.
-The dedicated `SyncSpike` environment + opt-in flag + random test key + fixed
-synthetic principal gate keeps the routes closed in normal runs. Never enable
-this on a real-data database. The script binds only loopback, uses no volume,
-and deletes its containers/network on exit.
+Protocol: `technical-planning/05-data-and-sync.md` §5. Future-clock rejections stay
+pending; the harness never repairs or discards them. The script binds only loopback, uses
+no volume, and deletes its containers and network on exit.
 
-B07 also uses this existing backend-owned integration harness for the tiny offline
-`catalog_client_test.dart` gate: it verifies the generated API client preserves arbitrary binary
-pack bytes. `make catalog-client-smoke` runs it without a server, credentials or paid calls.
+B07 also uses this package for the tiny offline `catalog_client_test.dart` gate: it
+verifies the generated API client preserves arbitrary binary pack bytes.
+`make catalog-client-smoke` runs it without a server, credentials or paid calls.

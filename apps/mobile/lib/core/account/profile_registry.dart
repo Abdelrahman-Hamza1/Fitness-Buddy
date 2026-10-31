@@ -174,6 +174,34 @@ final class AccountTransition {
   String toString() => 'AccountTransition(${kind.name}, ${phase.name})';
 }
 
+/// An account deletion bound to one profile (A35 fix 2): recorded before
+/// `DELETE /v1/me` is sent, confirmed (in the same write as the removal
+/// journal) once the server answered 204 or the user chose to remove the
+/// data. No secret, no raw id.
+final class PendingDeletion {
+  /// Deletion of [profileKey]; [confirmed] once the local removal started.
+  const new({required this.profileKey, this.confirmed = false});
+
+  /// The profile whose account is being deleted.
+  final String profileKey;
+
+  /// The local removal was journaled (204, or the user's choice).
+  final bool confirmed;
+
+  Map<String, Object?> _toJson() => {'key': profileKey, 'ok': confirmed};
+
+  // A private parser keeps the JSON shape out of the public API.
+  // ignore: prefer_constructors_over_static_methods
+  static PendingDeletion _fromJson(Map<String, Object?> json) =>
+      PendingDeletion(
+        profileKey: json['key']! as String,
+        confirmed: json['ok'] as bool? ?? false,
+      );
+
+  @override
+  String toString() => 'PendingDeletion(confirmed: $confirmed)';
+}
+
 /// The profiles on this install, the active one, the reserved directories
 /// and the open transition (A33 D1, §6): one atomic preference value.
 final class ProfilesSnapshot {
@@ -184,6 +212,7 @@ final class ProfilesSnapshot {
     this.reserved = const [],
     this.transition,
     this.guestSeq = 1,
+    this.deletion,
   });
 
   /// A fresh install: one guest profile, `local` (A01's existing file).
@@ -212,6 +241,9 @@ final class ProfilesSnapshot {
 
   /// The last guest profile number handed out (`guest-<n>`).
   final int guestSeq;
+
+  /// An account deletion in progress (A35), if any.
+  final PendingDeletion? deletion;
 
   /// Whether an account transition journal is open.
   bool get transitionPending => transition != null;
@@ -250,12 +282,15 @@ final class ProfilesSnapshot {
     AccountTransition? transition,
     bool clearTransition = false,
     int? guestSeq,
+    PendingDeletion? deletion,
+    bool clearDeletion = false,
   }) => ProfilesSnapshot(
     activeKey: activeKey ?? this.activeKey,
     profiles: profiles ?? this.profiles,
     reserved: reserved ?? this.reserved,
     transition: clearTransition ? null : transition ?? this.transition,
     guestSeq: guestSeq ?? this.guestSeq,
+    deletion: clearDeletion ? null : deletion ?? this.deletion,
   );
 
   /// Replaces or adds [profile].
@@ -318,6 +353,7 @@ final class ProfileRegistry {
     try {
       final json = jsonDecode(raw) as Map<String, Object?>;
       final transition = json['transition'] as Map<String, Object?>?;
+      final deletion = json['deletion'] as Map<String, Object?>?;
       return ProfilesSnapshot(
         activeKey: json['active']! as String,
         profiles: [
@@ -332,6 +368,7 @@ final class ProfileRegistry {
             ? null
             : AccountTransition._fromJson(transition),
         guestSeq: json['guestSeq'] as int? ?? 1,
+        deletion: deletion == null ? null : PendingDeletion._fromJson(deletion),
       );
     } on Object {
       return ProfilesSnapshot.initial;
@@ -348,6 +385,7 @@ final class ProfileRegistry {
       if (snapshot.reserved.isNotEmpty) 'reserved': snapshot.reserved,
       if (snapshot.transition case final t?) 'transition': t._toJson(),
       'guestSeq': snapshot.guestSeq,
+      if (snapshot.deletion case final d?) 'deletion': d._toJson(),
     }),
   );
 }

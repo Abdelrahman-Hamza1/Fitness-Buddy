@@ -115,7 +115,7 @@ final class DioProvider extends $FunctionalProvider<Dio, Dio, Dio>
   }
 }
 
-String _$dioHash() => r'b7a864d4a236d4cd000f98a5b35d7bc86a929555';
+String _$dioHash() => r'5e9c3fc11f1f3812cd43402d2220be03e87f063b';
 
 /// The generated API client (`fb_api_client`) on [dio].
 
