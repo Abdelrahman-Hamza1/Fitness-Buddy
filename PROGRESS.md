@@ -1,12 +1,12 @@
 # Fitness Buddy: progress
 
-**71 of 93 steps done** · `▓▓▓▓▓▓▓░░░` 76%
+**72 of 98 steps done** · `▓▓▓▓▓▓▓░░░` 73%
 
-App 54/69 · Backend 17/24 · Foundation 7/7
+App 55/74 · Backend 17/24 · Foundation 7/7
 
 ## Now
 
-- 🟨 building [A56](technical-planning/steps/A56-today-summary-card.md) Today summary card with slides (Nutrition, Weight, Workout; owner request 2026-10-31, backlog #74) · R1
+- Nothing marked in progress on the board.
 
 ## Milestones
 
@@ -20,7 +20,7 @@ App 54/69 · Backend 17/24 · Foundation 7/7
 | ⬜ | **M4** Dogfood 2 | `░░░░░` 0/8 | A25 A26 A27 A28b A29 A31 +2 |
 | ⬜ | **M6** Workouts, review &… | `░░░░░` 0/4 | A37b A39b A41b B12 |
 | ⬜ | **M7** Production | `░░░░░` 0/3 | A43 B13 B14 |
-| 🟨 | **R1** done | `▓▓░░░` 5/9 | A32 A56 B15 B16 A43 |
+| 🟨 | **R1** done | `▓▓░░░` 6/14 | A32 A57 A58 A59 A60 A61 +3 |
 
 ✅ reached · 🟨 in progress · ⬜ ahead. Each step counts toward the first milestone that needs it.
 

@@ -209,8 +209,13 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A51](A51-first-run-me.md) | First run, sign-in screens & Me overhaul (UX overhaul 2026-10-31) | Claude | A13b, A33, A50 | L | new |  | ✅ |
 | [A52](A52-workouts-ux.md) | Workouts UX overhaul (tab, logging maps, picker popularity, plans choose exercises) | Claude | A37a, A37c | L | new (owner UX critique 2026-10-31) |  | ✅ |
 | [A53](A53-targets-food-names.md) | Targets redesign & food-name language (UX overhaul) | Claude | A38, A41a, A42 | L | new (owner sketches 2026-10-31) |  | ✅ |
-| [A56](A56-today-summary-card.md) | Today summary card with slides (Nutrition, Weight, Workout; owner request 2026-10-31, backlog #74) | Claude plans, Codex builds | A45, A52, A53 | M | new (owner request) |  | 🟨 closed, awaiting review |
+| [A56](A56-today-summary-card.md) | Today summary card with slides (Nutrition, Weight, Workout; owner request 2026-10-31, backlog #74) | Claude plans, Codex builds | A45, A52, A53 | M | new (owner request) |  | ✅ |
 | [A54](A54-catalog-expansion.md) | Catalog expansion: natural foods and generic store products (USDA only, ~+1,700 basics) | Claude | A47 | L | new (owner 2026-10-31) |  | ✅ |
+| [A57](ux-polish-week.md) | Stable logging and editing: no layout shifts on input (audit A01–A08, A15, A65, A79) | Claude (models per owner) | A56 | M | new (Codex UI/UX audit 2026-10-31) |  | ⬜ next week |
+| [A58](ux-polish-week.md) | Food names everywhere follow the setting (audit A30–A40) | Claude (models per owner) | A56 | M | new (Codex UI/UX audit 2026-10-31) |  | ⬜ next week |
+| [A59](ux-polish-week.md) | Recovery and unfinished work: no false-empty screens or trapped loaders (audit A41–A49, A62–A64, A66–A71) | Claude (models per owner) | A56 | M | new (Codex UI/UX audit 2026-10-31) |  | ⬜ next week |
+| [A60](ux-polish-week.md) | Consistent motion: expand/collapse and transitions (audit A09–A14, A16–A29, A80) | Claude (models per owner) | A56 | M | new (Codex UI/UX audit 2026-10-31) |  | ⬜ next week |
+| [A61](ux-polish-week.md) | Accessible charts and dense screens (audit A50–A61, A72–A78) | Claude (models per owner) | A56 | M | new (Codex UI/UX audit 2026-10-31) |  | ⬜ next week |
 
 **A44 runs right after A22 (owner request, 2026-10-29):** the "Embrace" identity (palette, fonts, icon) lands before the remaining screens are built, an exception to "the number is the order" like the dish batches below.
 
