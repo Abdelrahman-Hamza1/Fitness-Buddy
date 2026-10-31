@@ -58,7 +58,7 @@ final class RamadanComparisonProvider
   }
 }
 
-String _$ramadanComparisonHash() => r'339f17782b3abb24b780d48de2f59a668a9223d7';
+String _$ramadanComparisonHash() => r'f2a1ccd5ad88b97d458b89df23d1c47d17d1fb3a';
 
 @ProviderFor(_totals)
 final _totalsProvider = _TotalsFamily._();

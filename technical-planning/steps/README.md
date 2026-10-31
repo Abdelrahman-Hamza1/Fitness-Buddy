@@ -198,7 +198,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A40](A40-notifications.md) | Notifications | Claude | A37c, A39a (TD-105; see card) | M | S45 |  | ✅ closed, awaiting review/merge (with A39a) |
 | [A41a](A41-ramadan.md) | Ramadan mode without Buddy (split from A41, 2026-10-30) | Claude | A05b, A15, A38, A40 | L | S46 app part |  | ✅ closed, awaiting review/merge |
 | [A41b](A41-ramadan.md) | Ramadan Buddy parts (split from A41) | Claude | A41a, A39b, **B12** (contract) | S | S46 app part | **M6** | ⬜ phase 2 |
-| [A42](A42-performance-a11y-offline.md) | Performance, accessibility & offline acceptance | Claude | A41a, A35 (TD-105) | M | S48 | **M2b** · **R1** | ⬜ wave 5, the last phase-1 step |
+| [A42](A42-performance-a11y-offline.md) | Performance, accessibility & offline acceptance | Claude | A41a, A35 (TD-105) | M | S48 | **M2b** · **R1** | ✅ closed, awaiting review/merge (A41a merged in, its screens swept) |
 | [A43](A43-play-internal-release.md) | Play internal testing release | Claude | A42, **B14** | S | S29 app part | **M7** | ⬜ production |
 | [A45](A45-ux-polish.md) | UX polish: steady chips, light default, slim weight row, tab reset | Claude | A15b, A44 | M | new (owner phone feedback) |  | ✅ |
 | [A46](A46-test-diet.md) | Test diet (one-time cut, TD-104) | Claude | — | M | new |  | ✅ |

@@ -139,6 +139,21 @@ make cold-start COLD_START_APP=io.github.abdelrahmanhamza1.fitnessbuddy RUNS=20
 
 It prints each `TotalTime` (`am start -S -W`, about the time to Flutter's first frame), then the median and p90, the device model and its Android build. Measure release builds only: debug builds use the JIT and are slow.
 
+### Device benchmarks (A42)
+
+With the phone connected over adb (one device, or set `ANDROID_SERIAL`):
+
+```bash
+make perf-startup                                 # UX-001: 1 seed run + RUNS=10 fresh processes, p50/p90
+make perf-device                                  # the other three, profile mode, dev flavor
+make perf-device PERF_TARGETS=jank_benchmark_test
+```
+
+- `startup_benchmark_test` (`make perf-startup`): UX-001 end to end, one sample per fresh app process, from the process's own start to Today ready (numbers drawn from the loaded seeded day and targets, input bar on screen and tappable), then the bar must open Buddy's sheet and take text. Target p90 ≤ 2,000 ms. `make cold-start` (first frame of a release build) stays as a second view.
+- `jank_benchmark_test`: UX-007, real flings in fully live frame scheduling over Today (swipes, a long day), Progress (scroll, period switch) and a long workout history; prints p90/p99/max and the share of frames over 16 ms; fails on any frame over 16 ms (`09` §6).
+- `progress_benchmark_test`: each Progress chart's first frame with data, one year of data (< 300 ms, A16).
+- `proposal_recompute_benchmark_test`: proposal recompute after a tap (≤ 50 ms, A21).
+
 ## Rules worth knowing
 
 - Strings only in `lib/l10n/app_en.arb`, read with `context.l10n.<key>`. English only in R1 (LC-002).

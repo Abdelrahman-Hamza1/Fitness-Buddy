@@ -1,8 +1,8 @@
 # Fitness Buddy: progress
 
-**65 of 87 steps done** · `▓▓▓▓▓▓▓░░░` 74%
+**66 of 87 steps done** · `▓▓▓▓▓▓▓░░░` 75%
 
-App 49/64 · Backend 16/23 · Foundation 7/7
+App 50/64 · Backend 16/23 · Foundation 7/7
 
 ## Now
 
@@ -15,12 +15,12 @@ App 49/64 · Backend 16/23 · Foundation 7/7
 | ✅ | **M1** Dogfood 1 | `▓▓▓▓▓` 14/14 | — |
 | ✅ | **M2** Targets & weight | `▓▓▓▓▓` 9/9 | — |
 | ✅ | **M5** Accounts & sync | `▓▓▓▓▓` 20/20 | — |
-| 🟨 | **M2b** Solid app (no AI) | `▓▓▓▓░` 21/22 | A42 |
+| ✅ | **M2b** Solid app (no AI) | `▓▓▓▓▓` 22/22 | — |
 | 🟨 | **M3** Buddy on the laptop | `▓░░░░` 1/4 | A23b A48 A49 #148 #149 #150 #151 |
 | ⬜ | **M4** Dogfood 2 | `░░░░░` 0/8 | A25 A26 A27 A28b A29 A31 +2 |
 | ⬜ | **M6** Workouts, review &… | `░░░░░` 0/4 | A37b A39b A41b B12 |
 | ⬜ | **M7** Production | `░░░░░` 0/3 | A43 B13 B14 |
-| ⬜ | **R1** done | `░░░░░` 0/3 | A32 B15 B16 A42 A43 |
+| ⬜ | **R1** done | `░░░░░` 0/3 | A32 B15 B16 A43 |
 
 ✅ reached · 🟨 in progress · ⬜ ahead. Each step counts toward the first milestone that needs it.
 
@@ -28,14 +28,15 @@ App 49/64 · Backend 16/23 · Foundation 7/7
 
 Not started, every dependency done; earliest milestone first:
 
-- [A42](technical-planning/steps/A42-performance-a11y-offline.md) Performance, accessibility & offline acceptance · M2b
 - [A23b](technical-planning/steps/A23-message-lifecycle.md) Message queue, failures & pending strip (split from A23) · M3
 - [A26](technical-planning/steps/A26-memory-user-model.md) Memory & user model (app) · M4
 - [B10b](technical-planning/steps/B10-barcode-vision-import.md) Label & meal photos, paste import (split from B10) · M4
 - [B11](technical-planning/steps/B11-buddy-qa-suggestions.md) Buddy Q&A & suggestions · M4
+- [B12](technical-planning/steps/B12-buddy-workouts-review-ramadan.md) Buddy workouts, weekly review & Ramadan · M6
 
 ## Waiting on you
 
+- **#260** ⚠️ Owner A55 checks (optional, D-087): with the phone over adb, make perf-startup…
 - **#219** ⚠️ Owner A55 check: with the phone connected over adb, run flutter test…
 - **#185** ⚠️ Owner/A55 check: pack update end to end against the laptop server: publish a new…
 - **#164** ⚠️ Owner A55 check: a profile-mode pan of the weight graph over two years of daily…
@@ -45,8 +46,7 @@ Not started, every dependency done; earliest milestone first:
 - **#125** Install the prod build (docs/runbooks/install-a-build.md: Chrome download from the main…
 - **#124** On the A55: Me > Your data > Export your data with Android font size at the largest…
 - **#123** At the A22 phone session: run A21 §6's A55 profile benchmark (UI-free), then at least…
-- **#115** On the A55: set real settings (imperial/metric, theme dark/light, week start, halal…
-- …and 45 more owner items in the [backlog](technical-planning/steps/backlog.md)
+- …and 44 more owner items in the [backlog](technical-planning/steps/backlog.md)
 
 ---
 

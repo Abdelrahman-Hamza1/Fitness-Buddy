@@ -73,4 +73,89 @@ void main() {
       );
     });
   }
+
+  // A42: the themes Material widgets actually read. A role mapped to the
+  // wrong token in FbTheme would bypass the token pairs above.
+  for (final (name, theme) in [
+    ('light', FbTheme.light()),
+    ('dark', FbTheme.dark()),
+  ]) {
+    test('UX-071 every ColorScheme text role meets WCAG AA on its '
+        'background, and outlines reach 3:1 ($name theme)', () {
+      final c = theme.colorScheme;
+      final surfaces = {
+        'surface': c.surface,
+        'surfaceContainerLowest': c.surfaceContainerLowest,
+        'surfaceContainerLow': c.surfaceContainerLow,
+        'surfaceContainer': c.surfaceContainer,
+        'surfaceContainerHigh': c.surfaceContainerHigh,
+        'surfaceContainerHighest': c.surfaceContainerHighest,
+        'surfaceBright': c.surfaceBright,
+        'surfaceDim': c.surfaceDim,
+      };
+      final text = <(String, Color, Color)>[
+        ('onPrimary/primary', c.onPrimary, c.primary),
+        (
+          'onPrimaryContainer/primaryContainer',
+          c.onPrimaryContainer,
+          c.primaryContainer,
+        ),
+        ('onSecondary/secondary', c.onSecondary, c.secondary),
+        (
+          'onSecondaryContainer/secondaryContainer',
+          c.onSecondaryContainer,
+          c.secondaryContainer,
+        ),
+        ('onTertiary/tertiary', c.onTertiary, c.tertiary),
+        (
+          'onTertiaryContainer/tertiaryContainer',
+          c.onTertiaryContainer,
+          c.tertiaryContainer,
+        ),
+        ('onPrimaryFixed/primaryFixed', c.onPrimaryFixed, c.primaryFixed),
+        (
+          'onPrimaryFixedVariant/primaryFixedDim',
+          c.onPrimaryFixedVariant,
+          c.primaryFixedDim,
+        ),
+        (
+          'onSecondaryFixed/secondaryFixed',
+          c.onSecondaryFixed,
+          c.secondaryFixed,
+        ),
+        ('onTertiaryFixed/tertiaryFixed', c.onTertiaryFixed, c.tertiaryFixed),
+        ('onError/error', c.onError, c.error),
+        (
+          'onErrorContainer/errorContainer',
+          c.onErrorContainer,
+          c.errorContainer,
+        ),
+        (
+          'onInverseSurface/inverseSurface',
+          c.onInverseSurface,
+          c.inverseSurface,
+        ),
+        ('inversePrimary/inverseSurface', c.inversePrimary, c.inverseSurface),
+        for (final MapEntry(:key, :value) in surfaces.entries) ...[
+          ('onSurface/$key', c.onSurface, value),
+          ('onSurfaceVariant/$key', c.onSurfaceVariant, value),
+          ('primary/$key', c.primary, value),
+          ('error/$key', c.error, value),
+        ],
+      ];
+      final ui = <(String, Color, Color)>[
+        for (final MapEntry(:key, :value) in surfaces.entries)
+          ('outline/$key', c.outline, value),
+      ];
+      final failing = [
+        for (final (pair, fg, bg) in text)
+          if (wcagContrast(fg, bg) < 4.5)
+            '$pair ${wcagContrast(fg, bg).toStringAsFixed(2)}:1',
+        for (final (pair, fg, bg) in ui)
+          if (wcagContrast(fg, bg) < 3)
+            '$pair ${wcagContrast(fg, bg).toStringAsFixed(2)}:1',
+      ];
+      expect(failing, isEmpty, reason: failing.join('\n'));
+    });
+  }
 }

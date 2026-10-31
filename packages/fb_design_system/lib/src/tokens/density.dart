@@ -19,9 +19,9 @@ abstract final class FbDensity {
   /// macros (comfortable: 16).
   static const double sectionGap = _compact ? 12 : 16;
 
-  /// Minimum height of a list row (comfortable: 56). Never below the 44 dp
-  /// touch target.
-  static const double rowMinHeight = _compact ? 44 : 56;
+  /// Minimum height of a list row (comfortable: 56). Never below Android's
+  /// 48 dp touch target (A42: the tap target sweep found 44 dp rows).
+  static const double rowMinHeight = _compact ? 48 : 56;
 
   /// Font size of the display number (comfortable: 48).
   static const double displaySize = _compact ? 40 : 48;

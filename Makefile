@@ -329,6 +329,34 @@ test-android-unit: ## Run Android host JVM unit tests (including the PA2 commit 
 build-it: catalog-pack ## Build the Patrol test APKs (dev debug app + instrumentation APK), no device needed
 	$(PATROL_ANDROID) build
 
+# Device benchmarks (A42 D1): profile builds of the dev flavor on the one
+# connected phone, each printing its own numbers. PERF_TARGETS picks a subset.
+PERF_TARGETS ?= jank_benchmark_test progress_benchmark_test proposal_recompute_benchmark_test
+.PHONY: perf-device
+perf-device: catalog-pack ## Run the device benchmarks (UX-007 frames, Progress charts, proposal recompute) on the connected phone, profile mode
+	@status=0; cd '$(REPO_ROOT)/apps/mobile' && for t in $(PERF_TARGETS); do \
+	  echo "== $$t"; \
+	  '$(FLUTTER)' test "integration_test/$$t.dart" --profile --flavor dev \
+	    --dart-define-from-file=config/dev.json --dart-define=A16_DEVICE=A55 --dart-define=A21_DEVICE=A55 \
+	    $(if $(ANDROID_SERIAL),-d '$(ANDROID_SERIAL)') || status=1; \
+	done; exit $$status
+
+# UX-001 end to end (A42 review fix 5): one seed run, then RUNS sample runs,
+# each a fresh app process timed from its own start to Today ready.
+.PHONY: perf-startup
+perf-startup: catalog-pack ## UX-001 on the connected phone: process start to Today ready, RUNS=10 fresh processes, p50/p90
+	@cd '$(REPO_ROOT)/apps/mobile' && run() { '$(FLUTTER)' test integration_test/startup_benchmark_test.dart \
+	    --profile --flavor dev --dart-define-from-file=config/dev.json --dart-define=A42_STARTUP=$$1 \
+	    $(if $(ANDROID_SERIAL),-d '$(ANDROID_SERIAL)'); }; \
+	run seed >/dev/null || { echo 'perf-startup: the seed run failed'; exit 1; }; \
+	samples=''; for i in $$(seq 1 $(RUNS)); do \
+	  out=$$(run sample 2>&1) || { printf '%s\n' "$$out" | tail -n 30; echo "perf-startup: run $$i failed"; exit 1; }; \
+	  line=$$(printf '%s\n' "$$out" | grep -o 'UX-001 sample: [0-9]* ms.*' | tail -n 1); \
+	  [ -n "$$line" ] || { echo "perf-startup: run $$i gave no sample"; exit 1; }; \
+	  echo "  run $$i: $$line"; samples="$$samples $$(echo "$$line" | sed 's/UX-001 sample: \([0-9]*\) ms.*/\1/')"; \
+	done; \
+	python3 -I -c 'import math,statistics,sys; t=sorted(int(x) for x in sys.argv[1:]); p90=t[max(0,math.ceil(.9*len(t))-1)]; print(f"UX-001 process start to Today ready: p50 {statistics.median(t):g} ms, p90 {p90} ms, max {t[-1]} ms (n={len(t)}, target p90 <= 2000 ms)")' $$samples
+
 .PHONY: cold-start
 cold-start: ## Measure cold start on the connected phone: 1 warm-up + RUNS=10 `am start -W`, median + p90 (COLD_START_APP=<application id>)
 	@ADB='$(ADB)' bash '$(REPO_ROOT)/tools/scripts/cold-start.sh' '$(COLD_START_APP)' '$(RUNS)'

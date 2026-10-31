@@ -17,7 +17,9 @@ Future<RamadanComparison?> ramadanComparison(Ref ref) async {
   final periodsFuture = ref.watch(ramadanOnPeriodsProvider.future);
   final today = await todayFuture;
   final period = RamadanComparison.shownOn(today, await periodsFuture);
-  if (period == null) return null;
+  // A42: leaving Progress during this await disposes the provider; its
+  // later `watch` would throw (an error report for nothing).
+  if (period == null || !ref.mounted) return null;
   final from = period.start.plusDays(-RamadanComparison.beforeDays);
   final to = today.isBefore(period.end) ? today : period.end;
   final totalsFuture = ref.watch(_totalsProvider(from, to).future);

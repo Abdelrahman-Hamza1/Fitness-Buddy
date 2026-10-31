@@ -1,8 +1,9 @@
 // The Progress tab's device benchmark (A16 WP6, T15, PA5). Not run in CI.
 //
-// Run on the phone in profile mode, from apps/mobile, with the device
-// connected over adb:
+// Run on the phone in profile mode with `make perf-device` (A42), or from
+// apps/mobile with the device connected over adb:
 //   flutter test integration_test/progress_benchmark_test.dart --profile \
+//     --flavor dev --dart-define-from-file=config/dev.json \
 //     -d <device-id> --dart-define=A16_DEVICE=A55
 // It seeds one year of synthetic data (ProgressWorkload) into an in-memory
 // database, then for the current month and the 1-year phase times, per
