@@ -22,6 +22,7 @@ _BarcodeProduct _$BarcodeProductFromJson(Map<String, dynamic> json) =>
       labels: (json['labels'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
+      checkLabel: json['checkLabel'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$BarcodeProductToJson(_BarcodeProduct instance) =>
@@ -38,4 +39,5 @@ Map<String, dynamic> _$BarcodeProductToJson(_BarcodeProduct instance) =>
       'servingLabel': instance.servingLabel,
       'ingredientsText': instance.ingredientsText,
       'labels': instance.labels,
+      'checkLabel': instance.checkLabel,
     };

@@ -27,6 +27,7 @@ final class OffProduct {
     this.servingLabel,
     this.ingredients,
     this.labels = const [],
+    this.checkLabel = false,
   });
 
   /// The normalized barcode.
@@ -76,6 +77,10 @@ final class OffProduct {
 
   /// OFF label and ingredient-analysis tags (`en:halal`, `en:vegan`…).
   final List<String> labels;
+
+  /// The server's sanity checks passed but something looks off (B22): the
+  /// scan screen says to compare the numbers with the label.
+  final bool checkLabel;
 }
 
 /// How the server lookup ended.
@@ -136,6 +141,7 @@ final class BarcodeApi {
           servingLabel: p.servingLabel,
           ingredients: p.ingredientsText,
           labels: p.labels,
+          checkLabel: p.checkLabel,
         ),
       );
     } on DioException catch (error) {

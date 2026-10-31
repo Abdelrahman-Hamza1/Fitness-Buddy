@@ -8969,6 +8969,12 @@ abstract class AppLocalizations {
   /// **'Fiber isn\'t listed for this product, so it\'s counted as 0.'**
   String get scannedFiberMissing;
 
+  /// Food sheet after a scan: the server's sanity checks found the product's numbers doubtful (B22). Neutral, not an error.
+  ///
+  /// In en, this message translates to:
+  /// **'Check these numbers against the label.'**
+  String get scannedCheckLabel;
+
   /// Attribution required wherever Open Food Facts data is shown (ODbL). Keep the © and the name.
   ///
   /// In en, this message translates to:

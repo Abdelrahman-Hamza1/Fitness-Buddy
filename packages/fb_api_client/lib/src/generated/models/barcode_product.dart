@@ -24,6 +24,9 @@ abstract class BarcodeProduct with _$BarcodeProduct {
     required String? servingLabel,
     required String? ingredientsText,
     required List<String> labels,
+
+    /// B22: the numbers passed the server's sanity checks but something looks off (energy vs macros, or values rescaled from per serving); the app says to compare with the label. Absent on older servers.
+    @Default(false) bool checkLabel,
   }) = _BarcodeProduct;
 
   factory BarcodeProduct.fromJson(Map<String, Object?> json) =>

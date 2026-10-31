@@ -1,14 +1,14 @@
 namespace FitnessBuddy.Modules.Catalog.Application;
 
-/// <summary>Open Food Facts nutrients per 100 g or 100 ml, already bounded; null = not published or out of range.</summary>
-internal sealed record OffNutrients(double? Kcal, double? ProteinG, double? CarbsG, double? FatG, double? FiberG)
+/// <summary>Open Food Facts nutrients per 100 g or 100 ml after B22 corrections; null = not published. Range checks are <see cref="OffSanity"/>'s.</summary>
+internal sealed record OffNutrients(double? Kcal, double? ProteinG, double? CarbsG, double? FatG, double? FiberG, double? AlcoholG = null)
 {
     public bool Complete => Kcal.HasValue && ProteinG.HasValue && CarbsG.HasValue && FatG.HasValue && FiberG.HasValue;
 }
 
-/// <summary>The OFF fields the app uses (ODbL data, licence-isolated in <c>catalog.off_cache</c>; never catalog rows).</summary>
+/// <summary>The OFF fields the app uses; <see cref="Corrections"/> names the B22 repairs made on ingest (ODbL data, licence-isolated in <c>catalog.off_cache</c>; never catalog rows).</summary>
 internal sealed record OffProduct(string Code, string? Name, string? NameAr, string? Brand, string Basis, OffNutrients Per100,
-    double? ServingQuantity, string? ServingLabel, string? IngredientsText, string[] Labels);
+    double? ServingQuantity, string? ServingLabel, string? IngredientsText, string[] Labels, string[]? Corrections = null);
 
 internal enum OffFetchStatus { Found, NotFound, Unavailable }
 

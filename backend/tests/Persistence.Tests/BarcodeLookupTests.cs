@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using FitnessBuddy.Modules.Catalog.Application;
 using FitnessBuddy.Modules.Catalog.Infrastructure;
 using FitnessBuddy.Modules.Identity.Application;
 using Microsoft.AspNetCore.Hosting;
@@ -162,16 +163,39 @@ public sealed class BarcodeLookupTests(PostgresFixture postgres)
         using var doc = JsonDocument.Parse("""
             {"product_name":"  Juice\u0000 ","product_name_ar":"عصير","brands":" Brand A , Brand B","product_quantity_unit":"ml",
              "serving_quantity":"250","serving_quantity_unit":"ml","serving_size":"250 ml",
-             "nutriments":{"energy_100g":"188.28","proteins_100g":-1,"carbohydrates_100g":"11","fat_100g":1000,"fiber_100g":0.2},
+             "nutriments":{"energy_100g":"188.28","proteins_100g":0.5,"carbohydrates_100g":"11","fat_100g":0.1,"fiber_100g":0.2},
              "ingredients_text":"water, sugar","labels_tags":["en:halal",""],"ingredients_analysis_tags":["en:vegan","en:halal"]}
             """);
         var p = OffMapper.Map(doc.RootElement, "5000000000001");
         Assert.Equal("Juice", p.Name); Assert.Equal("عصير", p.NameAr); Assert.Equal("Brand A", p.Brand); Assert.Equal("ml", p.Basis);
-        Assert.Equal(45, p.Per100.Kcal!.Value, 3); Assert.Null(p.Per100.ProteinG); Assert.Equal(11, p.Per100.CarbsG); Assert.Null(p.Per100.FatG);
-        Assert.False(p.Per100.Complete); Assert.Equal(250, p.ServingQuantity); Assert.Equal(["en:halal", "en:vegan"], p.Labels);
+        Assert.Equal(45, p.Per100.Kcal!.Value, 3); Assert.Equal(0.5, p.Per100.ProteinG); Assert.Equal(11, p.Per100.CarbsG); Assert.Equal(0.1, p.Per100.FatG);
+        Assert.True(p.Per100.Complete); Assert.Equal(250, p.ServingQuantity); Assert.Equal(["en:halal", "en:vegan"], p.Labels);
         using var grams = JsonDocument.Parse("""{"serving_quantity":30,"serving_quantity_unit":"oz","nutriments":{"energy-kcal_100g":2000}}""");
         var g = OffMapper.Map(grams.RootElement, "5000000000001");
-        Assert.Equal("g", g.Basis); Assert.Null(g.ServingQuantity); Assert.Null(g.Per100.Kcal); Assert.Null(g.Name);
+        Assert.Equal("g", g.Basis); Assert.Null(g.ServingQuantity); Assert.Null(g.Name);
+        Assert.True(OffSanity.Check(g.Per100, g.Basis).Rejected);
+    }
+
+    [Fact]
+    [Trait("Rule", "07.3-off-sanity")]
+    public async Task Lookup_rejects_impossible_products_flags_doubtful_ones_and_rechecks_cached_rows()
+    {
+        var clock = new TestClock(); var cache = new MemoryCache();
+        var bad = NewCode(13); var doubtful = NewCode(13); var good = NewCode(13); var legacy = NewCode(13);
+        var client = new FakeClient(code => new(OffFetchStatus.Found, code == bad ? SyntheticProduct(code) with { Per100 = new(1500, 30, 30, 50, 1) }
+            : code == doubtful ? SyntheticProduct(code) with { Per100 = new(400, 6, 45, 6, 1) }
+            : SyntheticProduct(code) with { Per100 = new(258, 6, 45, 6, 1) }));
+        var lookup = Lookup(cache, client, clock);
+        Assert.Equal(BarcodeStatus.NotFound, (await lookup.LookupAsync(bad, Guid.NewGuid(), Ct)).Status);
+        Assert.Null((await cache.GetAsync(bad, Ct))!.Product);
+        var warn = await lookup.LookupAsync(doubtful, Guid.NewGuid(), Ct);
+        Assert.Equal(BarcodeStatus.Found, warn.Status); Assert.True(warn.CheckLabel);
+        var ok = await lookup.LookupAsync(good, Guid.NewGuid(), Ct);
+        Assert.Equal(BarcodeStatus.Found, ok.Status); Assert.False(ok.CheckLabel);
+        // A row cached before B22 is checked when it is served.
+        await cache.PutAsync(legacy, SyntheticProduct(legacy) with { Per100 = new(2000, 5, 5, 5, 1) }, clock.GetUtcNow() + TimeSpan.FromDays(1), Ct);
+        Assert.Equal(BarcodeStatus.NotFound, (await lookup.LookupAsync(legacy, Guid.NewGuid(), Ct)).Status);
+        Assert.Equal(3, client.Calls);
     }
 
     [Fact]

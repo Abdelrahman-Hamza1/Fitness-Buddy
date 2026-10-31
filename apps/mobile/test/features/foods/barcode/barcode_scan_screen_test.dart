@@ -173,6 +173,38 @@ void main() {
     rig.stack.dispose();
   });
 
+  testWidgets('B22 a flagged Open Food Facts product shows the neutral '
+      'check-the-label note on the food sheet', (tester) async {
+    final draft = draftFromOff(_offFor(_ean))!;
+    final rig = SheetRig(scannedChoice(fixtureId(950), draft));
+    final flagged = BarcodeLookup(
+      personalByBarcode: (_) async => null,
+      packByBarcode: (_) async => null,
+      server: (code) async => BarcodeApiFound(
+        OffProduct(
+          code: code,
+          isOff: true,
+          complete: true,
+          perMl: false,
+          name: 'Synthetic halawa',
+          kcal: 520,
+          protein: 12,
+          carbs: 50,
+          fat: 30,
+          fiber: 3,
+          servingQuantity: 30,
+          checkLabel: true,
+        ),
+      ),
+      newId: () => fixtureId(950),
+      count: (_) async {},
+    );
+    await _pump(tester, rig, flagged);
+    await _typeCode(tester, _ean);
+    expect(find.text(_l10n.scannedCheckLabel), findsOneWidget);
+    rig.stack.dispose();
+  });
+
   testWidgets('review: an Open Food Facts product → Add saves the food and '
       'the entry; Undo removes both', (tester) async {
     final draft = draftFromOff(_offFor(_ean))!;
@@ -270,7 +302,7 @@ void main() {
           asked.add(code);
           return const BarcodeApiNotFound();
         },
-        newId: () => fixtureId(951),
+        newId: () => fixtureId(950),
         count: (_) async {},
       ),
     );

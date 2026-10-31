@@ -6862,6 +6862,10 @@
   "@scannedFiberMissing": {
     "description": "Food sheet after a scan: the product has no fiber value (A28a D9)."
   },
+  "scannedCheckLabel": "Check these numbers against the label.",
+  "@scannedCheckLabel": {
+    "description": "Food sheet after a scan: the server's sanity checks found the product's numbers doubtful (B22). Neutral, not an error."
+  },
   "offAttribution": "© Open Food Facts contributors",
   "@offAttribution": {
     "description": "Attribution required wherever Open Food Facts data is shown (ODbL). Keep the © and the name."

@@ -6223,6 +6223,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Fiber isn\'t listed for this product, so it\'s counted as 0.';
 
   @override
+  String get scannedCheckLabel => 'Check these numbers against the label.';
+
+  @override
   String get offAttribution => '© Open Food Facts contributors';
 
   @override

@@ -40,7 +40,7 @@ internal static class CatalogEndpoints
         var result = await lookup.LookupAsync(code, owner, cancellationToken);
         switch (result.Status)
         {
-            case BarcodeStatus.Found: return TypedResults.Ok(BarcodeProduct.From(result.Product!));
+            case BarcodeStatus.Found: return TypedResults.Ok(BarcodeProduct.From(result.Product!, result.CheckLabel));
             case BarcodeStatus.NotFound: return TypedResults.Problem(statusCode: 404);
             case BarcodeStatus.Invalid:
                 return TypedResults.ValidationProblem(new Dictionary<string, string[]> { ["code"] = ["Use a GTIN-8, -12, -13 or -14 barcode with a valid check digit."] });

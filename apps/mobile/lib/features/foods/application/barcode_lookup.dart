@@ -30,6 +30,7 @@ final class ScannedProduct {
     this.halal = const {},
     this.fiberMissing = false,
     this.fromOff = false,
+    this.checkLabel = false,
   });
 
   /// The normalized barcode.
@@ -54,6 +55,9 @@ final class ScannedProduct {
 
   /// OFF has no fiber value: it's logged as 0 (A28a D9).
   final bool fiberMissing;
+
+  /// The server flagged the numbers (B22): compare them with the label.
+  final bool checkLabel;
 }
 
 /// How a typed code is read (review fix 4).
@@ -370,6 +374,7 @@ final class BarcodeLookup {
           servingLabel: product.servingLabel,
           fiberMissing: product.fiber == null,
           fromOff: product.isOff,
+          checkLabel: product.checkLabel,
           halal: _halalOf(product),
         );
         final draft = draftFromOff(product);

@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BarcodeProduct {
 
- String get code; String get source; bool get complete; String? get name; String? get nameAr; String? get brand; String get basis; BarcodeNutrients get per100; double? get servingQuantity; String? get servingLabel; String? get ingredientsText; List<String> get labels;
+ String get code; String get source; bool get complete; String? get name; String? get nameAr; String? get brand; String get basis; BarcodeNutrients get per100; double? get servingQuantity; String? get servingLabel; String? get ingredientsText; List<String> get labels;/// B22: the numbers passed the server's sanity checks but something looks off (energy vs macros, or values rescaled from per serving); the app says to compare with the label. Absent on older servers.
+ bool get checkLabel;
 /// Create a copy of BarcodeProduct
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +31,20 @@ $BarcodeProductCopyWith<BarcodeProduct> get copyWith => _$BarcodeProductCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as BarcodeProduct;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BarcodeProduct&&(identical(other.code, _this.code) || other.code == _this.code)&&(identical(other.source, _this.source) || other.source == _this.source)&&(identical(other.complete, _this.complete) || other.complete == _this.complete)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.nameAr, _this.nameAr) || other.nameAr == _this.nameAr)&&(identical(other.brand, _this.brand) || other.brand == _this.brand)&&(identical(other.basis, _this.basis) || other.basis == _this.basis)&&(identical(other.per100, _this.per100) || other.per100 == _this.per100)&&(identical(other.servingQuantity, _this.servingQuantity) || other.servingQuantity == _this.servingQuantity)&&(identical(other.servingLabel, _this.servingLabel) || other.servingLabel == _this.servingLabel)&&(identical(other.ingredientsText, _this.ingredientsText) || other.ingredientsText == _this.ingredientsText)&&const DeepCollectionEquality().equals(other.labels, _this.labels));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BarcodeProduct&&(identical(other.code, _this.code) || other.code == _this.code)&&(identical(other.source, _this.source) || other.source == _this.source)&&(identical(other.complete, _this.complete) || other.complete == _this.complete)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.nameAr, _this.nameAr) || other.nameAr == _this.nameAr)&&(identical(other.brand, _this.brand) || other.brand == _this.brand)&&(identical(other.basis, _this.basis) || other.basis == _this.basis)&&(identical(other.per100, _this.per100) || other.per100 == _this.per100)&&(identical(other.servingQuantity, _this.servingQuantity) || other.servingQuantity == _this.servingQuantity)&&(identical(other.servingLabel, _this.servingLabel) || other.servingLabel == _this.servingLabel)&&(identical(other.ingredientsText, _this.ingredientsText) || other.ingredientsText == _this.ingredientsText)&&const DeepCollectionEquality().equals(other.labels, _this.labels)&&(identical(other.checkLabel, _this.checkLabel) || other.checkLabel == _this.checkLabel));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as BarcodeProduct;
-  return Object.hash(runtimeType,_this.code,_this.source,_this.complete,_this.name,_this.nameAr,_this.brand,_this.basis,_this.per100,_this.servingQuantity,_this.servingLabel,_this.ingredientsText,const DeepCollectionEquality().hash(_this.labels));
+  return Object.hash(runtimeType,_this.code,_this.source,_this.complete,_this.name,_this.nameAr,_this.brand,_this.basis,_this.per100,_this.servingQuantity,_this.servingLabel,_this.ingredientsText,const DeepCollectionEquality().hash(_this.labels),_this.checkLabel);
 }
 
 @override
 String toString() {
   final _this = this as BarcodeProduct;
-  return 'BarcodeProduct(code: ${_this.code}, source: ${_this.source}, complete: ${_this.complete}, name: ${_this.name}, nameAr: ${_this.nameAr}, brand: ${_this.brand}, basis: ${_this.basis}, per100: ${_this.per100}, servingQuantity: ${_this.servingQuantity}, servingLabel: ${_this.servingLabel}, ingredientsText: ${_this.ingredientsText}, labels: ${_this.labels})';
+  return 'BarcodeProduct(code: ${_this.code}, source: ${_this.source}, complete: ${_this.complete}, name: ${_this.name}, nameAr: ${_this.nameAr}, brand: ${_this.brand}, basis: ${_this.basis}, per100: ${_this.per100}, servingQuantity: ${_this.servingQuantity}, servingLabel: ${_this.servingLabel}, ingredientsText: ${_this.ingredientsText}, labels: ${_this.labels}, checkLabel: ${_this.checkLabel})';
 }
 
 
@@ -54,7 +55,7 @@ abstract mixin class $BarcodeProductCopyWith<$Res>  {
   factory $BarcodeProductCopyWith(BarcodeProduct value, $Res Function(BarcodeProduct) _then) = _$BarcodeProductCopyWithImpl;
 @useResult
 $Res call({
- String code, String source, bool complete, String? name, String? nameAr, String? brand, String basis, BarcodeNutrients per100, double? servingQuantity, String? servingLabel, String? ingredientsText, List<String> labels
+ String code, String source, bool complete, String? name, String? nameAr, String? brand, String basis, BarcodeNutrients per100, double? servingQuantity, String? servingLabel, String? ingredientsText, List<String> labels, bool checkLabel
 });
 
 
@@ -71,7 +72,7 @@ class _$BarcodeProductCopyWithImpl<$Res>
 
 /// Create a copy of BarcodeProduct
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? code = null,Object? source = null,Object? complete = null,Object? name = freezed,Object? nameAr = freezed,Object? brand = freezed,Object? basis = null,Object? per100 = null,Object? servingQuantity = freezed,Object? servingLabel = freezed,Object? ingredientsText = freezed,Object? labels = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? code = null,Object? source = null,Object? complete = null,Object? name = freezed,Object? nameAr = freezed,Object? brand = freezed,Object? basis = null,Object? per100 = null,Object? servingQuantity = freezed,Object? servingLabel = freezed,Object? ingredientsText = freezed,Object? labels = null,Object? checkLabel = null,}) {
   return _then(BarcodeProduct(
 code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
 as String,source: null == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
@@ -85,7 +86,8 @@ as BarcodeNutrients,servingQuantity: freezed == servingQuantity ? _self.servingQ
 as double?,servingLabel: freezed == servingLabel ? _self.servingLabel : servingLabel // ignore: cast_nullable_to_non_nullable
 as String?,ingredientsText: freezed == ingredientsText ? _self.ingredientsText : ingredientsText // ignore: cast_nullable_to_non_nullable
 as String?,labels: null == labels ? _self.labels : labels // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as List<String>,checkLabel: null == checkLabel ? _self.checkLabel : checkLabel // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 /// Create a copy of BarcodeProduct
@@ -179,10 +181,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String code,  String source,  bool complete,  String? name,  String? nameAr,  String? brand,  String basis,  BarcodeNutrients per100,  double? servingQuantity,  String? servingLabel,  String? ingredientsText,  List<String> labels)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String code,  String source,  bool complete,  String? name,  String? nameAr,  String? brand,  String basis,  BarcodeNutrients per100,  double? servingQuantity,  String? servingLabel,  String? ingredientsText,  List<String> labels,  bool checkLabel)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BarcodeProduct() when $default != null:
-return $default(_that.code,_that.source,_that.complete,_that.name,_that.nameAr,_that.brand,_that.basis,_that.per100,_that.servingQuantity,_that.servingLabel,_that.ingredientsText,_that.labels);case _:
+return $default(_that.code,_that.source,_that.complete,_that.name,_that.nameAr,_that.brand,_that.basis,_that.per100,_that.servingQuantity,_that.servingLabel,_that.ingredientsText,_that.labels,_that.checkLabel);case _:
   return orElse();
 
 }
@@ -200,10 +202,10 @@ return $default(_that.code,_that.source,_that.complete,_that.name,_that.nameAr,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String code,  String source,  bool complete,  String? name,  String? nameAr,  String? brand,  String basis,  BarcodeNutrients per100,  double? servingQuantity,  String? servingLabel,  String? ingredientsText,  List<String> labels)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String code,  String source,  bool complete,  String? name,  String? nameAr,  String? brand,  String basis,  BarcodeNutrients per100,  double? servingQuantity,  String? servingLabel,  String? ingredientsText,  List<String> labels,  bool checkLabel)  $default,) {final _that = this;
 switch (_that) {
 case _BarcodeProduct():
-return $default(_that.code,_that.source,_that.complete,_that.name,_that.nameAr,_that.brand,_that.basis,_that.per100,_that.servingQuantity,_that.servingLabel,_that.ingredientsText,_that.labels);case _:
+return $default(_that.code,_that.source,_that.complete,_that.name,_that.nameAr,_that.brand,_that.basis,_that.per100,_that.servingQuantity,_that.servingLabel,_that.ingredientsText,_that.labels,_that.checkLabel);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -220,10 +222,10 @@ return $default(_that.code,_that.source,_that.complete,_that.name,_that.nameAr,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String code,  String source,  bool complete,  String? name,  String? nameAr,  String? brand,  String basis,  BarcodeNutrients per100,  double? servingQuantity,  String? servingLabel,  String? ingredientsText,  List<String> labels)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String code,  String source,  bool complete,  String? name,  String? nameAr,  String? brand,  String basis,  BarcodeNutrients per100,  double? servingQuantity,  String? servingLabel,  String? ingredientsText,  List<String> labels,  bool checkLabel)?  $default,) {final _that = this;
 switch (_that) {
 case _BarcodeProduct() when $default != null:
-return $default(_that.code,_that.source,_that.complete,_that.name,_that.nameAr,_that.brand,_that.basis,_that.per100,_that.servingQuantity,_that.servingLabel,_that.ingredientsText,_that.labels);case _:
+return $default(_that.code,_that.source,_that.complete,_that.name,_that.nameAr,_that.brand,_that.basis,_that.per100,_that.servingQuantity,_that.servingLabel,_that.ingredientsText,_that.labels,_that.checkLabel);case _:
   return null;
 
 }
@@ -235,7 +237,7 @@ return $default(_that.code,_that.source,_that.complete,_that.name,_that.nameAr,_
 @JsonSerializable()
 
 class _BarcodeProduct implements BarcodeProduct {
-  const _BarcodeProduct({required this.code, required this.source, required this.complete, required this.name, required this.nameAr, required this.brand, required this.basis, required this.per100, required this.servingQuantity, required this.servingLabel, required this.ingredientsText, required  List<String> labels}): _labels = labels;
+  const _BarcodeProduct({required this.code, required this.source, required this.complete, required this.name, required this.nameAr, required this.brand, required this.basis, required this.per100, required this.servingQuantity, required this.servingLabel, required this.ingredientsText, required  List<String> labels, this.checkLabel = false}): _labels = labels;
   factory _BarcodeProduct.fromJson(Map<String, dynamic> json) => _$BarcodeProductFromJson(json);
 
 @override final  String code;
@@ -256,6 +258,8 @@ class _BarcodeProduct implements BarcodeProduct {
   return EqualUnmodifiableListView(_labels);
 }
 
+/// B22: the numbers passed the server's sanity checks but something looks off (energy vs macros, or values rescaled from per serving); the app says to compare with the label. Absent on older servers.
+@override@JsonKey() final  bool checkLabel;
 
 /// Create a copy of BarcodeProduct
 /// with the given fields replaced by the non-null parameter values.
@@ -270,18 +274,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _BarcodeProduct&&(identical(other.code, code) || other.code == code)&&(identical(other.source, source) || other.source == source)&&(identical(other.complete, complete) || other.complete == complete)&&(identical(other.name, name) || other.name == name)&&(identical(other.nameAr, nameAr) || other.nameAr == nameAr)&&(identical(other.brand, brand) || other.brand == brand)&&(identical(other.basis, basis) || other.basis == basis)&&(identical(other.per100, per100) || other.per100 == per100)&&(identical(other.servingQuantity, servingQuantity) || other.servingQuantity == servingQuantity)&&(identical(other.servingLabel, servingLabel) || other.servingLabel == servingLabel)&&(identical(other.ingredientsText, ingredientsText) || other.ingredientsText == ingredientsText)&&const DeepCollectionEquality().equals(other.labels, _labels));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _BarcodeProduct&&(identical(other.code, code) || other.code == code)&&(identical(other.source, source) || other.source == source)&&(identical(other.complete, complete) || other.complete == complete)&&(identical(other.name, name) || other.name == name)&&(identical(other.nameAr, nameAr) || other.nameAr == nameAr)&&(identical(other.brand, brand) || other.brand == brand)&&(identical(other.basis, basis) || other.basis == basis)&&(identical(other.per100, per100) || other.per100 == per100)&&(identical(other.servingQuantity, servingQuantity) || other.servingQuantity == servingQuantity)&&(identical(other.servingLabel, servingLabel) || other.servingLabel == servingLabel)&&(identical(other.ingredientsText, ingredientsText) || other.ingredientsText == ingredientsText)&&const DeepCollectionEquality().equals(other.labels, _labels)&&(identical(other.checkLabel, checkLabel) || other.checkLabel == checkLabel));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,code,source,complete,name,nameAr,brand,basis,per100,servingQuantity,servingLabel,ingredientsText,const DeepCollectionEquality().hash(_labels));
+    return Object.hash(runtimeType,code,source,complete,name,nameAr,brand,basis,per100,servingQuantity,servingLabel,ingredientsText,const DeepCollectionEquality().hash(_labels),checkLabel);
 }
 
 @override
 String toString() {
-    return 'BarcodeProduct(code: $code, source: $source, complete: $complete, name: $name, nameAr: $nameAr, brand: $brand, basis: $basis, per100: $per100, servingQuantity: $servingQuantity, servingLabel: $servingLabel, ingredientsText: $ingredientsText, labels: $labels)';
+    return 'BarcodeProduct(code: $code, source: $source, complete: $complete, name: $name, nameAr: $nameAr, brand: $brand, basis: $basis, per100: $per100, servingQuantity: $servingQuantity, servingLabel: $servingLabel, ingredientsText: $ingredientsText, labels: $labels, checkLabel: $checkLabel)';
 }
 
 
@@ -292,7 +296,7 @@ abstract mixin class _$BarcodeProductCopyWith<$Res> implements $BarcodeProductCo
   factory _$BarcodeProductCopyWith(_BarcodeProduct value, $Res Function(_BarcodeProduct) _then) = __$BarcodeProductCopyWithImpl;
 @override @useResult
 $Res call({
- String code, String source, bool complete, String? name, String? nameAr, String? brand, String basis, BarcodeNutrients per100, double? servingQuantity, String? servingLabel, String? ingredientsText, List<String> labels
+ String code, String source, bool complete, String? name, String? nameAr, String? brand, String basis, BarcodeNutrients per100, double? servingQuantity, String? servingLabel, String? ingredientsText, List<String> labels, bool checkLabel
 });
 
 
@@ -309,7 +313,7 @@ class __$BarcodeProductCopyWithImpl<$Res>
 
 /// Create a copy of BarcodeProduct
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? code = null,Object? source = null,Object? complete = null,Object? name = freezed,Object? nameAr = freezed,Object? brand = freezed,Object? basis = null,Object? per100 = null,Object? servingQuantity = freezed,Object? servingLabel = freezed,Object? ingredientsText = freezed,Object? labels = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? code = null,Object? source = null,Object? complete = null,Object? name = freezed,Object? nameAr = freezed,Object? brand = freezed,Object? basis = null,Object? per100 = null,Object? servingQuantity = freezed,Object? servingLabel = freezed,Object? ingredientsText = freezed,Object? labels = null,Object? checkLabel = null,}) {
   return _then(_BarcodeProduct(
 code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
 as String,source: null == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
@@ -323,7 +327,8 @@ as BarcodeNutrients,servingQuantity: freezed == servingQuantity ? _self.servingQ
 as double?,servingLabel: freezed == servingLabel ? _self.servingLabel : servingLabel // ignore: cast_nullable_to_non_nullable
 as String?,ingredientsText: freezed == ingredientsText ? _self.ingredientsText : ingredientsText // ignore: cast_nullable_to_non_nullable
 as String?,labels: null == labels ? _self._labels : labels // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as List<String>,checkLabel: null == checkLabel ? _self.checkLabel : checkLabel // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

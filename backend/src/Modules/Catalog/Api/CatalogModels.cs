@@ -29,8 +29,8 @@ internal sealed record CatalogPack(int Version, string Url, string Sha256, int S
 internal sealed record BarcodeNutrients(double? Kcal, double? ProteinG, double? CarbsG, double? FatG, double? FiberG);
 /// <summary>Open Food Facts data (ODbL): the app shows "© Open Food Facts contributors" when <see cref="Source"/> is "off".</summary>
 internal sealed record BarcodeProduct(string Code, string Source, bool Complete, string? Name, string? NameAr, string? Brand, string Basis,
-    BarcodeNutrients Per100, double? ServingQuantity, string? ServingLabel, string? IngredientsText, string[] Labels)
+    BarcodeNutrients Per100, double? ServingQuantity, string? ServingLabel, string? IngredientsText, string[] Labels, bool CheckLabel = false)
 {
-    internal static BarcodeProduct From(OffProduct p) => new(p.Code, "off", p.Per100.Complete, p.Name, p.NameAr, p.Brand, p.Basis,
-        new(p.Per100.Kcal, p.Per100.ProteinG, p.Per100.CarbsG, p.Per100.FatG, p.Per100.FiberG), p.ServingQuantity, p.ServingLabel, p.IngredientsText, p.Labels);
+    internal static BarcodeProduct From(OffProduct p, bool checkLabel = false) => new(p.Code, "off", p.Per100.Complete, p.Name, p.NameAr, p.Brand, p.Basis,
+        new(p.Per100.Kcal, p.Per100.ProteinG, p.Per100.CarbsG, p.Per100.FatG, p.Per100.FiberG), p.ServingQuantity, p.ServingLabel, p.IngredientsText, p.Labels, checkLabel);
 }

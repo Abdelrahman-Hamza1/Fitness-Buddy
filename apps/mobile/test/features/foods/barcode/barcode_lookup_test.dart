@@ -36,6 +36,7 @@ OffProduct _off({
   double? serving = 30,
   String? ingredients,
   List<String> labels = const [],
+  bool checkLabel = false,
 }) => OffProduct(
   code: code,
   isOff: true,
@@ -51,6 +52,7 @@ OffProduct _off({
   servingQuantity: serving,
   ingredients: ingredients,
   labels: labels,
+  checkLabel: checkLabel,
 );
 
 final class _Ports {
@@ -142,6 +144,19 @@ void main() {
         expect(ports.counted, [BarcodeCoverageKind.found]);
       },
     );
+
+    test('the check-the-label flag reaches the product header', () async {
+      final ports = _Ports()..server = BarcodeApiFound(_off(checkLabel: true));
+      final outcome = await ports.lookup().lookup(_ean) as BarcodeFound;
+      expect(outcome.product.checkLabel, isTrue);
+      final plain = _Ports()..server = BarcodeApiFound(_off());
+      expect(
+        ((await plain.lookup().lookup(
+          _ean,
+        )) as BarcodeFound).product.checkLabel,
+        isFalse,
+      );
+    });
 
     test(
       'missing fiber logs as 0 with a note and counts as incomplete',

@@ -848,6 +848,11 @@
             "items": {
               "type": "string"
             }
+          },
+          "checkLabel": {
+            "type": "boolean",
+            "default": false,
+            "description": "B22: the numbers passed the server's sanity checks but something looks off (energy vs macros, or values rescaled from per serving); the app says to compare with the label. Absent on older servers."
           }
         }
       }
