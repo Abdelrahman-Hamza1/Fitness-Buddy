@@ -1,5 +1,6 @@
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/db/sync/drift_sync_store.dart';
+import 'package:fb_mobile/core/sync/legacy_target_factors.dart';
 import 'package:fb_sync/fb_sync.dart';
 
 /// One earlier version of a row from the server's history (G7, A34 D14).
@@ -47,6 +48,9 @@ Future<List<EarlierVersion>> readEarlierVersions(
 }) async {
   final dataset = (await store.checkpoint()).datasetId;
   final localVersion = await store.localVersion(entity, id);
+  final factorsSince = entity == 'targetSettings'
+      ? await store.dayFactorsSinceMs()
+      : null;
   final versions = <EarlierVersion>[];
   var cursor = '0';
   for (var page = 0; page < maxPages; page++) {
@@ -72,7 +76,13 @@ Future<List<EarlierVersion>> readEarlierVersions(
           hlc: d.hlc,
           wallMs: hlc.wallMs,
           deleted: d.deletedAt != null,
-          payload: payload,
+          payload: entity == 'targetSettings'
+              ? legacyTargetSettings(
+                  payload,
+                  wallMs: hlc.wallMs,
+                  sinceMs: factorsSince,
+                )
+              : payload,
           localVersion: localVersion,
         ),
       );

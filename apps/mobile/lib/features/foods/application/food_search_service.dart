@@ -298,8 +298,8 @@ final class FoodSearchService {
       if (index != null)
         for (final token in tokens.toSet()) token: index.corrections(token),
     };
-    MatchStrength? match(Iterable<String> keys) {
-      MatchStrength? best;
+    ({MatchStrength strength, String key})? matchKey(Iterable<String> keys) {
+      ({MatchStrength strength, String key})? best;
       for (final name in keys) {
         final strength = NameMatcher.match(
           key,
@@ -307,17 +307,23 @@ final class FoodSearchService {
           name,
           corrections: corrections,
         );
-        if (strength != null && (best == null || strength.index > best.index)) {
-          best = strength;
+        if (strength != null &&
+            (best == null || strength.index > best.strength.index)) {
+          best = (strength: strength, key: name);
         }
       }
       return best;
     }
 
+    MatchStrength? match(Iterable<String> keys) => matchKey(keys)?.strength;
+
     final names = await repository.candidateNames(
       CandidateQuery(key, corrections: corrections),
     );
     final best = <String, MatchStrength>{};
+    // The name behind each target's best strength; a display name wins a
+    // tie, so an alias is named only when nothing shown matched as well.
+    final bestName = <String, CatalogNameRow>{};
     final hits = <String, int>{};
     final lengths = <String, int>{};
     for (final name in names) {
@@ -326,6 +332,11 @@ final class FoodSearchService {
       final id = name.targetId;
       if (best[id] == null || strength.index > best[id]!.index) {
         best[id] = strength;
+        bestName[id] = name;
+      } else if (strength == best[id] &&
+          name.isDisplay &&
+          !bestName[id]!.isDisplay) {
+        bestName[id] = name;
       }
       if ((hits[id] ?? -1) < name.wordHits) hits[id] = name.wordHits;
       if ((lengths[id] ?? 1 << 30) > name.key.length) {
@@ -352,7 +363,13 @@ final class FoodSearchService {
     final foods = await repository.foodsByIds(selected);
     final candidates = <SearchCandidate<FoodSearchRow>>[];
     final historyById = {for (final h in _history) _identity(h.food.ref): h};
-    void add(FoodChoice choice, MatchStrength strength, SourceTier tier) {
+    void add(
+      FoodChoice choice,
+      MatchStrength strength,
+      SourceTier tier, {
+      String? matchedKey,
+      bool matchedDisplay = false,
+    }) {
       final f = choice.catalogFood;
       final h = choice.lastUsed;
       final row = FoodSearchRow(
@@ -360,6 +377,8 @@ final class FoodSearchService {
         tier: tier,
         parsed: carried,
         system: system,
+        matchedKey: matchedKey,
+        matchedDisplay: matchedDisplay,
       );
       candidates.add(
         SearchCandidate(
@@ -377,12 +396,18 @@ final class FoodSearchService {
     }
 
     for (final f in _personal.values) {
-      final strength = match(_personalKeys(f));
-      if (strength != null) {
+      final hit = matchKey(_personalKeys(f));
+      if (hit != null) {
+        final shown = {
+          normalizeKey(f.names.en),
+          if (f.names.ar case final ar?) normalizeKey(ar),
+        };
         add(
           personalChoice(f, history: historyById['personal:${f.id}']),
-          strength,
+          hit.strength,
           SourceTier.personal,
+          matchedKey: hit.key,
+          matchedDisplay: shown.contains(hit.key),
         );
       }
     }
@@ -392,14 +417,15 @@ final class FoodSearchService {
         if (!seen.add(f.id)) continue;
         final h = historyById['catalog:${f.id}'];
         final historyMatch = matchedHistory['catalog:${f.id}'];
-        final strength =
-            historyMatch != null && historyMatch.index > best[id]!.index
-            ? historyMatch
-            : best[id]!;
+        final fromHistory =
+            historyMatch != null && historyMatch.index > best[id]!.index;
+        final name = bestName[id]!;
         add(
           catalogChoice(f, history: h),
-          strength,
+          fromHistory ? historyMatch : best[id]!,
           h == null ? _catalogTier(f) : _tier(h),
+          matchedKey: fromHistory ? null : name.key,
+          matchedDisplay: name.isDisplay,
         );
       }
     }

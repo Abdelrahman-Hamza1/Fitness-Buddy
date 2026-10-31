@@ -12,6 +12,7 @@ import 'package:fb_mobile/features/foods/application/foods_providers.dart';
 import 'package:fb_mobile/features/foods/application/log_food.dart';
 import 'package:fb_mobile/features/foods/presentation/barcode/scanned_product_header.dart';
 import 'package:fb_mobile/features/foods/presentation/food_sheet_entry.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter/scheduler.dart' show SchedulerBinding;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show NumberFormat;
@@ -377,17 +378,30 @@ String _shown(AppLocalizations l10n, String text) {
   return text.replaceFirst('.', separator);
 }
 
-class _Header extends StatelessWidget {
+/// The food page header (D-091, any "Food names" setting): the English
+/// name, the Arabic one under it, and "Also called: …" with the food's
+/// aliases (a personal food's own, a catalog food's from the pack).
+class _Header extends ConsumerWidget {
   const new({required this.food});
 
   final FoodChoice food;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
     final ar = food.names.ar;
     final state = food.state;
+    final catalog = food.catalogFood;
+    final aliases =
+        food.personalFood?.aliases ??
+        (catalog == null
+            ? const <String>[]
+            : ref
+                      .watch(catalogAliasesProvider(catalog.id, catalog.dishId))
+                      .value ??
+                  const <String>[]);
+    final muted = FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -400,12 +414,21 @@ class _Header extends StatelessWidget {
               Semantics(
                 header: true,
                 child: Text(
-                  ar == null
-                      ? food.names.en
-                      : l10n.foodSheetNames(food.names.en, ar),
+                  food.names.en,
                   style: FbType.title.copyWith(color: scheme.onSurface),
                 ),
               ),
+              if (ar != null)
+                Text(
+                  ar,
+                  textDirection: TextDirection.rtl,
+                  style: FbType.body.copyWith(color: scheme.onSurface),
+                ),
+              if (aliases.isNotEmpty)
+                Text(
+                  l10n.foodAlsoCalled(aliases.map(isolateName).join(', ')),
+                  style: muted,
+                ),
               if (state != null)
                 Text(
                   l10n.foodSheetState(l10n.foodStateWord(state.code)),

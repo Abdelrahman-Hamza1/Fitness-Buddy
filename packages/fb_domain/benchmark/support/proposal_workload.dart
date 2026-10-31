@@ -73,7 +73,6 @@ final class ProposalWorkload {
           WeekIntake(date: date.plusDays(-1), kcal: 1800),
           WeekIntake(date: date.plusDays(-2), kcal: 0, complete: false),
         ],
-        workoutWeights: {DayOfWeek.saturday: 1.2},
         history: TargetSettingsHistory([
           TargetSettings(
             id: '019a1b2c-0000-7000-8000-000000007777',

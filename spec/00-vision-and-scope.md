@@ -74,7 +74,7 @@ Releases: **R1** = owner · **R2** = friends · **R3** = public · **Later** = n
 | **AI assistant extras** | Q&A on own data, suggestions, weekly review | Recipe from URL | | Program generation, fridge meal plans, grocery list | `10-ai-assistant.md` |
 | **Foods**: database, barcode, label photo, personal foods, local dishes | All, plus private user-added foods | | Shared user-added foods (marked until verified) | | `11-foods-and-data-quality.md` |
 | **Diary**: meal slots, batch cooking, family-cooked dishes, recipes, time handling | All except recipe library | Recipe library | | | `12-diary-meals-recipes.md` |
-| **Targets & goals**: formula → adaptive, weekly budget, shifting, protein, goals incl. monthly | All | | | | `13-targets-and-goals.md` |
+| **Targets & goals**: formula → adaptive, weekly budget, per-weekday numbers, protein, goals incl. monthly | All | | | | `13-targets-and-goals.md` |
 | **Weight & body**: weigh-ins, trend graph, paste import, measurements | Weight, trend, import, measurements | | | | `14-weight-and-body.md` |
 | **Progress photos** (device-only) | | ✓ | | Encrypted backup | `14-weight-and-body.md` |
 | **Workouts**: chat/form logging, PPL templates, last session, graphs, PRs, manual cardio | All | Hide module | | Notes, rest timer, programs | `15-workouts.md` |

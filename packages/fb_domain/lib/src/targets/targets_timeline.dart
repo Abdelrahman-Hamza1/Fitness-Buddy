@@ -6,7 +6,6 @@ import 'package:fb_domain/src/targets/target_settings.dart';
 import 'package:fb_domain/src/targets/weekly_budget.dart';
 import 'package:fb_domain/src/time/local_date.dart';
 import 'package:fb_domain/src/time/week_calendar.dart';
-import 'package:fb_domain/src/workouts/training_shift.dart';
 
 /// One diary day's logged intake, as the app gathers it (D6).
 final class DayIntake {
@@ -46,6 +45,10 @@ enum TargetIssue {
   /// The active goal can't be resolved (deadline passed, target weight
   /// reached or passed); targets keep the stored base (PA3).
   goalNeedsUpdate,
+
+  /// A weekday the user confirmed below the floor is planned below it on
+  /// this date: it stays as set (A53 D4) and is shown calmly.
+  dayBelowFloor,
 }
 
 /// The "This week" line (D7, HM-002): eaten minus planned over the known
@@ -68,6 +71,7 @@ final class WeekPosition {
 final class DayTargets {
   new _({
     required this.day,
+    required this.plan,
     required this.version,
     required this.floorKcal,
     required this.weightKg,
@@ -79,6 +83,11 @@ final class DayTargets {
 
   /// The engine's day: calories, macros, the week (weekly mode).
   final TargetDay day;
+
+  /// The plan the day was computed from: the suggestion (raised to the
+  /// floor, Ramadan "maintain" applied) and the weekday factors. Targets
+  /// draws the week and previews a day's change from it.
+  final TargetPlan plan;
 
   /// The settings version in effect on the date.
   final TargetSettingsRecord version;
@@ -200,8 +209,8 @@ abstract final class TargetsTimeline {
     Iterable<DayIntake> intake = const [],
     WeekCalendar calendar = const WeekCalendar(),
     TargetDefaults defaults = const TargetDefaults(),
-    TrainingShiftInput? training,
     bool ramadanMaintain = false,
+    Map<DayOfWeek, double> floorAcknowledged = const {},
   }) {
     final version = versionOn(settings, date);
     if (profile == null || version == null) return null;
@@ -215,7 +224,10 @@ abstract final class TargetsTimeline {
       ),
     );
     if (floor == null) return null;
-    final storedPlan = _tryEngine(() => version.toPlan(floor));
+    final storedPlan = _tryEngine(
+      () =>
+          version.toPlan(floor).copyWith(floorAcknowledged: floorAcknowledged),
+    );
     if (storedPlan == null) return null;
     // TG-060: on a Ramadan day of a "maintain" season, a generated base
     // drops the goal's energy (the SF-011-capped rate), never below the
@@ -230,37 +242,9 @@ abstract final class TargetsTimeline {
             defaults,
           )
         : null;
-    final versionPlan = maintainBase == null
+    final plan = maintainBase == null
         ? storedPlan
-        : _tryEngine(
-            () => TargetPlan(
-              baseKcal: maintainBase,
-              floorKcal: storedPlan.floorKcal,
-              mode: storedPlan.mode,
-              rebalancing: storedPlan.rebalancing,
-              manual: storedPlan.manual,
-              acknowledged: storedPlan.acknowledged,
-              weights: storedPlan.weights,
-              macros: storedPlan.macros,
-            ),
-          );
-    if (versionPlan == null) return null;
-    // The weekly workout plan's training days shift the same weekly budget
-    // (TG-043, WO-061, A36 D5); workouts never add calories (WO-060).
-    final plan = training == null
-        ? versionPlan
-        : _tryEngine(
-            () => TargetPlan(
-              baseKcal: versionPlan.baseKcal,
-              floorKcal: versionPlan.floorKcal,
-              mode: versionPlan.mode,
-              rebalancing: versionPlan.rebalancing,
-              manual: versionPlan.manual,
-              acknowledged: versionPlan.acknowledged,
-              weights: training.weightsOver(versionPlan.weights),
-              macros: versionPlan.macros,
-            ),
-          );
+        : _tryEngine(() => storedPlan.copyWith(baseKcal: maintainBase));
     if (plan == null) return null;
     final goalWeight = switch (phase?.expression) {
       TargetDateGoal(:final targetKg) ||
@@ -290,8 +274,6 @@ abstract final class TargetsTimeline {
         date: date,
         weightKg: goalWeight ?? weight,
         earlierIntake: known.values,
-        remainingWeights:
-            training?.remainingOver(versionPlan.weights, date) ?? const {},
         calendar: calendar,
       ),
     );
@@ -309,6 +291,7 @@ abstract final class TargetsTimeline {
     }
     return DayTargets._(
       day: targetDay,
+      plan: plan,
       version: version,
       floorKcal: floor,
       weightKg: weight,
@@ -321,6 +304,10 @@ abstract final class TargetsTimeline {
         if (phase != null &&
             resolve(phase, weightKg: weight, date: date) == null)
           TargetIssue.goalNeedsUpdate,
+        if (DayOfWeek.values.any(
+          (d) => plan.keptBelowFloor(d) && plan.plannedKcal(d) < floor,
+        ))
+          TargetIssue.dayBelowFloor,
       },
       week: position,
       ramadanMaintain: maintainBase != null,

@@ -112,12 +112,11 @@ List<WeighIn> progressWeighIns() {
 /// The Progress tab's providers without a database: [progressToday], a
 /// Saturday week, fixed targets, one phase, [logs], the weigh-ins, and a
 /// fixed weekly workout summary. While [failLogs] returns true the diary
-/// read fails, while [failTraining] does the training plan's shift, while
-/// [failTargets] the stored targets' stream (error-state tests).
+/// read fails, while [failTargets] the stored targets' stream (error-state
+/// tests).
 List<Override> progressOverrides({
   List<DayLog>? logs,
   bool Function()? failLogs,
-  bool Function()? failTraining,
   bool Function()? failTargets,
   Future<CheckInRun> Function()? checkIn,
 }) {
@@ -128,6 +127,9 @@ List<Override> progressOverrides({
     ),
     todayProvider.overrideWith((ref) => Stream.value(progressToday)),
     weekStartProvider.overrideWith((ref) => Stream.value(DayOfWeek.saturday)),
+    dayFloorAcksProvider.overrideWith(
+      (ref) => Stream.value(const <DayOfWeek, double>{}),
+    ),
     ramadanOff,
     targetsDataProvider.overrideWith(
       (ref) => (failTargets?.call() ?? false)
@@ -151,11 +153,6 @@ List<Override> progressOverrides({
                 if (!log.date.isBefore(range.$1) && !log.date.isAfter(range.$2))
                   log,
             ],
-    ),
-    trainingShiftProvider.overrideWith(
-      (ref, range) async => (failTraining?.call() ?? false)
-          ? throw StateError('synthetic plan read failure')
-          : null,
     ),
     // A38: no check-in run or stored answers; the estimate reads [all].
     weeklyCheckInProvider.overrideWith(

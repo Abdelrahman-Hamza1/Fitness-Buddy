@@ -19,6 +19,7 @@ class TypedNumberField extends StatefulWidget {
     this.maxDecimals = 1,
     this.semanticLabel,
     this.textInputAction = TextInputAction.next,
+    this.autofocus = false,
     super.key,
   });
 
@@ -48,6 +49,9 @@ class TypedNumberField extends StatefulWidget {
 
   /// The keyboard's action button.
   final TextInputAction textInputAction;
+
+  /// Whether the field takes focus when it appears.
+  final bool autofocus;
 
   @override
   State<TypedNumberField> createState() => _TypedNumberFieldState();
@@ -101,6 +105,7 @@ class _TypedNumberFieldState extends State<TypedNumberField> {
     maxDecimals: widget.maxDecimals,
     semanticLabel: widget.semanticLabel,
     textInputAction: widget.textInputAction,
+    autofocus: widget.autofocus,
     errorText: widget.showError || _left ? widget.errorText : null,
     onChanged: (text) {
       _edited = true;

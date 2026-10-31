@@ -8,7 +8,8 @@ _Status: **Draft v1** · 2026-10-10 · Main decisions: D-006, D-022, D-051, D-05
 - **LC-002** `[R1]` Interface language: **English** in R1.
 - **LC-003** `[R2]` Full **Arabic interface** with right-to-left layout: mirrored navigation, charts read right-to-left where it makes sense (time axes stay chronological, oldest → newest in reading direction), and fonts suited to Arabic.
 - **LC-004** `[R2]` Digit style setting for the Arabic interface: Western digits (0–9, default) or Arabic-Indic digits (٠–٩).
-- **LC-005** `[R1]` Food names show in the interface language, with the other language visible on details when the food has one (e.g. "Maqluba · مقلوبة").
+- **LC-005** `[R1]` Food names show in the **Food names** language (LC-007), with both names and the other names visible on the food page (e.g. "Maqluba (chicken)" / "مقلوبة دجاج" / "Also called: maqlooba", D-091).
+- **LC-007** `[R1]` **Food names** setting (D-091): Match my phone (default: Arabic when the phone's language list prefers Arabic, else English) / English / Arabic / Both (English with the Arabic name underneath). It applies to search results, recents, diary rows, quick add, saved meal items and your foods. A missing name falls back to the other language; names the user typed stay as typed. A search hit on the other language's name or an alias says "Matched <name>".
 - **LC-006** `[R1]` What's Arabic in R1 and what waits for R2 is summarised in D-080: Buddy **understands** Arabic and Arabizi from R1, but **replies** in Arabic (AI-141) and full Arabic food and exercise names (FD-005, WO-006) come with the Arabic interface in R2.
 
 ## 2. Units (D-006)

@@ -141,6 +141,7 @@ class MePreferencesScreen extends StatelessWidget {
           ThemeSettingRow(),
           WeekStartSettingRow(),
           LanguageSettingRow(),
+          FoodNamesSettingRow(),
           EnergySettingRow(),
         ],
       ),

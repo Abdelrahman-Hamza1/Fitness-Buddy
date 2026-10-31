@@ -400,7 +400,7 @@ void main() {
         version(4).copyWith(
           revision: 2,
           mode: TargetMode.fixed,
-          shifts: {DayOfWeek.friday: 1.3},
+          dayFactors: {DayOfWeek.friday: 1.3},
           macros: MacroSettings(protein: MacroOverride.percent(30)),
         ),
         expectedVersion: 1,

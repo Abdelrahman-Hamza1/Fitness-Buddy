@@ -6,48 +6,18 @@ import '../helpers/property.dart';
 final saturday = LocalDate(2026, 10, 17);
 double sum(Iterable<double> values) => values.fold(0, (a, b) => a + b);
 
-void main() {
-  test('TG-043 unplanned weights preserve unknown past reservations', () {
-    for (final rebalance in [true, false]) {
-      final ordinary = WeeklyBudget.calculate(
-        baseKcal: 2000,
-        floorKcal: 1500,
-        today: saturday.plusDays(4),
-        rebalancing: rebalance,
-      );
-      final workout = WeeklyBudget.calculate(
-        baseKcal: 2000,
-        floorKcal: 1500,
-        today: saturday.plusDays(4),
-        rebalancing: rebalance,
-        remainingWeights: {DayOfWeek.wednesday: 2, DayOfWeek.saturday: 1000},
-      );
-      expect(workout.accountedPastKcal, ordinary.accountedPastKcal);
-      expect(workout.unknownDates, ordinary.unknownDates);
-      expect(workout.planned, ordinary.planned);
-      expect(workout.targets[saturday.plusDays(4)], closeTo(2500, 1e-7));
-      expect(
-        sum(workout.targets.values),
-        closeTo(sum(ordinary.targets.values), 1e-7),
-      );
-      expect(workout.carryKcal, closeTo(0, 1e-7));
-    }
-    expect(
-      () => WeeklyBudget.calculate(
-        baseKcal: 2000,
-        floorKcal: 1500,
-        today: saturday,
-        remainingWeights: {DayOfWeek.friday: double.nan},
-      ),
-      throwsArgumentError,
-    );
-  });
+/// Every weekday at [kcal], with [days] overriding.
+Map<DayOfWeek, double> week(
+  double kcal, [
+  Map<DayOfWeek, double> days = const {},
+]) => {for (final d in DayOfWeek.values) d: days[d] ?? kcal};
 
+void main() {
   test(
     'TG-040 TG-041 worked week consumes known intake and reserves unknown',
     () {
       final result = WeeklyBudget.calculate(
-        baseKcal: 2000,
+        planned: week(2000),
         floorKcal: 1500,
         today: saturday.plusDays(3),
         earlierIntake: [
@@ -68,7 +38,7 @@ void main() {
       expect(result.planned.clear, throwsUnsupportedError);
       expect(result.unknownDates.clear, throwsUnsupportedError);
       final knownZero = WeeklyBudget.calculate(
-        baseKcal: 2000,
+        planned: week(2000),
         floorKcal: 1500,
         today: saturday.plusDays(1),
         earlierIntake: [WeekIntake(date: saturday, kcal: 0)],
@@ -78,12 +48,42 @@ void main() {
     },
   );
 
+  test('TG-040 D-090 the budget is the sum of the planned days; without '
+      'intake every day is exactly its planned number', () {
+    final planned = week(2150, {DayOfWeek.friday: 2600});
+    final result = WeeklyBudget.calculate(
+      planned: planned,
+      floorKcal: 1500,
+      today: saturday,
+    );
+    expect(result.budgetKcal, 2150 * 6 + 2600);
+    expect(result.targets[saturday.plusDays(6)], 2600);
+    expect(result.targets[saturday], 2150);
+    expect(result.carryKcal, 0);
+  });
+
+  test('TG-041 D-090 rebalancing spreads in proportion to the planned '
+      'days', () {
+    final result = WeeklyBudget.calculate(
+      planned: week(2000, {DayOfWeek.friday: 3000}),
+      floorKcal: 1200,
+      today: saturday.plusDays(1),
+      earlierIntake: [WeekIntake(date: saturday, kcal: 2700)],
+    );
+    // 700 over, spread 2000:…:3000 over the six days left (budget 15,000).
+    const rest = 15000 - 2700;
+    const m = rest / (2000 * 5 + 3000);
+    expect(result.targets[saturday.plusDays(1)], closeTo(2000 * m, 1e-7));
+    expect(result.targets[saturday.plusDays(6)], closeTo(3000 * m, 1e-7));
+    expect(result.carryKcal, closeTo(0, 1e-7));
+  });
+
   test(
     'TG-042 impossible remainder becomes over/under, never unsafe targets',
     () {
       for (final intake in [0.0, 3000.0]) {
         final result = WeeklyBudget.calculate(
-          baseKcal: 2000,
+          planned: week(2000),
           floorKcal: 1800,
           today: saturday.plusDays(6),
           earlierIntake: [
@@ -97,85 +97,40 @@ void main() {
         );
         expect(result.carryKcal, closeTo(intake == 0 ? -11500 : 5800, 1e-7));
       }
-      for (final fixed in [false, true]) {
-        expect(
-          () => WeeklyBudget.calculate(
-            baseKcal: 1000,
-            floorKcal: 1600,
-            today: saturday,
-            fixed: fixed,
-          ),
-          throwsArgumentError,
-        );
-      }
     },
   );
 
-  test(
-    'TG-043 WO-060 shifting and unplanned workout redistribute same budget',
-    () {
-      final shifted = WeeklyBudget.calculate(
-        baseKcal: 2000,
-        floorKcal: 1500,
-        today: saturday,
-        weights: {DayOfWeek.friday: 2},
-      );
-      expect(shifted.targets[saturday.plusDays(6)], closeTo(2500, 1e-7));
-      expect(sum(shifted.targets.values), closeTo(14000, 1e-7));
-      final workout = WeeklyBudget.calculate(
-        baseKcal: 2000,
-        floorKcal: 1500,
-        today: saturday.plusDays(4),
-        weights: {DayOfWeek.wednesday: 2},
-        earlierIntake: [
-          for (var i = 0; i < 4; i++)
-            WeekIntake(date: saturday.plusDays(i), kcal: 2000),
-        ],
-      );
-      expect(workout.budgetKcal, shifted.budgetKcal);
-      expect(sum(workout.targets.values), closeTo(6000, 1e-7));
-      expect(workout.targets[saturday.plusDays(4)], closeTo(2500, 1e-7));
-      final extremes = WeeklyBudget.calculate(
-        baseKcal: 2000,
-        floorKcal: 1500,
-        today: saturday,
-        weights: {DayOfWeek.saturday: .001, DayOfWeek.sunday: 1000},
-      );
-      expect(extremes.targets[saturday], closeTo(1500, 1e-7));
-      expect(extremes.targets[saturday.plusDays(1)], closeTo(2500, 1e-7));
-      expect(sum(extremes.targets.values), closeTo(14000, 1e-7));
-    },
-  );
+  test('TG-042 A53 D4 each day moves at most ±25% of its own planned number; '
+      'a day planned below the floor is never lowered further', () {
+    final result = WeeklyBudget.calculate(
+      planned: week(2000, {DayOfWeek.friday: 3000, DayOfWeek.thursday: 1300}),
+      floorKcal: 1500,
+      today: saturday.plusDays(1),
+      earlierIntake: [WeekIntake(date: saturday, kcal: 9000)],
+    );
+    expect(result.targets[saturday.plusDays(6)], closeTo(2250, 1e-7));
+    expect(result.targets[saturday.plusDays(5)], closeTo(1300, 1e-7));
+    expect(result.targets[saturday.plusDays(1)], closeTo(1500, 1e-7));
+    expect(result.carryKcal, greaterThan(0));
+  });
 
-  test(
-    'TG-044 fixed mode ignores weights/intake; rebalancing off keeps plan',
-    () {
-      final fixed = WeeklyBudget.calculate(
-        baseKcal: 2000,
-        floorKcal: 1500,
-        today: saturday.plusDays(1),
-        fixed: true,
-        weights: {DayOfWeek.friday: 2},
-        earlierIntake: [WeekIntake(date: saturday, kcal: 3000)],
-      );
-      expect(fixed.targets.values, everyElement(2000));
-      expect(fixed.carryKcal, 0);
-      final planned = WeeklyBudget.calculate(
-        baseKcal: 2000,
-        floorKcal: 1500,
-        today: saturday.plusDays(1),
-        rebalancing: false,
-        earlierIntake: [WeekIntake(date: saturday, kcal: 3000)],
-      );
-      expect(planned.targets.values, everyElement(closeTo(2000, 1e-7)));
-      expect(planned.carryKcal, closeTo(1000, 1e-7));
-    },
-  );
+  test('TG-044 rebalancing off keeps the planned days', () {
+    final planned = WeeklyBudget.calculate(
+      planned: week(2000, {DayOfWeek.monday: 2400}),
+      floorKcal: 1500,
+      today: saturday.plusDays(1),
+      rebalancing: false,
+      earlierIntake: [WeekIntake(date: saturday, kcal: 3000)],
+    );
+    expect(planned.targets[saturday.plusDays(1)], 2000);
+    expect(planned.targets[saturday.plusDays(2)], 2400);
+    expect(planned.carryKcal, closeTo(1000, 1e-7));
+  });
 
-  test('TG-040 week start and invalid dates/weights are explicit', () {
+  test('TG-040 week start and invalid dates/days are explicit', () {
     for (final start in DayOfWeek.values) {
       final result = WeeklyBudget.calculate(
-        baseKcal: 2000,
+        planned: week(2000),
         floorKcal: 2000,
         today: saturday,
         calendar: WeekCalendar(weekStart: start),
@@ -183,24 +138,24 @@ void main() {
       expect(result.weekStart.weekday, start);
       expect(result.targets.values, everyElement(greaterThanOrEqualTo(2000)));
     }
-    for (final value in [
-      double.nan,
-      double.infinity,
-      -.1,
-      0.0,
-      .0001,
-      1001.0,
-    ]) {
+    for (final value in [double.nan, double.infinity, -.1, 0.0]) {
       expect(
         () => WeeklyBudget.calculate(
-          baseKcal: 2000,
+          planned: week(2000, {DayOfWeek.friday: value}),
           floorKcal: 1500,
           today: saturday,
-          weights: {DayOfWeek.friday: value},
         ),
         throwsArgumentError,
       );
     }
+    expect(
+      () => WeeklyBudget.calculate(
+        planned: {DayOfWeek.friday: 2000},
+        floorKcal: 1500,
+        today: saturday,
+      ),
+      throwsArgumentError,
+    );
     for (final value in [double.nan, -1.0, double.infinity]) {
       expect(
         () => WeekIntake(date: saturday, kcal: value),
@@ -210,7 +165,7 @@ void main() {
     for (final pastDate in [saturday.plusDays(-1), saturday.plusDays(1)]) {
       expect(
         () => WeeklyBudget.calculate(
-          baseKcal: 2000,
+          planned: week(2000),
           floorKcal: 1500,
           today: saturday.plusDays(1),
           earlierIntake: [WeekIntake(date: pastDate, kcal: 1)],
@@ -220,7 +175,7 @@ void main() {
     }
     expect(
       () => WeeklyBudget.calculate(
-        baseKcal: 2000,
+        planned: week(2000),
         floorKcal: 1500,
         today: saturday.plusDays(1),
         earlierIntake: [
@@ -235,52 +190,63 @@ void main() {
   Glados3(
     any.doubleInRange(1200, 6000),
     any.intInRange(0, 7),
-    any.listWithLength(7, any.doubleInRange(.001, 1000)),
+    any.listWithLength(7, any.doubleInRange(.5, 2)),
     propertyRuns,
   ).test('TG-041 TG-042 SF-010 property: floor/bounds and residual identity', (
     base,
     elapsed,
-    weights,
+    factors,
   ) {
-    final floor = base * .9;
+    final floor = base * .6;
+    final planned = {
+      for (var i = 0; i < 7; i++) DayOfWeek.values[i]: base * factors[i],
+    };
     final result = WeeklyBudget.calculate(
-      baseKcal: base,
+      planned: planned,
       floorKcal: floor,
       today: saturday.plusDays(elapsed),
-      weights: {for (var i = 0; i < 7; i++) DayOfWeek.values[i]: weights[i]},
       earlierIntake: [
         for (var i = 0; i < elapsed; i++)
           WeekIntake(date: saturday.plusDays(i), kcal: i.isEven ? base * 2 : 0),
       ],
     );
-    for (final target in result.targets.values) {
+    for (final MapEntry(key: date, value: target) in result.targets.entries) {
+      final p = planned[date.weekday]!;
       expect(target.isFinite, isTrue);
-      expect(target, greaterThanOrEqualTo(floor));
-      expect(target, lessThanOrEqualTo(base * 1.25));
-      expect(target, greaterThanOrEqualTo(base * .75));
+      expect(target, lessThanOrEqualTo(p * 1.25 + 1e-9));
+      expect(target, greaterThanOrEqualTo(p * .75 - 1e-9));
+      expect(target, greaterThanOrEqualTo((p < floor ? p : floor) - 1e-9));
     }
     expect(
       result.accountedPastKcal + sum(result.targets.values),
-      closeTo(result.budgetKcal + result.carryKcal, 1e-7),
+      closeTo(result.budgetKcal + result.carryKcal, 1e-6),
     );
   });
 
   Glados2(
     any.doubleInRange(1200, 6000),
-    any.listWithLength(7, any.doubleInRange(.001, 1000)),
+    any.listWithLength(7, any.doubleInRange(.5, 2)),
     propertyRuns,
-  ).test('TG-043 property: weighted shifting preserves weekly total', (
+  ).test('D-090 property: without intake every day is its planned number', (
     base,
-    weights,
+    factors,
   ) {
-    final result = WeeklyBudget.calculate(
-      baseKcal: base,
-      floorKcal: base * .95,
-      today: saturday,
-      weights: {for (var i = 0; i < 7; i++) DayOfWeek.values[i]: weights[i]},
-    );
-    expect(sum(result.targets.values), closeTo(base * 7, 1e-7));
-    expect(result.carryKcal, closeTo(0, 1e-7));
+    final planned = {
+      for (var i = 0; i < 7; i++) DayOfWeek.values[i]: base * factors[i],
+    };
+    for (final rebalancing in [true, false]) {
+      final result = WeeklyBudget.calculate(
+        planned: planned,
+        floorKcal: base * .5,
+        today: saturday,
+        rebalancing: rebalancing,
+      );
+      for (final MapEntry(key: date, value: kcal) in result.targets.entries) {
+        expect(kcal, planned[date.weekday]);
+      }
+      expect(result.budgetKcal, closeTo(sum(planned.values), 1e-9));
+      expect(result.carryKcal, closeTo(0, 1e-7));
+    }
   });
 
   Glados2(
@@ -292,7 +258,7 @@ void main() {
     elapsed,
   ) {
     final result = WeeklyBudget.calculate(
-      baseKcal: base,
+      planned: week(base),
       floorKcal: base * .75,
       today: saturday.plusDays(elapsed),
       earlierIntake: [

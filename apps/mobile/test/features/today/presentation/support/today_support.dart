@@ -262,6 +262,13 @@ List<Override> fakeToday({
   appNavigatorProvider.overrideWithValue(navigator ?? RecordingNavigator()),
   // No database stream to close at the end of a widget test.
   unitSystemProvider.overrideWith((ref) => Stream.value(units)),
+  foodNameSettingProvider.overrideWith(
+    (ref) => Stream.value(FoodNameLanguage.phone),
+  ),
+  // No settings stream for the confirmed below-floor days (A53).
+  dayFloorAcksProvider.overrideWith(
+    (ref) => Stream.value(const <DayOfWeek, double>{}),
+  ),
   // Normal meals, no Ramadan (A41a): no settings or slot stream.
   ramadanOff,
   daySlotsProvider.overrideWith(
@@ -331,6 +338,10 @@ final class TodayRig {
     appConfigProvider.overrideWithValue(config),
     appNavigatorProvider.overrideWithValue(navigator),
     units.override,
+    // No settings stream to close at the end of a widget test.
+    foodNameSettingProvider.overrideWith(
+      (ref) => Stream.value(FoodNameLanguage.phone),
+    ),
     // The weight card (A14) reads and writes the same in-memory profile.
     weighInRepositoryProvider.overrideWithValue(WeighInRepository(diary.db)),
     weightTipStoreProvider.overrideWithValue(tips),
@@ -338,6 +349,9 @@ final class TodayRig {
     // targets until a test stores some.
     targetsRepositoryProvider.overrideWithValue(TargetsRepository(diary.db)),
     weekStartProvider.overrideWith((ref) => Stream.value(DayOfWeek.saturday)),
+    dayFloorAcksProvider.overrideWith(
+      (ref) => Stream.value(const <DayOfWeek, double>{}),
+    ),
     ramadanOff,
     // The workout row (A37 D20) is the workouts tests' business (R7).
     todayWorkoutProvider.overrideWith((ref, date) => null),

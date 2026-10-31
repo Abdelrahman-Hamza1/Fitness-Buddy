@@ -15,10 +15,12 @@ Future<TargetSettingsRecord> _current(TargetsScreenRig rig) async {
   ], rig.today)!;
 }
 
-/// Opens Targets › Set my own target and applies [kcal].
+/// Opens Targets › How is this worked out? › Set my own number instead and
+/// applies [kcal].
 Future<TargetsScreenRig> _enter(WidgetTester tester, String kcal) async {
   final rig = await TargetsScreenRig.open(tester, route: const TargetsRoute());
-  await rig.tap('Set my own target');
+  await rig.tap('How is this worked out?');
+  await rig.tap('Set my own number instead');
   await tester.enterText(find.widgetWithText(TextField, 'Daily target'), kcal);
   await tester.pumpAndSettle();
   await rig.tapAndSettle('Use this target');

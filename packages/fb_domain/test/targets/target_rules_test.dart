@@ -33,7 +33,7 @@ TargetSettingsRecord _settings({
   double base = 2000,
   bool manual = false,
   double basis = 70,
-  Map<DayOfWeek, double> shifts = const {},
+  Map<DayOfWeek, double> dayFactors = const {},
   MacroSettings? macros,
 }) => TargetSettingsRecord(
   id: _id(2),
@@ -42,7 +42,7 @@ TargetSettingsRecord _settings({
   baseKcal: base,
   basisWeightKg: basis,
   manual: manual,
-  shifts: shifts,
+  dayFactors: dayFactors,
   macros: macros,
 );
 
@@ -99,7 +99,7 @@ void main() {
   });
 
   test('D15 TargetRules.input bounds for rates, months, dates, manual kcal, '
-      'macros, fiber and shifting weights', () {
+      'macros, fiber and day factors', () {
     expect(_input.kgPerWeek(-2), isTrue);
     expect(_input.kgPerWeek(2.01), isFalse);
     expect(_input.monthKg(-8), isTrue);
@@ -124,10 +124,10 @@ void main() {
     expect(_input.macro(100.1, isPercent: true), isFalse);
     expect(_input.fiber(150), isTrue);
     expect(_input.fiber(150.1), isFalse);
-    expect(_input.shift(1), isTrue);
-    expect(_input.shift(2), isTrue);
-    expect(_input.shift(.99), isFalse);
-    expect(_input.shift(2.01), isFalse);
+    expect(_input.dayFactor(.5), isTrue);
+    expect(_input.dayFactor(2), isTrue);
+    expect(_input.dayFactor(.49), isFalse);
+    expect(_input.dayFactor(2.01), isFalse);
 
     Set<TargetRuleViolation> goal(GoalExpression e) =>
         _input.goalPhase(_phase(expression: e), today: _today);
@@ -152,7 +152,7 @@ void main() {
     expect(
       _input.targetSettings(
         _settings(
-          shifts: {DayOfWeek.friday: 1.3, DayOfWeek.monday: 2.5},
+          dayFactors: {DayOfWeek.friday: 1.3, DayOfWeek.monday: 2.5},
           macros: MacroSettings(
             protein: MacroOverride.grams(1200),
             fat: MacroOverride.percent(25),
@@ -162,7 +162,7 @@ void main() {
         ),
       ),
       {
-        TargetRuleViolation.shift,
+        TargetRuleViolation.dayFactor,
         TargetRuleViolation.macroGrams,
         TargetRuleViolation.fiber,
       },
@@ -212,7 +212,7 @@ void main() {
     final synced = _settings(
       manual: true,
       base: 300,
-      shifts: {DayOfWeek.friday: 5},
+      dayFactors: {DayOfWeek.friday: 5},
       macros: MacroSettings(protein: MacroOverride.percent(90)),
     );
     expect(

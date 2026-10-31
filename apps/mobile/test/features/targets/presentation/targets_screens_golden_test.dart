@@ -2,6 +2,8 @@ import 'package:alchemist/alchemist.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_domain/testing.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/features/targets/presentation/day_target_sheet.dart';
+import 'package:fb_mobile/features/targets/presentation/how_sheet.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -33,7 +35,7 @@ TargetSettingsRecord _version({
   TargetMode mode = TargetMode.weekly,
   bool manual = false,
   bool acknowledged = false,
-  Map<DayOfWeek, double> shifts = const {},
+  Map<DayOfWeek, double> dayFactors = const {},
 }) => TargetSettingsRecord(
   id: '01890abc-def0-7123-8abc-0123456789ad',
   revision: 1,
@@ -43,7 +45,7 @@ TargetSettingsRecord _version({
   mode: mode,
   manual: manual,
   acknowledged: acknowledged,
-  shifts: shifts,
+  dayFactors: dayFactors,
 );
 
 TargetsView _targetsView(TargetSettingsRecord version) {
@@ -116,16 +118,36 @@ Future<void> _golden(
 );
 
 Future<void> main() async {
+  final view = _targetsView(
+    _version(dayFactors: const {DayOfWeek.friday: 1.2}),
+  );
   await _golden(
     'targets_screen_weekly',
-    'TG-021 TG-040 TG-043 Targets, weekly budget with a higher-calorie Friday',
+    'D-090 TG-040 Targets, the suggestion with a higher Friday',
     () => const TargetsScreen(),
-    overrides: [
-      targetsViewProvider.overrideWith(
-        (ref) async =>
-            _targetsView(_version(shifts: const {DayOfWeek.friday: 1.3})),
+    overrides: [targetsViewProvider.overrideWith((ref) async => view)],
+    height: 1400,
+  );
+  await _golden(
+    'targets_day_sheet',
+    "D-090 the day sheet: Friday's number, chips and the week line",
+    () => Scaffold(
+      body: Align(
+        alignment: AlignmentDirectional.bottomCenter,
+        child: DayTargetSheet(view: view, weekday: DayOfWeek.friday),
       ),
-    ],
-    height: 1800,
+    ),
+    height: 900,
+  );
+  await _golden(
+    'targets_how_sheet',
+    'D-090 TG-021 how the target is worked out, as steps',
+    () => Scaffold(
+      body: Align(
+        alignment: AlignmentDirectional.bottomCenter,
+        child: SingleChildScrollView(child: HowSheet(view: view)),
+      ),
+    ),
+    height: 1300,
   );
 }

@@ -1,6 +1,6 @@
 # 13 — Targets & Goals
 
-_Status: **Draft v1** · 2026-10-10 · Main decisions: D-020, D-021, D-027, D-034, D-052 to D-054, D-056, D-058, D-070._
+_Status: **Draft v1** · 2026-10-10, amended 2026-10-31 (D-090) · Main decisions: D-020, D-021, D-027, D-034, D-052 to D-054, D-056, D-058, D-070, D-090._
 
 Numeric defaults below are **starting values** based on common evidence-based practice. They're listed in one place (§8) so they can be reviewed together.
 
@@ -19,7 +19,7 @@ Numeric defaults below are **starting values** based on common evidence-based pr
 ## 3. Initial targets (D-053)
 
 - **TG-020** `[R1]` Initial expenditure estimate = Mifflin-St Jeor resting energy × activity factor. The calorie target = expenditure − (or +) the energy for the goal rate (≈ 7,700 kcal per kg per week ÷ 7 per day).
-- **TG-021** `[R1]` The user sees how the number was calculated in plain language, and can override any target manually at any time (manual override is always available, D-053).
+- **TG-021** `[R1]` The user can see how the number was calculated, in plain steps, **on demand** (D-090), and can override any target manually at any time (manual override is always available, D-053).
 
 ## 4. Adaptive targets (D-053, D-054)
 
@@ -32,13 +32,13 @@ Numeric defaults below are **starting values** based on common evidence-based pr
 - **TG-036** `[R1]` Exercise calories are **never** added to the food budget (D-021). Expenditure is learned from real results instead.
 - **TG-037** `[R1]` Ramadan weeks are included, but with lower weight confidence, because weight fluctuates more while fasting (D-052).
 
-## 5. Weekly budget & daily targets (D-056, D-058)
+## 5. Weekly budget & daily targets (D-056, D-058, D-090)
 
-- **TG-040** `[R1]` **Default model: weekly calorie budget + fixed daily protein.** Weekly budget = daily calorie target × 7. The week starts on the user's chosen day (default Saturday, D-070).
-- **TG-041** `[R1]` **Rebalancing** (on by default): each day's calorie target = (weekly budget − calories eaten earlier this week) ÷ days left, so going over on Monday lowers the remaining days a little, and under-eating raises them.
-- **TG-042** `[R1]` Rebalancing limits: no day's target goes below the safety floor (`21`), and no day moves more than **±25%** from the base daily target. Any surplus or deficit beyond that carries as a visible "this week: X over/under" figure instead of being forced into the remaining days.
-- **TG-043** `[R1]` **Calorie shifting** (optional, off by default, D-058): the user assigns a weight to particular days, either planned training days (from the weekly workout plan, `15`) or specific weekdays (e.g. Friday higher). Those days get a larger share of the **same** weekly budget. Logging a workout on an unplanned day redistributes the rest of that week.
-- **TG-044** `[R1]` Simple fixed mode is also available: the same target every day, no weekly logic.
+- **TG-040** `[R1]` **Default model: a suggested daily number + fixed daily protein.** The app suggests one daily calorie target; each weekday can have its own number instead (D-090). The weekly budget is the sum of the seven days. The week starts on the user's chosen day (default Saturday, D-070).
+- **TG-041** `[R1]` **Rebalancing** (on by default): what's left of the weekly budget after the calories eaten earlier this week is spread over the days left in proportion to their numbers, so going over on Monday lowers the remaining days a little, and under-eating raises them.
+- **TG-042** `[R1]` Rebalancing limits: no day's target goes below the safety floor (`21`), and no day moves more than **±25%** from its own number. Any surplus or deficit beyond that carries as a visible "this week: X over/under" figure instead of being forced into the remaining days.
+- **TG-043** `[R1]` **Per-weekday numbers** (D-090, replaces weighted calorie shifting): "Same every day" (default) or "Different by day". Tapping a day sets its number (− / +, quick chips, typing); it is stored relative to the suggestion, so it follows adaptive updates. "Same every day" puts every day back to the suggestion (with Undo). A day below the safety floor needs the SF-012 acknowledgement.
+- **TG-044** `[R1]` Turning rebalancing off (More options) keeps each day at its own number, with no weekly logic. An acknowledged own target below the floor is the same every day with rebalancing off (SF-012).
 - **TG-045** `[R1]` The home screen shows today's remaining calories big and the weekly position small (D-071).
 
 ## 6. Macros & fiber

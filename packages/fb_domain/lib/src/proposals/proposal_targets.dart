@@ -25,12 +25,10 @@ final class ProposalDayContext {
     this.history,
     this.weightKg,
     Iterable<WeekIntake> earlierIntake = const [],
-    Map<DayOfWeek, double> workoutWeights = const {},
     this.calendar = const WeekCalendar(),
     this.ramadan = false,
   }) : confirmed = Map.unmodifiable(confirmed),
-       earlierIntake = List.unmodifiable(earlierIntake),
-       workoutWeights = Map.unmodifiable(workoutWeights);
+       earlierIntake = List.unmodifiable(earlierIntake);
 
   /// Explicit current date.
   final LocalDate today;
@@ -49,9 +47,6 @@ final class ProposalDayContext {
 
   /// Confirmed earlier days with explicit completeness.
   final List<WeekIntake> earlierIntake;
-
-  /// Remaining-day workout weights.
-  final Map<DayOfWeek, double> workoutWeights;
 
   /// User week calendar.
   final WeekCalendar calendar;
@@ -105,7 +100,6 @@ ProposalDayPreview _preview(
               i.date.isBefore(date) &&
               !i.date.isBefore(day.calendar.weekStartOf(date)),
         ),
-        remainingWeights: day.workoutWeights,
         calendar: day.calendar,
       );
   return ProposalDayPreview._(

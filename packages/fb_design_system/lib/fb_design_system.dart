@@ -56,6 +56,7 @@ export 'src/components/swipe_actions.dart';
 export 'src/components/switch_row.dart';
 export 'src/components/text_field.dart';
 export 'src/components/time_picker.dart';
+export 'src/components/week_bars.dart';
 export 'src/theme/fb_theme.dart';
 export 'src/theme/licenses.dart';
 export 'src/tokens/colors.dart';

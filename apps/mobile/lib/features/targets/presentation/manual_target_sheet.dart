@@ -12,47 +12,6 @@ import 'package:fb_mobile/features/targets/presentation/typed_number_field.dart'
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Targets' "Your own target" section (D14, SF-012): "Set my own target"
-/// and, for a manual target, "Use the calculated target".
-class ManualTargetSection extends ConsumerWidget {
-  /// The section for [view].
-  const new({required this.view, super.key});
-
-  /// What Targets shows.
-  final TargetsView view;
-
-  Future<void> _useCalculated(BuildContext context, WidgetRef ref) async {
-    final host = Navigator.of(context, rootNavigator: true).context;
-    final outcome = await ref
-        .read(targetsActionsProvider)
-        .useCalculatedTarget(view.shown);
-    if (!host.mounted) return;
-    showTargetsFeedback(host, outcome, done: (_) => host.l10n.targetsUpdated);
-  }
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        FbSectionHeader(title: l10n.targetsSectionOwn),
-        FbListRow(
-          title: l10n.targetsSetOwn,
-          subtitle: l10n.targetsSetOwnHint,
-          trailing: const Icon(FbIcons.next),
-          onTap: () => unawaited(showManualTargetSheet(context, view: view)),
-        ),
-        if (view.version.manual)
-          FbListRow(
-            title: l10n.targetsUseCalculated,
-            onTap: () => unawaited(_useCalculated(context, ref)),
-          ),
-      ],
-    );
-  }
-}
-
 /// Opens the manual target sheet (D11, D14): a number from 500 to 10,000
 /// kcal. Within the limits it applies with Undo; below the floor or beyond
 /// the 1%/week loss rate the full-screen warning asks for an explicit

@@ -33,7 +33,7 @@ Scope: **simple strength logging, usually entered after the session** (D-028). B
 ## 3. Routine templates & weekly plan
 
 - **WO-020** `[R1]` Templates: a named exercise list with target sets × reps (e.g. "Push: bench 3×8, OHP 3×10, incline DB 3×10, lateral raise 3×15, triceps pushdown 3×12"). Created by form, by chat, or from any logged session ("save as template").
-- **WO-021** `[R1]` **Weekly plan** (optional, never required, D-085): which template on which weekdays (e.g. Sat Push, Sun Pull, Tue Legs, Wed Push). Used for the Today screen hint ("Push day today") and for calorie shifting (TG-043).
+- **WO-021** `[R1]` **Weekly plan** (optional, never required, D-085): which template on which weekdays (e.g. Sat Push, Sun Pull, Tue Legs, Wed Push). Used for the Today screen hint ("Push day today") (calorie shifting from the plan was removed by D-090).
 - **WO-023** `[R1]` **Starter plans** (D-085): an optional gallery (Full body 3 days, Upper/Lower 4, Push/Pull/Legs 3–6, Build my own). Picking one asks for the weekdays, then shows each workout day **empty** with suggested exercises to add (one by one or all): the app never assumes the exercises (D-089). Finishing saves the templates and weekdays in one change with Undo; nothing changes before that.
 - **WO-024** `[R1]` **No-plan training is first-class** (D-085): log by picking exercises or telling Buddy, **Repeat** any past session, the week view shows only trained days, and the app never shows "missed day" messages. The Workouts tab puts today's action first (today's plan card or "Log a workout", recent sessions with Repeat, one "Your plan" row); with nothing logged and no plan it is the setup point (D-089).
 - **WO-022** `[R1]` Templates are updated only when the user chooses: after a session that differs from its template, the app offers "update the Push template with these changes?" (a proposal).
@@ -61,7 +61,7 @@ Scope: **simple strength logging, usually entered after the session** (D-028). B
 ## 7. Relation to nutrition (D-021, D-058)
 
 - **WO-060** `[R1]` Workouts never add calories to the food budget.
-- **WO-061** `[R1]` If calorie shifting is on (TG-043), planned training days get their bigger share of the weekly budget, and an unplanned logged workout redistributes the rest of the week.
+- **WO-061** `[R1]` ~~Training-day calorie shifting~~ removed by D-090: a training day that needs more food gets its own weekday number (TG-043).
 
 ## Open questions
 

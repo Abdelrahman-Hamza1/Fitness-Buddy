@@ -10181,6 +10181,306 @@ abstract class AppLocalizations {
   /// **'Log your iftar when you have a moment.'**
   String get notifIftarBody;
 
+  /// Targets top card (D-090): the line above today's number, e.g. "Today, Friday".
+  ///
+  /// In en, this message translates to:
+  /// **'Today, {weekday}'**
+  String targetsTodayOn(String weekday);
+
+  /// Targets top card: the week's total of the seven daily numbers, e.g. "This week 15,500".
+  ///
+  /// In en, this message translates to:
+  /// **'This week {kcal}'**
+  String targetsWeekTotal(int kcal);
+
+  /// Targets top card: segment that puts every day back to the suggestion (D-090).
+  ///
+  /// In en, this message translates to:
+  /// **'Same every day'**
+  String get targetsSameEveryDay;
+
+  /// Targets top card: segment for different numbers per weekday (D-090).
+  ///
+  /// In en, this message translates to:
+  /// **'Different by day'**
+  String get targetsDifferentByDay;
+
+  /// Targets top card: hint under the weekday bars.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a day to change its number'**
+  String get targetsTapDayHint;
+
+  /// Targets weekday bar for screen readers, e.g. "Friday: 2,600 kcal".
+  ///
+  /// In en, this message translates to:
+  /// **'{weekday}: {kcal} kcal'**
+  String targetsDayBarLabel(String weekday, int kcal);
+
+  /// Targets weekday bar for screen readers when it is today.
+  ///
+  /// In en, this message translates to:
+  /// **'{weekday}, today: {kcal} kcal'**
+  String targetsDayBarToday(String weekday, int kcal);
+
+  /// Snackbar after "Same every day" (with Undo).
+  ///
+  /// In en, this message translates to:
+  /// **'Every day is back to {kcal} kcal'**
+  String targetsSameEveryDayDone(int kcal);
+
+  /// Targets: heading of the macros card.
+  ///
+  /// In en, this message translates to:
+  /// **'Macros today'**
+  String get targetsMacrosTitle;
+
+  /// Targets macros card: how macros follow a day's number (TG-055).
+  ///
+  /// In en, this message translates to:
+  /// **'Protein stays the same every day. Carbs follow the day\'s number.'**
+  String get targetsMacrosNote;
+
+  /// Targets row that opens the calculation (D-090).
+  ///
+  /// In en, this message translates to:
+  /// **'How is this worked out?'**
+  String get targetsHowRow;
+
+  /// Targets row subtitle: what the calculation uses.
+  ///
+  /// In en, this message translates to:
+  /// **'From your body, activity and goal'**
+  String get targetsHowRowHint;
+
+  /// Targets row that opens Profile & goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal'**
+  String get targetsGoalRow;
+
+  /// Targets goal row subtitle, e.g. "Keep weight · 82 kg".
+  ///
+  /// In en, this message translates to:
+  /// **'{goal} · {weight}'**
+  String targetsGoalRowValue(String goal, String weight);
+
+  /// Targets row that opens the macro split and the rebalancing switch.
+  ///
+  /// In en, this message translates to:
+  /// **'More options'**
+  String get targetsMoreOptions;
+
+  /// Targets More options row subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Macro split, balance over/under across the week'**
+  String get targetsMoreOptionsHint;
+
+  /// More options: the rebalancing switch (TG-041).
+  ///
+  /// In en, this message translates to:
+  /// **'Balance over/under across the week'**
+  String get targetsBalancing;
+
+  /// Day sheet (D-090): what saving changes, e.g. "Every Friday. Suggested: 2,150 · your week becomes 15,500."
+  ///
+  /// In en, this message translates to:
+  /// **'Every {weekday}. Suggested: {suggested} · your week becomes {total}.'**
+  String targetsDayLine(String weekday, int suggested, int total);
+
+  /// Day sheet: caption under the big number.
+  ///
+  /// In en, this message translates to:
+  /// **'kcal · tap to type'**
+  String get targetsDayTapToType;
+
+  /// Day sheet chip: back to the suggestion, e.g. "Usual 2,150".
+  ///
+  /// In en, this message translates to:
+  /// **'Usual {kcal}'**
+  String targetsDayUsual(int kcal);
+
+  /// Day sheet chip: suggestion plus an amount, e.g. "+250".
+  ///
+  /// In en, this message translates to:
+  /// **'+{kcal}'**
+  String targetsDayPlus(int kcal);
+
+  /// Day sheet chip: suggestion minus an amount, e.g. "−250" (minus sign).
+  ///
+  /// In en, this message translates to:
+  /// **'−{kcal}'**
+  String targetsDayMinus(int kcal);
+
+  /// Day sheet − button tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'50 kcal less'**
+  String get targetsDayLess;
+
+  /// Day sheet + button tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'50 kcal more'**
+  String get targetsDayMore;
+
+  /// Day sheet: label of the typed number field.
+  ///
+  /// In en, this message translates to:
+  /// **'{weekday}\'s target'**
+  String targetsDayLabel(String weekday);
+
+  /// Day sheet: the accepted range for one day.
+  ///
+  /// In en, this message translates to:
+  /// **'Between {min} and {max} kcal'**
+  String targetsDayRange(int min, int max);
+
+  /// Warning screen for one weekday below the floor (A53 D4), instead of the same-every-day line.
+  ///
+  /// In en, this message translates to:
+  /// **'This applies every {weekday}. The other days keep their numbers.'**
+  String targetsWarningDay(String weekday);
+
+  /// Targets banner when a weekday the user set is below the floor (A53 D4). Calm, no alarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Some days are below your safety floor of {floor} kcal. They stay as you set them.'**
+  String targetsDayBelowFloor(int floor);
+
+  /// How sheet title (D-090).
+  ///
+  /// In en, this message translates to:
+  /// **'How your target is worked out'**
+  String get targetsHowTitle;
+
+  /// How sheet step 1 value: resting energy.
+  ///
+  /// In en, this message translates to:
+  /// **'About {kcal} kcal'**
+  String targetsHowRestingTitle(int kcal);
+
+  /// How sheet step 1 description.
+  ///
+  /// In en, this message translates to:
+  /// **'What your body uses at rest, from your weight, height, age and sex.'**
+  String get targetsHowRestingBody;
+
+  /// How sheet step 2 value, e.g. "× 1.4 for your day = 2,150".
+  ///
+  /// In en, this message translates to:
+  /// **'× {factor} for your day = {kcal}'**
+  String targetsHowActivityTitle(double factor, int kcal);
+
+  /// How sheet step 2 description, e.g. "Lightly active. Workouts …".
+  ///
+  /// In en, this message translates to:
+  /// **'{activity}. Workouts are counted in this, not added on top.'**
+  String targetsHowActivityBody(String activity);
+
+  /// How sheet step 3 value.
+  ///
+  /// In en, this message translates to:
+  /// **'Your goal'**
+  String get targetsHowGoalTitle;
+
+  /// How sheet last step value.
+  ///
+  /// In en, this message translates to:
+  /// **'= {kcal} kcal a day'**
+  String targetsHowResultTitle(int kcal);
+
+  /// How sheet last step description (TG-030).
+  ///
+  /// In en, this message translates to:
+  /// **'After 2–3 weeks of weigh-ins, the app adjusts this to what your body actually does.'**
+  String get targetsHowResultBody;
+
+  /// How sheet button (D5).
+  ///
+  /// In en, this message translates to:
+  /// **'Recalculate with today\'s weight'**
+  String get targetsHowRecalculate;
+
+  /// How sheet button: opens the manual target sheet (TG-021).
+  ///
+  /// In en, this message translates to:
+  /// **'Set my own number instead'**
+  String get targetsHowSetOwn;
+
+  /// Settings row and sheet title (D-091).
+  ///
+  /// In en, this message translates to:
+  /// **'Food names'**
+  String get foodNamesSetting;
+
+  /// Food names option (default): Arabic when the phone prefers Arabic, else English.
+  ///
+  /// In en, this message translates to:
+  /// **'Match my phone'**
+  String get foodNamesPhone;
+
+  /// Food names option subtitle when the phone prefers Arabic.
+  ///
+  /// In en, this message translates to:
+  /// **'Your phone prefers Arabic, so Arabic'**
+  String get foodNamesPhoneArabic;
+
+  /// Food names option subtitle when the phone doesn't prefer Arabic.
+  ///
+  /// In en, this message translates to:
+  /// **'Your phone is in English, so English'**
+  String get foodNamesPhoneEnglish;
+
+  /// Food names option.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get foodNamesEnglish;
+
+  /// Food names option.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic'**
+  String get foodNamesArabic;
+
+  /// Food names option: English with the Arabic name underneath.
+  ///
+  /// In en, this message translates to:
+  /// **'Both'**
+  String get foodNamesBoth;
+
+  /// Food names option subtitle for Both.
+  ///
+  /// In en, this message translates to:
+  /// **'English, with the Arabic name underneath'**
+  String get foodNamesBothHint;
+
+  /// Snackbar after changing Food names (with Undo).
+  ///
+  /// In en, this message translates to:
+  /// **'Food names: {choice}'**
+  String foodNamesSet(String choice);
+
+  /// Search result subtitle: the name or alias the query matched when it is not shown (D-091), e.g. "Matched ma2loobe".
+  ///
+  /// In en, this message translates to:
+  /// **'Matched {name}'**
+  String foodMatched(String name);
+
+  /// Search result subtitle: the matched name, then the rest of the line.
+  ///
+  /// In en, this message translates to:
+  /// **'{matched} · {rest}'**
+  String foodMatchedSubtitle(String matched, String rest);
+
+  /// Food page: the food's other names and aliases (D-091).
+  ///
+  /// In en, this message translates to:
+  /// **'Also called: {names}'**
+  String foodAlsoCalled(String names);
+
   /// Workouts tab setup point and plan chooser title (WO-023, D-089).
   ///
   /// In en, this message translates to:

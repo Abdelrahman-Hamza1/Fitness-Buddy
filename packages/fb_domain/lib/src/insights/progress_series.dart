@@ -4,7 +4,6 @@ import 'package:fb_domain/src/targets/target_records.dart';
 import 'package:fb_domain/src/targets/targets_timeline.dart';
 import 'package:fb_domain/src/time/local_date.dart';
 import 'package:fb_domain/src/time/week_calendar.dart';
-import 'package:fb_domain/src/workouts/training_shift.dart';
 
 /// One diary day the app has: the day's live-entry [totals] and the day mark
 /// (A16 §3.1). Days with neither entries nor a mark are not passed (unknown,
@@ -101,13 +100,11 @@ abstract final class ProgressSeries {
   /// Every date from [from] to the earlier of [to] and [today], with the
   /// day's intake, status and the target [TargetsTimeline.day] gives it
   /// with the same inputs as Today's `dayTargetsProvider`: the trend weight
-  /// on that date ([trendOn]), that week's earlier days, the week calendar
-  /// and the training input. Evaluated per date (A16 PA3).
+  /// on that date ([trendOn]), that week's earlier days and the week
+  /// calendar. Evaluated per date (A16 PA3).
   ///
   /// [logs] must cover from `calendar.weekStartOf(from)`: the earlier days
-  /// of the first week feed weekly-mode targets. [training] may span the
-  /// whole range: only its weekdays and whether the date itself has a
-  /// logged session matter.
+  /// of the first week feed weekly-mode targets.
   static List<ProgressDay> build({
     required LocalDate from,
     required LocalDate to,
@@ -118,7 +115,7 @@ abstract final class ProgressSeries {
     ProfileRecord? profile,
     Iterable<GoalPhaseRecord> goals = const [],
     WeekCalendar calendar = const WeekCalendar(),
-    TrainingShiftInput? training,
+    Map<DayOfWeek, double> floorAcknowledged = const {},
   }) {
     final last = to.isAfter(today) ? today : to;
     if (last.isBefore(from)) return const [];
@@ -148,7 +145,7 @@ abstract final class ProgressSeries {
               bodyWeightKg: trendOn(date),
               intake: intake,
               calendar: calendar,
-              training: training,
+              floorAcknowledged: floorAcknowledged,
             );
       final log = byDate[date];
       final entries = log?.entryCount ?? 0;

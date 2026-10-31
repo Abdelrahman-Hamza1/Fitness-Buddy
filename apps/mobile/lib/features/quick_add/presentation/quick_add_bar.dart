@@ -85,6 +85,7 @@ class QuickAddBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final chips = ref.watch(quickAddChipsProvider(date)).value ?? const [];
+    final language = ref.watch(foodNameLanguageProvider);
     final row = chips.isEmpty
         ? const SizedBox(key: ValueKey('empty'), width: double.infinity)
         : FbQuickAddRow(
@@ -98,13 +99,15 @@ class QuickAddBar extends ConsumerWidget {
               for (final chip in chips)
                 FbQuickAddChip(
                   key: ValueKey(chip.key),
-                  label: chip.name,
+                  label: chip.nameIn(language),
                   icon: chip.ranked.candidate is SavedMealCandidate
                       ? FbIcons.meal
                       : null,
                   semanticLabel: chip.ranked.candidate is SavedMealCandidate
-                      ? l10n.quickAddSavedMealChipSemantics(chip.name)
-                      : l10n.quickAddChipSemantics(chip.name),
+                      ? l10n.quickAddSavedMealChipSemantics(
+                          chip.nameIn(language),
+                        )
+                      : l10n.quickAddChipSemantics(chip.nameIn(language)),
                   onTap: () => unawaited(_log(context, ref, chip)),
                 ),
             ],

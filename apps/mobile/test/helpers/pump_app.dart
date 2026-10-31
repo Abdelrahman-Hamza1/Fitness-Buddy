@@ -1,4 +1,5 @@
-import 'package:fb_domain/fb_domain.dart' show DayOfWeek, EntryTime;
+import 'package:fb_domain/fb_domain.dart'
+    show DayOfWeek, EntryTime, FoodNameLanguage;
 import 'package:fb_mobile/app/app.dart';
 import 'package:fb_mobile/app/router/app_router.dart';
 import 'package:fb_mobile/core/config/upgrade_signal.dart';
@@ -21,6 +22,11 @@ import 'test_phone.dart';
 
 export 'test_phone.dart' show TestPhone, testConfig;
 
+/// And for the confirmed below-floor days (A53).
+final Override _noFloorAcks = dayFloorAcksProvider.overrideWith(
+  (ref) => Stream.value(const <DayOfWeek, double>{}),
+);
+
 /// What the app's Today needs in a widget test: an empty in-memory profile
 /// (no platform channel for the app-support folder), and today without the
 /// midnight timer (and the quick-add context's 30-minute one), which a widget
@@ -35,6 +41,12 @@ List<Override> todayOverrides() => [
   todayWorkoutProvider.overrideWith((ref, date) => null),
   // No Ramadan decision: no settings stream for the day's meals (A41a).
   ramadanOff,
+  // No settings stream for the confirmed below-floor days (A53).
+  _noFloorAcks,
+  // Nor for the food-name language every food row reads (A53, D-091).
+  foodNameSettingProvider.overrideWith(
+    (ref) => Stream.value(FoodNameLanguage.phone),
+  ),
 ];
 
 /// This app's scope closes with the widget tree, inside fake async: no

@@ -39,7 +39,7 @@ _Logical model. Exact columns are fixed in the migrations of A01/A06 and later s
 |---|---|
 | `profile` (1 row, `naturalId('profile','self')`) | sex, birth_year, height_cm + height_input_unit, activity_level (body data only; preferences such as unit system, week start, halal, city, language and digit style live in `settings_kv`; no weight: weigh-ins are the only stored body weight, TD-089/TD-090, A13a) |
 | `goal_phases` | type, start/end, expression (weekly / monthly / target date / target rate), target weight + weight_input_unit, name, revision (A13a) |
-| `target_settings` (versioned, effective-from date) | base kcal, mode (weekly / fixed), rebalancing, shifting config, protein/fat/fiber rules, manual overrides + acknowledged warning (SF-012), Ramadan variant, check-in mode (ask / auto) |
+| `target_settings` (versioned, effective-from date) | base kcal, mode (weekly / fixed), rebalancing, per-weekday factors (`shift_*`, D-090/TD-112), protein/fat/fiber rules, manual overrides + acknowledged warning (SF-012), Ramadan variant, check-in mode (ask / auto) |
 | `weigh_ins` | measured_at, local_date, kg, input value/unit, note |
 | `measurement_types` (custom) + `measurements` | type, value, date |
 | `custom_exercises` (sync `customExercise`; built-ins ship in the catalog pack) | name, aliases, type (WO-004), equipment, primary muscle (nullable) + up to 4 secondary muscles (A37a D2, 15 codes; on the wire `primaryMuscle` and `secondaryMusclesJson`) |

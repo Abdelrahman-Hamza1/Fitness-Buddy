@@ -340,9 +340,14 @@ class _ItemRow extends ConsumerWidget {
     final source = item.food.editedByUser
         ? FbSource.yours
         : fbSourceOf(item.food.provenance.source);
+    final names = watchFoodNames(ref, item.food.names);
+    final detail = large ? l10n.savedMealItemSubtitle(amount, kcal) : amount;
     return FbListRow(
-      title: item.food.names.en,
-      subtitle: large ? l10n.savedMealItemSubtitle(amount, kcal) : amount,
+      title: names.primary,
+      subtitle: switch (names.secondary) {
+        final ar? => l10n.foodResultSubtitle(isolateName(ar), detail),
+        null => detail,
+      },
       leading: FbSourceBadge(source: source),
       trailing: large
           ? null

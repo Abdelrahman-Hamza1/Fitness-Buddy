@@ -7,7 +7,6 @@ import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/progress/application/progress_providers.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/today/today.dart';
-import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -15,11 +14,8 @@ import '../../diary/support/diary_fixtures.dart';
 import '../../targets/application/targets_app_harness.dart';
 
 /// A container over [h]'s database with the real trend (no body-weight
-/// override), today at the harness clock and [training] for every week.
-ProviderContainer _container(
-  TargetsAppHarness h, {
-  TrainingShiftInput? training,
-}) {
+/// override) and today at the harness clock.
+ProviderContainer _container(TargetsAppHarness h) {
   final c = ProviderContainer(
     overrides: [
       appDatabaseProvider.overrideWithValue(h.db),
@@ -28,7 +24,6 @@ ProviderContainer _container(
       idGeneratorProvider.overrideWithValue(h.ids),
       undoStackProvider.overrideWithValue(h.undo),
       todayProvider.overrideWith((ref) => Stream.value(h.date)),
-      trainingShiftProvider.overrideWith((ref, range) async => training),
     ],
   );
   addTearDown(c.dispose);
@@ -128,16 +123,8 @@ void main() {
     ]);
     // An incomplete day in a weekly week.
     await h.apply([MarkDay(_oct(13), incomplete: true)]);
-    // Training on Mondays and Wednesdays; an unplanned workout logged on
-    // Saturday 10 October (the same-day adjustment).
-    final c = _container(
-      h,
-      training: TrainingShiftInput(
-        plannedDays: {DayOfWeek.monday, DayOfWeek.wednesday},
-        weight: 1.3,
-        loggedDates: {_oct(10)},
-      ),
-    )..listen(progressDaysProvider(_oct(1), _oct(31)), (_, _) {});
+    final c = _container(h)
+      ..listen(progressDaysProvider(_oct(1), _oct(31)), (_, _) {});
     for (var d = 1; d <= 17; d++) {
       c.listen(dayTargetsProvider(_oct(d)), (_, _) {});
     }

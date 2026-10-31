@@ -6,6 +6,7 @@ import 'package:fb_mobile/core/db/catalog/catalog_pack_source.dart';
 import 'package:fb_mobile/core/db/migrations/from_10_to_11.dart';
 import 'package:fb_mobile/core/db/migrations/from_11_to_12.dart';
 import 'package:fb_mobile/core/db/migrations/from_12_to_13.dart';
+import 'package:fb_mobile/core/db/migrations/from_13_to_14.dart';
 import 'package:fb_mobile/core/db/migrations/from_1_to_2.dart';
 import 'package:fb_mobile/core/db/migrations/from_2_to_3.dart';
 import 'package:fb_mobile/core/db/migrations/from_3_to_4.dart';
@@ -172,7 +173,7 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
   ];
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -194,6 +195,7 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
       from10To11: from10To11,
       from11To12: from11To12,
       from12To13: from12To13,
+      from13To14: from13To14,
     ),
     beforeOpen: (details) async {
       // drift runs this on the executor it's opening, below the guard (the

@@ -92,9 +92,12 @@ void main() {
     expect(data.settings.map((s) => s.value.id), [fixtureId(5)]);
     expect(data.skippedRows, 4);
     final shifted = data.settings.single.value;
-    expect(shifted.shifts, {DayOfWeek.saturday: 5000.0, DayOfWeek.sunday: 1.3});
-    expect(shifted.weights, {DayOfWeek.sunday: 1.3});
-    expect(shifted.toPlan(1500).weights, {DayOfWeek.sunday: 1.3});
+    expect(shifted.dayFactors, {
+      DayOfWeek.saturday: 5000.0,
+      DayOfWeek.sunday: 1.3,
+    });
+    expect(shifted.factors, {DayOfWeek.sunday: 1.3});
+    expect(shifted.toPlan(1500).dayFactors, {DayOfWeek.sunday: 1.3});
   });
 
   test('watchTargets emits the current rows and again after a change; the '

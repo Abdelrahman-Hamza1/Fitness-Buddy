@@ -277,7 +277,7 @@ Map<String, Object?> _settings({
     mode: mode,
     manual: manual,
     acknowledged: acknowledged,
-    shifts: const {DayOfWeek.friday: 1.3},
+    dayFactors: const {DayOfWeek.friday: 1.3},
     macros: MacroSettings(
       protein: MacroOverride.grams(140),
       fat: MacroOverride.percent(25),

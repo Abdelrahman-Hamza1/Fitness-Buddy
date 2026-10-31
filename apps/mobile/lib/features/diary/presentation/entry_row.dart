@@ -71,11 +71,16 @@ class DiaryEntryTile extends ConsumerWidget {
     final system = ref.watch(unitSystemProvider).value ?? UnitSystem.metric;
     final amount = entryAmountText(l10n, entry.amount, system);
     final large = usesLargeText(context);
+    final names = watchFoodNames(ref, entry.food.names);
+    final detail = large ? kcal : amount;
     Widget row = Semantics(
       expanded: expanded,
       child: FbListRow(
-        title: entry.food.names.en,
-        subtitle: large ? kcal : amount,
+        title: names.primary,
+        subtitle: switch (names.secondary) {
+          final ar? => l10n.foodResultSubtitle(isolateName(ar), detail),
+          null => detail,
+        },
         leading: FbSourceBadge(source: entrySourceOf(entry)),
         trailing: large
             ? null

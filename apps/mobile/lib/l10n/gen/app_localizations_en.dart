@@ -6965,6 +6965,277 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifIftarBody => 'Log your iftar when you have a moment.';
 
   @override
+  String targetsTodayOn(String weekday) {
+    return 'Today, $weekday';
+  }
+
+  @override
+  String targetsWeekTotal(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'This week $kcalString';
+  }
+
+  @override
+  String get targetsSameEveryDay => 'Same every day';
+
+  @override
+  String get targetsDifferentByDay => 'Different by day';
+
+  @override
+  String get targetsTapDayHint => 'Tap a day to change its number';
+
+  @override
+  String targetsDayBarLabel(String weekday, int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '$weekday: $kcalString kcal';
+  }
+
+  @override
+  String targetsDayBarToday(String weekday, int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '$weekday, today: $kcalString kcal';
+  }
+
+  @override
+  String targetsSameEveryDayDone(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Every day is back to $kcalString kcal';
+  }
+
+  @override
+  String get targetsMacrosTitle => 'Macros today';
+
+  @override
+  String get targetsMacrosNote =>
+      'Protein stays the same every day. Carbs follow the day\'s number.';
+
+  @override
+  String get targetsHowRow => 'How is this worked out?';
+
+  @override
+  String get targetsHowRowHint => 'From your body, activity and goal';
+
+  @override
+  String get targetsGoalRow => 'Goal';
+
+  @override
+  String targetsGoalRowValue(String goal, String weight) {
+    return '$goal · $weight';
+  }
+
+  @override
+  String get targetsMoreOptions => 'More options';
+
+  @override
+  String get targetsMoreOptionsHint =>
+      'Macro split, balance over/under across the week';
+
+  @override
+  String get targetsBalancing => 'Balance over/under across the week';
+
+  @override
+  String targetsDayLine(String weekday, int suggested, int total) {
+    final intl.NumberFormat suggestedNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String suggestedString = suggestedNumberFormat.format(suggested);
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    return 'Every $weekday. Suggested: $suggestedString · your week becomes $totalString.';
+  }
+
+  @override
+  String get targetsDayTapToType => 'kcal · tap to type';
+
+  @override
+  String targetsDayUsual(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Usual $kcalString';
+  }
+
+  @override
+  String targetsDayPlus(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '+$kcalString';
+  }
+
+  @override
+  String targetsDayMinus(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '−$kcalString';
+  }
+
+  @override
+  String get targetsDayLess => '50 kcal less';
+
+  @override
+  String get targetsDayMore => '50 kcal more';
+
+  @override
+  String targetsDayLabel(String weekday) {
+    return '$weekday\'s target';
+  }
+
+  @override
+  String targetsDayRange(int min, int max) {
+    final intl.NumberFormat minNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String minString = minNumberFormat.format(min);
+    final intl.NumberFormat maxNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String maxString = maxNumberFormat.format(max);
+
+    return 'Between $minString and $maxString kcal';
+  }
+
+  @override
+  String targetsWarningDay(String weekday) {
+    return 'This applies every $weekday. The other days keep their numbers.';
+  }
+
+  @override
+  String targetsDayBelowFloor(int floor) {
+    final intl.NumberFormat floorNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String floorString = floorNumberFormat.format(floor);
+
+    return 'Some days are below your safety floor of $floorString kcal. They stay as you set them.';
+  }
+
+  @override
+  String get targetsHowTitle => 'How your target is worked out';
+
+  @override
+  String targetsHowRestingTitle(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'About $kcalString kcal';
+  }
+
+  @override
+  String get targetsHowRestingBody =>
+      'What your body uses at rest, from your weight, height, age and sex.';
+
+  @override
+  String targetsHowActivityTitle(double factor, int kcal) {
+    final intl.NumberFormat factorNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String factorString = factorNumberFormat.format(factor);
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '× $factorString for your day = $kcalString';
+  }
+
+  @override
+  String targetsHowActivityBody(String activity) {
+    return '$activity. Workouts are counted in this, not added on top.';
+  }
+
+  @override
+  String get targetsHowGoalTitle => 'Your goal';
+
+  @override
+  String targetsHowResultTitle(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '= $kcalString kcal a day';
+  }
+
+  @override
+  String get targetsHowResultBody =>
+      'After 2–3 weeks of weigh-ins, the app adjusts this to what your body actually does.';
+
+  @override
+  String get targetsHowRecalculate => 'Recalculate with today\'s weight';
+
+  @override
+  String get targetsHowSetOwn => 'Set my own number instead';
+
+  @override
+  String get foodNamesSetting => 'Food names';
+
+  @override
+  String get foodNamesPhone => 'Match my phone';
+
+  @override
+  String get foodNamesPhoneArabic => 'Your phone prefers Arabic, so Arabic';
+
+  @override
+  String get foodNamesPhoneEnglish => 'Your phone is in English, so English';
+
+  @override
+  String get foodNamesEnglish => 'English';
+
+  @override
+  String get foodNamesArabic => 'Arabic';
+
+  @override
+  String get foodNamesBoth => 'Both';
+
+  @override
+  String get foodNamesBothHint => 'English, with the Arabic name underneath';
+
+  @override
+  String foodNamesSet(String choice) {
+    return 'Food names: $choice';
+  }
+
+  @override
+  String foodMatched(String name) {
+    return 'Matched $name';
+  }
+
+  @override
+  String foodMatchedSubtitle(String matched, String rest) {
+    return '$matched · $rest';
+  }
+
+  @override
+  String foodAlsoCalled(String names) {
+    return 'Also called: $names';
+  }
+
+  @override
   String get workoutsChoosePlan => 'Choose a plan';
 
   @override

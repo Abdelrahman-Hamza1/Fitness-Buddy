@@ -6,11 +6,10 @@ import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/targets/application/targets_actions.dart';
 import 'package:fb_mobile/features/targets/application/targets_screens.dart';
+import 'package:fb_mobile/features/targets/presentation/day_target_sheet.dart';
+import 'package:fb_mobile/features/targets/presentation/how_sheet.dart';
 import 'package:fb_mobile/features/targets/presentation/macro_sheet.dart';
 import 'package:fb_mobile/features/targets/presentation/macro_summary.dart';
-import 'package:fb_mobile/features/targets/presentation/manual_target_sheet.dart';
-import 'package:fb_mobile/features/targets/presentation/shifting_sheet.dart';
-import 'package:fb_mobile/features/targets/presentation/target_explanation.dart';
 import 'package:fb_mobile/features/targets/presentation/targets_day_rollover.dart';
 import 'package:fb_mobile/features/targets/presentation/targets_feedback.dart';
 import 'package:fb_mobile/features/targets/presentation/targets_text.dart';
@@ -18,13 +17,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 import 'package:material_ui/material_ui.dart';
 
-/// Me › Targets (A13c D14, TG-021/040–044/054, SF-012): today's target, the
-/// weekly budget and its planned days with the "This week" line; the
-/// plain-language explanation (or the manual note) with its issue banners
-/// and "Recalculate with your current weight"; the budget mode,
-/// rebalancing and higher-calorie days (off with a note for an
-/// acknowledged below-floor target, PA7); macros; your own target. Every
-/// change is one `TargetsActions` command with Undo.
+/// Me › Targets (D-090, A53 D6; TG-021/040–045/054, SF-012): a suggested
+/// number a day that the user can change per weekday, the calculation only
+/// on demand. Every change is one `TargetsActions` command with Undo.
 class TargetsScreen extends ConsumerWidget {
   /// Creates the screen.
   const new({super.key});
@@ -74,125 +69,50 @@ class TargetsScreen extends ConsumerWidget {
   }
 }
 
-/// The Targets screen's content for [view] (public for the goldens).
-class TargetsBody extends ConsumerWidget {
+/// The Targets screen's content for [view] (public for the goldens), the
+/// D-090 layout (sketch `Targets`): the issue banners, the top card
+/// (today's number, the week's total, "Same every day | Different by day"
+/// and the weekday bars), the macros card and three rows: "How is this
+/// worked out?", Goal and More options.
+class TargetsBody extends StatelessWidget {
   /// Shows [view].
   const new({required this.view, super.key});
 
   /// What the screen shows.
   final TargetsView view;
 
-  /// Runs a settings command and shows its feedback ("Targets updated").
-  Future<void> _settings(
-    BuildContext context,
-    Future<TargetsOutcome> Function(TargetsActions actions) command,
-    WidgetRef ref,
-  ) async {
-    final host = Navigator.of(context, rootNavigator: true).context;
-    final outcome = await command(ref.read(targetsActionsProvider));
-    if (!host.mounted) return;
-    if (outcome case TargetsFailed(reason: TargetsFailure.changed)) {
-      showFbSnackBar(host, host.l10n.targetsChangedTryAgain);
-      return;
-    }
-    showTargetsFeedback(host, outcome, done: (_) => host.l10n.targetsUpdated);
-  }
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final version = view.version;
-    final weekly = version.mode == TargetMode.weekly;
-    final forced = view.forcedFixed;
-    final shown = view.shown;
-    void run(Future<TargetsOutcome> Function(TargetsActions a) command) =>
-        unawaited(_settings(context, command, ref));
     return ListView(
-      padding: const EdgeInsetsDirectional.only(bottom: FbSpace.s6),
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        FbSpace.s4,
+        FbSpace.s2,
+        FbSpace.s4,
+        FbSpace.s6,
+      ),
       children: [
-        FbSectionHeader(title: l10n.targetsSectionWeek),
-        _Padded(child: _WeekSummary(view: view)),
-        FbSectionHeader(title: l10n.targetsSectionHow),
-        _Padded(
-          child: _HowCalculated(
-            view: view,
-            onRecalculate: () => run((a) => a.recalculate(shown)),
+        _Banners(view: view),
+        _WeekCard(view: view),
+        const SizedBox(height: FbSpace.s4),
+        FbCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: FbSpace.s3,
+            children: [
+              Text(l10n.targetsMacrosTitle, style: FbType.title),
+              MacroSummary(macros: view.day.day.macros),
+              _Muted(l10n.targetsMacrosNote),
+              if (_energyNote(l10n, view.day.day.macros) case final note?)
+                _Muted(note),
+            ],
           ),
         ),
-        FbSectionHeader(title: l10n.targetsSectionBudget),
-        if (forced) ...[
-          FbListRow(
-            title: l10n.targetsModeFixed,
-            subtitle: l10n.targetsForcedFixedNote,
-          ),
-          FbSwitchRow(
-            title: l10n.targetsRebalancing,
-            value: false,
-            onChanged: null,
-          ),
-          FbListRow(
-            title: l10n.targetsShifting,
-            subtitle: l10n.targetsForcedFixedNote,
-          ),
-        ] else ...[
-          _Padded(
-            child: FbOptionList<TargetMode>(
-              selected: version.mode,
-              onSelected: (mode) {
-                if (mode != version.mode) run((a) => a.setMode(shown, mode));
-              },
-              options: [
-                FbOption(
-                  value: TargetMode.weekly,
-                  label: l10n.targetsModeWeekly,
-                  subtitle: l10n.targetsModeWeeklyHint,
-                ),
-                FbOption(
-                  value: TargetMode.fixed,
-                  label: l10n.targetsModeFixed,
-                  subtitle: l10n.targetsModeFixedHint,
-                ),
-              ],
-            ),
-          ),
-          if (weekly) ...[
-            FbSwitchRow(
-              title: l10n.targetsRebalancing,
-              subtitle: l10n.targetsRebalancingHint,
-              value: version.rebalancing,
-              onChanged: (on) => run((a) => a.setRebalancing(shown, on)),
-            ),
-            FbListRow(
-              title: l10n.targetsShifting,
-              subtitle: shiftingSummary(context, version.shifts),
-              trailing: const Icon(FbIcons.next),
-              onTap: () => unawaited(showShiftingSheet(context, view: view)),
-            ),
-          ],
-        ],
-        FbSectionHeader(title: l10n.targetsSectionMacros),
-        _Padded(child: MacroSummary(macros: view.day.day.macros)),
-        if (_energyNote(l10n, view.day.day.macros) case final note?)
-          _Padded(child: _Muted(note)),
-        FbListRow(
-          title: l10n.targetsMacroSettings,
-          subtitle: _macroDefaults(version.macros)
-              ? l10n.targetsMacroSettingsDefault
-              : l10n.targetsMacroSettingsCustom,
-          trailing: const Icon(FbIcons.next),
-          onTap: () => unawaited(showMacroSheet(context, view: view)),
-        ),
-        ManualTargetSection(view: view),
+        const SizedBox(height: FbSpace.s4),
+        _Rows(view: view),
       ],
     );
   }
-
-  static bool _macroDefaults(MacroSettings m) =>
-      m.protein == null &&
-      m.fat == null &&
-      m.carbs == null &&
-      m.fiberGrams == null &&
-      !m.caloriesProteinOnly;
 
   /// The neutral TG-054 note when the macros' energy is more than 50 kcal
   /// away from the calorie target, else null.
@@ -206,46 +126,298 @@ class TargetsBody extends ConsumerWidget {
   }
 }
 
-/// "Friday: More · Sunday: A little more", or "None".
-String shiftingSummary(BuildContext context, Map<DayOfWeek, double> shifts) {
-  final l10n = context.l10n;
-  if (shifts.isEmpty) return l10n.targetsShiftingNone;
-  return [
-    for (final day in DayOfWeek.values)
-      if (shifts[day] case final weight?)
-        '${weekdayName(l10n, day)}: ${shiftLevelLabel(l10n, weight)}',
-  ].join(' · ');
+/// What needs a look: a manual target to review (SF-012), a goal to update
+/// (PA3), a weekday below the floor (A53 D4). Calm info banners.
+class _Banners extends ConsumerWidget {
+  const new({required this.view});
+
+  final TargetsView view;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final issues = view.day.issues;
+    final floor = DisplayRounding.kcal(view.day.floorKcal);
+    final banners = [
+      if (issues.contains(TargetIssue.manualNeedsReview))
+        FbInlineBanner(
+          kind: FbInlineBannerKind.info,
+          message: l10n.targetsManualNeedsReview(floor),
+        ),
+      if (issues.contains(TargetIssue.goalNeedsUpdate))
+        FbInlineBanner(
+          kind: FbInlineBannerKind.info,
+          message: l10n.targetsGoalNeedsUpdate,
+          actionLabel: l10n.targetsGoalUpdateAction,
+          onAction: () =>
+              ref.read(appNavigatorProvider).push(const ProfileRoute()),
+        ),
+      if (issues.contains(TargetIssue.dayBelowFloor))
+        FbInlineBanner(
+          kind: FbInlineBannerKind.info,
+          message: l10n.targetsDayBelowFloor(floor),
+        ),
+    ];
+    if (banners.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(bottom: FbSpace.s4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: FbSpace.s3,
+        children: banners,
+      ),
+    );
+  }
 }
 
-/// A shift weight's level: "A little more" (up to 1.15), else "More".
-String shiftLevelLabel(AppLocalizations l10n, double weight) =>
-    weight <= ShiftLevel.little.weight + 1e-9
-    ? l10n.targetsShiftLittle
-    : l10n.targetsShiftMore;
+/// Today's number, the week's total and position, "Same every day |
+/// Different by day" and the weekday bars (tap → the day sheet). Under
+/// PA7 the segments and bars are read-only with the note.
+class _WeekCard extends ConsumerStatefulWidget {
+  const new({required this.view});
 
-/// The higher-calorie day levels (D14, TG-043).
-enum ShiftLevel {
-  /// No shift.
-  usual(1),
+  final TargetsView view;
 
-  /// 15% above the other days' base.
-  little(1.15),
+  @override
+  ConsumerState<_WeekCard> createState() => _WeekCardState();
+}
 
-  /// 30% above.
-  more(1.3);
+class _WeekCardState extends ConsumerState<_WeekCard> {
+  /// "Different by day" picked while every day is still the same: only
+  /// the screen's choice, nothing is written until a day changes.
+  bool _pickedDifferent = false;
 
-  new(this.weight);
+  Future<void> _sameEveryDay() async {
+    final host = Navigator.of(context, rootNavigator: true).context;
+    final view = widget.view;
+    setState(() => _pickedDifferent = false);
+    final outcome = await ref
+        .read(targetsActionsProvider)
+        .sameEveryDay(view.shown);
+    if (!host.mounted) return;
+    showTargetsFeedback(
+      host,
+      outcome,
+      done: (_) => host.l10n.targetsSameEveryDayDone(
+        DisplayRounding.kcal(view.suggestionKcal),
+      ),
+    );
+  }
 
-  /// The stored shifting weight.
-  final double weight;
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final view = widget.view;
+    final forced = view.forcedFixed;
+    final different = view.differentByDay || (_pickedDifferent && !forced);
+    final position = view.day.week;
+    final week = view.day.day.week;
+    final dayFormat = DateFormat.E(l10n.localeName);
+    final dates = view.weekDates;
+    return FbCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: FbSpace.s2,
+        children: [
+          _Muted(l10n.targetsTodayOn(weekdayName(l10n, view.today.weekday))),
+          Text(
+            l10n.targetsTodayKcal(DisplayRounding.kcal(view.day.day.kcal)),
+            key: const ValueKey('targets-today'),
+            style: FbType.numeric(FbType.headline)
+                .copyWith(color: scheme.onSurface),
+          ),
+          Text(
+            l10n.targetsWeekTotal(DisplayRounding.kcal(view.weekTotalKcal)),
+            style: FbType.numeric(FbType.body)
+                .copyWith(color: scheme.onSurface),
+          ),
+          if (position != null)
+            Text(
+              weekPositionText(l10n, position),
+              style: FbType.bodySmall.copyWith(color: scheme.onSurface),
+            ),
+          if (week != null && DisplayRounding.kcal(week.carryKcal) != 0)
+            _Muted(l10n.targetsCarryNote),
+          const SizedBox(height: FbSpace.s2),
+          FbSegmented<bool>(
+            options: [
+              FbOption(value: false, label: l10n.targetsSameEveryDay),
+              FbOption(value: true, label: l10n.targetsDifferentByDay),
+            ],
+            selected: different,
+            onSelected: (pick) {
+              if (forced) return;
+              if (pick) {
+                setState(() => _pickedDifferent = true);
+              } else if (view.differentByDay) {
+                unawaited(_sameEveryDay());
+              } else {
+                setState(() => _pickedDifferent = false);
+              }
+            },
+          ),
+          if (forced) _Muted(l10n.targetsForcedFixedNote),
+          const SizedBox(height: FbSpace.s2),
+          FbWeekBars(
+            key: const ValueKey('targets-week-bars'),
+            bars: [
+              for (final date in dates)
+                FbWeekBar(
+                  value: view.plannedKcal(date.weekday),
+                  valueLabel: NumberFormat.decimalPattern(l10n.localeName)
+                      .format(
+                        DisplayRounding.kcal(view.plannedKcal(date.weekday)),
+                      ),
+                  label: dayFormat.format(
+                    DateTime(date.year, date.month, date.day),
+                  ),
+                  highlighted: date == view.today,
+                  semanticLabel:
+                      (date == view.today
+                      ? l10n.targetsDayBarToday
+                      : l10n.targetsDayBarLabel)(
+                        weekdayName(l10n, date.weekday),
+                        DisplayRounding.kcal(view.plannedKcal(date.weekday)),
+                      ),
+                ),
+            ],
+            onTap: forced
+                ? null
+                : (i) => unawaited(
+                    showDayTargetSheet(
+                      context,
+                      view: view,
+                      weekday: dates[i].weekday,
+                    ),
+                  ),
+          ),
+          if (!forced) _Muted(l10n.targetsTapDayHint),
+        ],
+      ),
+    );
+  }
+}
 
-  /// The level shown for a stored [weight] (null: usual).
-  static ShiftLevel of(double? weight) => switch (weight) {
-    null => usual,
-    final w when w <= 1 => usual,
-    final w when w <= little.weight + 1e-9 => little,
-    _ => more,
-  };
+/// "How is this worked out?", Goal and More options.
+class _Rows extends ConsumerWidget {
+  const new({required this.view});
+
+  final TargetsView view;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final goal = view.explanation?.goal;
+    final weight = massText(l10n, view.day.weightKg, view.units.bodyMass);
+    return FbCard(
+      padding: EdgeInsetsDirectional.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          FbListRow(
+            title: l10n.targetsHowRow,
+            subtitle: l10n.targetsHowRowHint,
+            trailing: const Icon(FbIcons.next),
+            onTap: () => unawaited(showHowSheet(context, view: view)),
+          ),
+          FbListRow(
+            title: l10n.targetsGoalRow,
+            subtitle: goal == null
+                ? weight
+                : l10n.targetsGoalRowValue(
+                    goalTypeLabel(l10n, goal.type),
+                    weight,
+                  ),
+            trailing: const Icon(FbIcons.next),
+            onTap: () =>
+                ref.read(appNavigatorProvider).push(const ProfileRoute()),
+          ),
+          FbListRow(
+            title: l10n.targetsMoreOptions,
+            subtitle: l10n.targetsMoreOptionsHint,
+            trailing: const Icon(FbIcons.next),
+            onTap: () => unawaited(
+              showFbSheet<void>(
+                context,
+                builder: (_) => const MoreOptionsSheet(),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// More options (D-090): "Balance over/under across the week" (TG-041,
+/// off with the note under PA7) and the macro split. Follows the live view,
+/// so the switch shows each change at once.
+class MoreOptionsSheet extends ConsumerWidget {
+  /// Creates the sheet.
+  const new({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final view = ref.watch(targetsViewProvider).value;
+    if (view == null) return const SizedBox.shrink();
+    final macros = view.version.macros;
+    final custom =
+        macros.protein != null ||
+        macros.fat != null ||
+        macros.carbs != null ||
+        macros.fiberGrams != null ||
+        macros.caloriesProteinOnly;
+    return FbSheet(
+      title: l10n.targetsMoreOptions,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          FbSwitchRow(
+            title: l10n.targetsBalancing,
+            subtitle: view.forcedFixed
+                ? l10n.targetsForcedFixedNote
+                : l10n.targetsRebalancingHint,
+            value: view.balancing && !view.forcedFixed,
+            onChanged: view.forcedFixed
+                ? null
+                : (on) => unawaited(_balancing(context, ref, view, on)),
+          ),
+          FbListRow(
+            title: l10n.targetsMacroSettings,
+            subtitle: custom
+                ? l10n.targetsMacroSettingsCustom
+                : l10n.targetsMacroSettingsDefault,
+            trailing: const Icon(FbIcons.next),
+            onTap: () {
+              final host = Navigator.of(context, rootNavigator: true).context;
+              Navigator.of(context).pop();
+              unawaited(showMacroSheet(host, view: view));
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Future<void> _balancing(
+    BuildContext context,
+    WidgetRef ref,
+    TargetsView view,
+    bool on,
+  ) async {
+    final host = Navigator.of(context, rootNavigator: true).context;
+    final outcome = await ref
+        .read(targetsActionsProvider)
+        .setBalancing(view.shown, on);
+    if (!host.mounted) return;
+    if (outcome case TargetsFailed(reason: TargetsFailure.changed)) {
+      showFbSnackBar(host, host.l10n.targetsChangedTryAgain);
+      return;
+    }
+    showTargetsFeedback(host, outcome, done: (_) => host.l10n.targetsUpdated);
+  }
 }
 
 /// [day]'s full name in the locale ("Friday").
@@ -253,165 +425,6 @@ String weekdayName(AppLocalizations l10n, DayOfWeek day) {
   // 2026-10-19 is a Monday; DayOfWeek runs Monday … Sunday.
   final date = DateTime(2026, 10, 19 + day.index);
   return DateFormat.EEEE(l10n.localeName).format(date);
-}
-
-class _WeekSummary extends StatelessWidget {
-  const new({required this.view});
-
-  final TargetsView view;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final scheme = Theme.of(context).colorScheme;
-    final day = view.day;
-    final week = day.day.week;
-    final position = day.week;
-    final dayFormat = DateFormat.MMMEd(l10n.localeName);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: FbSpace.s2,
-      children: [
-        Text(
-          l10n.targetsTodayKcal(DisplayRounding.kcal(day.day.kcal)),
-          style: FbType.numeric(FbType.headline)
-              .copyWith(color: scheme.onSurface),
-        ),
-        _Muted(l10n.targetsTodayCaption),
-        if (week != null) ...[
-          Text(
-            l10n.targetsWeeklyBudget(DisplayRounding.kcal(week.budgetKcal)),
-            style: FbType.numeric(FbType.body)
-                .copyWith(color: scheme.onSurface),
-          ),
-          if (position != null)
-            Text(
-              weekPositionText(l10n, position),
-              style: FbType.body.copyWith(color: scheme.onSurface),
-            ),
-          for (final date in week.planned.keys.toList()..sort())
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    dayFormat.format(DateTime(date.year, date.month, date.day)),
-                    style: FbType.bodySmall.copyWith(
-                      color: date == view.today
-                          ? scheme.onSurface
-                          : scheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-                Text(
-                  l10n.targetsPlannedDay(
-                    DisplayRounding.kcal(week.planned[date]!),
-                  ),
-                  style: FbType.numeric(FbType.bodySmall).copyWith(
-                    color: date == view.today
-                        ? scheme.onSurface
-                        : scheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          if (DisplayRounding.kcal(week.carryKcal) != 0)
-            _Muted(l10n.targetsCarryNote),
-        ],
-      ],
-    );
-  }
-}
-
-class _HowCalculated extends ConsumerWidget {
-  const new({required this.view, required this.onRecalculate});
-
-  final TargetsView view;
-  final VoidCallback onRecalculate;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    final scheme = Theme.of(context).colorScheme;
-    final version = view.version;
-    final explanation = view.explanation;
-    final issues = view.day.issues;
-    final unit = view.units.bodyMass;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: FbSpace.s3,
-      children: [
-        if (issues.contains(TargetIssue.manualNeedsReview))
-          FbInlineBanner(
-            kind: FbInlineBannerKind.info,
-            message: l10n.targetsManualNeedsReview(
-              DisplayRounding.kcal(view.day.floorKcal),
-            ),
-          ),
-        if (issues.contains(TargetIssue.goalNeedsUpdate))
-          FbInlineBanner(
-            kind: FbInlineBannerKind.info,
-            message: l10n.targetsGoalNeedsUpdate,
-            actionLabel: l10n.targetsGoalUpdateAction,
-            onAction: () =>
-                ref.read(appNavigatorProvider).push(const ProfileRoute()),
-          ),
-        if (explanation != null) ...[
-          if (version.manual)
-            Text(
-              l10n.targetsManualNote(
-                DisplayRounding.kcal(version.baseKcal),
-                DisplayRounding.kcal(explanation.calculated.kcal),
-              ),
-              style: FbType.body.copyWith(color: scheme.onSurface),
-            )
-          else ...[
-            if (view.adapted)
-              Text(
-                l10n.targetsAdjustedNote(
-                  DisplayRounding.kcal(version.baseKcal),
-                  DisplayRounding.kcal(explanation.calculated.kcal),
-                ),
-                key: const ValueKey('targets-adapted'),
-                style: FbType.body.copyWith(color: scheme.onSurface),
-              ),
-            TargetExplanationView(
-              calculation: explanation.calculated,
-              activity: view.profile.activity,
-              units: view.units,
-              // The formula's own numbers only: the weekly budget follows
-              // the adjusted base.
-              weeklyKcal: view.adapted ? null : view.day.day.week?.budgetKcal,
-              showGoal: explanation.goal != null,
-            ),
-          ],
-        ],
-        if (view.recalculateOffered) ...[
-          _Muted(
-            l10n.targetsRecalculateHint(
-              massText(l10n, version.basisWeightKg, unit),
-              massText(l10n, view.trendKg!, unit),
-            ),
-          ),
-          FbButton.secondary(
-            label: l10n.targetsRecalculate,
-            onPressed: onRecalculate,
-          ),
-        ],
-      ],
-    );
-  }
-}
-
-class _Padded extends StatelessWidget {
-  const new({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsetsDirectional.symmetric(horizontal: FbSpace.s4),
-    child: child,
-  );
 }
 
 class _Muted extends StatelessWidget {

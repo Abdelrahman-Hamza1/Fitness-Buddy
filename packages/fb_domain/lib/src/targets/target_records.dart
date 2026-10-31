@@ -98,7 +98,8 @@ abstract final class TargetWireFields {
     'weightInputUnit',
   ];
 
-  /// The seven nullable shifting weights (NULL = 1.0, PA5).
+  /// The seven nullable weekday factor fields (NULL = the suggestion, PA5,
+  /// D-090). The names keep the original v1 `shift*` wire names.
   static const Map<DayOfWeek, String> shifts = {
     DayOfWeek.monday: 'shiftMon',
     DayOfWeek.tuesday: 'shiftTue',
@@ -413,7 +414,8 @@ final class GoalPhaseRecord {
 /// preferences. Floors and daily targets are derived, never stored.
 /// Sensitive: [toString] shows no values.
 final class TargetSettingsRecord {
-  /// Missing [shifts] days are NULL (1.0). Validation is [TargetRules].
+  /// Missing [dayFactors] days are NULL (the suggestion). Validation is
+  /// [TargetRules].
   new({
     required this.id,
     required this.revision,
@@ -424,9 +426,9 @@ final class TargetSettingsRecord {
     this.rebalancing = true,
     this.manual = false,
     this.acknowledged = false,
-    Map<DayOfWeek, double> shifts = const {},
+    Map<DayOfWeek, double> dayFactors = const {},
     MacroSettings? macros,
-  }) : shifts = Map.unmodifiable(shifts),
+  }) : dayFactors = Map.unmodifiable(dayFactors),
        macros = macros ?? MacroSettings();
 
   /// Decodes a wire map for row [id], or null when [id] isn't a UUIDv7 or
@@ -453,7 +455,7 @@ final class TargetSettingsRecord {
       manual: wire['manual']! as bool,
       acknowledged: wire['acknowledged']! as bool,
       basisWeightKg: _double(wire['basisWeightKg'])!,
-      shifts: {
+      dayFactors: {
         for (final MapEntry(key: day, value: field)
             in TargetWireFields.shifts.entries)
           day: ?_double(wire[field]),
@@ -495,8 +497,10 @@ final class TargetSettingsRecord {
   /// The weight the base was computed with (TG-021 reproduction, D5).
   final double basisWeightKg;
 
-  /// The stored shifting weights; a missing day is NULL. Unmodifiable.
-  final Map<DayOfWeek, double> shifts;
+  /// Each weekday's number as a factor of the suggestion (D-090, A53 D1),
+  /// stored in the `shift*` wire fields; a missing day is NULL (the
+  /// suggestion). Unmodifiable.
+  final Map<DayOfWeek, double> dayFactors;
 
   /// Macro preferences (TG-054).
   final MacroSettings macros;
@@ -505,12 +509,12 @@ final class TargetSettingsRecord {
   SettingsVersionKey get key =>
       (id: id, revision: revision, effectiveFrom: effectiveFrom);
 
-  /// The weights the engine uses: a NULL or unsupported (outside
-  /// [TargetLimits.minWeight]–[TargetLimits.maxWeight]) weight reads as 1.0.
-  Map<DayOfWeek, double> get weights => {
-    for (final MapEntry(key: day, value: weight) in shifts.entries)
-      if (weight >= TargetLimits.minWeight && weight <= TargetLimits.maxWeight)
-        day: weight,
+  /// The factors the engine uses: a NULL or unsupported (outside
+  /// [TargetLimits.minDayFactor]–[TargetLimits.maxDayFactor], e.g. a synced
+  /// outlier) factor reads as the suggestion.
+  Map<DayOfWeek, double> get factors => {
+    for (final MapEntry(key: day, value: factor) in dayFactors.entries)
+      if (TargetLimits.isDayFactor(factor)) day: factor,
   };
 
   /// Whether a base below the floor may stand: an acknowledged manual fixed
@@ -528,11 +532,12 @@ final class TargetSettingsRecord {
     rebalancing: rebalancing,
     manual: manual,
     acknowledged: acknowledged,
-    weights: weights,
+    dayFactors: factors,
     macros: macros,
   );
 
-  /// A copy with the given fields replaced. [shifts] replaces the whole map.
+  /// A copy with the given fields replaced. [dayFactors] replaces the whole
+  /// map.
   TargetSettingsRecord copyWith({
     String? id,
     int? revision,
@@ -543,7 +548,7 @@ final class TargetSettingsRecord {
     bool? manual,
     bool? acknowledged,
     double? basisWeightKg,
-    Map<DayOfWeek, double>? shifts,
+    Map<DayOfWeek, double>? dayFactors,
     MacroSettings? macros,
   }) => TargetSettingsRecord(
     id: id ?? this.id,
@@ -555,7 +560,7 @@ final class TargetSettingsRecord {
     manual: manual ?? this.manual,
     acknowledged: acknowledged ?? this.acknowledged,
     basisWeightKg: basisWeightKg ?? this.basisWeightKg,
-    shifts: shifts ?? this.shifts,
+    dayFactors: dayFactors ?? this.dayFactors,
     macros: macros ?? this.macros,
   );
 
@@ -573,7 +578,7 @@ final class TargetSettingsRecord {
       'basisWeightKg': basisWeightKg,
       for (final MapEntry(key: day, value: field)
           in TargetWireFields.shifts.entries)
-        field: shifts[day],
+        field: dayFactors[day],
       for (final (i, name) in TargetWireFields.macros.indexed) ...{
         '${name}Value': overrides[i]?.value,
         '${name}IsPercent': overrides[i]?.isPercent,

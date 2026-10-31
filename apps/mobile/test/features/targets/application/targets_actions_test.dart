@@ -99,7 +99,7 @@ void main() {
       (version.mode, version.rebalancing, version.manual, version.acknowledged),
       (TargetMode.weekly, true, false, false),
     );
-    expect(version.shifts, isEmpty);
+    expect(version.dayFactors, isEmpty);
     expect(version.macros.protein, isNull);
 
     // The first weigh-in (A14): the typed value and unit, measured now.
@@ -486,28 +486,34 @@ void main() {
     expect((await h.phases()).single.value.name, isNull);
   });
 
-  test('TG-041 TG-043 TG-044 TG-054 setMode, setRebalancing, setShifting and '
+  test('TG-041 D-090 TG-054 setBalancing, setDayTarget, sameEveryDay and '
       'setMacros copy every other field; a stale version → changed, nothing '
       'written', () async {
     final h = TargetsAppHarness();
     await h.setUp();
     final original = await h.currentVersion();
     final first = await h.shownVersion();
-    await h.actions.setMode(first, TargetMode.fixed);
+    await h.actions.setBalancing(first, false);
     expect(
       await h.currentVersion(),
-      original.copyWith(revision: 2, mode: TargetMode.fixed),
+      original.copyWith(revision: 2, rebalancing: false),
     );
     // The screen still shows version 1: refused.
     expect(
       (await h.expectNoWrite<TargetsFailed>(
-        () => h.actions.setRebalancing(first, false),
+        () => h.actions.setBalancing(first, true),
       )).reason,
       TargetsFailure.changed,
     );
 
     h.advanceDays(1); // Sunday: the next change is a new row (D5).
-    await h.actions.setRebalancing(await h.shownVersion(), false);
+    final base = original.baseKcal;
+    await h.actions.setDayTarget(
+      await h.shownVersion(),
+      DayOfWeek.friday,
+      2600,
+      suggestionKcal: base,
+    );
     final sunday = await h.currentVersion();
     expect(sunday.id, isNot(original.id));
     expect(
@@ -516,26 +522,18 @@ void main() {
         id: sunday.id,
         revision: 1,
         effectiveFrom: h.date,
-        mode: TargetMode.fixed,
         rebalancing: false,
+        dayFactors: {DayOfWeek.friday: 2600 / base},
       ),
     );
     // Saturday's row is no longer the one in effect: refused.
     expect(
       (await h.expectNoWrite<TargetsFailed>(
-        () => h.actions.setMode(VersionedId(original.id, 2), TargetMode.weekly),
+        () => h.actions.sameEveryDay(VersionedId(original.id, 2)),
       )).reason,
       TargetsFailure.changed,
     );
 
-    await h.actions.setShifting(await h.shownVersion(), {
-      DayOfWeek.friday: 1.3,
-      DayOfWeek.saturday: null,
-    });
-    expect(
-      await h.currentVersion(),
-      sunday.copyWith(revision: 2, shifts: {DayOfWeek.friday: 1.3}),
-    );
     final macros = MacroSettings(
       protein: MacroOverride.grams(150),
       fat: MacroOverride.percent(25),
@@ -544,22 +542,98 @@ void main() {
     await h.actions.setMacros(await h.shownVersion(), macros);
     expect(
       await h.currentVersion(),
-      sunday.copyWith(
-        revision: 3,
-        shifts: {DayOfWeek.friday: 1.3},
-        macros: macros,
-      ),
+      sunday.copyWith(revision: 2, macros: macros),
     );
-    // A shift back to 1.0 clears the day.
-    await h.actions.setShifting(await h.shownVersion(), {DayOfWeek.friday: 1});
-    expect((await h.currentVersion()).shifts, isEmpty);
+    // On: weekly with rebalancing again.
+    await h.actions.setBalancing(await h.shownVersion(), true);
+    expect((await h.currentVersion()).rebalancing, isTrue);
+    // The rounded suggestion clears the day.
+    await h.actions.setDayTarget(
+      await h.shownVersion(),
+      DayOfWeek.friday,
+      base.roundToDouble(),
+      suggestionKcal: base,
+    );
+    expect((await h.currentVersion()).dayFactors, isEmpty);
+    // Same every day clears every day.
+    await h.actions.setDayTarget(
+      await h.shownVersion(),
+      DayOfWeek.monday,
+      2300,
+      suggestionKcal: base,
+    );
+    await h.actions.sameEveryDay(await h.shownVersion());
+    expect((await h.currentVersion()).dayFactors, isEmpty);
+    // Out of range: 500–10,000 kcal and 0.5–2× the suggestion.
+    for (final kcal in [400.0, base * 2.1, base * .45]) {
+      expect(
+        (await h.expectNoWrite<TargetsFailed>(
+          () => h.actions.setDayTarget(
+            VersionedId(sunday.id, 6),
+            DayOfWeek.monday,
+            kcal,
+            suggestionKcal: base,
+          ),
+        )).reason,
+        TargetsFailure.invalid,
+      );
+    }
     // A version that is gone is "removed".
     expect(
       (await h.expectNoWrite<TargetsFailed>(
-        () =>
-            h.actions.setMode(VersionedId(h.ids.next(), 1), TargetMode.weekly),
+        () => h.actions.sameEveryDay(VersionedId(h.ids.next(), 1)),
       )).reason,
       TargetsFailure.removed,
+    );
+  });
+
+  test('A53 D4 setDayTarget below the floor without acknowledgement → '
+      'NeedsAcknowledgement, nothing written; with it the day stays as set '
+      'and the version stays generated', () async {
+    final h = TargetsAppHarness();
+    await h.setUp();
+    final base = (await h.currentVersion()).baseKcal;
+    final need = await h.expectNoWrite<TargetsNeedsAcknowledgement>(
+      () async => await h.actions.setDayTarget(
+        await h.shownVersion(),
+        DayOfWeek.friday,
+        1200,
+        suggestionKcal: base,
+      ),
+    );
+    expect(need.warnings, {TargetWarning.manualBelowFloor});
+    expect(need.floorKcal, greaterThan(1200));
+    await h.actions.setDayTarget(
+      await h.shownVersion(),
+      DayOfWeek.friday,
+      1200,
+      suggestionKcal: base,
+      acknowledged: true,
+    );
+    final version = await h.currentVersion();
+    expect(version.dayFactors[DayOfWeek.friday], closeTo(1200 / base, 1e-12));
+    expect((version.manual, version.acknowledged), (false, false));
+    // The confirmation is stored with it (A53 D4), in the same change set.
+    expect(
+      (await h.actions.settings.read(
+        AppSettings.dayFloorAcks,
+      ))[DayOfWeek.friday],
+      closeTo(1200 / base, 1e-12),
+    );
+    // "Same every day" drops it again.
+    await h.actions.sameEveryDay(await h.shownVersion());
+    expect(await h.actions.settings.read(AppSettings.dayFloorAcks), isEmpty);
+    // A suggestion that isn't the current one is refused: nothing written.
+    expect(
+      (await h.expectNoWrite<TargetsFailed>(
+        () async => await h.actions.setDayTarget(
+          await h.shownVersion(),
+          DayOfWeek.monday,
+          2300,
+          suggestionKcal: base + 40,
+        ),
+      )).reason,
+      TargetsFailure.changed,
     );
   });
 
@@ -653,7 +727,6 @@ void main() {
       acknowledged: true,
     );
     expect((await h.currentVersion()).acknowledged, isFalse);
-    await h.actions.setMode(await h.shownVersion(), TargetMode.fixed);
     final saved = await h.actions.saveProfile(
       const ProfilePatch(sex: FormulaSex.male),
       1,
@@ -662,7 +735,7 @@ void main() {
     final version = await h.currentVersion();
     expect(
       (version.baseKcal, version.manual, version.acknowledged, version.mode),
-      (1600.0, true, false, TargetMode.fixed),
+      (1600.0, true, false, TargetMode.weekly),
     );
     final data = await h.data();
     final day = TargetsTimeline.day(
@@ -678,30 +751,41 @@ void main() {
     expect(day.issues, {TargetIssue.manualNeedsReview});
   });
 
-  test('PA7 SF-012 switching an acknowledged below-floor manual target to '
-      'weekly budget is refused, nothing written (also rebalancing and '
-      'shifting)', () async {
+  test('PA7 SF-012 for an acknowledged below-floor manual target, balancing, '
+      'per-day numbers and "Same every day" are refused, nothing written; a '
+      'below-floor manual target clears the per-day numbers', () async {
     final h = TargetsAppHarness();
     await h.setUp();
+    final base = (await h.currentVersion()).baseKcal;
+    await h.actions.setDayTarget(
+      await h.shownVersion(),
+      DayOfWeek.friday,
+      2600,
+      suggestionKcal: base,
+    );
     await h.actions.setManualTarget(
       await h.shownVersion(),
       1500,
       acknowledged: true,
     );
+    expect((await h.currentVersion()).dayFactors, isEmpty);
     final shown = await h.shownVersion();
     for (final command in [
-      () => h.actions.setMode(shown, TargetMode.weekly),
-      () => h.actions.setRebalancing(shown, false),
-      () => h.actions.setShifting(shown, {DayOfWeek.friday: 1.3}),
+      () => h.actions.setBalancing(shown, true),
+      () => h.actions.sameEveryDay(shown),
+      () => h.actions.setDayTarget(
+        shown,
+        DayOfWeek.friday,
+        1600,
+        suggestionKcal: 1500,
+        acknowledged: true,
+      ),
     ]) {
       expect(
         (await h.expectNoWrite<TargetsFailed>(command)).reason,
         TargetsFailure.fixedBelowFloor,
       );
     }
-    await h.expectNoWrite<TargetsUnchanged>(
-      () => h.actions.setMode(shown, TargetMode.fixed),
-    );
     // Macros don't depend on the weekly budget.
     expect(
       await h.actions.setMacros(shown, MacroSettings(fiberGrams: 25)),
@@ -710,7 +794,7 @@ void main() {
     // Back on the calculated target, weekly is allowed again.
     await h.actions.useCalculatedTarget(await h.shownVersion());
     expect(
-      await h.actions.setMode(await h.shownVersion(), TargetMode.weekly),
+      await h.actions.setBalancing(await h.shownVersion(), true),
       isA<TargetsDone>(),
     );
   });
@@ -743,18 +827,22 @@ void main() {
       return await h.applier.apply(changes);
     };
     final shown = await h.shownVersion();
-    final first = h.actions.setMode(shown, TargetMode.fixed);
-    expect(await h.actions.setRebalancing(shown, false), isA<TargetsPending>());
+    final first = h.actions.setBalancing(shown, false);
+    expect(await h.actions.sameEveryDay(shown), isA<TargetsPending>());
     expect(await h.actions.completeSetup(setupInput()), isA<TargetsPending>());
     pending.complete();
     expect(await first, isA<TargetsDone>());
     h.applyHook = null;
 
     final commands = <Future<TargetsOutcome> Function()>[
-      () async => await h.actions.setRebalancing(await h.shownVersion(), false),
-      () async => await h.actions.setShifting(await h.shownVersion(), {
-        DayOfWeek.monday: 1.15,
-      }),
+      () async => await h.actions.setBalancing(await h.shownVersion(), true),
+      () async => await h.actions.setDayTarget(
+        await h.shownVersion(),
+        DayOfWeek.monday,
+        2300,
+        suggestionKcal: setupBase,
+      ),
+      () async => await h.actions.sameEveryDay(await h.shownVersion()),
       () async => await h.actions.setMacros(
         await h.shownVersion(),
         MacroSettings(caloriesProteinOnly: true),
@@ -813,18 +901,12 @@ void main() {
     ]) {
       h.applyHook = (_) async => Rejected(failure);
       expect(
-        ((await h.actions.setMode(
-          shown,
-          TargetMode.fixed,
-        )) as TargetsFailed).reason,
+        ((await h.actions.setBalancing(shown, false)) as TargetsFailed).reason,
         reason,
       );
       h.applyHook = (_) async => throw ChangeRejected(failure);
       expect(
-        ((await h.actions.setMode(
-          shown,
-          TargetMode.fixed,
-        )) as TargetsFailed).reason,
+        ((await h.actions.setBalancing(shown, false)) as TargetsFailed).reason,
         reason,
       );
     }
@@ -880,7 +962,7 @@ void main() {
     final h = TargetsAppHarness();
     final id = VersionedId(h.ids.next(), 1);
     for (final command in <Future<TargetsOutcome> Function()>[
-      () => h.actions.setMode(id, TargetMode.fixed),
+      () => h.actions.setBalancing(id, false),
       () => h.actions.recalculate(id),
       () => h.actions.setManualTarget(id, 2000),
       () => h.actions.startPhase(GoalInput.maintain()),

@@ -5,7 +5,8 @@ import 'package:fb_mobile/features/targets/presentation/targets_text.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Shows the full-screen warning (SF-011, SF-012, D14, D16) for a manual
-/// target of [kcal] that breaks the limits in [need]. Resolves true only
+/// target (or one [weekday]'s number, A53 D4) of [kcal] that breaks the
+/// limits in [need]. Resolves true only
 /// when the user checked the acknowledgement and tapped "Use …"; Go back
 /// or closing resolves false or null (nothing is written either way here).
 ///
@@ -19,10 +20,16 @@ Future<bool?> showBelowLimitScreen(
   required double kcal,
   required TargetsNeedsAcknowledgement need,
   required UnitSystem units,
+  String? weekday,
 }) => Navigator.of(context, rootNavigator: true).push<bool>(
   MaterialPageRoute<bool>(
     fullscreenDialog: true,
-    builder: (_) => BelowLimitScreen(kcal: kcal, need: need, units: units),
+    builder: (_) => BelowLimitScreen(
+      kcal: kcal,
+      need: need,
+      units: units,
+      weekday: weekday,
+    ),
   ),
 );
 
@@ -35,6 +42,7 @@ class BelowLimitScreen extends StatefulWidget {
     required this.kcal,
     required this.need,
     required this.units,
+    this.weekday,
     super.key,
   });
 
@@ -46,6 +54,10 @@ class BelowLimitScreen extends StatefulWidget {
 
   /// The unit setting (the implied rate).
   final UnitSystem units;
+
+  /// For one weekday's number (A53 D4), its name: the warning says only
+  /// that day changes, instead of "the same every day".
+  final String? weekday;
 
   @override
   State<BelowLimitScreen> createState() => _BelowLimitScreenState();
@@ -81,7 +93,10 @@ class _BelowLimitScreenState extends State<BelowLimitScreen> {
                       style: style,
                     ),
                     const SizedBox(height: FbSpace.s3),
-                    Text(l10n.targetsWarningFixed, style: style),
+                    Text(switch (widget.weekday) {
+                      final day? => l10n.targetsWarningDay(day),
+                      null => l10n.targetsWarningFixed,
+                    }, style: style),
                   ] else
                     Text(
                       l10n.targetsWarningRate(

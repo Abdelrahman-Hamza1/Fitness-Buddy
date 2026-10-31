@@ -135,19 +135,30 @@ abstract final class TargetLimits {
   /// Maximum supported numeric input, avoiding unbounded arithmetic.
   static const double maxNumber = 1000000;
 
-  /// Smallest supported positive weekday weight.
+  /// Smallest supported positive weight (retired weekday weights; kept as a
+  /// guard for settings that still read one).
   static const double minWeight = .001;
 
-  /// Largest weekday weight (maximum ratio one million).
+  /// Largest retired weekday weight.
   static const double maxWeight = 1000;
+
+  /// Smallest per-weekday factor of the suggestion (D-090, A53 D1).
+  static const double minDayFactor = .5;
+
+  /// Largest per-weekday factor of the suggestion.
+  static const double maxDayFactor = 2;
 
   /// Bisections for the bounded monotonic allocation solver.
   static const int allocationIterations = 80;
 
-  /// Shared weight validation, with content-free errors.
-  static void checkWeight(double weight) {
-    if (!weight.isFinite || weight < minWeight || weight > maxWeight) {
-      throw ArgumentError('weekday weights must be in supported range');
+  /// Whether [factor] is a supported per-weekday factor.
+  static bool isDayFactor(double factor) =>
+      factor.isFinite && factor >= minDayFactor && factor <= maxDayFactor;
+
+  /// Shared factor validation, with content-free errors.
+  static void checkDayFactor(double factor) {
+    if (!isDayFactor(factor)) {
+      throw ArgumentError('weekday factors must be in supported range');
     }
   }
 }

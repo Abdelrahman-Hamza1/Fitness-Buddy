@@ -208,6 +208,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A50](A50-google-sign-in.md) | Google sign-in on the phone (backlog #200) | Claude | A33 | S | new |  | ✅ |
 | [A51](A51-first-run-me.md) | First run, sign-in screens & Me overhaul (UX overhaul 2026-10-31) | Claude | A13b, A33, A50 | L | new |  | ✅ closed, awaiting merge |
 | [A52](A52-workouts-ux.md) | Workouts UX overhaul (tab, logging maps, picker popularity, plans choose exercises) | Claude | A37a, A37c | L | new (owner UX critique 2026-10-31) |  | ✅ |
+| [A53](A53-targets-food-names.md) | Targets redesign & food-name language (UX overhaul) | Claude | A38, A41a, A42 | L | new (owner sketches 2026-10-31) |  | ✅ closed, awaiting merge |
 
 **A44 runs right after A22 (owner request, 2026-10-29):** the "Embrace" identity (palette, fonts, icon) lands before the remaining screens are built, an exception to "the number is the order" like the dish batches below.
 

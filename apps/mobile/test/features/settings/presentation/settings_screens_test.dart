@@ -63,6 +63,35 @@ void main() {
     await unmountApp(tester, container);
   });
 
+  testWidgets('D-091 LC-007 Food names: Match my phone by default; Both sets '
+      'it with Undo', (tester) async {
+    final container = await pumpAt(tester);
+    await openMePage(tester, 'Preferences');
+    final row = find.byKey(const ValueKey('settings-food-names'));
+    await tester.ensureVisible(row);
+    expect(
+      find.descendant(of: row, matching: find.text('Match my phone')),
+      findsOneWidget,
+    );
+    await tester.tap(row);
+    await tester.pumpAndSettle();
+    expect(_sheet('Your phone is in English, so English'), findsOneWidget);
+    await tester.tap(_sheet('Both'));
+    await settleWrites(tester);
+    expect(find.text('Food names: Both'), findsOneWidget);
+    expect(
+      await _stored(tester, container, AppSettings.foodNames),
+      FoodNameLanguage.both,
+    );
+    await tester.tap(find.text('Undo'));
+    await settleWrites(tester);
+    expect(
+      await _stored(tester, container, AppSettings.foodNames),
+      FoodNameLanguage.phone,
+    );
+    await unmountApp(tester, container);
+  });
+
   testWidgets('FD-080 LC-040 Halal switch on by default; turning it off '
       'shows Undo', (tester) async {
     final container = await pumpAt(tester);

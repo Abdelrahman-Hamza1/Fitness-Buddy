@@ -99,17 +99,6 @@ void main() {
         : d.isBefore(LocalDate(2026, 10, 15))
         ? 86.0
         : 84.6 - d.day / 100;
-    // Training on Mondays and Wednesdays, over two weeks of the range; a
-    // logged unplanned workout on Saturday 10 Oct (same-day adjustment).
-    final training = TrainingShiftInput(
-      plannedDays: {DayOfWeek.monday, DayOfWeek.wednesday},
-      weight: 1.3,
-      loggedDates: {
-        LocalDate(2026, 10, 10),
-        LocalDate(2026, 10, 12),
-        LocalDate(2026, 10, 19),
-      },
-    );
     final days = ProgressSeries.build(
       from: _from,
       to: LocalDate(2026, 11, 7),
@@ -119,7 +108,6 @@ void main() {
       goals: goals,
       trendOn: trendOn,
       logs: logs,
-      training: training,
     );
 
     expect(days.first.date, _from);
@@ -142,7 +130,6 @@ void main() {
         goals: goals,
         bodyWeightKg: trendOn(day.date),
         intake: intake,
-        training: training,
       );
       expect(day.targetKcal, expected?.day.kcal, reason: '${day.date}');
       expect(

@@ -24,10 +24,10 @@ Set<(String, String)> targetIdPairs(Iterable<String> ids) {
 
 /// Weekly budgeting or the simple fixed alternative (TG-044).
 enum TargetMode {
-  /// Seven-day budget, optionally rebalanced and weighted.
+  /// Seven-day budget, optionally rebalanced.
   weekly,
 
-  /// Identical calories each day, no weekly logic.
+  /// Each day its planned number, no weekly logic.
   fixed,
 }
 
@@ -35,6 +35,8 @@ enum TargetMode {
 /// The app persists these through ChangeSetApplier; domain code only computes.
 final class TargetPlan {
   /// A below-floor manual target is allowed only when acknowledged and fixed.
+  /// [dayFactors] are each weekday's number as a factor of [baseKcal]
+  /// (D-090, A53 D1); a missing weekday is the suggestion itself.
   new({
     required this.baseKcal,
     required this.floorKcal,
@@ -42,9 +44,11 @@ final class TargetPlan {
     this.rebalancing = true,
     this.manual = false,
     this.acknowledged = false,
-    Map<DayOfWeek, double> weights = const {},
+    Map<DayOfWeek, double> dayFactors = const {},
+    Map<DayOfWeek, double> floorAcknowledged = const {},
     MacroSettings? macros,
-  }) : weights = Map.unmodifiable(weights),
+  }) : dayFactors = Map.unmodifiable(dayFactors),
+       floorAcknowledged = Map.unmodifiable(floorAcknowledged),
        macros = macros ?? MacroSettings() {
     checkTargetNumber(baseKcal);
     checkTargetNumber(floorKcal);
@@ -54,10 +58,11 @@ final class TargetPlan {
         'below-floor target must be acknowledged manual fixed',
       );
     }
-    this.weights.values.forEach(TargetLimits.checkWeight);
+    this.dayFactors.values.forEach(TargetLimits.checkDayFactor);
   }
 
-  /// Daily base calories, unrounded.
+  /// The daily suggestion, unrounded: the calculated (or the user's own)
+  /// target that every weekday starts from.
   final double baseKcal;
 
   /// Transient SF-010 floor. Recompute from profile/date; never persist it.
@@ -75,34 +80,62 @@ final class TargetPlan {
   /// Explicit warning acknowledgement for below-limit manual values.
   final bool acknowledged;
 
-  /// Immutable weekday weights; the caller can include workout-plan weights.
-  final Map<DayOfWeek, double> weights;
+  /// Immutable weekday factors of [baseKcal].
+  final Map<DayOfWeek, double> dayFactors;
+
+  /// The weekday factors the user confirmed below the floor (A53 D4, the
+  /// SF-012 warning): such a day stays as set while its factor is the one
+  /// confirmed; any other day below the floor is raised to it (SF-010).
+  final Map<DayOfWeek, double> floorAcknowledged;
 
   /// Daily macro rules resolved against base calories and goal/current weight.
   final MacroSettings macros;
 
+  /// Whether this is an acknowledged manual target below the floor (PA7):
+  /// the same number every day, factors ignored, no weekly logic.
+  bool get belowFloorFixed => baseKcal < floorKcal;
+
+  /// [weekday]'s planned number: the suggestion times its factor, raised
+  /// to the floor unless the user confirmed that factor below it.
+  double plannedKcal(DayOfWeek weekday) {
+    if (belowFloorFixed) return baseKcal;
+    final kcal = baseKcal * (dayFactors[weekday] ?? 1);
+    return kcal < floorKcal && !keptBelowFloor(weekday) ? floorKcal : kcal;
+  }
+
+  /// Whether [weekday]'s factor is one the user confirmed below the floor.
+  bool keptBelowFloor(DayOfWeek weekday) {
+    final factor = dayFactors[weekday];
+    final confirmed = floorAcknowledged[weekday];
+    return factor != null &&
+        confirmed != null &&
+        (factor - confirmed).abs() < 1e-9;
+  }
+
+  /// Every weekday's planned number.
+  Map<DayOfWeek, double> get plannedWeek => {
+    for (final day in DayOfWeek.values) day: plannedKcal(day),
+  };
+
   /// Derives, never stores, one historical/current day (G10).
-  /// Fixed manual targets are returned as explicit values, not generated.
+  /// Fixed mode returns the day's planned number, with no week.
   TargetDay day({
     required LocalDate date,
     required double weightKg,
     Iterable<WeekIntake> earlierIntake = const [],
-    Map<DayOfWeek, double> remainingWeights = const {},
     WeekCalendar calendar = const WeekCalendar(),
   }) {
     final week = mode == TargetMode.fixed
         ? null
         : WeeklyBudget.calculate(
-            baseKcal: baseKcal,
+            planned: plannedWeek,
             floorKcal: floorKcal,
             today: date,
             earlierIntake: earlierIntake,
-            weights: weights,
-            remainingWeights: remainingWeights,
             rebalancing: rebalancing,
             calendar: calendar,
           );
-    final kcal = week?.targets[date] ?? baseKcal;
+    final kcal = week?.targets[date] ?? plannedKcal(date.weekday);
     return TargetDay._(
       kcal,
       MacroPlan.calculate(
@@ -115,6 +148,23 @@ final class TargetPlan {
       acknowledged,
     );
   }
+
+  /// A copy with the given fields replaced.
+  TargetPlan copyWith({
+    double? baseKcal,
+    Map<DayOfWeek, double>? dayFactors,
+    Map<DayOfWeek, double>? floorAcknowledged,
+  }) => TargetPlan(
+    baseKcal: baseKcal ?? this.baseKcal,
+    floorKcal: floorKcal,
+    mode: mode,
+    rebalancing: rebalancing,
+    manual: manual,
+    acknowledged: acknowledged,
+    dayFactors: dayFactors ?? this.dayFactors,
+    floorAcknowledged: floorAcknowledged ?? this.floorAcknowledged,
+    macros: macros,
+  );
 }
 
 /// One computed day, not a persistence snapshot.

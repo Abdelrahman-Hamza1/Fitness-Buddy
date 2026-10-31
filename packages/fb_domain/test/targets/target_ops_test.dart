@@ -30,7 +30,7 @@ final _settings = TargetSettingsRecord(
   manual: true,
   acknowledged: true,
   mode: TargetMode.fixed,
-  shifts: {DayOfWeek.friday: 1.3},
+  dayFactors: {DayOfWeek.friday: 1.3},
   macros: MacroSettings(protein: MacroOverride.grams(141), fiberGrams: 33),
 );
 

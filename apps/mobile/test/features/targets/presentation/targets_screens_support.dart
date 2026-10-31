@@ -9,6 +9,7 @@ import 'package:fb_mobile/core/settings/settings_store.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/body/body.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -57,6 +58,12 @@ final class TargetsScreenRig {
             settings: ref.watch(settingsStoreProvider),
             bodyWeightKg: ref.watch(bodyWeightReaderProvider),
           ),
+        ),
+        // The real below-floor confirmations: pumpApp's Today defaults pin
+        // them empty, but these screens write and read them (A53 D4).
+        dayFloorAcksProvider.overrideWith(
+          (ref) =>
+              ref.watch(settingsStoreProvider).watch(AppSettings.dayFloorAcks),
         ),
         ...overrides,
       ],

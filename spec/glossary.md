@@ -7,7 +7,7 @@
 | **Assumption chip** | A small tappable label on a proposal card showing something Buddy assumed ("raw weight", "1 tsp oil"). Tap to change it (AI-033). |
 | **Batch** | Food cooked once and eaten over several meals or shared. It stays "open" for leftovers (DY-040). |
 | **Buddy** | The in-app AI assistant (D-078). |
-| **Calorie shifting** | Giving some days (e.g. training days) a bigger share of the same weekly budget (TG-043). |
+| **Calorie shifting** | Retired by D-090: replaced by per-weekday numbers (TG-043), each day's own number, relative to the suggestion. |
 | **Direct action** | Something you tap yourself (quick-add, barcode amount, manual edit). It applies immediately, with undo (AI-048). |
 | **e1RM** | Estimated one-rep max, calculated from a set's weight and reps (Epley formula) (WO-041). |
 | **Estimate (~)** | A value that isn't from exact data (a reference dish portion, a photo portion, or an AI estimate). Always marked, with a range on tap (D-045). |

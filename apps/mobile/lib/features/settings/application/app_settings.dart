@@ -65,10 +65,9 @@ abstract final class AppSettings {
     defaultValue: null,
   );
 
-  /// TG-043 / WO-061: the calorie-shifting weight of planned training days
-  /// (from the weekly workout plan), or unset for no training-day shifting
-  /// (off by default, D-058). Values outside the engine's weight range read
-  /// as unset.
+  /// Retired (D-090, A53 D3): the training-day shifting weight of A36,
+  /// which never had a setting screen. Nothing reads it; the key stays in
+  /// [all] so export can still name a stored value.
   static final trainingDayWeight = SettingKey<double?>(
     'targets.trainingDayWeight',
     codec: SettingCodec(
@@ -81,6 +80,34 @@ abstract final class AppSettings {
           : null,
     ),
     defaultValue: null,
+  );
+
+  /// D-091: the language food names show in; "Match my phone" by default.
+  static final SettingKey<FoodNameLanguage> foodNames = SettingKey.enumeration(
+    'food.nameLanguage',
+    FoodNameLanguage.values,
+    defaultValue: FoodNameLanguage.phone,
+  );
+
+  /// A53 D4 / SF-012: the weekday factors the user confirmed below the
+  /// safety floor on the warning screen (weekday name → factor). A day
+  /// below the floor stays as set only while its factor is the confirmed
+  /// one; unreadable entries are skipped.
+  static final dayFloorAcks = SettingKey<Map<DayOfWeek, double>>(
+    'targets.dayFloorAcks',
+    codec: SettingCodec(
+      toJson: (value) => {
+        for (final MapEntry(:key, :value) in value.entries) key.name: value,
+      },
+      fromJson: (json) => {
+        if (json is Map)
+          for (final day in DayOfWeek.values)
+            if (json[day.name] case final num factor
+                when TargetLimits.isDayFactor(factor.toDouble()))
+              day: factor.toDouble(),
+      },
+    ),
+    defaultValue: const {},
   );
 
   /// TG-034: ask (default) or apply the weekly check-in automatically.
@@ -147,9 +174,11 @@ abstract final class AppSettings {
     unitSystem,
     weekStart,
     halal,
+    foodNames,
     theme,
     cityId,
     trainingDayWeight,
+    dayFloorAcks,
     checkInMode,
     ramadanSeasons,
     prayerMethod,

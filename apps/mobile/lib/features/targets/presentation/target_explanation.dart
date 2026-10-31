@@ -60,7 +60,7 @@ class TargetExplanationView extends StatelessWidget {
         calc.activityFactor,
         kcal(calc.expenditureKcal),
       ),
-      if (showGoal) _goalLine(l10n, unit),
+      if (showGoal) explanationGoalLine(l10n, calc, unit, defaults: defaults),
       if (calc.warnings.contains(TargetWarning.lossRateCapped))
         capMessage(l10n, calc, unit),
       if (calc.warnings.contains(TargetWarning.calorieFloorApplied))
@@ -76,18 +76,25 @@ class TargetExplanationView extends StatelessWidget {
       children: [for (final line in lines) Text(line, style: style)],
     );
   }
+}
 
-  String _goalLine(AppLocalizations l10n, MassUnit unit) {
-    final rate = calculation.cappedKgPerWeek;
-    if (rate == 0) return l10n.targetsExplainGoalMaintain;
-    final perDay = DisplayRounding.kcal(rate.abs() * defaults.kcalPerKg / 7);
-    // About 7,700 kcal per kg, or about 3,490 kcal per lb (nearest 10).
-    final perUnit =
-        (Mass.of(1, unit).kilograms * defaults.kcalPerKg / 10).round() * 10;
-    final rateWords = rateText(l10n, rate.abs(), unit);
-    final unitWord = massUnitLabel(l10n, unit);
-    return rate < 0
-        ? l10n.targetsExplainGoalLose(rateWords, perDay, perUnit, unitWord)
-        : l10n.targetsExplainGoalGain(rateWords, perDay, perUnit, unitWord);
-  }
+/// The goal line of the explanation (TG-021): maintain, or the weekly rate
+/// with its daily energy ("about 550 kcal a day").
+String explanationGoalLine(
+  AppLocalizations l10n,
+  TargetCalculation calculation,
+  MassUnit unit, {
+  TargetDefaults defaults = const TargetDefaults(),
+}) {
+  final rate = calculation.cappedKgPerWeek;
+  if (rate == 0) return l10n.targetsExplainGoalMaintain;
+  final perDay = DisplayRounding.kcal(rate.abs() * defaults.kcalPerKg / 7);
+  // About 7,700 kcal per kg, or about 3,490 kcal per lb (nearest 10).
+  final perUnit =
+      (Mass.of(1, unit).kilograms * defaults.kcalPerKg / 10).round() * 10;
+  final rateWords = rateText(l10n, rate.abs(), unit);
+  final unitWord = massUnitLabel(l10n, unit);
+  return rate < 0
+      ? l10n.targetsExplainGoalLose(rateWords, perDay, perUnit, unitWord)
+      : l10n.targetsExplainGoalGain(rateWords, perDay, perUnit, unitWord);
 }

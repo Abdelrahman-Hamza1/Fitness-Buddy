@@ -28,12 +28,18 @@ final class QuickAddChip {
   /// Stable pending identity; never log.
   String get key => ranked.candidate.key;
 
-  /// Private display name.
-  String get name => switch (ranked.candidate) {
-    FoodCandidate(:final lastUsed) =>
-      choice?.names.en ?? lastUsed.food.names.en,
+  /// Private display name in [language] (D-091; a saved meal's own name
+  /// stays as typed).
+  String nameIn(FoodNameLanguage language) => switch (ranked.candidate) {
+    FoodCandidate(:final lastUsed) => FoodNameLines.of(
+      choice?.names ?? lastUsed.food.names,
+      language,
+    ).primary,
     SavedMealCandidate(:final meal) => meal.name,
   };
+
+  /// Private display name in English.
+  String get name => nameIn(FoodNameLanguage.english);
 }
 
 /// Reconstructs only the candidate's selected last-used amount (FD-022).

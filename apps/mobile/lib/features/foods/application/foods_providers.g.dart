@@ -61,6 +61,100 @@ final class FoodCatalogRepositoryProvider
 String _$foodCatalogRepositoryHash() =>
     r'9fdb3288b9749eb1b3806ad1080eeee8451885b9';
 
+/// The other names a catalog food (and its dish) is known by: the pack's
+/// aliases and spellings, normalized (D-091, the food page's "Also
+/// called"). Empty without a pack.
+
+@ProviderFor(catalogAliases)
+final catalogAliasesProvider = CatalogAliasesFamily._();
+
+/// The other names a catalog food (and its dish) is known by: the pack's
+/// aliases and spellings, normalized (D-091, the food page's "Also
+/// called"). Empty without a pack.
+
+final class CatalogAliasesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<String>>,
+          List<String>,
+          FutureOr<List<String>>
+        >
+    with $FutureModifier<List<String>>, $FutureProvider<List<String>> {
+  /// The other names a catalog food (and its dish) is known by: the pack's
+  /// aliases and spellings, normalized (D-091, the food page's "Also
+  /// called"). Empty without a pack.
+  CatalogAliasesProvider._({
+    required CatalogAliasesFamily super.from,
+    required (String, String?) super.argument,
+  }) : super(
+         retry: null,
+         name: r'catalogAliasesProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$catalogAliasesHash();
+
+  @override
+  String toString() {
+    return r'catalogAliasesProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<String>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<String>> create(Ref ref) {
+    final argument = this.argument as (String, String?);
+    return catalogAliases(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CatalogAliasesProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$catalogAliasesHash() => r'0e2b48e394e372477644fea21ec3ee29dfdabb77';
+
+/// The other names a catalog food (and its dish) is known by: the pack's
+/// aliases and spellings, normalized (D-091, the food page's "Also
+/// called"). Empty without a pack.
+
+final class CatalogAliasesFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<String>>, (String, String?)> {
+  CatalogAliasesFamily._()
+    : super(
+        retry: null,
+        name: r'catalogAliasesProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The other names a catalog food (and its dish) is known by: the pack's
+  /// aliases and spellings, normalized (D-091, the food page's "Also
+  /// called"). Empty without a pack.
+
+  CatalogAliasesProvider call(String foodId, String? dishId) =>
+      CatalogAliasesProvider._(argument: (foodId, dishId), from: this);
+
+  @override
+  String toString() => r'catalogAliasesProvider';
+}
+
 /// Search session with reactive history and background fuzzy builds.
 
 @ProviderFor(foodSearchService)

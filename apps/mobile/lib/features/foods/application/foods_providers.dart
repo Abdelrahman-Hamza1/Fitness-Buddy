@@ -29,6 +29,21 @@ part 'foods_providers.g.dart';
 FoodCatalogRepository foodCatalogRepository(Ref ref) =>
     FoodCatalogRepository(ref.watch(offlineCatalogProvider));
 
+/// The other names a catalog food (and its dish) is known by: the pack's
+/// aliases and spellings, normalized (D-091, the food page's "Also
+/// called"). Empty without a pack.
+@riverpod
+Future<List<String>> catalogAliases(Ref ref, String foodId, String? dishId) =>
+    ref
+        .watch(foodCatalogRepositoryProvider)
+        .namesForTargets([foodId, ?dishId])
+        .then(
+          (names) => {
+            for (final n in names)
+              if (!n.isDisplay) n.key,
+          }.toList(),
+        );
+
 /// Search session with reactive history and background fuzzy builds.
 @riverpod
 FoodSearchService foodSearchService(Ref ref) {

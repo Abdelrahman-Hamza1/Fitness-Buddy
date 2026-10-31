@@ -90,6 +90,10 @@ final class SettingsActions {
   Future<SettingsOutcome> setHalal(bool value) =>
       _set(AppSettings.halal, value);
 
+  /// Set the food-name language (D-091).
+  Future<SettingsOutcome> setFoodNames(FoodNameLanguage value) =>
+      _set(AppSettings.foodNames, value);
+
   /// Set the persisted theme.
   Future<SettingsOutcome> setTheme(ThemePreference value) =>
       _set(AppSettings.theme, value);

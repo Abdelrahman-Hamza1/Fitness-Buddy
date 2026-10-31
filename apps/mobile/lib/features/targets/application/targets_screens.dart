@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/body/body.dart';
@@ -279,33 +277,37 @@ final class TargetsView {
         (trend - version.basisWeightKg).abs() >= .05;
   }
 
-  /// The base the plan uses today: the stored one, or the floor when it was
-  /// raised (D6).
-  double get effectiveBaseKcal => day.raisedToFloor
-      ? math.max(version.baseKcal, day.floorKcal)
-      : version.baseKcal;
+  /// The plan today's numbers come from (the suggestion and the weekday
+  /// factors, A53 D1).
+  TargetPlan get plan => day.plan;
 
-  /// Each day's planned target this week with [weights] instead of the
-  /// stored shifts and no rebalancing (the Higher-calorie days preview,
-  /// TG-043), from the engine; empty in fixed mode.
-  Map<LocalDate, double> plannedWith(Map<DayOfWeek, double> weights) {
-    if (version.mode == TargetMode.fixed) return const {};
-    try {
-      return WeeklyBudget.calculate(
-        baseKcal: effectiveBaseKcal,
-        floorKcal: day.floorKcal,
-        today: calendar.weekStartOf(today),
-        weights: weights,
-        rebalancing: false,
-        calendar: calendar,
-      ).planned;
-    }
-    // The engine's content-free signal for an impossible input.
-    // ignore: avoid_catching_errors
-    on ArgumentError {
-      return const {};
-    }
+  /// Today's suggestion: the calculated (or own) daily target every day
+  /// starts from, floor and Ramadan "maintain" applied.
+  double get suggestionKcal => plan.baseKcal;
+
+  /// The seven dates of today's week, from the week start setting.
+  List<LocalDate> get weekDates {
+    final start = calendar.weekStartOf(today);
+    return [for (var i = 0; i < 7; i++) start.plusDays(i)];
   }
+
+  /// [weekday]'s planned number.
+  double plannedKcal(DayOfWeek weekday) => plan.plannedKcal(weekday);
+
+  /// The week's total: the sum of the seven planned numbers.
+  double get weekTotalKcal =>
+      DayOfWeek.values.fold(0, (sum, day) => sum + plannedKcal(day));
+
+  /// The week's total if [weekday] were [kcal] (the day sheet's line).
+  double weekTotalWith(DayOfWeek weekday, double kcal) =>
+      weekTotalKcal - plannedKcal(weekday) + kcal;
+
+  /// Whether any weekday has its own number ("Different by day").
+  bool get differentByDay => !forcedFixed && plan.dayFactors.isNotEmpty;
+
+  /// "Balance over/under across the week" is on (TG-041).
+  bool get balancing =>
+      version.mode == TargetMode.weekly && version.rebalancing;
 
   @override
   String toString() => 'TargetsView(${version.mode.name})';

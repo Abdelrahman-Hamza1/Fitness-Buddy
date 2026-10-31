@@ -1,3 +1,5 @@
+import 'dart:ui' show PlatformDispatcher;
+
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/catalog/catalog_models.dart';
 import 'package:fb_mobile/core/catalog/catalog_providers.dart';
@@ -19,10 +21,29 @@ Stream<UnitSystem> unitSystem(Ref ref) =>
 Stream<DayOfWeek> weekStart(Ref ref) =>
     ref.watch(settingsStoreProvider).watch(AppSettings.weekStart);
 
-/// The training-day shifting weight, or null when off (TG-043).
+/// The stored "Food names" choice (D-091), "Match my phone" by default.
 @riverpod
-Stream<double?> trainingDayWeight(Ref ref) =>
-    ref.watch(settingsStoreProvider).watch(AppSettings.trainingDayWeight);
+Stream<FoodNameLanguage> foodNameSetting(Ref ref) =>
+    ref.watch(settingsStoreProvider).watch(AppSettings.foodNames);
+
+/// The phone's languages in preference order (language codes), read when
+/// first needed; tests override it.
+@riverpod
+List<String> phoneLanguages(Ref ref) => [
+  for (final locale in PlatformDispatcher.instance.locales) locale.languageCode,
+];
+
+/// The language food names show in (D-091): the setting with "Match my
+/// phone" resolved; English until the setting has loaded.
+@riverpod
+FoodNameLanguage foodNameLanguage(Ref ref) =>
+    (ref.watch(foodNameSettingProvider).value ?? FoodNameLanguage.phone)
+        .resolve(ref.watch(phoneLanguagesProvider));
+
+/// The weekday factors confirmed below the floor (A53 D4).
+@riverpod
+Stream<Map<DayOfWeek, double>> dayFloorAcks(Ref ref) =>
+    ref.watch(settingsStoreProvider).watch(AppSettings.dayFloorAcks);
 
 /// Ask or apply the weekly check-in automatically (TG-034).
 @riverpod

@@ -21,36 +21,31 @@ final class WeekIntake {
   final bool complete;
 }
 
-/// Pure weekly budget projection. No exercise-calorie input exists (WO-060).
+/// Pure weekly budget projection (TG-040–042, D-090). No exercise-calorie
+/// input exists (WO-060).
 abstract final class WeeklyBudget {
-  /// Projects today through week end, with earlier known intake accounted.
-  /// Missing/incomplete days reserve their planned calories. An acknowledged
-  /// below-floor manual target is displayed directly, never generated here.
-  /// [remainingWeights] changes only the remaining allocation (unplanned
-  /// workouts); unknown earlier days keep their original planned reservation.
-  /// [fixed] is the standalone equal-budget projection; TargetPlan fixed mode
-  /// skips weekly logic entirely, including below-floor manual exceptions.
+  /// Projects today through week end from each weekday's [planned] number
+  /// (all seven weekdays; the suggestion or the user's own number for that
+  /// day). The weekly budget is their sum. With [rebalancing], earlier known
+  /// intake changes the remaining days in proportion to their planned
+  /// numbers, each within ±[TargetDefaults.dailyFlex] of its own planned
+  /// number and never below [floorKcal]; a day planned below the floor (the
+  /// user's acknowledged choice, A53 D4) is never lowered further. Missing
+  /// or incomplete earlier days reserve their planned number (TG-032).
   static WeekTargets calculate({
-    required double baseKcal,
+    required Map<DayOfWeek, double> planned,
     required double floorKcal,
     required LocalDate today,
     Iterable<WeekIntake> earlierIntake = const [],
-    Map<DayOfWeek, double> weights = const {},
-    Map<DayOfWeek, double> remainingWeights = const {},
     bool rebalancing = true,
-    bool fixed = false,
     WeekCalendar calendar = const WeekCalendar(),
     TargetDefaults defaults = const TargetDefaults(),
   }) {
-    checkTargetNumber(baseKcal);
     checkTargetNumber(floorKcal);
-    if (baseKcal < floorKcal) {
-      throw ArgumentError('weekly base must meet the safety floor');
+    if (planned.length != DayOfWeek.values.length) {
+      throw ArgumentError('every weekday needs a planned number');
     }
-    [
-      ...weights.values,
-      ...remainingWeights.values,
-    ].forEach(TargetLimits.checkWeight);
+    planned.values.forEach(checkTargetNumber);
     final start = calendar.weekStartOf(today);
     final days = [for (var i = 0; i < 7; i++) start.plusDays(i)];
     final past = <LocalDate, WeekIntake>{};
@@ -62,37 +57,20 @@ abstract final class WeeklyBudget {
       }
       past[intake.date] = intake;
     }
-    final lower = math.max(floorKcal, baseKcal * (1 - defaults.dailyFlex));
-    final upper = baseKcal * (1 + defaults.dailyFlex);
-    final budget = baseKcal * 7;
-    final dayWeights = [for (final d in days) weights[d.weekday] ?? 1.0];
-    final planned = fixed
-        ? List.filled(7, baseKcal)
-        : _allocate(budget, dayWeights, lower, upper);
+    final week = [for (final d in days) planned[d.weekday]!];
+    final budget = week.fold<double>(0, (a, b) => a + b);
     final elapsed = start.daysUntil(today);
     var accounted = 0.0;
     final unknown = <LocalDate>[];
     for (var i = 0; i < elapsed; i++) {
       final intake = past[days[i]];
       if (intake == null || !intake.complete) unknown.add(days[i]);
-      accounted += !fixed && intake != null && intake.complete
-          ? intake.kcal
-          : planned[i];
+      accounted += intake != null && intake.complete ? intake.kcal : week[i];
     }
-    final futureWeights = [
-      for (final d in days.skip(elapsed))
-        remainingWeights[d.weekday] ?? weights[d.weekday] ?? 1.0,
-    ];
-    final remaining = fixed || (!rebalancing && remainingWeights.isEmpty)
-        ? planned.sublist(elapsed)
-        : _allocate(
-            rebalancing
-                ? budget - accounted
-                : planned.skip(elapsed).fold<double>(0, (a, b) => a + b),
-            futureWeights,
-            lower,
-            upper,
-          );
+    final ahead = week.sublist(elapsed);
+    final remaining = rebalancing
+        ? _allocate(budget - accounted, ahead, floorKcal, defaults.dailyFlex)
+        : ahead;
     final assigned = remaining.fold<double>(0, (sum, kcal) => sum + kcal);
     return WeekTargets._(
       weekStart: start,
@@ -102,43 +80,48 @@ abstract final class WeeklyBudget {
       targets: {
         for (var i = elapsed; i < 7; i++) days[i]: remaining[i - elapsed],
       },
-      planned: {for (var i = 0; i < 7; i++) days[i]: planned[i]},
+      planned: {for (var i = 0; i < 7; i++) days[i]: week[i]},
       unknownDates: unknown,
     );
   }
 
-  // Solve sum(clamp(multiplier * weight, lower, upper)) = feasible budget.
-  // Monotonic bisection avoids freezing both extremes incorrectly. Normalize
-  // weights first; 80 iterations cover the bounded 1e6 ratio.
+  // Solve sum(clamp(m * planned, lower, upper)) = feasible budget for the
+  // multiplier m by monotonic bisection. A budget equal to the planned sum
+  // returns the planned numbers exactly.
   static List<double> _allocate(
     double budget,
-    List<double> weights,
-    double lower,
-    double upper,
+    List<double> planned,
+    double floor,
+    double flex,
   ) {
+    final sum = planned.fold<double>(0, (a, b) => a + b);
+    if ((budget - sum).abs() <= 1e-9 * sum) return planned;
+    final lower = [
+      for (final p in planned)
+        if (p < floor) p else math.max(floor, p * (1 - flex)),
+    ];
+    final upper = [for (final p in planned) p * (1 + flex)];
     final feasible = budget.clamp(
-      lower * weights.length,
-      upper * weights.length,
+      lower.fold<double>(0, (a, b) => a + b),
+      upper.fold<double>(0, (a, b) => a + b),
     );
-    final maxWeight = weights.reduce(math.max);
-    final normalized = [for (final w in weights) w / maxWeight];
+    double at(double m, int i) => (m * planned[i]).clamp(lower[i], upper[i]);
     var lo = 0.0;
-    var hi = upper / normalized.reduce(math.min);
+    var hi = 1 + flex;
     for (var i = 0; i < TargetLimits.allocationIterations; i++) {
-      final multiplier = (lo + hi) / 2;
-      final total = normalized.fold<double>(
-        0,
-        (sum, w) => sum + (multiplier * w).clamp(lower, upper),
-      );
+      final m = (lo + hi) / 2;
+      var total = 0.0;
+      for (var j = 0; j < planned.length; j++) {
+        total += at(m, j);
+      }
       if (total < feasible) {
-        lo = multiplier;
+        lo = m;
       } else {
-        hi = multiplier;
+        hi = m;
       }
     }
-    return [
-      for (final w in normalized) ((lo + hi) / 2 * w).clamp(lower, upper),
-    ];
+    final m = (lo + hi) / 2;
+    return [for (var j = 0; j < planned.length; j++) at(m, j)];
   }
 }
 
@@ -159,7 +142,7 @@ final class WeekTargets {
   /// First day according to the supplied WeekCalendar.
   final LocalDate weekStart;
 
-  /// Always base calories times seven.
+  /// The sum of the seven planned numbers.
   final double budgetKcal;
 
   /// Actual known intake plus planned reservations for unknown past days.
@@ -171,7 +154,7 @@ final class WeekTargets {
   /// Today's and future targets only, in chronological order.
   final Map<LocalDate, double> targets;
 
-  /// The whole week's initial weighted allocation, before actual intake.
+  /// The whole week's planned numbers, before actual intake.
   final Map<LocalDate, double> planned;
 
   /// Earlier dates whose intake is unknown; never treated as zero.

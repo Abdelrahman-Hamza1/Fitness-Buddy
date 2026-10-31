@@ -117,7 +117,19 @@ void main() {
       expect(manual.rebalancing, isTrue);
       expect(manual.floorKcal, 1600);
       expect(manual.macros.caloriesProteinOnly, isFalse);
-      expect(manual.weights, isEmpty);
+      expect(manual.dayFactors, isEmpty);
+      expect(
+        TargetPlan(
+          baseKcal: 1000,
+          floorKcal: 1600,
+          mode: TargetMode.fixed,
+          manual: true,
+          acknowledged: true,
+          dayFactors: {DayOfWeek.friday: 1.5},
+        ).plannedKcal(DayOfWeek.friday),
+        1000,
+        reason: 'PA7: factors are ignored below the floor',
+      );
       for (final bad in [
         () => TargetPlan(baseKcal: 1000, floorKcal: 1600),
         () =>
@@ -140,58 +152,72 @@ void main() {
     },
   );
 
-  test(
-    'TG-040 TG-043 settings copy weights and pass intake/calendar to engine',
-    () {
-      final weights = {DayOfWeek.friday: 2.0};
-      final macros = MacroSettings(protein: MacroOverride.grams(150));
-      final settings = TargetPlan(
-        baseKcal: 2000,
-        floorKcal: 1500,
-        weights: weights,
-        macros: macros,
-        rebalancing: false,
-      );
-      weights.clear();
-      expect(settings.weights[DayOfWeek.friday], 2);
-      expect(settings.weights.clear, throwsUnsupportedError);
-      final date = saturday.plusDays(6);
-      final day = settings.day(
-        date: date,
-        weightKg: 70,
-        earlierIntake: [WeekIntake(date: saturday, kcal: 3000)],
-      );
-      expect(day.kcal, closeTo(2500, 1e-7));
-      expect(day.macros.proteinGrams, 150);
-      expect(day.week!.accountedPastKcal, greaterThan(3000));
-      final updated = settings.day(
-        date: saturday.plusDays(4),
-        weightKg: 70,
-        remainingWeights: {DayOfWeek.wednesday: 2},
-      );
-      expect(updated.week!.planned[saturday], day.week!.planned[saturday]);
+  test('TG-040 D-090 settings copy day factors and pass intake/calendar to '
+      'the engine; fixed mode keeps each planned day', () {
+    final factors = {DayOfWeek.friday: 1.25};
+    final macros = MacroSettings(protein: MacroOverride.grams(150));
+    final settings = TargetPlan(
+      baseKcal: 2000,
+      floorKcal: 1500,
+      dayFactors: factors,
+      macros: macros,
+      rebalancing: false,
+    );
+    factors.clear();
+    expect(settings.dayFactors[DayOfWeek.friday], 1.25);
+    expect(settings.dayFactors.clear, throwsUnsupportedError);
+    expect(settings.plannedKcal(DayOfWeek.friday), 2500);
+    expect(settings.plannedKcal(DayOfWeek.monday), 2000);
+    final date = saturday.plusDays(6);
+    final day = settings.day(
+      date: date,
+      weightKg: 70,
+      earlierIntake: [WeekIntake(date: saturday, kcal: 3000)],
+    );
+    expect(day.kcal, 2500);
+    expect(day.week!.budgetKcal, 14500);
+    expect(day.macros.proteinGrams, 150);
+    expect(day.week!.accountedPastKcal, 13000, reason: '5 unknown days');
+    final monday = settings.day(
+      date: date,
+      weightKg: 70,
+      calendar: const WeekCalendar(weekStart: DayOfWeek.monday),
+    );
+    expect(monday.week!.weekStart.weekday, DayOfWeek.monday);
+    final fixed = TargetPlan(
+      baseKcal: 2000,
+      floorKcal: 1500,
+      mode: TargetMode.fixed,
+      dayFactors: {DayOfWeek.friday: 1.25},
+    );
+    final friday = fixed.day(date: date, weightKg: 70);
+    expect(friday.kcal, 2500);
+    expect(friday.week, isNull);
+    expect(fixed.day(date: saturday, weightKg: 70).kcal, 2000);
+    for (final value in [0.0, double.nan, double.infinity, .49, 2.01]) {
       expect(
-        updated.kcal,
-        greaterThan(updated.week!.planned[saturday.plusDays(4)]!),
+        () => TargetPlan(
+          baseKcal: 2000,
+          floorKcal: 1500,
+          dayFactors: {DayOfWeek.friday: value},
+        ),
+        throwsArgumentError,
       );
-      final monday = settings.day(
-        date: date,
-        weightKg: 70,
-        calendar: const WeekCalendar(weekStart: DayOfWeek.monday),
-      );
-      expect(monday.week!.weekStart.weekday, DayOfWeek.monday);
-      for (final value in [0.0, double.nan, double.infinity, .0001, 1001.0]) {
-        expect(
-          () => TargetPlan(
-            baseKcal: 2000,
-            floorKcal: 1500,
-            weights: {DayOfWeek.friday: value},
-          ),
-          throwsArgumentError,
-        );
-      }
-    },
-  );
+    }
+  });
+
+  test('TG-055 D-090 protein stays the same every day; carbs follow the '
+      "day's number", () {
+    final plan = TargetPlan(
+      baseKcal: 2000,
+      floorKcal: 1500,
+      dayFactors: {DayOfWeek.friday: 1.25},
+    );
+    final usual = plan.day(date: saturday, weightKg: 80);
+    final friday = plan.day(date: saturday.plusDays(6), weightKg: 80);
+    expect(friday.macros.proteinGrams, usual.macros.proteinGrams);
+    expect(friday.macros.carbsGrams, greaterThan(usual.macros.carbsGrams!));
+  });
 
   test('TG-020 defaults summary is centralized for future adaptation', () {
     const d = TargetDefaults();

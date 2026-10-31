@@ -6,6 +6,8 @@ import 'package:drift/isolate.dart' show DriftRemoteException;
 import 'package:fb_api_client/fb_api_client.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
+import 'package:fb_mobile/core/db/migrations/from_13_to_14.dart'
+    show dayFactorsSinceKey;
 import 'package:fb_mobile/core/db/sync/sync_codec.dart';
 import 'package:fb_mobile/core/db/synced_tables.dart';
 import 'package:fb_mobile/core/db/write_guard.dart';
@@ -286,6 +288,18 @@ final class DriftSyncStore implements SyncStore {
     } on Object {
       refused.add(ParkedVersion(version, 'encodeFailed'));
     }
+  }
+
+  /// When this install began storing weekday factors (the v14 step's
+  /// marker, UTC ms), or null for a fresh install (A53 D2).
+  Future<int?> dayFactorsSinceMs() async {
+    final row = await _db
+        .customSelect(
+          'SELECT value FROM sync_state WHERE key = ?',
+          variables: [Variable.withString(dayFactorsSinceKey)],
+        )
+        .getSingleOrNull();
+    return int.tryParse(row?.read<String>('value') ?? '');
   }
 
   // ---- writes ---------------------------------------------------------

@@ -269,9 +269,9 @@ final class _ProgressMarksFamily extends $Family
 /// Every date from [from] to the earlier of [to] and today with its intake,
 /// status and target (A16 D6): [ProgressSeries.build] over the same inputs
 /// `dayTargetsProvider` uses (the stored targets, the week start, the
-/// trend, the training input), so a day's target equals Today's for it
-/// (G10). Follows every source. No automatic retry: the screen shows the
-/// error with Try again (UX-052).
+/// trend, the confirmed below-floor days), so a day's target equals
+/// Today's for it (G10). Follows every source. No automatic retry: the
+/// screen shows the error with Try again (UX-052).
 
 @ProviderFor(progressDays)
 final progressDaysProvider = ProgressDaysFamily._();
@@ -279,9 +279,9 @@ final progressDaysProvider = ProgressDaysFamily._();
 /// Every date from [from] to the earlier of [to] and today with its intake,
 /// status and target (A16 D6): [ProgressSeries.build] over the same inputs
 /// `dayTargetsProvider` uses (the stored targets, the week start, the
-/// trend, the training input), so a day's target equals Today's for it
-/// (G10). Follows every source. No automatic retry: the screen shows the
-/// error with Try again (UX-052).
+/// trend, the confirmed below-floor days), so a day's target equals
+/// Today's for it (G10). Follows every source. No automatic retry: the
+/// screen shows the error with Try again (UX-052).
 
 final class ProgressDaysProvider
     extends
@@ -296,9 +296,9 @@ final class ProgressDaysProvider
   /// Every date from [from] to the earlier of [to] and today with its intake,
   /// status and target (A16 D6): [ProgressSeries.build] over the same inputs
   /// `dayTargetsProvider` uses (the stored targets, the week start, the
-  /// trend, the training input), so a day's target equals Today's for it
-  /// (G10). Follows every source. No automatic retry: the screen shows the
-  /// error with Try again (UX-052).
+  /// trend, the confirmed below-floor days), so a day's target equals
+  /// Today's for it (G10). Follows every source. No automatic retry: the
+  /// screen shows the error with Try again (UX-052).
   ProgressDaysProvider._({
     required ProgressDaysFamily super.from,
     required (LocalDate, LocalDate) super.argument,
@@ -343,14 +343,14 @@ final class ProgressDaysProvider
   }
 }
 
-String _$progressDaysHash() => r'f4b43e7c05cf3252d39d4d577f395ef06dfccb7c';
+String _$progressDaysHash() => r'97e56a0eaa3200817c3a63ce9e1d2d87d33a6bc6';
 
 /// Every date from [from] to the earlier of [to] and today with its intake,
 /// status and target (A16 D6): [ProgressSeries.build] over the same inputs
 /// `dayTargetsProvider` uses (the stored targets, the week start, the
-/// trend, the training input), so a day's target equals Today's for it
-/// (G10). Follows every source. No automatic retry: the screen shows the
-/// error with Try again (UX-052).
+/// trend, the confirmed below-floor days), so a day's target equals
+/// Today's for it (G10). Follows every source. No automatic retry: the
+/// screen shows the error with Try again (UX-052).
 
 final class ProgressDaysFamily extends $Family
     with
@@ -370,9 +370,9 @@ final class ProgressDaysFamily extends $Family
   /// Every date from [from] to the earlier of [to] and today with its intake,
   /// status and target (A16 D6): [ProgressSeries.build] over the same inputs
   /// `dayTargetsProvider` uses (the stored targets, the week start, the
-  /// trend, the training input), so a day's target equals Today's for it
-  /// (G10). Follows every source. No automatic retry: the screen shows the
-  /// error with Try again (UX-052).
+  /// trend, the confirmed below-floor days), so a day's target equals
+  /// Today's for it (G10). Follows every source. No automatic retry: the
+  /// screen shows the error with Try again (UX-052).
 
   ProgressDaysProvider call(LocalDate from, LocalDate to) =>
       ProgressDaysProvider._(argument: (from, to), from: this);

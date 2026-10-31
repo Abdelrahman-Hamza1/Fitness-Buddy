@@ -180,6 +180,16 @@ List<Override> displayOverrides(FoodChoice choice) => [
   unitSystemProvider.overrideWith((ref) => Stream.value(UnitSystem.metric)),
   foodSlotsProvider.overrideWith((ref, _) => Stream.value(DefaultSlots.all)),
   clockProvider.overrideWithValue(ManualClock(DateTime.utc(2026, 10, 17, 12))),
+  ...noPackOverrides,
+];
+
+/// No catalog pack and no settings stream in a sheet test: no aliases, the
+/// default food names.
+final List<Override> noPackOverrides = [
+  catalogAliasesProvider.overrideWith((ref, args) async => const []),
+  foodNameSettingProvider.overrideWith(
+    (ref) => Stream.value(FoodNameLanguage.phone),
+  ),
 ];
 
 /// The providers a food sheet needs: [choice] is what the row loads, the
@@ -212,6 +222,7 @@ final class SheetRig {
   List<Override> get overrides => [
     foodChoiceProvider(row.choiceRef).overrideWith((ref) async => choice),
     units.override,
+    ...noPackOverrides,
     foodSlotsProvider.overrideWith((ref, _) => Stream.value(DefaultSlots.all)),
     clockProvider.overrideWithValue(diary.clock),
     undoStackProvider.overrideWithValue(stack),

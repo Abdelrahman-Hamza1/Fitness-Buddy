@@ -23,7 +23,7 @@ GoalPhaseRecord _phase(
 
 TargetSettingsRecord _settings({
   LocalDate? from,
-  Map<DayOfWeek, double> shifts = const {},
+  Map<DayOfWeek, double> dayFactors = const {},
   MacroSettings? macros,
 }) => TargetSettingsRecord(
   id: _id(2),
@@ -31,7 +31,7 @@ TargetSettingsRecord _settings({
   effectiveFrom: from ?? _today.plusDays(-3),
   baseKcal: 2150.5,
   basisWeightKg: 82.4,
-  shifts: shifts,
+  dayFactors: dayFactors,
   macros: macros,
 );
 
@@ -163,51 +163,56 @@ void main() {
     }
   });
 
-  test('TG-043 a NULL shift weight reads as 1.0; seven weights '
-      'round-trip', () {
-    final unshifted = _settings();
-    final wire = unshifted.toWire();
+  test('D-090 a NULL day factor reads as the suggestion; seven factors '
+      'round-trip in the shift wire fields', () {
+    final usual = _settings();
+    final wire = usual.toWire();
     for (final field in TargetWireFields.shifts.values) {
       expect(wire.containsKey(field), isTrue);
       expect(wire[field], isNull);
     }
-    expect(unshifted.shifts, isEmpty);
-    expect(unshifted.weights, isEmpty);
-    final plan = unshifted.toPlan(1500);
-    expect(plan.weights, isEmpty);
-    // NULL days are 1.0 to the engine: the same week as explicit 1.0s.
+    expect(usual.dayFactors, isEmpty);
+    expect(usual.factors, isEmpty);
+    final plan = usual.toPlan(1500);
+    expect(plan.dayFactors, isEmpty);
+    // NULL days are the suggestion: the same week as explicit 1.0s.
     final explicitOnes = _settings(
-      shifts: {for (final d in DayOfWeek.values) d: 1.0},
+      dayFactors: {for (final d in DayOfWeek.values) d: 1.0},
     );
     final week = plan.day(date: _today, weightKg: 80).week!;
     final ones = explicitOnes.toPlan(1500).day(date: _today, weightKg: 80);
     expect(ones.week!.planned, week.planned);
 
     final seven = {
-      for (final (i, day) in DayOfWeek.values.indexed) day: 1 + i / 10,
+      for (final (i, day) in DayOfWeek.values.indexed) day: .7 + i / 10,
     };
-    final shifted = _settings(shifts: seven);
-    final shiftedWire = shifted.toWire();
-    expect(shiftedWire['shiftMon'], 1.0);
-    expect(shiftedWire['shiftSun'], closeTo(1.6, 1e-12));
-    final back = TargetSettingsRecord.fromWire(shifted.id, shiftedWire)!;
-    expect(back.shifts, seven);
-    expect(back, shifted);
-    expect(back.toPlan(1500).weights, seven);
-    expect(back.shifts.clear, throwsUnsupportedError);
-    // A synced weight the engine can't use reads as 1.0, but is kept.
+    final changed = _settings(dayFactors: seven);
+    final changedWire = changed.toWire();
+    expect(changedWire['shiftMon'], .7);
+    expect(changedWire['shiftSun'], closeTo(1.3, 1e-12));
+    final back = TargetSettingsRecord.fromWire(changed.id, changedWire)!;
+    expect(back.dayFactors, seven);
+    expect(back, changed);
+    expect(back.toPlan(1500).dayFactors, seven);
+    expect(
+      back.toPlan(1500).plannedKcal(DayOfWeek.sunday),
+      closeTo(2150.5 * 1.3, 1e-9),
+    );
+    expect(back.dayFactors.clear, throwsUnsupportedError);
+    // A synced factor the engine can't use reads as the suggestion, but is
+    // kept.
     final odd = TargetSettingsRecord.fromWire(_id(2), {
       ...wire,
       'shiftFri': 0,
       'shiftSat': 5000,
       'shiftSun': 1.3,
     })!;
-    expect(odd.shifts, {
+    expect(odd.dayFactors, {
       DayOfWeek.friday: 0.0,
       DayOfWeek.saturday: 5000.0,
       DayOfWeek.sunday: 1.3,
     });
-    expect(odd.weights, {DayOfWeek.sunday: 1.3});
+    expect(odd.factors, {DayOfWeek.sunday: 1.3});
     expect(odd.toWire()['shiftSat'], 5000.0);
   });
 
@@ -224,7 +229,7 @@ void main() {
       manual: true,
       acknowledged: true,
       basisWeightKg: 70,
-      shifts: {DayOfWeek.friday: 1.3},
+      dayFactors: {DayOfWeek.friday: 1.3},
       macros: MacroSettings(
         protein: MacroOverride.grams(140),
         fat: MacroOverride.percent(25),
@@ -284,7 +289,7 @@ void main() {
       record.copyWith(rebalancing: true),
       record.copyWith(baseKcal: 1301),
       record.copyWith(basisWeightKg: 71),
-      record.copyWith(shifts: {}),
+      record.copyWith(dayFactors: {}),
       record.copyWith(macros: MacroSettings()),
     ]) {
       expect(other, isNot(record));
@@ -298,7 +303,7 @@ void main() {
         r.copyWith(rebalancing: false);
     // The current version started earlier: a new row effective today.
     final earlier = _settings(
-      shifts: {DayOfWeek.friday: 1.3},
+      dayFactors: {DayOfWeek.friday: 1.3},
       macros: MacroSettings(fiberGrams: 30),
     );
     final inserted = TargetSettingsRevision.next(

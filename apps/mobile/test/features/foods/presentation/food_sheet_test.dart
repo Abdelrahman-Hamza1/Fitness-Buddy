@@ -190,7 +190,8 @@ void main() {
     await tester.tap(find.text('Done'));
     await tester.pump();
 
-    expect(find.text('Rice, white, cooked · رز مطبوخ'), findsOneWidget);
+    expect(find.text('Rice, white, cooked'), findsOneWidget);
+    expect(find.text('رز مطبوخ'), findsOneWidget);
     expect(find.text('Log as Rice, white, raw'), findsOneWidget);
     expect(find.text('100 g cooked ≈ 36 g dry'), findsOneWidget);
     // The chosen amount, and the same 100 g under "Per 100 g".
@@ -199,7 +200,8 @@ void main() {
     await tester.tap(find.text('Log as Rice, white, raw'));
     await tester.pump();
 
-    expect(find.text('Rice, white, raw · رز أبيض'), findsOneWidget);
+    expect(find.text('Rice, white, raw'), findsOneWidget);
+    expect(find.text('رز أبيض'), findsOneWidget);
     expect(find.text('State: dry'), findsOneWidget);
     // The input stays as typed.
     expect(amount('Amount, 100 g'), findsOneWidget);

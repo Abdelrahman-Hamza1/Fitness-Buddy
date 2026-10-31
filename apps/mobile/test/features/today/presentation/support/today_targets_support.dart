@@ -36,7 +36,7 @@ TargetSettingsRecord sampleVersion({
   TargetMode mode = TargetMode.weekly,
   bool manual = false,
   bool acknowledged = false,
-  Map<DayOfWeek, double> shifts = const {},
+  Map<DayOfWeek, double> dayFactors = const {},
   MacroSettings? macros,
 }) => TargetSettingsRecord(
   id: _id(id),
@@ -47,7 +47,7 @@ TargetSettingsRecord sampleVersion({
   mode: mode,
   manual: manual,
   acknowledged: acknowledged,
-  shifts: shifts,
+  dayFactors: dayFactors,
   macros: macros,
 );
 

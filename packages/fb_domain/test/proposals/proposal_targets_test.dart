@@ -22,7 +22,6 @@ ProposalContext dayContext({
     revision: revision,
     earlierIntake: earlier,
     ramadan: ramadan,
-    workoutWeights: {DayOfWeek.saturday: 1.2},
     history: plan == null
         ? null
         : TargetSettingsHistory([
@@ -116,7 +115,6 @@ void main() {
             weightKg: 70,
             calendar: ctx.dayContext!.calendar,
             earlierIntake: earlier,
-            remainingWeights: ctx.dayContext!.workoutWeights,
           )
           .kcal,
     );
@@ -138,12 +136,7 @@ void main() {
       expect(
         session(message(), ctx: ctx).cards.single.preview.targetKcal,
         plan
-            .day(
-              date: date,
-              weightKg: 70,
-              calendar: ctx.dayContext!.calendar,
-              remainingWeights: ctx.dayContext!.workoutWeights,
-            )
+            .day(date: date, weightKg: 70, calendar: ctx.dayContext!.calendar)
             .kcal,
       );
       expect(

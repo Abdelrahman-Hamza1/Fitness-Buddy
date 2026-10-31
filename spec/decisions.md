@@ -472,3 +472,25 @@ _Entries marked **(provisional)** apply Claude's recommendation to a question th
   - **Popularity:** the built-in exercises carry a curated popularity rank. The picker shows "Your recent" (with the last result) and then "Most popular" before anything is typed, and search breaks ties by popularity.
   - **Plans never auto-assign exercises.** Picking a plan (Full body, Upper/Lower, Push/Pull/Legs, or Make my own; "No plan, I'll log as I go" is listed first) asks for the weekdays, then shows each workout day empty, with suggested exercises to add one by one or all at once. Nothing is saved until the user finishes, in one change with Undo.
 - Why: The tab mixed every function on one long list; the sketches put today's action first. Muscle maps make the log form easier to scan, popular exercises are found faster, and a plan should reflect what the user actually does instead of our guess. Step A52.
+
+## D-090 — Targets: one suggested number a day, changed per weekday; calculation on demand
+- Date / Source: 2026-10-31 · owner UX critique ("Targets, showing how it's calculated should only appear on demand, also, it should be EASY to specify per day target, not complex, which means we can get rid of this high calorie days or whatever") and the sketch review ("We should not be this involved, we make a suggestion, then user can adapt as they need")
+- Status: Accepted. **Amends D-058, TG-021, TG-040, TG-041, TG-042, TG-043, TG-044, WO-061.**
+- Decision:
+  - The app **suggests** one daily number (the calculated target, adapted after 2–3 weeks of weigh-ins). Each weekday can be given **its own number** ("Same every day | Different by day", tap a day, − / +, quick chips, type). A changed day keeps following the suggestion when it changes (stored relative to it).
+  - The **week's total** is the sum of the seven days. Rebalancing (on by default) stays: over- or under-eating spreads over the rest of the week, each day within ±25 % of its own number and never below the safety floor.
+  - "Higher-calorie days" with weights, taking calories "from other days", per-date one-off targets and training-day shifting are **removed**. Existing higher-calorie days become per-weekday numbers with the same daily values.
+  - How the number is worked out (resting energy → × activity → goal → result) shows **only on demand**, with "Recalculate with today's weight" and "Set my own number instead". Rebalancing and the macro split move under "More options".
+  - A day set below the safety floor shows the same warning and acknowledgement as an own target below the floor (SF-012).
+- Why: Picking a number per day is simpler than weights and shares; the explanation is useful once, not every visit. Technical details: TD-112 (step A53).
+
+## D-091 — Food names in the language you read
+- Date / Source: 2026-10-31 · owner UX critique ("For foods, we show both Arabic and English names, we should have a setting, that defaults to system language(s) if possible, otherwise, default to English") and the sketch review
+- Status: Accepted. **Amends LC-005**, adds LC-007.
+- Decision:
+  - Setting **Food names**: Match my phone (default) / English / Arabic / Both. "Match my phone" shows Arabic when the phone's language list prefers Arabic, else English. Both shows the English name with the Arabic one underneath. The app's own text stays English in R1 (D-080).
+  - It applies wherever a food is listed: search results, recents, diary rows, quick add, saved meal items and your foods. If a food has no name in the chosen language, the other one shows. Names the user typed stay as typed.
+  - The **food page** always shows both names and the food's other names ("Also called: …").
+  - Search still understands English, Arabic and Arabizi. When the match came from the other language or an alias, the result says "Matched <name>".
+- Why: A list in one language is easier to scan; the other names stay one tap away. Step A53.
+

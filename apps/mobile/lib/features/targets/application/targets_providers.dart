@@ -4,7 +4,6 @@ import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/application/body_weight.dart';
 import 'package:fb_mobile/features/targets/data/targets_repository.dart';
-import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'targets_providers.g.dart';
@@ -103,6 +102,7 @@ Future<DayTargets?> dayTargets(Ref ref, LocalDate date) async {
   final dataFuture = ref.watch(targetsDataProvider.future);
   final weekStartFuture = ref.watch(weekStartProvider.future);
   final weightFuture = ref.watch(bodyWeightProvider(date).future);
+  final acksFuture = ref.watch(dayFloorAcksProvider.future);
   final data = await dataFuture;
   final calendar = WeekCalendar(weekStart: await weekStartFuture);
   final weightKg = await weightFuture;
@@ -112,13 +112,9 @@ Future<DayTargets?> dayTargets(Ref ref, LocalDate date) async {
     return null;
   }
   final from = calendar.weekStartOf(date);
-  final trainingFuture = ref.watch(
-    trainingShiftProvider(from, from.plusDays(6)).future,
-  );
   final intake = from.isBefore(date)
       ? await ref.watch(_weekIntakeProvider(from, date.plusDays(-1)).future)
       : const <DayIntake>[];
-  final training = await trainingFuture;
   // TG-060: "maintain during Ramadan" on a fasting day of that season.
   final ramadan = await ref.watch(ramadanCalendarProvider.future);
   final maintain = ramadan.maintainOn(date);
@@ -130,8 +126,8 @@ Future<DayTargets?> dayTargets(Ref ref, LocalDate date) async {
     bodyWeightKg: weightKg,
     intake: intake,
     calendar: calendar,
-    training: training,
     ramadanMaintain: maintain,
+    floorAcknowledged: await acksFuture,
   );
 }
 

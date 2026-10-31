@@ -7,7 +7,6 @@ import 'package:fb_mobile/features/progress/application/weight_graph_providers.d
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/today/today.dart';
-import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'progress_providers.g.dart';
@@ -46,9 +45,9 @@ Stream<List<DayMark>> _progressMarks(Ref ref, LocalDate from, LocalDate to) =>
 /// Every date from [from] to the earlier of [to] and today with its intake,
 /// status and target (A16 D6): [ProgressSeries.build] over the same inputs
 /// `dayTargetsProvider` uses (the stored targets, the week start, the
-/// trend, the training input), so a day's target equals Today's for it
-/// (G10). Follows every source. No automatic retry: the screen shows the
-/// error with Try again (UX-052).
+/// trend, the confirmed below-floor days), so a day's target equals
+/// Today's for it (G10). Follows every source. No automatic retry: the
+/// screen shows the error with Try again (UX-052).
 @Riverpod(retry: _noAutomaticRetry)
 Future<List<ProgressDay>> progressDays(
   Ref ref,
@@ -59,17 +58,16 @@ Future<List<ProgressDay>> progressDays(
   final dataFuture = ref.watch(targetsDataProvider.future);
   final weekStartFuture = ref.watch(weekStartProvider.future);
   final trendFuture = ref.watch(weightTrendProvider.future);
+  final acksFuture = ref.watch(dayFloorAcksProvider.future);
   final today = await todayFuture;
   final calendar = WeekCalendar(weekStart: await weekStartFuture);
   final last = to.isAfter(today) ? today : to;
   if (last.isBefore(from)) return const [];
   final first = calendar.weekStartOf(from);
   final logsFuture = ref.watch(progressLogsProvider(first, last).future);
-  final trainingFuture = ref.watch(trainingShiftProvider(first, last).future);
   final data = await dataFuture;
   final trend = await trendFuture;
   final logs = await logsFuture;
-  final training = await trainingFuture;
   return ProgressSeries.build(
     from: from,
     to: last,
@@ -80,7 +78,7 @@ Future<List<ProgressDay>> progressDays(
     trendOn: trend.trendOn,
     logs: logs,
     calendar: calendar,
-    training: training,
+    floorAcknowledged: await acksFuture,
   );
 }
 

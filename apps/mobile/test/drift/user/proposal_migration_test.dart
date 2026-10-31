@@ -111,9 +111,18 @@ void main() {
             for (final r in await db.customSelect('SELECT * FROM $table').get())
               r.data,
           ];
+          // v14 (A53 D2) rewrites a target_settings row's weekday weights
+          // as factors, with a new HLC and version: the rest must stay.
+          final rewritten = table == 'target_settings' && from < 14
+              ? _v14Rewrites
+              : const <String>{};
           for (final row in rows) {
             expect(
-              after.where((a) => row.entries.every((e) => a[e.key] == e.value)),
+              after.where(
+                (a) => row.entries.every(
+                  (e) => rewritten.contains(e.key) || a[e.key] == e.value,
+                ),
+              ),
               hasLength(1),
               reason: 'v$from → v$latest keeps $table rows',
             );
@@ -217,3 +226,16 @@ void main() {
     },
   );
 }
+
+/// The target_settings columns the v13 → v14 step rewrites (A53 D2).
+const Set<String> _v14Rewrites = {
+  'shift_mon',
+  'shift_tue',
+  'shift_wed',
+  'shift_thu',
+  'shift_fri',
+  'shift_sat',
+  'shift_sun',
+  'updated_hlc',
+  'version',
+};

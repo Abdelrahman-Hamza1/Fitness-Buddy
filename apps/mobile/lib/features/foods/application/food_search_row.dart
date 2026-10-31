@@ -9,6 +9,8 @@ final class FoodSearchRow {
     required this.tier,
     ParsedAmount? parsed,
     UnitSystem system = UnitSystem.metric,
+    this.matchedKey,
+    this.matchedDisplay = false,
   }) : defaultPortion = choice.defaultPortion(parsed: parsed, system: system);
 
   /// Food and units used by the preview and sheet.
@@ -16,6 +18,15 @@ final class FoodSearchRow {
 
   /// Ranking tier before de-duplication.
   final SourceTier tier;
+
+  /// The normalized name the query matched (D-091), or null (recents, a
+  /// match through the history). The row shows "Matched …" when it is an
+  /// alias or the other language's name (see `FoodResultRow`).
+  final String? matchedKey;
+
+  /// Whether [matchedKey] is a display name (of the food or its dish)
+  /// rather than an alias.
+  final bool matchedDisplay;
 
   /// FD-022 input: resolvable last use, parsed quantity or default.
   final Quantity defaultPortion;

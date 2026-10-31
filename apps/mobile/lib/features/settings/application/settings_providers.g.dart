@@ -90,43 +90,198 @@ final class WeekStartProvider
 
 String _$weekStartHash() => r'656abc5c29e168a35ec34f461f99965bc2d6548e';
 
-/// The training-day shifting weight, or null when off (TG-043).
+/// The stored "Food names" choice (D-091), "Match my phone" by default.
 
-@ProviderFor(trainingDayWeight)
-final trainingDayWeightProvider = TrainingDayWeightProvider._();
+@ProviderFor(foodNameSetting)
+final foodNameSettingProvider = FoodNameSettingProvider._();
 
-/// The training-day shifting weight, or null when off (TG-043).
+/// The stored "Food names" choice (D-091), "Match my phone" by default.
 
-final class TrainingDayWeightProvider
-    extends $FunctionalProvider<AsyncValue<double?>, double?, Stream<double?>>
-    with $FutureModifier<double?>, $StreamProvider<double?> {
-  /// The training-day shifting weight, or null when off (TG-043).
-  TrainingDayWeightProvider._()
+final class FoodNameSettingProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<FoodNameLanguage>,
+          FoodNameLanguage,
+          Stream<FoodNameLanguage>
+        >
+    with $FutureModifier<FoodNameLanguage>, $StreamProvider<FoodNameLanguage> {
+  /// The stored "Food names" choice (D-091), "Match my phone" by default.
+  FoodNameSettingProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'trainingDayWeightProvider',
+        name: r'foodNameSettingProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$trainingDayWeightHash();
+  String debugGetCreateSourceHash() => _$foodNameSettingHash();
 
   @$internal
   @override
-  $StreamProviderElement<double?> $createElement($ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+  $StreamProviderElement<FoodNameLanguage> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
-  Stream<double?> create(Ref ref) {
-    return trainingDayWeight(ref);
+  Stream<FoodNameLanguage> create(Ref ref) {
+    return foodNameSetting(ref);
   }
 }
 
-String _$trainingDayWeightHash() => r'8ae477ec2985d9cdbdcca93b4cd7184dc736aa78';
+String _$foodNameSettingHash() => r'546bade6610dd973ed494044ceb77c55c09f3668';
+
+/// The phone's languages in preference order (language codes), read when
+/// first needed; tests override it.
+
+@ProviderFor(phoneLanguages)
+final phoneLanguagesProvider = PhoneLanguagesProvider._();
+
+/// The phone's languages in preference order (language codes), read when
+/// first needed; tests override it.
+
+final class PhoneLanguagesProvider
+    extends $FunctionalProvider<List<String>, List<String>, List<String>>
+    with $Provider<List<String>> {
+  /// The phone's languages in preference order (language codes), read when
+  /// first needed; tests override it.
+  PhoneLanguagesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'phoneLanguagesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$phoneLanguagesHash();
+
+  @$internal
+  @override
+  $ProviderElement<List<String>> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  List<String> create(Ref ref) {
+    return phoneLanguages(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<String> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<String>>(value),
+    );
+  }
+}
+
+String _$phoneLanguagesHash() => r'ca8fbc3ce9ee21a4f8204dff08710a97754cbcbd';
+
+/// The language food names show in (D-091): the setting with "Match my
+/// phone" resolved; English until the setting has loaded.
+
+@ProviderFor(foodNameLanguage)
+final foodNameLanguageProvider = FoodNameLanguageProvider._();
+
+/// The language food names show in (D-091): the setting with "Match my
+/// phone" resolved; English until the setting has loaded.
+
+final class FoodNameLanguageProvider
+    extends
+        $FunctionalProvider<
+          FoodNameLanguage,
+          FoodNameLanguage,
+          FoodNameLanguage
+        >
+    with $Provider<FoodNameLanguage> {
+  /// The language food names show in (D-091): the setting with "Match my
+  /// phone" resolved; English until the setting has loaded.
+  FoodNameLanguageProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'foodNameLanguageProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$foodNameLanguageHash();
+
+  @$internal
+  @override
+  $ProviderElement<FoodNameLanguage> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  FoodNameLanguage create(Ref ref) {
+    return foodNameLanguage(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(FoodNameLanguage value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<FoodNameLanguage>(value),
+    );
+  }
+}
+
+String _$foodNameLanguageHash() => r'a49af028158120a9540172a789dd2e86758d6964';
+
+/// The weekday factors confirmed below the floor (A53 D4).
+
+@ProviderFor(dayFloorAcks)
+final dayFloorAcksProvider = DayFloorAcksProvider._();
+
+/// The weekday factors confirmed below the floor (A53 D4).
+
+final class DayFloorAcksProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Map<DayOfWeek, double>>,
+          Map<DayOfWeek, double>,
+          Stream<Map<DayOfWeek, double>>
+        >
+    with
+        $FutureModifier<Map<DayOfWeek, double>>,
+        $StreamProvider<Map<DayOfWeek, double>> {
+  /// The weekday factors confirmed below the floor (A53 D4).
+  DayFloorAcksProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'dayFloorAcksProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$dayFloorAcksHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<Map<DayOfWeek, double>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<Map<DayOfWeek, double>> create(Ref ref) {
+    return dayFloorAcks(ref);
+  }
+}
+
+String _$dayFloorAcksHash() => r'4f6c8fb095160fb0b8a8e970dc16db45814690f4';
 
 /// Ask or apply the weekly check-in automatically (TG-034).
 

@@ -32,7 +32,7 @@ TargetSettingsRecord _version({
   TargetMode mode = TargetMode.weekly,
   bool manual = false,
   bool acknowledged = false,
-  Map<DayOfWeek, double> shifts = const {},
+  Map<DayOfWeek, double> dayFactors = const {},
 }) => TargetSettingsRecord(
   id: _id(id),
   revision: revision,
@@ -42,7 +42,7 @@ TargetSettingsRecord _version({
   mode: mode,
   manual: manual,
   acknowledged: acknowledged,
-  shifts: shifts,
+  dayFactors: dayFactors,
 );
 
 GoalPhaseRecord _goal(
@@ -182,14 +182,15 @@ void main() {
       'complete earlier days; 0 on the first day; positive over, negative '
       'under', () {
     final shifted = [
-      _version(shifts: {DayOfWeek.friday: 1.3}),
+      _version(dayFactors: {DayOfWeek.friday: 1.3}),
     ];
     final firstDay = _day(_sat, settings: shifted, intake: [_ate(_sat, 5000)])!;
     expect(firstDay.week!.kcal, 0);
     expect(firstDay.week!.uncountedDays, 0);
 
     final planned = firstDay.day.week!.planned;
-    expect(planned[_sat], lessThan(2000));
+    expect(planned[_sat], 2000);
+    expect(planned[_sat.plusDays(6)], closeTo(2600, 1e-9));
     final over = _day(
       _mon,
       settings: shifted,
@@ -642,7 +643,7 @@ void main() {
       manual: input.manual,
       acknowledged: input.acknowledged,
       mode: fixed == 1 ? TargetMode.fixed : TargetMode.weekly,
-      shifts: {DayOfWeek.friday: 1.3},
+      dayFactors: {DayOfWeek.friday: 1.3},
     );
     final intake = [
       for (var i = 0; i < input.elapsed; i++)
@@ -669,7 +670,7 @@ void main() {
           mode: version.mode,
           manual: input.manual,
           acknowledged: input.acknowledged,
-          weights: version.weights,
+          dayFactors: version.factors,
         ).day(
           date: date,
           weightKg: weight,
@@ -715,7 +716,7 @@ void main() {
         _version(
           from: first,
           base: 2200,
-          shifts: {DayOfWeek.friday: 1.3, DayOfWeek.saturday: 1.15},
+          dayFactors: {DayOfWeek.friday: 1.3, DayOfWeek.saturday: 1.15},
         ),
       ],
       intake: [
@@ -757,58 +758,77 @@ void main() {
     if (elapsed == 0) expect(result.week!.kcal, 0);
   });
 
-  group('A36 training shift', () {
-    double sum(Iterable<double> v) => v.fold(0, (a, b) => a + b);
-
-    test('TG-043 planned training days get a bigger share of the same '
-        'weekly budget', () {
-      final plain = _day(_sat)!;
-      final shifted = TargetsTimeline.day(
-        date: _sat,
-        settings: [_version()],
-        profile: _profile,
-        training: TrainingShiftInput(
-          plannedDays: {DayOfWeek.saturday, DayOfWeek.tuesday},
-          weight: 1.2,
-        ),
+  group('D-090 per-weekday numbers', () {
+    test('a changed weekday follows a new suggestion in proportion; the '
+        'plan is exposed for the screen', () {
+      final friday = _sat.plusDays(6);
+      final before = _day(
+        friday,
+        settings: [
+          _version(dayFactors: {DayOfWeek.friday: 1.25}),
+        ],
       )!;
-      expect(shifted.day.kcal, greaterThan(plain.day.kcal));
-      final week = shifted.day.week!;
-      expect(sum(week.targets.values), closeTo(week.budgetKcal, 0.01));
-      expect(week.budgetKcal, plain.day.week!.budgetKcal); // WO-060
+      expect(before.day.kcal, closeTo(2500, 1e-9));
+      expect(before.plan.baseKcal, 2000);
+      expect(before.plan.plannedKcal(DayOfWeek.monday), 2000);
+      // An adaptive update writes a new base; Friday keeps its factor.
+      final after = _day(
+        friday,
+        settings: [
+          _version(dayFactors: {DayOfWeek.friday: 1.25}),
+          _version(
+            id: 2,
+            from: _sat,
+            base: 2200,
+            dayFactors: {DayOfWeek.friday: 1.25},
+          ),
+        ],
+      )!;
+      expect(after.day.kcal, closeTo(2750, 1e-9));
+      expect(after.issues, isEmpty);
     });
 
-    test('WO-061 a workout logged today on an unplanned day raises today and '
-        'redistributes the rest of the week', () {
-      final training = TrainingShiftInput(
-        plannedDays: {DayOfWeek.saturday, DayOfWeek.tuesday},
-        weight: 1.2,
-        loggedDates: [_mon],
-      );
-      final before = TargetsTimeline.day(
-        date: _mon,
-        settings: [_version()],
+    test('A53 D4 SF-010 a weekday below the floor is raised to it unless the '
+        'user confirmed that factor; a confirmed one stays and is flagged', () {
+      final settings = [
+        _version(dayFactors: {DayOfWeek.saturday: .6}),
+      ];
+      final raised = _day(_sat, settings: settings)!;
+      expect(raised.day.kcal, closeTo(raised.floorKcal, 1e-9));
+      expect(raised.issues, isEmpty);
+      final kept = TargetsTimeline.day(
+        date: _sat,
+        settings: settings,
         profile: _profile,
-        training: TrainingShiftInput(
-          plannedDays: training.plannedDays,
-          weight: 1.2,
-        ),
-        intake: [_ate(_sat, 2200), _ate(_sun, 1900)],
+        floorAcknowledged: {DayOfWeek.saturday: .6},
       )!;
-      final after = TargetsTimeline.day(
-        date: _mon,
-        settings: [_version()],
+      expect(kept.day.kcal, closeTo(1200, 1e-9));
+      expect(kept.issues, {TargetIssue.dayBelowFloor});
+      // A confirmation of another factor doesn't cover this one.
+      final other = TargetsTimeline.day(
+        date: _sat,
+        settings: settings,
         profile: _profile,
-        training: training,
-        intake: [_ate(_sat, 2200), _ate(_sun, 1900)],
+        floorAcknowledged: {DayOfWeek.saturday: .5},
       )!;
-      expect(after.day.kcal, greaterThan(before.day.kcal));
-      final week = after.day.week!;
-      expect(week.targets[_tue], lessThan(before.day.week!.targets[_tue]!));
-      expect(
-        week.accountedPastKcal + sum(week.targets.values),
-        closeTo(week.budgetKcal + week.carryKcal, 0.01),
-      );
+      expect(other.day.kcal, closeTo(other.floorKcal, 1e-9));
+    });
+
+    test('TG-060 a Ramadan maintain day applies the factor to the maintain '
+        'base', () {
+      final result = TargetsTimeline.day(
+        date: _wed,
+        settings: [
+          _version(
+            mode: TargetMode.fixed,
+            dayFactors: {DayOfWeek.wednesday: 1.1},
+          ),
+        ],
+        profile: _profile,
+        goals: [_goal(GoalExpression.weekly(-.5))],
+        ramadanMaintain: true,
+      )!;
+      expect(result.day.kcal, closeTo((2000 + .5 * 7700 / 7) * 1.1, .01));
     });
   });
 

@@ -76,8 +76,11 @@ final class TargetsActions {
     required this.read,
     required this.settings,
     required this.bodyWeightKg,
+    this.ramadanMaintainOn = _noRamadan,
     this.defaults = const TargetDefaults(),
   });
+
+  static Future<bool> _noRamadan(LocalDate _) async => false;
 
   /// The single writer port (`ChangeSetApplier.apply`).
   final Future<ApplyResult> Function(ChangeSet) apply;
@@ -100,6 +103,10 @@ final class TargetsActions {
   /// The trend weight on or before a date, or null (D8 seam); null falls
   /// back to the current version's basis weight.
   final Future<double?> Function(LocalDate date) bodyWeightKg;
+
+  /// Whether a date is a "maintain during Ramadan" day (TG-060), so a
+  /// command sees the same suggestion as `dayTargetsProvider`.
+  final Future<bool> Function(LocalDate date) ramadanMaintainOn;
 
   /// The engine defaults.
   final TargetDefaults defaults;
@@ -262,46 +269,124 @@ final class TargetsActions {
         ]);
       });
 
-  /// Weekly budget or the same every day (TG-044). Switching to weekly is
-  /// refused for an acknowledged below-floor fixed manual target (PA7).
-  Future<TargetsOutcome> setMode(VersionedId shown, TargetMode mode) =>
-      _settings(
-        shown,
-        weeklyOnly: mode == TargetMode.weekly,
-        (current) => current.copyWith(mode: mode),
-      );
-
-  /// Rebalancing on or off (TG-042); refused under PA7.
+  /// "Balance over/under across the week" (TG-041, D-090): on → the weekly
+  /// budget with rebalancing (a legacy fixed version becomes weekly); off →
+  /// rebalancing off, each day keeps its planned number. Refused under PA7.
   // One value, like the other typed setting commands.
   // ignore: avoid_positional_boolean_parameters
-  Future<TargetsOutcome> setRebalancing(VersionedId shown, bool on) =>
-      _settings(
-        shown,
-        weeklyOnly: true,
-        (current) => current.copyWith(rebalancing: on),
-      );
+  Future<TargetsOutcome> setBalancing(VersionedId shown, bool on) => _settings(
+    shown,
+    weeklyOnly: true,
+    (current) => on
+        ? current.copyWith(mode: TargetMode.weekly, rebalancing: true)
+        : current.copyWith(rebalancing: false),
+  );
 
-  /// Weekday shifting weights (TG-043): each given day is set (null or 1.0
-  /// = no shift); other days stay. Each weight is 1.0–2.0. Refused under
-  /// PA7.
-  Future<TargetsOutcome> setShifting(
+  /// "Same every day" (D-090): every weekday back to the suggestion, and
+  /// the below-floor confirmations go with them. Refused under PA7.
+  Future<TargetsOutcome> sameEveryDay(VersionedId shown) =>
+      _settingsPlan(shown, (data, current, today) async {
+        if (await _fixedBelowFloor(data, current.value, today)) {
+          return _refuse(TargetsFailure.fixedBelowFloor);
+        }
+        final write = _revision(
+          current,
+          today,
+          (r) => r.copyWith(dayFactors: const {}),
+        );
+        return _Write([...write.ops, ...await _acksOps(const {})]);
+      });
+
+  /// [weekday]'s own number (D-090, A53 D1): stored as a factor of the
+  /// suggestion, so the day follows later changes of it. The command
+  /// recomputes the suggestion (the plan's base: floor and Ramadan
+  /// "maintain" applied) and refuses with [TargetsFailure.changed] when it
+  /// isn't [suggestionKcal], the one the screen showed. A number equal to
+  /// the rounded suggestion clears the factor. 500–10,000 kcal and
+  /// 0.5–2× the suggestion, else [TargetsFailure.invalid]. Below today's
+  /// floor without [acknowledged] → [TargetsNeedsAcknowledgement], nothing
+  /// written (A53 D4); with it the factor is saved with its confirmation
+  /// (`AppSettings.dayFloorAcks`) in the same change set, so the day stays
+  /// as set. Refused under PA7.
+  Future<TargetsOutcome> setDayTarget(
     VersionedId shown,
-    Map<DayOfWeek, double?> weights,
-  ) {
-    if (weights.values.any((w) => w != null && !TargetRules.input.shift(w))) {
+    DayOfWeek weekday,
+    double kcal, {
+    required double suggestionKcal,
+    bool acknowledged = false,
+  }) {
+    if (!TargetRules.input.manualKcal(kcal) ||
+        !suggestionKcal.isFinite ||
+        suggestionKcal <= 0) {
       return Future.value(const TargetsFailed(TargetsFailure.invalid));
     }
-    return _settings(shown, weeklyOnly: true, (current) {
-      final shifts = {...current.shifts};
-      for (final MapEntry(key: day, value: weight) in weights.entries) {
-        if (weight == null || weight == 1) {
-          shifts.remove(day);
-        } else {
-          shifts[day] = weight;
-        }
+    return _settingsPlan(shown, (data, current, today) async {
+      if (await _fixedBelowFloor(data, current.value, today)) {
+        return _refuse(TargetsFailure.fixedBelowFloor);
       }
-      return current.copyWith(shifts: shifts);
+      final day = TargetsTimeline.day(
+        date: today,
+        settings: [for (final s in data.settings) s.value],
+        profile: data.profile!.value,
+        goals: _values(data.phases),
+        bodyWeightKg: await bodyWeightKg(today),
+        ramadanMaintain: await ramadanMaintainOn(today),
+        defaults: defaults,
+      );
+      if (day == null) return _refuse(TargetsFailure.invalid);
+      final suggestion = day.plan.baseKcal;
+      if ((suggestion - suggestionKcal).abs() >= .5) {
+        return _refuse(TargetsFailure.changed);
+      }
+      final usual = kcal.round() == DisplayRounding.kcal(suggestion);
+      final factor = kcal / suggestion;
+      if (!usual && !TargetRules.input.dayFactor(factor)) {
+        return _refuse(TargetsFailure.invalid);
+      }
+      final below = !usual && kcal < day.floorKcal;
+      if (below && !acknowledged) {
+        return _Refuse(
+          TargetsNeedsAcknowledgement(
+            floorKcal: day.floorKcal,
+            impliedKgPerWeek: 0,
+            warnings: const {TargetWarning.manualBelowFloor},
+          ),
+        );
+      }
+      final acks = {...await settings.read(AppSettings.dayFloorAcks)};
+      if (below) {
+        acks[weekday] = factor;
+      } else {
+        acks.remove(weekday);
+      }
+      final write = _revision(current, today, (r) {
+        final factors = {...r.dayFactors};
+        if (usual) {
+          factors.remove(weekday);
+        } else {
+          factors[weekday] = factor;
+        }
+        return r.copyWith(dayFactors: factors);
+      });
+      return _Write([...write.ops, ...await _acksOps(acks)]);
     });
+  }
+
+  /// The settings op that stores [acks] when they differ from the stored
+  /// confirmations (none when equal; a reset when empty).
+  Future<List<ChangeOp>> _acksOps(Map<DayOfWeek, double> acks) async {
+    final key = AppSettings.dayFloorAcks;
+    final stored = await settings.read(key);
+    if (stored.length == acks.length &&
+        acks.entries.every((e) => stored[e.key] == e.value)) {
+      return const [];
+    }
+    return [
+      if (acks.isEmpty)
+        SettingsOp.reset(key.name)
+      else
+        SettingsOp.put(key.name, key.codec.encode(acks)),
+    ];
   }
 
   /// Macro settings (TG-054).
@@ -370,7 +455,7 @@ final class TargetsActions {
       // An acknowledgement only ever means "below the floor, seen": a
       // rate-only warning is confirmed here but not stored.
       final below = warnings.contains(TargetWarning.manualBelowFloor);
-      return _revision(
+      final write = _revision(
         current,
         today,
         (r) => r.copyWith(
@@ -379,9 +464,15 @@ final class TargetsActions {
           manual: true,
           acknowledged: below,
           mode: below ? TargetMode.fixed : null,
+          // PA7: below the floor every day is the same number.
+          dayFactors: below ? const {} : null,
         ),
         warnings: warnings,
       );
+      return _Write([
+        ...write.ops,
+        if (below) ...await _acksOps(const {}),
+      ], warnings: write.warnings);
     });
   }
 
@@ -705,20 +796,30 @@ final class TargetsActions {
     LocalDate today,
   ) async {
     if (!current.mayStayBelowFloor) return false;
+    final floor = await _floor(data, current, today);
+    return floor == null || current.baseKcal < floor;
+  }
+
+  /// Today's SF-010 floor at the trend (else basis) weight, or null when
+  /// the weight is unusable or the profile can't be evaluated.
+  Future<double?> _floor(
+    TargetsData data,
+    TargetSettingsRecord current,
+    LocalDate today,
+  ) async {
     final weight = await _weight(today, current);
-    if (weight == null) return true;
+    if (weight == null) return null;
     try {
-      final floor = TargetCalculator.floor(
+      return TargetCalculator.floor(
         data.profile!.value.toProfile(weight),
         today,
         defaults: defaults,
       );
-      return current.baseKcal < floor;
     }
     // The engine's content-free signal for an impossible input.
     // ignore: avoid_catching_errors
     on ArgumentError {
-      return true;
+      return null;
     }
   }
 
@@ -880,4 +981,14 @@ TargetsActions targetsActions(Ref ref) => TargetsActions(
   // One read of the weigh-ins per command (A14's reader): no auto-disposed
   // provider is involved, so nothing can be disposed while it loads.
   bodyWeightKg: ref.watch(bodyWeightReaderProvider),
+  ramadanMaintainOn: (date) async {
+    final store = ref.read(settingsStoreProvider);
+    final notFasting =
+        await store.read(AppSettings.fastingMark(date)) ==
+        FastingMark.notFasting;
+    return RamadanCalendar(
+      await store.read(AppSettings.ramadanSeasons),
+      notFasting: [if (notFasting) date],
+    ).maintainOn(date);
+  },
 );

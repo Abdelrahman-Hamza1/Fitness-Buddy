@@ -3,6 +3,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -102,14 +103,14 @@ class PersonalFoodsScreen extends ConsumerWidget {
   }
 }
 
-class _FoodRow extends StatelessWidget {
+class _FoodRow extends ConsumerWidget {
   const new({required this.food, required this.onTap, super.key});
 
   final PersonalFood food;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final kcal = l10n.yourFoodsKcalPer(
       DisplayRounding.kcal(food.per100.kcal),
@@ -117,10 +118,13 @@ class _FoodRow extends StatelessWidget {
           ? l10n.personalFoodBasis100g
           : l10n.personalFoodBasis100ml,
     );
-    final ar = food.names.ar;
+    final names = watchFoodNames(ref, food.names);
     return FbListRow(
-      title: food.names.en,
-      subtitle: ar == null ? kcal : l10n.foodResultSubtitle(ar, kcal),
+      title: names.primary,
+      subtitle: switch (names.secondary) {
+        final ar? => l10n.foodResultSubtitle(isolateName(ar), kcal),
+        null => kcal,
+      },
       leading: const FbSourceBadge(source: FbSource.yours),
       trailing: const Icon(FbIcons.next),
       onTap: onTap,

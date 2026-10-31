@@ -160,32 +160,6 @@ void main() {
     );
   });
 
-  testWidgets('#220 UX-052 Try again also refreshes an upstream read the '
-      'sections share (the training plan shift)', (tester) async {
-    _tallPhone(tester);
-    var failing = true;
-    await tester.pumpWidget(
-      progressApp(progressOverrides(failTraining: () => failing)),
-    );
-    await tester.pumpAndSettle();
-    const goalError = ValueKey('progress-goal-error');
-    expect(find.byKey(goalError), findsOneWidget);
-
-    failing = false;
-    await tester.tap(
-      find.descendant(
-        of: find.byKey(goalError),
-        matching: find.byType(TextButton),
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(find.byKey(goalError), findsNothing);
-    expect(
-      find.byKey(const ValueKey('progress-calories-chart')),
-      findsOneWidget,
-    );
-  });
-
   testWidgets('#220 UX-052 Try again re-reads a failed stored-data stream '
       '(the targets repository)', (tester) async {
     _tallPhone(tester);

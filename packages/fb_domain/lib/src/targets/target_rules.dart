@@ -72,8 +72,8 @@ enum TargetRuleViolation {
   /// Input: fiber outside 0–150 g.
   fiber,
 
-  /// Input: shifting weight outside 1.0–2.0.
-  shift,
+  /// Input: a weekday factor outside 0.5–2.0 of the suggestion (D-090).
+  dayFactor,
 
   /// Input: phase name blank after trimming, too long or with controls.
   name,
@@ -247,12 +247,6 @@ final class TargetInputRules {
   /// Largest fiber target, g.
   static const double maxFiberG = 150;
 
-  /// Smallest shifting weight.
-  static const double minShift = 1;
-
-  /// Largest shifting weight.
-  static const double maxShift = 2;
-
   /// Longest phase name after trimming.
   static const int maxNameLength = 40;
 
@@ -304,8 +298,8 @@ final class TargetInputRules {
   /// Whether [grams] is a plausible fiber target.
   bool fiber(double grams) => _within(grams, 0, maxFiberG);
 
-  /// Whether [weight] is a supported shifting weight.
-  bool shift(double weight) => _within(weight, minShift, maxShift);
+  /// Whether [factor] is a supported weekday factor of the suggestion.
+  bool dayFactor(double factor) => TargetLimits.isDayFactor(factor);
 
   /// Whether [name] can be stored (null: the default label).
   bool name(String? name) {
@@ -392,9 +386,9 @@ final class TargetInputRules {
     }
     for (final MapEntry(key: day, value: field)
         in TargetWireFields.shifts.entries) {
-      final weight = record.shifts[day];
-      if (weight != null && changed(field) && !shift(weight)) {
-        violations.add(TargetRuleViolation.shift);
+      final factor = record.dayFactors[day];
+      if (factor != null && changed(field) && !dayFactor(factor)) {
+        violations.add(TargetRuleViolation.dayFactor);
       }
     }
     return violations;
