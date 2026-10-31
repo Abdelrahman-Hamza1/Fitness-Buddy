@@ -1,0 +1,77 @@
+# Fish and seafood (A54 batch 3). usda head phrase | EN | AR | arabizi | flags
+fish, anchovy, european | Anchovy, European | أنشوجة | anchovy, hamsa, ansho | f s=raw,cooked
+fish, bass, striped | Striped bass | قاروص مخطط | striped bass, qarous | s=raw,cooked
+fish, carp | Carp | شبوط | shabbout, carp | s=raw,cooked
+fish, catfish, channel, farmed | Catfish, farmed | سلور مزرعة | silour, catfish | s=raw,cooked
+fish, catfish, channel, wild | Catfish, wild | سلور بري | wild catfish | s=raw,cooked
+fish, cod, atlantic | Cod, Atlantic | سمك القد | cod, qadd | s=cooked,canned,dried
+fish, eel, mixed species | Eel | أنقليس | angalis, eel | s=raw,cooked
+fish, flatfish | Flatfish (flounder and sole) | سمك موسى | samak mousa, flounder, sole | s=raw,cooked
+fish, grouper, mixed species | Grouper (mixed species) | هامور | hamour, grouper | s=raw,cooked
+fish, haddock | Haddock | حدوق | haddock | s=raw,cooked,smoked
+fish, halibut, atlantic and pacific | Halibut | هلبوت | halibut | s=raw,cooked
+fish, herring, atlantic | Herring, Atlantic | رنجة | ringa, herring | s=raw,cooked
+fish, herring, atlantic, kippered | Herring, kippered | رنجة مدخنة | kippered herring, ringa mudakhkhana | p s=none
+fish, herring, atlantic, pickled | Herring, pickled | رنجة مخللة | pickled herring | p s=none
+fish, mackerel, atlantic | Mackerel, Atlantic | سمك الماكريل الأطلسي | mackerel, makarel, skumbri | s=raw,cooked
+fish, mackerel, spanish | Mackerel, Spanish | سمك الكنعد | spanish mackerel, kanad | s=raw,cooked
+fish, mahimahi | Mahi-mahi (dolphinfish) | ماهي ماهي | mahi mahi | s=raw,cooked
+fish, mullet, striped | Mullet, striped | بوري | bouri, mullet | s=raw,cooked
+fish, pollock, alaska | Pollock, Alaska | بولوك ألاسكا | pollock | s=raw,cooked
+fish, roe, mixed species | Fish roe | بيض السمك | fish roe, baydh samak | s=raw,cooked
+fish, caviar, black and red, granular | Caviar | كافيار | caviar | p s=none
+fish, salmon, atlantic, farmed | Salmon, Atlantic, farmed | سلمون مزرعة | salmon, salamon | s=cooked
+fish, salmon, atlantic, wild | Salmon, Atlantic, wild | سلمون أطلسي بري | wild salmon | s=raw,cooked
+fish, salmon, chinook | Salmon, chinook | سلمون شينوك | chinook salmon | s=raw,cooked,smoked
+fish, salmon, chum | Salmon, chum | سلمون تشام | chum salmon | s=raw,cooked,canned
+fish, salmon, coho, farmed | Salmon, coho, farmed | سلمون كوهو مزرعة | coho salmon | s=raw,cooked
+fish, salmon, coho, wild | Salmon, coho, wild | سلمون كوهو بري | wild coho salmon | s=raw,cooked
+fish, salmon, pink | Salmon, pink | سلمون وردي | pink salmon | s=raw,cooked,canned
+fish, salmon, sockeye | Salmon, sockeye | سلمون سوكاي | sockeye salmon | s=raw,cooked,canned
+fish, sardine, atlantic | Sardine, Atlantic, canned in oil | سردين معلب بالزيت | sardine, sardin | p s=canned
+fish, sardine, pacific | Sardine, Pacific, canned | سردين باسيفيكي معلب | pacific sardine | p s=canned
+fish, sea bass, mixed species | Sea bass | قاروص | qarous, lavrek, sea bass | s=raw,cooked
+fish, shark, mixed species | Shark | قرش | shark, qirsh | s=raw,cooked
+fish, snapper, mixed species | Snapper | سمك الحمر | snapper, ahmar | s=raw,cooked
+fish, sturgeon, mixed species | Sturgeon | سمك الحفش | sturgeon | s=raw,cooked,smoked
+fish, swordfish | Swordfish | أبو سيف | swordfish, abu sayf | s=raw,cooked
+fish, trout, rainbow, farmed | Trout, rainbow, farmed | سمك السلمون المرقط مزرعة | rainbow trout farmed | s=raw,cooked
+fish, trout, rainbow, wild | Trout, rainbow, wild | سمك السلمون المرقط بري | rainbow trout wild | s=raw,cooked
+fish, tuna, fresh, bluefin | Tuna, bluefin | تونة زرقاء الزعانف | bluefin tuna | s=raw,cooked
+fish, tuna, fresh, skipjack | Tuna, skipjack | تونة بونيتو | skipjack tuna, bonito | s=raw,cooked
+fish, tuna, fresh, yellowfin | Tuna, yellowfin | تونة صفراء الزعانف | yellowfin tuna | s=raw,cooked
+fish, tuna, light | Tuna, light, canned | تونة لايت معلبة | tuna light | p s=canned
+fish, tuna, white | Tuna, white (albacore), canned | تونة بيضاء معلبة | albacore tuna | p s=canned
+fish, tuna salad | Tuna salad | سلطة التونة | tuna salad | p
+fish, surimi | Surimi | سوريمي | surimi | p
+fish, gefiltefish, commercial, sweet recipe | Gefilte fish | سمك جفيلتي | gefilte fish | p
+fish, mackerel, salted | Mackerel, salted | سمك الماكريل المملح | salted mackerel | p
+crustaceans, crab, alaska king | Crab, Alaska king | سلطعون ألاسكا الملكي | crab, king crab | s=raw,cooked
+crustaceans, crab, blue | Crab, blue | سلطعون أزرق | blue crab, sartan | s=raw,cooked,canned
+crustaceans, crab, dungeness | Crab, Dungeness | سلطعون دانجنس | dungeness crab | s=raw,cooked
+crustaceans, crab, queen | Crab, queen | سلطعون الملكة | queen crab | s=raw,cooked
+crustaceans, crayfish, mixed species, farmed | Crayfish, farmed | كركند الأنهار | crayfish | s=raw,cooked
+crustaceans, crayfish, mixed species, wild | Crayfish, wild | كركند الأنهار البري | wild crayfish | s=raw,cooked
+crustaceans, lobster, northern | Lobster, northern | كركند | lobster, karkand | s=raw,cooked
+crustaceans, spiny lobster, mixed species | Spiny lobster | كركند شوكي | spiny lobster | s=raw,cooked
+crustaceans, shrimp, farmed | Shrimp, farmed | روبيان مزرعة | shrimp, jambari, gambari | s=raw,cooked
+crustaceans, shrimp, mixed species | Shrimp, mixed species | جمبري | jambari, gambari, shrimp, rubyan | s=raw,cooked,canned
+crustaceans, shrimp, mixed species, imitation, made from surimi | Shrimp, imitation | جمبري مقلد | imitation shrimp | p
+crustaceans, crab, alaska king, imitation, made from surimi | Crab, imitation (crab sticks) | سلطعون مقلد | imitation crab, crab sticks | p
+mollusks, abalone, mixed species | Abalone | أذن البحر | abalone | s=raw,cooked
+mollusks, clam, mixed species | Clams | محار صغير | clams, mahar | s=raw,cooked,canned
+mollusks, conch | Conch | بوق البحر | conch | s=raw
+mollusks, cuttlefish, mixed species | Cuttlefish | حبار | cuttlefish, 7abbar | s=raw,cooked
+mollusks, mussel, blue | Mussels | بلح البحر | mussels, bala7 el bahr | s=raw,cooked
+mollusks, octopus, common | Octopus | أخطبوط | octopus, okhtabout | s=raw,cooked
+mollusks, oyster, eastern | Oyster, eastern | محار | oysters, mahhar | s=raw,cooked,canned
+mollusks, oyster, pacific | Oyster, Pacific | محار باسيفيكي | pacific oyster | s=raw,cooked
+mollusks, scallop, mixed species | Scallops | أسقلوب | scallops | s=raw,cooked
+mollusks, snail | Snail | حلزون | halzoun, snail | s=raw
+mollusks, squid, mixed species | Squid | كاليماري | squid, calamari, hbar | s=raw,cooked
+frog legs | Frog legs | أرجل الضفدع | frog legs | s=raw
+jellyfish | Jellyfish, dried | قنديل البحر | jellyfish | p s=dried
+sea bass, chilean | Sea bass, Chilean | قاروص تشيلي | chilean sea bass | s=raw,cooked
+tuna, ahi or yellowfin | Tuna, ahi (yellowfin) | تونة أهي | ahi tuna | s=raw,cooked
+lobster, tail only | Lobster tail | ذيل الكركند | lobster tail | s=raw
+snow crab, legs only | Snow crab legs | أرجل السلطعون | snow crab legs | s=raw

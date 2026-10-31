@@ -1,0 +1,304 @@
+# Drinks, sweets, snacks, cereals, soups, sauces, deli meats (A54 batch 4). `a` = one food whatever the USDA state, name as written.
+beverages, carbonated, ginger ale | Ginger ale | جنجر أيل | ginger ale | a
+beverages, carbonated, grape soda | Grape soda | مشروب غازي بالعنب | grape soda | a
+beverages, carbonated, root beer | Root beer | روت بير | root beer | a
+beverages, carbonated, tonic water | Tonic water | مياه التونيك | tonic water | a
+beverages, carbonated, cola, without caffeine | Cola, caffeine free | كولا بدون كافيين | cola no caffeine, caffeine free cola | a
+beverages, carbonated, low calorie, cola or pepper-type, with aspartame, contains caffeine | Cola, diet (with aspartame) | كولا دايت | diet cola, coke zero, pepsi max | a
+beverages, carbonated, reduced sugar, cola, contains caffeine and sweeteners | Cola, reduced sugar | كولا مخفضة السكر | reduced sugar cola | a
+carbonated beverage, cream soda | Cream soda | كريم صودا | cream soda | a
+carbonated beverage, chocolate-flavored soda | Chocolate soda | صودا الشوكولاتة | chocolate soda | a
+beverages, cranberry juice cocktail | Cranberry juice cocktail | كوكتيل عصير التوت البري | cranberry juice cocktail | a
+beverages, cranberry-apple juice drink | Cranberry-apple juice drink | مشروب التوت البري والتفاح | cranberry apple drink | a
+beverages, fruit punch drink, frozen concentrate, prepared with water | Fruit punch drink | مشروب فواكه بانش | fruit punch | a
+beverages, grape drink | Grape drink, canned | مشروب العنب | grape drink | a
+beverages, grape juice drink | Grape juice drink | مشروب عصير العنب | grape juice drink | a
+beverages, orange juice drink | Orange juice drink | مشروب عصير البرتقال | orange juice drink, orange drink | a
+beverages, pineapple and orange juice drink | Pineapple-orange juice drink | مشروب أناناس وبرتقال | pineapple orange drink | a
+beverages, tropical punch, ready-to-drink | Tropical punch | بانش استوائي | tropical punch | a
+beverages, lemonade-flavor drink, powder, prepared with water | Lemonade drink, from powder | ليموناضة من المسحوق | lemonade powder | a
+lemonade, frozen concentrate, white, prepared with water | Lemonade, from concentrate | ليموناضة | lemonade, laymounada | a
+limeade, frozen concentrate, prepared with water | Limeade | ليمونادة خضراء | limeade | a
+beverages, energy drink, citrus | Energy drink | مشروب الطاقة | energy drink, red bull | a
+beverages, tea, black, ready to drink | Tea, black, ready to drink | شاي أسود جاهز | iced tea, ready tea | a
+beverages, tea, green, ready to drink, unsweetened | Tea, green, ready to drink, unsweetened | شاي أخضر جاهز بدون سكر | green iced tea | a
+beverages, tea, green, ready-to-drink, sweetened | Tea, green, ready to drink, sweetened | شاي أخضر جاهز محلى | sweetened green tea | a
+beverages, tea, instant, unsweetened, prepared with water | Tea, instant, unsweetened | شاي سريع التحضير | instant tea | a
+beverages, tea, instant, lemon, sweetened, prepared with water | Tea, instant, lemon, sweetened | شاي سريع بالليمون محلى | lemon instant tea | a
+beverages, tea, oolong, brewed | Tea, oolong, brewed | شاي أولونغ | oolong tea | a
+beverages, tea, black, brewed, prepared with tap water, decaffeinated | Tea, black, decaffeinated, brewed | شاي أسود منزوع الكافيين | decaf tea | a
+beverages, tea, green, brewed, decaffeinated | Tea, green, decaffeinated, brewed | شاي أخضر منزوع الكافيين | decaf green tea | a
+beverages, coffee, brewed, espresso, restaurant-prepared, decaffeinated | Espresso, decaffeinated | إسبريسو منزوع الكافيين | decaf espresso | a
+beverages, coffee, brewed, prepared with tap water, decaffeinated | Coffee, brewed, decaffeinated | قهوة منزوعة الكافيين | decaf coffee | a
+beverages, coffee, instant, prepared with water | Coffee, instant, prepared | قهوة سريعة التحضير جاهزة | nescafe prepared | a
+beverages, coffee, instant, decaffeinated, powder | Coffee, instant, decaffeinated, powder | بودرة قهوة سريعة منزوعة الكافيين | decaf instant coffee | a
+beverages, coffee, instant, mocha, sweetened | Coffee, instant, mocha, sweetened | قهوة موكا سريعة | instant mocha | a
+beverages, coffee, ready to drink, iced, mocha, milk based | Iced coffee, mocha, ready to drink | قهوة مثلجة موكا | iced mocha | a
+beverages, coffee substitute, cereal grain beverage, powder | Coffee substitute, cereal grain | بديل القهوة من الحبوب | postum | a
+beverages, cocoa mix, powder, prepared with water | Cocoa mix, prepared with water | كاكاو جاهز بالماء | hot cocoa mix prepared | a
+beverages, cocoa mix, no sugar added, powder | Cocoa mix, no sugar added, powder | مسحوق كاكاو بدون سكر مضاف | cocoa mix no sugar | a
+beverages, chocolate syrup | Chocolate syrup | شراب الشوكولاتة | chocolate syrup, sauce shokolata | a
+beverages, chocolate powder, no sugar added | Chocolate drink powder, no sugar added | بودرة مشروب الشوكولاتة بدون سكر | chocolate powder no sugar | a
+beverages, malted drink mix, chocolate, powder | Malted drink mix, chocolate, powder | بودرة مالت بالشوكولاتة | ovaltine, milo | a
+beverages, almond milk, sweetened, vanilla flavor, ready-to-drink | Almond milk, sweetened, vanilla | حليب اللوز بالفانيليا | almond milk vanilla | a
+beverages, almond milk, chocolate, ready-to-drink | Almond milk, chocolate | حليب اللوز بالشوكولاتة | almond milk chocolate | a
+beverages, coconut milk, sweetened, fortified with calcium, vitamins a, b12, d2 | Coconut milk beverage, sweetened | مشروب حليب جوز الهند | coconut milk drink | a
+beverages, rice milk, unsweetened | Rice milk, unsweetened | حليب الرز | rice milk | a
+beverages, aloe vera juice drink, fortified with vitamin c | Aloe vera drink | مشروب الصبار | aloe vera drink | a
+beverages, acai berry drink, fortified | Acai berry drink | مشروب الأساي | acai drink | a
+beverages, clam and tomato juice | Clam and tomato juice | عصير الطماطم والمحار | clamato | a
+beverages, wine, non-alcoholic | Wine, non-alcoholic | نبيذ بدون كحول | non alcoholic wine | a
+beverages, water, tap, municipal | Water, tap | ماء الصنبور | tap water | a
+water, generic | Water, bottled | ماء معبأ | bottled water | a
+beverages, water, perrier | Water, sparkling mineral | مياه غازية معدنية | sparkling water, perrier | a
+beverages, protein powder soy based | Protein powder, soy based | بودرة بروتين الصويا | soy protein powder | a
+beverages, abbott, eas whey protein powder | Protein powder, whey | بودرة بروتين مصل اللبن | whey protein | a
+alcoholic beverage, beer, all | Beer, regular | بيرة | beer, bira | a
+alcoholic beverage, beer, light | Beer, light | بيرة لايت | light beer | a
+alcoholic beverage, wine, table, red | Wine, red | نبيذ أحمر | red wine, nabeedh ahmar | a
+alcoholic beverage, wine, table, white | Wine, white | نبيذ أبيض | white wine | a
+alcoholic beverages, wine, rose | Wine, rose | نبيذ وردي | rose wine | a
+alcoholic beverage, wine, dessert, sweet | Wine, dessert, sweet | نبيذ حلو | dessert wine | a
+alcoholic beverage, distilled, vodka, 80 proof | Vodka | فودكا | vodka | a
+alcoholic beverage, distilled, whiskey, 86 proof | Whiskey | ويسكي | whiskey, whisky | a
+alcoholic beverage, distilled, rum, 80 proof | Rum | رم | rum | a
+alcoholic beverage, distilled, all  80 proof | Spirits, distilled (80 proof) | مشروب كحولي مقطر | spirits | a
+alcoholic beverage, liqueur, coffee, 53 proof | Coffee liqueur | ليكور القهوة | kahlua | a
+alcoholic beverage, pina colada, prepared-from-recipe | Pina colada | بينا كولادا | pina colada | a
+alcoholic beverage, daiquiri, prepared-from-recipe | Daiquiri | دايكيري | daiquiri | a
+beverages, amber, hard cider | Hard cider | سيدر كحولي | hard cider | a
+baking chocolate, unsweetened | Baking chocolate, unsweetened | شوكولاتة الخبز غير المحلاة | baking chocolate | a
+candies, butterscotch | Butterscotch candy | حلوى الزبدة | butterscotch | a
+candies, caramels, chocolate-flavor roll | Caramel candy, chocolate roll | كراميل بالشوكولاتة | chocolate caramel | a
+candies, chocolate covered, caramel with nuts | Candy, chocolate covered caramel with nuts | كراميل بالمكسرات مغطى بالشوكولاتة | caramel nut chocolate | a
+candies, coconut bar, not chocolate covered | Coconut bar candy | حلوى جوز الهند | coconut bar | a
+candies, fudge, chocolate, prepared-from-recipe | Fudge, chocolate | فدج الشوكولاتة | chocolate fudge | a
+candies, fudge, vanilla, prepared-from-recipe | Fudge, vanilla | فدج الفانيليا | vanilla fudge | a
+candies, jellybeans | Jellybeans | حلوى الجيلي بينز | jelly beans | a
+candies, milk chocolate coated peanuts | Milk chocolate coated peanuts | فول سوداني بالشوكولاتة | chocolate peanuts | a
+candies, milk chocolate coated raisins | Milk chocolate coated raisins | زبيب بالشوكولاتة | chocolate raisins | a
+candies, milk chocolate coated coffee beans | Milk chocolate coated coffee beans | حبوب قهوة بالشوكولاتة | chocolate coffee beans | a
+candies, milk chocolate, with almonds | Milk chocolate with almonds | شوكولاتة بالحليب واللوز | almond milk chocolate | a
+candies, milk chocolate, with rice cereal | Milk chocolate with crisped rice | شوكولاتة بالحليب والرز المقرمش | crunch chocolate | a
+candies, peanut bar | Peanut bar | حلوى الفول السوداني | peanut bar | a
+candies, peanut brittle, prepared-from-recipe | Peanut brittle | ملبن الفول السوداني | peanut brittle | a
+candies, praline, prepared-from-recipe | Pralines | براليني | praline | a
+candies, semisweet chocolate | Semisweet chocolate | شوكولاتة شبه حلوة | semisweet chocolate, chocolate chips | a
+candies, sweet chocolate | Sweet chocolate | شوكولاتة حلوة | sweet chocolate | a
+candies, sugar-coated almonds | Sugar-coated almonds | لوز مسكر | jordan almonds, mlabbas | a
+candies, taffy, prepared-from-recipe | Taffy | تافي | taffy | a
+candies, tamarind | Tamarind candy | حلوى التمر الهندي | tamarind candy | a
+candies, toffee, prepared-from-recipe | Toffee | توفي | toffee | a
+candies, truffles, prepared-from-recipe | Truffles, chocolate | ترافل الشوكولاتة | chocolate truffles | a
+candies, fruit snacks, with high vitamin c | Fruit snacks (gummies) | حلوى الفواكه الجيلاتينية | fruit gummies | a
+candies, hard, dietetic or low calorie | Hard candy, sugar free | حلوى صلبة بدون سكر | sugar free candy | a
+candies, gum drops, no sugar or low calorie | Gum drops, sugar free | علك جيلاتيني بدون سكر | sugar free gum drops | a
+candies, fondant, prepared-from-recipe | Fondant | فوندان | fondant | a
+candies, divinity, prepared-from-recipe | Divinity candy | حلوى ديفينيتي | divinity | a
+chocolate, dark, 45- 59% cacao solids | Chocolate, dark, 45-59% cacao | شوكولاتة داكنة 50% | dark chocolate 50 | a
+chocolate, dark, 70-85% cacao solids | Chocolate, dark, 70-85% cacao | شوكولاتة داكنة 70% | dark chocolate 70, dark chocolate 85 | a
+cocoa, dry powder, unsweetened, processed with alkali | Cocoa powder, Dutch process | كاكاو هولندي | dutch cocoa | a
+desserts, apple crisp, prepared-from-recipe | Apple crisp | أبل كريسب | apple crisp | a
+desserts, egg custard, prepared-from-recipe | Egg custard, baked | كاسترد البيض | egg custard | a
+desserts, mousse, chocolate, prepared-from-recipe | Chocolate mousse | موس الشوكولاتة | chocolate mousse | a
+flan, caramel custard, dry mix | Flan, caramel custard | كريم كراميل | creme caramel, flan | a
+frostings, chocolate, creamy | Frosting, chocolate | كريمة تزيين الشوكولاتة | chocolate frosting | a
+frostings, vanilla, creamy | Frosting, vanilla | كريمة تزيين الفانيليا | vanilla frosting | a
+frostings, cream cheese-flavor | Frosting, cream cheese | كريمة الجبن للتزيين | cream cheese frosting | a
+frostings, glaze, prepared-from-recipe | Glaze (powdered sugar icing) | غلازور السكر | sugar glaze | a
+frozen novelties, ice type, pop | Ice pop | مصاصة ثلج | ice pop, popsicle | a
+frozen novelties, ice type, lime | Italian ice, lime | ثلج إيطالي بالليمون | lime ice | a
+frozen novelties, juice type, orange | Juice bar, orange | مصاصة عصير برتقال | orange ice pop | a
+frozen novelties, ice cream type, sundae, prepackaged | Sundae, prepackaged | صنداي | sundae | a
+frozen yogurts, chocolate | Frozen yogurt, chocolate | فروزن يوغرت شوكولاتة | frozen yogurt chocolate | a
+frozen yogurts, flavors other than chocolate | Frozen yogurt, fruit flavors | فروزن يوغرت بالفواكه | frozen yogurt | a
+frozen yogurts, vanilla, soft-serve | Frozen yogurt, vanilla, soft serve | فروزن يوغرت فانيليا | frozen yogurt vanilla | a
+fruit butters, apple | Apple butter | زبدة التفاح | apple butter | a
+fruit syrup | Fruit syrup | شراب الفواكه | fruit syrup | a
+gelatin desserts, dry mix | Gelatin dessert, dry mix | جيلي مسحوق | jelly powder, jello | a
+gelatins, dry powder, unsweetened | Gelatin, dry powder, unsweetened | جيلاتين | gelatin powder | a
+ice creams, chocolate, rich | Ice cream, chocolate, rich | آيس كريم شوكولاتة | chocolate ice cream | a
+ice creams, vanilla, rich | Ice cream, vanilla, rich | آيس كريم فانيليا غني | rich vanilla ice cream | a
+ice creams, vanilla, light | Ice cream, vanilla, light | آيس كريم فانيليا لايت | light ice cream | a
+ice creams, vanilla, fat free | Ice cream, vanilla, fat free | آيس كريم فانيليا خالي الدسم | fat free ice cream vanilla | a
+ice creams, french vanilla, soft-serve | Ice cream, French vanilla, soft serve | آيس كريم فرنش فانيلا | french vanilla soft serve | a
+jams and preserves, no sugar, any flavor | Jam, no sugar | مربى بدون سكر | sugar free jam | a
+jams, preserves, marmalades, sweetened with fruit juice | Jam, fruit juice sweetened | مربى محلى بعصير الفواكه | fruit sweetened jam | a
+jellies | Jelly (fruit jelly spread) | جيلي فواكه للدهن | fruit jelly | a
+pectin | Pectin | بكتين | pectin | a
+pie fillings, apple | Pie filling, apple | حشوة فطيرة التفاح | apple pie filling | a
+pie fillings, blueberry | Pie filling, blueberry | حشوة فطيرة التوت الأزرق | blueberry pie filling | a
+pie fillings, cherry | Pie filling, cherry | حشوة فطيرة الكرز | cherry pie filling | a
+puddings, chocolate, dry mix, prepared with whole milk | Pudding, chocolate, from mix | بودينغ الشوكولاتة | chocolate pudding | a
+puddings, vanilla, dry mix, prepared with whole milk | Pudding, vanilla, from mix | بودينغ الفانيليا | vanilla pudding | a
+puddings, rice, dry mix, prepared with whole milk | Pudding, rice, from mix | رز بالحليب جاهز | rice pudding mix | a
+puddings, tapioca, dry mix, prepared with whole milk | Pudding, tapioca, from mix | بودينغ التابيوكا | tapioca pudding | a
+puddings, banana, dry mix, prepared with whole milk | Pudding, banana, from mix | بودينغ الموز | banana pudding | a
+puddings, coconut cream, dry mix, prepared with whole milk | Pudding, coconut cream, from mix | بودينغ جوز الهند | coconut pudding | a
+puddings, lemon, dry mix, instant, prepared with whole milk | Pudding, lemon, instant | بودينغ الليمون | lemon pudding | a
+puddings, chocolate, fat free | Pudding, chocolate, fat free (ready to eat) | بودينغ شوكولاتة خالي الدسم | fat free chocolate pudding | a
+sherbet, orange | Sherbet, orange | شربت برتقال | orange sherbet | a
+snacks, fruit leather, rolls | Fruit leather | رقائق الفواكه المجففة | fruit leather, fruit roll | a
+sugar, turbinado | Sugar, turbinado | سكر خام | raw sugar, brown cane sugar | a
+sugars, maple | Maple sugar | سكر القيقب | maple sugar | a
+sweetener, syrup, agave | Agave syrup | شراب الأغاف | agave syrup, agave | a
+sweetener, herbal extract powder from stevia leaf | Stevia powder | ستيفيا | stevia | a
+snacks, beef jerky, chopped and formed | Beef jerky | لحم بقري مجفف جيركي | beef jerky | a
+snacks, beef sticks | Beef sticks | أصابع لحم بقري | beef sticks | a
+snacks, corn cakes | Corn cakes | كعك الذرة | corn cakes | a
+snacks, corn-based, extruded, chips, plain | Corn chips | رقائق الذرة | corn chips, tortilla chips | a
+snacks, corn-based, extruded, chips, barbecue-flavor | Corn chips, barbecue | رقائق الذرة بنكهة الباربيكيو | bbq corn chips | a
+snacks, corn-based, extruded, cones, plain | Corn snack cones | مقرمشات الذرة المخروطية | corn cones | a
+snacks, corn-based, extruded, onion-flavor | Corn snack, onion flavor | مقرمشات الذرة بالبصل | onion rings snack | a
+snacks, cornnuts, barbecue-flavor | Corn nuts, barbecue | ذرة محمصة مقرمشة | corn nuts | a
+snacks, granola bars, hard, almond | Granola bar, hard, almond | قضيب غرانولا باللوز | almond granola bar | a
+snacks, granola bars, hard, chocolate chip | Granola bar, hard, chocolate chip | قضيب غرانولا بالشوكولاتة | chocolate chip granola bar | a
+snacks, granola bars, hard, peanut butter | Granola bar, hard, peanut butter | قضيب غرانولا بزبدة الفول السوداني | peanut butter granola bar | a
+snacks, granola bars, soft, uncoated, plain | Granola bar, soft, plain | قضيب غرانولا طري | soft granola bar | a
+snacks, granola bars, soft, uncoated, chocolate chip | Granola bar, soft, chocolate chip | قضيب غرانولا طري بالشوكولاتة | soft chocolate granola bar | a
+snacks, granola bars, soft, uncoated, raisin | Granola bar, soft, raisin | قضيب غرانولا بالزبيب | raisin granola bar | a
+snacks, granola bars, soft, uncoated, nut and raisin | Granola bar, soft, nut and raisin | قضيب غرانولا بالمكسرات والزبيب | nut granola bar | a
+snacks, granola bars, soft, uncoated, peanut butter | Granola bar, soft, peanut butter | قضيب غرانولا طري بزبدة الفول | soft peanut butter granola bar | a
+snacks, granola bars, soft, coated, milk chocolate coating, chocolate chip | Granola bar, chocolate coated | قضيب غرانولا مغطى بالشوكولاتة | chocolate coated granola bar | a
+snacks, granola bites, mixed flavors | Granola bites | قطع غرانولا | granola bites | a
+snacks, popcorn, caramel-coated, without peanuts | Popcorn, caramel coated | فشار بالكراميل | caramel popcorn | a
+snacks, popcorn, cheese-flavor | Popcorn, cheese flavor | فشار بالجبن | cheese popcorn | a
+snacks, popcorn, home-prepared, oil-popped | Popcorn, oil popped, homemade | فشار بالزيت | popcorn, fushar | a
+snacks, popcorn, microwave, low fat | Popcorn, microwave, low fat | فشار الميكروويف قليل الدسم | microwave popcorn light | a
+snacks, popcorn, oil-popped, microwave, regular flavor, no trans fat | Popcorn, microwave, regular | فشار الميكروويف | microwave popcorn | a
+snacks, popcorn, cakes | Popcorn cakes | كعك الفشار | popcorn cakes | a
+snacks, pork skins, plain | Pork rinds | قشور لحم الخنزير | pork rinds | a
+snacks, potato chips, barbecue-flavor | Potato chips, barbecue | شيبس بنكهة الباربيكيو | bbq chips | a
+snacks, potato chips, cheese-flavor | Potato chips, cheese | شيبس بالجبن | cheese chips | a
+snacks, potato chips, plain | Potato chips, plain | شيبس بطاطا | potato chips plain, chips, crisps | a
+snacks, potato chips, lightly salted | Potato chips, lightly salted | شيبس قليل الملح | lightly salted chips | a
+snacks, potato chips, sour-cream-and-onion-flavor | Potato chips, sour cream and onion | شيبس بالكريمة والبصل | sour cream onion chips | a
+snacks, potato chips, fat free, salted | Potato chips, fat free | شيبس خالي الدسم | fat free chips | a
+snacks, potato chips, made from dried potatoes, plain | Potato crisps, stacked, plain | شيبس بطاطا مضغوط | pringles, stacked chips | a
+snacks, potato chips, made from dried potatoes, cheese-flavor | Potato crisps, stacked, cheese | شيبس مضغوط بالجبن | pringles cheese | a
+snacks, potato chips, made from dried potatoes, sour-cream and onion-flavor | Potato crisps, stacked, sour cream onion | شيبس مضغوط بالكريمة والبصل | pringles sour cream | a
+snacks, potato chips, reduced fat | Potato chips, reduced fat | شيبس قليل الدسم | light chips | a
+snacks, potato sticks | Potato sticks | أصابع بطاطا مقرمشة | potato sticks | a
+snacks, plantain chips, salted | Plantain chips | شيبس الموز | plantain chips | a
+snacks, pita chips, salted | Pita chips | شيبس الخبز العربي | pita chips | a
+snacks, bagel chips, plain | Bagel chips | شيبس البيغل | bagel chips | a
+snacks, pretzels, hard, plain, made with enriched flour | Pretzels, hard | بريتزل | pretzels | a
+snacks, pretzels, hard, whole-wheat including both salted and unsalted | Pretzels, whole wheat | بريتزل قمح كامل | whole wheat pretzels | a
+snacks, pretzels, hard, confectioner's coating, chocolate-flavor | Pretzels, chocolate coated | بريتزل بالشوكولاتة | chocolate pretzels | a
+pretzels, soft | Pretzel, soft | بريتزل طري | soft pretzel | a
+snacks, rice cakes, brown rice, buckwheat | Rice cakes, brown rice, buckwheat | كعك الرز البني | brown rice cakes | a
+snacks, rice cakes, brown rice, sesame seed | Rice cakes, sesame | أقراص الرز والسمسم | sesame rice cakes | a
+rice crackers | Rice crackers | بسكويت الرز | rice crackers | a
+snacks, brown rice chips | Rice chips, brown rice | رقائق الرز | brown rice chips | a
+snacks, oriental mix, rice-based | Oriental snack mix, rice-based | مقرمشات شرقية | oriental mix | a
+snacks, peas, wasabi-flavored | Peas, wasabi coated | بازلاء بالواسابي | wasabi peas | a
+snacks, crisped rice bar, chocolate chip | Crisped rice bar | قضيب الرز المقرمش | rice crispy bar | a
+breakfast bars, oats, sugar, raisins, coconut | Breakfast bar, oats and raisins | قضيب الإفطار بالشوفان | breakfast bar | a
+snacks, fruit leather, pieces | Fruit leather pieces | قطع رقائق الفواكه المجففة | fruit leather pieces | a
+cereals ready-to-eat, rice, puffed, fortified | Cereal, rice, puffed | رز منفوخ | puffed rice | a
+cereals ready-to-eat, wheat, puffed, fortified | Cereal, wheat, puffed | قمح منفوخ | puffed wheat | a
+cereals ready-to-eat, wheat germ, plain | Cereal, wheat germ, toasted | جنين القمح المحمص | toasted wheat germ | a
+cereals ready-to-eat, wheat and bran, presweetened with nuts and fruits | Cereal, wheat and bran, sweetened | حبوب القمح والنخالة | wheat bran cereal | a
+millet, puffed | Millet, puffed | دخن منفوخ | puffed millet | a
+cereals, corn grits, white, regular and quick | Corn grits, white, dry | جريش الذرة الأبيض | corn grits white | a
+cereals, corn grits, yellow, regular and quick | Corn grits, yellow, dry | جريش الذرة الأصفر | grits | a
+cereals, corn grits, white, regular and quick, cooked with water | Corn grits, white, cooked | جريش الذرة المطبوخ | cooked grits | a
+cereals, farina | Farina, dry | فارينا | farina | a
+cereals, farina, cooked with water | Farina, cooked | فارينا مطبوخة | cooked farina, semolina porridge | a
+cereals, oats, instant, fortified, plain, prepared with water | Oatmeal, instant, plain, cooked | شوفان سريع مطبوخ | instant oatmeal | a
+cereals, oats, regular and quick and instant, cooked with water | Oatmeal, cooked with water | شوفان مطبوخ بالماء | oatmeal cooked, oat porridge | a
+cereals, oats, instant, fortified, maple and brown sugar | Oatmeal, instant, maple and brown sugar | شوفان سريع بالقيقب | maple oatmeal | a
+cereals, oats, instant, fortified, with cinnamon and spice | Oatmeal, instant, cinnamon | شوفان سريع بالقرفة | cinnamon oatmeal | a
+cereals, whole wheat hot natural cereal | Wheat cereal, whole wheat hot, dry | حبوب قمح كامل ساخنة | wheat porridge dry | a
+cereals, whole wheat hot natural cereal, cooked with water | Wheat cereal, whole wheat hot, cooked | حبوب قمح كامل مطبوخة | wheat porridge cooked | a
+gravy, brown instant | Gravy, brown, instant | مرق بني سريع | brown gravy | a
+gravy, chicken, canned or bottled, ready-to-serve | Gravy, chicken, ready to serve | مرق دجاج جاهز | chicken gravy | a
+gravy, beef, ready-to-serve | Gravy, beef, ready to serve | مرق لحم جاهز | beef gravy | a
+gravy, mushroom | Gravy, mushroom | مرق الفطر | mushroom gravy | a
+gravy, turkey, ready-to-serve | Gravy, turkey | مرق ديك رومي | turkey gravy | a
+sauce, alfredo mix | Alfredo sauce mix | صلصة ألفريدو | alfredo sauce | a
+sauce, cheese, ready-to-serve | Cheese sauce, ready to serve | صلصة جبن جاهزة | ready cheese sauce | a
+sauce, cocktail, ready-to-serve | Cocktail sauce | صلصة الكوكتيل | cocktail sauce | a
+sauce, enchilada, red, mild, ready to serve | Enchilada sauce | صلصة الإنتشيلادا | enchilada sauce | a
+sauce, fish, ready-to-serve | Fish sauce | صلصة السمك | fish sauce | a
+sauce, hoisin, ready-to-serve | Hoisin sauce | صلصة الهويسين | hoisin | a
+sauce, homemade, white, medium | White sauce (bechamel), medium | بشاميل | bechamel, white sauce, besamel | a
+sauce, homemade, white, thick | White sauce (bechamel), thick | بشاميل ثخين | thick bechamel | a
+sauce, hot chile, sriracha | Sriracha hot sauce | صلصة سريراتشا | sriracha | a
+sauce, oyster, ready-to-serve | Oyster sauce | صلصة المحار | oyster sauce | a
+sauce, pasta, spaghetti/marinara, ready-to-serve, low sodium | Pasta sauce, marinara, low sodium | صلصة مارينارا قليلة الصوديوم | low sodium marinara | a
+sauce, peanut, made from peanut butter, water, soy sauce | Peanut sauce | صلصة الفول السوداني | peanut sauce, satay sauce | a
+sauce, pesto, ready-to-serve, shelf stable | Pesto sauce | صلصة البيستو | pesto | a
+sauce, pizza, ready-to-serve | Pizza sauce | صلصة البيتزا | pizza sauce | a
+sauce, plum, ready-to-serve | Plum sauce | صلصة البرقوق | plum sauce | a
+sauce, salsa, verde, ready-to-serve | Salsa verde | صلصة سالسا فيردي | salsa verde | a
+sauce, steak, tomato based | Steak sauce | صلصة الستيك | steak sauce, a1 | a
+sauce, sweet and sour, ready-to-serve | Sweet and sour sauce | صلصة حلوة وحامضة جاهزة | sweet and sour sauce | a
+sauce, tartar, ready-to-serve | Tartar sauce | صلصة التارتار | tartar sauce | a
+sauce, teriyaki, ready-to-serve | Teriyaki sauce | صلصة التيرياكي | teriyaki | a
+sauce, tomato chili sauce | Chili sauce (tomato based) | صلصة الفلفل بالطماطم | chili sauce | a
+sauce, worcestershire | Worcestershire sauce | صلصة ورستر | worcestershire | a
+sauce, horseradish | Horseradish sauce | صلصة الفجل الحار | horseradish sauce | a
+sauce, white, thin, prepared-from-recipe, with butter | White sauce, thin | صلصة بيضاء خفيفة | thin white sauce | a
+dip, bean, original flavor | Bean dip | غموس الفاصولياء | bean dip | a
+dip, salsa con queso, cheese and salsa- medium | Salsa con queso (cheese dip) | غموس الجبن والسالسا | queso dip | a
+fish broth | Fish broth | مرق السمك | fish broth, fish stock | a
+soup, beef broth or bouillon canned, ready-to-serve | Beef broth, ready to serve | مرق لحم جاهز | beef broth | a
+soup, chicken broth, ready-to-serve | Chicken broth, ready to serve | مرق دجاج جاهز | chicken broth, chicken stock | a
+soup, chicken broth or bouillon, prepared with water | Chicken bouillon, prepared | مرق دجاج من المكعبات | chicken cube broth | a
+soup, beef broth, cubed, prepared with water | Beef bouillon cube, prepared | مرق لحم من المكعبات | beef cube broth | a
+soup, bouillon cubes and granules, low sodium | Bouillon cubes, low sodium | مكعبات مرق قليلة الصوديوم | low sodium cubes | a
+soup, chicken noodle, prepared with equal volume water | Soup, chicken noodle, canned | شوربة دجاج بالشعيرية | chicken noodle soup | a
+soup, chicken noodle, mix, prepared with water | Soup, chicken noodle, from mix | شوربة دجاج جاهزة | instant chicken soup | a
+soup, chicken vegetable, ready-to-serve | Soup, chicken and vegetable, canned | شوربة دجاج وخضار | chicken vegetable soup | a
+soup, chicken rice, chunky, ready-to-serve | Chicken rice soup, canned | شوربة دجاج بالأرز معلبة | chicken rice soup | a
+soup, beef noodle, prepared with equal volume water | Soup, beef noodle, canned | شوربة لحم بالشعيرية | beef noodle soup | a
+soup, beef and vegetables, ready-to-serve | Soup, beef and vegetables, canned | شوربة لحم وخضار | beef vegetable soup | a
+soup, beef barley, ready to serve | Soup, beef barley, canned | شوربة لحم وشعير | beef barley soup | a
+soup, black bean, prepared with equal volume water | Soup, black bean, canned | شوربة الفاصولياء السوداء | black bean soup | a
+soup, cheese, prepared with equal volume water | Soup, cheese, canned | شوربة الجبن | cheese soup | a
+soup, broccoli cheese, condensed, commercial | Soup, broccoli cheese, condensed | شوربة البروكلي والجبن | broccoli cheese soup | a
+soup, bean with pork, prepared with equal volume water | Soup, bean with pork, canned | شوربة الفاصولياء مع لحم الخنزير | bean pork soup | a
+potato soup, instant, dry mix | Soup, potato, instant mix | شوربة البطاطا سريعة | potato soup | a
+bacon and beef sticks | Bacon and beef sticks | أصابع لحم مقدد وبقر | bacon beef sticks | a
+bacon, turkey | Bacon, turkey | لحم ديك رومي مقدد | turkey bacon | a
+beef, cured | Beef, cured, dried | لحم بقري مجفف ومملح | dried beef | a
+beef, bologna, reduced sodium | Bologna, beef | مرتديلا بقر | beef mortadella, beef bologna | a
+bologna, turkey | Bologna, turkey | مرتديلا ديك رومي | turkey mortadella | a
+bologna, chicken, pork | Bologna, chicken and pork | مرتديلا دجاج | chicken mortadella | a
+bologna, beef and pork | Bologna, beef and pork | مرتديلا بقر وخنزير | bologna, mortadella | a
+mortadella, beef, pork | Mortadella | مرتديلا إيطالية | italian mortadella | a
+bratwurst, beef and pork | Bratwurst | براتفورست | bratwurst | a
+bratwurst, chicken | Bratwurst, chicken | براتفورست دجاج | chicken bratwurst | a
+chicken breast, oven-roasted, fat-free, sliced | Chicken breast, deli, oven roasted (fat free) | صدر دجاج مشوي للشطائر خالي الدسم | deli chicken breast | a
+chicken spread | Chicken spread | معجون الدجاج | chicken spread | a
+frankfurter, beef, low fat | Frankfurter, beef, low fat | نقانق بقر قليلة الدسم | beef hot dog light | a
+frankfurter, turkey | Frankfurter, turkey | نقانق ديك رومي | turkey hot dog | a
+frankfurter, meat and poultry | Frankfurter, meat and poultry | نقانق لحم ودجاج | hot dog, sausage | a
+frankfurter, pork | Frankfurter, pork | نقانق خنزير | pork hot dog | a
+ham, sliced, pre-packaged, deli meat | Ham, sliced, deli (96% fat free) | جامبون شرائح قليل الدسم | ham, jambon | a
+ham, chopped, not canned | Ham, chopped | جامبون مفروم | chopped ham | a
+ham, turkey, sliced, extra lean, prepackaged or deli | Turkey ham, sliced | جامبون ديك رومي | turkey ham | a
+ham and cheese spread | Ham and cheese spread | معجون الجامبون والجبن | ham cheese spread | a
+headcheese, pork | Headcheese | هيد تشيز | headcheese | a
+kielbasa | Kielbasa (Polish sausage) | كيلباسا | kielbasa | a
+liver sausage, liverwurst, pork | Liverwurst | سجق الكبد | liverwurst, liver sausage | a
+liverwurst spread | Liverwurst spread | معجون سجق الكبد | liverwurst spread | a
+luncheon meat, pork | Luncheon meat, canned | لحم معلب | spam, luncheon meat | a
+pastrami, beef, 98% fat-free | Pastrami, beef (98% fat free) | بسطرمة بقر قليلة الدسم | pastrami, basterma | a
+pastrami, turkey | Pastrami, turkey | بسطرمة ديك رومي | turkey pastrami | a
+pepperoni, beef and pork, sliced | Pepperoni | ببروني | pepperoni | a
+roast beef, deli style, prepackaged, sliced | Roast beef, deli sliced | روست بيف شرائح | roast beef deli | a
+salami, dry or hard, pork | Salami, dry, pork | سلامي | salami | a
+salami, turkey | Salami, turkey | سلامي ديك رومي | turkey salami | a
+sausage, pork, chorizo, link or ground | Chorizo | تشوريزو | chorizo | a
+sausage, italian, pork, mild | Sausage, Italian, pork | سجق إيطالي | italian sausage | a
+sausage, turkey | Sausage, turkey | سجق ديك رومي | turkey sausage | a
+sausage, chicken or turkey, italian style, lower sodium | Sausage, chicken, Italian style | سجق دجاج إيطالي | chicken sausage | a
+sausage, beef, cured | Sausage, beef, cured | سجق بقري مدخن | beef sausage cured, soujouk | a
+sausage, vienna, chicken, beef, pork | Vienna sausage, canned | نقانق فيينا معلبة | vienna sausage | a
+pork sausage, link/patty | Sausage, pork, link or patty | سجق خنزير | pork sausage | a
+pate, chicken liver | Pate, chicken liver | معجون كبدة الدجاج | chicken liver pate | a
+pate, liver, not specified | Pate, liver | باتيه الكبدة | liver pate | a
+turkey breast, sliced, prepackaged | Turkey breast, deli sliced | صدر ديك رومي شرائح | deli turkey | a
+meatballs, italian style | Meatballs, Italian style | كرات لحم إيطالية | meatballs | a

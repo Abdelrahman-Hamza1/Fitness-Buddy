@@ -1,0 +1,159 @@
+# Legumes, grains, flours, pasta, soy (A54 batch 2). usda head phrase | EN | AR | arabizi | flags (d = dry ingredient)
+beans, adzuki | Adzuki beans | فاصولياء أدزوكي | adzuki beans | f d s=raw,boiled
+beans, black | Black beans | فاصولياء سوداء | black beans, fasolia sawda | f d s=raw,boiled
+beans, black turtle | Black turtle beans | فاصولياء سوداء سلحفاة | black turtle beans | f d s=raw,boiled,canned
+beans, cranberry | Cranberry beans | فاصولياء كرانبيري | cranberry beans | f d s=raw,boiled,canned
+beans, french | French beans | فاصولياء فرنسية | french beans | f d s=raw,boiled
+beans, great northern | Great Northern beans | فاصولياء بيضاء كبيرة | great northern beans | f d s=raw,boiled,canned
+beans, kidney, california red | Kidney beans, California red | فاصولياء حمراء كاليفورنيا | california red kidney beans | f d s=raw,boiled
+beans, kidney, royal red | Kidney beans, royal red | فاصولياء حمراء ملكية | royal red kidney beans | f d s=raw,boiled
+beans, navy | Navy beans | فاصولياء بيضاء صغيرة | navy beans, fasolia bayda | f d s=raw,boiled,canned
+beans, pink | Pink beans | فاصولياء وردية | pink beans | f d s=raw,boiled
+beans, pinto | Pinto beans | فاصولياء مرقطة | pinto beans | f d s=raw,boiled,canned
+beans, small white | Small white beans | فاصولياء بيضاء صغيرة الحجم | small white beans | f d s=raw,boiled
+beans, yellow | Yellow beans, dry | فاصولياء صفراء جافة | yellow beans | f d s=raw,boiled
+beans, cannellini | Cannellini beans | فاصولياء كانيليني | cannellini beans | f d s=dry
+beans, kidney | Kidney beans, canned in liquid | فاصولياء حمراء معلبة | red kidney beans canned | f p s=canned
+beans, home prepared | Baked beans, home prepared | فاصولياء مخبوزة بالطريقة المنزلية | baked beans homemade | f p s=baked
+refried beans, traditional style | Refried beans | فاصولياء مقلية مهروسة | refried beans | f p s=canned
+refried beans, vegetarian | Refried beans, vegetarian | فاصولياء مقلية نباتية | refried beans vegetarian | f p s=canned
+beans, with pork and tomato sauce | Baked beans with pork, canned | فاصولياء بالطماطم ولحم الخنزير | baked beans pork | f p s=x_canned_cooked
+beans, with franks | Beans with franks, canned | فاصولياء بالنقانق | beans franks | f p s=x_canned_cooked
+chili with beans | Chili with beans, canned | تشيلي بالفاصولياء | chili con carne, chili beans | p s=canned
+blackeye pea | Black-eyed peas, canned | لوبيا معلبة | lobia mu3alaba | f p s=dry
+cowpeas, catjang | Catjang cowpeas | لوبيا كاتجانج | catjang | f d s=raw,boiled
+cowpeas, common, plain | Cowpeas, canned | لوبيا بيضاء معلبة | cowpeas canned | f p s=canned
+hyacinth beans | Hyacinth beans | فاصولياء لبلاب | hyacinth beans | f d s=raw,boiled
+lima beans, large | Lima beans, large, dry | فاصولياء ليما كبيرة | lima beans, butter beans | f d s=raw,boiled,canned
+lima beans, thin seeded | Baby lima beans, dry | فاصولياء ليما صغيرة | baby lima beans | f d s=raw,boiled
+lupins | Lupin beans, raw | ترمس نيء | turmus, termes | d s=raw
+mothbeans | Moth beans | فاصولياء الفراشة | moth beans | f d s=raw,boiled
+mung beans | Mung beans, dry | ماش | mash, mung beans | d s=raw,boiled
+mungo beans | Mungo beans | فاصولياء مونغو | mungo beans, urad | f d s=raw,boiled
+pigeon peas | Pigeon peas, dry | بازلاء الحمام الجافة | pigeon peas dry | f d s=raw,boiled
+winged beans | Winged beans, dry | فاصولياء مجنحة جافة | winged beans | f d s=raw,boiled
+yardlong beans | Yardlong beans, dry | لوبيا طويلة جافة | yardlong beans | f d s=raw,boiled
+peas, split | Split peas, cooked | بازلاء مجروشة مطبوخة | split peas | f p s=boiled
+peas, green, split | Split peas | بازلاء مجروشة | bazella majrousha, split peas | f d s=raw,boiled
+soybeans | Soybeans, dry | فول الصويا | ful soya, soybeans | d s=raw,boiled,dry_roasted
+soybeans, salted | Soybeans, roasted, salted | فول صويا محمص مملح | roasted soybeans | p s=roasted
+soybeans, mature cooked | Soybeans, cooked | فول صويا مطبوخ | cooked soybeans | p s=boiled
+soy flour, full-fat | Soy flour, full-fat | طحين الصويا | soy flour | d s=raw
+soy flour, defatted | Soy flour, defatted | طحين صويا منزوع الدسم | defatted soy flour | d
+soy protein isolate | Soy protein isolate | بروتين الصويا المعزول | soy protein isolate | p
+soy sauce made from soy and wheat, low sodium | Soy sauce, low sodium | صلصة صويا قليلة الصوديوم | soy sauce low sodium | p
+soy sauce made from soy | Soy sauce (tamari) | صلصة التاماري | tamari | p
+soymilk, original and vanilla, with added calcium, vitamins a and d | Soy milk, original | حليب الصويا | soy milk, halib soya | p
+soymilk, unsweetened, with added calcium, vitamins a and d | Soy milk, unsweetened | حليب الصويا بدون سكر | soy milk unsweetened | p
+soymilk, chocolate, with added calcium, vitamins a and d | Soy milk, chocolate | حليب الصويا بالشوكولاتة | soy milk chocolate | p
+tempeh | Tempeh | تمبيه | tempeh | p s=none,cooked
+tofu, soft, prepared with calcium sulfate and magnesium chloride | Tofu, soft | توفو طري | tofu soft | p
+tofu, firm, prepared with calcium sulfate and magnesium chloride | Tofu, firm | توفو صلب | tofu firm | p
+tofu, extra firm, prepared with nigari | Tofu, extra firm | توفو صلب جدا | tofu extra firm | p
+tofu, prepared with calcium sulfate | Tofu, fried | توفو مقلي | tofu fried | p s=fried
+natto | Natto | ناتو | natto | p
+miso | Miso | ميسو | miso | p
+okara | Okara | أوكارا | okara | p
+papad | Papad | بابادوم | papad, papadum | p
+hummus, commercial | Hummus, commercial | حمص جاهز | hummus store bought, hummus commercial | p
+hummus, home prepared | Hummus, home prepared | حمص بيتي بالطحينة | hummus homemade | p
+amaranth grain | Amaranth grain | أمارانث | amaranth | d s=raw,cooked
+barley, hulled | Barley, hulled | شعير غير مقشور | shaeer | d
+barley flour or meal | Barley flour | طحين الشعير | barley flour | d
+buckwheat groats | Buckwheat groats, roasted | حنطة سوداء محمصة | kasha, buckwheat | p s=roasted
+buckwheat, whole grain | Buckwheat | حنطة سوداء | buckwheat | d
+buckwheat flour, whole-groat | Buckwheat flour | طحين الحنطة السوداء | buckwheat flour | d
+bulgur | Bulgur, dry, coarse | برغل خشن | burghul khashen | d s=dry
+chia seeds | Chia seeds, raw | بذور الشيا | chia | s=raw
+corn bran, crude | Corn bran | نخالة الذرة | corn bran | d
+corn flour, masa harina, white or yellow | Corn flour, masa harina | طحين الذرة ماسا | masa harina | d s=raw
+corn flour, whole-grain, yellow | Corn flour, whole grain, yellow | طحين ذرة كامل أصفر | corn flour yellow | d
+corn flour, whole-grain, white | Corn flour, whole grain, white | طحين ذرة كامل أبيض | corn flour white | d
+corn grain, yellow | Corn grain, yellow | حبوب الذرة الصفراء | corn grain | d
+cornmeal, whole-grain, yellow | Cornmeal, whole grain, yellow | دقيق ذرة كامل أصفر | cornmeal, polenta | d
+cornmeal, whole-grain, white | Cornmeal, whole grain, white | دقيق ذرة كامل أبيض | cornmeal white | d
+cornmeal, degermed, white | Cornmeal, degermed, white | دقيق ذرة منزوع الجنين | cornmeal degermed | d
+hominy, white | Hominy, canned | ذرة مقشرة معلبة | hominy | p s=canned
+einkorn, grain | Einkorn | قمح أينكورن | einkorn | d s=raw
+farro, pearled | Farro, pearled | فارو | farro | d s=raw
+fonio, grain | Fonio | فونيو | fonio | d s=raw
+khorasan, grain | Khorasan wheat | قمح خراسان | khorasan wheat | d s=raw
+wheat, kamut khorasan | Kamut | قمح كاموت | kamut | d s=raw,cooked
+millet | Millet | دخن | dukhn, millet | d s=raw,cooked
+millet flour | Millet flour | طحين الدخن | millet flour | d
+millet, whole grain | Millet, whole grain | دخن كامل | millet whole grain | d
+oat bran | Oat bran | نخالة الشوفان | oat bran | d s=raw,cooked
+oat flour, partially debranned | Oat flour | طحين الشوفان | oat flour | d
+oats, whole grain, rolled, old fashioned | Oats, rolled | شوفان مجروش | shoufan, oats | d
+oats, whole grain, steel cut | Oats, steel cut | شوفان مقطع | steel cut oats | d
+quinoa | Quinoa | كينوا | quinoa, kinwa | d s=raw,cooked
+rice, black | Rice, black | رز أسود | black rice | d s=raw
+rice, red | Rice, red | رز أحمر | red rice | d s=raw
+rice, brown, long grain | Rice, brown, long grain | رز بني طويل الحبة | brown rice | d s=raw
+rice, brown, medium-grain | Rice, brown, medium grain | رز بني متوسط الحبة | brown rice medium | d s=raw,cooked
+rice, white, long grain | Rice, white, long grain, raw | رز أبيض طويل الحبة | long grain rice | d s=raw
+rice, white, glutinous | Rice, glutinous | رز لزج | sticky rice, glutinous rice | d s=raw,cooked
+rice, white, long-grain, precooked or instant | Rice, instant | رز سريع التحضير | instant rice | d s=dry,none
+rice, white, chinese restaurant | Rice, steamed, Chinese style | رز صيني مطهو على البخار | chinese rice | p s=steamed
+rice bran, crude | Rice bran | نخالة الرز | rice bran | d
+rice flour, brown | Rice flour, brown | طحين الرز البني | brown rice flour | d
+rice noodles | Rice noodles | شعيرية الرز | rice noodles | d s=dry,cooked
+wild rice | Wild rice | رز بري | wild rice | d s=raw,cooked
+rye flour, dark | Rye flour, dark | طحين الجاودار الداكن | rye flour dark | d
+rye flour, light | Rye flour, light | طحين الجاودار الخفيف | rye flour light | d
+rye flour, medium | Rye flour | طحين الجاودار | rye flour | d
+rye grain | Rye grain | حبوب الجاودار | rye grain, jawdar | d
+semolina | Semolina | سميد ناعم | semolina | d
+sorghum flour, whole-grain | Sorghum flour | طحين الذرة الرفيعة | sorghum flour | d
+sorghum grain | Sorghum grain | ذرة رفيعة | sorghum, dhura rafiaa | d
+spelt | Spelt | قمح الإسبلت | spelt | d s=raw,cooked
+tapioca, pearl | Tapioca pearls | لؤلؤ التابيوكا | tapioca | d s=dry
+teff | Teff | تيف | teff | d s=raw,cooked
+triticale | Triticale | تريتيكالي | triticale | d
+vital wheat gluten | Vital wheat gluten | غلوتين القمح | wheat gluten, seitan | d
+wheat bran, crude | Wheat bran | نخالة القمح | nokhala, wheat bran | d
+wheat germ, crude | Wheat germ | جنين القمح | wheat germ | d
+wheat flour, white, bread | Wheat flour, bread | طحين الخبز | bread flour | d
+wheat flour, white, cake | Wheat flour, cake | طحين الكيك | cake flour | d
+wheat flour, white, all-purpose, self-rising | Wheat flour, self-rising | طحين ذاتي الارتفاع | self rising flour | d
+wheat flour, whole-grain, soft wheat | Wheat flour, whole grain, soft | طحين قمح كامل ناعم | whole wheat soft flour | d
+wheat, hard red winter | Wheat, hard red winter | قمح قاسي أحمر | wheat hard red | d
+wheat, hard white | Wheat, hard white | قمح قاسي أبيض | wheat hard white | d
+wheat, soft white | Wheat, soft white | قمح طري أبيض | wheat soft white | d
+wheat, sprouted | Wheat, sprouted | قمح مستنبت | sprouted wheat | d
+flour, 00 | Flour, 00 | طحين 00 | flour 00 | d
+flour, amaranth | Amaranth flour | طحين الأمارانث | amaranth flour | d
+flour, buckwheat | Buckwheat flour, gluten free | طحين الحنطة السوداء الخالي من الغلوتين | buckwheat flour gf | d
+flour, oat, whole grain | Oat flour, whole grain | طحين الشوفان الكامل | oat flour whole | d
+flour, pastry, unbleached | Wheat flour, pastry | طحين المعجنات | pastry flour | d
+flour, quinoa | Quinoa flour | طحين الكينوا | quinoa flour | d
+flour, rice, white | Rice flour, white | طحين الرز الأبيض | white rice flour | d
+flour, rice, glutinous | Rice flour, glutinous | طحين الرز اللزج | glutinous rice flour | d
+flour, rye | Rye flour, whole | طحين الجاودار الكامل | rye flour whole | d
+flour, spelt, whole grain | Spelt flour | طحين الإسبلت | spelt flour | d
+flour, wheat, all-purpose, unbleached | Wheat flour, all-purpose, unbleached | طحين متعدد الاستعمالات غير مبيض | unbleached flour | d
+flour, soy, full-fat | Soy flour, full-fat, raw | طحين الصويا الكامل | full fat soy flour | d
+arrowroot flour | Arrowroot flour | طحين الأروروت | arrowroot flour | d
+carob flour | Carob flour | طحين الخروب | carob flour, kharoub | d
+macaroni, vegetable | Macaroni, vegetable | معكرونة الخضار | vegetable macaroni | d s=dry,cooked
+noodles, egg | Egg noodles, dry | شعيرية بيض جافة | egg noodles | d s=dry,cooked
+noodles, egg, spinach | Spinach egg noodles | نودلز بيض بالسبانخ | spinach noodles | d s=dry,cooked
+noodles, japanese, soba | Soba noodles | نودلز السوبا | soba | d s=dry,cooked
+noodles, japanese, somen | Somen noodles | نودلز السومن | somen | d s=dry,cooked
+noodles, chinese, cellophane or long rice | Cellophane noodles, dried | نودلز زجاجية | glass noodles | p s=dried
+noodles, chinese, chow mein | Chow mein noodles, crunchy | نودلز مقرمشة | chow mein noodles | p
+pasta, fresh-refrigerated, plain | Pasta, fresh, plain | معكرونة طازجة | fresh pasta | p s=cooked
+pasta, fresh-refrigerated, spinach | Pasta, fresh, spinach | معكرونة طازجة بالسبانخ | fresh spinach pasta | p s=cooked
+pasta, gluten-free, corn | Pasta, gluten-free, corn | معكرونة خالية من الغلوتين | gluten free pasta | d s=dry,cooked
+pasta, homemade, made with egg | Pasta, homemade, with egg | معكرونة منزلية بالبيض | homemade pasta | p s=cooked
+spaghetti, spinach | Spaghetti, spinach | سباغيتي بالسبانخ | spinach spaghetti | d s=dry,cooked
+spaghetti, protein-fortified | Spaghetti, protein-enriched | سباغيتي مدعمة بالبروتين | protein spaghetti | d s=dry,cooked
+peanuts, spanish | Peanuts, Spanish, raw | فول سوداني إسباني | peanuts spanish | s=raw
+peanuts, valencia | Peanuts, Valencia, raw | فول سوداني فالنسيا | peanuts valencia | s=raw
+peanuts, virginia | Peanuts, Virginia, raw | فول سوداني فيرجينيا | peanuts virginia | s=raw
+peanuts | Peanuts, boiled | فول سوداني مسلوق | peanuts boiled | p s=boiled
+peanut butter, creamy | Peanut butter, creamy | زبدة الفول السوداني الناعمة | peanut butter creamy | p
+peanut butter, chunk style | Peanut butter, chunky | زبدة الفول السوداني الخشنة | peanut butter chunky | p
+peanut butter, reduced sodium | Peanut butter, reduced sodium | زبدة فول سوداني قليلة الصوديوم | peanut butter low sodium | p
+peanut butter, smooth, reduced fat | Peanut butter, reduced fat | زبدة فول سوداني قليلة الدسم | peanut butter light | p
+peanut flour, defatted | Peanut flour, defatted | طحين الفول السوداني | peanut flour | p

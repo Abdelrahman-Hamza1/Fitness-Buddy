@@ -1,7 +1,7 @@
 schema: 1
 id: ref:arabic_salad
 names:
-  en: [Arabic salad, Palestinian salad, Chopped salad, Salata arabiyeh]
+  en: [Arabic salad, Palestinian salad, Chopped salad, Salata arabiyeh, Salad]
   ar: [سلطة عربية, سلطة فلسطينية, سلطة خيار وبندورة, سلطة بلدية]
   arabizi: [salata arabiyeh, salata arabieh, salata 3arabiyeh, salata falasteeniyeh, salata baladiyeh, salatet khyar w banadoura, arabic salad]
 state: raw

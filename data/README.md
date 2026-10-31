@@ -6,6 +6,7 @@ bulk downloads are never committed. Tooling: `tools/catalog/` (`make catalog`).
 | Path | What |
 |---|---|
 | `usda_selection.yaml` | The chosen USDA basics: catalog ID `usda:<slug>`, FDC ID, state, EN/AR/Arabizi names. Edited by hand. |
+| `usda_selection.yaml` growth (A54) | Most basics after A47 were proposed by `tools/scripts/catalog_expand/` (`expand.py` + the name files in `names/*.tsv`, `gen_meats.py`, `sanity_fix.py`): it reads the pinned USDA SR Legacy and Foundation CSVs (CC0, outside the repo), picks one USDA row per food and state, and writes selection entries with EN, AR and Arabizi names and USDA-only servings. It never writes a number. See `technical-planning/steps/A54-catalog-expansion.md` for the rules and the run order. |
 | `usda/extract.jsonl` | Per-100 g values of the selection, written by `make catalog-usda` (sorted, deterministic). `usda/sources.yaml` pins the downloads by sha256. |
 | `reference_dishes/<slug>.yaml` | One reference dish each (format v1, `schema/reference_dish.v1.schema.json`): names, variants (recipe or `per_100g`), portions with ranges, review status and sources. New dishes start as `draft`. `review.reviewed_by` is `claude-draft`, `ai-verified` (numbers checked against cited sources by an AI, owner-delegated 2026-10-30, A47) or `owner` (strongest). |
 | `must_cover.yaml` | The spec's must-cover list (`spec/11` section 6, FD-052) with EN, AR and Arabizi names. `catalog coverage` reports how each item resolves. |
