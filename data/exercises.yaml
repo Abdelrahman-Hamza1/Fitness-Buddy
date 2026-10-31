@@ -8,597 +8,697 @@ exercises:
     equipment: other
     primary_muscle: abs
     secondary_muscles: [obliques, shoulders, lower_back]
+    popularity: 95
   - id: ex:arnold_press
     names: {en: ["Arnold press", "Arnold dumbbell press"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: shoulders
     secondary_muscles: [triceps, chest]
+    popularity: 58
   - id: ex:assisted_dip
     names: {en: ["Assisted dip", "Assisted dip machine"]}
     type: assisted
     equipment: machine
     primary_muscle: triceps
     secondary_muscles: [chest, shoulders]
+    popularity: 79
   - id: ex:assisted_pull_up
     names: {en: ["Assisted pull-up", "Assisted pull-up machine"]}
     type: assisted
     equipment: machine
     primary_muscle: upper_back
     secondary_muscles: [biceps, forearms]
+    popularity: 67
   - id: ex:bar_triceps_pushdown
     names: {en: ["Bar triceps pushdown", "Straight bar pushdown"]}
     type: weight_reps
     equipment: cable
     primary_muscle: triceps
     secondary_muscles: []
+    popularity: 54
   - id: ex:barbell_back_squat
     names: {en: ["Barbell back squat", "Squat", "Back squat", "BB squat"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: quadriceps
     secondary_muscles: [glutes, adductors, hamstrings, lower_back]
+    popularity: 2
   - id: ex:barbell_bench_press
     names: {en: ["Barbell bench press", "Bench", "Flat bench", "BB bench"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: chest
     secondary_muscles: [triceps, shoulders]
+    popularity: 1
   - id: ex:barbell_curl
     names: {en: ["Barbell curl", "BB curl"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: biceps
     secondary_muscles: [forearms]
+    popularity: 26
   - id: ex:barbell_deadlift
     names: {en: ["Barbell deadlift", "Deadlift", "Conventional deadlift"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: hamstrings
     secondary_muscles: [glutes, lower_back, traps, forearms]
+    popularity: 4
   - id: ex:barbell_front_squat
     names: {en: ["Barbell front squat", "Front squat"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: quadriceps
     secondary_muscles: [glutes, adductors, abs]
+    popularity: 64
   - id: ex:barbell_glute_bridge
     names: {en: ["Barbell glute bridge", "Weighted glute bridge"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: glutes
     secondary_muscles: [hamstrings, quadriceps]
+    popularity: 84
   - id: ex:barbell_hip_thrust
     names: {en: ["Barbell hip thrust", "Hip thrust"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: glutes
     secondary_muscles: [hamstrings, quadriceps, adductors]
+    popularity: 32
   - id: ex:barbell_romanian_deadlift
     names: {en: ["Barbell Romanian deadlift", "RDL", "BB RDL"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: hamstrings
     secondary_muscles: [glutes, lower_back, forearms]
+    popularity: 20
   - id: ex:barbell_row
     names: {en: ["Barbell row", "Bent over row", "BB row"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: upper_back
     secondary_muscles: [biceps, lower_back, traps, forearms]
+    popularity: 12
   - id: ex:barbell_stiff_leg_deadlift
     names: {en: ["Barbell stiff-leg deadlift", "Stiff leg pull"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: hamstrings
     secondary_muscles: [glutes, lower_back]
+    popularity: 93
   - id: ex:bench_dip
     names: {en: ["Bench dip", "Bench triceps dip"]}
     type: bodyweight_reps
     equipment: bodyweight
     primary_muscle: triceps
     secondary_muscles: [chest, shoulders]
+    popularity: 62
   - id: ex:bicycle_crunch
     names: {en: ["Bicycle crunch", "Bicycle abs"]}
     type: reps_only
     equipment: bodyweight
     primary_muscle: abs
     secondary_muscles: [obliques]
+    popularity: 82
   - id: ex:cable_chest_fly
     names: {en: ["Cable chest fly", "Cable crossover"]}
     type: weight_reps
     equipment: cable
     primary_muscle: chest
     secondary_muscles: [shoulders]
+    popularity: 28
   - id: ex:cable_crunch
     names: {en: ["Cable crunch", "Kneeling cable crunch"]}
     type: weight_reps
     equipment: cable
     primary_muscle: abs
     secondary_muscles: [obliques]
+    popularity: 49
   - id: ex:cable_curl
     names: {en: ["Cable curl", "Standing cable biceps curl"]}
     type: weight_reps
     equipment: cable
     primary_muscle: biceps
     secondary_muscles: [forearms]
+    popularity: 71
   - id: ex:cable_face_pull
     names: {en: ["Cable face pull", "Face pull"]}
     type: weight_reps
     equipment: cable
     primary_muscle: shoulders
     secondary_muscles: [upper_back, traps]
+    popularity: 34
   - id: ex:cable_front_raise
     names: {en: ["Cable front raise", "Front cable raise"]}
     type: weight_reps
     equipment: cable
     primary_muscle: shoulders
     secondary_muscles: [chest]
+    popularity: 97
   - id: ex:cable_glute_kickback
     names: {en: ["Cable glute kickback", "Cable kickback"]}
     type: weight_reps
     equipment: cable
     primary_muscle: glutes
     secondary_muscles: [hamstrings]
+    popularity: 87
   - id: ex:cable_lateral_raise
     names: {en: ["Cable lateral raise", "Cable side raise"]}
     type: weight_reps
     equipment: cable
     primary_muscle: shoulders
     secondary_muscles: [traps]
+    popularity: 59
   - id: ex:chest_dip
     names: {en: ["Chest dip", "Dips", "Parallel bar dip"]}
     type: bodyweight_reps
     equipment: bodyweight
     primary_muscle: chest
     secondary_muscles: [triceps, shoulders]
+    popularity: 31
   - id: ex:chest_supported_dumbbell_row
     names: {en: ["Chest-supported dumbbell row", "Incline bench DB row"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: upper_back
     secondary_muscles: [biceps, traps]
+    popularity: 77
   - id: ex:chin_up
     names: {en: ["Chin-up", "Chinups", "Underhand pull-up"]}
     type: bodyweight_reps
     equipment: bodyweight
     primary_muscle: upper_back
     secondary_muscles: [biceps, forearms]
+    popularity: 43
   - id: ex:close_grip_bench_press
     names: {en: ["Close-grip bench press", "Close grip BB bench"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: triceps
     secondary_muscles: [chest, shoulders]
+    popularity: 60
   - id: ex:close_grip_lat_pulldown
     names: {en: ["Close-grip lat pulldown", "Neutral grip pulldown"]}
     type: weight_reps
     equipment: cable
     primary_muscle: upper_back
     secondary_muscles: [biceps, forearms]
+    popularity: 53
   - id: ex:concentration_curl
     names: {en: ["Concentration curl", "Seated single arm curl"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: biceps
     secondary_muscles: [forearms]
+    popularity: 70
   - id: ex:crunch
     names: {en: ["Crunch", "Ab crunch"]}
     type: reps_only
     equipment: bodyweight
     primary_muscle: abs
     secondary_muscles: []
+    popularity: 40
   - id: ex:dead_bug
     names: {en: ["Dead bug", "Alternating dead bug"]}
     type: reps_only
     equipment: bodyweight
     primary_muscle: abs
     secondary_muscles: [obliques]
+    popularity: 96
   - id: ex:decline_barbell_bench_press
     names: {en: ["Decline barbell bench press", "Decline bench"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: chest
     secondary_muscles: [triceps, shoulders]
+    popularity: 85
   - id: ex:diamond_push_up
     names: {en: ["Diamond push-up", "Close grip push-up"]}
     type: reps_only
     equipment: bodyweight
     primary_muscle: triceps
     secondary_muscles: [chest, shoulders]
+    popularity: 89
   - id: ex:dumbbell_bench_press
     names: {en: ["Dumbbell bench press", "DB bench", "Flat dumbbell press"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: chest
     secondary_muscles: [triceps, shoulders]
+    popularity: 14
   - id: ex:dumbbell_bulgarian_split_squat
     names: {en: ["Dumbbell Bulgarian split squat", "DB rear foot elevated split squat"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: quadriceps
     secondary_muscles: [glutes, adductors, hamstrings]
+    popularity: 38
   - id: ex:dumbbell_chest_fly
     names: {en: ["Dumbbell chest fly", "DB fly"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: chest
     secondary_muscles: [shoulders]
+    popularity: 47
   - id: ex:dumbbell_curl
     names: {en: ["Dumbbell curl", "DB curl"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: biceps
     secondary_muscles: [forearms]
+    popularity: 6
   - id: ex:dumbbell_front_raise
     names: {en: ["Dumbbell front raise", "DB front raise"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: shoulders
     secondary_muscles: [chest]
+    popularity: 72
   - id: ex:dumbbell_goblet_squat
     names: {en: ["Dumbbell goblet squat", "DB goblet squat"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: quadriceps
     secondary_muscles: [glutes, adductors]
+    popularity: 36
   - id: ex:dumbbell_lateral_raise
     names: {en: ["Dumbbell lateral raise", "DB side raise"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: shoulders
     secondary_muscles: [traps]
+    popularity: 10
   - id: ex:dumbbell_reverse_fly
     names: {en: ["Dumbbell reverse fly", "Bent over DB rear delt fly"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: shoulders
     secondary_muscles: [upper_back, traps]
+    popularity: 61
   - id: ex:dumbbell_reverse_lunge
     names: {en: ["Dumbbell reverse lunge", "DB reverse lunge"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: quadriceps
     secondary_muscles: [glutes, hamstrings, adductors]
+    popularity: 81
   - id: ex:dumbbell_romanian_deadlift
     names: {en: ["Dumbbell Romanian deadlift", "DB RDL"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: hamstrings
     secondary_muscles: [glutes, lower_back, forearms]
+    popularity: 55
   - id: ex:dumbbell_russian_twist
     names: {en: ["Dumbbell Russian twist", "Weighted Russian twist"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: obliques
     secondary_muscles: [abs]
+    popularity: 90
   - id: ex:dumbbell_step_up
     names: {en: ["Dumbbell step-up", "DB step-up"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: quadriceps
     secondary_muscles: [glutes, hamstrings, calves]
+    popularity: 80
   - id: ex:dumbbell_walking_lunge
     names: {en: ["Dumbbell walking lunge", "DB walking lunge"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: quadriceps
     secondary_muscles: [glutes, hamstrings, adductors]
+    popularity: 37
   - id: ex:elliptical
     names: {en: ["Elliptical", "Cross trainer"]}
     type: distance_duration
     equipment: machine
     primary_muscle: quadriceps
     secondary_muscles: [glutes, hamstrings, calves]
+    popularity: 50
   - id: ex:ez_bar_curl
     names: {en: ["EZ-bar curl", "EZ curl"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: biceps
     secondary_muscles: [forearms]
+    popularity: 35
   - id: ex:ez_bar_skull_crusher
     names: {en: ["EZ-bar skull crusher", "Lying triceps extension"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: triceps
     secondary_muscles: []
+    popularity: 44
   - id: ex:hack_squat
     names: {en: ["Hack squat", "Hack squat machine"]}
     type: weight_reps
     equipment: machine
     primary_muscle: quadriceps
     secondary_muscles: [glutes, adductors]
+    popularity: 48
   - id: ex:hammer_curl
     names: {en: ["Hammer curl", "Neutral grip dumbbell curl"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: biceps
     secondary_muscles: [forearms]
+    popularity: 17
   - id: ex:hanging_leg_raise
     names: {en: ["Hanging leg raise", "Hanging straight-leg raise"]}
     type: reps_only
     equipment: bodyweight
     primary_muscle: abs
     secondary_muscles: [obliques, forearms]
+    popularity: 41
   - id: ex:incline_barbell_bench_press
     names: {en: ["Incline barbell bench press", "Incline BB bench"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: chest
     secondary_muscles: [shoulders, triceps]
+    popularity: 27
   - id: ex:incline_dumbbell_bench_press
     names: {en: ["Incline dumbbell bench press", "Incline DB bench"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: chest
     secondary_muscles: [shoulders, triceps]
+    popularity: 9
   - id: ex:incline_dumbbell_curl
     names: {en: ["Incline dumbbell curl", "Incline DB curl"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: biceps
     secondary_muscles: [forearms]
+    popularity: 69
   - id: ex:inverted_row
     names: {en: ["Inverted row", "Body row"]}
     type: bodyweight_reps
     equipment: bodyweight
     primary_muscle: upper_back
     secondary_muscles: [biceps, traps, forearms]
+    popularity: 94
   - id: ex:kettlebell_swing
     names: {en: ["Kettlebell swing", "KB swing"]}
     type: weight_reps
     equipment: kettlebell
     primary_muscle: glutes
     secondary_muscles: [hamstrings, lower_back, shoulders]
+    popularity: 78
   - id: ex:lat_pulldown
     names: {en: ["Lat pulldown", "Wide grip pulldown"]}
     type: weight_reps
     equipment: cable
     primary_muscle: upper_back
     secondary_muscles: [biceps, forearms]
+    popularity: 3
   - id: ex:leg_extension
     names: {en: ["Leg extension", "Quad extension machine"]}
     type: weight_reps
     equipment: machine
     primary_muscle: quadriceps
     secondary_muscles: []
+    popularity: 16
   - id: ex:leg_press
     names: {en: ["Leg press", "Leg press machine"]}
     type: weight_reps
     equipment: machine
     primary_muscle: quadriceps
     secondary_muscles: [glutes, adductors, hamstrings]
+    popularity: 8
   - id: ex:leg_press_calf_raise
     names: {en: ["Leg press calf raise", "Calf press"]}
     type: weight_reps
     equipment: machine
     primary_muscle: calves
     secondary_muscles: []
+    popularity: 88
   - id: ex:lying_leg_curl
     names: {en: ["Lying leg curl", "Prone hamstring curl"]}
     type: weight_reps
     equipment: machine
     primary_muscle: hamstrings
     secondary_muscles: [calves]
+    popularity: 22
   - id: ex:lying_leg_raise
     names: {en: ["Lying leg raise", "Floor leg raise"]}
     type: reps_only
     equipment: bodyweight
     primary_muscle: abs
     secondary_muscles: [obliques]
+    popularity: 73
   - id: ex:machine_chest_press
     names: {en: ["Machine chest press", "Chest press machine"]}
     type: weight_reps
     equipment: machine
     primary_muscle: chest
     secondary_muscles: [triceps, shoulders]
+    popularity: 30
   - id: ex:machine_hip_abduction
     names: {en: ["Machine hip abduction", "Hip abductor machine"]}
     type: weight_reps
     equipment: machine
     primary_muscle: glutes
     secondary_muscles: []
+    popularity: 66
   - id: ex:machine_hip_adduction
     names: {en: ["Machine hip adduction", "Hip adductor machine"]}
     type: weight_reps
     equipment: machine
     primary_muscle: adductors
     secondary_muscles: []
+    popularity: 65
   - id: ex:machine_row
     names: {en: ["Machine row", "Seated row machine"]}
     type: weight_reps
     equipment: machine
     primary_muscle: upper_back
     secondary_muscles: [biceps, traps]
+    popularity: 52
   - id: ex:machine_shoulder_press
     names: {en: ["Machine shoulder press", "Shoulder press machine"]}
     type: weight_reps
     equipment: machine
     primary_muscle: shoulders
     secondary_muscles: [triceps]
+    popularity: 46
   - id: ex:one_arm_dumbbell_row
     names: {en: ["One-arm dumbbell row", "DB row", "Single arm dumbbell row"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: upper_back
     secondary_muscles: [biceps, traps, forearms]
+    popularity: 24
   - id: ex:outdoor_cycling
     names: {en: ["Outdoor cycling", "Bicycle ride"]}
     type: distance_duration
     equipment: other
     primary_muscle: quadriceps
     secondary_muscles: [glutes, hamstrings, calves]
+    popularity: 100
   - id: ex:outdoor_run
     names: {en: ["Outdoor run", "Running outdoors"]}
     type: distance_duration
     equipment: other
     primary_muscle: quadriceps
     secondary_muscles: [hamstrings, glutes, calves]
+    popularity: 98
   - id: ex:outdoor_walk
     names: {en: ["Outdoor walk", "Walking outdoors"]}
     type: distance_duration
     equipment: other
     primary_muscle: quadriceps
     secondary_muscles: [glutes, hamstrings, calves]
+    popularity: 99
   - id: ex:overhead_cable_triceps_extension
     names: {en: ["Overhead cable triceps extension", "Overhead rope extension"]}
     type: weight_reps
     equipment: cable
     primary_muscle: triceps
     secondary_muscles: []
+    popularity: 39
   - id: ex:overhead_dumbbell_triceps_extension
     names: {en: ["Overhead dumbbell triceps extension", "DB overhead extension"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: triceps
     secondary_muscles: []
+    popularity: 56
   - id: ex:pec_deck
     names: {en: ["Pec deck", "Machine chest fly"]}
     type: weight_reps
     equipment: machine
     primary_muscle: chest
     secondary_muscles: [shoulders]
+    popularity: 29
   - id: ex:pendlay_row
     names: {en: ["Pendlay row", "Dead stop barbell row"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: upper_back
     secondary_muscles: [biceps, lower_back, traps]
+    popularity: 91
   - id: ex:plank
     names: {en: ["Plank", "Front plank"]}
     type: duration
     equipment: bodyweight
     primary_muscle: abs
     secondary_muscles: [obliques, shoulders, glutes]
+    popularity: 19
   - id: ex:preacher_curl
     names: {en: ["Preacher curl", "EZ-bar preacher curl"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: biceps
     secondary_muscles: [forearms]
+    popularity: 45
   - id: ex:pull_up
     names: {en: ["Pull-up", "Pullups", "Overhand pull-up"]}
     type: bodyweight_reps
     equipment: bodyweight
     primary_muscle: upper_back
     secondary_muscles: [biceps, forearms]
+    popularity: 13
   - id: ex:push_up
     names: {en: ["Push-up", "Press-up"]}
     type: reps_only
     equipment: bodyweight
     primary_muscle: chest
     secondary_muscles: [triceps, shoulders]
+    popularity: 18
   - id: ex:rack_pull
     names: {en: ["Rack pull", "Block pull"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: traps
     secondary_muscles: [lower_back, glutes, hamstrings, forearms]
+    popularity: 92
   - id: ex:reverse_pec_deck
     names: {en: ["Reverse pec deck", "Rear delt machine fly"]}
     type: weight_reps
     equipment: machine
     primary_muscle: shoulders
     secondary_muscles: [upper_back, traps]
+    popularity: 57
   - id: ex:rope_triceps_pushdown
     names: {en: ["Rope triceps pushdown", "Rope pressdown"]}
     type: weight_reps
     equipment: cable
     primary_muscle: triceps
     secondary_muscles: []
+    popularity: 7
   - id: ex:rowing_machine
     names: {en: ["Rowing machine", "Row ergometer"]}
     type: distance_duration
     equipment: machine
     primary_muscle: quadriceps
     secondary_muscles: [upper_back, hamstrings, glutes]
+    popularity: 74
   - id: ex:seated_barbell_shoulder_press
     names: {en: ["Seated barbell shoulder press", "Seated BB press"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: shoulders
     secondary_muscles: [triceps]
+    popularity: 76
   - id: ex:seated_cable_row
     names: {en: ["Seated cable row", "Cable row"]}
     type: weight_reps
     equipment: cable
     primary_muscle: upper_back
     secondary_muscles: [biceps, traps, lower_back]
+    popularity: 11
   - id: ex:seated_calf_raise
     names: {en: ["Seated calf raise", "Seated calf machine"]}
     type: weight_reps
     equipment: machine
     primary_muscle: calves
     secondary_muscles: []
+    popularity: 51
   - id: ex:seated_dumbbell_shoulder_press
     names: {en: ["Seated dumbbell shoulder press", "DB shoulder press"]}
     type: weight_reps
     equipment: dumbbell
     primary_muscle: shoulders
     secondary_muscles: [triceps]
+    popularity: 5
   - id: ex:seated_leg_curl
     names: {en: ["Seated leg curl", "Seated hamstring curl"]}
     type: weight_reps
     equipment: machine
     primary_muscle: hamstrings
     secondary_muscles: [calves]
+    popularity: 25
   - id: ex:side_plank
     names: {en: ["Side plank", "Lateral plank"]}
     type: duration
     equipment: bodyweight
     primary_muscle: obliques
     secondary_muscles: [abs, glutes]
+    popularity: 83
   - id: ex:smith_machine_squat
     names: {en: ["Smith machine squat", "Smith squat"]}
     type: weight_reps
     equipment: machine
     primary_muscle: quadriceps
     secondary_muscles: [glutes, adductors]
+    popularity: 63
   - id: ex:stair_climber
     names: {en: ["Stair climber", "Stair machine"]}
     type: distance_duration
     equipment: machine
     primary_muscle: glutes
     secondary_muscles: [quadriceps, hamstrings, calves]
+    popularity: 75
   - id: ex:standing_barbell_overhead_press
     names: {en: ["Standing barbell overhead press", "OHP", "Military press"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: shoulders
     secondary_muscles: [triceps, traps]
+    popularity: 21
   - id: ex:standing_calf_raise
     names: {en: ["Standing calf raise", "Standing calf machine"]}
     type: weight_reps
     equipment: machine
     primary_muscle: calves
     secondary_muscles: []
+    popularity: 33
   - id: ex:stationary_bike
     names: {en: ["Stationary bike", "Exercise bike"]}
     type: distance_duration
     equipment: machine
     primary_muscle: quadriceps
     secondary_muscles: [glutes, hamstrings, calves]
+    popularity: 42
   - id: ex:straight_arm_pulldown
     names: {en: ["Straight-arm pulldown", "Cable pullover"]}
     type: weight_reps
     equipment: cable
     primary_muscle: upper_back
     secondary_muscles: [triceps]
+    popularity: 68
   - id: ex:sumo_deadlift
     names: {en: ["Sumo deadlift", "Sumo pull"]}
     type: weight_reps
     equipment: barbell
     primary_muscle: glutes
     secondary_muscles: [adductors, hamstrings, quadriceps, lower_back]
+    popularity: 86
   - id: ex:treadmill_run
     names: {en: ["Treadmill run", "Treadmill running"]}
     type: distance_duration
     equipment: machine
     primary_muscle: quadriceps
     secondary_muscles: [hamstrings, glutes, calves]
+    popularity: 23
   - id: ex:treadmill_walk
     names: {en: ["Treadmill walk", "Treadmill walking"]}
     type: distance_duration
     equipment: machine
     primary_muscle: quadriceps
     secondary_muscles: [glutes, hamstrings, calves]
+    popularity: 15

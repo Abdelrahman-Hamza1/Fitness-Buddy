@@ -52,7 +52,7 @@ final class BuiltInExercisesProvider
   }
 }
 
-String _$builtInExercisesHash() => r'd40fad3b74c6efed8b0438986e7d0303d4556dec';
+String _$builtInExercisesHash() => r'c99e707e961e7ced9bc4ceb72b5bde262857fcdb';
 
 /// The live custom exercises.
 

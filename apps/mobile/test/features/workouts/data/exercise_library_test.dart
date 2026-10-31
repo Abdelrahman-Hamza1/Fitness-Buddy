@@ -10,11 +10,13 @@ import '../support/workout_harness.dart';
 const _exercises = '''
 INSERT INTO exercises VALUES
   ('ex:barbell_bench_press', 'Barbell bench press', 'weight_reps', 'barbell',
-   'chest', 'triceps,shoulders', 1),
+   'chest', 'triceps,shoulders', 1, 1),
   ('ex:dumbbell_bench_press', 'Dumbbell bench press', 'weight_reps',
-   'dumbbell', 'chest', '', 1),
-  ('ex:plank', 'Plank', 'duration', 'bodyweight', 'abs', 'obliques,neck', 1),
-  ('ex:future_thing', 'Future thing', 'rpe_only', 'barbell', 'chest', '', 1);
+   'dumbbell', 'chest', '', 14, 1),
+  ('ex:plank', 'Plank', 'duration', 'bodyweight', 'abs', 'obliques,neck', 19,
+   1),
+  ('ex:future_thing', 'Future thing', 'rpe_only', 'barbell', 'chest', '', 50,
+   1);
 INSERT INTO names (target_id, lang, name, key, is_display) VALUES
   ('ex:barbell_bench_press', 'en', 'Barbell bench press',
    'barbell bench press', 1),

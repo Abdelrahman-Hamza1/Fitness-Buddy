@@ -185,15 +185,21 @@ enum StarterPlan {
   }
 
   /// The one change set that applies this plan (A37 D18, PA4): a
-  /// `CreateWorkoutTemplate` per template (named by [nameOf], new IDs from
-  /// [ids]), then a `SetPlanDay` for all seven weekdays: the picked [days]
-  /// train their template, every other day rests. Applied together, it
-  /// either all lands or none of it does, and its inverse is one undo.
+  /// `CreateWorkoutTemplate` per template (named by [nameOf], with the
+  /// lines the user chose, [itemsOf], new IDs from [ids]), then a
+  /// `SetPlanDay` for all seven weekdays: the picked [days] train their
+  /// template, every other day rests. Applied together, it either all lands
+  /// or none of it does, and its inverse is one undo.
+  ///
+  /// The plan never assumes exercises (D-089, A52 D5): a template's own
+  /// [StarterTemplate.items] are only suggestions, used when [itemsOf]
+  /// returns them.
   List<WorkoutOp> ops({
     required Iterable<DayOfWeek> days,
     required DayOfWeek weekStart,
     required IdGenerator ids,
     required String Function(StarterTemplate template) nameOf,
+    required List<TemplateTarget> Function(StarterTemplate template) itemsOf,
   }) {
     final assigned = assign(days, weekStart: weekStart);
     final templateIds = <StarterTemplate, String>{};
@@ -204,7 +210,7 @@ enum StarterPlan {
           WorkoutTemplateDraft(
             name: nameOf(template),
             items: [
-              for (final item in template.items)
+              for (final item in itemsOf(template))
                 TemplateItemDraft(
                   id: ids.next(),
                   exerciseId: item.exerciseId,

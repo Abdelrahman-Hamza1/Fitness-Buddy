@@ -11,6 +11,7 @@ final class ExercisePickerState {
   new({
     this.query = '',
     this.filter = ExerciseFilter.all,
+    this.equipment,
     Iterable<String> selected = const [],
   }) : selected = List.unmodifiable(selected);
 
@@ -19,6 +20,13 @@ final class ExercisePickerState {
 
   /// The chip.
   final ExerciseFilter filter;
+
+  /// The equipment filter, or `null` for any (A52).
+  final Equipment? equipment;
+
+  /// Whether the picker shows its "Your recent" and "Most popular"
+  /// sections: nothing typed (A52, D-089).
+  bool get browsing => query.trim().isEmpty;
 
   /// The picked exercise IDs, in the order picked.
   final List<String> selected;
@@ -33,10 +41,12 @@ final class ExercisePickerState {
   ExercisePickerState copyWith({
     String? query,
     ExerciseFilter? filter,
+    Equipment? Function()? equipment,
     Iterable<String>? selected,
   }) => ExercisePickerState(
     query: query ?? this.query,
     filter: filter ?? this.filter,
+    equipment: equipment == null ? this.equipment : equipment(),
     selected: selected ?? this.selected,
   );
 }
@@ -55,6 +65,10 @@ class ExercisePicker extends _$ExercisePicker {
   /// A chip was tapped.
   void filterBy(ExerciseFilter filter) =>
       state = state.copyWith(filter: filter);
+
+  /// The equipment filter changed (`null`: any).
+  void equipmentIs(Equipment? equipment) =>
+      state = state.copyWith(equipment: () => equipment);
 
   /// Picks [id], or unpicks it if picked.
   void toggle(String id) => state = state.copyWith(

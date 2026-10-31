@@ -1,4 +1,4 @@
 # Catalog release state (A05 D3). Written by `make catalog`, never by hand:
 # the version goes up when the content hash of the load files changes.
-catalog_version: 25
-content_sha256: 34ed1196dce827e103547c694220d197644333d1a8901c07d39dcdc9879e5ff7
+catalog_version: 26
+content_sha256: 66fab4a6612c5035ccbcc2eb3ca4caad5d3187e9d4d0b4ee8d8b78a70fc378e4

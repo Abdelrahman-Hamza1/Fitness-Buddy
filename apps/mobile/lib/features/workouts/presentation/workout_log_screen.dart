@@ -13,6 +13,7 @@ import 'package:fb_mobile/features/workouts/application/workout_log_controller.d
 import 'package:fb_mobile/features/workouts/application/workout_log_state.dart';
 import 'package:fb_mobile/features/workouts/application/workout_views.dart';
 import 'package:fb_mobile/features/workouts/presentation/exercise_log_card.dart';
+import 'package:fb_mobile/features/workouts/presentation/exercise_muscle_map.dart';
 import 'package:fb_mobile/features/workouts/presentation/exercise_picker_screen.dart';
 import 'package:fb_mobile/features/workouts/presentation/template_editor_screen.dart';
 import 'package:fb_mobile/features/workouts/presentation/workout_text.dart';
@@ -74,6 +75,10 @@ class _LogState extends ConsumerState<WorkoutLogScreen> {
   final TextEditingController _name = TextEditingController();
   bool _named = false;
   bool _leaving = false;
+
+  /// Cards the user showed (true) or hid (false); the others follow
+  /// [_collapsedByDefault]. Ephemeral view state (D-089).
+  final Map<String, bool> _shown = {};
 
   /// Whether the visit ended (the screen is closing).
   bool _ended = false;
@@ -338,6 +343,9 @@ class _LogState extends ConsumerState<WorkoutLogScreen> {
       _name.text = form.name;
     }
     final editing = _launch is EditLog;
+    final collapsed = form == null
+        ? const <String>{}
+        : _collapsedByDefault(form.exercises);
     // The visit always has an exit path to run (its Undo, the zero-set
     // delete, pending writes): back and tab re-taps go through it (A45 D12).
     return UnsavedEditsGuard(
@@ -368,6 +376,8 @@ class _LogState extends ConsumerState<WorkoutLogScreen> {
           _ => ListView(
             padding: const EdgeInsetsDirectional.all(FbSpace.s4),
             children: [
+              _SessionSummary(form: form, library: library),
+              const SizedBox(height: FbSpace.s2),
               if (form.saveState == LogSaveState.conflict) ...[
                 FbInlineBanner(
                   key: const ValueKey('workout-conflict'),
@@ -438,6 +448,11 @@ class _LogState extends ConsumerState<WorkoutLogScreen> {
                   library: library,
                   controller: _controller,
                   prs: prs,
+                  collapsed: !(_shown[card.id] ?? !collapsed.contains(card.id)),
+                  onCollapse: () => setState(
+                    () => _shown[card.id] =
+                        !(_shown[card.id] ?? !collapsed.contains(card.id)),
+                  ),
                 ),
               FbButton.secondary(
                 key: const ValueKey('workout-log-add-exercises'),
@@ -462,6 +477,19 @@ class _LogState extends ConsumerState<WorkoutLogScreen> {
         ),
       ),
     );
+  }
+
+  /// The cards hidden until shown (D-089): untouched ones (nothing typed
+  /// or checked) except the first untouched, so a planned workout opens on
+  /// the next exercise to log.
+  static Set<String> _collapsedByDefault(List<LogExerciseCard> cards) {
+    bool touched(LogExerciseCard c) =>
+        c.sets.any((s) => s.checked || !s.input.isEmpty);
+    final untouched = [
+      for (final c in cards)
+        if (!touched(c)) c.id,
+    ];
+    return untouched.skip(1).toSet();
   }
 
   Future<void> _reload() async {
@@ -506,3 +534,58 @@ class _TemplateOfferSheet extends StatelessWidget {
     );
   }
 }
+
+/// The top of the log form (D-089): the session's muscles on one map with
+/// their names ("Chest · Shoulders · Triceps") and the progress ("1 of 5
+/// exercises logged · 3 sets").
+class _SessionSummary extends StatelessWidget {
+  const new({required this.form, required this.library});
+
+  final LogFormState form;
+  final ExerciseLibrary library;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final muscles = library.musclesOf([
+      for (final c in form.exercises) c.exerciseId,
+    ]);
+    final logged = form.exercises
+        .where((c) => c.sets.any((s) => s.checked))
+        .length;
+    final sets = form.exercises.fold(
+      0,
+      (n, c) => n + c.sets.where((s) => s.checked).length,
+    );
+    return Row(
+      key: const ValueKey('workout-log-summary'),
+      spacing: FbSpace.s3,
+      children: [
+        ExerciseMuscleMap.union(muscles, height: _summaryMapHeight),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: FbSpace.s1,
+            children: [
+              if (muscles.primary.isNotEmpty)
+                Text(
+                  muscles.primary.map(l10n.muscle).join(' · '),
+                  style: FbType.title,
+                ),
+              Text(
+                l10n.workoutLogProgress(logged, form.exercises.length, sets),
+                style: FbType.bodySmall.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// The summary's map: bigger than a card's.
+const double _summaryMapHeight = 64;

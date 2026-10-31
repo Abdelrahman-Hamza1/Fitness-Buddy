@@ -117,6 +117,7 @@ const packColumns = <String, List<String>>{
     'equipment',
     'primary_muscle',
     'secondary_muscles',
+    'popularity',
     'catalog_version', //
   ],
   'cities': [
@@ -251,6 +252,7 @@ CREATE TABLE exercises (
   equipment TEXT NOT NULL,
   primary_muscle TEXT NOT NULL,
   secondary_muscles TEXT NOT NULL,
+  popularity INTEGER NOT NULL,
   catalog_version INTEGER NOT NULL
 ) WITHOUT ROWID;
 CREATE TABLE cities (

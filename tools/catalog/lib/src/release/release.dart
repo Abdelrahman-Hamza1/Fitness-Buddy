@@ -360,6 +360,7 @@ Release composeRelease({
             'equipment': e.equipment,
             'primary_muscle': e.primaryMuscle,
             'secondary_muscles': e.secondaryMuscles,
+            'popularity': e.popularity,
             'catalog_version': versionOf(e.id),
           },
       ],

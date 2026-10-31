@@ -104,15 +104,20 @@ class FbMuscleMap extends StatelessWidget {
     );
     final box = fbBodyViewBox;
     final width = height * box.width / box.height;
-    Widget view(FbBodyView side) => SizedBox(
-      width: width,
-      height: height,
-      child: CustomPaint(
-        painter: FbMuscleMapPainter(
-          view: side,
-          primary: primary,
-          secondary: secondary,
-          colours: colours,
+    // Each view is its own layer, cached by the raster cache: lists of maps
+    // (a log form while typing, a scrolling picker) never repaint them.
+    Widget view(FbBodyView side) => RepaintBoundary(
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: CustomPaint(
+          isComplex: true,
+          painter: FbMuscleMapPainter(
+            view: side,
+            primary: primary,
+            secondary: secondary,
+            colours: colours,
+          ),
         ),
       ),
     );

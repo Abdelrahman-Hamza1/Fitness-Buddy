@@ -17,6 +17,7 @@ exercises:
     equipment: barbell
     primary_muscle: chest
     secondary_muscles: [triceps, shoulders]
+    popularity: 1
 ''';
 
 const _plank = '''
@@ -26,6 +27,7 @@ const _plank = '''
     equipment: bodyweight
     primary_muscle: abs
     secondary_muscles: []
+    popularity: 19
 ''';
 
 String geoname(
@@ -154,17 +156,24 @@ void main() {
       'shoulders',
     ]);
     expect(rows['ex:plank']!['secondary_muscles'], isEmpty);
+    expect(rows['ex:plank']!['popularity'], 19);
     expect(validateLoadFiles(result.release!, contractDir), isEmpty);
     final pack = sqlite3.open(result.packPath!, mode: OpenMode.readOnly);
     addTearDown(pack.close);
     expect(
       {
         for (final r in pack.select(
-          'SELECT id, primary_muscle, secondary_muscles FROM exercises',
+          'SELECT id, primary_muscle, secondary_muscles, popularity '
+          'FROM exercises',
         ))
-          r['id']: '${r['primary_muscle']}|${r['secondary_muscles']}',
+          r['id']:
+              '${r['primary_muscle']}|${r['secondary_muscles']}|'
+              '${r['popularity']}',
       },
-      {'ex:barbell_bench_press': 'chest|triceps,shoulders', 'ex:plank': 'abs|'},
+      {
+        'ex:barbell_bench_press': 'chest|triceps,shoulders|1',
+        'ex:plank': 'abs||19',
+      },
     );
   });
 
@@ -209,6 +218,29 @@ void main() {
         reason: legacy,
       );
     }
+  });
+
+  test('WO-001 loader requires a unique popularity rank in 1..100', () {
+    expect(exerciseIssues('$exercise$_plank'), isEmpty);
+    for (final bad in ['0', '101', '1.5', '"1"']) {
+      expect(
+        exerciseIssues(
+          exercise.replaceFirst('popularity: 1', 'popularity: $bad'),
+        ),
+        isNotEmpty,
+        reason: bad,
+      );
+    }
+    expect(
+      exerciseIssues(exercise.replaceFirst('    popularity: 1\n', '')),
+      isNotEmpty,
+    );
+    expect(
+      exerciseIssues(
+        '$exercise${_plank.replaceFirst('popularity: 19', 'popularity: 1')}',
+      ),
+      isNotEmpty,
+    );
   });
 
   test('WO-001 normalized exercise aliases cannot collide with foods', () {

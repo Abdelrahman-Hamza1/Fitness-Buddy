@@ -8,6 +8,7 @@ import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/workouts/application/exercise_library.dart';
+import 'package:fb_mobile/features/workouts/presentation/exercise_muscle_map.dart';
 import 'package:fb_mobile/features/workouts/presentation/set_row.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,6 +67,15 @@ final class _Rig {
           type: ExerciseType.weightReps,
           equipment: Equipment.cable,
           primary: Muscle.chest,
+          secondaries: const [Muscle.triceps],
+        ),
+        LibraryExercise(
+          id: wid(2),
+          name: 'Lateral raise',
+          aliases: const [],
+          type: ExerciseType.weightReps,
+          equipment: Equipment.dumbbell,
+          primary: Muscle.shoulders,
         ),
       ]),
     ),
@@ -113,6 +123,130 @@ void main() {
     await rig.pump(tester, const WorkoutsScreen());
     expect(find.byKey(const ValueKey('workouts-pick')), findsOneWidget);
     expect(find.byKey(const ValueKey('workouts-log')), findsNothing);
+    await rig.unmount(tester);
+  });
+
+  testWidgets('D-089 Workouts tab: plan card on a planned day, recent rows '
+      'with maps and Repeat, Your plan row', (tester) async {
+    final rig = _Rig();
+    await rig.seed(tester, [
+      CreateCustomExercise(wid(1), benchDraft()),
+      LogWorkoutSession(wid(10), sessionDraft(date: today.plusDays(-2))),
+      CreateWorkoutTemplate(
+        wid(70),
+        WorkoutTemplateDraft(
+          name: 'Push',
+          items: [
+            TemplateItemDraft(
+              id: wid(71),
+              exerciseId: wid(1),
+              sets: 3,
+              reps: 8,
+            ),
+          ],
+        ),
+      ),
+      SetPlanDay(today.weekday, wid(70)),
+    ]);
+    await rig.pump(tester, const WorkoutsScreen());
+    expect(find.byKey(const ValueKey('workouts-plan-card')), findsOneWidget);
+    expect(find.text('Log Push'), findsOneWidget);
+    // "Something else" picks other exercises instead.
+    expect(find.byKey(const ValueKey('workouts-log')), findsOneWidget);
+    expect(find.text('This week'), findsOneWidget);
+    final recent = find.byKey(ValueKey('workouts-recent-${wid(10)}'));
+    expect(
+      find.descendant(of: recent, matching: find.byType(ExerciseMuscleMap)),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(ValueKey('workouts-repeat-${wid(10)}')));
+    expect((rig.navigator.pushed.last as WorkoutLogRoute).repeat, wid(10));
+    // "Your plan · Push · Thu".
+    expect(find.textContaining('Push · Thu'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('workouts-plan')));
+    expect(rig.navigator.pushed.last, isA<WorkoutPlanRoute>());
+    await tester.tap(find.byKey(const ValueKey('workouts-plan-log')));
+    expect((rig.navigator.pushed.last as WorkoutLogRoute).template, wid(70));
+    await rig.unmount(tester);
+  });
+
+  testWidgets('D-089 Workouts tab without a plan: Log a workout card; No plan '
+      'row opens the chooser', (tester) async {
+    final rig = _Rig();
+    await rig.seed(tester, [
+      CreateCustomExercise(wid(1), benchDraft()),
+      LogWorkoutSession(wid(10), sessionDraft(date: today.plusDays(-1))),
+    ]);
+    await rig.pump(tester, const WorkoutsScreen());
+    expect(find.byKey(const ValueKey('workouts-log-card')), findsOneWidget);
+    expect(find.byKey(const ValueKey('workouts-plan-card')), findsNothing);
+    expect(find.text('No plan'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('workouts-plan')));
+    expect(rig.navigator.pushed.last, isA<WorkoutStarterPlansRoute>());
+    await tester.tap(find.byKey(const ValueKey('workouts-exercises')));
+    expect(rig.navigator.pushed.last, isA<WorkoutExercisesRoute>());
+    await rig.unmount(tester);
+  });
+
+  testWidgets('D-089 log form: session muscles and progress on top, a map '
+      'per card, untouched cards after the first hidden', (tester) async {
+    final rig = _Rig();
+    await rig.seed(tester, [
+      CreateCustomExercise(wid(1), benchDraft()),
+      CreateCustomExercise(
+        wid(2),
+        CustomExerciseDraft(
+          name: 'Lateral raise',
+          type: ExerciseType.weightReps,
+          equipment: Equipment.dumbbell,
+        ),
+      ),
+    ]);
+    await rig.pump(
+      tester,
+      WorkoutLogScreen.newSession(exercises: [wid(1), wid(2)]),
+    );
+    expect(find.text('Chest · Shoulders'), findsOneWidget);
+    expect(find.text('0 of 2 exercises logged · 0 sets'), findsOneWidget);
+    // The summary's map and one per card.
+    expect(find.byType(ExerciseMuscleMap), findsNWidgets(3));
+    // The second card waits hidden: only the first card's set row shows.
+    expect(find.byType(SetRow), findsOneWidget);
+    expect(find.textContaining('1 set planned'), findsOneWidget);
+    final second = find.byWidgetPredicate(
+      (w) =>
+          w.key is ValueKey<String> &&
+          (w.key! as ValueKey<String>).value.startsWith(
+            'workout-card-collapse-',
+          ),
+    );
+    await tester.tap(second.last);
+    await tester.pump();
+    expect(find.byType(SetRow), findsNWidgets(2));
+
+    // Checking a set counts the exercise as logged.
+    final row = tester.widgetList<SetRow>(find.byType(SetRow)).first;
+    await tester.enterText(
+      find
+          .descendant(
+            of: find.byType(SetRow).first,
+            matching: find.byType(EditableText),
+          )
+          .first,
+      '60',
+    );
+    await tester.enterText(
+      find
+          .descendant(
+            of: find.byType(SetRow).first,
+            matching: find.byType(EditableText),
+          )
+          .last,
+      '8',
+    );
+    await tester.tap(find.byKey(ValueKey('workout-set-done-${row.row.id}')));
+    await rig.settle(tester);
+    expect(find.text('1 of 2 exercises logged · 1 set'), findsOneWidget);
     await rig.unmount(tester);
   });
 

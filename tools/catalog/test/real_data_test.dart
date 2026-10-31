@@ -184,6 +184,11 @@ void main() {
     }
   });
 
+  test('WO-001 the built-in popularity ranks are exactly 1..N', () {
+    final ranks = [for (final e in real.data.exercises) e.popularity]..sort();
+    expect(ranks, [for (var i = 1; i <= ranks.length; i++) i]);
+  });
+
   test('WO-007 every built-in exercise has a vocabulary primary muscle', () {
     for (final e in real.data.exercises) {
       final primary = Muscle.fromCode(e.primaryMuscle);

@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/workouts/application/exercise_library.dart';
 import 'package:fb_mobile/features/workouts/application/exercise_picker.dart';
+import 'package:fb_mobile/features/workouts/application/workout_views.dart';
 import 'package:fb_mobile/features/workouts/presentation/custom_exercise_screen.dart';
 import 'package:fb_mobile/features/workouts/presentation/exercise_muscle_map.dart';
 import 'package:fb_mobile/features/workouts/presentation/exercise_screen.dart';
@@ -26,9 +29,11 @@ Future<List<String>> pickExercises(
     ) ??
     const [];
 
-/// The exercise picker (WO-001, A37 D12): search by name or alias, a chip
-/// per muscle group (and Cardio), multi-select in order, and "Create …" for
-/// a custom exercise (WO-003). Pops with the picked IDs.
+/// The exercise picker (WO-001, A37 D12, D-089): with nothing typed, "Your
+/// recent" (with the last result) then "Most popular"; search by name or
+/// alias (ties by popularity), a chip per muscle group (and Cardio), an
+/// equipment filter, multi-select in order, and "Create …" for a custom
+/// exercise (WO-003). Pops with the picked IDs.
 ///
 /// In browse mode ("All exercises", A37 D13) the same list opens an
 /// exercise's page instead of selecting it.
@@ -80,6 +85,50 @@ class _PickerState extends ConsumerState<ExercisePickerScreen> {
     await openCustomExercise(context, id: id);
   }
 
+  Future<void> _chooseEquipment(
+    ExerciseLibrary library,
+    Equipment? current,
+  ) async {
+    final l10n = context.l10n;
+    // The empty string stands for "Any equipment".
+    final choice = await showFbSheet<String>(
+      context,
+      title: l10n.workoutPickEquipmentTitle,
+      builder: (sheet) => FbOptionList<String>(
+        options: [
+          FbOption(value: '', label: l10n.workoutPickEquipmentAny),
+          for (final e in Equipment.values)
+            if (library.equipment.contains(e))
+              FbOption(value: e.name, label: l10n.equipment(e)),
+        ],
+        selected: current?.name ?? '',
+        onSelected: (value) => Navigator.of(sheet).pop(value),
+      ),
+    );
+    if (choice == null || !mounted) return;
+    ref
+        .read(exercisePickerProvider(_scope).notifier)
+        .equipmentIs(Equipment.values.asNameMap()[choice]);
+  }
+
+  Widget _row(
+    LibraryExercise exercise,
+    ExerciseBrowseTab? browseTab,
+    ExercisePickerState picker,
+    ExercisePicker notifier, {
+    SetValues? last,
+  }) => _ExerciseRow(
+    key: ValueKey('workout-pick-${exercise.id}'),
+    exercise: exercise,
+    browse: browseTab != null,
+    position: picker.positionOf(exercise.id),
+    last: last,
+    onTap: browseTab == null
+        ? () => notifier.toggle(exercise.id)
+        : () => _open(browseTab, exercise.id),
+    onEdit: exercise.isCustom ? () => _edit(exercise.id) : null,
+  );
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -89,9 +138,47 @@ class _PickerState extends ConsumerState<ExercisePickerScreen> {
     final notifier = ref.read(exercisePickerProvider(_scope).notifier);
     final browseTab = widget.browseTab;
     final setsAndRepsOnly = widget.setsAndRepsOnly;
+    bool offered(LibraryExercise e) => !setsAndRepsOnly || e.type.hasReps;
     final results = [
-      for (final e in library.search(picker.query, filter: picker.filter))
-        if (!setsAndRepsOnly || e.type.hasReps) e,
+      for (final e in library.search(
+        picker.query,
+        filter: picker.filter,
+        equipment: picker.equipment,
+      ))
+        if (offered(e)) e,
+    ];
+    // Nothing typed: "Your recent" first, then the rest, most popular first
+    // (D-089). The recent ones pass the same chip and equipment filters.
+    final recent = !picker.browsing
+        ? const <(LibraryExercise, RecentExercise)>[]
+        : [
+            for (final r
+                in ref.watch(recentExercisesProvider).value ??
+                    const <RecentExercise>[])
+              if (results.where((e) => e.id == r.exerciseId).firstOrNull
+                  case final e?)
+                (e, r),
+          ];
+    final recentIds = {for (final (e, _) in recent) e.id};
+    final rest = [
+      for (final e in results)
+        if (!recentIds.contains(e.id)) e,
+    ];
+    final rows = <Widget Function()>[
+      if (recent.isNotEmpty) ...[
+        () => _SectionLabel(
+          key: const ValueKey('workout-pick-recent'),
+          label: l10n.workoutPickRecent,
+        ),
+        for (final (e, r) in recent)
+          () => _row(e, browseTab, picker, notifier, last: r.top),
+      ],
+      if (picker.browsing && rest.isNotEmpty)
+        () => _SectionLabel(
+          key: const ValueKey('workout-pick-popular'),
+          label: l10n.workoutPickPopular,
+        ),
+      for (final e in rest) () => _row(e, browseTab, picker, notifier),
     ];
     final count = picker.selected.length;
     return Scaffold(
@@ -144,12 +231,33 @@ class _PickerState extends ConsumerState<ExercisePickerScreen> {
               ],
             ),
           ),
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              FbSpace.s4,
+              FbSpace.s2,
+              FbSpace.s4,
+              0,
+            ),
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: FbChoiceChip(
+                key: const ValueKey('workout-pick-equipment'),
+                label: switch (picker.equipment) {
+                  null => l10n.workoutPickEquipmentAny,
+                  final e => l10n.equipment(e),
+                },
+                selected: picker.equipment != null,
+                onTap: () =>
+                    unawaited(_chooseEquipment(library, picker.equipment)),
+              ),
+            ),
+          ),
           const SizedBox(height: FbSpace.s2),
           Expanded(
             child: ListView.builder(
-              itemCount: results.length + 1,
+              itemCount: rows.length + 1,
               itemBuilder: (context, i) {
-                if (i == results.length) {
+                if (i == rows.length) {
                   final name = picker.query.trim();
                   return FbListRow(
                     key: const ValueKey('workout-pick-create'),
@@ -163,16 +271,7 @@ class _PickerState extends ConsumerState<ExercisePickerScreen> {
                     onTap: _create,
                   );
                 }
-                final exercise = results[i];
-                return _ExerciseRow(
-                  exercise: exercise,
-                  browse: browseTab != null,
-                  position: picker.positionOf(exercise.id),
-                  onTap: browseTab == null
-                      ? () => notifier.toggle(exercise.id)
-                      : () => _open(browseTab, exercise.id),
-                  onEdit: exercise.isCustom ? () => _edit(exercise.id) : null,
-                );
+                return rows[i]();
               },
             ),
           ),
@@ -197,8 +296,18 @@ class _PickerState extends ConsumerState<ExercisePickerScreen> {
   }
 }
 
-/// The height of a picker row's muscle map: small enough for a list row.
-const double _mapHeight = 44;
+/// A picker section's label ("YOUR RECENT", "MOST POPULAR").
+class _SectionLabel extends StatelessWidget {
+  const new({required this.label, super.key});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsetsDirectional.symmetric(horizontal: FbSpace.s4),
+    child: FbSectionHeader(title: label),
+  );
+}
 
 class _ExerciseRow extends StatelessWidget {
   const new({
@@ -207,6 +316,8 @@ class _ExerciseRow extends StatelessWidget {
     required this.position,
     required this.onTap,
     required this.onEdit,
+    this.last,
+    super.key,
   });
 
   final LibraryExercise exercise;
@@ -214,6 +325,10 @@ class _ExerciseRow extends StatelessWidget {
   final int? position;
   final VoidCallback onTap;
   final VoidCallback? onEdit;
+
+  /// The top set of its latest session ("last: 62.5 kg × 8"), in "Your
+  /// recent".
+  final SetValues? last;
 
   @override
   Widget build(BuildContext context) {
@@ -224,7 +339,6 @@ class _ExerciseRow extends StatelessWidget {
       selected: browse ? null : position != null,
       value: position == null ? null : l10n.workoutPickSelected(position),
       child: FbListRow(
-        key: ValueKey('workout-pick-${exercise.id}'),
         leading: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -246,7 +360,7 @@ class _ExerciseRow extends StatelessWidget {
             ExerciseMuscleMap(
               primary: primary,
               secondaries: exercise.secondaries,
-              height: _mapHeight,
+              height: ExerciseMuscleMap.rowHeight,
             ),
           ],
         ),
@@ -255,6 +369,8 @@ class _ExerciseRow extends StatelessWidget {
           if (primary != null) l10n.muscleGroup(primary.group),
           l10n.equipment(exercise.equipment),
           if (exercise.isCustom) l10n.workoutPickCustomTag,
+          if (last case final last?)
+            l10n.workoutPickLast(l10n.setValues(exercise.type, last)),
         ].join(' · '),
         trailing: onEdit == null
             ? null

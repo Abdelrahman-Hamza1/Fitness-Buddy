@@ -264,6 +264,7 @@ final class CatalogExercise {
     required this.equipment,
     required this.primary,
     this.secondaries = const [],
+    this.popularity,
   });
 
   /// The catalog ID, `ex:<slug>`.
@@ -284,4 +285,8 @@ final class CatalogExercise {
 
   /// Secondary muscles; empty for packs built before A37a.
   final List<Muscle> secondaries;
+
+  /// The curated popularity rank (1 = most popular), or `null` for packs
+  /// built before A52 (A52 D1).
+  final int? popularity;
 }

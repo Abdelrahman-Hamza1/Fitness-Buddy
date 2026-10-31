@@ -35,6 +35,30 @@ Future<SessionPrs> workoutPrs(Ref ref) async {
   ], library.typeOf);
 }
 
+/// How many exercises the picker's "Your recent" lists (A52 D3).
+const int recentExerciseCount = 5;
+
+/// The user's recent exercises, newest first, with their top set (A52 D3,
+/// D-089): the picker's "Your recent".
+@riverpod
+Future<List<RecentExercise>> recentExercises(Ref ref) async {
+  final sessionsFuture = ref.watch(allWorkoutSessionsProvider.future);
+  final libraryFuture = ref.watch(exerciseLibraryProvider.future);
+  final sessions = await sessionsFuture;
+  final library = await libraryFuture;
+  final recent = RecentExercises.of(
+    [for (final s in sessions) (id: s.ref.id, draft: s.draft)],
+    library.typeOf,
+    limit: sessions.length * WorkoutLimits.exercisesMax,
+  );
+  // Exercises the library no longer knows (a deleted custom one) are left
+  // out.
+  return [
+    for (final r in recent)
+      if (library.byId.containsKey(r.exerciseId)) r,
+  ].take(recentExerciseCount).toList();
+}
+
 /// One session as lists show it (WO-040): its title (D10), counts and PR
 /// count.
 @immutable
@@ -46,6 +70,7 @@ final class SessionSummary {
     required this.exerciseCount,
     required this.setCount,
     required this.prCount,
+    required this.muscles,
   });
 
   /// The stored session.
@@ -62,6 +87,9 @@ final class SessionSummary {
 
   /// How many exercises set a PR ("1 PR").
   final int prCount;
+
+  /// Its exercises' muscles together, for its small map (A52 D4).
+  final MuscleUnion muscles;
 
   /// The session's ID.
   String get id => session.ref.id;
@@ -87,6 +115,9 @@ Future<List<SessionSummary>> workoutHistory(Ref ref) async {
         exerciseCount: s.draft.exercises.length,
         setCount: s.draft.exercises.fold(0, (n, e) => n + e.sets.length),
         prCount: prs.countOf(s.ref.id),
+        muscles: library.musclesOf([
+          for (final e in s.draft.exercises) e.exerciseId,
+        ]),
       ),
   ];
 }
@@ -131,6 +162,7 @@ final class WorkoutWeek {
   new({
     required Iterable<LocalDate> days,
     required this.trained,
+    this.sessionCount = 0,
     Map<LocalDate, String> planned = const {},
   }) : days = List.unmodifiable(days),
        planned = Map.unmodifiable(planned);
@@ -140,6 +172,9 @@ final class WorkoutWeek {
 
   /// Days with at least one live session.
   final Set<LocalDate> trained;
+
+  /// How many sessions the week has ("This week · 2 workouts", D-089).
+  final int sessionCount;
 
   /// The planned template's name of today and later days (A37c D19). Past
   /// planned days without a session aren't here: they look like any other
@@ -161,19 +196,59 @@ Future<WorkoutWeek> workoutWeek(Ref ref, LocalDate today) async {
   final sessions = await sessionsFuture;
   final plan = await planFuture;
   final templates = await templatesFuture;
+  final inWeek = [
+    for (final s in sessions)
+      if (!s.draft.date.isBefore(start) && !s.draft.date.isAfter(days.last)) s,
+  ];
   return WorkoutWeek(
     days: days,
-    trained: {
-      for (final s in sessions)
-        if (!s.draft.date.isBefore(start) && !s.draft.date.isAfter(days.last))
-          s.draft.date,
-    },
+    trained: {for (final s in inWeek) s.draft.date},
+    sessionCount: inWeek.length,
     planned: {
       for (final day in days)
         if (!day.isBefore(today))
           if (plannedTemplate(day, plan, templates) case final t?)
             day: t.draft.name,
     },
+  );
+}
+
+/// The weekly plan as the Workouts tab's "Your plan" row shows it (D-089):
+/// the planned workouts' names and the training days, in week order.
+@immutable
+final class PlanOverview {
+  /// A plan training [names] on [days].
+  new({required Iterable<String> names, required Iterable<DayOfWeek> days})
+    : names = List.unmodifiable(names),
+      days = List.unmodifiable(days);
+
+  /// The distinct planned workouts' names, in week order ("Push", "Pull",
+  /// "Legs").
+  final List<String> names;
+
+  /// The training days, in week order.
+  final List<DayOfWeek> days;
+}
+
+/// The weekly plan's overview, or `null` without a plan (D-089).
+@riverpod
+Future<PlanOverview?> workoutPlanOverview(Ref ref) async {
+  final weekStartFuture = ref.watch(weekStartProvider.future);
+  final planFuture = ref.watch(workoutPlanProvider.future);
+  final templatesFuture = ref.watch(workoutTemplatesProvider.future);
+  final order = WeekCalendar(weekStart: await weekStartFuture).daysInOrder;
+  final plan = await planFuture;
+  final templates = await templatesFuture;
+  final named = [
+    for (final day in order)
+      if (templates.where((t) => t.ref.id == plan[day]).firstOrNull
+          case final t?)
+        (day, t.draft.name),
+  ];
+  if (named.isEmpty) return null;
+  return PlanOverview(
+    names: {for (final (_, name) in named) name},
+    days: [for (final (day, _) in named) day],
   );
 }
 

@@ -7,6 +7,7 @@ class ExerciseSeed {
     required this.equipment,
     required this.primaryMuscle,
     required this.secondaryMuscles,
+    required this.popularity,
   });
 
   final String id;
@@ -19,6 +20,9 @@ class ExerciseSeed {
 
   /// 0–4 distinct codes, never [primaryMuscle]: lighter on the map.
   final List<String> secondaryMuscles;
+
+  /// The curated popularity rank, 1 (most popular) to 100, unique (A52 D1).
+  final int popularity;
 }
 
 /// One GeoNames-derived city for offline location selection (LC-033).

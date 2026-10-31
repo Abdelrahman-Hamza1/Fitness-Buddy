@@ -19,6 +19,7 @@
           "equipment",
           "primary_muscle",
           "secondary_muscles",
+          "popularity",
           "names"
         ],
         "properties": {
@@ -91,6 +92,11 @@
                 "adductors"
               ]
             }
+          },
+          "popularity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
           },
           "names": {
             "type": "object",

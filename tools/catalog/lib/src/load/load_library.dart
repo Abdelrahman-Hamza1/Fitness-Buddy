@@ -16,6 +16,7 @@ List<ExerciseSeed> loadExercises(
   if (checked == null) return const [];
   final rows = (checked as Map<String, dynamic>)['exercises'] as List<dynamic>;
   final ids = <String>{};
+  final ranks = <int>{};
   final result = <ExerciseSeed>[];
   for (var i = 0; i < rows.length; i++) {
     final row = rows[i] as Map<String, dynamic>;
@@ -54,6 +55,17 @@ List<ExerciseSeed> loadExercises(
         ),
       );
     }
+    // The schema checks the range; uniqueness spans rows (A52 D1).
+    final popularity = row['popularity'] as int;
+    if (!ranks.add(popularity)) {
+      issues.add(
+        CatalogIssue(
+          file.path,
+          '/exercises/$i/popularity',
+          'duplicate popularity rank $popularity',
+        ),
+      );
+    }
     result.add(
       ExerciseSeed(
         id: id,
@@ -62,6 +74,7 @@ List<ExerciseSeed> loadExercises(
         equipment: row['equipment'] as String,
         primaryMuscle: primary,
         secondaryMuscles: List.unmodifiable(secondaries),
+        popularity: popularity,
       ),
     );
   }

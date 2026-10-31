@@ -6,8 +6,8 @@ Scope: **simple strength logging, usually entered after the session** (D-028). B
 
 ## 1. Exercise library (D-029)
 
-- **WO-001** `[R1]` A built-in list of ~100 common gym exercises (names, aliases and muscles: no videos, photos or instructions), each with English names and aliases ("bench", "flat bench", "BB bench"). Buddy still understands Arabic names ("بنش") through the AI (AI-010).
-- **WO-007** `[R1]` Every exercise, built-in and custom, shows a **muscle map** (D-085): front and back body, main muscles dark, secondary muscles lighter. Drawn by us from an MIT-licensed body outline; no photos.
+- **WO-001** `[R1]` A built-in list of ~100 common gym exercises (names, aliases and muscles: no videos, photos or instructions), each with English names and aliases ("bench", "flat bench", "BB bench"). Buddy still understands Arabic names ("بنش") through the AI (AI-010). Each built-in exercise has a curated **popularity rank**: the picker lists "Your recent" (with the last result) then "Most popular" before anything is typed, and search breaks ties by popularity (D-089).
+- **WO-007** `[R1]` Every exercise, built-in and custom, shows a **muscle map** (D-085): front and back body, main muscles dark, secondary muscles lighter. Drawn by us from an MIT-licensed body outline; no photos. The log form shows each exercise's map next to its name, and the session's combined map and muscles at the top (D-089).
 - **WO-006** `[R2]` The built-in exercises also have Arabic names, for the Arabic interface (D-080).
 - **WO-002** `[R1]` Equipment variants are **separate exercises** (barbell bench press ≠ dumbbell bench press ≠ machine chest press), so history and PRs stay meaningful.
 - **WO-003** `[R1]` Custom exercises can be added by form or chat ("add exercise: cable fly low to high"), with their main and secondary muscles for the muscle map (WO-007).
@@ -34,8 +34,8 @@ Scope: **simple strength logging, usually entered after the session** (D-028). B
 
 - **WO-020** `[R1]` Templates: a named exercise list with target sets × reps (e.g. "Push: bench 3×8, OHP 3×10, incline DB 3×10, lateral raise 3×15, triceps pushdown 3×12"). Created by form, by chat, or from any logged session ("save as template").
 - **WO-021** `[R1]` **Weekly plan** (optional, never required, D-085): which template on which weekdays (e.g. Sat Push, Sun Pull, Tue Legs, Wed Push). Used for the Today screen hint ("Push day today") and for calorie shifting (TG-043).
-- **WO-023** `[R1]` **Starter plans** (D-085): an optional gallery (Full body 3 days, Upper/Lower 4, Push/Pull/Legs 3–6, Build my own). Picking one copies editable templates and weekdays; nothing changes until you pick.
-- **WO-024** `[R1]` **No-plan training is first-class** (D-085): log by picking exercises or telling Buddy, **Repeat** any past session, the week view shows only trained days, and the app never shows "missed day" messages.
+- **WO-023** `[R1]` **Starter plans** (D-085): an optional gallery (Full body 3 days, Upper/Lower 4, Push/Pull/Legs 3–6, Build my own). Picking one asks for the weekdays, then shows each workout day **empty** with suggested exercises to add (one by one or all): the app never assumes the exercises (D-089). Finishing saves the templates and weekdays in one change with Undo; nothing changes before that.
+- **WO-024** `[R1]` **No-plan training is first-class** (D-085): log by picking exercises or telling Buddy, **Repeat** any past session, the week view shows only trained days, and the app never shows "missed day" messages. The Workouts tab puts today's action first (today's plan card or "Log a workout", recent sessions with Repeat, one "Your plan" row); with nothing logged and no plan it is the setup point (D-089).
 - **WO-022** `[R1]` Templates are updated only when the user chooses: after a session that differs from its template, the app offers "update the Push template with these changes?" (a proposal).
 
 ## 4. Logging

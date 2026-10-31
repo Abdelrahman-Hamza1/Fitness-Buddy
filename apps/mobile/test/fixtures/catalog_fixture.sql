@@ -76,6 +76,7 @@ CREATE TABLE exercises (
   equipment TEXT NOT NULL,
   primary_muscle TEXT NOT NULL,
   secondary_muscles TEXT NOT NULL,
+  popularity INTEGER NOT NULL,
   catalog_version INTEGER NOT NULL
 ) WITHOUT ROWID;
 CREATE TABLE cities (

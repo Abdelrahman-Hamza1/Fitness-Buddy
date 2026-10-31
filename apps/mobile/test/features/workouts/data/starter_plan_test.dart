@@ -15,7 +15,7 @@ String _packSql() {
   };
   final rows = [
     for (final id in ids)
-      "  ('$id', '$id', 'weight_reps', 'barbell', 'chest', '', 1)",
+      "  ('$id', '$id', 'weight_reps', 'barbell', 'chest', '', 1, 1)",
   ];
   return 'INSERT INTO exercises VALUES\n${rows.join(',\n')};';
 }
@@ -44,6 +44,7 @@ List<WorkoutOp> _ppl() => StarterPlan.pushPullLegs.ops(
   weekStart: DayOfWeek.saturday,
   ids: SequenceIdGenerator(startMs: 0x0199e3c40000),
   nameOf: (t) => t.name,
+  itemsOf: (t) => t.items,
 );
 
 void main() {
@@ -67,6 +68,7 @@ void main() {
       days: [DayOfWeek.saturday, DayOfWeek.monday, DayOfWeek.wednesday],
       weekStart: DayOfWeek.saturday,
       nameOf: (t) => t.name,
+      itemsOf: (t) => t.items,
     );
     expect(outcome, isA<WorkoutActionDone>());
     final templates = await h.repository.watchTemplates().first;
@@ -149,4 +151,34 @@ void main() {
       wid(5),
     ]);
   });
+
+  test(
+    'D-089 No plan clears every weekday in one change; Undo restores it',
+    () async {
+      final h = _harness();
+      final undo = UndoStack(
+        revert: h.applier.revert,
+        apply: h.applier.apply,
+        clock: h.clock,
+      );
+      addTearDown(undo.dispose);
+      final actions = WorkoutActions(
+        apply: h.applier.apply,
+        undoStack: undo,
+        ids: SequenceIdGenerator(startMs: 0x0199e3c40000),
+        repository: h.repository,
+      );
+      await h.apply(_ppl());
+      final before = await h.repository.plan();
+      final outcome = await actions.clearPlan();
+      expect(await h.repository.plan(), isEmpty);
+      // The templates stay.
+      expect(await h.repository.watchTemplates().first, hasLength(3));
+      expect(
+        await undo.undo((outcome as WorkoutActionDone).undoId),
+        UndoOutcome.undone,
+      );
+      expect(await h.repository.plan(), before);
+    },
+  );
 }

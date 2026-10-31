@@ -67,7 +67,7 @@ final class ExercisePickerProvider
   }
 }
 
-String _$exercisePickerHash() => r'597f9dece6da0b72389d6e829e0d8b5e8d8772be';
+String _$exercisePickerHash() => r'41a7dc54bec225a18dbb5927b175147a0c90164b';
 
 /// The exercise picker (WO-001): search, chip and multi-select in order.
 /// One per picker screen: [scope] is the screen's own key, so pickers open

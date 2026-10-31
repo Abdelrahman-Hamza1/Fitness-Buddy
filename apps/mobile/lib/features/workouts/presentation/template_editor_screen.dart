@@ -227,13 +227,13 @@ class _LineRow extends StatelessWidget {
             spacing: FbSpace.s4,
             runSpacing: FbSpace.s2,
             children: [
-              _Stepper(
+              TemplateStepper(
                 key: ValueKey('workout-template-sets-${line.id}'),
                 label: l10n.workoutTemplateSets,
                 value: line.sets,
                 onChanged: (v) => editor.setSets(line.id, v),
               ),
-              _Stepper(
+              TemplateStepper(
                 key: ValueKey('workout-template-reps-${line.id}'),
                 label: l10n.workoutFieldReps,
                 value: line.reps,
@@ -272,8 +272,9 @@ class _LineRow extends StatelessWidget {
   }
 }
 
-/// A labelled − value + stepper (48 dp buttons).
-class _Stepper extends StatelessWidget {
+/// A labelled − value + stepper (48 dp buttons): template targets.
+class TemplateStepper extends StatelessWidget {
+  /// A stepper of [value] named [label].
   const new({
     required this.label,
     required this.value,
@@ -281,8 +282,13 @@ class _Stepper extends StatelessWidget {
     super.key,
   });
 
+  /// What it counts ("Sets").
   final String label;
+
+  /// The value.
   final int value;
+
+  /// − or + was tapped.
   final ValueChanged<int> onChanged;
 
   @override

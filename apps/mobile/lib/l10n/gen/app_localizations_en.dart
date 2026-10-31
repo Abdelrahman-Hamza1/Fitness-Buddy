@@ -5017,33 +5017,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get workoutsStartFromPlan => 'Start from a plan';
-
-  @override
   String workoutsPlanCardLog(String name) {
     return 'Log $name';
   }
-
-  @override
-  String get workoutsPlanSection => 'Plan & templates';
-
-  @override
-  String get workoutsWeeklyPlanRow => 'Weekly plan';
-
-  @override
-  String workoutsWeeklyPlanDays(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count days a week',
-      one: '1 day a week',
-      zero: 'No plan',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get workoutsStarterPlansRow => 'Starter plans';
 
   @override
   String get workoutsNewTemplate => 'New template';
@@ -5126,7 +5102,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workoutStarterIntro =>
-      'Pick one to copy its workouts and weekdays. You can edit everything afterwards, and nothing changes until you pick.';
+      'A plan gives each day a name. You choose the exercises next.';
 
   @override
   String workoutStarterPlan(String plan) {
@@ -5142,9 +5118,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String workoutStarterPlanInfo(String plan) {
     String _temp0 = intl.Intl.selectLogic(plan, {
-      'fullBody': '3 days a week, two full-body workouts',
-      'upperLower': '4 days a week, upper and lower body',
-      'pushPullLegs': '3 to 6 days a week, push, pull and legs',
+      'fullBody': 'Whole body every session',
+      'upperLower': 'Alternate upper and lower body',
+      'pushPullLegs': 'Pushing, pulling, then legs',
       'other': '',
     });
     return '$_temp0';
@@ -5168,10 +5144,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get workoutStarterOwn => 'Build my own';
+  String get workoutStarterOwn => 'Make my own';
 
   @override
-  String get workoutStarterOwnInfo => 'Start from an empty template';
+  String get workoutStarterOwnInfo => 'Name your days, add what you like';
 
   @override
   String workoutStarterDays(int count) {
@@ -5190,7 +5166,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get workoutStarterApply => 'Use this plan';
+  String get workoutStarterApply => 'Next: choose exercises';
 
   @override
   String get workoutStarterApplied => 'Plan added';
@@ -5443,10 +5419,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workoutsFirstVisitMessage =>
-      'Your workouts will show up here. Pick exercises and log your sets after the gym, no plan needed.';
-
-  @override
-  String get workoutsPickExercises => 'Pick exercises';
+      'Your workouts will show up here. Log one after the gym, or choose a plan for a weekly routine. A plan is optional.';
 
   @override
   String get workoutsLogWorkout => 'Log a workout';
@@ -5456,9 +5429,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workoutsRepeat => 'Repeat';
-
-  @override
-  String get workoutsHistory => 'All workouts';
 
   @override
   String workoutsWeekTrained(String day) {
@@ -6736,4 +6706,212 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifIftarBody => 'Log your iftar when you have a moment.';
+
+  @override
+  String get workoutsChoosePlan => 'Choose a plan';
+
+  @override
+  String get workoutsLogCardMessage =>
+      'Pick exercises, or repeat a past workout.';
+
+  @override
+  String get workoutsSomethingElse => 'Something else';
+
+  @override
+  String get workoutsTodaysPlan => 'Today\'s plan';
+
+  @override
+  String workoutsMoreCount(int count) {
+    return '+$count';
+  }
+
+  @override
+  String get workoutsSeeAll => 'See all';
+
+  @override
+  String get workoutsYourPlan => 'Your plan';
+
+  @override
+  String get workoutsNoPlan => 'No plan';
+
+  @override
+  String get workoutsThisWeek => 'This week';
+
+  @override
+  String workoutsWeekCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count workouts',
+      one: '1 workout',
+      zero: 'No workouts yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get workoutPlanWorkoutsSection => 'Workouts';
+
+  @override
+  String get workoutPlanChooseAnother => 'Choose a different plan';
+
+  @override
+  String get workoutPickRecent => 'Your recent';
+
+  @override
+  String get workoutPickPopular => 'Most popular';
+
+  @override
+  String get workoutPickEquipmentAny => 'Any equipment';
+
+  @override
+  String get workoutPickEquipmentTitle => 'Equipment';
+
+  @override
+  String workoutPickLast(String result) {
+    return 'last: $result';
+  }
+
+  @override
+  String workoutMuscleMapMains(String muscles) {
+    return 'Muscle map. Main muscles: $muscles.';
+  }
+
+  @override
+  String workoutMuscleMapMainsSecondary(String muscles, String secondary) {
+    return 'Muscle map. Main muscles: $muscles. Secondary: $secondary.';
+  }
+
+  @override
+  String workoutLogProgress(int logged, int total, int sets) {
+    String _temp0 = intl.Intl.pluralLogic(
+      sets,
+      locale: localeName,
+      other: '$sets sets',
+      one: '1 set',
+    );
+    return '$logged of $total exercises logged · $_temp0';
+  }
+
+  @override
+  String workoutCardPlanned(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sets planned',
+      one: '1 set planned',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String workoutCardShow(String name) {
+    return 'Show $name sets';
+  }
+
+  @override
+  String workoutCardHide(String name) {
+    return 'Hide $name sets';
+  }
+
+  @override
+  String get workoutStarterHeading => 'How do you want to train?';
+
+  @override
+  String get workoutStarterNone => 'No plan, I\'ll log as I go';
+
+  @override
+  String get workoutStarterNoneInfo =>
+      'Pick exercises each time, or repeat a past workout.';
+
+  @override
+  String workoutStarterPlanDays(String plan) {
+    String _temp0 = intl.Intl.selectLogic(plan, {
+      'fullBody': '3 days',
+      'upperLower': '4 days',
+      'pushPullLegs': '3 to 6 days',
+      'other': '',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String workoutStarterContinue(String plan) {
+    return 'Continue with $plan';
+  }
+
+  @override
+  String get workoutStarterContinuePlain => 'Continue';
+
+  @override
+  String get workoutStarterCleared => 'Weekly plan cleared';
+
+  @override
+  String get workoutStarterDaysQuestion => 'Which days do you train?';
+
+  @override
+  String workoutSetupYour(String day) {
+    return 'Your $day exercises';
+  }
+
+  @override
+  String get workoutSetupEmpty =>
+      'Nothing yet. Add exercises from the suggestions or find any exercise.';
+
+  @override
+  String get workoutSetupFind => 'Find any exercise';
+
+  @override
+  String workoutSetupSuggested(String day) {
+    return 'Suggested for $day';
+  }
+
+  @override
+  String workoutSetupAddAll(int count) {
+    return 'Add all $count';
+  }
+
+  @override
+  String workoutSetupTarget(int sets, int reps) {
+    String _temp0 = intl.Intl.pluralLogic(
+      sets,
+      locale: localeName,
+      other: '$sets sets',
+      one: '1 set',
+    );
+    return '$_temp0 × $reps reps';
+  }
+
+  @override
+  String workoutSetupAdd(String name) {
+    return 'Add $name';
+  }
+
+  @override
+  String workoutSetupRemove(String name) {
+    return 'Remove $name';
+  }
+
+  @override
+  String workoutSetupNext(String day) {
+    return 'Next: $day day';
+  }
+
+  @override
+  String get workoutSetupSave => 'Save plan';
+
+  @override
+  String get workoutSetupIncomplete => 'Each day needs at least one exercise.';
+
+  @override
+  String workoutSetupTabSemantics(String day, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count exercises',
+      one: '1 exercise',
+      zero: 'no exercises',
+    );
+    return '$day, $_temp0';
+  }
 }

@@ -348,6 +348,7 @@
       "equipment",
       "primary_muscle",
       "secondary_muscles",
+      "popularity",
       "catalog_version"
     ],
     "properties": {
@@ -394,6 +395,11 @@
           "type": "string",
           "pattern": "^[a-z_]+$"
         }
+      },
+      "popularity": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100
       },
       "catalog_version": {
         "type": "integer",

@@ -18,6 +18,9 @@ abstract final class FbIcons {
   /// Expand a collapsed row; rotated half a turn when it is open.
   static const IconData expand = Icons.expand_more_rounded;
 
+  /// Hide a section's content (the opposite of [expand]).
+  static const IconData collapse = Icons.expand_less_rounded;
+
   /// Delete (swipe action).
   static const IconData delete = Icons.delete_outline_rounded;
 
@@ -44,6 +47,12 @@ abstract final class FbIcons {
 
   /// Confirm.
   static const IconData check = Icons.check_rounded;
+
+  /// The chosen option of a single choice.
+  static const IconData optionOn = Icons.radio_button_checked_rounded;
+
+  /// An option not chosen.
+  static const IconData optionOff = Icons.radio_button_unchecked_rounded;
 
   /// Backspace on the number pad.
   static const IconData backspace = Icons.backspace_outlined;

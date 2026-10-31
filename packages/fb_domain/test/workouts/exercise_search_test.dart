@@ -6,7 +6,14 @@ SearchableExercise _ex(
   List<String> keys, {
   MuscleGroup? group,
   bool cardio = false,
-}) => SearchableExercise(id: id, keys: keys, group: group, isCardio: cardio);
+  int? popularity,
+}) => SearchableExercise(
+  id: id,
+  keys: keys,
+  group: group,
+  isCardio: cardio,
+  popularity: popularity,
+);
 
 final List<SearchableExercise> _candidates = [
   _ex('ex:barbell_bench_press', [
@@ -111,5 +118,29 @@ void main() {
       ),
       isEmpty,
     );
+  });
+
+  test('WO-001 search breaks ties by popularity, unranked last (A52 D2)', () {
+    final ranked = [
+      _ex('ex:a_press', ['a press'], popularity: 30),
+      _ex('ex:b_press', ['b press']),
+      _ex('ex:c_press', ['c press'], popularity: 5),
+      _ex('ex:press_up', ['press up'], popularity: 90),
+    ];
+    // "press": the prefix match wins over popularity; word-prefix ties go
+    // to the more popular, unranked last.
+    expect(_ids(ExerciseSearch.search('press', ranked)), [
+      'ex:press_up',
+      'ex:c_press',
+      'ex:a_press',
+      'ex:b_press',
+    ]);
+    // An empty query lists the most popular first.
+    expect(_ids(ExerciseSearch.search('', ranked)), [
+      'ex:c_press',
+      'ex:a_press',
+      'ex:press_up',
+      'ex:b_press',
+    ]);
   });
 }

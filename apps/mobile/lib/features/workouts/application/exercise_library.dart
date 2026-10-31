@@ -18,6 +18,7 @@ final class LibraryExercise {
     required Iterable<String> aliases,
     Iterable<Muscle> secondaries = const [],
     this.custom,
+    this.popularity,
   }) : aliases = List.unmodifiable(aliases),
        secondaries = List.unmodifiable(secondaries);
 
@@ -44,6 +45,13 @@ final class LibraryExercise {
 
   /// The stored custom exercise, or `null` for a built-in.
   final Stored<CustomExerciseDraft>? custom;
+
+  /// The curated popularity rank (1 = most popular), or `null` for custom
+  /// exercises and older packs (A52 D1).
+  final int? popularity;
+
+  /// What a muscle map of it needs.
+  ExerciseMuscles get muscles => (primary: primary, secondaries: secondaries);
 
   /// Whether the user made it.
   bool get isCustom => custom != null;
@@ -77,6 +85,7 @@ final class ExerciseLibrary {
           },
           group: e.primary?.group,
           isCardio: e.isCardio,
+          popularity: e.popularity,
         ),
       );
     }
@@ -106,18 +115,29 @@ final class ExerciseLibrary {
   /// Whether any exercise is cardio (the Cardio chip).
   bool get hasCardio => all.any((e) => e.isCardio);
 
-  /// The exercises matching [query] under [filter], best first (D12).
+  /// The equipment that at least one exercise uses: the equipment filter.
+  Set<Equipment> get equipment => {for (final e in all) e.equipment};
+
+  /// The exercises matching [query] under [filter] (and [equipment] when
+  /// set), best first, ties by popularity (D12, A52 D2).
   List<LibraryExercise> search(
     String query, {
     ExerciseFilter filter = ExerciseFilter.all,
+    Equipment? equipment,
   }) => [
     for (final hit in ExerciseSearch.search(
       normalizeKey(query),
       _searchable,
       filter: filter,
     ))
-      byId[hit.id]!,
+      if (equipment == null || byId[hit.id]!.equipment == equipment)
+        byId[hit.id]!,
   ];
+
+  /// The map of several exercises together (A52 D4): unknown IDs are left
+  /// out.
+  MuscleUnion musclesOf(Iterable<String> exerciseIds) =>
+      MuscleUnion.of([for (final id in exerciseIds) ?byId[id]?.muscles]);
 
   /// What naming needs of [exercises] (WO-010).
   List<NamingExercise> namingOf(Iterable<SessionExerciseDraft> exercises) => [
@@ -153,6 +173,7 @@ Stream<List<LibraryExercise>> builtInExercises(Ref ref) async* {
           equipment: e.equipment,
           primary: e.primary,
           secondaries: e.secondaries,
+          popularity: e.popularity,
         ),
     ];
   }

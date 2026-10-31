@@ -25,7 +25,7 @@ void main() {
       extraSql: '''
       INSERT INTO exercises VALUES
         ('ex:barbell_bench_press', 'Barbell bench press', 'weight_reps',
-         'barbell', 'chest', 'triceps', 2);
+         'barbell', 'chest', 'triceps', 1, 2);
       INSERT INTO names (target_id, lang, name, key, is_display) VALUES
         ('ex:barbell_bench_press', 'en', 'BB bench', 'b bench', 1);
       INSERT INTO names_fts (rowid, key)

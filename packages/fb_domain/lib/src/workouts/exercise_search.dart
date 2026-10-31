@@ -11,6 +11,7 @@ final class SearchableExercise {
     required Iterable<String> keys,
     required this.group,
     required this.isCardio,
+    this.popularity,
   }) : keys = List.unmodifiable(keys);
 
   /// A catalog ID or a custom exercise's UUID.
@@ -25,6 +26,10 @@ final class SearchableExercise {
 
   /// Whether its type is cardio (duration and distance).
   final bool isCardio;
+
+  /// The curated popularity rank, 1 = most popular, or `null` (custom
+  /// exercises, older packs): unranked sorts after ranked (A52 D1, D2).
+  final int? popularity;
 
   @override
   String toString() => 'SearchableExercise($id)';
@@ -87,30 +92,34 @@ abstract final class ExerciseSearch {
   /// The [candidates] that pass [filter] and match [queryKey] (a normalized
   /// query, split into words on spaces), best first: a name or alias that
   /// starts with the query, then one whose words start with every token,
-  /// then a substring. Ties keep the candidates' order. An empty query
-  /// returns every candidate that passes [filter], in order.
+  /// then a substring. Ties go to the more popular exercise (unranked
+  /// last), then keep the candidates' order (A52 D2). An empty query
+  /// returns every candidate that passes [filter], most popular first.
   static List<SearchableExercise> search(
     String queryKey,
     Iterable<SearchableExercise> candidates, {
     ExerciseFilter filter = ExerciseFilter.all,
   }) {
-    final passing = candidates.where(filter.accepts);
     final key = queryKey.trim();
-    if (key.isEmpty) return passing.toList();
     final tokens = key.split(' ').where((t) => t.isNotEmpty).toList();
     final ranked = <(SearchableExercise, int, int)>[];
     var order = 0;
-    for (final exercise in passing) {
-      final rank = _rank(key, tokens, exercise.keys);
+    for (final exercise in candidates.where(filter.accepts)) {
+      final rank = key.isEmpty ? 0 : _rank(key, tokens, exercise.keys);
       if (rank != null) ranked.add((exercise, rank, order));
       order++;
     }
     ranked.sort((a, b) {
       final byRank = b.$2.compareTo(a.$2);
-      return byRank != 0 ? byRank : a.$3.compareTo(b.$3);
+      if (byRank != 0) return byRank;
+      final byPopularity = _popularity(a.$1).compareTo(_popularity(b.$1));
+      return byPopularity != 0 ? byPopularity : a.$3.compareTo(b.$3);
     });
     return [for (final r in ranked) r.$1];
   }
+
+  // Unranked exercises sort after every ranked one.
+  static int _popularity(SearchableExercise e) => e.popularity ?? 1 << 30;
 
   /// 3 prefix (or exact), 2 word prefixes, 1 substring, `null` no match.
   static int? _rank(String key, List<String> tokens, List<String> names) {

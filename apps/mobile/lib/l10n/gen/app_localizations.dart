@@ -7241,41 +7241,11 @@ abstract class AppLocalizations {
   /// **'{day}, {name} planned'**
   String workoutsWeekPlanned(String day, String name);
 
-  /// Workouts tab first visit: opens the optional starter plans (WO-023).
-  ///
-  /// In en, this message translates to:
-  /// **'Start from a plan'**
-  String get workoutsStartFromPlan;
-
   /// Workouts tab plan card button: logs today's planned template (A37 D20).
   ///
   /// In en, this message translates to:
   /// **'Log {name}'**
   String workoutsPlanCardLog(String name);
-
-  /// Workouts tab section header: weekly plan, starter plans and templates.
-  ///
-  /// In en, this message translates to:
-  /// **'Plan & templates'**
-  String get workoutsPlanSection;
-
-  /// Row opening the optional weekly plan (WO-021).
-  ///
-  /// In en, this message translates to:
-  /// **'Weekly plan'**
-  String get workoutsWeeklyPlanRow;
-
-  /// Weekly plan row subtitle: how many weekdays have a template.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =0{No plan} =1{1 day a week} other{{count} days a week}}'**
-  String workoutsWeeklyPlanDays(int count);
-
-  /// Row and title of the starter plans gallery (WO-023).
-  ///
-  /// In en, this message translates to:
-  /// **'Starter plans'**
-  String get workoutsStarterPlansRow;
 
   /// Row opening an empty template editor (WO-020).
   ///
@@ -7409,10 +7379,10 @@ abstract class AppLocalizations {
   /// **'Plan updated'**
   String get workoutPlanUpdated;
 
-  /// Starter plans intro (WO-023).
+  /// Plan chooser intro (WO-023, D-089): plans never assume exercises.
   ///
   /// In en, this message translates to:
-  /// **'Pick one to copy its workouts and weekdays. You can edit everything afterwards, and nothing changes until you pick.'**
+  /// **'A plan gives each day a name. You choose the exercises next.'**
   String get workoutStarterIntro;
 
   /// A starter plan's name (WO-023).
@@ -7424,7 +7394,7 @@ abstract class AppLocalizations {
   /// A starter plan's description.
   ///
   /// In en, this message translates to:
-  /// **'{plan, select, fullBody{3 days a week, two full-body workouts} upperLower{4 days a week, upper and lower body} pushPullLegs{3 to 6 days a week, push, pull and legs} other{}}'**
+  /// **'{plan, select, fullBody{Whole body every session} upperLower{Alternate upper and lower body} pushPullLegs{Pushing, pulling, then legs} other{}}'**
   String workoutStarterPlanInfo(String plan);
 
   /// The name a starter plan's template gets when copied (editable afterwards).
@@ -7436,13 +7406,13 @@ abstract class AppLocalizations {
   /// Starter plans: start from an empty template.
   ///
   /// In en, this message translates to:
-  /// **'Build my own'**
+  /// **'Make my own'**
   String get workoutStarterOwn;
 
   /// Build my own description.
   ///
   /// In en, this message translates to:
-  /// **'Start from an empty template'**
+  /// **'Name your days, add what you like'**
   String get workoutStarterOwnInfo;
 
   /// Starter plan sheet: how many weekdays to pick.
@@ -7457,10 +7427,10 @@ abstract class AppLocalizations {
   /// **'Pick {min} to {max} days'**
   String workoutStarterDaysRange(int min, int max);
 
-  /// Starter plan sheet button: copies the templates and weekdays.
+  /// Starter plan weekdays sheet: goes on to choosing each day's exercises (D-089).
   ///
   /// In en, this message translates to:
-  /// **'Use this plan'**
+  /// **'Next: choose exercises'**
   String get workoutStarterApply;
 
   /// Undo snackbar after copying a starter plan.
@@ -7796,14 +7766,8 @@ abstract class AppLocalizations {
   /// Workouts tab, first visit (UX-010, WO-024): what to do. Keep the opening 'Your workouts will show up here' (tab tests).
   ///
   /// In en, this message translates to:
-  /// **'Your workouts will show up here. Pick exercises and log your sets after the gym, no plan needed.'**
+  /// **'Your workouts will show up here. Log one after the gym, or choose a plan for a weekly routine. A plan is optional.'**
   String get workoutsFirstVisitMessage;
-
-  /// Workouts tab: starts a new workout by picking exercises (WO-034).
-  ///
-  /// In en, this message translates to:
-  /// **'Pick exercises'**
-  String get workoutsPickExercises;
 
   /// Workouts tab: starts a new workout (WO-034).
   ///
@@ -7822,12 +7786,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Repeat'**
   String get workoutsRepeat;
-
-  /// Workouts tab: opens the history (WO-040).
-  ///
-  /// In en, this message translates to:
-  /// **'All workouts'**
-  String get workoutsHistory;
 
   /// Week strip: semantics of a day with a workout (WO-024: trained days only).
   ///
@@ -9742,6 +9700,264 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Log your iftar when you have a moment.'**
   String get notifIftarBody;
+
+  /// Workouts tab setup point and plan chooser title (WO-023, D-089).
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a plan'**
+  String get workoutsChoosePlan;
+
+  /// Workouts tab 'Log a workout' card text when there's no plan for today (WO-024).
+  ///
+  /// In en, this message translates to:
+  /// **'Pick exercises, or repeat a past workout.'**
+  String get workoutsLogCardMessage;
+
+  /// Workouts tab plan card: log a different workout than today's plan (D-089).
+  ///
+  /// In en, this message translates to:
+  /// **'Something else'**
+  String get workoutsSomethingElse;
+
+  /// Workouts tab plan card label above the workout's name (D-089).
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s plan'**
+  String get workoutsTodaysPlan;
+
+  /// Workouts tab plan card: how many more exercises after the first names.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count}'**
+  String workoutsMoreCount(int count);
+
+  /// Workouts tab: opens the whole history (WO-040).
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get workoutsSeeAll;
+
+  /// Workouts tab plan row and the plan page title (WO-021, D-089).
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan'**
+  String get workoutsYourPlan;
+
+  /// Workouts tab plan row without a weekly plan (D-085: never required).
+  ///
+  /// In en, this message translates to:
+  /// **'No plan'**
+  String get workoutsNoPlan;
+
+  /// Workouts tab week strip title (D-089).
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get workoutsThisWeek;
+
+  /// Workouts tab week strip: sessions this week. Never a 'missed' count (WO-024).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No workouts yet} =1{1 workout} other{{count} workouts}}'**
+  String workoutsWeekCount(int count);
+
+  /// Your plan page: the section listing the plan's workouts (templates).
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts'**
+  String get workoutPlanWorkoutsSection;
+
+  /// Your plan page: opens the plan chooser (WO-023).
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a different plan'**
+  String get workoutPlanChooseAnother;
+
+  /// Exercise picker section with the user's recent exercises (D-089).
+  ///
+  /// In en, this message translates to:
+  /// **'Your recent'**
+  String get workoutPickRecent;
+
+  /// Exercise picker section: exercises by popularity (D-089).
+  ///
+  /// In en, this message translates to:
+  /// **'Most popular'**
+  String get workoutPickPopular;
+
+  /// Exercise picker equipment filter: no filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Any equipment'**
+  String get workoutPickEquipmentAny;
+
+  /// Exercise picker equipment filter sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment'**
+  String get workoutPickEquipmentTitle;
+
+  /// Exercise picker recent row: the top set of the latest session, e.g. 'last: 62.5 kg × 8'.
+  ///
+  /// In en, this message translates to:
+  /// **'last: {result}'**
+  String workoutPickLast(String result);
+
+  /// Screen-reader label of a muscle map of several exercises (D-089); muscles is a comma-separated list.
+  ///
+  /// In en, this message translates to:
+  /// **'Muscle map. Main muscles: {muscles}.'**
+  String workoutMuscleMapMains(String muscles);
+
+  /// Screen-reader label of a muscle map of several exercises with secondary muscles (D-089).
+  ///
+  /// In en, this message translates to:
+  /// **'Muscle map. Main muscles: {muscles}. Secondary: {secondary}.'**
+  String workoutMuscleMapMainsSecondary(String muscles, String secondary);
+
+  /// Log form summary under the session's muscles (D-089).
+  ///
+  /// In en, this message translates to:
+  /// **'{logged} of {total} exercises logged · {sets, plural, =1{1 set} other{{sets} sets}}'**
+  String workoutLogProgress(int logged, int total, int sets);
+
+  /// Log form: a hidden exercise card's set count (D-089).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 set planned} other{{count} sets planned}}'**
+  String workoutCardPlanned(int count);
+
+  /// Log form: shows a hidden exercise card's sets (tooltip).
+  ///
+  /// In en, this message translates to:
+  /// **'Show {name} sets'**
+  String workoutCardShow(String name);
+
+  /// Log form: hides an exercise card's sets (tooltip).
+  ///
+  /// In en, this message translates to:
+  /// **'Hide {name} sets'**
+  String workoutCardHide(String name);
+
+  /// Plan chooser heading (D-089).
+  ///
+  /// In en, this message translates to:
+  /// **'How do you want to train?'**
+  String get workoutStarterHeading;
+
+  /// Plan chooser first option: no weekly plan (WO-024, D-089).
+  ///
+  /// In en, this message translates to:
+  /// **'No plan, I\'ll log as I go'**
+  String get workoutStarterNone;
+
+  /// Plan chooser: the no-plan option's description.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick exercises each time, or repeat a past workout.'**
+  String get workoutStarterNoneInfo;
+
+  /// Plan chooser tag: a plan's training days a week.
+  ///
+  /// In en, this message translates to:
+  /// **'{plan, select, fullBody{3 days} upperLower{4 days} pushPullLegs{3 to 6 days} other{}}'**
+  String workoutStarterPlanDays(String plan);
+
+  /// Plan chooser button with a plan chosen.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with {plan}'**
+  String workoutStarterContinue(String plan);
+
+  /// Plan chooser button.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get workoutStarterContinuePlain;
+
+  /// Snackbar after choosing 'No plan' with a plan set; with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly plan cleared'**
+  String get workoutStarterCleared;
+
+  /// Starter plan weekdays sheet question (D-089).
+  ///
+  /// In en, this message translates to:
+  /// **'Which days do you train?'**
+  String get workoutStarterDaysQuestion;
+
+  /// Plan setup: a day's chosen exercises (D-089).
+  ///
+  /// In en, this message translates to:
+  /// **'Your {day} exercises'**
+  String workoutSetupYour(String day);
+
+  /// Plan setup: a day with no exercises chosen; nothing is assumed (D-089).
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing yet. Add exercises from the suggestions or find any exercise.'**
+  String get workoutSetupEmpty;
+
+  /// Plan setup: opens the exercise picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Find any exercise'**
+  String get workoutSetupFind;
+
+  /// Plan setup: suggested exercises for a day, added only when tapped (D-089).
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested for {day}'**
+  String workoutSetupSuggested(String day);
+
+  /// Plan setup: adds every suggestion of the day.
+  ///
+  /// In en, this message translates to:
+  /// **'Add all {count}'**
+  String workoutSetupAddAll(int count);
+
+  /// Plan setup: a chosen exercise's target, e.g. '3 sets × 8 reps'.
+  ///
+  /// In en, this message translates to:
+  /// **'{sets, plural, =1{1 set} other{{sets} sets}} × {reps} reps'**
+  String workoutSetupTarget(int sets, int reps);
+
+  /// Plan setup: adds a suggested exercise (tooltip).
+  ///
+  /// In en, this message translates to:
+  /// **'Add {name}'**
+  String workoutSetupAdd(String name);
+
+  /// Plan setup: removes a chosen exercise (tooltip).
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name}'**
+  String workoutSetupRemove(String name);
+
+  /// Plan setup: goes to the next day's tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Next: {day} day'**
+  String workoutSetupNext(String day);
+
+  /// Plan setup: saves the plan (one change with Undo).
+  ///
+  /// In en, this message translates to:
+  /// **'Save plan'**
+  String get workoutSetupSave;
+
+  /// Plan setup: why Save plan is disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Each day needs at least one exercise.'**
+  String get workoutSetupIncomplete;
+
+  /// Plan setup: a day tab for a screen reader.
+  ///
+  /// In en, this message translates to:
+  /// **'{day}, {count, plural, =0{no exercises} =1{1 exercise} other{{count} exercises}}'**
+  String workoutSetupTabSemantics(String day, int count);
 }
 
 class _AppLocalizationsDelegate

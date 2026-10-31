@@ -184,5 +184,6 @@ export 'src/workouts/workout_drafts.dart';
 export 'src/workouts/workout_events.dart';
 export 'src/workouts/workout_history.dart';
 export 'src/workouts/workout_ops.dart';
+export 'src/workouts/workout_overview.dart';
 export 'src/workouts/workout_set.dart';
 export 'src/workouts/workout_wire_rules.dart';

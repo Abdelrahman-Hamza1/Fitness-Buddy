@@ -11,7 +11,7 @@ Nothing here is generated or committed output: the files below are the **contrac
 | `names.schema.json` | One line of `names.jsonl`: a searchable name (raw and normalized `key`) of a food, dish, variant or exercise. |
 | `servings.schema.json` | One line of `servings.jsonl`: grams or millilitres of one household unit of a food. |
 | `yields.schema.json` | One line of `yields.jsonl`: a cooking yield factor (FD-060). |
-| `exercises.schema.json`, `cities.schema.json` | Lines of `exercises.jsonl` and `cities.jsonl`. Filled by A05b. Exercises use six WO-004 type codes; equipment variants are separate IDs. `primary_muscle` and `secondary_muscles` (added by A37a, additive, `schema_version` stays 1) use the muscle vocabulary of `data/schema/exercises.v1.schema.json`; consumers read unknown codes tolerantly, and packs built before A37a have no `secondary_muscles` column and may carry the legacy primaries `back`, `core`, `full_body`. |
+| `exercises.schema.json`, `cities.schema.json` | Lines of `exercises.jsonl` and `cities.jsonl`. Filled by A05b. Exercises use six WO-004 type codes; equipment variants are separate IDs. `primary_muscle` and `secondary_muscles` (added by A37a), and `popularity` (1–100, 1 = most popular, unique; added by A52), are additive (`schema_version` stays 1); muscles use the muscle vocabulary of `data/schema/exercises.v1.schema.json`; consumers read unknown codes tolerantly, and packs built before A37a have no `secondary_muscles` column and may carry the legacy primaries `back`, `core`, `full_body`; packs built before A52 have no `popularity` column. |
 | `manifest.schema.json` | `manifest.json`: version, content hash, per-file checksums and counts, pack checksum. |
 
 ## The release

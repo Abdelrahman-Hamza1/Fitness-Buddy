@@ -85,6 +85,9 @@ abstract final class WorkoutActionLabels {
 
   /// A starter plan was copied.
   static const String starterPlanApplied = 'starterPlanApplied';
+
+  /// The weekly plan was cleared ("No plan", D-089).
+  static const String planCleared = 'planCleared';
 }
 
 /// Direct workout actions with undo (WO-003, D15), through the single
@@ -196,20 +199,24 @@ final class WorkoutActions {
     planDayId(weekday),
   );
 
-  /// Copies [plan]'s templates and assigns them to [days] (every other day
-  /// rests) in **one** change set (A37 D18, PA4): all of it or nothing, one
-  /// undo. Templates are named by [nameOf]; existing templates stay.
+  /// Creates [plan]'s templates with the exercises the user chose
+  /// ([itemsOf], D-089: never assumed) and assigns them to [days] (every
+  /// other day rests) in **one** change set (A37 D18, PA4): all of it or
+  /// nothing, one undo. Templates are named by [nameOf]; existing templates
+  /// stay.
   Future<WorkoutActionOutcome> applyStarterPlan(
     StarterPlan plan, {
     required Iterable<DayOfWeek> days,
     required DayOfWeek weekStart,
     required String Function(StarterTemplate template) nameOf,
+    required List<TemplateTarget> Function(StarterTemplate template) itemsOf,
   }) {
     final ops = plan.ops(
       days: days,
       weekStart: weekStart,
       ids: ids,
       nameOf: nameOf,
+      itemsOf: itemsOf,
     );
     return _run(
       ops,
@@ -217,6 +224,14 @@ final class WorkoutActions {
       ops.whereType<CreateWorkoutTemplate>().first.id,
     );
   }
+
+  /// Makes every weekday a rest day in one change set with one undo ("No
+  /// plan, I'll log as I go", D-089). Templates stay.
+  Future<WorkoutActionOutcome> clearPlan() => _run(
+    [for (final day in DayOfWeek.values) SetPlanDay(day, null)],
+    WorkoutActionLabels.planCleared,
+    planDayId(DayOfWeek.monday),
+  );
 
   Future<WorkoutActionOutcome> _run(
     List<ChangeOp> ops,

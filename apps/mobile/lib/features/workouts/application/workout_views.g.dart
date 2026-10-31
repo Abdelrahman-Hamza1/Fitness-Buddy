@@ -147,6 +147,55 @@ final class WorkoutPrsProvider
 
 String _$workoutPrsHash() => r'5261363288134613249e8c078ee45ef494610de2';
 
+/// The user's recent exercises, newest first, with their top set (A52 D3,
+/// D-089): the picker's "Your recent".
+
+@ProviderFor(recentExercises)
+final recentExercisesProvider = RecentExercisesProvider._();
+
+/// The user's recent exercises, newest first, with their top set (A52 D3,
+/// D-089): the picker's "Your recent".
+
+final class RecentExercisesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<RecentExercise>>,
+          List<RecentExercise>,
+          FutureOr<List<RecentExercise>>
+        >
+    with
+        $FutureModifier<List<RecentExercise>>,
+        $FutureProvider<List<RecentExercise>> {
+  /// The user's recent exercises, newest first, with their top set (A52 D3,
+  /// D-089): the picker's "Your recent".
+  RecentExercisesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'recentExercisesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$recentExercisesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<RecentExercise>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<RecentExercise>> create(Ref ref) {
+    return recentExercises(ref);
+  }
+}
+
+String _$recentExercisesHash() => r'e247889ecfa63ed4904d0fa9228f8eb6d75412d9';
+
 /// Every session, newest first, summarized: the history list (WO-040).
 
 @ProviderFor(workoutHistory)
@@ -191,7 +240,7 @@ final class WorkoutHistoryProvider
   }
 }
 
-String _$workoutHistoryHash() => r'a4e4e3b9bb43395ec7121b6b55a04a70ff34c79f';
+String _$workoutHistoryHash() => r'78ecb8173eaa789fd2eed91beeaef4da64ef5155';
 
 /// The latest sessions, newest first (the Workouts tab, with Repeat).
 
@@ -397,7 +446,7 @@ final class WorkoutWeekProvider
   }
 }
 
-String _$workoutWeekHash() => r'c2f0634d8aa32a105e6c0543544af11426cdae68';
+String _$workoutWeekHash() => r'e2791a7aea6f7506d23bc6398c7318d75632b2fa';
 
 /// The week containing [today]: trained days, and plan hints for today and
 /// later (WO-024: no "missed" days, ever).
@@ -422,6 +471,51 @@ final class WorkoutWeekFamily extends $Family
   @override
   String toString() => r'workoutWeekProvider';
 }
+
+/// The weekly plan's overview, or `null` without a plan (D-089).
+
+@ProviderFor(workoutPlanOverview)
+final workoutPlanOverviewProvider = WorkoutPlanOverviewProvider._();
+
+/// The weekly plan's overview, or `null` without a plan (D-089).
+
+final class WorkoutPlanOverviewProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<PlanOverview?>,
+          PlanOverview?,
+          FutureOr<PlanOverview?>
+        >
+    with $FutureModifier<PlanOverview?>, $FutureProvider<PlanOverview?> {
+  /// The weekly plan's overview, or `null` without a plan (D-089).
+  WorkoutPlanOverviewProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'workoutPlanOverviewProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$workoutPlanOverviewHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<PlanOverview?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<PlanOverview?> create(Ref ref) {
+    return workoutPlanOverview(ref);
+  }
+}
+
+String _$workoutPlanOverviewHash() =>
+    r'9f9b3ab35764997628c5f189e42d2d3b252720d4';
 
 /// The workout row of [date] (D20): its latest session; else, for today or
 /// a later day, its planned template; else `null` (no-plan users see

@@ -21,7 +21,7 @@ final class OfflineCatalog {
   new(this._db, {this.onError}) {
     _packSub = packChanges.listen((_) {
       _readiness = null;
-      _secondaryMuscles = null;
+      _exerciseColumns = null;
     });
   }
 
@@ -86,14 +86,18 @@ final class OfflineCatalog {
   ///
   /// Packs built before A37a (an A24 download newer than the bundled pack)
   /// have no `secondary_muscles` column and legacy primary codes: muscles
-  /// are read through `Muscle.fromCatalogCode` (A37 D4, PA5).
+  /// are read through `Muscle.fromCatalogCode` (A37 D4, PA5). Packs built
+  /// before A52 have no `popularity` column: no rank (A52 D1).
   Future<List<CatalogExercise>> exercises() => _guard(() async {
     if (!await _isReady()) return const <CatalogExercise>[];
-    final secondaries = await _hasSecondaryMuscles();
+    final columns = await _readExerciseColumns();
+    final secondaries = columns.contains('secondary_muscles');
+    final popularity = columns.contains('popularity');
     final rows = await _db
         .customSelect(
           'SELECT id, name_en, type, equipment, primary_muscle'
-          '${secondaries ? ', secondary_muscles' : ''} '
+          '${secondaries ? ', secondary_muscles' : ''}'
+          '${popularity ? ', popularity' : ''} '
           'FROM $_schema.exercises ORDER BY name_en, id',
         )
         .get();
@@ -104,7 +108,13 @@ final class OfflineCatalog {
               Equipment.fromCode(row.read<String>('equipment')),
             )
             case (final type?, final equipment?))
-          _exercise(row, type, equipment, secondaries: secondaries),
+          _exercise(
+            row,
+            type,
+            equipment,
+            secondaries: secondaries,
+            popularity: popularity,
+          ),
     ];
   }, const <CatalogExercise>[]);
 
@@ -113,6 +123,7 @@ final class OfflineCatalog {
     ExerciseType type,
     Equipment equipment, {
     required bool secondaries,
+    required bool popularity,
   }) {
     final primary = Muscle.fromCatalogCode(row.read<String>('primary_muscle'));
     return CatalogExercise(
@@ -129,21 +140,22 @@ final class OfflineCatalog {
               primary: primary,
             )
           : const [],
+      popularity: popularity ? row.read<int?>('popularity') : null,
     );
   }
 
-  // Whether the attached pack has `exercises.secondary_muscles`, asked once
-  // per attached pack: every attach or swap clears it (see the constructor),
-  // so an old → new swap reads the new column at once.
-  Future<bool>? _secondaryMuscles;
+  // The attached pack's `exercises` columns, asked once per attached pack:
+  // every attach or swap clears it (see the constructor), so an old → new
+  // swap reads the new columns at once. Packs before A37a lack
+  // `secondary_muscles`, packs before A52 lack `popularity`.
+  Future<Set<String>>? _exerciseColumns;
 
-  Future<bool> _hasSecondaryMuscles() => _secondaryMuscles ??= _db
+  Future<Set<String>> _readExerciseColumns() => _exerciseColumns ??= _db
       .customSelect(
-        "SELECT 1 FROM pragma_table_info('exercises', '$_schema') "
-        "WHERE name = 'secondary_muscles'",
+        "SELECT name FROM pragma_table_info('exercises', '$_schema')",
       )
       .get()
-      .then((rows) => rows.isNotEmpty);
+      .then((rows) => {for (final r in rows) r.read<String>('name')});
 
   /// Every English name and alias of each built-in exercise, display name
   /// first (WO-001, A37 D12): the picker searches them. Empty while no pack

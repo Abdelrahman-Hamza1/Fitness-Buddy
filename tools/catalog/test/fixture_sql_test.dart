@@ -72,9 +72,10 @@ void main() {
       // Re-pinned by A37a: the exercises table gains secondary_muscles.
       // Re-pinned by A17/A18: the fixture's mloukhiyeh dish is released
       // (ai-verified), its bare names move to stew_only, plate aliases added.
+      // Re-pinned by A52: the exercises table gains popularity.
       expect(
         sha256.convert(utf8.encode(withoutCities)).toString(),
-        '436ae0dfa56fdc6eb090c80eb44b00d918d0a17417e52d619ddaa9d27d9ef767',
+        '32e767fc321057ec76b79a50ceb5faf95af4c2a446f3641d1de33dcdeb7c4edf',
       );
     },
   );

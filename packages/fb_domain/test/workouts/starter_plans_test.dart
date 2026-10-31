@@ -78,6 +78,7 @@ void main() {
       weekStart: DayOfWeek.saturday,
       ids: SequenceIdGenerator(),
       nameOf: (t) => t.name,
+      itemsOf: (t) => t.items,
     );
     final creates = ops.whereType<CreateWorkoutTemplate>().toList();
     final days = ops.whereType<SetPlanDay>().toList();
@@ -91,6 +92,29 @@ void main() {
       everyElement(isIn(ids)),
     );
     expect(days.where((d) => d.templateId == null), hasLength(3));
+  });
+
+  test('WO-023 D-089 a plan holds only the exercises the user chose', () {
+    const mine = (exerciseId: 'ex:dumbbell_curl', sets: 4, reps: 12);
+    final ops = StarterPlan.pushPullLegs.ops(
+      days: StarterPlan.pushPullLegs.defaultDays(DayOfWeek.saturday),
+      weekStart: DayOfWeek.saturday,
+      ids: SequenceIdGenerator(),
+      nameOf: (t) => t.name,
+      itemsOf: (t) => t == StarterTemplate.pull ? [mine] : const [],
+    );
+    final creates = {
+      for (final c in ops.whereType<CreateWorkoutTemplate>()) c.draft.name: c,
+    };
+    expect(creates.keys, ['push', 'pull', 'legs']);
+    expect(creates['push']!.draft.items, isEmpty);
+    expect(creates['legs']!.draft.items, isEmpty);
+    final pull = creates['pull']!.draft.items.single;
+    expect((
+      exerciseId: pull.exerciseId,
+      sets: pull.sets,
+      reps: pull.reps,
+    ), mine);
   });
 
   test('WO-020 save as template uses targets from the session', () {

@@ -206,6 +206,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A48](A48-local-brands.md) | Local brands & packaged foods | Claude | A47 | M | new |  | ⏸ postponed (owner, D-087) |
 | [A49](A49-buddy-accuracy.md) | Buddy accuracy (backlog #148–#151) | Claude | A23b, **B09b** | M | new |  | ⬜ phase 2 |
 | [A50](A50-google-sign-in.md) | Google sign-in on the phone (backlog #200) | Claude | A33 | S | new |  | ✅ closed, awaiting merge (pulled forward by the owner, 2026-10-30) |
+| [A52](A52-workouts-ux.md) | Workouts UX overhaul (tab, logging maps, picker popularity, plans choose exercises) | Claude | A37a, A37c | L | new (owner UX critique 2026-10-31) |  | ✅ closed, awaiting merge |
 
 **A44 runs right after A22 (owner request, 2026-10-29):** the "Embrace" identity (palette, fonts, icon) lands before the remaining screens are built, an exception to "the number is the order" like the dish batches below.
 
