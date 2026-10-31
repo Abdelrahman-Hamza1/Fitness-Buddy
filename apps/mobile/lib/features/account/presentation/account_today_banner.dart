@@ -1,6 +1,7 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/features/account/application/account_removed_note.dart';
 import 'package:fb_mobile/features/account/application/guest_prompt.dart';
 import 'package:fb_mobile/features/account/application/sign_in_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,6 +39,24 @@ class _AccountTodayBannerState extends ConsumerState<AccountTodayBanner> {
     final l10n = context.l10n;
     final navigator = ref.read(appNavigatorProvider);
     void signIn() => navigator.push(const SignInRoute());
+    final removed = ref.watch(accountRemovedNoteProvider).value;
+    if (removed != null) {
+      // Once, on the new guest's Today after a deletion (#241).
+      return Padding(
+        padding: const EdgeInsetsDirectional.only(top: FbSpace.s3),
+        child: FbInlineBanner(
+          key: const ValueKey('account-removed-note'),
+          kind: FbInlineBannerKind.info,
+          message: switch (removed) {
+            AccountRemovedKind.account => l10n.accountRemovedNoteAccount,
+            AccountRemovedKind.local => l10n.accountRemovedNoteLocal,
+          },
+          actionLabel: l10n.accountRemovedNoteOk,
+          onAction: ref.read(accountRemovedNoteProvider.notifier).dismiss,
+          actionBelow: true,
+        ),
+      );
+    }
     final status = ref.watch(accountStatusProvider).value;
     if (status == AccountStatus.sessionExpired ||
         status == AccountStatus.readOnlyCopy) {

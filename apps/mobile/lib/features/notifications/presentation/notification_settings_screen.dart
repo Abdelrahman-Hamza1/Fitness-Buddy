@@ -100,6 +100,10 @@ class NotificationSettingsScreen extends ConsumerWidget {
         FbListRow(
           key: ValueKey('notif-${type.name}-time'),
           title: l10n.notifTime,
+          // NT-021 skips a reminder inside quiet hours: say so (#243).
+          subtitle: prefs.isQuiet(setting.minute)
+              ? l10n.notifTimeInQuiet
+              : null,
           trailing: Text(_time(context, setting.minute)),
           onTap: () => unawaited(() async {
             final minute = await _pickMinute(context, setting.minute);

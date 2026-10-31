@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:fb_api_client/fb_api_client.dart';
+import 'package:fb_mobile/core/account/account_removed_note_store.dart';
 import 'package:fb_mobile/core/account/account_transitions.dart';
 import 'package:fb_mobile/core/account/google_id_token_source.dart';
 import 'package:fb_mobile/core/account/profile_registry.dart';
@@ -329,6 +330,7 @@ final class AccountService {
     required this._google,
     required this._revoke,
     this._account,
+    this._removedNote,
   });
 
   final IdentityClient _identity;
@@ -339,6 +341,10 @@ final class AccountService {
   final ProfileRegistry _registry;
   final GoogleIdTokenSource _google;
   final Future<void> Function(String accessToken) _revoke;
+
+  /// The new guest's one-time "account deleted" note (#241); `null` in
+  /// tests that don't check it.
+  final AccountRemovedNoteStore? _removedNote;
   SignInFlow? _flow;
 
   /// Revokes an issued-but-abandoned session with its own bearer (A33
@@ -421,7 +427,7 @@ final class AccountService {
       rethrow;
     }
     try {
-      await _transitions.removeProfile(profileKey);
+      await _removeWithNote(profileKey, AccountRemovedKind.account);
     } on Object {
       throw const AccountDeletionFailure(
         AccountDeletionKind.localRemovalFailed,
@@ -437,8 +443,23 @@ final class AccountService {
   Future<void> removeLocalData(String profileKey) async {
     _flow?.cancel();
     _flow = null;
-    await _transitions.removeProfile(profileKey);
+    await _removeWithNote(profileKey, AccountRemovedKind.local);
     await _googleSignOut();
+  }
+
+  /// Removes [profileKey]; once the removal is journaled, the one-time
+  /// note is recorded for the new guest it switches to (#241). The note
+  /// shows only when that guest is the active profile, so a crash before
+  /// the journal (nothing recorded) or a removal that never reached the
+  /// switch never claims data was removed.
+  Future<void> _removeWithNote(String profileKey, AccountRemovedKind kind) {
+    final note = _removedNote;
+    return _transitions.removeProfile(
+      profileKey,
+      onJournaled: note == null
+          ? null
+          : (guestKey) => note.mark(kind, guestKey: guestKey),
+    );
   }
 
   /// Keeps the account: drops an unconfirmed deletion record of

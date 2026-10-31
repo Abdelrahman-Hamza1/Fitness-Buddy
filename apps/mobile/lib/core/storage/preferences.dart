@@ -55,6 +55,11 @@ abstract final class PreferenceKeys {
   static const notificationPermissionAsked =
       'fb.notifications.permission_asked.v1';
 
+  /// What the last account deletion removed, until the new guest's Today
+  /// has shown its one-time note (A35 D19, #241): device state, never
+  /// synced or sent.
+  static const accountRemovedNote = 'fb.account_removed_note.v1';
+
   /// The pending-scan list of [profileKey] in the [namespace] environment
   /// (`flavor|apiBaseUrl`, as the profile registry's).
   static String pendingScansFor(String namespace, String profileKey) =>

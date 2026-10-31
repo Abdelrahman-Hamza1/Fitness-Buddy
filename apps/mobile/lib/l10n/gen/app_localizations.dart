@@ -4734,6 +4734,18 @@ abstract class AppLocalizations {
   /// **'Couldn\'t create the export. Try again.'**
   String get exportFailed;
 
+  /// Export sheet: error banner when the export files couldn't be written to the phone's storage (often a full phone; UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the export on this phone. Free up some space, then try again.'**
+  String get exportFailedStorage;
+
+  /// Export sheet: error banner when the files were made but the phone's share sheet couldn't open (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the share sheet. Try again.'**
+  String get exportFailedSharing;
+
   /// Export sheet: banner action that repeats a failed export.
   ///
   /// In en, this message translates to:
@@ -6533,6 +6545,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Session expired. Sign in again to keep your account.'**
   String get accountSessionExpired;
+
+  /// Today, once after an account deletion (A35 D19): the server account and this phone's copy are gone; the app now runs as a new empty guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account and its data were deleted. You\'re starting fresh as a guest.'**
+  String get accountRemovedNoteAccount;
+
+  /// Today, once after removing only this phone's data (a guest's data, or after a deletion that couldn't be confirmed).
+  ///
+  /// In en, this message translates to:
+  /// **'This phone\'s data was removed. You\'re starting fresh as a guest.'**
+  String get accountRemovedNoteLocal;
+
+  /// Dismisses the one-time note after a deletion.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get accountRemovedNoteOk;
 
   /// Me › Account: kept copy after sign-out (AC-004).
   ///
@@ -8423,6 +8453,18 @@ abstract class AppLocalizations {
   /// **'The camera isn\'t available. You can type the code instead.'**
   String get barcodeCameraUnavailable;
 
+  /// Today: scans that waited for a connection were looked up and can be logged now (A28a D10).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 scanned product is ready} other{{count} scanned products are ready}}'**
+  String barcodeReadyHint(int count);
+
+  /// Today: opens the scanner, which lists the scanned products that are ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get barcodeReadyShow;
+
   /// Barcode scanner: section of scans that waited for a connection (A28a D10).
   ///
   /// In en, this message translates to:
@@ -9076,6 +9118,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Time'**
   String get notifTime;
+
+  /// Notification settings: under a reminder's time when it falls inside quiet hours, so the reminder is skipped (NT-021).
+  ///
+  /// In en, this message translates to:
+  /// **'In quiet hours: won\'t show'**
+  String get notifTimeInQuiet;
 
   /// Notification settings: the weigh-in reminder's day row.
   ///

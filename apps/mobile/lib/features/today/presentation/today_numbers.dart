@@ -194,6 +194,15 @@ class TodayNumbers extends ConsumerWidget {
           child: budgetText,
         ),
       },
+      // A41a D8 (#259): the target is maintenance while Ramadan lasts.
+      if (view.ramadanMaintain) ...[
+        const SizedBox(height: FbSpace.s1),
+        Text(
+          l10n.ramadanMaintainOn,
+          key: const ValueKey('today-ramadan-maintain'),
+          style: muted,
+        ),
+      ],
       const SizedBox(height: FbDensity.sectionGap),
       FbMacroBars(
         macros: [

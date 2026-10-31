@@ -371,3 +371,12 @@ Future<ProgressWeightView> progressWeight(Ref ref) async {
     goalKg: periodGoalKg(view.period, phases, view.today),
   );
 }
+
+/// The diary streams beneath the Progress reads, for "Try again" (#220): a
+/// failure cached in a stream is read afresh only when the stream itself
+/// is invalidated. Each family as a whole.
+final List<ProviderOrFamily> progressStreamProviders = [
+  _progressTotalsProvider,
+  _progressMarksProvider,
+  _firstDiaryDateProvider,
+];

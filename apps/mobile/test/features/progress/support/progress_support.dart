@@ -112,10 +112,13 @@ List<WeighIn> progressWeighIns() {
 /// The Progress tab's providers without a database: [progressToday], a
 /// Saturday week, fixed targets, one phase, [logs], the weigh-ins, and a
 /// fixed weekly workout summary. While [failLogs] returns true the diary
-/// read fails (error-state tests).
+/// read fails, while [failTraining] does the training plan's shift, while
+/// [failTargets] the stored targets' stream (error-state tests).
 List<Override> progressOverrides({
   List<DayLog>? logs,
   bool Function()? failLogs,
+  bool Function()? failTraining,
+  bool Function()? failTargets,
   Future<CheckInRun> Function()? checkIn,
 }) {
   final all = logs ?? progressLogs();
@@ -127,13 +130,15 @@ List<Override> progressOverrides({
     weekStartProvider.overrideWith((ref) => Stream.value(DayOfWeek.saturday)),
     ramadanOff,
     targetsDataProvider.overrideWith(
-      (ref) => Stream.value(
-        TargetsData(
-          profile: const Versioned(progressProfile, 1),
-          phases: [progressPhase],
-          settings: [Versioned(progressSettings, 1)],
-        ),
-      ),
+      (ref) => (failTargets?.call() ?? false)
+          ? Stream.error(StateError('synthetic targets read failure'))
+          : Stream.value(
+              TargetsData(
+                profile: const Versioned(progressProfile, 1),
+                phases: [progressPhase],
+                settings: [Versioned(progressSettings, 1)],
+              ),
+            ),
     ),
     weighInsProvider.overrideWith((ref) => Stream.value(progressWeighIns())),
     unitSystemProvider.overrideWith((ref) => Stream.value(UnitSystem.metric)),
@@ -147,7 +152,11 @@ List<Override> progressOverrides({
                   log,
             ],
     ),
-    trainingShiftProvider.overrideWith((ref, range) async => null),
+    trainingShiftProvider.overrideWith(
+      (ref, range) async => (failTraining?.call() ?? false)
+          ? throw StateError('synthetic plan read failure')
+          : null,
+    ),
     // A38: no check-in run or stored answers; the estimate reads [all].
     weeklyCheckInProvider.overrideWith(
       (ref) => checkIn?.call() ?? Future.value(CheckInRun.none),

@@ -1,4 +1,5 @@
 import 'package:fb_api_client/fb_api_client.dart';
+import 'package:fb_mobile/core/account/account_removed_note_store.dart';
 import 'package:fb_mobile/core/account/account_service.dart';
 import 'package:fb_mobile/core/account/account_transitions.dart';
 import 'package:fb_mobile/core/account/google_id_token_source.dart';
@@ -108,7 +109,13 @@ AccountService accountService(Ref ref) => AccountService(
   google: ref.watch(googleIdTokenSourceProvider),
   revoke: ref.watch(abandonedSessionRevokerProvider),
   account: ref.watch(fbApiProvider).account,
+  removedNote: ref.watch(accountRemovedNoteStoreProvider),
 );
+
+/// The one-time "account deleted" note's device store (#241).
+@Riverpod(keepAlive: true)
+AccountRemovedNoteStore accountRemovedNoteStore(Ref ref) =>
+    PreferencesAccountRemovedNoteStore(ref.watch(sharedPreferencesProvider));
 
 final class _SessionAdapter implements AccountSession {
   const new(this._service);

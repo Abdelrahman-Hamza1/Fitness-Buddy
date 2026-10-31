@@ -1,4 +1,5 @@
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_domain/testing.dart';
 import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/ids/id_generator.dart';
@@ -7,10 +8,12 @@ import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
+import 'package:fb_mobile/features/targets/presentation/targets_day_rollover.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show ProviderListenable;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../diary/support/diary_fixtures.dart';
 import 'targets_app_harness.dart';
@@ -278,5 +281,33 @@ void main() {
       ),
     );
     expect(outcome.reason, TargetsFailure.unavailable);
+  });
+
+  testWidgets('#197 the targets screens move to the next day at midnight '
+      'while they stay open; the timer ends with the screen', (tester) async {
+    final clock = ManualClock(
+      DateTime.utc(2026, 10, 17, 20, 59, 30),
+      offsetMinutes: 180,
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [clockProvider.overrideWithValue(clock)],
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: TargetsDayRollover(
+            child: Consumer(
+              builder: (context, ref, _) =>
+                  Text('${ref.watch(targetsTodayProvider)}'),
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(find.text('${LocalDate(2026, 10, 17)}'), findsOneWidget);
+    clock.advance(const Duration(seconds: 31));
+    await tester.pump(const Duration(seconds: 31));
+    expect(find.text('${LocalDate(2026, 10, 18)}'), findsOneWidget);
+    // Unmounted: no timer is left behind (the test fails if one is).
+    await tester.pumpWidget(const SizedBox.shrink());
   });
 }

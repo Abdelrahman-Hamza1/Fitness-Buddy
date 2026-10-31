@@ -277,6 +277,49 @@ void main() {
     expect((await h.checkIn()).isPending, isTrue);
   });
 
+  test("#233 two devices' check-ins of one week: answering one resolves the "
+      'other too; Undo brings both back', () async {
+    for (final keep in [false, true]) {
+      final h = _Harness();
+      await h.targets();
+      await h.history();
+      await h.actions.runWeeklyCheckIn();
+      final first = await h.checkIn();
+      // The other device's copy of the week's check-in arrives by sync.
+      h.clock.advance(const Duration(minutes: 1));
+      await h.apply([
+        CreateProposal(
+          h.ids.next(),
+          ProposalRowDraft(
+            kind: targetChangeKind,
+            codecVersion: adaptiveDraftCodecVersion,
+            draftJson: first.draftJson,
+          ),
+        ),
+      ]);
+      final rows = await h.rows(targetChangeKind);
+      expect(rows.where((r) => r.isPending), hasLength(2));
+      final newest = rows.firstWhere((r) => r.id != first.id);
+      final outcome = keep
+          ? await h.actions.keep(newest.id)
+          : await h.actions.accept(newest.id);
+      expect(outcome, isA<AdaptiveDone>(), reason: 'keep: $keep');
+      final after = {
+        for (final r in await h.rows(targetChangeKind)) r.id: r.status,
+      };
+      expect(after[first.id], ProposalStatus.discarded, reason: 'keep: $keep');
+      expect(
+        after[newest.id],
+        keep ? ProposalStatus.discarded : ProposalStatus.confirmed,
+      );
+      await h.undo.undo((outcome as AdaptiveDone).undoEntryId);
+      expect(
+        (await h.rows(targetChangeKind)).where((r) => r.isPending),
+        hasLength(2),
+      );
+    }
+  });
+
   test('a check-in made against targets the user changed since is stale: '
       'nothing is written', () async {
     final h = _Harness();

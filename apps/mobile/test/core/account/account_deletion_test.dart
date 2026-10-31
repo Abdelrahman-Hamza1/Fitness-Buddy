@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:fb_api_client/fb_api_client.dart';
 import 'package:fb_mobile/core/account/account_providers.dart';
+import 'package:fb_mobile/core/account/account_removed_note_store.dart';
 import 'package:fb_mobile/core/account/account_service.dart';
 import 'package:fb_mobile/core/account/account_transitions.dart';
 import 'package:fb_mobile/core/account/profile_registry.dart';
@@ -53,6 +54,23 @@ DioException _type(DioExceptionType type) => DioException(
   requestOptions: RequestOptions(path: '/v1/me'),
   type: type,
 );
+
+/// The one-time note in memory (#241), with the guest it is bound to.
+final class _Notes implements AccountRemovedNoteStore {
+  ({AccountRemovedKind kind, String guest})? stored;
+
+  @override
+  Future<void> mark(
+    AccountRemovedKind kind, {
+    required String guestKey,
+  }) async => stored = (kind: kind, guest: guestKey);
+
+  @override
+  Future<AccountRemovedKind?> take(
+    String activeKey, {
+    required bool removalPending,
+  }) async => throw UnimplementedError();
+}
 
 Matcher _kind(AccountDeletionKind kind) =>
     throwsA(isA<AccountDeletionFailure>().having((f) => f.kind, 'kind', kind));
@@ -181,6 +199,43 @@ void main() {
     expect(host.deleted, [accountKey]);
     expect(transitions.deleting, isFalse);
   });
+
+  test(
+    '#241 the note is recorded only once the removal is journaled, for '
+    'the guest it switches to; a refused or unconfirmed one records none',
+    () async {
+      final notes = _Notes();
+      AccountService withNotes() => AccountService(
+        identity: FakeIdentity(),
+        transitions: transitions,
+        registry: registry,
+        google: google,
+        revoke: (_) async {},
+        account: account,
+        removedNote: notes,
+      );
+      // Refused before any journal (a crash there is the same: no note).
+      await expectLater(
+        withNotes().removeLocalData('guest-9'),
+        throwsA(isA<DeletionRefused>()),
+      );
+      expect(notes.stored, isNull);
+      account.script.add(_type(DioExceptionType.connectionError));
+      await expectLater(
+        withNotes().deleteAccount(accountKey),
+        _kind(AccountDeletionKind.offline),
+      );
+      expect(notes.stored, isNull);
+      await withNotes().deleteAccount(accountKey);
+      final guest = (await registry.read()).activeKey;
+      expect(notes.stored, (kind: AccountRemovedKind.account, guest: guest));
+      // The new guest removes its own data: bound to the next guest.
+      await withNotes().removeLocalData(guest);
+      final next = (await registry.read()).activeKey;
+      expect(next, isNot(guest));
+      expect(notes.stored, (kind: AccountRemovedKind.local, guest: next));
+    },
+  );
 
   test('a removal is refused for a profile that is not active', () async {
     await expectLater(

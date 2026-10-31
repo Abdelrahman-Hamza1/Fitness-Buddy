@@ -19,6 +19,7 @@ export 'data/personal_food_mappers.dart'
 export 'data/personal_food_op_handler.dart';
 export 'data/personal_food_repository.dart';
 export 'presentation/barcode/barcode_scan_screen.dart';
+export 'presentation/barcode/ready_scans_hint.dart';
 export 'presentation/food_result_row.dart';
 export 'presentation/food_search_screen.dart';
 export 'presentation/food_sheet.dart';

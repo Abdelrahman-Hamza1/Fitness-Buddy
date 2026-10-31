@@ -76,7 +76,7 @@ final class DayViewProvider
   }
 }
 
-String _$dayViewHash() => r'c71cc526c040924bb56c28c70188956da3bfadc8';
+String _$dayViewHash() => r'422edf474f43b7401eabc3893553031d5ab12ad7';
 
 /// Auto-disposed by the screen's bounded prefetch subscriptions.
 

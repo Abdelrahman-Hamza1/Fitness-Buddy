@@ -178,3 +178,17 @@ Stream<List<DailyTotals>> _dailyTotals(Ref ref, LocalDate from, LocalDate to) =>
 @riverpod
 Stream<List<DayMark>> _dayMarks(Ref ref, LocalDate from, LocalDate to) =>
     ref.watch(diaryRepositoryProvider).watchDayMarks(from, to);
+
+/// What a "Try again" refreshes beneath the day's targets (#220): the
+/// stored targets' stream, the derived reads and the intake streams, so a
+/// failure cached in any of them is read afresh (`retryProgress`). Each
+/// family as a whole.
+final List<ProviderOrFamily> targetsRetryProviders = [
+  targetsDataProvider,
+  goalHistoryProvider,
+  targetsExplanationProvider,
+  _weekIntakeProvider,
+  _dailyTotalsProvider,
+  _dayMarksProvider,
+  dayTargetsProvider,
+];

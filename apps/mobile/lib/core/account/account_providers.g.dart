@@ -331,4 +331,57 @@ final class AccountServiceProvider
   }
 }
 
-String _$accountServiceHash() => r'c0ffb6d363f4bf2deaea569b9cbdd8230da145f2';
+String _$accountServiceHash() => r'926f726211263b204697cdb69a998a25d9c94380';
+
+/// The one-time "account deleted" note's device store (#241).
+
+@ProviderFor(accountRemovedNoteStore)
+final accountRemovedNoteStoreProvider = AccountRemovedNoteStoreProvider._();
+
+/// The one-time "account deleted" note's device store (#241).
+
+final class AccountRemovedNoteStoreProvider
+    extends
+        $FunctionalProvider<
+          AccountRemovedNoteStore,
+          AccountRemovedNoteStore,
+          AccountRemovedNoteStore
+        >
+    with $Provider<AccountRemovedNoteStore> {
+  /// The one-time "account deleted" note's device store (#241).
+  AccountRemovedNoteStoreProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'accountRemovedNoteStoreProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$accountRemovedNoteStoreHash();
+
+  @$internal
+  @override
+  $ProviderElement<AccountRemovedNoteStore> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AccountRemovedNoteStore create(Ref ref) {
+    return accountRemovedNoteStore(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AccountRemovedNoteStore value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AccountRemovedNoteStore>(value),
+    );
+  }
+}
+
+String _$accountRemovedNoteStoreHash() =>
+    r'490c2616013117e5d254fa881cd69a7c8f3c2d62';

@@ -348,21 +348,32 @@ final class AccountTransitions {
   /// The in-flight marker is released on every outcome (A35 fix round 2):
   /// an unfinished cleanup stays journaled (and holds the session) for
   /// recovery, but no longer blocks sign-in, sign-out or sync.
-  Future<void> removeProfile(String profileKey) async {
+  ///
+  /// [onJournaled] runs once the removal is journaled, before the switch,
+  /// with the new guest's key (#241: the one-time note is bound to it).
+  /// Its failure doesn't stop the removal.
+  Future<void> removeProfile(
+    String profileKey, {
+    Future<void> Function(String guestKey)? onJournaled,
+  }) async {
     try {
       await _live(() async {
         final snapshot = await _registry.read();
         if (snapshot.active.profileKey != profileKey) {
           throw const DeletionRefused();
         }
-        await _startRemoval(snapshot, profileKey);
+        await _startRemoval(snapshot, profileKey, onJournaled);
       });
     } finally {
       if (_deleting == profileKey) _deleting = null;
     }
   }
 
-  Future<void> _startRemoval(ProfilesSnapshot snapshot, String key) async {
+  Future<void> _startRemoval(
+    ProfilesSnapshot snapshot,
+    String key,
+    Future<void> Function(String guestKey)? onJournaled,
+  ) async {
     final (guestKey, guestSeq) = snapshot.nextGuest();
     final forgetRefs = await _session.storedCredentialRefs();
     final transition = AccountTransition(
@@ -380,6 +391,13 @@ final class AccountTransitions {
         deletion: PendingDeletion(profileKey: key, confirmed: true),
       ),
     );
+    if (onJournaled != null) {
+      try {
+        await onJournaled(guestKey);
+      } on Object {
+        // Only the note is lost.
+      }
+    }
     await _advance(transition, live: true);
     await _clearFinishedDeletion();
   }
@@ -464,7 +482,8 @@ final class AccountTransitions {
           (p) => p.profileKey == pending.profileKey,
         );
         if (present && current.activeKey == pending.profileKey) {
-          await _startRemoval(current, pending.profileKey);
+          // No note here: recovery has no record of what was asked.
+          await _startRemoval(current, pending.profileKey, null);
         } else {
           await _clearFinishedDeletion();
         }

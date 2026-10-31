@@ -5,6 +5,7 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
+import 'package:fb_mobile/features/foods/foods.dart' show ReadyScansTodayHint;
 import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/sync/sync.dart';
 import 'package:fb_mobile/features/today/presentation/today_numbers.dart';
@@ -116,8 +117,8 @@ class DayPage extends ConsumerWidget {
 /// The top of a day page, as an ordered list (A14 §3.5): the day's numbers →
 /// the incomplete-day note (A16 D11, a marked day only) → [A22: the
 /// to-confirm strip] → the weight card → the workout row (A37 D20: after
-/// logging; A37c adds the planned day) → the account banner (A33, Today
-/// only).
+/// logging; A37c adds the planned day) → the ready-scans hint (#229) → the
+/// account banner (A33) → the sync line (Today only).
 /// Later steps add one entry here instead of nesting widgets.
 class _DayHeader extends StatelessWidget {
   const new({
@@ -144,6 +145,7 @@ class _DayHeader extends StatelessWidget {
       if (incomplete) _IncompleteNote(date: date),
       WeightCard(date: date, isToday: isToday),
       WorkoutTodayRow(date: date),
+      if (isToday) const ReadyScansTodayHint(),
       if (isToday) const AccountTodayBanner(),
       if (isToday) const SyncTodayLine(),
     ],

@@ -70,9 +70,15 @@ class ExportSheetActions extends ConsumerWidget {
               _ => l10n.exportDismissed,
             },
           ),
-          ExportFailed() => FbInlineBanner(
+          ExportFailed(:final kind) => FbInlineBanner(
             kind: FbInlineBannerKind.error,
-            message: l10n.exportFailed,
+            // The stage that failed, in plain words (#129).
+            message: switch (kind) {
+              ExportFailureKind.storage => l10n.exportFailedStorage,
+              ExportFailureKind.sharing => l10n.exportFailedSharing,
+              ExportFailureKind.snapshot ||
+              ExportFailureKind.encoding => l10n.exportFailed,
+            },
             actionBelow: true,
             actionLabel: l10n.exportTryAgain,
             onAction: export,

@@ -349,4 +349,50 @@ void main() {
       expect(c.read(diaryActionsControllerProvider).hidden, isEmpty);
     },
   );
+
+  test('#258 DY-012 the day waits for its meal mode, so a Ramadan day never '
+      'shows the normal meals first; a failed mode read falls back to '
+      'them', () async {
+    ProviderContainer withSlots(
+      DiaryHarness h,
+      Future<DaySlots> Function() slots,
+    ) {
+      final c = ProviderContainer(
+        overrides: [
+          diaryRepositoryProvider.overrideWithValue(DiaryRepository(h.db)),
+          changeSetApplierProvider.overrideWithValue(h.applier),
+          clockProvider.overrideWithValue(h.clock),
+          diaryApplyProvider.overrideWithValue(h.applier.apply),
+          ramadanOff,
+          daySlotsProvider.overrideWith((ref, date) => slots()),
+        ],
+      );
+      addTearDown(c.dispose);
+      return c;
+    }
+
+    final h = DiaryHarness();
+    final pending = Completer<DaySlots>();
+    final c = withSlots(h, () => pending.future);
+    final sub = c.listen(dayViewProvider(today), (_, _) {});
+    addTearDown(sub.close);
+    final stored = await c.read(dayProvider(today).future);
+    expect(c.read(dayViewProvider(today)).isLoading, isTrue);
+    pending.complete(DaySlots(mode: SlotMode.ramadan, slots: stored.slots));
+    final shown = await view(c, today);
+    expect(shown.layout.sections.map((s) => s.slot?.id), [
+      RamadanSlots.suhoorId,
+      RamadanSlots.iftarId,
+      RamadanSlots.snacksId,
+    ]);
+
+    final f = withSlots(
+      DiaryHarness(),
+      () async => throw StateError('synthetic'),
+    );
+    final normal = await view(f, today);
+    expect(normal.layout.sections.map((s) => s.slot?.mode).toSet(), {
+      SlotMode.normal,
+    });
+  });
 }

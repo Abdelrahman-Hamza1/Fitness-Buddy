@@ -107,4 +107,17 @@ for source in "FB_GOOGLE_SERVER_CLIENT_ID=$bad" "FB_GOOGLE_CLIENTS_FILE=$work/ba
   if grep -qF "$bad" "$work/output"; then echo 'build-android-selftest: value leaked' >&2; exit 1; fi
   [[ -z "$(find "$work/tmp" -type f -print -quit)" ]]
 done
-echo 'build-android-selftest: PASS (merge, validation, privacy, cleanup, forks, dev, Google ID only with the release key)'
+# #216: a res file removed since the last build cleans the stale intermediates;
+# an unchanged set keeps them.
+res="$work/repo/apps/mobile/android/app/src/main/res/drawable"
+inter="$work/repo/apps/mobile/build/app/intermediates"
+mkdir -p "$res" "$inter"
+touch "$res/launch_background.xml" "$res/splash.xml"
+FLAVOR=dev run
+touch "$inter/marker"
+FLAVOR=dev run
+[[ -f "$inter/marker" ]] || { echo 'build-android-selftest: intermediates cleaned without a removed resource' >&2; exit 1; }
+rm "$res/launch_background.xml"
+FLAVOR=dev run
+[[ ! -e "$inter/marker" ]] || { echo 'build-android-selftest: stale intermediates kept after a resource was removed' >&2; exit 1; }
+echo 'build-android-selftest: PASS (merge, validation, privacy, cleanup, forks, dev, Google ID only with the release key, stale resources)'

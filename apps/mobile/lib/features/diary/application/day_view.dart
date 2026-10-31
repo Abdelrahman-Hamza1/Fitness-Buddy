@@ -31,8 +31,14 @@ AsyncValue<DayView> dayView(Ref ref, LocalDate date) {
   });
   final raw = ref.watch(dayProvider(date));
   final hidden = ref.watch(diaryActionsControllerProvider).hidden;
-  // DY-012: a Ramadan fasting day shows Suhoor / Iftar / Snacks.
-  final mode = ref.watch(daySlotsProvider(date)).value?.mode ?? SlotMode.normal;
+  // DY-012: a Ramadan fasting day shows Suhoor / Iftar / Snacks. The page
+  // waits for the day's mode on its first read, so a Ramadan day never
+  // flashes the normal meals first (#258); a failed read falls back to them.
+  final slots = ref.watch(daySlotsProvider(date));
+  if (raw.hasValue && !slots.hasValue && !slots.hasError) {
+    return const AsyncLoading();
+  }
+  final mode = slots.value?.mode ?? SlotMode.normal;
   return raw.whenData(
     (day) => DayView(
       raw: day,

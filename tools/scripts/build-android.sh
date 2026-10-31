@@ -174,6 +174,25 @@ write_defines() {
   define="--dart-define-from-file=$defines_file"
 }
 
+# #216: Gradle's incremental resource merge can keep a res file that was
+# deleted or moved since the last build (A44 moved the splash drawable: "drawable/
+# launch_background not found"). When a file under android/app/src/*/res is
+# gone since the last build here (or on the first build with this check over
+# an existing build folder), the app module's intermediates start afresh.
+clean_stale_resources() {
+  local list="build/.fb-android-res-files" now
+  now="$({ find android/app/src -path '*/res/*' -type f 2>/dev/null || true; } | LC_ALL=C sort)"
+  if [[ -d build/app/intermediates ]] && {
+    [[ ! -f "$list" ]] \
+      || [[ -n "$(LC_ALL=C comm -23 "$list" <(printf '%s\n' "$now") | sed '/^$/d')" ]]
+  }; then
+    log "Android resources removed since the last build: cleaning build/app/intermediates"
+    rm -rf -- build/app/intermediates
+  fi
+  mkdir -p build
+  printf '%s\n' "$now" >"$list"
+}
+
 main() {
   define="--dart-define-from-file=config/$FLAVOR.json"
   local number=()
@@ -186,6 +205,7 @@ main() {
   trap 'exit 130' INT
   trap 'exit 143' TERM
   cd "$app"
+  clean_stale_resources
 
   if [[ "$MODE" == debug ]]; then
     write_defines

@@ -11,6 +11,7 @@ import 'package:fb_mobile/features/targets/presentation/macro_summary.dart';
 import 'package:fb_mobile/features/targets/presentation/manual_target_sheet.dart';
 import 'package:fb_mobile/features/targets/presentation/shifting_sheet.dart';
 import 'package:fb_mobile/features/targets/presentation/target_explanation.dart';
+import 'package:fb_mobile/features/targets/presentation/targets_day_rollover.dart';
 import 'package:fb_mobile/features/targets/presentation/targets_feedback.dart';
 import 'package:fb_mobile/features/targets/presentation/targets_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,41 +33,43 @@ class TargetsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final view = ref.watch(targetsViewProvider);
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.targetsTitle)),
-      body: switch (view) {
-        AsyncData(value: final view?) => TargetsBody(view: view),
-        AsyncData() => FbEmptyState(
-          icon: FbIcons.me,
-          title: l10n.meSetUpTargets,
-          message: l10n.targetsNotSetUpMessage,
-          action: FbButton.primary(
-            label: l10n.meSetUpTargets,
-            onPressed: () =>
-                ref.read(appNavigatorProvider).push(const SetupRoute()),
+    return TargetsDayRollover(
+      child: Scaffold(
+        appBar: AppBar(title: Text(l10n.targetsTitle)),
+        body: switch (view) {
+          AsyncData(value: final view?) => TargetsBody(view: view),
+          AsyncData() => FbEmptyState(
+            icon: FbIcons.me,
+            title: l10n.meSetUpTargets,
+            message: l10n.targetsNotSetUpMessage,
+            action: FbButton.primary(
+              label: l10n.meSetUpTargets,
+              onPressed: () =>
+                  ref.read(appNavigatorProvider).push(const SetupRoute()),
+            ),
           ),
-        ),
-        AsyncError() => Padding(
-          padding: const EdgeInsetsDirectional.all(FbSpace.s4),
-          child: FbInlineBanner(
-            kind: FbInlineBannerKind.error,
-            message: l10n.targetsLoadFailed,
-            actionLabel: l10n.targetsTryAgain,
-            onAction: () => ref.invalidate(targetsViewProvider),
+          AsyncError() => Padding(
+            padding: const EdgeInsetsDirectional.all(FbSpace.s4),
+            child: FbInlineBanner(
+              kind: FbInlineBannerKind.error,
+              message: l10n.targetsLoadFailed,
+              actionLabel: l10n.targetsTryAgain,
+              onAction: () => ref.invalidate(targetsViewProvider),
+            ),
           ),
-        ),
-        AsyncLoading() => const Padding(
-          padding: EdgeInsetsDirectional.all(FbSpace.s4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: FbSpace.s4,
-            children: [
-              FbSkeleton.card(height: 160),
-              FbSkeleton.card(height: 200),
-            ],
+          AsyncLoading() => const Padding(
+            padding: EdgeInsetsDirectional.all(FbSpace.s4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: FbSpace.s4,
+              children: [
+                FbSkeleton.card(height: 160),
+                FbSkeleton.card(height: 200),
+              ],
+            ),
           ),
-        ),
-      },
+        },
+      ),
     );
   }
 }

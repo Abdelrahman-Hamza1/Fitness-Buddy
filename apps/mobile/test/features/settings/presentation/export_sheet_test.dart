@@ -76,8 +76,11 @@ void main() {
     }
 
     sharer.fail = true;
-    await exportAndWait("Couldn't create the export. Try again.");
-    expect(find.text("Couldn't create the export. Try again."), findsOneWidget);
+    await exportAndWait("Couldn't open the share sheet. Try again.");
+    expect(
+      find.text("Couldn't open the share sheet. Try again."),
+      findsOneWidget,
+    );
     expect(find.textContaining('canary'), findsNothing);
 
     sharer.fail = false;
@@ -103,6 +106,45 @@ void main() {
       ),
       findsOneWidget,
     );
+    await unmountApp(tester, container);
+  });
+
+  testWidgets('#129 UX-052 a storage failure says to free up space', (
+    tester,
+  ) async {
+    final service = DataExportService(
+      readSnapshot: ({required settingNames}) async => ExportSnapshot(
+        schemaVersion: 4,
+        rows: {for (final spec in exportRegistryV1) spec.entity: []},
+      ),
+      temporaryDirectory: () async => throw const FileSystemException('canary'),
+      sharer: _Sharer(),
+      now: () => DateTime(2026, 10, 24),
+      appInfo: () async => (version: '0.1.0', build: '1'),
+    );
+    final container = await pumpAt(
+      tester,
+      phone: phoneOf(prodConfig),
+      overrides: [
+        dataExportServiceProvider.overrideWithValue(service),
+        ...fakeSettings(),
+      ],
+    );
+    await openMe(tester);
+    await tester.tap(find.widgetWithText(FbListRow, 'Export your data'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Export'));
+    const banner =
+        "Couldn't save the export on this phone. Free up some space, then try "
+        'again.';
+    for (var i = 0; i < 100 && find.text(banner).evaluate().isEmpty; i++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 20)),
+      );
+      await tester.pump();
+    }
+    expect(find.text(banner), findsOneWidget);
+    expect(find.textContaining('canary'), findsNothing);
     await unmountApp(tester, container);
   });
 

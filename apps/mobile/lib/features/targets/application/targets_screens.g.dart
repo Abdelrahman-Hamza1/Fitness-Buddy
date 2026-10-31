@@ -8,20 +8,23 @@ part of 'targets_screens.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Today in the device zone, read once per screen (the `SetupFlow` rule;
-/// the targets feature doesn't import Today's date provider).
+/// Today in the device zone for the open screen (the targets feature
+/// doesn't import Today's date provider). The screens move it to the next
+/// day at midnight while they stay open (`TargetsDayRollover`, #197).
 
 @ProviderFor(targetsToday)
 final targetsTodayProvider = TargetsTodayProvider._();
 
-/// Today in the device zone, read once per screen (the `SetupFlow` rule;
-/// the targets feature doesn't import Today's date provider).
+/// Today in the device zone for the open screen (the targets feature
+/// doesn't import Today's date provider). The screens move it to the next
+/// day at midnight while they stay open (`TargetsDayRollover`, #197).
 
 final class TargetsTodayProvider
     extends $FunctionalProvider<LocalDate, LocalDate, LocalDate>
     with $Provider<LocalDate> {
-  /// Today in the device zone, read once per screen (the `SetupFlow` rule;
-  /// the targets feature doesn't import Today's date provider).
+  /// Today in the device zone for the open screen (the targets feature
+  /// doesn't import Today's date provider). The screens move it to the next
+  /// day at midnight while they stay open (`TargetsDayRollover`, #197).
   TargetsTodayProvider._()
     : super(
         from: null,

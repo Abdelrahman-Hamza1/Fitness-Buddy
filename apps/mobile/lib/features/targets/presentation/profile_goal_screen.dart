@@ -11,6 +11,7 @@ import 'package:fb_mobile/features/targets/presentation/goal_form.dart'
 import 'package:fb_mobile/features/targets/presentation/goal_sheet.dart';
 import 'package:fb_mobile/features/targets/presentation/phase_history.dart';
 import 'package:fb_mobile/features/targets/presentation/profile_edit_sheet.dart';
+import 'package:fb_mobile/features/targets/presentation/targets_day_rollover.dart';
 import 'package:fb_mobile/features/targets/presentation/targets_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
@@ -28,19 +29,21 @@ class ProfileGoalScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final view = ref.watch(profileGoalViewProvider);
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.profileGoalTitle)),
-      body: switch (view) {
-        AsyncData(value: final view?) => _Body(view: view),
-        AsyncData() => _NotSetUp(
-          onSetUp: () =>
-              ref.read(appNavigatorProvider).push(const SetupRoute()),
-        ),
-        AsyncError() => _LoadFailed(
-          onRetry: () => ref.invalidate(profileGoalViewProvider),
-        ),
-        AsyncLoading() => const _Skeleton(),
-      },
+    return TargetsDayRollover(
+      child: Scaffold(
+        appBar: AppBar(title: Text(l10n.profileGoalTitle)),
+        body: switch (view) {
+          AsyncData(value: final view?) => _Body(view: view),
+          AsyncData() => _NotSetUp(
+            onSetUp: () =>
+                ref.read(appNavigatorProvider).push(const SetupRoute()),
+          ),
+          AsyncError() => _LoadFailed(
+            onRetry: () => ref.invalidate(profileGoalViewProvider),
+          ),
+          AsyncLoading() => const _Skeleton(),
+        },
+      ),
     );
   }
 }

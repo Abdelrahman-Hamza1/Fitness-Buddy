@@ -288,13 +288,18 @@ final class AdaptiveActions {
         final current = _current(data, today);
         if (current == null) return const _Refuse(AdaptiveFailure.stale);
         final trend = TrendWeight().compute(await readWeighIns());
-        return _acceptPlan(
+        final plan = _acceptPlan(
           record,
           kcal == null ? draft : draft.copyWith(toKcal: kcal),
           data: data,
           today: today,
           weight: _weight(trend, today, current.value),
         );
+        if (plan is! _Write) return plan;
+        return _Write([
+          ...plan.ops,
+          ...await _sameWeekDiscards(record, draft),
+        ], origin: plan.origin);
       });
 
   /// Keeps the current target: check-in [proposalId] is resolved as
@@ -305,8 +310,28 @@ final class AdaptiveActions {
         if (record == null || !record.isPending) {
           return const _Refuse(AdaptiveFailure.invalid);
         }
-        return _Write([_discard(record)], origin: Origin.proposal(proposalId));
+        final draft = TargetChangeDraft.tryParse(record.draftJson);
+        return _Write([
+          _discard(record),
+          if (draft != null) ...await _sameWeekDiscards(record, draft),
+        ], origin: Origin.proposal(proposalId));
       });
+
+  /// The other pending check-ins of [draft]'s week, discarded with the one
+  /// the user answered (#233): two devices can each create the week's
+  /// check-in before syncing; the card shows the newest, and the other
+  /// would stay pending until the next week's run.
+  Future<List<ResolveProposal>> _sameWeekDiscards(
+    ProposalRecord record,
+    TargetChangeDraft draft,
+  ) async => [
+    for (final other in await proposals.byKind(targetChangeKind))
+      if (other.id != record.id &&
+          other.isPending &&
+          TargetChangeDraft.tryParse(other.draftJson)?.weekStart ==
+              draft.weekStart)
+        _discard(other),
+  ];
 
   /// Restores the target an automatic check-in [proposalId] replaced, as a
   /// direct revision with Undo. Refused as stale when today's target is no

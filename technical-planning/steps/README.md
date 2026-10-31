@@ -277,6 +277,12 @@ Chores and backlog sweeps that aren't steps (one combined branch, one Codex revi
 - Closed as already done or not reproducible: #28, #29, #31 (pinned by A07), #99, #101.
 - Assessed and left open: #63 (needs a repair rule in the sync apply path).
 
+**Backlog sweep 2 (2026-10-31)**, branch `chore/backlog-sweep-2`: follow-ups from A28a, A38, A35, A40, A41a that a daily user feels (TD-105 phase 1).
+- Fixed: #197 targets screens follow midnight, #220 Progress Try again refreshes every upstream read, #229 "N scanned products are ready" on Today, #233 a same-week duplicate check-in is resolved with the answered one, #241 one-time "account deleted" note on the new Today, #243 "In quiet hours: won't show" under a reminder time, #258 no flash of the normal meals on a Ramadan day, #259 "Maintaining during Ramadan" under the target, #216 `make build-android` cleans stale intermediates after a removed res file.
+- Partly: #129 storage and sharing export failures have their own copy.
+- New: #267 (check the Ramadan-day startup benchmark next season).
+- Assessed and left open: #103 DS divider (A42 re-renders the personal food form golden: after A42), #230 recompute from the adaptive expenditure (changes the targets math; needs the estimate pipeline in `TargetsActions`, a targets step), #255 maintain edge cases (weekly-mode math), #186 resume trigger for the pack check (bootstrap path, A42's area), #203/#236 (bigger UI wiring), #226 (phase 2).
+
 ## 5. Milestones
 
 | Milestone | Reached when | Exit (the milestone is reached when…) | Server |

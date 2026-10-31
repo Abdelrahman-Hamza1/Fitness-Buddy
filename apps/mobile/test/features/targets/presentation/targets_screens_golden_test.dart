@@ -1,5 +1,7 @@
 import 'package:alchemist/alchemist.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_domain/testing.dart';
+import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -72,6 +74,11 @@ TargetsView _targetsView(TargetSettingsRecord version) {
   );
 }
 
+// The screen's midnight rollover reads the clock (#197).
+final List<Override> _fixedClock = [
+  clockProvider.overrideWithValue(ManualClock(DateTime.utc(2026, 10, 17, 12))),
+];
+
 Future<void> _golden(
   String name,
   String description,
@@ -95,7 +102,7 @@ Future<void> _golden(
               width: 360,
               height: height,
               child: ProviderScope(
-                overrides: overrides,
+                overrides: [..._fixedClock, ...overrides],
                 child: phoneApp(
                   screen(),
                   brightness: brightness,

@@ -97,4 +97,32 @@ void main() {
     expect(find.text("Couldn't load your targets."), findsNothing);
     expect(_big(tester).caption, 'kcal left today');
   });
+
+  testWidgets('#259 A41a D8 a Ramadan day of a "maintain" season says the '
+      'target is maintenance; other days say nothing', (tester) async {
+    final maintain = targetsOn(
+      weekSat,
+      settings: [sampleVersion(mode: TargetMode.fixed)],
+      goals: [sampleLoseGoal()],
+      ramadanMaintain: true,
+    );
+    expect(maintain.ramadanMaintain, isTrue);
+    await pumpBlock(tester, _block(weekSat, 900), [
+      dayTargetsProvider.overrideWith((ref, date) async => maintain),
+      setupStatusProvider.overrideWith((ref) => SetupStatus.setUp),
+    ]);
+    expect(find.text('Maintaining during Ramadan'), findsOneWidget);
+
+    await pumpBlock(tester, _block(weekSat, 900), [
+      dayTargetsProvider.overrideWith(
+        (ref, date) async => targetsOn(
+          weekSat,
+          settings: [sampleVersion(mode: TargetMode.fixed)],
+          goals: [sampleLoseGoal()],
+        ),
+      ),
+      setupStatusProvider.overrideWith((ref) => SetupStatus.setUp),
+    ]);
+    expect(find.text('Maintaining during Ramadan'), findsNothing);
+  });
 }

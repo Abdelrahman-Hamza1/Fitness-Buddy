@@ -34,6 +34,7 @@ sealed class TodayNumbersView {
       carbs: macro(totals.carbs, macros.carbsGrams),
       fat: macro(totals.fat, macros.fatGrams),
       fiber: macro(totals.fiber, macros.fiberGrams),
+      ramadanMaintain: targets.ramadanMaintain,
     );
   }
 }
@@ -89,6 +90,7 @@ final class TargetNumbers extends TodayNumbersView {
     required this.carbs,
     required this.fat,
     required this.fiber,
+    this.ramadanMaintain = false,
   }) : super._();
 
   /// The day's calorie target, whole (as shown).
@@ -111,6 +113,10 @@ final class TargetNumbers extends TodayNumbersView {
 
   /// Fiber eaten and its target.
   final MacroNumbers fiber;
+
+  /// The target is maintenance during Ramadan, not the goal's (A41a D8,
+  /// #259): the block says so next to it.
+  final bool ramadanMaintain;
 
   /// The shown target minus the shown eaten, so the three numbers always
   /// agree (D12); negative when over.

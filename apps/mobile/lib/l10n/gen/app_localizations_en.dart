@@ -3329,6 +3329,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportFailed => 'Couldn\'t create the export. Try again.';
 
   @override
+  String get exportFailedStorage =>
+      'Couldn\'t save the export on this phone. Free up some space, then try again.';
+
+  @override
+  String get exportFailedSharing =>
+      'Couldn\'t open the share sheet. Try again.';
+
+  @override
   String get exportTryAgain => 'Try again';
 
   @override
@@ -4504,6 +4512,17 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get accountSessionExpired =>
       'Session expired. Sign in again to keep your account.';
+
+  @override
+  String get accountRemovedNoteAccount =>
+      'Your account and its data were deleted. You\'re starting fresh as a guest.';
+
+  @override
+  String get accountRemovedNoteLocal =>
+      'This phone\'s data was removed. You\'re starting fresh as a guest.';
+
+  @override
+  String get accountRemovedNoteOk => 'OK';
 
   @override
   String get accountReadOnly => 'This is a read-only copy. Sign in to edit.';
@@ -5913,6 +5932,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'The camera isn\'t available. You can type the code instead.';
 
   @override
+  String barcodeReadyHint(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count scanned products are ready',
+      one: '1 scanned product is ready',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get barcodeReadyShow => 'Show';
+
+  @override
   String get barcodePendingTitle => 'Scanned earlier';
 
   @override
@@ -6358,6 +6391,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifTime => 'Time';
+
+  @override
+  String get notifTimeInQuiet => 'In quiet hours: won\'t show';
 
   @override
   String get notifDay => 'Day';

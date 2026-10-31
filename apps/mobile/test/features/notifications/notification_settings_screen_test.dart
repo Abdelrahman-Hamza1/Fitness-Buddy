@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/settings/settings_store.dart';
 import 'package:fb_mobile/features/notifications/notifications.dart';
@@ -72,6 +74,40 @@ void main() {
     await settleWrites(tester);
     expect(phone.notificationPlatform.requests, 1);
     expect(find.byKey(const ValueKey('notif-permission')), findsNothing);
+    await unmountApp(tester, container);
+  });
+
+  testWidgets('NT-021 #243 a reminder time inside quiet hours says it '
+      "won't show; outside them it says nothing", (tester) async {
+    final container = await pumpAt(tester);
+    // Started like a tap's write (in the test zone), then settled.
+    unawaited(
+      container
+          .read(settingsActionsProvider)
+          .setNotificationPrefs(
+            NotificationPrefs.defaults.copyWith(quietStart: 20 * 60),
+          ),
+    );
+    await settleWrites(tester);
+    await openMe(tester);
+    await tester.tap(find.byKey(const ValueKey('settings-notifications')));
+    await tester.pumpAndSettle();
+    // The log reminder (21:00) falls in 20:00–07:00; the weigh-in (08:00)
+    // doesn't.
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('notif-logReminder-time')),
+        matching: find.text("In quiet hours: won't show"),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('notif-weighIn-time')),
+        matching: find.text("In quiet hours: won't show"),
+      ),
+      findsNothing,
+    );
     await unmountApp(tester, container);
   });
 

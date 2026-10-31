@@ -4518,6 +4518,14 @@
   "@exportFailed": {
     "description": "Export sheet: error banner when the files could not be made or shared (UX-052)."
   },
+  "exportFailedStorage": "Couldn't save the export on this phone. Free up some space, then try again.",
+  "@exportFailedStorage": {
+    "description": "Export sheet: error banner when the export files couldn't be written to the phone's storage (often a full phone; UX-052)."
+  },
+  "exportFailedSharing": "Couldn't open the share sheet. Try again.",
+  "@exportFailedSharing": {
+    "description": "Export sheet: error banner when the files were made but the phone's share sheet couldn't open (UX-052)."
+  },
   "exportTryAgain": "Try again",
   "@exportTryAgain": {
     "description": "Export sheet: banner action that repeats a failed export."
@@ -5693,6 +5701,12 @@
   "@accountSessionExpired": {
     "description": "Me › Account and banner: registered session expired (A33 D9)."
   },
+  "accountRemovedNoteAccount": "Your account and its data were deleted. You're starting fresh as a guest.",
+  "@accountRemovedNoteAccount": {"description": "Today, once after an account deletion (A35 D19): the server account and this phone's copy are gone; the app now runs as a new empty guest."},
+  "accountRemovedNoteLocal": "This phone's data was removed. You're starting fresh as a guest.",
+  "@accountRemovedNoteLocal": {"description": "Today, once after removing only this phone's data (a guest's data, or after a deletion that couldn't be confirmed)."},
+  "accountRemovedNoteOk": "OK",
+  "@accountRemovedNoteOk": {"description": "Dismisses the one-time note after a deletion."},
   "accountReadOnly": "This is a read-only copy. Sign in to edit.",
   "@accountReadOnly": {
     "description": "Me › Account: kept copy after sign-out (AC-004)."
@@ -6428,6 +6442,10 @@
   "@barcodeCameraUnavailable": {
     "description": "Barcode scanner: shown in place of the camera when there is no usable camera."
   },
+  "barcodeReadyHint": "{count, plural, =1{1 scanned product is ready} other{{count} scanned products are ready}}",
+  "@barcodeReadyHint": {"description": "Today: scans that waited for a connection were looked up and can be logged now (A28a D10).", "placeholders": {"count": {"type": "int"}}},
+  "barcodeReadyShow": "Show",
+  "@barcodeReadyShow": {"description": "Today: opens the scanner, which lists the scanned products that are ready."},
   "barcodePendingTitle": "Scanned earlier",
   "@barcodePendingTitle": {
     "description": "Barcode scanner: section of scans that waited for a connection (A28a D10)."
@@ -6908,6 +6926,8 @@
   "@notifSectionTypes": {"description": "Notification settings: the section header over the reminder types."},
   "notifTime": "Time",
   "@notifTime": {"description": "Notification settings: a reminder's time row."},
+  "notifTimeInQuiet": "In quiet hours: won't show",
+  "@notifTimeInQuiet": {"description": "Notification settings: under a reminder's time when it falls inside quiet hours, so the reminder is skipped (NT-021)."},
   "notifDay": "Day",
   "@notifDay": {"description": "Notification settings: the weigh-in reminder's day row."},
   "notifSaved": "Notifications updated",

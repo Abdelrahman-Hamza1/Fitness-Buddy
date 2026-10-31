@@ -61,13 +61,28 @@ DayTargets targetsOn(
   LocalDate date, {
   List<TargetSettingsRecord>? settings,
   List<DayIntake> intake = const [],
+  List<GoalPhaseRecord> goals = const [],
+  bool ramadanMaintain = false,
 }) => TargetsTimeline.day(
   date: date,
   settings: settings ?? [sampleVersion()],
   profile: sampleProfile,
   bodyWeightKg: 80,
   intake: intake,
+  goals: goals,
+  ramadanMaintain: ramadanMaintain,
 )!;
+
+/// "Lose 0.5 kg a week" from two weeks before [weekSat] (A41a: what
+/// "maintain during Ramadan" leaves out).
+GoalPhaseRecord sampleLoseGoal() => GoalPhaseRecord(
+  id: _id(90),
+  revision: 1,
+  start: weekSat.plusDays(-14),
+  type: GoalType.lose,
+  expression: GoalExpression.weekly(-.5),
+  weightInputUnit: MassUnit.kilogram,
+);
 
 /// A day's totals: [kcal] with fixed macros.
 Nutrients eatenTotals(

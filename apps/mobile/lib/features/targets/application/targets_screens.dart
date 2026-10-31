@@ -22,8 +22,9 @@ part 'targets_screens.g.dart';
 // read-only projections of the stored rows through the A12 engine. Every
 // write stays a `TargetsActions` command; nothing here decides a limit.
 
-/// Today in the device zone, read once per screen (the `SetupFlow` rule;
-/// the targets feature doesn't import Today's date provider).
+/// Today in the device zone for the open screen (the targets feature
+/// doesn't import Today's date provider). The screens move it to the next
+/// day at midnight while they stay open (`TargetsDayRollover`, #197).
 @riverpod
 LocalDate targetsToday(Ref ref) =>
     EntryTime.now(ref.watch(clockProvider)).localDate;
