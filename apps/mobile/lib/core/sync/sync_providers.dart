@@ -262,8 +262,8 @@ class SyncController extends _$SyncController with WidgetsBindingObserver {
     SyncFailureKind.forbidden => SyncProblem.needsSignIn,
     SyncFailureKind.clockAhead => SyncProblem.clockAhead,
     SyncFailureKind.clockBehind => SyncProblem.clockBehind,
+    SyncFailureKind.upgradeRequired => SyncProblem.updateRequired,
     SyncFailureKind.payloadTooLarge ||
-    SyncFailureKind.upgradeRequired ||
     SyncFailureKind.protocol ||
     SyncFailureKind.datasetUnstable => SyncProblem.error,
   };

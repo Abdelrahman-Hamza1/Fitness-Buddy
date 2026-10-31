@@ -21,12 +21,16 @@ class ValidationReport {
 }
 
 /// Whether [food] (`usda:...`, `ref:dish` or `ref:dish/variant`) exists.
+/// When the selection failed to load ([basicsLoaded] false), `usda:`
+/// references aren't checked: the root cause is already reported, and
+/// every recipe line would otherwise repeat it (#66).
 bool foodResolves(
   String food,
   Set<String> basicIds,
-  List<ReferenceDish> dishes,
-) {
-  if (food.startsWith('usda:')) return basicIds.contains(food);
+  List<ReferenceDish> dishes, {
+  bool basicsLoaded = true,
+}) {
+  if (food.startsWith('usda:')) return !basicsLoaded || basicIds.contains(food);
   final slash = food.indexOf('/');
   final dishId = slash < 0 ? food : food.substring(0, slash);
   for (final d in dishes) {

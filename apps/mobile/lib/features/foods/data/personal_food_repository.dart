@@ -34,6 +34,16 @@ final class PersonalFoodRepository {
         return foods;
       });
 
+  /// Live rows that can't be read (corrupt, or written by a newer app
+  /// version), so Your foods can say they exist instead of hiding them
+  /// (#100). Counted with the same mapping as [watchAll].
+  Stream<int> watchUnreadableCount() => _watch({_db.personalFoods}, () async {
+    final rows = await (_db.select(
+      _db.personalFoods,
+    )..where((t) => t.deletedAt.isNull())).get();
+    return rows.where((row) => _read(row) == null).length;
+  });
+
   PersonalFood? _read(PersonalFoodRow row) {
     try {
       return personalFoodOf(row);

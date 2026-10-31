@@ -1,5 +1,6 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/diary/presentation/saved_meals/rename_saved_meal_sheet.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,7 +44,66 @@ Future<void> _finish(WidgetTester tester, TodayRig rig) async {
 }
 
 void main() {
-  group('list', () {});
+  group('list', () {
+    testWidgets('#107 the empty state offers Go to Today', (tester) async {
+      final rig = TodayRig();
+      tester.view
+        ..physicalSize = const Size(360, 800)
+        ..devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            ...rig.overrides,
+            savedMealsProvider.overrideWith((ref) => Stream.value(const [])),
+          ],
+          child: phoneApp(const SavedMealsScreen()),
+        ),
+      );
+      await settle(tester);
+      expect(find.text('No saved meals yet'), findsOneWidget);
+
+      await tester.tap(button('Go to Today'));
+      await tester.pump();
+      expect(rig.navigator.went, [const TodayRoute()]);
+      await _finish(tester, rig);
+    });
+  });
+
+  group('rtl', () {
+    testWidgets('#105 the detail mirrors in RTL: badge at the start (right) '
+        'of each item, the Meal chip first from the right', (tester) async {
+      final rig = await _pumpMeal(
+        tester,
+        screen: Directionality(
+          textDirection: TextDirection.rtl,
+          child: _detail,
+        ),
+      );
+      final width = tester.view.physicalSize.width;
+      for (final name in ['Food 2', 'Food 3']) {
+        final row = find.ancestor(
+          of: find.text(name),
+          matching: find.byType(FbListRow),
+        );
+        final badge = find.descendant(
+          of: row,
+          matching: find.byType(FbSourceBadge),
+        );
+        expect(
+          tester.getCenter(badge).dx,
+          greaterThan(tester.getCenter(find.text(name)).dx),
+          reason: '$name: the badge leads, so it sits on the right',
+        );
+        expect(tester.getCenter(badge).dx, greaterThan(width / 2));
+      }
+      expect(
+        tester.getCenter(chip('Meal')).dx,
+        greaterThan(tester.getCenter(chip('Day')).dx),
+      );
+      await _finish(tester, rig);
+    });
+  });
 
   group('detail', () {
     testWidgets('DY-031 Log copies the meal into the chosen meal and day with '
@@ -62,7 +122,7 @@ void main() {
       expect(tester.widget<FbChoiceChip>(chip('Meal')).value, 'Dinner');
       expect(tester.widget<FbChoiceChip>(chip('Day')).value, 'Yesterday');
 
-      await tester.tap(button('Log'));
+      await tester.tap(button('Log to Dinner'));
       await settle(tester);
 
       final day = (await tester.runAsync(

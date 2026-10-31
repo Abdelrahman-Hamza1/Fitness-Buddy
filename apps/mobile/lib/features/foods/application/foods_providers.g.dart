@@ -384,6 +384,46 @@ final class PersonalFoodsProvider
 
 String _$personalFoodsHash() => r'fcd79add619889c61fa10008ab4b7a4a11c92cb6';
 
+/// How many live personal foods can't be read (#100).
+
+@ProviderFor(unreadablePersonalFoodCount)
+final unreadablePersonalFoodCountProvider =
+    UnreadablePersonalFoodCountProvider._();
+
+/// How many live personal foods can't be read (#100).
+
+final class UnreadablePersonalFoodCountProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, Stream<int>>
+    with $FutureModifier<int>, $StreamProvider<int> {
+  /// How many live personal foods can't be read (#100).
+  UnreadablePersonalFoodCountProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'unreadablePersonalFoodCountProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$unreadablePersonalFoodCountHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<int> create(Ref ref) {
+    return unreadablePersonalFoodCount(ref);
+  }
+}
+
+String _$unreadablePersonalFoodCountHash() =>
+    r'029c82b062e22852e146512599547aa6bc18f04a';
+
 /// Row observed by a disposable edit form.
 
 @ProviderFor(personalFood)

@@ -20,59 +20,85 @@ class PersonalFoodsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final foods = ref.watch(personalFoodsProvider);
+    // Rows that can't be read stay counted, never silently hidden (#100).
+    final unreadable =
+        ref.watch(unreadablePersonalFoodCountProvider).value ?? 0;
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.yourFoodsTitle),
         actions: [
-          IconButton(
+          FbIconButton(
             tooltip: l10n.yourFoodsNew,
-            icon: const Icon(FbIcons.add),
+            icon: FbIcons.add,
             onPressed: () => _open(ref, const PersonalFoodRoute()),
           ),
         ],
       ),
-      body: switch (foods) {
-        AsyncData(:final value) when value.isEmpty => FbEmptyState(
-          icon: FbIcons.empty,
-          title: l10n.yourFoodsEmptyTitle,
-          message: l10n.yourFoodsEmptyMessage,
-          action: FbButton.primary(
-            label: l10n.yourFoodsNew,
-            icon: FbIcons.add,
-            onPressed: () => _open(ref, const PersonalFoodRoute()),
-          ),
-        ),
-        AsyncData(:final value) => ListView(
-          children: [
-            for (final food in value)
-              _FoodRow(
-                key: ValueKey(food.id),
-                food: food,
-                onTap: () => _open(ref, PersonalFoodRoute(id: food.id)),
+      body: Column(
+        children: [
+          if (unreadable > 0)
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                FbSpace.s4,
+                FbSpace.s3,
+                FbSpace.s4,
+                0,
               ),
-          ],
-        ),
-        AsyncError() => Padding(
-          padding: const EdgeInsetsDirectional.all(FbSpace.s4),
-          child: FbInlineBanner(
-            kind: FbInlineBannerKind.error,
-            message: l10n.yourFoodsLoadFailed,
-            actionLabel: l10n.foodTryAgain,
-            onAction: () => ref.invalidate(personalFoodsProvider),
-          ),
-        ),
-        _ => const Padding(
-          padding: EdgeInsetsDirectional.all(FbSpace.s4),
-          child: Column(
-            spacing: FbSpace.s3,
-            children: [
-              FbSkeleton.line(height: 56),
-              FbSkeleton.line(height: 56),
-            ],
-          ),
-        ),
-      },
+              child: FbInlineBanner(
+                kind: FbInlineBannerKind.info,
+                message: l10n.yourFoodsUnreadable(unreadable),
+              ),
+            ),
+          Expanded(child: _body(context, ref, foods)),
+        ],
+      ),
     );
+  }
+
+  Widget _body(
+    BuildContext context,
+    WidgetRef ref,
+    AsyncValue<List<PersonalFood>> foods,
+  ) {
+    final l10n = context.l10n;
+    return switch (foods) {
+      AsyncData(:final value) when value.isEmpty => FbEmptyState(
+        icon: FbIcons.empty,
+        title: l10n.yourFoodsEmptyTitle,
+        message: l10n.yourFoodsEmptyMessage,
+        action: FbButton.primary(
+          label: l10n.yourFoodsNew,
+          icon: FbIcons.add,
+          onPressed: () => _open(ref, const PersonalFoodRoute()),
+        ),
+      ),
+      AsyncData(:final value) => ListView(
+        children: [
+          for (final food in value)
+            _FoodRow(
+              key: ValueKey(food.id),
+              food: food,
+              onTap: () => _open(ref, PersonalFoodRoute(id: food.id)),
+            ),
+        ],
+      ),
+      AsyncError() => Padding(
+        padding: const EdgeInsetsDirectional.all(FbSpace.s4),
+        child: FbInlineBanner(
+          kind: FbInlineBannerKind.error,
+          message: l10n.yourFoodsLoadFailed,
+          actionLabel: l10n.foodTryAgain,
+          onAction: () => ref.invalidate(personalFoodsProvider),
+        ),
+      ),
+      _ => const Padding(
+        padding: EdgeInsetsDirectional.all(FbSpace.s4),
+        child: Column(
+          spacing: FbSpace.s3,
+          children: [FbSkeleton.line(height: 56), FbSkeleton.line(height: 56)],
+        ),
+      ),
+    };
   }
 }
 

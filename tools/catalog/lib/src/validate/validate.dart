@@ -20,6 +20,7 @@ ValidationReport validateCatalog({
   List<YieldRow>? yields,
   List<PortionWordRow>? portionWords,
   SanityCheck sanity = const SanityCheck(),
+  bool basicsLoaded = true,
 }) {
   final report = ValidationReport();
   final sortedDishes = [...dishes]..sort((a, b) => a.id.compareTo(b.id));
@@ -39,7 +40,7 @@ ValidationReport validateCatalog({
         CatalogIssue(dish.file, '/id', 'duplicate dish id ${dish.id}'),
       );
     }
-    _dish(report, dish, known, sortedDishes, computer, sanity);
+    _dish(report, dish, known, sortedDishes, computer, sanity, basicsLoaded);
   }
   _names(report, basics, sortedDishes, exercises);
   validateYieldsAndPortionWords(
@@ -48,6 +49,7 @@ ValidationReport validateCatalog({
     dishes: sortedDishes,
     yields: yields,
     portionWords: portionWords,
+    basicsLoaded: basicsLoaded,
   );
   return report;
 }
@@ -118,6 +120,7 @@ void _dish(
   List<ReferenceDish> allDishes,
   DishComputer computer,
   SanityCheck sanity,
+  bool basicsLoaded,
 ) {
   void error(String path, String message) =>
       report.errors.add(CatalogIssue(dish.file, path, message));
@@ -154,7 +157,12 @@ void _dish(
         if (range != null) {
           _range(error, '$at/recipe/$ri/range', range, item.grams, 'grams');
         }
-        if (!foodResolves(item.food, basicIds, allDishes)) {
+        if (!foodResolves(
+          item.food,
+          basicIds,
+          allDishes,
+          basicsLoaded: basicsLoaded,
+        )) {
           error(
             '$at/recipe/$ri/food',
             '`${item.food}` does not resolve to a USDA basic or a '

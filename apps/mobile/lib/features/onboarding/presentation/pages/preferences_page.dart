@@ -65,6 +65,7 @@ class PreferencesPage extends StatelessWidget {
               ),
               FbSwitchRow(
                 title: l10n.settingsHalal,
+                subtitle: l10n.settingsHalalHint,
                 value: draft.halal,
                 onChanged: flow.setHalal,
               ),

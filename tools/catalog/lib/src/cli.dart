@@ -183,6 +183,7 @@ class ValidateCommand extends Command<int> {
       yields: data.yields,
       portionWords: data.portionWords,
       exercises: data.exercises,
+      basicsLoaded: data.basicsLoaded,
     );
     for (final id in report.computed.keys.toList()..sort()) {
       final t = report.computed[id]!.typical;

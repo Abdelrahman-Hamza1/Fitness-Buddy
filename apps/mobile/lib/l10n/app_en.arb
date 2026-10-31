@@ -3553,6 +3553,15 @@
   "@yourFoodsLoadFailed": {
     "description": "Your foods: shown when the list could not be read."
   },
+  "yourFoodsUnreadable": "{count, plural, =1{1 food can't be shown. It may be damaged or come from a newer app version.} other{{count} foods can't be shown. They may be damaged or come from a newer app version.}}",
+  "@yourFoodsUnreadable": {
+    "description": "Your foods: shown above the list when stored foods can't be read (#100), so they aren't silently hidden.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "yourFoodsKcalPer": "{kcal} kcal per {basis}",
   "@yourFoodsKcalPer": {
     "description": "Your foods and merge list: the calories of a food, for example 250 kcal per 100 g.",
@@ -3993,6 +4002,10 @@
   "@savedMealsEmptyMessage": {
     "description": "Saved meals: one line of help in the empty state."
   },
+  "savedMealsGoToToday": "Go to Today",
+  "@savedMealsGoToToday": {
+    "description": "Saved meals: empty-state button that opens Today, where meals are saved from (#107)."
+  },
   "savedMealsLoadFailed": "Couldn't load your saved meals. Try again.",
   "@savedMealsLoadFailed": {
     "description": "Saved meals: banner when the list can't be read."
@@ -4024,6 +4037,15 @@
   "savedMealLogButton": "Log",
   "@savedMealLogButton": {
     "description": "Saved meal screen: button that logs the saved meal into the chosen meal and day (DY-031)."
+  },
+  "savedMealLogToButton": "Log to {meal}",
+  "@savedMealLogToButton": {
+    "description": "Saved meal screen: the Log button once a meal is chosen, naming the meal the items go to, for example Log to Lunch (DY-031, #108).",
+    "placeholders": {
+      "meal": {
+        "type": "String"
+      }
+    }
   },
   "savedMealNoItems": "This meal has no items.",
   "@savedMealNoItems": {
@@ -4195,7 +4217,11 @@
   },
   "settingsHalal": "Halal food",
   "@settingsHalal": {
-    "description": "Settings row: switch for showing halal food only."
+    "description": "Settings row: switch for the halal warnings (FD-081)."
+  },
+  "settingsHalalHint": "Warns when a food may contain pork, alcohol or gelatin",
+  "@settingsHalalHint": {
+    "description": "Settings row: hint under the halal switch saying what it does today (FD-081: warnings on search results and scanned products, never a block). Must not promise filtering (#118)."
   },
   "settingsTheme": "Theme",
   "@settingsTheme": {
@@ -6647,6 +6673,10 @@
   "syncStatusError": "Couldn't sync. Trying again soon.",
   "@syncStatusError": {
     "description": "Sync status: another failure; automatic retry."
+  },
+  "syncStatusUpdateRequired": "Update the app to sync. Your changes are kept on this phone.",
+  "@syncStatusUpdateRequired": {
+    "description": "Sync status: the server needs a newer app version (426); nothing is lost, changes wait on the phone (#242)."
   },
   "syncStatusParked": "{count, plural, =1{1 change couldn't sync} other{{count} changes couldn't sync}}",
   "@syncStatusParked": {

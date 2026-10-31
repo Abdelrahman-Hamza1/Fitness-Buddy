@@ -122,6 +122,7 @@ loadAndValidate(DataPaths d, StringSink err) {
     yields: data.yields,
     portionWords: data.portionWords,
     exercises: data.exercises,
+    basicsLoaded: data.basicsLoaded,
   );
   final errors = [...data.issues, ...report.errors];
   if (errors.isEmpty) {

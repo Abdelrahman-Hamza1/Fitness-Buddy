@@ -21,7 +21,12 @@ class CatalogData {
     this.portionWords,
     this.exercises = const [],
     this.cities = const [],
+    this.basicsLoaded = true,
   });
+
+  /// False when the selection file itself failed to load (YAML or schema
+  /// error): [basics] is empty and `usda:` references can't be checked.
+  final bool basicsLoaded;
 
   final List<ExerciseSeed> exercises;
   final List<CitySeed> cities;
@@ -53,12 +58,16 @@ CatalogData loadCatalog({
   File? cities,
 }) {
   final issues = <CatalogIssue>[];
+  final extracted = loadExtract(extract, issues);
+  final issuesBeforeSelection = issues.length;
   final basics = loadBasics(
     selection,
     loadSchema(schemaDir, selectionSchemaFile),
-    loadExtract(extract, issues),
+    extracted,
     issues,
   );
+  final basicsLoaded =
+      basics.isNotEmpty || issues.length == issuesBeforeSelection;
   final dishSchema = loadSchema(schemaDir, dishSchemaFile);
   final dishes = <ReferenceDish>[];
   if (dishesDir.existsSync()) {
@@ -79,6 +88,7 @@ CatalogData loadCatalog({
     basics,
     dishes,
     issues,
+    basicsLoaded: basicsLoaded,
     exercises: exercises != null && exercises.existsSync()
         ? loadExercises(
             exercises,

@@ -311,7 +311,10 @@ class DiaryActionsController extends _$DiaryActionsController {
   Future<DiaryActionOutcome> saveMeal(SlotSection section, String name) {
     final trimmed = name.trim();
     final entries = _entries(section);
-    if (trimmed.isEmpty || trimmed.length > 60 || entries.isEmpty) {
+    if (trimmed.isEmpty ||
+        trimmed.length > 60 ||
+        trimmed.contains('\u0000') ||
+        entries.isEmpty) {
       return Future.value(const DiaryActionFailed(DiaryActionFailure.invalid));
     }
     return _command(

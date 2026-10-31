@@ -267,6 +267,16 @@ flowchart LR
   w3 -. A38 reached: provision Hetzner .-> b13
 ```
 
+### 4.3 Chores log
+
+Chores and backlog sweeps that aren't steps (one combined branch, one Codex review, merged as `chore: …`). Details stay in `backlog.md` rows.
+
+**Backlog sweep 1 (2026-10-31)**, branch `chore/backlog-sweep-1`: small non-AI fixes for daily use (TD-105 phase 1).
+- Fixed: #66 catalog validation cascade, #70 mistyped `CATALOG_BASE_REF`, #100 Your foods counts unreadable rows, #102 `SaveMeal` rejects NUL, #103 DS icon buttons, #105 saved-meal RTL test, #107 "Go to Today" in the empty Saved meals, #108 "Log to {meal}", #118 halal hint line, #242 "update the app to sync" on a 426.
+- Tests only: #221 (part), #224 (app ranker over the real coffee rows).
+- Closed as already done or not reproducible: #28, #29, #31 (pinned by A07), #99, #101.
+- Assessed and left open: #63 (needs a repair rule in the sync apply path).
+
 ## 5. Milestones
 
 | Milestone | Reached when | Exit (the milestone is reached when…) | Server |

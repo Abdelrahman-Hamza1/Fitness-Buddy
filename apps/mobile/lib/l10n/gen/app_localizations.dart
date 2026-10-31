@@ -3612,6 +3612,12 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load your foods. Try again.'**
   String get yourFoodsLoadFailed;
 
+  /// Your foods: shown above the list when stored foods can't be read (#100), so they aren't silently hidden.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 food can\'t be shown. It may be damaged or come from a newer app version.} other{{count} foods can\'t be shown. They may be damaged or come from a newer app version.}}'**
+  String yourFoodsUnreadable(int count);
+
   /// Your foods and merge list: the calories of a food, for example 250 kcal per 100 g.
   ///
   /// In en, this message translates to:
@@ -4134,6 +4140,12 @@ abstract class AppLocalizations {
   /// **'Open a meal\'s menu on Today and choose Save as meal.'**
   String get savedMealsEmptyMessage;
 
+  /// Saved meals: empty-state button that opens Today, where meals are saved from (#107).
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Today'**
+  String get savedMealsGoToToday;
+
   /// Saved meals: banner when the list can't be read.
   ///
   /// In en, this message translates to:
@@ -4169,6 +4181,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Log'**
   String get savedMealLogButton;
+
+  /// Saved meal screen: the Log button once a meal is chosen, naming the meal the items go to, for example Log to Lunch (DY-031, #108).
+  ///
+  /// In en, this message translates to:
+  /// **'Log to {meal}'**
+  String savedMealLogToButton(String meal);
 
   /// Saved meal screen: why Log is off for a meal without items.
   ///
@@ -4356,11 +4374,17 @@ abstract class AppLocalizations {
   /// **'Week starts on'**
   String get settingsWeekStart;
 
-  /// Settings row: switch for showing halal food only.
+  /// Settings row: switch for the halal warnings (FD-081).
   ///
   /// In en, this message translates to:
   /// **'Halal food'**
   String get settingsHalal;
+
+  /// Settings row: hint under the halal switch saying what it does today (FD-081: warnings on search results and scanned products, never a block). Must not promise filtering (#118).
+  ///
+  /// In en, this message translates to:
+  /// **'Warns when a food may contain pork, alcohol or gelatin'**
+  String get settingsHalalHint;
 
   /// Settings row and sheet title: light, dark or the phone's setting.
   ///
@@ -8656,6 +8680,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t sync. Trying again soon.'**
   String get syncStatusError;
+
+  /// Sync status: the server needs a newer app version (426); nothing is lost, changes wait on the phone (#242).
+  ///
+  /// In en, this message translates to:
+  /// **'Update the app to sync. Your changes are kept on this phone.'**
+  String get syncStatusUpdateRequired;
 
   /// Sync sheet: changes the server refused; they stay on this phone.
   ///

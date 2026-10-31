@@ -15,6 +15,7 @@ String syncStatusText(AppLocalizations l10n, SyncView view) {
     SyncProblem.needsSignIn => l10n.syncStatusNeedsSignIn,
     SyncProblem.clockAhead when !view.synced => l10n.syncStatusClockAhead,
     SyncProblem.clockBehind => l10n.syncStatusClockBehind,
+    SyncProblem.updateRequired => l10n.syncStatusUpdateRequired,
     SyncProblem.error when !view.synced => l10n.syncStatusError,
     _ when view.running => l10n.syncStatusSyncing,
     _ when view.parked > 0 => l10n.syncStatusParked(view.parked),

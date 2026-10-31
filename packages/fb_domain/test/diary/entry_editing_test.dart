@@ -90,7 +90,7 @@ void main() {
       );
     }
   });
-  test('DY-023 SaveMeal trims and enforces 1–60 characters in the op', () {
+  test('DY-023 SaveMeal trims and enforces 1–60 characters, no NUL (#102)', () {
     SaveMeal build(String name) => SaveMeal(
       savedMealId: savedMeal,
       name: name,
@@ -99,7 +99,7 @@ void main() {
     );
     expect(build(' Meal ').name, 'Meal');
     expect(build('a' * 60).name.length, 60);
-    for (final name in ['', '   ', 'a' * 61]) {
+    for (final name in ['', '   ', 'a' * 61, 'Lunch\u0000']) {
       expect(() => build(name), throwsArgumentError);
     }
   });

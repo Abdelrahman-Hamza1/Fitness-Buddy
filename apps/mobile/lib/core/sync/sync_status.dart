@@ -17,6 +17,10 @@ enum SyncProblem {
   /// The phone clock is far behind: pulled changes wait.
   clockBehind,
 
+  /// The server needs a newer app (426): changes wait on the phone until
+  /// the app is updated; the update gate shows too (#242).
+  updateRequired,
+
   /// Something else failed: retrying.
   error,
 }

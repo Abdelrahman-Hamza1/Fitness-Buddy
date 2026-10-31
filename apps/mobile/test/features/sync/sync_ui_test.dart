@@ -60,6 +60,24 @@ void main() {
     expect(find.byKey(const ValueKey('today-sync-line')), findsOneWidget);
   });
 
+  testWidgets('#242 a 426 says "update the app to sync" on Today', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      const SyncTodayLine(),
+      _view(
+        pending: 1,
+        oldest: _now - 30000,
+        problem: SyncProblem.updateRequired,
+      ),
+    );
+    expect(
+      find.text('Update the app to sync. Your changes are kept on this phone.'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('the sync sheet shows the state, Try again for parked '
       'changes and Sync now', (tester) async {
     await _pump(tester, const SyncSheetBody(), _view(pending: 1, parked: 2));

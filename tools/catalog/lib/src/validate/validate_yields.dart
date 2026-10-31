@@ -22,6 +22,7 @@ void validateYieldsAndPortionWords(
   required List<ReferenceDish> dishes,
   List<YieldRow>? yields,
   List<PortionWordRow>? portionWords,
+  bool basicsLoaded = true,
 }) {
   if (yields != null) {
     _yields(report, yields);
@@ -51,7 +52,7 @@ void validateYieldsAndPortionWords(
     }
   }
   if (portionWords != null) {
-    _words(report, portionWords, basics, dishes);
+    _words(report, portionWords, basics, dishes, basicsLoaded);
   }
 }
 
@@ -88,6 +89,7 @@ void _words(
   List<PortionWordRow> rows,
   List<BasicFood> basics,
   List<ReferenceDish> dishes,
+  bool basicsLoaded,
 ) {
   final basicIds = {for (final b in basics) b.id};
   final byId = {for (final b in basics) b.id: b};
@@ -96,7 +98,7 @@ void _words(
     final at = '/rows/${r.index}';
     void error(String path, String message) =>
         report.errors.add(CatalogIssue(r.file, '$at$path', message));
-    if (!foodResolves(r.food, basicIds, dishes)) {
+    if (!foodResolves(r.food, basicIds, dishes, basicsLoaded: basicsLoaded)) {
       error(
         '/food',
         '`${r.food}` does not resolve to a USDA basic or a reference dish',

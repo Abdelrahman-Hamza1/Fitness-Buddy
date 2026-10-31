@@ -104,6 +104,11 @@ ReplaceEntryFood replaceEntryFood(Ref ref) => ReplaceEntryFood(
 Stream<List<PersonalFood>> personalFoods(Ref ref) =>
     ref.watch(personalFoodRepositoryProvider).watchAll();
 
+/// How many live personal foods can't be read (#100).
+@riverpod
+Stream<int> unreadablePersonalFoodCount(Ref ref) =>
+    ref.watch(personalFoodRepositoryProvider).watchUnreadableCount();
+
 /// Row observed by a disposable edit form.
 @riverpod
 Stream<PersonalFood?> personalFood(Ref ref, String id) =>

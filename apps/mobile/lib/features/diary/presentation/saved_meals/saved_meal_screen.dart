@@ -303,7 +303,9 @@ class _SavedMealScreenState extends ConsumerState<SavedMealScreen> {
                   ),
                 ),
               FbButton.primary(
-                label: l10n.savedMealLogButton,
+                label: slot == null
+                    ? l10n.savedMealLogButton
+                    : l10n.savedMealLogToButton(slotLabel(l10n, slot)),
                 expand: true,
                 onPressed: canLog ? () => unawaited(_log(meal, slotId)) : null,
               ),

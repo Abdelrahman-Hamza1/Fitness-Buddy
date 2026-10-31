@@ -9,7 +9,7 @@ import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter/services.dart' show TextInputAction;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_ui/material_ui.dart' show Divider, IconButton, Theme;
+import 'package:material_ui/material_ui.dart' show Divider, Theme;
 
 /// The optional nutrients under "More nutrients", in the order shown (FD-002).
 const List<(PersonalFoodField, NutrientKey)> extraNutrients = [
@@ -570,9 +570,9 @@ class ServingsSection extends StatelessWidget {
                         ),
                       ),
                     ),
-                    IconButton(
+                    FbIconButton(
                       tooltip: l10n.personalFoodRemoveServing,
-                      icon: const Icon(FbIcons.close),
+                      icon: FbIcons.close,
                       onPressed: () => onRemove(i),
                     ),
                   ],

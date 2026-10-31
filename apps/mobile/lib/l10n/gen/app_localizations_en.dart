@@ -2621,6 +2621,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yourFoodsLoadFailed => 'Couldn\'t load your foods. Try again.';
 
   @override
+  String yourFoodsUnreadable(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count foods can\'t be shown. They may be damaged or come from a newer app version.',
+      one: '1 food can\'t be shown. It may be damaged or come from a newer app version.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String yourFoodsKcalPer(int kcal, String basis) {
     final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
       localeName,
@@ -2954,6 +2966,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Open a meal\'s menu on Today and choose Save as meal.';
 
   @override
+  String get savedMealsGoToToday => 'Go to Today';
+
+  @override
   String get savedMealsLoadFailed =>
       'Couldn\'t load your saved meals. Try again.';
 
@@ -2973,6 +2988,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get savedMealLogButton => 'Log';
+
+  @override
+  String savedMealLogToButton(String meal) {
+    return 'Log to $meal';
+  }
 
   @override
   String get savedMealNoItems => 'This meal has no items.';
@@ -3093,6 +3113,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsHalal => 'Halal food';
+
+  @override
+  String get settingsHalalHint =>
+      'Warns when a food may contain pork, alcohol or gelatin';
 
   @override
   String get settingsTheme => 'Theme';
@@ -6083,6 +6107,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get syncStatusError => 'Couldn\'t sync. Trying again soon.';
+
+  @override
+  String get syncStatusUpdateRequired =>
+      'Update the app to sync. Your changes are kept on this phone.';
 
   @override
   String syncStatusParked(int count) {

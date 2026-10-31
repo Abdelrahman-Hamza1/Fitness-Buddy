@@ -737,7 +737,8 @@ final class CopyMeal extends DiaryOp {
 /// One item per live source entry, with its snapshot.
 final class SaveMeal extends DiaryOp {
   /// Save [source] as the new saved meal [savedMealId] named [name]
-  /// (1–60 characters after trimming). Throws an `ArgumentError` otherwise.
+  /// (1–60 characters after trimming, no NUL, like [RenameSavedMeal]).
+  /// Throws an `ArgumentError` otherwise.
   /// The items' IDs come from the applier's generator (derived rows).
   new({
     required this.savedMealId,
@@ -750,8 +751,10 @@ final class SaveMeal extends DiaryOp {
     if (expected.groups.isNotEmpty) {
       throw ArgumentError('save expects no groups');
     }
-    if (this.name.isEmpty || this.name.length > 60) {
-      throw ArgumentError('name must have 1–60 characters');
+    if (this.name.isEmpty ||
+        this.name.length > 60 ||
+        this.name.contains('\u0000')) {
+      throw ArgumentError('name must have 1–60 characters and no NUL');
     }
   }
 

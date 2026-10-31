@@ -25,6 +25,11 @@ class SavedMealsScreen extends ConsumerWidget {
           icon: FbIcons.meal,
           title: l10n.savedMealsEmptyTitle,
           message: l10n.savedMealsEmptyMessage,
+          action: FbButton.secondary(
+            label: l10n.savedMealsGoToToday,
+            onPressed: () =>
+                ref.read(appNavigatorProvider).go(const TodayRoute()),
+          ),
         ),
         AsyncData(:final value) => ListView(
           children: [

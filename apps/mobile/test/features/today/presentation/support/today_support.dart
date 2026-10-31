@@ -55,8 +55,11 @@ final class RecordingNavigator implements AppNavigator {
   /// Every pushed route, in order.
   final List<AppRoute> pushed = [];
 
+  /// Every route gone to (a tab switch), in order.
+  final List<AppRoute> went = [];
+
   @override
-  void go(AppRoute route) => throw UnimplementedError();
+  void go(AppRoute route) => went.add(route);
 
   @override
   void push(AppRoute route) => pushed.add(route);

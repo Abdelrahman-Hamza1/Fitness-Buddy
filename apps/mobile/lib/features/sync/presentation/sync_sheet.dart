@@ -133,6 +133,7 @@ class _SyncTodayLineState extends ConsumerState<SyncTodayLine> {
           SyncProblem.offline => FbInlineBannerKind.offline,
           SyncProblem.clockAhead ||
           SyncProblem.clockBehind ||
+          SyncProblem.updateRequired ||
           SyncProblem.error => FbInlineBannerKind.error,
           _ =>
             view.restoring

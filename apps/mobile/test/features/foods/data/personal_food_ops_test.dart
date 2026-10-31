@@ -747,6 +747,7 @@ void main() {
     expect((await repo.watchAll().first).map((f) => f.id), [fixtureId(2)]);
     expect(await repo.byId(fixtureId(1)), isNull);
     expect(await repo.watchFood(fixtureId(4)).first, isNull);
+    expect(await repo.watchUnreadableCount().first, 2);
   });
   test(
     'FD-071 unknown extras and state survive personal-food rewrites',

@@ -231,6 +231,33 @@ void main() {
     },
   );
 
+  test('#224 FD-021 "finjan qahwa" and "قهوة عربية" rank Arabic coffee above '
+      'the coffee basics (rows copied from the real pack)', () async {
+    final service = fixtureService(
+      extraSql: File('test/fixtures/catalog_coffee.sql').readAsStringSync(),
+    );
+    await ready(service);
+    for (final query in [
+      'finjan qahwa',
+      'قهوة عربية',
+      'arabic coffee',
+      'qahwa arabiyeh',
+    ]) {
+      final rows = (await service.search(query)).rows;
+      expect(rows, isNotEmpty, reason: query);
+      expect(
+        rows.first.choice.ref.id,
+        startsWith('ref:arabic_coffee'),
+        reason: '$query: got ${rows.map((r) => r.choice.ref.id).toList()}',
+      );
+    }
+    // The generic word still finds the generic basic first.
+    expect(
+      (await service.search('qahwa')).rows.first.choice.ref.id,
+      'usda:coffee_brewed',
+    );
+  });
+
   test('FD-021 PA10 uncapped exact behind 600 prefixes '
       'and 400 substring rows', () async {
     final sql = StringBuffer();

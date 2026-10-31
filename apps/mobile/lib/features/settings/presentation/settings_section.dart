@@ -55,6 +55,7 @@ class SettingsSection extends ConsumerWidget {
         ),
         FbSwitchRow(
           title: l10n.settingsHalal,
+          subtitle: l10n.settingsHalalHint,
           value: halal,
           onChanged: (value) => unawaited(_setHalal(context, ref, value)),
         ),

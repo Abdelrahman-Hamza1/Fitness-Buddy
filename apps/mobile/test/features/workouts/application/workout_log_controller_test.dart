@@ -1153,6 +1153,75 @@ void main() {
     expect(stored.draft.exercises.single.sets.first.values.reps, 10);
   });
 
+  group('#221 A37c gaps', () {
+    test('WO-022 a template lookup that throws on exit still saves; no '
+        'offer, and the visit Undo is recorded', () async {
+      late final _Log log;
+      log = _Log(
+        extra: [
+          workoutTemplatesOnceProvider.overrideWithValue(
+            () async => throw const FormatException('lookup failed'),
+          ),
+        ],
+      );
+      await log.seed();
+      await seedPlan(log, const []);
+      final launch = NewLog(visitId: 'g1', date: today, templateId: wid(70));
+      final c = await log.open(launch);
+      for (final card in log.state(launch).exercises) {
+        for (final set in card.sets) {
+          c
+            ..editSet(card.id, set.id, const SetInput(weight: '60', reps: '9'))
+            ..toggleSet(card.id, set.id);
+        }
+      }
+      final result = await c.finishVisit() as VisitSaved;
+      expect(result.offer, isNull);
+      expect(result.undoId, isNotNull);
+      expect((await log.sessions()).single.draft.templateId, wid(70));
+    });
+
+    test('WO-020 Save as template after a conflict gives nothing and writes '
+        'nothing', () async {
+      final log = _Log();
+      await log.seed();
+      await log.h.apply([LogWorkoutSession(wid(10), sessionDraft())]);
+      final launch = EditLog(wid(10), visitId: 's2');
+      final c = await log.open(launch);
+      // Another editor saves first.
+      await log.h.apply([
+        UpdateWorkoutSession(
+          VersionedId(wid(10), 1),
+          sessionDraft(sets: [lifted(30, 10, 100)]),
+        ),
+      ]);
+      final theirs = await log.h.state();
+      c.editSet(wid(20), wid(31), const SetInput(weight: '80', reps: '9'));
+      expect(await c.templateSource(), isNull);
+      expect(log.state(launch).saveState, LogSaveState.conflict);
+      expect(await log.h.state(), theirs);
+      expect(await log.h.repository.watchTemplates().first, isEmpty);
+    });
+
+    test(
+      'WO-020 Save as template after a failed write gives nothing',
+      () async {
+        final log = _Log();
+        await log.seed();
+        await log.h.apply([LogWorkoutSession(wid(10), sessionDraft())]);
+        final before = await log.h.state();
+        final launch = EditLog(wid(10), visitId: 's3');
+        final c = await log.open(launch);
+        c.editSet(wid(20), wid(31), const SetInput(weight: '80', reps: '9'));
+        log.apply = (_) async =>
+            throw DatabaseWriteException(13); // SQLITE_FULL
+        expect(await c.templateSource(), isNull);
+        expect(log.state(launch).saveState, LogSaveState.failed);
+        expect(await log.h.state(), before);
+      },
+    );
+  });
+
   group('review round 3', () {
     test('WO-034 Leave without saving during a Retry with newer edits '
         'pending completes', () async {

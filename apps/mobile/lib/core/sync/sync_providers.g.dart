@@ -243,7 +243,7 @@ final class SyncControllerProvider
   }
 }
 
-String _$syncControllerHash() => r'd0145cbf1bec8b524bd25fe152dc97271cda7adc';
+String _$syncControllerHash() => r'6afb25a154e8d8c54a66f3bd52af834366a990a6';
 
 /// Runs sync (A34 D10–D13): owns the [SyncScheduler], decides whether a run
 /// may start (registered, writable, ready session, no transition), runs

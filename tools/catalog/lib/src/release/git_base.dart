@@ -16,12 +16,17 @@ String? _git(List<String> args) {
 /// `tools/scripts/contract-breaking.sh`): [flag] / `CATALOG_BASE_REF` when
 /// given, else the merge-base with `origin/main`, and on `main` itself the
 /// previous commit. `null` (no comparison) outside git or without
-/// `origin/main` (shallow clones: CI fetches the full history).
+/// `origin/main` (shallow clones: CI fetches the full history). A given ref
+/// that doesn't name a commit is an error, so a typo can't pass as "no lock
+/// yet" (#70).
 String? resolveBaseRef({String? flag}) {
   final given = flag ?? Platform.environment['CATALOG_BASE_REF'];
   if (given != null && given.isNotEmpty) {
     if (given.startsWith('-')) {
       throw FormatException('the base ref must be a git ref, not "$given"');
+    }
+    if (_git(['rev-parse', '--verify', '-q', '$given^{commit}']) == null) {
+      throw FormatException('the base ref "$given" is not a commit here');
     }
     return given;
   }

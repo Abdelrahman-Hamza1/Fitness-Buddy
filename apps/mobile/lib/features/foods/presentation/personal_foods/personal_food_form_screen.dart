@@ -398,9 +398,9 @@ class _PersonalFoodFormScreenState
           ),
           actions: [
             if (food != null && !removed)
-              IconButton(
+              FbIconButton(
                 tooltip: l10n.personalFoodMenuTooltip,
-                icon: const Icon(FbIcons.more),
+                icon: FbIcons.more,
                 onPressed: () => _openMenu(food),
               ),
           ],

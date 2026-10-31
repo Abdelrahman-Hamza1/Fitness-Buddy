@@ -29,7 +29,11 @@ final String schemaDir = p.join('..', '..', 'data', 'schema');
     extract: File(p.join(fixtures, 'extract.jsonl')),
     dishesDir: dir,
   );
-  final report = validateCatalog(basics: data.basics, dishes: data.dishes);
+  final report = validateCatalog(
+    basics: data.basics,
+    dishes: data.dishes,
+    basicsLoaded: data.basicsLoaded,
+  );
   return (
     errors: [
       for (final i in [...data.issues, ...report.errors])
@@ -328,6 +332,30 @@ void main() {
       final errors = run(selection: file.path).errors;
       expect(errors.first, contains('selection.yaml: /foods/0/id'));
       expect(errors.first, contains('usda:Rice Raw'));
+    });
+
+    test('#66 a selection that fails its schema is the only error', () {
+      final dir = Directory.systemTemp.createTempSync('selection');
+      addTearDown(() => dir.deleteSync(recursive: true));
+      final file = File(p.join(dir.path, 'selection.yaml'))
+        ..writeAsStringSync(
+          File(p.join(fixtures, 'selection.yaml'))
+              .readAsStringSync()
+              .replaceFirst('fdc_id: 1001', 'fdc_id: "not a number"'),
+        );
+      final result = run(selection: file.path);
+      expect(result.data.basicsLoaded, isFalse);
+      expect(result.errors, isNotEmpty);
+      expect(
+        result.errors.where((e) => e.contains('does not resolve')),
+        isEmpty,
+        reason: "the dishes' usda: lines must not repeat the root cause",
+      );
+      expect(result.errors.first, contains('selection.yaml'));
+    });
+
+    test('#66 a valid selection counts as loaded', () {
+      expect(run().data.basicsLoaded, isTrue);
     });
 
     test('FD-004 a basic and a dish may not share a name', () {
