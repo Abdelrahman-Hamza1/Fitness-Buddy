@@ -19,7 +19,7 @@ dependencies:
   # Local database (A01 D13-D15). Exact pin: drift and drift_dev are a codegen
   # pair, bumped together on purpose (like riverpod). No drift_flutter (why:
   # lib/core/db/connection.dart).
-  drift: 2.35.2
+  drift: 2.35.3
   fb_api_client:
     path: ../../packages/fb_api_client
   # Tokens, themes and components (A02). Screens build UI from it only.
@@ -42,7 +42,7 @@ dependencies:
   # POST_NOTIFICATIONS and VIBRATE; the app adds RECEIVE_BOOT_COMPLETED and the
   # plugin's receivers, and enables core library desugaring. Inexact alarms only.
   # Used only in lib/features/notifications/data/notification_platform.dart.
-  flutter_local_notifications: 22.3.2
+  flutter_local_notifications: 22.3.3
   flutter_localizations:
     sdk: flutter
   flutter_riverpod: ^3.4.3
@@ -66,7 +66,7 @@ dependencies:
   path_provider: ^2.1.5
   riverpod_annotation: 4.0.7
   # Error reporting, after the first frame, off while the DSN is empty.
-  sentry_flutter: ^10.0.0
+  sentry_flutter: ^10.2.0
   # BSD-3 OS multi-file sharing; no permissions or network (A11).
   share_plus: 13.3.1
   # The device id and the cached /v1/config (not secret, not user data).
@@ -74,7 +74,7 @@ dependencies:
   # Direct: drift's `setup` callback gets a sqlite3 Database (pragmas). sqlite3
   # 3.x bundles SQLite through build hooks (sqlite3_flutter_libs is EOL). Hook
   # overrides (user_defines) go in the root pubspec only (A01 plan §3.5).
-  sqlite3: ^3.7.1
+  sqlite3: ^3.8.0
   # A40 D7: the type flutter_local_notifications schedules with (TZDateTime); only
   # tz.UTC is used, so no time-zone database is loaded. Exact pin.
   timezone: 0.11.2
@@ -84,7 +84,7 @@ dev_dependencies:
   build_runner: 2.16.1
   # drift's code generator and migration tooling (make-migrations), pinned
   # with drift.
-  drift_dev: 2.35.1
+  drift_dev: 2.35.2
   flutter_test:
     sdk: flutter
   # A21 engine-only profile gate: Flutter SDK device test runner.
