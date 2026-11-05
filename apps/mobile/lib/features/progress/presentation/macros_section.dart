@@ -32,6 +32,9 @@ class MacrosSection extends StatelessWidget {
   /// What is shown.
   final ProgressView view;
 
+  /// The narrowest plotting width two charts a row may leave, in dp.
+  static const double singleColumnBelow = 140;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -49,21 +52,42 @@ class MacrosSection extends StatelessWidget {
             header: true,
             child: Text(l10n.progressMacrosTitle, style: FbType.title),
           ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: FbSpace.s3,
-            children: [
-              Expanded(child: chart(ProgressMacro.protein)),
-              Expanded(child: chart(ProgressMacro.carbs)),
-            ],
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: FbSpace.s3,
-            children: [
-              Expanded(child: chart(ProgressMacro.fat)),
-              Expanded(child: chart(ProgressMacro.fiber)),
-            ],
+          // Two charts a row, or one when half the card is under 140 dp
+          // at the current text scale (A57 A53: large text, narrow phones).
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final scale = MediaQuery.textScalerOf(context).scale(1);
+              final half = (constraints.maxWidth - FbSpace.s3) / 2;
+              final pairs = [
+                (ProgressMacro.protein, ProgressMacro.carbs),
+                (ProgressMacro.fat, ProgressMacro.fiber),
+              ];
+              if (half / scale < singleColumnBelow) {
+                return Column(
+                  key: const ValueKey('progress-macros-stacked'),
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: FbSpace.s3,
+                  children: [
+                    for (final (a, b) in pairs) ...[chart(a), chart(b)],
+                  ],
+                );
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: FbSpace.s3,
+                children: [
+                  for (final (a, b) in pairs)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: FbSpace.s3,
+                      children: [
+                        Expanded(child: chart(a)),
+                        Expanded(child: chart(b)),
+                      ],
+                    ),
+                ],
+              );
+            },
           ),
         ],
       ),

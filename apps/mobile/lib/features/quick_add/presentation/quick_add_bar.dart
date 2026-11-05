@@ -6,6 +6,7 @@ import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/core/ui/success_haptic.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/quick_add/application/quick_add_controller.dart';
@@ -46,14 +47,16 @@ class QuickAddBar extends ConsumerWidget {
         .read(unitSystemProvider.future)
         .then<UnitSystem>((value) => value, onError: (_) => UnitSystem.metric);
     if (!host.mounted) return;
+    if (outcome is QuickAddLogged) successHaptic();
     switch (outcome) {
       case QuickAddLogged(
         :final undoEntryId,
-        :final name,
+        :final names,
         :final amount,
         :final itemCount,
       ):
         final l10n = host.l10n;
+        final name = readFoodNameInline(ref, names);
         showUndoFeedback(
           host,
           message: withDayClause(
@@ -81,6 +84,27 @@ class QuickAddBar extends ConsumerWidget {
     }
   }
 
+  FbQuickAddChip _chip(
+    BuildContext context,
+    WidgetRef ref,
+    QuickAddChip chip,
+    FoodNameLanguage language,
+  ) {
+    final l10n = context.l10n;
+    final lines = chip.linesIn(language);
+    final spoken = foodNameSpoken(lines);
+    return FbQuickAddChip(
+      key: ValueKey(chip.key),
+      // N2: the main name only; both are read aloud.
+      label: lines.primary,
+      icon: chip.ranked.candidate is SavedMealCandidate ? FbIcons.meal : null,
+      semanticLabel: chip.ranked.candidate is SavedMealCandidate
+          ? l10n.quickAddSavedMealChipSemantics(spoken)
+          : l10n.quickAddChipSemantics(spoken),
+      onTap: () => unawaited(_log(context, ref, chip)),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
@@ -96,20 +120,7 @@ class QuickAddBar extends ConsumerWidget {
                 .read(appNavigatorProvider)
                 .push(FoodSearchRoute(date: date)),
             chips: [
-              for (final chip in chips)
-                FbQuickAddChip(
-                  key: ValueKey(chip.key),
-                  label: chip.nameIn(language),
-                  icon: chip.ranked.candidate is SavedMealCandidate
-                      ? FbIcons.meal
-                      : null,
-                  semanticLabel: chip.ranked.candidate is SavedMealCandidate
-                      ? l10n.quickAddSavedMealChipSemantics(
-                          chip.nameIn(language),
-                        )
-                      : l10n.quickAddChipSemantics(chip.nameIn(language)),
-                  onTap: () => unawaited(_log(context, ref, chip)),
-                ),
+              for (final chip in chips) _chip(context, ref, chip, language),
             ],
           );
     final duration = FbMotion.of(context);
@@ -123,6 +134,8 @@ class QuickAddBar extends ConsumerWidget {
       child: AnimatedSwitcher(
         duration: duration,
         switchInCurve: FbMotion.curve,
+        // The leaving chips can't be tapped or read out.
+        layoutBuilder: FbInert.switcherLayout,
         child: row,
       ),
     );

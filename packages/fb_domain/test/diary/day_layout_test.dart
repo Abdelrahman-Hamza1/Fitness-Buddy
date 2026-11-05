@@ -62,7 +62,7 @@ void main() {
       final lunch = layout.sections.firstWhere(
         (s) => s.key == DefaultSlots.lunchId,
       );
-      expect(lunch.summaryNames, ['Rice, cooked']);
+      expect(lunch.summaryFoods.map((n) => n.en), ['Rice, cooked']);
       expect(lunch.items.single.key, entryA);
       expect(lunch.totals.kcal.round(), 0);
       expect(
@@ -71,7 +71,7 @@ void main() {
       );
       expect(layout.sections.clear, throwsUnsupportedError);
       expect(lunch.items.clear, throwsUnsupportedError);
-      expect(lunch.summaryNames.clear, throwsUnsupportedError);
+      expect(lunch.summaryFoods.clear, throwsUnsupportedError);
       expect(DayLayout.build(DefaultSlots.all, [], []).isEmpty, isTrue);
       expect(
         DayLayout.build(
@@ -92,7 +92,7 @@ void main() {
     },
   );
 
-  test('DY-024 groups sort by first member, split by slot, missing '
+  test('DY-024 LC-007 groups sort by first member, split by slot, missing '
       'group falls back', () {
     final group = DishGroup(
       id: groupG,
@@ -116,7 +116,11 @@ void main() {
     expect(dish.firstEntry.id, entryA);
     expect(dish.members.map((e) => e.id), [entryA, entryB]);
     expect(dish.totals, DiaryTotals.day(rows.take(2)));
-    expect(lunch.summaryNames, ['Dish', 'Rice, cooked']);
+    // LC-007: entries keep both names; a typed dish name has English only.
+    expect(lunch.summaryFoods, [
+      FoodNames('Dish'),
+      FoodNames('Rice, cooked', ar: 'رز مطبوخ'),
+    ]);
     expect(layout.sections[2].items.single, isA<GroupItem>());
     expect(flatten(layout).length, rows.length);
     expect(dish.members.clear, throwsUnsupportedError);

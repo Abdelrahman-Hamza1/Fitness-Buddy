@@ -156,7 +156,7 @@ class _RenamePhaseSheetState extends ConsumerState<RenamePhaseSheet> {
           FbTextField(
             controller: _name,
             label: l10n.goalNameLabel,
-            hint: l10n.goalNameHint(defaultLabel),
+            supportingText: l10n.goalNameHint(defaultLabel),
             maxLength: TargetInputRules.maxNameLength,
             autofocus: true,
             textInputAction: TextInputAction.done,

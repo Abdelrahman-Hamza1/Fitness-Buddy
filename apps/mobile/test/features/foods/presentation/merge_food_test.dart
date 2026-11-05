@@ -2,7 +2,10 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
+import 'package:fb_mobile/features/foods/presentation/personal_foods/merge_food_sheet.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'support/personal_food_support.dart';
 
@@ -75,6 +78,85 @@ void main() {
     expect(entry.foodId, labneh.id);
     expect(find.text('Labneh'), findsOneWidget);
     expect(find.text('Labne'), findsOneWidget);
+    await finish(tester, container);
+  });
+
+  testWidgets('A57 T-N2 LC-007 A38 Arabic: the merge picker, the confirmation '
+      'and the merged message name the Arabic foods', (tester) async {
+    const ar1 = 'لبنة';
+    const ar2 = 'لبنة بلدي';
+    final container = await pumpPersonal(
+      tester,
+      foods: [
+        aFood(1, ar: ar1),
+        aFood(2, name: 'Labne', ar: ar2),
+      ],
+      at: const PersonalFoodsRoute(),
+      overrides: [
+        foodNameSettingProvider.overrideWith(
+          (ref) => Stream.value(FoodNameLanguage.arabic),
+        ),
+      ],
+    );
+    await tester.tap(find.text(ar1));
+    await settle(tester);
+    await tester.tap(find.byTooltip('More options'));
+    await settle(tester);
+    await tester.tap(find.text('Merge a duplicate into this food…'));
+    await settle(tester);
+    // The picker lists the other food by its Arabic name.
+    await tester.tap(find.widgetWithText(FbListRow, ar2));
+    await settle(tester);
+    expect(
+      tester.widget<FbListRow>(find.byKey(const ValueKey('merge-keep'))).title,
+      ar1,
+    );
+    expect(find.textContaining('\u2068$ar1\u2069'), findsWidgets);
+    expect(find.textContaining('\u2068$ar2\u2069'), findsWidgets);
+    expect(
+      find.descendant(
+        of: find.byType(MergeConfirmSheet),
+        matching: find.textContaining('Labne'),
+      ),
+      findsNothing,
+    );
+
+    await tester.tap(find.widgetWithText(FbButton, 'Merge'));
+    await settle(tester);
+    final snack = tester.widget<Text>(
+      find
+          .descendant(of: find.byType(SnackBar), matching: find.byType(Text))
+          .first,
+    );
+    expect(snack.data, contains('\u2068$ar2\u2069'));
+    expect(snack.data, isNot(contains('Labne')));
+    await finish(tester, container);
+  });
+
+  testWidgets('A57 A70 T-R7 merge confirm can go back to the picker', (
+    tester,
+  ) async {
+    final container = await pumpPersonal(
+      tester,
+      foods: [
+        aFood(1),
+        aFood(2, name: 'Labne'),
+        aFood(3, name: 'Labna'),
+      ],
+      at: const PersonalFoodsRoute(),
+    );
+    await openMerge(tester);
+    expect(find.byType(MergeConfirmSheet), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('merge-choose-another')));
+    await settle(tester);
+    expect(find.byType(MergeConfirmSheet), findsNothing);
+    expect(find.byType(MergePickerSheet), findsOneWidget);
+    await tester.tap(find.widgetWithText(FbListRow, 'Labna'));
+    await settle(tester);
+    expect(
+      tester.widget<FbListRow>(find.byKey(const ValueKey('merge-other'))).title,
+      'Labna',
+    );
     await finish(tester, container);
   });
 }

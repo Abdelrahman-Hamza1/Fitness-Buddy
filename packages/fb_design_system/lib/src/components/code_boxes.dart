@@ -1,3 +1,5 @@
+import 'package:fb_design_system/src/components/digits.dart';
+import 'package:fb_design_system/src/components/supporting_line.dart';
 import 'package:fb_design_system/src/tokens/spacing.dart';
 import 'package:fb_design_system/src/tokens/typography.dart';
 import 'package:flutter/services.dart';
@@ -6,14 +8,16 @@ import 'package:material_ui/material_ui.dart';
 /// A one-time code entry shown as [length] boxes (A51 sign-in): one real,
 /// invisible text field under the boxes takes the typing, the keyboard's
 /// code suggestion and a paste, so pasting "481 920" fills all six boxes.
-/// Only digits are kept. [onCompleted] runs once the last digit is in.
+/// Only digits are kept; Arabic-Indic and Persian digits become ASCII ones
+/// (A57 A60). [onCompleted] runs once the last digit is in.
 ///
 /// The box being typed is outlined in the brand colour while focused; with
-/// an [errorText] every box gets the error outline and the message shows
-/// below. For a screen reader it is one text field named [label] with the
-/// digits as its value. Boxes are at least 48 dp tall and lay out
-/// start-to-end in the text direction of the digits (always left to right,
-/// as codes are read).
+/// an [errorText] every box gets the error outline and the message shows in
+/// the reserved line below ([supportingLines] tall whatever it shows, so
+/// nothing moves; UX-045). For a screen reader it is one text field named
+/// [label] with the digits as its value. Boxes are at least 48 dp tall and
+/// lay out start-to-end in the text direction of the digits (always left to
+/// right, as codes are read).
 class FbCodeBoxes extends StatefulWidget {
   /// Creates the entry over [controller].
   const new({
@@ -22,6 +26,8 @@ class FbCodeBoxes extends StatefulWidget {
     this.length = 6,
     this.onCompleted,
     this.errorText,
+    this.supportingText,
+    this.supportingLines = 1,
     this.autofocus = false,
     this.enabled = true,
     super.key,
@@ -41,6 +47,12 @@ class FbCodeBoxes extends StatefulWidget {
 
   /// A message under the boxes, or null.
   final String? errorText;
+
+  /// A hint in the reserved line while there is no error.
+  final String? supportingText;
+
+  /// How many lines the reserved line takes (0 = none).
+  final int supportingLines;
 
   /// Focus the field when it appears.
   final bool autofocus;
@@ -67,7 +79,6 @@ class _FbCodeBoxesState extends State<FbCodeBoxes> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     final error = widget.errorText;
     final field = TextField(
       controller: widget.controller,
@@ -78,7 +89,7 @@ class _FbCodeBoxesState extends State<FbCodeBoxes> {
       textInputAction: TextInputAction.done,
       autofillHints: const [AutofillHints.oneTimeCode],
       inputFormatters: [
-        FilteringTextInputFormatter.digitsOnly,
+        const _AsciiDigitsFormatter(),
         LengthLimitingTextInputFormatter(widget.length),
       ],
       onChanged: _changed,
@@ -128,9 +139,37 @@ class _FbCodeBoxesState extends State<FbCodeBoxes> {
             ),
           ),
         ),
-        if (error != null)
-          Text(error, style: FbType.bodySmall.copyWith(color: scheme.error)),
+        FbSupportingLine(
+          text: widget.supportingText,
+          errorText: error,
+          lines: widget.supportingLines,
+          horizontalPadding: 0,
+        ),
       ],
+    );
+  }
+}
+
+/// Keeps only digits, turning Arabic-Indic and Persian ones into ASCII.
+class _AsciiDigitsFormatter extends TextInputFormatter {
+  const new();
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    String keep(String text) => String.fromCharCodes(
+      normalizeDigits(text).codeUnits.where((u) => u >= 0x30 && u <= 0x39),
+    );
+    final text = keep(newValue.text);
+    if (text == newValue.text) return newValue;
+    final before = newValue.selection.baseOffset.clamp(0, newValue.text.length);
+    return TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(
+        offset: keep(newValue.text.substring(0, before)).length,
+      ),
     );
   }
 }

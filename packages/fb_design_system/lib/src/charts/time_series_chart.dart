@@ -22,7 +22,8 @@ import 'package:material_ui/material_ui.dart';
 /// The next [range] the parent passes resets the offset.
 ///
 /// **Range changes ease** (A45 D5): a new [range] zooms from the window on
-/// screen to the new one over [FbMotion.slow] (a jump with reduced motion).
+/// screen to the new one over [FbMotion.structural] (a jump with reduced
+/// motion).
 /// A pan's own drag end hands back the window on screen, so it doesn't move.
 /// A drag that starts mid-zoom first lands on the new [range], so the pan,
 /// its limits and the reported window share one base (A45 PA1).
@@ -121,7 +122,7 @@ class _FbTimeSeriesChartState extends State<FbTimeSeriesChart>
       Duration(milliseconds: _offset.value.round()),
     );
     _offset.value = 0;
-    final duration = FbMotion.of(context, FbMotion.slow);
+    final duration = FbMotion.of(context, FbMotion.structural);
     if (from == widget.range || duration == Duration.zero) {
       _commitZoom();
       return;

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/sync/application/sync_view.dart';
 import 'package:fb_mobile/features/sync/presentation/sync_text.dart';
@@ -37,16 +38,38 @@ class EarlierVersionsBody extends ConsumerWidget {
     final versions = ref.watch(earlierVersionsProvider(entity, id));
     final nowMs = ref.watch(syncViewProvider.select((v) => v.nowMs));
     return versions.when(
-      loading: () => const Padding(
-        padding: EdgeInsetsDirectional.all(FbSpace.s4),
-        child: Center(child: CircularProgressIndicator()),
+      // Rows shaped like versions, and every failure with its way out
+      // (A57 A49): Sign in when signed out, Try again otherwise.
+      loading: () => Column(
+        key: const ValueKey('versions-loading'),
+        mainAxisSize: MainAxisSize.min,
+        children: [for (var i = 0; i < 3; i++) FbSkeleton.row()],
       ),
-      error: (error, _) => FbListRow(
-        title: switch (error) {
-          EarlierVersionsFailure.offline => l10n.syncEarlierVersionsOffline,
-          EarlierVersionsFailure.signedOut => l10n.syncEarlierVersionsSignedOut,
-          _ => l10n.syncEarlierVersionsFailed,
-        },
+      error: (error, _) => Padding(
+        padding: const EdgeInsetsDirectional.symmetric(vertical: FbSpace.s2),
+        child: error == EarlierVersionsFailure.signedOut
+            ? FbInlineBanner(
+                key: const ValueKey('versions-signed-out'),
+                kind: FbInlineBannerKind.info,
+                message: l10n.syncEarlierVersionsSignedOut,
+                actionLabel: l10n.meSignIn,
+                onAction: () {
+                  Navigator.of(context).pop();
+                  ref.read(appNavigatorProvider).push(const SignInRoute());
+                },
+              )
+            : FbInlineBanner(
+                key: const ValueKey('versions-failed'),
+                kind: error == EarlierVersionsFailure.offline
+                    ? FbInlineBannerKind.info
+                    : FbInlineBannerKind.error,
+                message: error == EarlierVersionsFailure.offline
+                    ? l10n.syncEarlierVersionsOffline
+                    : l10n.syncEarlierVersionsFailed,
+                actionLabel: l10n.foodTryAgain,
+                onAction: () =>
+                    ref.invalidate(earlierVersionsProvider(entity, id)),
+              ),
       ),
       data: (list) => list.isEmpty
           ? FbListRow(title: l10n.syncEarlierVersionsEmpty)

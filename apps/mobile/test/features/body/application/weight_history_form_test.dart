@@ -54,6 +54,22 @@ void main() {
     );
   });
 
+  test('A57 A69 T-R7 a removed filled row comes back where it was', () {
+    final form = WeightHistoryForm.start(MassUnit.kilogram)
+        .withText(0, '97.4')
+        .addRow(day17)
+        .withText(1, '96.8');
+    final removed = form.rows.first;
+    final left = form.remove(removed.key);
+    final back = left.restore(removed, 0);
+    expect(back.rows.map((r) => r.text), ['97.4', '96.8']);
+    expect(back.restore(removed, 0).rows, hasLength(2));
+    // The only row removed: its empty stand-in gives way to it.
+    final only = WeightHistoryForm.start(MassUnit.kilogram).withText(0, '97');
+    final restored = only.remove(0).restore(only.rows.single, 0);
+    expect(restored.rows.map((r) => (r.key, r.text)), [(0, '97')]);
+  });
+
   test('LC-010 WB-005 the unit chips relabel every row; Use lb switches one '
       "row; edits clear that row's Keep", () {
     final base = WeightHistoryForm.start(MassUnit.kilogram)

@@ -11,6 +11,7 @@ import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/body/data/weigh_in_repository.dart';
 import 'package:fb_mobile/features/body/data/weight_tip_store.dart';
+import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/quick_add/quick_add.dart';
@@ -251,6 +252,7 @@ List<Override> fakeToday({
   CadenceTipState tip = CadenceTipState.initial,
   Map<LocalDate, DayTargets> targets = const {},
   SetupStatus setup = SetupStatus.notSetUp,
+  int waiting = 0,
 }) => [
   clockProvider.overrideWithValue(
     clock ?? ManualClock(DateTime.utc(2026, 10, 17, 12)),
@@ -291,14 +293,20 @@ List<Override> fakeToday({
   setupStatusProvider.overrideWith((ref) => setup),
   // The workout row (A37 D20) is the workouts tests' business (R7): no row.
   todayWorkoutProvider.overrideWith((ref, date) => const TodayWorkoutNone()),
+  // Buddy cards waiting on the input bar (D-094), no database.
+  pendingProposalCountProvider.overrideWith((ref) => Stream.value(waiting)),
 ];
 
 /// The providers of a Today screen on a real in-memory diary, with a real
 /// applier and undo stack.
 final class TodayRig {
   /// Creates the rig; [apply] replaces the applier (to make commands fail).
-  new({this.apply, AppConfig? config, this.realChips = false})
-    : config = config ?? prodConfig {
+  new({
+    this.apply,
+    AppConfig? config,
+    this.realChips = false,
+    this.names = FoodNameLanguage.phone,
+  }) : config = config ?? prodConfig {
     stack = UndoStack(revert: diary.applier.revert, clock: diary.clock);
     addTearDown(stack.dispose);
   }
@@ -309,6 +317,9 @@ final class TodayRig {
   /// Whether the quick-add row reads the real diary. Off, it shows nothing,
   /// so the A08 tests keep one row per logged item.
   final bool realChips;
+
+  /// The "Food names" setting (D-091).
+  final FoodNameLanguage names;
   final DiaryHarness diary = DiaryHarness();
 
   /// The unit system; switch it with `units.set`.
@@ -339,9 +350,7 @@ final class TodayRig {
     appNavigatorProvider.overrideWithValue(navigator),
     units.override,
     // No settings stream to close at the end of a widget test.
-    foodNameSettingProvider.overrideWith(
-      (ref) => Stream.value(FoodNameLanguage.phone),
-    ),
+    foodNameSettingProvider.overrideWith((ref) => Stream.value(names)),
     // The weight card (A14) reads and writes the same in-memory profile.
     weighInRepositoryProvider.overrideWithValue(WeighInRepository(diary.db)),
     weightTipStoreProvider.overrideWithValue(tips),
@@ -355,6 +364,8 @@ final class TodayRig {
     ramadanOff,
     // The workout row (A37 D20) is the workouts tests' business (R7).
     todayWorkoutProvider.overrideWith((ref, date) => const TodayWorkoutNone()),
+    // No Buddy cards waiting (D-094); no proposal stream to close.
+    pendingProposalCountProvider.overrideWith((ref) => Stream.value(0)),
   ];
 }
 

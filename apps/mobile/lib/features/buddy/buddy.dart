@@ -4,6 +4,7 @@ library;
 
 export 'application/buddy_thread_controller.dart'
     show BuddyThreadController, buddyThreadControllerProvider;
+export 'application/pending_proposals.dart' show pendingProposalCountProvider;
 export 'data/buddy_sync_codecs.dart' show buddySyncCodecs;
 export 'data/chat_message_op_handler.dart';
 export 'data/chat_message_repository.dart';

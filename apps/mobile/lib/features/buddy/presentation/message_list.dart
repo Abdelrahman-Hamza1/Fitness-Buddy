@@ -25,13 +25,19 @@ BuddyReplyTexts buddyReplyTexts(AppLocalizations l10n) => BuddyReplyTexts(
 
 /// The thread (A22 D14): newest at the bottom, in display order (each user
 /// message, then the replies to it, then its cards). Text and status come
-/// from the saved rows.
+/// from the saved rows. Built lazily, one keyed item per message, card or
+/// note (A57 A77).
 ///
-/// It follows the thread as it grows: when a turn's first card arrives the
-/// sheet goes to full height and the card's top is scrolled into view (a
-/// card is taller than the resting sheet); otherwise it follows the newest
-/// item. Not a reversed list: the sheet's drag shares this scroll, and a
-/// reversed list would turn "drag up for the full thread" upside down.
+/// It follows the thread as it grows, but only while the reader is at the
+/// bottom (within 48 dp, A67) or has just sent a message: when a turn's
+/// first card arrives the sheet goes to full height and the card's top is
+/// scrolled into view (a card is taller than the resting sheet); otherwise
+/// it follows the newest item. A reader scrolled up stays where they are
+/// and gets a "New message" button that jumps down. Reopened, it shows the
+/// latest turn (A66), or the oldest waiting card with [revealPending].
+/// Following runs from a listener on the thread, never from `build`. Not a
+/// reversed list: the sheet's drag shares this scroll, and a reversed list
+/// would turn "drag up for the full thread" upside down.
 class BuddyMessageList extends ConsumerStatefulWidget {
   /// The list, scrolled by [controller]; [sheet] sizes the sheet; [onSearch]
   /// opens food search.
@@ -39,6 +45,7 @@ class BuddyMessageList extends ConsumerStatefulWidget {
     required this.controller,
     required this.onSearch,
     this.sheet,
+    this.revealPending = false,
     super.key,
   });
 
@@ -51,71 +58,82 @@ class BuddyMessageList extends ConsumerStatefulWidget {
   /// Closes the sheet and opens food search.
   final VoidCallback onSearch;
 
+  /// Whether the list opens at the oldest open card (D-094).
+  final bool revealPending;
+
+  /// The "New message" button's key.
+  static const ValueKey<String> newMessagesKey = ValueKey('buddy-new-messages');
+
+  /// How close to the bottom still counts as "at the bottom" (A67).
+  static const double followSlack = 48;
+
   @override
   ConsumerState<BuddyMessageList> createState() => _BuddyMessageListState();
 }
 
 class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
-  /// The first card of each turn, to scroll its top into view.
+  /// Every card's key, to scroll a card's top into view.
   final Map<String, GlobalKey> _firstCards = {};
 
   /// What the list last followed, and the cards already shown.
   String? _followed;
+  int _turns = 0;
   final Set<String> _shownCards = {};
+
+  /// Something arrived below while the reader was scrolled up (A67).
+  bool _unseen = false;
 
   ScrollController get controller => widget.controller;
 
   VoidCallback get onSearch => widget.onSearch;
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final scheme = Theme.of(context).colorScheme;
-    final thread = ref.watch(buddyThreadControllerProvider);
-    final rows = ref.watch(buddyThreadMessagesProvider).value ?? const {};
-    final items = <Widget>[
-      if (thread.turns.isEmpty)
-        Padding(
-          padding: const EdgeInsetsDirectional.all(FbSpace.s2),
-          child: Text(
-            l10n.buddyEmpty,
-            style: FbType.body.copyWith(color: scheme.onSurfaceVariant),
-          ),
-        ),
-      // Stored cards with no turn to show them in (A23 D13).
-      for (final card in thread.orphans)
-        UnrestorableCardRow(key: ValueKey(card.id), card: card),
-      for (final turn in thread.turns) ..._turn(context, ref, turn, rows),
-    ];
-    _follow(thread, rows.length);
-    return ListView(
-      controller: controller,
-      padding: const EdgeInsetsDirectional.symmetric(
-        horizontal: FbSpace.s4,
-        vertical: FbSpace.s2,
-      ),
-      children: [
-        for (final item in items)
-          Padding(
-            padding: const EdgeInsetsDirectional.symmetric(
-              vertical: FbSpace.s1,
-            ),
-            child: item,
-          ),
-      ],
-    );
+  void initState() {
+    super.initState();
+    controller.addListener(_onScroll);
+    ref
+      ..listenManual(buddyThreadControllerProvider, (_, _) => _changed())
+      ..listenManual(buddyThreadMessagesProvider, (_, _) => _changed());
+    _remember(ref.read(buddyThreadControllerProvider));
+    WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_opened()));
   }
 
-  /// After this frame: show a newly arrived card from its top (full height),
-  /// or follow the newest item when the thread changed otherwise.
-  void _follow(BuddyThread thread, int rows) {
-    final key = [
-      rows,
-      for (final turn in thread.turns) '${turn.phase.name}${turn.cards.length}',
-    ].join();
-    if (key == _followed) return;
-    final first = _followed == null;
-    _followed = key;
+  @override
+  void didUpdateWidget(BuddyMessageList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != controller) {
+      oldWidget.controller.removeListener(_onScroll);
+      controller.addListener(_onScroll);
+    }
+  }
+
+  @override
+  void dispose() {
+    controller.removeListener(_onScroll);
+    super.dispose();
+  }
+
+  bool get _atBottom {
+    if (!controller.hasClients) return true;
+    final position = controller.position;
+    return position.maxScrollExtent - position.pixels <=
+        BuddyMessageList.followSlack;
+  }
+
+  void _onScroll() {
+    if (_unseen && _atBottom) setState(() => _unseen = false);
+  }
+
+  /// The thread's shape: what changed since the last follow.
+  String _keyOf(BuddyThread thread) => [
+    ref.read(buddyThreadMessagesProvider).value?.length ?? 0,
+    for (final turn in thread.turns) '${turn.phase.name}${turn.cards.length}',
+  ].join();
+
+  /// Records [thread] as followed; returns the cards that just arrived.
+  List<String> _remember(BuddyThread thread) {
+    _followed = _keyOf(thread);
+    _turns = thread.turns.length;
     final arrived = [
       for (final turn in thread.turns)
         if (turn.cards.isNotEmpty && !_shownCards.contains(turn.cards.first.id))
@@ -124,45 +142,187 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
     _shownCards.addAll([
       for (final turn in thread.turns) ...turn.cards.map((c) => c.id),
     ]);
-    if (first) return;
+    return arrived;
+  }
+
+  /// The first frame of an opened sheet: the latest turn, or the oldest
+  /// waiting card (A66, D-094).
+  Future<void> _opened() async {
+    if (!mounted) return;
+    final thread = ref.read(buddyThreadControllerProvider);
+    final open = [
+      for (final turn in thread.turns)
+        for (final card in turn.cards)
+          if (card.resolution == CardResolution.open) card.id,
+    ].firstOrNull;
+    await _jumpToEnd();
+    if (widget.revealPending && open != null) await _reveal(open);
+  }
+
+  /// The thread changed: follow it when the reader is at the bottom or has
+  /// just sent, else offer "New message" (A67). Runs after the change, but
+  /// before the new content is laid out, so [_atBottom] is where the reader
+  /// was.
+  void _changed() {
+    final thread = ref.read(buddyThreadControllerProvider);
+    if (_keyOf(thread) == _followed) return;
+    final sent = thread.turns.length > _turns;
+    final follow = sent || _atBottom;
+    final arrived = _remember(thread);
+    if (!follow) {
+      if (!_unseen) setState(() => _unseen = true);
+      return;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted || !controller.hasClients) return;
-      final duration = FbMotion.of(context);
-      final card = arrived.isEmpty ? null : _firstCards[arrived.last];
+      final card = arrived.lastOrNull;
       if (card != null) {
-        final sheet = widget.sheet;
-        if (sheet != null && sheet.isAttached && sheet.size < 1) {
-          if (duration == Duration.zero) {
-            sheet.jumpTo(1);
-          } else {
-            await sheet.animateTo(1, duration: duration, curve: FbMotion.curve);
-          }
-        }
-        final target = card.currentContext;
-        if (target != null && target.mounted) {
-          await Scrollable.ensureVisible(
-            target,
-            duration: duration,
-            curve: FbMotion.curve,
-          );
-          return;
-        }
+        await _expandSheet();
+        if (await _reveal(card)) return;
       }
-      if (!controller.hasClients) return;
-      final end = controller.position.maxScrollExtent;
-      if (duration == Duration.zero) {
-        controller.jumpTo(end);
-      } else {
-        await controller.animateTo(
-          end,
-          duration: duration,
-          curve: FbMotion.curve,
-        );
-      }
+      await _toEnd();
     });
   }
 
-  List<Widget> _turn(
+  Future<void> _expandSheet() async {
+    final sheet = widget.sheet;
+    if (sheet == null || !sheet.isAttached || sheet.size >= 1) return;
+    final duration = FbMotion.localOf(context);
+    if (duration == Duration.zero) {
+      sheet.jumpTo(1);
+    } else {
+      await sheet.animateTo(1, duration: duration, curve: FbMotion.standard);
+    }
+  }
+
+  /// Scrolls card [id]'s top into view. A lazily built card that isn't
+  /// laid out yet is found by stepping up from the end, a screen at a time.
+  Future<bool> _reveal(String id) async {
+    for (var step = 0; step < 64; step++) {
+      if (!mounted || !controller.hasClients) return false;
+      final target = _firstCards[id]?.currentContext;
+      if (target != null && target.mounted) {
+        final duration = FbMotion.localOf(context);
+        await Scrollable.ensureVisible(
+          target,
+          duration: duration,
+          curve: FbMotion.standard,
+        );
+        return true;
+      }
+      final position = controller.position;
+      if (position.pixels <= position.minScrollExtent) return false;
+      controller.jumpTo(
+        (position.pixels - position.viewportDimension).clamp(
+          position.minScrollExtent,
+          position.maxScrollExtent,
+        ),
+      );
+      await WidgetsBinding.instance.endOfFrame;
+    }
+    return false;
+  }
+
+  /// Animates to the newest item.
+  Future<void> _toEnd() async {
+    if (!mounted || !controller.hasClients) return;
+    final duration = FbMotion.localOf(context);
+    if (duration == Duration.zero) {
+      await _jumpToEnd();
+      return;
+    }
+    await controller.animateTo(
+      controller.position.maxScrollExtent,
+      duration: duration,
+      curve: FbMotion.standard,
+    );
+    // A lazy list's extent firms up as the last items are laid out.
+    await _jumpToEnd();
+  }
+
+  /// Jumps to the newest item; a lazy list's end is estimated until its
+  /// last items are laid out, so it settles over a few frames.
+  Future<void> _jumpToEnd() async {
+    for (var step = 0; step < 8; step++) {
+      if (!mounted || !controller.hasClients) return;
+      final end = controller.position.maxScrollExtent;
+      if (controller.position.pixels == end) return;
+      controller.jumpTo(end);
+      await WidgetsBinding.instance.endOfFrame;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final thread = ref.watch(buddyThreadControllerProvider);
+    final rows = ref.watch(buddyThreadMessagesProvider).value ?? const {};
+    final items = <(String, Widget)>[
+      if (thread.turns.isEmpty)
+        (
+          'empty',
+          Padding(
+            padding: const EdgeInsetsDirectional.all(FbSpace.s2),
+            child: Text(
+              l10n.buddyEmpty,
+              style: FbType.body.copyWith(color: scheme.onSurfaceVariant),
+            ),
+          ),
+        ),
+      // Stored cards with no turn to show them in (A23 D13).
+      for (final card in thread.orphans)
+        ('orphan:${card.id}', UnrestorableCardRow(card: card)),
+      for (final turn in thread.turns) ..._turn(context, ref, turn, rows),
+    ];
+    final indexOf = {for (final (i, item) in items.indexed) item.$1: i};
+    return Stack(
+      children: [
+        ListView.builder(
+          controller: controller,
+          padding: const EdgeInsetsDirectional.symmetric(
+            horizontal: FbSpace.s4,
+            vertical: FbSpace.s2,
+          ),
+          itemCount: items.length,
+          // Keyed: an item keeps its state when others arrive before it.
+          findChildIndexCallback: (key) =>
+              key is ValueKey<String> ? indexOf[key.value] : null,
+          itemBuilder: (context, i) => KeyedSubtree(
+            key: ValueKey(items[i].$1),
+            child: Padding(
+              padding: const EdgeInsetsDirectional.symmetric(
+                vertical: FbSpace.s1,
+              ),
+              child: items[i].$2,
+            ),
+          ),
+        ),
+        // A67: something new below while the reader is scrolled up.
+        PositionedDirectional(
+          start: 0,
+          end: 0,
+          bottom: FbSpace.s2,
+          child: Center(
+            child: FbReveal(
+              visible: _unseen,
+              child: FbButton.primary(
+                key: BuddyMessageList.newMessagesKey,
+                label: l10n.newMessages,
+                icon: FbIcons.expand,
+                onPressed: () {
+                  setState(() => _unseen = false);
+                  unawaited(_toEnd());
+                },
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<(String, Widget)> _turn(
     BuildContext context,
     WidgetRef ref,
     BuddyTurn turn,
@@ -175,49 +335,60 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
         ? null
         : rows[turn.assistantMessageId];
     return [
-      FbMessageBubble(
-        key: ValueKey(turn.userMessageId),
-        text: userText,
-        fromUser: true,
-        textDirection: messageDirection(userText),
-        semanticLabel: l10n.buddyBubbleYou(userText),
+      (
+        'user:${turn.userMessageId}',
+        FbMessageBubble(
+          text: userText,
+          fromUser: true,
+          textDirection: messageDirection(userText),
+          semanticLabel: l10n.buddyBubbleYou(userText),
+        ),
       ),
       // The plain "here's your meal" line adds nothing above its cards; it
       // stays stored (the transcript) but isn't drawn.
       if (reply != null &&
           !(turn.cards.isNotEmpty && reply.draft.text == l10n.buddyReplyCards))
-        FbMessageBubble(
-          key: ValueKey(reply.id),
-          text: reply.draft.text,
-          fromUser: false,
-          semanticLabel: l10n.buddyBubbleBuddy(reply.draft.text),
-          // Who is talking, as on the canvas (A44); decorative.
-          leading: const FbBuddyAvatar(size: 24),
+        (
+          'reply:${reply.id}',
+          FbMessageBubble(
+            text: reply.draft.text,
+            fromUser: false,
+            semanticLabel: l10n.buddyBubbleBuddy(reply.draft.text),
+            // Who is talking, as on the canvas (A44); decorative.
+            leading: const FbBuddyAvatar(size: 24),
+          ),
         ),
       // A follow-up updates its card in place ("Updating…" on the card), so
       // it gets no skeleton of its own.
       if (turn.phase == BuddyTurnPhase.sending && turn.followUpCardId == null)
-        FbProposalCard.skeleton(semanticLabel: l10n.buddyWorking),
+        (
+          'working:${turn.userMessageId}',
+          FbProposalCard.skeleton(semanticLabel: l10n.buddyWorking),
+        ),
       if (turn.phase == BuddyTurnPhase.failed)
-        _Failure(turn: turn, onSearch: onSearch),
-      for (final (index, card) in turn.cards.indexed)
-        FoodProposalCard(
-          key: index == 0
-              ? _firstCards.putIfAbsent(card.id, GlobalKey.new)
-              : ValueKey(card.id),
-          onSearch: onSearch,
-          view: FoodCardView.of(
-            card,
-            referenceDate: turn.message.time.localDate,
-            updating: ref
-                .read(buddyThreadControllerProvider)
-                .isUpdating(card.id),
-            turnAnswer: turn.interpretation,
+        (
+          'failed:${turn.userMessageId}',
+          _Failure(turn: turn, onSearch: onSearch),
+        ),
+      for (final card in turn.cards)
+        (
+          'card:${card.id}',
+          FoodProposalCard(
+            key: _firstCards.putIfAbsent(card.id, GlobalKey.new),
+            onSearch: onSearch,
+            view: FoodCardView.of(
+              card,
+              referenceDate: turn.message.time.localDate,
+              updating: ref
+                  .read(buddyThreadControllerProvider)
+                  .isUpdating(card.id),
+              turnAnswer: turn.interpretation,
+            ),
           ),
         ),
       // Stored cards that couldn't be reopened (A23 D13).
       for (final card in turn.unrestorable)
-        UnrestorableCardRow(key: ValueKey(card.id), card: card),
+        ('lost:${card.id}', UnrestorableCardRow(card: card)),
     ];
   }
 }

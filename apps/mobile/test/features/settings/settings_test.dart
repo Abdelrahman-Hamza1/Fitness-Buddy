@@ -396,47 +396,110 @@ void main() {
     expect(await r.store.read(AppSettings.cityId), 'city:282615');
   });
 
-  test(
-    'UX-030 SettingsActions pending, rejection and unexpected failure clean up',
-    () async {
-      final gate = Completer<void>();
-      final entered = Completer<void>();
-      var first = true;
-      final r = Rig(
-        beforePlan: () async {
-          if (first) {
-            first = false;
-            entered.complete();
-            await gate.future;
-          }
-        },
-      );
-      final writing = r.actions.setHalal(false);
-      await entered.future;
-      expect(await r.actions.setHalal(false), isA<SettingsPending>());
-      gate.complete();
-      expect(await writing, isA<SettingsDone>());
-      expect(await r.actions.setHalal(false), isA<SettingsUnchanged>());
+  test('UX-030 SettingsActions queued duplicate, rejection and unexpected '
+      'failure clean up', () async {
+    final gate = Completer<void>();
+    final entered = Completer<void>();
+    var first = true;
+    final r = Rig(
+      beforePlan: () async {
+        if (first) {
+          first = false;
+          entered.complete();
+          await gate.future;
+        }
+      },
+    );
+    final writing = r.actions.setHalal(false);
+    await entered.future;
+    final duplicate = r.actions.setHalal(false);
+    gate.complete();
+    expect(await writing, isA<SettingsDone>());
+    expect(await duplicate, isA<SettingsUnchanged>());
+    expect(await r.actions.setHalal(false), isA<SettingsUnchanged>());
 
-      Exception? rejection = const ChangeRejected(InvalidOp('test'));
-      var unexpected = false;
-      final failed = Rig(
-        beforePlan: () async {
-          if (unexpected) throw StateError('unexpected test error');
-          if (rejection case final failure?) throw failure;
-        },
-      );
-      final before = await failed.raw();
-      expect(await failed.actions.setHalal(false), isA<SettingsFailed>());
-      expect(await failed.raw(), before);
-      rejection = null;
-      unexpected = true;
-      await expectLater(failed.actions.setHalal(false), throwsStateError);
-      expect(await failed.raw(), before);
-      unexpected = false;
-      expect(await failed.actions.setHalal(false), isA<SettingsDone>());
-    },
-  );
+    Exception? rejection = const ChangeRejected(InvalidOp('test'));
+    var unexpected = false;
+    final failed = Rig(
+      beforePlan: () async {
+        if (unexpected) throw StateError('unexpected test error');
+        if (rejection case final failure?) throw failure;
+      },
+    );
+    final before = await failed.raw();
+    expect(await failed.actions.setHalal(false), isA<SettingsFailed>());
+    expect(await failed.raw(), before);
+    rejection = null;
+    unexpected = true;
+    await expectLater(failed.actions.setHalal(false), throwsStateError);
+    expect(await failed.raw(), before);
+    unexpected = false;
+    expect(await failed.actions.setHalal(false), isA<SettingsDone>());
+  });
+
+  test('A57 A71 T-R8 rapid setting changes: the last value wins, nothing is '
+      'dropped, each write has an undo entry', () async {
+    final gate = Completer<void>();
+    final entered = Completer<void>();
+    var gated = true;
+    final r = Rig(
+      beforePlan: () async {
+        if (gated) {
+          gated = false;
+          entered.complete();
+          await gate.future;
+        }
+      },
+    );
+    // A plain value: dark is in flight, light then system arrive behind it.
+    final dark = r.actions.setTheme(ThemePreference.dark);
+    await entered.future;
+    final light = r.actions.setTheme(ThemePreference.light);
+    final system = r.actions.setTheme(ThemePreference.system);
+    expect(await light, isA<SettingsQueued>());
+    gate.complete();
+    final first = await dark as SettingsDone;
+    final last = await system as SettingsDone;
+    expect(await r.store.read(AppSettings.theme), ThemePreference.system);
+    expect(await r.stack.undo(last.undoEntryId), UndoOutcome.undone);
+    expect(await r.store.read(AppSettings.theme), ThemePreference.dark);
+    expect(first.undoEntryId, isNot(last.undoEntryId));
+
+    // Part changes compose: three Ramadan years set in a burst all land.
+    final hold = Completer<void>();
+    final started = Completer<void>();
+    var once = true;
+    final s = Rig(
+      beforePlan: () async {
+        if (once) {
+          once = false;
+          started.complete();
+          await hold.future;
+        }
+      },
+    );
+    final y1 = s.actions.setRamadanSeason(
+      RamadanSeason(hijriYear: 1447, on: true),
+    );
+    await started.future;
+    final y2 = s.actions.setRamadanSeason(
+      RamadanSeason(hijriYear: 1448, on: true),
+    );
+    final y3 = s.actions.setRamadanSeason(
+      RamadanSeason(hijriYear: 1449, on: true),
+    );
+    expect(await y2, isA<SettingsQueued>());
+    hold.complete();
+    expect(await y1, isA<SettingsDone>());
+    expect(await y3, isA<SettingsDone>());
+    final seasons = await s.store.read(AppSettings.ramadanSeasons);
+    expect(
+      [
+        for (final y in [1447, 1448, 1449]) seasons[y]?.on,
+      ],
+      [true, true, true],
+    );
+  });
 
   test(
     'LC-033 selectedCity follows valid, unknown and unset identities',

@@ -264,4 +264,23 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(seconds: 1));
   });
+
+  testWidgets('A57 A53 T-A6 the macro charts stack one per row at 2.0 text '
+      'and sit two a row at 1.0', (tester) async {
+    _tallPhone(tester);
+    final stacked = find.byKey(const ValueKey('progress-macros-stacked'));
+    await tester.pumpWidget(progressApp(progressOverrides()));
+    await tester.pumpAndSettle();
+    expect(stacked, findsNothing);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpWidget(progressApp(progressOverrides(), textScale: 2));
+    await tester.pumpAndSettle();
+    expect(stacked, findsOneWidget);
+    final protein = find.byKey(const ValueKey('progress-macro-protein'));
+    final carbs = find.byKey(const ValueKey('progress-macro-carbs'));
+    expect(
+      tester.getTopLeft(carbs).dy,
+      greaterThan(tester.getBottomLeft(protein).dy),
+    );
+  });
 }

@@ -268,7 +268,7 @@ final class PendingScansProvider
   PendingScans create() => PendingScans();
 }
 
-String _$pendingScansHash() => r'8878e833b1193f7de3e982f47097378b142a9afc';
+String _$pendingScansHash() => r'609091099198de020d694f7dfaef1329c0fe2556';
 
 /// Scans waiting for a later lookup (A28a D10, OF-02): at most [maxScans],
 /// dropped after [maxAge], one list per local profile (review fix 1: the

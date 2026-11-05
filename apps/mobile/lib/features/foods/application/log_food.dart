@@ -11,13 +11,14 @@ sealed class LogFoodOutcome {
 /// Successful direct log with its undo handle.
 final class FoodLogged extends LogFoodOutcome {
   /// Creates this structured value.
-  const new(this.undoEntryId, this.nameEn, this.slotId);
+  const new(this.undoEntryId, this.names, this.slotId);
 
   /// Undo-stack identity returned by the successful apply.
   final String undoEntryId;
 
-  /// English display name.
-  final String nameEn;
+  /// The logged food's names; presentation picks the setting's one
+  /// (LC-007). Never logged.
+  final FoodNames names;
 
   /// The selected meal slot; presentation resolves its display label.
   final String? slotId;
@@ -103,7 +104,7 @@ final class LogFood {
       result as Applied,
       UndoLabel('foodLogged', args: {'name': choice.names.en}),
     );
-    return FoodLogged(undo.id, choice.names.en, slotId);
+    return FoodLogged(undo.id, choice.names, slotId);
   }
 }
 

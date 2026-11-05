@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_domain/testing.dart';
@@ -5,9 +7,12 @@ import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/workouts/application/exercise_library.dart';
+import 'package:fb_mobile/features/workouts/application/workout_log_state.dart';
+import 'package:fb_mobile/features/workouts/application/workout_views.dart';
 import 'package:fb_mobile/features/workouts/presentation/exercise_muscle_map.dart';
 import 'package:fb_mobile/features/workouts/presentation/set_row.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
@@ -48,7 +53,14 @@ final class _Rig {
   final _Navigator navigator = _Navigator();
   late final UndoStack stack;
 
+  /// Replaces the fixture exercise library (a failing read, A57 A45).
+  Override? library;
+
+  /// More overrides (failing or never-answering providers, A57 A42–A45).
+  List<Override> extra = const [];
+
   List<Override> get overrides => [
+    ...extra,
     changeSetApplierProvider.overrideWithValue(h.applier),
     clockProvider.overrideWithValue(h.clock),
     idGeneratorProvider.overrideWithValue(
@@ -58,27 +70,28 @@ final class _Rig {
     workoutRepositoryProvider.overrideWithValue(h.repository),
     appNavigatorProvider.overrideWithValue(navigator),
     weekStartProvider.overrideWith((ref) => Stream.value(DayOfWeek.saturday)),
-    exerciseLibraryProvider.overrideWith(
-      (ref) async => ExerciseLibrary([
-        LibraryExercise(
-          id: wid(1),
-          name: 'Cable fly',
-          aliases: const [],
-          type: ExerciseType.weightReps,
-          equipment: Equipment.cable,
-          primary: Muscle.chest,
-          secondaries: const [Muscle.triceps],
+    library ??
+        exerciseLibraryProvider.overrideWith(
+          (ref) async => ExerciseLibrary([
+            LibraryExercise(
+              id: wid(1),
+              name: 'Cable fly',
+              aliases: const [],
+              type: ExerciseType.weightReps,
+              equipment: Equipment.cable,
+              primary: Muscle.chest,
+              secondaries: const [Muscle.triceps],
+            ),
+            LibraryExercise(
+              id: wid(2),
+              name: 'Lateral raise',
+              aliases: const [],
+              type: ExerciseType.weightReps,
+              equipment: Equipment.dumbbell,
+              primary: Muscle.shoulders,
+            ),
+          ]),
         ),
-        LibraryExercise(
-          id: wid(2),
-          name: 'Lateral raise',
-          aliases: const [],
-          type: ExerciseType.weightReps,
-          equipment: Equipment.dumbbell,
-          primary: Muscle.shoulders,
-        ),
-      ]),
-    ),
   ];
 
   Future<void> seed(WidgetTester tester, List<ChangeOp> ops) =>
@@ -433,5 +446,142 @@ void main() {
     await tapUndo(tester, rig);
     expect(await sessionCount(tester, rig), 1);
     await rig.unmount(tester);
+  });
+
+  testWidgets('A57 A42 T-R2 Workouts tab: a failed read shows error + retry, '
+      'not the first-visit state; loading shows rows', (tester) async {
+    var fail = true;
+    final rig = _Rig()
+      ..extra = [
+        recentWorkoutsProvider.overrideWith((ref) async {
+          if (fail) throw StateError('read failed');
+          return const <SessionSummary>[];
+        }),
+      ];
+    await rig.pump(tester, const WorkoutsScreen());
+    expect(find.byKey(LoadFailedView.viewKey), findsOneWidget);
+    expect(find.byKey(const ValueKey('workouts-pick')), findsNothing);
+    fail = false;
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(LoadFailedView.viewKey),
+        matching: find.byType(TextButton),
+      ),
+    );
+    await rig.settle(tester);
+    expect(find.byKey(LoadFailedView.viewKey), findsNothing);
+    expect(find.byKey(const ValueKey('workouts-pick')), findsOneWidget);
+    await rig.unmount(tester);
+
+    final waiting = _Rig()
+      ..extra = [
+        recentWorkoutsProvider.overrideWith(
+          (ref) => Completer<List<SessionSummary>>().future,
+        ),
+      ];
+    await waiting.pump(tester, const WorkoutsScreen());
+    expect(find.byKey(LoadingRows.viewKey), findsOneWidget);
+    expect(find.byType(FbEmptyState), findsNothing);
+    await waiting.unmount(tester);
+  });
+
+  testWidgets('A57 A43 A44 A45 T-R3 history error is not "no workouts"; a '
+      'loading plan is not all rest; a session read error is not "deleted"', (
+    tester,
+  ) async {
+    final history = _Rig()
+      ..extra = [
+        workoutHistoryProvider.overrideWith(
+          (ref) async => throw StateError('read failed'),
+        ),
+      ];
+    await history.pump(tester, const WorkoutHistoryScreen());
+    expect(find.byKey(LoadFailedView.viewKey), findsOneWidget);
+    expect(find.byType(FbEmptyState), findsNothing);
+    await history.unmount(tester);
+
+    final plan = _Rig()
+      ..extra = [
+        workoutPlanProvider.overrideWith(
+          (ref) => const Stream<Map<DayOfWeek, String>>.empty(),
+        ),
+      ];
+    await plan.pump(tester, const WeeklyPlanScreen());
+    expect(find.byKey(LoadingRows.viewKey), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('workout-plan-day-saturday')),
+      findsNothing,
+    );
+    await plan.unmount(tester);
+
+    final session = _Rig()
+      ..library = exerciseLibraryProvider.overrideWith(
+        (ref) async => throw StateError('read failed'),
+      );
+    await session.pump(tester, WorkoutLogScreen.session(wid(10)));
+    expect(find.byKey(LoadFailedView.viewKey), findsOneWidget);
+    expect(find.byType(FbEmptyState), findsNothing);
+    await session.unmount(tester);
+  });
+
+  testWidgets('A57 A51 A05 T-A1 C1 set row: at 320 dp and 2.0 text "last '
+      'time" sits above the inputs, the status line is reserved and the '
+      'checkbox stays on screen; the normal row keeps its input widths when '
+      'PR appears', (tester) async {
+    Future<void> pumpRow(
+      Size size,
+      double scale, {
+      bool pr = false,
+      bool checked = false,
+    }) async {
+      tester.view
+        ..physicalSize = size
+        ..devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        phoneApp(
+          Scaffold(
+            body: Padding(
+              padding: const EdgeInsetsDirectional.all(FbSpace.s4),
+              child: SetRow(
+                row: LogSetRow(
+                  id: 's1',
+                  hint: const SetValues(reps: 8, kg: 60),
+                  checked: checked,
+                ),
+                number: 1,
+                type: ExerciseType.weightReps,
+                isPr: pr,
+                onChanged: (_) {},
+                onToggle: () {},
+                onRemove: () {},
+              ),
+            ),
+          ),
+          textScale: scale,
+        ),
+      );
+    }
+
+    await pumpRow(const Size(320, 640), 2);
+    final last = find.byKey(const ValueKey('workout-set-last-s1'));
+    final done = find.byKey(const ValueKey('workout-set-done-s1'));
+    final status = find.byKey(const ValueKey('workout-set-status-s1'));
+    expect(find.byKey(const ValueKey('workout-set-compact-s1')), findsOne);
+    expect(
+      tester.getBottomLeft(last).dy,
+      lessThanOrEqualTo(tester.getTopLeft(find.byType(FbNumberField).first).dy),
+    );
+    expect(tester.getTopRight(done).dx, lessThanOrEqualTo(320));
+    final emptyLine = tester.getSize(status).height;
+    expect(emptyLine, greaterThan(0));
+    await pumpRow(const Size(320, 640), 2, pr: true, checked: true);
+    expect(tester.getSize(status).height, emptyLine);
+
+    await pumpRow(const Size(400, 800), 1);
+    expect(find.byKey(const ValueKey('workout-set-compact-s1')), findsNothing);
+    final width = tester.getSize(find.byType(FbNumberField).first).width;
+    await pumpRow(const Size(400, 800), 1, pr: true, checked: true);
+    expect(tester.getSize(find.byType(FbNumberField).first).width, width);
   });
 }

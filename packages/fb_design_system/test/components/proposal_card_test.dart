@@ -2,6 +2,7 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../helpers/layout_stability.dart';
 import '../helpers/pump.dart';
 
 Widget _card({VoidCallback? onConfirm, String? reason}) => FbProposalCard(
@@ -125,5 +126,33 @@ void main() {
     await tester.pump();
     expect(sends, 1);
     expect(focus.hasFocus, isTrue);
+  });
+
+  testWidgets('UX-045 A57 A07 a reserved reason line keeps the buttons still '
+      'while a short reason comes and goes', (tester) async {
+    Widget actions(String? reason) => Center(
+      child: FbProposalActions(
+        key: const ValueKey('actions'),
+        discardLabel: 'Discard',
+        confirmLabel: 'Log it',
+        onDiscard: () {},
+        onConfirm: null,
+        reason: reason,
+        reserveReason: true,
+      ),
+    );
+    for (final scale in stabilityScales) {
+      await pumpFb(tester, actions(null), textScale: scale);
+      await expectStable(
+        tester,
+        find.byKey(const ValueKey('actions')),
+        () async {
+          await pumpFb(tester, actions('Logging…'), textScale: scale);
+          await tester.pumpAndSettle();
+        },
+        anchor: find.byType(FilledButton),
+        reason: 'at $scale',
+      );
+    }
   });
 }

@@ -100,6 +100,8 @@ void main() {
           c.onPrimaryContainer,
           c.primaryContainer,
         ),
+        // A57 D21: a changed day's row title on its tint (UX-071).
+        ('onSurface/primaryContainer', c.onSurface, c.primaryContainer),
         ('onSecondary/secondary', c.onSecondary, c.secondary),
         (
           'onSecondaryContainer/secondaryContainer',

@@ -7,6 +7,7 @@ import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/diary/application/saved_meal_actions.dart';
 import 'package:fb_mobile/features/diary/application/saved_meals.dart';
 import 'package:fb_mobile/features/diary/presentation/save_meal_sheet.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter/services.dart' show TextInputAction;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,7 +86,9 @@ class _RenameSavedMealSheetState extends ConsumerState<RenameSavedMealSheet> {
         if (host.mounted) {
           showUndoFeedback(
             host,
-            message: host.l10n.savedMealRenamedMessage('${args['name']}'),
+            message: host.l10n.savedMealRenamedMessage(
+              isolateName('${args['name']}'),
+            ),
             undoEntryId: undoEntryId,
           );
         }

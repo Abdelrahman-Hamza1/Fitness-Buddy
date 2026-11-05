@@ -57,8 +57,15 @@ class CheckInCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final applied = ref.watch(appliedCheckInCardProvider).value;
-    final view = ref.watch(checkInCardProvider).value;
+    final appliedAsync = ref.watch(appliedCheckInCardProvider);
+    final viewAsync = ref.watch(checkInCardProvider);
+    // `.value` keeps the last read through a later failure, so a shown
+    // Change back never disappears on an error (A57 A48).
+    final applied = appliedAsync.value;
+    final view = viewAsync.value;
+    final failed =
+        (appliedAsync.hasError && !appliedAsync.hasValue) ||
+        (viewAsync.hasError && !viewAsync.hasValue);
     Widget gap(Widget child) => Padding(
       padding: const EdgeInsetsDirectional.only(bottom: FbDensity.cardGap),
       child: child,
@@ -69,6 +76,16 @@ class CheckInCard extends ConsumerWidget {
         // The unseen automatic change first: a newer proposal never hides
         // its Change back (A38 review 5).
         if (applied != null) gap(_AppliedCard(view: applied)),
+        if (failed)
+          gap(
+            _CardLoadFailed(
+              key: const ValueKey('check-in-load-failed'),
+              message: context.l10n.checkInLoadFailed,
+              onRetry: () => ref
+                ..invalidate(appliedCheckInCardProvider)
+                ..invalidate(checkInCardProvider),
+            ),
+          ),
         if (view != null)
           gap(switch (view.kind) {
             CheckInCardKind.pending => _ProposalCard(
@@ -81,6 +98,23 @@ class CheckInCard extends ConsumerWidget {
       ],
     );
   }
+}
+
+/// A card's read failed: a calm sentence and Try again in its place
+/// (A57 A48), never a silent gap.
+class _CardLoadFailed extends StatelessWidget {
+  const new({required this.message, required this.onRetry, super.key});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) => FbInlineBanner(
+    kind: FbInlineBannerKind.info,
+    message: message,
+    actionLabel: context.l10n.foodTryAgain,
+    onAction: onRetry,
+  );
 }
 
 class _ProposalCard extends StatefulWidget {
@@ -299,9 +333,23 @@ class IncompleteDayCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final suggestion = ref.watch(incompleteDaySuggestionProvider).value;
-    if (suggestion == null) return const SizedBox.shrink();
+    final async = ref.watch(incompleteDaySuggestionProvider);
+    final suggestion = async.value;
     final l10n = context.l10n;
+    if (suggestion == null) {
+      return async.hasError
+          ? Padding(
+              padding: const EdgeInsetsDirectional.only(
+                bottom: FbDensity.cardGap,
+              ),
+              child: _CardLoadFailed(
+                key: const ValueKey('incomplete-day-load-failed'),
+                message: l10n.incompleteDayLoadFailed,
+                onRetry: () => ref.invalidate(incompleteDaySuggestionProvider),
+              ),
+            )
+          : const SizedBox.shrink();
+    }
     final date = suggestion.date;
     final day = DateFormat.MMMEd(l10n.localeName)
         .format(DateTime(date.year, date.month, date.day));
@@ -351,9 +399,18 @@ class ExpenditureCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final view = ref.watch(expenditureViewProvider).value;
-    if (view == null) return const SizedBox.shrink();
+    final async = ref.watch(expenditureViewProvider);
+    final view = async.value;
     final l10n = context.l10n;
+    if (view == null) {
+      return async.hasError
+          ? _CardLoadFailed(
+              key: const ValueKey('expenditure-load-failed'),
+              message: l10n.expenditureLoadFailed,
+              onRetry: () => ref.invalidate(expenditureViewProvider),
+            )
+          : const SizedBox.shrink();
+    }
     final scheme = Theme.of(context).colorScheme;
     final muted = FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant);
     final latest = view.latest;

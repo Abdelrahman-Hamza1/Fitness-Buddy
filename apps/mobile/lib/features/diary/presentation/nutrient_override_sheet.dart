@@ -5,6 +5,7 @@ import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/diary/application/diary_actions.dart';
 import 'package:fb_mobile/features/diary/presentation/entry_actions.dart';
 import 'package:fb_mobile/features/diary/presentation/live_entry.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show NumberFormat;
 import 'package:material_ui/material_ui.dart';
@@ -82,6 +83,8 @@ class _NutrientOverrideSheetState extends ConsumerState<NutrientOverrideSheet> {
         .overrideNutrients(entry, {widget.field: value});
     if (!mounted) return;
     setState(() => _saving = false);
+    // Read before the sheet closes (LC-007).
+    final name = readFoodNameInline(ref, entry.food.names);
     switch (outcome) {
       case DiaryActionFailed(:final reason):
         setState(() => _failure = reason);
@@ -95,7 +98,7 @@ class _NutrientOverrideSheetState extends ConsumerState<NutrientOverrideSheet> {
             outcome,
             () => host.l10n.diaryNutrientEdited(
               nutrientLabel(host.l10n, widget.field),
-              entry.food.names.en,
+              name,
             ),
           );
         }
@@ -139,7 +142,7 @@ class _NutrientOverrideSheetState extends ConsumerState<NutrientOverrideSheet> {
       children: [
         StaleEntryBanner(freshness: live.freshness, onReload: live.reload),
         Text(
-          entry.food.names.en,
+          watchFoodNameInline(ref, entry.food.names),
           style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
         ),
         FbAmountDisplay(

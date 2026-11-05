@@ -1,9 +1,11 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/ui/nutrition_summary.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../helpers/layout_stability.dart';
 import '../../diary/support/diary_fixtures.dart' show fixtureId;
 import '../../diary/support/diary_harness.dart';
 import 'support/today_support.dart';
@@ -156,6 +158,68 @@ void main() {
       await pad(tester, '3');
       expect(isEnabled(tester, button('Save')), isTrue);
     });
+
+    testWidgets('UX-045 A57 T-S2 entry amount sheet keeps its height when '
+        'the amount is cleared', (tester) async {
+      await pitaDetails(tester);
+      await tester.tap(chip('Amount'));
+      await tester.pumpAndSettle();
+      final summary = find.byType(NutritionSummary);
+      final save = button('Save');
+      for (final (keys, why) in [
+        ('2', 'typed'),
+        ('<', 'cleared'),
+        ('0', 'zero'),
+        ('<', 'cleared'),
+        ('3', 'typed again'),
+      ]) {
+        await expectStable(
+          tester,
+          summary,
+          () => pad(tester, keys),
+          anchor: save,
+          reason: why,
+        );
+      }
+    });
+  });
+
+  testWidgets('UX-045 A57 T-S5 diary rows cut the name at the same width '
+      'for 165 and 1,238 kcal', (tester) async {
+    final rig = TodayRig();
+    await pumpRig(tester, rig);
+    useTallPhone(tester);
+    final big = pitaLoaf(2, testToday, hour: 9);
+    await log(tester, rig, [
+      pitaLoaf(1, testToday),
+      NewDiaryEntry(
+        id: big.id,
+        when: big.when,
+        slotId: big.slotId,
+        food: big.food,
+        amount: EntryAmount(
+          input: Quantity(450, 'g'),
+          amount: 450,
+          basis: NutrientBasis.per100g,
+        ),
+      ),
+    ]);
+    await tester.tap(find.widgetWithText(FbDisclosureRow, 'Breakfast'));
+    await tester.pump();
+    final slots = find.descendant(
+      of: find.byType(FbListRow),
+      matching: find.byType(FbNumberSlot),
+    );
+    final texts = [
+      for (final e in slots.evaluate()) (e.widget as FbNumberSlot).text,
+    ];
+    expect(texts, containsAll(['165 kcal', '1,238 kcal']));
+    final widths = {
+      for (final e in slots.evaluate())
+        tester.getSize(find.byWidget(e.widget)).width,
+    };
+    expect(widths, hasLength(1), reason: 'one column width for every row');
+    rig.stack.dispose();
   });
 
   group('slot and time', () {

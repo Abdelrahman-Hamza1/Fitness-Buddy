@@ -29,6 +29,7 @@ final class PendingScan {
     required this.scannedAtMs,
     this.state = PendingScanState.waiting,
     this.name,
+    this.nameAr,
     this.fromOff = false,
   });
 
@@ -41,8 +42,12 @@ final class PendingScan {
   /// Where it stands.
   final PendingScanState state;
 
-  /// The product name once found.
+  /// The product name once found (English when it has one).
   final String? name;
+
+  /// The product's Arabic name once found, when it has one (A37). Stored as
+  /// `name_ar`; scans saved before it read without it.
+  final String? nameAr;
 
   /// The name is Open Food Facts data (the list shows the ODbL credit).
   final bool fromOff;
@@ -51,12 +56,14 @@ final class PendingScan {
   PendingScan withState(
     PendingScanState state, {
     String? name,
+    String? nameAr,
     bool fromOff = false,
   }) => PendingScan(
     code: code,
     scannedAtMs: scannedAtMs,
     state: state,
     name: name,
+    nameAr: nameAr,
     fromOff: fromOff,
   );
 
@@ -65,6 +72,7 @@ final class PendingScan {
     'at': scannedAtMs,
     'state': state.name,
     'name': ?name,
+    'name_ar': ?nameAr,
     if (fromOff) 'off': true,
   };
 
@@ -76,12 +84,14 @@ final class PendingScan {
         .where((s) => s.name == json['state'])
         .firstOrNull;
     final name = json['name'];
+    final nameAr = json['name_ar'];
     if (code is! String || at is! int || state == null) return null;
     return PendingScan(
       code: code,
       scannedAtMs: at,
       state: state,
       name: name is String ? name : null,
+      nameAr: nameAr is String ? nameAr : null,
       fromOff: json['off'] == true,
     );
   }

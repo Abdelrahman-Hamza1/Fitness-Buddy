@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:fb_design_system/src/tokens/colors.dart';
 import 'package:fb_design_system/src/tokens/motion.dart';
 import 'package:fb_design_system/src/tokens/spacing.dart';
@@ -51,8 +53,9 @@ class FbBigNumber extends StatelessWidget {
   /// Over the target: neutral tone.
   final bool over;
 
-  /// The largest text scale the number itself follows.
-  static const double maxTextScale = 1.5;
+  /// The largest text scale the number itself follows (A57 A55: up to the
+  /// largest system size).
+  static const double maxTextScale = 2;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +68,7 @@ class FbBigNumber extends StatelessWidget {
       excludeSemantics: true,
       child: TweenAnimationBuilder<double>(
         tween: Tween(end: count),
-        duration: FbMotion.of(context, FbMotion.slow),
+        duration: FbMotion.of(context, FbMotion.structural),
         curve: FbMotion.curve,
         builder: (context, shown, _) => _build(context, format(shown)),
       ),
@@ -83,20 +86,38 @@ class FbBigNumber extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          MediaQuery.withClampedTextScaling(
-            maxScaleFactor: maxTextScale,
-            child: Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: AlignmentDirectional.centerStart,
-                child: Text(
-                  value,
-                  maxLines: 1,
-                  style: FbType.numeric(FbType.display).copyWith(color: color),
-                ),
-              ),
-            ),
+          // Follows the text size up to [maxTextScale]; a number too wide
+          // for the space shrinks, but never below the 1.0-scale headline
+          // size, and wraps rather than going smaller (A57 A55).
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final scale = MediaQuery.textScalerOf(context)
+                  .clamp(maxScaleFactor: maxTextScale)
+                  .scale(1);
+              final style = FbType.numeric(FbType.display).copyWith(
+                color: color,
+                fontSize: FbType.display.fontSize! * scale,
+              );
+              final painter = TextPainter(
+                text: TextSpan(text: value, style: style),
+                textDirection: Directionality.of(context),
+                maxLines: 1,
+              )..layout();
+              final width = painter.width;
+              painter.dispose();
+              final fits = width <= constraints.maxWidth;
+              final size = fits
+                  ? style.fontSize!
+                  : math.max(
+                      style.fontSize! * constraints.maxWidth / width,
+                      FbType.headline.fontSize!,
+                    );
+              return Text(
+                value,
+                textScaler: TextScaler.noScaling,
+                style: style.copyWith(fontSize: size),
+              );
+            },
           ),
           const SizedBox(height: FbSpace.s1),
           Text(

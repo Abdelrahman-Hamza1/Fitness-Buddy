@@ -179,4 +179,10 @@ abstract final class FbIcons {
 
   /// Fast (log in seconds).
   static const IconData fast = Icons.bolt_rounded;
+
+  /// Weight (the Today line, A57).
+  static const IconData weight = Icons.monitor_weight_outlined;
+
+  /// A workout (the Today line, A57).
+  static const IconData workout = Icons.fitness_center_rounded;
 }

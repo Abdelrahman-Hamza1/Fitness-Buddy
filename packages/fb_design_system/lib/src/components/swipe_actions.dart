@@ -107,7 +107,9 @@ class _FbSwipeActionsState extends State<FbSwipeActions> {
           DismissDirection.startToEnd: fbSwipeThreshold,
         },
         movementDuration: FbMotion.of(context),
-        resizeDuration: reduced ? null : FbMotion.of(context, FbMotion.slow),
+        resizeDuration: reduced
+            ? null
+            : FbMotion.of(context, FbMotion.structural),
         onUpdate: (details) {
           if (details.reached && !details.previousReached) {
             unawaited(HapticFeedback.selectionClick());

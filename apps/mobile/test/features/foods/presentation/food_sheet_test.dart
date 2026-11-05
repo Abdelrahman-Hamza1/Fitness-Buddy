@@ -1,11 +1,13 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/changes/apply_result.dart';
+import 'package:fb_mobile/core/ui/nutrition_summary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../helpers/layout_stability.dart';
 import 'support/search_screen_support.dart';
 import 'support/sheet_support.dart';
 
@@ -163,7 +165,7 @@ void main() {
           .onPressed,
       isNull,
     );
-    expect(find.text('—'), findsOneWidget);
+    expect(find.byKey(NutritionSummary.pendingKey), findsOneWidget);
 
     await tapKeys(tester, '4');
     expect(
@@ -282,9 +284,7 @@ void main() {
         overrides: rig.overrides,
         child: screenApp(
           Scaffold(
-            body: SingleChildScrollView(
-              child: FoodSheet(pick: FoodPick(row: rig.row)),
-            ),
+            body: FoodSheet(pick: FoodPick(row: rig.row)),
           ),
         ),
       ),
@@ -296,5 +296,70 @@ void main() {
 
     expect(find.text("Couldn't add this food. Try again."), findsOneWidget);
     expect(find.byType(FoodSheet), findsOneWidget);
+  });
+
+  for (final scale in stabilityScales) {
+    testWidgets('UX-045 A57 T-S1 food sheet keeps its height when the amount '
+        'is cleared, grown and set to 0 (text $scale)', (tester) async {
+      // Grams, as typed on the pad (150 g, 1500 g).
+      final bread = foodOf(
+        'test:bread',
+        'Bread',
+        kcal: 275,
+        protein: 9.1,
+        carbs: 55.7,
+        fat: 1.2,
+        fiber: 2.2,
+      );
+      await openSheet(tester, SheetRig(catalogChoice(bread)), textScale: scale);
+      // Tall enough that the pad's keys are on screen at 2.0.
+      tester.view.physicalSize = const Size(360, 2400);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(FbAmountDisplay));
+      await tester.pumpAndSettle();
+      final summary = find.byType(NutritionSummary);
+      final below = find.byType(FbUnitPicker);
+      final add = find.byKey(FoodSheet.addKey);
+      Future<void> stable(String keys, String why) => expectStable(
+        tester,
+        summary,
+        () => tapKeys(tester, keys),
+        anchor: below,
+        reason: why,
+      );
+      final addTop = tester.getTopLeft(add).dy;
+      await stable('15', '15');
+      await stable('0', '150');
+      await stable('0', '1500');
+      expect(find.byKey(NutritionSummary.kcalKey), findsOneWidget);
+      await stable('<<<<', 'cleared');
+      expect(find.byKey(NutritionSummary.pendingKey), findsOneWidget);
+      await stable('0', 'zero');
+      expect(find.byKey(NutritionSummary.pendingKey), findsOneWidget);
+      expect(tester.getTopLeft(add).dy, addTop, reason: 'Add stays put');
+    });
+  }
+
+  testWidgets('UX-045 A57 T-S1 a food with 0 kcal shows a real 0', (
+    tester,
+  ) async {
+    await openSheet(
+      tester,
+      SheetRig(
+        catalogChoice(
+          foodOf(
+            'water',
+            'Water',
+            kcal: 0,
+            protein: 0,
+            carbs: 0,
+            fat: 0,
+            fiber: 0,
+          ),
+        ),
+      ),
+    );
+    expect(find.byKey(NutritionSummary.kcalKey), findsOneWidget);
+    expect(find.byKey(NutritionSummary.pendingKey), findsNothing);
   });
 }

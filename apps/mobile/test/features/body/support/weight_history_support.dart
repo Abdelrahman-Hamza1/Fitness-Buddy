@@ -77,6 +77,8 @@ Future<void> openHistory(
   HistoryRig rig, {
   WeightHistoryForm? initial,
   Size size = const Size(360, 1600),
+  double textScale = 1,
+  bool disableAnimations = true,
 }) async {
   tester.view
     ..physicalSize = size
@@ -85,7 +87,11 @@ Future<void> openHistory(
   await tester.pumpWidget(
     ProviderScope(
       overrides: rig.overrides,
-      child: phoneApp(WeightHistoryScreen(initial: initial)),
+      child: phoneApp(
+        WeightHistoryScreen(initial: initial),
+        textScale: textScale,
+        disableAnimations: disableAnimations,
+      ),
     ),
   );
   await settle(tester);

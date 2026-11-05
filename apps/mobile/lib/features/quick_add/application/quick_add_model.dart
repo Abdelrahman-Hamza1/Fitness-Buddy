@@ -28,15 +28,17 @@ final class QuickAddChip {
   /// Stable pending identity; never log.
   String get key => ranked.candidate.key;
 
-  /// Private display name in [language] (D-091; a saved meal's own name
-  /// stays as typed).
-  String nameIn(FoodNameLanguage language) => switch (ranked.candidate) {
-    FoodCandidate(:final lastUsed) => FoodNameLines.of(
-      choice?.names ?? lastUsed.food.names,
-      language,
-    ).primary,
-    SavedMealCandidate(:final meal) => meal.name,
-  };
+  /// Private display names in [language] (D-091, N2): the chip shows
+  /// [FoodNameLines.primary] and reads both. A saved meal's own name stays
+  /// as typed.
+  FoodNameLines linesIn(FoodNameLanguage language) =>
+      FoodNameLines.of(switch (ranked.candidate) {
+        FoodCandidate(:final lastUsed) => choice?.names ?? lastUsed.food.names,
+        SavedMealCandidate(:final meal) => FoodNames(meal.name),
+      }, language);
+
+  /// Private display name in [language]: the main line.
+  String nameIn(FoodNameLanguage language) => linesIn(language).primary;
 
   /// Private display name in English.
   String get name => nameIn(FoodNameLanguage.english);

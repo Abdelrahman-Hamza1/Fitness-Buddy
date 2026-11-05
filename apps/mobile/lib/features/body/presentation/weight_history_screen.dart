@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
@@ -6,6 +7,7 @@ import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/core/ui/revealed_column.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/body/application/weigh_in_actions.dart';
 import 'package:fb_mobile/features/body/application/weight_history_form.dart';
@@ -34,40 +36,73 @@ class WeightHistoryScreen extends ConsumerStatefulWidget {
   /// row keys count up from 0), for tests and journeys.
   static Key valueKey(int rowKey) => ValueKey('weight-history-value-$rowKey');
 
+  /// The key of a row's reserved message line.
+  static Key lineKey(int rowKey) => ValueKey('weight-history-line-$rowKey');
+
   @override
   ConsumerState<WeightHistoryScreen> createState() =>
       _WeightHistoryScreenState();
 }
 
 class _WeightHistoryScreenState extends ConsumerState<WeightHistoryScreen> {
-  final Map<int, TextEditingController> _controllers = {};
   WeightHistoryForm? _form;
   bool _saving = false;
   bool _leaving = false;
   WeighInFailure? _failure;
 
-  @override
-  void dispose() {
-    for (final controller in _controllers.values) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
-  TextEditingController _controller(WeightHistoryRow row) => _controllers
-      .putIfAbsent(row.key, () => TextEditingController(text: row.text));
-
   void _update(WeightHistoryForm Function(WeightHistoryForm form) change) =>
       setState(() {
         _form = change(_form!);
         _failure = null;
-        final keys = {for (final row in _form!.rows) row.key};
-        _controllers.removeWhere((key, controller) {
-          if (keys.contains(key)) return false;
-          controller.dispose();
-          return true;
-        });
       });
+
+  /// Removes [row]; one with something typed or picked can come back
+  /// through Undo (A57 A69). A draft, not stored data: the Undo is local.
+  void _remove(WeightHistoryRow row, int index) {
+    _update((f) => f.remove(row.key));
+    if (!row.isTouched) return;
+    showFbUndoSnackBar(
+      context,
+      message: context.l10n.weightHistoryRowRemoved,
+      onUndo: () {
+        if (!mounted || _form == null) return;
+        _update((f) => f.restore(row, index));
+      },
+    );
+  }
+
+  /// The last check and what it was made from (A57 A78): the batch check
+  /// runs again only when the draft, the stored weigh-ins or the day
+  /// changed, not on every rebuild.
+  ({
+    WeightHistoryForm form,
+    List<WeighIn> existing,
+    LocalDate today,
+    WeighInBatchResult result,
+  })?
+  _checked;
+
+  WeighInBatchResult _check(
+    WeightHistoryForm form,
+    List<WeighIn> existing,
+    LocalDate today,
+    Clock clock,
+  ) {
+    final last = _checked;
+    if (last != null &&
+        identical(last.form, form) &&
+        identical(last.existing, existing) &&
+        last.today == today) {
+      return last.result;
+    }
+    final result = form.check(
+      existing: existing,
+      today: today,
+      timeFor: (date) => WeighInBatch.timeFor(date, clock),
+    );
+    _checked = (form: form, existing: existing, today: today, result: result);
+    return result;
+  }
 
   LocalDate _today() => EntryTime.now(ref.read(clockProvider)).localDate;
 
@@ -144,11 +179,7 @@ class _WeightHistoryScreenState extends ConsumerState<WeightHistoryScreen> {
     final today = EntryTime.now(clock).localDate;
     final result = form == null || weighIns.value == null
         ? null
-        : form.check(
-            existing: weighIns.value!,
-            today: today,
-            timeFor: (date) => WeighInBatch.timeFor(date, clock),
-          );
+        : _check(form, weighIns.value!, today, clock);
     final pending = ref.watch(
       weighInActionsProvider.select(
         (keys) => keys.contains(WeighInActions.logManyKey),
@@ -254,19 +285,24 @@ class _WeightHistoryScreenState extends ConsumerState<WeightHistoryScreen> {
           ],
         ),
         const SizedBox(height: FbSpace.s3),
-        for (final (i, row) in form.rows.indexed)
-          _RowEditor(
-            key: ValueKey<int>(row.key),
-            row: row,
-            result: result.rows[i],
-            today: today,
-            controller: _controller(row),
-            onPickDate: () => unawaited(_pickDate(row)),
-            onText: (text) => _update((f) => f.withText(row.key, text)),
-            onRemove: () => _update((f) => f.remove(row.key)),
-            onKeep: (token) => _update((f) => f.keep(row.key, token)),
-            onUseUnit: (unit) => _update((f) => f.withRowUnit(row.key, unit)),
-          ),
+        // Added rows grow in, removed ones shrink away (A57 A22).
+        RevealedColumn(
+          children: [
+            for (final (i, row) in form.rows.indexed)
+              _RowEditor(
+                key: ValueKey<int>(row.key),
+                row: row,
+                result: result.rows[i],
+                today: today,
+                onPickDate: () => unawaited(_pickDate(row)),
+                onText: (text) => _update((f) => f.withText(row.key, text)),
+                onRemove: () => _remove(row, i),
+                onKeep: (token) => _update((f) => f.keep(row.key, token)),
+                onUseUnit: (unit) =>
+                    _update((f) => f.withRowUnit(row.key, unit)),
+              ),
+          ],
+        ),
         if (form.canAddRow)
           Align(
             alignment: AlignmentDirectional.centerStart,
@@ -292,13 +328,14 @@ class _WeightHistoryScreenState extends ConsumerState<WeightHistoryScreen> {
 }
 
 /// One row: the date chip, the value field, remove, and the row's flag
-/// with its answers.
-class _RowEditor extends StatelessWidget {
+/// with its answers. The row owns its field's text: a removed row stays
+/// mounted while it shrinks away (A57 A22), so its controller lives (and
+/// is disposed) with the row, and an Undo during the exit keeps the text.
+class _RowEditor extends StatefulWidget {
   const new({
     required this.row,
     required this.result,
     required this.today,
-    required this.controller,
     required this.onPickDate,
     required this.onText,
     required this.onRemove,
@@ -310,7 +347,6 @@ class _RowEditor extends StatelessWidget {
   final WeightHistoryRow row;
   final WeighInRowResult result;
   final LocalDate today;
-  final TextEditingController controller;
   final VoidCallback onPickDate;
   final ValueChanged<String> onText;
   final VoidCallback onRemove;
@@ -318,7 +354,32 @@ class _RowEditor extends StatelessWidget {
   final ValueChanged<MassUnit> onUseUnit;
 
   @override
+  State<_RowEditor> createState() => _RowEditorState();
+}
+
+class _RowEditorState extends State<_RowEditor> {
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.row.text,
+  );
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final _RowEditor(
+      :row,
+      :result,
+      :today,
+      :onPickDate,
+      :onText,
+      :onRemove,
+      :onKeep,
+      :onUseUnit,
+    ) = widget;
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
     final note = FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant);
@@ -383,19 +444,28 @@ class _RowEditor extends StatelessWidget {
           ),
           FbNumberField(
             key: WeightHistoryScreen.valueKey(row.key),
-            controller: controller,
+            controller: _controller,
             label: l10n.weightHistoryValue,
             unit: weightUnitLabel(l10n, row.unit),
             maxDecimals: 1,
             errorText: error,
+            // The row's own line below carries the message (A57 A15).
+            supportingLines: 0,
             onChanged: onText,
           ),
-          if (message != null) Text(message, style: note),
-          if (token != null)
-            Wrap(
-              spacing: FbSpace.s2,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
+          // One reserved line per row (A57 A15, UX-045): the error, the
+          // row's flag or the same-day note, with Keep / Use unit at its
+          // end. Always the same height, so later rows never move when a
+          // value crosses validation.
+          _RowLine(
+            key: WeightHistoryScreen.lineKey(row.key),
+            text:
+                error ??
+                message ??
+                (result.sameDay ? l10n.weightHistorySameDay : null),
+            isError: error != null,
+            actions: [
+              if (token != null) ...[
                 if (result.implausible
                     case LikelyOtherUnit(:final suggestedUnit)
                     when !result.kept)
@@ -413,8 +483,97 @@ class _RowEditor extends StatelessWidget {
                     onPressed: () => onKeep(token),
                   ),
               ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A weight-history row's reserved line: [text] (cut after two lines) with
+/// [actions] at its end, always as tall as two lines of small text or a
+/// 48 dp target, whichever is taller, at the current text scale. On a
+/// narrow screen or at large text the answers go on their own reserved
+/// line under the text, at full size (A57 A15), so they never shrink below
+/// a 48 dp target.
+class _RowLine extends StatelessWidget {
+  const new({
+    required this.text,
+    required this.isError,
+    required this.actions,
+    super.key,
+  });
+
+  final String? text;
+  final bool isError;
+  final List<Widget> actions;
+
+  // Measures one line's height (and an answer button's); never shown.
+  static const String _probe = 'Ag';
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final style = FbType.bodySmall.copyWith(
+      color: isError ? scheme.error : scheme.onSurfaceVariant,
+    );
+    final scaler = MediaQuery.textScalerOf(context);
+    final painter = TextPainter(
+      text: TextSpan(text: _probe, style: style),
+      textDirection: Directionality.of(context),
+      textScaler: scaler,
+    )..layout();
+    final twoLines = painter.height * 2;
+    painter.dispose();
+    final message = text;
+    final line = message == null
+        ? const SizedBox.shrink()
+        : Semantics(
+            liveRegion: isError,
+            child: Text(
+              message,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: style,
             ),
-          if (result.sameDay) Text(l10n.weightHistorySameDay, style: note),
+          );
+    final stacked =
+        MediaQuery.sizeOf(context).width < 360 || scaler.scale(1) >= 1.3;
+    if (stacked) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(height: twoLines, child: line),
+          // As tall as an answer button whether or not one shows: an
+          // invisible sample holds the height.
+          Stack(
+            alignment: AlignmentDirectional.centerEnd,
+            children: [
+              FbInert(
+                child: Opacity(
+                  opacity: 0,
+                  child: FbButton.text(label: _probe, onPressed: () {}),
+                ),
+              ),
+              Wrap(
+                alignment: WrapAlignment.end,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: actions,
+              ),
+            ],
+          ),
+        ],
+      );
+    }
+    return SizedBox(
+      height: math.max(kMinInteractiveDimension, twoLines),
+      child: Row(
+        spacing: FbSpace.s2,
+        children: [
+          Expanded(child: line),
+          if (actions.isNotEmpty)
+            Row(mainAxisSize: MainAxisSize.min, children: actions),
         ],
       ),
     );

@@ -169,6 +169,7 @@ class PendingScans extends _$PendingScans {
     String code,
     PendingScanState next, {
     String? name,
+    String? nameAr,
     bool fromOff = false,
   }) async {
     final epoch = _epoch;
@@ -179,7 +180,7 @@ class PendingScans extends _$PendingScans {
     await _save(epoch, [
       for (final s in scans)
         if (s.code == code)
-          s.withState(next, name: name, fromOff: fromOff)
+          s.withState(next, name: name, nameAr: nameAr, fromOff: fromOff)
         else
           s,
     ]);
@@ -236,6 +237,7 @@ class PendingScans extends _$PendingScans {
               scan,
               PendingScanState.ready,
               choice.names.en,
+              nameAr: choice.names.ar,
               fromOff: product.fromOff,
             );
           case BarcodeIncomplete(:final off, :final product):
@@ -245,6 +247,7 @@ class PendingScans extends _$PendingScans {
               scan,
               PendingScanState.ready,
               off.name,
+              nameAr: off.nameAr,
               fromOff: product.fromOff,
             );
           case BarcodeNotFound():
@@ -267,11 +270,12 @@ class PendingScans extends _$PendingScans {
     PendingScan scan,
     PendingScanState next,
     String? name, {
+    String? nameAr,
     bool fromOff = false,
   }) => _save(epoch, [
     for (final s in scans)
       if (s.code == scan.code)
-        s.withState(next, name: name, fromOff: fromOff)
+        s.withState(next, name: name, nameAr: nameAr, fromOff: fromOff)
       else
         s,
   ]);

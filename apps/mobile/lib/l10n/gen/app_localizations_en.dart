@@ -808,33 +808,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weightRowAdd => 'Log a weigh-in';
 
   @override
-  String weightCardTrend(String weight) {
-    return 'Trend $weight';
-  }
-
-  @override
   String get weightCardRateLater => 'Weekly rate after 2 weeks of weigh-ins';
-
-  @override
-  String weightCardTrendFrom(String weight, String date) {
-    return 'Trend $weight · from $date';
-  }
-
-  @override
-  String weightCardLast(String weight, String when) {
-    return 'Last weigh-in $weight · $when';
-  }
-
-  @override
-  String weightCardLastValue(String weight) {
-    return 'Last weigh-in $weight';
-  }
-
-  @override
-  String get weightCardEmpty => 'Log your first weigh-in';
-
-  @override
-  String get weightCardEmptyPast => 'No weigh-ins by this day. Tap to add one.';
 
   @override
   String weightCardSparse(int count) {
@@ -853,12 +827,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weightCardTipDismiss => 'Got it';
-
-  @override
-  String get weightCardLoadFailed => 'Couldn\'t load your weigh-ins.';
-
-  @override
-  String get weightCardTryAgain => 'Try again';
 
   @override
   String weightSpokenKg(String value) {
@@ -886,16 +854,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String weightCardLastSemantics(String weight, String when) {
-    return 'Last weigh-in $weight, $when';
-  }
-
-  @override
-  String weightCardLastValueSemantics(String weight) {
-    return 'Last weigh-in $weight';
-  }
-
-  @override
   String weightCardEmptySemantics(String message) {
     return 'Weight. $message';
   }
@@ -903,16 +861,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String weightCardLogSemantics(String summary) {
     return '$summary. Log a weigh-in';
-  }
-
-  @override
-  String weightCardLogNoteSemantics(String summary, String note) {
-    return '$summary. $note. Log a weigh-in';
-  }
-
-  @override
-  String weightCardEditSemantics(String summary) {
-    return '$summary. Edit';
   }
 
   @override
@@ -1150,6 +1098,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get foodSearchFailed => 'Couldn\'t search just now. Try again.';
+
+  @override
+  String get searchSearching => 'Searching';
 
   @override
   String foodResultKcal(int kcal) {
@@ -2199,7 +2150,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get foodSheetNoKcal => '—';
+  String get foodSheetKcalPending => '— kcal';
+
+  @override
+  String get foodSheetMacrosPending => 'Protein — · Carbs — · Fat — · Fiber —';
 
   @override
   String foodSheetMacros(
@@ -4839,6 +4793,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'We\'ll send a 6-digit code. No password needed.';
 
   @override
+  String get signInSending => 'Sending code…';
+
+  @override
+  String get signInVerifying => 'Verifying…';
+
+  @override
   String get signInEmailButton => 'Continue with email';
 
   @override
@@ -5256,16 +5216,6 @@ class AppLocalizationsEn extends AppLocalizations {
       one: '1 session',
     );
     return '$name: $metric, $_temp0';
-  }
-
-  @override
-  String workoutTodayPlanned(String name) {
-    return '$name day today';
-  }
-
-  @override
-  String workoutDayPlanned(String name) {
-    return '$name day';
   }
 
   @override
@@ -5725,22 +5675,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workoutPr => 'PR';
-
-  @override
-  String workoutTodayRow(String title, int exercises) {
-    String _temp0 = intl.Intl.pluralLogic(
-      exercises,
-      locale: localeName,
-      other: '$exercises exercises',
-      one: '1 exercise',
-    );
-    return '$title ✓ · $_temp0';
-  }
-
-  @override
-  String workoutTodayMore(int count) {
-    return '+$count';
-  }
 
   @override
   String get workoutLogNewTitle => 'Log workout';
@@ -6227,6 +6161,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get offAttribution => '© Open Food Facts contributors';
+
+  @override
+  String get newMessages => 'New message';
+
+  @override
+  String get scanSavedAsYours => 'Saved as your food when you add it';
+
+  @override
+  String scanDataFromOff(String credit) {
+    return 'Data: $credit';
+  }
 
   @override
   String halalCheckMessage(String items) {
@@ -6830,6 +6775,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ramadanTodayTimes => 'Today';
+
+  @override
+  String get ramadanTimesFailed =>
+      'Couldn\'t work out today\'s times. Tap to try again.';
+
+  @override
+  String get ramadanTimesNone => 'No times for this city today';
 
   @override
   String ramadanFajrMaghrib(String fajr, String maghrib) {
@@ -7447,41 +7399,102 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get todaySlideNutrition => 'Nutrition';
+  String get todayGlanceWeigh => 'Weigh in';
 
   @override
-  String get todaySlideWeight => 'Weight';
-
-  @override
-  String get todaySlideWorkout => 'Workout';
-
-  @override
-  String todaySlideSemantics(String name, int n, int count) {
-    return '$name, $n of $count';
+  String todayGlanceWeight(String weight, String rate) {
+    return '$weight · $rate';
   }
 
   @override
-  String get weightSlideAdd => '+ Weigh in';
-
-  @override
-  String workoutSlideLast(String title, int daysAgo) {
-    return 'Last: $title · $daysAgo days ago';
+  String todayGlanceWeightStale(String weight, String day) {
+    return '$weight · $day';
   }
 
   @override
-  String get workoutSlideNone => 'No workout logged';
+  String get todayGlanceWeightUnavailable => 'Weight unavailable. Try again';
 
   @override
-  String get workoutSlideLogNew => 'Log a workout';
-
-  @override
-  String get workoutSlideLog => 'Log';
-
-  @override
-  String workoutSlideOpenSemantics(String title) {
-    return 'Open $title';
+  String todayGlanceWorkoutDone(String title) {
+    return '$title done';
   }
 
   @override
-  String get workoutSlideLoadFailed => 'Couldn’t load workouts.';
+  String todayGlanceWorkoutDoneSemantics(String title) {
+    return '$title done. Open it';
+  }
+
+  @override
+  String todayGlanceWorkoutPlanned(String name) {
+    return '$name today';
+  }
+
+  @override
+  String todayGlanceWorkoutPlannedSemantics(String name) {
+    return '$name today. Start it';
+  }
+
+  @override
+  String get todayGlanceWorkoutLog => 'Log workout';
+
+  @override
+  String get todayGlanceWorkoutUnavailable => 'Workouts unavailable. Try again';
+
+  @override
+  String get todayGlanceUnavailable => 'Unavailable';
+
+  @override
+  String todayBuddyWaiting(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count waiting',
+      one: '1 waiting',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String todayBuddyWaitingSemantics(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'open the $count cards waiting for you',
+      one: 'open the card waiting for you',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get workoutsLoadFailed => 'Couldn\'t load your workouts.';
+
+  @override
+  String get workoutLoadFailed => 'Couldn\'t open this workout.';
+
+  @override
+  String get measurementLoadFailed => 'Couldn\'t load your measurements.';
+
+  @override
+  String get setupLoadFailed => 'Couldn\'t load your setup.';
+
+  @override
+  String get checkInLoadFailed => 'Couldn\'t load your weekly check-in.';
+
+  @override
+  String get incompleteDayLoadFailed => 'Couldn\'t check your recent days.';
+
+  @override
+  String get expenditureLoadFailed =>
+      'Couldn\'t load your expenditure estimate.';
+
+  @override
+  String get weightHistoryRowRemoved => 'Row removed';
+
+  @override
+  String get personalFoodMergeChooseAnother => 'Choose a different food';
+
+  @override
+  String targetsDayChanged(String day) {
+    return '$day, changed';
+  }
 }

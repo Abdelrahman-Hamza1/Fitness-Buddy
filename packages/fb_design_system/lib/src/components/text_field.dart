@@ -1,10 +1,14 @@
 import 'package:fb_design_system/l10n/gen/fb_localizations.dart';
+import 'package:fb_design_system/src/components/supporting_line.dart';
 import 'package:fb_design_system/src/tokens/icons.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// A labelled text field (D18): a [label] that floats above the text, an
 /// optional length limit with a counter, a clear button while there is text,
-/// and an [errorText] shown under the field.
+/// and one reserved supporting line under the field (UX-045, A57 D12): the
+/// [supportingText] or, in its place, the [errorText], with the counter at
+/// its end. The line is [supportingLines] lines tall whatever it shows, so
+/// nothing moves when an error appears or wraps; 0 reserves nothing.
 ///
 /// The field only edits [controller] and reports changes; what the text means
 /// is the caller's job. It reads label, text, counter and error as one text
@@ -18,6 +22,8 @@ class FbTextField extends StatelessWidget {
     this.maxLength,
     this.errorText,
     this.hint,
+    this.supportingText,
+    this.supportingLines = 1,
     this.onChanged,
     this.onSubmitted,
     this.textInputAction,
@@ -39,12 +45,18 @@ class FbTextField extends StatelessWidget {
   /// is shown and the field stops accepting more.
   final int? maxLength;
 
-  /// Why the text is not acceptable. Shown under the field, in the neutral
-  /// error colour.
+  /// Why the text is not acceptable. Shown in the supporting line, in the
+  /// error colour, and the field gets the error outline.
   final String? errorText;
 
   /// Shown while the field is empty.
   final String? hint;
+
+  /// A hint shown in the supporting line while there is no error.
+  final String? supportingText;
+
+  /// How many lines the supporting line reserves (0 = none).
+  final int supportingLines;
 
   /// Called on every edit, and with an empty string when the clear button
   /// empties the field.
@@ -76,7 +88,7 @@ class FbTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = FbLocalizations.of(context);
-    return TextField(
+    final field = TextField(
       controller: controller,
       focusNode: focusNode,
       autofocus: autofocus,
@@ -87,11 +99,18 @@ class FbTextField extends StatelessWidget {
       textInputAction: textInputAction,
       onChanged: onChanged,
       onSubmitted: onSubmitted,
+      // The counter is drawn in the supporting line, not under the field.
+      buildCounter: (
+        context, {
+        required currentLength,
+        required isFocused,
+        required maxLength,
+      }) => null,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        errorText: errorText,
-        errorMaxLines: 3,
+        // The outline shows the error; the message is in the line.
+        error: errorText == null ? null : const SizedBox.shrink(),
         suffixIcon: ValueListenableBuilder<TextEditingValue>(
           valueListenable: controller,
           builder: (context, value, _) => value.text.isEmpty || !enabled
@@ -106,6 +125,26 @@ class FbTextField extends StatelessWidget {
                 ),
         ),
       ),
+    );
+    if (supportingLines == 0) return field;
+    final limit = maxLength;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        field,
+        ValueListenableBuilder<TextEditingValue>(
+          valueListenable: controller,
+          builder: (context, value, _) => FbSupportingLine(
+            text: supportingText,
+            errorText: errorText,
+            lines: supportingLines,
+            counter: limit == null
+                ? null
+                : '${value.text.characters.length}/$limit',
+          ),
+        ),
+      ],
     );
   }
 }

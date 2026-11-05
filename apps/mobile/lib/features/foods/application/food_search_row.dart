@@ -46,13 +46,14 @@ final class FoodSearchRow {
   /// Structured identity passed to the amount sheet.
   FoodChoiceRef get choiceRef => FoodChoiceRef(choice.ref);
 
-  /// Locally calculated kcal for the default input.
-  double get kcalForDefault => switch (const NutritionCalculator().compute(
+  /// Locally calculated kcal for the default input, or null when it can't
+  /// be computed (A57 A72: shown as "—", never as a false 0).
+  double? get kcalForDefault => switch (const NutritionCalculator().compute(
     per100: choice.per100,
     measures: choice.measures,
     input: defaultPortion,
   )) {
     Computed(:final snapshot) => snapshot.nutrients.kcal,
-    NotComputed() => 0,
+    NotComputed() => null,
   };
 }

@@ -3,6 +3,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/features/workouts/application/set_input.dart';
 import 'package:fb_mobile/features/workouts/application/workout_views.dart';
 import 'package:fb_mobile/features/workouts/presentation/custom_exercise_screen.dart';
@@ -65,8 +66,13 @@ class ExerciseScreen extends ConsumerWidget {
           title: l10n.workoutRemovedExercise,
           message: l10n.workoutExerciseRemovedMessage,
         ),
-        // Local data: nothing to wait for that deserves a spinner.
-        _ => const SizedBox.shrink(),
+        // A failed read says so; it isn't "removed" (A57 A42).
+        AsyncError() => LoadFailedView(
+          message: l10n.workoutsLoadFailed,
+          onRetry: () => ref.invalidate(exerciseProgressProvider(exerciseId)),
+        ),
+        // Local data: rows shaped like the page, never a spinner.
+        _ => const LoadingRows(),
       },
     );
   }
@@ -223,12 +229,22 @@ class _Records extends StatelessWidget {
       },
     ];
     if (tiles.isEmpty) return const SizedBox.shrink();
-    return Row(
+    // The tiles stack on a narrow phone or at large text (A57 A54).
+    final stacked =
+        MediaQuery.sizeOf(context).width < 360 ||
+        MediaQuery.textScalerOf(context).scale(1) >= 1.3;
+    Widget slot(Widget tile) => stacked ? tile : Expanded(child: tile);
+    return Flex(
+      key: ValueKey(stacked ? 'exercise-prs-stacked' : 'exercise-prs'),
+      direction: stacked ? Axis.vertical : Axis.horizontal,
+      crossAxisAlignment: stacked
+          ? CrossAxisAlignment.stretch
+          : CrossAxisAlignment.center,
       spacing: FbDensity.cardGap,
       children: [
         for (final (label, value) in tiles)
-          Expanded(
-            child: FbCard(
+          slot(
+            FbCard(
               child: Semantics(
                 container: true,
                 label: '$label, $value',

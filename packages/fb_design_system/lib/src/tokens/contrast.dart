@@ -34,6 +34,11 @@ double _linear(double channel) => channel <= 0.04045
     ? channel / 12.92
     : math.pow((channel + 0.055) / 1.055, 2.4).toDouble();
 
+/// The opacity of a raw weigh-in point on a chart (A57 A56): the
+/// `onSurfaceVariant` role at this alpha, composited on any surface a chart
+/// sits on, still reaches 3:1 (non-text UI that carries information).
+const double fbRawPointAlpha = 0.8;
+
 /// One foreground drawn on one background, with the minimum it must reach.
 final class FbContrastPair {
   /// Creates a pair.
@@ -190,6 +195,18 @@ List<FbContrastPair> fbContrastPairs(FbPalette palette) {
       p.inverseSurface,
       FbContrastKind.text,
     ),
+    // A57 A56: a raw weigh-in point is translucent, so it is judged as
+    // composited on each surface.
+    for (final MapEntry(key: bg, value: background) in surfaces.entries)
+      FbContrastPair(
+        'raw weigh-in point on $bg',
+        Color.alphaBlend(
+          p.onSurfaceVariant.withValues(alpha: fbRawPointAlpha),
+          background,
+        ),
+        background,
+        FbContrastKind.ui,
+      ),
     for (final MapEntry(key: bg, value: background) in surfaces.entries)
       for (final MapEntry(key: fg, value: foreground) in {
         ...fills,

@@ -7,6 +7,7 @@ import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/diary/application/diary_actions.dart';
 import 'package:fb_mobile/features/diary/presentation/entry_actions.dart';
 import 'package:fb_mobile/features/diary/presentation/live_meal.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter/services.dart' show TextInputAction;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -90,7 +91,7 @@ class _SaveMealSheetState extends ConsumerState<SaveMealSheet> {
           reportDiaryOutcome(
             host,
             outcome,
-            () => host.l10n.diaryMealSaved(name),
+            () => host.l10n.diaryMealSaved(isolateName(name)),
           );
         }
     }

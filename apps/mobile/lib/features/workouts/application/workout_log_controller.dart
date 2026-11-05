@@ -121,7 +121,7 @@ class WorkoutLogController extends _$WorkoutLogController {
     switch (launch) {
       case EditLog(:final sessionId):
         final stored = all.where((s) => s.ref.id == sessionId).firstOrNull;
-        if (stored == null) throw StateError('the session is gone');
+        if (stored == null) throw const WorkoutSessionGone();
         _baseline = stored.draft;
         return _opened(stored, today);
       case NewLog(

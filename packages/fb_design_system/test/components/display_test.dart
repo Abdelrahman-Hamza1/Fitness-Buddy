@@ -339,4 +339,25 @@ void main() {
       });
     }
   });
+
+  testWidgets('A57 A55 T-A6 the big number follows text up to 2.0 and never '
+      'shrinks below the 1.0 headline size', (tester) async {
+    double size(WidgetTester tester) =>
+        tester.widget<Text>(find.text('1,240')).style!.fontSize!;
+    await pumpFb(
+      tester,
+      const FbBigNumber(value: '1,240', caption: 'kcal left'),
+      textScale: 2,
+    );
+    expect(size(tester), FbType.display.fontSize! * 2);
+    await pumpFb(
+      tester,
+      const SizedBox(
+        width: 60,
+        child: FbBigNumber(value: '1,240', caption: 'kcal left'),
+      ),
+      textScale: 2,
+    );
+    expect(size(tester), FbType.headline.fontSize);
+  });
 }

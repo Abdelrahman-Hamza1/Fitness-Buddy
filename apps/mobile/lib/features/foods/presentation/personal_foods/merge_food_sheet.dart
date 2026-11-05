@@ -5,6 +5,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
 import 'package:fb_mobile/features/foods/application/personal_food_actions.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart' show Theme;
@@ -17,17 +18,31 @@ Future<PersonalFoodDone?> showMergeFoodSheet(
   BuildContext context, {
   required PersonalFood food,
 }) async {
-  final picked = await showFbSheet<PersonalFood>(
-    context,
-    title: context.l10n.personalFoodMergeTitle,
-    builder: (_) => MergePickerSheet(food: food),
-  );
-  if (picked == null || !context.mounted) return null;
-  return await showFbSheet<PersonalFoodDone>(
-    context,
-    title: context.l10n.personalFoodMergeConfirmTitle,
-    builder: (_) => MergeConfirmSheet(keep: food, other: picked),
-  );
+  // The confirmation can go back to the list (A57 A70): another round.
+  final l10n = context.l10n;
+  while (true) {
+    if (!context.mounted) return null;
+    final picked = await showFbSheet<PersonalFood>(
+      context,
+      title: l10n.personalFoodMergeTitle,
+      builder: (_) => MergePickerSheet(food: food),
+    );
+    if (picked == null || !context.mounted) return null;
+    var again = false;
+    final done = await showFbSheet<PersonalFoodDone>(
+      context,
+      title: l10n.personalFoodMergeConfirmTitle,
+      builder: (sheet) => MergeConfirmSheet(
+        keep: food,
+        other: picked,
+        onChooseAnother: () {
+          again = true;
+          Navigator.of(sheet).pop();
+        },
+      ),
+    );
+    if (!again) return done;
+  }
 }
 
 /// Calories per 100 as the lists show them: "250 kcal per 100 g".
@@ -38,6 +53,17 @@ String kcalPerText(AppLocalizations l10n, PersonalFood food) =>
           ? l10n.personalFoodBasis100g
           : l10n.personalFoodBasis100ml,
     );
+
+/// A row's [detail] subtitle, led by the other-language name in "Both"
+/// (D-091, like the Your Foods list).
+String _withSecondary(
+  AppLocalizations l10n,
+  FoodNameLines names,
+  String detail,
+) => switch (names.secondary) {
+  final second? => l10n.foodResultSubtitle(isolateName(second), detail),
+  null => detail,
+};
 
 /// The foods that can be merged into [food]: every other food measured the
 /// same way (grams or millilitres), by name. Pops with the one tapped.
@@ -70,7 +96,9 @@ class MergePickerSheet extends ConsumerWidget {
         Padding(
           padding: const EdgeInsetsDirectional.only(bottom: FbSpace.s2),
           child: Text(
-            l10n.personalFoodMergePickMessage(food.names.en),
+            l10n.personalFoodMergePickMessage(
+              watchFoodNameInline(ref, food.names),
+            ),
             style: FbType.body.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
@@ -79,8 +107,12 @@ class MergePickerSheet extends ConsumerWidget {
         for (final other in candidates)
           FbListRow(
             key: ValueKey(other.id),
-            title: other.names.en,
-            subtitle: kcalPerText(l10n, other),
+            title: watchFoodNames(ref, other.names).primary,
+            subtitle: _withSecondary(
+              l10n,
+              watchFoodNames(ref, other.names),
+              kcalPerText(l10n, other),
+            ),
             leading: const FbSourceBadge(source: FbSource.yours),
             onTap: () => Navigator.of(context).pop(other),
           ),
@@ -96,7 +128,15 @@ class MergePickerSheet extends ConsumerWidget {
 /// D12(4)).
 class MergeConfirmSheet extends ConsumerStatefulWidget {
   /// Creates the confirmation that keeps [keep] and merges [other] into it.
-  const new({required this.keep, required this.other, super.key});
+  const new({
+    required this.keep,
+    required this.other,
+    this.onChooseAnother,
+    super.key,
+  });
+
+  /// Goes back to the list to pick another duplicate; null hides it.
+  final VoidCallback? onChooseAnother;
 
   /// The food kept at first.
   final PersonalFood keep;
@@ -152,6 +192,8 @@ class _MergeConfirmSheetState extends ConsumerState<MergeConfirmSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final keepNames = watchFoodNames(ref, _keep.names);
+    final otherNames = watchFoodNames(ref, _other.names);
     final live = (
       keep: ref.watch(personalFoodProvider(_keep.id)),
       other: ref.watch(personalFoodProvider(_other.id)),
@@ -193,24 +235,35 @@ class _MergeConfirmSheetState extends ConsumerState<MergeConfirmSheet> {
           ),
         FbListRow(
           key: const ValueKey('merge-keep'),
-          title: _keep.names.en,
-          subtitle: l10n.personalFoodMergeRowSubtitle(
-            l10n.personalFoodMergeStays,
-            kcalPerText(l10n, _keep),
+          title: keepNames.primary,
+          subtitle: _withSecondary(
+            l10n,
+            keepNames,
+            l10n.personalFoodMergeRowSubtitle(
+              l10n.personalFoodMergeStays,
+              kcalPerText(l10n, _keep),
+            ),
           ),
           leading: const FbSourceBadge(source: FbSource.yours),
         ),
         FbListRow(
           key: const ValueKey('merge-other'),
-          title: _other.names.en,
-          subtitle: l10n.personalFoodMergeRowSubtitle(
-            l10n.personalFoodMergeGoes,
-            kcalPerText(l10n, _other),
+          title: otherNames.primary,
+          subtitle: _withSecondary(
+            l10n,
+            otherNames,
+            l10n.personalFoodMergeRowSubtitle(
+              l10n.personalFoodMergeGoes,
+              kcalPerText(l10n, _other),
+            ),
           ),
           leading: const FbSourceBadge(source: FbSource.yours),
         ),
         Text(
-          l10n.personalFoodMergeConfirmMessage(_keep.names.en, _other.names.en),
+          l10n.personalFoodMergeConfirmMessage(
+            watchFoodNameInline(ref, _keep.names),
+            watchFoodNameInline(ref, _other.names),
+          ),
           style: FbType.body.copyWith(color: scheme.onSurfaceVariant),
         ),
         Align(
@@ -233,6 +286,13 @@ class _MergeConfirmSheetState extends ConsumerState<MergeConfirmSheet> {
           expand: true,
           onPressed: _busy || removed || changed ? null : _merge,
         ),
+        if (widget.onChooseAnother case final back?)
+          FbButton.text(
+            key: const ValueKey('merge-choose-another'),
+            label: l10n.personalFoodMergeChooseAnother,
+            expand: true,
+            onPressed: _busy ? null : back,
+          ),
       ],
     );
   }

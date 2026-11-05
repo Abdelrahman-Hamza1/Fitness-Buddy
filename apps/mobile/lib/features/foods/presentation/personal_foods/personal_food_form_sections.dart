@@ -136,7 +136,7 @@ class NameSection extends StatelessWidget {
         if (duplicate != null)
           formPad(
             Text(
-              l10n.personalFoodDuplicate(duplicate.names.en),
+              l10n.personalFoodDuplicate(isolateName(duplicate.names.en)),
               style: FbType.bodySmall.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
@@ -182,7 +182,7 @@ class OtherNamesSection extends StatelessWidget {
             controller: b.text(PersonalFoodField.aliases),
             focusNode: b.inputs.focus(PersonalFoodField.aliases),
             label: l10n.personalFoodAliasesLabel,
-            hint: l10n.personalFoodAliasesHint,
+            supportingText: l10n.personalFoodAliasesHint,
             textInputAction: TextInputAction.next,
             errorText: b.error(l10n, PersonalFoodField.aliases),
             onChanged: (t) =>
@@ -636,7 +636,7 @@ class BarcodesSection extends StatelessWidget {
         controller: b.text(PersonalFoodField.barcodes),
         focusNode: b.inputs.focus(PersonalFoodField.barcodes),
         label: l10n.personalFoodBarcodesLabel,
-        hint: l10n.personalFoodBarcodesHint,
+        supportingText: l10n.personalFoodBarcodesHint,
         textInputAction: TextInputAction.done,
         errorText: b.error(l10n, PersonalFoodField.barcodes),
         onChanged: (t) => b.controller.setField(PersonalFoodField.barcodes, t),

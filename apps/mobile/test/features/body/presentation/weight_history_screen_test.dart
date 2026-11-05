@@ -1,6 +1,8 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/features/body/application/weight_history_form.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../support/weight_history_support.dart';
 
@@ -100,6 +102,89 @@ void main() {
     await tester.tap(button('Discard'));
     await tester.pumpAndSettle();
     expect(rig.navigator.pops, 1);
+    await unmountHistory(tester, rig);
+  });
+
+  testWidgets('UX-045 A57 T-S7 A15 a value crossing validation keeps the '
+      'next row still', (tester) async {
+    final rig = HistoryRig();
+    await openHistory(tester, rig);
+    await pickRowDate(tester, 0, 3);
+    await tester.tap(button('Add row'));
+    await tester.pump();
+    final next = find.byType(FbNumberField).at(1);
+    final top = tester.getTopLeft(next).dy;
+    for (final value in ['19', '97', '9', '970', '97.4']) {
+      await typeRow(tester, 0, value);
+      expect(tester.getTopLeft(next).dy, top, reason: value);
+    }
+    expect(rowError(tester, 0), isNull);
+    await typeRow(tester, 0, '19');
+    expect(rowError(tester, 0), isNotNull);
+    expect(tester.getTopLeft(next).dy, top);
+    await unmountHistory(tester, rig);
+  });
+
+  WeightHistoryForm mixUp() =>
+      WeightHistoryForm.start(MassUnit.kilogram)
+          .withDate(0, LocalDate(2026, 10, 7))
+          .withText(0, '97')
+          .addRow(LocalDate(2026, 10, 17))
+          .withText(1, '214');
+
+  testWidgets('A57 A22 A69 removing a focused row and Undo at once keeps its '
+      'text; the leaving row takes no focus', (tester) async {
+    final rig = HistoryRig();
+    await openHistory(tester, rig, initial: mixUp(), disableAnimations: false);
+    await tester.showKeyboard(find.byType(TextField).at(1));
+    await tester.pump();
+    await tester.tap(find.byTooltip('Remove row').at(1));
+    await tester.pump(FbMotion.local ~/ 2);
+    // Mid-exit the field is still painted but has let go of focus.
+    expect(find.text('214'), findsOne);
+    final leaving = find.byType(EditableText).at(1);
+    expect(tester.widget<EditableText>(leaving).focusNode.hasFocus, isFalse);
+    // Undo while the row is still leaving (the snackbar may still be
+    // sliding in, so its action is run directly).
+    tester.widget<SnackBarAction>(find.byType(SnackBarAction)).onPressed();
+    await tester.pumpAndSettle();
+    expect(find.byType(FbNumberField), findsNWidgets(2));
+    expect(find.text('214'), findsOne);
+    expect(tester.takeException(), isNull);
+    // Removed for good: one row stays, and the exit ends.
+    await tester.tap(find.byTooltip('Remove row').at(1));
+    await tester.pumpAndSettle();
+    await tester.pump(FbMotion.local * 2);
+    expect(find.byType(FbNumberField), findsOne);
+    expect(tester.takeException(), isNull);
+    await unmountHistory(tester, rig);
+  });
+
+  testWidgets('A57 A15 at 320 dp and 2x text the row answers keep 48 dp '
+      'targets', (tester) async {
+    final rig = HistoryRig();
+    await openHistory(
+      tester,
+      rig,
+      initial: mixUp(),
+      size: const Size(320, 2400),
+      textScale: 2,
+    );
+    for (final label in ['Use lb', 'Keep']) {
+      final size = tester.getSize(button(label));
+      expect(size.height, greaterThanOrEqualTo(48), reason: label);
+      expect(size.width, greaterThanOrEqualTo(48), reason: label);
+      // Fully on screen, inside the row.
+      expect(tester.getTopRight(button(label)).dx, lessThanOrEqualTo(320));
+    }
+    // The line is as tall with or without answers: Keep the row and what
+    // follows doesn't move.
+    final top = tester.getTopLeft(button('Add row')).dy;
+    await tester.tap(button('Keep'));
+    await tester.pump();
+    expect(find.text('Kept'), findsOne);
+    expect(tester.getTopLeft(button('Add row')).dy, top);
+    expect(tester.takeException(), isNull);
     await unmountHistory(tester, rig);
   });
 }

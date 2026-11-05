@@ -4,7 +4,9 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/l10n/time_format.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/core/ui/success_haptic.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/body/application/weigh_in_actions.dart';
 import 'package:fb_mobile/features/body/application/weigh_in_form.dart';
@@ -219,6 +221,7 @@ class _WeighInSheetState extends ConsumerState<WeighInSheet> {
     if (mounted) setState(() => _saving = false);
     switch (outcome) {
       case WeighInDone(:final undoId, :final kind):
+        successHaptic();
         if (mounted) nav.pop();
         if (host.mounted) {
           final l10n = host.l10n;
@@ -391,6 +394,8 @@ class _WeighInSheetState extends ConsumerState<WeighInSheet> {
           ),
           active: _padOpen,
           onTap: _togglePad,
+          // A hardware keyboard types too (A57 A61).
+          onKey: (key) => _update((f) => f.key(key)),
         ),
         FbUnitPicker(
           units: [
@@ -401,46 +406,59 @@ class _WeighInSheetState extends ConsumerState<WeighInSheet> {
           onSelected: (code) =>
               _update((f) => f.withUnit(MassUnit.fromCode(code)!)),
         ),
-        Wrap(
-          spacing: FbSpace.s2,
-          runSpacing: FbSpace.s2,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            FbChoiceChip(
-              label: l10n.weighInWhenLabel,
-              value: l10n.weighInDayTime(
-                dayLabel(context, form.date, today),
-                _timeText(context, form.time.localDateTime),
-              ),
-              icon: FbIcons.calendar,
-              onTap: () => unawaited(_pickWhen()),
+            Wrap(
+              spacing: FbSpace.s2,
+              runSpacing: FbSpace.s2,
+              children: [
+                FbChoiceChip(
+                  label: l10n.weighInWhenLabel,
+                  value: l10n.weighInDayTime(
+                    dayLabel(context, form.date, today),
+                    _timeText(context, form.time.localDateTime),
+                  ),
+                  icon: FbIcons.calendar,
+                  onTap: () => unawaited(_pickWhen()),
+                ),
+                if (!_noteOpen)
+                  FbChoiceChip(
+                    label: l10n.weighInAddNote,
+                    icon: FbIcons.add,
+                    dropdown: false,
+                    onTap: () => setState(() => _noteOpen = true),
+                  ),
+              ],
             ),
-            if (!_noteOpen)
-              FbChoiceChip(
-                label: l10n.weighInAddNote,
-                icon: FbIcons.add,
-                dropdown: false,
-                onTap: () => setState(() => _noteOpen = true),
+            // The note, the confirmation and the pad grow in and out; the
+            // amount above and the pinned actions stay put (A57 A20). Each
+            // sits in its neighbour's slot, so a hidden one adds no gap.
+            FbReveal(
+              visible: _noteOpen,
+              child: Padding(
+                padding: const EdgeInsetsDirectional.only(top: FbSpace.s3),
+                child: FbTextField(
+                  controller: _note,
+                  focusNode: _noteFocus,
+                  label: l10n.weighInNoteLabel,
+                  hint: l10n.weighInNoteHint,
+                  maxLength: WeighInBounds.noteMax,
+                  autofocus: form.note.isEmpty,
+                  textInputAction: TextInputAction.done,
+                  errorText: switch (issue) {
+                    WeighInFormIssue.noteTooLong => l10n.weighInNoteTooLong(
+                      WeighInBounds.noteMax,
+                    ),
+                    WeighInFormIssue.noteInvalid => l10n.weighInNoteInvalid,
+                    _ => null,
+                  },
+                  onChanged: (text) => _update((f) => f.withNote(text)),
+                ),
               ),
+            ),
           ],
         ),
-        if (_noteOpen)
-          FbTextField(
-            controller: _note,
-            focusNode: _noteFocus,
-            label: l10n.weighInNoteLabel,
-            hint: l10n.weighInNoteHint,
-            maxLength: WeighInBounds.noteMax,
-            autofocus: form.note.isEmpty,
-            textInputAction: TextInputAction.done,
-            errorText: switch (issue) {
-              WeighInFormIssue.noteTooLong => l10n.weighInNoteTooLong(
-                WeighInBounds.noteMax,
-              ),
-              WeighInFormIssue.noteInvalid => l10n.weighInNoteInvalid,
-              _ => null,
-            },
-            onChanged: (text) => _update((f) => f.withNote(text)),
-          ),
         for (final other in form.sameDay)
           Text(
             (other.id == used?.id
@@ -457,18 +475,48 @@ class _WeighInSheetState extends ConsumerState<WeighInSheet> {
             value: form.forTrend,
             onChanged: (on) => _update((f) => f.withUseForTrend(on: on)),
           ),
-        if (form.confirming case final asked?)
-          if (_confirmationMessage(context, form, asked, today)
-              case final message?)
-            FbInlineBanner(kind: FbInlineBannerKind.info, message: message),
-        if (_hint(l10n, form, issue) case final hint?) Text(hint, style: muted),
-        if (_padOpen)
-          FbNumberPad(
-            onKey: (key) => _update((f) => f.key(key)),
-            // Done closes the pad (like the diary's amount sheets); Save
-            // stays pinned below.
-            onDone: () => setState(() => _padOpen = false),
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            FbSizeFade(
+              child: switch (form.confirming) {
+                final asked? => switch (_confirmationMessage(
+                  context,
+                  form,
+                  asked,
+                  today,
+                )) {
+                  final message? => Padding(
+                    key: const ValueKey('weigh-in-confirmation'),
+                    padding: const EdgeInsetsDirectional.only(
+                      bottom: FbSpace.s3,
+                    ),
+                    child: FbInlineBanner(
+                      kind: FbInlineBannerKind.info,
+                      message: message,
+                    ),
+                  ),
+                  null => const SizedBox.shrink(key: ValueKey('none')),
+                },
+                null => const SizedBox.shrink(key: ValueKey('none')),
+              },
+            ),
+            if (_hint(l10n, form, issue) case final hint?)
+              Padding(
+                padding: const EdgeInsetsDirectional.only(bottom: FbSpace.s3),
+                child: Text(hint, style: muted),
+              ),
+            FbReveal(
+              visible: _padOpen,
+              child: FbNumberPad(
+                onKey: (key) => _update((f) => f.key(key)),
+                // Done closes the pad (like the diary's amount sheets); Save
+                // stays pinned below.
+                onDone: () => setState(() => _padOpen = false),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -582,7 +630,4 @@ class _WeighInSheetState extends ConsumerState<WeighInSheet> {
 
 /// A clock time in the device's 12 or 24 hour format.
 String _timeText(BuildContext context, LocalDateTime time) =>
-    MaterialLocalizations.of(context).formatTimeOfDay(
-      TimeOfDay(hour: time.hour, minute: time.minute),
-      alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
-    );
+    deviceTimeFormat(context, TimeOfDay(hour: time.hour, minute: time.minute));

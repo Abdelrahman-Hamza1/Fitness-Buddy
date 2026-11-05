@@ -39,6 +39,34 @@ Future<int> _todayEntries(ProviderContainer container, LocalDate today) async {
 /// quick-add chip, an edit of its amount, a weigh-in, a workout by the form
 /// and the Progress charts, on a throw-away profile; every write goes
 /// through the app's own screens and single writer.
+/// [date]'s page of Today's day pager.
+Finder _dayPage(LocalDate date) => find.byKey(ValueKey<LocalDate>(date));
+
+/// Scrolls [date]'s day page (its vertical list, never the pager) until
+/// [target] is built and on screen.
+Future<void> _scrollTodayTo(
+  WidgetTester tester,
+  LocalDate date,
+  Finder target, {
+  bool up = false,
+}) async {
+  final list = find
+      .descendant(
+        of: _dayPage(date),
+        matching: find.byWidgetPredicate(
+          (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+        ),
+      )
+      .first;
+  await tester.scrollUntilVisible(
+    target,
+    up ? -200 : 200,
+    scrollable: list,
+    maxScrolls: 30,
+  );
+  await pumpFor(tester, const Duration(milliseconds: 300));
+}
+
 /// The grams of today's one live entry.
 Future<double?> _todayGrams(
   ProviderContainer container,
@@ -159,20 +187,24 @@ void main() {
       "today's logged entry",
     );
 
-    // 2. Edit it: its meal, its row, the amount, 120 g.
-    await tapExactly(
-      tester,
-      find.byWidgetPredicate(
+    // 2. Edit it: its meal, its row, the amount, 120 g. The day page builds
+    // its rows lazily, so the meal may lie below what is built: scroll
+    // today's page (not the pager) until it is (A57 P2).
+    final meal = find.descendant(
+      of: _dayPage(today),
+      matching: find.byWidgetPredicate(
         (w) => w is SlotHeaderTile && w.section.key == slot,
       ),
-      'the meal',
     );
+    await _scrollTodayTo(tester, today, meal);
+    await tapExactly(tester, meal, 'the meal');
     await pumpFor(tester, const Duration(milliseconds: 600));
-    await tapExactly(
-      tester,
-      find.widgetWithText(FbListRow, 'Offline oats').first,
-      'the entry',
+    final entry = find.descendant(
+      of: _dayPage(today),
+      matching: find.widgetWithText(FbListRow, 'Offline oats'),
     );
+    await _scrollTodayTo(tester, today, entry.first);
+    await tapExactly(tester, entry.first, 'the entry');
     await pumpFor(tester, const Duration(milliseconds: 600));
     await tapExactly(
       tester,
@@ -196,15 +228,14 @@ void main() {
       'the edited amount',
     );
 
-    // 3. A weigh-in from Today's weight card.
+    // 3. A weigh-in from the weight half of Today's line (D-093).
     await pumpFor(tester, const Duration(seconds: 6)); // the snackbar goes
-    await tester.tap(find.byKey(const ValueKey('fb-slide-dot-1')).first);
-    await pumpFor(tester, const Duration(milliseconds: 600));
-    await tapExactly(
-      tester,
-      find.byKey(const ValueKey('today-weigh-in')).first,
-      'the weight slide',
+    final weight = find.descendant(
+      of: _dayPage(today),
+      matching: find.byKey(const ValueKey('today-glance-weight')),
     );
+    await _scrollTodayTo(tester, today, weight, up: true);
+    await tapExactly(tester, weight, "the line's weight half");
     await waitUntil(
       tester,
       () => find.byType(FbNumberPad).evaluate().isNotEmpty,

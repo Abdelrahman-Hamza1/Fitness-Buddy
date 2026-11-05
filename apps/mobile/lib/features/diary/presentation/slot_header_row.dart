@@ -8,6 +8,7 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/diary/application/diary_view_state.dart';
 import 'package:fb_mobile/features/diary/presentation/large_text.dart';
 import 'package:fb_mobile/features/diary/presentation/meal_menu.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -52,7 +53,10 @@ class SlotHeaderTile extends ConsumerWidget {
         : l10n.diaryKcal(DisplayRounding.kcal(section.totals.kcal));
     final summary = empty
         ? l10n.todaySlotEmpty
-        : slotSummary(section.summaryNames);
+        : slotSummary([
+            for (final names in section.summaryFoods)
+              watchFoodNameInline(ref, names),
+          ]);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -113,13 +117,16 @@ Widget? _trailing(
       ? null
       : MediaQuery.withClampedTextScaling(
           maxScaleFactor: 1.3,
-          child: empty
-              ? Semantics(
-                  label: l10n.todaySlotNoKcalSemantics,
-                  excludeSemantics: true,
-                  child: Text(kcal),
-                )
-              : Text(kcal),
+          // A fixed column (A57 A03): the meal name is cut at the same
+          // width whatever the total.
+          child: Builder(
+            builder: (context) => FbNumberSlot(
+              text: kcal,
+              sample: l10n.diaryKcal(8888),
+              style: DefaultTextStyle.of(context).style,
+              semanticsLabel: empty ? l10n.todaySlotNoKcalSemantics : null,
+            ),
+          ),
         );
   if (menu == null) return amount;
   return Row(mainAxisSize: MainAxisSize.min, children: [?amount, menu]);

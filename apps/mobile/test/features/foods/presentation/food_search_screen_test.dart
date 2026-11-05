@@ -111,4 +111,54 @@ void main() {
       expect(find.byType(FbInlineBanner), findsNothing);
     },
   );
+
+  testWidgets('A57 A41 T-R1 UX-045 stale search results are faded, ignore '
+      'taps and are excluded from semantics; the progress slot is always '
+      'reserved', (tester) async {
+    final picks = <FoodPick>[];
+    await pumpScreen(
+      tester,
+      FoodSearchScreen(onPick: (_, pick) => picks.add(pick)),
+      FakeFoodSearch(recent: [_rice, _pita], hold: {'pit'}),
+    );
+    final progress = find.byKey(const ValueKey('food-search-progress'));
+    final results = find.byKey(const ValueKey('food-search-results'));
+    final idleTop = tester.getTopLeft(results).dy;
+    expect(tester.getSize(progress).height, FbProgressLine.height);
+    expect(tester.widget<FbProgressLine>(progress).active, isFalse);
+    expect(tester.widget<AnimatedOpacity>(results).opacity, 1);
+
+    await tester.enterText(find.byType(TextField), 'pit');
+    await tester.pump();
+    expect(tester.widget<FbProgressLine>(progress).active, isTrue);
+    expect(tester.getSize(progress).height, FbProgressLine.height);
+    expect(tester.getTopLeft(results).dy, idleTop);
+    expect(tester.widget<AnimatedOpacity>(results).opacity, 0.35);
+    final hidden = find.descendant(
+      of: results,
+      matching: find.byType(ExcludeSemantics),
+    );
+    expect(tester.widget<ExcludeSemantics>(hidden.first).excluding, isTrue);
+    await tester.tap(find.text('Pita bread, white'), warnIfMissed: false);
+    expect(picks, isEmpty);
+
+    await tester.enterText(find.byType(TextField), '');
+    await tester.pump();
+    expect(tester.widget<FbProgressLine>(progress).active, isFalse);
+    expect(tester.widget<AnimatedOpacity>(results).opacity, 1);
+    await tester.tap(find.text('Pita bread, white'));
+    expect(tester.widget<ExcludeSemantics>(hidden.first).excluding, isFalse);
+    expect(picks, hasLength(1));
+  });
+
+  testWidgets('A57 A41 the first search shows rows shaped like results, '
+      'never an empty state', (tester) async {
+    await pumpScreen(
+      tester,
+      const FoodSearchScreen(),
+      FakeFoodSearch(hold: {''}),
+    );
+    expect(find.byKey(const ValueKey('food-search-skeleton')), findsOneWidget);
+    expect(find.byType(FbEmptyState), findsNothing);
+  });
 }

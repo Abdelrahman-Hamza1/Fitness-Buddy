@@ -21,19 +21,30 @@ class AccountBusyScope extends ConsumerWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        ExcludeFocus(excluding: busy, child: child),
+        // The app behind stays mounted but out of reach: no focus, no
+        // taps and nothing for a screen reader (A57 A59).
+        ExcludeFocus(
+          excluding: busy,
+          child: ExcludeSemantics(
+            excluding: busy,
+            child: IgnorePointer(ignoring: busy, child: child),
+          ),
+        ),
         if (busy)
-          Material(
-            color: Theme.of(context).colorScheme.surface,
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsetsDirectional.all(FbSpace.s5),
-                child: Semantics(
-                  liveRegion: true,
-                  child: Text(
-                    context.l10n.accountTransitionBusy,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium,
+          BlockSemantics(
+            child: Material(
+              key: const ValueKey('account-busy'),
+              color: Theme.of(context).colorScheme.surface,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.all(FbSpace.s5),
+                  child: Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      context.l10n.accountTransitionBusy,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                   ),
                 ),
               ),

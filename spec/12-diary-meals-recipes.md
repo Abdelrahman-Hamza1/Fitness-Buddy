@@ -22,7 +22,7 @@ _Status: **Draft v1** · 2026-10-10 · Main decisions: D-015, D-016, D-017, D-02
 - **DY-022** `[R1]` Swiping an item: delete (with undo) or move to another slot.
 - **DY-023** `[R1]` A meal can be copied to another day or slot, or saved as a saved meal (§4).
 - **DY-024** `[R1]` Items cooked together show grouped under their dish name (AI-020), collapsible.
-- **DY-025** `[R1]` Pending (unconfirmed) proposals are never shown as diary entries. They appear only in the "to confirm" strip (AI-045).
+- **DY-025** `[R1]` Pending (unconfirmed) proposals are never shown as diary entries. They appear only as the "{n} waiting" count on Today's Buddy bar and in Buddy (AI-045, D-094).
 
 ## 4. Fast re-logging (D-016)
 

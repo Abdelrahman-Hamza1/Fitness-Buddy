@@ -4,6 +4,8 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
+import 'package:fb_mobile/core/ui/step_transition.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/onboarding/application/setup_flow.dart';
@@ -39,10 +41,22 @@ class SetupScreen extends ConsumerWidget {
     if (status == SetupStatus.profileUnreadable) {
       return const _UpdateNeeded();
     }
-    final draft = ref.watch(setupFlowProvider(mode)).value;
+    final flow = ref.watch(setupFlowProvider(mode));
+    final draft = flow.value;
     // Local reads only: the first frame has the bar and no body, never a
-    // spinner.
-    if (draft == null) return const _Shell();
+    // spinner. A failed read says so, with a retry (A57 A47); answers
+    // already given stay in the flow's state, so only a failure before
+    // the first read can show this.
+    if (draft == null) {
+      return flow.hasError
+          ? _Shell(
+              body: LoadFailedView(
+                message: context.l10n.setupLoadFailed,
+                onRetry: () => ref.invalidate(setupFlowProvider(mode)),
+              ),
+            )
+          : const _Shell();
+    }
     if (draft.alreadySetUp) return const _AlreadySetUp();
     return _Flow(draft: draft);
   }
@@ -50,11 +64,14 @@ class SetupScreen extends ConsumerWidget {
 
 /// The bar alone: the first frame, and the moment before leaving.
 class _Shell extends ConsumerWidget {
-  const new();
+  const new({this.body});
+
+  final Widget? body;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
     appBar: _bar(context, onClose: () => _Flow._close(context, ref)),
+    body: body,
   );
 }
 
@@ -392,17 +409,21 @@ class _FlowState extends ConsumerState<_Flow> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
-                child: SingleChildScrollView(
-                  key: ValueKey(draft.page),
-                  padding: const EdgeInsetsDirectional.fromSTEB(
-                    FbSpace.s4,
-                    FbSpace.s3,
-                    FbSpace.s4,
-                    FbSpace.s5,
+                // Each page comes in on a shared axis and starts at the top
+                // (A57 A26).
+                child: StepTransition(
+                  child: SingleChildScrollView(
+                    key: ValueKey(draft.page),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      FbSpace.s4,
+                      FbSpace.s3,
+                      FbSpace.s4,
+                      FbSpace.s5,
+                    ),
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    child: page,
                   ),
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  child: page,
                 ),
               ),
               if (question) actions,

@@ -7,41 +7,54 @@ import 'package:material_ui/material_ui.dart';
 import '../today/presentation/support/today_support.dart' show phoneApp;
 
 void main() {
-  testWidgets('AC-003 while a transition switches profiles the app shows a '
-      'calm blocking state and nothing underneath can be opened', (
-    tester,
-  ) async {
-    var opened = 0;
-    final container = ProviderContainer();
-    addTearDown(container.dispose);
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: phoneApp(
-          AccountBusyScope(
-            child: Scaffold(
-              body: Center(
-                child: TextButton(
-                  onPressed: () => opened++,
-                  child: const Text('Log weight'),
+  testWidgets(
+    'AC-003 A57 A59 T-A5 while a transition switches profiles the app shows a '
+    'calm blocking state and nothing underneath can be opened',
+    (tester) async {
+      var opened = 0;
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: phoneApp(
+            AccountBusyScope(
+              child: Scaffold(
+                body: Center(
+                  child: TextButton(
+                    onPressed: () => opened++,
+                    child: const Text('Log weight'),
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
-    );
-    expect(find.text('Updating your account…'), findsNothing);
+      );
+      expect(find.text('Updating your account…'), findsNothing);
 
-    container.read(accountBusyProvider.notifier).publish(busy: true);
-    await tester.pump();
-    expect(find.text('Updating your account…'), findsOneWidget);
-    await tester.tap(find.text('Log weight'), warnIfMissed: false);
-    expect(opened, 0);
+      container.read(accountBusyProvider.notifier).publish(busy: true);
+      await tester.pump();
+      expect(find.text('Updating your account…'), findsOneWidget);
+      await tester.tap(find.text('Log weight'), warnIfMissed: false);
+      expect(opened, 0);
+      // A57 A59 T-A5: a screen reader can't reach the app behind either.
+      expect(
+        tester
+            .widgetList<ExcludeSemantics>(
+              find.ancestor(
+                of: find.text('Log weight'),
+                matching: find.byType(ExcludeSemantics),
+              ),
+            )
+            .any((e) => e.excluding),
+        isTrue,
+      );
 
-    container.read(accountBusyProvider.notifier).publish(busy: false);
-    await tester.pump();
-    await tester.tap(find.text('Log weight'));
-    expect(opened, 1);
-  });
+      container.read(accountBusyProvider.notifier).publish(busy: false);
+      await tester.pump();
+      await tester.tap(find.text('Log weight'));
+      expect(opened, 1);
+    },
+  );
 }

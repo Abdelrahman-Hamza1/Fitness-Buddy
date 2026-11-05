@@ -1,6 +1,7 @@
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/amount_text.dart';
 import 'package:fb_mobile/features/buddy/application/food_card_view.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/l10n/gen/app_localizations.dart';
 
 // The words of a food proposal card (A22 D13): typed card values in, ARB
@@ -31,13 +32,14 @@ String optionLabel(
   ProposalDimension dimension,
   ProposalOption option, {
   required UnitSystem system,
+  required FoodNameLanguage language,
 }) {
   String amountText(Quantity q) =>
       servingText(l10n, input: q, basis: NutrientBasis.per100g, system: system);
   return switch (option.effect) {
     ProposalFoodEffect(:final food) => switch (dimension.kind) {
       ProposalDimensionKind.state => foodStateLabel(l10n, food.state),
-      _ => food.names.en,
+      _ => FoodNameLines.of(food.names, language).primary,
     },
     ProposalQuantityEffect(quantity: final q) => amountText(q),
     ProposalComponentEffect(:final quantity) =>
@@ -65,21 +67,35 @@ String chipLabel(
   AppLocalizations l10n,
   FoodChipView chip, {
   required UnitSystem system,
+  required FoodNameLanguage language,
 }) {
   final option = chip.selected;
+  final foodName = foodNameInline(chip.foodNames, language);
   return switch ((chip.dimension.kind, option.effect)) {
     (ProposalDimensionKind.state, ProposalFoodEffect(:final food)) =>
-      l10n.proposalChipFood(chip.foodName, _stateWord(l10n, food.state)),
+      l10n.proposalChipFood(foodName, _stateWord(l10n, food.state)),
     (ProposalDimensionKind.portion, _) => l10n.proposalChipFood(
-      chip.foodName,
-      optionLabel(l10n, chip.dimension, option, system: system),
+      foodName,
+      optionLabel(
+        l10n,
+        chip.dimension,
+        option,
+        system: system,
+        language: language,
+      ),
     ),
     (_, ProposalRetentionEffect(:final fraction)) =>
       fraction >= 1 ? l10n.proposalChipOilAll : l10n.proposalChipOilMost,
     (_, ProposalShareEffect(:final fraction)) => l10n.assumptionShare(
       (fraction * 100).round(),
     ),
-    _ => optionLabel(l10n, chip.dimension, option, system: system),
+    _ => optionLabel(
+      l10n,
+      chip.dimension,
+      option,
+      system: system,
+      language: language,
+    ),
   };
 }
 
@@ -92,9 +108,16 @@ String _stateWord(AppLocalizations l10n, FoodState state) => switch (state) {
   FoodState.asSold => l10n.assumptionStateAsSold,
 };
 
-/// The question about [question]'s dimension (AI-034).
-String questionText(AppLocalizations l10n, FoodQuestionView question) {
-  final food = inlineFoodName(question.foodName);
+/// The question about [question]'s dimension (AI-034), naming the food in
+/// [language] (LC-007).
+String questionText(
+  AppLocalizations l10n,
+  FoodQuestionView question, {
+  required FoodNameLanguage language,
+}) {
+  final food = isolateName(
+    inlineFoodName(FoodNameLines.of(question.foodNames, language).primary),
+  );
   return switch (question.dimension.kind) {
     ProposalDimensionKind.state => l10n.proposalQuestionState(food),
     ProposalDimensionKind.fat => l10n.proposalQuestionFat,

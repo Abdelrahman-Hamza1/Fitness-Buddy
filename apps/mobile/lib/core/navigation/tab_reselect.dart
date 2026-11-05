@@ -81,7 +81,7 @@ class TabActivationNotifier extends _$TabActivationNotifier {
 /// `ListView` or `CustomScrollView` without a controller is primary on
 /// Android). [ScrollToTopOnTabReselect.builder] owns a controller for a
 /// scroll view that can't be primary (e.g. the pages of a pager). The
-/// scroll takes [FbMotion.slow], or jumps with reduced motion; without a
+/// scroll takes [FbMotion.structural], or jumps with reduced motion; without a
 /// scroll view attached it does nothing.
 class ScrollToTopOnTabReselect extends ConsumerStatefulWidget {
   /// Scrolls the primary scroll controller of [child]'s scroll view.
@@ -133,7 +133,7 @@ class _ScrollToTopOnTabReselectState
   void _toTop() {
     final controller = _controller;
     if (controller == null || !controller.hasClients) return;
-    final duration = FbMotion.of(context, FbMotion.slow);
+    final duration = FbMotion.of(context, FbMotion.structural);
     // A copy: animating a position can detach it from the controller.
     for (final position in [...controller.positions]) {
       if (duration == Duration.zero) {

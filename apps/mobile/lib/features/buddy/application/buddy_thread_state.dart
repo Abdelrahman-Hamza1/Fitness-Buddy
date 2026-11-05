@@ -192,18 +192,19 @@ final class UnrestorableCard {
   String toString() => 'UnrestorableCard($id, ${issue.name})';
 }
 
-/// A line swiped off an open card: its ID and food name (for "Removed … ·
-/// Undo"). Holds user content: never logged.
+/// A line swiped off an open card: its ID and food names (for "Removed … ·
+/// Undo", in the "Food names" setting, LC-007). In memory only. Holds user
+/// content: never logged.
 @immutable
 final class RemovedLine {
-  /// Line [id] of food [name].
-  const new(this.id, this.name);
+  /// Line [id] of food [names].
+  const new(this.id, this.names);
 
   /// The line's ID.
   final String id;
 
-  /// The food's name.
-  final String name;
+  /// The food's names; presentation picks the setting's one.
+  final FoodNames names;
 
   @override
   String toString() => 'RemovedLine($id)';

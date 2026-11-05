@@ -20,7 +20,7 @@ export 'presentation/exercise_screen.dart'
     show ExerciseBrowseTab, ExerciseScreen;
 export 'presentation/starter_plans_screen.dart' show StarterPlansScreen;
 export 'presentation/weekly_plan_screen.dart' show WeeklyPlanScreen;
+export 'presentation/workout_glance.dart';
 export 'presentation/workout_history_screen.dart';
 export 'presentation/workout_log_screen.dart';
-export 'presentation/workout_slide.dart';
 export 'presentation/workouts_screen.dart';

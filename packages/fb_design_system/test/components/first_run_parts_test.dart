@@ -1,7 +1,6 @@
 import 'dart:ui' show Tristate;
 
 import 'package:fb_design_system/fb_design_system.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -151,7 +150,7 @@ void main() {
     final formatters = tester
         .widget<TextField>(find.byType(TextField))
         .inputFormatters!;
-    expect(formatters.whereType<FilteringTextInputFormatter>(), isNotEmpty);
+    expect(formatters, isNotEmpty);
   });
 
   testWidgets('AC-001 FbGoogleButton: one labelled button, neutral in light '

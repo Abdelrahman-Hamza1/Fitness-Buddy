@@ -115,6 +115,32 @@ void main() {
     await finish(tester, container);
   });
 
+  testWidgets('UX-045 A57 T-S4 A06 the nutrition note waits for the field '
+      'to lose focus: nothing moves while typing', (tester) async {
+    final container = await pumpPersonal(tester, at: const PersonalFoodRoute());
+    await type(tester, 'Name', 'Odd');
+    await type(tester, 'Protein', '6');
+    await type(tester, 'Carbs', '4');
+    await type(tester, 'Fat', '15');
+    final below = fieldLabelled('Fiber');
+    final note = find.byWidgetPredicate(
+      (w) =>
+          w.key is ValueKey<String> &&
+          (w.key! as ValueKey<String>).value.startsWith('note-sanity'),
+    );
+    final top = tester.getTopLeft(below).dy;
+    // Calories far from what the macros give: the note is due, not shown.
+    await type(tester, 'Calories', '5');
+    await type(tester, 'Calories', '50');
+    await type(tester, 'Calories', '500');
+    expect(note, findsNothing);
+    expect(tester.getTopLeft(below).dy, top);
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
+    expect(note, findsOneWidget);
+    await finish(tester, container);
+  });
+
   testWidgets("FD-073 rename from the form, then delete with Undo; Today's "
       'entries of that food are unchanged', (tester) async {
     final food = aFood(1);

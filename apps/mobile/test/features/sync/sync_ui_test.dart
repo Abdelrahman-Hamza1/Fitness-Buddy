@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fb_mobile/features/sync/application/sync_view.dart';
 import 'package:fb_mobile/features/sync/sync.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -120,5 +122,43 @@ void main() {
           find.byType(FilledButton).evaluate().length,
       greaterThanOrEqualTo(1),
     );
+  });
+
+  testWidgets('A57 A49 T-R4 earlier versions: rows while loading, Try again '
+      'after a failure, Sign in when signed out', (tester) async {
+    Exception? failure = const FormatException('failed');
+    final waiting = Completer<void>();
+    await tester.pumpWidget(
+      ProviderScope(
+        retry: (_, _) => null,
+        overrides: [
+          syncViewProvider.overrideWithValue(_view()),
+          earlierVersionsProvider('diaryEntry', 'x').overrideWith((ref) async {
+            await waiting.future;
+            if (failure case final error?) throw error;
+            return const <EarlierVersion>[];
+          }),
+        ],
+        child: phoneApp(
+          const Scaffold(
+            body: EarlierVersionsBody(entity: 'diaryEntry', id: 'x'),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.byKey(const ValueKey('versions-loading')), findsOneWidget);
+    waiting.complete();
+    await tester.pump();
+    await tester.pump();
+    final failed = find.byKey(const ValueKey('versions-failed'));
+    expect(failed, findsOneWidget);
+    failure = EarlierVersionsFailure.signedOut;
+    await tester.tap(
+      find.descendant(of: failed, matching: find.byType(TextButton)),
+    );
+    await tester.pump();
+    await tester.pump();
+    expect(find.byKey(const ValueKey('versions-signed-out')), findsOneWidget);
   });
 }

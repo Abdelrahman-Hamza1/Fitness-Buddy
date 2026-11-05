@@ -76,6 +76,7 @@ final class FakeFoodSearch extends FoodSearchController {
     this.answers = const {},
     this.fail = false,
     this.shouldFail,
+    this.hold = const {},
   });
 
   final bool packReady;
@@ -83,6 +84,9 @@ final class FakeFoodSearch extends FoodSearchController {
   final Map<String, List<FoodSearchRow>> answers;
   final bool fail;
   final bool Function()? shouldFail;
+
+  /// Queries that never answer: the screen keeps the previous rows, stale.
+  final Set<String> hold;
 
   /// Every query the screen asked for, in order.
   final queries = <String>[];
@@ -94,6 +98,14 @@ final class FakeFoodSearch extends FoodSearchController {
   void setQuery(String text) {
     queries.add(text);
     final key = text.trim();
+    if (hold.contains(key)) {
+      state = FoodSearchState(
+        query: text,
+        results: state.results,
+        resultsFor: state.resultsFor,
+      );
+      return;
+    }
     if (fail || (shouldFail?.call() ?? false)) {
       state = FoodSearchState(
         query: text,

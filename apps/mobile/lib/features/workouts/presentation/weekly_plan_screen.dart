@@ -4,6 +4,7 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/workouts/application/exercise_library.dart';
@@ -33,17 +34,36 @@ class WeeklyPlanScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toString();
     final weekStart = ref.watch(weekStartProvider).value ?? DayOfWeek.saturday;
-    final plan = ref.watch(workoutPlanProvider).value ?? const {};
-    final templates = ref.watch(workoutTemplatesProvider).value ?? const [];
+    final planAsync = ref.watch(workoutPlanProvider);
+    final templatesAsync = ref.watch(workoutTemplatesProvider);
     final library =
         ref.watch(exerciseLibraryProvider).value ?? ExerciseLibrary.empty;
     final navigator = ref.read(appNavigatorProvider);
-    String? nameOf(String? id) =>
-        templates.where((t) => t.ref.id == id).firstOrNull?.draft.name;
     Widget section(String title) => Padding(
       padding: const EdgeInsetsDirectional.symmetric(horizontal: FbSpace.s4),
       child: FbSectionHeader(title: title),
     );
+    // Editing needs both: a loading plan never shows as all rest days, and a
+    // failed read says so (A57 A44).
+    final (plan, templates) = switch ((planAsync.value, templatesAsync.value)) {
+      (final p?, final t?) => (p, t),
+      _ => (null, null),
+    };
+    if (plan == null || templates == null) {
+      return Scaffold(
+        appBar: AppBar(title: Text(l10n.workoutsYourPlan)),
+        body: planAsync.hasError || templatesAsync.hasError
+            ? LoadFailedView(
+                message: l10n.workoutsLoadFailed,
+                onRetry: () => ref
+                  ..invalidate(workoutPlanProvider)
+                  ..invalidate(workoutTemplatesProvider),
+              )
+            : const LoadingRows(count: 7),
+      );
+    }
+    String? nameOf(String? id) =>
+        templates.where((t) => t.ref.id == id).firstOrNull?.draft.name;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.workoutsYourPlan)),
       body: ListView(

@@ -1,6 +1,7 @@
 import 'package:fb_design_system/l10n/gen/fb_localizations.dart';
 import 'package:fb_design_system/src/components/button.dart';
 import 'package:fb_design_system/src/components/card.dart';
+import 'package:fb_design_system/src/components/reveal.dart';
 import 'package:fb_design_system/src/components/skeleton.dart';
 import 'package:fb_design_system/src/tokens/icons.dart';
 import 'package:fb_design_system/src/tokens/spacing.dart';
@@ -180,6 +181,7 @@ class FbProposalLine extends StatelessWidget {
     required this.amount,
     required this.kcal,
     required this.marker,
+    this.secondaryName,
     this.note,
     this.onTap,
     this.onNameTap,
@@ -194,6 +196,10 @@ class FbProposalLine extends StatelessWidget {
 
   /// The food's name.
   final String name;
+
+  /// The food's other-language name, as a muted line under [name] (the
+  /// "Both" food-name setting).
+  final String? secondaryName;
 
   /// The amount as text.
   final String amount;
@@ -236,10 +242,19 @@ class FbProposalLine extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final small = FbType.numeric(FbType.bodySmall)
         .copyWith(color: scheme.onSurfaceVariant);
-    final nameText = Text(
-      name,
-      style: FbType.body.copyWith(color: scheme.onSurface),
-    );
+    final nameText = switch (secondaryName) {
+      final second? => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(name, style: FbType.body.copyWith(color: scheme.onSurface)),
+          Text(
+            second,
+            style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
+          ),
+        ],
+      ),
+      null => Text(name, style: FbType.body.copyWith(color: scheme.onSurface)),
+    };
     Widget tappable(Widget child) => switch (onAmountTap) {
       final onTap? => Semantics(
         button: true,
@@ -349,6 +364,7 @@ class FbProposalActions extends StatelessWidget {
     required this.onDiscard,
     required this.onConfirm,
     this.reason,
+    this.reserveReason = false,
     super.key,
   });
 
@@ -366,6 +382,11 @@ class FbProposalActions extends StatelessWidget {
 
   /// Why the primary action is disabled.
   final String? reason;
+
+  /// Keeps one line for [reason] even without one, so a reason that comes
+  /// and goes while the card is edited ("Updating…", "Logging…") never
+  /// moves the buttons (UX-045, A57 A07). A longer reason grows smoothly.
+  final bool reserveReason;
 
   /// From this text scale on, the buttons stack.
   static const double stackFromScale = 1.5;
@@ -399,14 +420,18 @@ class FbProposalActions extends StatelessWidget {
             ],
           );
     final reason = this.reason;
-    if (reason == null) return buttons;
+    if (reason == null && !reserveReason) return buttons;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: FbSpace.s2,
       children: [
-        Text(
-          reason,
-          style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
+        FbSizeFade(
+          child: Text(
+            // An empty line holds the reason's place.
+            reason ?? '',
+            key: ValueKey(reason),
+            style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
+          ),
         ),
         buttons,
       ],

@@ -6,6 +6,8 @@ import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/buddy/application/food_card_view.dart';
 import 'package:fb_mobile/features/buddy/presentation/cards/proposal_labels.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// One item of a food card (AI-031): name, amount + unit, kcal and its
@@ -14,7 +16,7 @@ import 'package:material_ui/material_ui.dart';
 /// Tapping the amount opens an inline editor under the line (AI-040,
 /// UX-022): unit chips and the number pad; every valid key recomputes the
 /// card through [onSetAmount]. The system keyboard is closed meanwhile.
-class ProposalLineRow extends StatefulWidget {
+class ProposalLineRow extends ConsumerStatefulWidget {
   /// The row for [line], amounts in [system]; the callbacks are null on a
   /// card that can't be adjusted (being logged).
   const new({
@@ -42,10 +44,10 @@ class ProposalLineRow extends StatefulWidget {
   final ValueChanged<Quantity>? onSetAmount;
 
   @override
-  State<ProposalLineRow> createState() => _ProposalLineRowState();
+  ConsumerState<ProposalLineRow> createState() => _ProposalLineRowState();
 }
 
-class _ProposalLineRowState extends State<ProposalLineRow> {
+class _ProposalLineRowState extends ConsumerState<ProposalLineRow> {
   bool _open = false;
 
   /// What was typed since the editor opened; the first key replaces the
@@ -96,25 +98,42 @@ class _ProposalLineRowState extends State<ProposalLineRow> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final row = _line(context, l10n);
-    if (!_open || widget.onSetAmount == null) return row;
+    if (widget.onSetAmount == null) return row;
     final input = line.amount.input;
+    // The unit picker and pad grow in under the line (A57 A19).
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: FbSpace.s2,
       children: [
         row,
-        FbUnitPicker(
-          units: [
-            for (final code in line.editUnits)
-              FbUnitOption(
-                id: code,
-                label: unitLabel(l10n, code, input.amount, system: system),
-              ),
-          ],
-          selected: input.unitCode,
-          onSelected: _onUnit,
+        FbReveal(
+          visible: _open,
+          child: Padding(
+            padding: const EdgeInsetsDirectional.only(top: FbSpace.s2),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: FbSpace.s2,
+              children: [
+                FbUnitPicker(
+                  units: [
+                    for (final code in line.editUnits)
+                      FbUnitOption(
+                        id: code,
+                        label: unitLabel(
+                          l10n,
+                          code,
+                          input.amount,
+                          system: system,
+                        ),
+                      ),
+                  ],
+                  selected: input.unitCode,
+                  onSelected: _onUnit,
+                ),
+                FbNumberPad(onKey: _onKey, onDone: _toggle),
+              ],
+            ),
+          ),
         ),
-        FbNumberPad(onKey: _onKey, onDone: _toggle),
       ],
     );
   }
@@ -136,16 +155,21 @@ class _ProposalLineRowState extends State<ProposalLineRow> {
         : FbSourceBadge(source: fbSourceOf(line.food.provenance.source));
     final onStep = widget.onStep;
     final stepper = line.amountAssumed;
+    // The "Food names" setting (LC-007): both lines in "Both"; the main
+    // name inside the − / + labels.
+    final names = watchFoodNames(ref, line.food.names);
+    final inline = watchFoodNameInline(ref, line.food.names);
     final canDecrease = onStep != null && AmountStep.down(amount.input) != null;
     return FbProposalLine(
       stepper: stepper,
       onDecrease: stepper && canDecrease ? () => onStep(false) : null,
       onIncrease: stepper && onStep != null ? () => onStep(true) : null,
-      decreaseTooltip: l10n.proposalAmountLess(line.food.names.en),
-      increaseTooltip: l10n.proposalAmountMore(line.food.names.en),
+      decreaseTooltip: l10n.proposalAmountLess(inline),
+      increaseTooltip: l10n.proposalAmountMore(inline),
       onNameTap: widget.onSwap,
       onAmountTap: widget.onSetAmount == null ? null : _toggle,
-      name: line.food.names.en,
+      name: names.primary,
+      secondaryName: names.secondary,
       // While typing, the pad's buffer as typed ("1.", "0"), even before
       // it's a valid amount; otherwise the card's amount.
       amount: switch (_open ? _typed?.text : null) {

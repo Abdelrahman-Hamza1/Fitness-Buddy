@@ -33,6 +33,16 @@ final class FoodSearchState {
   /// Whether the query requests recent foods.
   bool get recent => query.trim().isEmpty;
 
+  /// Whether a search for [query] is still running (A57 D23): nothing has
+  /// answered yet, or the rows on screen answer an older query.
+  bool get searching =>
+      error == null && (results == null || resultsFor != query);
+
+  /// Whether the rows on screen answer an older query (R1): a newer search
+  /// runs or failed. They fade and can't be picked until rows for [query]
+  /// land.
+  bool get stale => results != null && resultsFor != query;
+
   /// Whether a readable catalog pack is attached.
   bool get packReady => results?.packReady ?? false;
 }

@@ -12,8 +12,8 @@ import 'package:material_ui/material_ui.dart';
 /// The product part of the food sheet for a scan (FD-030, A28a D8): the
 /// brand, the values of one serving (per 100 is the sheet's own block), the
 /// halal warning when the setting is on (FD-081), the check-the-label note
-/// (B22), the fiber note and the
-/// Open Food Facts credit (ODbL, `07` §3).
+/// (B22), the fiber note, "saved as your food" for a product not saved yet
+/// and, on its own line, the Open Food Facts credit (ODbL, `07` §3, A50).
 class ScannedProductHeader extends ConsumerWidget {
   /// Creates the header.
   const new({required this.product, required this.food, super.key});
@@ -50,7 +50,19 @@ class ScannedProductHeader extends ConsumerWidget {
           ),
         if (product.checkLabel) Text(l10n.scannedCheckLabel, style: muted),
         if (product.fiberMissing) Text(l10n.scannedFiberMissing, style: muted),
-        if (product.fromOff) Text(l10n.offAttribution, style: muted),
+        // Who owns it and where the values come from, apart (A50).
+        if (food.pendingCreate != null)
+          Text(
+            l10n.scanSavedAsYours,
+            key: const ValueKey('scan-saved-as-yours'),
+            style: muted,
+          ),
+        if (product.fromOff)
+          Text(
+            l10n.scanDataFromOff(l10n.offAttribution),
+            key: const ValueKey('scan-data-from-off'),
+            style: muted,
+          ),
       ],
     );
   }

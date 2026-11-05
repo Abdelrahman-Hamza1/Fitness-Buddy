@@ -1382,47 +1382,11 @@ abstract class AppLocalizations {
   /// **'Log a weigh-in'**
   String get weightRowAdd;
 
-  /// Weight card: the trend weight, the main number (WB-011): "Trend 97.6 kg".
-  ///
-  /// In en, this message translates to:
-  /// **'Trend {weight}'**
-  String weightCardTrend(String weight);
-
   /// Weight card: there is a trend but not enough history for a weekly rate yet (WB-011).
   ///
   /// In en, this message translates to:
   /// **'Weekly rate after 2 weeks of weigh-ins'**
   String get weightCardRateLater;
-
-  /// Weight card: the last weigh-in is 4 weeks old or older, so no rate; the trend is from that day (A14 PA2).
-  ///
-  /// In en, this message translates to:
-  /// **'Trend {weight} · from {date}'**
-  String weightCardTrendFrom(String weight, String date);
-
-  /// Weight card: the latest weigh-in on or before the page's day, smaller: "Last weigh-in 97.4 kg · Yesterday".
-  ///
-  /// In en, this message translates to:
-  /// **'Last weigh-in {weight} · {when}'**
-  String weightCardLast(String weight, String when);
-
-  /// Weight card: the latest weigh-in when the trend line already says its date (stale): "Last weigh-in 97.4 kg".
-  ///
-  /// In en, this message translates to:
-  /// **'Last weigh-in {weight}'**
-  String weightCardLastValue(String weight);
-
-  /// Weight card: no weigh-in at all yet (UX-050).
-  ///
-  /// In en, this message translates to:
-  /// **'Log your first weigh-in'**
-  String get weightCardEmpty;
-
-  /// Weight card on a past day page: no weigh-in on or before that day, but later ones exist (UX-050).
-  ///
-  /// In en, this message translates to:
-  /// **'No weigh-ins by this day. Tap to add one.'**
-  String get weightCardEmptyPast;
 
   /// Weight card, today only: honest note when there are few weigh-ins (WB-012). Information, not a nag.
   ///
@@ -1441,18 +1405,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Got it'**
   String get weightCardTipDismiss;
-
-  /// Weight card: the weigh-ins couldn't be read.
-  ///
-  /// In en, this message translates to:
-  /// **'Couldn\'t load your weigh-ins.'**
-  String get weightCardLoadFailed;
-
-  /// Weight card: retries loading the weigh-ins.
-  ///
-  /// In en, this message translates to:
-  /// **'Try again'**
-  String get weightCardTryAgain;
 
   /// Screen readers: a body weight in kilograms, unit in full: "97.6 kilograms". The value arrives formatted, possibly signed.
   ///
@@ -1484,18 +1436,6 @@ abstract class AppLocalizations {
   /// **'Weight trend {weight}, from {date}'**
   String weightCardTrendFromSemantics(String weight, String date);
 
-  /// Weight card, second row, screen readers: the latest weigh-in, unit in full, and its day.
-  ///
-  /// In en, this message translates to:
-  /// **'Last weigh-in {weight}, {when}'**
-  String weightCardLastSemantics(String weight, String when);
-
-  /// Weight card, second row, screen readers: the latest weigh-in when the trend already says its date.
-  ///
-  /// In en, this message translates to:
-  /// **'Last weigh-in {weight}'**
-  String weightCardLastValueSemantics(String weight);
-
   /// Weight card without a weigh-in on or before the day, screen readers: the title and the visible invitation.
   ///
   /// In en, this message translates to:
@@ -1507,18 +1447,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{summary}. Log a weigh-in'**
   String weightCardLogSemantics(String summary);
-
-  /// Weight card, first row, screen readers: the trend sentence, the visible note under it (rate after 2 weeks, or the weigh-in count), then what a tap does.
-  ///
-  /// In en, this message translates to:
-  /// **'{summary}. {note}. Log a weigh-in'**
-  String weightCardLogNoteSemantics(String summary, String note);
-
-  /// Weight card, last weigh-in row, screen readers: the last weigh-in sentence, then what a tap does.
-  ///
-  /// In en, this message translates to:
-  /// **'{summary}. Edit'**
-  String weightCardEditSemantics(String summary);
 
   /// Weigh-in sheet: title when logging a new weigh-in (WB-001).
   ///
@@ -1897,6 +1825,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t search just now. Try again.'**
   String get foodSearchFailed;
+
+  /// Add-food screen: screen-reader label of the thin progress line under the search box while a search runs (not announced on each keystroke).
+  ///
+  /// In en, this message translates to:
+  /// **'Searching'**
+  String get searchSearching;
 
   /// Add-food result row: calories of the default serving, at the end of the row.
   ///
@@ -3118,11 +3052,17 @@ abstract class AppLocalizations {
   /// **'{kcal} kcal'**
   String foodSheetKcal(int kcal);
 
-  /// Food sheet: calories shown while there is no valid amount.
+  /// Food sheet and amount sheet: calories while the amount is incomplete (A57 D13); the dash stands for the missing number.
   ///
   /// In en, this message translates to:
-  /// **'—'**
-  String get foodSheetNoKcal;
+  /// **'— kcal'**
+  String get foodSheetKcalPending;
+
+  /// Food sheet and amount sheet: the four macros while the amount is incomplete (A57 D13); each dash stands for a missing number.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein — · Carbs — · Fat — · Fiber —'**
+  String get foodSheetMacrosPending;
 
   /// Food sheet: the four macros of the chosen amount, in grams.
   ///
@@ -7152,6 +7092,18 @@ abstract class AppLocalizations {
   /// **'We\'ll send a 6-digit code. No password needed.'**
   String get signInEmailNote;
 
+  /// Sign-in: the email button's label while the code is being sent (A57 A79).
+  ///
+  /// In en, this message translates to:
+  /// **'Sending code…'**
+  String get signInSending;
+
+  /// Sign-in: the code button's label while the code is being checked (A57 A79).
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying…'**
+  String get signInVerifying;
+
   /// Sign-in and the first run's account step: sends a code to the email.
   ///
   /// In en, this message translates to:
@@ -7702,18 +7654,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name}: {metric}, {count, plural, =1{1 session} other{{count} sessions}}'**
   String workoutExerciseGraph(String name, String metric, int count);
-
-  /// Today row and Workouts tab card: today's planned template (HM-006, A37 D20), e.g. 'Push day today'.
-  ///
-  /// In en, this message translates to:
-  /// **'{name} day today'**
-  String workoutTodayPlanned(String name);
-
-  /// Today row on a later day with a planned template (A37 D20).
-  ///
-  /// In en, this message translates to:
-  /// **'{name} day'**
-  String workoutDayPlanned(String name);
 
   /// Week strip day with a planned template, for screen readers (A37 D19).
   ///
@@ -8296,18 +8236,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PR'**
   String get workoutPr;
-
-  /// Today: the workout row after logging (HM-006), e.g. 'Push ✓ · 5 exercises'.
-  ///
-  /// In en, this message translates to:
-  /// **'{title} ✓ · {exercises, plural, =1{1 exercise} other{{exercises} exercises}}'**
-  String workoutTodayRow(String title, int exercises);
-
-  /// Today: how many more sessions the day has.
-  ///
-  /// In en, this message translates to:
-  /// **'+{count}'**
-  String workoutTodayMore(int count);
 
   /// Log form title, new session (WO-034).
   ///
@@ -8980,6 +8908,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'© Open Food Facts contributors'**
   String get offAttribution;
+
+  /// Buddy sheet (A57 A67): a button at the bottom of the thread when something new arrived below while you were scrolled up; tapping it jumps down.
+  ///
+  /// In en, this message translates to:
+  /// **'New message'**
+  String get newMessages;
+
+  /// Food sheet of a scanned product that isn't saved yet (A57 A50): adding it also saves it as one of your foods. Its own line, apart from where the data comes from.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved as your food when you add it'**
+  String get scanSavedAsYours;
+
+  /// Food sheet of a scanned product (A57 A50): where the values come from, on its own line. {credit} is the required Open Food Facts attribution ('© Open Food Facts contributors').
+  ///
+  /// In en, this message translates to:
+  /// **'Data: {credit}'**
+  String scanDataFromOff(String credit);
 
   /// Halal warning (FD-081): a warning, never a block. items is a list like "may contain pork; gelatin or emulsifiers of unknown source".
   ///
@@ -9953,6 +9899,18 @@ abstract class AppLocalizations {
   /// **'Today'**
   String get ramadanTodayTimes;
 
+  /// Ramadan settings: today's prayer-times row when computing them failed; tapping retries (A57 A14).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t work out today\'s times. Tap to try again.'**
+  String get ramadanTimesFailed;
+
+  /// Ramadan settings: today's prayer-times row when the chosen city has no Fajr or Maghrib today, e.g. a polar day (A57 A14).
+  ///
+  /// In en, this message translates to:
+  /// **'No times for this city today'**
+  String get ramadanTimesNone;
+
   /// Today's prayer times, e.g. Fajr 4:58 AM · Maghrib 5:29 PM.
   ///
   /// In en, this message translates to:
@@ -10745,71 +10703,143 @@ abstract class AppLocalizations {
   /// **'{day}, {count, plural, =0{no exercises} =1{1 exercise} other{{count} exercises}}'**
   String workoutSetupTabSemantics(String day, int count);
 
-  /// No description provided for @todaySlideNutrition.
+  /// Today's slim line, weight half: no weigh-in on or before the viewed day; tap logs one (D-093).
   ///
   /// In en, this message translates to:
-  /// **'Nutrition'**
-  String get todaySlideNutrition;
+  /// **'Weigh in'**
+  String get todayGlanceWeigh;
 
-  /// No description provided for @todaySlideWeight.
+  /// Today's slim line, weight half: the as-of trend and the weekly rate (D-093).
   ///
   /// In en, this message translates to:
-  /// **'Weight'**
-  String get todaySlideWeight;
+  /// **'{weight} · {rate}'**
+  String todayGlanceWeight(String weight, String rate);
 
-  /// No description provided for @todaySlideWorkout.
+  /// Today's slim line, weight half: the trend from an older weigh-in, with its day (D-093).
   ///
   /// In en, this message translates to:
-  /// **'Workout'**
-  String get todaySlideWorkout;
+  /// **'{weight} · {day}'**
+  String todayGlanceWeightStale(String weight, String day);
 
-  /// No description provided for @todaySlideSemantics.
+  /// Today's slim line, weight half, for a screen reader: weigh-ins couldn't load; a tap retries.
   ///
   /// In en, this message translates to:
-  /// **'{name}, {n} of {count}'**
-  String todaySlideSemantics(String name, int n, int count);
+  /// **'Weight unavailable. Try again'**
+  String get todayGlanceWeightUnavailable;
 
-  /// No description provided for @weightSlideAdd.
+  /// Today's slim line, workout half: the day's logged session; tap opens it (D-093).
   ///
   /// In en, this message translates to:
-  /// **'+ Weigh in'**
-  String get weightSlideAdd;
+  /// **'{title} done'**
+  String todayGlanceWorkoutDone(String title);
 
-  /// No description provided for @workoutSlideLast.
+  /// Today's slim line, workout half, for a screen reader: the logged session.
   ///
   /// In en, this message translates to:
-  /// **'Last: {title} · {daysAgo} days ago'**
-  String workoutSlideLast(String title, int daysAgo);
+  /// **'{title} done. Open it'**
+  String todayGlanceWorkoutDoneSemantics(String title);
 
-  /// No description provided for @workoutSlideNone.
+  /// Today's slim line, workout half: today's planned workout; tap starts it (D-093).
   ///
   /// In en, this message translates to:
-  /// **'No workout logged'**
-  String get workoutSlideNone;
+  /// **'{name} today'**
+  String todayGlanceWorkoutPlanned(String name);
 
-  /// No description provided for @workoutSlideLogNew.
+  /// Today's slim line, workout half, for a screen reader: today's planned workout.
   ///
   /// In en, this message translates to:
-  /// **'Log a workout'**
-  String get workoutSlideLogNew;
+  /// **'{name} today. Start it'**
+  String todayGlanceWorkoutPlannedSemantics(String name);
 
-  /// No description provided for @workoutSlideLog.
+  /// Today's slim line, workout half: no session that day; tap starts a free session on the viewed day (D-093).
   ///
   /// In en, this message translates to:
-  /// **'Log'**
-  String get workoutSlideLog;
+  /// **'Log workout'**
+  String get todayGlanceWorkoutLog;
 
-  /// No description provided for @workoutSlideOpenSemantics.
+  /// Today's slim line, workout half, for a screen reader: workouts couldn't load; a tap retries.
   ///
   /// In en, this message translates to:
-  /// **'Open {title}'**
-  String workoutSlideOpenSemantics(String title);
+  /// **'Workouts unavailable. Try again'**
+  String get todayGlanceWorkoutUnavailable;
 
-  /// No description provided for @workoutSlideLoadFailed.
+  /// Today's slim line: a half whose data couldn't load; a tap retries.
   ///
   /// In en, this message translates to:
-  /// **'Couldn’t load workouts.'**
-  String get workoutSlideLoadFailed;
+  /// **'Unavailable'**
+  String get todayGlanceUnavailable;
+
+  /// Today's Buddy bar: how many Buddy cards wait to be confirmed (D-094).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 waiting} other{{count} waiting}}'**
+  String todayBuddyWaiting(int count);
+
+  /// Today's Buddy bar, for a screen reader: what a tap does while cards wait (D-094).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{open the card waiting for you} other{open the {count} cards waiting for you}}'**
+  String todayBuddyWaitingSemantics(int count);
+
+  /// Workouts screens (tab, exercise, custom exercise, workout editor, history, weekly plan): a read failed; shown with Try again instead of an empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your workouts.'**
+  String get workoutsLoadFailed;
+
+  /// Workout log: reading the session failed (not deleted); shown with Try again.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open this workout.'**
+  String get workoutLoadFailed;
+
+  /// Measurement sheet: reading the measurement types failed; shown with Try again.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your measurements.'**
+  String get measurementLoadFailed;
+
+  /// Setup screen: reading the setup answers failed; shown with Try again.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your setup.'**
+  String get setupLoadFailed;
+
+  /// Progress: the weekly check-in card could not be read; shown with Try again.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your weekly check-in.'**
+  String get checkInLoadFailed;
+
+  /// Progress: the incomplete-day suggestion could not be read; shown with Try again.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t check your recent days.'**
+  String get incompleteDayLoadFailed;
+
+  /// Progress: the expenditure card could not be read; shown with Try again.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your expenditure estimate.'**
+  String get expenditureLoadFailed;
+
+  /// Weight history: snackbar after removing a row with something typed, with Undo (nothing is saved yet).
+  ///
+  /// In en, this message translates to:
+  /// **'Row removed'**
+  String get weightHistoryRowRemoved;
+
+  /// Merge confirmation: goes back to the list of foods to merge in.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a different food'**
+  String get personalFoodMergeChooseAnother;
+
+  /// Targets per-day list, for a screen reader: a weekday with its own number (not the suggestion); {day} is the row's spoken text, e.g. "Friday: 2,600 kcal".
+  ///
+  /// In en, this message translates to:
+  /// **'{day}, changed'**
+  String targetsDayChanged(String day);
 }
 
 class _AppLocalizationsDelegate

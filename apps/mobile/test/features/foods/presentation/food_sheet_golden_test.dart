@@ -1,5 +1,4 @@
 import 'package:alchemist/alchemist.dart';
-import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
@@ -23,9 +22,7 @@ Widget _sheet(FoodChoice choice, Brightness brightness, double scale) =>
           Scaffold(
             body: Align(
               alignment: AlignmentDirectional.topCenter,
-              child: FbSheet(
-                child: FoodSheet(pick: FoodPick(row: rowFor(choice))),
-              ),
+              child: FoodSheet(pick: FoodPick(row: rowFor(choice))),
             ),
           ),
           brightness: brightness,

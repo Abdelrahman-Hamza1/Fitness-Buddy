@@ -1,10 +1,10 @@
 import 'package:fb_domain/fb_domain.dart' show LocalDate;
 import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/l10n/time_format.dart';
 import 'package:fb_mobile/features/sync/application/sync_view.dart';
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart'
-    show MaterialLocalizations, TimeOfDay;
+import 'package:material_ui/material_ui.dart' show TimeOfDay;
 
 /// The one-line status of [view] (A34 D13): calm words, never an error
 /// tone for a normal wait.
@@ -29,9 +29,9 @@ String syncStatusText(AppLocalizations l10n, SyncView view) {
 String instantText(BuildContext context, int ms, {required int nowMs}) {
   final local = DateTime.fromMillisecondsSinceEpoch(ms);
   final now = DateTime.fromMillisecondsSinceEpoch(nowMs);
-  final time = MaterialLocalizations.of(context).formatTimeOfDay(
+  final time = deviceTimeFormat(
+    context,
     TimeOfDay(hour: local.hour, minute: local.minute),
-    alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
   );
   final day = dayLabelInline(
     context,

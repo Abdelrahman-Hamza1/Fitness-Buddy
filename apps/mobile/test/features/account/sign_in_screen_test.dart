@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/core/account/account_providers.dart';
 import 'package:fb_mobile/core/account/account_service.dart';
 import 'package:fb_mobile/core/account/account_transitions.dart';
@@ -125,5 +128,38 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(l10n.signInErrorOther), findsOneWidget);
     expect(find.text(l10n.signInErrorGoogleUnavailable), findsNothing);
+  });
+
+  testWidgets('UX-045 A57 T-S4 T-S7 the code step: an error and the busy '
+      'state keep the Verify button where it is', (tester) async {
+    await pump(tester);
+    await tester.enterText(find.byType(TextField), canaryEmail);
+    await tester.tap(find.byKey(const ValueKey('sign-in-email-button')));
+    await tester.pumpAndSettle();
+    final verify = find.byKey(const ValueKey('sign-in-verify-button'));
+    final size = tester.getSize(verify);
+    final top = tester.getTopLeft(verify).dy;
+
+    identity.offline = true;
+    await tester.enterText(find.byType(TextField), '123456');
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<FbCodeBoxes>(find.byType(FbCodeBoxes)).errorText,
+      isNotNull,
+    );
+    expect(tester.getTopLeft(verify).dy, top, reason: 'error');
+
+    identity
+      ..offline = false
+      ..hold = Completer<void>();
+    await tester.enterText(find.byType(TextField), '654321');
+    await tester.pump();
+    final button = tester.widget<FbButton>(verify);
+    expect(button.busy, isTrue);
+    expect(button.onPressed, isNull);
+    expect(tester.getSize(verify), size, reason: 'busy');
+    expect(tester.getTopLeft(verify).dy, top, reason: 'busy');
+    identity.hold!.complete();
+    await tester.pumpAndSettle();
   });
 }

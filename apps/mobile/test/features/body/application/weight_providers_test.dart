@@ -1,6 +1,5 @@
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
-import 'package:fb_mobile/features/body/application/weight_card_state.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show ProviderListenable;

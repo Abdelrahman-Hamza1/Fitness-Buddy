@@ -21,15 +21,24 @@ Future<TargetSettingsRecord> _current(TargetsScreenRig rig) async {
 
 String _n(num kcal) => NumberFormat.decimalPattern('en').format(kcal);
 
-/// Taps weekday bar [index] (Saturday week: 0 is Saturday, 6 Friday).
+/// Taps weekday row [index] (Saturday week: 0 is Saturday, 6 Friday).
 Future<void> _tapBar(WidgetTester tester, int index) async {
-  await tester.tap(
-    find
-        .descendant(of: find.byType(FbWeekBars), matching: find.byType(InkWell))
-        .at(index),
-  );
+  final row = find.byKey(ValueKey('targets-day-${_week[index].name}'));
+  await tester.ensureVisible(row);
+  await tester.pumpAndSettle();
+  await tester.tap(row);
   await tester.pumpAndSettle();
 }
+
+const List<DayOfWeek> _week = [
+  DayOfWeek.saturday,
+  DayOfWeek.sunday,
+  DayOfWeek.monday,
+  DayOfWeek.tuesday,
+  DayOfWeek.wednesday,
+  DayOfWeek.thursday,
+  DayOfWeek.friday,
+];
 
 void main() {
   testWidgets('D-090 a tap on Friday opens its sheet; +250 and Save store '
@@ -66,7 +75,11 @@ void main() {
     );
     expect(version.dayFactors.keys, [DayOfWeek.friday]);
     expect(find.text('Targets updated'), findsOneWidget);
-    expect(find.text(_n(suggested + 250)), findsOneWidget, reason: 'the bar');
+    expect(
+      find.text('${_n(suggested + 250)} kcal'),
+      findsOneWidget,
+      reason: "Friday's row",
+    );
     // Undo restores the usual Friday.
     await rig.tapAndSettle('Undo');
     expect((await _current(rig)).dayFactors, isEmpty);
@@ -245,6 +258,35 @@ void main() {
     expect(version.basisWeightKg, 78);
     expect(version.manual, isFalse);
     expect(find.text('Targets updated'), findsOneWidget);
+    await rig.close();
+  });
+
+  testWidgets('A57 A52 T-A2 C2 targets day list: 7 rows of at least 48 dp '
+      'with full weekday names; a changed day is not marked by colour '
+      'alone', (tester) async {
+    final rig = await TargetsScreenRig.open(
+      tester,
+      route: const TargetsRoute(),
+    );
+    final rows = [
+      for (final day in _week) find.byKey(ValueKey('targets-day-${day.name}')),
+    ];
+    for (final row in rows) {
+      expect(row, findsOneWidget);
+      expect(tester.getSize(row).height, greaterThanOrEqualTo(48));
+    }
+    expect(tester.widget<FbListRow>(rows.last).title, 'Friday');
+    await _tapBar(tester, 6);
+    await rig.tap('+250');
+    await rig.tapAndSettle('Save');
+    final changed = find.ancestor(
+      of: rows.last,
+      matching: find.byType(Semantics),
+    );
+    expect(
+      tester.widgetList<Semantics>(changed).map((s) => s.properties.label),
+      contains(matches(RegExp('changed'))),
+    );
     await rig.close();
   });
 }

@@ -68,13 +68,13 @@ void main() {
           data: MediaQueryData(disableAnimations: disabled),
           child: Builder(
             builder: (context) {
-              result = FbMotion.of(context, FbMotion.slow);
+              result = FbMotion.of(context, FbMotion.structural);
               return const SizedBox();
             },
           ),
         ),
       );
-      expect(result, disabled ? Duration.zero : FbMotion.slow);
+      expect(result, disabled ? Duration.zero : FbMotion.structural);
     });
   }
 }

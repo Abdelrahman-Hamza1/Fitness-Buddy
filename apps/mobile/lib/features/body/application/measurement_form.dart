@@ -33,6 +33,7 @@ final class MeasurementFormState {
     this.text = '',
     this.editing,
     this.touched = false,
+    this.drafts = const {},
   });
 
   /// A new entry of [type] at [now], in [lengthUnit] (body fat: %),
@@ -88,6 +89,10 @@ final class MeasurementFormState {
   /// Whether the user changed the value or the unit.
   final bool touched;
 
+  /// What was typed for other types in this sheet, kept across a type
+  /// switch so switching back restores it (A57 A68). User content.
+  final Map<MeasurementTypeRef, ({String text, MeasurementUnit unit})> drafts;
+
   /// Whether this edits a stored entry.
   bool get isEdit => editing != null;
 
@@ -103,12 +108,26 @@ final class MeasurementFormState {
     Measurement? latest,
   }) {
     if (isEdit || type == this.type) return this;
+    final drafts = {
+      ...this.drafts,
+      if (touched) this.type: (text: text, unit: this.unit),
+    };
+    if (drafts.remove(type) case final kept?) {
+      return _copy(
+        type: type,
+        unit: kept.unit,
+        text: kept.text,
+        touched: true,
+        drafts: drafts,
+      );
+    }
     final unit = _unitFor(type.kind, lengthUnit);
     return _copy(
       type: type,
       unit: unit,
       text: latest == null ? '' : _prefill(latest, unit),
       touched: false,
+      drafts: drafts,
     );
   }
 
@@ -191,6 +210,7 @@ final class MeasurementFormState {
     EntryTime? time,
     String? text,
     bool? touched,
+    Map<MeasurementTypeRef, ({String text, MeasurementUnit unit})>? drafts,
   }) => MeasurementFormState._(
     type: type ?? this.type,
     unit: unit ?? this.unit,
@@ -199,6 +219,7 @@ final class MeasurementFormState {
     text: text ?? this.text,
     editing: editing,
     touched: touched ?? this.touched,
+    drafts: drafts ?? this.drafts,
   );
 
   @override

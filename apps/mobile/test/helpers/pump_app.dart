@@ -7,6 +7,8 @@ import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
+import 'package:fb_mobile/features/buddy/buddy.dart'
+    show pendingProposalCountProvider;
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
@@ -39,6 +41,8 @@ List<Override> todayOverrides() => [
   quickAddContextWithoutTimer(),
   // Today's workout row (A37 D20) is the workouts tests' business (R7).
   todayWorkoutProvider.overrideWith((ref, date) => const TodayWorkoutNone()),
+  // No pending Buddy cards (D-094) unless a test passes some.
+  pendingProposalCountProvider.overrideWith((ref) => Stream.value(0)),
   // No Ramadan decision: no settings stream for the day's meals (A41a).
   ramadanOff,
   // No settings stream for the confirmed below-floor days (A53).

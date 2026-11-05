@@ -73,7 +73,7 @@ final class FoodChipView {
   /// The chip.
   const new({
     required this.lineId,
-    required this.foodName,
+    required this.foodNames,
     required this.dimension,
     required this.selected,
     required this.origin,
@@ -82,8 +82,9 @@ final class FoodChipView {
   /// The line it belongs to.
   final String lineId;
 
-  /// The line's food name, for the question and option words.
-  final String foodName;
+  /// The line's food names, for the chip words; presentation picks the
+  /// setting's one (LC-007).
+  final FoodNames foodNames;
 
   /// The dimension.
   final ProposalDimension dimension;
@@ -100,15 +101,15 @@ final class FoodChipView {
 final class FoodQuestionView {
   /// The question.
   const new({
-    required this.foodName,
+    required this.foodNames,
     required this.dimension,
     required this.options,
     required this.selectedOptionId,
     required this.defaultOptionId,
   });
 
-  /// The line's food name.
-  final String foodName;
+  /// The line's food names; presentation picks the setting's one.
+  final FoodNames foodNames;
 
   /// The dimension asked about.
   final ProposalDimension dimension;
@@ -165,7 +166,7 @@ final class FoodCardView {
     final chips = <FoodChipView>[];
     final questions = <FoodQuestionView>[];
     for (final line in proposal.lines) {
-      final name = line.entry.food.names.en;
+      final names = line.entry.food.names;
       final selected = {for (final c in line.chips) c.dimensionId: c};
       lines.add(FoodLineView(line: line, reason: _reason(line)));
       for (final dimension in line.dimensions) {
@@ -179,7 +180,7 @@ final class FoodCardView {
           if (options.length < 2) continue;
           questions.add(
             FoodQuestionView(
-              foodName: name,
+              foodNames: names,
               dimension: dimension,
               options: options,
               selectedOptionId: chip?.optionId,
@@ -194,7 +195,7 @@ final class FoodCardView {
           chips.add(
             FoodChipView(
               lineId: line.entry.id,
-              foodName: name,
+              foodNames: names,
               dimension: dimension,
               selected: option,
               origin: chip.origin,

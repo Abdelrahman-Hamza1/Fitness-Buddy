@@ -146,6 +146,29 @@ void main() {
     expect(draft.localDate, measureDay.plusDays(-5));
   });
 
+  test('A57 A68 T-R6 a typed measurement survives a type switch and back', () {
+    final bodyFat = MeasurementTypeRef.builtIn(MeasurementKind.bodyFat);
+    final typed = MeasurementFormState.create(
+      type: waistRef,
+      lengthUnit: LengthUnit.centimeter,
+      now: now,
+      latest: _stored(1, measureDraft(92)),
+    ).withUnit(MeasurementUnit.inch).withText('35.5');
+    final other = typed.withType(bodyFat).withText('21');
+    final back = other.withType(waistRef);
+    expect(back.text, '35.5');
+    expect(back.unit, MeasurementUnit.inch);
+    expect(back.touched, isTrue);
+    expect(back.withType(bodyFat).text, '21');
+    // An untouched type still gets its latest value, not a stale draft.
+    final fresh = typed.withType(
+      MeasurementTypeRef.builtIn(MeasurementKind.chest),
+      latest: _stored(2, measureDraft(101)),
+    );
+    expect(fresh.text, '101');
+    expect(fresh.touched, isFalse);
+  });
+
   test('numberText shows at most two decimals without trailing zeros', () {
     expect(MeasurementFormState.numberText(92), '92');
     expect(MeasurementFormState.numberText(92.5), '92.5');

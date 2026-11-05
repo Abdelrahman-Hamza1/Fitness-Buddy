@@ -3,6 +3,13 @@ import 'package:fb_mobile/features/workouts/application/set_input.dart';
 import 'package:fb_mobile/features/workouts/data/workout_repository.dart';
 import 'package:flutter/foundation.dart' show immutable;
 
+/// The session a log form was opened for no longer exists (deleted here or
+/// on another device): a fact, not a read failure (A57 A45).
+final class WorkoutSessionGone implements Exception {
+  /// Creates the signal.
+  const new();
+}
+
 /// How the log form was opened (A37 D13, D14).
 @immutable
 sealed class LogLaunch {

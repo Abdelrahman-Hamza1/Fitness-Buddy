@@ -259,3 +259,10 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 278 | A53 Codex review | Quick-add chips in "Both" show only the English name (one-line chips); Buddy proposal lines and swap options ignore the Food names setting (Buddy frozen, TD-105) | minor | phase 2 / next UX polish | open |
 | 279 | A53 (review fix 4) | Restoring an earlier `targetSettings` version converts pre-A53 weights by HLC time; a row written by an old app on another install after this install upgraded would still read as factors. R1 is one phone; revisit if friends sync older builds (R2) | minor | R2 | open |
 | 280 | A53 (D4) | Below-floor confirmations (`targets.dayFloorAcks`) are global, not effective-dated: a past week's day is projected with today's confirmations. The proposal preview (`ProposalDayContext`) doesn't read them, so a kept below-floor day previews at the floor there | minor | next targets step | open |
+| 281 | A57 | weight_history_screen_test.dart:174: the 48 dp button test measures layout size before the FittedBox transform; measure transformed global rects instead (Codex fix-check) | minor | next UX polish | open |
+| 282 | A57 | No QuickAddBar regression test for the inert switcher layout (`FbInert.switcherLayout`) | minor | next UX polish | open |
+| 283 | A57 | Focus does not move to a new row (A22) or to the step heading (A26) after the reveal/transition | minor | next UX polish | open |
+| 284 | A57 | Personal-food serving rows are not animated (rows have no stable identity) | minor | next UX polish | open |
+| 285 | A57 | T-R5: barcode camera resume (A63) is not automated (`MobileScannerController` has no seam); owner checklist 7 | minor | next scanner touch | open |
+| 286 | A57 | No separate T-R4 tests for the measurement and setup load-failure states (same `LoadFailedView` path as the tested cards) | minor | next UX polish | open |
+| 287 | A57 | Prove Patrol P1 (`patrol_test/app_test.dart` Progress check) on the emulator: manual `android-it` CI run or the next nightly | minor | next nightly | open |

@@ -2,7 +2,6 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/today/today.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -153,6 +152,33 @@ void main() {
       () => rig.diary.reads.day(testToday),
     ))!;
     expect(after.entries, isEmpty);
+    rig.stack.dispose();
+    await tester.pump(const Duration(seconds: 7));
+  });
+
+  testWidgets('A57 T-N2 N2 LC-007 a chip shows the main name and reads both; '
+      'the log snackbar names the food in the setting', (tester) async {
+    var rig = TodayRig(realChips: true, names: FoodNameLanguage.both);
+    await _pumpReal(tester, rig, _Taps());
+    await log(tester, rig, _lunchHistory());
+    final chip = tester.widget<FbQuickAddChip>(_chip('Food 1'));
+    expect(chip.label, 'Food 1');
+    expect(chip.semanticLabel, contains('Food 1, طعام 1'));
+
+    await tester.pumpWidget(const SizedBox());
+    rig.stack.dispose();
+    rig = TodayRig(realChips: true, names: FoodNameLanguage.arabic);
+    await _pumpReal(tester, rig, _Taps());
+    await log(tester, rig, _lunchHistory());
+    await tester.tap(_chip('طعام 1'));
+    await settle(tester);
+    final snack = tester.widget<Text>(
+      find
+          .descendant(of: find.byType(SnackBar), matching: find.byType(Text))
+          .first,
+    );
+    expect(snack.data, contains('\u2068طعام 1\u2069'));
+    expect(snack.data, isNot(contains('Food 1')));
     rig.stack.dispose();
     await tester.pump(const Duration(seconds: 7));
   });

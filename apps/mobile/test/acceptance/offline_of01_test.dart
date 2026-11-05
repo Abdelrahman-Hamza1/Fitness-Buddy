@@ -150,15 +150,14 @@ void main() {
     expect(edited.version, 2);
     expect(edited.amount, 300);
 
-    await tester.tap(find.byKey(const ValueKey('fb-slide-dot-1')).first);
-    await settle(tester);
-    // 3. A weigh-in from Today's weight card.
-    await tester.tap(
-      find.descendant(
-        of: dayPage(today),
-        matching: find.byKey(const ValueKey('today-weigh-in')),
-      ),
+    // 3. A weigh-in from the weight half of Today's line (D-093).
+    final weight = find.descendant(
+      of: dayPage(today),
+      matching: find.byKey(const ValueKey('today-glance-weight')),
     );
+    await tester.ensureVisible(weight);
+    await settle(tester);
+    await tester.tap(weight);
     await settle(tester);
     expect(find.byType(WeighInSheet), findsOneWidget);
     await _pad(tester, '97.4');

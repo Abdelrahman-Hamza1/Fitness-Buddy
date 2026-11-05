@@ -1,4 +1,6 @@
 import 'package:fb_design_system/l10n/gen/fb_localizations.dart';
+import 'package:fb_design_system/src/components/digits.dart';
+import 'package:fb_design_system/src/components/supporting_line.dart';
 import 'package:fb_design_system/src/tokens/typography.dart';
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
@@ -21,10 +23,7 @@ class FbDecimalInputFormatter extends TextInputFormatter {
   /// The most digits after the decimal separator.
   final int maxDecimals;
 
-  static bool _isDigit(int unit) =>
-      (unit >= 0x30 && unit <= 0x39) ||
-      (unit >= 0x660 && unit <= 0x669) ||
-      (unit >= 0x6f0 && unit <= 0x6f9);
+  static bool _isDigit(int unit) => isAnyDigit(unit);
 
   static bool _isSeparator(int unit) =>
       unit == 0x2e || unit == 0x2c || unit == 0x66b;
@@ -70,8 +69,12 @@ class FbDecimalInputFormatter extends TextInputFormatter {
 /// A labelled numeric field (D16): a [label] that floats above the number,
 /// a [unit] shown after it ("g", "kcal"), a decimal keyboard and an input
 /// filter that only lets a plain nonnegative number through
-/// ([FbDecimalInputFormatter], at most [maxDecimals] decimals), and an
-/// [errorText] shown under the field.
+/// ([FbDecimalInputFormatter], at most [maxDecimals] decimals), and one
+/// reserved supporting line under the field (UX-045, A57 D12) that shows
+/// the [supportingText] or, in its place, the [errorText]. The line is
+/// [supportingLines] lines tall whatever it shows, so nothing moves when an
+/// error appears; 0 reserves nothing (dense inline fields mark an error by
+/// their outline only).
 ///
 /// The field only edits [controller] and reports changes; what the number
 /// means (its range, a conversion) is the caller's job, so the caller keeps
@@ -86,6 +89,8 @@ class FbNumberField extends StatelessWidget {
     this.maxDecimals = 2,
     this.errorText,
     this.hint,
+    this.supportingText,
+    this.supportingLines = 1,
     this.onChanged,
     this.onSubmitted,
     this.textInputAction,
@@ -108,12 +113,18 @@ class FbNumberField extends StatelessWidget {
   /// The most digits after the decimal separator.
   final int maxDecimals;
 
-  /// Why the number is not acceptable. Shown under the field, in the neutral
-  /// error colour.
+  /// Why the number is not acceptable. Shown in the supporting line, in the
+  /// error colour, and the field gets the error outline.
   final String? errorText;
 
   /// Shown while the field is empty.
   final String? hint;
+
+  /// A hint shown in the supporting line while there is no error.
+  final String? supportingText;
+
+  /// How many lines the supporting line reserves (0 = none).
+  final int supportingLines;
 
   /// Called on every edit.
   final ValueChanged<String>? onChanged;
@@ -150,7 +161,7 @@ class FbNumberField extends StatelessWidget {
           ?unit,
         ].where((part) => part.isNotEmpty).join(' ');
         final name = semanticLabel ?? label;
-        return Semantics(
+        final field = Semantics(
           label: reading.isEmpty
               ? name
               : l10n.fbNumberFieldSemantics(name, reading),
@@ -171,12 +182,25 @@ class FbNumberField extends StatelessWidget {
               // Read once, in the label above, with the number and its unit.
               label: ExcludeSemantics(child: Text(label)),
               hintText: hint,
-              errorText: errorText,
-              errorMaxLines: 3,
+              // The outline shows the error; the message is in the line.
+              error: errorText == null ? null : const SizedBox.shrink(),
               suffixText: unit,
               suffixStyle: FbType.body.copyWith(color: scheme.onSurfaceVariant),
             ),
           ),
+        );
+        if (supportingLines == 0) return field;
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            field,
+            FbSupportingLine(
+              text: supportingText,
+              errorText: errorText,
+              lines: supportingLines,
+            ),
+          ],
         );
       },
     );

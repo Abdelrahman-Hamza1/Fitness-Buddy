@@ -45,7 +45,7 @@ final class QuickAddControllerProvider
 }
 
 String _$quickAddControllerHash() =>
-    r'3b09134d8f107eba414c08c25940c17155b2ba86';
+    r'f8ea6225a126f5133d1a300ad74de5e578a7e964';
 
 /// Session-owned commands survive the source day being evicted (D14).
 

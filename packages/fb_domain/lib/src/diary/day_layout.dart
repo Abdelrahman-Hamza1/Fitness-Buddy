@@ -125,12 +125,15 @@ final class SlotSection {
   /// Stored snapshot sums for this section.
   final Nutrients totals;
 
-  /// Content names; presentation supplies separators and truncation.
-  List<String> get summaryNames => List.unmodifiable(
+  /// Content names, structured (LC-007): presentation resolves them with
+  /// the "Food names" setting and supplies separators and truncation. A
+  /// user-written dish name is `FoodNames(en: typed)`, so every setting
+  /// shows it as typed.
+  List<FoodNames> get summaryFoods => List.unmodifiable(
     items.map(
       (item) => switch (item) {
-        EntryItem(:final entry) => entry.food.names.en,
-        GroupItem(:final group) => group.name,
+        EntryItem(:final entry) => entry.food.names,
+        GroupItem(:final group) => FoodNames(group.name),
       },
     ),
   );

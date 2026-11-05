@@ -1,7 +1,9 @@
 import 'package:fb_design_system/fb_design_system.dart';
+import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/features/workouts/application/workout_views.dart';
 import 'package:fb_mobile/features/workouts/presentation/workout_session_tile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,41 +18,58 @@ class WorkoutHistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final history = ref.watch(workoutHistoryProvider).value ?? const [];
     final today = ref.watch(workoutTodayProvider);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.workoutHistoryTitle)),
-      body: history.isEmpty
-          ? FbEmptyState(
-              icon: FbIcons.navWorkouts,
-              title: l10n.workoutsEmptyTitle,
-              message: l10n.workoutsFirstVisitMessage,
-            )
-          : ListView(
-              padding: const EdgeInsetsDirectional.symmetric(
-                vertical: FbSpace.s2,
-              ),
-              children: [
-                for (final (i, summary) in history.indexed) ...[
-                  if (i == 0 || history[i - 1].date != summary.date)
-                    Padding(
-                      padding: const EdgeInsetsDirectional.symmetric(
-                        horizontal: FbSpace.s4,
-                      ),
-                      child: FbSectionHeader(
-                        title: dayLabel(context, summary.date, today),
-                      ),
-                    ),
-                  WorkoutSessionTile(
-                    key: ValueKey('workout-history-${summary.id}'),
-                    summary: summary,
-                    onTap: () => ref
-                        .read(appNavigatorProvider)
-                        .push(WorkoutSessionRoute(id: summary.id)),
-                  ),
-                ],
-              ],
-            ),
+      // A failed read is not "no workouts" (A57 A43).
+      body: switch (ref.watch(workoutHistoryProvider)) {
+        AsyncValue(value: final history?) when history.isNotEmpty => _List(
+          history: history,
+          today: today,
+        ),
+        AsyncValue(hasValue: true) => FbEmptyState(
+          icon: FbIcons.navWorkouts,
+          title: l10n.workoutsEmptyTitle,
+          message: l10n.workoutsFirstVisitMessage,
+        ),
+        AsyncError() => LoadFailedView(
+          message: l10n.workoutsLoadFailed,
+          onRetry: () => ref.invalidate(workoutHistoryProvider),
+        ),
+        _ => const LoadingRows(),
+      },
     );
   }
+}
+
+class _List extends ConsumerWidget {
+  const new({required this.history, required this.today});
+
+  final List<SessionSummary> history;
+  final LocalDate today;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => ListView(
+    padding: const EdgeInsetsDirectional.symmetric(vertical: FbSpace.s2),
+    children: [
+      for (final (i, summary) in history.indexed) ...[
+        if (i == 0 || history[i - 1].date != summary.date)
+          Padding(
+            padding: const EdgeInsetsDirectional.symmetric(
+              horizontal: FbSpace.s4,
+            ),
+            child: FbSectionHeader(
+              title: dayLabel(context, summary.date, today),
+            ),
+          ),
+        WorkoutSessionTile(
+          key: ValueKey('workout-history-${summary.id}'),
+          summary: summary,
+          onTap: () => ref
+              .read(appNavigatorProvider)
+              .push(WorkoutSessionRoute(id: summary.id)),
+        ),
+      ],
+    ],
+  );
 }

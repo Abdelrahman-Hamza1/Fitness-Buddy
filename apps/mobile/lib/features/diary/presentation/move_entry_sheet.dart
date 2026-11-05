@@ -8,6 +8,7 @@ import 'package:fb_mobile/features/diary/application/slot_providers.dart';
 import 'package:fb_mobile/features/diary/presentation/entry_actions.dart';
 import 'package:fb_mobile/features/diary/presentation/live_entry.dart';
 import 'package:fb_mobile/features/diary/presentation/move_to_slot_sheet.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -55,6 +56,8 @@ class _MoveEntrySheetState extends ConsumerState<MoveEntrySheet> {
         .moveEntry(entry, target.id);
     if (!mounted) return;
     setState(() => _moving = false);
+    // Read before the sheet closes (LC-007).
+    final name = readFoodNameInline(ref, entry.food.names);
     switch (outcome) {
       case DiaryActionFailed(:final reason):
         setState(() => _failure = reason);
@@ -66,10 +69,7 @@ class _MoveEntrySheetState extends ConsumerState<MoveEntrySheet> {
           reportDiaryOutcome(
             host,
             outcome,
-            () => host.l10n.diaryEntryMoved(
-              entry.food.names.en,
-              slotLabel(host.l10n, target),
-            ),
+            () => host.l10n.diaryEntryMoved(name, slotLabel(host.l10n, target)),
           );
         }
     }

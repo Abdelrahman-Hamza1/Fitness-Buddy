@@ -118,8 +118,10 @@ class _PlanPageState extends State<PlanPage> {
                 expanded: _how,
                 onToggle: () => setState(() => _how = !_how),
               ),
-              if (_how)
-                Padding(
+              // Grows in under its row (A57 A29).
+              FbReveal(
+                visible: _how,
+                child: Padding(
                   padding: const EdgeInsetsDirectional.fromSTEB(
                     FbSpace.s4,
                     0,
@@ -133,6 +135,7 @@ class _PlanPageState extends State<PlanPage> {
                     weeklyKcal: preview.weeklyKcal,
                   ),
                 ),
+              ),
             ],
           ),
         ),

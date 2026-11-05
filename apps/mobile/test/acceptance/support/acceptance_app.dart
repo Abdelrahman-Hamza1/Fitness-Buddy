@@ -274,7 +274,6 @@ List<AppRoute> everyRoute(SeededProfile s) => [
   const RamadanMealSlotsRoute(),
   const CityPickerRoute(),
   const AboutRoute(),
-  const TodayWeightGraphRoute(),
   const WeightGraphRoute(),
   const WeightHistoryRoute(),
   const MeasurementsRoute(),
@@ -326,7 +325,6 @@ Type screenOf(AppRoute route) => switch (route) {
   RamadanMealSlotsRoute() => MealSlotsScreen,
   CityPickerRoute() => CityPickerScreen,
   AboutRoute() => AboutScreen,
-  TodayWeightGraphRoute() => WeightGraphScreen,
   WeightGraphRoute() => WeightGraphScreen,
   WeightHistoryRoute() => WeightHistoryScreen,
   MeasurementsRoute() => MeasurementsScreen,
@@ -585,46 +583,15 @@ Future<void> visitStates(
   );
   await tester.binding.handlePopRoute();
   await settle(tester);
-  for (var index = 0; index < 3; index++) {
-    final dot = find.descendant(
-      of: page,
-      matching: find.byKey(ValueKey('fb-slide-dot-$index')),
-    );
-    await list.position.ensureVisible(tester.renderObject(dot), alignment: 0.5);
-    await settle(tester);
-    await tester.tap(dot);
-    await settle(tester);
-    await check('Today summary slide $index');
-  }
-  final weightDot = find.descendant(
-    of: page,
-    matching: find.byKey(const ValueKey('fb-slide-dot-1')),
-  );
-  await list.position.ensureVisible(
-    tester.renderObject(weightDot),
-    alignment: 0.5,
-  );
-  await settle(tester);
-  await tester.tap(weightDot);
-  await settle(tester);
+  // The weight | workout line under the calories card (D-093).
   final add = find.descendant(
-    of: find.descendant(of: page, matching: find.byType(WeightSlide)),
-    matching: find.byKey(const ValueKey('today-weigh-in')),
+    of: page,
+    matching: find.byKey(const ValueKey('today-glance-weight')),
   );
-  expect(add, findsOneWidget, reason: "the weight row's plus");
-  // Reveal it inside the slide first, then position the outer day list.
-  // Generic ensureVisible would also scroll the horizontal pagers.
-  await Scrollable.of(
-    tester.element(add),
-    axis: Axis.vertical,
-  ).position.ensureVisible(tester.renderObject(add), alignment: 0.5);
+  expect(add, findsOneWidget, reason: "the line's weight half");
+  await list.position.ensureVisible(tester.renderObject(add), alignment: 0.5);
   await settle(tester);
-  final viewport = tester.getRect(find.byWidget(list.widget));
-  final delta = tester.getCenter(add).dy - viewport.center.dy;
-  list.position.jumpTo(
-    (list.position.pixels + delta).clamp(0, list.position.maxScrollExtent),
-  );
-  await settle(tester);
+  await check('Today summary card and line');
   await tester.tap(add);
   await settle(tester);
   expect(find.byType(WeighInSheet), findsOneWidget);

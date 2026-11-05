@@ -383,7 +383,7 @@ class BuddyThreadController extends _$BuddyThreadController {
       found.$2.copyWith(
         removed: [
           ...found.$2.removed,
-          RemovedLine(lineId, line.entry.food.names.en),
+          RemovedLine(lineId, line.entry.food.names),
         ],
       ),
     );

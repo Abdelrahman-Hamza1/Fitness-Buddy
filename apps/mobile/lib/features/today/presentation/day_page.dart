@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
@@ -9,7 +11,7 @@ import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/sync/sync.dart';
 import 'package:fb_mobile/features/today/presentation/today_numbers.dart'
     show EmptyDayHint;
-import 'package:fb_mobile/features/today/presentation/today_slide_card.dart';
+import 'package:fb_mobile/features/today/presentation/today_summary_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -18,7 +20,12 @@ import 'package:material_ui/material_ui.dart';
 /// sliver list of [DayRow]s, so only the rows on screen are built. A day that
 /// is not loaded yet shows meal skeletons; a prefetched one never does
 /// (UX-051). Today and past days look the same.
-class DayPage extends ConsumerWidget {
+///
+/// Opening or closing a meal, a group or an entry's details (A57 D18, A16,
+/// A17) grows the new rows in under the tapped one and lets the closed ones
+/// shrink away over [FbMotion.local]; the tapped row never moves. Data
+/// changes (log, delete, move) stay immediate.
+class DayPage extends ConsumerStatefulWidget {
   /// Creates the page of [date]; [isToday] picks the empty-day wording.
   const new({required this.date, required this.isToday, super.key});
 
@@ -29,7 +36,77 @@ class DayPage extends ConsumerWidget {
   final bool isToday;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DayPage> createState() => _DayPageState();
+}
+
+/// A row on screen: its key, its row, and whether it is shrinking away.
+typedef _Shown = ({Key key, DayRow row, bool exiting});
+
+class _DayPageState extends ConsumerState<DayPage> {
+  DiaryViewChoices? _lastChoices;
+  List<_Shown> _shown = const [];
+  final Set<Key> _exiting = {};
+  Timer? _drop;
+
+  @override
+  void dispose() {
+    _drop?.cancel();
+    super.dispose();
+  }
+
+  /// [rows] plus the rows a disclosure just closed, each at its old place,
+  /// and which rows it just opened.
+  (List<_Shown>, Set<Key>) _withMotion(
+    List<DayRow> rows,
+    DiaryViewChoices choices,
+  ) {
+    final duration = FbMotion.localOf(context);
+    final current = <_Shown>[
+      for (final row in rows) (key: _keyOf(row), row: row, exiting: false),
+    ];
+    final now = {for (final s in current) s.key};
+    final disclosed =
+        _lastChoices != null &&
+        !identical(choices, _lastChoices) &&
+        duration > Duration.zero;
+    _lastChoices = choices;
+    var entering = const <Key>{};
+    _exiting.removeAll(now);
+    if (disclosed) {
+      entering = now.difference({for (final s in _shown) s.key});
+      final closed = [
+        for (final s in _shown)
+          if (!now.contains(s.key)) s.key,
+      ];
+      if (closed.isNotEmpty) {
+        _exiting.addAll(closed);
+        _drop?.cancel();
+        _drop = Timer(duration, () {
+          if (mounted) setState(_exiting.clear);
+        });
+      }
+    }
+    final combined = [...current];
+    Key? previous;
+    for (final s in _shown) {
+      if (_exiting.contains(s.key)) {
+        final at = previous == null
+            ? 0
+            : combined.indexWhere((c) => c.key == previous) + 1;
+        combined.insert(at, (key: s.key, row: s.row, exiting: true));
+      } else if (!now.contains(s.key)) {
+        continue;
+      }
+      previous = s.key;
+    }
+    _shown = combined;
+    return (combined, entering);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final date = widget.date;
+    final isToday = widget.isToday;
     final view = ref.watch(dayViewProvider(date));
     final data = view.value;
     if (data == null) {
@@ -38,9 +115,11 @@ class DayPage extends ConsumerWidget {
           : const _DaySkeleton();
     }
     final choices = ref.watch(diaryViewStateProvider);
-    final rows = DayRows.of(data.layout, choices, isToday: isToday);
-    final keys = [for (final row in rows) _keyOf(row)];
-    final indexOfKey = {for (final (i, key) in keys.indexed) key: i};
+    final (rows, entering) = _withMotion(
+      DayRows.of(data.layout, choices, isToday: isToday),
+      choices,
+    );
+    final indexOfKey = {for (final (i, s) in rows.indexed) s.key: i};
     final slots = data.raw.slots;
     // A re-tap of the Today tab scrolls the page to the top (A45 D13). Several
     // pages exist while swiping: none takes the primary controller, so each
@@ -55,8 +134,8 @@ class DayPage extends ConsumerWidget {
             itemCount: rows.length,
             findChildIndexCallback: (key) => indexOfKey[key],
             itemBuilder: (context, i) {
-              final key = keys[i];
-              return switch (rows[i]) {
+              final (:key, :row, :exiting) = rows[i];
+              final content = switch (row) {
                 NumbersRow(:final totals) => _DayHeader(
                   key: key,
                   date: date,
@@ -64,45 +143,44 @@ class DayPage extends ConsumerWidget {
                   totals: totals,
                   incomplete: data.raw.mark?.incomplete ?? false,
                 ),
-                EmptyHintRow(:final isToday) => EmptyDayHint(
-                  key: key,
-                  isToday: isToday,
-                ),
+                EmptyHintRow(:final isToday) => EmptyDayHint(isToday: isToday),
                 SlotHeaderRow(:final section, :final expanded) =>
                   SlotHeaderTile(
-                    key: key,
                     section: section,
                     date: date,
                     expanded: expanded,
                   ),
                 SlotMacrosRow(:final section) => SlotMacrosLine(
-                  key: key,
                   section: section,
                 ),
                 GroupHeaderRow(:final item, :final expanded) => DishGroupTile(
-                  key: key,
                   item: item,
                   expanded: expanded,
                 ),
                 EntryRow(:final entry) => DiaryEntryTile(
-                  key: key,
                   entry: entry,
                   slots: slots,
                   expanded: _isOpen(choices, entry),
                 ),
                 GroupMemberRow(:final entry) => DiaryEntryTile(
-                  key: key,
                   entry: entry,
                   slots: slots,
                   expanded: _isOpen(choices, entry),
                   indented: true,
                 ),
                 EntryDetailsRow(:final entry) => EntryDetailsPanel(
-                  key: key,
                   entry: entry,
                   slots: slots,
                 ),
               };
+              // The header never enters or leaves (and isn't clipped).
+              if (row is NumbersRow) return content;
+              return FbReveal(
+                key: key,
+                visible: !exiting,
+                appearOnMount: entering.contains(key),
+                child: content,
+              );
             },
           ),
           const SliverPadding(
@@ -114,8 +192,11 @@ class DayPage extends ConsumerWidget {
   }
 }
 
-/// The summary card, Ramadan proposal and not-fasting note, incomplete-day
-/// note, ready-scans hint, account banner and sync line, in that order.
+/// The calories card with the weight | workout line (D-093), then the
+/// Ramadan proposal and not-fasting note, incomplete-day note, ready-scans
+/// hint, account banner and sync line, in that order. The notes share one
+/// [FbSizeFade], so one appearing or going grows or shrinks the region
+/// smoothly instead of jumping the meals (A57 A09).
 class _DayHeader extends StatelessWidget {
   const new({
     required this.date,
@@ -135,13 +216,21 @@ class _DayHeader extends StatelessWidget {
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      TodaySlideCard(date: date, isToday: isToday, totals: totals),
-      if (isToday) const RamadanProposalCard(),
-      _NotFastingNote(date: date),
-      if (incomplete) _IncompleteNote(date: date),
-      if (isToday) const ReadyScansTodayHint(),
-      if (isToday) const AccountTodayBanner(),
-      if (isToday) const SyncTodayLine(),
+      TodaySummaryCard(date: date, isToday: isToday, totals: totals),
+      FbSizeFade(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (isToday) const RamadanProposalCard(),
+            _NotFastingNote(date: date),
+            if (incomplete) _IncompleteNote(date: date),
+            if (isToday) const ReadyScansTodayHint(),
+            if (isToday) const AccountTodayBanner(),
+            if (isToday) const SyncTodayLine(),
+          ],
+        ),
+      ),
     ],
   );
 }

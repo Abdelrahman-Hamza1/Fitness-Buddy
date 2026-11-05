@@ -135,6 +135,20 @@ final class WeightHistoryForm {
     ], next: nextKey + 1);
   }
 
+  /// [row] back at [index] after a [remove] (A57 A69): an Undo of the form
+  /// itself, nothing stored. The empty row a removal of the only row left
+  /// behind gives way to it; a row already there, or a full form, is left
+  /// as it is.
+  WeightHistoryForm restore(WeightHistoryRow row, int index) {
+    if (rows.any((r) => r.key == row.key)) return this;
+    final kept = rows.length == 1 && !rows.single.isTouched
+        ? const <WeightHistoryRow>[]
+        : rows;
+    if (kept.length >= WeighInBatchCheck.maxRows) return this;
+    final at = index.clamp(0, kept.length);
+    return _with([...kept.take(at), row, ...kept.skip(at)]);
+  }
+
   /// Row [key] on [date] (its Keep cleared).
   WeightHistoryForm withDate(int key, LocalDate date) =>
       _edit(key, (row) => row.date == date ? row : row._copy(date: date));

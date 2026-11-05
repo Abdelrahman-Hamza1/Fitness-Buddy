@@ -5,6 +5,8 @@ import 'package:fb_mobile/core/l10n/amount_text.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/core/ui/nutrition_summary.dart';
+import 'package:fb_mobile/core/ui/success_haptic.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/application/food_amount_controller.dart';
 import 'package:fb_mobile/features/foods/application/food_choice.dart';
@@ -26,7 +28,8 @@ const NumberPadBuffer _emptyPad = NumberPadBuffer(maxDecimals: 2);
 /// The content of the food sheet (A07 WP4): the food, the amount with its
 /// calories and macros, the unit, the state choice, the meal and Add.
 ///
-/// It is the body for `showFbSheet`; [openFoodSheet] shows it. It pops with
+/// It builds its whole [FbSheet] (Add pinned in its actions, A57 A65), for
+/// `showFbStatefulSheet`; [openFoodSheet] shows it. It pops with
 /// the [FoodLogged] outcome once the food is added, so the caller can close
 /// itself and show the undo snackbar (UX-030). The sheet knows its food only
 /// by the structured [FoodPick], so A08 (swap) and A28 (scan) can open it too.
@@ -36,6 +39,9 @@ class FoodSheet extends ConsumerStatefulWidget {
 
   /// The tapped result and where the log goes.
   final FoodPick pick;
+
+  /// The key of the pinned Add (or Use this) button.
+  static const Key addKey = ValueKey('food-sheet-add');
 
   @override
   ConsumerState<FoodSheet> createState() => _FoodSheetState();
@@ -94,6 +100,7 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
     if (!mounted) return;
     switch (outcome) {
       case FoodLogged():
+        successHaptic();
         Navigator.of(context).pop(outcome);
       case FoodLogFailed(:final code):
         setState(() {
@@ -132,33 +139,37 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
     final l10n = context.l10n;
     return switch (ref.watch(_provider)) {
       AsyncData(:final value) => _body(context, value),
-      AsyncError() => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          FbInlineBanner(
-            kind: FbInlineBannerKind.error,
-            message: l10n.foodSheetLoadFailed,
-            actionLabel: l10n.foodTryAgain,
-            onAction: () {
-              ref
-                ..invalidate(foodChoiceProvider(widget.pick.row.choiceRef))
-                ..invalidate(foodSlotsProvider(_date))
-                ..invalidate(_provider);
-            },
-          ),
-          FbButton.text(
-            label: l10n.foodSheetClose,
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ],
+      AsyncError() => FbSheet(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            FbInlineBanner(
+              kind: FbInlineBannerKind.error,
+              message: l10n.foodSheetLoadFailed,
+              actionLabel: l10n.foodTryAgain,
+              onAction: () {
+                ref
+                  ..invalidate(foodChoiceProvider(widget.pick.row.choiceRef))
+                  ..invalidate(foodSlotsProvider(_date))
+                  ..invalidate(_provider);
+              },
+            ),
+            FbButton.text(
+              label: l10n.foodSheetClose,
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
       ),
-      _ => const Column(
-        spacing: FbSpace.s3,
-        children: [
-          FbSkeleton.line(height: 24),
-          FbSkeleton.line(height: 56),
-          FbSkeleton.line(height: 40),
-        ],
+      _ => const FbSheet(
+        child: Column(
+          spacing: FbSpace.s3,
+          children: [
+            FbSkeleton.line(height: 24),
+            FbSkeleton.line(height: 56),
+            FbSkeleton.line(height: 40),
+          ],
+        ),
       ),
     };
   }
@@ -228,132 +239,165 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
     final guardRefused =
         (_failCode == 'changed' || _failCode == 'removed') &&
         food.guard != null;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: FbSpace.s3,
-      children: [
-        _Header(food: food),
-        if (widget.pick.scanned case final scanned?)
-          ScannedProductHeader(product: scanned, food: food),
-        if (live != null)
-          StaleEntryBanner(freshness: live.freshness, onReload: live.reload),
-        if (food.sanity == CatalogSanity.warn)
-          FbInlineBanner(
-            kind: FbInlineBannerKind.info,
-            message: l10n.foodSheetSanityWarn,
+    return FbSheet(
+      // Add is pinned under the content (A57 A65): it stays under the thumb
+      // however long the scanned product or the nutrient list is.
+      actions: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: FbSpace.s3,
+        children: [
+          if (_failed)
+            FbInlineBanner(
+              kind: FbInlineBannerKind.error,
+              // The food changed under the sheet: nothing here can fix that,
+              // so the way out is offered (pick it again from the search).
+              actionLabel: guardRefused ? l10n.foodSheetClose : null,
+              onAction: guardRefused ? () => Navigator.of(context).pop() : null,
+              message: replacing == null
+                  ? guardRefused
+                        ? l10n.foodSheetAddChanged
+                        : mealRemoved
+                        ? l10n.diarySlotRemoved
+                        : mealRequired
+                        ? l10n.foodSheetSlotChoose
+                        : l10n.foodSheetAddFailed
+                  : switch (_failCode) {
+                      _ when guardRefused => l10n.foodSheetReplaceChanged,
+                      'slotRemoved' => l10n.diarySlotRemoved,
+                      'changed' => l10n.diaryItemChanged,
+                      'removed' => l10n.diaryActionRemoved,
+                      _ => l10n.diaryActionFailed,
+                    },
+            ),
+          FbButton.primary(
+            key: FoodSheet.addKey,
+            label: replacing == null
+                ? l10n.foodSheetAdd
+                : l10n.foodSheetUseThis,
+            expand: true,
+            onPressed:
+                state.canAdd &&
+                    (live == null || live.freshness == EntryFreshness.fresh)
+                ? _add
+                : null,
           ),
-        FbAmountDisplay(
-          amount: _shown(l10n, text),
-          unit: unitName(state.unit),
-          semanticLabel: l10n.foodSheetAmountLabel(
-            _shown(l10n, text),
-            unitName(state.unit),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: FbSpace.s3,
+        children: [
+          _Header(food: food),
+          if (widget.pick.scanned case final scanned?)
+            ScannedProductHeader(product: scanned, food: food),
+          if (live != null)
+            StaleEntryBanner(freshness: live.freshness, onReload: live.reload),
+          if (food.sanity == CatalogSanity.warn)
+            FbInlineBanner(
+              kind: FbInlineBannerKind.info,
+              message: l10n.foodSheetSanityWarn,
+            ),
+          FbAmountDisplay(
+            amount: _shown(l10n, text),
+            unit: unitName(state.unit),
+            semanticLabel: l10n.foodSheetAmountLabel(
+              _shown(l10n, text),
+              unitName(state.unit),
+            ),
+            active: _padOpen,
+            onTap: () => setState(() => _padOpen = !_padOpen),
+            // A hardware keyboard types too (A57 A61).
+            onKey: (key) => _onKey(key, state),
           ),
-          active: _padOpen,
-          onTap: () => setState(() => _padOpen = !_padOpen),
-        ),
-        _Nutrition(snapshot: state.snapshot),
-        FbUnitPicker(
-          units: [
-            for (final code in state.units)
-              FbUnitOption(id: code, label: unitName(code)),
-          ],
-          selected: state.unit,
-          onSelected: (code) {
-            setState(() => _failed = false);
-            _controller.setUnit(code);
-          },
-        ),
-        if (food.siblings.isNotEmpty)
-          Wrap(
-            spacing: FbSpace.s2,
-            runSpacing: FbSpace.s2,
-            children: [
-              for (final sibling in food.siblings)
-                FbChoiceChip(
-                  label: l10n.foodSheetLogAs(sibling.nameEn),
-                  dropdown: false,
-                  onTap: () {
-                    if (_controller.switchState(sibling.id)) {
-                      setState(() => _failed = false);
-                    }
-                  },
+          NutritionSummary(nutrients: state.snapshot?.nutrients),
+          FbUnitPicker(
+            units: [
+              for (final code in state.units)
+                FbUnitOption(id: code, label: unitName(code)),
+            ],
+            selected: state.unit,
+            onSelected: (code) {
+              setState(() => _failed = false);
+              _controller.setUnit(code);
+            },
+          ),
+          if (food.siblings.isNotEmpty)
+            Wrap(
+              spacing: FbSpace.s2,
+              runSpacing: FbSpace.s2,
+              children: [
+                for (final sibling in food.siblings)
+                  FbChoiceChip(
+                    label: l10n.foodSheetLogAs(
+                      watchFoodNameInline(
+                        ref,
+                        FoodNames(sibling.nameEn, ar: sibling.nameAr),
+                      ),
+                    ),
+                    dropdown: false,
+                    onTap: () {
+                      if (_controller.switchState(sibling.id)) {
+                        setState(() => _failed = false);
+                      }
+                    },
+                  ),
+              ],
+            ),
+          if (yieldNote != null)
+            Text(
+              l10n.foodSheetYieldNote(
+                foodMassText(
+                  l10n,
+                  yieldNote.fromAmount.grams,
+                  system: state.system,
                 ),
+                l10n.foodStateWord(yieldNote.fromState.code),
+                foodMassText(
+                  l10n,
+                  yieldNote.toGramsForNote.toDouble(),
+                  system: state.system,
+                ),
+                l10n.foodStateWord(yieldNote.toState.code),
+              ),
+              style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
+            ),
+          // Changing the food keeps the item's meal: nothing to choose.
+          if (replacing == null)
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: FbChoiceChip(
+                label: l10n.foodSheetSlotTitle,
+                value: slot == null
+                    ? l10n.foodSheetSlotChoose
+                    : slotLabel(l10n, slot),
+                onTap: () => _chooseSlot(slots, state.slotId),
+              ),
+            ),
+          // The pad grows in under the amount; the pinned Add stays put
+          // (A57 A19).
+          // In the next row's slot, so a closed pad adds no gap.
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              FbReveal(
+                visible: _padOpen,
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.only(bottom: FbSpace.s3),
+                  child: FbNumberPad(
+                    onKey: (key) => _onKey(key, state),
+                    onDone: () => setState(() => _padOpen = false),
+                  ),
+                ),
+              ),
+              _PerHundred(
+                food: food,
+                showMore: _more,
+                onToggleMore: () => setState(() => _more = !_more),
+              ),
             ],
           ),
-        if (yieldNote != null)
-          Text(
-            l10n.foodSheetYieldNote(
-              foodMassText(
-                l10n,
-                yieldNote.fromAmount.grams,
-                system: state.system,
-              ),
-              l10n.foodStateWord(yieldNote.fromState.code),
-              foodMassText(
-                l10n,
-                yieldNote.toGramsForNote.toDouble(),
-                system: state.system,
-              ),
-              l10n.foodStateWord(yieldNote.toState.code),
-            ),
-            style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
-          ),
-        // Changing the food keeps the item's meal: nothing to choose.
-        if (replacing == null)
-          Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: FbChoiceChip(
-              label: l10n.foodSheetSlotTitle,
-              value: slot == null
-                  ? l10n.foodSheetSlotChoose
-                  : slotLabel(l10n, slot),
-              onTap: () => _chooseSlot(slots, state.slotId),
-            ),
-          ),
-        if (_padOpen)
-          FbNumberPad(
-            onKey: (key) => _onKey(key, state),
-            onDone: () => setState(() => _padOpen = false),
-          ),
-        if (_failed)
-          FbInlineBanner(
-            kind: FbInlineBannerKind.error,
-            // The food changed under the sheet: nothing here can fix that,
-            // so the way out is offered (pick it again from the search).
-            actionLabel: guardRefused ? l10n.foodSheetClose : null,
-            onAction: guardRefused ? () => Navigator.of(context).pop() : null,
-            message: replacing == null
-                ? guardRefused
-                      ? l10n.foodSheetAddChanged
-                      : mealRemoved
-                      ? l10n.diarySlotRemoved
-                      : mealRequired
-                      ? l10n.foodSheetSlotChoose
-                      : l10n.foodSheetAddFailed
-                : switch (_failCode) {
-                    _ when guardRefused => l10n.foodSheetReplaceChanged,
-                    'slotRemoved' => l10n.diarySlotRemoved,
-                    'changed' => l10n.diaryItemChanged,
-                    'removed' => l10n.diaryActionRemoved,
-                    _ => l10n.diaryActionFailed,
-                  },
-          ),
-        FbButton.primary(
-          label: replacing == null ? l10n.foodSheetAdd : l10n.foodSheetUseThis,
-          expand: true,
-          onPressed:
-              state.canAdd &&
-                  (live == null || live.freshness == EntryFreshness.fresh)
-              ? _add
-              : null,
-        ),
-        _PerHundred(
-          food: food,
-          showMore: _more,
-          onToggleMore: () => setState(() => _more = !_more),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -444,43 +488,6 @@ class _Header extends ConsumerWidget {
   }
 }
 
-/// Calories (large) and the four macros of the chosen amount.
-class _Nutrition extends StatelessWidget {
-  const new({required this.snapshot});
-
-  final NutrientSnapshot? snapshot;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final scheme = Theme.of(context).colorScheme;
-    final n = snapshot?.nutrients;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          n == null
-              ? l10n.foodSheetNoKcal
-              : l10n.foodSheetKcal(DisplayRounding.kcal(n.kcal)),
-          style: FbType.numeric(FbType.headline)
-              .copyWith(color: scheme.onSurface),
-        ),
-        if (n != null)
-          Text(
-            l10n.foodSheetMacros(
-              DisplayRounding.nutrientGrams(n.protein),
-              DisplayRounding.nutrientGrams(n.carbs),
-              DisplayRounding.nutrientGrams(n.fat),
-              DisplayRounding.nutrientGrams(n.fiber),
-            ),
-            style: FbType.numeric(FbType.bodySmall)
-                .copyWith(color: scheme.onSurfaceVariant),
-          ),
-      ],
-    );
-  }
-}
-
 /// The values per 100 g or ml, with the optional ones under "More" (FD-002).
 class _PerHundred extends StatelessWidget {
   const new({
@@ -529,21 +536,31 @@ class _PerHundred extends StatelessWidget {
         _NutrientRow(l10n.foodNutrientFat, grams(n.fat)),
         _NutrientRow(l10n.foodNutrientFiber, grams(n.fiber)),
         if (extras.isNotEmpty) ...[
-          if (showMore)
-            for (final (key, value) in extras)
-              _NutrientRow(
-                nutrientKeyLabel(l10n, key),
-                key.unit == NutrientUnit.milligram
-                    ? l10n.foodNutrientMilligrams(
-                        DisplayRounding.milligrams(value).toDouble(),
-                      )
-                    : grams(value),
-              ),
+          // More/Less stays put; the optional values grow in under it
+          // (A57 A18).
           Align(
             alignment: AlignmentDirectional.centerStart,
             child: FbButton.text(
+              key: const ValueKey('food-sheet-more'),
               label: showMore ? l10n.foodSheetLess : l10n.foodSheetMore,
               onPressed: onToggleMore,
+            ),
+          ),
+          FbReveal(
+            visible: showMore,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final (key, value) in extras)
+                  _NutrientRow(
+                    nutrientKeyLabel(l10n, key),
+                    key.unit == NutrientUnit.milligram
+                        ? l10n.foodNutrientMilligrams(
+                            DisplayRounding.milligrams(value).toDouble(),
+                          )
+                        : grams(value),
+                  ),
+              ],
             ),
           ),
         ],

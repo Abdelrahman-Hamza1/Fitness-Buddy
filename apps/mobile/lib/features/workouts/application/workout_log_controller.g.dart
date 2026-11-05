@@ -291,7 +291,7 @@ final class WorkoutLogControllerProvider
 }
 
 String _$workoutLogControllerHash() =>
-    r'eb1128b1e8e2901092f9719d1de1152786cd7064';
+    r'c81e6d3acab0044cc491e93d58c9b1c78fca7651';
 
 /// The log form (WO-034, A37 D7-D9, PA1-PA3): its cards and set rows,
 /// "saves as you type" through the applier (debounced, one write in flight,

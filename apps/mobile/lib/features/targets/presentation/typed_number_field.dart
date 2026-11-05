@@ -107,6 +107,8 @@ class _TypedNumberFieldState extends State<TypedNumberField> {
     textInputAction: widget.textInputAction,
     autofocus: widget.autofocus,
     errorText: widget.showError || _left ? widget.errorText : null,
+    // Range messages name both ends: two reserved lines (A57 A02).
+    supportingLines: 2,
     onChanged: (text) {
       _edited = true;
       widget.onChanged(text);

@@ -41,7 +41,9 @@ class TodayNumbers extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final targets = ref.watch(dayTargetsProvider(date));
     final List<Widget> children;
+    final String mode;
     if (targets.hasValue) {
+      mode = targets.value == null ? 'eaten' : 'targets';
       children = switch (TodayNumbersView.of(totals, targets.value)) {
         final TargetNumbers view => _targetMode(context, view),
         final EatenNumbers view => [
@@ -51,6 +53,7 @@ class TodayNumbers extends ConsumerWidget {
       };
     } else if (targets.hasError) {
       final l10n = context.l10n;
+      mode = 'error';
       children = [
         ..._eatenMode(context, EatenNumbers.of(totals)),
         const SizedBox(height: FbSpace.s3),
@@ -67,31 +70,45 @@ class TodayNumbers extends ConsumerWidget {
       ];
     } else {
       // Shaped like the target-mode block (number, caption, bar, line,
-      // macros), so the targets arriving don't shift the page.
-      children = const [
-        FbSkeleton.box(width: 160, height: FbDensity.displayLineHeight),
-        SizedBox(height: FbSpace.s1),
-        FbSkeleton.line(width: 120),
-        SizedBox(height: FbDensity.blockGap),
-        FbSkeleton.line(height: 8),
-        SizedBox(height: FbSpace.s2),
-        FbSkeleton.line(width: 200),
-        SizedBox(height: FbDensity.sectionGap),
-        FbSkeleton.line(width: 140),
-        SizedBox(height: FbSpace.s3),
-        FbSkeleton.line(width: 140),
+      // macros), so the targets arriving don't shift the page; with the
+      // setup row's slot when it will show (A57 A10).
+      mode = 'loading';
+      final setup = switch (ref.watch(setupStatusProvider).value) {
+        SetupStatus.notSetUp || SetupStatus.profileUnreadable => isToday,
+        _ => false,
+      };
+      children = [
+        const FbSkeleton.box(width: 160, height: FbDensity.displayLineHeight),
+        const SizedBox(height: FbSpace.s1),
+        const FbSkeleton.line(width: 120),
+        const SizedBox(height: FbDensity.blockGap),
+        const FbSkeleton.line(height: 8),
+        const SizedBox(height: FbSpace.s2),
+        const FbSkeleton.line(width: 200),
+        const SizedBox(height: FbDensity.sectionGap),
+        const FbSkeleton.line(width: 140),
+        const SizedBox(height: FbSpace.s3),
+        const FbSkeleton.line(width: 140),
         // One row per macro when they don't sit in columns.
         if (!FbDensity.macroColumns) ...[
-          SizedBox(height: FbSpace.s3),
-          FbSkeleton.line(width: 140),
-          SizedBox(height: FbSpace.s3),
-          FbSkeleton.line(width: 100),
+          const SizedBox(height: FbSpace.s3),
+          const FbSkeleton.line(width: 140),
+          const SizedBox(height: FbSpace.s3),
+          const FbSkeleton.line(width: 100),
+        ],
+        if (setup) ...[
+          const SizedBox(height: FbDensity.cardGap),
+          const FbSkeleton.card(height: FbDensity.rowMinHeight + FbSpace.s4),
         ],
       ];
     }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: children,
+    // The eaten and target modes cross-fade inside the card (A57 A10).
+    return FbSizeFade(
+      child: Column(
+        key: ValueKey(mode),
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: children,
+      ),
     );
   }
 

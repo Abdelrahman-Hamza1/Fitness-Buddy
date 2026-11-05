@@ -132,4 +132,34 @@ void main() {
     expect(find.semantics.byLabel('bar 2'), findsNothing);
     semantics.dispose();
   });
+
+  testWidgets('A57 A24 during a period switch only the new period is in '
+      'semantics', (tester) async {
+    final semantics = tester.ensureSemantics();
+    List<FbBar> from(int day) => [
+      for (var i = 0; i < 7; i++)
+        FbBar(
+          at: _d0.add(Duration(days: day + i)),
+          value: 1800 + i * 10.0,
+        ),
+    ];
+    await pumpFb(
+      tester,
+      FbBarChart(bars: from(0), describeBar: (i) => 'old $i'),
+      disableAnimations: false,
+    );
+    expect(find.semantics.byLabel('old 2'), findsOne);
+    await pumpFb(
+      tester,
+      FbBarChart(bars: from(7), describeBar: (i) => 'new $i'),
+      disableAnimations: false,
+    );
+    await tester.pump(FbMotion.local ~/ 2);
+    // Both periods are painted mid-fade; only the new one is announced.
+    expect(_paint(), findsNWidgets(2));
+    expect(find.semantics.byLabel('new 2'), findsOne);
+    expect(find.semantics.byLabel('old 2'), findsNothing);
+    await tester.pumpAndSettle();
+    semantics.dispose();
+  });
 }

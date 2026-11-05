@@ -213,7 +213,6 @@ class _WeekCardState extends ConsumerState<_WeekCard> {
     final different = view.differentByDay || (_pickedDifferent && !forced);
     final position = view.day.week;
     final week = view.day.day.week;
-    final dayFormat = DateFormat.E(l10n.localeName);
     final dates = view.weekDates;
     return FbCard(
       child: Column(
@@ -259,36 +258,16 @@ class _WeekCardState extends ConsumerState<_WeekCard> {
           ),
           if (forced) _Muted(l10n.targetsForcedFixedNote),
           const SizedBox(height: FbSpace.s2),
-          FbWeekBars(
-            key: const ValueKey('targets-week-bars'),
-            bars: [
-              for (final date in dates)
-                FbWeekBar(
-                  value: view.plannedKcal(date.weekday),
-                  valueLabel: NumberFormat.decimalPattern(l10n.localeName)
-                      .format(
-                        DisplayRounding.kcal(view.plannedKcal(date.weekday)),
-                      ),
-                  label: dayFormat.format(
-                    DateTime(date.year, date.month, date.day),
-                  ),
-                  highlighted: date == view.today,
-                  semanticLabel:
-                      (date == view.today
-                      ? l10n.targetsDayBarToday
-                      : l10n.targetsDayBarLabel)(
-                        weekdayName(l10n, date.weekday),
-                        DisplayRounding.kcal(view.plannedKcal(date.weekday)),
-                      ),
-                ),
-            ],
+          _DayTargetList(
+            view: view,
+            dates: dates,
             onTap: forced
                 ? null
-                : (i) => unawaited(
+                : (date) => unawaited(
                     showDayTargetSheet(
                       context,
                       view: view,
-                      weekday: dates[i].weekday,
+                      weekday: date.weekday,
                     ),
                   ),
           ),
@@ -458,4 +437,79 @@ String weekPositionText(AppLocalizations l10n, WeekPosition position) {
           line,
           l10n.todayWeekUncounted(position.uncountedDays),
         );
+}
+
+/// The week's planned numbers as seven rows in week-start order (C2 B,
+/// A57 D21, TG-043): the full weekday name and the number in a fixed
+/// column, each row at least 48 dp and tappable. A day with its own number
+/// is tinted, bold and says "changed" to a screen reader (never colour
+/// alone, UX-071). A changed number counts to its new value, lit while it
+/// moves (A25, UX-024).
+class _DayTargetList extends StatelessWidget {
+  const new({required this.view, required this.dates, required this.onTap});
+
+  /// The widest number the column is measured for.
+  static const _sample = '8,888 kcal';
+
+  final TargetsView view;
+  final List<LocalDate> dates;
+  final ValueChanged<LocalDate>? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    return Column(
+      key: const ValueKey('targets-day-list'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final date in dates)
+          Builder(
+            builder: (context) {
+              final kcal = DisplayRounding.kcal(view.plannedKcal(date.weekday));
+              final factor = view.plan.dayFactors[date.weekday];
+              final changed = factor != null && factor != 1;
+              final name = weekdayName(l10n, date.weekday);
+              final spoken = (date == view.today
+                  ? l10n.targetsDayBarToday
+                  : l10n.targetsDayBarLabel)(name, kcal);
+              final row = Semantics(
+                label: changed ? l10n.targetsDayChanged(spoken) : spoken,
+                button: onTap != null,
+                excludeSemantics: true,
+                child: FbListRow(
+                  key: ValueKey('targets-day-${date.weekday.name}'),
+                  title: name,
+                  onTap: onTap == null ? null : () => onTap!(date),
+                  trailing: TweenAnimationBuilder<int>(
+                    tween: IntTween(end: kcal),
+                    duration: FbMotion.structuralOf(context),
+                    curve: FbMotion.standard,
+                    builder: (context, shown, _) => FbNumberSlot(
+                      text: l10n.foodSheetKcal(shown),
+                      sample: _sample,
+                      style: FbType.body.copyWith(
+                        fontWeight: changed ? FontWeight.w700 : null,
+                        color: shown != kcal
+                            ? scheme.primary
+                            : changed
+                            ? scheme.onPrimaryContainer
+                            : scheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+              // Always the same wrapper, so a day turning "changed" keeps
+              // its number's tween.
+              // A Material, so the row's ink still shows on the tint.
+              return Material(
+                color: changed ? scheme.primaryContainer : Colors.transparent,
+                child: row,
+              );
+            },
+          ),
+      ],
+    );
+  }
 }

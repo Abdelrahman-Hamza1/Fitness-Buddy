@@ -20,23 +20,32 @@ import 'package:material_ui/material_ui.dart';
 /// The sheet sits above the keyboard and starts at 60% of that space, so the
 /// numbers behind stay readable; drag it up for the full thread, down (or
 /// tap outside, or back) to close. The thread stays for this app session.
-Future<void> showBuddySheet(BuildContext context, {required LocalDate date}) =>
-    showModalBottomSheet<void>(
-      context: context,
-      useRootNavigator: true,
-      isScrollControlled: true,
-      useSafeArea: true,
-      barrierColor: Theme.of(context).colorScheme.scrim.withValues(alpha: 0.16),
-      builder: (context) => BuddySheet(date: date),
-    );
+///
+/// With [revealPending] (Today's "{n} waiting", D-094) the thread opens
+/// scrolled to the oldest card still waiting for an answer.
+Future<void> showBuddySheet(
+  BuildContext context, {
+  required LocalDate date,
+  bool revealPending = false,
+}) => showModalBottomSheet<void>(
+  context: context,
+  useRootNavigator: true,
+  isScrollControlled: true,
+  useSafeArea: true,
+  barrierColor: Theme.of(context).colorScheme.scrim.withValues(alpha: 0.16),
+  builder: (context) => BuddySheet(date: date, revealPending: revealPending),
+);
 
 /// The chat sheet's content: the thread and the composer.
 class BuddySheet extends ConsumerStatefulWidget {
   /// The sheet; search opens on [date].
-  const new({required this.date, super.key});
+  const new({required this.date, this.revealPending = false, super.key});
 
   /// The day food search opens on.
   final LocalDate date;
+
+  /// Whether the thread opens at the oldest waiting card.
+  final bool revealPending;
 
   /// The sheet's resting height, as a share of the space above the keyboard.
   static const double restingSize = 0.6;
@@ -123,7 +132,7 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
       to,
       duration: MediaQuery.disableAnimationsOf(context)
           ? const Duration(milliseconds: 1)
-          : FbMotion.normal,
+          : FbMotion.local,
       curve: Curves.easeOutCubic,
     );
   }
@@ -203,6 +212,7 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
                     controller: scroll,
                     sheet: _sheet,
                     onSearch: _search,
+                    revealPending: widget.revealPending,
                   ),
                 ),
                 const _FollowUpChip(),
@@ -231,12 +241,21 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
 
 /// "Updating {slot} card ✕" above the composer while a card is open
 /// (AI-044, UX-023, D21): the next message updates that card; ✕ makes it a
-/// new message.
-class _FollowUpChip extends ConsumerWidget {
+/// new message. It reveals in its own slot directly above the composer
+/// (A57 A08): the composer never moves, the thread above gives the room.
+class _FollowUpChip extends ConsumerStatefulWidget {
   const new();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_FollowUpChip> createState() => _FollowUpChipState();
+}
+
+class _FollowUpChipState extends ConsumerState<_FollowUpChip> {
+  /// The last chip's label, kept while it hides.
+  String? _label;
+
+  @override
+  Widget build(BuildContext context) {
     final target = ref.watch(
       buddyThreadControllerProvider.select(
         (t) => switch (t.followUpCard) {
@@ -245,31 +264,40 @@ class _FollowUpChip extends ConsumerWidget {
         },
       ),
     );
-    if (target == null) return const SizedBox.shrink();
     final l10n = context.l10n;
-    final slots =
-        ref.watch(slotRecordsProvider(SlotMode.normal)).value ?? const [];
-    final slot = slots
-        .map((r) => r.slot)
-        .where((s) => s.id == target.$2)
-        .firstOrNull;
-    return Padding(
-      padding: const EdgeInsetsDirectional.only(
-        start: FbSpace.s3,
-        end: FbSpace.s3,
-        top: FbSpace.s1,
-      ),
-      child: Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: FbTargetChip(
-          label: slot == null
-              ? l10n.buddyFollowUpTargetNoSlot
-              : l10n.buddyFollowUpTarget(slotLabel(l10n, slot)),
-          clearTooltip: l10n.buddyFollowUpClear,
-          onClear: () =>
-              ref.read(buddyThreadControllerProvider.notifier).clearFollowUp(),
-        ),
-      ),
+    if (target != null) {
+      final slots =
+          ref.watch(slotRecordsProvider(SlotMode.normal)).value ?? const [];
+      final slot = slots
+          .map((r) => r.slot)
+          .where((s) => s.id == target.$2)
+          .firstOrNull;
+      _label = slot == null
+          ? l10n.buddyFollowUpTargetNoSlot
+          : l10n.buddyFollowUpTarget(slotLabel(l10n, slot));
+    }
+    final label = _label;
+    return FbReveal(
+      visible: target != null,
+      child: label == null
+          ? const SizedBox(width: double.infinity)
+          : Padding(
+              padding: const EdgeInsetsDirectional.only(
+                start: FbSpace.s3,
+                end: FbSpace.s3,
+                top: FbSpace.s1,
+              ),
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: FbTargetChip(
+                  label: label,
+                  clearTooltip: l10n.buddyFollowUpClear,
+                  onClear: () => ref
+                      .read(buddyThreadControllerProvider.notifier)
+                      .clearFollowUp(),
+                ),
+              ),
+            ),
     );
   }
 }

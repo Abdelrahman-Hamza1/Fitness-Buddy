@@ -32,6 +32,7 @@ class FbMacroValue {
     required this.label,
     required this.valueText,
     this.target,
+    this.sampleText = '888 / 888 g',
   });
 
   /// Which macro (decides the colour).
@@ -50,6 +51,11 @@ class FbMacroValue {
 
   /// The formatted amounts, e.g. "82 / 140 g" or "12 g over".
   final String valueText;
+
+  /// The widest [valueText] this macro is expected to show (A57 A04). The
+  /// bars choose columns or rows by this sample, not by the live value, so
+  /// the layout doesn't flip when a value gains a digit (UX-045).
+  final String sampleText;
 }
 
 /// Macro bars, one per [FbMacroValue] (HM-003). Each bar has its text label
@@ -59,9 +65,10 @@ class FbMacroValue {
 ///
 /// In the compact density ([FbDensity.macroColumns]) the macros sit side by
 /// side, one column each (label, bar, amounts), but only while the text
-/// scale is below 1.4 and the widest label and amount fit their column;
-/// otherwise each macro gets its own row, so no width or text size
-/// overflows (A44 PA3).
+/// scale is below 1.4 and the widest label and each macro's sample amount
+/// ([FbMacroValue.sampleText]) fit their column, so the choice depends on
+/// width and text scale only, never on the live values; otherwise each
+/// macro gets its own row, so no width or text size overflows (A44 PA3).
 class FbMacroBars extends StatelessWidget {
   /// Creates the bars.
   const new({required this.macros, super.key});
@@ -131,7 +138,7 @@ class FbMacroBars extends StatelessWidget {
     return macros.every(
       (m) =>
           width(m.label, _MacroColumn.labelStyle) <= column &&
-          width(m.valueText, _MacroColumn.valueStyle) <= column,
+          width(m.sampleText, _MacroColumn.valueStyle) <= column,
     );
   }
 }

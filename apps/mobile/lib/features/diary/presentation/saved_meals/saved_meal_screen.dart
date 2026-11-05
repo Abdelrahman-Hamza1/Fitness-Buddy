@@ -111,7 +111,10 @@ class _SavedMealScreenState extends ConsumerState<SavedMealScreen> {
           host,
           message: withDayClause(
             host,
-            host.l10n.quickAddLoggedItems(meal.name, meal.items.length),
+            host.l10n.quickAddLoggedItems(
+              isolateName(meal.name),
+              meal.items.length,
+            ),
             day,
             today,
           ),
@@ -153,7 +156,9 @@ class _SavedMealScreenState extends ConsumerState<SavedMealScreen> {
         if (mounted) navigator.pop();
         showUndoFeedback(
           host,
-          message: host.l10n.savedMealDeletedMessage('${args['name']}'),
+          message: host.l10n.savedMealDeletedMessage(
+            isolateName('${args['name']}'),
+          ),
           undoEntryId: undoEntryId,
         );
       case SavedMealFailed(:final reason):
@@ -353,7 +358,11 @@ class _ItemRow extends ConsumerWidget {
           ? null
           : MediaQuery.withClampedTextScaling(
               maxScaleFactor: 1.3,
-              child: Text(kcal, style: FbType.numeric(FbType.body)),
+              child: FbNumberSlot(
+                text: kcal,
+                sample: l10n.diaryKcal(8888),
+                style: FbType.body,
+              ),
             ),
     );
   }

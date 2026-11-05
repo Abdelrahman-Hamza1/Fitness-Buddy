@@ -51,6 +51,9 @@ class SetRow extends StatefulWidget {
 }
 
 class _SetRowState extends State<SetRow> {
+  /// Keeps the reserved status line one line tall when empty.
+  static const _blank = '\u00a0';
+
   late final TextEditingController _first;
   late final TextEditingController _second;
 
@@ -151,6 +154,9 @@ class _SetRowState extends State<SetRow> {
               controller: controller,
               label: label,
               hint: hintText,
+              // Dense inline inputs: the row reserves its own status
+              // (A57 A02, D20).
+              supportingLines: 0,
               keyboardType: TextInputType.datetime,
               textInputAction: TextInputAction.next,
               enabled: type != null,
@@ -160,6 +166,7 @@ class _SetRowState extends State<SetRow> {
               controller: controller,
               label: label,
               hint: hintText,
+              supportingLines: 0,
               maxDecimals: decimals,
               textInputAction: TextInputAction.next,
               enabled: type != null,
@@ -191,86 +198,136 @@ class _SetRowState extends State<SetRow> {
       ],
       null => <Widget>[],
     };
-    return Padding(
-      padding: const EdgeInsetsDirectional.symmetric(vertical: FbSpace.s1),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              // The set's number opens its menu (remove): a labelled
-              // 48 × 48 target.
-              Semantics(
-                button: true,
-                label: l10n.workoutSetMenu(widget.number),
-                excludeSemantics: true,
-                child: Tooltip(
-                  message: l10n.workoutSetMenu(widget.number),
-                  child: InkResponse(
-                    key: ValueKey('workout-set-menu-${row.id}'),
-                    onTap: () => unawaited(_menu(context)),
-                    child: SizedBox.square(
-                      dimension: FbSpace.s7,
-                      child: Center(
-                        child: Text(
-                          l10n.workoutSetNumber(widget.number),
-                          style: theme.textTheme.titleSmall,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: FbSpace.s7 + FbSpace.s2,
-                child: Semantics(
-                  label: lastTime.isEmpty
-                      ? null
-                      : l10n.workoutLastTime(lastTime),
-                  child: ExcludeSemantics(
-                    child: Text(
-                      lastTime,
-                      style: theme.textTheme.bodySmall,
-                      maxLines: 2,
-                    ),
-                  ),
-                ),
-              ),
-              for (final (i, f) in fields.indexed) ...[
-                if (i > 0) const SizedBox(width: FbSpace.s2),
-                f,
-              ],
-              if (widget.isPr && row.checked)
-                Padding(
-                  padding: const EdgeInsetsDirectional.only(start: FbSpace.s1),
-                  child: Text(
-                    l10n.workoutPr,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-                ),
-              Checkbox(
-                key: ValueKey('workout-set-done-${row.id}'),
-                value: row.checked,
-                semanticLabel: l10n.workoutSetDone(widget.number),
-                onChanged: type == null && !row.checked
-                    ? null
-                    : (_) => widget.onToggle(),
-              ),
-            ],
-          ),
-          if (row.issue != null)
-            Padding(
-              padding: const EdgeInsetsDirectional.only(start: FbSpace.s5),
+    // The set's number opens its menu (remove): a labelled 48 × 48 target.
+    final number = Semantics(
+      button: true,
+      label: l10n.workoutSetMenu(widget.number),
+      excludeSemantics: true,
+      child: Tooltip(
+        message: l10n.workoutSetMenu(widget.number),
+        child: InkResponse(
+          key: ValueKey('workout-set-menu-${row.id}'),
+          onTap: () => unawaited(_menu(context)),
+          child: SizedBox.square(
+            dimension: FbSpace.s7,
+            child: Center(
               child: Text(
-                l10n.workoutSetInvalid,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.error,
-                ),
+                l10n.workoutSetNumber(widget.number),
+                style: theme.textTheme.titleSmall,
               ),
             ),
-        ],
+          ),
+        ),
+      ),
+    );
+    Widget last({int maxLines = 2}) => Semantics(
+      label: lastTime.isEmpty ? null : l10n.workoutLastTime(lastTime),
+      child: ExcludeSemantics(
+        child: Text(
+          lastTime,
+          key: ValueKey('workout-set-last-${row.id}'),
+          style: theme.textTheme.bodySmall,
+          maxLines: maxLines,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    );
+    final checkbox = Checkbox(
+      key: ValueKey('workout-set-done-${row.id}'),
+      value: row.checked,
+      semanticLabel: l10n.workoutSetDone(widget.number),
+      onChanged: type == null && !row.checked ? null : (_) => widget.onToggle(),
+    );
+    final pr = widget.isPr && row.checked;
+    final invalid = row.issue != null;
+    final inputs = [
+      for (final (i, f) in fields.indexed) ...[
+        if (i > 0) const SizedBox(width: FbSpace.s2),
+        f,
+      ],
+    ];
+    return Padding(
+      padding: const EdgeInsetsDirectional.symmetric(vertical: FbSpace.s1),
+      // C1 A (A57 D20, A05, A51): at large text or on a narrow phone "last
+      // time" goes above the inputs and PR or the invalid note get their
+      // own reserved line; otherwise one row with a fixed status slot.
+      // Either way nothing moves when a set turns PR or invalid.
+      child: Builder(
+        builder: (context) {
+          final compact =
+              MediaQuery.sizeOf(context).width < 360 ||
+              MediaQuery.textScalerOf(context).scale(1) >= 1.3;
+          if (compact) {
+            return Column(
+              key: ValueKey('workout-set-compact-${row.id}'),
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    number,
+                    Expanded(child: last()),
+                  ],
+                ),
+                Row(children: [...inputs, checkbox]),
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(start: FbSpace.s7),
+                  child: Text(
+                    pr
+                        ? l10n.workoutPr
+                        : invalid
+                        ? l10n.workoutSetInvalid
+                        : _blank,
+                    key: ValueKey('workout-set-status-${row.id}'),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: invalid && !pr
+                          ? theme.colorScheme.error
+                          : theme.colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+          return Row(
+            children: [
+              number,
+              SizedBox(width: FbSpace.s7 + FbSpace.s2, child: last()),
+              ...inputs,
+              // A fixed status slot before the checkbox (A05): PR, or an
+              // error mark for numbers that can't be saved.
+              SizedBox(
+                key: ValueKey('workout-set-status-${row.id}'),
+                width: FbSpace.s6,
+                child: Center(
+                  child: pr
+                      ? Text(
+                          l10n.workoutPr,
+                          maxLines: 1,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.primary,
+                          ),
+                        )
+                      : invalid
+                      ? Tooltip(
+                          message: l10n.workoutSetInvalid,
+                          child: Semantics(
+                            label: l10n.workoutSetInvalid,
+                            child: Icon(
+                              FbIcons.error,
+                              size: 20,
+                              color: theme.colorScheme.error,
+                            ),
+                          ),
+                        )
+                      : null,
+                ),
+              ),
+              checkbox,
+            ],
+          );
+        },
       ),
     );
   }

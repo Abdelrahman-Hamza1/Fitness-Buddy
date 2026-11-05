@@ -86,6 +86,17 @@ class _SetupState extends ConsumerState<PlanSetupScreen>
     super.dispose();
   }
 
+  /// Goes to day [index]: animated, or at once under reduced motion
+  /// (A57 A29).
+  void _next(int index) {
+    final duration = FbMotion.localOf(context);
+    if (duration == Duration.zero) {
+      _tabs.index = index;
+    } else {
+      _tabs.animateTo(index, duration: duration, curve: FbMotion.standard);
+    }
+  }
+
   // Save plan runs once at a time.
   bool _saving = false;
 
@@ -231,7 +242,7 @@ class _SetupState extends ConsumerState<PlanSetupScreen>
                         : l10n.workoutSetupNext(dayName(days[index + 1])),
                     expand: true,
                     onPressed: switch ((last, state.complete && !_saving)) {
-                      (false, _) => () => _tabs.animateTo(index + 1),
+                      (false, _) => () => _next(index + 1),
                       (true, true) => () => unawaited(_save(state)),
                       (true, false) => null,
                     },

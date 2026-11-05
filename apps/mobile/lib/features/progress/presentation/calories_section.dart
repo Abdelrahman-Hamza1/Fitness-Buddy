@@ -59,15 +59,32 @@ class CaloriesSection extends ConsumerWidget {
             emptyLabel: l10n.progressPlaceholder,
             aspectRatio: 1.7,
           ),
-          FbBarLegend(
-            entries: [
-              (FbBarLegendKind.target, l10n.progressLegendTarget),
-              (FbBarLegendKind.over, l10n.progressLegendOver),
-              (FbBarLegendKind.notCounted, l10n.progressLegendNotCounted),
-              (FbBarLegendKind.inProgress, l10n.progressLegendToday),
+          // The selected day's details grow in under the legend, in its
+          // slot, so nothing shows a gap when none is selected (A57 A23).
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              FbBarLegend(
+                entries: [
+                  (FbBarLegendKind.target, l10n.progressLegendTarget),
+                  (FbBarLegendKind.over, l10n.progressLegendOver),
+                  (FbBarLegendKind.notCounted, l10n.progressLegendNotCounted),
+                  (FbBarLegendKind.inProgress, l10n.progressLegendToday),
+                ],
+              ),
+              FbSizeFade(
+                child: shown == null
+                    ? const SizedBox.shrink(key: ValueKey('none'))
+                    : Padding(
+                        key: ValueKey(buckets[shown].start),
+                        padding: const EdgeInsetsDirectional.only(
+                          top: FbSpace.s2,
+                        ),
+                        child: ProgressDayDetails(bucket: buckets[shown]),
+                      ),
+              ),
             ],
           ),
-          if (shown != null) ProgressDayDetails(bucket: buckets[shown]),
         ],
       ),
     );

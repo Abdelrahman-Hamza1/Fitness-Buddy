@@ -6,6 +6,7 @@ import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/workouts/application/exercise_library.dart';
 import 'package:fb_mobile/features/workouts/application/workout_actions.dart';
@@ -367,12 +368,19 @@ class _LogState extends ConsumerState<WorkoutLogScreen> {
           ],
         ),
         body: switch (async) {
-          AsyncError() when form == null => FbEmptyState(
-            icon: FbIcons.error,
-            title: l10n.workoutLogEditTitle,
-            message: l10n.workoutSessionGone,
+          AsyncError(error: WorkoutSessionGone()) when form == null =>
+            FbEmptyState(
+              icon: FbIcons.error,
+              title: l10n.workoutLogEditTitle,
+              message: l10n.workoutSessionGone,
+            ),
+          // A failed read isn't "deleted": say so and offer a retry (A45).
+          AsyncError() when form == null => LoadFailedView(
+            message: l10n.workoutLoadFailed,
+            onRetry: () =>
+                ref.invalidate(workoutLogControllerProvider(_launch)),
           ),
-          _ when form == null => const SizedBox.shrink(),
+          _ when form == null => const LoadingRows(),
           _ => ListView(
             padding: const EdgeInsetsDirectional.all(FbSpace.s4),
             children: [

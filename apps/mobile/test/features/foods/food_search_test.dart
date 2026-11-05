@@ -91,6 +91,9 @@ void main() {
       expect(failed.results, same(original));
       expect(failed.resultsFor, 'rice');
       expect(failed.query, 'rice white');
+      // A57 R1: the old rows stay faded and unpickable after the failure.
+      expect(failed.searching, isFalse);
+      expect(failed.stale, isTrue);
       repository.fail = false;
       controller.setQuery(failed.query);
       await controller.settle();
@@ -98,6 +101,7 @@ void main() {
       expect(retried.error, isNull);
       expect(retried.resultsFor, 'rice white');
       expect(retried.results!.rows, isNotEmpty);
+      expect(retried.stale, isFalse);
     },
   );
 

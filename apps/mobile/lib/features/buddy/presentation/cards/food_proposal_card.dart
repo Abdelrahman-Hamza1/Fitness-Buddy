@@ -5,6 +5,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/l10n/time_format.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
@@ -36,7 +37,20 @@ class FoodProposalCard extends ConsumerWidget {
   final VoidCallback? onSearch;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) =>
+      // The card and the row it resolves into swap in place, the region
+      // resizing smoothly (A57 A07).
+      FbSizeFade(
+        child: KeyedSubtree(
+          key: ValueKey(switch (view.resolution) {
+            CardResolution.open || CardResolution.confirming => 'open',
+            final other => other.name,
+          }),
+          child: _resolved(context, ref),
+        ),
+      );
+
+  Widget _resolved(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final thread = ref.read(buddyThreadControllerProvider.notifier);
     switch (view.resolution) {
@@ -62,9 +76,9 @@ class FoodProposalCard extends ConsumerWidget {
     final time = view.time?.localDateTime;
     final timeText = time == null
         ? ''
-        : MaterialLocalizations.of(context).formatTimeOfDay(
+        : deviceTimeFormat(
+            context,
             TimeOfDay(hour: time.hour, minute: time.minute),
-            alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
           );
     final when = slot == null
         ? timeText
@@ -137,13 +151,18 @@ class FoodProposalCard extends ConsumerWidget {
             ),
           // Swiped-off items, each with its Undo (AI-042).
           for (final removed in view.removed)
-            FbProposalResolvedRow(
-              icon: FbIcons.delete,
-              text: l10n.proposalLineRemoved(removed.name),
-              undoLabel: editable ? l10n.proposalUndo : null,
-              onUndo: editable
-                  ? () => thread.restoreLine(view.id, removed.id)
-                  : null,
+            FbReveal.entering(
+              key: ValueKey('removed:${removed.id}'),
+              child: FbProposalResolvedRow(
+                icon: FbIcons.delete,
+                text: l10n.proposalLineRemoved(
+                  watchFoodNameInline(ref, removed.names),
+                ),
+                undoLabel: editable ? l10n.proposalUndo : null,
+                onUndo: editable
+                    ? () => thread.restoreLine(view.id, removed.id)
+                    : null,
+              ),
             ),
           // Rebuilt with current details into its own message (A23 D11).
           if (view.rebuilt)
@@ -181,22 +200,27 @@ class FoodProposalCard extends ConsumerWidget {
       ],
       questions: view.questions.isEmpty
           ? null
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: FbSpace.s2,
-              children: [
-                for (final question in view.questions)
-                  _Question(
-                    question: question,
-                    system: system,
-                    onAnswer: !editable
-                        ? null
-                        : (optionId) => thread.adjust(
-                            view.id,
-                            ProposalSelect(question.dimension.id, optionId),
-                          ),
-                  ),
-              ],
+          : FbSizeFade(
+              child: Column(
+                key: ValueKey(
+                  view.questions.map((q) => q.dimension.id).join('|'),
+                ),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: FbSpace.s2,
+                children: [
+                  for (final question in view.questions)
+                    _Question(
+                      question: question,
+                      system: system,
+                      onAnswer: !editable
+                          ? null
+                          : (optionId) => thread.adjust(
+                              view.id,
+                              ProposalSelect(question.dimension.id, optionId),
+                            ),
+                    ),
+                ],
+              ),
             ),
       impact: FbChangeHighlight(
         token: view.totalsChanged ? view.changeToken : null,
@@ -254,6 +278,7 @@ class FoodProposalCard extends ConsumerWidget {
       ),
       actions: FbProposalActions(
         discardLabel: l10n.proposalDiscard,
+        reserveReason: true,
         confirmLabel: !stale
             ? l10n.proposalLogIt
             : view.canUpdate
@@ -304,15 +329,19 @@ class FoodProposalCard extends ConsumerWidget {
     FoodLineView line,
   ) async {
     final l10n = context.l10n;
+    final language = ref.read(foodNameLanguageProvider);
     final alternatives = line.alternatives;
     const search = -1;
     final picked = await showFbOptionSheet<int>(
       context,
-      title: l10n.proposalSwapTitle(line.food.names.en),
+      title: l10n.proposalSwapTitle(foodNameInline(line.food.names, language)),
       selected: null,
       options: [
         for (final (i, food) in alternatives.indexed)
-          FbOption(value: i, label: food.names.en),
+          FbOption(
+            value: i,
+            label: FoodNameLines.of(food.names, language).primary,
+          ),
         FbOption(value: search, label: l10n.proposalSearchFoods),
       ],
     );
@@ -399,7 +428,8 @@ class _AssumptionChip extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final label = chipLabel(l10n, chip, system: system);
+    final language = ref.watch(foodNameLanguageProvider);
+    final label = chipLabel(l10n, chip, system: system, language: language);
     return FbAssumptionChip(
       label: label,
       semanticLabel: l10n.proposalChipSemantics(label),
@@ -421,6 +451,7 @@ class _AssumptionChip extends ConsumerWidget {
                         chip.dimension,
                         option,
                         system: system,
+                        language: language,
                       ),
                     ),
                 ],
@@ -436,7 +467,7 @@ class _AssumptionChip extends ConsumerWidget {
 
 /// One in-card question with its answer chips, the default labelled
 /// (AI-034).
-class _Question extends StatelessWidget {
+class _Question extends ConsumerWidget {
   const new({
     required this.question,
     required this.system,
@@ -448,15 +479,16 @@ class _Question extends StatelessWidget {
   final ValueChanged<String>? onAnswer;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
+    final language = ref.watch(foodNameLanguageProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: FbSpace.s1,
       children: [
         Text(
-          questionText(l10n, question),
+          questionText(l10n, question, language: language),
           style: FbType.label.copyWith(color: scheme.onSurface),
         ),
         Wrap(
@@ -470,6 +502,7 @@ class _Question extends StatelessWidget {
                   question.dimension,
                   option,
                   system: system,
+                  language: language,
                 ),
                 selected: option.id == question.selectedOptionId,
                 isDefault: option.id == question.defaultOptionId,

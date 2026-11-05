@@ -13,6 +13,7 @@ class FbButton extends StatelessWidget {
     required this.onPressed,
     this.icon,
     this.expand = false,
+    this.busy = false,
     super.key,
   }) : _kind = _FbButtonKind.primary;
 
@@ -22,6 +23,7 @@ class FbButton extends StatelessWidget {
     required this.onPressed,
     this.icon,
     this.expand = false,
+    this.busy = false,
     super.key,
   }) : _kind = _FbButtonKind.secondary;
 
@@ -31,6 +33,7 @@ class FbButton extends StatelessWidget {
     required this.onPressed,
     this.icon,
     this.expand = false,
+    this.busy = false,
     super.key,
   }) : _kind = _FbButtonKind.text;
 
@@ -46,12 +49,22 @@ class FbButton extends StatelessWidget {
   /// Fill the available width.
   final bool expand;
 
+  /// Work started by this button is under way (A57 A79): a small progress
+  /// glyph takes the icon's place, and the button is announced. Pair it
+  /// with a null [onPressed] and a label that says what is happening; the
+  /// button keeps its bounds.
+  final bool busy;
+
   final _FbButtonKind _kind;
 
   @override
   Widget build(BuildContext context) {
     final text = Text(label, textAlign: TextAlign.center);
-    final leading = icon == null ? null : Icon(icon, size: 20);
+    final leading = busy
+        ? const _BusyGlyph()
+        : icon == null
+        ? null
+        : Icon(icon, size: 20);
     final Widget button = switch (_kind) {
       _FbButtonKind.primary =>
         leading == null
@@ -74,6 +87,28 @@ class FbButton extends StatelessWidget {
             ? TextButton(onPressed: onPressed, child: text)
             : TextButton.icon(onPressed: onPressed, icon: leading, label: text),
     };
-    return expand ? SizedBox(width: double.infinity, child: button) : button;
+    final sized = expand
+        ? SizedBox(width: double.infinity, child: button)
+        : button;
+    return busy ? Semantics(liveRegion: true, child: sized) : sized;
   }
+}
+
+/// A 20 dp progress ring; still (full) when the system asks for no
+/// animations.
+class _BusyGlyph extends StatelessWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context) => SizedBox.square(
+    dimension: 20,
+    child: Padding(
+      padding: const EdgeInsetsDirectional.all(2),
+      child: CircularProgressIndicator(
+        strokeWidth: 2,
+        value: MediaQuery.disableAnimationsOf(context) ? 1 : null,
+        color: DefaultTextStyle.of(context).style.color,
+      ),
+    ),
+  );
 }

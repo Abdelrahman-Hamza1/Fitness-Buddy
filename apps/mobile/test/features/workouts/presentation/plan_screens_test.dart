@@ -531,4 +531,31 @@ void main() {
     });
     await rig.unmount(tester);
   });
+
+  testWidgets('A57 A29 T-M4 reduced motion: plan setup changes day without '
+      'an animation', (tester) async {
+    final rig = _Rig();
+    await rig.pump(
+      tester,
+      const PlanSetupScreen(
+        plan: StarterPlan.fullBody,
+        days: {DayOfWeek.saturday, DayOfWeek.monday, DayOfWeek.wednesday},
+        weekStart: DayOfWeek.saturday,
+      ),
+    );
+    await tester.tap(
+      find.byKey(const ValueKey('workout-setup-add-all-fullBodyA')),
+    );
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('workout-setup-next')));
+    await tester.pump();
+    final tabs = DefaultTabController.maybeOf(
+      tester.element(find.byType(TabBarView)),
+    );
+    final controller =
+        tabs ?? tester.widget<TabBarView>(find.byType(TabBarView)).controller!;
+    expect(controller.index, 1);
+    expect(controller.indexIsChanging, isFalse);
+    await rig.unmount(tester);
+  });
 }

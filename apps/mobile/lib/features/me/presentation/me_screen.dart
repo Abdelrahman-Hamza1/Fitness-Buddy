@@ -153,7 +153,7 @@ class MeScreen extends ConsumerWidget {
 
 /// Today's calorie and protein targets and the goal, in one card that
 /// opens Targets & goal; before setup a line and "Set up profile &
-/// targets". Nothing while it loads (local reads, no spinner).
+/// targets". A card-shaped placeholder while it loads (A57 A11).
 class _TargetsSummary extends ConsumerWidget {
   const new();
 
@@ -175,7 +175,12 @@ class _TargetsSummary extends ConsumerWidget {
         ),
       );
     }
-    final summary = ref.watch(meTargetsSummaryProvider).value;
+    final asyncSummary = ref.watch(meTargetsSummaryProvider);
+    // The card's shape while it loads (A57 A11): nothing below jumps.
+    if (asyncSummary.isLoading && !asyncSummary.hasValue) {
+      return const _SummarySkeleton();
+    }
+    final summary = asyncSummary.value;
     if (summary == null) return const SizedBox.shrink();
     Widget cell(String value, String caption) => Expanded(
       child: MergeSemantics(
@@ -217,6 +222,32 @@ class _TargetsSummary extends ConsumerWidget {
           if (goal != null) cell(goalTypeLabel(l10n, goal), l10n.meSummaryGoal),
         ],
       ),
+    );
+  }
+}
+
+/// The targets summary card's shape while it loads: three value and
+/// caption pairs at the current text scale.
+class _SummarySkeleton extends StatelessWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context) {
+    final scaler = MediaQuery.textScalerOf(context);
+    Widget cell() => Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: FbSpace.s2,
+        children: [
+          FbSkeleton.line(width: 72, height: scaler.scale(20)),
+          FbSkeleton.line(width: 56, height: scaler.scale(12)),
+        ],
+      ),
+    );
+    return FbCard(
+      key: const ValueKey('me-summary-loading'),
+      padding: const EdgeInsetsDirectional.all(FbSpace.s4),
+      child: Row(spacing: FbSpace.s3, children: [cell(), cell(), cell()]),
     );
   }
 }

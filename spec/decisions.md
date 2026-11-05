@@ -497,6 +497,33 @@ _Entries marked **(provisional)** apply Claude's recommendation to a question th
 
 ## D-092 — Today summary card with slides
 - Date: 2026-10-31
-- Status: Accepted by the owner’s direct feature request and A56 build brief. Amends HM-005, HM-006, HM-009 and the Today presentation in D-084/D-085.
+- Status: **Superseded by D-093** (2026-11-05). Was accepted by the owner’s direct feature request and A56 build brief. Amended HM-005, HM-006, HM-009 and the Today presentation in D-084/D-085.
 - Decision: Today’s top is a card with slides (Nutrition, Weight, Workout). Weight and workout are slides, not rows; the workout slide always shows (empty state “Log a workout”). Day swipe works below the card. A horizontal drag starting on the card changes slides. Buttons and the date picker continue changing days.
 - Reason: keep Today’s essentials compact while preserving weight and workout entry points. Slide selection is session-only, shared across viewed days, with Nutrition first on cold start; no startup network or persisted setting.
+
+## D-093 — Today: one calories card and a slim weight · workout line
+- Date / Source: 2026-11-05 · owner review of the Today mockups (option T-B)
+- Status: Accepted by the owner. **Supersedes D-092.** Amends HM-005, HM-006, HM-009 and the Today clauses of D-084/D-085.
+- Decision:
+  - Today's top is the calories card only, with no slides or dots.
+  - One line sits under it, always visible and the same height in every state: **weight** (the as-of trend and weekly rate; tap to weigh in on the viewed day) | **workout** (the day's session "done", today's plan "today", otherwise "Log workout"). No missed-day notes, ever.
+  - The sparse-history note and the weigh-in tip live in Progress; the last weigh-in is edited from the weight graph.
+  - Swiping left or right anywhere on Today changes the day.
+- Why: The slides hid weight and workout behind a gesture and blocked day swipe on the card. One slim line keeps both one tap away without moving anything. Step A57.
+
+## D-094 — Unfinished Buddy proposals as a count on the Buddy bar
+- Date / Source: 2026-11-05 · owner review (option R2-B)
+- Status: Accepted by the owner. Amends HM-004, AI-045, DY-025.
+- Decision: No "to confirm" strip on Today. While proposals are pending, Today's Buddy bar shows "{n} waiting"; one tap opens Buddy at them. Pending proposals never count toward totals.
+- Why: A strip pushed the diary down and moved the page when it appeared; a count on the bar says the same without taking a row. Step A57.
+
+## D-095 — Still layouts, one motion vocabulary, names in every place
+- Date / Source: 2026-11-05 · owner answers S1/S2/M1/N2/C2 on the UX audit mockups; approved by the orchestrator under the owner's "trust your decisions on the rest"
+- Status: Accepted. Adds UX-045, UX-046. Amends LC-007 and TG-043.
+- Decision:
+  - **Nothing moves while you type, validate or wait** (UX-045): fields reserve one supporting line (hint and error share it), number columns have a fixed width, skeletons are shaped like the result, and incomplete amounts show dashes instead of hiding a line.
+  - **One motion vocabulary** (UX-046): 200 ms for local changes, 300 ms for structural ones, one easing; zero when the phone's "Remove animations" is on; no motion on keystrokes, validation or search reorders.
+  - **Food names in every place** (LC-007): the setting applies wherever a food name appears, including meal previews, edit sheets, Buddy cards, barcode, merge and messages. Quick-add chips in Both show the main name, with both read aloud. Inside sentences only the main name appears.
+  - **Per-day targets as a list** (TG-043): the per-day numbers are a list of the seven days, not a bar chart.
+- Why: These codify the owner's choices on the audit mockups. Step A57.
+

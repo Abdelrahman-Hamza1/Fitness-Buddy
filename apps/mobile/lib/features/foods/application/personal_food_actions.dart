@@ -48,7 +48,8 @@ final class PersonalFoodDone extends PersonalFoodOutcome {
   /// Typed undo label kind.
   final PersonalFoodKind kind;
 
-  /// Presentation placeholders; never logged.
+  /// Presentation placeholders; never logged. Food names are `FoodNames`
+  /// (presentation picks the setting's one, LC-007).
   final Map<String, Object> args;
 
   /// Resulting food identity for opening its amount sheet.
@@ -104,7 +105,7 @@ final class PersonalFoodActions {
       {'create'},
       [CreatePersonalFood(id, draft)],
       PersonalFoodKind.personalFoodSaved,
-      {'name': draft.names.en},
+      {'name': draft.names},
       foodId: id,
     );
   }
@@ -125,7 +126,7 @@ final class PersonalFoodActions {
       {food.id},
       [UpdatePersonalFood(food.id, food.version, draft)],
       PersonalFoodKind.personalFoodSaved,
-      {'name': draft.names.en},
+      {'name': draft.names},
       foodId: food.id,
     );
   }
@@ -135,7 +136,7 @@ final class PersonalFoodActions {
     {food.id},
     [DeletePersonalFood(VersionedId(food.id, food.version))],
     PersonalFoodKind.personalFoodDeleted,
-    {'name': food.names.en},
+    {'name': food.names},
   );
 
   /// Merges and relinks both families in one atomic change set.
@@ -161,7 +162,7 @@ final class PersonalFoodActions {
         ),
       ],
       PersonalFoodKind.personalFoodsMerged,
-      {'merged': merged.names.en, 'survivor': survivor.names.en},
+      {'merged': merged.names, 'survivor': survivor.names},
       foodId: survivor.id,
     );
   }

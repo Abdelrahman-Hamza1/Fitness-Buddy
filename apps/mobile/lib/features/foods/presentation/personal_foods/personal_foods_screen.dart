@@ -2,6 +2,7 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,15 +74,18 @@ class PersonalFoodsScreen extends ConsumerWidget {
           onPressed: () => _open(ref, const PersonalFoodRoute()),
         ),
       ),
-      AsyncData(:final value) => ListView(
-        children: [
-          for (final food in value)
-            _FoodRow(
-              key: ValueKey(food.id),
-              food: food,
-              onTap: () => _open(ref, PersonalFoodRoute(id: food.id)),
-            ),
-        ],
+      // Built as it scrolls, keyed by food (A57 A76).
+      AsyncData(:final value) => ListView.builder(
+        itemCount: value.length,
+        findChildIndexCallback: (key) {
+          final index = value.indexWhere((f) => ValueKey(f.id) == key);
+          return index < 0 ? null : index;
+        },
+        itemBuilder: (context, i) => _FoodRow(
+          key: ValueKey(value[i].id),
+          food: value[i],
+          onTap: () => _open(ref, PersonalFoodRoute(id: value[i].id)),
+        ),
       ),
       AsyncError() => Padding(
         padding: const EdgeInsetsDirectional.all(FbSpace.s4),
@@ -92,13 +96,7 @@ class PersonalFoodsScreen extends ConsumerWidget {
           onAction: () => ref.invalidate(personalFoodsProvider),
         ),
       ),
-      _ => const Padding(
-        padding: EdgeInsetsDirectional.all(FbSpace.s4),
-        child: Column(
-          spacing: FbSpace.s3,
-          children: [FbSkeleton.line(height: 56), FbSkeleton.line(height: 56)],
-        ),
-      ),
+      _ => const LoadingRows(count: 3),
     };
   }
 }

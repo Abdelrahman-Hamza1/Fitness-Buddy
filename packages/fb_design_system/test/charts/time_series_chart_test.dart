@@ -139,11 +139,11 @@ void main() {
     // Eases: half-way the window is strictly between, then lands exactly.
     await pump(month);
     await pump(quarter);
-    await tester.pump(FbMotion.slow ~/ 2);
+    await tester.pump(FbMotion.structural ~/ 2);
     expect(shown().start.isBefore(month.start), isTrue);
     expect(shown().start.isAfter(quarter.start), isTrue);
     expect(shown().end, quarter.end);
-    await tester.pump(FbMotion.slow);
+    await tester.pump(FbMotion.structural);
     expect(shown(), quarter);
 
     // A pan end hands back the window on screen: adopting it moves nothing.
@@ -154,7 +154,7 @@ void main() {
     await pump(panned);
     expect(shown(), beforeAdopt);
     expect(shown(), panned);
-    await tester.pump(FbMotion.slow ~/ 2);
+    await tester.pump(FbMotion.structural ~/ 2);
     expect(shown(), panned, reason: 'no zoom started');
 
     // A drag mid-zoom first lands on the target, then pans from it at the
@@ -162,7 +162,7 @@ void main() {
     // arrive with no pump between them.
     ranges.clear();
     await pump(month);
-    await tester.pump(FbMotion.slow ~/ 2);
+    await tester.pump(FbMotion.structural ~/ 2);
     expect(shown().duration, isNot(month.duration));
     final gesture = await tester.startGesture(
       tester.getCenter(find.byType(FbTimeSeriesChart)),
@@ -171,7 +171,7 @@ void main() {
     expect(shown().duration, month.duration);
     await gesture.moveBy(const Offset(40, 0));
     await gesture.up();
-    await tester.pump(FbMotion.slow);
+    await tester.pump(FbMotion.structural);
     expect(shown().duration, month.duration, reason: 'the zoom stopped');
     final map =
         (tester.widget<CustomPaint>(_paint()).painter! as TimeSeriesPainter)

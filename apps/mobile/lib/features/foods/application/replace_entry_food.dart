@@ -57,6 +57,6 @@ final class ReplaceEntryFood {
       result as Applied,
       UndoLabel('foodChanged', args: {'name': choice.names.en}),
     );
-    return FoodLogged(undo.id, choice.names.en, null);
+    return FoodLogged(undo.id, choice.names, null);
   }
 }

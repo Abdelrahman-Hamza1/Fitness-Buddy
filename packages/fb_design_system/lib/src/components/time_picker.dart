@@ -5,8 +5,12 @@ import 'package:material_ui/material_ui.dart';
 ///
 /// The dialog opens on the dial; whether it shows a 12 or 24 hour clock
 /// follows the device setting. Its words ("Select time", "OK", "Cancel", AM
-/// and PM) come from the app's Material localizations.
+/// and PM) come from the app's Material localizations. A [title] (already
+/// translated) replaces "Select time" when two pickers follow each other
+/// and must say which time they ask for (A57 A73).
 Future<TimeOfDay?> showFbTimePicker(
   BuildContext context, {
   required TimeOfDay initialTime,
-}) => showTimePicker(context: context, initialTime: initialTime);
+  String? title,
+}) =>
+    showTimePicker(context: context, initialTime: initialTime, helpText: title);

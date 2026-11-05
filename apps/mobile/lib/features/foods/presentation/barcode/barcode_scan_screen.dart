@@ -8,10 +8,32 @@ import 'package:fb_mobile/features/foods/application/barcode_lookup.dart';
 import 'package:fb_mobile/features/foods/application/barcode_providers.dart';
 import 'package:fb_mobile/features/foods/application/food_search_row.dart';
 import 'package:fb_mobile/features/foods/presentation/food_sheet_entry.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+
+/// A waiting scan's names in [language] (A37, D-091): null until the
+/// product is found. A product with only an Arabic name shows it in every
+/// setting.
+FoodNameLines? pendingScanNames(PendingScan scan, FoodNameLanguage language) {
+  String? clean(String? text) =>
+      text == null || text.trim().isEmpty ? null : text;
+  final en = clean(scan.name);
+  final ar = clean(scan.nameAr);
+  if (en == null && ar == null) return null;
+  return FoodNameLines.of(
+    FoodNames(en ?? ar!, ar: en == null ? null : ar),
+    language,
+  );
+}
+
+/// A pending row's [state] line, led by the other-language name in "Both".
+String _pendingSubtitle(AppLocalizations l10n, String? second, String state) =>
+    second == null
+    ? state
+    : l10n.foodResultSubtitle(isolateName(second), state);
 
 /// The barcode scanner (FD-030, A28a §1): the camera reads EAN/UPC codes,
 /// "Type the code" works without it. A found product opens the food sheet
@@ -69,6 +91,22 @@ class _BarcodeScanScreenState extends ConsumerState<BarcodeScanScreen> {
     super.dispose();
   }
 
+  /// Whether the manual-food form was opened from here and the camera
+  /// should start again once this screen is on top.
+  bool _awayForForm = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Registers on the route's "current" state, so returning from the form
+    // (saved or not) lands here.
+    final current = ModalRoute.isCurrentOf(context) ?? true;
+    if (_awayForForm && current) {
+      _awayForForm = false;
+      _resumeCamera();
+    }
+  }
+
   void _pauseCamera() => unawaited(_camera?.stop().catchError((Object _) {}));
 
   void _resumeCamera() {
@@ -113,6 +151,7 @@ class _BarcodeScanScreenState extends ConsumerState<BarcodeScanScreen> {
           product.code,
           PendingScanState.ready,
           name: choice.names.en,
+          nameAr: choice.names.ar,
           fromOff: product.fromOff,
         );
         if (product.source == ScannedSource.openFoodFacts) processOthers();
@@ -122,6 +161,7 @@ class _BarcodeScanScreenState extends ConsumerState<BarcodeScanScreen> {
           product.code,
           PendingScanState.ready,
           name: off.name,
+          nameAr: off.nameAr,
           fromOff: product.fromOff,
         );
         processOthers();
@@ -166,6 +206,8 @@ class _BarcodeScanScreenState extends ConsumerState<BarcodeScanScreen> {
     // The scan stays pending until the form saves the food (review fix 3).
     ref.read(scanFoodPrefillProvider.notifier).put(prefill);
     setState(() => _panel = null);
+    // The camera comes back when this screen is on top again (A57 A63).
+    _awayForForm = true;
     ref
         .read(appNavigatorProvider)
         .push(NewFoodFromScanRoute(date: widget.date, slotId: widget.slotId));
@@ -179,10 +221,10 @@ class _BarcodeScanScreenState extends ConsumerState<BarcodeScanScreen> {
   Future<void> _typeCode() async {
     final l10n = context.l10n;
     _pauseCamera();
-    final code = await showFbSheet<String>(
+    // The whole sheet, field and button, sits above the keyboard (A64).
+    final code = await showFbStatefulSheet<String>(
       context,
-      title: l10n.barcodeTypeCodeTitle,
-      builder: (_) => const _TypeCodeSheet(),
+      builder: (_) => _TypeCodeSheet(title: l10n.barcodeTypeCodeTitle),
     );
     if (!mounted) return;
     final digits = code?.replaceAll(RegExp('[^0-9]'), '') ?? '';
@@ -230,6 +272,7 @@ class _BarcodeScanScreenState extends ConsumerState<BarcodeScanScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final pending = ref.watch(pendingScansProvider).value ?? const [];
+    final language = ref.watch(foodNameLanguageProvider);
     final camera = _camera;
     return Scaffold(
       appBar: AppBar(
@@ -299,7 +342,7 @@ class _BarcodeScanScreenState extends ConsumerState<BarcodeScanScreen> {
                   title: l10n.barcodeIncompleteTitle,
                   body: off.name == null
                       ? l10n.barcodeIncompleteBodyNoName
-                      : l10n.barcodeIncompleteBody(off.name!),
+                      : l10n.barcodeIncompleteBody(isolateName(off.name!)),
                   action: l10n.barcodeAddMissing,
                   onAction: () => _addYourself(prefill),
                   onAnother: _scanAnother,
@@ -318,14 +361,20 @@ class _BarcodeScanScreenState extends ConsumerState<BarcodeScanScreen> {
             for (final scan in pending)
               FbListRow(
                 key: ValueKey('pending-${scan.code}'),
-                title: scan.name ?? l10n.barcodeProductCode(scan.code),
-                subtitle: switch (scan.state) {
-                  PendingScanState.waiting => l10n.barcodePendingWaiting,
-                  PendingScanState.ready when scan.fromOff =>
-                    l10n.barcodePendingReadyOff,
-                  PendingScanState.ready => l10n.barcodePendingReady,
-                  PendingScanState.notFound => l10n.barcodePendingNotFound,
-                },
+                title:
+                    pendingScanNames(scan, language)?.primary ??
+                    l10n.barcodeProductCode(scan.code),
+                subtitle: _pendingSubtitle(
+                  l10n,
+                  pendingScanNames(scan, language)?.secondary,
+                  switch (scan.state) {
+                    PendingScanState.waiting => l10n.barcodePendingWaiting,
+                    PendingScanState.ready when scan.fromOff =>
+                      l10n.barcodePendingReadyOff,
+                    PendingScanState.ready => l10n.barcodePendingReady,
+                    PendingScanState.notFound => l10n.barcodePendingNotFound,
+                  },
+                ),
                 trailing: FbIconButton(
                   icon: FbIcons.close,
                   tooltip: l10n.barcodePendingRemove,
@@ -345,7 +394,9 @@ class _BarcodeScanScreenState extends ConsumerState<BarcodeScanScreen> {
 /// The "Type the code" sheet; it owns its text field's controller, so the
 /// controller outlives the sheet's closing animation.
 class _TypeCodeSheet extends StatefulWidget {
-  const new();
+  const new({required this.title});
+
+  final String title;
 
   @override
   State<_TypeCodeSheet> createState() => _TypeCodeSheetState();
@@ -363,26 +414,30 @@ class _TypeCodeSheetState extends State<_TypeCodeSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: FbSpace.s3,
-      children: [
-        FbTextField(
+    return Padding(
+      padding: EdgeInsetsDirectional.only(
+        bottom: MediaQuery.viewInsetsOf(context).bottom,
+      ),
+      child: FbSheet(
+        title: widget.title,
+        actions: FbButton.primary(
+          key: const ValueKey('barcode-type-look-up'),
+          label: l10n.barcodeLookUp,
+          expand: true,
+          onPressed: () => Navigator.of(context).pop(_controller.text),
+        ),
+        child: FbTextField(
+          key: const ValueKey('barcode-type-code'),
           controller: _controller,
           label: l10n.barcodeTypeCodeLabel,
-          hint: l10n.barcodeTypeCodeHint,
+          supportingText: l10n.barcodeTypeCodeHint,
           keyboardType: TextInputType.number,
           maxLength: 14,
           autofocus: true,
           textInputAction: TextInputAction.search,
           onSubmitted: (text) => Navigator.of(context).pop(text),
         ),
-        FbButton.primary(
-          label: l10n.barcodeLookUp,
-          expand: true,
-          onPressed: () => Navigator.of(context).pop(_controller.text),
-        ),
-      ],
+      ),
     );
   }
 }

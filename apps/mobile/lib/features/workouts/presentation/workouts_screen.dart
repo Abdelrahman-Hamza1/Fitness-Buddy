@@ -5,6 +5,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/features/workouts/application/exercise_library.dart';
 import 'package:fb_mobile/features/workouts/application/workout_views.dart';
 import 'package:fb_mobile/features/workouts/presentation/exercise_muscle_map.dart';
@@ -45,8 +46,14 @@ class WorkoutsScreen extends ConsumerWidget {
     final today = ref.watch(workoutTodayProvider);
     final recent = ref.watch(recentWorkoutsProvider);
     final todayRow = ref.watch(todayWorkoutProvider(today)).value;
-    final templates = ref.watch(workoutTemplatesProvider).value;
+    final templatesAsync = ref.watch(workoutTemplatesProvider);
+    final templates = templatesAsync.value;
     final plan = ref.watch(workoutPlanOverviewProvider);
+    // A read failure is said as one, never as "nothing yet" (A57 A42).
+    final failed =
+        (recent.hasError && recent.value == null) ||
+        (templatesAsync.hasError && templates == null) ||
+        (plan.hasError && !plan.hasValue);
     void start() => unawaited(_start(context, navigator, today));
     return Scaffold(
       appBar: AppBar(
@@ -61,10 +68,17 @@ class WorkoutsScreen extends ConsumerWidget {
         ],
       ),
       body: switch ((recent.value, templates, plan)) {
-        // Local data: no spinner, the list shows as soon as it's read.
+        _ when failed => LoadFailedView(
+          message: l10n.workoutsLoadFailed,
+          onRetry: () => ref
+            ..invalidate(recentWorkoutsProvider)
+            ..invalidate(workoutTemplatesProvider)
+            ..invalidate(workoutPlanOverviewProvider),
+        ),
+        // Local data: no spinner; rows shaped like the list until it's read.
         (null, _, _) ||
         (_, null, _) ||
-        (_, _, AsyncLoading()) => const SizedBox.shrink(),
+        (_, _, AsyncLoading()) => const LoadingRows(),
         // The setup point: nothing logged, no plan, no templates.
         ([], [], AsyncData(value: null)) => FbEmptyState(
           icon: FbIcons.navWorkouts,

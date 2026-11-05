@@ -3,8 +3,10 @@ import 'package:fb_design_system/src/charts/bar_chart_painter.dart';
 import 'package:fb_design_system/src/charts/chart_types.dart';
 import 'package:fb_design_system/src/charts/time_series_painter.dart'
     show ChartLabelCache;
+import 'package:fb_design_system/src/components/reveal.dart';
 import 'package:fb_design_system/src/tokens/colors.dart';
 import 'package:fb_design_system/src/tokens/icons.dart';
+import 'package:fb_design_system/src/tokens/motion.dart';
 import 'package:fb_design_system/src/tokens/spacing.dart';
 import 'package:fb_design_system/src/tokens/typography.dart';
 import 'package:material_ui/material_ui.dart';
@@ -82,15 +84,76 @@ class FbBarChart extends StatefulWidget {
   State<FbBarChart> createState() => _FbBarChartState();
 }
 
-class _FbBarChartState extends State<FbBarChart> {
+class _FbBarChartState extends State<FbBarChart>
+    with SingleTickerProviderStateMixin {
   final ChartLabelCache _labels = ChartLabelCache();
   BarChartPainter? _painter;
 
+  /// A57 A24: new values for the same bars (same days) grow from the old
+  /// ones over [FbMotion.structural]; the screen reader hears the final
+  /// values ([FbBarChart.describeBar] reads the caller's data).
+  late final AnimationController _tween = AnimationController(vsync: this)
+    ..value = 1;
+  List<FbBar>? _from;
+
+  @override
+  void didUpdateWidget(FbBarChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final duration = FbMotion.structuralOf(context);
+    if (duration == Duration.zero ||
+        !_sameSlots(oldWidget.bars, widget.bars) ||
+        identical(oldWidget.bars, widget.bars)) {
+      return;
+    }
+    _from = _shownBars(oldWidget.bars);
+    _tween
+      ..duration = duration
+      ..forward(from: 0);
+  }
+
   @override
   void dispose() {
+    _tween.dispose();
     _labels.clear();
     super.dispose();
   }
+
+  static bool _sameSlots(List<FbBar> a, List<FbBar> b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].at != b[i].at || a[i].placeholder != b[i].placeholder) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /// The bars as drawn now: between [_from] and [bars] while tweening.
+  List<FbBar> _shownBars(List<FbBar> bars) {
+    final from = _from;
+    final t = FbMotion.standard.transform(_tween.value);
+    if (from == null || t >= 1 || from.length != bars.length) return bars;
+    double? lerp(double? a, double? b) =>
+        a == null || b == null ? b : a + (b - a) * t;
+    return [
+      for (var i = 0; i < bars.length; i++)
+        FbBar(
+          at: bars[i].at,
+          value: lerp(from[i].value, bars[i].value),
+          target: lerp(from[i].target, bars[i].target),
+          style: bars[i].style,
+          placeholder: bars[i].placeholder,
+          key: bars[i].key,
+        ),
+    ];
+  }
+
+  /// A different period: the old chart fades out as the new fades in.
+  Object get _period => (
+    widget.bars.firstOrNull?.at,
+    widget.bars.lastOrNull?.at,
+    widget.bars.length,
+  );
 
   String _formatValue(double value) =>
       widget.formatValue?.call(value) ?? value.round().toString();
@@ -155,8 +218,28 @@ class _FbBarChartState extends State<FbBarChart> {
         ),
       );
     }
-    final painter = _painter = BarChartPainter(
-      bars: widget.bars,
+    // The leaving period keeps drawing its own bars while it fades.
+    final bars = widget.bars;
+    return AnimatedSwitcher(
+      duration: FbMotion.localOf(context),
+      switchInCurve: FbMotion.standard,
+      switchOutCurve: FbMotion.standard,
+      // The leaving period takes no taps and is hidden from screen readers.
+      layoutBuilder: FbInert.switcherLayout,
+      child: KeyedSubtree(
+        key: ValueKey(_period),
+        child: AnimatedBuilder(
+          animation: _tween,
+          builder: (context, _) => _chart(scheme, direction, bars),
+        ),
+      ),
+    );
+  }
+
+  Widget _chart(ColorScheme scheme, TextDirection direction, List<FbBar> bars) {
+    final current = identical(bars, widget.bars);
+    final painter = BarChartPainter(
+      bars: current ? _shownBars(bars) : bars,
       selected: widget.selected,
       colors: BarChartColors.of(scheme, context.fbColors, widget.tone),
       labels: _labels,
@@ -167,18 +250,23 @@ class _FbBarChartState extends State<FbBarChart> {
       describeBar: widget.describeBar,
       onSelectBar: widget.onSelect == null ? null : _selectFromSemantics,
     );
+    // Taps hit-test the current period's geometry only.
+    if (current) _painter = painter;
     return AspectRatio(
       aspectRatio: widget.aspectRatio,
-      child: Semantics(
-        container: true,
-        explicitChildNodes: true,
-        label: widget.semanticLabel,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          excludeFromSemantics: true,
-          onTapUp: widget.onSelect == null ? null : _tap,
-          child: RepaintBoundary(
-            child: CustomPaint(painter: painter, size: Size.infinite),
+      child: ExcludeSemantics(
+        excluding: !current,
+        child: Semantics(
+          container: true,
+          explicitChildNodes: true,
+          label: widget.semanticLabel,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            excludeFromSemantics: true,
+            onTapUp: widget.onSelect == null ? null : _tap,
+            child: RepaintBoundary(
+              child: CustomPaint(painter: painter, size: Size.infinite),
+            ),
           ),
         ),
       ),

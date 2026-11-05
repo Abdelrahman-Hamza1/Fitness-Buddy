@@ -4,7 +4,6 @@ import 'package:fb_domain/testing.dart';
 import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
-import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -102,11 +101,8 @@ void main() {
     // The first day of the week: the generated base, 2,162.5 kcal.
     expect(DisplayRounding.kcal(engine.day.kcal), 2163);
     _expectToday(tester, saturday, engine, 0, 'This week: on track');
-    await tester.tap(find.byKey(const ValueKey('fb-slide-dot-1')).first);
-    await settleWrites(tester);
-    expect(find.byType(WeightSlide), findsWidgets);
-    await tester.tap(find.byKey(const ValueKey('fb-slide-dot-0')).first);
-    await settleWrites(tester);
+    // The weight | workout line sits under the calories card (D-093).
+    expect(find.byKey(const ValueKey('today-glance-weight')), findsWidgets);
 
     // A 300 kcal lunch today.
     Future<void> log(int n, LocalDate date, double per100) async {

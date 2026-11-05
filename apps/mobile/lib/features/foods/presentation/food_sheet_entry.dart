@@ -10,6 +10,7 @@ import 'package:fb_mobile/features/foods/application/food_search_row.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
 import 'package:fb_mobile/features/foods/application/log_food.dart';
 import 'package:fb_mobile/features/foods/presentation/food_sheet.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -61,18 +62,22 @@ Future<bool> openFoodSheet(BuildContext context, FoodPick pick) async {
   final container = ProviderScope.containerOf(context);
   // The root navigator's context outlives the search screen.
   final host = Navigator.of(context, rootNavigator: true).context;
-  final logged = await showFbSheet<FoodLogged>(
+  final logged = await showFbStatefulSheet<FoodLogged>(
     context,
     builder: (_) => FoodSheet(pick: pick),
   );
   if (logged == null || !host.mounted) return logged != null;
   container.read(appNavigatorProvider).pop();
+  final name = foodNameInline(
+    logged.names,
+    container.read(foodNameLanguageProvider),
+  );
   showUndoFeedback(
     host,
     message: pick.replacing != null
-        ? host.l10n.foodChangedMessage(logged.nameEn)
+        ? host.l10n.foodChangedMessage(name)
         : host.l10n.foodLoggedMessage(
-            logged.nameEn,
+            name,
             [
                   for (final slot
                       in container

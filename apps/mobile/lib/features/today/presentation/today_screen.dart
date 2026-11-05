@@ -240,6 +240,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     final pager = DayPager(today);
     final controller = ref.read(todayControllerProvider.notifier);
     final dev = ref.watch(appConfigProvider).flavor == AppFlavor.dev;
+    final waiting = ref.watch(pendingProposalCountProvider).value ?? 0;
 
     ref
       ..listen(todayProvider, (_, next) {
@@ -317,9 +318,22 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
               ),
               // Opens Buddy's chat sheet over Today (AI-001, HM-008); food
               // search is its first button.
+              // While Buddy cards wait, the bar says how many and a tap
+              // opens Buddy at them (HM-004, D-094).
               child: FbInputBar(
                 hint: l10n.todayInputHint,
-                onTap: () => unawaited(showBuddySheet(context, date: viewed)),
+                badge: waiting > 0 ? l10n.todayBuddyWaiting(waiting) : null,
+                badgeKey: const ValueKey('today-buddy-waiting'),
+                semanticsHint: waiting > 0
+                    ? l10n.todayBuddyWaitingSemantics(waiting)
+                    : null,
+                onTap: () => unawaited(
+                  showBuddySheet(
+                    context,
+                    date: viewed,
+                    revealPending: waiting > 0,
+                  ),
+                ),
                 // Not built yet (A22): in the dev flavor only.
                 onCamera: dev ? _comingSoon : null,
                 // The barcode scanner (A28a D14).

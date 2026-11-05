@@ -1,6 +1,6 @@
 # 30 — UX Principles
 
-_Status: **Draft v1** · 2026-10-10 · Main decisions: D-035, D-039, D-043, D-060, D-079._
+_Status: **Draft v1** · 2026-10-10, amended 2026-11-05 · Main decisions: D-035, D-039, D-043, D-060, D-079, D-095._
 
 The product principles (PR-1 to PR-12 in `00-vision-and-scope.md`) apply everywhere. This file turns them into concrete interface rules.
 
@@ -44,6 +44,8 @@ The product principles (PR-1 to PR-12 in `00-vision-and-scope.md`) apply everywh
 - **UX-042** `[R1]` Colour carries meaning consistently (e.g. one colour per macro across all screens). Over-target is a neutral tone, never alarm red (SF-021).
 - **UX-043** `[R1]` A modern look: the opposite of the dated look the owner disliked in MyFitnessPal and Cronometer (D-039).
 - **UX-044** `[R1]` Source badges and estimate markers (FD-010, AI-032) are small and consistent, and readable without a legend once learned. A legend is available on tap.
+- **UX-045** `[R1]` **Nothing moves while you type, validate or wait** (D-095): fields reserve one supporting line shared by hint and error, number columns have a fixed width, skeletons are shaped like the result, and incomplete amounts show dashes instead of hiding a line.
+- **UX-046** `[R1]` **One motion vocabulary** (D-095): 200 ms for local changes, 300 ms for structural ones, one easing; zero when the phone's "Remove animations" is on; no motion on keystrokes, validation or search reorders.
 
 ## 6. States
 

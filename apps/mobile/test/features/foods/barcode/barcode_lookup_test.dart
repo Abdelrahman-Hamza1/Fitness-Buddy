@@ -433,6 +433,47 @@ void main() {
       },
     );
 
+    test('A57 A37 LC-007 PendingScan JSON round-trips nameAr and reads old '
+        'entries without it', () async {
+      final store = await container.read(pendingScansStoreProvider.future);
+      final at = clock.nowUtc().millisecondsSinceEpoch;
+      await store.write([
+        PendingScan(
+          code: _ean,
+          scannedAtMs: at,
+          state: PendingScanState.ready,
+          name: 'Synthetic halawa',
+          nameAr: 'حلاوة',
+        ),
+      ]);
+      final read = (await store.read()).single;
+      expect(read.name, 'Synthetic halawa');
+      expect(read.nameAr, 'حلاوة');
+
+      // Written before A57: no `name_ar`.
+      await SharedPreferencesAsync().setString(
+        store.key,
+        '[{"code":"$_ean","at":$at,"state":"ready","name":"Old halawa"}]',
+      );
+      final old = (await store.read()).single;
+      expect(old.name, 'Old halawa');
+      expect(old.nameAr, isNull);
+      expect(old.state, PendingScanState.ready);
+
+      // A later lookup keeps both names.
+      final scans = container.read(pendingScansProvider.notifier);
+      await scans.resolve(
+        _ean,
+        PendingScanState.ready,
+        name: 'Synthetic halawa',
+        nameAr: 'حلاوة',
+      );
+      expect(
+        (await container.read(pendingScansProvider.future)).single.nameAr,
+        'حلاوة',
+      );
+    });
+
     test(
       'not found is kept as such; a code you added yourself is dropped',
       () async {

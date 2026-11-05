@@ -29,9 +29,9 @@ final class _Sharer implements ExportSharer {
 }
 
 void main() {
-  testWidgets('AC-030 UX-052 Export builds the files and shares them through '
-      'the sharer; a share failure shows the banner, then Try again '
-      'succeeds', (tester) async {
+  testWidgets('AC-030 UX-052 UX-045 A57 T-S7 Export builds the files and '
+      'shares them through the sharer; a share failure shows the banner, '
+      'then Try again succeeds', (tester) async {
     final root = Directory.systemTemp.createTempSync('fb_export_sheet');
     addTearDown(() => root.deleteSync(recursive: true));
     final sharer = _Sharer();
@@ -75,8 +75,14 @@ void main() {
       }
     }
 
+    // A57 T-S7: the two action slots stay where they are in every state.
+    final primary = find.byKey(ExportSheetActions.primaryKey);
+    final secondary = find.byKey(ExportSheetActions.secondaryKey);
+    final slots = (tester.getRect(primary), tester.getRect(secondary));
     sharer.fail = true;
     await exportAndWait("Couldn't open the share sheet. Try again.");
+    await tester.pumpAndSettle();
+    expect((tester.getRect(primary), tester.getRect(secondary)), slots);
     expect(
       find.text("Couldn't open the share sheet. Try again."),
       findsOneWidget,
@@ -84,7 +90,7 @@ void main() {
     expect(find.textContaining('canary'), findsNothing);
 
     sharer.fail = false;
-    await tester.tap(find.widgetWithText(TextButton, 'Try again'));
+    await tester.tap(find.byKey(ExportSheetActions.primaryKey));
     await tester.pump();
     for (
       var i = 0;
@@ -98,6 +104,8 @@ void main() {
       await tester.pump();
     }
     await tester.pump();
+    await tester.pumpAndSettle();
+    expect((tester.getRect(primary), tester.getRect(secondary)), slots);
     expect(sharer.files, hasLength(exportRegistryV1.length + 1));
     expect(
       find.text(

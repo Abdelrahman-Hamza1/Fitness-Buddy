@@ -1,6 +1,7 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/ui/revealed_column.dart';
 import 'package:fb_mobile/features/workouts/application/exercise_library.dart';
 import 'package:fb_mobile/features/workouts/application/workout_log_controller.dart';
 import 'package:fb_mobile/features/workouts/application/workout_log_state.dart';
@@ -155,31 +156,43 @@ class ExerciseLogCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (!collapsed) ...[
-              for (final (i, row) in card.sets.indexed)
-                SetRow(
-                  key: ValueKey(row.id),
-                  row: row,
-                  number: i + 1,
-                  type: type,
-                  isPr: prs?.ofSet(row.id).isNotEmpty ?? false,
-                  onChanged: (input) =>
-                      controller.editSet(card.id, row.id, input),
-                  onToggle: () => controller.toggleSet(card.id, row.id),
-                  onRemove: () => controller.removeSet(card.id, row.id),
-                ),
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: FbButton.text(
-                  key: ValueKey('workout-add-set-${card.id}'),
-                  label: l10n.workoutLogAddSet,
-                  icon: FbIcons.add,
-                  onPressed: type == null
-                      ? null
-                      : () => controller.addSet(card.id),
-                ),
+            // Collapsing shrinks the sets under the header; added and
+            // removed sets grow in and out (A57 A21/A22).
+            FbReveal(
+              visible: !collapsed,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  RevealedColumn(
+                    children: [
+                      for (final (i, row) in card.sets.indexed)
+                        SetRow(
+                          key: ValueKey(row.id),
+                          row: row,
+                          number: i + 1,
+                          type: type,
+                          isPr: prs?.ofSet(row.id).isNotEmpty ?? false,
+                          onChanged: (input) =>
+                              controller.editSet(card.id, row.id, input),
+                          onToggle: () => controller.toggleSet(card.id, row.id),
+                          onRemove: () => controller.removeSet(card.id, row.id),
+                        ),
+                    ],
+                  ),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: FbButton.text(
+                      key: ValueKey('workout-add-set-${card.id}'),
+                      label: l10n.workoutLogAddSet,
+                      icon: FbIcons.add,
+                      onPressed: type == null
+                          ? null
+                          : () => controller.addSet(card.id),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ],
         ),
       ),

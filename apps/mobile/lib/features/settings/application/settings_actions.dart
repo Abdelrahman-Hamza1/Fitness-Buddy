@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/changes/apply_result.dart';
 import 'package:fb_mobile/core/settings/setting_key.dart';
@@ -49,8 +51,10 @@ final class SettingsUnchanged extends SettingsOutcome {
   const new();
 }
 
-/// A duplicate action for this key is already in flight.
-final class SettingsPending extends SettingsOutcome {
+/// A57 A71 (D22): a later change to the same key arrived while this one
+/// waited behind a write in flight; the later one carries this intent on
+/// (it is folded into that write), so nothing is dropped.
+final class SettingsQueued extends SettingsOutcome {
   /// Creates the result.
   const new();
 }
@@ -75,6 +79,13 @@ final class SettingsActions {
   /// Direct-action undo history, using the injected app clock.
   final UndoStack undoStack;
   final Set<String> _pending = {};
+
+  /// A57 A71 (D22): the latest intent per key that arrived while a write for
+  /// it was in flight. Intents are changes of the current value, so plain
+  /// sets end in the latest value and edits of one part of a value (a
+  /// notification type, a Ramadan year) compose instead of overwriting each
+  /// other.
+  final Map<String, _Queued<Object?>> _queued = {};
 
   /// Set display units only.
   Future<SettingsOutcome> setUnitSystem(UnitSystem value) =>
@@ -106,12 +117,19 @@ final class SettingsActions {
   Future<SettingsOutcome> setNotificationPrefs(NotificationPrefs value) =>
       _set(AppSettings.notificationPrefs, value);
 
+  /// Change part of the notification settings, applied to the stored value
+  /// when the write runs (A57 A71): rapid edits of different reminders all
+  /// land.
+  Future<SettingsOutcome> updateNotificationPrefs(
+    NotificationPrefs Function(NotificationPrefs current) change,
+  ) => _change(AppSettings.notificationPrefs, change);
+
   /// Store [season]'s decision (LC-030/031, TG-060), replacing that Hijri
   /// year's; the other years stay as they are.
-  Future<SettingsOutcome> setRamadanSeason(RamadanSeason season) async {
-    final current = await store.read(AppSettings.ramadanSeasons);
-    return await _set(AppSettings.ramadanSeasons, current.withSeason(season));
-  }
+  Future<SettingsOutcome> setRamadanSeason(RamadanSeason season) => _change(
+    AppSettings.ramadanSeasons,
+    (current) => current.withSeason(season),
+  );
 
   /// Marks [date] "not fasting", or fasting again (LC-034, A41a fix rounds
   /// 1–2): a per-date setting, for a day of a Ramadan with the mode on
@@ -156,29 +174,89 @@ final class SettingsActions {
     SettingKey<T> key,
     T value, {
     bool reset = false,
+  }) => _change(key, (_) => value, reset: reset);
+
+  /// Runs [change] on [key] now, or, with a write for [key] in flight, queues
+  /// it behind that write (D22). A newer queued change folds in the older
+  /// one, whose caller gets [SettingsQueued]; the newest caller gets the
+  /// outcome of the write that carries them.
+  Future<SettingsOutcome> _change<T>(
+    SettingKey<T> key,
+    T Function(T current) change, {
+    bool reset = false,
+  }) {
+    if (!_pending.contains(key.name)) return _run(key, change, reset: reset);
+    final earlier = _queued[key.name] as _Queued<T>?;
+    final T Function(T) combined;
+    if (earlier == null) {
+      combined = change;
+    } else {
+      earlier.done.complete(const SettingsQueued());
+      final before = earlier.change;
+      combined = (current) => change(before(current));
+    }
+    final queued = _Queued<T>(combined, reset: reset);
+    _queued[key.name] = queued;
+    return queued.done.future;
+  }
+
+  Future<SettingsOutcome> _run<T>(
+    SettingKey<T> key,
+    T Function(T current) change, {
+    required bool reset,
   }) async {
-    if (!_pending.add(key.name)) return const SettingsPending();
+    _pending.add(key.name);
     try {
-      final ApplyResult result;
-      try {
-        if (await store.read(key) == value) return const SettingsUnchanged();
-        result = reset
-            ? await store.reset(key, origin: Origin.direct)
-            : await store.put(key, value, origin: Origin.direct);
-      } on ChangeRejected catch (rejection) {
-        return _failure(rejection.failure);
-      }
-      if (result is Rejected) return _failure(result.failure);
-      final applied = result as Applied;
-      if (applied.inverse.isEmpty) return const SettingsUnchanged();
-      const kind = SettingsKind.settingChanged;
-      final undo = undoStack.record(
-        applied,
-        UndoLabel(kind.name, args: {'key': key.name}),
-      );
-      return SettingsDone(undo.id, kind, key.name);
+      return await _write(key, change, reset: reset);
     } finally {
       _pending.remove(key.name);
+      // The latest intent goes through the same writer path, with its own
+      // change set and undo entry, whatever happened to this write.
+      if (_queued.remove(key.name) case final _Queued<T> next) {
+        unawaited(
+          _run(
+            key,
+            next.change,
+            reset: next.reset,
+          ).then(next.done.complete, onError: next.done.completeError),
+        );
+      }
     }
   }
+
+  Future<SettingsOutcome> _write<T>(
+    SettingKey<T> key,
+    T Function(T current) change, {
+    required bool reset,
+  }) async {
+    final ApplyResult result;
+    try {
+      final current = await store.read(key);
+      final value = change(current);
+      if (current == value) return const SettingsUnchanged();
+      result = reset
+          ? await store.reset(key, origin: Origin.direct)
+          : await store.put(key, value, origin: Origin.direct);
+    } on ChangeRejected catch (rejection) {
+      return _failure(rejection.failure);
+    }
+    if (result is Rejected) return _failure(result.failure);
+    final applied = result as Applied;
+    if (applied.inverse.isEmpty) return const SettingsUnchanged();
+    const kind = SettingsKind.settingChanged;
+    final undo = undoStack.record(
+      applied,
+      UndoLabel(kind.name, args: {'key': key.name}),
+    );
+    return SettingsDone(undo.id, kind, key.name);
+  }
+}
+
+/// A change waiting behind a write in flight for the same key.
+final class _Queued<T> {
+  new(this.change, {required this.reset});
+
+  final T Function(T current) change;
+  final bool reset;
+  final Completer<SettingsOutcome> done = Completer();
 }

@@ -60,9 +60,13 @@ class FoodResultRow extends ConsumerWidget {
           ? base
           : l10n.foodResultHalalSubtitle(base, halal),
       leading: FbSourceBadge(source: fbSourceOf(row.source)),
-      trailing: Text(
-        l10n.foodResultKcal(row.kcalForDefault.round()),
-        style: FbType.numeric(FbType.body),
+      trailing: FbNumberSlot(
+        text: switch (row.kcalForDefault) {
+          final kcal? => l10n.foodResultKcal(kcal.round()),
+          null => l10n.foodSheetKcalPending,
+        },
+        sample: l10n.foodResultKcal(8888),
+        style: FbType.body,
       ),
       onTap: onTap,
     );

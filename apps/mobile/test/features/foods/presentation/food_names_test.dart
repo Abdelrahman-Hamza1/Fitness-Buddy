@@ -94,6 +94,75 @@ void main() {
     expect(find.textContaining('Matched'), findsNothing);
   });
 
+  test('A57 T-N1 LC-007 inline name follows the setting; Both is the main '
+      'name only, spoken is both', () {
+    final both = FoodNames('Maqluba (chicken)', ar: _ar);
+    final noArabic = FoodNames('Oats');
+    // A user-written dish name: as typed, whatever the setting.
+    final typed = FoodNames('صحن الغدا');
+    const iso = '\u2068$_ar\u2069';
+    final expected = {
+      FoodNameLanguage.phone: ['Maqluba (chicken)', 'Oats'],
+      FoodNameLanguage.english: ['Maqluba (chicken)', 'Oats'],
+      FoodNameLanguage.arabic: [iso, 'Oats'],
+      FoodNameLanguage.both: ['Maqluba (chicken)', 'Oats'],
+    };
+    for (final MapEntry(key: language, value: names) in expected.entries) {
+      expect(foodNameInline(both, language), names[0], reason: '$language');
+      expect(foodNameInline(noArabic, language), names[1]);
+      expect(foodNameInline(typed, language), '\u2068صحن الغدا\u2069');
+    }
+    expect(
+      foodNameSpoken(FoodNameLines.of(both, FoodNameLanguage.both)),
+      'Maqluba (chicken), $_ar',
+    );
+    for (final language in FoodNameLanguage.values) {
+      expect(foodNameSpoken(FoodNameLines.of(noArabic, language)), 'Oats');
+      if (language != FoodNameLanguage.both) {
+        expect(
+          foodNameSpoken(FoodNameLines.of(both, language)),
+          FoodNameLines.of(both, language).primary,
+        );
+      }
+    }
+    // Undo-label placeholders: structured names resolve, text is isolated.
+    expect(foodNameArg(both, FoodNameLanguage.arabic), iso);
+    expect(foodNameArg('Oats', FoodNameLanguage.arabic), 'Oats');
+  });
+
+  test('A57 T-N4 LC-007 isolateName wraps embedded RTL queries and scan '
+      'names, not English ones', () {
+    expect(createQuote(_ar), _ar);
+    expect(isolateName(createQuote(_ar)), '\u2068$_ar\u2069');
+    expect(isolateName('Pita bread, white'), 'Pita bread, white');
+    expect(
+      pendingScanNames(
+        const PendingScan(
+          code: '1',
+          scannedAtMs: 0,
+          name: 'Halawa',
+          nameAr: 'حلاوة',
+        ),
+        FoodNameLanguage.arabic,
+      )?.primary,
+      'حلاوة',
+    );
+    expect(
+      pendingScanNames(
+        const PendingScan(code: '1', scannedAtMs: 0, nameAr: 'حلاوة'),
+        FoodNameLanguage.english,
+      )?.primary,
+      'حلاوة',
+    );
+    expect(
+      pendingScanNames(
+        const PendingScan(code: '1', scannedAtMs: 0),
+        FoodNameLanguage.both,
+      ),
+      isNull,
+    );
+  });
+
   test('D-091 isolateName wraps only right-to-left text', () {
     expect(isolateName('Oats'), 'Oats');
     expect(isolateName(_ar), '\u2068$_ar\u2069');

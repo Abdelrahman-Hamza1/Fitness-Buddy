@@ -86,7 +86,13 @@ class DiaryEntryTile extends ConsumerWidget {
             ? null
             : MediaQuery.withClampedTextScaling(
                 maxScaleFactor: 1.3,
-                child: Text(kcal, style: FbType.numeric(FbType.body)),
+                // A fixed column (A57 A03): 85 and 1,240 kcal cut the
+                // name at the same width.
+                child: FbNumberSlot(
+                  text: kcal,
+                  sample: l10n.diaryKcal(8888),
+                  style: FbType.body,
+                ),
               ),
         onTap: pending
             ? null

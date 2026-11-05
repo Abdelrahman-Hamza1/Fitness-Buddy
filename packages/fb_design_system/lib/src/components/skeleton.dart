@@ -1,5 +1,6 @@
 import 'package:fb_design_system/l10n/gen/fb_localizations.dart';
 import 'package:fb_design_system/src/tokens/colors.dart';
+import 'package:fb_design_system/src/tokens/density.dart';
 import 'package:fb_design_system/src/tokens/spacing.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -22,6 +23,11 @@ class FbSkeleton extends StatefulWidget {
   const new card({this.height = 96, super.key})
     : width = null,
       radius = FbRadius.lg;
+
+  /// A list row's placeholder (A57): a title and a subtitle line, as tall
+  /// as a two-line `FbListRow` at the current text scale, so the real row
+  /// replaces it without moving anything (UX-045).
+  static Widget row({Key? key}) => _FbSkeletonRow(key: key);
 
   /// Width in dp, or null to fill the available width.
   final double? width;
@@ -84,4 +90,31 @@ class _FbSkeletonState extends State<FbSkeleton>
       ),
     ),
   );
+}
+
+class _FbSkeletonRow extends StatelessWidget {
+  const new({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final scaler = MediaQuery.textScalerOf(context);
+    // A two-line row: 16 sp title, 14 sp subtitle, row padding.
+    final height = (scaler.scale(16) * 1.5 + scaler.scale(14) * 1.43 + 16)
+        .clamp(FbDensity.rowMinHeight + 16, double.infinity);
+    return SizedBox(
+      height: height,
+      child: Padding(
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: FbSpace.s4),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: FbSpace.s2,
+          children: [
+            FbSkeleton.line(height: scaler.scale(14)),
+            FbSkeleton.line(width: 120, height: scaler.scale(12)),
+          ],
+        ),
+      ),
+    );
+  }
 }

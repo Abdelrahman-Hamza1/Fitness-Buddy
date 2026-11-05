@@ -2,7 +2,6 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
-import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/body/data/weigh_in_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,17 +23,20 @@ Future<List<WeighIn>> _stored(ProviderContainer container) =>
 /// Stable identity used by TodayScreen's day pager.
 Finder dayPage(LocalDate date) => find.byKey(ValueKey<LocalDate>(date));
 
-/// The weight card of [date]'s page, with the text [text].
-Finder _cardText(LocalDate date, String text) => find.descendant(
-  of: find.descendant(of: dayPage(date), matching: find.byType(WeightSlide)),
-  matching: find.text(text),
+/// The weight half of [date]'s slim line under the calories card (D-093):
+/// a tap opens the weigh-in sheet for that day.
+Finder _slimAdd(LocalDate date) => find.descendant(
+  of: dayPage(date),
+  matching: find.byKey(const ValueKey('today-glance-weight')),
 );
 
-/// The ＋ of [date]'s slim weight row (a day with a weigh-in, D-084).
-Finder _slimAdd(LocalDate date) => find.descendant(
-  of: find.descendant(of: dayPage(date), matching: find.byType(WeightSlide)),
-  matching: find.byKey(const ValueKey('today-weigh-in')),
-);
+/// Whether [date]'s weight half invites the first weigh-in (its ＋ icon,
+/// not its copy).
+bool _invites(WidgetTester tester, LocalDate date) {
+  final half = _slimAdd(date);
+  return half.evaluate().length == 1 &&
+      tester.widget<FbGlanceTile>(half).icon == FbIcons.add;
+}
 
 /// Waits for the snackbar that starts with [prefix].
 Future<void> _waitForSnackBar(WidgetTester tester, String prefix) => waitUntil(
@@ -78,22 +80,15 @@ void main() {
 
     final save = find.widgetWithText(FbButton, 'Save');
 
-    await tapExactly(
-      tester,
-      find.byKey(const ValueKey('fb-slide-dot-1')).first,
-      'Weight slide',
-    );
-    await pumpFor(tester, const Duration(milliseconds: 600));
-    // No weigh-ins yet: the card invites the first one.
-    const invite = 'Log your first weigh-in';
+    // No weigh-ins yet: the line's weight half invites the first one.
     await waitUntil(
       tester,
-      () => _cardText(today, invite).evaluate().length == 1,
-      'the weight card on Today',
+      () => _invites(tester, today),
+      "the weight half of Today's line",
     );
     expect(await _stored(container), isEmpty);
 
-    // First weigh-in: card, type 97.4, Save.
+    // First weigh-in: the weight half, type 97.4, Save.
     await tap(_slimAdd(today), 'Weigh in');
     await waitUntil(
       tester,
@@ -108,12 +103,12 @@ void main() {
     await waitUntil(
       tester,
       () => _slimAdd(today).evaluate().isNotEmpty,
-      'the slim weight row',
+      "the line's weight half",
     );
 
     // The same value again: 2 taps, no typing (the pad is prefilled).
     taps = 0;
-    await tap(_slimAdd(today), 'the slim row plus');
+    await tap(_slimAdd(today), 'the weight half');
     await waitUntil(
       tester,
       () => save.evaluate().isNotEmpty,
@@ -129,7 +124,7 @@ void main() {
 
     // An unusual value: the in-sheet confirm is the third tap.
     taps = 0;
-    await tap(_slimAdd(today), 'the slim row plus');
+    await tap(_slimAdd(today), 'the weight half');
     await waitUntil(
       tester,
       () => find.byType(FbNumberPad).evaluate().isNotEmpty,

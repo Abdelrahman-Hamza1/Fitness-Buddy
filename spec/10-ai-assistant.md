@@ -86,7 +86,7 @@ This is the most important interaction in the app. It must feel **instant, clear
 
 ### 4.4 Unconfirmed proposals
 
-- **AI-045** `[R1]` If the user leaves without confirming or discarding, the proposal is kept as **pending**. Today shows a "1 to confirm · +640 kcal" strip that reopens it. Pending proposals never count toward totals.
+- **AI-045** `[R1]` If the user leaves without confirming or discarding, the proposal is kept as **pending**. Today's Buddy bar shows "{n} waiting", and one tap reopens Buddy at the pending cards (D-094). Pending proposals never count toward totals.
 - **AI-046** `[R1]` Pending proposals stay until handled. The optional reminder is in `17-notifications.md`.
 - **AI-047** `[R1]` Messages sent while offline become pending items marked "will process when you're online" (D-049). Once processed, they show up as normal proposals to confirm.
 

@@ -211,11 +211,11 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A53](A53-targets-food-names.md) | Targets redesign & food-name language (UX overhaul) | Claude | A38, A41a, A42 | L | new (owner sketches 2026-10-31) |  | ✅ |
 | [A56](A56-today-summary-card.md) | Today summary card with slides (Nutrition, Weight, Workout; owner request 2026-10-31, backlog #74) | Claude plans, Codex builds | A45, A52, A53 | M | new (owner request) |  | ✅ |
 | [A54](A54-catalog-expansion.md) | Catalog expansion: natural foods and generic store products (USDA only, ~+1,700 basics) | Claude | A47 | L | new (owner 2026-10-31) |  | ✅ |
-| [A57](ux-polish-week.md) | Stable logging and editing: no layout shifts on input (audit A01–A08, A15, A65, A79) | Claude (models per owner) | A56 | M | new (Codex UI/UX audit 2026-10-31) |  | ⬜ next week |
-| [A58](ux-polish-week.md) | Food names everywhere follow the setting (audit A30–A40) | Claude (models per owner) | A56 | M | new (Codex UI/UX audit 2026-10-31) |  | ⬜ next week |
-| [A59](ux-polish-week.md) | Recovery and unfinished work: no false-empty screens or trapped loaders (audit A41–A49, A62–A64, A66–A71) | Claude (models per owner) | A56 | M | new (Codex UI/UX audit 2026-10-31) |  | ⬜ next week |
-| [A60](ux-polish-week.md) | Consistent motion: expand/collapse and transitions (audit A09–A14, A16–A29, A80) | Claude (models per owner) | A56 | M | new (Codex UI/UX audit 2026-10-31) |  | ⬜ next week |
-| [A61](ux-polish-week.md) | Accessible charts and dense screens (audit A50–A61, A72–A78) | Claude (models per owner) | A56 | M | new (Codex UI/UX audit 2026-10-31) |  | ⬜ next week |
+| [A57](A57-ux-polish.md) | UX polish, combined (owner 2026-11-05): stable layouts, food names everywhere, recovery, motion, accessible dense screens (audit A01–A80) + Today top = calories card and one slim weight · workout line (replaces A56 slides); fixes the red nightly Patrol suite | Claude (Opus plan + build), Codex review | A56 | XL | new (Codex UI/UX audit 2026-10-31) |  | ✅ done (owner acceptance by use, TD-037) |
+| [A58](A57-ux-polish.md) | Folded into A57 (owner 2026-11-05: one combined step) | — | — | — | — |  | ⏸ folded into A57 |
+| [A59](A57-ux-polish.md) | Folded into A57 (owner 2026-11-05: one combined step) | — | — | — | — |  | ⏸ folded into A57 |
+| [A60](A57-ux-polish.md) | Folded into A57 (owner 2026-11-05: one combined step) | — | — | — | — |  | ⏸ folded into A57 |
+| [A61](A57-ux-polish.md) | Folded into A57 (owner 2026-11-05: one combined step) | — | — | — | — |  | ⏸ folded into A57 |
 
 **A44 runs right after A22 (owner request, 2026-10-29):** the "Embrace" identity (palette, fonts, icon) lands before the remaining screens are built, an exception to "the number is the order" like the dish batches below.
 

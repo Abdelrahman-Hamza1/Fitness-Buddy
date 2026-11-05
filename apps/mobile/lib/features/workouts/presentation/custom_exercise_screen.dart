@@ -1,6 +1,7 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/workouts/application/custom_exercise_form.dart';
 import 'package:fb_mobile/features/workouts/application/workout_actions.dart';
@@ -105,7 +106,8 @@ class _CustomState extends ConsumerState<CustomExerciseScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final editing = widget.formKey.id != null;
-    final form = ref.watch(customExerciseFormProvider(widget.formKey)).value;
+    final async = ref.watch(customExerciseFormProvider(widget.formKey));
+    final form = async.value;
     if (form != null && !_filled) {
       _filled = true;
       _name.text = form.name;
@@ -118,7 +120,14 @@ class _CustomState extends ConsumerState<CustomExerciseScreen> {
         ),
       ),
       body: form == null
-          ? const SizedBox.shrink()
+          ? (async.hasError
+                ? LoadFailedView(
+                    message: l10n.workoutsLoadFailed,
+                    onRetry: () => ref.invalidate(
+                      customExerciseFormProvider(widget.formKey),
+                    ),
+                  )
+                : const LoadingRows())
           : ListView(
               padding: const EdgeInsetsDirectional.all(FbSpace.s4),
               children: [
@@ -138,7 +147,7 @@ class _CustomState extends ConsumerState<CustomExerciseScreen> {
                   key: const ValueKey('workout-custom-aliases'),
                   controller: _aliases,
                   label: l10n.workoutCustomAliases,
-                  hint: l10n.workoutCustomAliasesHint,
+                  supportingText: l10n.workoutCustomAliasesHint,
                   errorText: form.tooManyAliases
                       ? l10n.workoutCustomAliasesTooMany(
                           WorkoutLimits.aliasesMax,

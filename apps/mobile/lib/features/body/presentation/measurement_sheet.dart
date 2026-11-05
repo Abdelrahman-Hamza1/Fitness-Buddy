@@ -5,6 +5,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/body/application/measurement_actions.dart';
 import 'package:fb_mobile/features/body/application/measurement_form.dart';
@@ -190,7 +191,8 @@ class _MeasurementSheetState extends ConsumerState<MeasurementSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final views = ref.watch(latestByTypeProvider).value;
+    final viewsAsync = ref.watch(latestByTypeProvider);
+    final views = viewsAsync.value;
     final units = ref.watch(unitSystemProvider);
     final form = _formOf(views, units);
     final edit = widget.edit;
@@ -240,7 +242,13 @@ class _MeasurementSheetState extends ConsumerState<MeasurementSheet> {
           ],
         ),
         child: form == null || views == null
-            ? const FbSkeleton.line(height: 56)
+            // A failed read says so, with a retry (A57 A46).
+            ? (viewsAsync.hasError
+                  ? LoadFailedView(
+                      message: l10n.measurementLoadFailed,
+                      onRetry: () => ref.invalidate(latestByTypeProvider),
+                    )
+                  : const FbSkeleton.line(height: 56))
             : _content(context, form, views, nameOf),
       ),
     );

@@ -2,12 +2,14 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/application/food_search_controller.dart';
 import 'package:fb_mobile/features/foods/application/food_search_row.dart';
 import 'package:fb_mobile/features/foods/application/new_food_prefill.dart';
 import 'package:fb_mobile/features/foods/presentation/food_result_row.dart';
 import 'package:fb_mobile/features/foods/presentation/food_sheet_entry.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
@@ -123,7 +125,9 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
               child: Align(
                 alignment: AlignmentDirectional.centerStart,
                 child: Text(
-                  l10n.foodSearchReplacing(replacing.food.names.en),
+                  l10n.foodSearchReplacing(
+                    watchFoodNameInline(ref, replacing.food.names),
+                  ),
                   style: FbType.bodySmall.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -141,6 +145,13 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
               autofocus: true,
               onChanged: _search,
             ),
+          ),
+          // Always reserved, so results never move when a search starts or
+          // ends (A57 D23).
+          FbProgressLine(
+            key: const ValueKey('food-search-progress'),
+            active: state.searching,
+            semanticsLabel: l10n.searchSearching,
           ),
           if (results != null && !results.packReady && results.rows.isNotEmpty)
             Padding(
@@ -168,26 +179,57 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
             ),
           Expanded(
             child: results == null
-                ? const SizedBox.shrink()
-                : _Results(
-                    // The rows are shown under the query they answer, so a
-                    // newer search never relabels them while it runs.
-                    query: (state.resultsFor ?? '').trim(),
-                    packReady: results.packReady,
-                    carried: results.carried,
-                    rows: results.rows,
-                    date: widget.date,
-                    slotId: widget.slotId,
-                    replace: widget.replace,
-                    onPick: widget.onPick,
-                    // Changing a logged item's food picks an existing food.
-                    onCreate: widget.replace == null ? _createFood : null,
+                // The first search with nothing to show: rows shaped like
+                // results (A57 D23), never an empty state.
+                ? (state.error == null
+                      ? const LoadingRows(
+                          key: ValueKey('food-search-skeleton'),
+                          count: 6,
+                        )
+                      : const SizedBox.shrink())
+                : _Stale(
+                    stale: state.stale,
+                    child: _Results(
+                      // The rows are shown under the query they answer, so a
+                      // newer search never relabels them while it runs.
+                      query: (state.resultsFor ?? '').trim(),
+                      packReady: results.packReady,
+                      carried: results.carried,
+                      rows: results.rows,
+                      date: widget.date,
+                      slotId: widget.slotId,
+                      replace: widget.replace,
+                      onPick: widget.onPick,
+                      // Changing a logged item's food picks an existing food.
+                      onCreate: widget.replace == null ? _createFood : null,
+                    ),
                   ),
           ),
         ],
       ),
     );
   }
+}
+
+/// Rows that answer an older query while a newer search runs (R1 A): faded,
+/// not tappable and hidden from screen readers until the new rows land.
+class _Stale extends StatelessWidget {
+  const new({required this.stale, required this.child});
+
+  final bool stale;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => AnimatedOpacity(
+    key: const ValueKey('food-search-results'),
+    opacity: stale ? 0.35 : 1,
+    duration: FbMotion.localOf(context),
+    curve: FbMotion.standard,
+    child: IgnorePointer(
+      ignoring: stale,
+      child: ExcludeSemantics(excluding: stale, child: child),
+    ),
+  );
 }
 
 class _Results extends StatelessWidget {
@@ -219,7 +261,7 @@ class _Results extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final create = query.isEmpty ? null : onCreate;
-    final createLabel = l10n.foodSearchCreate(createQuote(query));
+    final createLabel = l10n.foodSearchCreate(isolateName(createQuote(query)));
     if (rows.isEmpty) {
       return CustomScrollView(
         slivers: [
@@ -246,7 +288,7 @@ class _Results extends StatelessWidget {
                   )
                 : FbEmptyState(
                     icon: FbIcons.search,
-                    title: l10n.foodSearchNoMatchTitle(query),
+                    title: l10n.foodSearchNoMatchTitle(isolateName(query)),
                     message: l10n.foodSearchNoMatchMessage,
                     action: create == null
                         ? null

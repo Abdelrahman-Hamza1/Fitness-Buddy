@@ -44,7 +44,11 @@ class RamadanScreen extends ConsumerWidget {
                 onAction: () => ref.invalidate(ramadanSettingsProvider),
               ),
             ),
-            _ => const FbSkeleton.card(),
+            // Shaped like the rows that replace it (A57 A14).
+            _ => Column(
+              key: const ValueKey('ramadan-loading'),
+              children: [for (var i = 0; i < 3; i++) FbSkeleton.row()],
+            ),
           },
           const _PrayerTimes(),
         ],
@@ -158,33 +162,40 @@ class _Season extends ConsumerWidget {
           onChanged: (value) =>
               unawaited(_save(context, ref, season.copyWith(on: value))),
         ),
-        if (on) ...[
-          FbListRow(
-            key: const ValueKey('ramadan-first-day'),
-            title: l10n.ramadanFirstDay,
-            subtitle: ramadanDateText(context, period.start),
-            trailing: const Icon(FbIcons.next),
-            onTap: () =>
-                unawaited(_pickShift(context, ref, season, start: true)),
+        // The season's rows grow in and out under the switch (A57 A14).
+        FbReveal(
+          visible: on,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              FbListRow(
+                key: const ValueKey('ramadan-first-day'),
+                title: l10n.ramadanFirstDay,
+                subtitle: ramadanDateText(context, period.start),
+                trailing: const Icon(FbIcons.next),
+                onTap: () =>
+                    unawaited(_pickShift(context, ref, season, start: true)),
+              ),
+              FbListRow(
+                key: const ValueKey('ramadan-last-day'),
+                title: l10n.ramadanLastDay,
+                subtitle: ramadanDateText(context, period.end),
+                trailing: const Icon(FbIcons.next),
+                onTap: () =>
+                    unawaited(_pickShift(context, ref, season, start: false)),
+              ),
+              FbListRow(
+                key: const ValueKey('ramadan-targets'),
+                title: l10n.ramadanTargets,
+                subtitle: season.maintain
+                    ? l10n.ramadanTargetsMaintain
+                    : l10n.ramadanTargetsKeep,
+                trailing: const Icon(FbIcons.next),
+                onTap: () => unawaited(_pickTargets(context, ref, season)),
+              ),
+            ],
           ),
-          FbListRow(
-            key: const ValueKey('ramadan-last-day'),
-            title: l10n.ramadanLastDay,
-            subtitle: ramadanDateText(context, period.end),
-            trailing: const Icon(FbIcons.next),
-            onTap: () =>
-                unawaited(_pickShift(context, ref, season, start: false)),
-          ),
-          FbListRow(
-            key: const ValueKey('ramadan-targets'),
-            title: l10n.ramadanTargets,
-            subtitle: season.maintain
-                ? l10n.ramadanTargetsMaintain
-                : l10n.ramadanTargetsKeep,
-            trailing: const Icon(FbIcons.next),
-            onTap: () => unawaited(_pickTargets(context, ref, season)),
-          ),
-        ],
+        ),
         FbListRow(
           key: const ValueKey('ramadan-meal-times'),
           title: l10n.ramadanMealTimes,
@@ -247,9 +258,7 @@ class _PrayerTimes extends ConsumerWidget {
         ref.watch(prayerMethodProvider).value ??
         AppSettings.prayerMethod.defaultValue;
     final today = ref.watch(todayProvider).value;
-    final times = today == null
-        ? null
-        : ref.watch(prayerTimesProvider(today)).value;
+    final times = today == null ? null : ref.watch(prayerTimesProvider(today));
     final navigator = ref.read(appNavigatorProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -262,15 +271,36 @@ class _PrayerTimes extends ConsumerWidget {
           trailing: const Icon(FbIcons.next),
           onTap: () => navigator.push(const CityPickerRoute()),
         ),
-        if (times != null)
-          FbListRow(
-            key: const ValueKey('ramadan-today-times'),
-            title: l10n.ramadanTodayTimes,
-            subtitle: l10n.ramadanFajrMaghrib(
-              ramadanTimeText(context, times.cityFajrMinute),
-              ramadanTimeText(context, times.cityMaghribMinute),
+        // Today's times with a chosen city (A57 A14): a row-shaped
+        // placeholder while they load, a retry when they fail, and a plain
+        // word when the city has none today (a polar day).
+        if (city != null)
+          switch (times) {
+            AsyncValue(hasValue: true, :final value) => switch (value) {
+              final t? => FbListRow(
+                key: const ValueKey('ramadan-today-times'),
+                title: l10n.ramadanTodayTimes,
+                subtitle: l10n.ramadanFajrMaghrib(
+                  ramadanTimeText(context, t.cityFajrMinute),
+                  ramadanTimeText(context, t.cityMaghribMinute),
+                ),
+              ),
+              null => FbListRow(
+                key: const ValueKey('ramadan-today-times-none'),
+                title: l10n.ramadanTodayTimes,
+                subtitle: l10n.ramadanTimesNone,
+              ),
+            },
+            AsyncError() => FbListRow(
+              key: const ValueKey('ramadan-today-times-failed'),
+              title: l10n.ramadanTodayTimes,
+              subtitle: l10n.ramadanTimesFailed,
+              onTap: () => ref.invalidate(prayerTimesProvider(today!)),
             ),
-          ),
+            _ => FbSkeleton.row(
+              key: const ValueKey('ramadan-today-times-loading'),
+            ),
+          },
         FbListRow(
           key: const ValueKey('ramadan-method'),
           title: l10n.ramadanPrayerMethod,

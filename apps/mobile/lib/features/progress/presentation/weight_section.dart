@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/progress/application/progress_providers.dart';
 import 'package:fb_mobile/features/progress/application/weight_chart_parts.dart';
@@ -15,7 +18,10 @@ import 'package:material_ui/material_ui.dart';
 /// The weight chart for the selected period (IN-004, A16 D8): weigh-ins as
 /// dots, the trend line, the goal line of the period's phase (PA4) and the
 /// phases shaded. No pan or selection here: the card and "Full graph" open
-/// the full weight graph.
+/// the full weight graph. Under the chart, at most one quiet note about the
+/// weigh-ins (D-093, A57 D8): the "weigh in 2–3 times a week" tip (at most
+/// once in 30 days, dismissible, WB-012), else the sparse-history note,
+/// else "Weekly rate after 2 weeks".
 class WeightSection extends ConsumerWidget {
   /// Creates the section.
   const new({super.key});
@@ -58,6 +64,7 @@ class WeightSection extends ConsumerWidget {
             ),
             _ => const FbSkeleton.box(width: double.infinity, height: 160),
           },
+          const _WeightNote(),
         ],
       ),
     );
@@ -130,5 +137,64 @@ class _Chart extends ConsumerWidget {
       ),
       emptyLabel: l10n.progressWeightEmpty,
     );
+  }
+}
+
+/// The one quiet weigh-in note under the chart (A57 D8), as of today.
+class _WeightNote extends ConsumerWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final today = EntryTime.now(ref.read(clockProvider)).localDate;
+    final state = ref.watch(weightCardProvider(today, isToday: true)).value;
+    if (state == null || state.isEmpty) return const SizedBox.shrink();
+    final scheme = Theme.of(context).colorScheme;
+    final style = FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant);
+    if (state.showTip) {
+      _markTipShown(context, ref, today);
+      return Semantics(
+        button: true,
+        label: l10n.weightCardTipDismiss,
+        child: InkWell(
+          key: const ValueKey('progress-weight-tip'),
+          onTap: () => unawaited(
+            ref.read(weightTipControllerProvider.notifier).dismiss(),
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48),
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Text(l10n.weightCardTip, style: style),
+            ),
+          ),
+        ),
+      );
+    }
+    final String? note;
+    if (state.cadence case final cadence?
+        when cadence.kind == CadenceKind.sparse) {
+      note = l10n.weightCardSparse(cadence.countLast28);
+    } else if (!state.asOf.isStale && state.asOf.weeklyRateKg == null) {
+      note = l10n.weightCardRateLater;
+    } else {
+      note = null;
+    }
+    if (note == null) return const SizedBox.shrink();
+    return Text(
+      note,
+      key: const ValueKey('progress-weight-note'),
+      style: style,
+    );
+  }
+
+  /// The tip counts as shown once it is on screen (WB-012).
+  void _markTipShown(BuildContext context, WidgetRef ref, LocalDate today) {
+    if (ref.read(weightTipControllerProvider).value?.shownOn == today) return;
+    final controller = ref.read(weightTipControllerProvider.notifier);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.mounted) unawaited(controller.markShown(today));
+    });
   }
 }

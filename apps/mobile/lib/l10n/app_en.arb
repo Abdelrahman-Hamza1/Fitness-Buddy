@@ -1204,59 +1204,9 @@
   "@weightRowAdd": {
     "description": "Today, the slim weight row: tooltip and screen-reader label of the plus button that opens the weigh-in sheet."
   },
-  "weightCardTrend": "Trend {weight}",
-  "@weightCardTrend": {
-    "description": "Weight card: the trend weight, the main number (WB-011): \"Trend 97.6 kg\".",
-    "placeholders": {
-      "weight": {
-        "type": "String"
-      }
-    }
-  },
   "weightCardRateLater": "Weekly rate after 2 weeks of weigh-ins",
   "@weightCardRateLater": {
     "description": "Weight card: there is a trend but not enough history for a weekly rate yet (WB-011)."
-  },
-  "weightCardTrendFrom": "Trend {weight} · from {date}",
-  "@weightCardTrendFrom": {
-    "description": "Weight card: the last weigh-in is 4 weeks old or older, so no rate; the trend is from that day (A14 PA2).",
-    "placeholders": {
-      "weight": {
-        "type": "String"
-      },
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "weightCardLast": "Last weigh-in {weight} · {when}",
-  "@weightCardLast": {
-    "description": "Weight card: the latest weigh-in on or before the page's day, smaller: \"Last weigh-in 97.4 kg · Yesterday\".",
-    "placeholders": {
-      "weight": {
-        "type": "String"
-      },
-      "when": {
-        "type": "String"
-      }
-    }
-  },
-  "weightCardLastValue": "Last weigh-in {weight}",
-  "@weightCardLastValue": {
-    "description": "Weight card: the latest weigh-in when the trend line already says its date (stale): \"Last weigh-in 97.4 kg\".",
-    "placeholders": {
-      "weight": {
-        "type": "String"
-      }
-    }
-  },
-  "weightCardEmpty": "Log your first weigh-in",
-  "@weightCardEmpty": {
-    "description": "Weight card: no weigh-in at all yet (UX-050)."
-  },
-  "weightCardEmptyPast": "No weigh-ins by this day. Tap to add one.",
-  "@weightCardEmptyPast": {
-    "description": "Weight card on a past day page: no weigh-in on or before that day, but later ones exist (UX-050)."
   },
   "weightCardSparse": "{count, plural, one{1 weigh-in in 4 weeks · trend updates slowly} other{{count} weigh-ins in 4 weeks · trend updates slowly}}",
   "@weightCardSparse": {
@@ -1274,14 +1224,6 @@
   "weightCardTipDismiss": "Got it",
   "@weightCardTipDismiss": {
     "description": "Weight card: dismisses the weigh-in suggestion."
-  },
-  "weightCardLoadFailed": "Couldn't load your weigh-ins.",
-  "@weightCardLoadFailed": {
-    "description": "Weight card: the weigh-ins couldn't be read."
-  },
-  "weightCardTryAgain": "Try again",
-  "@weightCardTryAgain": {
-    "description": "Weight card: retries loading the weigh-ins."
   },
   "weightSpokenKg": "{value} kilograms",
   "@weightSpokenKg": {
@@ -1334,27 +1276,6 @@
       }
     }
   },
-  "weightCardLastSemantics": "Last weigh-in {weight}, {when}",
-  "@weightCardLastSemantics": {
-    "description": "Weight card, second row, screen readers: the latest weigh-in, unit in full, and its day.",
-    "placeholders": {
-      "weight": {
-        "type": "String"
-      },
-      "when": {
-        "type": "String"
-      }
-    }
-  },
-  "weightCardLastValueSemantics": "Last weigh-in {weight}",
-  "@weightCardLastValueSemantics": {
-    "description": "Weight card, second row, screen readers: the latest weigh-in when the trend already says its date.",
-    "placeholders": {
-      "weight": {
-        "type": "String"
-      }
-    }
-  },
   "weightCardEmptySemantics": "Weight. {message}",
   "@weightCardEmptySemantics": {
     "description": "Weight card without a weigh-in on or before the day, screen readers: the title and the visible invitation.",
@@ -1367,27 +1288,6 @@
   "weightCardLogSemantics": "{summary}. Log a weigh-in",
   "@weightCardLogSemantics": {
     "description": "Weight card, first row, screen readers: the trend sentence, then what a tap does.",
-    "placeholders": {
-      "summary": {
-        "type": "String"
-      }
-    }
-  },
-  "weightCardLogNoteSemantics": "{summary}. {note}. Log a weigh-in",
-  "@weightCardLogNoteSemantics": {
-    "description": "Weight card, first row, screen readers: the trend sentence, the visible note under it (rate after 2 weeks, or the weigh-in count), then what a tap does.",
-    "placeholders": {
-      "summary": {
-        "type": "String"
-      },
-      "note": {
-        "type": "String"
-      }
-    }
-  },
-  "weightCardEditSemantics": "{summary}. Edit",
-  "@weightCardEditSemantics": {
-    "description": "Weight card, last weigh-in row, screen readers: the last weigh-in sentence, then what a tap does.",
     "placeholders": {
       "summary": {
         "type": "String"
@@ -1783,6 +1683,10 @@
   "foodSearchFailed": "Couldn't search just now. Try again.",
   "@foodSearchFailed": {
     "description": "Add-food screen: banner when a search failed unexpectedly."
+  },
+  "searchSearching": "Searching",
+  "@searchSearching": {
+    "description": "Add-food screen: screen-reader label of the thin progress line under the search box while a search runs (not announced on each keystroke)."
   },
   "foodResultKcal": "{kcal} kcal",
   "@foodResultKcal": {
@@ -3005,9 +2909,13 @@
       }
     }
   },
-  "foodSheetNoKcal": "—",
-  "@foodSheetNoKcal": {
-    "description": "Food sheet: calories shown while there is no valid amount."
+  "foodSheetKcalPending": "— kcal",
+  "@foodSheetKcalPending": {
+    "description": "Food sheet and amount sheet: calories while the amount is incomplete (A57 D13); the dash stands for the missing number."
+  },
+  "foodSheetMacrosPending": "Protein — · Carbs — · Fat — · Fiber —",
+  "@foodSheetMacrosPending": {
+    "description": "Food sheet and amount sheet: the four macros while the amount is incomplete (A57 D13); each dash stands for a missing number."
   },
   "foodSheetMacros": "Protein {protein} g · Carbs {carbs} g · Fat {fat} g · Fiber {fiber} g",
   "@foodSheetMacros": {
@@ -6124,6 +6032,10 @@
   "@signInEmailNote": {
     "description": "Sign-in: under the email field."
   },
+  "signInSending": "Sending code…",
+  "@signInSending": {"description": "Sign-in: the email button's label while the code is being sent (A57 A79)."},
+  "signInVerifying": "Verifying…",
+  "@signInVerifying": {"description": "Sign-in: the code button's label while the code is being checked (A57 A79)."},
   "signInEmailButton": "Continue with email",
   "@signInEmailButton": {
     "description": "Sign-in and the first run's account step: sends a code to the email."
@@ -6342,10 +6254,6 @@
   "@workoutExerciseMetric": {"description": "What the exercise graph shows, for screen readers (WO-041).", "placeholders": {"metric": {"type": "String"}}},
   "workoutExerciseGraph": "{name}: {metric}, {count, plural, =1{1 session} other{{count} sessions}}",
   "@workoutExerciseGraph": {"description": "Screen-reader label of an exercise's graph (WO-041).", "placeholders": {"name": {"type": "String"}, "metric": {"type": "String"}, "count": {"type": "int"}}},
-  "workoutTodayPlanned": "{name} day today",
-  "@workoutTodayPlanned": {"description": "Today row and Workouts tab card: today's planned template (HM-006, A37 D20), e.g. 'Push day today'.", "placeholders": {"name": {"type": "String"}}},
-  "workoutDayPlanned": "{name} day",
-  "@workoutDayPlanned": {"description": "Today row on a later day with a planned template (A37 D20).", "placeholders": {"name": {"type": "String"}}},
   "workoutsWeekPlanned": "{day}, {name} planned",
   "@workoutsWeekPlanned": {"description": "Week strip day with a planned template, for screen readers (A37 D19).", "placeholders": {"day": {"type": "String"}, "name": {"type": "String"}}},
   "workoutsPlanCardLog": "Log {name}",
@@ -6540,10 +6448,6 @@
   "@workoutPrCount": {"description": "How many exercises of a session set a personal record (WO-042): a plain marker.", "placeholders": {"count": {"type": "int"}}},
   "workoutPr": "PR",
   "@workoutPr": {"description": "The plain personal-record marker on a set or exercise (WO-042, D-033: no celebration)."},
-  "workoutTodayRow": "{title} ✓ · {exercises, plural, =1{1 exercise} other{{exercises} exercises}}",
-  "@workoutTodayRow": {"description": "Today: the workout row after logging (HM-006), e.g. 'Push ✓ · 5 exercises'.", "placeholders": {"title": {"type": "String"}, "exercises": {"type": "int"}}},
-  "workoutTodayMore": "+{count}",
-  "@workoutTodayMore": {"description": "Today: how many more sessions the day has.", "placeholders": {"count": {"type": "int"}}},
   "workoutLogNewTitle": "Log workout",
   "@workoutLogNewTitle": {"description": "Log form title, new session (WO-034)."},
   "workoutLogEditTitle": "Workout",
@@ -6869,6 +6773,24 @@
   "offAttribution": "© Open Food Facts contributors",
   "@offAttribution": {
     "description": "Attribution required wherever Open Food Facts data is shown (ODbL). Keep the © and the name."
+  },
+  "newMessages": "New message",
+  "@newMessages": {
+    "description": "Buddy sheet (A57 A67): a button at the bottom of the thread when something new arrived below while you were scrolled up; tapping it jumps down."
+  },
+  "scanSavedAsYours": "Saved as your food when you add it",
+  "@scanSavedAsYours": {
+    "description": "Food sheet of a scanned product that isn't saved yet (A57 A50): adding it also saves it as one of your foods. Its own line, apart from where the data comes from."
+  },
+  "scanDataFromOff": "Data: {credit}",
+  "@scanDataFromOff": {
+    "description": "Food sheet of a scanned product (A57 A50): where the values come from, on its own line. {credit} is the required Open Food Facts attribution ('© Open Food Facts contributors').",
+    "placeholders": {
+      "credit": {
+        "type": "String",
+        "example": "© Open Food Facts contributors"
+      }
+    }
   },
   "halalCheckMessage": "Halal check: {items}.",
   "@halalCheckMessage": {
@@ -7403,6 +7325,10 @@
   "@ramadanNoCity": {"description": "City row when no city is chosen."},
   "ramadanTodayTimes": "Today",
   "@ramadanTodayTimes": {"description": "Row title for today's Fajr and Maghrib."},
+  "ramadanTimesFailed": "Couldn't work out today's times. Tap to try again.",
+  "@ramadanTimesFailed": {"description": "Ramadan settings: today's prayer-times row when computing them failed; tapping retries (A57 A14)."},
+  "ramadanTimesNone": "No times for this city today",
+  "@ramadanTimesNone": {"description": "Ramadan settings: today's prayer-times row when the chosen city has no Fajr or Maghrib today, e.g. a polar day (A57 A14)."},
   "ramadanFajrMaghrib": "Fajr {fajr} · Maghrib {maghrib}",
   "@ramadanFajrMaghrib": {"description": "Today's prayer times, e.g. Fajr 4:58 AM · Maghrib 5:29 PM.", "placeholders": {"fajr": {"type": "String"}, "maghrib": {"type": "String"}}},
   "ramadanPrayerMethod": "Calculation method",
@@ -7668,18 +7594,50 @@
   "workoutSetupTabSemantics": "{day}, {count, plural, =0{no exercises} =1{1 exercise} other{{count} exercises}}",
   "@workoutSetupTabSemantics": {"description": "Plan setup: a day tab for a screen reader.", "placeholders": {"day": {"type": "String"}, "count": {"type": "int"}}}
 ,
-  "todaySlideNutrition": "Nutrition",
-  "todaySlideWeight": "Weight",
-  "todaySlideWorkout": "Workout",
-  "todaySlideSemantics": "{name}, {n} of {count}",
-  "weightSlideAdd": "+ Weigh in",
-  "workoutSlideLast": "Last: {title} · {daysAgo} days ago",
-  "workoutSlideNone": "No workout logged",
-  "workoutSlideLogNew": "Log a workout",
-  "workoutSlideLog": "Log",
-  "workoutSlideOpenSemantics": "Open {title}",
-  "workoutSlideLoadFailed": "Couldn’t load workouts.",
-  "@todaySlideSemantics": {"placeholders": {"name": {"type": "String"}, "n": {"type": "int"}, "count": {"type": "int"}}},
-  "@workoutSlideLast": {"placeholders": {"title": {"type": "String"}, "daysAgo": {"type": "int"}}},
-  "@workoutSlideOpenSemantics": {"placeholders": {"title": {"type": "String"}}}
+  "todayGlanceWeigh": "Weigh in",
+  "@todayGlanceWeigh": {"description": "Today's slim line, weight half: no weigh-in on or before the viewed day; tap logs one (D-093)."},
+  "todayGlanceWeight": "{weight} · {rate}",
+  "@todayGlanceWeight": {"description": "Today's slim line, weight half: the as-of trend and the weekly rate (D-093).", "placeholders": {"weight": {"type": "String"}, "rate": {"type": "String"}}},
+  "todayGlanceWeightStale": "{weight} · {day}",
+  "@todayGlanceWeightStale": {"description": "Today's slim line, weight half: the trend from an older weigh-in, with its day (D-093).", "placeholders": {"weight": {"type": "String"}, "day": {"type": "String"}}},
+  "todayGlanceWeightUnavailable": "Weight unavailable. Try again",
+  "@todayGlanceWeightUnavailable": {"description": "Today's slim line, weight half, for a screen reader: weigh-ins couldn't load; a tap retries."},
+  "todayGlanceWorkoutDone": "{title} done",
+  "@todayGlanceWorkoutDone": {"description": "Today's slim line, workout half: the day's logged session; tap opens it (D-093).", "placeholders": {"title": {"type": "String"}}},
+  "todayGlanceWorkoutDoneSemantics": "{title} done. Open it",
+  "@todayGlanceWorkoutDoneSemantics": {"description": "Today's slim line, workout half, for a screen reader: the logged session.", "placeholders": {"title": {"type": "String"}}},
+  "todayGlanceWorkoutPlanned": "{name} today",
+  "@todayGlanceWorkoutPlanned": {"description": "Today's slim line, workout half: today's planned workout; tap starts it (D-093).", "placeholders": {"name": {"type": "String"}}},
+  "todayGlanceWorkoutPlannedSemantics": "{name} today. Start it",
+  "@todayGlanceWorkoutPlannedSemantics": {"description": "Today's slim line, workout half, for a screen reader: today's planned workout.", "placeholders": {"name": {"type": "String"}}},
+  "todayGlanceWorkoutLog": "Log workout",
+  "@todayGlanceWorkoutLog": {"description": "Today's slim line, workout half: no session that day; tap starts a free session on the viewed day (D-093)."},
+  "todayGlanceWorkoutUnavailable": "Workouts unavailable. Try again",
+  "@todayGlanceWorkoutUnavailable": {"description": "Today's slim line, workout half, for a screen reader: workouts couldn't load; a tap retries."},
+  "todayGlanceUnavailable": "Unavailable",
+  "@todayGlanceUnavailable": {"description": "Today's slim line: a half whose data couldn't load; a tap retries."},
+  "todayBuddyWaiting": "{count, plural, one{1 waiting} other{{count} waiting}}",
+  "@todayBuddyWaiting": {"description": "Today's Buddy bar: how many Buddy cards wait to be confirmed (D-094).", "placeholders": {"count": {"type": "int"}}},
+  "todayBuddyWaitingSemantics": "{count, plural, one{open the card waiting for you} other{open the {count} cards waiting for you}}",
+  "@todayBuddyWaitingSemantics": {"description": "Today's Buddy bar, for a screen reader: what a tap does while cards wait (D-094).", "placeholders": {"count": {"type": "int"}}},
+  "workoutsLoadFailed": "Couldn't load your workouts.",
+  "@workoutsLoadFailed": {"description": "Workouts screens (tab, exercise, custom exercise, workout editor, history, weekly plan): a read failed; shown with Try again instead of an empty state."},
+  "workoutLoadFailed": "Couldn't open this workout.",
+  "@workoutLoadFailed": {"description": "Workout log: reading the session failed (not deleted); shown with Try again."},
+  "measurementLoadFailed": "Couldn't load your measurements.",
+  "@measurementLoadFailed": {"description": "Measurement sheet: reading the measurement types failed; shown with Try again."},
+  "setupLoadFailed": "Couldn't load your setup.",
+  "@setupLoadFailed": {"description": "Setup screen: reading the setup answers failed; shown with Try again."},
+  "checkInLoadFailed": "Couldn't load your weekly check-in.",
+  "@checkInLoadFailed": {"description": "Progress: the weekly check-in card could not be read; shown with Try again."},
+  "incompleteDayLoadFailed": "Couldn't check your recent days.",
+  "@incompleteDayLoadFailed": {"description": "Progress: the incomplete-day suggestion could not be read; shown with Try again."},
+  "expenditureLoadFailed": "Couldn't load your expenditure estimate.",
+  "@expenditureLoadFailed": {"description": "Progress: the expenditure card could not be read; shown with Try again."},
+  "weightHistoryRowRemoved": "Row removed",
+  "@weightHistoryRowRemoved": {"description": "Weight history: snackbar after removing a row with something typed, with Undo (nothing is saved yet)."},
+  "personalFoodMergeChooseAnother": "Choose a different food",
+  "@personalFoodMergeChooseAnother": {"description": "Merge confirmation: goes back to the list of foods to merge in."},
+  "targetsDayChanged": "{day}, changed",
+  "@targetsDayChanged": {"description": "Targets per-day list, for a screen reader: a weekday with its own number (not the suggestion); {day} is the row's spoken text, e.g. \"Friday: 2,600 kcal\".", "placeholders": {"day": {"type": "String"}}}
 }

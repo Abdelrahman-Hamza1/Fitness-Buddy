@@ -3,6 +3,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/amount_text.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/ui/nutrition_summary.dart';
 import 'package:fb_mobile/features/diary/application/diary_actions.dart';
 import 'package:fb_mobile/features/diary/presentation/entry_actions.dart';
 import 'package:fb_mobile/features/diary/presentation/live_entry.dart';
@@ -17,7 +18,11 @@ import 'package:material_ui/material_ui.dart';
 Future<void> showEntryAmountSheet(BuildContext context, DiaryEntry entry) =>
     showFbSheet<void>(
       context,
-      title: entry.food.names.en,
+      // The name in the "Food names" setting, like the row it came from.
+      title: foodNameInline(
+        entry.food.names,
+        ProviderScope.containerOf(context).read(foodNameLanguageProvider),
+      ),
       builder: (_) => EntryAmountSheet(entry: entry),
     );
 
@@ -73,6 +78,8 @@ class _EntryAmountSheetState extends ConsumerState<EntryAmountSheet> {
         .changeAmount(entry, input);
     if (!mounted) return;
     setState(() => _saving = false);
+    // Read before the sheet closes (LC-007).
+    final name = readFoodNameInline(ref, entry.food.names);
     switch (outcome) {
       case DiaryActionFailed(:final reason):
         setState(() => _failure = reason);
@@ -85,7 +92,7 @@ class _EntryAmountSheetState extends ConsumerState<EntryAmountSheet> {
             host,
             outcome,
             () => host.l10n.diaryAmountChanged(
-              entry.food.names.en,
+              name,
               servingText(
                 host.l10n,
                 input: input,
@@ -164,46 +171,38 @@ class _EntryAmountSheetState extends ConsumerState<EntryAmountSheet> {
           ),
           active: _padOpen,
           onTap: () => setState(() => _padOpen = !_padOpen),
+          // A hardware keyboard types too (A57 A61).
+          onKey: (key) => _onKey(key, entry),
         ),
+        NutritionSummary(nutrients: snapshot),
+        // The pad grows and shrinks under the units (A57 A19), in their
+        // slot, so a closed pad adds no gap.
         Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              snapshot == null
-                  ? l10n.foodSheetNoKcal
-                  : l10n.foodSheetKcal(DisplayRounding.kcal(snapshot.kcal)),
-              style: FbType.numeric(FbType.headline)
-                  .copyWith(color: scheme.onSurface),
+            FbUnitPicker(
+              units: [
+                for (final code in units)
+                  FbUnitOption(id: code, label: unitName(code)),
+              ],
+              selected: unit,
+              onSelected: (code) => setState(() {
+                _unit = code;
+                _failure = null;
+              }),
             ),
-            if (snapshot != null)
-              Text(
-                l10n.foodSheetMacros(
-                  DisplayRounding.nutrientGrams(snapshot.protein),
-                  DisplayRounding.nutrientGrams(snapshot.carbs),
-                  DisplayRounding.nutrientGrams(snapshot.fat),
-                  DisplayRounding.nutrientGrams(snapshot.fiber),
+            FbReveal(
+              visible: _padOpen,
+              child: Padding(
+                padding: const EdgeInsetsDirectional.only(top: FbSpace.s3),
+                child: FbNumberPad(
+                  onKey: (key) => _onKey(key, entry),
+                  onDone: () => setState(() => _padOpen = false),
                 ),
-                style: FbType.numeric(FbType.bodySmall)
-                    .copyWith(color: scheme.onSurfaceVariant),
               ),
+            ),
           ],
         ),
-        FbUnitPicker(
-          units: [
-            for (final code in units)
-              FbUnitOption(id: code, label: unitName(code)),
-          ],
-          selected: unit,
-          onSelected: (code) => setState(() {
-            _unit = code;
-            _failure = null;
-          }),
-        ),
-        if (_padOpen)
-          FbNumberPad(
-            onKey: (key) => _onKey(key, entry),
-            onDone: () => setState(() => _padOpen = false),
-          ),
         if (_failure == DiaryActionFailure.invalid)
           FbInlineBanner(
             kind: FbInlineBannerKind.error,
@@ -218,12 +217,21 @@ class _EntryAmountSheetState extends ConsumerState<EntryAmountSheet> {
                 ? l10n.diaryActionRemoved
                 : l10n.diaryItemChanged,
           ),
-        if (input == null)
-          Text(
-            l10n.diaryAmountNeeded,
-            style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
+        // Why Save is off, in a line that is always reserved (UX-045):
+        // clearing the amount doesn't push Save down.
+        ExcludeSemantics(
+          excluding: input != null,
+          child: Opacity(
+            opacity: input == null ? 1 : 0,
+            child: Text(
+              l10n.diaryAmountNeeded,
+              key: const ValueKey('entry-amount-needed'),
+              style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
+            ),
           ),
+        ),
         FbButton.primary(
+          key: const ValueKey('entry-amount-save'),
           label: l10n.diarySave,
           expand: true,
           onPressed: canSave ? () => _save(entry, input) : null,

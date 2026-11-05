@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:fb_design_system/src/charts/chart_geometry.dart';
 import 'package:fb_design_system/src/charts/chart_types.dart';
 import 'package:fb_design_system/src/charts/nice_scale.dart';
+import 'package:fb_design_system/src/tokens/contrast.dart';
 import 'package:fb_design_system/src/tokens/spacing.dart';
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:material_ui/material_ui.dart';
@@ -15,7 +16,8 @@ final class ChartColors {
   factory of(ColorScheme scheme) => ChartColors._(
     primary: scheme.primary,
     secondary: scheme.secondary,
-    muted: scheme.onSurfaceVariant.withValues(alpha: 0.45),
+    // A57 A56: composited ≥ 3:1 on every chart surface (contrast pairs).
+    muted: scheme.onSurfaceVariant.withValues(alpha: fbRawPointAlpha),
     grid: scheme.outlineVariant,
     goal: scheme.onSurfaceVariant,
     band: scheme.primary.withValues(alpha: 0.14),
@@ -46,7 +48,7 @@ final class ChartColors {
   /// A second series.
   final Color secondary;
 
-  /// Faint raw readings.
+  /// Raw readings: quieter than the trend, still ≥ 3:1 composited.
   final Color muted;
 
   /// Grid lines and period edges.

@@ -4,6 +4,7 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/l10n/time_format.dart';
 import 'package:fb_mobile/features/notifications/application/notification_coordinator.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,11 +22,22 @@ class NotificationSettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final prefs =
-        ref.watch(notificationPrefsProvider).value ??
-        NotificationPrefs.defaults;
+    final stored = ref.watch(notificationPrefsProvider);
     final allowed = ref.watch(notificationsAllowedProvider).value ?? true;
     final weekStart = ref.watch(weekStartProvider).value ?? DayOfWeek.saturday;
+    // Wait for the stored choices (A57 A13): defaults shown first and then
+    // replaced would flip switches under the finger.
+    if (!stored.hasValue && !stored.hasError) {
+      return Scaffold(
+        appBar: AppBar(title: Text(l10n.notifSettingsTitle)),
+        body: ListView(
+          key: const ValueKey('notif-loading'),
+          physics: const NeverScrollableScrollPhysics(),
+          children: [for (var i = 0; i < 6; i++) FbSkeleton.row()],
+        ),
+      );
+    }
+    final prefs = stored.value ?? NotificationPrefs.defaults;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.notifSettingsTitle)),
       body: ListView(
@@ -50,23 +62,31 @@ class NotificationSettingsScreen extends ConsumerWidget {
             subtitle: l10n.notifMasterHint,
             value: prefs.enabled,
             onChanged: (on) =>
-                unawaited(_save(context, ref, prefs.copyWith(enabled: on))),
+                unawaited(_save(context, ref, (p) => p.copyWith(enabled: on))),
           ),
-          if (prefs.enabled) ...[
-            FbListRow(
-              key: const ValueKey('notif-quiet'),
-              title: l10n.notifQuietHours,
-              subtitle: l10n.notifQuietRange(
-                _time(context, prefs.quietStart),
-                _time(context, prefs.quietEnd),
-              ),
-              trailing: const Icon(FbIcons.next),
-              onTap: () => unawaited(_pickQuiet(context, ref, prefs)),
+          // Everything under the master switch grows in and out with it
+          // (A57 A13); the switch itself stays put.
+          FbReveal(
+            visible: prefs.enabled,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                FbListRow(
+                  key: const ValueKey('notif-quiet'),
+                  title: l10n.notifQuietHours,
+                  subtitle: l10n.notifQuietRange(
+                    _time(context, prefs.quietStart),
+                    _time(context, prefs.quietEnd),
+                  ),
+                  trailing: const Icon(FbIcons.next),
+                  onTap: () => unawaited(_pickQuiet(context, ref, prefs)),
+                ),
+                FbSectionHeader(title: l10n.notifSectionTypes),
+                for (final type in NotificationType.values)
+                  ..._typeRows(context, ref, prefs, type, weekStart),
+              ],
             ),
-            FbSectionHeader(title: l10n.notifSectionTypes),
-            for (final type in NotificationType.values)
-              ..._typeRows(context, ref, prefs, type, weekStart),
-          ],
+          ),
         ],
       ),
     );
@@ -92,18 +112,40 @@ class NotificationSettingsScreen extends ConsumerWidget {
           _save(
             context,
             ref,
-            prefs.withType(type, setting.copyWith(enabled: on)),
+            (p) => p.withType(type, p.of(type).copyWith(enabled: on)),
           ),
         ),
       ),
-      if (setting.enabled && type.hasTime)
+      if (type.hasTime || type == NotificationType.weighIn)
+        FbReveal(
+          visible: setting.enabled,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [..._detailRows(context, ref, prefs, type, weekStart)],
+          ),
+        ),
+    ];
+  }
+
+  /// A reminder's time (and the weigh-in's day), shown while it is on.
+  List<Widget> _detailRows(
+    BuildContext context,
+    WidgetRef ref,
+    NotificationPrefs prefs,
+    NotificationType type,
+    DayOfWeek weekStart,
+  ) {
+    final l10n = context.l10n;
+    final setting = prefs.of(type);
+    return [
+      if (type.hasTime)
         FbListRow(
           key: ValueKey('notif-${type.name}-time'),
           title: l10n.notifTime,
-          // NT-021 skips a reminder inside quiet hours: say so (#243).
-          subtitle: prefs.isQuiet(setting.minute)
-              ? l10n.notifTimeInQuiet
-              : null,
+          // NT-021 skips a reminder inside quiet hours: say so (#243). The
+          // line is always reserved (A57 A13), so changing quiet hours
+          // doesn't move the rows below.
+          subtitle: prefs.isQuiet(setting.minute) ? l10n.notifTimeInQuiet : '',
           trailing: Text(_time(context, setting.minute)),
           onTap: () => unawaited(() async {
             final minute = await _pickMinute(context, setting.minute);
@@ -111,11 +153,11 @@ class NotificationSettingsScreen extends ConsumerWidget {
             await _save(
               context,
               ref,
-              prefs.withType(type, setting.copyWith(minute: minute)),
+              (p) => p.withType(type, p.of(type).copyWith(minute: minute)),
             );
           }()),
         ),
-      if (setting.enabled && type == NotificationType.weighIn)
+      if (type == NotificationType.weighIn)
         FbListRow(
           key: const ValueKey('notif-weighIn-day'),
           title: l10n.notifDay,
@@ -165,14 +207,20 @@ class NotificationSettingsScreen extends ConsumerWidget {
       NotificationType.iftar => (l10n.notifTypeIftar, l10n.notifTypeIftarHint),
     };
 
-String _time(BuildContext context, int minute) =>
-    MaterialLocalizations.of(context)
-        .formatTimeOfDay(TimeOfDay(hour: minute ~/ 60, minute: minute % 60));
+String _time(BuildContext context, int minute) => deviceTimeFormat(
+  context,
+  TimeOfDay(hour: minute ~/ 60, minute: minute % 60),
+);
 
-Future<int?> _pickMinute(BuildContext context, int minute) async {
+Future<int?> _pickMinute(
+  BuildContext context,
+  int minute, {
+  String? title,
+}) async {
   final picked = await showFbTimePicker(
     context,
     initialTime: TimeOfDay(hour: minute ~/ 60, minute: minute % 60),
+    title: title,
   );
   return picked == null ? null : picked.hour * 60 + picked.minute;
 }
@@ -182,11 +230,25 @@ Future<void> _pickQuiet(
   WidgetRef ref,
   NotificationPrefs prefs,
 ) async {
-  final start = await _pickMinute(context, prefs.quietStart);
+  // Two pickers in a row: each says which end of the window it sets
+  // (A57 A73).
+  final start = await _pickMinute(
+    context,
+    prefs.quietStart,
+    title: context.l10n.notifQuietFrom,
+  );
   if (start == null || !context.mounted) return;
-  final end = await _pickMinute(context, prefs.quietEnd);
+  final end = await _pickMinute(
+    context,
+    prefs.quietEnd,
+    title: context.l10n.notifQuietUntil,
+  );
   if (end == null || !context.mounted) return;
-  await _save(context, ref, prefs.copyWith(quietStart: start, quietEnd: end));
+  await _save(
+    context,
+    ref,
+    (p) => p.copyWith(quietStart: start, quietEnd: end),
+  );
 }
 
 Future<void> _pickWeighInDay(
@@ -205,19 +267,21 @@ Future<void> _pickWeighInDay(
     ],
   );
   if (picked == null || !context.mounted) return;
-  await _save(context, ref, prefs.copyWith(weighInDay: picked));
+  await _save(context, ref, (p) => p.copyWith(weighInDay: picked));
 }
 
-/// Saves [prefs] with Undo feedback (UX-030).
+/// Saves [change] of the stored settings with Undo feedback (UX-030). A
+/// change, not a whole value, so quick edits of different reminders all
+/// land (A57 A71).
 Future<void> _save(
   BuildContext context,
   WidgetRef ref,
-  NotificationPrefs prefs,
+  NotificationPrefs Function(NotificationPrefs current) change,
 ) async {
   final host = Navigator.of(context, rootNavigator: true).context;
   final outcome = await ref
       .read(settingsActionsProvider)
-      .setNotificationPrefs(prefs);
+      .updateNotificationPrefs(change);
   if (!host.mounted) return;
   reportSettingsOutcome(host, outcome, () => host.l10n.notifSaved);
 }

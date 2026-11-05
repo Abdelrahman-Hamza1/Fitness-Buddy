@@ -29,7 +29,7 @@ final class QuickAddLogged extends QuickAddOutcome {
   /// [amount] it was logged with; a saved meal its [itemCount].
   const new(
     this.undoEntryId,
-    this.name,
+    this.names,
     this.date, {
     this.amount,
     this.itemCount,
@@ -38,8 +38,9 @@ final class QuickAddLogged extends QuickAddOutcome {
   /// Undo handle.
   final String undoEntryId;
 
-  /// Private food or meal name.
-  final String name;
+  /// Private food names, or a saved meal's typed name as English (LC-007);
+  /// presentation picks the setting's one.
+  final FoodNames names;
 
   /// Explicit viewed day.
   final LocalDate date;
@@ -99,9 +100,9 @@ class QuickAddController extends _$QuickAddController {
             slotId: chip.slotId,
           );
           return switch (result) {
-            FoodLogged(:final undoEntryId, :final nameEn) => QuickAddLogged(
+            FoodLogged(:final undoEntryId, :final names) => QuickAddLogged(
               undoEntryId,
-              nameEn,
+              names,
               viewedDate,
               amount: lastUsed.amount,
             ),
@@ -118,7 +119,7 @@ class QuickAddController extends _$QuickAddController {
           return switch (result) {
             SavedMealDone(:final undoEntryId) => QuickAddLogged(
               undoEntryId,
-              meal.name,
+              FoodNames(meal.name),
               viewedDate,
               itemCount: meal.items.length,
             ),

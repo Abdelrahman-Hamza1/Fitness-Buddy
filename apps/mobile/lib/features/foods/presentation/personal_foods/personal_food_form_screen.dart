@@ -17,6 +17,7 @@ import 'package:fb_mobile/features/foods/presentation/personal_foods/discard_cha
 import 'package:fb_mobile/features/foods/presentation/personal_foods/merge_food_sheet.dart';
 import 'package:fb_mobile/features/foods/presentation/personal_foods/personal_food_form_sections.dart';
 import 'package:fb_mobile/features/foods/presentation/personal_foods/personal_food_inputs.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -87,8 +88,21 @@ class _PersonalFoodFormScreenState
 
   PersonalFoodFormController get _controller => ref.read(_provider.notifier);
 
+  /// The note shown under the numbers, and the one they call for now
+  /// (A06).
+  _Note? _shownNote;
+  _Note? _latestNote;
+  bool _noteStarted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    FocusManager.instance.addListener(_onFocusChange);
+  }
+
   @override
   void dispose() {
+    FocusManager.instance.removeListener(_onFocusChange);
     _inputs.dispose();
     super.dispose();
   }
@@ -162,6 +176,7 @@ class _PersonalFoodFormScreenState
       setState(() {
         _attempted = true;
         _refusal = null;
+        _shownNote = _latestNote;
       });
       _focusFirstError(form);
       return;
@@ -192,7 +207,9 @@ class _PersonalFoodFormScreenState
         }
         setState(() => _leaving = true);
         navigator.pop();
-        final saved = l10n.personalFoodSavedMessage('${args['name']}');
+        final saved = l10n.personalFoodSavedMessage(
+          foodNameArg(args['name'], ref.read(foodNameLanguageProvider)),
+        );
         if (addTo != null && foodId != null && host.mounted) {
           // Creation Undo is skipped in this flow: the root food sheet
           // covers it, and delaying it would outlive the undo window.
@@ -288,7 +305,9 @@ class _PersonalFoodFormScreenState
         if (host.mounted) {
           showUndoFeedback(
             host,
-            message: l10n.personalFoodDeletedMessage('${args['name']}'),
+            message: l10n.personalFoodDeletedMessage(
+              foodNameArg(args['name'], ref.read(foodNameLanguageProvider)),
+            ),
             undoEntryId: undoId,
           );
         }
@@ -305,12 +324,13 @@ class _PersonalFoodFormScreenState
     final l10n = context.l10n;
     final done = await showMergeFoodSheet(context, food: food);
     if (done == null || !mounted) return;
+    final language = ref.read(foodNameLanguageProvider);
     // Whichever food was kept, this form's food is now stale or gone.
     setState(() => _leaving = true);
     navigator.pop();
     if (host.mounted) {
-      final merged = '${done.args['merged']}';
-      final survivor = '${done.args['survivor']}';
+      final merged = foodNameArg(done.args['merged'], language);
+      final survivor = foodNameArg(done.args['survivor'], language);
       showUndoFeedback(
         host,
         // "Merged Labneh into Labneh" says nothing: name only the survivor.
@@ -490,7 +510,7 @@ class _PersonalFoodFormScreenState
                       unit: code,
                     ),
                   ),
-                  notes: _nutritionNotes(l10n, form),
+                  notes: [_notesRegion(l10n, form)],
                 ),
                 FbDisclosureRow(
                   title: l10n.personalFoodMoreDetails,
@@ -560,12 +580,10 @@ class _PersonalFoodFormScreenState
         PersonalFoodStaleness.current => const SizedBox.shrink(),
       };
 
-  /// The calories-versus-macros note (FD-012) and the impossible-values
-  /// note, once every number they depend on is acceptable.
-  List<Widget> _nutritionNotes(
-    AppLocalizations l10n,
-    PersonalFoodFormState form,
-  ) {
+  /// The calories-versus-macros note (FD-012) or the impossible-values
+  /// note the numbers call for now, once every number they depend on is
+  /// acceptable; null for none.
+  _Note? _liveNote(PersonalFoodFormState form) {
     const core = [
       PersonalFoodField.kcal,
       PersonalFoodField.protein,
@@ -575,19 +593,12 @@ class _PersonalFoodFormScreenState
       PersonalFoodField.servingSize,
     ];
     final errors = form.validation.errors;
-    if (core.any(errors.containsKey)) return const [];
+    if (core.any(errors.containsKey)) return null;
     if (errors[PersonalFoodField.nutrients] != null) {
-      return [
-        formPad(
-          FbInlineBanner(
-            kind: FbInlineBannerKind.error,
-            message: l10n.personalFoodErrorImpossible,
-          ),
-        ),
-      ];
+      return const _Note.impossible();
     }
     final sanity = form.sanity;
-    if (!form.showSanityWarning || sanity == null) return const [];
+    if (!form.showSanityWarning || sanity == null) return null;
     // The check works on per-100 values; say it in the numbers typed.
     var expected = sanity.expectedKcal;
     if (form.mode == PersonalFoodMode.perServing) {
@@ -596,14 +607,55 @@ class _PersonalFoodFormScreenState
       );
       if (size != null) expected = expected * size / 100;
     }
-    return [
-      formPad(
-        FbInlineBanner(
-          kind: FbInlineBannerKind.info,
-          message: l10n.personalFoodSanityWarn(DisplayRounding.kcal(expected)),
+    return _Note.sanity(DisplayRounding.kcal(expected));
+  }
+
+  /// The note region under the numbers (A57 A06, UX-045): it shows the
+  /// note as of the last time a field lost focus or Save was tried, never
+  /// one that comes and goes with each keystroke, and it changes with a
+  /// smooth resize.
+  Widget _notesRegion(AppLocalizations l10n, PersonalFoodFormState form) {
+    _latestNote = _liveNote(form);
+    if (!_noteStarted) {
+      _noteStarted = true;
+      _shownNote = _latestNote;
+    }
+    final note = _shownNote;
+    return FbSizeFade(
+      child: switch (note) {
+        null => const SizedBox(
+          key: ValueKey('note-none'),
+          width: double.infinity,
         ),
-      ),
-    ];
+        _Note(impossible: true) => formPad(
+          FbInlineBanner(
+            key: const ValueKey('note-impossible'),
+            kind: FbInlineBannerKind.error,
+            message: l10n.personalFoodErrorImpossible,
+          ),
+        ),
+        _Note(:final kcal) => formPad(
+          FbInlineBanner(
+            key: ValueKey('note-sanity-$kcal'),
+            kind: FbInlineBannerKind.info,
+            message: l10n.personalFoodSanityWarn(kcal),
+          ),
+        ),
+      },
+    );
+  }
+
+  /// Shows the note the numbers call for now (on blur and on Save).
+  void _syncNote() {
+    if (!mounted || _shownNote == _latestNote) return;
+    setState(() => _shownNote = _latestNote);
+  }
+
+  void _onFocusChange() {
+    // Focus can move while the tree is being built or torn down.
+    WidgetsBinding.instance
+      ..addPostFrameCallback((_) => _syncNote())
+      ..ensureVisualUpdate();
   }
 
   Widget _bottom(
@@ -654,4 +706,22 @@ class _PersonalFoodFormScreenState
       ),
     );
   }
+}
+
+/// A note under the personal food's numbers: impossible values, or the
+/// calories-versus-macros check with the [kcal] it expects.
+@immutable
+final class _Note {
+  const new impossible() : impossible = true, kcal = 0;
+  const new sanity(this.kcal) : impossible = false;
+
+  final bool impossible;
+  final int kcal;
+
+  @override
+  bool operator ==(Object other) =>
+      other is _Note && other.impossible == impossible && other.kcal == kcal;
+
+  @override
+  int get hashCode => Object.hash(impossible, kcal);
 }

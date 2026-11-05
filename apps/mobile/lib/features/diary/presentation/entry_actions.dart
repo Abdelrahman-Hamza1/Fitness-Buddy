@@ -1,13 +1,14 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/l10n/time_format.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/diary/application/diary_actions.dart';
+import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_ui/material_ui.dart'
-    show MaterialLocalizations, TimeOfDay;
+import 'package:material_ui/material_ui.dart' show TimeOfDay;
 
 // What a swipe on a diary item does (DY-022): run the command, then say what
 // happened. The container and the root context are taken before the first
@@ -23,11 +24,8 @@ Future<void> deleteEntryWithUndo(BuildContext context, DiaryEntry entry) async {
       .read(diaryActionsControllerProvider.notifier)
       .deleteEntry(entry);
   if (!host.mounted) return;
-  reportDiaryOutcome(
-    host,
-    outcome,
-    () => host.l10n.diaryEntryDeleted(entry.food.names.en),
-  );
+  final name = _nameOf(container, entry);
+  reportDiaryOutcome(host, outcome, () => host.l10n.diaryEntryDeleted(name));
 }
 
 /// Opens the time picker on [entry]'s time and, once a time is picked,
@@ -46,11 +44,12 @@ Future<void> chooseTimeAndChange(BuildContext context, DiaryEntry entry) async {
       .read(diaryActionsControllerProvider.notifier)
       .changeTime(entry, time);
   if (!host.mounted) return;
+  final name = _nameOf(container, entry);
   reportDiaryOutcome(
     host,
     outcome,
     () => host.l10n.diaryTimeChanged(
-      entry.food.names.en,
+      name,
       timeText(host, time.hour, time.minute),
     ),
   );
@@ -69,12 +68,13 @@ void changeFoodOf(WidgetRef ref, DiaryEntry entry) => ref
       ),
     );
 
+/// [entry]'s name for a sentence, in the "Food names" setting (LC-007).
+String _nameOf(ProviderContainer container, DiaryEntry entry) =>
+    foodNameInline(entry.food.names, container.read(foodNameLanguageProvider));
+
 /// A clock time in the device's 12 or 24 hour format.
 String timeText(BuildContext context, int hour, int minute) =>
-    MaterialLocalizations.of(context).formatTimeOfDay(
-      TimeOfDay(hour: hour, minute: minute),
-      alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
-    );
+    deviceTimeFormat(context, TimeOfDay(hour: hour, minute: minute));
 
 /// Says what a diary command did: the Undo snackbar with [done]'s text, or a
 /// calm sentence for a refusal (A08 D12(3)). [changedMessage] replaces the

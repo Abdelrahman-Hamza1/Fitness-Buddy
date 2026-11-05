@@ -6,7 +6,8 @@ import 'package:flutter/widgets.dart';
 
 /// Says what a settings command did: the Undo snackbar with [done]'s text
 /// (UX-030), or a calm sentence for a refusal. A value that is already set
-/// and a command already running need no message; nothing else is silent.
+/// and a change folded into a later one need no message; nothing else is
+/// silent.
 void reportSettingsOutcome(
   BuildContext host,
   SettingsOutcome outcome,
@@ -15,7 +16,7 @@ void reportSettingsOutcome(
   switch (outcome) {
     case SettingsDone(:final undoEntryId):
       showUndoFeedback(host, message: done(), undoEntryId: undoEntryId);
-    case SettingsUnchanged() || SettingsPending():
+    case SettingsUnchanged() || SettingsQueued():
       break;
     case SettingsFailed():
       showFbSnackBar(host, host.l10n.settingsSaveFailed);

@@ -1,6 +1,7 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/workouts/application/exercise_library.dart';
 import 'package:fb_mobile/features/workouts/application/template_editor.dart';
@@ -112,7 +113,8 @@ class _EditorState extends ConsumerState<TemplateEditorScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final form = ref.watch(templateEditorProvider(_key)).value;
+    final async = ref.watch(templateEditorProvider(_key));
+    final form = async.value;
     final library =
         ref.watch(exerciseLibraryProvider).value ?? ExerciseLibrary.empty;
     if (form != null && !_filled) {
@@ -128,7 +130,12 @@ class _EditorState extends ConsumerState<TemplateEditorScreen> {
         ),
       ),
       body: form == null
-          ? const SizedBox.shrink()
+          ? (async.hasError
+                ? LoadFailedView(
+                    message: l10n.workoutsLoadFailed,
+                    onRetry: () => ref.invalidate(templateEditorProvider(_key)),
+                  )
+                : const LoadingRows())
           : ListView(
               padding: const EdgeInsetsDirectional.all(FbSpace.s4),
               children: [

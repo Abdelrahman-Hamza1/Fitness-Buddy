@@ -548,21 +548,7 @@ final class RamadanMealSlotsRoute extends AppRoute {
   String get location => path;
 }
 
-/// The weight graph opened from Today's weight card (A15 D12): a detail
-/// screen of the Today tab, so Back returns to Today. No parameters.
-final class TodayWeightGraphRoute extends AppRoute {
-  /// Creates the route.
-  const new();
-
-  /// The route's path pattern.
-  static const path = '/today/weight';
-
-  @override
-  String get location => path;
-}
-
-/// The weight graph opened from the Progress tab (A15 D12). Same screen as
-/// [TodayWeightGraphRoute]. No parameters.
+/// The weight graph opened from the Progress tab (A15 D12). No parameters.
 final class WeightGraphRoute extends AppRoute {
   /// Creates the route.
   const new();

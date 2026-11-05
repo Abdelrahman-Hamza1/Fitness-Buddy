@@ -4,6 +4,7 @@ import 'package:fb_domain/fb_domain.dart'
     show LocalDate, SlotMode, VersionedId, checkExerciseId, isUuid;
 import 'package:fb_mobile/app/router/tab_tap.dart';
 import 'package:fb_mobile/app/shell/app_shell.dart';
+import 'package:fb_mobile/app/shell/fade_through_branches.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
 import 'package:fb_mobile/core/account/profile_generation.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
@@ -107,7 +108,14 @@ final class AppRouter implements AppNavigator {
     // showing go_router's error page.
     onException: (_, _, router) => router.go(TodayRoute.path),
     routes: [
-      StatefulShellRoute.indexedStack(
+      // Like `StatefulShellRoute.indexedStack`, with a fade-through on tab
+      // changes (A57 A27).
+      StatefulShellRoute(
+        navigatorContainerBuilder: (context, shell, children) =>
+            FadeThroughBranches(
+              currentIndex: shell.currentIndex,
+              children: children,
+            ),
         builder: (context, state, shell) => AppShell(
           currentIndex: shell.currentIndex,
           onTabSelected: (index) => _selectTab(shell, index),
@@ -127,7 +135,6 @@ final class AppRouter implements AppNavigator {
                     if (route is TodayRoute) ...[
                       _foodSearchRoute(),
                       _barcodeScanRoute(),
-                      _goRoute(const TodayWeightGraphRoute(), nested: true),
                       _sessionRoute(
                         TodayWorkoutSessionRoute.path,
                         TodayRoute.path,
@@ -645,7 +652,7 @@ final class AppRouter implements AppNavigator {
     CityPickerRoute() => const CityPickerScreen(),
     AboutRoute() => const AboutScreen(),
     NotificationSettingsRoute() => const NotificationSettingsScreen(),
-    TodayWeightGraphRoute() || WeightGraphRoute() => const WeightGraphScreen(),
+    WeightGraphRoute() => const WeightGraphScreen(),
     WeightHistoryRoute() => const WeightHistoryScreen(),
     MeasurementsRoute() => const MeasurementsScreen(),
     MeasurementTypeRoute(:final key) => MeasurementTypeScreen(typeKey: key),

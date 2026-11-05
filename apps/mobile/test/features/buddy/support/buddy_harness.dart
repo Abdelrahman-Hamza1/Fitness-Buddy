@@ -34,6 +34,7 @@ import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../../../packages/fb_domain/test/proposals/proposal_fixtures.dart';
@@ -132,7 +133,9 @@ final class RecordingAppNavigator implements AppNavigator {
 /// The real applier, database, send path, resolution and thread controller
 /// over a fake transport, at 2026-10-17 08:00 UTC.
 final class BuddyHarness {
-  new() {
+  /// A harness; [overrides] are added to the container's (e.g. the "Food
+  /// names" setting).
+  new({this.overrides = const []}) {
     addTearDown(bus.close);
     applier = ChangeSetApplier(
       db: db,
@@ -224,8 +227,12 @@ final class BuddyHarness {
       domainEventBusProvider.overrideWithValue(bus),
       clockProvider.overrideWithValue(clock),
       idGeneratorProvider.overrideWithValue(ids),
+      ...overrides,
     ],
   );
+
+  /// Extra container overrides.
+  final List<Override> overrides;
 
   /// A fresh app process over the same database (A23 restore): a new
   /// thread controller, the use cases kept.

@@ -162,4 +162,36 @@ void main() {
     await tester.pumpAndSettle();
     expect(runs, first + 1);
   });
+
+  testWidgets('A57 A48 T-R4 a failed check-in read shows a calm retry and '
+      'keeps Change back', (tester) async {
+    var fail = true;
+    await tester.pumpWidget(
+      _app(const CheckInCard(), [
+        appliedCheckInCardProvider.overrideWith(
+          (ref) async => CheckInCardView(
+            record: _record(),
+            draft: _draft,
+            kind: CheckInCardKind.applied,
+            floorKcal: 1750,
+          ),
+        ),
+        checkInCardProvider.overrideWith((ref) async {
+          if (fail) throw StateError('read failed');
+          return null;
+        }),
+      ]),
+    );
+    await tester.pumpAndSettle();
+    final failed = find.byKey(const ValueKey('check-in-load-failed'));
+    expect(failed, findsOneWidget);
+    expect(find.byKey(const ValueKey('check-in-change-back')), findsOneWidget);
+    fail = false;
+    await tester.tap(
+      find.descendant(of: failed, matching: find.byType(TextButton)),
+    );
+    await tester.pumpAndSettle();
+    expect(failed, findsNothing);
+    expect(find.byKey(const ValueKey('check-in-change-back')), findsOneWidget);
+  });
 }

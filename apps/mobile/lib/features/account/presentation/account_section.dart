@@ -12,7 +12,8 @@ import 'package:material_ui/material_ui.dart';
 /// The account card at the top of Me and of Me › Account & data (A33,
 /// A51 D7): a guest sees "Data on this phone only, not backed up" and Sign
 /// in; an account sees its backup state (the sync line, A34). No email or
-/// name: the phone keeps none (A33). Nothing while the status loads.
+/// name: the phone keeps none (A33). A card-shaped placeholder while the
+/// status loads (A57 A11), so Me doesn't jump when it arrives.
 class AccountCard extends ConsumerWidget {
   /// Creates the card.
   const new({super.key});
@@ -22,7 +23,7 @@ class AccountCard extends ConsumerWidget {
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
     final status = ref.watch(accountStatusProvider).value;
-    if (status == null) return const SizedBox.shrink();
+    if (status == null) return const _AccountCardSkeleton();
     final signedIn = status == AccountStatus.signedIn;
     final (title, detail) = switch (status) {
       AccountStatus.guest => (l10n.meGuest, l10n.meGuestDetail),
@@ -174,6 +175,37 @@ class AccountDeleteRow extends ConsumerWidget {
       trailing: const Icon(FbIcons.next),
       onTap: () =>
           ref.read(appNavigatorProvider).push(const DeleteAccountRoute()),
+    );
+  }
+}
+
+/// The account card's shape while its status loads: the badge and two
+/// text lines at the current text scale.
+class _AccountCardSkeleton extends StatelessWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context) {
+    final scaler = MediaQuery.textScalerOf(context);
+    return FbCard(
+      key: const ValueKey('account-card-loading'),
+      padding: const EdgeInsetsDirectional.all(FbSpace.s4),
+      child: Row(
+        spacing: FbSpace.s3,
+        children: [
+          const FbSkeleton.box(width: 44, height: 44, radius: 22),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: FbSpace.s2,
+              children: [
+                FbSkeleton.line(width: 140, height: scaler.scale(16)),
+                FbSkeleton.line(height: scaler.scale(13)),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

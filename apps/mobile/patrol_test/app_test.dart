@@ -1,3 +1,4 @@
+import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/app/app.dart';
 import 'package:fb_mobile/app/app_scope.dart';
 import 'package:fb_mobile/core/api/client_config_repository.dart';
@@ -75,17 +76,45 @@ void main() {
       );
 
       // Every tab works offline, and Today comes back as it was.
-      final tabs = {
-        'Progress': (ProgressScreen, 'Charts appear after'),
-        'Workouts': (WorkoutsScreen, 'Your workouts will show up'),
-        'Me': (MeScreen, 'Food & meals'),
-        'Today': (TodayScreen, 'Tell Buddy what you ate'),
+      // Progress (A57 P1): its list builds lazily, so the calories card can
+      // sit past the emulator's build extent; scroll to the chart by key and
+      // check that a fresh install shows its empty state (the chart icon),
+      // not axes.
+      final calories = find.byKey(const ValueKey('progress-calories-chart'));
+      Future<Finder> progress() async {
+        await $.tester.scrollUntilVisible(
+          calories,
+          200,
+          scrollable: find
+              .descendant(
+                of: find.byType(ProgressScreen),
+                matching: find.byType(Scrollable),
+              )
+              .first,
+        );
+        return find.descendant(
+          of: calories,
+          matching: find.byIcon(FbIcons.chart),
+        );
+      }
+
+      final tabs = <String, (Type, Future<Finder> Function())>{
+        'Progress': (ProgressScreen, progress),
+        'Workouts': (
+          WorkoutsScreen,
+          () async => find.textContaining('Your workouts will show up'),
+        ),
+        'Me': (MeScreen, () async => find.textContaining('Food & meals')),
+        'Today': (
+          TodayScreen,
+          () async => find.textContaining('Tell Buddy what you ate'),
+        ),
       };
-      for (final MapEntry(key: label, value: (screen, text)) in tabs.entries) {
+      for (final MapEntry(key: label, value: (screen, shown)) in tabs.entries) {
         await $(NavigationBar).$(label).tap();
 
         expect($(screen), findsOneWidget, reason: label);
-        expect(find.textContaining(text), findsOneWidget, reason: label);
+        expect(await shown(), findsOneWidget, reason: label);
         expect($(NavigationBar), findsOneWidget, reason: label);
       }
     },
