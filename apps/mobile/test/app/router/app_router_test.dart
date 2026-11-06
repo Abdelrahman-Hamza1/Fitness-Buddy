@@ -1,6 +1,7 @@
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/app/router/app_router.dart';
 import 'package:fb_mobile/app/update/update_required_screen.dart';
+import 'package:fb_mobile/core/account/profile_generation.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/body/body.dart';
@@ -403,5 +404,48 @@ void main() {
     expect(screen.replace, VersionedId(_entryId, 2));
     expect(find.text('Change food'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
+  });
+
+  test('A51 #272 the start route holder gives its route once', () {
+    final holder = StartRouteHolder();
+    expect(holder.take(), isNull);
+    holder.hold(const WorkoutStarterPlansRoute());
+    expect(holder.take(), const WorkoutStarterPlansRoute());
+    expect(holder.take(), isNull);
+    holder
+      ..hold(const WorkoutStarterPlansRoute())
+      ..hold(null);
+    expect(holder.take(), isNull);
+  });
+
+  testWidgets('A51 #272 a profile switch with a held start route opens the '
+      "new router there (the first run's starter plans after signing in to "
+      'an existing account); the next switch opens Today', (tester) async {
+    final container = await pumpApp(
+      tester,
+      overrides: [searchOverride(FakeFoodSearch())],
+    );
+    expect(
+      container.read(appRouterProvider).config.state.matchedLocation,
+      TodayRoute.path,
+    );
+    container
+        .read(startRouteHolderProvider)
+        .hold(const WorkoutStarterPlansRoute());
+    container.read(profileGenerationProvider.notifier).bump();
+    await tester.pumpAndSettle();
+    expect(
+      container.read(appRouterProvider).config.state.matchedLocation,
+      WorkoutStarterPlansRoute.path,
+    );
+    expect(find.byType(StarterPlansScreen), findsOneWidget);
+
+    container.read(profileGenerationProvider.notifier).bump();
+    await tester.pumpAndSettle();
+    expect(
+      container.read(appRouterProvider).config.state.matchedLocation,
+      TodayRoute.path,
+    );
+    await unmountApp(tester, container);
   });
 }

@@ -151,6 +151,21 @@ void main() {
     );
   });
 
+  testWidgets('LC-011 #117 the sheet says what a portion comes to under '
+      'the typed amount; a weight unit needs no such line', (tester) async {
+    final used = usedBefore(pita, 2, 'loaf', 120);
+    await openSheet(tester, SheetRig(catalogChoice(pita, history: used)));
+    const line = ValueKey('food-sheet-canonical');
+    expect(find.byKey(line), findsOneWidget);
+    expect(find.text("That's 120 g"), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(FbChoiceChip, 'oz'));
+    await tester.pumpAndSettle();
+    // The line keeps its room (UX-045) but says nothing.
+    expect(find.byKey(line), findsOneWidget);
+    expect(find.textContaining("That's"), findsNothing);
+  });
+
   testWidgets('LC-011 a zero amount disables Add and shows no calories', (
     tester,
   ) async {

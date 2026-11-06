@@ -144,8 +144,10 @@ String cityLabel(AppLocalizations l10n, CatalogCity city) {
 }
 
 /// The country shown under a city's name (LC-033): the name for Palestine,
-/// Jordan and the region the owner's cities come from, else the ISO code.
-String countryLabel(AppLocalizations l10n, String code) => switch (code) {
+/// Jordan and the region the owner's cities come from. Any other code has no
+/// subtitle, so a row shows the city name only, never a bare ISO code such as
+/// "IL" (backlog #119, owner 2026-11-06).
+String? countryLabel(AppLocalizations l10n, String code) => switch (code) {
   'PS' => l10n.countryPS,
   'JO' => l10n.countryJO,
   'EG' => l10n.countryEG,
@@ -161,5 +163,5 @@ String countryLabel(AppLocalizations l10n, String code) => switch (code) {
   'KW' => l10n.countryKW,
   'BH' => l10n.countryBH,
   'MA' => l10n.countryMA,
-  _ => code,
+  _ => null,
 };

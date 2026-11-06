@@ -161,4 +161,33 @@ void main() {
     await tester.pump();
     expect(find.byKey(const ValueKey('versions-signed-out')), findsOneWidget);
   });
+
+  testWidgets("G7 #236 the editors' Earlier versions button shows only "
+      'while sync is on', (tester) async {
+    SyncView off() => const SyncView(
+      enabled: false,
+      running: false,
+      restoring: false,
+      restoredRows: 0,
+      problem: SyncProblem.none,
+      pending: 0,
+      parked: 0,
+      lastSuccessMs: null,
+      oldestPendingMs: null,
+      nowMs: _now,
+    );
+    await _pump(
+      tester,
+      const EarlierVersionsButton(entity: 'weighIn', id: 'w'),
+      off(),
+    );
+    expect(find.text('Earlier versions'), findsNothing);
+
+    await _pump(
+      tester,
+      const EarlierVersionsButton(key: ValueKey(2), entity: 'weighIn', id: 'w'),
+      _view(),
+    );
+    expect(find.text('Earlier versions'), findsOneWidget);
+  });
 }

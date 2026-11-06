@@ -76,8 +76,9 @@ final class UpdateRow<T extends Table, D> extends RowOp {
 /// Tombstone a live row (synced rows are never deleted). Fails like
 /// [UpdateRow].
 final class TombstoneRow<T extends Table, D> extends RowOp {
-  /// Tombstone row [id] of [table].
-  const new(this.table, this.id, {this.expectedVersion}) : super._();
+  /// Tombstone row [id] of [table], clearing the [scrub] columns with it.
+  const new(this.table, this.id, {this.expectedVersion, this.scrub})
+    : super._();
 
   @override
   final TableInfo<T, D> table;
@@ -87,6 +88,13 @@ final class TombstoneRow<T extends Table, D> extends RowOp {
 
   /// The version the row must be at, if the op read it earlier.
   final int? expectedVersion;
+
+  /// Content columns set in the same write as `deleted_at` (one version):
+  /// user content a tombstone must not keep or push, such as a weigh-in's
+  /// kg and note (backlog #136). Undo still brings them back: the inverse
+  /// restores the row's snapshot from before this write. Null keeps the
+  /// content as it was.
+  final Insertable<D>? scrub;
 }
 
 /// Put a row back as it was (A01 D3): its content columns, `deleted_at` and

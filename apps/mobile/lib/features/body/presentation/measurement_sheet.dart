@@ -10,8 +10,10 @@ import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/body/application/measurement_actions.dart';
 import 'package:fb_mobile/features/body/application/measurement_form.dart';
 import 'package:fb_mobile/features/body/application/measurement_providers.dart';
+import 'package:fb_mobile/features/body/presentation/body_versions.dart';
 import 'package:fb_mobile/features/body/presentation/measurement_text.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
+import 'package:fb_mobile/features/sync/sync.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -232,13 +234,22 @@ class _MeasurementSheetState extends ConsumerState<MeasurementSheet> {
                   ? () => unawaited(_save(nameOf(form.type)))
                   : null,
             ),
-            if (edit != null)
+            if (edit != null) ...[
               FbButton.text(
                 label: l10n.measurementDelete,
                 icon: FbIcons.delete,
                 expand: true,
                 onPressed: busy ? null : () => unawaited(_delete(edit)),
               ),
+              // G7 (#236): the server's earlier versions, for an account.
+              EarlierVersionsButton(
+                key: const ValueKey('measurement-earlier-versions'),
+                entity: 'measurement',
+                id: edit.id,
+                summary: measurementVersionSummary,
+                enabled: !busy,
+              ),
+            ],
           ],
         ),
         child: form == null || views == null

@@ -124,4 +124,75 @@ void main() {
       'portion (2.1 oz)',
     );
   });
+
+  NutrientSnapshot snap(Quantity input, double amount, NutrientBasis basis) =>
+      NutrientSnapshot(
+        nutrients: Nutrients(kcal: 1, protein: 0, carbs: 0, fat: 0, fiber: 0),
+        amount: amount,
+        basis: basis,
+        input: input,
+      );
+
+  test('LC-011 #117 amountEditorCanonical says what a portion, kitchen '
+      'measure or density-backed volume comes to, in the unit system', () {
+    expect(
+      amountEditorCanonical(
+        l10n,
+        snap(Quantity(2, 'piece'), 120, NutrientBasis.per100g),
+        system: UnitSystem.metric,
+      ),
+      "That's 120 g",
+    );
+    expect(
+      amountEditorCanonical(
+        l10n,
+        snap(Quantity(250, 'ml'), 258, NutrientBasis.per100g),
+        system: UnitSystem.metric,
+      ),
+      "That's 258 g",
+    );
+    expect(
+      amountEditorCanonical(
+        l10n,
+        snap(Quantity(1, 'loaf'), 60, NutrientBasis.per100g),
+        system: UnitSystem.imperial,
+      ),
+      "That's 2.1 oz",
+    );
+  });
+
+  test('LC-011 #117 amountEditorCanonical adds nothing for an amount in the '
+      "basis's own dimension or an incomplete amount", () {
+    expect(
+      amountEditorCanonical(
+        l10n,
+        snap(Quantity(150, 'g'), 150, NutrientBasis.per100g),
+        system: UnitSystem.metric,
+      ),
+      isNull,
+    );
+    expect(
+      amountEditorCanonical(
+        l10n,
+        snap(Quantity(250, 'ml'), 250, NutrientBasis.per100ml),
+        system: UnitSystem.metric,
+      ),
+      isNull,
+    );
+    expect(
+      amountEditorCanonical(l10n, null, system: UnitSystem.metric),
+      isNull,
+    );
+  });
+
+  test('UX-045 #117 amountEditorMayResolve: only foods offering a portion or '
+      'cross-dimension unit keep the line', () {
+    expect(amountEditorMayResolve(['g', 'oz'], NutrientBasis.per100g), isFalse);
+    expect(
+      amountEditorMayResolve(['g', 'oz', 'loaf'], NutrientBasis.per100g),
+      isTrue,
+    );
+    expect(amountEditorMayResolve(['ml'], NutrientBasis.per100g), isTrue);
+    expect(amountEditorMayResolve(['ml'], NutrientBasis.per100ml), isFalse);
+  });
 }

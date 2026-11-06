@@ -1358,6 +1358,18 @@ abstract class AppLocalizations {
   /// **'lb'**
   String get weightUnitLb;
 
+  /// Screen readers: the kg unit chip in full, for body weight.
+  ///
+  /// In en, this message translates to:
+  /// **'kilograms'**
+  String get weightUnitKgSpoken;
+
+  /// Screen readers: the lb unit chip in full, for body weight.
+  ///
+  /// In en, this message translates to:
+  /// **'pounds'**
+  String get weightUnitLbSpoken;
+
   /// Weekly rate of the weight trend, signed: "−0.4 kg/week" (WB-011). Neutral: no good/bad wording.
   ///
   /// In en, this message translates to:
@@ -3425,6 +3437,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{amount} ({canonical})'**
   String foodAmountWithCanonical(String amount, String canonical);
+
+  /// Amount editors (food sheet, entry amount sheet): the size a portion, kitchen measure or density-backed amount resolves to, under the typed amount, e.g. "That's 120 g" for 2 pieces (backlog #117). Arrives formatted with its unit.
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s {canonical}'**
+  String amountEditorCanonical(String canonical);
 
   /// Item details: row label of the time the item was logged for.
   ///
@@ -6611,48 +6629,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Below the safety floor the same target applies every day and weekly rebalancing is off.'**
   String get targetsForcedFixedNote;
-
-  /// Targets: row and sheet title, weekdays with a higher share of the weekly budget (TG-043).
-  ///
-  /// In en, this message translates to:
-  /// **'Higher-calorie days'**
-  String get targetsShifting;
-
-  /// Targets: no higher-calorie days.
-  ///
-  /// In en, this message translates to:
-  /// **'None'**
-  String get targetsShiftingNone;
-
-  /// Shifting sheet: what a higher-calorie day does (TG-043).
-  ///
-  /// In en, this message translates to:
-  /// **'The weekly total stays the same: the other days get a little less.'**
-  String get targetsShiftingHint;
-
-  /// Shifting sheet: a day without a shift.
-  ///
-  /// In en, this message translates to:
-  /// **'Usual'**
-  String get targetsShiftNormal;
-
-  /// Shifting sheet: a day 15% above the others.
-  ///
-  /// In en, this message translates to:
-  /// **'A little more'**
-  String get targetsShiftLittle;
-
-  /// Shifting sheet: a day 30% above the others.
-  ///
-  /// In en, this message translates to:
-  /// **'More'**
-  String get targetsShiftMore;
-
-  /// Shifting sheet: a weekday and its planned target with this choice.
-  ///
-  /// In en, this message translates to:
-  /// **'{day}: {kcal} kcal'**
-  String targetsShiftDayPlanned(String day, int kcal);
 
   /// Targets: section header of the macro settings (TG-054).
   ///

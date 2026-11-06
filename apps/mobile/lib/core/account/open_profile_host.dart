@@ -30,7 +30,6 @@ final class OpenProfileHost implements ProfileHost {
 
   /// The registry's current active profile key.
   final Future<String> Function() _activeKey;
-  final _closing = <Future<void>>[];
 
   @override
   Future<void> activate(String profileKey) async {
@@ -43,15 +42,14 @@ final class OpenProfileHost implements ProfileHost {
     _select(profileKey);
     if (old == null) return;
     // The same future the provider's dispose uses (one close per database).
-    final closing = closeDatabase(old);
-    _closing.add(closing);
-    await closing;
+    await _handles.trackClose(closeDatabase(old));
   }
 
   @override
   Future<void> deleteFiles(String profileKey) async {
-    // Never delete under an open SQLite connection.
-    await Future.wait(_closing);
+    // Never delete under an open SQLite connection: every close tracked
+    // by the handles, a switch's or a provider dispose's (#210).
+    await _handles.closed();
     // Only the root is taken from the registered location: it may still be
     // the discarded profile's own location (its replacement builds lazily),
     // so it is never asked whether [profileKey] is open. The transitions

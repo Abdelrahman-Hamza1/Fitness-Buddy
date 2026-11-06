@@ -127,17 +127,32 @@ void main() {
     expect(await h.state(), state);
   });
 
-  test('UX-030 DeleteWeighIn tombstones the row and undo revives it', () async {
+  test('UX-030 DeleteWeighIn tombstones the row, scrubbing kg, typed value '
+      'and note in the same write (#136), and undo revives it', () async {
     final h = WeighInHarness();
     await h.seed([weighInDraft(97, note: 'n')]);
     final before = await h.state();
+    final seeded = await h.row(1);
     final a = await h.apply([DeleteWeighIn(VersionedId(fixtureId(1), 1))]);
-    expect((await h.row(1)).deletedAt, isNotNull);
+    final tombstone = await h.row(1);
+    expect(tombstone.deletedAt, isNotNull);
+    // One write: the scrub doesn't add a version of its own.
+    expect(tombstone.version, 2);
+    expect(
+      (tombstone.kg, tombstone.inputValue, tombstone.note),
+      (0.0, 0.0, null),
+    );
+    // What the wire needs stays (corpus `weighIn2-tombstone-scrubbed`).
+    expect(
+      (tombstone.measuredAtUtc, tombstone.localDate, tombstone.inputUnit),
+      (seeded.measuredAtUtc, seeded.localDate, seeded.inputUnit),
+    );
     expect(await h.live(), isEmpty);
     expect((await outbox(h.db)).last.$4, isTrue);
     await h.undo(a);
     expect((await h.row(1)).deletedAt, isNull);
     expect(await h.state(), before);
+    expect(((await h.row(1)).kg, (await h.row(1)).note), (97.0, 'n'));
     expect(
       await h.reject([DeleteWeighIn(VersionedId(fixtureId(1), 1))]),
       isA<VersionConflict>(),

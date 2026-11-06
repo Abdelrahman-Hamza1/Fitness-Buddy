@@ -13,6 +13,7 @@ export 'src/load/schema.dart';
 export 'src/model/dish.dart';
 export 'src/model/issue.dart';
 export 'src/model/library_data.dart';
+export 'src/model/unit_codes.dart';
 export 'src/model/yields.dart';
 export 'src/pack/commands.dart'
     show buildFixtureSql, fixtureCityIds, fixtureIds;

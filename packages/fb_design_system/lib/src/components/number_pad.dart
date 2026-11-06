@@ -253,13 +253,18 @@ class _PadKey extends StatelessWidget {
 @immutable
 class FbUnitOption {
   /// Creates an option: a stable [id] and an already translated [label].
-  const new({required this.id, required this.label});
+  /// [semanticLabel] is what a screen reader says instead of an
+  /// abbreviated [label] ("kilograms" for "kg").
+  const new({required this.id, required this.label, this.semanticLabel});
 
   /// Stable identifier the caller maps back to its unit.
   final String id;
 
   /// What the user sees.
   final String label;
+
+  /// What a screen reader says; [label] when null.
+  final String? semanticLabel;
 }
 
 /// A row of units, one selected (AI-040). Each unit is a steady
@@ -291,6 +296,7 @@ class FbUnitPicker extends StatelessWidget {
       for (final unit in units)
         FbChoiceChip(
           label: unit.label,
+          semanticLabel: unit.semanticLabel,
           selected: unit.id == selected,
           dropdown: false,
           onTap: () => onSelected(unit.id),

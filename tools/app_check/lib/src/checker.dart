@@ -286,6 +286,15 @@ Iterable<Violation> _checkImport(
         'AppDatabase from core/db/ and write with a change set',
       );
     }
+    if (uri == 'package:fb_domain/system.dart' &&
+        from.path != 'lib/app/app_scope.dart') {
+      yield v(
+        Rule.systemSource,
+        'imports package:fb_domain/system.dart, which only the composition '
+        'root lib/app/app_scope.dart may import; read the injected '
+        'clockProvider / ID generator instead',
+      );
+    }
     if (external == 'go_router' && !from.path.startsWith('lib/app/router/')) {
       yield v(
         Rule.goRouter,

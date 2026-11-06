@@ -172,4 +172,20 @@ void main() {
       expect(weighInOf(row).draft, draft, reason: id);
     }
   });
+
+  test('WB-003 a delete scrubs the tombstone to the payload the server '
+      'admits (#136, corpus weighIn2-tombstone-scrubbed)', () {
+    final byId = {for (final p in _v2) p['id'] as String: p};
+    final full = byId['weighIn2-tombstone-full']!;
+    final scrubbed = byId['weighIn2-tombstone-scrubbed']!;
+    expect(scrubbed['serverAccepts'], isTrue);
+    expect(scrubbed['deleted'], isTrue);
+    final cleared = {
+      for (final MapEntry(:key, :value)
+          in scrubbedWeighInColumns.toColumns(false).entries)
+        _camel(key): (value as Variable).value,
+    };
+    expect(cleared.keys, unorderedEquals(['kg', 'inputValue', 'note']));
+    expect({..._decoded(full), ...cleared}, _decoded(scrubbed));
+  });
 }

@@ -230,6 +230,14 @@ void main() {
       ),
     );
     test(
+      'FD-003 a portion unit outside the closed vocabulary fails (#88)',
+      () => expectFails(
+        'unknown_portion_unit',
+        'unknown unit `handful`',
+        at: '/portions/handful',
+      ),
+    );
+    test(
       'a dish that contains itself fails',
       () => expectFails('circular', 'circular recipe'),
     );

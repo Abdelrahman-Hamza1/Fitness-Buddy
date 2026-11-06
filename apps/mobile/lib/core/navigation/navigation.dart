@@ -4,6 +4,7 @@ library;
 
 export 'app_navigator.dart';
 export 'app_route.dart';
+export 'start_route.dart';
 export 'tab_reselect.dart';
 export 'unsaved_edits.dart'
     show UnsavedEdits, UnsavedEditsGuard, unsavedEditsProvider;

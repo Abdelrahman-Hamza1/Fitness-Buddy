@@ -1,6 +1,7 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
+import 'package:fb_mobile/features/quick_add/quick_add.dart';
 import 'package:fb_mobile/features/today/today.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
@@ -23,6 +24,7 @@ Future<void> _pumpReal(
   TodayRig rig,
   _Taps taps, {
   List<Override> extra = const [],
+  bool animate = false,
 }) async {
   usePhone(tester);
   await tester.pumpWidget(
@@ -37,7 +39,7 @@ Future<void> _pumpReal(
       child: Listener(
         behavior: HitTestBehavior.translucent,
         onPointerDown: (_) => taps.count++,
-        child: phoneApp(const TodayScreen()),
+        child: phoneApp(const TodayScreen(), disableAnimations: !animate),
       ),
     ),
   );
@@ -179,6 +181,23 @@ void main() {
     );
     expect(snack.data, contains('\u2068طعام 1\u2069'));
     expect(snack.data, isNot(contains('Food 1')));
+    rig.stack.dispose();
+    await tester.pump(const Duration(seconds: 7));
+  });
+
+  testWidgets('A57 T-M1 (#282) the chip row swaps through '
+      'FbInert.switcherLayout, so a leaving row takes no taps', (tester) async {
+    final rig = TodayRig(realChips: true);
+    await _pumpReal(tester, rig, _Taps(), animate: true);
+    await log(tester, rig, _lunchHistory());
+    expect(_chip('Food 1'), findsOneWidget);
+    final switcher = tester.widget<AnimatedSwitcher>(
+      find.descendant(
+        of: find.byType(QuickAddBar),
+        matching: find.byType(AnimatedSwitcher),
+      ),
+    );
+    expect(switcher.layoutBuilder, same(FbInert.switcherLayout));
     rig.stack.dispose();
     await tester.pump(const Duration(seconds: 7));
   });

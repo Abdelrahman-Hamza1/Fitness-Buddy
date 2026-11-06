@@ -11,8 +11,10 @@ import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/body/application/weigh_in_actions.dart';
 import 'package:fb_mobile/features/body/application/weigh_in_form.dart';
 import 'package:fb_mobile/features/body/application/weight_providers.dart';
+import 'package:fb_mobile/features/body/presentation/body_versions.dart';
 import 'package:fb_mobile/features/body/presentation/weight_text.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
+import 'package:fb_mobile/features/sync/sync.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -321,7 +323,7 @@ class _WeighInSheetState extends ConsumerState<WeighInSheet> {
                     expand: true,
                     onPressed: canSave ? () => unawaited(_save()) : null,
                   ),
-                  if (editing != null)
+                  if (editing != null) ...[
                     FbButton.text(
                       label: l10n.weighInDelete,
                       icon: FbIcons.delete,
@@ -330,6 +332,16 @@ class _WeighInSheetState extends ConsumerState<WeighInSheet> {
                           ? null
                           : () => unawaited(_delete(editing)),
                     ),
+                    // G7 (#236): the server's earlier versions, for an
+                    // account.
+                    EarlierVersionsButton(
+                      key: const ValueKey('weigh-in-earlier-versions'),
+                      entity: 'weighIn',
+                      id: editing.id,
+                      summary: weighInVersionSummary,
+                      enabled: !busy,
+                    ),
+                  ],
                 ],
         ),
         child: form == null
@@ -400,7 +412,11 @@ class _WeighInSheetState extends ConsumerState<WeighInSheet> {
         FbUnitPicker(
           units: [
             for (final u in WeighInInput.units)
-              FbUnitOption(id: u.code, label: weightUnitLabel(l10n, u)),
+              FbUnitOption(
+                id: u.code,
+                label: weightUnitLabel(l10n, u),
+                semanticLabel: weightUnitSpoken(l10n, u),
+              ),
           ],
           selected: form.unit.code,
           onSelected: (code) =>

@@ -223,4 +223,35 @@ void main() {
     expect(await storedFoods(tester, container), isEmpty);
     await finish(tester, container);
   });
+
+  testWidgets('UX-046 #284 a serving row grows in when added and shrinks away '
+      'when removed, its field still drawn while it leaves', (tester) async {
+    final container = await pumpPersonal(
+      tester,
+      at: const PersonalFoodsRoute(),
+    );
+    await tester.tap(find.byTooltip('New food'));
+    await settle(tester);
+    await tapVisible(tester, find.text('More details'));
+    await tester.ensureVisible(find.text('Add serving'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add serving'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 16));
+    final row = find.byTooltip('Remove serving');
+    expect(row, findsOneWidget);
+    await settle(tester);
+    expect(row, findsOneWidget);
+
+    await tester.tap(row);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 16));
+    // Leaving: still there, with its (live) field, for the exit.
+    expect(find.byTooltip('Remove serving'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await settle(tester);
+    expect(find.byTooltip('Remove serving'), findsNothing);
+    expect(tester.takeException(), isNull);
+    await finish(tester, container);
+  });
 }

@@ -1,0 +1,20 @@
+schema: 1
+id: ref:unknown_portion_unit
+names:
+  en: [Bad dish unknown_portion_unit]
+  ar: [طبق unknown-portion-unit]
+  arabizi: [tabak unknown portion unit]
+state: cooked
+variants:
+  - id: only
+    default: true
+    recipe:
+      - {food: usda:rice_raw, grams: 150, range: [100, 200]}
+      - {food: usda:chicken_thigh_cooked, grams: 400}
+    cooked_total_g: 1000
+portions:
+  handful: {g: 350, range: [300, 450]}
+review:
+  status: draft
+  reviewed_by: claude-draft
+  sources: [https://example.org/recipes/bad]

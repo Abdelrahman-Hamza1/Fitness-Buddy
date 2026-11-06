@@ -32,7 +32,9 @@ class FbNumberSlot extends StatelessWidget {
   /// What a screen reader reads instead of [text].
   final String? semanticsLabel;
 
-  /// The slot's width for [sample] in [style] at [scaler].
+  /// The slot's width for [sample] in [style] at [scaler]. Pass the
+  /// resolved style (over the inherited `DefaultTextStyle`), as [build]
+  /// does.
   static double widthFor(
     String sample,
     TextStyle style,
@@ -55,9 +57,16 @@ class FbNumberSlot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final numeric = FbType.numeric(style);
+    // Measured in the style the text is drawn with: [style] over the
+    // inherited one (its letter spacing, font, bold text), else a
+    // sample-wide number is cut by about a pixel (#294).
+    var drawn = DefaultTextStyle.of(context).style.merge(numeric);
+    if (MediaQuery.boldTextOf(context)) {
+      drawn = drawn.merge(const TextStyle(fontWeight: FontWeight.bold));
+    }
     final width = widthFor(
       sample,
-      numeric,
+      drawn,
       MediaQuery.textScalerOf(context),
       Directionality.of(context),
     );

@@ -60,6 +60,7 @@ feature with its barrel `<name>.dart`, `presentation/`, `application/` and
 | 12 | `application-db` | `features/*/application/` imports `core/db/` (A01 D12, backlog #38) | Read and write through the feature's `data/` repositories |
 | 13 | `presentation-changes` | `features/*/presentation/`, `app/shell/` or `app/update/` import `core/changes/` (A01 D12) | Change data through `application/` commands (undo is `core/undo/`) |
 | 14 | `patrol-name` | A `patrolTest(` name in `<app>/patrol_test/` (app mode only) has a non-ASCII character (a `\u`/`\x` escape counts), a `;` or a `/` (backlog #87: the test runner mangles them). Only the literal parts of the first argument are read (adjacent literals are joined; `$x` interpolations are not known) | Rename the test with ASCII letters, digits and spaces. No exceptions |
+| 15 | `system-source` | `package:fb_domain/system.dart` (the system clock, time zone and random sources) imported anywhere but `app/app_scope.dart`, the composition root (S08 D8, backlog #37). Tests may import it | Read the injected `clockProvider` / ID generator from `core/` |
 
 Rules 1 to 7, 10, 12, 13 and rule 11's write-guard and seed parts look at `import` and
 `export` directives, including every URI of a conditional import. Directives

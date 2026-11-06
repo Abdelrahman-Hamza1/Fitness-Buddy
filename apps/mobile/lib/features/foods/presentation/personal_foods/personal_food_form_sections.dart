@@ -3,6 +3,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/amount_text.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/ui/revealed_column.dart';
 import 'package:fb_mobile/features/foods/application/personal_food_form.dart';
 import 'package:fb_mobile/features/foods/presentation/personal_foods/personal_food_inputs.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
@@ -543,56 +544,73 @@ class ServingsSection extends StatelessWidget {
       spacing: FbSpace.s3,
       children: [
         FbSectionHeader(title: l10n.personalFoodSectionServings),
-        formPad(
-          Text(
-            l10n.personalFoodServingsHint,
-            style: FbType.bodySmall.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            formPad(
+              Text(
+                l10n.personalFoodServingsHint,
+                style: FbType.bodySmall.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
             ),
-          ),
-        ),
-        for (var i = 0; i < rows.length; i++)
-          formPad(
-            Column(
-              key: ObjectKey(rows[i]),
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: FbSpace.s2,
+            // A new row grows in, a removed one shrinks away (#284, UX-046):
+            // each row is its own input object, so it keeps its identity.
+            RevealedColumn(
+              key: ValueKey(b.inputs.servingsGeneration),
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Align(
-                        alignment: AlignmentDirectional.centerStart,
-                        child: FbChoiceChip(
-                          label: l10n.personalFoodServingCalled,
-                          value: unitLabel(l10n, rows[i].unit, 1),
-                          onTap: () => onPickUnit(i),
-                        ),
+                for (var i = 0; i < rows.length; i++)
+                  Padding(
+                    key: ObjectKey(rows[i]),
+                    padding: const EdgeInsetsDirectional.only(top: FbSpace.s3),
+                    child: formPad(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        spacing: FbSpace.s2,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Align(
+                                  alignment: AlignmentDirectional.centerStart,
+                                  child: FbChoiceChip(
+                                    label: l10n.personalFoodServingCalled,
+                                    value: unitLabel(l10n, rows[i].unit, 1),
+                                    onTap: () => onPickUnit(i),
+                                  ),
+                                ),
+                              ),
+                              FbIconButton(
+                                tooltip: l10n.personalFoodRemoveServing,
+                                icon: FbIcons.close,
+                                onPressed: () => onRemove(i),
+                              ),
+                            ],
+                          ),
+                          FbNumberField(
+                            controller: rows[i].amount,
+                            focusNode: rows[i].focus,
+                            label: l10n.personalFoodServingSize,
+                            semanticLabel: l10n.personalFoodServingRowSemantics(
+                              unitLabel(l10n, rows[i].unit, 1),
+                            ),
+                            unit: b.basisUnit(l10n),
+                            textInputAction: TextInputAction.next,
+                            errorText: error != null && bad.contains(i)
+                                ? error
+                                : null,
+                            onChanged: (_) => onChanged(),
+                          ),
+                          const Divider(),
+                        ],
                       ),
                     ),
-                    FbIconButton(
-                      tooltip: l10n.personalFoodRemoveServing,
-                      icon: FbIcons.close,
-                      onPressed: () => onRemove(i),
-                    ),
-                  ],
-                ),
-                FbNumberField(
-                  controller: rows[i].amount,
-                  focusNode: rows[i].focus,
-                  label: l10n.personalFoodServingSize,
-                  semanticLabel: l10n.personalFoodServingRowSemantics(
-                    unitLabel(l10n, rows[i].unit, 1),
                   ),
-                  unit: b.basisUnit(l10n),
-                  textInputAction: TextInputAction.next,
-                  errorText: error != null && bad.contains(i) ? error : null,
-                  onChanged: (_) => onChanged(),
-                ),
-                const Divider(),
               ],
             ),
-          ),
+          ],
+        ),
         if (error != null && bad.isEmpty)
           formPad(
             Text(

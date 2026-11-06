@@ -394,4 +394,45 @@ void main() {
     );
     expect(estimate.dayEstimate, isTrue);
   });
+
+  test('TG-060 G10 a maintain-during-Ramadan day gets the same target as '
+      'Today (#275)', () {
+    final settings = [_version(1, _from, mode: TargetMode.fixed)];
+    final goals = [
+      GoalPhaseRecord(
+        weightInputUnit: MassUnit.kilogram,
+        id: _id(60),
+        revision: 1,
+        start: LocalDate(2026, 9, 1),
+        type: GoalType.lose,
+        expression: GoalExpression.targetRate(78, 0.5),
+      ),
+    ];
+    final fasting = LocalDate(2026, 10, 20);
+    final days = ProgressSeries.build(
+      from: _from,
+      to: _today,
+      today: _today,
+      settings: settings,
+      profile: _profile,
+      goals: goals,
+      trendOn: (_) => 85,
+      logs: const [],
+      maintainOn: (d) => d == fasting,
+    );
+    for (final day in days) {
+      final today = TargetsTimeline.day(
+        date: day.date,
+        settings: settings,
+        profile: _profile,
+        goals: goals,
+        bodyWeightKg: 85,
+        ramadanMaintain: day.date == fasting,
+      );
+      expect(day.targetKcal, today?.day.kcal, reason: '${day.date}');
+    }
+    final normal = days.firstWhere((d) => d.date == fasting.plusDays(1));
+    final maintained = days.firstWhere((d) => d.date == fasting);
+    expect(maintained.targetKcal, greaterThan(normal.targetKcal!));
+  });
 }

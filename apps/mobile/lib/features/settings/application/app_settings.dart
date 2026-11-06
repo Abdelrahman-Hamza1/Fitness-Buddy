@@ -65,23 +65,6 @@ abstract final class AppSettings {
     defaultValue: null,
   );
 
-  /// Retired (D-090, A53 D3): the training-day shifting weight of A36,
-  /// which never had a setting screen. Nothing reads it; the key stays in
-  /// [all] so export can still name a stored value.
-  static final trainingDayWeight = SettingKey<double?>(
-    'targets.trainingDayWeight',
-    codec: SettingCodec(
-      toJson: (value) => value,
-      fromJson: (json) =>
-          json is num &&
-              json >= TargetLimits.minWeight &&
-              json <= TargetLimits.maxWeight
-          ? json.toDouble()
-          : null,
-    ),
-    defaultValue: null,
-  );
-
   /// D-091: the language food names show in; "Match my phone" by default.
   static final SettingKey<FoodNameLanguage> foodNames = SettingKey.enumeration(
     'food.nameLanguage',
@@ -177,7 +160,6 @@ abstract final class AppSettings {
     foodNames,
     theme,
     cityId,
-    trainingDayWeight,
     dayFloorAcks,
     checkInMode,
     ramadanSeasons,

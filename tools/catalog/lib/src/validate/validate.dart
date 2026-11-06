@@ -2,6 +2,7 @@ import 'package:fb_catalog/src/compute/dish_nutrients.dart';
 import 'package:fb_catalog/src/model/dish.dart';
 import 'package:fb_catalog/src/model/issue.dart';
 import 'package:fb_catalog/src/model/library_data.dart';
+import 'package:fb_catalog/src/model/unit_codes.dart';
 import 'package:fb_catalog/src/model/yields.dart';
 import 'package:fb_catalog/src/validate/report.dart';
 import 'package:fb_catalog/src/validate/validate_yields.dart';
@@ -10,8 +11,9 @@ import 'package:fb_text/fb_text.dart';
 
 /// The semantic rules the JSON Schema can't express: references resolve,
 /// exactly one default variant, ordered ranges, no Open Food Facts source
-/// (C-5), unique normalized names per language (FD-004), and the FD-012
-/// sanity check on every basic and variant (A03 D7).
+/// (C-5), unique normalized names per language (FD-004), the FD-012
+/// sanity check on every basic and variant (A03 D7), and serving units from
+/// the closed [catalogUnitCodes] (#88).
 ValidationReport validateCatalog({
   required List<BasicFood> basics,
   required List<ReferenceDish> dishes,
@@ -84,7 +86,24 @@ void _basics(
     }
     _sanity(report, sanity, n, b.id, b.file, at, b.sanityOverrideReason);
   }
+  for (final b in basics) {
+    for (final unit in b.servings.keys) {
+      if (!catalogUnitCodes.contains(unit)) {
+        report.errors.add(
+          CatalogIssue(
+            b.file,
+            '/foods/${b.index}/servings',
+            '${b.id}: ${_unknownUnit(unit)}',
+          ),
+        );
+      }
+    }
+  }
 }
+
+String _unknownUnit(String unit) =>
+    'unknown unit `$unit` (not in catalogUnitCodes; the app needs a word '
+    'for it first)';
 
 void _sanity(
   ValidationReport report,
@@ -237,6 +256,9 @@ void _portionRanges(
   Map<String, Portion> portions,
 ) {
   for (final MapEntry(key: code, value: portion) in portions.entries) {
+    if (!catalogUnitCodes.contains(code)) {
+      error('$path/$code', _unknownUnit(code));
+    }
     _range(error, '$path/$code/range', portion.range, portion.g, 'g');
   }
 }

@@ -122,7 +122,9 @@ abstract final class ProgressSeries {
   /// day's intake, status and the target [TargetsTimeline.day] gives it
   /// with the same inputs as Today's `dayTargetsProvider`: the trend weight
   /// on that date ([trendOn]), that week's earlier days and the week
-  /// calendar. Evaluated per date (A16 PA3).
+  /// calendar. Evaluated per date (A16 PA3). [maintainOn] says whether a
+  /// date is a "maintain during Ramadan" fasting day (TG-060), as Today
+  /// passes it, so both show the same target.
   ///
   /// [logs] must cover from `calendar.weekStartOf(from)`: the earlier days
   /// of the first week feed weekly-mode targets.
@@ -137,6 +139,7 @@ abstract final class ProgressSeries {
     Iterable<GoalPhaseRecord> goals = const [],
     WeekCalendar calendar = const WeekCalendar(),
     Map<DayOfWeek, double> floorAcknowledged = const {},
+    bool Function(LocalDate date) maintainOn = _noMaintainDays,
   }) {
     final last = to.isAfter(today) ? today : to;
     if (last.isBefore(from)) return const [];
@@ -168,6 +171,7 @@ abstract final class ProgressSeries {
               bodyWeightKg: trendOn(date),
               intake: intake,
               calendar: calendar,
+              ramadanMaintain: maintainOn(date),
               floorAcknowledged: floorAcknowledged,
             );
       final log = byDate[date];
@@ -405,3 +409,5 @@ abstract final class ProgressBuckets {
     );
   }
 }
+
+bool _noMaintainDays(LocalDate date) => false;

@@ -3,6 +3,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/amount_text.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/ui/amount_canonical_line.dart';
 import 'package:fb_mobile/core/ui/nutrition_summary.dart';
 import 'package:fb_mobile/features/diary/application/diary_actions.dart';
 import 'package:fb_mobile/features/diary/presentation/entry_actions.dart';
@@ -128,16 +129,18 @@ class _EntryAmountSheetState extends ConsumerState<EntryAmountSheet> {
         typedAmount == null || !typedAmount.isFinite || typedAmount <= 0
         ? null
         : Quantity(typedAmount, unit);
-    final snapshot = input == null
+    final computed = input == null
         ? null
         : switch (const NutritionCalculator().compute(
             per100: entry.food.per100,
             measures: measures,
             input: input,
           )) {
-            Computed(:final snapshot) => snapshot.nutrients,
+            Computed(:final snapshot) => snapshot,
             NotComputed() => null,
           };
+    final snapshot = computed?.nutrients;
+    final canonical = amountEditorCanonical(l10n, computed, system: system);
     String unitName(String code) => unitLabel(
       l10n,
       code,
@@ -174,6 +177,13 @@ class _EntryAmountSheetState extends ConsumerState<EntryAmountSheet> {
           // A hardware keyboard types too (A57 A61).
           onKey: (key) => _onKey(key, entry),
         ),
+        // What a portion or kitchen measure comes to (#117), in a line kept
+        // for foods that have one (UX-045).
+        if (amountEditorMayResolve(units, measures.basis))
+          AmountCanonicalLine(
+            key: const ValueKey('entry-amount-canonical'),
+            text: canonical,
+          ),
         NutritionSummary(nutrients: snapshot, known: entry.food.known),
         // The pad grows and shrinks under the units (A57 A19), in their
         // slot, so a closed pad adds no gap.

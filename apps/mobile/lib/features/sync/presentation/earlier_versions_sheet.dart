@@ -139,3 +139,51 @@ Future<void> showEarlierVersionsSheet(
   title: context.l10n.syncEarlierVersions,
   builder: (_) => EarlierVersionsBody(entity: entity, id: id, summary: summary),
 );
+
+/// "Earlier versions" for one item in its editor's actions (G7, #236):
+/// shown only while sync is on (an account), else nothing. [enabled] false
+/// keeps it visible but off (a write in flight).
+class EarlierVersionsButton extends ConsumerWidget {
+  /// Creates the button for row [id] of [entity].
+  const new({
+    required this.entity,
+    required this.id,
+    this.summary,
+    this.enabled = true,
+    super.key,
+  });
+
+  /// The entity wire name.
+  final String entity;
+
+  /// The row id.
+  final String id;
+
+  /// The item's words for a version.
+  final VersionSummary? summary;
+
+  /// Whether it can be tapped now.
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (!ref.watch(syncViewProvider.select((v) => v.enabled))) {
+      return const SizedBox.shrink();
+    }
+    return FbButton.text(
+      label: context.l10n.syncEarlierVersions,
+      icon: FbIcons.pending,
+      expand: true,
+      onPressed: enabled
+          ? () => unawaited(
+              showEarlierVersionsSheet(
+                context,
+                entity: entity,
+                id: id,
+                summary: summary,
+              ),
+            )
+          : null,
+    );
+  }
+}

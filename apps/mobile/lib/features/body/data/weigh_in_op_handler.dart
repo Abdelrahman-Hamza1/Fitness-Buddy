@@ -11,6 +11,11 @@ import 'package:fb_mobile/features/body/data/weigh_in_mappers.dart';
 /// transaction (A14 D3, D5, D6). Reads at most once per op. No custom
 /// events: `ChangeSetApplied(entities: {'weighIn'})` tells subscribers.
 ///
+/// A delete scrubs the weight and the note from the tombstone (backlog
+/// #136, owner 2026-11-06): the row keeps only what the wire needs, the
+/// server admits that tombstone (corpus `weighIn2-tombstone-scrubbed`), and
+/// Undo restores the content from the applier's snapshot.
+///
 /// Rejections: `RowNotFound` / `VersionConflict` for a row that is gone or
 /// changed; `InvalidOp('invalidDraft')` for a draft outside the local-write
 /// bounds, `InvalidOp('time')` for a time before 1970 (PA9),
@@ -42,6 +47,7 @@ final class WeighInOpHandler extends ChangeOpHandler<WeighInOp> {
             db.weighIns,
             weighIn.id,
             expectedVersion: weighIn.expectedVersion,
+            scrub: scrubbedWeighInColumns,
           ),
         ]),
         ChooseTrendWeighIn() => await _choose(op, tx),

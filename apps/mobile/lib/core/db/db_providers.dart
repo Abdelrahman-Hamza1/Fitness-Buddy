@@ -87,6 +87,29 @@ final class OpenProfileHandles {
     _idle = null;
     _idleOwner = null;
   }
+
+  final Set<Future<void>> _closing = {};
+
+  /// Records a database close in flight (a switch's, or a provider's
+  /// dispose outside a switch, #210), so [closed] waits for it. A close
+  /// that succeeded is dropped; a failed one stays, so [closed] keeps
+  /// failing (fail closed: no deletion under a connection that may still
+  /// be open). Returns [closing].
+  Future<void> trackClose(Future<void> closing) {
+    if (_closing.add(closing)) {
+      unawaited(
+        closing.then<void>(
+          (_) => _closing.remove(closing),
+          onError: (Object _) {},
+        ),
+      );
+    }
+    return closing;
+  }
+
+  /// Completes once every tracked close has finished; throws if one failed.
+  /// Files are never deleted under an open SQLite connection.
+  Future<void> closed() => Future.wait([..._closing]);
 }
 
 /// The one [OpenProfileHandles] (no dependencies).
@@ -108,7 +131,8 @@ AppDatabase appDatabase(Ref ref) {
   final handles = ref.read(openProfileHandlesProvider)..database = db;
   ref.onDispose(() {
     if (identical(handles.database, db)) handles.database = null;
-    unawaited(closeDatabase(db));
+    // Tracked, so a later cleanup waits for it (#210).
+    unawaited(handles.trackClose(closeDatabase(db)));
   });
   return db;
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:fb_mobile/core/account/open_profile_host.dart';
@@ -93,5 +94,38 @@ void main() {
     final _ = handles.registerIdle(newIdle);
     handles.unregisterIdle(oldOwner);
     expect(handles.idle, same(newIdle));
+  });
+
+  test('AC-004 #210 cleanup waits for a database closed by its provider '
+      'outside a switch, and a failed close keeps blocking deletion', () async {
+    final dir = Directory('${root.path}/profiles/guest-3')
+      ..createSync(recursive: true);
+    final handles = OpenProfileHandles();
+    final host = OpenProfileHost(
+      handles: handles,
+      select: (_) {},
+      fallbackRoot: () => locationOf('local'),
+      activeKey: () async => 'local',
+    );
+    // A provider dispose (not a switch) starts a close that hasn't ended.
+    final close = Completer<void>();
+    unawaited(handles.trackClose(close.future));
+    var deleted = false;
+    final cleanup = host.deleteFiles('guest-3').then((_) => deleted = true);
+    await Future<void>.delayed(Duration.zero);
+    expect(deleted, isFalse, reason: 'waits for the close');
+    expect(dir.existsSync(), isTrue);
+    close.complete();
+    await cleanup;
+    expect(dir.existsSync(), isFalse);
+
+    // A failed close: deletion fails closed, now and later.
+    final again = Directory('${root.path}/profiles/guest-4')
+      ..createSync(recursive: true);
+    final failed = Future<void>.error(StateError('close failed'));
+    unawaited(handles.trackClose(failed).catchError((Object _) {}));
+    await expectLater(host.deleteFiles('guest-4'), throwsStateError);
+    await expectLater(host.deleteFiles('guest-4'), throwsStateError);
+    expect(again.existsSync(), isTrue);
   });
 }

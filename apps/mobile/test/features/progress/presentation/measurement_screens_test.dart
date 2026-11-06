@@ -1,9 +1,15 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
+import 'package:fb_mobile/features/body/body.dart';
+import 'package:fb_mobile/features/body/data/measurement_repository.dart'
+    show MeasurementData;
 import 'package:fb_mobile/features/progress/progress.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../today/presentation/support/today_support.dart' show phoneApp;
 import '../support/measurement_support.dart';
 
 /// The chart on screen.
@@ -156,5 +162,54 @@ void main() {
     expect(back.types.single.name, 'Calf L');
     expect(back.measurements, hasLength(1));
     await unmountMeasure(tester, screen);
+  });
+
+  testWidgets('A57 A46 T-R4 (#286) a failed read in the measurement sheet '
+      'says so with Try again, and the retry shows the form', (tester) async {
+    final rig = MeasureRig();
+    var fail = true;
+    tester.view
+      ..physicalSize = const Size(360, 1600)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          ...rig.overrides,
+          latestByTypeProvider.overrideWith((ref) async {
+            if (fail) throw StateError('read failed (test)');
+            return viewsOf(
+              MeasurementData(
+                types: const <MeasurementType>[],
+                measurements: const <Measurement>[],
+              ),
+            );
+          }),
+        ],
+        child: phoneApp(
+          Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: TextButton(
+                  onPressed: () => showMeasurementSheet(context),
+                  child: const Text('open'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await settleMeasure(tester);
+    expect(find.byKey(LoadFailedView.viewKey), findsOneWidget);
+    expect(find.text("Couldn't load your measurements."), findsOneWidget);
+
+    fail = false;
+    await tester.tap(find.text('Try again'));
+    await settleMeasure(tester);
+    expect(find.byKey(LoadFailedView.viewKey), findsNothing);
+    expect(fbButton('Save'), findsOneWidget);
+    await unmountMeasure(tester, rig);
   });
 }

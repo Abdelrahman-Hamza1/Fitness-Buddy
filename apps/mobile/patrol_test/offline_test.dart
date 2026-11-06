@@ -107,7 +107,18 @@ void main() {
     final clock = container.read(clockProvider);
     final now = EntryTime.now(clock).localDateTime;
     final today = now.date;
-    final slot = container.read(quickAddContextProvider).slotId;
+    // The meal of this time once the day's meals have loaded: read right
+    // after boot, the context can still have no meals and say null, and
+    // the history (and the meal header looked for below) would then be
+    // "Other" (nightly 2026-11-06).
+    final slotContext = container.listen(quickAddContextProvider, (_, _) {});
+    await waitUntil(
+      tester,
+      () => container.read(quickAddContextProvider).slotId != null,
+      'the current meal',
+    );
+    final slot = container.read(quickAddContextProvider).slotId!;
+    slotContext.close();
 
     // History for one chip (the same food at this time of day on the three
     // days before) and a past workout for the form's hints.

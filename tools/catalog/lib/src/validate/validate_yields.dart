@@ -1,5 +1,6 @@
 import 'package:fb_catalog/src/model/dish.dart';
 import 'package:fb_catalog/src/model/issue.dart';
+import 'package:fb_catalog/src/model/unit_codes.dart';
 import 'package:fb_catalog/src/model/yields.dart';
 import 'package:fb_catalog/src/validate/report.dart';
 import 'package:fb_domain/fb_domain.dart';
@@ -109,8 +110,9 @@ void _words(
         '/unit',
         '`${r.unit}` is a mass or volume unit, not a portion word',
       );
-    } else if (!isKnownFoodUnitCode(r.unit) &&
-        !extraPortionUnits.contains(r.unit)) {
+    } else if ((!isKnownFoodUnitCode(r.unit) &&
+            !extraPortionUnits.contains(r.unit)) ||
+        !catalogUnitCodes.contains(r.unit)) {
       error('/unit', 'unknown unit `${r.unit}`');
     }
     // Household units have one owner: this file (A04 D5). A selection

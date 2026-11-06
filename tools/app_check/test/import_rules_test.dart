@@ -279,6 +279,22 @@ void main() {
     });
   });
 
+  group('rule 15 system-source', () {
+    test('fb_domain/system.dart only in app/app_scope.dart (#37)', () {
+      const directive = "import 'package:fb_domain/system.dart';";
+      expect(_imports(todayScreen, directive), {'1 system-source'});
+      expect(_imports('lib/core/time/clock_providers.dart', directive), {
+        '1 system-source',
+      });
+      expect(_imports('lib/main.dart', directive), {'1 system-source'});
+      expect(_imports('lib/app/app_scope.dart', directive), isEmpty);
+      expect(
+        _imports(todayScreen, "import 'package:fb_domain/fb_domain.dart';"),
+        isEmpty,
+      );
+    });
+  });
+
   group('rule 7 go-router', () {
     test('go_router outside app/router/ fails (S06 D2)', () {
       expect(

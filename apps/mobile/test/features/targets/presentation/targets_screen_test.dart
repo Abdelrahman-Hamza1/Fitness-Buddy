@@ -1,5 +1,7 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/changes/apply_result.dart' show Applied;
+import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/targets/presentation/below_limit_screen.dart';
@@ -10,6 +12,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart' show NumberFormat;
 import 'package:material_ui/material_ui.dart';
 
+import '../../../helpers/pump_app.dart' show settleWrites;
+import '../../diary/support/diary_harness.dart' show atDay, newEntry;
 import 'targets_screens_support.dart';
 
 /// The version in effect today.
@@ -210,6 +214,47 @@ void main() {
     expect(macros.fat?.value, 25);
     expect(macros.fat?.isPercent, isTrue);
     expect(macros.fiberGrams, 30);
+    await rig.close();
+  });
+
+  testWidgets('TG-042 (#198) a logged day far over its target that the rest '
+      'of the week can no longer absorb shows the carry note the next day', (
+    tester,
+  ) async {
+    final rig = await TargetsScreenRig.open(
+      tester,
+      route: const TargetsRoute(),
+    );
+    const note =
+        'The rest of this week is already at its limit (25% above or below '
+        'your usual target), so not all of the difference can be spread out.';
+    // Saturday, the first day of the week, nothing logged yet: no carry.
+    expect(find.text(note), findsNothing);
+
+    // 7,500 kcal on Saturday: about 5,300 over a ~2,160 target, more than
+    // the six days left can take within their ±25 % (and the floor).
+    final logged = await rig.settle(
+      rig.container
+          .read(changeSetApplierProvider)
+          .apply(
+            ChangeSet([
+              LogEntries([
+                newEntry(
+                  901,
+                  when: atDay(rig.today, 10),
+                  slotId: DefaultSlots.lunchId,
+                  kcal: 5000,
+                ),
+              ]),
+            ], origin: Origin.direct),
+          ),
+    );
+    expect(logged, isA<Applied>());
+    await settleWrites(tester);
+
+    rig.advanceDays(1);
+    await rig.show(const TargetsRoute());
+    expect(find.text(note), findsOneWidget);
     await rig.close();
   });
 

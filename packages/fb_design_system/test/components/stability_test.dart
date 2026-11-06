@@ -1,4 +1,5 @@
 import 'package:fb_design_system/fb_design_system.dart';
+import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -178,6 +179,52 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('UX-045 #294 FbNumberSlot measures its sample in the style the '
+      'text is drawn with, inherited letter spacing included: a number as '
+      'wide as the sample is never cut', (tester) async {
+    await pumpFb(
+      tester,
+      DefaultTextStyle.merge(
+        style: const TextStyle(letterSpacing: 1.5),
+        child: const Row(
+          children: [
+            FbNumberSlot(
+              key: ValueKey('slot'),
+              text: '8,888',
+              style: FbType.body,
+            ),
+          ],
+        ),
+      ),
+    );
+    final text = tester.widget<Text>(
+      find.descendant(
+        of: find.byKey(const ValueKey('slot')),
+        matching: find.byType(Text),
+      ),
+    );
+    final drawn = DefaultTextStyle.of(tester.element(find.byWidget(text))).style
+        .merge(text.style);
+    expect(drawn.letterSpacing, 1.5);
+    final painter = TextPainter(
+      text: TextSpan(text: '8,888', style: drawn),
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+    )..layout();
+    addTearDown(painter.dispose);
+    expect(
+      tester.getSize(find.byKey(const ValueKey('slot'))).width,
+      greaterThanOrEqualTo(painter.width),
+    );
+    final paragraph = tester.renderObject<RenderParagraph>(
+      find.descendant(
+        of: find.byKey(const ValueKey('slot')),
+        matching: find.byType(RichText),
+      ),
+    );
+    expect(paragraph.didExceedMaxLines, isFalse);
+  });
 
   testWidgets('UX-045 A57 A04 T-S6 FbMacroBars keep their mode when a value '
       'gains a digit', (tester) async {

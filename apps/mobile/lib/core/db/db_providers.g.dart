@@ -335,4 +335,4 @@ final class AppDatabaseProvider
   }
 }
 
-String _$appDatabaseHash() => r'1950590d19f35be019dbab389d675e6ed4818171';
+String _$appDatabaseHash() => r'77e9a0d9a42b9ce257d0bbfcf60a7408d2b38d80';

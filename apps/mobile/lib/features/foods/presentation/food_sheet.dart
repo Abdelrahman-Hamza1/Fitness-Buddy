@@ -5,6 +5,7 @@ import 'package:fb_mobile/core/l10n/amount_text.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/core/ui/amount_canonical_line.dart';
 import 'package:fb_mobile/core/ui/nutrition_summary.dart';
 import 'package:fb_mobile/core/ui/success_haptic.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
@@ -309,6 +310,17 @@ class _FoodSheetState extends ConsumerState<FoodSheet> {
             // A hardware keyboard types too (A57 A61).
             onKey: (key) => _onKey(key, state),
           ),
+          // What a portion or kitchen measure comes to (#117), in a line
+          // kept for foods that have one (UX-045).
+          if (amountEditorMayResolve(state.units, food.measures.basis))
+            AmountCanonicalLine(
+              key: const ValueKey('food-sheet-canonical'),
+              text: amountEditorCanonical(
+                l10n,
+                state.snapshot,
+                system: state.system,
+              ),
+            ),
           NutritionSummary(nutrients: state.snapshot?.nutrients),
           FbUnitPicker(
             units: [

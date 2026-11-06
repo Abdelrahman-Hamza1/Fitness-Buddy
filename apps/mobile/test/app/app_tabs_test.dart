@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/app/router/app_router.dart';
+import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
+import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
@@ -10,11 +14,13 @@ import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:fb_mobile/features/today/today.dart';
+import 'package:fb_mobile/features/workouts/application/workout_actions.dart';
 import 'package:fb_mobile/features/workouts/presentation/set_row.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../features/diary/support/diary_fixtures.dart' show fixtureId;
 import '../features/diary/support/diary_harness.dart' show atDay, newEntry;
 import '../features/foods/presentation/support/personal_food_support.dart';
 import '../helpers/pump_app.dart';
@@ -237,6 +243,63 @@ void main() {
     );
     // The visit finished: its one Undo is offered.
     expect(container.read(undoStackProvider).latest, isNotNull);
+    await unmountApp(tester, container);
+  });
+
+  testWidgets('WO-023 A52 (#271) on the real tab shell, a "No plan" save '
+      'that ends after a switch to Me and a Me detail leaves that detail '
+      'open; the plan is cleared', (tester) async {
+    final gate = Completer<void>();
+    final container = await pumpApp(
+      tester,
+      overrides: [
+        // The chooser's write waits for the gate (a slow save).
+        workoutActionsProvider.overrideWith(
+          (ref) => WorkoutActions(
+            apply: (changes) async {
+              await gate.future;
+              return await ref.read(changeSetApplierProvider).apply(changes);
+            },
+            undoStack: ref.watch(undoStackProvider),
+            ids: ref.watch(idGeneratorProvider),
+            repository: ref.watch(workoutRepositoryProvider),
+          ),
+        ),
+      ],
+    );
+    final template = fixtureId(905);
+    await applyOps(tester, container, [
+      CreateWorkoutTemplate(
+        template,
+        WorkoutTemplateDraft(name: 'Mine', items: const []),
+      ),
+      SetPlanDay(DayOfWeek.monday, template),
+    ]);
+    final router = container.read(appRouterProvider);
+    await _tap(tester, 2);
+    router.push(const WorkoutStarterPlansRoute());
+    await settle(tester);
+    expect(find.byType(StarterPlansScreen), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('workout-starter-none')));
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('workout-starter-continue')));
+    await tester.pump();
+
+    // While the save waits: Me, then one of its details.
+    await _tap(tester, 3);
+    router.push(const PersonalFoodsRoute());
+    await settle(tester);
+    expect(find.byType(PersonalFoodsScreen), findsOneWidget);
+
+    gate.complete();
+    await settle(tester);
+    expect(find.byType(PersonalFoodsScreen), findsOneWidget);
+    expect(
+      await tester.runAsync(container.read(workoutRepositoryProvider).plan),
+      isEmpty,
+    );
+    // The Undo snackbar's timer and the undo stack's expiry end here.
+    await finish(tester, container);
     await unmountApp(tester, container);
   });
 }

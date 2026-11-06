@@ -1144,6 +1144,14 @@
   "@weightUnitLb": {
     "description": "Unit label for pounds, for body weight (A14)."
   },
+  "weightUnitKgSpoken": "kilograms",
+  "@weightUnitKgSpoken": {
+    "description": "Screen readers: the kg unit chip in full, for body weight."
+  },
+  "weightUnitLbSpoken": "pounds",
+  "@weightUnitLbSpoken": {
+    "description": "Screen readers: the lb unit chip in full, for body weight."
+  },
   "weightCardRate": "{rate} {unit}/week",
   "@weightCardRate": {
     "description": "Weekly rate of the weight trend, signed: \"−0.4 kg/week\" (WB-011). Neutral: no good/bad wording.",
@@ -3182,6 +3190,15 @@
       "amount": {
         "type": "String"
       },
+      "canonical": {
+        "type": "String"
+      }
+    }
+  },
+  "amountEditorCanonical": "That's {canonical}",
+  "@amountEditorCanonical": {
+    "description": "Amount editors (food sheet, entry amount sheet): the size a portion, kitchen measure or density-backed amount resolves to, under the typed amount, e.g. \"That's 120 g\" for 2 pieces (backlog #117). Arrives formatted with its unit.",
+    "placeholders": {
       "canonical": {
         "type": "String"
       }
@@ -5563,43 +5580,6 @@
   "targetsForcedFixedNote": "Below the safety floor the same target applies every day and weekly rebalancing is off.",
   "@targetsForcedFixedNote": {
     "description": "Targets (PA7, SF-012): why mode, rebalancing and higher-calorie days are off for an acknowledged below-floor target."
-  },
-  "targetsShifting": "Higher-calorie days",
-  "@targetsShifting": {
-    "description": "Targets: row and sheet title, weekdays with a higher share of the weekly budget (TG-043)."
-  },
-  "targetsShiftingNone": "None",
-  "@targetsShiftingNone": {
-    "description": "Targets: no higher-calorie days."
-  },
-  "targetsShiftingHint": "The weekly total stays the same: the other days get a little less.",
-  "@targetsShiftingHint": {
-    "description": "Shifting sheet: what a higher-calorie day does (TG-043)."
-  },
-  "targetsShiftNormal": "Usual",
-  "@targetsShiftNormal": {
-    "description": "Shifting sheet: a day without a shift."
-  },
-  "targetsShiftLittle": "A little more",
-  "@targetsShiftLittle": {
-    "description": "Shifting sheet: a day 15% above the others."
-  },
-  "targetsShiftMore": "More",
-  "@targetsShiftMore": {
-    "description": "Shifting sheet: a day 30% above the others."
-  },
-  "targetsShiftDayPlanned": "{day}: {kcal} kcal",
-  "@targetsShiftDayPlanned": {
-    "description": "Shifting sheet: a weekday and its planned target with this choice.",
-    "placeholders": {
-      "day": {
-        "type": "String"
-      },
-      "kcal": {
-        "type": "int",
-        "format": "decimalPattern"
-      }
-    }
   },
   "targetsSectionMacros": "Macros",
   "@targetsSectionMacros": {

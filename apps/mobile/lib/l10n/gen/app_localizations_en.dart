@@ -783,6 +783,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weightUnitLb => 'lb';
 
   @override
+  String get weightUnitKgSpoken => 'kilograms';
+
+  @override
+  String get weightUnitLbSpoken => 'pounds';
+
+  @override
   String weightCardRate(String rate, String unit) {
     return '$rate $unit/week';
   }
@@ -2396,6 +2402,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String foodAmountWithCanonical(String amount, String canonical) {
     return '$amount ($canonical)';
+  }
+
+  @override
+  String amountEditorCanonical(String canonical) {
+    return 'That\'s $canonical';
   }
 
   @override
@@ -4420,35 +4431,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get targetsForcedFixedNote =>
       'Below the safety floor the same target applies every day and weekly rebalancing is off.';
-
-  @override
-  String get targetsShifting => 'Higher-calorie days';
-
-  @override
-  String get targetsShiftingNone => 'None';
-
-  @override
-  String get targetsShiftingHint =>
-      'The weekly total stays the same: the other days get a little less.';
-
-  @override
-  String get targetsShiftNormal => 'Usual';
-
-  @override
-  String get targetsShiftLittle => 'A little more';
-
-  @override
-  String get targetsShiftMore => 'More';
-
-  @override
-  String targetsShiftDayPlanned(String day, int kcal) {
-    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
-    final String kcalString = kcalNumberFormat.format(kcal);
-
-    return '$day: $kcalString kcal';
-  }
 
   @override
   String get targetsSectionMacros => 'Macros';

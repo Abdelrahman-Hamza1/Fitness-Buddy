@@ -49,6 +49,11 @@ enum Rule {
   /// test runner mangles such names). Checked in `patrol_test/`.
   patrolName('patrol-name'),
 
+  /// 15. `package:fb_domain/system.dart` (the system clock and random
+  /// sources) only in `app/app_scope.dart`, the composition root (S08 D8,
+  /// backlog #37).
+  systemSource('system-source'),
+
   /// An `// app-check: allow` comment without a rule id or a reason, or
   /// naming a rule that can't be allowed (every rule but the lexical
   /// `raw-string` and `directional`).

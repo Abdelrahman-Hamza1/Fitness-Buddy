@@ -16,6 +16,10 @@ double weightIn(double kg, MassUnit unit) => kg * 1000 / unit.grams;
 String weightUnitLabel(AppLocalizations l10n, MassUnit unit) =>
     unit == MassUnit.pound ? l10n.weightUnitLb : l10n.weightUnitKg;
 
+/// The unit word in full, for screen readers: "kilograms" or "pounds".
+String weightUnitSpoken(AppLocalizations l10n, MassUnit unit) =>
+    unit == MassUnit.pound ? l10n.weightUnitLbSpoken : l10n.weightUnitKgSpoken;
+
 /// [value] with one decimal and the locale's separators: "97.6", "1,102.3".
 String weightNumber(AppLocalizations l10n, double value) =>
     NumberFormat.decimalPatternDigits(

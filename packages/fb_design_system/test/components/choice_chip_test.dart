@@ -180,5 +180,24 @@ void main() {
       expect(sizes(), before);
       expect(find.byIcon(FbIcons.check), findsNothing);
     });
+
+    testWidgets('UX-072 FbUnitPicker reads a unit in full when it has a '
+        'semantic label (#135)', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpFb(
+        tester,
+        FbUnitPicker(
+          units: const [
+            FbUnitOption(id: 'kg', label: 'kg', semanticLabel: 'kilograms'),
+            FbUnitOption(id: 'g', label: 'g'),
+          ],
+          selected: 'kg',
+          onSelected: (_) {},
+        ),
+      );
+      expect(find.bySemanticsLabel('kilograms'), findsOneWidget);
+      expect(find.bySemanticsLabel('g'), findsOneWidget);
+      handle.dispose();
+    });
   });
 }

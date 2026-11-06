@@ -52,14 +52,21 @@ final class AppRouter implements AppNavigator {
   /// A02 D15).
   /// [onReselect] hears a re-tap of the current tab at its root;
   /// [unsavedEdits] tells which tabs hold a screen with unsaved edits.
+  /// [initialLocation] replaces Today once, for a router built by a profile
+  /// switch that should continue somewhere else (#272).
   new({
     required ValueListenable<bool> updateRequired,
     bool designPreview = false,
     this.onReselect,
     this.onActivate,
     this.unsavedEdits,
+    String initialLocation = TodayRoute.path,
   }) : assert(tabs.length == AppTab.values.length, 'one AppTab per tab') {
-    config = _createConfig(updateRequired, designPreview: designPreview);
+    config = _createConfig(
+      updateRequired,
+      designPreview: designPreview,
+      initialLocation: initialLocation,
+    );
     // Each tab keeps its own stack: remember where each one is.
     config.routerDelegate.addListener(_recordLocation);
   }
@@ -97,10 +104,11 @@ final class AppRouter implements AppNavigator {
   GoRouter _createConfig(
     ValueListenable<bool> gate, {
     required bool designPreview,
+    required String initialLocation,
   }) => GoRouter(
     navigatorKey: GlobalKey<NavigatorState>(debugLabel: 'root'),
     observers: [createErrorNavigationObserver()],
-    initialLocation: TodayRoute.path,
+    initialLocation: initialLocation,
     refreshListenable: gate,
     redirect: (_, state) =>
         redirect(state.matchedLocation, updateRequired: gate.value),
@@ -733,6 +741,10 @@ AppRouter appRouter(Ref ref) {
     onReselect: ref.read(tabReselectProvider.notifier).fire,
     onActivate: ref.read(tabActivationProvider.notifier).fire,
     unsavedEdits: ref.read(unsavedEditsProvider),
+    // A first run that signed in to an existing account goes on where it
+    // was headed (#272); every other router starts at Today.
+    initialLocation:
+        ref.read(startRouteHolderProvider).take()?.location ?? TodayRoute.path,
   );
   ref.onDispose(() {
     // After the current frame's work: on a generation switch the old

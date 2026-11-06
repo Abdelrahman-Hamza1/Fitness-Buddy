@@ -568,15 +568,19 @@ void main() {
     await _seed(db);
     await runAuthorizedWrite(
       () => db.customStatement(
-        "UPDATE day_marks SET estimate_kcal = 2300 WHERE id = 'dayMark-live'",
+        'UPDATE day_marks SET estimate_kcal = 2300, estimate_only = 1 '
+        "WHERE id = 'dayMark-live'",
       ),
     );
     final data = _json(_build(await _read(db)))['data'] as Map;
     final row = (data['dayMark'] as List).single as Map<String, dynamic>;
     expect(row['estimate_kcal'], 2300);
+    // An estimate-only mark says so (#297).
+    expect(row['estimate_only'], isTrue);
     await runAuthorizedWrite(
       () => db.customStatement(
-        "UPDATE day_marks SET estimate_kcal = NULL WHERE id = 'dayMark-live'",
+        'UPDATE day_marks SET estimate_kcal = NULL, estimate_only = 0 '
+        "WHERE id = 'dayMark-live'",
       ),
     );
     final cleared = _json(_build(await _read(db)))['data'] as Map;
@@ -587,6 +591,10 @@ void main() {
     expect(
       ((cleared['dayMark'] as List).single as Map)['estimate_kcal'],
       equals(null),
+    );
+    expect(
+      ((cleared['dayMark'] as List).single as Map)['estimate_only'],
+      isFalse,
     );
   });
 

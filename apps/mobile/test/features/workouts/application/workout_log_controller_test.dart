@@ -1470,6 +1470,27 @@ void main() {
       },
     );
 
+    test('UX-030 W5 A63 a card filled to the limit with real numbers '
+        'autosaves every set (#291)', () async {
+      final log = _Log();
+      await log.seed();
+      await log.h.apply([LogWorkoutSession(wid(10), sessionDraft())]);
+      final launch = EditLog(wid(10), visitId: 'e1');
+      final c = await log.open(launch);
+      List<LogSetRow> rows() => log.state(launch).exercises.single.sets;
+      while (rows().length < maxSetsPerExercise) {
+        c.addSet(wid(20));
+      }
+      for (final (i, row) in rows().indexed) {
+        c.editSet(wid(20), row.id, SetInput(weight: '${60 + i}', reps: '5'));
+      }
+      await log.fire(c);
+      expect(log.state(launch).saveState, LogSaveState.idle);
+      final saved = (await log.sessions()).single.draft.exercises.single.sets;
+      expect(saved, hasLength(maxSetsPerExercise));
+      expect([for (final s in saved) s.id], [for (final r in rows()) r.id]);
+    });
+
     test('WO-034 T-W1 stored data and the sync payload are unchanged: the '
         'saved draft holds only sets with numbers', () async {
       final log = _Log();

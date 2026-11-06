@@ -219,9 +219,12 @@ final class RowWriteSession {
         update(from, content);
         version = from + 1;
         deleted = false;
-      case TombstoneRow(:final expectedVersion):
+      case TombstoneRow(:final expectedVersion, :final scrub):
+        final cleared = scrub == null
+            ? const <String, Expression<Object>>{}
+            : _content(synced, scrub, allowId: false);
         final from = _live(synced, op.id, current, expectedVersion);
-        update(from, {'deleted_at': Variable<int>(_nowMs)});
+        update(from, {...cleared, 'deleted_at': Variable<int>(_nowMs)});
         version = from + 1;
         deleted = true;
       case RestoreRow(snapshot: final restored, :final expectedVersion):

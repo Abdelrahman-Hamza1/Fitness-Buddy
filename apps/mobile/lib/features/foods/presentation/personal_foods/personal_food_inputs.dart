@@ -58,6 +58,16 @@ final class PersonalFoodInputs {
   final List<ServingRowInput> servings = [];
   bool _servingsMade = false;
 
+  /// Rows taken off the list: a removed row still draws while it shrinks
+  /// away (#284), so its controller and focus node live until the form
+  /// goes ([dispose]).
+  final List<ServingRowInput> _retired = [];
+
+  /// Changes when the rows are made again from the view model (a Reload):
+  /// the list then shows them at once instead of animating every row.
+  int get servingsGeneration => _servingsGeneration;
+  int _servingsGeneration = 0;
+
   /// The controller of [field], starting from [state]'s buffer.
   TextEditingController controller(
     PersonalFoodField field,
@@ -84,9 +94,8 @@ final class PersonalFoodInputs {
   }
 
   void _fillServings(PersonalFoodFormState state) {
-    for (final row in servings) {
-      row.dispose();
-    }
+    _retired.addAll(servings);
+    _servingsGeneration++;
     servings
       ..clear()
       ..addAll([
@@ -109,8 +118,9 @@ final class PersonalFoodInputs {
   /// Adds an empty row for [unit].
   void addServing(String unit) => servings.add(ServingRowInput(unit, ''));
 
-  /// Removes and releases the row at [index].
-  void removeServing(int index) => servings.removeAt(index).dispose();
+  /// Removes the row at [index]; it is released with the form, after it
+  /// has shrunk away (#284).
+  void removeServing(int index) => _retired.add(servings.removeAt(index));
 
   /// After a Reload: shows the view model's buffers again (what was typed
   /// stays, the rest is the stored food's).
@@ -131,7 +141,7 @@ final class PersonalFoodInputs {
     for (final node in _focus.values) {
       node.dispose();
     }
-    for (final row in servings) {
+    for (final row in [...servings, ..._retired]) {
       row.dispose();
     }
   }

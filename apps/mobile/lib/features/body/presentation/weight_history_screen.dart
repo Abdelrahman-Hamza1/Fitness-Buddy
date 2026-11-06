@@ -278,6 +278,7 @@ class _WeightHistoryScreenState extends ConsumerState<WeightHistoryScreen> {
             for (final unit in WeighInInput.units)
               FbChoiceChip(
                 label: weightUnitLabel(l10n, unit),
+                semanticLabel: weightUnitSpoken(l10n, unit),
                 selected: form.unit == unit,
                 dropdown: false,
                 onTap: () => _update((f) => f.withUnit(unit)),

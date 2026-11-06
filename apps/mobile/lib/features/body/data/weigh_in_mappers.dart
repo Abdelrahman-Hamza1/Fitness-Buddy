@@ -61,3 +61,12 @@ WeighInsCompanion weighInColumns(WeighInDraft draft) => WeighInsCompanion(
   inputUnit: Value(draft.input.unit.code),
   note: Value(draft.note),
 );
+
+/// The content a weigh-in tombstone clears (backlog #136): the weight, the
+/// typed value and the note. The time, day and unit stay (wire-valid; the
+/// server admits this tombstone, corpus `weighIn2-tombstone-scrubbed`).
+const scrubbedWeighInColumns = WeighInsCompanion(
+  kg: Value(0),
+  inputValue: Value(0),
+  note: Value(null),
+);

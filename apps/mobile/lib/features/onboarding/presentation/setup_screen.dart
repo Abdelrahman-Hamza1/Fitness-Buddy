@@ -145,6 +145,7 @@ class _Flow extends ConsumerStatefulWidget {
   final SetupDraft draft;
 
   static void _close(BuildContext context, WidgetRef ref) {
+    ref.read(startRouteHolderProvider).hold(null);
     final navigator = Navigator.of(context);
     if (navigator.canPop()) {
       navigator.pop();
@@ -224,11 +225,24 @@ class _FlowState extends ConsumerState<_Flow> {
     _Flow._close(context, ref);
   }
 
+  /// Opens sign-in from the account step. Signing in to an existing
+  /// account switches the profile, which rebuilds the app: the starter
+  /// plans for "I want a plan" are held for the new router (#272).
+  void _signIn(SignInRoute route) {
+    final now = ref.read(setupFlowProvider(draft.mode)).value ?? draft;
+    ref
+        .read(startRouteHolderProvider)
+        .hold(now.wantsPlan ? const WorkoutStarterPlansRoute() : null);
+    ref.read(appNavigatorProvider).push(route);
+  }
+
   /// The flow is over: the starter plans for "I want a plan" (A52 owns
   /// them), else Today.
   void _finish() {
     // The flow's state now (a Skip just before may have changed it).
     final now = ref.read(setupFlowProvider(draft.mode)).value ?? draft;
+    // Ended here: no later profile switch continues this flow (#272).
+    ref.read(startRouteHolderProvider).hold(null);
     ref
         .read(appNavigatorProvider)
         .go(
@@ -358,16 +372,13 @@ class _FlowState extends ConsumerState<_Flow> {
           if (ref.watch(googleSignInAvailableProvider))
             FbGoogleButton(
               label: l10n.signInGoogle,
-              onPressed: () => ref
-                  .read(appNavigatorProvider)
-                  .push(const SignInRoute(withGoogle: true)),
+              onPressed: () => _signIn(const SignInRoute(withGoogle: true)),
             ),
           FbButton.secondary(
             label: l10n.signInEmailButton,
             icon: FbIcons.email,
             expand: true,
-            onPressed: () =>
-                ref.read(appNavigatorProvider).push(const SignInRoute()),
+            onPressed: () => _signIn(const SignInRoute()),
           ),
           FbButton.text(
             label: l10n.setupAccountNotNow,

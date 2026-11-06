@@ -171,9 +171,11 @@ void main() {
       textScale: 2,
     );
     for (final label in ['Use lb', 'Keep']) {
-      final size = tester.getSize(button(label));
-      expect(size.height, greaterThanOrEqualTo(48), reason: label);
-      expect(size.width, greaterThanOrEqualTo(48), reason: label);
+      // The painted (global, transformed) rect, not the layout size: a
+      // scaling ancestor would shrink the real target (#281).
+      final rect = tester.getRect(button(label));
+      expect(rect.height, greaterThanOrEqualTo(48), reason: label);
+      expect(rect.width, greaterThanOrEqualTo(48), reason: label);
       // Fully on screen, inside the row.
       expect(tester.getTopRight(button(label)).dx, lessThanOrEqualTo(320));
     }

@@ -90,6 +90,47 @@ String foodAmountText(
         );
 }
 
+/// The line an amount editor shows under the typed amount (backlog #117):
+/// "That's 120 g" for 2 pieces, "That's 258 g" for 250 ml of a food on a
+/// per-100 g basis. Null when the typed unit already is the basis's
+/// dimension (nothing to add) or when nothing resolved yet. The same rule
+/// as the rows' "(120 g)" ([foodAmountText]); the editor keeps the typed
+/// value as it is.
+String? amountEditorCanonical(
+  AppLocalizations l10n,
+  NutrientSnapshot? snapshot, {
+  required UnitSystem system,
+}) {
+  final input = snapshot?.input;
+  if (snapshot == null || input == null) return null;
+  final secondary = FoodAmountDisplay.of(
+    input: input,
+    amount: snapshot.amount,
+    basis: snapshot.basis,
+    system: system,
+  ).secondary;
+  if (secondary == null) return null;
+  return l10n.amountEditorCanonical(
+    _quantityText(l10n, secondary.value, secondary.unitCode, system: system),
+  );
+}
+
+/// Whether an editor offering [unitCodes] for a food on [basis] can show
+/// an [amountEditorCanonical] line: it then keeps the line's room at all
+/// times, so typing, clearing or switching units never moves what is below
+/// (UX-045).
+bool amountEditorMayResolve(Iterable<String> unitCodes, NutrientBasis basis) =>
+    unitCodes.any(
+      (code) =>
+          FoodAmountDisplay.of(
+            input: Quantity(1, code),
+            amount: 1,
+            basis: basis,
+            system: UnitSystem.metric,
+          ).secondary !=
+          null,
+    );
+
 /// A weight in [system]'s food unit: "100 g" or "3.5 oz" (the yield note).
 String foodMassText(
   AppLocalizations l10n,

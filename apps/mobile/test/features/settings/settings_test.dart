@@ -124,6 +124,18 @@ final class GateHandler extends ChangeOpHandler<SettingsOp> {
 }
 
 void main() {
+  test('D-090 the retired training-day weight is no longer a setting key '
+      '(never had a screen; A53 removed its reader)', () {
+    expect(
+      AppSettings.all.map((k) => k.name),
+      isNot(contains('targets.trainingDayWeight')),
+    );
+    expect(
+      AppSettings.all.map((k) => k.name).toSet(),
+      hasLength(AppSettings.all.length),
+    );
+  });
+
   test('LC-010 LC-021 FD-080 UX-040 D-083 setting keys: names pinned '
       '(units.system, calendar.weekStart, food.halal, '
       'appearance.theme, location.cityId) and defaults metric, '

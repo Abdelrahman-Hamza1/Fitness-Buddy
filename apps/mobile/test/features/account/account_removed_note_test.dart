@@ -5,6 +5,7 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/storage/preferences.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/account/application/account_removed_note.dart';
+import 'package:fb_mobile/features/account/application/guest_prompt.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -15,6 +16,12 @@ import 'package:shared_preferences_platform_interface/shared_preferences_async_p
 import '../../core/account/account_fakes.dart' show memoryRegistry;
 import '../today/presentation/support/today_support.dart'
     show RecordingNavigator, phoneApp;
+
+/// A guest prompt that is due now (the policy has its own tests).
+final class _DuePrompt extends GuestPrompt {
+  @override
+  Future<bool> build() async => true;
+}
 
 void main() {
   setUp(() {
@@ -106,5 +113,33 @@ void main() {
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
     expect(find.byKey(note), findsNothing);
+  });
+
+  testWidgets('AC-002 (#290) a due guest prompt is one row on Today: Sign in '
+      'opens sign-in, Not now hides it', (tester) async {
+    final navigator = RecordingNavigator();
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(SharedPreferencesAsync()),
+          appNavigatorProvider.overrideWithValue(navigator),
+          profileRegistryProvider.overrideWithValue(memoryRegistry()),
+          accountStatusProvider.overrideWith(
+            (ref) async => AccountStatus.guest,
+          ),
+          guestPromptProvider.overrideWith(_DuePrompt.new),
+        ],
+        child: phoneApp(const AccountTodayBanner()),
+      ),
+    );
+    await tester.pumpAndSettle();
+    const row = ValueKey('guest-prompt-row');
+    expect(find.byKey(row), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('guest-prompt-sign-in')));
+    await tester.pumpAndSettle();
+    expect(navigator.pushed.single, isA<SignInRoute>());
+    await tester.tap(find.byTooltip('Not now'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(row), findsNothing);
   });
 }
