@@ -7,8 +7,20 @@ final _period = RamadanPeriod(
   end: LocalDate(2026, 3, 19),
 );
 
-ComparisonDay _day(LocalDate date, double kcal, {bool incomplete = false}) =>
-    (date: date, kcal: kcal, entryCount: 3, incomplete: incomplete);
+ComparisonDay _day(
+  LocalDate date,
+  double kcal, {
+  bool incomplete = false,
+  bool estimated = false,
+  bool dayEstimate = false,
+}) => (
+  date: date,
+  kcal: kcal,
+  entryCount: dayEstimate ? 0 : 3,
+  incomplete: incomplete,
+  estimated: estimated || dayEstimate,
+  dayEstimate: dayEstimate,
+);
 
 void main() {
   test('IN-008 intake, trend and workouts: Ramadan so far vs the month '
@@ -92,5 +104,62 @@ void main() {
       ),
       throwsArgumentError,
     );
+  });
+
+  test('D25 Ramadan side with a meal estimate is marked estimated; the '
+      'average includes it', () {
+    final c = RamadanComparison.compute(
+      period: _period,
+      today: _period.start.plusDays(2),
+      days: [
+        _day(_period.start, 2000),
+        _day(_period.start.plusDays(1), 1000, estimated: true),
+        _day(_period.start.plusDays(-1), 2400),
+      ],
+      trendOn: (_) => null,
+      workoutDates: const [],
+    );
+    expect(c.ramadan.estimated, isTrue);
+    expect(c.ramadan.averageKcal, 1500);
+    expect(c.before.estimated, isFalse);
+  });
+
+  test('DY-006 D25 Ramadan comparison admits day-estimate days (entryCount '
+      '0) and marks the side estimated', () {
+    final empty = (
+      date: _period.start.plusDays(2),
+      kcal: 0.0,
+      entryCount: 0,
+      incomplete: false,
+      estimated: false,
+      dayEstimate: false,
+    );
+    final c = RamadanComparison.compute(
+      period: _period,
+      today: _period.start.plusDays(3),
+      days: [
+        _day(_period.start, 2000),
+        _day(_period.start.plusDays(1), 2600, dayEstimate: true),
+        empty,
+        _day(_period.start.plusDays(-1), 2400),
+        _day(_period.start.plusDays(-2), 1800, dayEstimate: true),
+        _day(
+          _period.start.plusDays(-3),
+          900,
+          dayEstimate: true,
+          incomplete: true,
+        ),
+      ],
+      trendOn: (_) => null,
+      workoutDates: const [],
+    );
+    // A meal-estimate day and a day-estimate day both count; an empty day
+    // and an incomplete one don't.
+    expect(c.ramadan.loggedDays, 2);
+    expect(c.ramadan.averageKcal, 2300);
+    expect(c.ramadan.estimated, isTrue);
+    expect(c.before.loggedDays, 2);
+    expect(c.before.averageKcal, 2100);
+    expect(c.before.estimated, isTrue);
   });
 }

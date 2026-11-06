@@ -106,7 +106,7 @@ List<FbBar> caloriesBars(ProgressView view) => [
       value: bucket.avgKcal,
       target: bucket.avgTargetKcal,
       style: switch (bucket.status) {
-        DayStatus.incomplete => FbBarStyle.hatched,
+        DayStatus.incomplete || DayStatus.estimated => FbBarStyle.hatched,
         DayStatus.inProgress => FbBarStyle.faint,
         _ => FbBarStyle.solid,
       },

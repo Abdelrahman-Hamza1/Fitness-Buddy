@@ -1,8 +1,8 @@
 # Fitness Buddy: progress
 
-**74 of 99 steps done** · `▓▓▓▓▓▓▓░░░` 74%
+**76 of 101 steps done** · `▓▓▓▓▓▓▓░░░` 75%
 
-App 57/75 · Backend 17/24 · Foundation 7/7
+App 59/77 · Backend 17/24 · Foundation 7/7
 
 ## Now
 
@@ -20,7 +20,7 @@ App 57/75 · Backend 17/24 · Foundation 7/7
 | ⬜ | **M4** Dogfood 2 | `░░░░░` 0/8 | A25 A26 A27 A28b A29 A31 +2 |
 | ⬜ | **M6** Workouts, review &… | `░░░░░` 0/4 | A37b A39b A41b B12 |
 | ⬜ | **M7** Production | `░░░░░` 0/3 | A43 B13 B14 |
-| 🟨 | **R1** done | `▓▓░░░` 8/15 | A32 A58 A59 A60 A61 B15 +2 |
+| 🟨 | **R1** done | `▓▓░░░` 10/17 | A32 A58 A59 A60 A61 B15 +2 |
 
 ✅ reached · 🟨 in progress · ⬜ ahead. Each step counts toward the first milestone that needs it.
 
@@ -46,7 +46,7 @@ Not started, every dependency done; earliest milestone first:
 - **#125** Install the prod build (docs/runbooks/install-a-build.md: Chrome download from the main…
 - **#124** On the A55: Me > Your data > Export your data with Android font size at the largest…
 - **#123** At the A22 phone session: run A21 §6's A55 profile benchmark (UI-free), then at least…
-- …and 49 more owner items in the [backlog](technical-planning/steps/backlog.md)
+- …and 50 more owner items in the [backlog](technical-planning/steps/backlog.md)
 
 ---
 

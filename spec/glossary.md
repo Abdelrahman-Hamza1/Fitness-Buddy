@@ -10,7 +10,7 @@
 | **Calorie shifting** | Retired by D-090: replaced by per-weekday numbers (TG-043), each day's own number, relative to the suggestion. |
 | **Direct action** | Something you tap yourself (quick-add, barcode amount, manual edit). It applies immediately, with undo (AI-048). |
 | **e1RM** | Estimated one-rep max, calculated from a set's weight and reps (Epley formula) (WO-041). |
-| **Estimate (~)** | A value that isn't from exact data (a reference dish portion, a photo portion, or an AI estimate). Always marked, with a range on tap (D-045). |
+| **Estimate (~)** | A value that isn't from exact data: a reference dish portion, a photo portion, an AI estimate, or a number you typed for a meal or a day (DY-005, DY-006). Always marked; AI estimates show a range on tap (D-045). |
 | **Expenditure / TDEE** | Total calories your body burns per day. Estimated by formula first, then adaptively. |
 | **Fajr / Maghrib** | Dawn and sunset prayer times, which mark the start and end of the Ramadan fast. |
 | **Iftar / Suhoor** | The meal that breaks the fast at sunset / the pre-dawn meal before the fast. |

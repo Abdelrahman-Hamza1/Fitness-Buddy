@@ -2,6 +2,7 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/ui/nutrition_summary.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
+import 'package:fb_mobile/l10n/gen/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -465,6 +466,33 @@ void main() {
       expect(slotKcal('Lunch', '—'), findsOneWidget);
       rig.stack.dispose();
     });
+
+    for (final action in ['Copy to…', 'Save as meal…']) {
+      testWidgets('A62 D16 the $action sheet shows "~" on a meal holding an '
+          'estimate', (tester) async {
+        final rig = await yesterday(tester);
+        await log(tester, rig, [
+          NewDiaryEntry(
+            id: fixtureId(3),
+            when: atDay(testYesterday, 10),
+            slotId: DefaultSlots.breakfastId,
+            food: const UserEstimate(kcal: 700).food(),
+            amount: UserEstimate.amount,
+          ),
+        ]);
+        await tester.tap(find.byTooltip('More for Breakfast'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(action));
+        await tester.pumpAndSettle();
+        final l10n = lookupAppLocalizations(const Locale('en'));
+        // 2 × 300 kcal + the 700 kcal estimate.
+        expect(
+          find.text(l10n.diaryMealSummary(3, l10n.approx('1,300'))),
+          findsOneWidget,
+        );
+        rig.stack.dispose();
+      });
+    }
 
     testWidgets('DY-023 copying to the next day lands on that day', (
       tester,

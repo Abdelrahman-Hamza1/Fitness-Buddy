@@ -528,6 +528,18 @@ _Entries marked **(provisional)** apply Claude's recommendation to a question th
 - Why: These codify the owner's choices on the audit mockups. Step A57.
 
 
+## D-096 — Estimates: a meal or a day in one number
+- Date / Source: 2026-11-06 · owner review of the Estimates mockups (E1 A+B, E2 A, E3 A)
+- Status: Accepted by the owner. Adds DY-005, DY-006. Amends DY-004, TG-031, TG-032, IN-001, IN-002, IN-003, HM-001, HM-002, AI-032, FD-012, the `~ estimate` row of spec/11 §2 and the glossary.
+- Decision:
+  - **Meal estimate** (DY-005): a meal's add screen offers "~ Estimate" next to Search and Scan: one calorie number, an optional name, and optional protein, carbs and fat, each on its own. Search also offers "~ Estimate "<query>"" with the query as the name. It applies at once with Undo (AI-048), never as a proposal, and works offline.
+  - **Day estimate** (DY-006): a past day with nothing logged offers "Didn't log {day}?" with "about ___ kcal". One per day. Logging or moving food onto that day replaces it (one Undo). No top-up for partly logged days: a meal estimate covers that.
+  - **What they count for:** meal estimates count everywhere like food, including the adaptive target. Day estimates count in Today, charts (hatched), averages (including the Ramadan comparison) and the weekly budget, but are left out of the adaptive target, like incomplete days, and out of macro averages.
+  - **Missing stays missing:** a macro you didn't give is unknown, never 0. Totals that include unknowns show "~"; a value with nothing known shows "—". Averages leave unknown days out per nutrient, and a day whose protein isn't known is never counted as a missed protein target.
+  - **How they show:** only "~" and the number. Tapping "~" on your own estimate opens "~ Your estimate" with Edit and Swap for foods, the only explanation. Tapping the row edits it; Swap for foods opens the food search and replaces the estimate only when you pick a food (one Undo). Any total that includes an estimate, including Buddy's, shows "~".
+  - Your estimates are totals, not foods: the per-100 sanity check (FD-012) doesn't apply to them.
+- Why: Eating out or a forgotten meal is common, and finding each food or faking a personal food was slow. You type the number, so the app still never invents nutrition numbers (D-011). One wrong day guess shouldn't move targets for weeks (option E3 A). Steps A62a, A62b.
+
 ## D-097 — Visual first: no text-only cards, honest rows, who's signed in, sets count by their numbers
 - Date / Source: 2026-11-06 · owner review of the next-UX mockups (P1 B, M1 A + M2, S1 A, W4 A, W5 A)
 - Status: Accepted by the owner. Adds UX-047, UX-048, AC-005. Amends IN-001, WO-034, UX-010.

@@ -1,6 +1,6 @@
 # 13 — Targets & Goals
 
-_Status: **Draft v1** · 2026-10-10, amended 2026-10-31 (D-090) · Main decisions: D-020, D-021, D-027, D-034, D-052 to D-054, D-056, D-058, D-070, D-090._
+_Status: **Draft v1** · 2026-10-10, amended 2026-10-31 (D-090), 2026-11-06 (D-096) · Main decisions: D-020, D-021, D-027, D-034, D-052 to D-054, D-056, D-058, D-070, D-090, D-096._
 
 Numeric defaults below are **starting values** based on common evidence-based practice. They're listed in one place (§8) so they can be reviewed together.
 
@@ -24,8 +24,8 @@ Numeric defaults below are **starting values** based on common evidence-based pr
 ## 4. Adaptive targets (D-053, D-054)
 
 - **TG-030** `[R1]` Once there's enough data, the app estimates **actual expenditure** from logged intake and the change in **trend weight** over the same period, and recalculates targets weekly.
-- **TG-031** `[R1]` "Enough data" = at least **14 days** of logging, of which at least **10 complete** (not marked incomplete, DY-004), plus at least **3 weigh-ins spread over ≥ 10 days**. With weekly weigh-ins this usually takes 3–4 weeks. The app says so plainly and shows progress ("2 more weigh-ins until your targets can adapt").
-- **TG-032** `[R1]` Incomplete days are left out of the calculation, and missing days are treated as unknown, never as zero.
+- **TG-031** `[R1]` "Enough data" = at least **14 days** of logging, of which at least **10 complete** (not marked incomplete, DY-004, and without a day estimate, DY-006), plus at least **3 weigh-ins spread over ≥ 10 days**. With weekly weigh-ins this usually takes 3–4 weeks. The app says so plainly and shows progress ("2 more weigh-ins until your targets can adapt").
+- **TG-032** `[R1]` Incomplete days and day estimates (DY-006) are left out of the calculation; meal estimates (DY-005) count like food. Missing days are treated as unknown, never as zero.
 - **TG-033** `[R1]` Each estimate shows a **confidence** level (low / medium / high) based on how much data there is and how consistent it is. Fewer weigh-ins mean lower confidence (D-054).
 - **TG-034** `[R1]` **Weekly check-in**: at the start of each week (D-070), if the recommended target differs from the current one by more than **50 kcal/day**, Buddy proposes the change inside the weekly review. It's a proposal (D-079): the user accepts, adjusts or keeps the current target. A setting can switch this to "apply automatically" (default: **ask**).
 - **TG-035** `[R1]` Weekly changes are limited to **±150 kcal/day** per check-in to avoid jumps from noisy data.

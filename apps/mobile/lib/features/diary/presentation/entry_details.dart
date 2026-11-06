@@ -58,6 +58,9 @@ class EntryDetailsPanel extends ConsumerWidget {
     final slot = slots.where((s) => s.id == entry.slotId).firstOrNull;
     String grams(double v) =>
         l10n.foodNutrientGrams(DisplayRounding.nutrientGrams(v));
+    // A62 D26: an unknown macro of your estimate is "—", never 0.
+    String macro(NutrientField field, double v) =>
+        food.known.contains(field) ? grams(v) : l10n.unknownValue;
     final source = _sourceText(l10n, entry);
     final range = provenance.range;
     void edit(NutrientField field) =>
@@ -159,22 +162,22 @@ class EntryDetailsPanel extends ConsumerWidget {
             ),
             _NutrientRow(
               label: l10n.foodNutrientProtein,
-              value: grams(n.protein),
+              value: macro(NutrientField.protein, n.protein),
               onTap: pending ? null : () => edit(NutrientField.protein),
             ),
             _NutrientRow(
               label: l10n.foodNutrientCarbs,
-              value: grams(n.carbs),
+              value: macro(NutrientField.carbs, n.carbs),
               onTap: pending ? null : () => edit(NutrientField.carbs),
             ),
             _NutrientRow(
               label: l10n.foodNutrientFat,
-              value: grams(n.fat),
+              value: macro(NutrientField.fat, n.fat),
               onTap: pending ? null : () => edit(NutrientField.fat),
             ),
             _NutrientRow(
               label: l10n.foodNutrientFiber,
-              value: grams(n.fiber),
+              value: macro(NutrientField.fiber, n.fiber),
               onTap: pending ? null : () => edit(NutrientField.fiber),
             ),
             for (final field in NutrientField.values)

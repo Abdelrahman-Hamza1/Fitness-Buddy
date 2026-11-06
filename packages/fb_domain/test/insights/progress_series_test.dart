@@ -1,6 +1,8 @@
 import 'package:fb_domain/fb_domain.dart';
 import 'package:test/test.dart';
 
+import '../helpers/diary.dart';
+
 String _id(int value) =>
     '0199e3c2-5b1a-7000-8000-${value.toRadixString(16).padLeft(12, '0')}';
 
@@ -285,5 +287,111 @@ void main() {
     expect(last.uncountedDays, 1);
     expect(last.avgKcal, 2200);
     expect(last.avgTargetKcal, 2200);
+  });
+
+  test('IN-003 bucket macro average uses per-nutrient denominators; a '
+      'kcal-only estimate day does not lower protein; IN-002 daily bar: none '
+      'is no value, partial is a flagged lower bound', () {
+    final week = [
+      for (var i = 0; i < 70; i++)
+        if (i == 1)
+          ProgressDay(
+            date: _from.plusDays(i),
+            intake: DiaryTotals.intake([estimateEntry(kcal: 1800)]),
+            entryCount: 1,
+            status: DayStatus.logged,
+          )
+        else
+          _day(_from.plusDays(i)),
+    ];
+    final buckets = ProgressBuckets.of(week);
+    expect(buckets.first.size, ProgressBucketSize.week);
+    final first = buckets.first.avgEaten!;
+    expect(first.protein, _food(2000).protein);
+    expect(first.estimated, isTrue);
+    expect(first.kcal, closeTo((2000 * 6 + 1800) / 7, 1e-9));
+
+    final kcalOnly = ProgressBuckets.of([week[1]]).single.avgEaten!;
+    expect(kcalOnly.protein, isNull);
+    expect(kcalOnly.kcal, 1800);
+    final partial = ProgressBuckets.of([
+      ProgressDay(
+        date: _from,
+        intake: DiaryTotals.intake([
+          entry(snapshot: snapshotOf(500, protein: 25)),
+          estimateEntry(kcal: 900),
+        ]),
+        entryCount: 2,
+        status: DayStatus.logged,
+      ),
+    ]).single.avgEaten!;
+    expect(partial.protein, 25);
+    expect(partial.lowerBound, contains(NutrientField.protein));
+  });
+
+  test('DY-006 IN-002 estimated day hatched, counted for kcal, no macro '
+      'values; a day estimate on today is only in progress', () {
+    final estimate = DayLog(
+      date: _today.plusDays(-2),
+      entryCount: 0,
+      intake: IntakeTotals.ofDayEstimate(2300),
+    );
+    final days = ProgressSeries.build(
+      from: _today.plusDays(-3),
+      to: _today,
+      today: _today,
+      settings: const [],
+      trendOn: (_) => null,
+      logs: [
+        _log(_today.plusDays(-3), 1800),
+        estimate,
+        DayLog(
+          date: _today.plusDays(-1),
+          entryCount: 0,
+          intake: IntakeTotals.ofDayEstimate(2100),
+          incomplete: true,
+        ),
+      ],
+    );
+    expect(days.map((d) => d.status), [
+      DayStatus.logged,
+      DayStatus.estimated,
+      DayStatus.incomplete,
+      DayStatus.inProgress,
+    ]);
+    final day = days[1];
+    expect(day.hasIntake, isTrue);
+    expect(day.counted, isTrue);
+    expect(day.eaten.kcal, 2300);
+    expect(day.intake.estimated, isTrue);
+    for (final field in IntakeTotals.unknowable) {
+      expect(day.intake.valueOf(field), isNull);
+    }
+    final bar = ProgressBuckets.of([day]).single;
+    expect(bar.avgKcal, 2300);
+    expect(bar.avgEaten!.protein, isNull);
+    expect(bar.avgEaten!.estimated, isTrue);
+    expect(bar.status, DayStatus.estimated);
+    // An average over both counted days: kcal over both, protein only over
+    // the logged one (D10's per-nutrient denominators).
+    final avg = IntakeAverages.over([
+      for (final d in days)
+        if (d.counted) d.intake,
+    ])!;
+    expect(avg.kcal, (1800 + 2300) / 2);
+    expect(avg.protein, _food(1800).protein);
+    expect(avg.estimated, isTrue);
+    // Food on the day wins: the status is logged (D13).
+    expect(
+      ProgressSeries.statusOf(
+        date: _today.plusDays(-2),
+        today: _today,
+        entryCount: 1,
+        incomplete: false,
+        dayEstimate: true,
+      ),
+      DayStatus.logged,
+    );
+    expect(estimate.dayEstimate, isTrue);
   });
 }

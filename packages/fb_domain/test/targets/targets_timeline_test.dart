@@ -79,6 +79,60 @@ DayTargets? _day(
 );
 
 void main() {
+  test('HM-002 an estimate earlier in the week marks the week line on a '
+      'later ordinary day; an estimate on an incomplete day does not', () {
+    final plain = _day(_wed, intake: [_ate(_sat, 2000), _ate(_sun, 2100)])!;
+    expect(plain.week!.estimated, isFalse);
+    final marked = _day(
+      _wed,
+      intake: [
+        DayIntake(date: _sat, kcal: 2000, entryCount: 2, estimated: true),
+        _ate(_sun, 2100),
+      ],
+    )!;
+    expect(marked.week!.estimated, isTrue);
+    expect(marked.week!.kcal, plain.week!.kcal);
+    final incomplete = _day(
+      _wed,
+      intake: [
+        DayIntake(
+          date: _sat,
+          kcal: 900,
+          entryCount: 1,
+          estimated: true,
+          incomplete: true,
+        ),
+      ],
+    )!;
+    expect(incomplete.week!.estimated, isFalse);
+  });
+
+  test('DY-006 TG-041 week budget counts a day estimate as intake and marks '
+      'the week line', () {
+    final logged = _day(_wed, intake: [_ate(_sat, 2000), _ate(_sun, 2600)])!;
+    final estimated = _day(
+      _wed,
+      intake: [
+        _ate(_sat, 2000),
+        DayIntake(
+          date: _sun,
+          kcal: 2600,
+          entryCount: 0,
+          estimated: true,
+          dayEstimate: true,
+        ),
+      ],
+    )!;
+    // Same as logging 2,600 that day, not an unknown day reserved at plan.
+    expect(estimated.week!.kcal, logged.week!.kcal);
+    expect(estimated.week!.uncountedDays, logged.week!.uncountedDays);
+    expect(
+      estimated.day.week!.accountedPastKcal,
+      logged.day.week!.accountedPastKcal,
+    );
+    expect(estimated.week!.estimated, isTrue);
+  });
+
   test('TG-040 TG-041 TargetsTimeline equals TargetPlan.day for a '
       'Saturday-start week (base 2,000, Sunday known +500, Monday no '
       'entries, Tuesday incomplete)', () {

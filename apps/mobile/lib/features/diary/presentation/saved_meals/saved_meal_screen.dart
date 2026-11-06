@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/approx_text.dart';
 import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
@@ -238,7 +239,10 @@ class _SavedMealScreenState extends ConsumerState<SavedMealScreen> {
     final today = _today;
     final slotId = _targetSlot(slots);
     final slot = slots.where((s) => s.id == slotId).firstOrNull;
-    final totals = meal.totals;
+    final intake = meal.intake;
+    final totals = intake.sum;
+    String grams(NutrientField f) =>
+        intakeText(l10n, intake, f, (v) => gramsText(l10n, v));
     final empty = meal.items.isEmpty;
     final canLog = !empty && !_busy && slotId != null;
     return Column(
@@ -256,16 +260,20 @@ class _SavedMealScreenState extends ConsumerState<SavedMealScreen> {
                   spacing: FbSpace.s1,
                   children: [
                     Text(
-                      l10n.diaryKcal(DisplayRounding.kcal(totals.kcal)),
+                      approxText(
+                        l10n,
+                        l10n.diaryKcal(DisplayRounding.kcal(totals.kcal)),
+                        approximate: intake.estimated,
+                      ),
                       style: FbType.numeric(FbType.title)
                           .copyWith(color: scheme.onSurface),
                     ),
                     Text(
                       l10n.foodSheetMacros(
-                        DisplayRounding.nutrientGrams(totals.protein),
-                        DisplayRounding.nutrientGrams(totals.carbs),
-                        DisplayRounding.nutrientGrams(totals.fat),
-                        DisplayRounding.nutrientGrams(totals.fiber),
+                        grams(NutrientField.protein),
+                        grams(NutrientField.carbs),
+                        grams(NutrientField.fat),
+                        grams(NutrientField.fiber),
                       ),
                       style: FbType.numeric(FbType.bodySmall)
                           .copyWith(color: scheme.onSurfaceVariant),
@@ -340,15 +348,24 @@ class _ItemRow extends ConsumerWidget {
       item.amount,
       ref.watch(unitSystemProvider).value ?? UnitSystem.metric,
     );
-    final kcal = l10n.diaryKcal(DisplayRounding.kcal(item.snapshot.kcal));
+    final estimate = item.food.userEstimate;
+    final kcal = approxText(
+      l10n,
+      l10n.diaryKcal(DisplayRounding.kcal(item.snapshot.kcal)),
+      approximate: item.food.provenance.isEstimate,
+    );
     final large = usesLargeText(context);
     final source = item.food.editedByUser
         ? FbSource.yours
         : fbSourceOf(item.food.provenance.source);
     final names = watchFoodNames(ref, item.food.names);
-    final detail = large ? l10n.savedMealItemSubtitle(amount, kcal) : amount;
+    final shownAmount = estimate ? estimateMacrosText(l10n, item.food) : amount;
+    final detail = large
+        ? l10n.savedMealItemSubtitle(shownAmount, kcal)
+        : shownAmount;
+    final unnamed = estimate && item.food.names.en == UserEstimate.unnamedName;
     return FbListRow(
-      title: names.primary,
+      title: unnamed ? l10n.estimateUnnamed : names.primary,
       subtitle: switch (names.secondary) {
         final ar? => l10n.foodResultSubtitle(isolateName(ar), detail),
         null => detail,

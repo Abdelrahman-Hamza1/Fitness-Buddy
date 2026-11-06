@@ -18,11 +18,14 @@ export 'data/diary_reads.dart' show DiaryReads;
 export 'data/diary_repository.dart';
 export 'data/meal_slot_op_handler.dart';
 export 'presentation/copy_meal_sheet.dart';
+export 'presentation/day_estimate_rows.dart';
 export 'presentation/day_mark_actions.dart';
 export 'presentation/entry_actions.dart' show reportDiaryOutcome;
 export 'presentation/entry_amount_sheet.dart';
 export 'presentation/entry_details.dart';
 export 'presentation/entry_row.dart';
+export 'presentation/estimate_sheet.dart'
+    show showEstimatePopup, showEstimateSheet;
 export 'presentation/group_rows.dart';
 export 'presentation/live_entry.dart';
 export 'presentation/live_meal.dart';

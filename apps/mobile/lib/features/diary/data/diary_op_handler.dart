@@ -42,21 +42,28 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
   Future<OpPlan> plan(DiaryOp op, TxReader tx, ApplyContext context) {
     final reads = DiaryTxReads(db, tx);
     return switch (op) {
-      LogSavedMeal() => planLogSavedMeal(db, op, reads, context),
+      LogSavedMeal() => _clearingOnLogged(
+        planLogSavedMeal(db, op, reads, context),
+        reads,
+      ),
       RelinkFoodRefs() => planRelink(db, op, tx),
       RenameSavedMeal() => planRenameSavedMeal(db, op, tx),
       DeleteSavedMeal() => planDeleteSavedMeal(db, op, tx),
-      LogEntries() => _log(op, reads, context),
+      LogEntries() => _clearingOnLogged(_log(op, reads, context), reads),
       OverrideNutrients() => _override(op, reads),
       UpdateDiaryEntry() => _updateEntry(op, reads, context),
       MoveEntries() => _moveEntries(op, reads, context),
       DeleteEntries() => _deleteEntries(op, reads),
       MarkDay() => _markDay(op, tx, context),
+      SetDayEstimate() => _setDayEstimate(op, reads, context),
       CreateDishGroup() => _createGroup(op, reads, context),
       RenameDishGroup() => _renameGroup(op, reads),
       MoveDishGroup() => _moveGroup(op, reads, context),
       DeleteDishGroup() => _deleteGroup(op, reads),
-      CopyMeal() => planCopyMeal(db, op, reads, context),
+      CopyMeal() => _clearingOnLogged(
+        planCopyMeal(db, op, reads, context),
+        reads,
+      ),
       SaveMeal() => planSaveMeal(db, op, reads, context),
     };
   }
@@ -133,10 +140,13 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
     ]);
     if (row.amount <= 0) throw const ChangeRejected(InvalidOp('zeroAmount'));
     final entry = diaryEntryOf(row);
+    // A62 D24: unknown → an explicit value (0 included) is a real write.
     if (row.editedByUser &&
         op.values.entries.every(
           (e) =>
-              entry.snapshot.valueOf(e.key) == StoragePrecision.round(e.value),
+              entry.snapshot.valueOf(e.key) ==
+                  StoragePrecision.round(e.value) &&
+              _isKnown(entry.food, e.key),
         )) {
       return OpPlan(const []);
     }
@@ -152,7 +162,11 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
     } on ArgumentError {
       throw const ChangeRejected(InvalidOp('outOfRange'));
     }
-    final changes = FoodColumns.per100Changes(per100, entry.amount);
+    final changes = FoodColumns.per100Changes(
+      per100,
+      entry.amount,
+      overridden: op.values.keys.toSet(),
+    );
     final event = EntryChanged([row.id], [entry.localDate]);
     return OpPlan(
       [
@@ -167,6 +181,10 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
       revertEvents: [event],
     );
   }
+
+  /// Whether [field] of [food] is known (kcal and extras always are).
+  static bool _isKnown(EntryFood food, NutrientField field) =>
+      !EntryFood.allKnown.contains(field) || food.known.contains(field);
 
   Future<OpPlan> _updateEntry(
     UpdateDiaryEntry op,
@@ -204,18 +222,22 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
       [row.id],
       [LocalDate.parse(row.localDate), ?moved?.newDate],
     );
-    return OpPlan(
-      [
-        UpdateRow(
-          db.diaryEntries,
-          row.id,
-          _Changes(changes),
-          expectedVersion: row.version,
-        ),
-        ...await _tombstoneEmptied(reads, leaving),
-      ],
-      events: [event],
-      revertEvents: [event],
+    return await _withEstimatesCleared(
+      OpPlan(
+        [
+          UpdateRow(
+            db.diaryEntries,
+            row.id,
+            _Changes(changes),
+            expectedVersion: row.version,
+          ),
+          ...await _tombstoneEmptied(reads, leaving),
+        ],
+        events: [event],
+        revertEvents: [event],
+      ),
+      {?_movedTo(row, moved)},
+      reads,
     );
   }
 
@@ -230,6 +252,7 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
     final leaving = <String, int>{};
     final ids = <String>[];
     final dates = <LocalDate>{};
+    final destinations = <LocalDate>{};
     for (final row in entries) {
       final moved = _relocate(
         row,
@@ -238,6 +261,7 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
         today: context.today,
       );
       if (moved == null) continue;
+      if (_movedTo(row, moved) case final date?) destinations.add(date);
       rows.add(
         UpdateRow(
           db.diaryEntries,
@@ -256,10 +280,14 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
     }
     if (rows.isEmpty) return OpPlan(const []);
     final event = EntryChanged(ids, dates);
-    return OpPlan(
-      [...rows, ...await _tombstoneEmptied(reads, leaving)],
-      events: [event],
-      revertEvents: [event],
+    return await _withEstimatesCleared(
+      OpPlan(
+        [...rows, ...await _tombstoneEmptied(reads, leaving)],
+        events: [event],
+        revertEvents: [event],
+      ),
+      destinations,
+      reads,
     );
   }
 
@@ -290,8 +318,11 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
     }
     final id = dayMarkRowId(op.date);
     final existing = await tx.liveRow(db.dayMarks, id);
-    // Already as asked: nothing to write, nothing changed.
-    if ((existing?.incomplete ?? false) == op.incomplete) {
+    // Already as asked: nothing to write, nothing changed. A mark that only
+    // holds a day estimate becomes the user's own mark ("count again"
+    // confirms the day, A62b review fix).
+    if ((existing?.incomplete ?? false) == op.incomplete &&
+        !(existing?.estimateOnly ?? false)) {
       return OpPlan(const []);
     }
     return OpPlan(
@@ -303,6 +334,11 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
             localDate: Value('${op.date}'),
             incomplete: Value(op.incomplete),
             notFasting: Value(existing?.notFasting ?? false),
+            // Every content column explicitly: a live mark keeps its
+            // estimate, a revived tombstone gets none (an undone estimate
+            // stays undone, A62b review fix).
+            estimateKcal: Value(existing?.estimateKcal),
+            estimateOnly: const Value(false),
           ),
         ),
       ],
@@ -312,6 +348,153 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
       ],
     );
   }
+
+  /// [SetDayEstimate] (A62 D12), inside the applier transaction: reads the
+  /// day mark (tombstones too) and whether the day has live food, then
+  /// creates, edits or clears the estimate against the version the user
+  /// saw. A stale view is a `VersionConflict`, never an overwrite.
+  Future<OpPlan> _setDayEstimate(
+    SetDayEstimate op,
+    DiaryTxReads reads,
+    ApplyContext context,
+  ) async {
+    if (!op.date.isBefore(context.today)) {
+      throw const ChangeRejected(InvalidOp('notPast'));
+    }
+    final kcal = op.kcal;
+    if (kcal != null && !DayEstimate.isValid(kcal)) {
+      throw const ChangeRejected(InvalidOp('outOfRange'));
+    }
+    final id = dayMarkRowId(op.date);
+    final stored = await reads.tx.row(db.dayMarks, id);
+    final live = stored?.deletedAt == null ? stored : null;
+    Never conflict() => throw ChangeRejected(
+      VersionConflict(
+        entity: dayMarkEntity,
+        id: id,
+        expected: op.expectedVersion ?? 0,
+        actual: live?.version ?? 0,
+      ),
+    );
+    if (live?.version != op.expectedVersion) conflict();
+    if ((live?.estimateKcal != null) != op.expectEstimate) conflict();
+    // Unchanged: nothing to write, nothing changed.
+    if (live != null && live.estimateKcal == kcal) return OpPlan(const []);
+    // A day with food has no new or edited estimate (DY-006); clearing a
+    // superseded one is fine (D13).
+    if (kcal != null && await _hasFood(reads, op.date)) {
+      throw const ChangeRejected(InvalidOp('dayHasFood'));
+    }
+    final event = DayEstimateChanged(op.date);
+    return OpPlan(
+      [
+        if (live == null)
+          // No mark, or a tombstone (revived with default marks): the mark
+          // exists only for the estimate.
+          UpsertRow(
+            db.dayMarks,
+            DayMarksCompanion(
+              id: Value(id),
+              localDate: Value('${op.date}'),
+              incomplete: const Value(false),
+              notFasting: const Value(false),
+              estimateKcal: Value(kcal),
+              estimateOnly: const Value(true),
+            ),
+          )
+        else if (kcal == null)
+          _clearEstimate(live)
+        else
+          UpdateRow(
+            db.dayMarks,
+            id,
+            DayMarksCompanion(estimateKcal: Value(kcal)),
+            expectedVersion: live.version,
+          ),
+      ],
+      events: [event],
+      revertEvents: [event],
+    );
+  }
+
+  /// Whether [date] has a live entry.
+  Future<bool> _hasFood(DiaryTxReads reads, LocalDate date) async {
+    final row =
+        await (reads.tx.db.selectOnly(db.diaryEntries)
+              ..addColumns([db.diaryEntries.id])
+              ..where(
+                db.diaryEntries.localDate.equals('$date') &
+                    db.diaryEntries.deletedAt.isNull(),
+              )
+              ..limit(1))
+            .getSingleOrNull();
+    return row != null;
+  }
+
+  /// [planned] (an op that logs new entries), plus the clear of the day
+  /// estimates on the days it logs onto (A62 D12).
+  Future<OpPlan> _clearingOnLogged(
+    Future<OpPlan> planned,
+    DiaryTxReads reads,
+  ) async {
+    final plan = await planned;
+    return await _withEstimatesCleared(plan, {
+      for (final event in plan.events)
+        if (event is EntriesLogged) ...event.dates,
+    }, reads);
+  }
+
+  /// [plan] with one `estimate_kcal = null` per date of [destinations]
+  /// whose day mark holds an estimate (A62 D12): food logged or moved onto
+  /// a day replaces its estimate in the same change set, so one Undo
+  /// restores both (the applier's inverse restores the mark).
+  Future<OpPlan> _withEstimatesCleared(
+    OpPlan plan,
+    Set<LocalDate> destinations,
+    DiaryTxReads reads,
+  ) async {
+    if (destinations.isEmpty || plan.rows.isEmpty) return plan;
+    final marks =
+        await (reads.tx.db.select(db.dayMarks)..where(
+              (t) =>
+                  t.localDate.isIn([for (final d in destinations) '$d']) &
+                  t.deletedAt.isNull() &
+                  t.estimateKcal.isNotNull(),
+            ))
+            .get();
+    if (marks.isEmpty) return plan;
+    final cleared = [
+      for (final mark in marks)
+        DayEstimateChanged(LocalDate.parse(mark.localDate)),
+    ];
+    return OpPlan(
+      [...plan.rows, for (final mark in marks) _clearEstimate(mark)],
+      events: [...plan.events, ...cleared],
+      revertEvents: [...plan.revertEvents, ...cleared],
+      revertGuards: plan.revertGuards,
+    );
+  }
+
+  /// The write that clears the day estimate of the live [mark] (A62 D12):
+  /// a mark that exists only for the estimate is tombstoned, so the day
+  /// goes back to having no mark (its food isn't taken as confirmed
+  /// complete, DY-004); the user's own mark keeps its flags and loses the
+  /// estimate. Undo restores either exactly.
+  RowOp _clearEstimate(DayMarkRow mark) => mark.estimateOnly
+      ? TombstoneRow(db.dayMarks, mark.id, expectedVersion: mark.version)
+      : UpdateRow(
+          db.dayMarks,
+          mark.id,
+          const DayMarksCompanion(estimateKcal: Value(null)),
+          expectedVersion: mark.version,
+        );
+
+  /// The date [row] moves to with [moved], or null when it stays on its
+  /// day.
+  static LocalDate? _movedTo(DiaryEntryRow row, _Relocation? moved) =>
+      moved == null || moved.newDate == LocalDate.parse(row.localDate)
+      ? null
+      : moved.newDate;
 
   /// The slot [slotId] as the day [date] uses it (a Ramadan Suhoor/Iftar
   /// gets its window), or null for no slot.
@@ -397,6 +580,7 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
       ),
     ];
     final dates = <LocalDate>{oldDate, ?toDate};
+    final destinations = <LocalDate>{};
     for (final row in members) {
       final moved = _relocate(
         row,
@@ -407,13 +591,19 @@ final class DiaryOpHandler extends ChangeOpHandler<DiaryOp> {
       );
       if (moved == null) continue;
       rows.add(UpdateRow(db.diaryEntries, row.id, moved.changes));
+      if (_movedTo(row, moved) case final date?) destinations.add(date);
       dates
         ..add(LocalDate.parse(row.localDate))
         ..add(moved.newDate);
     }
     if (members.isEmpty) return OpPlan(rows);
     final event = EntryChanged(members.map((row) => row.id), dates);
-    return OpPlan(rows, events: [event], revertEvents: [event]);
+    // A62 D12: one clear per destination date, however many members move.
+    return await _withEstimatesCleared(
+      OpPlan(rows, events: [event], revertEvents: [event]),
+      destinations,
+      reads,
+    );
   }
 
   Future<OpPlan> _deleteGroup(DeleteDishGroup op, DiaryTxReads reads) async {

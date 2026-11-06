@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/amount_text.dart';
+import 'package:fb_mobile/core/l10n/approx_text.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/diary/application/diary_actions.dart';
 import 'package:fb_mobile/features/diary/application/diary_view_state.dart';
 import 'package:fb_mobile/features/diary/presentation/entry_actions.dart';
+import 'package:fb_mobile/features/diary/presentation/estimate_sheet.dart';
 import 'package:fb_mobile/features/diary/presentation/large_text.dart';
 import 'package:fb_mobile/features/diary/presentation/move_entry_sheet.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
@@ -29,6 +31,20 @@ String entryAmountText(
 FbSource entrySourceOf(DiaryEntry entry) => entry.editedByUser
     ? FbSource.yours
     : fbSourceOf(entry.food.provenance.source);
+
+/// The macros the user gave an estimate, e.g. "P 30 g · F 10 g"; empty
+/// without any (A62 D16: the given macros only).
+String estimateMacrosText(AppLocalizations l10n, EntryFood food) {
+  String grams(NutrientField f) => gramsText(l10n, food.per100.valueOf(f)!);
+  return [
+    if (food.known.contains(NutrientField.protein))
+      l10n.estimateProtein(grams(NutrientField.protein)),
+    if (food.known.contains(NutrientField.carbs))
+      l10n.estimateCarbs(grams(NutrientField.carbs)),
+    if (food.known.contains(NutrientField.fat))
+      l10n.estimateFat(grams(NutrientField.fat)),
+  ].join(' · ');
+}
 
 /// One logged item (DY-020): the source badge, the English name, the amount
 /// and the calories; a tap opens its details (DY-021). Drag end to start
@@ -67,21 +83,42 @@ class DiaryEntryTile extends ConsumerWidget {
         (s) => s.pending.contains(entry.id),
       ),
     );
-    final kcal = l10n.diaryKcal(DisplayRounding.kcal(entry.snapshot.kcal));
+    // A62 D16: your own estimate shows "~" + the number, the given macros
+    // only, and its "~" opens the popup; a tap edits it.
+    final estimate = entry.food.userEstimate;
+    final kcal = approxText(
+      l10n,
+      l10n.diaryKcal(DisplayRounding.kcal(entry.snapshot.kcal)),
+      approximate: estimate,
+    );
     final system = ref.watch(unitSystemProvider).value ?? UnitSystem.metric;
-    final amount = entryAmountText(l10n, entry.amount, system);
+    final amount = estimate
+        ? estimateMacrosText(l10n, entry.food)
+        : entryAmountText(l10n, entry.amount, system);
     final large = usesLargeText(context);
     final names = watchFoodNames(ref, entry.food.names);
     final detail = large ? kcal : amount;
+    final unnamed = estimate && entry.food.names.en == UserEstimate.unnamedName;
     Widget row = Semantics(
-      expanded: expanded,
+      expanded: estimate ? null : expanded,
       child: FbListRow(
-        title: names.primary,
+        key: estimate ? ValueKey('estimate-row-${entry.id}') : null,
+        title: unnamed ? l10n.estimateUnnamed : names.primary,
         subtitle: switch (names.secondary) {
-          final ar? => l10n.foodResultSubtitle(isolateName(ar), detail),
-          null => detail,
+          final ar? when !estimate => l10n.foodResultSubtitle(
+            isolateName(ar),
+            detail,
+          ),
+          _ when detail.isEmpty => null,
+          _ => detail,
         },
-        leading: FbSourceBadge(source: entrySourceOf(entry)),
+        leading: estimate
+            ? FbEstimateMarker.action(
+                key: ValueKey('estimate-marker-${entry.id}'),
+                semanticsLabel: l10n.estimateMarkerLabel,
+                onTap: () => unawaited(showEstimatePopup(context, entry)),
+              )
+            : FbSourceBadge(source: entrySourceOf(entry)),
         trailing: large
             ? null
             : MediaQuery.withClampedTextScaling(
@@ -96,6 +133,8 @@ class DiaryEntryTile extends ConsumerWidget {
               ),
         onTap: pending
             ? null
+            : estimate
+            ? () => unawaited(showEstimateSheet(context, entry: entry))
             : () =>
                   ref.read(diaryViewStateProvider.notifier).toggleEntry(entry),
       ),

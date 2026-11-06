@@ -1,5 +1,6 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/approx_text.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/diary/application/diary_view_state.dart';
 import 'package:fb_mobile/features/diary/presentation/large_text.dart';
@@ -23,7 +24,11 @@ class DishGroupTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final count = l10n.diaryGroupItems(item.members.length);
-    final kcal = l10n.diaryKcal(DisplayRounding.kcal(item.totals.kcal));
+    final kcal = approxText(
+      l10n,
+      l10n.diaryKcal(DisplayRounding.kcal(item.totals.kcal)),
+      approximate: item.intake.estimated,
+    );
     final large = usesLargeText(context);
     return Padding(
       padding: const EdgeInsetsDirectional.only(start: FbSpace.s4),

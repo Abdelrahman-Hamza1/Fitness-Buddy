@@ -104,7 +104,8 @@ final class DriftSyncStore implements SyncStore {
           'GROUP BY entity, row_id)) + (SELECT count(*) FROM sync_displaced '
           'WHERE parked_reason IS NULL) AS pending, '
           '(SELECT count(*) FROM sync_parked) + (SELECT count(*) FROM '
-          'sync_displaced WHERE parked_reason IS NOT NULL) AS parked, '
+          'sync_displaced WHERE parked_reason IS NOT NULL '
+          "AND parked_reason <> '$supersededReason') AS parked, "
           '(SELECT min(hlc) FROM (SELECT hlc FROM sync_outbox UNION ALL '
           'SELECT hlc FROM sync_displaced WHERE parked_reason IS NULL)) '
           'AS oldest, '
@@ -328,6 +329,15 @@ final class DriftSyncStore implements SyncStore {
     final now = _clock.nowUtc().millisecondsSinceEpoch;
     for (final p in parked) {
       final v = p.version;
+      // TD-114, A62 D23: the server answers a schema downgrade of a
+      // protected entity `unsupported`, like a version it doesn't admit
+      // yet. Which one it was is settled later against the server's row
+      // (resolveRefusedDowngrades); until then the version is not retried.
+      final refused =
+          p.reason == 'unsupported' &&
+              SyncDocumentUpgraders.downgradeProtected.contains(v.entity)
+          ? _codecs[v.entity]?.uploadVersion
+          : null;
       // A displaced version is parked where it is, payload kept.
       final displaced = await _db
           .customSelect(
@@ -341,9 +351,9 @@ final class DriftSyncStore implements SyncStore {
           .getSingleOrNull();
       if (displaced != null) {
         await _db.customStatement(
-          'UPDATE sync_displaced SET parked_reason = ? '
+          'UPDATE sync_displaced SET parked_reason = ?, refused_schema = ? '
           'WHERE entity = ? AND row_id = ? AND hlc = ?',
-          [p.reason, v.entity, v.id, v.hlc],
+          [p.reason, refused, v.entity, v.id, v.hlc],
         );
         continue;
       }
@@ -357,10 +367,11 @@ final class DriftSyncStore implements SyncStore {
         [v.entity, v.id, v.hlc],
       );
       await _db.customStatement(
-        'INSERT INTO sync_parked (entity, row_id, hlc, reason, parked_at) '
-        'SELECT ?, ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM sync_parked '
+        'INSERT INTO sync_parked '
+        '(entity, row_id, hlc, reason, parked_at, refused_schema) '
+        'SELECT ?, ?, ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM sync_parked '
         'WHERE entity = ? AND row_id = ? AND hlc >= ?)',
-        [v.entity, v.id, v.hlc, p.reason, now, v.entity, v.id, v.hlc],
+        [v.entity, v.id, v.hlc, p.reason, now, refused, v.entity, v.id, v.hlc],
       );
     }
   }
@@ -420,54 +431,168 @@ final class DriftSyncStore implements SyncStore {
   Future<int> retryParked() => _write(() async {
     final count = await _db
         .customSelect(
-          'SELECT (SELECT count(*) FROM sync_parked) + (SELECT count(*) '
-          'FROM sync_displaced WHERE parked_reason IS NOT NULL) AS n',
+          'SELECT (SELECT count(*) FROM sync_parked $_retriable) + '
+          '(SELECT count(*) FROM sync_displaced WHERE parked_reason IS NOT '
+          "NULL AND parked_reason <> '$supersededReason' "
+          'AND refused_schema IS NULL) AS n',
           readsFrom: {_db.syncParked, _db.syncDisplaced},
         )
         .getSingle();
     await _db.customStatement(
       'INSERT INTO sync_outbox (entity, row_id, hlc, deleted) '
-      'SELECT entity, row_id, hlc, 0 FROM sync_parked',
+      'SELECT entity, row_id, hlc, 0 FROM sync_parked $_retriable',
     );
-    await _db.customStatement('DELETE FROM sync_parked');
-    await _db.customStatement('UPDATE sync_displaced SET parked_reason = NULL');
+    await _db.customStatement('DELETE FROM sync_parked $_retriable');
+    await _db.customStatement(
+      'UPDATE sync_displaced SET parked_reason = NULL '
+      "WHERE parked_reason <> '$supersededReason' "
+      'AND refused_schema IS NULL',
+    );
     return count.read<int>('n');
   });
 
   /// Moves parked versions back to the outbox once per [appVersion] and at
   /// most once a day (A34 D5: an app or server update may have fixed the
   /// cause). Returns how many were retried.
+  ///
+  /// Versions parked as a possible schema downgrade (`refused_schema`) stay
+  /// parked: only [resolveRefusedDowngrades] releases them (A62 D23).
   Future<int> retryParkedIfDue({
     required int nowMs,
     required String appVersion,
   }) async {
-    final state = await _state();
-    final last = int.tryParse(state[_parkedRetryKey] ?? '') ?? 0;
-    final versionChanged = state[_appVersionKey] != appVersion;
-    if (!versionChanged &&
-        nowMs - last < const Duration(days: 1).inMilliseconds) {
-      return 0;
-    }
+    if (!await parkedRetryDue(nowMs: nowMs, appVersion: appVersion)) return 0;
     return await _write(() async {
       await _setState(_parkedRetryKey, '$nowMs');
       await _setState(_appVersionKey, appVersion);
       final count = await _db
           .customSelect(
-            'SELECT (SELECT count(*) FROM sync_parked) + (SELECT count(*) '
-            'FROM sync_displaced WHERE parked_reason IS NOT NULL) AS n',
+            'SELECT (SELECT count(*) FROM sync_parked $_retriable) + '
+            '(SELECT count(*) FROM sync_displaced WHERE parked_reason IS NOT '
+            "NULL AND parked_reason <> '$supersededReason' "
+            'AND refused_schema IS NULL) AS n',
             readsFrom: {_db.syncParked, _db.syncDisplaced},
           )
           .getSingle();
       await _db.customStatement(
         'INSERT INTO sync_outbox (entity, row_id, hlc, deleted) '
-        'SELECT entity, row_id, hlc, 0 FROM sync_parked',
+        'SELECT entity, row_id, hlc, 0 FROM sync_parked $_retriable',
       );
-      await _db.customStatement('DELETE FROM sync_parked');
+      await _db.customStatement('DELETE FROM sync_parked $_retriable');
       await _db.customStatement(
-        'UPDATE sync_displaced SET parked_reason = NULL',
+        'UPDATE sync_displaced SET parked_reason = NULL '
+        "WHERE parked_reason <> '$supersededReason' "
+        'AND refused_schema IS NULL',
       );
       return count.read<int>('n');
     });
+  }
+
+  /// Whether [retryParkedIfDue] would retry now: [appVersion] changed or a
+  /// day passed since the last retry.
+  Future<bool> parkedRetryDue({
+    required int nowMs,
+    required String appVersion,
+  }) async {
+    final state = await _state();
+    final last = int.tryParse(state[_parkedRetryKey] ?? '') ?? 0;
+    return state[_appVersionKey] != appVersion ||
+        nowMs - last >= const Duration(days: 1).inMilliseconds;
+  }
+
+  /// The rows with a version parked as a possible schema downgrade
+  /// (`refused_schema`, A62 D23), live or displaced.
+  Future<Set<SyncRowKey>> refusedDowngrades() async {
+    final rows = await _db
+        .customSelect(
+          'SELECT entity, row_id FROM sync_parked '
+          'WHERE refused_schema IS NOT NULL UNION SELECT entity, row_id '
+          'FROM sync_displaced WHERE refused_schema IS NOT NULL',
+          readsFrom: {_db.syncParked, _db.syncDisplaced},
+        )
+        .get();
+    return {
+      for (final r in rows)
+        (entity: r.read<String>('entity'), id: r.read<String>('row_id')),
+    };
+  }
+
+  /// Resolves the versions parked as a possible schema downgrade (TD-114,
+  /// A62 D23) against [server], the server's current documents of those
+  /// rows (re-read by the caller; a row the server lacks is absent), in
+  /// one remote-apply transaction:
+  /// - the server's document has a newer schema than the refused version
+  ///   (the server refused a real downgrade): the document applies as the
+  ///   winner whatever its HLC, and the refused version is kept in
+  ///   `sync_displaced` as [supersededReason] (never pushed or retried).
+  ///   A displaced refused version is marked superseded likewise. If a
+  ///   newer local edit already replaced the refused version, that edit
+  ///   stays and syncs by ordinary LWW;
+  /// - otherwise (no document, or no newer schema: the server just didn't
+  ///   admit that version yet) the mark is dropped and the version is an
+  ///   ordinary parked one again.
+  ///
+  /// A document this app can't read keeps the mark (retried when due).
+  Future<PageApplied> resolveRefusedDowngrades(
+    Map<SyncRowKey, SyncDocument> server,
+  ) => _remote((apply) async {
+    final parked = await _db
+        .customSelect(
+          'SELECT entity, row_id, hlc, refused_schema, 0 AS displaced '
+          'FROM sync_parked WHERE refused_schema IS NOT NULL UNION ALL '
+          'SELECT entity, row_id, hlc, refused_schema, 1 FROM sync_displaced '
+          'WHERE refused_schema IS NOT NULL',
+          readsFrom: {_db.syncParked, _db.syncDisplaced},
+        )
+        .get();
+    final winners = <SyncDocument>[];
+    for (final p in parked) {
+      final key = (
+        entity: p.read<String>('entity'),
+        id: p.read<String>('row_id'),
+      );
+      final hlc = p.read<String>('hlc');
+      final document = server[key];
+      final downgrade =
+          document != null &&
+          document.schemaVersion > p.read<int>('refused_schema');
+      final table = p.read<int>('displaced') == 1
+          ? 'sync_displaced'
+          : 'sync_parked';
+      if (downgrade && table == 'sync_displaced') {
+        await _db.customStatement(
+          'UPDATE sync_displaced SET parked_reason = ?, refused_schema = NULL '
+          'WHERE entity = ? AND row_id = ? AND hlc = ?',
+          [supersededReason, key.entity, key.id, hlc],
+        );
+        continue;
+      }
+      if (downgrade && await _localHlc(key) == hlc) {
+        // Applied below; the park goes with the displacement.
+        winners.add(document);
+        continue;
+      }
+      await _db.customStatement(
+        'UPDATE $table SET refused_schema = NULL '
+        'WHERE entity = ? AND row_id = ? AND hlc = ?',
+        [key.entity, key.id, hlc],
+      );
+    }
+    return await apply(winners, fromDeferred: false, supersede: true);
+  });
+
+  /// The `updated_hlc` of local row [key], or `null` when absent.
+  Future<String?> _localHlc(SyncRowKey key) async {
+    final table = _tables[key.entity];
+    if (table == null) return null;
+    final row = await _db
+        .customSelect(
+          'SELECT updated_hlc FROM "${table.sqlName}" WHERE id = ?',
+          variables: [Variable.withString(key.id)],
+          readsFrom: {table.table},
+        )
+        .getSingleOrNull();
+    return row?.read<String>('updated_hlc');
   }
 
   // ---- remote apply -----------------------------------------------------
@@ -537,6 +662,7 @@ final class DriftSyncStore implements SyncStore {
       Future<PageApplied> Function(
         List<SyncDocument> documents, {
         required bool fromDeferred,
+        bool supersede,
       })
       apply,
     )
@@ -562,8 +688,14 @@ final class DriftSyncStore implements SyncStore {
                 : Hlc.tryParse(stored.read<String>('value')),
           );
           final outcome = await body(
-            (documents, {required fromDeferred}) =>
-                _applyDocuments(documents, clock, touched, fromDeferred),
+            (documents, {required fromDeferred, supersede = false}) =>
+                _applyDocuments(
+                  documents,
+                  clock,
+                  touched,
+                  fromDeferred,
+                  supersede: supersede,
+                ),
           );
           if (clock.last case final last?) {
             await _db.customStatement(
@@ -594,12 +726,16 @@ final class DriftSyncStore implements SyncStore {
     [if (on) '1' else '0'],
   );
 
+  /// With [supersede] (the downgrade recovery only, A62 D23) each document
+  /// applies whatever its HLC and the local version it replaces is kept as
+  /// [supersededReason]; one it can't read is left alone (not deferred).
   Future<PageApplied> _applyDocuments(
     List<SyncDocument> documents,
     HybridLogicalClock clock,
     Set<String> touched,
-    bool fromDeferred,
-  ) async {
+    bool fromDeferred, {
+    bool supersede = false,
+  }) async {
     var applied = 0;
     final entities = <String>{};
     final deferred = <DeferredDocument>[];
@@ -610,7 +746,7 @@ final class DriftSyncStore implements SyncStore {
         throw const SyncFailure(SyncFailureKind.clockBehind);
       }
       final version = SyncVersion.ofDocument(d);
-      final outcome = await _applyOne(d);
+      final outcome = await _applyOne(d, supersede: supersede);
       if (fromDeferred && outcome is! _Deferred) {
         await _db.customStatement(
           'DELETE FROM sync_deferred '
@@ -624,7 +760,7 @@ final class DriftSyncStore implements SyncStore {
           entities.add(d.entity);
           touched.add(sqlName);
         case _Deferred(:final reason):
-          if (!fromDeferred) {
+          if (!fromDeferred && !supersede) {
             await _db.customStatement(
               'INSERT OR REPLACE INTO sync_deferred '
               '(entity, row_id, hlc, document_json, reason) '
@@ -644,7 +780,7 @@ final class DriftSyncStore implements SyncStore {
     );
   }
 
-  Future<_Outcome> _applyOne(SyncDocument d) async {
+  Future<_Outcome> _applyOne(SyncDocument d, {bool supersede = false}) async {
     final table = _tables[d.entity];
     final codec = _codecs[d.entity];
     if (table == null || codec == null) return const _Deferred('unknownEntity');
@@ -657,6 +793,7 @@ final class DriftSyncStore implements SyncStore {
         )
         .getSingleOrNull();
     if (local != null &&
+        !supersede &&
         d.hlc.compareTo(local.read<String>('updated_hlc')) <= 0) {
       return const _Skipped();
     }
@@ -664,7 +801,12 @@ final class DriftSyncStore implements SyncStore {
     if (d.compacted) {
       // A deletion fence (B05): tombstone an older local row, meta only.
       if (local == null) return const _Skipped();
-      await _displace(table, d.id, local.read<String>('updated_hlc'));
+      await _displace(
+        table,
+        d.id,
+        local.read<String>('updated_hlc'),
+        superseded: supersede,
+      );
       final fenceMs =
           deletedAtMs ??
           local.readNullable<int>('deleted_at') ??
@@ -697,7 +839,12 @@ final class DriftSyncStore implements SyncStore {
       return const _Deferred('unreadable');
     }
     if (local != null) {
-      await _displace(table, d.id, local.read<String>('updated_hlc'));
+      await _displace(
+        table,
+        d.id,
+        local.read<String>('updated_hlc'),
+        superseded: supersede,
+      );
     }
     final values = {
       ...columns,
@@ -742,21 +889,26 @@ final class DriftSyncStore implements SyncStore {
   /// if it is still pending (outbox) or parked, before a pulled version
   /// replaces it (A34 fix 1): the outbox holds no payload, so without this
   /// the confirmed edit would be lost. Inside the remote-apply transaction.
+  ///
+  /// With [superseded] the kept version is marked [supersededReason]: it is
+  /// never pushed or retried and not counted (A62 D23).
   Future<void> _displace(
     SyncedTable<Table, Object?> table,
     String id,
-    String localHlc,
-  ) async {
+    String localHlc, {
+    bool superseded = false,
+  }) async {
     final state = await _db
         .customSelect(
           'SELECT EXISTS (SELECT 1 FROM sync_outbox WHERE entity = ? '
           'AND row_id = ? AND hlc <= ?) AS pending, (SELECT reason FROM '
-          'sync_parked WHERE entity = ? AND row_id = ? AND hlc = ?) AS parked',
+          'sync_parked WHERE entity = ? AND row_id = ? AND hlc = ?) AS parked, '
+          '(SELECT refused_schema FROM sync_parked WHERE entity = ? '
+          'AND row_id = ? AND hlc = ?) AS refused',
           variables: [
-            for (final v in [table.entity, id, localHlc])
-              Variable.withString(v),
-            for (final v in [table.entity, id, localHlc])
-              Variable.withString(v),
+            for (var i = 0; i < 3; i++)
+              for (final v in [table.entity, id, localHlc])
+                Variable.withString(v),
           ],
           readsFrom: {_db.syncOutbox, _db.syncParked},
         )
@@ -764,6 +916,10 @@ final class DriftSyncStore implements SyncStore {
     final pending = state.read<bool>('pending');
     final parked = state.readNullable<String>('parked');
     if (!pending && parked == null) return;
+    // A possible downgrade stays marked unless it is superseded now.
+    final refused = superseded || pending
+        ? null
+        : state.readNullable<int>('refused');
     final row = await _db
         .customSelect(
           'SELECT * FROM "${table.sqlName}" WHERE id = ?',
@@ -773,13 +929,15 @@ final class DriftSyncStore implements SyncStore {
         .getSingle();
     await _db.customStatement(
       'INSERT OR REPLACE INTO sync_displaced '
-      '(entity, row_id, hlc, row_json, parked_reason) VALUES (?, ?, ?, ?, ?)',
+      '(entity, row_id, hlc, row_json, parked_reason, refused_schema) '
+      'VALUES (?, ?, ?, ?, ?, ?)',
       [
         table.entity,
         id,
         localHlc,
         jsonEncode(row.data),
-        if (pending) null else parked,
+        if (superseded) supersededReason else if (pending) null else parked,
+        refused,
       ],
     );
     await _db.customStatement(
@@ -817,6 +975,19 @@ final class DriftSyncStore implements SyncStore {
       ? expression
       : throw ArgumentError.value(expression, 'expression', 'not a Variable');
 }
+
+/// The `sync_displaced.parked_reason` of a local version a newer-schema
+/// server document replaced after the server refused it as a schema
+/// downgrade (TD-114, A62 D23): kept for "earlier versions", never pushed,
+/// retried or counted.
+const String supersededReason = 'superseded';
+
+/// A synced row: its entity wire name and id.
+typedef SyncRowKey = ({String entity, String id});
+
+/// The parked versions "Try again" and the due retry move back: not those
+/// parked as a possible schema downgrade (A62 D23).
+const String _retriable = 'WHERE refused_schema IS NULL';
 
 sealed class _Outcome {
   const new();

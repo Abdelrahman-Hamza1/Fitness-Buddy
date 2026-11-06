@@ -520,6 +520,76 @@ void main() {
       );
     },
   );
+  test('DY-005 export: known 0 vs unknown and user_estimate columns in the '
+      'fixture (A62 D14)', () async {
+    final db = memoryDatabase();
+    await _seed(db, diaryRows: 2);
+    await runAuthorizedWrite(() async {
+      // An unknown protein (stored 0) on a user estimate…
+      await db.customStatement(
+        'UPDATE diary_entries SET user_estimate = 1, protein_known = 0, '
+        "protein_g = 0, per100_protein_g = 0 WHERE id = 'diaryEntry-live'",
+      );
+      // …and an explicit, known 0 on an ordinary entry.
+      await db.customStatement(
+        'UPDATE diary_entries SET user_estimate = 0, protein_known = 1, '
+        "protein_g = 0, per100_protein_g = 0 WHERE id = 'diary-1'",
+      );
+    });
+    final csv = _csv(_build(await _read(db)).first);
+    final header = csv.first;
+    List<String> row(String id) =>
+        csv.singleWhere((r) => r[header.indexOf('id')] == id);
+    String cell(String id, String column) => row(id)[header.indexOf(column)];
+    expect(cell('diaryEntry-live', 'protein_g'), cell('diary-1', 'protein_g'));
+    expect(
+      cell('diaryEntry-live', 'protein_known'),
+      isNot(cell('diary-1', 'protein_known')),
+    );
+    expect(
+      cell('diaryEntry-live', 'user_estimate'),
+      cell('diary-1', 'protein_known'),
+      reason: 'both true',
+    );
+    for (final column in [
+      'user_estimate',
+      'protein_known',
+      'carbs_known',
+      'fat_known',
+      'fiber_known',
+    ]) {
+      expect(header, contains(column));
+    }
+  });
+
+  test('DY-006 export: a day estimate and a mark without one in the fixture '
+      '(estimate_kcal, A62 D14)', () async {
+    final db = memoryDatabase();
+    await _seed(db);
+    await runAuthorizedWrite(
+      () => db.customStatement(
+        "UPDATE day_marks SET estimate_kcal = 2300 WHERE id = 'dayMark-live'",
+      ),
+    );
+    final data = _json(_build(await _read(db)))['data'] as Map;
+    final row = (data['dayMark'] as List).single as Map<String, dynamic>;
+    expect(row['estimate_kcal'], 2300);
+    await runAuthorizedWrite(
+      () => db.customStatement(
+        "UPDATE day_marks SET estimate_kcal = NULL WHERE id = 'dayMark-live'",
+      ),
+    );
+    final cleared = _json(_build(await _read(db)))['data'] as Map;
+    expect(
+      ((cleared['dayMark'] as List).single as Map).containsKey('estimate_kcal'),
+      isTrue,
+    );
+    expect(
+      ((cleared['dayMark'] as List).single as Map)['estimate_kcal'],
+      equals(null),
+    );
+  });
+
   test('docs/export-format.md lists every file.column of the registry', () {
     final doc = File('../../docs/export-format.md').readAsStringSync();
     for (final spec in exportRegistryV1) {

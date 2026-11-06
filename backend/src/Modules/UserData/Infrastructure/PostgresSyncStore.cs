@@ -93,9 +93,10 @@ internal sealed class PostgresSyncStore(NpgsqlDataSource source, IIdentityAccess
         {
             if (!System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(knownFingerprint, fingerprint))
             { return new(version.Entity, version.Id, version.Hlc, "invalid", "versionConflict"); }
-            await using var winner = session.Command("SELECT hlc FROM userdata.documents WHERE user_id=$1 AND entity=$2 AND id=$3");
-            winner.Parameters.AddWithValue(userId); winner.Parameters.AddWithValue(version.Entity); winner.Parameters.AddWithValue(version.Id);
-            var latest = (string?)await winner.ExecuteScalarAsync(cancellationToken);
+            var (latest, latestSchema) = await CurrentAsync(session, userId, version, cancellationToken);
+            // A replayed refused downgrade gets the same answer for as long as the newer schema is stored.
+            if (latest is not null && latest != version.Hlc && SyncRules.IsRefusedDowngrade(version.Entity, version.SchemaVersion, latestSchema))
+            { return new(version.Entity, version.Id, version.Hlc, "invalid", "unsupported"); }
             return new(version.Entity, version.Id, version.Hlc, latest == version.Hlc ? "accepted" : "stale", null);
         }
         // Retaining same-device losers too makes version identity immutable after any replacement.
@@ -114,22 +115,19 @@ internal sealed class PostgresSyncStore(NpgsqlDataSource source, IIdentityAccess
         var match = await duplicate.ExecuteScalarAsync(cancellationToken);
         if (match is bool same && !same) { return new(version.Entity, version.Id, version.Hlc, "invalid", "versionConflict"); }
         await SaveReceiptAsync(session, userId, version, fingerprint, cancellationToken);
-        await using var currentCommand = session.Command("SELECT hlc FROM userdata.documents WHERE user_id=$1 AND entity=$2 AND id=$3");
-        currentCommand.Parameters.AddWithValue(userId);
-        currentCommand.Parameters.AddWithValue(version.Entity);
-        currentCommand.Parameters.AddWithValue(version.Id);
-        var current = (string?)await currentCommand.ExecuteScalarAsync(cancellationToken);
+        var (current, storedSchema) = await CurrentAsync(session, userId, version, cancellationToken);
+        // TD-114 (A62 D23): a lower schema version than the stored one is refused whatever its HLC and kept
+        // in history like a loser (with its receipt, so a replay hits the check above). The stored document stays.
+        if (current is not null && SyncRules.IsRefusedDowngrade(version.Entity, version.SchemaVersion, storedSchema))
+        {
+            await ArchiveIncomingAsync(session, userId, version, now, cancellationToken);
+            return new(version.Entity, version.Id, version.Hlc, "invalid", "unsupported");
+        }
         var comparison = current is null ? 1 : string.CompareOrdinal(version.Hlc, current);
         if (comparison == 0) { return new(version.Entity, version.Id, version.Hlc, "accepted", null); }
         if (comparison < 0)
         {
-            await using var archive = session.Command("""
-                INSERT INTO userdata.row_history(user_id,entity,id,hlc,schema_version,device_id,deleted_at,payload,replaced_at)
-                VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT(user_id,entity,id,hlc) DO NOTHING
-                """);
-            AddVersion(archive, userId, version);
-            archive.Parameters.AddWithValue(now);
-            await archive.ExecuteNonQueryAsync(cancellationToken);
+            await ArchiveIncomingAsync(session, userId, version, now, cancellationToken);
             return new(version.Entity, version.Id, version.Hlc, "stale", null);
         }
         if (current is not null)
@@ -155,6 +153,25 @@ internal sealed class PostgresSyncStore(NpgsqlDataSource source, IIdentityAccess
         AddVersion(upsert, userId, version); upsert.Parameters.AddWithValue(now);
         await upsert.ExecuteNonQueryAsync(cancellationToken);
         return new(version.Entity, version.Id, version.Hlc, "accepted", null);
+    }
+
+    private static async Task<(string? Hlc, int SchemaVersion)> CurrentAsync(DatabaseSession session, Guid userId, SyncVersion version, CancellationToken cancellationToken)
+    {
+        await using var command = session.Command("SELECT hlc, schema_version FROM userdata.documents WHERE user_id=$1 AND entity=$2 AND id=$3");
+        command.Parameters.AddWithValue(userId); command.Parameters.AddWithValue(version.Entity); command.Parameters.AddWithValue(version.Id);
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        return await reader.ReadAsync(cancellationToken) ? (reader.GetString(0), reader.GetInt32(1)) : (null, 0);
+    }
+
+    private static async Task ArchiveIncomingAsync(DatabaseSession session, Guid userId, SyncVersion version, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        await using var archive = session.Command("""
+            INSERT INTO userdata.row_history(user_id,entity,id,hlc,schema_version,device_id,deleted_at,payload,replaced_at)
+            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT(user_id,entity,id,hlc) DO NOTHING
+            """);
+        AddVersion(archive, userId, version);
+        archive.Parameters.AddWithValue(now);
+        await archive.ExecuteNonQueryAsync(cancellationToken);
     }
 
     internal static async Task SaveReceiptAsync(DatabaseSession session, Guid userId, SyncVersion version, byte[] fingerprint, CancellationToken cancellationToken)

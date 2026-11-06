@@ -13995,6 +13995,81 @@ class $DiaryEntriesTable extends DiaryEntries
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _userEstimateMeta = const VerificationMeta(
+    'userEstimate',
+  );
+  @override
+  late final GeneratedColumn<bool> userEstimate = GeneratedColumn<bool>(
+    'user_estimate',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("user_estimate" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _proteinKnownMeta = const VerificationMeta(
+    'proteinKnown',
+  );
+  @override
+  late final GeneratedColumn<bool> proteinKnown = GeneratedColumn<bool>(
+    'protein_known',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("protein_known" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _carbsKnownMeta = const VerificationMeta(
+    'carbsKnown',
+  );
+  @override
+  late final GeneratedColumn<bool> carbsKnown = GeneratedColumn<bool>(
+    'carbs_known',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("carbs_known" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _fatKnownMeta = const VerificationMeta(
+    'fatKnown',
+  );
+  @override
+  late final GeneratedColumn<bool> fatKnown = GeneratedColumn<bool>(
+    'fat_known',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("fat_known" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _fiberKnownMeta = const VerificationMeta(
+    'fiberKnown',
+  );
+  @override
+  late final GeneratedColumn<bool> fiberKnown = GeneratedColumn<bool>(
+    'fiber_known',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("fiber_known" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   static const VerificationMeta _localDateMeta = const VerificationMeta(
     'localDate',
   );
@@ -14084,6 +14159,11 @@ class $DiaryEntriesTable extends DiaryEntries
     isEstimate,
     estimateRangeJson,
     assumptionsJson,
+    userEstimate,
+    proteinKnown,
+    carbsKnown,
+    fatKnown,
+    fiberKnown,
     localDate,
     occurredAtUtc,
     tzOffsetMin,
@@ -14378,6 +14458,42 @@ class $DiaryEntriesTable extends DiaryEntries
         ),
       );
     }
+    if (data.containsKey('user_estimate')) {
+      context.handle(
+        _userEstimateMeta,
+        userEstimate.isAcceptableOrUnknown(
+          data['user_estimate']!,
+          _userEstimateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('protein_known')) {
+      context.handle(
+        _proteinKnownMeta,
+        proteinKnown.isAcceptableOrUnknown(
+          data['protein_known']!,
+          _proteinKnownMeta,
+        ),
+      );
+    }
+    if (data.containsKey('carbs_known')) {
+      context.handle(
+        _carbsKnownMeta,
+        carbsKnown.isAcceptableOrUnknown(data['carbs_known']!, _carbsKnownMeta),
+      );
+    }
+    if (data.containsKey('fat_known')) {
+      context.handle(
+        _fatKnownMeta,
+        fatKnown.isAcceptableOrUnknown(data['fat_known']!, _fatKnownMeta),
+      );
+    }
+    if (data.containsKey('fiber_known')) {
+      context.handle(
+        _fiberKnownMeta,
+        fiberKnown.isAcceptableOrUnknown(data['fiber_known']!, _fiberKnownMeta),
+      );
+    }
     if (data.containsKey('local_date')) {
       context.handle(
         _localDateMeta,
@@ -14566,6 +14682,26 @@ class $DiaryEntriesTable extends DiaryEntries
         DriftSqlType.string,
         data['${effectivePrefix}assumptions_json'],
       ),
+      userEstimate: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}user_estimate'],
+      )!,
+      proteinKnown: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}protein_known'],
+      )!,
+      carbsKnown: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}carbs_known'],
+      )!,
+      fatKnown: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}fat_known'],
+      )!,
+      fiberKnown: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}fiber_known'],
+      )!,
       localDate: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}local_date'],
@@ -14697,6 +14833,23 @@ class DiaryEntryRow extends DataClass implements Insertable<DiaryEntryRow> {
   /// The assumptions behind the values, a JSON list of strings.
   final String? assumptionsJson;
 
+  /// Whether the user typed these values as an estimate (DY-005, A62 D3).
+  final bool userEstimate;
+
+  /// Whether protein is known. Unknown is stored as 0 in both protein
+  /// columns (W3) and only a user estimate has one (W2); readers go
+  /// through `IntakeTotals`, never the bare column (TD-114).
+  final bool proteinKnown;
+
+  /// Whether carbs are known (see [proteinKnown]).
+  final bool carbsKnown;
+
+  /// Whether fat is known (see [proteinKnown]).
+  final bool fatKnown;
+
+  /// Whether fiber is known (see [proteinKnown]).
+  final bool fiberKnown;
+
   /// The diary day, `YYYY-MM-DD`; fixed at log time from the stored offset
   /// (DY-002).
   final String localDate;
@@ -14746,6 +14899,11 @@ class DiaryEntryRow extends DataClass implements Insertable<DiaryEntryRow> {
     required this.isEstimate,
     this.estimateRangeJson,
     this.assumptionsJson,
+    required this.userEstimate,
+    required this.proteinKnown,
+    required this.carbsKnown,
+    required this.fatKnown,
+    required this.fiberKnown,
     required this.localDate,
     required this.occurredAtUtc,
     required this.tzOffsetMin,
@@ -14804,6 +14962,11 @@ class DiaryEntryRow extends DataClass implements Insertable<DiaryEntryRow> {
     if (!nullToAbsent || assumptionsJson != null) {
       map['assumptions_json'] = Variable<String>(assumptionsJson);
     }
+    map['user_estimate'] = Variable<bool>(userEstimate);
+    map['protein_known'] = Variable<bool>(proteinKnown);
+    map['carbs_known'] = Variable<bool>(carbsKnown);
+    map['fat_known'] = Variable<bool>(fatKnown);
+    map['fiber_known'] = Variable<bool>(fiberKnown);
     map['local_date'] = Variable<String>(localDate);
     map['occurred_at_utc'] = Variable<int>(occurredAtUtc);
     map['tz_offset_min'] = Variable<int>(tzOffsetMin);
@@ -14865,6 +15028,11 @@ class DiaryEntryRow extends DataClass implements Insertable<DiaryEntryRow> {
       assumptionsJson: assumptionsJson == null && nullToAbsent
           ? const Value.absent()
           : Value(assumptionsJson),
+      userEstimate: Value(userEstimate),
+      proteinKnown: Value(proteinKnown),
+      carbsKnown: Value(carbsKnown),
+      fatKnown: Value(fatKnown),
+      fiberKnown: Value(fiberKnown),
       localDate: Value(localDate),
       occurredAtUtc: Value(occurredAtUtc),
       tzOffsetMin: Value(tzOffsetMin),
@@ -14916,6 +15084,11 @@ class DiaryEntryRow extends DataClass implements Insertable<DiaryEntryRow> {
         json['estimateRangeJson'],
       ),
       assumptionsJson: serializer.fromJson<String?>(json['assumptionsJson']),
+      userEstimate: serializer.fromJson<bool>(json['userEstimate']),
+      proteinKnown: serializer.fromJson<bool>(json['proteinKnown']),
+      carbsKnown: serializer.fromJson<bool>(json['carbsKnown']),
+      fatKnown: serializer.fromJson<bool>(json['fatKnown']),
+      fiberKnown: serializer.fromJson<bool>(json['fiberKnown']),
       localDate: serializer.fromJson<String>(json['localDate']),
       occurredAtUtc: serializer.fromJson<int>(json['occurredAtUtc']),
       tzOffsetMin: serializer.fromJson<int>(json['tzOffsetMin']),
@@ -14960,6 +15133,11 @@ class DiaryEntryRow extends DataClass implements Insertable<DiaryEntryRow> {
       'isEstimate': serializer.toJson<bool>(isEstimate),
       'estimateRangeJson': serializer.toJson<String?>(estimateRangeJson),
       'assumptionsJson': serializer.toJson<String?>(assumptionsJson),
+      'userEstimate': serializer.toJson<bool>(userEstimate),
+      'proteinKnown': serializer.toJson<bool>(proteinKnown),
+      'carbsKnown': serializer.toJson<bool>(carbsKnown),
+      'fatKnown': serializer.toJson<bool>(fatKnown),
+      'fiberKnown': serializer.toJson<bool>(fiberKnown),
       'localDate': serializer.toJson<String>(localDate),
       'occurredAtUtc': serializer.toJson<int>(occurredAtUtc),
       'tzOffsetMin': serializer.toJson<int>(tzOffsetMin),
@@ -15002,6 +15180,11 @@ class DiaryEntryRow extends DataClass implements Insertable<DiaryEntryRow> {
     bool? isEstimate,
     Value<String?> estimateRangeJson = const Value.absent(),
     Value<String?> assumptionsJson = const Value.absent(),
+    bool? userEstimate,
+    bool? proteinKnown,
+    bool? carbsKnown,
+    bool? fatKnown,
+    bool? fiberKnown,
     String? localDate,
     int? occurredAtUtc,
     int? tzOffsetMin,
@@ -15047,6 +15230,11 @@ class DiaryEntryRow extends DataClass implements Insertable<DiaryEntryRow> {
     assumptionsJson: assumptionsJson.present
         ? assumptionsJson.value
         : this.assumptionsJson,
+    userEstimate: userEstimate ?? this.userEstimate,
+    proteinKnown: proteinKnown ?? this.proteinKnown,
+    carbsKnown: carbsKnown ?? this.carbsKnown,
+    fatKnown: fatKnown ?? this.fatKnown,
+    fiberKnown: fiberKnown ?? this.fiberKnown,
     localDate: localDate ?? this.localDate,
     occurredAtUtc: occurredAtUtc ?? this.occurredAtUtc,
     tzOffsetMin: tzOffsetMin ?? this.tzOffsetMin,
@@ -15118,6 +15306,19 @@ class DiaryEntryRow extends DataClass implements Insertable<DiaryEntryRow> {
       assumptionsJson: data.assumptionsJson.present
           ? data.assumptionsJson.value
           : this.assumptionsJson,
+      userEstimate: data.userEstimate.present
+          ? data.userEstimate.value
+          : this.userEstimate,
+      proteinKnown: data.proteinKnown.present
+          ? data.proteinKnown.value
+          : this.proteinKnown,
+      carbsKnown: data.carbsKnown.present
+          ? data.carbsKnown.value
+          : this.carbsKnown,
+      fatKnown: data.fatKnown.present ? data.fatKnown.value : this.fatKnown,
+      fiberKnown: data.fiberKnown.present
+          ? data.fiberKnown.value
+          : this.fiberKnown,
       localDate: data.localDate.present ? data.localDate.value : this.localDate,
       occurredAtUtc: data.occurredAtUtc.present
           ? data.occurredAtUtc.value
@@ -15168,6 +15369,11 @@ class DiaryEntryRow extends DataClass implements Insertable<DiaryEntryRow> {
           ..write('isEstimate: $isEstimate, ')
           ..write('estimateRangeJson: $estimateRangeJson, ')
           ..write('assumptionsJson: $assumptionsJson, ')
+          ..write('userEstimate: $userEstimate, ')
+          ..write('proteinKnown: $proteinKnown, ')
+          ..write('carbsKnown: $carbsKnown, ')
+          ..write('fatKnown: $fatKnown, ')
+          ..write('fiberKnown: $fiberKnown, ')
           ..write('localDate: $localDate, ')
           ..write('occurredAtUtc: $occurredAtUtc, ')
           ..write('tzOffsetMin: $tzOffsetMin, ')
@@ -15212,6 +15418,11 @@ class DiaryEntryRow extends DataClass implements Insertable<DiaryEntryRow> {
     isEstimate,
     estimateRangeJson,
     assumptionsJson,
+    userEstimate,
+    proteinKnown,
+    carbsKnown,
+    fatKnown,
+    fiberKnown,
     localDate,
     occurredAtUtc,
     tzOffsetMin,
@@ -15255,6 +15466,11 @@ class DiaryEntryRow extends DataClass implements Insertable<DiaryEntryRow> {
           other.isEstimate == this.isEstimate &&
           other.estimateRangeJson == this.estimateRangeJson &&
           other.assumptionsJson == this.assumptionsJson &&
+          other.userEstimate == this.userEstimate &&
+          other.proteinKnown == this.proteinKnown &&
+          other.carbsKnown == this.carbsKnown &&
+          other.fatKnown == this.fatKnown &&
+          other.fiberKnown == this.fiberKnown &&
           other.localDate == this.localDate &&
           other.occurredAtUtc == this.occurredAtUtc &&
           other.tzOffsetMin == this.tzOffsetMin &&
@@ -15296,6 +15512,11 @@ class DiaryEntriesCompanion extends UpdateCompanion<DiaryEntryRow> {
   final Value<bool> isEstimate;
   final Value<String?> estimateRangeJson;
   final Value<String?> assumptionsJson;
+  final Value<bool> userEstimate;
+  final Value<bool> proteinKnown;
+  final Value<bool> carbsKnown;
+  final Value<bool> fatKnown;
+  final Value<bool> fiberKnown;
   final Value<String> localDate;
   final Value<int> occurredAtUtc;
   final Value<int> tzOffsetMin;
@@ -15336,6 +15557,11 @@ class DiaryEntriesCompanion extends UpdateCompanion<DiaryEntryRow> {
     this.isEstimate = const Value.absent(),
     this.estimateRangeJson = const Value.absent(),
     this.assumptionsJson = const Value.absent(),
+    this.userEstimate = const Value.absent(),
+    this.proteinKnown = const Value.absent(),
+    this.carbsKnown = const Value.absent(),
+    this.fatKnown = const Value.absent(),
+    this.fiberKnown = const Value.absent(),
     this.localDate = const Value.absent(),
     this.occurredAtUtc = const Value.absent(),
     this.tzOffsetMin = const Value.absent(),
@@ -15377,6 +15603,11 @@ class DiaryEntriesCompanion extends UpdateCompanion<DiaryEntryRow> {
     required bool isEstimate,
     this.estimateRangeJson = const Value.absent(),
     this.assumptionsJson = const Value.absent(),
+    this.userEstimate = const Value.absent(),
+    this.proteinKnown = const Value.absent(),
+    this.carbsKnown = const Value.absent(),
+    this.fatKnown = const Value.absent(),
+    this.fiberKnown = const Value.absent(),
     required String localDate,
     required int occurredAtUtc,
     required int tzOffsetMin,
@@ -15445,6 +15676,11 @@ class DiaryEntriesCompanion extends UpdateCompanion<DiaryEntryRow> {
     Expression<bool>? isEstimate,
     Expression<String>? estimateRangeJson,
     Expression<String>? assumptionsJson,
+    Expression<bool>? userEstimate,
+    Expression<bool>? proteinKnown,
+    Expression<bool>? carbsKnown,
+    Expression<bool>? fatKnown,
+    Expression<bool>? fiberKnown,
     Expression<String>? localDate,
     Expression<int>? occurredAtUtc,
     Expression<int>? tzOffsetMin,
@@ -15486,6 +15722,11 @@ class DiaryEntriesCompanion extends UpdateCompanion<DiaryEntryRow> {
       if (isEstimate != null) 'is_estimate': isEstimate,
       if (estimateRangeJson != null) 'estimate_range_json': estimateRangeJson,
       if (assumptionsJson != null) 'assumptions_json': assumptionsJson,
+      if (userEstimate != null) 'user_estimate': userEstimate,
+      if (proteinKnown != null) 'protein_known': proteinKnown,
+      if (carbsKnown != null) 'carbs_known': carbsKnown,
+      if (fatKnown != null) 'fat_known': fatKnown,
+      if (fiberKnown != null) 'fiber_known': fiberKnown,
       if (localDate != null) 'local_date': localDate,
       if (occurredAtUtc != null) 'occurred_at_utc': occurredAtUtc,
       if (tzOffsetMin != null) 'tz_offset_min': tzOffsetMin,
@@ -15529,6 +15770,11 @@ class DiaryEntriesCompanion extends UpdateCompanion<DiaryEntryRow> {
     Value<bool>? isEstimate,
     Value<String?>? estimateRangeJson,
     Value<String?>? assumptionsJson,
+    Value<bool>? userEstimate,
+    Value<bool>? proteinKnown,
+    Value<bool>? carbsKnown,
+    Value<bool>? fatKnown,
+    Value<bool>? fiberKnown,
     Value<String>? localDate,
     Value<int>? occurredAtUtc,
     Value<int>? tzOffsetMin,
@@ -15570,6 +15816,11 @@ class DiaryEntriesCompanion extends UpdateCompanion<DiaryEntryRow> {
       isEstimate: isEstimate ?? this.isEstimate,
       estimateRangeJson: estimateRangeJson ?? this.estimateRangeJson,
       assumptionsJson: assumptionsJson ?? this.assumptionsJson,
+      userEstimate: userEstimate ?? this.userEstimate,
+      proteinKnown: proteinKnown ?? this.proteinKnown,
+      carbsKnown: carbsKnown ?? this.carbsKnown,
+      fatKnown: fatKnown ?? this.fatKnown,
+      fiberKnown: fiberKnown ?? this.fiberKnown,
       localDate: localDate ?? this.localDate,
       occurredAtUtc: occurredAtUtc ?? this.occurredAtUtc,
       tzOffsetMin: tzOffsetMin ?? this.tzOffsetMin,
@@ -15681,6 +15932,21 @@ class DiaryEntriesCompanion extends UpdateCompanion<DiaryEntryRow> {
     if (assumptionsJson.present) {
       map['assumptions_json'] = Variable<String>(assumptionsJson.value);
     }
+    if (userEstimate.present) {
+      map['user_estimate'] = Variable<bool>(userEstimate.value);
+    }
+    if (proteinKnown.present) {
+      map['protein_known'] = Variable<bool>(proteinKnown.value);
+    }
+    if (carbsKnown.present) {
+      map['carbs_known'] = Variable<bool>(carbsKnown.value);
+    }
+    if (fatKnown.present) {
+      map['fat_known'] = Variable<bool>(fatKnown.value);
+    }
+    if (fiberKnown.present) {
+      map['fiber_known'] = Variable<bool>(fiberKnown.value);
+    }
     if (localDate.present) {
       map['local_date'] = Variable<String>(localDate.value);
     }
@@ -15738,6 +16004,11 @@ class DiaryEntriesCompanion extends UpdateCompanion<DiaryEntryRow> {
           ..write('isEstimate: $isEstimate, ')
           ..write('estimateRangeJson: $estimateRangeJson, ')
           ..write('assumptionsJson: $assumptionsJson, ')
+          ..write('userEstimate: $userEstimate, ')
+          ..write('proteinKnown: $proteinKnown, ')
+          ..write('carbsKnown: $carbsKnown, ')
+          ..write('fatKnown: $fatKnown, ')
+          ..write('fiberKnown: $fiberKnown, ')
           ..write('localDate: $localDate, ')
           ..write('occurredAtUtc: $occurredAtUtc, ')
           ..write('tzOffsetMin: $tzOffsetMin, ')
@@ -16792,6 +17063,81 @@ class $SavedMealItemsTable extends SavedMealItems
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _userEstimateMeta = const VerificationMeta(
+    'userEstimate',
+  );
+  @override
+  late final GeneratedColumn<bool> userEstimate = GeneratedColumn<bool>(
+    'user_estimate',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("user_estimate" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _proteinKnownMeta = const VerificationMeta(
+    'proteinKnown',
+  );
+  @override
+  late final GeneratedColumn<bool> proteinKnown = GeneratedColumn<bool>(
+    'protein_known',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("protein_known" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _carbsKnownMeta = const VerificationMeta(
+    'carbsKnown',
+  );
+  @override
+  late final GeneratedColumn<bool> carbsKnown = GeneratedColumn<bool>(
+    'carbs_known',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("carbs_known" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _fatKnownMeta = const VerificationMeta(
+    'fatKnown',
+  );
+  @override
+  late final GeneratedColumn<bool> fatKnown = GeneratedColumn<bool>(
+    'fat_known',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("fat_known" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _fiberKnownMeta = const VerificationMeta(
+    'fiberKnown',
+  );
+  @override
+  late final GeneratedColumn<bool> fiberKnown = GeneratedColumn<bool>(
+    'fiber_known',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("fiber_known" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   static const VerificationMeta _savedMealIdMeta = const VerificationMeta(
     'savedMealId',
   );
@@ -16849,6 +17195,11 @@ class $SavedMealItemsTable extends SavedMealItems
     isEstimate,
     estimateRangeJson,
     assumptionsJson,
+    userEstimate,
+    proteinKnown,
+    carbsKnown,
+    fatKnown,
+    fiberKnown,
     savedMealId,
     sortOrder,
   ];
@@ -17140,6 +17491,42 @@ class $SavedMealItemsTable extends SavedMealItems
         ),
       );
     }
+    if (data.containsKey('user_estimate')) {
+      context.handle(
+        _userEstimateMeta,
+        userEstimate.isAcceptableOrUnknown(
+          data['user_estimate']!,
+          _userEstimateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('protein_known')) {
+      context.handle(
+        _proteinKnownMeta,
+        proteinKnown.isAcceptableOrUnknown(
+          data['protein_known']!,
+          _proteinKnownMeta,
+        ),
+      );
+    }
+    if (data.containsKey('carbs_known')) {
+      context.handle(
+        _carbsKnownMeta,
+        carbsKnown.isAcceptableOrUnknown(data['carbs_known']!, _carbsKnownMeta),
+      );
+    }
+    if (data.containsKey('fat_known')) {
+      context.handle(
+        _fatKnownMeta,
+        fatKnown.isAcceptableOrUnknown(data['fat_known']!, _fatKnownMeta),
+      );
+    }
+    if (data.containsKey('fiber_known')) {
+      context.handle(
+        _fiberKnownMeta,
+        fiberKnown.isAcceptableOrUnknown(data['fiber_known']!, _fiberKnownMeta),
+      );
+    }
     if (data.containsKey('saved_meal_id')) {
       context.handle(
         _savedMealIdMeta,
@@ -17300,6 +17687,26 @@ class $SavedMealItemsTable extends SavedMealItems
         DriftSqlType.string,
         data['${effectivePrefix}assumptions_json'],
       ),
+      userEstimate: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}user_estimate'],
+      )!,
+      proteinKnown: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}protein_known'],
+      )!,
+      carbsKnown: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}carbs_known'],
+      )!,
+      fatKnown: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}fat_known'],
+      )!,
+      fiberKnown: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}fiber_known'],
+      )!,
       savedMealId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}saved_meal_id'],
@@ -17420,6 +17827,23 @@ class SavedMealItemRow extends DataClass
   /// The assumptions behind the values, a JSON list of strings.
   final String? assumptionsJson;
 
+  /// Whether the user typed these values as an estimate (DY-005, A62 D3).
+  final bool userEstimate;
+
+  /// Whether protein is known. Unknown is stored as 0 in both protein
+  /// columns (W3) and only a user estimate has one (W2); readers go
+  /// through `IntakeTotals`, never the bare column (TD-114).
+  final bool proteinKnown;
+
+  /// Whether carbs are known (see [proteinKnown]).
+  final bool carbsKnown;
+
+  /// Whether fat is known (see [proteinKnown]).
+  final bool fatKnown;
+
+  /// Whether fiber is known (see [proteinKnown]).
+  final bool fiberKnown;
+
   /// The saved meal's id.
   final String savedMealId;
 
@@ -17459,6 +17883,11 @@ class SavedMealItemRow extends DataClass
     required this.isEstimate,
     this.estimateRangeJson,
     this.assumptionsJson,
+    required this.userEstimate,
+    required this.proteinKnown,
+    required this.carbsKnown,
+    required this.fatKnown,
+    required this.fiberKnown,
     required this.savedMealId,
     required this.sortOrder,
   });
@@ -17514,6 +17943,11 @@ class SavedMealItemRow extends DataClass
     if (!nullToAbsent || assumptionsJson != null) {
       map['assumptions_json'] = Variable<String>(assumptionsJson);
     }
+    map['user_estimate'] = Variable<bool>(userEstimate);
+    map['protein_known'] = Variable<bool>(proteinKnown);
+    map['carbs_known'] = Variable<bool>(carbsKnown);
+    map['fat_known'] = Variable<bool>(fatKnown);
+    map['fiber_known'] = Variable<bool>(fiberKnown);
     map['saved_meal_id'] = Variable<String>(savedMealId);
     map['sort_order'] = Variable<int>(sortOrder);
     return map;
@@ -17570,6 +18004,11 @@ class SavedMealItemRow extends DataClass
       assumptionsJson: assumptionsJson == null && nullToAbsent
           ? const Value.absent()
           : Value(assumptionsJson),
+      userEstimate: Value(userEstimate),
+      proteinKnown: Value(proteinKnown),
+      carbsKnown: Value(carbsKnown),
+      fatKnown: Value(fatKnown),
+      fiberKnown: Value(fiberKnown),
       savedMealId: Value(savedMealId),
       sortOrder: Value(sortOrder),
     );
@@ -17616,6 +18055,11 @@ class SavedMealItemRow extends DataClass
         json['estimateRangeJson'],
       ),
       assumptionsJson: serializer.fromJson<String?>(json['assumptionsJson']),
+      userEstimate: serializer.fromJson<bool>(json['userEstimate']),
+      proteinKnown: serializer.fromJson<bool>(json['proteinKnown']),
+      carbsKnown: serializer.fromJson<bool>(json['carbsKnown']),
+      fatKnown: serializer.fromJson<bool>(json['fatKnown']),
+      fiberKnown: serializer.fromJson<bool>(json['fiberKnown']),
       savedMealId: serializer.fromJson<String>(json['savedMealId']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
     );
@@ -17657,6 +18101,11 @@ class SavedMealItemRow extends DataClass
       'isEstimate': serializer.toJson<bool>(isEstimate),
       'estimateRangeJson': serializer.toJson<String?>(estimateRangeJson),
       'assumptionsJson': serializer.toJson<String?>(assumptionsJson),
+      'userEstimate': serializer.toJson<bool>(userEstimate),
+      'proteinKnown': serializer.toJson<bool>(proteinKnown),
+      'carbsKnown': serializer.toJson<bool>(carbsKnown),
+      'fatKnown': serializer.toJson<bool>(fatKnown),
+      'fiberKnown': serializer.toJson<bool>(fiberKnown),
       'savedMealId': serializer.toJson<String>(savedMealId),
       'sortOrder': serializer.toJson<int>(sortOrder),
     };
@@ -17696,6 +18145,11 @@ class SavedMealItemRow extends DataClass
     bool? isEstimate,
     Value<String?> estimateRangeJson = const Value.absent(),
     Value<String?> assumptionsJson = const Value.absent(),
+    bool? userEstimate,
+    bool? proteinKnown,
+    bool? carbsKnown,
+    bool? fatKnown,
+    bool? fiberKnown,
     String? savedMealId,
     int? sortOrder,
   }) => SavedMealItemRow(
@@ -17738,6 +18192,11 @@ class SavedMealItemRow extends DataClass
     assumptionsJson: assumptionsJson.present
         ? assumptionsJson.value
         : this.assumptionsJson,
+    userEstimate: userEstimate ?? this.userEstimate,
+    proteinKnown: proteinKnown ?? this.proteinKnown,
+    carbsKnown: carbsKnown ?? this.carbsKnown,
+    fatKnown: fatKnown ?? this.fatKnown,
+    fiberKnown: fiberKnown ?? this.fiberKnown,
     savedMealId: savedMealId ?? this.savedMealId,
     sortOrder: sortOrder ?? this.sortOrder,
   );
@@ -17806,6 +18265,19 @@ class SavedMealItemRow extends DataClass
       assumptionsJson: data.assumptionsJson.present
           ? data.assumptionsJson.value
           : this.assumptionsJson,
+      userEstimate: data.userEstimate.present
+          ? data.userEstimate.value
+          : this.userEstimate,
+      proteinKnown: data.proteinKnown.present
+          ? data.proteinKnown.value
+          : this.proteinKnown,
+      carbsKnown: data.carbsKnown.present
+          ? data.carbsKnown.value
+          : this.carbsKnown,
+      fatKnown: data.fatKnown.present ? data.fatKnown.value : this.fatKnown,
+      fiberKnown: data.fiberKnown.present
+          ? data.fiberKnown.value
+          : this.fiberKnown,
       savedMealId: data.savedMealId.present
           ? data.savedMealId.value
           : this.savedMealId,
@@ -17849,6 +18321,11 @@ class SavedMealItemRow extends DataClass
           ..write('isEstimate: $isEstimate, ')
           ..write('estimateRangeJson: $estimateRangeJson, ')
           ..write('assumptionsJson: $assumptionsJson, ')
+          ..write('userEstimate: $userEstimate, ')
+          ..write('proteinKnown: $proteinKnown, ')
+          ..write('carbsKnown: $carbsKnown, ')
+          ..write('fatKnown: $fatKnown, ')
+          ..write('fiberKnown: $fiberKnown, ')
           ..write('savedMealId: $savedMealId, ')
           ..write('sortOrder: $sortOrder')
           ..write(')'))
@@ -17890,6 +18367,11 @@ class SavedMealItemRow extends DataClass
     isEstimate,
     estimateRangeJson,
     assumptionsJson,
+    userEstimate,
+    proteinKnown,
+    carbsKnown,
+    fatKnown,
+    fiberKnown,
     savedMealId,
     sortOrder,
   ]);
@@ -17930,6 +18412,11 @@ class SavedMealItemRow extends DataClass
           other.isEstimate == this.isEstimate &&
           other.estimateRangeJson == this.estimateRangeJson &&
           other.assumptionsJson == this.assumptionsJson &&
+          other.userEstimate == this.userEstimate &&
+          other.proteinKnown == this.proteinKnown &&
+          other.carbsKnown == this.carbsKnown &&
+          other.fatKnown == this.fatKnown &&
+          other.fiberKnown == this.fiberKnown &&
           other.savedMealId == this.savedMealId &&
           other.sortOrder == this.sortOrder);
 }
@@ -17968,6 +18455,11 @@ class SavedMealItemsCompanion extends UpdateCompanion<SavedMealItemRow> {
   final Value<bool> isEstimate;
   final Value<String?> estimateRangeJson;
   final Value<String?> assumptionsJson;
+  final Value<bool> userEstimate;
+  final Value<bool> proteinKnown;
+  final Value<bool> carbsKnown;
+  final Value<bool> fatKnown;
+  final Value<bool> fiberKnown;
   final Value<String> savedMealId;
   final Value<int> sortOrder;
   final Value<int> rowid;
@@ -18005,6 +18497,11 @@ class SavedMealItemsCompanion extends UpdateCompanion<SavedMealItemRow> {
     this.isEstimate = const Value.absent(),
     this.estimateRangeJson = const Value.absent(),
     this.assumptionsJson = const Value.absent(),
+    this.userEstimate = const Value.absent(),
+    this.proteinKnown = const Value.absent(),
+    this.carbsKnown = const Value.absent(),
+    this.fatKnown = const Value.absent(),
+    this.fiberKnown = const Value.absent(),
     this.savedMealId = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -18043,6 +18540,11 @@ class SavedMealItemsCompanion extends UpdateCompanion<SavedMealItemRow> {
     required bool isEstimate,
     this.estimateRangeJson = const Value.absent(),
     this.assumptionsJson = const Value.absent(),
+    this.userEstimate = const Value.absent(),
+    this.proteinKnown = const Value.absent(),
+    this.carbsKnown = const Value.absent(),
+    this.fatKnown = const Value.absent(),
+    this.fiberKnown = const Value.absent(),
     required String savedMealId,
     required int sortOrder,
     this.rowid = const Value.absent(),
@@ -18106,6 +18608,11 @@ class SavedMealItemsCompanion extends UpdateCompanion<SavedMealItemRow> {
     Expression<bool>? isEstimate,
     Expression<String>? estimateRangeJson,
     Expression<String>? assumptionsJson,
+    Expression<bool>? userEstimate,
+    Expression<bool>? proteinKnown,
+    Expression<bool>? carbsKnown,
+    Expression<bool>? fatKnown,
+    Expression<bool>? fiberKnown,
     Expression<String>? savedMealId,
     Expression<int>? sortOrder,
     Expression<int>? rowid,
@@ -18144,6 +18651,11 @@ class SavedMealItemsCompanion extends UpdateCompanion<SavedMealItemRow> {
       if (isEstimate != null) 'is_estimate': isEstimate,
       if (estimateRangeJson != null) 'estimate_range_json': estimateRangeJson,
       if (assumptionsJson != null) 'assumptions_json': assumptionsJson,
+      if (userEstimate != null) 'user_estimate': userEstimate,
+      if (proteinKnown != null) 'protein_known': proteinKnown,
+      if (carbsKnown != null) 'carbs_known': carbsKnown,
+      if (fatKnown != null) 'fat_known': fatKnown,
+      if (fiberKnown != null) 'fiber_known': fiberKnown,
       if (savedMealId != null) 'saved_meal_id': savedMealId,
       if (sortOrder != null) 'sort_order': sortOrder,
       if (rowid != null) 'rowid': rowid,
@@ -18184,6 +18696,11 @@ class SavedMealItemsCompanion extends UpdateCompanion<SavedMealItemRow> {
     Value<bool>? isEstimate,
     Value<String?>? estimateRangeJson,
     Value<String?>? assumptionsJson,
+    Value<bool>? userEstimate,
+    Value<bool>? proteinKnown,
+    Value<bool>? carbsKnown,
+    Value<bool>? fatKnown,
+    Value<bool>? fiberKnown,
     Value<String>? savedMealId,
     Value<int>? sortOrder,
     Value<int>? rowid,
@@ -18222,6 +18739,11 @@ class SavedMealItemsCompanion extends UpdateCompanion<SavedMealItemRow> {
       isEstimate: isEstimate ?? this.isEstimate,
       estimateRangeJson: estimateRangeJson ?? this.estimateRangeJson,
       assumptionsJson: assumptionsJson ?? this.assumptionsJson,
+      userEstimate: userEstimate ?? this.userEstimate,
+      proteinKnown: proteinKnown ?? this.proteinKnown,
+      carbsKnown: carbsKnown ?? this.carbsKnown,
+      fatKnown: fatKnown ?? this.fatKnown,
+      fiberKnown: fiberKnown ?? this.fiberKnown,
       savedMealId: savedMealId ?? this.savedMealId,
       sortOrder: sortOrder ?? this.sortOrder,
       rowid: rowid ?? this.rowid,
@@ -18330,6 +18852,21 @@ class SavedMealItemsCompanion extends UpdateCompanion<SavedMealItemRow> {
     if (assumptionsJson.present) {
       map['assumptions_json'] = Variable<String>(assumptionsJson.value);
     }
+    if (userEstimate.present) {
+      map['user_estimate'] = Variable<bool>(userEstimate.value);
+    }
+    if (proteinKnown.present) {
+      map['protein_known'] = Variable<bool>(proteinKnown.value);
+    }
+    if (carbsKnown.present) {
+      map['carbs_known'] = Variable<bool>(carbsKnown.value);
+    }
+    if (fatKnown.present) {
+      map['fat_known'] = Variable<bool>(fatKnown.value);
+    }
+    if (fiberKnown.present) {
+      map['fiber_known'] = Variable<bool>(fiberKnown.value);
+    }
     if (savedMealId.present) {
       map['saved_meal_id'] = Variable<String>(savedMealId.value);
     }
@@ -18378,6 +18915,11 @@ class SavedMealItemsCompanion extends UpdateCompanion<SavedMealItemRow> {
           ..write('isEstimate: $isEstimate, ')
           ..write('estimateRangeJson: $estimateRangeJson, ')
           ..write('assumptionsJson: $assumptionsJson, ')
+          ..write('userEstimate: $userEstimate, ')
+          ..write('proteinKnown: $proteinKnown, ')
+          ..write('carbsKnown: $carbsKnown, ')
+          ..write('fatKnown: $fatKnown, ')
+          ..write('fiberKnown: $fiberKnown, ')
           ..write('savedMealId: $savedMealId, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('rowid: $rowid')
@@ -18520,6 +19062,35 @@ class $DayMarksTable extends DayMarks
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _estimateKcalMeta = const VerificationMeta(
+    'estimateKcal',
+  );
+  @override
+  late final GeneratedColumn<double> estimateKcal = GeneratedColumn<double>(
+    'estimate_kcal',
+    aliasedName,
+    true,
+    check: () =>
+        estimateKcal.isNull() |
+        ComparableExpr(estimateKcal).isBetweenValues(1, 20000),
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _estimateOnlyMeta = const VerificationMeta(
+    'estimateOnly',
+  );
+  @override
+  late final GeneratedColumn<bool> estimateOnly = GeneratedColumn<bool>(
+    'estimate_only',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("estimate_only" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -18533,6 +19104,8 @@ class $DayMarksTable extends DayMarks
     localDate,
     incomplete,
     notFasting,
+    estimateKcal,
+    estimateOnly,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -18628,6 +19201,24 @@ class $DayMarksTable extends DayMarks
         notFasting.isAcceptableOrUnknown(data['not_fasting']!, _notFastingMeta),
       );
     }
+    if (data.containsKey('estimate_kcal')) {
+      context.handle(
+        _estimateKcalMeta,
+        estimateKcal.isAcceptableOrUnknown(
+          data['estimate_kcal']!,
+          _estimateKcalMeta,
+        ),
+      );
+    }
+    if (data.containsKey('estimate_only')) {
+      context.handle(
+        _estimateOnlyMeta,
+        estimateOnly.isAcceptableOrUnknown(
+          data['estimate_only']!,
+          _estimateOnlyMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -18681,6 +19272,14 @@ class $DayMarksTable extends DayMarks
         DriftSqlType.bool,
         data['${effectivePrefix}not_fasting'],
       )!,
+      estimateKcal: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}estimate_kcal'],
+      ),
+      estimateOnly: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}estimate_only'],
+      )!,
     );
   }
 
@@ -18725,6 +19324,17 @@ class DayMarkRow extends DataClass implements Insertable<DayMarkRow> {
 
   /// Whether a Ramadan day is marked not fasting (A41).
   final bool notFasting;
+
+  /// The user's own estimate of the whole day, kcal (DY-006, A62 D4), or
+  /// null. Set only on a past day with no live food; logging food onto the
+  /// day clears it in the same change set (A62 D12). User content.
+  final double? estimateKcal;
+
+  /// Whether the mark exists only to hold the day estimate (A62b review
+  /// fix): the user never marked the day, so it says nothing about the
+  /// day being complete (DY-004). Clearing its estimate tombstones the
+  /// mark; marking the day sets it false.
+  final bool estimateOnly;
   const DayMarkRow({
     required this.id,
     required this.createdAt,
@@ -18737,6 +19347,8 @@ class DayMarkRow extends DataClass implements Insertable<DayMarkRow> {
     required this.localDate,
     required this.incomplete,
     required this.notFasting,
+    this.estimateKcal,
+    required this.estimateOnly,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -18754,6 +19366,10 @@ class DayMarkRow extends DataClass implements Insertable<DayMarkRow> {
     map['local_date'] = Variable<String>(localDate);
     map['incomplete'] = Variable<bool>(incomplete);
     map['not_fasting'] = Variable<bool>(notFasting);
+    if (!nullToAbsent || estimateKcal != null) {
+      map['estimate_kcal'] = Variable<double>(estimateKcal);
+    }
+    map['estimate_only'] = Variable<bool>(estimateOnly);
     return map;
   }
 
@@ -18772,6 +19388,10 @@ class DayMarkRow extends DataClass implements Insertable<DayMarkRow> {
       localDate: Value(localDate),
       incomplete: Value(incomplete),
       notFasting: Value(notFasting),
+      estimateKcal: estimateKcal == null && nullToAbsent
+          ? const Value.absent()
+          : Value(estimateKcal),
+      estimateOnly: Value(estimateOnly),
     );
   }
 
@@ -18792,6 +19412,8 @@ class DayMarkRow extends DataClass implements Insertable<DayMarkRow> {
       localDate: serializer.fromJson<String>(json['localDate']),
       incomplete: serializer.fromJson<bool>(json['incomplete']),
       notFasting: serializer.fromJson<bool>(json['notFasting']),
+      estimateKcal: serializer.fromJson<double?>(json['estimateKcal']),
+      estimateOnly: serializer.fromJson<bool>(json['estimateOnly']),
     );
   }
   @override
@@ -18809,6 +19431,8 @@ class DayMarkRow extends DataClass implements Insertable<DayMarkRow> {
       'localDate': serializer.toJson<String>(localDate),
       'incomplete': serializer.toJson<bool>(incomplete),
       'notFasting': serializer.toJson<bool>(notFasting),
+      'estimateKcal': serializer.toJson<double?>(estimateKcal),
+      'estimateOnly': serializer.toJson<bool>(estimateOnly),
     };
   }
 
@@ -18824,6 +19448,8 @@ class DayMarkRow extends DataClass implements Insertable<DayMarkRow> {
     String? localDate,
     bool? incomplete,
     bool? notFasting,
+    Value<double?> estimateKcal = const Value.absent(),
+    bool? estimateOnly,
   }) => DayMarkRow(
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
@@ -18836,6 +19462,8 @@ class DayMarkRow extends DataClass implements Insertable<DayMarkRow> {
     localDate: localDate ?? this.localDate,
     incomplete: incomplete ?? this.incomplete,
     notFasting: notFasting ?? this.notFasting,
+    estimateKcal: estimateKcal.present ? estimateKcal.value : this.estimateKcal,
+    estimateOnly: estimateOnly ?? this.estimateOnly,
   );
   DayMarkRow copyWithCompanion(DayMarksCompanion data) {
     return DayMarkRow(
@@ -18858,6 +19486,12 @@ class DayMarkRow extends DataClass implements Insertable<DayMarkRow> {
       notFasting: data.notFasting.present
           ? data.notFasting.value
           : this.notFasting,
+      estimateKcal: data.estimateKcal.present
+          ? data.estimateKcal.value
+          : this.estimateKcal,
+      estimateOnly: data.estimateOnly.present
+          ? data.estimateOnly.value
+          : this.estimateOnly,
     );
   }
 
@@ -18874,7 +19508,9 @@ class DayMarkRow extends DataClass implements Insertable<DayMarkRow> {
           ..write('editedByUser: $editedByUser, ')
           ..write('localDate: $localDate, ')
           ..write('incomplete: $incomplete, ')
-          ..write('notFasting: $notFasting')
+          ..write('notFasting: $notFasting, ')
+          ..write('estimateKcal: $estimateKcal, ')
+          ..write('estimateOnly: $estimateOnly')
           ..write(')'))
         .toString();
   }
@@ -18892,6 +19528,8 @@ class DayMarkRow extends DataClass implements Insertable<DayMarkRow> {
     localDate,
     incomplete,
     notFasting,
+    estimateKcal,
+    estimateOnly,
   );
   @override
   bool operator ==(Object other) =>
@@ -18907,7 +19545,9 @@ class DayMarkRow extends DataClass implements Insertable<DayMarkRow> {
           other.editedByUser == this.editedByUser &&
           other.localDate == this.localDate &&
           other.incomplete == this.incomplete &&
-          other.notFasting == this.notFasting);
+          other.notFasting == this.notFasting &&
+          other.estimateKcal == this.estimateKcal &&
+          other.estimateOnly == this.estimateOnly);
 }
 
 class DayMarksCompanion extends UpdateCompanion<DayMarkRow> {
@@ -18922,6 +19562,8 @@ class DayMarksCompanion extends UpdateCompanion<DayMarkRow> {
   final Value<String> localDate;
   final Value<bool> incomplete;
   final Value<bool> notFasting;
+  final Value<double?> estimateKcal;
+  final Value<bool> estimateOnly;
   final Value<int> rowid;
   const DayMarksCompanion({
     this.id = const Value.absent(),
@@ -18935,6 +19577,8 @@ class DayMarksCompanion extends UpdateCompanion<DayMarkRow> {
     this.localDate = const Value.absent(),
     this.incomplete = const Value.absent(),
     this.notFasting = const Value.absent(),
+    this.estimateKcal = const Value.absent(),
+    this.estimateOnly = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DayMarksCompanion.insert({
@@ -18949,6 +19593,8 @@ class DayMarksCompanion extends UpdateCompanion<DayMarkRow> {
     required String localDate,
     required bool incomplete,
     this.notFasting = const Value.absent(),
+    this.estimateKcal = const Value.absent(),
+    this.estimateOnly = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        createdAt = Value(createdAt),
@@ -18970,6 +19616,8 @@ class DayMarksCompanion extends UpdateCompanion<DayMarkRow> {
     Expression<String>? localDate,
     Expression<bool>? incomplete,
     Expression<bool>? notFasting,
+    Expression<double>? estimateKcal,
+    Expression<bool>? estimateOnly,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -18984,6 +19632,8 @@ class DayMarksCompanion extends UpdateCompanion<DayMarkRow> {
       if (localDate != null) 'local_date': localDate,
       if (incomplete != null) 'incomplete': incomplete,
       if (notFasting != null) 'not_fasting': notFasting,
+      if (estimateKcal != null) 'estimate_kcal': estimateKcal,
+      if (estimateOnly != null) 'estimate_only': estimateOnly,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -19000,6 +19650,8 @@ class DayMarksCompanion extends UpdateCompanion<DayMarkRow> {
     Value<String>? localDate,
     Value<bool>? incomplete,
     Value<bool>? notFasting,
+    Value<double?>? estimateKcal,
+    Value<bool>? estimateOnly,
     Value<int>? rowid,
   }) {
     return DayMarksCompanion(
@@ -19014,6 +19666,8 @@ class DayMarksCompanion extends UpdateCompanion<DayMarkRow> {
       localDate: localDate ?? this.localDate,
       incomplete: incomplete ?? this.incomplete,
       notFasting: notFasting ?? this.notFasting,
+      estimateKcal: estimateKcal ?? this.estimateKcal,
+      estimateOnly: estimateOnly ?? this.estimateOnly,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -19054,6 +19708,12 @@ class DayMarksCompanion extends UpdateCompanion<DayMarkRow> {
     if (notFasting.present) {
       map['not_fasting'] = Variable<bool>(notFasting.value);
     }
+    if (estimateKcal.present) {
+      map['estimate_kcal'] = Variable<double>(estimateKcal.value);
+    }
+    if (estimateOnly.present) {
+      map['estimate_only'] = Variable<bool>(estimateOnly.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -19074,6 +19734,8 @@ class DayMarksCompanion extends UpdateCompanion<DayMarkRow> {
           ..write('localDate: $localDate, ')
           ..write('incomplete: $incomplete, ')
           ..write('notFasting: $notFasting, ')
+          ..write('estimateKcal: $estimateKcal, ')
+          ..write('estimateOnly: $estimateOnly, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -23226,8 +23888,26 @@ class $SyncParkedTable extends SyncParked
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _refusedSchemaMeta = const VerificationMeta(
+    'refusedSchema',
+  );
   @override
-  List<GeneratedColumn> get $columns => [entity, rowId, hlc, reason, parkedAt];
+  late final GeneratedColumn<int> refusedSchema = GeneratedColumn<int>(
+    'refused_schema',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    entity,
+    rowId,
+    hlc,
+    reason,
+    parkedAt,
+    refusedSchema,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -23280,6 +23960,15 @@ class $SyncParkedTable extends SyncParked
     } else if (isInserting) {
       context.missing(_parkedAtMeta);
     }
+    if (data.containsKey('refused_schema')) {
+      context.handle(
+        _refusedSchemaMeta,
+        refusedSchema.isAcceptableOrUnknown(
+          data['refused_schema']!,
+          _refusedSchemaMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -23309,6 +23998,10 @@ class $SyncParkedTable extends SyncParked
         DriftSqlType.int,
         data['${effectivePrefix}parked_at'],
       )!,
+      refusedSchema: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}refused_schema'],
+      ),
     );
   }
 
@@ -23334,12 +24027,19 @@ class SyncParkedRow extends DataClass implements Insertable<SyncParkedRow> {
 
   /// When it was parked, UTC ms.
   final int parkedAt;
+
+  /// The `schemaVersion` the server refused as `unsupported` for a
+  /// downgrade-protected entity (TD-114, A62 D23): a possible schema
+  /// downgrade. Such a version is never retried or re-encoded until the
+  /// downgrade recovery has re-read the server's row. `null` otherwise.
+  final int? refusedSchema;
   const SyncParkedRow({
     required this.entity,
     required this.rowId,
     required this.hlc,
     required this.reason,
     required this.parkedAt,
+    this.refusedSchema,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -23349,6 +24049,9 @@ class SyncParkedRow extends DataClass implements Insertable<SyncParkedRow> {
     map['hlc'] = Variable<String>(hlc);
     map['reason'] = Variable<String>(reason);
     map['parked_at'] = Variable<int>(parkedAt);
+    if (!nullToAbsent || refusedSchema != null) {
+      map['refused_schema'] = Variable<int>(refusedSchema);
+    }
     return map;
   }
 
@@ -23359,6 +24062,9 @@ class SyncParkedRow extends DataClass implements Insertable<SyncParkedRow> {
       hlc: Value(hlc),
       reason: Value(reason),
       parkedAt: Value(parkedAt),
+      refusedSchema: refusedSchema == null && nullToAbsent
+          ? const Value.absent()
+          : Value(refusedSchema),
     );
   }
 
@@ -23373,6 +24079,7 @@ class SyncParkedRow extends DataClass implements Insertable<SyncParkedRow> {
       hlc: serializer.fromJson<String>(json['hlc']),
       reason: serializer.fromJson<String>(json['reason']),
       parkedAt: serializer.fromJson<int>(json['parkedAt']),
+      refusedSchema: serializer.fromJson<int?>(json['refusedSchema']),
     );
   }
   @override
@@ -23384,6 +24091,7 @@ class SyncParkedRow extends DataClass implements Insertable<SyncParkedRow> {
       'hlc': serializer.toJson<String>(hlc),
       'reason': serializer.toJson<String>(reason),
       'parkedAt': serializer.toJson<int>(parkedAt),
+      'refusedSchema': serializer.toJson<int?>(refusedSchema),
     };
   }
 
@@ -23393,12 +24101,16 @@ class SyncParkedRow extends DataClass implements Insertable<SyncParkedRow> {
     String? hlc,
     String? reason,
     int? parkedAt,
+    Value<int?> refusedSchema = const Value.absent(),
   }) => SyncParkedRow(
     entity: entity ?? this.entity,
     rowId: rowId ?? this.rowId,
     hlc: hlc ?? this.hlc,
     reason: reason ?? this.reason,
     parkedAt: parkedAt ?? this.parkedAt,
+    refusedSchema: refusedSchema.present
+        ? refusedSchema.value
+        : this.refusedSchema,
   );
   SyncParkedRow copyWithCompanion(SyncParkedCompanion data) {
     return SyncParkedRow(
@@ -23407,6 +24119,9 @@ class SyncParkedRow extends DataClass implements Insertable<SyncParkedRow> {
       hlc: data.hlc.present ? data.hlc.value : this.hlc,
       reason: data.reason.present ? data.reason.value : this.reason,
       parkedAt: data.parkedAt.present ? data.parkedAt.value : this.parkedAt,
+      refusedSchema: data.refusedSchema.present
+          ? data.refusedSchema.value
+          : this.refusedSchema,
     );
   }
 
@@ -23417,13 +24132,15 @@ class SyncParkedRow extends DataClass implements Insertable<SyncParkedRow> {
           ..write('rowId: $rowId, ')
           ..write('hlc: $hlc, ')
           ..write('reason: $reason, ')
-          ..write('parkedAt: $parkedAt')
+          ..write('parkedAt: $parkedAt, ')
+          ..write('refusedSchema: $refusedSchema')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(entity, rowId, hlc, reason, parkedAt);
+  int get hashCode =>
+      Object.hash(entity, rowId, hlc, reason, parkedAt, refusedSchema);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -23432,7 +24149,8 @@ class SyncParkedRow extends DataClass implements Insertable<SyncParkedRow> {
           other.rowId == this.rowId &&
           other.hlc == this.hlc &&
           other.reason == this.reason &&
-          other.parkedAt == this.parkedAt);
+          other.parkedAt == this.parkedAt &&
+          other.refusedSchema == this.refusedSchema);
 }
 
 class SyncParkedCompanion extends UpdateCompanion<SyncParkedRow> {
@@ -23441,6 +24159,7 @@ class SyncParkedCompanion extends UpdateCompanion<SyncParkedRow> {
   final Value<String> hlc;
   final Value<String> reason;
   final Value<int> parkedAt;
+  final Value<int?> refusedSchema;
   final Value<int> rowid;
   const SyncParkedCompanion({
     this.entity = const Value.absent(),
@@ -23448,6 +24167,7 @@ class SyncParkedCompanion extends UpdateCompanion<SyncParkedRow> {
     this.hlc = const Value.absent(),
     this.reason = const Value.absent(),
     this.parkedAt = const Value.absent(),
+    this.refusedSchema = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SyncParkedCompanion.insert({
@@ -23456,6 +24176,7 @@ class SyncParkedCompanion extends UpdateCompanion<SyncParkedRow> {
     required String hlc,
     required String reason,
     required int parkedAt,
+    this.refusedSchema = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : entity = Value(entity),
        rowId = Value(rowId),
@@ -23468,6 +24189,7 @@ class SyncParkedCompanion extends UpdateCompanion<SyncParkedRow> {
     Expression<String>? hlc,
     Expression<String>? reason,
     Expression<int>? parkedAt,
+    Expression<int>? refusedSchema,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -23476,6 +24198,7 @@ class SyncParkedCompanion extends UpdateCompanion<SyncParkedRow> {
       if (hlc != null) 'hlc': hlc,
       if (reason != null) 'reason': reason,
       if (parkedAt != null) 'parked_at': parkedAt,
+      if (refusedSchema != null) 'refused_schema': refusedSchema,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -23486,6 +24209,7 @@ class SyncParkedCompanion extends UpdateCompanion<SyncParkedRow> {
     Value<String>? hlc,
     Value<String>? reason,
     Value<int>? parkedAt,
+    Value<int?>? refusedSchema,
     Value<int>? rowid,
   }) {
     return SyncParkedCompanion(
@@ -23494,6 +24218,7 @@ class SyncParkedCompanion extends UpdateCompanion<SyncParkedRow> {
       hlc: hlc ?? this.hlc,
       reason: reason ?? this.reason,
       parkedAt: parkedAt ?? this.parkedAt,
+      refusedSchema: refusedSchema ?? this.refusedSchema,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -23516,6 +24241,9 @@ class SyncParkedCompanion extends UpdateCompanion<SyncParkedRow> {
     if (parkedAt.present) {
       map['parked_at'] = Variable<int>(parkedAt.value);
     }
+    if (refusedSchema.present) {
+      map['refused_schema'] = Variable<int>(refusedSchema.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -23530,6 +24258,7 @@ class SyncParkedCompanion extends UpdateCompanion<SyncParkedRow> {
           ..write('hlc: $hlc, ')
           ..write('reason: $reason, ')
           ..write('parkedAt: $parkedAt, ')
+          ..write('refusedSchema: $refusedSchema, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -23964,6 +24693,17 @@ class $SyncDisplacedTable extends SyncDisplaced
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _refusedSchemaMeta = const VerificationMeta(
+    'refusedSchema',
+  );
+  @override
+  late final GeneratedColumn<int> refusedSchema = GeneratedColumn<int>(
+    'refused_schema',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     entity,
@@ -23971,6 +24711,7 @@ class $SyncDisplacedTable extends SyncDisplaced
     hlc,
     rowJson,
     parkedReason,
+    refusedSchema,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -24025,6 +24766,15 @@ class $SyncDisplacedTable extends SyncDisplaced
         ),
       );
     }
+    if (data.containsKey('refused_schema')) {
+      context.handle(
+        _refusedSchemaMeta,
+        refusedSchema.isAcceptableOrUnknown(
+          data['refused_schema']!,
+          _refusedSchemaMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -24054,6 +24804,10 @@ class $SyncDisplacedTable extends SyncDisplaced
         DriftSqlType.string,
         data['${effectivePrefix}parked_reason'],
       ),
+      refusedSchema: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}refused_schema'],
+      ),
     );
   }
 
@@ -24080,12 +24834,16 @@ class SyncDisplacedRow extends DataClass
   /// The parked reason when the server or the encoder refused it; `null`
   /// while it waits to be pushed.
   final String? parkedReason;
+
+  /// Like [SyncParked.refusedSchema], for a parked displaced version.
+  final int? refusedSchema;
   const SyncDisplacedRow({
     required this.entity,
     required this.rowId,
     required this.hlc,
     required this.rowJson,
     this.parkedReason,
+    this.refusedSchema,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -24096,6 +24854,9 @@ class SyncDisplacedRow extends DataClass
     map['row_json'] = Variable<String>(rowJson);
     if (!nullToAbsent || parkedReason != null) {
       map['parked_reason'] = Variable<String>(parkedReason);
+    }
+    if (!nullToAbsent || refusedSchema != null) {
+      map['refused_schema'] = Variable<int>(refusedSchema);
     }
     return map;
   }
@@ -24109,6 +24870,9 @@ class SyncDisplacedRow extends DataClass
       parkedReason: parkedReason == null && nullToAbsent
           ? const Value.absent()
           : Value(parkedReason),
+      refusedSchema: refusedSchema == null && nullToAbsent
+          ? const Value.absent()
+          : Value(refusedSchema),
     );
   }
 
@@ -24123,6 +24887,7 @@ class SyncDisplacedRow extends DataClass
       hlc: serializer.fromJson<String>(json['hlc']),
       rowJson: serializer.fromJson<String>(json['rowJson']),
       parkedReason: serializer.fromJson<String?>(json['parkedReason']),
+      refusedSchema: serializer.fromJson<int?>(json['refusedSchema']),
     );
   }
   @override
@@ -24134,6 +24899,7 @@ class SyncDisplacedRow extends DataClass
       'hlc': serializer.toJson<String>(hlc),
       'rowJson': serializer.toJson<String>(rowJson),
       'parkedReason': serializer.toJson<String?>(parkedReason),
+      'refusedSchema': serializer.toJson<int?>(refusedSchema),
     };
   }
 
@@ -24143,12 +24909,16 @@ class SyncDisplacedRow extends DataClass
     String? hlc,
     String? rowJson,
     Value<String?> parkedReason = const Value.absent(),
+    Value<int?> refusedSchema = const Value.absent(),
   }) => SyncDisplacedRow(
     entity: entity ?? this.entity,
     rowId: rowId ?? this.rowId,
     hlc: hlc ?? this.hlc,
     rowJson: rowJson ?? this.rowJson,
     parkedReason: parkedReason.present ? parkedReason.value : this.parkedReason,
+    refusedSchema: refusedSchema.present
+        ? refusedSchema.value
+        : this.refusedSchema,
   );
   SyncDisplacedRow copyWithCompanion(SyncDisplacedCompanion data) {
     return SyncDisplacedRow(
@@ -24159,6 +24929,9 @@ class SyncDisplacedRow extends DataClass
       parkedReason: data.parkedReason.present
           ? data.parkedReason.value
           : this.parkedReason,
+      refusedSchema: data.refusedSchema.present
+          ? data.refusedSchema.value
+          : this.refusedSchema,
     );
   }
 
@@ -24169,13 +24942,15 @@ class SyncDisplacedRow extends DataClass
           ..write('rowId: $rowId, ')
           ..write('hlc: $hlc, ')
           ..write('rowJson: $rowJson, ')
-          ..write('parkedReason: $parkedReason')
+          ..write('parkedReason: $parkedReason, ')
+          ..write('refusedSchema: $refusedSchema')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(entity, rowId, hlc, rowJson, parkedReason);
+  int get hashCode =>
+      Object.hash(entity, rowId, hlc, rowJson, parkedReason, refusedSchema);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -24184,7 +24959,8 @@ class SyncDisplacedRow extends DataClass
           other.rowId == this.rowId &&
           other.hlc == this.hlc &&
           other.rowJson == this.rowJson &&
-          other.parkedReason == this.parkedReason);
+          other.parkedReason == this.parkedReason &&
+          other.refusedSchema == this.refusedSchema);
 }
 
 class SyncDisplacedCompanion extends UpdateCompanion<SyncDisplacedRow> {
@@ -24193,6 +24969,7 @@ class SyncDisplacedCompanion extends UpdateCompanion<SyncDisplacedRow> {
   final Value<String> hlc;
   final Value<String> rowJson;
   final Value<String?> parkedReason;
+  final Value<int?> refusedSchema;
   final Value<int> rowid;
   const SyncDisplacedCompanion({
     this.entity = const Value.absent(),
@@ -24200,6 +24977,7 @@ class SyncDisplacedCompanion extends UpdateCompanion<SyncDisplacedRow> {
     this.hlc = const Value.absent(),
     this.rowJson = const Value.absent(),
     this.parkedReason = const Value.absent(),
+    this.refusedSchema = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SyncDisplacedCompanion.insert({
@@ -24208,6 +24986,7 @@ class SyncDisplacedCompanion extends UpdateCompanion<SyncDisplacedRow> {
     required String hlc,
     required String rowJson,
     this.parkedReason = const Value.absent(),
+    this.refusedSchema = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : entity = Value(entity),
        rowId = Value(rowId),
@@ -24219,6 +24998,7 @@ class SyncDisplacedCompanion extends UpdateCompanion<SyncDisplacedRow> {
     Expression<String>? hlc,
     Expression<String>? rowJson,
     Expression<String>? parkedReason,
+    Expression<int>? refusedSchema,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -24227,6 +25007,7 @@ class SyncDisplacedCompanion extends UpdateCompanion<SyncDisplacedRow> {
       if (hlc != null) 'hlc': hlc,
       if (rowJson != null) 'row_json': rowJson,
       if (parkedReason != null) 'parked_reason': parkedReason,
+      if (refusedSchema != null) 'refused_schema': refusedSchema,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -24237,6 +25018,7 @@ class SyncDisplacedCompanion extends UpdateCompanion<SyncDisplacedRow> {
     Value<String>? hlc,
     Value<String>? rowJson,
     Value<String?>? parkedReason,
+    Value<int?>? refusedSchema,
     Value<int>? rowid,
   }) {
     return SyncDisplacedCompanion(
@@ -24245,6 +25027,7 @@ class SyncDisplacedCompanion extends UpdateCompanion<SyncDisplacedRow> {
       hlc: hlc ?? this.hlc,
       rowJson: rowJson ?? this.rowJson,
       parkedReason: parkedReason ?? this.parkedReason,
+      refusedSchema: refusedSchema ?? this.refusedSchema,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -24267,6 +25050,9 @@ class SyncDisplacedCompanion extends UpdateCompanion<SyncDisplacedRow> {
     if (parkedReason.present) {
       map['parked_reason'] = Variable<String>(parkedReason.value);
     }
+    if (refusedSchema.present) {
+      map['refused_schema'] = Variable<int>(refusedSchema.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -24281,6 +25067,7 @@ class SyncDisplacedCompanion extends UpdateCompanion<SyncDisplacedRow> {
           ..write('hlc: $hlc, ')
           ..write('rowJson: $rowJson, ')
           ..write('parkedReason: $parkedReason, ')
+          ..write('refusedSchema: $refusedSchema, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

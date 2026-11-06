@@ -499,7 +499,7 @@ final class _WeekIntakeProvider
   }
 }
 
-String _$_weekIntakeHash() => r'0c4eb930d4fd8d4e0be4f5fd5b981b0453ad36cc';
+String _$_weekIntakeHash() => r'5d347769a82c61aabca2bc0e2404279df923f6d0';
 
 /// The diary days [from]–[to] (inclusive) as [DayIntake]s: each day with
 /// entries or a mark. Days with neither are left out (unknown, TG-032).

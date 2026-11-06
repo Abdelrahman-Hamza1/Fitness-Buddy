@@ -60,8 +60,10 @@ Map<String, Map<String, Object?>> _fixtures() {
   final v2 = _json('contracts/testdata/sync/entity-payloads-v2.json');
   return {
     for (final MapEntry(:key, :value) in v1.entries)
-      key: ((key == 'weighIn' ? v2[key] : value)! as Map)
-          .cast<String, Object?>(),
+      key:
+          ((SyncDocumentUpgraders.currentVersionOf(key) == 2 ? v2[key] : value)!
+                  as Map)
+              .cast<String, Object?>(),
   };
 }
 
@@ -172,6 +174,108 @@ void main() {
     final change = (await store.pending(limit: 100)).changes
         .singleWhere((c) => c.entity == 'weighIn');
     expect(change.schemaVersion, 2, reason: 'upload v2 only');
+  });
+
+  test('DY-005 diaryEntry and savedMealItem v1 documents upgrade on pull to '
+      'known non-estimates; a newer v3 is deferred, never applied', () async {
+    final db = memoryDatabase();
+    final store = driftStore(db, clock: clock);
+    final v1 = _json('contracts/testdata/sync/entity-payloads.json');
+    await store.applyPage(
+      _page([
+        for (final (i, entity) in ['diaryEntry', 'savedMealItem'].indexed)
+          _doc(
+            entity,
+            syntheticId(i + 1),
+            (v1[entity]! as Map).cast<String, Object?>(),
+            seq: i + 1,
+          ),
+      ], next: '2'),
+      requestedCursor: '0',
+    );
+    final entry = await db.select(db.diaryEntries).getSingle();
+    final item = await db.select(db.savedMealItems).getSingle();
+    for (final (userEstimate, known) in [
+      (
+        entry.userEstimate,
+        [
+          entry.proteinKnown,
+          entry.carbsKnown,
+          entry.fatKnown,
+          entry.fiberKnown,
+        ],
+      ),
+      (
+        item.userEstimate,
+        [item.proteinKnown, item.carbsKnown, item.fatKnown, item.fiberKnown],
+      ),
+    ]) {
+      expect(userEstimate, isFalse);
+      expect(known, everyElement(isTrue));
+    }
+    await store.beginReset();
+    final changes = (await store.pending(limit: 100)).changes;
+    expect(
+      changes.where((c) => c.entity == 'diaryEntry').single.schemaVersion,
+      2,
+    );
+    // The guard an older build relies on: a version newer than this app's.
+    final applied = await store.applyPage(
+      _page([
+        _doc(
+          'diaryEntry',
+          syntheticId(9),
+          _fixtures()['diaryEntry']!,
+          seq: 3,
+          schemaVersion: 3,
+        ),
+      ], next: '3'),
+      requestedCursor: '2',
+    );
+    expect(applied.deferred.single.reason, 'newerSchema');
+    expect(
+      await (db.select(
+        db.diaryEntries,
+      )..where((t) => t.id.equals(syntheticId(9)))).getSingleOrNull(),
+      isNull,
+    );
+  });
+
+  // D23 order (a) (a refused old-client edit): test/core/sync/
+  // downgrade_recovery_test.dart.
+
+  test('D23 order (b): a newer v1 document over a local v2 row is plain LWW: '
+      'it applies through the upgrader', () async {
+    final db = memoryDatabase();
+    final store = driftStore(db, clock: clock);
+    final id = syntheticId(1);
+    const h1 = '1760351230000-00000-0199e3c2-5b1a-7000-8000-000000000002';
+    const h2 = '1760351231000-00000-0199e3c2-5b1a-7000-8000-000000000003';
+    await store.applyPage(
+      _page([
+        _doc(
+          'diaryEntry',
+          id,
+          _fixtures()['diaryEntry']!,
+          seq: 1,
+          hlc: h1,
+          schemaVersion: 2,
+        ),
+      ], next: '1'),
+      requestedCursor: '0',
+    );
+    final v1 =
+        (_json('contracts/testdata/sync/entity-payloads.json')['diaryEntry']!
+                as Map)
+            .cast<String, Object?>();
+    await store.applyPage(
+      _page([_doc('diaryEntry', id, v1, seq: 2, hlc: h2)], next: '2'),
+      requestedCursor: '1',
+    );
+    final row = await db.select(db.diaryEntries).getSingle();
+    expect(row.updatedHlc, h2);
+    expect(row.userEstimate, isFalse);
+    expect(row.proteinKnown, isTrue);
   });
 
   test('chat: a pull never touches request/answer JSON; a pulled tombstone '

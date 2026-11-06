@@ -250,10 +250,10 @@ final class ProposalInputLoader {
             today: referenceTime.localDate,
             revision: confirmedRevision,
             confirmed: {
-              referenceTime.localDate: Nutrients.zero,
-              referenceTime.localDate.plusDays(-1): Nutrients.zero,
-              for (final day in named) day: Nutrients.zero,
-              for (final t in totals) t.date: t.totals,
+              referenceTime.localDate: IntakeTotals.empty,
+              referenceTime.localDate.plusDays(-1): IntakeTotals.empty,
+              for (final day in named) day: IntakeTotals.empty,
+              for (final t in totals) t.date: t.intake,
             },
           ),
         );

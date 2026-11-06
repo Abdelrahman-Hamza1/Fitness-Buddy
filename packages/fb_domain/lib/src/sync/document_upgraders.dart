@@ -10,7 +10,21 @@ import 'package:fb_domain/src/time/local_date.dart';
 abstract final class SyncDocumentUpgraders {
   /// The newest `schemaVersion` this app reads and uploads per entity; an
   /// entity not listed is at version 1.
-  static const Map<String, int> currentVersions = {'weighIn': 2};
+  static const Map<String, int> currentVersions = {
+    'weighIn': 2,
+    'diaryEntry': 2,
+    'savedMealItem': 2,
+    'dayMark': 2,
+  };
+
+  /// The entities whose stored documents the server never lets an older
+  /// schema version replace (TD-114, A62 D23; the server's
+  /// `SyncRules.DowngradeProtected`); `dayMark` since A62b.
+  static const Set<String> downgradeProtected = {
+    'dayMark',
+    'diaryEntry',
+    'savedMealItem',
+  };
 
   /// The version this app uploads for [entity].
   static int currentVersionOf(String entity) => currentVersions[entity] ?? 1;
@@ -38,7 +52,33 @@ abstract final class SyncDocumentUpgraders {
   }
 
   static const Map<String, Map<String, Object?>? Function(Map<String, Object?>)>
-  _steps = {'weighIn@1': weighInV1ToV2};
+  _steps = {
+    'weighIn@1': weighInV1ToV2,
+    'diaryEntry@1': foodValuesV1ToV2,
+    'savedMealItem@1': foodValuesV1ToV2,
+    'dayMark@1': dayMarkV1ToV2,
+  };
+
+  /// `dayMark` v1 → v2 (A62b D6, DY-006): v1 marks never hold a day
+  /// estimate, so `estimateKcal` null, and every v1 mark was made by the
+  /// user marking the day, so `estimateOnly` false. Lossless.
+  static Map<String, Object?> dayMarkV1ToV2(Map<String, Object?> v1) => {
+    ...v1,
+    'estimateKcal': null,
+    'estimateOnly': false,
+  };
+
+  /// `diaryEntry` / `savedMealItem` v1 → v2 (A62 D6, TD-114): v1 rows are
+  /// never user estimates and know every nutrient, so `userEstimate` false
+  /// and every `*Known` true. Lossless.
+  static Map<String, Object?> foodValuesV1ToV2(Map<String, Object?> v1) => {
+    ...v1,
+    'userEstimate': false,
+    'proteinKnown': true,
+    'carbsKnown': true,
+    'fatKnown': true,
+    'fiberKnown': true,
+  };
 
   /// `weighIn` v1 → v2 (A14 D7, B19 D6): `inputValue` = `kg`, `inputUnit`
   /// `kg`, `preferredForDay` false and `tzOffsetMin` from

@@ -9,11 +9,11 @@ import 'package:material_ui/material_ui.dart';
 /// slides and no inner pager, so a swipe that starts on the card changes
 /// the day (HM-009).
 class TodaySummaryCard extends StatelessWidget {
-  /// Creates the top of [date]'s page for the day's [totals].
+  /// Creates the top of [date]'s page for the day's [intake].
   const new({
     required this.date,
     required this.isToday,
-    required this.totals,
+    required this.intake,
     super.key,
   });
 
@@ -23,8 +23,8 @@ class TodaySummaryCard extends StatelessWidget {
   /// Whether [date] is today.
   final bool isToday;
 
-  /// The sum of the day's stored snapshots.
-  final Nutrients totals;
+  /// The sum of the day's stored snapshots, knowledge-aware (A62).
+  final IntakeTotals intake;
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -41,7 +41,7 @@ class TodaySummaryCard extends StatelessWidget {
       children: [
         FbCard(
           key: const ValueKey('today-summary-card'),
-          child: TodayNumbers(date: date, isToday: isToday, totals: totals),
+          child: TodayNumbers(date: date, isToday: isToday, intake: intake),
         ),
         TodayGlanceLine(date: date, isToday: isToday),
       ],

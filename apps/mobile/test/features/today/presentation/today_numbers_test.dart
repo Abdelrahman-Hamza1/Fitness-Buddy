@@ -14,7 +14,7 @@ FbBigNumber _big(WidgetTester tester) =>
     tester.widget<FbBigNumber>(find.byType(FbBigNumber));
 
 TodayNumbers _block(LocalDate date, double kcal, {bool isToday = true}) =>
-    TodayNumbers(date: date, isToday: isToday, totals: eatenTotals(kcal));
+    TodayNumbers(date: date, isToday: isToday, intake: eatenTotals(kcal));
 
 void main() {
   testWidgets('UX-050 without targets today shows kcal eaten and the setup '

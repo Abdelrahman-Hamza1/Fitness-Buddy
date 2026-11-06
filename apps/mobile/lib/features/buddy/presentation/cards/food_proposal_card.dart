@@ -269,7 +269,10 @@ class FoodProposalCard extends ConsumerWidget {
                 l10n,
                 view.preview,
                 day: day,
-                approx: view.isEstimate,
+                // A62 D15: "~" also when the day already holds an estimate.
+                approx:
+                    view.isEstimate ||
+                    (view.preview.intake?.estimated ?? false),
               ),
               style: FbType.body.copyWith(color: scheme.onSurface),
             ),

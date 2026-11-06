@@ -545,5 +545,83 @@ void main() {
         'MarkDay(2026-10-13, incomplete: false)',
       );
     });
+
+    test('DY-006 SetDayEstimate: create, edit and clear modes; no value in '
+        'toString; invalid combinations rejected', () {
+      SetDayEstimate create({double? kcal = 2300, int? version}) =>
+          SetDayEstimate(
+            _day,
+            kcal: kcal,
+            expectedVersion: version,
+            expectEstimate: false,
+          );
+      _expectValue(create(), create(), [
+        create(kcal: 2400),
+        create(version: 3),
+        SetDayEstimate(
+          _day,
+          kcal: 2300,
+          expectedVersion: 3,
+          expectEstimate: true,
+        ),
+        SetDayEstimate(
+          _yesterday,
+          kcal: 2300,
+          expectedVersion: null,
+          expectEstimate: false,
+        ),
+      ]);
+      final clear = SetDayEstimate(
+        _day,
+        kcal: null,
+        expectedVersion: 2,
+        expectEstimate: true,
+      );
+      expect(clear.family, 'diary');
+      expect('$clear', 'SetDayEstimate(2026-10-13, clear, v2)');
+      expect('${create(kcal: 2345)}', isNot(contains('2345')));
+      // Clearing needs the estimate the user saw, and it has a version.
+      expect(() => create(kcal: null), throwsArgumentError);
+      expect(
+        () => SetDayEstimate(
+          _day,
+          kcal: 2300,
+          expectedVersion: null,
+          expectEstimate: true,
+        ),
+        throwsArgumentError,
+      );
+      expect(() => create(version: 0), throwsArgumentError);
+    });
+
+    test('DY-006 DayEstimate bounds are the contract range 1–20,000', () {
+      for (final ok in [1.0, 2300.5, 20000.0]) {
+        expect(DayEstimate.isValid(ok), isTrue, reason: '$ok');
+      }
+      for (final bad in [
+        0.0,
+        0.5,
+        -1.0,
+        20000.01,
+        double.nan,
+        double.infinity,
+      ]) {
+        expect(DayEstimate.isValid(bad), isFalse, reason: '$bad');
+      }
+    });
+
+    test('DY-006 DayMark carries the estimate and version; toString hides '
+        'the value', () {
+      final mark = DayMark(
+        localDate: _day,
+        incomplete: false,
+        estimateKcal: 2345,
+        version: 4,
+      );
+      expect(mark.hasEstimate, isTrue);
+      expect(mark, isNot(DayMark(localDate: _day, incomplete: false)));
+      expect('$mark', isNot(contains('2345')));
+      expect(DayMark(localDate: _day, incomplete: true).hasEstimate, isFalse);
+    });
   });
 }

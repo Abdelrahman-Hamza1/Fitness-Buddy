@@ -3,6 +3,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/diary/presentation/saved_meals/rename_saved_meal_sheet.dart';
+import 'package:fb_mobile/l10n/gen/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -66,6 +67,49 @@ void main() {
       await tester.tap(button('Go to Today'));
       await tester.pump();
       expect(rig.navigator.went, [const TodayRoute()]);
+      await _finish(tester, rig);
+    });
+  });
+
+  group('estimates', () {
+    testWidgets('DY-031 A62 a saved meal holding an estimate shows "~" on '
+        'its list summary', (tester) async {
+      final rig = TodayRig();
+      tester.view
+        ..physicalSize = const Size(360, 800)
+        ..devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final food = const UserEstimate(kcal: 700).food();
+      final meal = SavedMeal(
+        id: fixtureId(90),
+        version: 1,
+        name: 'Friday out',
+        items: [
+          SavedMealItem(
+            id: fixtureId(91),
+            version: 1,
+            sortOrder: 0,
+            food: food,
+            amount: UserEstimate.amount,
+            snapshot: food.per100,
+          ),
+        ],
+      );
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            ...rig.overrides,
+            savedMealsProvider.overrideWith((ref) => Stream.value([meal])),
+          ],
+          child: phoneApp(const SavedMealsScreen()),
+        ),
+      );
+      await settle(tester);
+      final l10n = lookupAppLocalizations(const Locale('en'));
+      expect(
+        find.text(l10n.diaryMealSummary(1, l10n.approx('700'))),
+        findsOneWidget,
+      );
       await _finish(tester, rig);
     });
   });

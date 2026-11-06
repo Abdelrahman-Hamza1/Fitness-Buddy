@@ -21,6 +21,21 @@ Future<SyncFailure> _failure(Future<void> Function() run) async {
 }
 
 void main() {
+  test('D23 afterDeferredRetry runs after the deferred retry and before any '
+      'push (TD-114)', () async {
+    final (:device, :server) = _setup();
+    device.write(1, {'v': 1});
+    int? outboxAtHook;
+    final engine = SyncEngine(
+      store: device.store,
+      transport: server,
+      afterDeferredRetry: () async => outboxAtHook = device.store.outboxLength,
+    );
+    await engine.run();
+    expect(outboxAtHook, 1, reason: 'nothing pushed before the hook');
+    expect(device.store.outboxLength, 0);
+  });
+
   // covers: AC-010, AC-012
   group('SyncEngine push:', () {
     test('a first run binds the dataset, pushes, then pulls', () async {

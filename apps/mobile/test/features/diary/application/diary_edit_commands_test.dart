@@ -504,4 +504,57 @@ void main() {
     expect(historyChoice(history.single).badge, FoodSource.yours);
     expect(history.single.food.provenance.source, FoodSource.database);
   });
+
+  test('DY-005 edit estimate keeps an overridden fiber and the extras; '
+      'the same numbers write nothing', () async {
+    final h = DiaryHarness();
+    final base = const UserEstimate(kcal: 700, protein: 30).food();
+    await h.apply([
+      LogEntries([
+        NewDiaryEntry(
+          id: fixtureId(1),
+          when: .at(EntryTime(DateTime.utc(2026, 10, 17, 13, 5), 0)),
+          slotId: DefaultSlots.lunchId,
+          food: EntryFood(
+            ref: base.ref,
+            names: base.names,
+            per100: Nutrients(
+              kcal: 700,
+              protein: 30,
+              carbs: 0,
+              fat: 0,
+              fiber: 9,
+              extras: {NutrientKey.sodium: 800},
+            ),
+            provenance: base.provenance,
+            editedByUser: true,
+            userEstimate: true,
+            known: {NutrientField.protein, NutrientField.fiber},
+          ),
+          amount: UserEstimate.amount,
+        ),
+      ]),
+    ]);
+    final c = setup(h);
+    final actions = c.read(diaryActionsControllerProvider.notifier);
+    final shown = await entry(h);
+    final estimate = UserEstimate.of(shown.food)!;
+    expect(
+      await actions.editEstimate(shown, estimate),
+      isA<DiaryActionUnchanged>(),
+    );
+    expect(
+      await actions.editEstimate(
+        shown,
+        UserEstimate(kcal: 650, name: estimate.name, protein: 30),
+      ),
+      isA<DiaryActionDone>(),
+    );
+    final row = await h.entry(1);
+    expect((row.kcal, row.fiberG, row.fiberKnown), (650.0, 9.0, true));
+    expect(row.extrasJson, contains('sodium'));
+    expect(row.per100ExtrasJson, contains('sodium'));
+    final after = await entry(h);
+    expect(after.food.per100.extras, {NutrientKey.sodium: 800.0});
+  });
 }

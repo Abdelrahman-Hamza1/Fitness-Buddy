@@ -38,6 +38,8 @@ Future<RamadanComparison?> ramadanComparison(Ref ref) async {
           kcal: t.totals.kcal,
           entryCount: t.entryCount,
           incomplete: marks[t.date]?.incomplete ?? false,
+          estimated: t.intake.estimated,
+          dayEstimate: t.dayEstimate,
         ),
     ],
     trendOn: trend.trendOn,

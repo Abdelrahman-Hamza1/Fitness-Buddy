@@ -1,5 +1,6 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/approx_text.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/diary/application/day_view.dart';
 import 'package:flutter/widgets.dart';
@@ -25,8 +26,10 @@ String mealStamp(SlotSection section) => [
   for (final id in section.entryCopyGroupIds.toList()..sort()) 'copy:$id',
 ].join(',');
 
-/// The calories of [section] as the meal's summary line shows them.
-int mealKcal(SlotSection section) => DisplayRounding.kcal(section.totals.kcal);
+/// The calories of [section] as the meal's summary line shows them: "~"
+/// when it holds an estimate (A62 D16).
+String mealKcal(AppLocalizations l10n, SlotSection section) =>
+    kcalSummaryText(l10n, section.intake);
 
 /// How an open copy or save sheet's meal compares with the stored one.
 final class LiveMeal {

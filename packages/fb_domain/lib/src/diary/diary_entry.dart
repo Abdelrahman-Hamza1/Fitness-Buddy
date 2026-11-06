@@ -1,6 +1,7 @@
 import 'package:fb_domain/src/diary/food_ref.dart';
 import 'package:fb_domain/src/diary/provenance.dart';
 import 'package:fb_domain/src/ids/uuid_v7.dart';
+import 'package:fb_domain/src/nutrition/nutrient_field.dart';
 import 'package:fb_domain/src/nutrition/nutrients.dart';
 import 'package:fb_domain/src/time/local_date.dart';
 import 'package:fb_domain/src/time/local_time.dart';
@@ -37,16 +38,48 @@ final class FoodNames {
 /// What an entry was logged from, as one unit (A06 D4): the reference, the
 /// names, the per-100 values and the provenance. A food change on an entry
 /// replaces all four together.
+///
+/// A62 (TD-114): [userEstimate] marks a number the user typed (DY-005) and
+/// [known] names which of protein/carbs/fat/fiber are known. Only a user
+/// estimate may leave one unknown, and an unknown one is stored as 0 (the
+/// wire rules W1–W3, `DiaryEstimateWireRules`).
 final class EntryFood {
   /// [ref] with [names], [per100] values (per 100 g or ml, see the amount's
-  /// basis) and [provenance].
-  const new({
+  /// basis) and [provenance]. Throws an `ArgumentError` (without values)
+  /// when the A62 rules don't hold.
+  new({
     required this.ref,
     required this.names,
     required this.per100,
     required this.provenance,
     this.editedByUser = false,
-  });
+    this.userEstimate = false,
+    Set<NutrientField> known = allKnown,
+  }) : known = Set.unmodifiable(known) {
+    if (userEstimate &&
+        !(ref.kind == FoodRefKind.estimate &&
+            ref.id == null &&
+            provenance.source == FoodSource.yours &&
+            provenance.isEstimate)) {
+      throw ArgumentError('a user estimate breaks W1');
+    }
+    if (!userEstimate && !this.known.containsAll(allKnown)) {
+      throw ArgumentError('only a user estimate has unknowns (W2)');
+    }
+    for (final field in allKnown) {
+      if (!this.known.contains(field) && per100.valueOf(field) != 0) {
+        throw ArgumentError('an unknown nutrient is stored as 0 (W3)');
+      }
+    }
+  }
+
+  /// The nutrients that can be unknown, all known (the default).
+  static const Set<NutrientField> allKnown = {
+    NutrientField.protein,
+    NutrientField.carbs,
+    NutrientField.fat,
+    NutrientField.fiber,
+  };
 
   /// Whether this chosen snapshot carries a user nutrient override (AI-072).
   final bool editedByUser;
@@ -64,6 +97,12 @@ final class EntryFood {
   /// The source badge and estimate details.
   final Provenance provenance;
 
+  /// Whether the user typed these values as an estimate (DY-005).
+  final bool userEstimate;
+
+  /// Which of protein, carbs, fat and fiber are known. Unmodifiable.
+  final Set<NutrientField> known;
+
   @override
   bool operator ==(Object other) =>
       other is EntryFood &&
@@ -71,14 +110,27 @@ final class EntryFood {
       other.names == names &&
       other.per100 == per100 &&
       other.provenance == provenance &&
-      other.editedByUser == editedByUser;
+      other.editedByUser == editedByUser &&
+      other.userEstimate == userEstimate &&
+      other.known.length == known.length &&
+      other.known.containsAll(known);
 
   @override
-  int get hashCode => Object.hash(ref, names, per100, provenance, editedByUser);
+  int get hashCode => Object.hash(
+    ref,
+    names,
+    per100,
+    provenance,
+    editedByUser,
+    userEstimate,
+    Object.hashAllUnordered(known),
+  );
 
   /// Without the names, values or assumptions.
   @override
-  String toString() => 'EntryFood($ref, ${provenance.source.code})';
+  String toString() =>
+      'EntryFood($ref, ${provenance.source.code}'
+      '${userEstimate ? ', user estimate' : ''})';
 }
 
 /// How much was logged (A06 D4): the input as typed, and the canonical
@@ -139,6 +191,11 @@ final class DiaryEntry {
     checkRowVersion(version);
     checkUuid(slotId, 'slotId');
     if (dishGroupId case final group?) checkUuid(group, 'dishGroupId');
+    for (final field in EntryFood.allKnown) {
+      if (!food.known.contains(field) && snapshot.valueOf(field) != 0) {
+        throw ArgumentError('an unknown nutrient is stored as 0 (W3)');
+      }
+    }
   }
 
   /// The entry's ID.
@@ -260,13 +317,17 @@ final class DishGroup {
   String toString() => 'DishGroup($id, v$version, $localDate, slot $slotId)';
 }
 
-/// The user's marks on a day (DY-004): incomplete, and (A41) not fasting.
+/// The user's marks on a day (DY-004): incomplete, (A41) not fasting and
+/// (A62b, DY-006) a day estimate.
 final class DayMark {
   /// The marks of [localDate].
   const new({
     required this.localDate,
     required this.incomplete,
     this.notFasting = false,
+    this.estimateKcal,
+    this.estimateOnly = false,
+    this.version,
   });
 
   /// The day.
@@ -278,19 +339,52 @@ final class DayMark {
   /// Whether the user marked a Ramadan day as not fasting (A41).
   final bool notFasting;
 
+  /// The user's own estimate of the whole day, kcal (DY-006), or null. It
+  /// counts while the day has no live food (A62 D9, D13). User content.
+  final double? estimateKcal;
+
+  /// Whether the mark exists only to hold the day estimate: the user never
+  /// marked the day, so [incomplete] false is not a "count again"
+  /// confirmation (DY-004, A62b review fix).
+  final bool estimateOnly;
+
+  /// Whether the user marked the day complete ("count again"): a mark that
+  /// isn't incomplete and wasn't made only for a day estimate.
+  bool get confirmedComplete => !incomplete && !estimateOnly;
+
+  /// The stored row's version (for an expected-version write), or null when
+  /// not read from storage.
+  final int? version;
+
+  /// Whether the day holds a day estimate.
+  bool get hasEstimate => estimateKcal != null;
+
   @override
   bool operator ==(Object other) =>
       other is DayMark &&
       other.localDate == localDate &&
       other.incomplete == incomplete &&
-      other.notFasting == notFasting;
+      other.notFasting == notFasting &&
+      other.estimateKcal == estimateKcal &&
+      other.estimateOnly == estimateOnly &&
+      other.version == version;
 
   @override
-  int get hashCode => Object.hash(localDate, incomplete, notFasting);
+  int get hashCode => Object.hash(
+    localDate,
+    incomplete,
+    notFasting,
+    estimateKcal,
+    estimateOnly,
+    version,
+  );
 
+  /// Without the estimate's value.
   @override
   String toString() =>
-      'DayMark($localDate, incomplete: $incomplete, notFasting: $notFasting)';
+      'DayMark($localDate, incomplete: $incomplete, notFasting: $notFasting'
+      '${hasEstimate ? ', estimate' : ''}'
+      '${version != null ? ', v$version' : ''})';
 }
 
 /// [id] if it is a lowercase canonical UUID, else an `ArgumentError`.

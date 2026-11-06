@@ -1,5 +1,6 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/approx_text.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/body/body.dart';
@@ -66,7 +67,12 @@ class CaloriesWeekHeader extends ConsumerWidget {
         average = switch (value) {
           WeeklySummary(:final averageKcal?, :final averageTargetKcal?) =>
             l10n.progressCaloriesWeekAvg(
-              kcalNumber(l10n, averageKcal),
+              // "~" when a meal or day estimate is in it (A62, D-096).
+              approxText(
+                l10n,
+                kcalNumber(l10n, averageKcal),
+                approximate: value.estimated,
+              ),
               kcalNumber(l10n, averageTargetKcal),
             ),
           _ => null,
@@ -132,8 +138,9 @@ class CaloriesWeekHeader extends ConsumerWidget {
                   size: iconSize,
                   color: scheme.onSurfaceVariant,
                 );
+                // Sized with the "~" of an estimated week (A62).
                 final sample = l10n.progressCaloriesWeekAvg(
-                  _sampleKcal,
+                  l10n.approx(_sampleKcal),
                   _sampleKcal,
                 );
                 // Resolved over the inherited style, so the slot is

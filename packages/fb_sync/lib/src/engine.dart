@@ -93,7 +93,14 @@ final class SyncEngine {
     this.onApplied,
     this.onParked,
     this.onDeferred,
+    this.afterDeferredRetry,
   });
+
+  /// Runs right after the deferred documents were retried and before
+  /// anything is pushed (TD-114, A62 D23): the app retries its parked
+  /// versions here, so a document the server holds and an old build
+  /// deferred applies before a version the server refused is pushed again.
+  final Future<void> Function()? afterDeferredRetry;
 
   /// The durable side.
   final SyncStore store;
@@ -125,6 +132,7 @@ final class SyncEngine {
     final run = _Run(firstSync: (await store.checkpoint()).cursor == '0');
     final retried = await store.retryDeferred();
     run.applied(retried, this);
+    await afterDeferredRetry?.call();
     var resets = 0;
     while (true) {
       try {

@@ -1,5 +1,6 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/approx_text.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/progress/application/weekly_summary_providers.dart';
@@ -53,7 +54,11 @@ class WeekSummaryTiles extends ConsumerWidget {
     final headline = switch (summary) {
       WeeklySummary(:final averageKcal?, :final averageTargetKcal?) =>
         l10n.progressWeekAverageBig(
-          kcalNumber(l10n, averageKcal),
+          approxText(
+            l10n,
+            kcalNumber(l10n, averageKcal),
+            approximate: summary.estimated,
+          ),
           kcalNumber(l10n, averageTargetKcal),
         ),
       WeeklySummary(elapsedDays: 0) => l10n.progressWeekNoDays,

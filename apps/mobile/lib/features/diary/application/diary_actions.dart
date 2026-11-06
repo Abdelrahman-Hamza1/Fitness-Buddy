@@ -67,6 +67,18 @@ enum DiaryActionKind {
 
   /// A day counted again (its incomplete mark removed).
   dayMarkedComplete,
+
+  /// A meal estimate added (DY-005).
+  estimateAdded,
+
+  /// A meal estimate edited (DY-005).
+  estimateChanged,
+
+  /// A day estimate saved or edited (DY-006).
+  dayEstimateSaved,
+
+  /// A day estimate removed (DY-006).
+  dayEstimateRemoved,
 }
 
 /// Command result without display text.
@@ -224,10 +236,14 @@ class DiaryActionsController extends _$DiaryActionsController {
     if (entry.amount.amount <= 0) {
       return Future.value(const DiaryActionFailed(DiaryActionFailure.invalid));
     }
+    // A62 D24: unknown → an explicit value (0 included) is a real write.
     if (entry.editedByUser &&
         values.entries.every(
           (e) =>
-              entry.snapshot.valueOf(e.key) == StoragePrecision.round(e.value),
+              entry.snapshot.valueOf(e.key) ==
+                  StoragePrecision.round(e.value) &&
+              (!EntryFood.allKnown.contains(e.key) ||
+                  entry.food.known.contains(e.key)),
         )) {
       return Future.value(const DiaryActionUnchanged());
     }
@@ -236,6 +252,75 @@ class DiaryActionsController extends _$DiaryActionsController {
       OverrideNutrients(entry.id, entry.version, values),
       DiaryActionKind.nutrientEdited,
       {'name': entry.food.names.en, 'field': values.keys.first},
+    );
+  }
+
+  /// Logs [estimate] on [date] in [slotId] (null: the slot by the time of
+  /// day, DY-011) as one direct change set with Undo (DY-005, AI-048, A62
+  /// D11): never a proposal, offline, no sanity check (FD-012).
+  Future<DiaryActionOutcome> logEstimate(
+    UserEstimate estimate, {
+    required LocalDate date,
+    String? slotId,
+  }) {
+    if (estimate.check() != null) {
+      return Future.value(const DiaryActionFailed(DiaryActionFailure.invalid));
+    }
+    final id = ref.read(idGeneratorProvider).next();
+    final now = EntryTime.now(ref.read(clockProvider));
+    return _command(
+      [id],
+      LogEntries([
+        NewDiaryEntry(
+          id: id,
+          when: now.localDate == date
+              ? EntryWhen.at(now)
+              : EntryWhen.onDay(date),
+          slotId: slotId,
+          food: estimate.food(),
+          amount: UserEstimate.amount,
+        ),
+      ]),
+      DiaryActionKind.estimateAdded,
+      {'kcal': estimate.kcal},
+    );
+  }
+
+  /// Replaces [entry]'s estimate with [estimate] at the version shown (A62
+  /// D11): same entry, one Undo. Fiber, extras and provenance the editor
+  /// doesn't show are kept ([UserEstimate.foodReplacing]). The same
+  /// numbers write nothing.
+  Future<DiaryActionOutcome> editEstimate(
+    DiaryEntry entry,
+    UserEstimate estimate,
+  ) {
+    if (!entry.food.userEstimate || estimate.check() != null) {
+      return Future.value(const DiaryActionFailed(DiaryActionFailure.invalid));
+    }
+    final food = estimate.foodReplacing(entry.food);
+    // A read entry carries "edited by user" on the entry, not its food
+    // (`diaryEntryOf`): compare with the food as stored.
+    final stored = EntryFood(
+      ref: entry.food.ref,
+      names: entry.food.names,
+      per100: entry.food.per100,
+      provenance: entry.food.provenance,
+      editedByUser: entry.editedByUser,
+      userEstimate: entry.food.userEstimate,
+      known: entry.food.known,
+    );
+    if (food == stored && entry.amount == UserEstimate.amount) {
+      return Future.value(const DiaryActionUnchanged());
+    }
+    return _command(
+      [entry.id],
+      UpdateDiaryEntry(
+        entry.id,
+        entry.version,
+        EntryPatch(food: food, amount: UserEstimate.amount),
+      ),
+      DiaryActionKind.estimateChanged,
+      {'kcal': estimate.kcal},
     );
   }
 
@@ -254,6 +339,38 @@ class DiaryActionsController extends _$DiaryActionsController {
         : DiaryActionKind.dayMarkedComplete,
     {'date': date},
   );
+
+  /// Saves [kcal] as [date]'s day estimate, or (null) removes it, against
+  /// the day mark [shown] as the user saw it (DY-006, A62 D12): one direct
+  /// change set with Undo. A day that has food by now, or a mark changed
+  /// meanwhile, writes nothing ([DiaryActionFailure.changed]); the same
+  /// number writes nothing ([DiaryActionUnchanged]).
+  Future<DiaryActionOutcome> setDayEstimate(
+    LocalDate date, {
+    required double? kcal,
+    required DayMark? shown,
+  }) {
+    if (kcal != null && !DayEstimate.isValid(kcal)) {
+      return Future.value(const DiaryActionFailed(DiaryActionFailure.invalid));
+    }
+    final expectEstimate = shown?.hasEstimate ?? false;
+    if (kcal == null && !expectEstimate) {
+      return Future.value(const DiaryActionUnchanged());
+    }
+    return _command(
+      ['day:$date'],
+      SetDayEstimate(
+        date,
+        kcal: kcal,
+        expectedVersion: shown?.version,
+        expectEstimate: expectEstimate,
+      ),
+      kcal == null
+          ? DiaryActionKind.dayEstimateRemoved
+          : DiaryActionKind.dayEstimateSaved,
+      {'date': date, 'kcal': ?kcal},
+    );
+  }
 
   List<DiaryEntry> _entries(SlotSection section) => [
     for (final item in section.items)
@@ -336,8 +453,8 @@ class DiaryActionsController extends _$DiaryActionsController {
       DiaryActionFailed(switch (failure) {
         InvalidOp(code: 'inactiveSlot' || 'unknownSlot') =>
           DiaryActionFailure.slotRemoved,
-        VersionConflict() ||
-        InvalidOp(code: 'sourceChanged') => DiaryActionFailure.changed,
+        VersionConflict() || InvalidOp(code: 'sourceChanged' || 'dayHasFood') =>
+          DiaryActionFailure.changed,
         RowNotFound() =>
           kind == DiaryActionKind.mealCopied ||
                   kind == DiaryActionKind.mealSaved

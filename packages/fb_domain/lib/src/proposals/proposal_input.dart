@@ -7,6 +7,7 @@ import 'package:fb_domain/src/changes/change_op.dart';
 import 'package:fb_domain/src/diary/diary_entry.dart';
 import 'package:fb_domain/src/diary/diary_ops.dart';
 import 'package:fb_domain/src/diary/food_ref.dart';
+import 'package:fb_domain/src/diary/intake_totals.dart';
 import 'package:fb_domain/src/diary/meal_slot.dart';
 import 'package:fb_domain/src/diary/provenance.dart';
 import 'package:fb_domain/src/diary/slot_assigner.dart';

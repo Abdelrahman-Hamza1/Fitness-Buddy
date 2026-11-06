@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/approx_text.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
@@ -50,7 +51,11 @@ class SlotHeaderTile extends ConsumerWidget {
     final large = usesLargeText(context);
     final kcal = empty
         ? l10n.todaySlotNoKcal
-        : l10n.diaryKcal(DisplayRounding.kcal(section.totals.kcal));
+        : approxText(
+            l10n,
+            l10n.diaryKcal(DisplayRounding.kcal(section.totals.kcal)),
+            approximate: section.intake.estimated,
+          );
     final summary = empty
         ? l10n.todaySlotEmpty
         : slotSummary([
@@ -143,7 +148,11 @@ class SlotMacrosLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final n = section.totals;
+    final n = section.intake;
+    String shown(NutrientField f) =>
+        intakeText(l10n, n, f, (v) => gramsText(l10n, v));
+    String spoken(NutrientField f) =>
+        intakeSpoken(l10n, n, f, (v) => gramsText(l10n, v));
     return Align(
       alignment: AlignmentDirectional.centerStart,
       child: Padding(
@@ -154,18 +163,18 @@ class SlotMacrosLine extends StatelessWidget {
         ),
         child: Semantics(
           label: l10n.diarySlotMacrosSemantics(
-            DisplayRounding.nutrientGrams(n.protein),
-            DisplayRounding.nutrientGrams(n.carbs),
-            DisplayRounding.nutrientGrams(n.fat),
-            DisplayRounding.nutrientGrams(n.fiber),
+            spoken(NutrientField.protein),
+            spoken(NutrientField.carbs),
+            spoken(NutrientField.fat),
+            spoken(NutrientField.fiber),
           ),
           excludeSemantics: true,
           child: Text(
             l10n.diarySlotMacros(
-              DisplayRounding.nutrientGrams(n.protein),
-              DisplayRounding.nutrientGrams(n.carbs),
-              DisplayRounding.nutrientGrams(n.fat),
-              DisplayRounding.nutrientGrams(n.fiber),
+              shown(NutrientField.protein),
+              shown(NutrientField.carbs),
+              shown(NutrientField.fat),
+              shown(NutrientField.fiber),
             ),
             style: FbType.numeric(
               FbType.bodySmall,

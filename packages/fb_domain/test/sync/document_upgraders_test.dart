@@ -19,9 +19,57 @@ Map<String, Object?> _v1({
 
 void main() {
   group('SyncDocumentUpgraders:', () {
-    test('current versions: weighIn 2, every other entity 1', () {
+    test('current versions: weighIn, diaryEntry, savedMealItem and dayMark '
+        '2, every other entity 1', () {
       expect(SyncDocumentUpgraders.currentVersionOf('weighIn'), 2);
-      expect(SyncDocumentUpgraders.currentVersionOf('diaryEntry'), 1);
+      expect(SyncDocumentUpgraders.currentVersionOf('diaryEntry'), 2);
+      expect(SyncDocumentUpgraders.currentVersionOf('savedMealItem'), 2);
+      expect(SyncDocumentUpgraders.currentVersionOf('dayMark'), 2);
+      expect(SyncDocumentUpgraders.currentVersionOf('setting'), 1);
+      expect(SyncDocumentUpgraders.downgradeProtected, {
+        'dayMark',
+        'diaryEntry',
+        'savedMealItem',
+      });
+    });
+
+    test('DY-006 dayMark v1→v2 upgrade adds estimateKcal null and '
+        'estimateOnly false, keeping v1 fields', () {
+      final v1 = {
+        'createdAtMs': 0,
+        'origin': 'direct',
+        'editedByUser': false,
+        'localDate': '2026-10-18',
+        'incomplete': true,
+        'notFasting': false,
+      };
+      expect(SyncDocumentUpgraders.upgrade('dayMark', 1, v1), {
+        ...v1,
+        'estimateKcal': null,
+        'estimateOnly': false,
+      });
+      expect(v1.length, 6, reason: 'input unchanged');
+      final v2 = {...v1, 'estimateKcal': 2300.0, 'estimateOnly': false};
+      expect(SyncDocumentUpgraders.upgrade('dayMark', 2, v2), v2);
+      expect(SyncDocumentUpgraders.upgrade('dayMark', 3, v2), isNull);
+    });
+
+    test('DY-005 diaryEntry and savedMealItem v1→v2 upgrade adds '
+        'userEstimate false and all known, keeping v1 fields', () {
+      for (final entity in ['diaryEntry', 'savedMealItem']) {
+        final v1 = {'nameEn': 'Rice', 'kcal': 195.0, 'proteinG': 4.1};
+        final v2 = SyncDocumentUpgraders.upgrade(entity, 1, v1)!;
+        expect(v2, {
+          ...v1,
+          'userEstimate': false,
+          'proteinKnown': true,
+          'carbsKnown': true,
+          'fatKnown': true,
+          'fiberKnown': true,
+        }, reason: entity);
+        expect(v1.length, 3, reason: 'input unchanged');
+        expect(SyncDocumentUpgraders.upgrade(entity, 3, v1), isNull);
+      }
     });
 
     test('weighIn v1 → v2 adds the A14 D7 fields and keeps v1 fields', () {
@@ -40,12 +88,12 @@ void main() {
       final same = SyncDocumentUpgraders.upgrade('weighIn', 2, payload)!;
       expect(same, payload);
       expect(identical(same, payload), isFalse);
-      expect(SyncDocumentUpgraders.upgrade('diaryEntry', 1, payload), payload);
+      expect(SyncDocumentUpgraders.upgrade('setting', 1, payload), payload);
     });
 
     test('newer, zero or unreadable versions read as null', () {
       expect(SyncDocumentUpgraders.upgrade('weighIn', 3, _v1()), isNull);
-      expect(SyncDocumentUpgraders.upgrade('diaryEntry', 2, _v1()), isNull);
+      expect(SyncDocumentUpgraders.upgrade('setting', 2, _v1()), isNull);
       expect(SyncDocumentUpgraders.upgrade('weighIn', 0, _v1()), isNull);
       for (final broken in [
         {..._v1()}..remove('kg'),

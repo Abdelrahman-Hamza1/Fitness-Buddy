@@ -297,13 +297,81 @@ void main() {
     expect(rows.whereType<GroupMemberRow>(), isEmpty);
     state.toggleGroup(group.id);
     expect(c.read(diaryViewStateProvider).collapsedGroupIds, isEmpty);
+    // A62b: a past empty day offers a day estimate instead of the hint.
     final empty = DayRows.of(
       DayLayout.build(data.slots, [], []),
       c.read(diaryViewStateProvider),
       isToday: false,
     );
-    expect(empty.whereType<EmptyHintRow>().single.isToday, isFalse);
+    expect(empty.whereType<EmptyHintRow>(), isEmpty);
+    expect(empty.whereType<DayEstimatePromptRow>().single.mark, isNull);
+    final emptyToday = DayRows.of(
+      DayLayout.build(data.slots, [], []),
+      c.read(diaryViewStateProvider),
+      isToday: true,
+    );
+    expect(emptyToday.whereType<EmptyHintRow>().single.isToday, isTrue);
+    expect(emptyToday.whereType<DayEstimatePromptRow>(), isEmpty);
   });
+
+  test(
+    'DY-006 day rows: a past empty day offers the estimate; one with an '
+    'estimate shows it as the day intake; with food it is superseded',
+    () async {
+      final h = DiaryHarness();
+      await h.apply([
+        LogEntries([newEntry(1)]),
+      ]);
+      final data = await h.reads.day(today);
+      final slots = data.slots;
+      final mark = DayMark(
+        localDate: LocalDate(2026, 10, 13),
+        incomplete: false,
+        estimateKcal: 2300,
+        version: 2,
+      );
+      final choices = DiaryViewChoices();
+      final estimated = DayRows.of(
+        DayLayout.build(slots, [], []),
+        choices,
+        isToday: false,
+        mark: mark,
+      );
+      expect(
+        (estimated.first as NumbersRow).intake,
+        IntakeTotals.ofDayEstimate(2300),
+      );
+      final row = estimated.whereType<DayEstimateRow>().single;
+      expect((row.mark, row.superseded), (mark, false));
+      expect(estimated.whereType<DayEstimatePromptRow>(), isEmpty);
+
+      final unmarked = DayMark(
+        localDate: LocalDate(2026, 10, 13),
+        incomplete: true,
+        version: 1,
+      );
+      final prompt = DayRows.of(
+        DayLayout.build(slots, [], []),
+        choices,
+        isToday: false,
+        mark: unmarked,
+      ).whereType<DayEstimatePromptRow>().single;
+      expect(prompt.mark, unmarked, reason: 'its version guards the save');
+
+      // Food from another device on the same day (D13): food wins.
+      final withFood = DayRows.of(
+        DayLayout.build(slots, data.groups, data.entries),
+        choices,
+        isToday: false,
+        mark: mark,
+      );
+      expect(
+        (withFood.first as NumbersRow).intake,
+        DiaryTotals.intake(data.entries),
+      );
+      expect(withFood.whereType<DayEstimateRow>().single.superseded, isTrue);
+    },
+  );
   test(
     'DY-022 hidden versions do not hide a newer row on another day',
     () async {

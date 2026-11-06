@@ -1,5 +1,6 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/approx_text.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/progress/presentation/progress_text.dart';
@@ -26,6 +27,11 @@ class ProgressDayDetails extends ConsumerWidget {
     final target = bucket.avgTargetKcal;
     final status = bucket.status;
     final daily = bucket.size == ProgressBucketSize.day;
+    // A62 D10: "~" with an estimate or a lower bound, "—" for unknown.
+    String kcal(IntakeAverages e) =>
+        averageText(l10n, e, NutrientField.kcal, (v) => kcalNumber(l10n, v));
+    String grams(IntakeAverages e, NutrientField field) =>
+        averageText(l10n, e, field, (v) => gramsNumber(l10n, v));
     return Container(
       key: const ValueKey('progress-day-details'),
       decoration: BoxDecoration(
@@ -43,21 +49,19 @@ class ProgressDayDetails extends ConsumerWidget {
           else ...[
             Text(
               target == null
-                  ? l10n.progressDetailsKcalNoTarget(
-                      kcalNumber(l10n, eaten.kcal),
-                    )
+                  ? l10n.progressDetailsKcalNoTarget(kcal(eaten))
                   : l10n.progressDetailsKcal(
-                      kcalNumber(l10n, eaten.kcal),
+                      kcal(eaten),
                       kcalNumber(l10n, target),
                     ),
               style: FbType.title,
             ),
             Text(
               l10n.progressDetailsMacros(
-                gramsNumber(l10n, eaten.protein),
-                gramsNumber(l10n, eaten.carbs),
-                gramsNumber(l10n, eaten.fat),
-                gramsNumber(l10n, eaten.fiber),
+                grams(eaten, NutrientField.protein),
+                grams(eaten, NutrientField.carbs),
+                grams(eaten, NutrientField.fat),
+                grams(eaten, NutrientField.fiber),
               ),
               style: muted,
             ),

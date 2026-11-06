@@ -1,5 +1,6 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/approx_text.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/progress/application/ramadan_comparison_provider.dart';
@@ -26,7 +27,9 @@ class RamadanComparisonCard extends ConsumerWidget {
         (ref.watch(unitSystemProvider).value ?? UnitSystem.defaultSystem)
             .bodyMass;
     String kcal(ComparisonSide s) => switch (s.averageKcal) {
-      final v? => l10n.ramadanCompareKcal(kcalNumber(l10n, v)),
+      final v? => l10n.ramadanCompareKcal(
+        approxText(l10n, kcalNumber(l10n, v), approximate: s.estimated),
+      ),
       null => l10n.ramadanCompareNone,
     };
     String trend(ComparisonSide s) => switch (s.trendChangeKg) {

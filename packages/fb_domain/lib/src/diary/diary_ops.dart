@@ -810,6 +810,86 @@ final class MarkDay extends DiaryOp {
   String toString() => 'MarkDay($date, incomplete: $incomplete)';
 }
 
+/// Set, edit or clear the day estimate of a past [date] (DY-006, A62 D12).
+/// The row is the day mark (ID derived from the date by the handler).
+///
+/// The mode follows from [kcal] and [expectEstimate]:
+/// - **create** (`kcal` given, `expectEstimate` false): the day must have no
+///   live food (`InvalidOp('dayHasFood')`) and no estimate, and the mark row
+///   must be at [expectedVersion] (null: no live row);
+/// - **edit** (`kcal` given, `expectEstimate` true) and **clear** (`kcal`
+///   null, `expectEstimate` true): the row must be at [expectedVersion] and
+///   hold an estimate.
+///
+/// A stale view gives `VersionConflict`, never an overwrite. Today or a
+/// future date is `InvalidOp('notPast')`; kcal outside
+/// [DayEstimate.minKcal]–[DayEstimate.maxKcal] is `InvalidOp('outOfRange')`.
+/// Emits `DayEstimateChanged`.
+final class SetDayEstimate extends DiaryOp {
+  /// The estimate [kcal] (null: clear) for [date]. Clearing without
+  /// [expectEstimate], or an [expectedVersion] below 1, is an
+  /// `ArgumentError`.
+  new(
+    this.date, {
+    required this.kcal,
+    required this.expectedVersion,
+    required this.expectEstimate,
+  }) : super._() {
+    if (kcal == null && !expectEstimate) {
+      throw ArgumentError('clearing needs an expected estimate');
+    }
+    if (expectedVersion case final v?) checkRowVersion(v, 'expectedVersion');
+    if (expectEstimate && expectedVersion == null) {
+      throw ArgumentError('an existing estimate has a version');
+    }
+  }
+
+  /// The day.
+  final LocalDate date;
+
+  /// The new estimate, kcal, or null to clear it. User content.
+  final double? kcal;
+
+  /// The day mark's version as the user saw it, or null when there was no
+  /// live mark.
+  final int? expectedVersion;
+
+  /// Whether the user saw an estimate on the day (edit or clear).
+  final bool expectEstimate;
+
+  @override
+  bool operator ==(Object other) =>
+      other is SetDayEstimate &&
+      other.date == date &&
+      other.kcal == kcal &&
+      other.expectedVersion == expectedVersion &&
+      other.expectEstimate == expectEstimate;
+
+  @override
+  int get hashCode =>
+      Object.hash(SetDayEstimate, date, kcal, expectedVersion, expectEstimate);
+
+  /// Without the value.
+  @override
+  String toString() =>
+      'SetDayEstimate($date, ${kcal == null ? 'clear' : 'set'}, '
+      'v$expectedVersion)';
+}
+
+/// The bounds of a day estimate (DY-006, A62 D4): the contract's
+/// `dayMark.estimateKcal` range.
+abstract final class DayEstimate {
+  /// The smallest day estimate, kcal.
+  static const double minKcal = 1;
+
+  /// The largest day estimate, kcal.
+  static const double maxKcal = 20000;
+
+  /// Whether [kcal] is a valid day estimate.
+  static bool isValid(double kcal) =>
+      kcal.isFinite && kcal >= minKcal && kcal <= maxKcal;
+}
+
 /// [ids] as an unmodifiable list: at least one, all UUIDs, no duplicates.
 List<String> _uniqueIds(Iterable<String> ids, String name) {
   final list = List<String>.unmodifiable(ids);

@@ -406,17 +406,17 @@ abstract class AppLocalizations {
   /// **'{eaten} of {budget} kcal eaten'**
   String todayEatenOfBudgetSemantics(String eaten, String budget);
 
-  /// Today: a macro eaten out of its target, next to its bar, e.g. "82 / 140 g" (HM-003).
+  /// Today: a macro eaten out of its target, next to its bar, e.g. "82 / 140 g" (HM-003). The grams are formatted, "~" before a lower bound or estimate, "—" when unknown (A62).
   ///
   /// In en, this message translates to:
   /// **'{eaten} / {target} g'**
-  String todayMacroOfTarget(double eaten, int target);
+  String todayMacroOfTarget(String eaten, int target);
 
-  /// Today: a macro with no target (carbs and fat in 'calories and protein only', TG-054), e.g. "96 g".
+  /// Today: a macro with no target (carbs and fat in 'calories and protein only', TG-054), e.g. "96 g". The grams are formatted, "~" before a lower bound or estimate, "—" when unknown (A62).
   ///
   /// In en, this message translates to:
   /// **'{eaten} g'**
-  String todayMacroEaten(double eaten);
+  String todayMacroEaten(String eaten);
 
   /// Today: the row under the big number that opens setup while no targets exist (A13 D10).
   ///
@@ -3064,15 +3064,15 @@ abstract class AppLocalizations {
   /// **'Protein — · Carbs — · Fat — · Fiber —'**
   String get foodSheetMacrosPending;
 
-  /// Food sheet: the four macros of the chosen amount, in grams.
+  /// Food sheet: the four macros of the chosen amount, in grams. The grams are formatted, "~" before a lower bound, "—" when unknown (A62).
   ///
   /// In en, this message translates to:
   /// **'Protein {protein} g · Carbs {carbs} g · Fat {fat} g · Fiber {fiber} g'**
   String foodSheetMacros(
-    double protein,
-    double carbs,
-    double fat,
-    double fiber,
+    String protein,
+    String carbs,
+    String fat,
+    String fiber,
   );
 
   /// Food sheet: chip that switches to the same food in another state (raw, cooked, dry); {name} is that food.
@@ -3290,11 +3290,11 @@ abstract class AppLocalizations {
   /// **'{kcal}'**
   String diaryBigKcal(int kcal);
 
-  /// Today: one macro of the day's total, e.g. Protein 110 g.
+  /// Today: one macro of the day's total, e.g. Protein 110 g. The grams are formatted, "~" before a lower bound or estimate, "—" when unknown (A62).
   ///
   /// In en, this message translates to:
   /// **'{label} {value} g'**
-  String diaryMacroItem(String label, double value);
+  String diaryMacroItem(String label, String value);
 
   /// Diary: calories of a slot, a dish or an item.
   ///
@@ -3332,26 +3332,26 @@ abstract class AppLocalizations {
   /// **'Add food to {meal}'**
   String diarySlotAddTooltip(String meal);
 
-  /// Full nutrient names spoken for an expanded meal.
+  /// Full nutrient names spoken for an expanded meal. Values are formatted grams, "~" before a lower bound or "—" when unknown (A62).
   ///
   /// In en, this message translates to:
   /// **'Protein {protein} g, carbs {carbs} g, fat {fat} g, fiber {fiber} g'**
   String diarySlotMacrosSemantics(
-    double protein,
-    double carbs,
-    double fat,
-    double fiber,
+    String protein,
+    String carbs,
+    String fat,
+    String fiber,
   );
 
-  /// Diary: compact macro line of an opened meal (grams).
+  /// Diary: compact macro line of an opened meal (grams). Values are formatted grams, "~" before a lower bound or "—" when unknown (A62).
   ///
   /// In en, this message translates to:
   /// **'P {protein} · C {carbs} · F {fat} · Fiber {fiber}'**
   String diarySlotMacros(
-    double protein,
-    double carbs,
-    double fat,
-    double fiber,
+    String protein,
+    String carbs,
+    String fat,
+    String fiber,
   );
 
   /// Diary: how many items a dish holds.
@@ -3780,11 +3780,11 @@ abstract class AppLocalizations {
   /// **'Enter a value.'**
   String get diaryValueNeeded;
 
-  /// Copy and save sheets: how much the meal holds.
+  /// Copy and save sheets and the saved-meals list: how much the meal holds. {kcal} is the formatted number, with a leading "~" when the meal holds an estimate (A62).
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 item · {kcal} kcal} other{{count} items · {kcal} kcal}}'**
-  String diaryMealSummary(int count, int kcal);
+  String diaryMealSummary(int count, String kcal);
 
   /// Change-food search: caption under the title naming the item being replaced.
   ///
@@ -11032,6 +11032,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You have changes that aren\'t saved.'**
   String get workoutDiscardMessage;
+
+  /// A value that includes an estimate or is only a lower bound (A62, D-096): only a tilde before the number, e.g. "~700". Tapping it never explains; only your own estimate's ~ opens a popup.
+  ///
+  /// In en, this message translates to:
+  /// **'~{value}'**
+  String approx(String value);
+
+  /// Screen reader text of an approximate value (A62); {value} is the number with its unit.
+  ///
+  /// In en, this message translates to:
+  /// **'about {value}'**
+  String approxSpoken(String value);
+
+  /// A nutrient with nothing known (A62, D-096): never shown as 0.
+  ///
+  /// In en, this message translates to:
+  /// **'—'**
+  String get unknownValue;
+
+  /// Screen reader text of a nutrient with nothing known (A62).
+  ///
+  /// In en, this message translates to:
+  /// **'unknown'**
+  String get unknownValueSpoken;
+
+  /// Food search action row (A62, DY-005): opens the estimate sheet: type one calorie number for a meal.
+  ///
+  /// In en, this message translates to:
+  /// **'~ Estimate'**
+  String get estimateAction;
+
+  /// Food search row after the results and when nothing matches (A62 E1 B): estimate a meal named after the query.
+  ///
+  /// In en, this message translates to:
+  /// **'~ Estimate “{query}”'**
+  String estimateFromQuery(String query);
+
+  /// Estimate sheet title (A62); {meal} is the meal's name, e.g. "Estimate breakfast".
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate {meal}'**
+  String estimateSheetTitle(String meal);
+
+  /// Estimate sheet title when no meal is chosen yet (the app picks it by the time).
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate a meal'**
+  String get estimateSheetTitleNoMeal;
+
+  /// Screen reader label of the estimate's calorie number.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories, {kcal} kcal'**
+  String estimateKcalLabel(String kcal);
+
+  /// Estimate sheet: the optional name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get estimateName;
+
+  /// Estimate sheet: reveals the optional protein, carbs and fat fields.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Macros'**
+  String get estimateMacros;
+
+  /// Estimate sheet primary button when adding (A62).
+  ///
+  /// In en, this message translates to:
+  /// **'Add ~{kcal} kcal'**
+  String estimateAdd(String kcal);
+
+  /// Estimate sheet primary button when editing an estimate (A62).
+  ///
+  /// In en, this message translates to:
+  /// **'Save ~{kcal} kcal'**
+  String estimateSave(String kcal);
+
+  /// Estimate sheet: the reserved line when no calories are typed yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Type the calories'**
+  String get estimateKcalNeeded;
+
+  /// Estimate sheet: a typed value outside the bounds (A62 D7).
+  ///
+  /// In en, this message translates to:
+  /// **'Calories 1–10,000, each macro up to 1,000 g'**
+  String get estimateOutOfRange;
+
+  /// The title of an estimate the user didn't name (A62).
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate'**
+  String get estimateUnnamed;
+
+  /// Title of the popup opened by tapping ~ on your own estimate (A62, AI-032): the only explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'~ Your estimate'**
+  String get estimatePopupTitle;
+
+  /// Screen reader label of the ~ on your own estimate row.
+  ///
+  /// In en, this message translates to:
+  /// **'Your estimate, options'**
+  String get estimateMarkerLabel;
+
+  /// "~ Your estimate" popup: edit the estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get estimateEdit;
+
+  /// "~ Your estimate" popup: search foods; the estimate is replaced only when a food is picked.
+  ///
+  /// In en, this message translates to:
+  /// **'Swap for foods'**
+  String get estimateSwap;
+
+  /// Undo snackbar after adding an estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Added ~{kcal} kcal'**
+  String estimateAdded(String kcal);
+
+  /// Undo snackbar after editing an estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate changed'**
+  String get estimateChanged;
+
+  /// Estimate row subtitle: protein the user gave, e.g. "P 30 g".
+  ///
+  /// In en, this message translates to:
+  /// **'P {grams} g'**
+  String estimateProtein(String grams);
+
+  /// Estimate row subtitle: carbs the user gave.
+  ///
+  /// In en, this message translates to:
+  /// **'C {grams} g'**
+  String estimateCarbs(String grams);
+
+  /// Estimate row subtitle: fat the user gave.
+  ///
+  /// In en, this message translates to:
+  /// **'F {grams} g'**
+  String estimateFat(String grams);
+
+  /// Food search action row (A62 E1 A): opens the barcode scanner for the same day and meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan'**
+  String get foodSearchScan;
+
+  /// Card on a past day with nothing logged (A62 E2 A, DY-006); {weekday} is the day's name, e.g. "Didn't log Tuesday?".
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t log {weekday}?'**
+  String dayEstimatePrompt(String weekday);
+
+  /// Before the calorie field of the past-day card: "about ___ kcal" (A62 E2 A).
+  ///
+  /// In en, this message translates to:
+  /// **'about'**
+  String get dayEstimateAbout;
+
+  /// Screen reader label of the day estimate's calorie field.
+  ///
+  /// In en, this message translates to:
+  /// **'About how many calories'**
+  String get dayEstimateKcalLabel;
+
+  /// Past-day card button: saves the typed number as the whole day's calories (DY-006).
+  ///
+  /// In en, this message translates to:
+  /// **'Save day estimate'**
+  String get dayEstimateSave;
+
+  /// Title of the row (and edit sheet) holding your own estimate of a whole day (DY-006).
+  ///
+  /// In en, this message translates to:
+  /// **'Day estimate'**
+  String get dayEstimateTitle;
+
+  /// Day estimate: a typed number outside the bounds (A62 D4).
+  ///
+  /// In en, this message translates to:
+  /// **'Calories 1–20,000'**
+  String get dayEstimateOutOfRange;
+
+  /// Undo snackbar after saving a day estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Day saved as ~{kcal} kcal'**
+  String dayEstimateSaved(String kcal);
+
+  /// Undo snackbar after removing a day estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Day estimate removed'**
+  String get dayEstimateRemoved;
 }
 
 class _AppLocalizationsDelegate

@@ -2,12 +2,16 @@ import 'package:fb_domain/src/ramadan/ramadan_settings.dart';
 import 'package:fb_domain/src/time/local_date.dart';
 
 /// One day's intake for the comparison: `kcal` over `entryCount` entries,
-/// and the user's incomplete mark.
+/// the user's incomplete mark, whether the intake includes an estimate, and
+/// whether `kcal` is a day estimate standing in for the day's food
+/// (DY-006, A62 D25).
 typedef ComparisonDay = ({
   LocalDate date,
   double kcal,
   int entryCount,
   bool incomplete,
+  bool estimated,
+  bool dayEstimate,
 });
 
 /// The numbers of one side of the Ramadan comparison (IN-008).
@@ -20,6 +24,7 @@ final class ComparisonSide {
     required this.averageKcal,
     required this.trendChangeKg,
     required this.workouts,
+    this.estimated = false,
   });
 
   /// The first day.
@@ -31,8 +36,8 @@ final class ComparisonSide {
   /// The number of days.
   int get days => from.daysUntil(to) + 1;
 
-  /// Days with food that are not marked incomplete (TG-032: other days
-  /// are unknown, never zero).
+  /// Days with food or a day estimate (DY-006) that are not marked
+  /// incomplete (TG-032: other days are unknown, never zero).
   final int loggedDays;
 
   /// The average calories over [loggedDays], or null without any.
@@ -44,6 +49,10 @@ final class ComparisonSide {
 
   /// Workouts logged in the period.
   final int workouts;
+
+  /// Whether a counted day includes an estimate: [averageKcal] shows "~"
+  /// (A62 D25).
+  final bool estimated;
 
   /// Workouts per week (7 days).
   double get workoutsPerWeek => workouts * 7 / days;
@@ -80,11 +89,14 @@ final class RamadanComparison {
     ComparisonSide side(LocalDate from, LocalDate to) {
       var logged = 0;
       var kcal = 0.0;
+      var estimated = false;
       for (final d in dayList) {
         if (d.date.isBefore(from) || d.date.isAfter(to)) continue;
-        if (d.incomplete || d.entryCount == 0) continue;
+        // D25: a day estimate counts like logged food (E3 A).
+        if (d.incomplete || (d.entryCount == 0 && !d.dayEstimate)) continue;
         logged++;
         kcal += d.kcal;
+        if (d.estimated) estimated = true;
       }
       final startTrend = trendOn(from.plusDays(-1));
       final endTrend = trendOn(to);
@@ -99,6 +111,7 @@ final class RamadanComparison {
         workouts: workouts
             .where((d) => !d.isBefore(from) && !d.isAfter(to))
             .length,
+        estimated: estimated,
       );
     }
 

@@ -246,6 +246,27 @@ void main() {
       expect(e.completeDays, 27);
     });
 
+    test('DY-006 TG-031 TG-032 a day-estimate day counts toward the logged '
+        'days but is left out of the complete days and the average', () {
+      final h = _History(intakeNoise: 0);
+      final days = [
+        ...h.intakeDays.where((d) => d.date != dayN(5)),
+        IntakeDay(
+          date: dayN(5),
+          kcal: 4000,
+          entryCount: 0,
+          mealCount: 0,
+          incomplete: true,
+          dayEstimate: true,
+        ),
+      ];
+      expect(days.last.logged, isTrue);
+      final result = h.estimate(days: days);
+      expect(result.estimate!.intakeKcal, closeTo(2000, 1e-9));
+      expect(result.estimate!.completeDays, 27);
+      expect(result.readiness.loggedDays, 28);
+    });
+
     test('S6b TG-031 an unmarked day that only looks incomplete still '
         'counts: the estimate never leaves days out on its own', () {
       final h = _History(intakeNoise: 0);

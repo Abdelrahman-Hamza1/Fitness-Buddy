@@ -120,7 +120,7 @@ class _SaveMealSheetState extends ConsumerState<SaveMealSheet> {
           Text(
             l10n.diaryMealSummary(
               mealEntries(live.section).length,
-              mealKcal(live.section),
+              mealKcal(l10n, live.section),
             ),
             style: FbType.bodySmall.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,

@@ -1,6 +1,8 @@
 import 'package:fb_domain/fb_domain.dart';
 import 'package:test/test.dart';
 
+import '../helpers/diary.dart';
+
 // Saturday-start weeks: 24–30 Oct 2026 is a whole week; 31 Oct starts the
 // next one.
 final LocalDate _weekStart = LocalDate(2026, 10, 24);
@@ -190,5 +192,46 @@ void main() {
       ),
       [LocalDate(2026, 10, 31)],
     );
+  });
+
+  test('IN-001 protein day: full counts, partial >= target is a hit, partial '
+      'below target and none are not evaluated; fiber average over full '
+      'days; an estimate marks the average kcal', () {
+    final p = _macros.proteinGrams;
+    ProgressDay withIntake(LocalDate date, List<DiaryEntry> entries) =>
+        ProgressDay(
+          date: date,
+          intake: DiaryTotals.intake(entries),
+          entryCount: entries.length,
+          status: DayStatus.logged,
+          targetKcal: 2000,
+          targetMacros: _macros,
+        );
+    DiaryEntry food(String id, double protein, {double fiber = 20}) => entry(
+      id: id,
+      snapshot: snapshotOf(1000, protein: protein, fiber: fiber),
+    );
+    final days = [
+      _day(_d(0), protein: p + 1, fiber: 10), // full, hit
+      _day(_d(1), protein: p - 1, fiber: 30), // full, missed
+      // Known P below target + a kcal-only estimate: not evaluated.
+      withIntake(_d(2), [food(entryA, 25), estimateEntry(kcal: 900)]),
+      // Known P above target + an estimate: a certain hit.
+      withIntake(_d(3), [food(entryA, p + 40), estimateEntry(kcal: 800)]),
+      // Only an estimate: protein unknown, not evaluated.
+      withIntake(_d(4), [estimateEntry(kcal: 2000)]),
+    ];
+    final s = WeeklySummary.of(
+      weekStart: _weekStart,
+      today: LocalDate(2026, 11, 3),
+      days: days,
+      trendOn: (_) => null,
+    );
+    expect(s.countedDays, 5);
+    expect(s.proteinTargetDays, 3);
+    expect(s.proteinDaysHit, 2);
+    expect(s.averageFiber, 20, reason: 'only the two fully known days');
+    expect(s.estimated, isTrue);
+    expect(s.averageKcal, isNotNull);
   });
 }

@@ -7,6 +7,7 @@ import 'proposal_recompute_test.dart' show update;
 final date = LocalDate(2026, 10, 17);
 ProposalContext dayContext({
   Map<LocalDate, Nutrients> confirmed = const {},
+  Map<LocalDate, IntakeTotals>? intake,
   TargetPlan? plan,
   Iterable<WeekIntake> earlier = const [],
   bool ramadan = false,
@@ -18,7 +19,12 @@ ProposalContext dayContext({
     today: date,
     weightKg: 70,
     calendar: const WeekCalendar(weekStart: DayOfWeek.monday),
-    confirmed: confirmed,
+    confirmed:
+        intake ??
+        {
+          for (final MapEntry(:key, :value) in confirmed.entries)
+            key: IntakeTotals.known(value),
+        },
     revision: revision,
     earlierIntake: earlier,
     ramadan: ramadan,
@@ -50,6 +56,43 @@ void main() {
   // rule: A21 privacy
   test('A21 day context diagnostics omit confirmed intake', () {
     expect(dayContext().dayContext.toString(), 'ProposalDayContext(redacted)');
+  });
+  test('AI-031 an ordinary Buddy card over a day holding a fully-known '
+      'estimate shows ~ on after-this (A62 D15)', () {
+    final plain = session(
+      message([
+        intent([item()]),
+      ]),
+      ctx: dayContext(confirmed: {date: nutrients(500)}),
+    );
+    expect(plain.cards.single.preview.intake!.estimated, isFalse);
+    final s = session(
+      message([
+        intent([item()]),
+      ]),
+      ctx: dayContext(
+        intake: {date: IntakeTotals.known(nutrients(500), estimated: true)},
+      ),
+    );
+    final preview = s.cards.single.preview;
+    expect(preview.intake!.estimated, isTrue);
+    expect(preview.eaten!.kcal, plain.cards.single.preview.eaten!.kcal);
+  });
+  test('AI-031 DY-006 a card over a day estimate previews the card alone, '
+      'macros known: confirming replaces the estimate (A62 D12)', () {
+    final plain = session(
+      message(),
+      ctx: dayContext(confirmed: {date: Nutrients.zero}),
+    );
+    final s = session(
+      message(),
+      ctx: dayContext(intake: {date: IntakeTotals.ofDayEstimate(2300)}),
+    );
+    final preview = s.cards.single.preview.intake!;
+    expect(preview.sum, plain.cards.single.preview.intake!.sum);
+    expect(preview.dayEstimate, isFalse);
+    expect(preview.estimated, isFalse);
+    expect(preview.coverage(NutrientField.protein), NutrientCoverage.full);
   });
   test('AI-031 today after this includes only this active card', () {
     final s = session(

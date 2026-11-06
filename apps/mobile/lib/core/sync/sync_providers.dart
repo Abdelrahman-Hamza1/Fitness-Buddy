@@ -17,6 +17,7 @@ import 'package:fb_mobile/core/events/domain_event_bus.dart';
 import 'package:fb_mobile/core/session/session_providers.dart';
 import 'package:fb_mobile/core/session/session_state.dart';
 import 'package:fb_mobile/core/storage/device_id_store.dart';
+import 'package:fb_mobile/core/sync/downgrade_recovery.dart';
 import 'package:fb_mobile/core/sync/sync_guard.dart';
 import 'package:fb_mobile/core/sync/sync_scheduler.dart';
 import 'package:fb_mobile/core/sync/sync_status.dart';
@@ -191,13 +192,23 @@ class SyncController extends _$SyncController with WidgetsBindingObserver {
     state = state.copyWith(running: true, enabled: true, restoredRows: 0);
     try {
       final version = (await ref.read(packageInfoProvider.future)).version;
-      await store.retryParkedIfDue(
-        nowMs: ref.read(clockProvider).nowUtc().millisecondsSinceEpoch,
-        appVersion: version,
+      final nowMs = ref.read(clockProvider).nowUtc().millisecondsSinceEpoch;
+      final transport = GuardedSyncTransport(
+        ref.read(syncTransportProvider),
+        valid,
       );
       final engine = SyncEngine(
         store: store,
-        transport: GuardedSyncTransport(ref.read(syncTransportProvider), valid),
+        // Parked versions are retried after the deferred documents applied
+        // and only once the possible schema downgrades among them were
+        // resolved against the server (TD-114, A62 D23).
+        afterDeferredRetry: () => retryParkedSafely(
+          store: store,
+          transport: transport,
+          nowMs: nowMs,
+          appVersion: version,
+        ),
+        transport: transport,
         onProgress: (progress) {
           if (!valid()) return;
           state = state.copyWith(

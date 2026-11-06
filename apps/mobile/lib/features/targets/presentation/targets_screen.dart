@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/approx_text.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/targets/application/targets_actions.dart';
@@ -427,10 +428,12 @@ String weekPositionText(AppLocalizations l10n, WeekPosition position) {
   final kcal = DisplayRounding.kcal(position.kcal);
   final amount = NumberFormat.decimalPattern(l10n.localeName)
       .format(kcal.abs());
+  // HM-002 (A62): "~" when an earlier counted day holds an estimate.
+  final shown = approxText(l10n, amount, approximate: position.estimated);
   final line = switch (kcal) {
     0 => l10n.todayWeekOnTrack,
-    > 0 => l10n.todayWeekOver(amount),
-    _ => l10n.todayWeekUnder(amount),
+    > 0 => l10n.todayWeekOver(shown),
+    _ => l10n.todayWeekUnder(shown),
   };
   return position.uncountedDays == 0
       ? line

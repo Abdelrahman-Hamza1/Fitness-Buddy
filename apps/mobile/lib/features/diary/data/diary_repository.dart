@@ -173,7 +173,10 @@ final class DiaryRepository {
 
   /// The stored-precision totals per day from [from] to [to] (charts).
   Stream<List<DailyTotals>> watchDailyTotals(LocalDate from, LocalDate to) =>
-      _watch({_db.diaryEntries}, () => _reads.dailyTotals(from, to));
+      _watch({
+        _db.diaryEntries,
+        _db.dayMarks,
+      }, () => _reads.dailyTotals(from, to));
 
   /// The earliest day with a live entry or a live day mark, or null
   /// (Progress's earliest period, A16 D14).

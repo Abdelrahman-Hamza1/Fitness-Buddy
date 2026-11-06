@@ -1,5 +1,6 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/approx_text.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
@@ -20,11 +21,11 @@ import 'package:material_ui/material_ui.dart';
 /// (UX-051); a reload keeps the last numbers. A targets read error keeps the
 /// eaten numbers and offers Try again (UX-052).
 class TodayNumbers extends ConsumerWidget {
-  /// Creates the block of [date] for the day's [totals].
+  /// Creates the block of [date] for the day's [intake].
   const new({
     required this.date,
     required this.isToday,
-    required this.totals,
+    required this.intake,
     super.key,
   });
 
@@ -34,8 +35,8 @@ class TodayNumbers extends ConsumerWidget {
   /// Whether [date] is today (only today offers setup).
   final bool isToday;
 
-  /// The sum of the day's stored snapshots.
-  final Nutrients totals;
+  /// The sum of the day's stored snapshots, knowledge-aware (A62).
+  final IntakeTotals intake;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,7 +45,7 @@ class TodayNumbers extends ConsumerWidget {
     final String mode;
     if (targets.hasValue) {
       mode = targets.value == null ? 'eaten' : 'targets';
-      children = switch (TodayNumbersView.of(totals, targets.value)) {
+      children = switch (TodayNumbersView.of(intake, targets.value)) {
         final TargetNumbers view => _targetMode(context, view),
         final EatenNumbers view => [
           ..._eatenMode(context, view),
@@ -55,7 +56,7 @@ class TodayNumbers extends ConsumerWidget {
       final l10n = context.l10n;
       mode = 'error';
       children = [
-        ..._eatenMode(context, EatenNumbers.of(totals)),
+        ..._eatenMode(context, EatenNumbers.of(intake)),
         const SizedBox(height: FbSpace.s3),
         FbInlineBanner(
           kind: FbInlineBannerKind.error,
@@ -117,14 +118,23 @@ class TodayNumbers extends ConsumerWidget {
     final scheme = Theme.of(context).colorScheme;
     final style = FbType.numeric(FbType.bodySmall)
         .copyWith(color: scheme.onSurfaceVariant);
-    Widget macro(String label, double grams) =>
-        Text(l10n.diaryMacroItem(label, grams), style: style);
+    Widget macro(String label, NutrientField field, double? grams) => Text(
+      l10n.diaryMacroItem(
+        label,
+        _grams(l10n, grams, approximate: eaten.approximate.contains(field)),
+      ),
+      style: style,
+    );
     return [
       // Counts to the new total when it changes, e.g. after Log it
       // (UX-025, A22 D24).
       FbBigNumber.counting(
         count: eaten.eatenKcal.toDouble(),
-        format: (kcal) => l10n.diaryBigKcal(kcal.round()),
+        format: (kcal) => approxText(
+          l10n,
+          l10n.diaryBigKcal(kcal.round()),
+          approximate: eaten.estimated,
+        ),
         caption: l10n.diaryKcalEaten,
       ),
       const SizedBox(height: FbSpace.s3),
@@ -132,10 +142,10 @@ class TodayNumbers extends ConsumerWidget {
         spacing: FbSpace.s3,
         runSpacing: FbSpace.s1,
         children: [
-          macro(l10n.todayMacroProtein, eaten.protein),
-          macro(l10n.todayMacroCarbs, eaten.carbs),
-          macro(l10n.todayMacroFat, eaten.fat),
-          macro(l10n.todayMacroFiber, eaten.fiber),
+          macro(l10n.todayMacroProtein, NutrientField.protein, eaten.protein),
+          macro(l10n.todayMacroCarbs, NutrientField.carbs, eaten.carbs),
+          macro(l10n.todayMacroFat, NutrientField.fat, eaten.fat),
+          macro(l10n.todayMacroFiber, NutrientField.fiber, eaten.fiber),
         ],
       ),
     ];
@@ -145,7 +155,11 @@ class TodayNumbers extends ConsumerWidget {
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
     final number = NumberFormat.decimalPattern(l10n.localeName);
-    final eaten = number.format(view.eatenKcal);
+    final eaten = approxText(
+      l10n,
+      number.format(view.eatenKcal),
+      approximate: view.estimated,
+    );
     final budget = number.format(view.targetKcal);
     final muted = FbType.numeric(FbType.bodySmall)
         .copyWith(color: scheme.onSurfaceVariant);
@@ -158,17 +172,26 @@ class TodayNumbers extends ConsumerWidget {
         FbMacroValue(
           kind: kind,
           label: label,
-          value: m.eatenGrams,
+          value: m.eatenGrams ?? 0,
           target: m.targetGrams?.toDouble(),
           valueText: switch (m.targetGrams) {
-            final target? => l10n.todayMacroOfTarget(m.eatenGrams, target),
-            null => l10n.todayMacroEaten(m.eatenGrams),
+            final target? => l10n.todayMacroOfTarget(
+              _grams(l10n, m.eatenGrams, approximate: m.approximate),
+              target,
+            ),
+            null => l10n.todayMacroEaten(
+              _grams(l10n, m.eatenGrams, approximate: m.approximate),
+            ),
           },
         );
     return [
       FbBigNumber.counting(
         count: view.remainingKcal.abs().toDouble(),
-        format: (kcal) => l10n.diaryBigKcal(kcal.round()),
+        format: (kcal) => approxText(
+          l10n,
+          l10n.diaryBigKcal(kcal.round()),
+          approximate: view.estimated,
+        ),
         caption: view.over ? l10n.todayKcalOver : l10n.todayKcalLeft,
         over: view.over,
       ),
@@ -231,10 +254,12 @@ String weekLineText(BuildContext context, WeekLine week) {
   final l10n = context.l10n;
   final amount = NumberFormat.decimalPattern(l10n.localeName)
       .format(week.kcal.abs());
+  // HM-002 (A62): "~" when an earlier counted day holds an estimate.
+  final shown = approxText(l10n, amount, approximate: week.estimated);
   final line = switch (week.kcal) {
     0 => l10n.todayWeekOnTrack,
-    > 0 => l10n.todayWeekOver(amount),
-    _ => l10n.todayWeekUnder(amount),
+    > 0 => l10n.todayWeekOver(shown),
+    _ => l10n.todayWeekUnder(shown),
   };
   return week.uncountedDays == 0
       ? line
@@ -321,4 +346,19 @@ class EmptyDayHint extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Display-rounded [grams] in the locale, "~" when [approximate], "—" when
+/// unknown (A62 D16).
+String _grams(
+  AppLocalizations l10n,
+  double? grams, {
+  required bool approximate,
+}) {
+  if (grams == null) return l10n.unknownValue;
+  return approxText(
+    l10n,
+    NumberFormat.decimalPattern(l10n.localeName).format(grams),
+    approximate: approximate,
+  );
 }

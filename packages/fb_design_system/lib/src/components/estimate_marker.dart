@@ -9,24 +9,49 @@ import 'package:material_ui/material_ui.dart';
 /// shows the likely range and the reason (see [showFbEstimateRange]).
 class FbEstimateMarker extends StatelessWidget {
   /// Creates the marker.
-  const new({required this.rangeText, required this.reason, super.key});
+  const new({
+    required String this.rangeText,
+    required String this.reason,
+    super.key,
+  }) : onTap = null,
+       semanticsLabel = null;
+
+  /// The marker of the user's own estimate (A62, AI-032): no range or
+  /// reason; a tap runs [onTap] (the app's "~ Your estimate" popup).
+  const new action({
+    required VoidCallback this.onTap,
+    required String this.semanticsLabel,
+    super.key,
+  }) : rangeText = null,
+       reason = null;
 
   /// The formatted range, e.g. "450 to 650 kcal".
-  final String rangeText;
+  final String? rangeText;
 
   /// Why it is an estimate, in a sentence.
-  final String reason;
+  final String? reason;
+
+  /// The tap of an [FbEstimateMarker.action] marker.
+  final VoidCallback? onTap;
+
+  /// The screen-reader label of an [FbEstimateMarker.action] marker.
+  final String? semanticsLabel;
 
   @override
   Widget build(BuildContext context) {
     final l10n = FbLocalizations.of(context);
     return Semantics(
       button: true,
-      label: l10n.fbSourceEstimateTitle,
+      label: semanticsLabel ?? l10n.fbSourceEstimateTitle,
       excludeSemantics: true,
       child: InkResponse(
-        onTap: () =>
-            showFbEstimateRange(context, rangeText: rangeText, reason: reason),
+        onTap:
+            onTap ??
+            () => showFbEstimateRange(
+              context,
+              rangeText: rangeText!,
+              reason: reason!,
+            ),
         radius: FbSpace.s4,
         // At least 24 x 24 dp, the same touch area as the source badge.
         child: ConstrainedBox(

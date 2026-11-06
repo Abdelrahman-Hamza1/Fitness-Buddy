@@ -1,11 +1,12 @@
 import 'package:fb_domain/src/diary/diary_entry.dart';
+import 'package:fb_domain/src/diary/intake_totals.dart';
 import 'package:fb_domain/src/diary/meal_slot.dart';
 import 'package:fb_domain/src/diary/totals.dart';
 import 'package:fb_domain/src/nutrition/nutrients.dart';
 
 /// Deterministic read model: orphan slots and groups retain food (DY-020).
 final class DayLayout {
-  new _(this.sections, this.totals, this.entryCount);
+  new _(this.sections, this.intake, this.entryCount);
 
   /// Builds from live rows. Historical slots follow the active mode's slots.
   factory build(
@@ -47,7 +48,7 @@ final class DayLayout {
     }
     return DayLayout._(
       List.unmodifiable(sections),
-      DiaryTotals.day(all),
+      DiaryTotals.intake(all),
       all.length,
     );
   }
@@ -55,8 +56,11 @@ final class DayLayout {
   /// Ordered sections, including empty active slots.
   final List<SlotSection> sections;
 
-  /// Stored sums, rounded only after summation.
-  final Nutrients totals;
+  /// Stored sums, rounded only after summation, with what is known (A62).
+  final IntakeTotals intake;
+
+  /// Stored sums ([intake]'s lower bounds).
+  Nutrients get totals => intake.sum;
 
   /// Number of live entries, counting group members once.
   final int entryCount;
@@ -72,7 +76,7 @@ final class SlotSection {
     List<DiaryEntry> entries,
     Map<String, DishGroup> groups,
     List<DiaryEntry> all,
-  ) : totals = DiaryTotals.day(entries) {
+  ) : intake = DiaryTotals.intake(entries) {
     final selectedIds = entries.map((e) => e.id).toSet();
     final outsideGroups = {
       for (final e in all)
@@ -122,8 +126,11 @@ final class SlotSection {
   /// Ordered entries and dish groups.
   late final List<DiaryItem> items;
 
-  /// Stored snapshot sums for this section.
-  final Nutrients totals;
+  /// Stored snapshot sums for this section, with what is known (A62).
+  final IntakeTotals intake;
+
+  /// Stored snapshot sums ([intake]'s lower bounds).
+  Nutrients get totals => intake.sum;
 
   /// Content names, structured (LC-007): presentation resolves them with
   /// the "Food names" setting and supplies separators and truncation. A
@@ -168,7 +175,7 @@ final class GroupItem extends DiaryItem {
   /// Members must be nonempty and already in chronological order.
   new(this.group, Iterable<DiaryEntry> members)
     : members = List.unmodifiable(members),
-      totals = DiaryTotals.day(members);
+      intake = DiaryTotals.intake(members);
 
   /// The dish header.
   final DishGroup group;
@@ -176,8 +183,12 @@ final class GroupItem extends DiaryItem {
   /// Members belonging to this section only.
   final List<DiaryEntry> members;
 
-  /// Stored member sums.
-  final Nutrients totals;
+  /// Stored member sums, with what is known (A62): "~" when a member is
+  /// an estimate.
+  final IntakeTotals intake;
+
+  /// Stored member sums ([intake]'s lower bounds).
+  Nutrients get totals => intake.sum;
   @override
   String get key => group.id;
   @override

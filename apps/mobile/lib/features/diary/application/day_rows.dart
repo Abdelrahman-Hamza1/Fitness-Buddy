@@ -8,11 +8,11 @@ sealed class DayRow {
 
 /// Day totals.
 final class NumbersRow extends DayRow {
-  /// Stored totals.
-  const new(this.totals);
+  /// Stored totals with what is known (A62).
+  const new(this.intake);
 
-  /// Header nutrients.
-  final Nutrients totals;
+  /// Header totals, knowledge-aware: "~" and "—" follow it.
+  final IntakeTotals intake;
 }
 
 /// Empty-state kind; presentation owns the hint.
@@ -22,6 +22,30 @@ final class EmptyHintRow extends DayRow {
 
   /// Whether Buddy's today hint applies.
   final bool isToday;
+}
+
+/// A past day with nothing logged and no day estimate (A62 E2 A, DY-006):
+/// "Didn't log {weekday}?" with "about ___ kcal".
+final class DayEstimatePromptRow extends DayRow {
+  /// The prompt for a day whose mark (if any) is [mark].
+  const new(this.mark);
+
+  /// The day's live mark as shown (its version guards the save), or null.
+  final DayMark? mark;
+}
+
+/// The day's own estimate (DY-006, A62 D16): "~2,300". [superseded] when
+/// the day also has food (two offline devices, D13): food wins, the row is
+/// dimmed and only offers to clear it.
+final class DayEstimateRow extends DayRow {
+  /// The estimate held by [mark].
+  const new(this.mark, {required this.superseded});
+
+  /// The day's mark, with its estimate and version.
+  final DayMark mark;
+
+  /// Whether the day's food replaces it in every total.
+  final bool superseded;
 }
 
 /// Slot disclosure and summary.
@@ -93,14 +117,29 @@ final class EntryDetailsRow extends DayRow {
 /// Produces only visible rows, with no widget work (D16).
 abstract final class DayRows {
   /// Opening a slot exposes grouped and plain items equally (UX-013).
+  ///
+  /// A past day without food offers a day estimate, or shows the one its
+  /// [mark] holds, which then is the day's intake (A62 D9, D16); a day with
+  /// food and an estimate shows it superseded (D13).
   static List<DayRow> of(
     DayLayout layout,
     DiaryViewChoices viewState, {
     required bool isToday,
+    DayMark? mark,
   }) {
+    final estimate = mark?.estimateKcal;
     final rows = <DayRow>[
-      NumbersRow(layout.totals),
-      if (layout.isEmpty) EmptyHintRow(isToday: isToday),
+      NumbersRow(
+        layout.isEmpty && estimate != null
+            ? IntakeTotals.ofDayEstimate(estimate)
+            : layout.intake,
+      ),
+      if (estimate != null)
+        DayEstimateRow(mark!, superseded: !layout.isEmpty)
+      else if (layout.isEmpty && isToday)
+        const EmptyHintRow(isToday: true)
+      else if (layout.isEmpty)
+        DayEstimatePromptRow(mark),
     ];
     void addEntry(DiaryEntry entry, {String? groupId}) {
       rows.add(

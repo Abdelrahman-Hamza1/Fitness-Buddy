@@ -1,5 +1,6 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/approx_text.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -12,11 +13,19 @@ import 'package:material_ui/material_ui.dart';
 /// invisible sample under it), so typing 248 → 2,475 or clearing the amount
 /// never moves what sits below, at any text scale.
 class NutritionSummary extends StatelessWidget {
-  /// Creates the summary.
-  const new({required this.nutrients, super.key});
+  /// Creates the summary. [known] names the known macros (A62 D26): an
+  /// unknown one shows "—", never 0.
+  const new({
+    required this.nutrients,
+    this.known = EntryFood.allKnown,
+    super.key,
+  });
 
   /// The amount's nutrients, or null while the amount is incomplete.
   final Nutrients? nutrients;
+
+  /// Which of protein, carbs, fat and fiber are known.
+  final Set<NutrientField> known;
 
   /// Key of the calories line while the amount is incomplete.
   static const Key pendingKey = ValueKey('nutrition-pending');
@@ -33,6 +42,8 @@ class NutritionSummary extends StatelessWidget {
         .copyWith(color: scheme.onSurface);
     final macroStyle = FbType.numeric(FbType.bodySmall)
         .copyWith(color: scheme.onSurfaceVariant);
+    String grams(NutrientField field, double value) =>
+        known.contains(field) ? gramsText(l10n, value) : l10n.unknownValue;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -50,16 +61,16 @@ class NutritionSummary extends StatelessWidget {
         _Reserved(
           // Up to about a kilogram of any macro; a larger amount may wrap
           // once more.
-          sample: l10n.foodSheetMacros(888, 888, 888, 88),
+          sample: l10n.foodSheetMacros('888', '888', '888', '88'),
           style: macroStyle,
           child: Text(
             n == null
                 ? l10n.foodSheetMacrosPending
                 : l10n.foodSheetMacros(
-                    DisplayRounding.nutrientGrams(n.protein),
-                    DisplayRounding.nutrientGrams(n.carbs),
-                    DisplayRounding.nutrientGrams(n.fat),
-                    DisplayRounding.nutrientGrams(n.fiber),
+                    grams(NutrientField.protein, n.protein),
+                    grams(NutrientField.carbs, n.carbs),
+                    grams(NutrientField.fat, n.fat),
+                    grams(NutrientField.fiber, n.fiber),
                   ),
             style: macroStyle,
           ),

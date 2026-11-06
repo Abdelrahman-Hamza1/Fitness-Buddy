@@ -19,11 +19,11 @@ This file defines **what food data the product needs and how it behaves**. Which
 | **ⓨ yours** | Personal foods, label scans, saved meals, batch dishes, values edited by you | You own it |
 | **ⓓ database** | Verified generic and branded food data | High |
 | **ⓡ reference dish** | Reviewed recipes for local and mixed dishes (§6) | Medium: real recipe, typical portion |
-| **~ estimate** | AI estimate when nothing else matches | Low: always marked, range shown |
+| **~ estimate** | AI estimate when nothing else matches, or a number you typed (DY-005, DY-006) | Low: always marked; AI estimates show a range |
 
 - **FD-010** `[R1]` Each logged item stores and shows its source badge (SC-4).
 - **FD-011** `[R1]` When several sources match, priority is: yours → database → reference dish → estimate (AI-070).
-- **FD-012** `[R1]` Sanity check on every food: calories should roughly match protein×4 + carbs×4 + fat×9 (+ fiber, alcohol). Foods that fail are not used as "verified", and user-created ones get a gentle warning.
+- **FD-012** `[R1]` Sanity check on every food: calories should roughly match protein×4 + carbs×4 + fat×9 (+ fiber, alcohol). Foods that fail are not used as "verified", and user-created ones get a gentle warning. Your own estimates (DY-005, DY-006) are totals, not foods, and are never sanity-checked (D-096).
 
 ## 3. Search (manual logging)
 

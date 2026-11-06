@@ -56,7 +56,14 @@ class _NutrientOverrideSheetState extends ConsumerState<NutrientOverrideSheet> {
   /// reload; a typed one is kept).
   String _textOf(DiaryEntry entry) =>
       _typed?.text ??
-      _initial(entry.snapshot.valueOf(widget.field) ?? 0, _decimals);
+      // A62 D24: an unknown value starts empty ("—"), never "0".
+      (_known(entry)
+          ? _initial(entry.snapshot.valueOf(widget.field) ?? 0, _decimals)
+          : '');
+
+  bool _known(DiaryEntry entry) =>
+      !EntryFood.allKnown.contains(widget.field) ||
+      entry.food.known.contains(widget.field);
 
   void _onKey(NumberPadKey key, DiaryEntry entry) {
     final empty = NumberPadBuffer(maxDigits: _digits, maxDecimals: _decimals);
@@ -123,7 +130,9 @@ class _NutrientOverrideSheetState extends ConsumerState<NutrientOverrideSheet> {
       _ => l10n.unitG,
     };
     final name = nutrientLabel(l10n, field);
-    final shown = _shown(l10n, text);
+    final shown = text.isEmpty && !_known(entry)
+        ? l10n.unknownValue
+        : _shown(l10n, text);
     final pending = ref.watch(
       diaryActionsControllerProvider.select(
         (s) => s.pending.contains(entry.id),

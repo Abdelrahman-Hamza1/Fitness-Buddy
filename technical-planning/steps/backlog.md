@@ -270,6 +270,10 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 289 | A63 (D18) | Adaptive mode (automatic check-in changes) is reachable only from Progress › Expenditure; decide whether Me › Targets & goal should link it (settings audit note, product placement) | minor | next targets step | open |
 | 290 | A63 | No widget test for the guest-prompt notice row on Today (`guest-prompt-row`); the DS `FbNoticeRow` and the prompt's logic are tested | minor | next Today touch | open |
 | 291 | A63 | Test gap: `workout_log_controller_test.dart:1436` fills 40 rows with empty additions, so it does not reproduce the original autosave failure at the set limit; add a case with real numbers | minor | next workouts touch | open |
-| 292 | A63 | T-P6 moved to A62: after A62 rebases on A63, check the Progress week header's in-target denominator with mixed estimates (A62 D10) | minor | A62 post-rebase | open |
+| 292 | A63 | T-P6 moved to A62: after A62 rebases on A63, check the Progress week header's in-target denominator with mixed estimates (A62 D10) | minor | A62 post-rebase | done (A62 T-P6, `calories_week_header_test`) |
 | 293 | A63 | The Today "What should we call you?" prompt is memory-only: lost if the app is killed before it shows (name stays editable in Account & data) | nit | next account touch | open |
 | 294 | A63 CI fix | `FbNumberSlot` measures its reserved sample without the inherited letter spacing, so number slots (Today rows, food results, targets) may clip by ~1 px; fix it in the design system and regenerate the affected goldens | minor | next UX polish | open |
+| 295 | A62a | "Try again" in sync cannot force the marked-row (`refused_schema`) downgrade recovery before the daily/app-update gate | minor | next sync touch | open |
+| 296 | A62b | No two-device test matrix for estimate vs MarkDay (food on A, estimate or MarkDay on B, both orders) | minor | next diary-sync touch | open |
+| 297 | A62b | No export assertion for `estimate_only = true` day marks | nit | next export touch | open |
+| 298 | A62 | TD-114 text should mention `dayMark` `estimateOnly` (owner OK needed: Accepted TD; card D22 documents it) | minor | owner OK | open |

@@ -66,7 +66,7 @@ This is the most important interaction in the app. It must feel **instant, clear
 
 - **AI-030** `[R1]` After a message is sent, a proposal card appears in the chat sheet **within 5 s in 9 out of 10 cases** (D-060). A skeleton card shows right away while Buddy works, so the user never stares at nothing.
 - **AI-031** `[R1]` The card shows: target meal slot and time; a dish name when items were cooked together; one line per item (name, amount + unit, kcal, source badge); the card's total kcal, protein, carbs, fat and fiber; and **what today's remaining calories will be after logging** it.
-- **AI-032** `[R1]` Estimated values show a `~` marker. Tapping it shows the likely range and why (D-045).
+- **AI-032** `[R1]` Estimated values show a `~` marker. Tapping it shows the likely range and why (D-045). Your own estimates (DY-005, DY-006) have no range: tapping "~" shows "~ Your estimate" with Edit and Swap for foods (D-096).
 - **AI-033** `[R1]` Every assumption Buddy made is shown on the card as a tappable **assumption chip** (e.g. "raw weight", "1 tsp oil assumed", "chicken maqluba", "your share: ¼"). Tapping a chip shows the alternatives, and picking one updates the numbers immediately.
 - **AI-034** `[R1]` A clarifying question (§5) appears **inside the card** as tappable answer chips, never as a separate step. Until it's answered, the card shows the default answer's numbers, labelled as such.
 

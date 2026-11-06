@@ -57,6 +57,34 @@ final class NotificationInputs {
 /// measurement look-back).
 const int _lookBackDays = 14;
 
+/// The protein target the nudge compares today's intake with, or null for
+/// no protein nudge (A62 D10): protein that isn't fully known and whose
+/// known part is below [target] is unknown, not low.
+double? proteinNudgeTarget(double? target, IntakeTotals? today) {
+  if (target == null || today == null) return target;
+  final partial =
+      today.coverage(NutrientField.protein) != NutrientCoverage.full;
+  return partial && today.sum.protein < target ? null : target;
+}
+
+/// The days with something logged (NT-004's "the week had activity"):
+/// food or a day estimate (DY-006, A62b review fix), a weigh-in from
+/// [from] on, or a workout up to [today].
+Set<LocalDate> activeDatesOf({
+  required Iterable<DailyTotals> totals,
+  required Iterable<LocalDate> weighInDates,
+  required Iterable<LocalDate> workoutDates,
+  required LocalDate from,
+  required LocalDate today,
+}) => {
+  for (final t in totals)
+    if (t.entryCount > 0 || t.dayEstimate) t.date,
+  for (final d in weighInDates)
+    if (!d.isBefore(from)) d,
+  for (final d in workoutDates)
+    if (!d.isAfter(today)) d,
+};
+
 /// The [NotificationInputs] now: the settings and the local data the rules
 /// need. Follows every source, so a logged meal, a weigh-in, a session, a
 /// resolved card or a settings change re-plans (A40 D6). Today comes from
@@ -117,7 +145,10 @@ Future<NotificationInputs> notificationInputs(Ref ref) async {
     state: NotificationState(
       mealsToday: todayTotals?.mealCount ?? 0,
       proteinToday: todayTotals?.totals.protein ?? 0,
-      proteinTargetToday: targets?.day.macros.proteinGrams,
+      proteinTargetToday: proteinNudgeTarget(
+        targets?.day.macros.proteinGrams,
+        todayTotals?.intake,
+      ),
       todayIncomplete: marks.any((m) => m.localDate == today && m.incomplete),
       weekStart: calendar.weekStart,
       weighInDates: weighInDates,
@@ -130,14 +161,13 @@ Future<NotificationInputs> notificationInputs(Ref ref) async {
         for (final p in pending)
           NotificationState.pendingDue(p.createdAt, clock),
       ],
-      activeDates: {
-        for (final t in totals)
-          if (t.entryCount > 0) t.date,
-        for (final d in weighInDates)
-          if (!d.isBefore(from)) d,
-        for (final d in workouts)
-          if (!d.isAfter(today)) d,
-      },
+      activeDates: activeDatesOf(
+        totals: totals,
+        weighInDates: weighInDates,
+        workoutDates: workouts,
+        from: from,
+        today: today,
+      ),
     ),
   );
 }

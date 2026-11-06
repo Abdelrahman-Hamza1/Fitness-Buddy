@@ -265,6 +265,66 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
   });
 
+  testWidgets('DY-006 IN-002 a day estimate is drawn hatched with its kcal '
+      'and counted (A62 D10)', (tester) async {
+    _tallPhone(tester);
+    final h = TargetsAppHarness();
+    await tester.runAsync(() async {
+      await h.apply([
+        PutProfile(setupInput().profile),
+        PutTargetSettings(
+          TargetSettingsRecord(
+            id: h.ids.next(),
+            revision: 1,
+            effectiveFrom: LocalDate(2026, 9, 20),
+            baseKcal: setupBase,
+            basisWeightKg: 80,
+          ),
+        ),
+      ]);
+    });
+    h.advanceDays(3); // Tuesday 20 October
+    await tester.runAsync(
+      () => h.apply([
+        SetDayEstimate(
+          LocalDate(2026, 10, 18),
+          kcal: 2300,
+          expectedVersion: null,
+          expectEstimate: false,
+        ),
+      ]),
+    );
+    final today = h.date;
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(h.db),
+          changeSetApplierProvider.overrideWithValue(h.applier),
+          clockProvider.overrideWithValue(h.clock),
+          idGeneratorProvider.overrideWithValue(h.ids),
+          undoStackProvider.overrideWithValue(h.undo),
+          todayProvider.overrideWith((ref) => Stream.value(today)),
+        ],
+        child: phoneApp(const ProgressScreen()),
+      ),
+    );
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 80)),
+    );
+    await tester.pumpAndSettle();
+    // Sunday 18 October is the week's second bar.
+    const calories = 'progress-calories-chart';
+    expect(_bars(tester, calories)[1].value, 2300);
+    expect(_bars(tester, calories)[1].style, FbBarStyle.hatched);
+
+    h.undo.dispose();
+    for (var i = 0; i < 3; i++) {
+      await tester.pump(const Duration(seconds: 6));
+    }
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(seconds: 1));
+  });
+
   testWidgets('A57 A53 T-A6 the macro charts stack one per row at 2.0 text '
       'and sit two a row at 1.0', (tester) async {
     _tallPhone(tester);

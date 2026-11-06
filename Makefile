@@ -595,6 +595,10 @@ gen-body-targets-vectors: ## Regenerate the shared synthetic body & targets vali
 gen-measurement-vectors: ## Regenerate the shared synthetic measurement validation corpus (B20)
 	cd '$(REPO_ROOT)/packages/fb_domain' && '$(DART)' run tool/generate_measurement_vectors.dart
 
+.PHONY: gen-diary-estimate-vectors
+gen-diary-estimate-vectors: ## Regenerate the shared synthetic diaryEntry/savedMealItem v2 estimate validation corpus (A62a)
+	cd '$(REPO_ROOT)/packages/fb_domain' && '$(DART)' run tool/generate_diary_estimate_vectors.dart
+
 .PHONY: gen-workout-vectors
 gen-workout-vectors: ## Regenerate the shared synthetic workout validation corpus (B21)
 	cd '$(REPO_ROOT)/packages/fb_domain' && '$(DART)' run tool/generate_workout_vectors.dart

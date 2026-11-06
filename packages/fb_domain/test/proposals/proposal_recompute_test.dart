@@ -186,7 +186,7 @@ void main() {
         slots: context().slots,
         dayContext: ProposalDayContext(
           today: context().referenceTime.localDate,
-          confirmed: {context().referenceTime.localDate: Nutrients.zero},
+          confirmed: {context().referenceTime.localDate: IntakeTotals.empty},
         ),
       ),
     );

@@ -248,29 +248,9 @@
     }
   },
   "todayMacroOfTarget": "{eaten} / {target} g",
-  "@todayMacroOfTarget": {
-    "description": "Today: a macro eaten out of its target, next to its bar, e.g. \"82 / 140 g\" (HM-003).",
-    "placeholders": {
-      "eaten": {
-        "type": "double",
-        "format": "decimalPattern"
-      },
-      "target": {
-        "type": "int",
-        "format": "decimalPattern"
-      }
-    }
-  },
+  "@todayMacroOfTarget": {"description": "Today: a macro eaten out of its target, next to its bar, e.g. \"82 / 140 g\" (HM-003). The grams are formatted, \"~\" before a lower bound or estimate, \"—\" when unknown (A62).", "placeholders": {"eaten": {"type": "String"}, "target": {"type": "int", "format": "decimalPattern"}}},
   "todayMacroEaten": "{eaten} g",
-  "@todayMacroEaten": {
-    "description": "Today: a macro with no target (carbs and fat in 'calories and protein only', TG-054), e.g. \"96 g\".",
-    "placeholders": {
-      "eaten": {
-        "type": "double",
-        "format": "decimalPattern"
-      }
-    }
-  },
+  "@todayMacroEaten": {"description": "Today: a macro with no target (carbs and fat in 'calories and protein only', TG-054), e.g. \"96 g\". The grams are formatted, \"~\" before a lower bound or estimate, \"—\" when unknown (A62).", "placeholders": {"eaten": {"type": "String"}}},
   "todaySetupTitle": "Set up your targets",
   "@todaySetupTitle": {
     "description": "Today: the row under the big number that opens setup while no targets exist (A13 D10)."
@@ -2918,27 +2898,7 @@
     "description": "Food sheet and amount sheet: the four macros while the amount is incomplete (A57 D13); each dash stands for a missing number."
   },
   "foodSheetMacros": "Protein {protein} g · Carbs {carbs} g · Fat {fat} g · Fiber {fiber} g",
-  "@foodSheetMacros": {
-    "description": "Food sheet: the four macros of the chosen amount, in grams.",
-    "placeholders": {
-      "protein": {
-        "type": "double",
-        "format": "decimalPattern"
-      },
-      "carbs": {
-        "type": "double",
-        "format": "decimalPattern"
-      },
-      "fat": {
-        "type": "double",
-        "format": "decimalPattern"
-      },
-      "fiber": {
-        "type": "double",
-        "format": "decimalPattern"
-      }
-    }
-  },
+  "@foodSheetMacros": {"description": "Food sheet: the four macros of the chosen amount, in grams. The grams are formatted, \"~\" before a lower bound, \"—\" when unknown (A62).", "placeholders": {"protein": {"type": "String"}, "carbs": {"type": "String"}, "fat": {"type": "String"}, "fiber": {"type": "String"}}},
   "foodSheetLogAs": "Log as {name}",
   "@foodSheetLogAs": {
     "description": "Food sheet: chip that switches to the same food in another state (raw, cooked, dry); {name} is that food.",
@@ -3113,18 +3073,7 @@
     }
   },
   "diaryMacroItem": "{label} {value} g",
-  "@diaryMacroItem": {
-    "description": "Today: one macro of the day's total, e.g. Protein 110 g.",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      },
-      "value": {
-        "type": "double",
-        "format": "decimalPattern"
-      }
-    }
-  },
+  "@diaryMacroItem": {"description": "Today: one macro of the day's total, e.g. Protein 110 g. The grams are formatted, \"~\" before a lower bound or estimate, \"—\" when unknown (A62).", "placeholders": {"label": {"type": "String"}, "value": {"type": "String"}}},
   "diaryKcal": "{kcal} kcal",
   "@diaryKcal": {
     "description": "Diary: calories of a slot, a dish or an item.",
@@ -3161,49 +3110,9 @@
     }
   },
   "diarySlotMacrosSemantics": "Protein {protein} g, carbs {carbs} g, fat {fat} g, fiber {fiber} g",
-  "@diarySlotMacrosSemantics": {
-    "description": "Full nutrient names spoken for an expanded meal.",
-    "placeholders": {
-      "protein": {
-        "type": "double",
-        "format": "decimalPattern"
-      },
-      "carbs": {
-        "type": "double",
-        "format": "decimalPattern"
-      },
-      "fat": {
-        "type": "double",
-        "format": "decimalPattern"
-      },
-      "fiber": {
-        "type": "double",
-        "format": "decimalPattern"
-      }
-    }
-  },
+  "@diarySlotMacrosSemantics": {"description": "Full nutrient names spoken for an expanded meal. Values are formatted grams, \"~\" before a lower bound or \"—\" when unknown (A62).", "placeholders": {"protein": {"type": "String"}, "carbs": {"type": "String"}, "fat": {"type": "String"}, "fiber": {"type": "String"}}},
   "diarySlotMacros": "P {protein} · C {carbs} · F {fat} · Fiber {fiber}",
-  "@diarySlotMacros": {
-    "description": "Diary: compact macro line of an opened meal (grams).",
-    "placeholders": {
-      "protein": {
-        "type": "double",
-        "format": "decimalPattern"
-      },
-      "carbs": {
-        "type": "double",
-        "format": "decimalPattern"
-      },
-      "fat": {
-        "type": "double",
-        "format": "decimalPattern"
-      },
-      "fiber": {
-        "type": "double",
-        "format": "decimalPattern"
-      }
-    }
-  },
+  "@diarySlotMacros": {"description": "Diary: compact macro line of an opened meal (grams). Values are formatted grams, \"~\" before a lower bound or \"—\" when unknown (A62).", "placeholders": {"protein": {"type": "String"}, "carbs": {"type": "String"}, "fat": {"type": "String"}, "fiber": {"type": "String"}}},
   "diaryGroupItems": "{count, plural, =1{1 item} other{{count} items}}",
   "@diaryGroupItems": {
     "description": "Diary: how many items a dish holds.",
@@ -3607,14 +3516,13 @@
   },
   "diaryMealSummary": "{count, plural, =1{1 item · {kcal} kcal} other{{count} items · {kcal} kcal}}",
   "@diaryMealSummary": {
-    "description": "Copy and save sheets: how much the meal holds.",
+    "description": "Copy and save sheets and the saved-meals list: how much the meal holds. {kcal} is the formatted number, with a leading \"~\" when the meal holds an estimate (A62).",
     "placeholders": {
       "count": {
         "type": "int"
       },
       "kcal": {
-        "type": "int",
-        "format": "decimalPattern"
+        "type": "String"
       }
     }
   },
@@ -7693,5 +7601,73 @@
   "exercisePickerLoadFailed": "Couldn't load the exercises.",
   "@exercisePickerLoadFailed": {"description": "Exercise picker: the library couldn't be read; not 'no results' (UX-050–052)."},
   "workoutDiscardMessage": "You have changes that aren't saved.",
-  "@workoutDiscardMessage": {"description": "Template and custom exercise editors: Back with unsaved edits (UX-052, A63 D19)."}
+  "@workoutDiscardMessage": {"description": "Template and custom exercise editors: Back with unsaved edits (UX-052, A63 D19)."},
+  "approx": "~{value}",
+  "@approx": {"description": "A value that includes an estimate or is only a lower bound (A62, D-096): only a tilde before the number, e.g. \"~700\". Tapping it never explains; only your own estimate's ~ opens a popup.", "placeholders": {"value": {"type": "String"}}},
+  "approxSpoken": "about {value}",
+  "@approxSpoken": {"description": "Screen reader text of an approximate value (A62); {value} is the number with its unit.", "placeholders": {"value": {"type": "String"}}},
+  "unknownValue": "—",
+  "@unknownValue": {"description": "A nutrient with nothing known (A62, D-096): never shown as 0."},
+  "unknownValueSpoken": "unknown",
+  "@unknownValueSpoken": {"description": "Screen reader text of a nutrient with nothing known (A62)."},
+  "estimateAction": "~ Estimate",
+  "@estimateAction": {"description": "Food search action row (A62, DY-005): opens the estimate sheet: type one calorie number for a meal."},
+  "estimateFromQuery": "~ Estimate “{query}”",
+  "@estimateFromQuery": {"description": "Food search row after the results and when nothing matches (A62 E1 B): estimate a meal named after the query.", "placeholders": {"query": {"type": "String"}}},
+  "estimateSheetTitle": "Estimate {meal}",
+  "@estimateSheetTitle": {"description": "Estimate sheet title (A62); {meal} is the meal's name, e.g. \"Estimate breakfast\".", "placeholders": {"meal": {"type": "String"}}},
+  "estimateSheetTitleNoMeal": "Estimate a meal",
+  "@estimateSheetTitleNoMeal": {"description": "Estimate sheet title when no meal is chosen yet (the app picks it by the time)."},
+  "estimateKcalLabel": "Calories, {kcal} kcal",
+  "@estimateKcalLabel": {"description": "Screen reader label of the estimate's calorie number.", "placeholders": {"kcal": {"type": "String"}}},
+  "estimateName": "Name",
+  "@estimateName": {"description": "Estimate sheet: the optional name field."},
+  "estimateMacros": "+ Macros",
+  "@estimateMacros": {"description": "Estimate sheet: reveals the optional protein, carbs and fat fields."},
+  "estimateAdd": "Add ~{kcal} kcal",
+  "@estimateAdd": {"description": "Estimate sheet primary button when adding (A62).", "placeholders": {"kcal": {"type": "String"}}},
+  "estimateSave": "Save ~{kcal} kcal",
+  "@estimateSave": {"description": "Estimate sheet primary button when editing an estimate (A62).", "placeholders": {"kcal": {"type": "String"}}},
+  "estimateKcalNeeded": "Type the calories",
+  "@estimateKcalNeeded": {"description": "Estimate sheet: the reserved line when no calories are typed yet."},
+  "estimateOutOfRange": "Calories 1–10,000, each macro up to 1,000 g",
+  "@estimateOutOfRange": {"description": "Estimate sheet: a typed value outside the bounds (A62 D7)."},
+  "estimateUnnamed": "Estimate",
+  "@estimateUnnamed": {"description": "The title of an estimate the user didn't name (A62)."},
+  "estimatePopupTitle": "~ Your estimate",
+  "@estimatePopupTitle": {"description": "Title of the popup opened by tapping ~ on your own estimate (A62, AI-032): the only explanation."},
+  "estimateMarkerLabel": "Your estimate, options",
+  "@estimateMarkerLabel": {"description": "Screen reader label of the ~ on your own estimate row."},
+  "estimateEdit": "Edit",
+  "@estimateEdit": {"description": "\"~ Your estimate\" popup: edit the estimate."},
+  "estimateSwap": "Swap for foods",
+  "@estimateSwap": {"description": "\"~ Your estimate\" popup: search foods; the estimate is replaced only when a food is picked."},
+  "estimateAdded": "Added ~{kcal} kcal",
+  "@estimateAdded": {"description": "Undo snackbar after adding an estimate.", "placeholders": {"kcal": {"type": "String"}}},
+  "estimateChanged": "Estimate changed",
+  "@estimateChanged": {"description": "Undo snackbar after editing an estimate."},
+  "estimateProtein": "P {grams} g",
+  "@estimateProtein": {"description": "Estimate row subtitle: protein the user gave, e.g. \"P 30 g\".", "placeholders": {"grams": {"type": "String"}}},
+  "estimateCarbs": "C {grams} g",
+  "@estimateCarbs": {"description": "Estimate row subtitle: carbs the user gave.", "placeholders": {"grams": {"type": "String"}}},
+  "estimateFat": "F {grams} g",
+  "@estimateFat": {"description": "Estimate row subtitle: fat the user gave.", "placeholders": {"grams": {"type": "String"}}},
+  "foodSearchScan": "Scan",
+  "@foodSearchScan": {"description": "Food search action row (A62 E1 A): opens the barcode scanner for the same day and meal."},
+  "dayEstimatePrompt": "Didn't log {weekday}?",
+  "@dayEstimatePrompt": {"description": "Card on a past day with nothing logged (A62 E2 A, DY-006); {weekday} is the day's name, e.g. \"Didn't log Tuesday?\".", "placeholders": {"weekday": {"type": "String"}}},
+  "dayEstimateAbout": "about",
+  "@dayEstimateAbout": {"description": "Before the calorie field of the past-day card: \"about ___ kcal\" (A62 E2 A)."},
+  "dayEstimateKcalLabel": "About how many calories",
+  "@dayEstimateKcalLabel": {"description": "Screen reader label of the day estimate's calorie field."},
+  "dayEstimateSave": "Save day estimate",
+  "@dayEstimateSave": {"description": "Past-day card button: saves the typed number as the whole day's calories (DY-006)."},
+  "dayEstimateTitle": "Day estimate",
+  "@dayEstimateTitle": {"description": "Title of the row (and edit sheet) holding your own estimate of a whole day (DY-006)."},
+  "dayEstimateOutOfRange": "Calories 1–20,000",
+  "@dayEstimateOutOfRange": {"description": "Day estimate: a typed number outside the bounds (A62 D4)."},
+  "dayEstimateSaved": "Day saved as ~{kcal} kcal",
+  "@dayEstimateSaved": {"description": "Undo snackbar after saving a day estimate.", "placeholders": {"kcal": {"type": "String"}}},
+  "dayEstimateRemoved": "Day estimate removed",
+  "@dayEstimateRemoved": {"description": "Undo snackbar after removing a day estimate."}
 }

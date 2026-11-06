@@ -9,12 +9,15 @@ import 'package:fb_domain/src/time/week_calendar.dart';
 
 /// One diary day's logged intake, as the app gathers it (D6).
 final class DayIntake {
-  /// [kcal] over [entryCount] live entries; [incomplete] is the day mark.
+  /// [kcal] over [entryCount] live entries; [incomplete] is the day mark;
+  /// [dayEstimate] when [kcal] is the day's estimate (DY-006, no entries).
   new({
     required this.date,
     required this.kcal,
     required this.entryCount,
     this.incomplete = false,
+    this.estimated = false,
+    this.dayEstimate = false,
   }) {
     checkTargetNumber(kcal, allowZero: true);
     if (entryCount < 0) throw ArgumentError('entry count must not be negative');
@@ -29,8 +32,16 @@ final class DayIntake {
   /// Live entries that day. None means unknown, never zero (TG-032).
   final int entryCount;
 
+  /// Whether the day's intake includes an estimate (A62 D9): the week line
+  /// then shows "~".
+  final bool estimated;
+
   /// Whether the user marked the day incomplete.
   final bool incomplete;
+
+  /// Whether [kcal] is the user's day estimate (DY-006): it counts in the
+  /// weekly budget like logged intake (TG-041, D-096).
+  final bool dayEstimate;
 
   @override
   String toString() => 'DayIntake($date)';
@@ -54,10 +65,14 @@ enum TargetIssue {
 /// The "This week" line (D7, HM-002): eaten minus planned over the known
 /// complete earlier days of the week. Content-free [toString].
 final class WeekPosition {
-  const new _(this.kcal, this.uncountedDays);
+  const new _(this.kcal, this.uncountedDays, {this.estimated = false});
 
   /// Positive: over; negative: under. Today is not included.
   final double kcal;
+
+  /// Whether a counted earlier day of the week includes an estimate
+  /// (HM-002, A62 D9): the line shows "~".
+  final bool estimated;
 
   /// Earlier days (on or after the first version) with unknown intake.
   final int uncountedDays;
@@ -266,8 +281,12 @@ abstract final class TargetsTimeline {
               kcal: day.kcal,
               complete: false,
             )
-          else if (day.entryCount > 0)
+          else if (day.entryCount > 0 || day.dayEstimate)
             day.date: WeekIntake(date: day.date, kcal: day.kcal),
+    };
+    final estimatedDates = {
+      for (final day in intake)
+        if (day.estimated) day.date,
     };
     final targetDay = _tryEngine(
       () => plan.day(
@@ -281,12 +300,16 @@ abstract final class TargetsTimeline {
     WeekPosition? position;
     if (targetDay.week case final week?) {
       var kcal = 0.0;
+      var estimated = false;
       for (final day in known.values) {
-        if (day.complete) kcal += day.kcal - week.planned[day.date]!;
+        if (!day.complete) continue;
+        kcal += day.kcal - week.planned[day.date]!;
+        if (estimatedDates.contains(day.date)) estimated = true;
       }
       position = WeekPosition._(
         kcal,
         week.unknownDates.where((d) => !d.isBefore(first)).length,
+        estimated: estimated,
       );
     }
     return DayTargets._(

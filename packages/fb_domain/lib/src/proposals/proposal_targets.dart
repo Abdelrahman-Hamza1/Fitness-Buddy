@@ -20,7 +20,7 @@ final class ProposalDayContext {
   /// Dates, revisions and completeness are explicit, with no clock fallback.
   new({
     required this.today,
-    Map<LocalDate, Nutrients> confirmed = const {},
+    Map<LocalDate, IntakeTotals> confirmed = const {},
     this.revision = 0,
     this.history,
     this.weightKg,
@@ -33,8 +33,8 @@ final class ProposalDayContext {
   /// Explicit current date.
   final LocalDate today;
 
-  /// Frozen confirmed totals by date.
-  final Map<LocalDate, Nutrients> confirmed;
+  /// Frozen confirmed totals by date, knowledge-aware (A62 D15).
+  final Map<LocalDate, IntakeTotals> confirmed;
 
   /// Diary revision, for invalidation.
   final int revision;
@@ -59,13 +59,19 @@ final class ProposalDayContext {
 
 /// Dated preview, independent of all sibling pending cards.
 final class ProposalDayPreview extends ProposalValue {
-  const new _(this.date, this.eaten, this.targetKcal, this.revision);
+  const new _(this.date, this.intake, this.targetKcal, this.revision);
 
   /// The card's diary date, including past cards.
   final LocalDate date;
 
+  /// Confirmed intake plus this active card, knowledge-aware (A62 D15):
+  /// "~" when the day holds an estimate or a lower-bound macro. On a day
+  /// whose intake is a day estimate it is the card alone, since confirming
+  /// replaces the estimate (A62 D12). Absent if its date was not loaded.
+  final IntakeTotals? intake;
+
   /// Confirmed intake plus this active card; absent if its date was not loaded.
-  final Nutrients? eaten;
+  Nutrients? get eaten => intake?.sum;
 
   /// A12 projection, absent when targets are unavailable.
   final double? targetKcal;
@@ -80,7 +86,7 @@ final class ProposalDayPreview extends ProposalValue {
   double? get remainingKcal =>
       targetKcal == null || eaten == null ? null : targetKcal! - eaten!.kcal;
   @override
-  List<Object?> get _values => [date, eaten, targetKcal, revision];
+  List<Object?> get _values => [date, intake, targetKcal, revision];
 }
 
 ProposalDayPreview _preview(
@@ -104,7 +110,14 @@ ProposalDayPreview _preview(
       );
   return ProposalDayPreview._(
     date,
-    day?.confirmed[date] == null ? null : _sum([day!.confirmed[date]!, own]),
+    switch (day?.confirmed[date]) {
+      // A day estimate stands in for a day without food: confirming the
+      // card replaces it (A62 D12), so the day is the card's food alone,
+      // macros known (A62b review fix).
+      IntakeTotals(dayEstimate: true) => IntakeTotals.known(_sum([own])),
+      final confirmed? => confirmed + IntakeTotals.known(_sum([own])),
+      null => null,
+    },
     target?.kcal,
     day?.revision ?? 0,
   );

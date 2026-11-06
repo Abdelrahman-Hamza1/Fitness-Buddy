@@ -85,18 +85,14 @@ GoalPhaseRecord sampleLoseGoal() => GoalPhaseRecord(
 );
 
 /// A day's totals: [kcal] with fixed macros.
-Nutrients eatenTotals(
+IntakeTotals eatenTotals(
   double kcal, {
   double protein = 82.4,
   double carbs = 151.6,
   double fat = 40.2,
   double fiber = 12.3,
-}) => Nutrients(
-  kcal: kcal,
-  protein: protein,
-  carbs: carbs,
-  fat: fat,
-  fiber: fiber,
+}) => IntakeTotals.known(
+  Nutrients(kcal: kcal, protein: protein, carbs: carbs, fat: fat, fiber: fiber),
 );
 
 /// Whole kcal with thousands separators, as Today shows them.

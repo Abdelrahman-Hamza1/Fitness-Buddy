@@ -1,5 +1,6 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/approx_text.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/progress/application/progress_providers.dart';
 import 'package:fb_mobile/features/progress/application/weight_graph_providers.dart';
@@ -154,13 +155,23 @@ String macroBarWords(
   final label = bucketName(l10n, bucket);
   final value = macroValue(bucket, macro);
   final target = macroTarget(bucket, macro);
+  // A62 D10: "~" for a lower bound or an estimate.
+  final field = switch (macro) {
+    ProgressMacro.protein => NutrientField.protein,
+    ProgressMacro.carbs => NutrientField.carbs,
+    ProgressMacro.fat => NutrientField.fat,
+    ProgressMacro.fiber => NutrientField.fiber,
+  };
+  final approximate = bucket.avgEaten?.isApproximate(field) ?? false;
+  String grams(double v) =>
+      approxText(l10n, gramsNumber(l10n, v), approximate: approximate);
   final base = value == null
       ? l10n.progressBarNothing(label)
       : target == null
-      ? l10n.progressGramsValue(label, gramsNumber(l10n, value))
+      ? l10n.progressGramsValue(label, grams(value))
       : l10n.progressGramsValueTarget(
           label,
-          gramsNumber(l10n, value),
+          grams(value),
           gramsNumber(l10n, target),
         );
   return switch (bucket.status) {
@@ -199,7 +210,7 @@ List<FbBar> macroBars(ProgressView view, ProgressMacro macro) => [
       value: macroValue(bucket, macro),
       target: macroTarget(bucket, macro),
       style: switch (bucket.status) {
-        DayStatus.incomplete => FbBarStyle.hatched,
+        DayStatus.incomplete || DayStatus.estimated => FbBarStyle.hatched,
         DayStatus.inProgress => FbBarStyle.faint,
         _ => FbBarStyle.solid,
       },

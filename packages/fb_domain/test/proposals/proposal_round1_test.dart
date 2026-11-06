@@ -169,7 +169,7 @@ void main() {
       slots: context().slots,
       dayContext: ProposalDayContext(
         today: date,
-        confirmed: {date: Nutrients.zero},
+        confirmed: {date: IntakeTotals.empty},
         history: TargetSettingsHistory([
           TargetSettings(
             id: '019a1b2c-0000-7000-8000-000000007777',
@@ -512,7 +512,9 @@ void main() {
         slots: base.slots,
         dayContext: ProposalDayContext(
           today: base.referenceTime.localDate,
-          confirmed: {base.referenceTime.localDate: nutrients(500)},
+          confirmed: {
+            base.referenceTime.localDate: IntakeTotals.known(nutrients(500)),
+          },
         ),
       ),
     );

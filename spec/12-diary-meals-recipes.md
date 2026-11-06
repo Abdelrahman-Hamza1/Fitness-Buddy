@@ -1,13 +1,15 @@
 # 12 — Diary, Meals, Batches & Recipes
 
-_Status: **Draft v1** · 2026-10-10 · Main decisions: D-015, D-016, D-017, D-023, D-044, D-050, D-052, D-072, D-079._
+_Status: **Draft v1** · 2026-10-10 · Main decisions: D-015, D-016, D-017, D-023, D-044, D-050, D-052, D-072, D-079, D-096._
 
 ## 1. Days
 
 - **DY-001** `[R1]` A diary day is the **calendar day** in the user's current time zone. Food eaten after midnight counts toward the new day, including suhoor, which counts toward the fasting day (D-052). Any entry can be moved to another day.
 - **DY-002** `[R1]` Each entry keeps the local time it was eaten. Travelling across time zones doesn't move past entries.
 - **DY-003** `[R1]` Food can be logged for any past day ("yesterday dinner", D-017). Logging for future days (planning): **Later**.
-- **DY-004** `[R1]` A day can be marked **"incomplete"** (e.g. "I didn't log everything"). Incomplete days are excluded from adaptive target calculations (`13` §4). The app suggests this marking for days with suspiciously low logged intake (e.g. under 50% of target with fewer than 2 meals). The suggestion is a proposal, never automatic.
+- **DY-004** `[R1]` A day can be marked **"incomplete"** (e.g. "I didn't log everything"). Incomplete days are excluded from adaptive target calculations (`13` §4). The app suggests this marking for days with suspiciously low logged intake (e.g. under 50% of target with fewer than 2 meals). The suggestion is a proposal, never automatic. A day with a day estimate (DY-006) is left out the same way.
+- **DY-005** `[R1]` **Meal estimate:** from a meal's add screen ("~ Estimate", or "~ Estimate "<query>"" in search), one calorie number, an optional name and optional protein, carbs and fat, each on its own. A direct action with undo (AI-048). It counts like food. Macros not given stay unknown (never 0) in every total and average. It shows as "~" + the number; tapping it edits it; "~" offers Edit and Swap for foods (D-096).
+- **DY-006** `[R1]` **Day estimate:** a past day with nothing logged offers "about ___ kcal" for the whole day; one per day, undoable; logging food that day replaces it. It counts in totals, charts and averages, not in adaptive targets (TG-032) or macro averages (D-096).
 
 ## 2. Meal slots (D-050)
 

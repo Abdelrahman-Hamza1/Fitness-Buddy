@@ -27,6 +27,8 @@ final class FoodColumns {
     required this.isEstimate,
     required this.estimateRangeJson,
     required this.assumptionsJson,
+    required this.userEstimate,
+    required this.known,
     this.rawPer100ExtrasJson,
     this.rawExtrasJson,
   });
@@ -40,7 +42,17 @@ final class FoodColumns {
       basis: amount.basis,
     );
     final provenance = food.provenance;
+    // W3 (A62 D27): an unknown nutrient is 0 in the snapshot too. EntryFood
+    // already holds it for per-100, so this only guards a future change.
+    for (final field in EntryFood.allKnown) {
+      if (!food.known.contains(field) &&
+          computed.nutrients.valueOf(field) != 0) {
+        throw ArgumentError('an unknown nutrient is stored as 0 (W3)');
+      }
+    }
     return FoodColumns._(
+      userEstimate: food.userEstimate,
+      known: food.known,
       editedByUser: food.editedByUser,
       foodKind: food.ref.kind.code,
       foodId: food.ref.id,
@@ -69,6 +81,13 @@ final class FoodColumns {
 
   /// The columns of the stored [row], unchanged.
   factory fromEntry(DiaryEntryRow row) => FoodColumns._(
+    userEstimate: row.userEstimate,
+    known: knownOf(
+      protein: row.proteinKnown,
+      carbs: row.carbsKnown,
+      fat: row.fatKnown,
+      fiber: row.fiberKnown,
+    ),
     editedByUser: row.editedByUser,
     foodKind: row.foodKind,
     foodId: row.foodId,
@@ -105,6 +124,13 @@ final class FoodColumns {
   factory fromSavedItem(SavedMealItemRow row) => FoodColumns._(
     rawPer100ExtrasJson: row.per100ExtrasJson,
     rawExtrasJson: row.extrasJson,
+    userEstimate: row.userEstimate,
+    known: knownOf(
+      protein: row.proteinKnown,
+      carbs: row.carbsKnown,
+      fat: row.fatKnown,
+      fiber: row.fiberKnown,
+    ),
     editedByUser: row.editedByUser,
     foodKind: row.foodKind,
     foodId: row.foodId,
@@ -168,12 +194,27 @@ final class FoodColumns {
   final bool editedByUser;
 
   /// Per-100 equivalent and recomputed snapshot for a nutrient override.
+  /// Each field in [overridden] becomes known (A62 D24: the user gave it,
+  /// an explicit 0 included); the others keep their state.
   static DiaryEntriesCompanion per100Changes(
     Nutrients per100,
-    EntryAmount amount,
-  ) {
+    EntryAmount amount, {
+    Set<NutrientField> overridden = const {},
+  }) {
     final snapshot = amountChanges(per100, amount);
     return snapshot.copyWith(
+      proteinKnown: overridden.contains(NutrientField.protein)
+          ? const Value(true)
+          : const Value.absent(),
+      carbsKnown: overridden.contains(NutrientField.carbs)
+          ? const Value(true)
+          : const Value.absent(),
+      fatKnown: overridden.contains(NutrientField.fat)
+          ? const Value(true)
+          : const Value.absent(),
+      fiberKnown: overridden.contains(NutrientField.fiber)
+          ? const Value(true)
+          : const Value.absent(),
       // Nutrient edits retain the exact stored canonical amount.
       amount: const Value.absent(),
       per100Kcal: Value(per100.kcal),
@@ -237,6 +278,26 @@ final class FoodColumns {
   /// The assumptionsJson column(s).
   final String? assumptionsJson;
 
+  /// The userEstimate column(s) (A62 D3).
+  final bool userEstimate;
+
+  /// The `*_known` columns: the known nutrients of protein, carbs, fat and
+  /// fiber (A62 D3).
+  final Set<NutrientField> known;
+
+  /// The known set of four stored `*_known` flags.
+  static Set<NutrientField> knownOf({
+    required bool protein,
+    required bool carbs,
+    required bool fat,
+    required bool fiber,
+  }) => {
+    if (protein) NutrientField.protein,
+    if (carbs) NutrientField.carbs,
+    if (fat) NutrientField.fat,
+    if (fiber) NutrientField.fiber,
+  };
+
   /// A new entry row.
   DiaryEntriesCompanion entry({
     required String id,
@@ -272,6 +333,11 @@ final class FoodColumns {
     isEstimate: Value(isEstimate),
     estimateRangeJson: Value(estimateRangeJson),
     assumptionsJson: Value(assumptionsJson),
+    userEstimate: Value(userEstimate),
+    proteinKnown: Value(known.contains(NutrientField.protein)),
+    carbsKnown: Value(known.contains(NutrientField.carbs)),
+    fatKnown: Value(known.contains(NutrientField.fat)),
+    fiberKnown: Value(known.contains(NutrientField.fiber)),
     localDate: Value(localDate),
     occurredAtUtc: Value(time.occurredAtUtc.millisecondsSinceEpoch),
     tzOffsetMin: Value(time.tzOffsetMin),
@@ -308,6 +374,11 @@ final class FoodColumns {
     isEstimate: Value(isEstimate),
     estimateRangeJson: Value(estimateRangeJson),
     assumptionsJson: Value(assumptionsJson),
+    userEstimate: Value(userEstimate),
+    proteinKnown: Value(known.contains(NutrientField.protein)),
+    carbsKnown: Value(known.contains(NutrientField.carbs)),
+    fatKnown: Value(known.contains(NutrientField.fat)),
+    fiberKnown: Value(known.contains(NutrientField.fiber)),
   );
 
   /// A new saved-meal item row.
@@ -345,5 +416,10 @@ final class FoodColumns {
     isEstimate: Value(isEstimate),
     estimateRangeJson: Value(estimateRangeJson),
     assumptionsJson: Value(assumptionsJson),
+    userEstimate: Value(userEstimate),
+    proteinKnown: Value(known.contains(NutrientField.protein)),
+    carbsKnown: Value(known.contains(NutrientField.carbs)),
+    fatKnown: Value(known.contains(NutrientField.fat)),
+    fiberKnown: Value(known.contains(NutrientField.fiber)),
   );
 }

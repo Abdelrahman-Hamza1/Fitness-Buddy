@@ -85,6 +85,11 @@ energy is kcal, macros/fiber are grams. All ids are opaque row identifiers.
 | `diary-entries.is_estimate` | boolean | Whether the values are estimated. |
 | `diary-entries.estimate_range_json` | JSON value | `{"lowKcal": …, "highKcal": …}` for an estimate with a range. |
 | `diary-entries.assumptions_json` | JSON value | The assumptions behind the values, a JSON list of strings. |
+| `diary-entries.user_estimate` | boolean | Whether the user typed these values as an estimate (DY-005): one total, logged as 100 g, so the per-100 values equal the snapshot. |
+| `diary-entries.protein_known` | boolean | Whether protein is known. When false, `protein_g` and `per100_protein_g` hold 0 and are not data. |
+| `diary-entries.carbs_known` | boolean | Whether carbs are known. When false, `carbs_g` and `per100_carbs_g` hold 0 and are not data. |
+| `diary-entries.fat_known` | boolean | Whether fat is known. When false, `fat_g` and `per100_fat_g` hold 0 and are not data. |
+| `diary-entries.fiber_known` | boolean | Whether fiber is known. When false, `fiber_g` and `per100_fiber_g` hold 0 and are not data. |
 | `diary-entries.local_date` | text | The day, `YYYY-MM-DD`. |
 | `diary-entries.occurred_at_utc` | UTC ms | When it was eaten, UTC ms. |
 | `diary-entries.tz_offset_min` | integer | The zone offset where it was eaten, minutes ahead of UTC. |
@@ -160,6 +165,8 @@ Buddy's cards (A23): one per meal, waiting for you or already logged or discarde
 | `day-marks.local_date` | text | The day, `YYYY-MM-DD`. |
 | `day-marks.incomplete` | boolean | Whether the day is marked incomplete. |
 | `day-marks.not_fasting` | boolean | Whether a Ramadan day is marked not fasting (A41). |
+| `day-marks.estimate_kcal` | real | The user's own calorie estimate for the whole day (DY-006), or empty. It stands in for the day only while the day has no live food; it is a number the user typed, never data the app derived. |
+| `day-marks.estimate_only` | boolean | Whether the mark only holds the day estimate: the user never marked the day, so `incomplete` false here doesn't mean they confirmed it complete. |
 | `day-marks.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
 | `day-marks.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
 | `day-marks.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
@@ -287,6 +294,11 @@ Buddy's cards (A23): one per meal, waiting for you or already logged or discarde
 | `saved-meal-items.is_estimate` | boolean | Whether the values are estimated. |
 | `saved-meal-items.estimate_range_json` | JSON value | `{"lowKcal": …, "highKcal": …}` for an estimate with a range. |
 | `saved-meal-items.assumptions_json` | JSON value | The assumptions behind the values, a JSON list of strings. |
+| `saved-meal-items.user_estimate` | boolean | Whether the user typed these values as an estimate (DY-005): one total, logged as 100 g, so the per-100 values equal the snapshot. |
+| `saved-meal-items.protein_known` | boolean | Whether protein is known. When false, `protein_g` and `per100_protein_g` hold 0 and are not data. |
+| `saved-meal-items.carbs_known` | boolean | Whether carbs are known. When false, `carbs_g` and `per100_carbs_g` hold 0 and are not data. |
+| `saved-meal-items.fat_known` | boolean | Whether fat is known. When false, `fat_g` and `per100_fat_g` hold 0 and are not data. |
+| `saved-meal-items.fiber_known` | boolean | Whether fiber is known. When false, `fiber_g` and `per100_fiber_g` hold 0 and are not data. |
 | `saved-meal-items.saved_meal_id` | text | The saved meal's id. |
 | `saved-meal-items.sort_order` | integer | The position in the meal. |
 | `saved-meal-items.saved_meal_name` | derived text | Derived parent meal name, including deleted meals. |

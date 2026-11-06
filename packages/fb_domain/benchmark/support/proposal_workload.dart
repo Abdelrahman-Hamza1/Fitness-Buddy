@@ -68,7 +68,7 @@ final class ProposalWorkload {
         today: date,
         weightKg: 70,
         calendar: const WeekCalendar(weekStart: DayOfWeek.monday),
-        confirmed: {date: fixture.nutrients(500)},
+        confirmed: {date: IntakeTotals.known(fixture.nutrients(500))},
         earlierIntake: [
           WeekIntake(date: date.plusDays(-1), kcal: 1800),
           WeekIntake(date: date.plusDays(-2), kcal: 0, complete: false),

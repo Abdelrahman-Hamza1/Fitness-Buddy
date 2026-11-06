@@ -58,6 +58,7 @@ DiaryEntry entry({
   Nutrients? snapshot,
   String? dishGroupId,
   int version = 1,
+  EntryFood? food,
 }) {
   final time = EntryTime(DateTime.utc(2026, 10, 13, 10), 180);
   return DiaryEntry(
@@ -67,8 +68,27 @@ DiaryEntry entry({
     localDate: time.localDate,
     slotId: slotId,
     dishGroupId: dishGroupId,
-    food: riceFood(),
+    food: food ?? riceFood(),
     amount: grams(150),
     snapshot: snapshot ?? snapshotOf(195),
   );
+}
+
+/// A user estimate entry (DY-005) of [kcal] with the typed macros, its
+/// snapshot equal to the typed values.
+DiaryEntry estimateEntry({
+  String id = entryB,
+  String slotId = DefaultSlots.lunchId,
+  double kcal = 700,
+  double? protein,
+  double? carbs,
+  double? fat,
+}) {
+  final food = UserEstimate(
+    kcal: kcal,
+    protein: protein,
+    carbs: carbs,
+    fat: fat,
+  ).food();
+  return entry(id: id, slotId: slotId, food: food, snapshot: food.per100);
 }

@@ -59,6 +59,12 @@ class SyncParked extends Table {
   /// When it was parked, UTC ms.
   IntColumn get parkedAt => integer()();
 
+  /// The `schemaVersion` the server refused as `unsupported` for a
+  /// downgrade-protected entity (TD-114, A62 D23): a possible schema
+  /// downgrade. Such a version is never retried or re-encoded until the
+  /// downgrade recovery has re-read the server's row. `null` otherwise.
+  IntColumn get refusedSchema => integer().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {entity, rowId, hlc};
 }
@@ -108,6 +114,9 @@ class SyncDisplaced extends Table {
   /// The parked reason when the server or the encoder refused it; `null`
   /// while it waits to be pushed.
   TextColumn get parkedReason => text().nullable()();
+
+  /// Like [SyncParked.refusedSchema], for a parked displaced version.
+  IntColumn get refusedSchema => integer().nullable()();
 
   @override
   Set<Column<Object>> get primaryKey => {entity, rowId, hlc};

@@ -8,9 +8,16 @@ final int adaptiveWindowDays = const AdaptiveConfig().windowDays;
 /// The estimate's intake days from the diary's per-day totals, the day
 /// marks and the dates the user confirmed complete (A38 D1): a day with
 /// entries is logged; its mark says whether it is incomplete; a "count
-/// again" mark (a mark that isn't incomplete) or a dismissed suggestion
-/// ([confirmed]) means the user said it is complete. Days with only a mark
-/// are not logged (unknown, TG-032).
+/// again" mark (a mark that isn't incomplete, unless it exists only for a
+/// day estimate) or a dismissed suggestion ([confirmed]) means the user
+/// said it is complete. Days with only a mark are not logged (unknown,
+/// TG-032).
+///
+/// A day estimate (DY-006, A62 D9) makes a day logged but never complete:
+/// it counts toward the 14 logged days, not the 10 complete ones, and is
+/// left out of the intake average (TG-031, TG-032). That holds also when
+/// food was logged on it from another device (D13). Meal estimates count
+/// like food.
 List<IntakeDay> intakeDaysOf({
   required Iterable<DailyTotals> totals,
   required Iterable<DayMark> marks,
@@ -19,15 +26,17 @@ List<IntakeDay> intakeDaysOf({
   final byDate = {for (final m in marks) m.localDate: m};
   return [
     for (final t in totals)
-      if (t.entryCount > 0)
+      if (t.entryCount > 0 || t.dayEstimate)
         IntakeDay(
           date: t.date,
           kcal: t.totals.kcal,
           entryCount: t.entryCount,
           mealCount: t.mealCount,
-          incomplete: byDate[t.date]?.incomplete ?? false,
+          incomplete: (byDate[t.date]?.incomplete ?? false) || t.hasDayEstimate,
           confirmed:
-              confirmed.contains(t.date) || byDate[t.date]?.incomplete == false,
+              confirmed.contains(t.date) ||
+              (byDate[t.date]?.confirmedComplete ?? false),
+          dayEstimate: t.dayEstimate,
         ),
   ];
 }

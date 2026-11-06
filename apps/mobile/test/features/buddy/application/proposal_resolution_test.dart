@@ -9,6 +9,9 @@ import 'package:fb_mobile/features/buddy/application/buddy_issues.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_reply_texts.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
+import 'package:fb_mobile/features/buddy/presentation/cards/proposal_labels.dart';
+import 'package:fb_mobile/l10n/gen/app_localizations.dart';
+import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/buddy_harness.dart';
@@ -853,5 +856,39 @@ void main() {
     h.configThrows = false;
     expect(await h.thread.undo(cardId), UndoOutcome.undone);
     expect((await h.entries()).where((e) => e.deletedAt == null), isEmpty);
+  });
+
+  // rule: A62 D15 logged line provenance
+  test('A62 D15 an ordinary card logged after a meal estimate: the logged '
+      'kcal has no "~", the day figure has "~"', () async {
+    final h = BuddyHarness()..answer(message());
+    await h.thread.send('2 eggs', texts);
+    expect(
+      await h.applier.apply(
+        ChangeSet([
+          LogEntries([
+            NewDiaryEntry(
+              id: h.ids.next(),
+              when: EntryWhen.at(EntryTime.now(h.clock)),
+              slotId: DefaultSlots.breakfastId,
+              food: const UserEstimate(kcal: 500).food(),
+              amount: UserEstimate.amount,
+            ),
+          ]),
+        ], origin: Origin.direct),
+      ),
+      isA<Applied>(),
+    );
+    await pumpEventQueue();
+    final cardId = h.state.turns.single.cards.single.id;
+    await h.thread.confirm(cardId);
+    final card = h.state.turns.single.cards.single;
+    final logged = card.logged!;
+    expect(logged.preview.intake!.estimated, isTrue);
+    final l10n = lookupAppLocalizations(const Locale('en'));
+    final kcal = DisplayRounding.kcal(logged.kcal).toString();
+    final text = loggedText(l10n, logged.kcal, logged.preview);
+    expect(text, isNot(contains(l10n.approx(kcal))));
+    expect(text, contains(l10n.approx('')));
   });
 }

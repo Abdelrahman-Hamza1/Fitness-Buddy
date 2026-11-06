@@ -17,6 +17,7 @@ public sealed class SemanticValidatorTests
         ("Measurement", MeasurementPayloadValidator.Covers, MeasurementPayloadValidator.Versions, ["measurementType", "measurement"]),
         ("Workout", WorkoutPayloadValidator.Covers, WorkoutPayloadValidator.Versions,
             ["customExercise", "workoutSession", "sessionExercise", "workoutSet", "workoutTemplate", "workoutTemplateItem", "weeklyPlanDay"]),
+        ("DiaryEstimate", DiaryEstimatePayloadValidator.Covers, DiaryEstimatePayloadValidator.Versions, ["diaryEntry", "savedMealItem"]),
     ];
 
     [Fact, Trait("Rule", "B20.fail-closed-dispatch")]

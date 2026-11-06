@@ -19,6 +19,7 @@ final class IntakeDay {
     int? mealCount,
     this.incomplete = false,
     this.confirmed = false,
+    this.dayEstimate = false,
   }) : mealCount = mealCount ?? entryCount {
     if (!kcal.isFinite || kcal < 0) {
       throw ArgumentError('kcal must be finite and not negative');
@@ -46,8 +47,13 @@ final class IntakeDay {
   /// Confirmed complete by the user.
   final bool confirmed;
 
-  /// Whether anything was logged.
-  bool get logged => entryCount > 0;
+  /// Whether the day holds a day estimate (DY-006): it counts toward the
+  /// logged days, and the caller marks it [incomplete] so it never counts
+  /// as complete (TG-031, TG-032, A62 D9).
+  final bool dayEstimate;
+
+  /// Whether anything was logged (food or a day estimate).
+  bool get logged => entryCount > 0 || dayEstimate;
 
   @override
   String toString() => 'IntakeDay($date)';

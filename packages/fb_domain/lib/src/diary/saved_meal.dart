@@ -1,5 +1,6 @@
 import 'package:fb_domain/src/diary/diary_entry.dart';
 import 'package:fb_domain/src/diary/diary_ops.dart';
+import 'package:fb_domain/src/diary/intake_totals.dart';
 import 'package:fb_domain/src/nutrition/nutrients.dart';
 
 /// A saved snapshot, independent of subsequent food edits (DY-031).
@@ -64,7 +65,11 @@ final class SavedMeal {
   final List<SavedMealItem> items;
 
   /// Totals at storage precision, preserving unknown extras.
-  Nutrients get totals => Nutrients.sum(items.map((i) => i.snapshot)).rounded();
+  Nutrients get totals => intake.sum;
+
+  /// Knowledge-aware totals (A62 D9): "~" and "—" follow the items' flags.
+  IntakeTotals get intake =>
+      IntakeTotals.ofFoods([for (final i in items) (i.food, i.snapshot)]);
 
   /// Exact source guard, or null when logging an empty meal is unavailable.
   SavedMealVersions? get versions => items.isEmpty

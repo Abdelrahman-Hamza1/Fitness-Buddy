@@ -1,0 +1,966 @@
+{
+  "version": 1,
+  "constants": {
+    "entities": [
+      "diaryEntry",
+      "savedMealItem"
+    ],
+    "versions": [
+      1,
+      2
+    ],
+    "foodKind": "estimate",
+    "source": "yours",
+    "v2Fields": [
+      "userEstimate",
+      "proteinKnown",
+      "carbsKnown",
+      "fatKnown",
+      "fiberKnown"
+    ],
+    "nutrients": [
+      {
+        "known": "proteinKnown",
+        "snapshot": "proteinG",
+        "per100": "per100ProteinG"
+      },
+      {
+        "known": "carbsKnown",
+        "snapshot": "carbsG",
+        "per100": "per100CarbsG"
+      },
+      {
+        "known": "fatKnown",
+        "snapshot": "fatG",
+        "per100": "per100FatG"
+      },
+      {
+        "known": "fiberKnown",
+        "snapshot": "fiberG",
+        "per100": "per100FiberG"
+      }
+    ]
+  },
+  "rules": [
+    {
+      "id": "W1",
+      "readme": "W1 user estimate shape"
+    },
+    {
+      "id": "W2",
+      "readme": "W2 unknowns only on user estimates"
+    },
+    {
+      "id": "W3",
+      "readme": "W3 unknown is stored zero"
+    }
+  ],
+  "payloads": [
+    {
+      "id": "diaryEntry-v1-base",
+      "entity": "diaryEntry",
+      "schemaVersion": 1,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "diaryEntry-v1-legacy-estimate",
+      "entity": "diaryEntry",
+      "schemaVersion": 1,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "diaryEntry-v2-ordinary",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "diaryEntry-v2-buddy-estimate",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"estimate\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":\"{\\\"low\\\":150,\\\"high\\\":250}\",\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "diaryEntry-v2-estimate-kcal-only",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "diaryEntry-v2-estimate-protein-only",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "diaryEntry-v2-estimate-known-zero-fat",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":450.0,\"per100ProteinG\":30.0,\"per100CarbsG\":40.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":450.0,\"proteinG\":30.0,\"carbsG\":40.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":false}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "diaryEntry-v2-estimate-all-known",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":450.0,\"per100ProteinG\":30.0,\"per100CarbsG\":40.0,\"per100FatG\":10.0,\"per100FiberG\":5.0,\"kcal\":450.0,\"proteinG\":30.0,\"carbsG\":40.0,\"fatG\":10.0,\"fiberG\":5.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "diaryEntry-v2-estimate-max",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":10000.0,\"per100ProteinG\":1000.0,\"per100CarbsG\":1000.0,\"per100FatG\":1000.0,\"per100FiberG\":0.0,\"kcal\":10000.0,\"proteinG\":1000.0,\"carbsG\":1000.0,\"fatG\":1000.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":false}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "diaryEntry-v2-estimate-no-sanity-check",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":10000.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":10000.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":false}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "diaryEntry-v2-estimate-integer-zero",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "diaryEntry-v1-sent-as-v2",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-v2-ordinary-sent-as-v1",
+      "entity": "diaryEntry",
+      "schemaVersion": 1,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "asymmetry": "schemaOnly",
+      "serverAccepts": false,
+      "appWire": true
+    },
+    {
+      "id": "diaryEntry-v2-estimate-sent-as-v1",
+      "entity": "diaryEntry",
+      "schemaVersion": 1,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "asymmetry": "schemaOnly",
+      "serverAccepts": false,
+      "appWire": true
+    },
+    {
+      "id": "diaryEntry-W1-food-kind-catalog",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"catalog\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W1-food-kind-personal",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"personal\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W1-food-kind-batch",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"batch\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W1-source-database",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W1-source-reference",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"reference\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W1-source-estimate",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"estimate\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W1-not-is-estimate",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W1-food-id",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":\"synthetic-food\",\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W1-all-known-catalog",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":450.0,\"per100ProteinG\":30.0,\"per100CarbsG\":40.0,\"per100FatG\":10.0,\"per100FiberG\":5.0,\"kcal\":450.0,\"proteinG\":30.0,\"carbsG\":40.0,\"fatG\":10.0,\"fiberG\":5.0,\"foodKind\":\"catalog\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W2-ordinary-proteinKnown-false",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":0.0,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":0.0,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":false,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "rule": "W2 unknowns only on user estimates",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W2-ordinary-carbsKnown-false",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":0.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":0.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":true,\"fiberKnown\":true}",
+      "rule": "W2 unknowns only on user estimates",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W2-ordinary-fatKnown-false",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.0,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.0,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":false,\"fiberKnown\":true}",
+      "rule": "W2 unknowns only on user estimates",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W2-ordinary-fiberKnown-false",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.0,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.0,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":false}",
+      "rule": "W2 unknowns only on user estimates",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W2-buddy-proteinKnown-false",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":0.0,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":0.0,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"estimate\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":\"{\\\"low\\\":150,\\\"high\\\":250}\",\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":false,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "rule": "W2 unknowns only on user estimates",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W2-estimate-flag-cleared",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W2 unknowns only on user estimates",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W3-proteinKnown-false-snapshot",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":1.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W3-proteinKnown-false-per100",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":1.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W3-carbsKnown-false-snapshot",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":1.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W3-carbsKnown-false-per100",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":1.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W3-fatKnown-false-snapshot",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":1.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W3-fatKnown-false-per100",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":1.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W3-fiberKnown-false-snapshot",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":1.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W3-fiberKnown-false-per100",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":1.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-W3-tiny-nonzero",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":1e-9,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-schema-missing-userEstimate",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "asymmetry": "schemaOnly",
+      "serverAccepts": false,
+      "appWire": true
+    },
+    {
+      "id": "diaryEntry-schema-null-userEstimate",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":null,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "asymmetry": "schemaOnly",
+      "serverAccepts": false,
+      "appWire": true
+    },
+    {
+      "id": "diaryEntry-schema-string-userEstimate",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":\"true\",\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "asymmetry": "schemaOnly",
+      "serverAccepts": false,
+      "appWire": true
+    },
+    {
+      "id": "diaryEntry-schema-missing-proteinKnown",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-schema-null-proteinKnown",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":null,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-schema-string-proteinKnown",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":\"true\",\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-schema-missing-carbsKnown",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-schema-null-carbsKnown",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":null,\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-schema-string-carbsKnown",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":\"true\",\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-schema-missing-fatKnown",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-schema-null-fatKnown",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":null,\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-schema-string-fatKnown",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":\"true\",\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-schema-missing-fiberKnown",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-schema-null-fiberKnown",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":null}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "diaryEntry-schema-string-fiberKnown",
+      "entity": "diaryEntry",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"localDate\":\"2026-10-18\",\"occurredAtUtc\":1792299600000,\"tzOffsetMin\":180,\"slotId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"dishGroupId\":null,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":\"true\"}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-v1-base",
+      "entity": "savedMealItem",
+      "schemaVersion": 1,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "savedMealItem-v1-legacy-estimate",
+      "entity": "savedMealItem",
+      "schemaVersion": 1,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "savedMealItem-v2-ordinary",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "savedMealItem-v2-buddy-estimate",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"estimate\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":\"{\\\"low\\\":150,\\\"high\\\":250}\",\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "savedMealItem-v2-estimate-kcal-only",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "savedMealItem-v2-estimate-protein-only",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "savedMealItem-v2-estimate-known-zero-fat",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":450.0,\"per100ProteinG\":30.0,\"per100CarbsG\":40.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":450.0,\"proteinG\":30.0,\"carbsG\":40.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":false}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "savedMealItem-v2-estimate-all-known",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":450.0,\"per100ProteinG\":30.0,\"per100CarbsG\":40.0,\"per100FatG\":10.0,\"per100FiberG\":5.0,\"kcal\":450.0,\"proteinG\":30.0,\"carbsG\":40.0,\"fatG\":10.0,\"fiberG\":5.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "savedMealItem-v2-estimate-max",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":10000.0,\"per100ProteinG\":1000.0,\"per100CarbsG\":1000.0,\"per100FatG\":1000.0,\"per100FiberG\":0.0,\"kcal\":10000.0,\"proteinG\":1000.0,\"carbsG\":1000.0,\"fatG\":1000.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":false}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "savedMealItem-v2-estimate-no-sanity-check",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":10000.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":10000.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":false}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "savedMealItem-v2-estimate-integer-zero",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "serverAccepts": true,
+      "appWire": true
+    },
+    {
+      "id": "savedMealItem-v1-sent-as-v2",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-v2-ordinary-sent-as-v1",
+      "entity": "savedMealItem",
+      "schemaVersion": 1,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "asymmetry": "schemaOnly",
+      "serverAccepts": false,
+      "appWire": true
+    },
+    {
+      "id": "savedMealItem-v2-estimate-sent-as-v1",
+      "entity": "savedMealItem",
+      "schemaVersion": 1,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "asymmetry": "schemaOnly",
+      "serverAccepts": false,
+      "appWire": true
+    },
+    {
+      "id": "savedMealItem-W1-food-kind-catalog",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"catalog\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W1-food-kind-personal",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"personal\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W1-food-kind-batch",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"batch\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W1-source-database",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W1-source-reference",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"reference\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W1-source-estimate",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"estimate\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W1-not-is-estimate",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W1-food-id",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":35.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":35.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":\"synthetic-food\",\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W1-all-known-catalog",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":450.0,\"per100ProteinG\":30.0,\"per100CarbsG\":40.0,\"per100FatG\":10.0,\"per100FiberG\":5.0,\"kcal\":450.0,\"proteinG\":30.0,\"carbsG\":40.0,\"fatG\":10.0,\"fiberG\":5.0,\"foodKind\":\"catalog\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "rule": "W1 user estimate shape",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W2-ordinary-proteinKnown-false",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":0.0,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":0.0,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":false,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "rule": "W2 unknowns only on user estimates",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W2-ordinary-carbsKnown-false",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":0.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":0.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":false,\"fatKnown\":true,\"fiberKnown\":true}",
+      "rule": "W2 unknowns only on user estimates",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W2-ordinary-fatKnown-false",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.0,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.0,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":false,\"fiberKnown\":true}",
+      "rule": "W2 unknowns only on user estimates",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W2-ordinary-fiberKnown-false",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.0,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.0,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":false}",
+      "rule": "W2 unknowns only on user estimates",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W2-buddy-proteinKnown-false",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":0.0,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":0.0,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"estimate\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":\"{\\\"low\\\":150,\\\"high\\\":250}\",\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":false,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "rule": "W2 unknowns only on user estimates",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W2-estimate-flag-cleared",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W2 unknowns only on user estimates",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W3-proteinKnown-false-snapshot",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":1.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W3-proteinKnown-false-per100",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":1.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W3-carbsKnown-false-snapshot",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":1.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W3-carbsKnown-false-per100",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":1.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W3-fatKnown-false-snapshot",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":1.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W3-fatKnown-false-per100",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":1.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W3-fiberKnown-false-snapshot",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":1.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W3-fiberKnown-false-per100",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":1.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":0.0,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-W3-tiny-nonzero",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":true,\"inputAmount\":1.0,\"amount\":100.0,\"per100Kcal\":700.0,\"per100ProteinG\":0.0,\"per100CarbsG\":0.0,\"per100FatG\":0.0,\"per100FiberG\":0.0,\"kcal\":700.0,\"proteinG\":0.0,\"carbsG\":0.0,\"fatG\":0.0,\"fiberG\":1e-9,\"foodKind\":\"estimate\",\"foodId\":null,\"foodVersion\":null,\"nameEn\":\"Estimate\",\"nameAr\":null,\"inputUnit\":\"serving\",\"amountBasis\":\"g\",\"source\":\"yours\",\"isEstimate\":true,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":true,\"proteinKnown\":false,\"carbsKnown\":false,\"fatKnown\":false,\"fiberKnown\":false}",
+      "rule": "W3 unknown is stored zero",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-schema-missing-userEstimate",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "asymmetry": "schemaOnly",
+      "serverAccepts": false,
+      "appWire": true
+    },
+    {
+      "id": "savedMealItem-schema-null-userEstimate",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":null,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "asymmetry": "schemaOnly",
+      "serverAccepts": false,
+      "appWire": true
+    },
+    {
+      "id": "savedMealItem-schema-string-userEstimate",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":\"true\",\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "asymmetry": "schemaOnly",
+      "serverAccepts": false,
+      "appWire": true
+    },
+    {
+      "id": "savedMealItem-schema-missing-proteinKnown",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-schema-null-proteinKnown",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":null,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-schema-string-proteinKnown",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":\"true\",\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-schema-missing-carbsKnown",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":true,\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-schema-null-carbsKnown",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":null,\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-schema-string-carbsKnown",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":\"true\",\"fatKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-schema-missing-fatKnown",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-schema-null-fatKnown",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":null,\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-schema-string-fatKnown",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":\"true\",\"fiberKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-schema-missing-fiberKnown",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-schema-null-fiberKnown",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":null}",
+      "serverAccepts": false,
+      "appWire": false
+    },
+    {
+      "id": "savedMealItem-schema-string-fiberKnown",
+      "entity": "savedMealItem",
+      "schemaVersion": 2,
+      "rawPayload": "{\"createdAtMs\":0,\"origin\":\"synthetic\",\"editedByUser\":false,\"inputAmount\":150.0,\"amount\":150.0,\"per100Kcal\":130.0,\"per100ProteinG\":2.7,\"per100CarbsG\":28.0,\"per100FatG\":0.3,\"per100FiberG\":0.4,\"kcal\":195.0,\"proteinG\":4.05,\"carbsG\":42.0,\"fatG\":0.45,\"fiberG\":0.6,\"foodKind\":\"catalog\",\"foodId\":\"synthetic-food\",\"foodVersion\":\"1\",\"nameEn\":\"synthetic rice\",\"nameAr\":null,\"inputUnit\":\"g\",\"amountBasis\":\"g\",\"source\":\"database\",\"isEstimate\":false,\"per100ExtrasJson\":null,\"extrasJson\":null,\"estimateRangeJson\":null,\"assumptionsJson\":null,\"savedMealId\":\"0199e3c2-5b1a-7c3d-8e4f-0123456789ab\",\"sortOrder\":0,\"userEstimate\":false,\"proteinKnown\":true,\"carbsKnown\":true,\"fatKnown\":true,\"fiberKnown\":\"true\"}",
+      "serverAccepts": false,
+      "appWire": false
+    }
+  ]
+}

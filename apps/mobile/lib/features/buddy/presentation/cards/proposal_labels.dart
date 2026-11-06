@@ -179,6 +179,11 @@ String todayAfterText(
 /// "Logged 191 kcal · 1,240 left today" (AI-140; English, AI-143). For
 /// another day, [dayInline] names it instead ("Logged 191 kcal for
 /// yesterday").
+///
+/// [approx] is the logged food's own provenance ("~" on its kcal); the
+/// day's left/over/eaten figure also gets "~" when the resulting day total
+/// holds an estimate (`day.intake.estimated`, A62 D15), e.g. an ordinary
+/// food logged after a meal estimate.
 String loggedText(
   AppLocalizations l10n,
   double kcal,
@@ -186,14 +191,14 @@ String loggedText(
   String? dayInline,
   bool approx = false,
 }) {
-  String kcalText(AppLocalizations l10n, double kcal) =>
-      _kcal(l10n, kcal, approx: approx);
-  final logged = kcalText(l10n, kcal);
+  final logged = _kcal(l10n, kcal, approx: approx);
   if (dayInline != null) return l10n.proposalLoggedOnDay(logged, dayInline);
+  final dayApprox = approx || (day.intake?.estimated ?? false);
+  String dayText(double kcal) => _kcal(l10n, kcal, approx: dayApprox);
   final left = day.remainingKcal;
   if (left != null && left < 0) {
-    return l10n.proposalLoggedOver(logged, kcalText(l10n, -left));
+    return l10n.proposalLoggedOver(logged, dayText(-left));
   }
-  if (left != null) return l10n.proposalLogged(logged, kcalText(l10n, left));
-  return l10n.proposalLoggedEaten(logged, kcalText(l10n, day.eaten?.kcal ?? 0));
+  if (left != null) return l10n.proposalLogged(logged, dayText(left));
+  return l10n.proposalLoggedEaten(logged, dayText(day.eaten?.kcal ?? 0));
 }

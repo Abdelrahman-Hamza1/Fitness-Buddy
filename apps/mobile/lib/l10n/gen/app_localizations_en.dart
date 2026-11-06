@@ -187,24 +187,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String todayMacroOfTarget(double eaten, int target) {
-    final intl.NumberFormat eatenNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String eatenString = eatenNumberFormat.format(eaten);
+  String todayMacroOfTarget(String eaten, int target) {
     final intl.NumberFormat targetNumberFormat =
         intl.NumberFormat.decimalPattern(localeName);
     final String targetString = targetNumberFormat.format(target);
 
-    return '$eatenString / $targetString g';
+    return '$eaten / $targetString g';
   }
 
   @override
-  String todayMacroEaten(double eaten) {
-    final intl.NumberFormat eatenNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String eatenString = eatenNumberFormat.format(eaten);
-
-    return '$eatenString g';
+  String todayMacroEaten(String eaten) {
+    return '$eaten g';
   }
 
   @override
@@ -2157,26 +2150,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String foodSheetMacros(
-    double protein,
-    double carbs,
-    double fat,
-    double fiber,
+    String protein,
+    String carbs,
+    String fat,
+    String fiber,
   ) {
-    final intl.NumberFormat proteinNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String proteinString = proteinNumberFormat.format(protein);
-    final intl.NumberFormat carbsNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String carbsString = carbsNumberFormat.format(carbs);
-    final intl.NumberFormat fatNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
-    final String fatString = fatNumberFormat.format(fat);
-    final intl.NumberFormat fiberNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String fiberString = fiberNumberFormat.format(fiber);
-
-    return 'Protein $proteinString g · Carbs $carbsString g · Fat $fatString g · Fiber $fiberString g';
+    return 'Protein $protein g · Carbs $carbs g · Fat $fat g · Fiber $fiber g';
   }
 
   @override
@@ -2316,12 +2295,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String diaryMacroItem(String label, double value) {
-    final intl.NumberFormat valueNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String valueString = valueNumberFormat.format(value);
-
-    return '$label $valueString g';
+  String diaryMacroItem(String label, String value) {
+    return '$label $value g';
   }
 
   @override
@@ -2355,50 +2330,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String diarySlotMacrosSemantics(
-    double protein,
-    double carbs,
-    double fat,
-    double fiber,
+    String protein,
+    String carbs,
+    String fat,
+    String fiber,
   ) {
-    final intl.NumberFormat proteinNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String proteinString = proteinNumberFormat.format(protein);
-    final intl.NumberFormat carbsNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String carbsString = carbsNumberFormat.format(carbs);
-    final intl.NumberFormat fatNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
-    final String fatString = fatNumberFormat.format(fat);
-    final intl.NumberFormat fiberNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String fiberString = fiberNumberFormat.format(fiber);
-
-    return 'Protein $proteinString g, carbs $carbsString g, fat $fatString g, fiber $fiberString g';
+    return 'Protein $protein g, carbs $carbs g, fat $fat g, fiber $fiber g';
   }
 
   @override
   String diarySlotMacros(
-    double protein,
-    double carbs,
-    double fat,
-    double fiber,
+    String protein,
+    String carbs,
+    String fat,
+    String fiber,
   ) {
-    final intl.NumberFormat proteinNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String proteinString = proteinNumberFormat.format(protein);
-    final intl.NumberFormat carbsNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String carbsString = carbsNumberFormat.format(carbs);
-    final intl.NumberFormat fatNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
-    final String fatString = fatNumberFormat.format(fat);
-    final intl.NumberFormat fiberNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String fiberString = fiberNumberFormat.format(fiber);
-
-    return 'P $proteinString · C $carbsString · F $fatString · Fiber $fiberString';
+    return 'P $protein · C $carbs · F $fat · Fiber $fiber';
   }
 
   @override
@@ -2673,17 +2620,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diaryValueNeeded => 'Enter a value.';
 
   @override
-  String diaryMealSummary(int count, int kcal) {
-    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
-      localeName,
-    );
-    final String kcalString = kcalNumberFormat.format(kcal);
-
+  String diaryMealSummary(int count, String kcal) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count items · $kcalString kcal',
-      one: '1 item · $kcalString kcal',
+      other: '$count items · $kcal kcal',
+      one: '1 item · $kcal kcal',
     );
     return '$_temp0';
   }
@@ -7616,4 +7558,133 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workoutDiscardMessage => 'You have changes that aren\'t saved.';
+
+  @override
+  String approx(String value) {
+    return '~$value';
+  }
+
+  @override
+  String approxSpoken(String value) {
+    return 'about $value';
+  }
+
+  @override
+  String get unknownValue => '—';
+
+  @override
+  String get unknownValueSpoken => 'unknown';
+
+  @override
+  String get estimateAction => '~ Estimate';
+
+  @override
+  String estimateFromQuery(String query) {
+    return '~ Estimate “$query”';
+  }
+
+  @override
+  String estimateSheetTitle(String meal) {
+    return 'Estimate $meal';
+  }
+
+  @override
+  String get estimateSheetTitleNoMeal => 'Estimate a meal';
+
+  @override
+  String estimateKcalLabel(String kcal) {
+    return 'Calories, $kcal kcal';
+  }
+
+  @override
+  String get estimateName => 'Name';
+
+  @override
+  String get estimateMacros => '+ Macros';
+
+  @override
+  String estimateAdd(String kcal) {
+    return 'Add ~$kcal kcal';
+  }
+
+  @override
+  String estimateSave(String kcal) {
+    return 'Save ~$kcal kcal';
+  }
+
+  @override
+  String get estimateKcalNeeded => 'Type the calories';
+
+  @override
+  String get estimateOutOfRange =>
+      'Calories 1–10,000, each macro up to 1,000 g';
+
+  @override
+  String get estimateUnnamed => 'Estimate';
+
+  @override
+  String get estimatePopupTitle => '~ Your estimate';
+
+  @override
+  String get estimateMarkerLabel => 'Your estimate, options';
+
+  @override
+  String get estimateEdit => 'Edit';
+
+  @override
+  String get estimateSwap => 'Swap for foods';
+
+  @override
+  String estimateAdded(String kcal) {
+    return 'Added ~$kcal kcal';
+  }
+
+  @override
+  String get estimateChanged => 'Estimate changed';
+
+  @override
+  String estimateProtein(String grams) {
+    return 'P $grams g';
+  }
+
+  @override
+  String estimateCarbs(String grams) {
+    return 'C $grams g';
+  }
+
+  @override
+  String estimateFat(String grams) {
+    return 'F $grams g';
+  }
+
+  @override
+  String get foodSearchScan => 'Scan';
+
+  @override
+  String dayEstimatePrompt(String weekday) {
+    return 'Didn\'t log $weekday?';
+  }
+
+  @override
+  String get dayEstimateAbout => 'about';
+
+  @override
+  String get dayEstimateKcalLabel => 'About how many calories';
+
+  @override
+  String get dayEstimateSave => 'Save day estimate';
+
+  @override
+  String get dayEstimateTitle => 'Day estimate';
+
+  @override
+  String get dayEstimateOutOfRange => 'Calories 1–20,000';
+
+  @override
+  String dayEstimateSaved(String kcal) {
+    return 'Day saved as ~$kcal kcal';
+  }
+
+  @override
+  String get dayEstimateRemoved => 'Day estimate removed';
 }

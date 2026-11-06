@@ -141,6 +141,23 @@ mixin FoodValueColumns on Table {
 
   /// The assumptions behind the values, a JSON list of strings.
   TextColumn get assumptionsJson => text().nullable()();
+
+  /// Whether the user typed these values as an estimate (DY-005, A62 D3).
+  BoolColumn get userEstimate => boolean().withDefault(const Constant(false))();
+
+  /// Whether protein is known. Unknown is stored as 0 in both protein
+  /// columns (W3) and only a user estimate has one (W2); readers go
+  /// through `IntakeTotals`, never the bare column (TD-114).
+  BoolColumn get proteinKnown => boolean().withDefault(const Constant(true))();
+
+  /// Whether carbs are known (see [proteinKnown]).
+  BoolColumn get carbsKnown => boolean().withDefault(const Constant(true))();
+
+  /// Whether fat is known (see [proteinKnown]).
+  BoolColumn get fatKnown => boolean().withDefault(const Constant(true))();
+
+  /// Whether fiber is known (see [proteinKnown]).
+  BoolColumn get fiberKnown => boolean().withDefault(const Constant(true))();
 }
 
 /// A logged food (DY-001..003, DY-021..024).
@@ -176,6 +193,19 @@ class DayMarks extends Table with SyncColumns {
 
   /// Whether a Ramadan day is marked not fasting (A41).
   BoolColumn get notFasting => boolean().withDefault(const Constant(false))();
+
+  /// The user's own estimate of the whole day, kcal (DY-006, A62 D4), or
+  /// null. Set only on a past day with no live food; logging food onto the
+  /// day clears it in the same change set (A62 D12). User content.
+  RealColumn get estimateKcal => real().nullable().check(
+    estimateKcal.isNull() | estimateKcal.isBetweenValues(1, 20000),
+  )();
+
+  /// Whether the mark exists only to hold the day estimate (A62b review
+  /// fix): the user never marked the day, so it says nothing about the
+  /// day being complete (DY-004). Clearing its estimate tombstones the
+  /// mark; marking the day sets it false.
+  BoolColumn get estimateOnly => boolean().withDefault(const Constant(false))();
 }
 
 /// A saved meal (DY-023, DY-031); the UI is A09.

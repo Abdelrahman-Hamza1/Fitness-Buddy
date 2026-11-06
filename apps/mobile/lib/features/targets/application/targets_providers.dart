@@ -163,6 +163,8 @@ Future<List<DayIntake>> _weekIntake(
         kcal: totals[date]?.totals.kcal ?? 0,
         entryCount: totals[date]?.entryCount ?? 0,
         incomplete: marks[date]?.incomplete ?? false,
+        estimated: totals[date]?.intake.estimated ?? false,
+        dayEstimate: totals[date]?.dayEstimate ?? false,
       ),
   ];
 }

@@ -1,6 +1,6 @@
 # 16 — Home (Today) & Insights
 
-_Status: **Draft v1** · 2026-10-10, amended 2026-11-05 · Main decisions: D-031, D-043, D-052, D-068, D-070, D-071, D-084, D-085, D-093, D-094._
+_Status: **Draft v1** · 2026-10-10, amended 2026-11-05, 2026-11-06 · Main decisions: D-031, D-043, D-052, D-068, D-070, D-071, D-084, D-085, D-093, D-094, D-096._
 
 ## 1. Today screen (home, D-043, D-071)
 
@@ -28,8 +28,8 @@ Top to bottom:
 └─────────────────────────────────────────┘
 ```
 
-- **HM-001** `[R1]` Today's remaining calories is the largest element, with a progress bar. If over, it shows "X over" in a neutral colour, never alarm red (PR-12).
-- **HM-002** `[R1]` A small weekly line: "This week: X under / over" against the weekly budget (TG-045).
+- **HM-001** `[R1]` Today's remaining calories is the largest element, with a progress bar. If over, it shows "X over" in a neutral colour, never alarm red (PR-12). When an estimate is included the numbers show "~"; a macro with nothing known shows "—" (D-096).
+- **HM-002** `[R1]` A small weekly line: "This week: X under / over" against the weekly budget (TG-045). It shows "~" when the week includes an estimate.
 - **HM-003** `[R1]` Macro progress for protein, carbs, fat (with targets) and fiber (smaller).
 - **HM-004** `[R1]` While proposals are pending, Today's Buddy bar shows "{n} waiting"; one tap opens Buddy at them (AI-045, D-094). There is no strip.
 - **HM-005** `[R1]` Today's top is the calories card only, with no slides (D-093). Under it, one slim line is always visible with the same height in every state. Its weight half shows the as-of trend and weekly rate ("Weigh in" before the first weigh-in); tapping it weighs in on the viewed day (WB-001, two taps including Save). The sparse-history note and the weigh-in tip live in Progress; the last weigh-in is edited from the weight graph.
@@ -41,9 +41,9 @@ Top to bottom:
 
 ## 2. Progress tab
 
-- **IN-001** `[R1]` **Weekly summary** for the current week and any past week: average calories vs. budget, days within target, protein target hit days, fiber average, trend weight change, workouts done (vs. planned, when there is a plan), PRs, and the Buddy weekly review on top (AI-130). On the Progress tab the week lives in the calories chart card (average vs target and a line of key numbers); the full summary opens from it and from the weekly notification (D-097).
-- **IN-002** `[R1]` **Calories chart**: daily intake vs. daily target, by week or month, with incomplete days marked differently.
-- **IN-003** `[R1]` **Macros chart**: protein, carbs, fat, fiber per day vs. targets.
+- **IN-001** `[R1]` **Weekly summary** for the current week and any past week: average calories vs. budget (day estimates count); protein days and fiber average count only days whose values are known, days within target, protein target hit days, fiber average, trend weight change, workouts done (vs. planned, when there is a plan), PRs, and the Buddy weekly review on top (AI-130). On the Progress tab the week lives in the calories chart card (average vs target and a line of key numbers); the full summary opens from it and from the weekly notification (D-097).
+- **IN-002** `[R1]` **Calories chart**: daily intake vs. daily target, by week or month, with incomplete days and day estimates drawn hatched; day estimates count in the averages, incomplete days don't.
+- **IN-003** `[R1]` **Macros chart**: protein, carbs, fat, fiber per day vs. targets. Unknown macros draw no bar and are left out of averages; day estimates have none.
 - **IN-004** `[R1]` **Weight chart** (WB-020 to WB-023).
 - **IN-005** `[R1]` **Expenditure chart**: estimated expenditure over time, with confidence, once adaptive targets are active (TG-030 to TG-033).
 - **IN-006** `[R1]` **Measurements charts** (WB-041) and **exercise progress** (WO-041), each reachable from the Progress tab.

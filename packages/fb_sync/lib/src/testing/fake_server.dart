@@ -26,6 +26,11 @@ final class FakeSyncServer implements SyncTransport {
   /// A semantic rejection for a change (`invalidPayload`), or `null`.
   String? Function(SyncChange change) validate = _valid;
 
+  /// Entities whose stored document refuses a lower `schemaVersion` as
+  /// `unsupported`, whatever its HLC, archiving the refused version (the
+  /// server's TD-114 downgrade refusal). Default none.
+  Set<String> downgradeProtected = const {};
+
   /// Requests over this many UTF-8 bytes answer 413.
   int maxBodyBytes = 256 * 1024;
 
@@ -142,7 +147,12 @@ final class FakeSyncServer implements SyncTransport {
       if (reason == null) {
         _versions[_version(c)] = c;
         final current = _documents[_row(c.entity, c.id)];
-        if (current == null || c.hlc.compareTo(current.hlc) > 0) {
+        if (current != null &&
+            downgradeProtected.contains(c.entity) &&
+            c.schemaVersion < current.schemaVersion) {
+          _archive(c);
+          reason = 'unsupported';
+        } else if (current == null || c.hlc.compareTo(current.hlc) > 0) {
           if (current != null && !current.compacted) _archive(_change(current));
           _documents[_row(c.entity, c.id)] = _stored(c, ++_seq);
           status = 'accepted';

@@ -1,4 +1,5 @@
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/approx_text.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/progress/application/progress_period.dart';
 import 'package:fb_mobile/features/progress/application/progress_providers.dart';
@@ -79,15 +80,17 @@ String caloriesBarWords(AppLocalizations l10n, ProgressBucket bucket) {
   final name = bucketName(l10n, bucket);
   final eaten = bucket.avgKcal;
   final target = bucket.avgTargetKcal;
+  // A62 D10: "~" when the bar includes an estimate.
+  String kcal(double v) => approxText(
+    l10n,
+    kcalNumber(l10n, v),
+    approximate: bucket.avgEaten?.estimated ?? false,
+  );
   final base = eaten == null
       ? l10n.progressBarNothing(name)
       : target == null
-      ? l10n.progressBarValueNoTarget(name, kcalNumber(l10n, eaten))
-      : l10n.progressBarValue(
-          name,
-          kcalNumber(l10n, eaten),
-          kcalNumber(l10n, target),
-        );
+      ? l10n.progressBarValueNoTarget(name, kcal(eaten))
+      : l10n.progressBarValue(name, kcal(eaten), kcalNumber(l10n, target));
   return switch (bucket.status) {
     DayStatus.incomplete => l10n.progressBarNotCounted(base),
     DayStatus.inProgress => l10n.progressBarSoFar(base),

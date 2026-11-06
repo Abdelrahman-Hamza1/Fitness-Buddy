@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
@@ -86,6 +88,20 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
   void _search(String text) =>
       ref.read(foodSearchControllerProvider.notifier).setQuery(text);
 
+  /// A meal estimate (DY-005, A62 E1): the sheet adds it to this day and
+  /// meal; [name] is the query (E1 B), never put in the URL.
+  void _estimate([String? name]) {
+    FocusScope.of(context).unfocus();
+    unawaited(
+      showEstimateSheet(
+        context,
+        date: widget.date,
+        slotId: widget.slotId,
+        name: name,
+      ),
+    );
+  }
+
   /// "Create … as your own food" (A09 D9): the query goes to the form
   /// through a one-shot provider, never through the URL (backlog #42).
   void _createFood(String query) {
@@ -146,6 +162,39 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
               onChanged: _search,
             ),
           ),
+          // Scan and ~ Estimate next to the search (A62 E1 A); not when
+          // changing a logged item's food (that picks a food).
+          if (widget.replace == null)
+            Padding(
+              padding: const EdgeInsetsDirectional.only(
+                start: FbSpace.s4,
+                end: FbSpace.s4,
+                bottom: FbSpace.s2,
+              ),
+              child: Row(
+                spacing: FbSpace.s2,
+                children: [
+                  FbButton.secondary(
+                    key: const ValueKey('food-search-scan'),
+                    label: l10n.foodSearchScan,
+                    icon: FbIcons.barcode,
+                    onPressed: () => ref
+                        .read(appNavigatorProvider)
+                        .push(
+                          BarcodeScanRoute(
+                            date: widget.date,
+                            slotId: widget.slotId,
+                          ),
+                        ),
+                  ),
+                  FbButton.secondary(
+                    key: const ValueKey('food-search-estimate'),
+                    label: l10n.estimateAction,
+                    onPressed: _estimate,
+                  ),
+                ],
+              ),
+            ),
           // Always reserved, so results never move when a search starts or
           // ends (A57 D23).
           FbProgressLine(
@@ -202,6 +251,7 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
                       onPick: widget.onPick,
                       // Changing a logged item's food picks an existing food.
                       onCreate: widget.replace == null ? _createFood : null,
+                      onEstimate: widget.replace == null ? _estimate : null,
                     ),
                   ),
           ),
@@ -243,6 +293,7 @@ class _Results extends StatelessWidget {
     required this.replace,
     required this.onPick,
     required this.onCreate,
+    required this.onEstimate,
   });
 
   final String query;
@@ -257,48 +308,59 @@ class _Results extends StatelessWidget {
   /// Starts a new personal food named [query]; null where it isn't offered.
   final ValueChanged<String>? onCreate;
 
+  /// Estimates a meal named [query] (A62 E1 B); null where it isn't offered.
+  final ValueChanged<String>? onEstimate;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final create = query.isEmpty ? null : onCreate;
     final createLabel = l10n.foodSearchCreate(isolateName(createQuote(query)));
+    final estimate = query.isEmpty ? null : onEstimate;
+    final estimateRow = estimate == null
+        ? null
+        : FbListRow(
+            key: const ValueKey('food-search-estimate-query'),
+            title: l10n.estimateFromQuery(isolateName(createQuote(query))),
+            onTap: () => estimate(query),
+          );
     if (rows.isEmpty) {
+      final empty = !packReady
+          ? FbEmptyState(
+              icon: FbIcons.search,
+              title: l10n.foodSearchNotReadyTitle,
+              message: l10n.foodSearchNotReadyMessage,
+              action: create == null
+                  ? null
+                  : FbButton.secondary(
+                      label: createLabel,
+                      icon: FbIcons.add,
+                      onPressed: () => create(query),
+                    ),
+            )
+          : query.isEmpty
+          ? FbEmptyState(
+              icon: FbIcons.search,
+              title: l10n.foodSearchEmptyTitle,
+              message: l10n.foodSearchEmptyMessage,
+            )
+          : FbEmptyState(
+              icon: FbIcons.search,
+              title: l10n.foodSearchNoMatchTitle(isolateName(query)),
+              message: l10n.foodSearchNoMatchMessage,
+              action: create == null
+                  ? null
+                  : FbButton.secondary(
+                      label: createLabel,
+                      icon: FbIcons.add,
+                      onPressed: () => create(query),
+                    ),
+            );
       return CustomScrollView(
         slivers: [
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: !packReady
-                ? FbEmptyState(
-                    icon: FbIcons.search,
-                    title: l10n.foodSearchNotReadyTitle,
-                    message: l10n.foodSearchNotReadyMessage,
-                    action: create == null
-                        ? null
-                        : FbButton.secondary(
-                            label: createLabel,
-                            icon: FbIcons.add,
-                            onPressed: () => create(query),
-                          ),
-                  )
-                : query.isEmpty
-                ? FbEmptyState(
-                    icon: FbIcons.search,
-                    title: l10n.foodSearchEmptyTitle,
-                    message: l10n.foodSearchEmptyMessage,
-                  )
-                : FbEmptyState(
-                    icon: FbIcons.search,
-                    title: l10n.foodSearchNoMatchTitle(isolateName(query)),
-                    message: l10n.foodSearchNoMatchMessage,
-                    action: create == null
-                        ? null
-                        : FbButton.secondary(
-                            label: createLabel,
-                            icon: FbIcons.add,
-                            onPressed: () => create(query),
-                          ),
-                  ),
-          ),
+          // E1 B: "~ Estimate "<query>"" also when nothing matches.
+          if (estimateRow != null) SliverToBoxAdapter(child: estimateRow),
+          SliverFillRemaining(hasScrollBody: false, child: empty),
         ],
       );
     }
@@ -324,6 +386,7 @@ class _Results extends StatelessWidget {
               );
             },
           ),
+        ?estimateRow,
         if (create != null)
           FbListRow(
             key: const ValueKey('create-personal-food'),

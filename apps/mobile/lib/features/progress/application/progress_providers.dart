@@ -24,7 +24,7 @@ Future<List<DayLog>> progressLogs(Ref ref, LocalDate from, LocalDate to) async {
     for (final date in {...totals.keys, ...marks.keys})
       DayLog(
         date: date,
-        totals: totals[date]?.totals ?? Nutrients.zero,
+        intake: totals[date]?.intake ?? IntakeTotals.empty,
         entryCount: totals[date]?.entryCount ?? 0,
         incomplete: marks[date]?.incomplete ?? false,
       ),

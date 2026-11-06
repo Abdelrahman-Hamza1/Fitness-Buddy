@@ -30,13 +30,26 @@ final class DiaryReads {
       'SELECT * FROM diary_entries WHERE local_date BETWEEN ? AND ? '
       'AND deleted_at IS NULL ORDER BY local_date, occurred_at_utc, id';
 
-  /// The SQL of [dailyTotals].
+  /// The SQL of [dailyTotals]: one statement, so the food totals and the
+  /// day estimates come from the same snapshot (a food log that replaces
+  /// an estimate can never show as neither, A62b review fix). The first
+  /// part sums each day's live entries; the second adds a row per live day
+  /// mark holding an estimate (its count columns NULL). `?1`/`?2` are the
+  /// range; `ix_diary_entries_live` and `ix_day_marks_date` serve them.
   static const String dailyTotalsSql =
       'SELECT local_date, SUM(kcal) AS kcal, SUM(protein_g) AS protein_g, '
       'SUM(carbs_g) AS carbs_g, SUM(fat_g) AS fat_g, SUM(fiber_g) AS fiber_g, '
-      'COUNT(*) AS n, COUNT(DISTINCT slot_id) AS meals '
-      'FROM diary_entries WHERE local_date BETWEEN ? AND ? '
-      'AND deleted_at IS NULL GROUP BY local_date ORDER BY local_date';
+      'COUNT(*) AS n, COUNT(DISTINCT slot_id) AS meals, '
+      'SUM(is_estimate) AS est, SUM(1 - protein_known) AS p_unk, '
+      'SUM(1 - carbs_known) AS c_unk, SUM(1 - fat_known) AS f_unk, '
+      'SUM(1 - fiber_known) AS fib_unk, NULL AS estimate_kcal '
+      'FROM diary_entries WHERE local_date BETWEEN ?1 AND ?2 '
+      'AND deleted_at IS NULL GROUP BY local_date '
+      'UNION ALL '
+      'SELECT local_date, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '
+      'NULL, NULL, NULL, NULL, estimate_kcal FROM day_marks '
+      'WHERE local_date BETWEEN ?1 AND ?2 AND deleted_at IS NULL '
+      'AND estimate_kcal IS NOT NULL ORDER BY local_date';
 
   /// The SQL of [firstDiaryDate]: the earlier of the first live entry and
   /// the first live day mark (the date indexes serve each MIN).
@@ -131,31 +144,58 @@ final class DiaryReads {
   Future<List<DiaryEntry>> entriesBetween(LocalDate from, LocalDate to) =>
       _entries(rangeEntriesSql, ['$from', '$to']);
 
-  /// The stored-precision totals of each day from [from] to [to]
-  /// (inclusive) that has live entries (A06 D12), by date.
+  /// The day intake of each day from [from] to [to] (inclusive) that has
+  /// live entries or a day estimate (A06 D12, A62 D9), by date: the one
+  /// projection every per-day reader uses. A day estimate stands in for a
+  /// day with no live food; with food the food wins and the stored estimate
+  /// is only reported ([DailyTotals.estimateKcal], D13).
   Future<List<DailyTotals>> dailyTotals(LocalDate from, LocalDate to) async {
     final rows = await db
         .customSelect(
           dailyTotalsSql,
           variables: [Variable<String>('$from'), Variable<String>('$to')],
-          readsFrom: {db.diaryEntries},
+          readsFrom: {db.diaryEntries, db.dayMarks},
         )
         .get();
-    return [
-      for (final row in rows)
-        DailyTotals(
+    final estimateOn = <LocalDate, double>{};
+    final food = <QueryRow>[];
+    for (final row in rows) {
+      if (row.read<int?>('n') == null) {
+        estimateOn[LocalDate.parse(row.read<String>('local_date'))] = row
+            .read<double>('estimate_kcal');
+      } else {
+        food.add(row);
+      }
+    }
+    final days = <LocalDate, DailyTotals>{
+      for (final row in food)
+        LocalDate.parse(row.read<String>('local_date')): DailyTotals.ofIntake(
           LocalDate.parse(row.read<String>('local_date')),
-          Nutrients(
-            kcal: row.read<double>('kcal'),
-            protein: row.read<double>('protein_g'),
-            carbs: row.read<double>('carbs_g'),
-            fat: row.read<double>('fat_g'),
-            fiber: row.read<double>('fiber_g'),
-          ).rounded(),
+          IntakeTotals.fromCounts(
+            sum: Nutrients(
+              kcal: row.read<double>('kcal'),
+              protein: row.read<double>('protein_g'),
+              carbs: row.read<double>('carbs_g'),
+              fat: row.read<double>('fat_g'),
+              fiber: row.read<double>('fiber_g'),
+            ).rounded(),
+            items: row.read<int>('n'),
+            estimates: row.read<int>('est'),
+            proteinUnknown: row.read<int>('p_unk'),
+            carbsUnknown: row.read<int>('c_unk'),
+            fatUnknown: row.read<int>('f_unk'),
+            fiberUnknown: row.read<int>('fib_unk'),
+          ),
           row.read<int>('n'),
           mealCount: row.read<int>('meals'),
+          estimateKcal:
+              estimateOn[LocalDate.parse(row.read<String>('local_date'))],
         ),
-    ];
+    };
+    for (final MapEntry(key: date, value: kcal) in estimateOn.entries) {
+      days.putIfAbsent(date, () => DailyTotals.dayEstimate(date, kcal));
+    }
+    return [for (final date in days.keys.toList()..sort()) days[date]!];
   }
 
   /// The earliest day with a live entry or a live day mark, or null without
@@ -207,43 +247,53 @@ final class DiaryReads {
     final items = <String, List<SavedMealItem>>{};
     try {
       for (final row in rows) {
+        final (food, snapshot) = storedFoodOf(
+          kind: row.foodKind,
+          id: row.foodId,
+          version: row.foodVersion,
+          nameEn: row.nameEn,
+          nameAr: row.nameAr,
+          per100: nutrientsOf(
+            kcal: row.per100Kcal,
+            proteinG: row.per100ProteinG,
+            carbsG: row.per100CarbsG,
+            fatG: row.per100FatG,
+            fiberG: row.per100FiberG,
+            extrasJson: row.per100ExtrasJson,
+          ),
+          snapshot: nutrientsOf(
+            kcal: row.kcal,
+            proteinG: row.proteinG,
+            carbsG: row.carbsG,
+            fatG: row.fatG,
+            fiberG: row.fiberG,
+            extrasJson: row.extrasJson,
+          ),
+          source: row.source,
+          rangeJson: row.estimateRangeJson,
+          assumptionsJson: row.assumptionsJson,
+          isEstimate: row.isEstimate,
+          userEstimate: row.userEstimate,
+          known: (
+            protein: row.proteinKnown,
+            carbs: row.carbsKnown,
+            fat: row.fatKnown,
+            fiber: row.fiberKnown,
+          ),
+          editedByUser: row.editedByUser,
+        );
         (items[row.savedMealId] ??= []).add(
           SavedMealItem(
             id: row.id,
             version: row.version,
             sortOrder: row.sortOrder,
-            food: EntryFood(
-              ref: foodRefOf(row.foodKind, row.foodId, row.foodVersion),
-              names: FoodNames(row.nameEn, ar: row.nameAr),
-              per100: nutrientsOf(
-                kcal: row.per100Kcal,
-                proteinG: row.per100ProteinG,
-                carbsG: row.per100CarbsG,
-                fatG: row.per100FatG,
-                fiberG: row.per100FiberG,
-                extrasJson: row.per100ExtrasJson,
-              ),
-              provenance: provenanceOf(
-                row.source,
-                row.estimateRangeJson,
-                row.assumptionsJson,
-                isEstimate: row.isEstimate,
-              ),
-              editedByUser: row.editedByUser,
-            ),
+            food: food,
             amount: EntryAmount(
               input: Quantity(row.inputAmount, row.inputUnit),
               amount: row.amount,
               basis: basisOf(row.amountBasis),
             ),
-            snapshot: nutrientsOf(
-              kcal: row.kcal,
-              proteinG: row.proteinG,
-              carbsG: row.carbsG,
-              fatG: row.fatG,
-              fiberG: row.fiberG,
-              extrasJson: row.extrasJson,
-            ),
+            snapshot: snapshot,
           ),
         );
       }

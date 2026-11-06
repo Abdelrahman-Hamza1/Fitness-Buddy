@@ -94,7 +94,7 @@ bool _ready(WidgetTester tester, ProviderContainer container, LocalDate day) {
   }
   final numbers = tester
       .widgetList<TodayNumbers>(find.byType(TodayNumbers))
-      .where((n) => n.date == day && n.totals.kcal > 0);
+      .where((n) => n.date == day && n.intake.sum.kcal > 0);
   if (numbers.isEmpty) return false;
   final targets = container.read(dayTargetsProvider(day));
   if (!targets.hasValue || targets.hasError) return false;

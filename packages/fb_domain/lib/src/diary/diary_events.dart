@@ -86,6 +86,26 @@ final class DayMarked extends DomainEvent {
   String toString() => 'DayMarked($date, incomplete: $incomplete)';
 }
 
+/// A day's estimate was set, changed or cleared (DY-006, A62 D12): by
+/// `SetDayEstimate` or because food was logged onto the day.
+final class DayEstimateChanged extends DomainEvent {
+  /// [date]'s day estimate changed.
+  const new(this.date);
+
+  /// The day.
+  final LocalDate date;
+
+  @override
+  bool operator ==(Object other) =>
+      other is DayEstimateChanged && other.date == date;
+
+  @override
+  int get hashCode => Object.hash(DayEstimateChanged, date);
+
+  @override
+  String toString() => 'DayEstimateChanged($date)';
+}
+
 /// Slot identities affected by a customization; no private labels.
 final class MealSlotsChanged extends DomainEvent {
   /// Immutable affected identity set.

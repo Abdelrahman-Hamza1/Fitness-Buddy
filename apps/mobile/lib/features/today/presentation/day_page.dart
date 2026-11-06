@@ -116,7 +116,7 @@ class _DayPageState extends ConsumerState<DayPage> {
     }
     final choices = ref.watch(diaryViewStateProvider);
     final (rows, entering) = _withMotion(
-      DayRows.of(data.layout, choices, isToday: isToday),
+      DayRows.of(data.layout, choices, isToday: isToday, mark: data.raw.mark),
       choices,
     );
     final indexOfKey = {for (final (i, s) in rows.indexed) s.key: i};
@@ -136,14 +136,20 @@ class _DayPageState extends ConsumerState<DayPage> {
             itemBuilder: (context, i) {
               final (:key, :row, :exiting) = rows[i];
               final content = switch (row) {
-                NumbersRow(:final totals) => _DayHeader(
+                NumbersRow(:final intake) => _DayHeader(
                   key: key,
                   date: date,
                   isToday: isToday,
-                  totals: totals,
+                  intake: intake,
                   incomplete: data.raw.mark?.incomplete ?? false,
                 ),
                 EmptyHintRow(:final isToday) => EmptyDayHint(isToday: isToday),
+                DayEstimatePromptRow(:final mark) => DayEstimatePrompt(
+                  date: date,
+                  mark: mark,
+                ),
+                DayEstimateRow(:final mark, :final superseded) =>
+                  DayEstimateTile(mark: mark, superseded: superseded),
                 SlotHeaderRow(:final section, :final expanded) =>
                   SlotHeaderTile(
                     section: section,
@@ -201,14 +207,14 @@ class _DayHeader extends StatelessWidget {
   const new({
     required this.date,
     required this.isToday,
-    required this.totals,
+    required this.intake,
     this.incomplete = false,
     super.key,
   });
 
   final LocalDate date;
   final bool isToday;
-  final Nutrients totals;
+  final IntakeTotals intake;
   final bool incomplete;
 
   @override
@@ -216,7 +222,7 @@ class _DayHeader extends StatelessWidget {
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      TodaySummaryCard(date: date, isToday: isToday, totals: totals),
+      TodaySummaryCard(date: date, isToday: isToday, intake: intake),
       FbSizeFade(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -322,6 +328,8 @@ bool _isOpen(DiaryViewChoices choices, DiaryEntry entry) =>
 Key _keyOf(DayRow row) => ValueKey(switch (row) {
   NumbersRow() => 'numbers',
   EmptyHintRow() => 'empty',
+  DayEstimatePromptRow() => 'estimate-prompt',
+  DayEstimateRow() => 'day-estimate',
   SlotHeaderRow(:final section) => 'slot:${section.key}',
   SlotMacrosRow(:final section) => 'macros:${section.key}',
   GroupHeaderRow(:final item, :final slotKey) =>

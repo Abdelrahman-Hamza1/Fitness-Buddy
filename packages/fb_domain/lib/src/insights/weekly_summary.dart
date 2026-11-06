@@ -1,4 +1,6 @@
+import 'package:fb_domain/src/diary/intake_totals.dart';
 import 'package:fb_domain/src/insights/progress_series.dart';
+import 'package:fb_domain/src/nutrition/nutrient_field.dart';
 import 'package:fb_domain/src/time/local_date.dart';
 import 'package:fb_domain/src/time/week_calendar.dart';
 import 'package:fb_domain/src/workouts/weekly_workout_summary.dart';
@@ -24,6 +26,7 @@ final class WeeklySummary {
     this.averageFiber,
     this.trendChangeKg,
     this.workouts,
+    this.estimated = false,
   });
 
   /// The summary of the week from [weekStart] as of [today], from the
@@ -55,9 +58,13 @@ final class WeeklySummary {
       for (final day in counted)
         if (day.targetKcal != null) day,
     ];
+    // A62 D10: a protein day is evaluated when protein is fully known, or
+    // when the known part already reaches the target (a certain hit);
+    // unknown protein is never a missed target.
     final proteinTargeted = [
       for (final day in counted)
-        if (day.targetMacros != null) day,
+        if (day.targetMacros case final macros?)
+          if (_proteinEvaluated(day, macros.proteinGrams)) day,
     ];
     double? mean(Iterable<double> values) {
       var sum = 0.0;
@@ -87,11 +94,23 @@ final class WeeklySummary {
           .length,
       averageKcal: mean(targeted.map((d) => d.eaten.kcal)),
       averageTargetKcal: mean(targeted.map((d) => d.targetKcal!)),
-      averageFiber: mean(counted.map((d) => d.eaten.fiber)),
+      averageFiber: mean([
+        for (final d in counted)
+          if (d.intake.coverage(NutrientField.fiber) == NutrientCoverage.full)
+            d.eaten.fiber,
+      ]),
       trendChangeKg: now == null || before == null ? null : now - before,
       workouts: workouts,
+      estimated: targeted.any((d) => d.intake.estimated),
     );
   }
+
+  static bool _proteinEvaluated(ProgressDay day, double target) =>
+      switch (day.intake.coverage(NutrientField.protein)) {
+        NutrientCoverage.full => true,
+        NutrientCoverage.partial => day.eaten.protein >= target,
+        NutrientCoverage.none => false,
+      };
 
   /// How far from the day's calorie target still counts as within it: a
   /// 10 % band on either side (A39a D1).
@@ -141,7 +160,8 @@ final class WeeklySummary {
   /// target.
   final int daysWithinTarget;
 
-  /// Counted days with a protein target.
+  /// Counted days with a protein target whose protein is evaluated: fully
+  /// known, or a certain hit (A62 D10).
   final int proteinTargetDays;
 
   /// Of [proteinTargetDays], the days protein reached the target.
@@ -153,8 +173,12 @@ final class WeeklySummary {
   /// The average calorie target over the same days.
   final double? averageTargetKcal;
 
-  /// The average fiber over [countedDays], or null without one.
+  /// The average fiber over the counted days whose fiber is fully known,
+  /// or null without one (A62 D10).
   final double? averageFiber;
+
+  /// Whether [averageKcal] includes an estimate ("~", A62 D10).
+  final bool estimated;
 
   /// The trend change over the week (to today for the current week), or
   /// null when the trend isn't known at both ends.

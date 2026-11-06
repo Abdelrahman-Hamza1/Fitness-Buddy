@@ -88,6 +88,13 @@ const exportRegistryV1 = <ExportTableSpec>[
     ExportColumn('is_estimate', ExportKind.boolean),
     ExportColumn('estimate_range_json', ExportKind.json),
     ExportColumn('assumptions_json', ExportKind.json),
+    // A62 D14: `user_estimate` marks a typed estimate; `*_known = 0` means
+    // that value column is not data (stored 0, TD-114).
+    ExportColumn('user_estimate', ExportKind.boolean),
+    ExportColumn('protein_known', ExportKind.boolean),
+    ExportColumn('carbs_known', ExportKind.boolean),
+    ExportColumn('fat_known', ExportKind.boolean),
+    ExportColumn('fiber_known', ExportKind.boolean),
     ExportColumn('local_date', ExportKind.text),
     ExportColumn('occurred_at_utc', ExportKind.utcMs),
     ExportColumn('tz_offset_min', ExportKind.integer),
@@ -148,6 +155,11 @@ const exportRegistryV1 = <ExportTableSpec>[
     ExportColumn('local_date', ExportKind.text),
     ExportColumn('incomplete', ExportKind.boolean),
     ExportColumn('not_fasting', ExportKind.boolean),
+    // A62 D14: the user's own day estimate (DY-006), kcal, or empty.
+    ExportColumn('estimate_kcal', ExportKind.real),
+    // Whether the mark only holds that estimate (the user never marked
+    // the day).
+    ExportColumn('estimate_only', ExportKind.boolean),
     ExportColumn('created_at', ExportKind.utcMs),
     ExportColumn('edited_by_user', ExportKind.boolean),
     ExportColumn('version', ExportKind.integer),
@@ -257,6 +269,13 @@ const exportRegistryV1 = <ExportTableSpec>[
     ExportColumn('is_estimate', ExportKind.boolean),
     ExportColumn('estimate_range_json', ExportKind.json),
     ExportColumn('assumptions_json', ExportKind.json),
+    // A62 D14: `user_estimate` marks a typed estimate; `*_known = 0` means
+    // that value column is not data (stored 0, TD-114).
+    ExportColumn('user_estimate', ExportKind.boolean),
+    ExportColumn('protein_known', ExportKind.boolean),
+    ExportColumn('carbs_known', ExportKind.boolean),
+    ExportColumn('fat_known', ExportKind.boolean),
+    ExportColumn('fiber_known', ExportKind.boolean),
     ExportColumn('saved_meal_id', ExportKind.text),
     ExportColumn('sort_order', ExportKind.integer),
     ExportColumn('saved_meal_name', ExportKind.derived),

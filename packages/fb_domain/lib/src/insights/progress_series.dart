@@ -1,3 +1,4 @@
+import 'package:fb_domain/src/diary/intake_totals.dart';
 import 'package:fb_domain/src/nutrition/nutrients.dart';
 import 'package:fb_domain/src/targets/macros.dart';
 import 'package:fb_domain/src/targets/target_records.dart';
@@ -9,28 +10,37 @@ import 'package:fb_domain/src/time/week_calendar.dart';
 /// (A16 §3.1). Days with neither entries nor a mark are not passed (unknown,
 /// TG-032). Content-free [toString].
 final class DayLog {
-  /// [date] with [entryCount] live entries adding up to [totals];
-  /// [incomplete] is the day mark.
+  /// [date] with [entryCount] live entries adding up to [intake] (or, for
+  /// fully known food, [totals]); [incomplete] is the day mark. A day
+  /// without food whose [intake] is a day estimate (DY-006) is estimated.
   new({
     required this.date,
-    required this.totals,
     required this.entryCount,
+    Nutrients? totals,
+    IntakeTotals? intake,
     this.incomplete = false,
-  }) {
+  }) : intake = intake ?? IntakeTotals.known(totals ?? Nutrients.zero) {
     if (entryCount < 0) throw ArgumentError('entry count must not be negative');
   }
 
   /// The diary day.
   final LocalDate date;
 
-  /// The sum of the day's entries (core five).
-  final Nutrients totals;
+  /// The sum of the day's entries, with what is known (A62 D9).
+  final IntakeTotals intake;
+
+  /// The sum of the day's entries (core five, unknowns as 0).
+  Nutrients get totals => intake.sum;
 
   /// Live entries that day.
   final int entryCount;
 
   /// Whether the user marked the day incomplete (DY-004).
   final bool incomplete;
+
+  /// Whether a day estimate stands in for the day's food (DY-006): no live
+  /// entries and an estimate.
+  bool get dayEstimate => entryCount == 0 && intake.dayEstimate;
 
   @override
   String toString() => 'DayLog($date)';
@@ -50,27 +60,36 @@ enum DayStatus {
 
   /// Today, still in progress: drawn "so far", not counted yet.
   inProgress,
+
+  /// A past day with no entries and a day estimate (DY-006, A62 D10):
+  /// counted for kcal, drawn hatched with "~", no macro values.
+  estimated,
 }
 
 /// One date on the progress charts: what was eaten and the day's target as
 /// Today shows it, recomputed from current data (G10). Content-free
 /// [toString].
 final class ProgressDay {
-  /// The day.
-  const new({
+  /// The day. [intake] defaults to fully known [eaten].
+  new({
     required this.date,
-    required this.eaten,
     required this.entryCount,
     required this.status,
+    Nutrients? eaten,
+    IntakeTotals? intake,
     this.targetKcal,
     this.targetMacros,
-  });
+  }) : intake = intake ?? IntakeTotals.known(eaten ?? Nutrients.zero);
 
   /// The date.
   final LocalDate date;
 
-  /// The day's logged totals (zero without entries).
-  final Nutrients eaten;
+  /// The day's logged totals with what is known (empty without entries,
+  /// A62 D10).
+  final IntakeTotals intake;
+
+  /// The day's logged totals (zero without entries; unknowns as 0).
+  Nutrients get eaten => intake.sum;
 
   /// Live entries that day.
   final int entryCount;
@@ -84,11 +103,13 @@ final class ProgressDay {
   /// The day's macro targets, or null before setup.
   final DailyMacros? targetMacros;
 
-  /// Whether the day has logged food to draw.
-  bool get hasIntake => entryCount > 0;
+  /// Whether the day has logged food (or a day estimate) to draw.
+  bool get hasIntake => entryCount > 0 || status == DayStatus.estimated;
 
-  /// Whether the day counts in averages (A16 D4).
-  bool get counted => status == DayStatus.logged;
+  /// Whether the day counts in averages (A16 D4); a day estimate counts
+  /// for kcal (its macros are unknown, so left out per nutrient, A62 D10).
+  bool get counted =>
+      status == DayStatus.logged || status == DayStatus.estimated;
 
   @override
   String toString() => 'ProgressDay($date, ${status.name})';
@@ -133,6 +154,8 @@ abstract final class ProgressSeries {
               kcal: log.totals.kcal,
               entryCount: log.entryCount,
               incomplete: log.incomplete,
+              estimated: log.intake.estimated,
+              dayEstimate: log.dayEstimate,
             ),
       ];
       final targets = versions.isEmpty
@@ -149,17 +172,22 @@ abstract final class ProgressSeries {
             );
       final log = byDate[date];
       final entries = log?.entryCount ?? 0;
+      final status = statusOf(
+        date: date,
+        today: today,
+        entryCount: entries,
+        incomplete: log?.incomplete ?? false,
+        dayEstimate: log?.dayEstimate ?? false,
+      );
+      final drawn =
+          entries > 0 ||
+          (log != null && log.dayEstimate && status != DayStatus.inProgress);
       days.add(
         ProgressDay(
           date: date,
-          eaten: entries > 0 ? log!.totals : Nutrients.zero,
+          intake: drawn ? log!.intake : IntakeTotals.empty,
           entryCount: entries,
-          status: statusOf(
-            date: date,
-            today: today,
-            entryCount: entries,
-            incomplete: log?.incomplete ?? false,
-          ),
+          status: status,
           targetKcal: targets?.day.kcal,
           targetMacros: targets?.day.macros,
         ),
@@ -169,16 +197,19 @@ abstract final class ProgressSeries {
   }
 
   /// A day's [DayStatus]: a mark wins (the user said so), then today is in
-  /// progress, then entries make it logged, else unknown (TG-032).
+  /// progress, then entries make it logged, then a day estimate (DY-006)
+  /// makes it estimated, else unknown (TG-032).
   static DayStatus statusOf({
     required LocalDate date,
     required LocalDate today,
     required int entryCount,
     required bool incomplete,
+    bool dayEstimate = false,
   }) {
     if (incomplete) return DayStatus.incomplete;
     if (date == today) return DayStatus.inProgress;
-    return entryCount > 0 ? DayStatus.logged : DayStatus.unknown;
+    if (entryCount > 0) return DayStatus.logged;
+    return dayEstimate ? DayStatus.estimated : DayStatus.unknown;
   }
 }
 
@@ -239,8 +270,10 @@ final class ProgressBucket {
   /// The calorie target, the same way; null before setup.
   final double? avgTargetKcal;
 
-  /// The nutrients eaten, the same way.
-  final Nutrients? avgEaten;
+  /// The nutrients eaten, the same way, knowledge-aware (A62 D10): each
+  /// macro averages only the days that knew it fully; a daily bucket flags
+  /// lower bounds.
+  final IntakeAverages? avgEaten;
 
   /// The macro targets, the same way.
   final MacroAverages? avgTargets;
@@ -312,7 +345,7 @@ abstract final class ProgressBuckets {
       uncountedDays: day.counted ? 0 : 1,
       avgKcal: day.hasIntake ? day.eaten.kcal : null,
       avgTargetKcal: day.targetKcal,
-      avgEaten: day.hasIntake ? day.eaten : null,
+      avgEaten: day.hasIntake ? IntakeAverages.ofDay(day.intake) : null,
       avgTargets: macros == null
           ? null
           : (
@@ -350,18 +383,7 @@ abstract final class ProgressBuckets {
     }
 
     final n = counted.length;
-    Nutrients? eaten;
-    if (n > 0) {
-      double avg(double Function(Nutrients) of) =>
-          counted.fold<double>(0, (sum, d) => sum + of(d.eaten)) / n;
-      eaten = Nutrients(
-        kcal: avg((e) => e.kcal),
-        protein: avg((e) => e.protein),
-        carbs: avg((e) => e.carbs),
-        fat: avg((e) => e.fat),
-        fiber: avg((e) => e.fiber),
-      );
-    }
+    final eaten = IntakeAverages.over(counted.map((d) => d.intake));
     return ProgressBucket(
       start: group.first.date,
       end: group.last.date,

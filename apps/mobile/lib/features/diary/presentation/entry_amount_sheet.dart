@@ -174,7 +174,7 @@ class _EntryAmountSheetState extends ConsumerState<EntryAmountSheet> {
           // A hardware keyboard types too (A57 A61).
           onKey: (key) => _onKey(key, entry),
         ),
-        NutritionSummary(nutrients: snapshot),
+        NutritionSummary(nutrients: snapshot, known: entry.food.known),
         // The pad grows and shrinks under the units (A57 A19), in their
         // slot, so a closed pad adds no gap.
         Column(

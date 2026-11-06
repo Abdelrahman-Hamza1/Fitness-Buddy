@@ -71,7 +71,7 @@ void main() {
           );
     });
     final day = await DiaryRepository(db).watchDay(_day).first;
-    expect(day.mark, DayMark(localDate: _day, incomplete: true));
+    expect(day.mark, DayMark(localDate: _day, incomplete: true, version: 1));
     expect(day.groups.single.name, 'Maqluba');
     expect(day.groups.single.slotId, _lunch);
   });
@@ -245,7 +245,7 @@ void main() {
         .watchDayMarks(_day, LocalDate(2026, 10, 18))
         .first;
     expect(marks, [
-      DayMark(localDate: _day, incomplete: false, notFasting: true),
+      DayMark(localDate: _day, incomplete: false, notFasting: true, version: 1),
     ]);
   });
 }

@@ -74,7 +74,7 @@ final class ProgressLogsProvider
   }
 }
 
-String _$progressLogsHash() => r'c6e56d76b523f2f7dbd9db57bdedb9ff34df4cc2';
+String _$progressLogsHash() => r'aafb78348e3d8e920126fff0c09244efbb4f7085';
 
 /// The diary days [from]–[to] (inclusive) the charts need: each day with
 /// entries or a mark, from the indexed per-day totals and the day marks

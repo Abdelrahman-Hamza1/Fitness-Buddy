@@ -1,5 +1,6 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/approx_text.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/diary/application/saved_meals.dart';
@@ -85,7 +86,7 @@ class _MealRow extends StatelessWidget {
     title: meal.name,
     subtitle: context.l10n.diaryMealSummary(
       meal.items.length,
-      DisplayRounding.kcal(meal.totals.kcal),
+      kcalSummaryText(context.l10n, meal.intake),
     ),
     leading: const FbSourceBadge(source: FbSource.yours),
     trailing: const Icon(FbIcons.next),
