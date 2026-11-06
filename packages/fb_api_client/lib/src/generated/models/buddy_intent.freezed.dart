@@ -80,6 +80,22 @@ BuddyIntent _$BuddyIntentFromJson(
           return BuddyIntentSavedMealCreate.fromJson(
             json
           );
+                case 'measurement':
+          return BuddyIntentMeasurement.fromJson(
+            json
+          );
+                case 'workout':
+          return BuddyIntentWorkout.fromJson(
+            json
+          );
+                case 'importRows':
+          return BuddyIntentImportRows.fromJson(
+            json
+          );
+                case 'suggestion':
+          return BuddyIntentSuggestion.fromJson(
+            json
+          );
         
           default:
             return BuddyIntentUnrecognized.fromJson(
@@ -135,7 +151,7 @@ extension BuddyIntentPatterns on BuddyIntent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( BuddyIntentFoodLog value)?  foodLog,TResult Function( BuddyIntentClarify value)?  clarify,TResult Function( BuddyIntentOutOfScope value)?  outOfScope,TResult Function( BuddyIntentMedical value)?  medical,TResult Function( BuddyIntentWeighIn value)?  weighIn,TResult Function( BuddyIntentDiaryEdit value)?  diaryEdit,TResult Function( BuddyIntentDiaryDelete value)?  diaryDelete,TResult Function( BuddyIntentAmbiguousReference value)?  ambiguousReference,TResult Function( BuddyIntentDiaryCopy value)?  diaryCopy,TResult Function( BuddyIntentMemoryChange value)?  memoryChange,TResult Function( BuddyIntentBatch value)?  batch,TResult Function( BuddyIntentBatchPortion value)?  batchPortion,TResult Function( BuddyIntentBatchClose value)?  batchClose,TResult Function( BuddyIntentPersonalFoodCreate value)?  personalFoodCreate,TResult Function( BuddyIntentSavedMealLog value)?  savedMealLog,TResult Function( BuddyIntentSavedMealCreate value)?  savedMealCreate,TResult Function( BuddyIntentUnrecognized value)?  unrecognized,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( BuddyIntentFoodLog value)?  foodLog,TResult Function( BuddyIntentClarify value)?  clarify,TResult Function( BuddyIntentOutOfScope value)?  outOfScope,TResult Function( BuddyIntentMedical value)?  medical,TResult Function( BuddyIntentWeighIn value)?  weighIn,TResult Function( BuddyIntentDiaryEdit value)?  diaryEdit,TResult Function( BuddyIntentDiaryDelete value)?  diaryDelete,TResult Function( BuddyIntentAmbiguousReference value)?  ambiguousReference,TResult Function( BuddyIntentDiaryCopy value)?  diaryCopy,TResult Function( BuddyIntentMemoryChange value)?  memoryChange,TResult Function( BuddyIntentBatch value)?  batch,TResult Function( BuddyIntentBatchPortion value)?  batchPortion,TResult Function( BuddyIntentBatchClose value)?  batchClose,TResult Function( BuddyIntentPersonalFoodCreate value)?  personalFoodCreate,TResult Function( BuddyIntentSavedMealLog value)?  savedMealLog,TResult Function( BuddyIntentSavedMealCreate value)?  savedMealCreate,TResult Function( BuddyIntentMeasurement value)?  measurement,TResult Function( BuddyIntentWorkout value)?  workout,TResult Function( BuddyIntentImportRows value)?  importRows,TResult Function( BuddyIntentSuggestion value)?  suggestion,TResult Function( BuddyIntentUnrecognized value)?  unrecognized,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case BuddyIntentFoodLog() when foodLog != null:
@@ -154,7 +170,11 @@ return batchPortion(_that);case BuddyIntentBatchClose() when batchClose != null:
 return batchClose(_that);case BuddyIntentPersonalFoodCreate() when personalFoodCreate != null:
 return personalFoodCreate(_that);case BuddyIntentSavedMealLog() when savedMealLog != null:
 return savedMealLog(_that);case BuddyIntentSavedMealCreate() when savedMealCreate != null:
-return savedMealCreate(_that);case BuddyIntentUnrecognized() when unrecognized != null:
+return savedMealCreate(_that);case BuddyIntentMeasurement() when measurement != null:
+return measurement(_that);case BuddyIntentWorkout() when workout != null:
+return workout(_that);case BuddyIntentImportRows() when importRows != null:
+return importRows(_that);case BuddyIntentSuggestion() when suggestion != null:
+return suggestion(_that);case BuddyIntentUnrecognized() when unrecognized != null:
 return unrecognized(_that);case _:
   return orElse();
 
@@ -173,7 +193,7 @@ return unrecognized(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( BuddyIntentFoodLog value)  foodLog,required TResult Function( BuddyIntentClarify value)  clarify,required TResult Function( BuddyIntentOutOfScope value)  outOfScope,required TResult Function( BuddyIntentMedical value)  medical,required TResult Function( BuddyIntentWeighIn value)  weighIn,required TResult Function( BuddyIntentDiaryEdit value)  diaryEdit,required TResult Function( BuddyIntentDiaryDelete value)  diaryDelete,required TResult Function( BuddyIntentAmbiguousReference value)  ambiguousReference,required TResult Function( BuddyIntentDiaryCopy value)  diaryCopy,required TResult Function( BuddyIntentMemoryChange value)  memoryChange,required TResult Function( BuddyIntentBatch value)  batch,required TResult Function( BuddyIntentBatchPortion value)  batchPortion,required TResult Function( BuddyIntentBatchClose value)  batchClose,required TResult Function( BuddyIntentPersonalFoodCreate value)  personalFoodCreate,required TResult Function( BuddyIntentSavedMealLog value)  savedMealLog,required TResult Function( BuddyIntentSavedMealCreate value)  savedMealCreate,required TResult Function( BuddyIntentUnrecognized value)  unrecognized,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( BuddyIntentFoodLog value)  foodLog,required TResult Function( BuddyIntentClarify value)  clarify,required TResult Function( BuddyIntentOutOfScope value)  outOfScope,required TResult Function( BuddyIntentMedical value)  medical,required TResult Function( BuddyIntentWeighIn value)  weighIn,required TResult Function( BuddyIntentDiaryEdit value)  diaryEdit,required TResult Function( BuddyIntentDiaryDelete value)  diaryDelete,required TResult Function( BuddyIntentAmbiguousReference value)  ambiguousReference,required TResult Function( BuddyIntentDiaryCopy value)  diaryCopy,required TResult Function( BuddyIntentMemoryChange value)  memoryChange,required TResult Function( BuddyIntentBatch value)  batch,required TResult Function( BuddyIntentBatchPortion value)  batchPortion,required TResult Function( BuddyIntentBatchClose value)  batchClose,required TResult Function( BuddyIntentPersonalFoodCreate value)  personalFoodCreate,required TResult Function( BuddyIntentSavedMealLog value)  savedMealLog,required TResult Function( BuddyIntentSavedMealCreate value)  savedMealCreate,required TResult Function( BuddyIntentMeasurement value)  measurement,required TResult Function( BuddyIntentWorkout value)  workout,required TResult Function( BuddyIntentImportRows value)  importRows,required TResult Function( BuddyIntentSuggestion value)  suggestion,required TResult Function( BuddyIntentUnrecognized value)  unrecognized,}){
 final _that = this;
 switch (_that) {
 case BuddyIntentFoodLog():
@@ -192,7 +212,11 @@ return batchPortion(_that);case BuddyIntentBatchClose():
 return batchClose(_that);case BuddyIntentPersonalFoodCreate():
 return personalFoodCreate(_that);case BuddyIntentSavedMealLog():
 return savedMealLog(_that);case BuddyIntentSavedMealCreate():
-return savedMealCreate(_that);case BuddyIntentUnrecognized():
+return savedMealCreate(_that);case BuddyIntentMeasurement():
+return measurement(_that);case BuddyIntentWorkout():
+return workout(_that);case BuddyIntentImportRows():
+return importRows(_that);case BuddyIntentSuggestion():
+return suggestion(_that);case BuddyIntentUnrecognized():
 return unrecognized(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
@@ -207,7 +231,7 @@ return unrecognized(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( BuddyIntentFoodLog value)?  foodLog,TResult? Function( BuddyIntentClarify value)?  clarify,TResult? Function( BuddyIntentOutOfScope value)?  outOfScope,TResult? Function( BuddyIntentMedical value)?  medical,TResult? Function( BuddyIntentWeighIn value)?  weighIn,TResult? Function( BuddyIntentDiaryEdit value)?  diaryEdit,TResult? Function( BuddyIntentDiaryDelete value)?  diaryDelete,TResult? Function( BuddyIntentAmbiguousReference value)?  ambiguousReference,TResult? Function( BuddyIntentDiaryCopy value)?  diaryCopy,TResult? Function( BuddyIntentMemoryChange value)?  memoryChange,TResult? Function( BuddyIntentBatch value)?  batch,TResult? Function( BuddyIntentBatchPortion value)?  batchPortion,TResult? Function( BuddyIntentBatchClose value)?  batchClose,TResult? Function( BuddyIntentPersonalFoodCreate value)?  personalFoodCreate,TResult? Function( BuddyIntentSavedMealLog value)?  savedMealLog,TResult? Function( BuddyIntentSavedMealCreate value)?  savedMealCreate,TResult? Function( BuddyIntentUnrecognized value)?  unrecognized,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( BuddyIntentFoodLog value)?  foodLog,TResult? Function( BuddyIntentClarify value)?  clarify,TResult? Function( BuddyIntentOutOfScope value)?  outOfScope,TResult? Function( BuddyIntentMedical value)?  medical,TResult? Function( BuddyIntentWeighIn value)?  weighIn,TResult? Function( BuddyIntentDiaryEdit value)?  diaryEdit,TResult? Function( BuddyIntentDiaryDelete value)?  diaryDelete,TResult? Function( BuddyIntentAmbiguousReference value)?  ambiguousReference,TResult? Function( BuddyIntentDiaryCopy value)?  diaryCopy,TResult? Function( BuddyIntentMemoryChange value)?  memoryChange,TResult? Function( BuddyIntentBatch value)?  batch,TResult? Function( BuddyIntentBatchPortion value)?  batchPortion,TResult? Function( BuddyIntentBatchClose value)?  batchClose,TResult? Function( BuddyIntentPersonalFoodCreate value)?  personalFoodCreate,TResult? Function( BuddyIntentSavedMealLog value)?  savedMealLog,TResult? Function( BuddyIntentSavedMealCreate value)?  savedMealCreate,TResult? Function( BuddyIntentMeasurement value)?  measurement,TResult? Function( BuddyIntentWorkout value)?  workout,TResult? Function( BuddyIntentImportRows value)?  importRows,TResult? Function( BuddyIntentSuggestion value)?  suggestion,TResult? Function( BuddyIntentUnrecognized value)?  unrecognized,}){
 final _that = this;
 switch (_that) {
 case BuddyIntentFoodLog() when foodLog != null:
@@ -226,7 +250,11 @@ return batchPortion(_that);case BuddyIntentBatchClose() when batchClose != null:
 return batchClose(_that);case BuddyIntentPersonalFoodCreate() when personalFoodCreate != null:
 return personalFoodCreate(_that);case BuddyIntentSavedMealLog() when savedMealLog != null:
 return savedMealLog(_that);case BuddyIntentSavedMealCreate() when savedMealCreate != null:
-return savedMealCreate(_that);case BuddyIntentUnrecognized() when unrecognized != null:
+return savedMealCreate(_that);case BuddyIntentMeasurement() when measurement != null:
+return measurement(_that);case BuddyIntentWorkout() when workout != null:
+return workout(_that);case BuddyIntentImportRows() when importRows != null:
+return importRows(_that);case BuddyIntentSuggestion() when suggestion != null:
+return suggestion(_that);case BuddyIntentUnrecognized() when unrecognized != null:
 return unrecognized(_that);case _:
   return null;
 
@@ -244,7 +272,7 @@ return unrecognized(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( BuddyFoodLogKind kind,  String language,  String script,  String? timeHint,  String? slotHint,  String? dateHint,  String? dishGroup,  List<BuddyFoodItem> items)?  foodLog,TResult Function( BuddyClarifyKind kind,  String language,  String script,  String reason)?  clarify,TResult Function( BuddyOutOfScopeKind kind,  String language,  String script,  String reason)?  outOfScope,TResult Function( BuddyMedicalKind kind,  String language,  String script)?  medical,TResult Function( BuddyWeighInKind kind,  String language,  String script,  double value,  String unit,  String? timeHint,  String? dateHint)?  weighIn,TResult Function( BuddyDiaryEditKind kind,  String language,  String script,  List<String> targets,  BuddyEntryReference reference,  BuddyDiaryPatch patch)?  diaryEdit,TResult Function( BuddyDiaryDeleteKind kind,  String language,  String script,  List<String> targets,  BuddyEntryReference reference)?  diaryDelete,TResult Function( BuddyAmbiguousReferenceKind kind,  String language,  String script,  BuddyReferenceOperation operation,  List<String> candidates,  BuddyEntryReference reference,  BuddyDiaryPatch? patch)?  ambiguousReference,TResult Function( BuddyDiaryCopyKind kind,  String language,  String script,  BuddyDayHint source,  BuddyDayHint target)?  diaryCopy,TResult Function( BuddyMemoryChangeKind kind,  String language,  String script,  BuddyMemoryOperation operation,  BuddyMemoryKind memoryKind,  String? subject,  BuddyMemoryDimension? dimension,  String? value,  BuddyAmount? amount,  BuddyFoodItem? food)?  memoryChange,TResult Function( BuddyBatchKind kind,  String language,  String script,  String? name,  List<BuddyFoodItem> ingredients,  BuddyAmount? cookedWeight,  BuddyBatchPath? path,  BuddyPortion? eatenNow,  String? timeHint,  String? slotHint,  String? dateHint)?  batch,TResult Function( BuddyBatchPortionKind kind,  String language,  String script,  String batchId,  BuddyPortion? portion,  bool rest,  String? timeHint,  String? slotHint,  String? dateHint)?  batchPortion,TResult Function( BuddyBatchCloseKind kind,  String language,  String script,  String batchId)?  batchClose,TResult Function( BuddyPersonalFoodCreateKind kind,  String language,  String script,  String name,  List<String> aliases,  List<BuddyFoodItem> components,  BuddyStatedNutrients? stated)?  personalFoodCreate,TResult Function( BuddySavedMealLogKind kind,  String language,  String script,  String savedMealId,  String? timeHint,  String? slotHint,  String? dateHint,  BuddyShare? share)?  savedMealLog,TResult Function( BuddySavedMealCreateKind kind,  String language,  String script,  String name,  String? activeProposal,  List<String> targets,  BuddyDayHint? source)?  savedMealCreate,TResult Function()?  unrecognized,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( BuddyFoodLogKind kind,  String language,  String script,  String? timeHint,  String? slotHint,  String? dateHint,  String? dishGroup,  List<BuddyFoodItem> items)?  foodLog,TResult Function( BuddyClarifyKind kind,  String language,  String script,  String reason)?  clarify,TResult Function( BuddyOutOfScopeKind kind,  String language,  String script,  String reason)?  outOfScope,TResult Function( BuddyMedicalKind kind,  String language,  String script)?  medical,TResult Function( BuddyWeighInKind kind,  String language,  String script,  double value,  String unit,  String? timeHint,  String? dateHint)?  weighIn,TResult Function( BuddyDiaryEditKind kind,  String language,  String script,  List<String> targets,  BuddyEntryReference reference,  BuddyDiaryPatch patch)?  diaryEdit,TResult Function( BuddyDiaryDeleteKind kind,  String language,  String script,  List<String> targets,  BuddyEntryReference reference)?  diaryDelete,TResult Function( BuddyAmbiguousReferenceKind kind,  String language,  String script,  BuddyReferenceOperation operation,  List<String> candidates,  BuddyEntryReference reference,  BuddyDiaryPatch? patch)?  ambiguousReference,TResult Function( BuddyDiaryCopyKind kind,  String language,  String script,  BuddyDayHint source,  BuddyDayHint target)?  diaryCopy,TResult Function( BuddyMemoryChangeKind kind,  String language,  String script,  BuddyMemoryOperation operation,  BuddyMemoryKind memoryKind,  String? subject,  BuddyMemoryDimension? dimension,  String? value,  BuddyAmount? amount,  BuddyFoodItem? food)?  memoryChange,TResult Function( BuddyBatchKind kind,  String language,  String script,  String? name,  List<BuddyFoodItem> ingredients,  BuddyAmount? cookedWeight,  BuddyBatchPath? path,  BuddyPortion? eatenNow,  String? timeHint,  String? slotHint,  String? dateHint)?  batch,TResult Function( BuddyBatchPortionKind kind,  String language,  String script,  String batchId,  BuddyPortion? portion,  bool rest,  String? timeHint,  String? slotHint,  String? dateHint)?  batchPortion,TResult Function( BuddyBatchCloseKind kind,  String language,  String script,  String batchId)?  batchClose,TResult Function( BuddyPersonalFoodCreateKind kind,  String language,  String script,  String name,  List<String> aliases,  List<BuddyFoodItem> components,  BuddyStatedNutrients? stated)?  personalFoodCreate,TResult Function( BuddySavedMealLogKind kind,  String language,  String script,  String savedMealId,  String? timeHint,  String? slotHint,  String? dateHint,  BuddyShare? share)?  savedMealLog,TResult Function( BuddySavedMealCreateKind kind,  String language,  String script,  String name,  String? activeProposal,  List<String> targets,  BuddyDayHint? source)?  savedMealCreate,TResult Function( BuddyMeasurementKind kind,  String language,  String script,  BuddyBodyMeasurementKind measurementKind,  String? customTypeId,  double value,  BuddyMeasurementUnit unit,  String? timeHint,  String? dateHint)?  measurement,TResult Function( BuddyWorkoutKind kind,  String? name,  String language,  String script,  String? timeHint,  String? dateHint,  List<BuddyWorkoutExercise> exercises)?  workout,TResult Function( BuddyImportRowsKind kind,  String language,  String script,  BuddyImportMetric metric,  BuddyBodyMeasurementKind? measurementKind,  List<BuddyImportRow> rows)?  importRows,TResult Function( BuddySuggestionKind kind,  String language,  String script,  List<BuddySuggestionOption> options)?  suggestion,TResult Function()?  unrecognized,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case BuddyIntentFoodLog() when foodLog != null:
 return foodLog(_that.kind,_that.language,_that.script,_that.timeHint,_that.slotHint,_that.dateHint,_that.dishGroup,_that.items);case BuddyIntentClarify() when clarify != null:
@@ -262,7 +290,11 @@ return batchPortion(_that.kind,_that.language,_that.script,_that.batchId,_that.p
 return batchClose(_that.kind,_that.language,_that.script,_that.batchId);case BuddyIntentPersonalFoodCreate() when personalFoodCreate != null:
 return personalFoodCreate(_that.kind,_that.language,_that.script,_that.name,_that.aliases,_that.components,_that.stated);case BuddyIntentSavedMealLog() when savedMealLog != null:
 return savedMealLog(_that.kind,_that.language,_that.script,_that.savedMealId,_that.timeHint,_that.slotHint,_that.dateHint,_that.share);case BuddyIntentSavedMealCreate() when savedMealCreate != null:
-return savedMealCreate(_that.kind,_that.language,_that.script,_that.name,_that.activeProposal,_that.targets,_that.source);case BuddyIntentUnrecognized() when unrecognized != null:
+return savedMealCreate(_that.kind,_that.language,_that.script,_that.name,_that.activeProposal,_that.targets,_that.source);case BuddyIntentMeasurement() when measurement != null:
+return measurement(_that.kind,_that.language,_that.script,_that.measurementKind,_that.customTypeId,_that.value,_that.unit,_that.timeHint,_that.dateHint);case BuddyIntentWorkout() when workout != null:
+return workout(_that.kind,_that.name,_that.language,_that.script,_that.timeHint,_that.dateHint,_that.exercises);case BuddyIntentImportRows() when importRows != null:
+return importRows(_that.kind,_that.language,_that.script,_that.metric,_that.measurementKind,_that.rows);case BuddyIntentSuggestion() when suggestion != null:
+return suggestion(_that.kind,_that.language,_that.script,_that.options);case BuddyIntentUnrecognized() when unrecognized != null:
 return unrecognized();case _:
   return orElse();
 
@@ -281,7 +313,7 @@ return unrecognized();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( BuddyFoodLogKind kind,  String language,  String script,  String? timeHint,  String? slotHint,  String? dateHint,  String? dishGroup,  List<BuddyFoodItem> items)  foodLog,required TResult Function( BuddyClarifyKind kind,  String language,  String script,  String reason)  clarify,required TResult Function( BuddyOutOfScopeKind kind,  String language,  String script,  String reason)  outOfScope,required TResult Function( BuddyMedicalKind kind,  String language,  String script)  medical,required TResult Function( BuddyWeighInKind kind,  String language,  String script,  double value,  String unit,  String? timeHint,  String? dateHint)  weighIn,required TResult Function( BuddyDiaryEditKind kind,  String language,  String script,  List<String> targets,  BuddyEntryReference reference,  BuddyDiaryPatch patch)  diaryEdit,required TResult Function( BuddyDiaryDeleteKind kind,  String language,  String script,  List<String> targets,  BuddyEntryReference reference)  diaryDelete,required TResult Function( BuddyAmbiguousReferenceKind kind,  String language,  String script,  BuddyReferenceOperation operation,  List<String> candidates,  BuddyEntryReference reference,  BuddyDiaryPatch? patch)  ambiguousReference,required TResult Function( BuddyDiaryCopyKind kind,  String language,  String script,  BuddyDayHint source,  BuddyDayHint target)  diaryCopy,required TResult Function( BuddyMemoryChangeKind kind,  String language,  String script,  BuddyMemoryOperation operation,  BuddyMemoryKind memoryKind,  String? subject,  BuddyMemoryDimension? dimension,  String? value,  BuddyAmount? amount,  BuddyFoodItem? food)  memoryChange,required TResult Function( BuddyBatchKind kind,  String language,  String script,  String? name,  List<BuddyFoodItem> ingredients,  BuddyAmount? cookedWeight,  BuddyBatchPath? path,  BuddyPortion? eatenNow,  String? timeHint,  String? slotHint,  String? dateHint)  batch,required TResult Function( BuddyBatchPortionKind kind,  String language,  String script,  String batchId,  BuddyPortion? portion,  bool rest,  String? timeHint,  String? slotHint,  String? dateHint)  batchPortion,required TResult Function( BuddyBatchCloseKind kind,  String language,  String script,  String batchId)  batchClose,required TResult Function( BuddyPersonalFoodCreateKind kind,  String language,  String script,  String name,  List<String> aliases,  List<BuddyFoodItem> components,  BuddyStatedNutrients? stated)  personalFoodCreate,required TResult Function( BuddySavedMealLogKind kind,  String language,  String script,  String savedMealId,  String? timeHint,  String? slotHint,  String? dateHint,  BuddyShare? share)  savedMealLog,required TResult Function( BuddySavedMealCreateKind kind,  String language,  String script,  String name,  String? activeProposal,  List<String> targets,  BuddyDayHint? source)  savedMealCreate,required TResult Function()  unrecognized,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( BuddyFoodLogKind kind,  String language,  String script,  String? timeHint,  String? slotHint,  String? dateHint,  String? dishGroup,  List<BuddyFoodItem> items)  foodLog,required TResult Function( BuddyClarifyKind kind,  String language,  String script,  String reason)  clarify,required TResult Function( BuddyOutOfScopeKind kind,  String language,  String script,  String reason)  outOfScope,required TResult Function( BuddyMedicalKind kind,  String language,  String script)  medical,required TResult Function( BuddyWeighInKind kind,  String language,  String script,  double value,  String unit,  String? timeHint,  String? dateHint)  weighIn,required TResult Function( BuddyDiaryEditKind kind,  String language,  String script,  List<String> targets,  BuddyEntryReference reference,  BuddyDiaryPatch patch)  diaryEdit,required TResult Function( BuddyDiaryDeleteKind kind,  String language,  String script,  List<String> targets,  BuddyEntryReference reference)  diaryDelete,required TResult Function( BuddyAmbiguousReferenceKind kind,  String language,  String script,  BuddyReferenceOperation operation,  List<String> candidates,  BuddyEntryReference reference,  BuddyDiaryPatch? patch)  ambiguousReference,required TResult Function( BuddyDiaryCopyKind kind,  String language,  String script,  BuddyDayHint source,  BuddyDayHint target)  diaryCopy,required TResult Function( BuddyMemoryChangeKind kind,  String language,  String script,  BuddyMemoryOperation operation,  BuddyMemoryKind memoryKind,  String? subject,  BuddyMemoryDimension? dimension,  String? value,  BuddyAmount? amount,  BuddyFoodItem? food)  memoryChange,required TResult Function( BuddyBatchKind kind,  String language,  String script,  String? name,  List<BuddyFoodItem> ingredients,  BuddyAmount? cookedWeight,  BuddyBatchPath? path,  BuddyPortion? eatenNow,  String? timeHint,  String? slotHint,  String? dateHint)  batch,required TResult Function( BuddyBatchPortionKind kind,  String language,  String script,  String batchId,  BuddyPortion? portion,  bool rest,  String? timeHint,  String? slotHint,  String? dateHint)  batchPortion,required TResult Function( BuddyBatchCloseKind kind,  String language,  String script,  String batchId)  batchClose,required TResult Function( BuddyPersonalFoodCreateKind kind,  String language,  String script,  String name,  List<String> aliases,  List<BuddyFoodItem> components,  BuddyStatedNutrients? stated)  personalFoodCreate,required TResult Function( BuddySavedMealLogKind kind,  String language,  String script,  String savedMealId,  String? timeHint,  String? slotHint,  String? dateHint,  BuddyShare? share)  savedMealLog,required TResult Function( BuddySavedMealCreateKind kind,  String language,  String script,  String name,  String? activeProposal,  List<String> targets,  BuddyDayHint? source)  savedMealCreate,required TResult Function( BuddyMeasurementKind kind,  String language,  String script,  BuddyBodyMeasurementKind measurementKind,  String? customTypeId,  double value,  BuddyMeasurementUnit unit,  String? timeHint,  String? dateHint)  measurement,required TResult Function( BuddyWorkoutKind kind,  String? name,  String language,  String script,  String? timeHint,  String? dateHint,  List<BuddyWorkoutExercise> exercises)  workout,required TResult Function( BuddyImportRowsKind kind,  String language,  String script,  BuddyImportMetric metric,  BuddyBodyMeasurementKind? measurementKind,  List<BuddyImportRow> rows)  importRows,required TResult Function( BuddySuggestionKind kind,  String language,  String script,  List<BuddySuggestionOption> options)  suggestion,required TResult Function()  unrecognized,}) {final _that = this;
 switch (_that) {
 case BuddyIntentFoodLog():
 return foodLog(_that.kind,_that.language,_that.script,_that.timeHint,_that.slotHint,_that.dateHint,_that.dishGroup,_that.items);case BuddyIntentClarify():
@@ -299,7 +331,11 @@ return batchPortion(_that.kind,_that.language,_that.script,_that.batchId,_that.p
 return batchClose(_that.kind,_that.language,_that.script,_that.batchId);case BuddyIntentPersonalFoodCreate():
 return personalFoodCreate(_that.kind,_that.language,_that.script,_that.name,_that.aliases,_that.components,_that.stated);case BuddyIntentSavedMealLog():
 return savedMealLog(_that.kind,_that.language,_that.script,_that.savedMealId,_that.timeHint,_that.slotHint,_that.dateHint,_that.share);case BuddyIntentSavedMealCreate():
-return savedMealCreate(_that.kind,_that.language,_that.script,_that.name,_that.activeProposal,_that.targets,_that.source);case BuddyIntentUnrecognized():
+return savedMealCreate(_that.kind,_that.language,_that.script,_that.name,_that.activeProposal,_that.targets,_that.source);case BuddyIntentMeasurement():
+return measurement(_that.kind,_that.language,_that.script,_that.measurementKind,_that.customTypeId,_that.value,_that.unit,_that.timeHint,_that.dateHint);case BuddyIntentWorkout():
+return workout(_that.kind,_that.name,_that.language,_that.script,_that.timeHint,_that.dateHint,_that.exercises);case BuddyIntentImportRows():
+return importRows(_that.kind,_that.language,_that.script,_that.metric,_that.measurementKind,_that.rows);case BuddyIntentSuggestion():
+return suggestion(_that.kind,_that.language,_that.script,_that.options);case BuddyIntentUnrecognized():
 return unrecognized();}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -314,7 +350,7 @@ return unrecognized();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( BuddyFoodLogKind kind,  String language,  String script,  String? timeHint,  String? slotHint,  String? dateHint,  String? dishGroup,  List<BuddyFoodItem> items)?  foodLog,TResult? Function( BuddyClarifyKind kind,  String language,  String script,  String reason)?  clarify,TResult? Function( BuddyOutOfScopeKind kind,  String language,  String script,  String reason)?  outOfScope,TResult? Function( BuddyMedicalKind kind,  String language,  String script)?  medical,TResult? Function( BuddyWeighInKind kind,  String language,  String script,  double value,  String unit,  String? timeHint,  String? dateHint)?  weighIn,TResult? Function( BuddyDiaryEditKind kind,  String language,  String script,  List<String> targets,  BuddyEntryReference reference,  BuddyDiaryPatch patch)?  diaryEdit,TResult? Function( BuddyDiaryDeleteKind kind,  String language,  String script,  List<String> targets,  BuddyEntryReference reference)?  diaryDelete,TResult? Function( BuddyAmbiguousReferenceKind kind,  String language,  String script,  BuddyReferenceOperation operation,  List<String> candidates,  BuddyEntryReference reference,  BuddyDiaryPatch? patch)?  ambiguousReference,TResult? Function( BuddyDiaryCopyKind kind,  String language,  String script,  BuddyDayHint source,  BuddyDayHint target)?  diaryCopy,TResult? Function( BuddyMemoryChangeKind kind,  String language,  String script,  BuddyMemoryOperation operation,  BuddyMemoryKind memoryKind,  String? subject,  BuddyMemoryDimension? dimension,  String? value,  BuddyAmount? amount,  BuddyFoodItem? food)?  memoryChange,TResult? Function( BuddyBatchKind kind,  String language,  String script,  String? name,  List<BuddyFoodItem> ingredients,  BuddyAmount? cookedWeight,  BuddyBatchPath? path,  BuddyPortion? eatenNow,  String? timeHint,  String? slotHint,  String? dateHint)?  batch,TResult? Function( BuddyBatchPortionKind kind,  String language,  String script,  String batchId,  BuddyPortion? portion,  bool rest,  String? timeHint,  String? slotHint,  String? dateHint)?  batchPortion,TResult? Function( BuddyBatchCloseKind kind,  String language,  String script,  String batchId)?  batchClose,TResult? Function( BuddyPersonalFoodCreateKind kind,  String language,  String script,  String name,  List<String> aliases,  List<BuddyFoodItem> components,  BuddyStatedNutrients? stated)?  personalFoodCreate,TResult? Function( BuddySavedMealLogKind kind,  String language,  String script,  String savedMealId,  String? timeHint,  String? slotHint,  String? dateHint,  BuddyShare? share)?  savedMealLog,TResult? Function( BuddySavedMealCreateKind kind,  String language,  String script,  String name,  String? activeProposal,  List<String> targets,  BuddyDayHint? source)?  savedMealCreate,TResult? Function()?  unrecognized,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( BuddyFoodLogKind kind,  String language,  String script,  String? timeHint,  String? slotHint,  String? dateHint,  String? dishGroup,  List<BuddyFoodItem> items)?  foodLog,TResult? Function( BuddyClarifyKind kind,  String language,  String script,  String reason)?  clarify,TResult? Function( BuddyOutOfScopeKind kind,  String language,  String script,  String reason)?  outOfScope,TResult? Function( BuddyMedicalKind kind,  String language,  String script)?  medical,TResult? Function( BuddyWeighInKind kind,  String language,  String script,  double value,  String unit,  String? timeHint,  String? dateHint)?  weighIn,TResult? Function( BuddyDiaryEditKind kind,  String language,  String script,  List<String> targets,  BuddyEntryReference reference,  BuddyDiaryPatch patch)?  diaryEdit,TResult? Function( BuddyDiaryDeleteKind kind,  String language,  String script,  List<String> targets,  BuddyEntryReference reference)?  diaryDelete,TResult? Function( BuddyAmbiguousReferenceKind kind,  String language,  String script,  BuddyReferenceOperation operation,  List<String> candidates,  BuddyEntryReference reference,  BuddyDiaryPatch? patch)?  ambiguousReference,TResult? Function( BuddyDiaryCopyKind kind,  String language,  String script,  BuddyDayHint source,  BuddyDayHint target)?  diaryCopy,TResult? Function( BuddyMemoryChangeKind kind,  String language,  String script,  BuddyMemoryOperation operation,  BuddyMemoryKind memoryKind,  String? subject,  BuddyMemoryDimension? dimension,  String? value,  BuddyAmount? amount,  BuddyFoodItem? food)?  memoryChange,TResult? Function( BuddyBatchKind kind,  String language,  String script,  String? name,  List<BuddyFoodItem> ingredients,  BuddyAmount? cookedWeight,  BuddyBatchPath? path,  BuddyPortion? eatenNow,  String? timeHint,  String? slotHint,  String? dateHint)?  batch,TResult? Function( BuddyBatchPortionKind kind,  String language,  String script,  String batchId,  BuddyPortion? portion,  bool rest,  String? timeHint,  String? slotHint,  String? dateHint)?  batchPortion,TResult? Function( BuddyBatchCloseKind kind,  String language,  String script,  String batchId)?  batchClose,TResult? Function( BuddyPersonalFoodCreateKind kind,  String language,  String script,  String name,  List<String> aliases,  List<BuddyFoodItem> components,  BuddyStatedNutrients? stated)?  personalFoodCreate,TResult? Function( BuddySavedMealLogKind kind,  String language,  String script,  String savedMealId,  String? timeHint,  String? slotHint,  String? dateHint,  BuddyShare? share)?  savedMealLog,TResult? Function( BuddySavedMealCreateKind kind,  String language,  String script,  String name,  String? activeProposal,  List<String> targets,  BuddyDayHint? source)?  savedMealCreate,TResult? Function( BuddyMeasurementKind kind,  String language,  String script,  BuddyBodyMeasurementKind measurementKind,  String? customTypeId,  double value,  BuddyMeasurementUnit unit,  String? timeHint,  String? dateHint)?  measurement,TResult? Function( BuddyWorkoutKind kind,  String? name,  String language,  String script,  String? timeHint,  String? dateHint,  List<BuddyWorkoutExercise> exercises)?  workout,TResult? Function( BuddyImportRowsKind kind,  String language,  String script,  BuddyImportMetric metric,  BuddyBodyMeasurementKind? measurementKind,  List<BuddyImportRow> rows)?  importRows,TResult? Function( BuddySuggestionKind kind,  String language,  String script,  List<BuddySuggestionOption> options)?  suggestion,TResult? Function()?  unrecognized,}) {final _that = this;
 switch (_that) {
 case BuddyIntentFoodLog() when foodLog != null:
 return foodLog(_that.kind,_that.language,_that.script,_that.timeHint,_that.slotHint,_that.dateHint,_that.dishGroup,_that.items);case BuddyIntentClarify() when clarify != null:
@@ -332,7 +368,11 @@ return batchPortion(_that.kind,_that.language,_that.script,_that.batchId,_that.p
 return batchClose(_that.kind,_that.language,_that.script,_that.batchId);case BuddyIntentPersonalFoodCreate() when personalFoodCreate != null:
 return personalFoodCreate(_that.kind,_that.language,_that.script,_that.name,_that.aliases,_that.components,_that.stated);case BuddyIntentSavedMealLog() when savedMealLog != null:
 return savedMealLog(_that.kind,_that.language,_that.script,_that.savedMealId,_that.timeHint,_that.slotHint,_that.dateHint,_that.share);case BuddyIntentSavedMealCreate() when savedMealCreate != null:
-return savedMealCreate(_that.kind,_that.language,_that.script,_that.name,_that.activeProposal,_that.targets,_that.source);case BuddyIntentUnrecognized() when unrecognized != null:
+return savedMealCreate(_that.kind,_that.language,_that.script,_that.name,_that.activeProposal,_that.targets,_that.source);case BuddyIntentMeasurement() when measurement != null:
+return measurement(_that.kind,_that.language,_that.script,_that.measurementKind,_that.customTypeId,_that.value,_that.unit,_that.timeHint,_that.dateHint);case BuddyIntentWorkout() when workout != null:
+return workout(_that.kind,_that.name,_that.language,_that.script,_that.timeHint,_that.dateHint,_that.exercises);case BuddyIntentImportRows() when importRows != null:
+return importRows(_that.kind,_that.language,_that.script,_that.metric,_that.measurementKind,_that.rows);case BuddyIntentSuggestion() when suggestion != null:
+return suggestion(_that.kind,_that.language,_that.script,_that.options);case BuddyIntentUnrecognized() when unrecognized != null:
 return unrecognized();case _:
   return null;
 
@@ -1906,6 +1946,352 @@ $BuddyDayHintCopyWith<$Res>? get source {
     return _then(_self.copyWith(source: value));
   });
 }
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class BuddyIntentMeasurement implements BuddyIntent {
+  const BuddyIntentMeasurement({required this.kind, required this.language, required this.script, required this.measurementKind, required this.customTypeId, required this.value, required this.unit, required this.timeHint, required this.dateHint});
+  factory BuddyIntentMeasurement.fromJson(Map<String, dynamic> json) => _$BuddyIntentMeasurementFromJson(json);
+
+ final  BuddyMeasurementKind kind;
+ final  String language;
+ final  String script;
+ final  BuddyBodyMeasurementKind measurementKind;
+ final  String? customTypeId;
+ final  double value;
+ final  BuddyMeasurementUnit unit;
+ final  String? timeHint;
+ final  String? dateHint;
+
+/// Create a copy of BuddyIntent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BuddyIntentMeasurementCopyWith<BuddyIntentMeasurement> get copyWith => _$BuddyIntentMeasurementCopyWithImpl<BuddyIntentMeasurement>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$BuddyIntentMeasurementToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is BuddyIntentMeasurement&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.language, language) || other.language == language)&&(identical(other.script, script) || other.script == script)&&(identical(other.measurementKind, measurementKind) || other.measurementKind == measurementKind)&&(identical(other.customTypeId, customTypeId) || other.customTypeId == customTypeId)&&(identical(other.value, value) || other.value == value)&&(identical(other.unit, unit) || other.unit == unit)&&(identical(other.timeHint, timeHint) || other.timeHint == timeHint)&&(identical(other.dateHint, dateHint) || other.dateHint == dateHint));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,kind,language,script,measurementKind,customTypeId,value,unit,timeHint,dateHint);
+}
+
+@override
+String toString() {
+    return 'BuddyIntent.measurement(kind: $kind, language: $language, script: $script, measurementKind: $measurementKind, customTypeId: $customTypeId, value: $value, unit: $unit, timeHint: $timeHint, dateHint: $dateHint)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BuddyIntentMeasurementCopyWith<$Res> implements $BuddyIntentCopyWith<$Res> {
+  factory $BuddyIntentMeasurementCopyWith(BuddyIntentMeasurement value, $Res Function(BuddyIntentMeasurement) _then) = _$BuddyIntentMeasurementCopyWithImpl;
+@useResult
+$Res call({
+ BuddyMeasurementKind kind, String language, String script, BuddyBodyMeasurementKind measurementKind, String? customTypeId, double value, BuddyMeasurementUnit unit, String? timeHint, String? dateHint
+});
+
+
+
+
+}
+/// @nodoc
+class _$BuddyIntentMeasurementCopyWithImpl<$Res>
+    implements $BuddyIntentMeasurementCopyWith<$Res> {
+  _$BuddyIntentMeasurementCopyWithImpl(this._self, this._then);
+
+  final BuddyIntentMeasurement _self;
+  final $Res Function(BuddyIntentMeasurement) _then;
+
+/// Create a copy of BuddyIntent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? kind = null,Object? language = null,Object? script = null,Object? measurementKind = null,Object? customTypeId = freezed,Object? value = null,Object? unit = null,Object? timeHint = freezed,Object? dateHint = freezed,}) {
+  return _then(BuddyIntentMeasurement(
+kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
+as BuddyMeasurementKind,language: null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
+as String,script: null == script ? _self.script : script // ignore: cast_nullable_to_non_nullable
+as String,measurementKind: null == measurementKind ? _self.measurementKind : measurementKind // ignore: cast_nullable_to_non_nullable
+as BuddyBodyMeasurementKind,customTypeId: freezed == customTypeId ? _self.customTypeId : customTypeId // ignore: cast_nullable_to_non_nullable
+as String?,value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as double,unit: null == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
+as BuddyMeasurementUnit,timeHint: freezed == timeHint ? _self.timeHint : timeHint // ignore: cast_nullable_to_non_nullable
+as String?,dateHint: freezed == dateHint ? _self.dateHint : dateHint // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class BuddyIntentWorkout implements BuddyIntent {
+  const BuddyIntentWorkout({required this.kind, required this.name, required this.language, required this.script, required this.timeHint, required this.dateHint, required  List<BuddyWorkoutExercise> exercises}): _exercises = exercises;
+  factory BuddyIntentWorkout.fromJson(Map<String, dynamic> json) => _$BuddyIntentWorkoutFromJson(json);
+
+ final  BuddyWorkoutKind kind;
+ final  String? name;
+ final  String language;
+ final  String script;
+ final  String? timeHint;
+ final  String? dateHint;
+ final  List<BuddyWorkoutExercise> _exercises;
+ List<BuddyWorkoutExercise> get exercises {
+  if (_exercises is EqualUnmodifiableListView) return _exercises;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_exercises);
+}
+
+
+/// Create a copy of BuddyIntent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BuddyIntentWorkoutCopyWith<BuddyIntentWorkout> get copyWith => _$BuddyIntentWorkoutCopyWithImpl<BuddyIntentWorkout>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$BuddyIntentWorkoutToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is BuddyIntentWorkout&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.name, name) || other.name == name)&&(identical(other.language, language) || other.language == language)&&(identical(other.script, script) || other.script == script)&&(identical(other.timeHint, timeHint) || other.timeHint == timeHint)&&(identical(other.dateHint, dateHint) || other.dateHint == dateHint)&&const DeepCollectionEquality().equals(other.exercises, _exercises));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,kind,name,language,script,timeHint,dateHint,const DeepCollectionEquality().hash(_exercises));
+}
+
+@override
+String toString() {
+    return 'BuddyIntent.workout(kind: $kind, name: $name, language: $language, script: $script, timeHint: $timeHint, dateHint: $dateHint, exercises: $exercises)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BuddyIntentWorkoutCopyWith<$Res> implements $BuddyIntentCopyWith<$Res> {
+  factory $BuddyIntentWorkoutCopyWith(BuddyIntentWorkout value, $Res Function(BuddyIntentWorkout) _then) = _$BuddyIntentWorkoutCopyWithImpl;
+@useResult
+$Res call({
+ BuddyWorkoutKind kind, String? name, String language, String script, String? timeHint, String? dateHint, List<BuddyWorkoutExercise> exercises
+});
+
+
+
+
+}
+/// @nodoc
+class _$BuddyIntentWorkoutCopyWithImpl<$Res>
+    implements $BuddyIntentWorkoutCopyWith<$Res> {
+  _$BuddyIntentWorkoutCopyWithImpl(this._self, this._then);
+
+  final BuddyIntentWorkout _self;
+  final $Res Function(BuddyIntentWorkout) _then;
+
+/// Create a copy of BuddyIntent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? kind = null,Object? name = freezed,Object? language = null,Object? script = null,Object? timeHint = freezed,Object? dateHint = freezed,Object? exercises = null,}) {
+  return _then(BuddyIntentWorkout(
+kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
+as BuddyWorkoutKind,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,language: null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
+as String,script: null == script ? _self.script : script // ignore: cast_nullable_to_non_nullable
+as String,timeHint: freezed == timeHint ? _self.timeHint : timeHint // ignore: cast_nullable_to_non_nullable
+as String?,dateHint: freezed == dateHint ? _self.dateHint : dateHint // ignore: cast_nullable_to_non_nullable
+as String?,exercises: null == exercises ? _self._exercises : exercises // ignore: cast_nullable_to_non_nullable
+as List<BuddyWorkoutExercise>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class BuddyIntentImportRows implements BuddyIntent {
+  const BuddyIntentImportRows({required this.kind, required this.language, required this.script, required this.metric, required this.measurementKind, required  List<BuddyImportRow> rows}): _rows = rows;
+  factory BuddyIntentImportRows.fromJson(Map<String, dynamic> json) => _$BuddyIntentImportRowsFromJson(json);
+
+ final  BuddyImportRowsKind kind;
+ final  String language;
+ final  String script;
+ final  BuddyImportMetric metric;
+ final  BuddyBodyMeasurementKind? measurementKind;
+ final  List<BuddyImportRow> _rows;
+ List<BuddyImportRow> get rows {
+  if (_rows is EqualUnmodifiableListView) return _rows;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_rows);
+}
+
+
+/// Create a copy of BuddyIntent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BuddyIntentImportRowsCopyWith<BuddyIntentImportRows> get copyWith => _$BuddyIntentImportRowsCopyWithImpl<BuddyIntentImportRows>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$BuddyIntentImportRowsToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is BuddyIntentImportRows&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.language, language) || other.language == language)&&(identical(other.script, script) || other.script == script)&&(identical(other.metric, metric) || other.metric == metric)&&(identical(other.measurementKind, measurementKind) || other.measurementKind == measurementKind)&&const DeepCollectionEquality().equals(other.rows, _rows));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,kind,language,script,metric,measurementKind,const DeepCollectionEquality().hash(_rows));
+}
+
+@override
+String toString() {
+    return 'BuddyIntent.importRows(kind: $kind, language: $language, script: $script, metric: $metric, measurementKind: $measurementKind, rows: $rows)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BuddyIntentImportRowsCopyWith<$Res> implements $BuddyIntentCopyWith<$Res> {
+  factory $BuddyIntentImportRowsCopyWith(BuddyIntentImportRows value, $Res Function(BuddyIntentImportRows) _then) = _$BuddyIntentImportRowsCopyWithImpl;
+@useResult
+$Res call({
+ BuddyImportRowsKind kind, String language, String script, BuddyImportMetric metric, BuddyBodyMeasurementKind? measurementKind, List<BuddyImportRow> rows
+});
+
+
+
+
+}
+/// @nodoc
+class _$BuddyIntentImportRowsCopyWithImpl<$Res>
+    implements $BuddyIntentImportRowsCopyWith<$Res> {
+  _$BuddyIntentImportRowsCopyWithImpl(this._self, this._then);
+
+  final BuddyIntentImportRows _self;
+  final $Res Function(BuddyIntentImportRows) _then;
+
+/// Create a copy of BuddyIntent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? kind = null,Object? language = null,Object? script = null,Object? metric = null,Object? measurementKind = freezed,Object? rows = null,}) {
+  return _then(BuddyIntentImportRows(
+kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
+as BuddyImportRowsKind,language: null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
+as String,script: null == script ? _self.script : script // ignore: cast_nullable_to_non_nullable
+as String,metric: null == metric ? _self.metric : metric // ignore: cast_nullable_to_non_nullable
+as BuddyImportMetric,measurementKind: freezed == measurementKind ? _self.measurementKind : measurementKind // ignore: cast_nullable_to_non_nullable
+as BuddyBodyMeasurementKind?,rows: null == rows ? _self._rows : rows // ignore: cast_nullable_to_non_nullable
+as List<BuddyImportRow>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class BuddyIntentSuggestion implements BuddyIntent {
+  const BuddyIntentSuggestion({required this.kind, required this.language, required this.script, required  List<BuddySuggestionOption> options}): _options = options;
+  factory BuddyIntentSuggestion.fromJson(Map<String, dynamic> json) => _$BuddyIntentSuggestionFromJson(json);
+
+ final  BuddySuggestionKind kind;
+ final  String language;
+ final  String script;
+ final  List<BuddySuggestionOption> _options;
+ List<BuddySuggestionOption> get options {
+  if (_options is EqualUnmodifiableListView) return _options;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_options);
+}
+
+
+/// Create a copy of BuddyIntent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BuddyIntentSuggestionCopyWith<BuddyIntentSuggestion> get copyWith => _$BuddyIntentSuggestionCopyWithImpl<BuddyIntentSuggestion>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$BuddyIntentSuggestionToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is BuddyIntentSuggestion&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.language, language) || other.language == language)&&(identical(other.script, script) || other.script == script)&&const DeepCollectionEquality().equals(other.options, _options));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,kind,language,script,const DeepCollectionEquality().hash(_options));
+}
+
+@override
+String toString() {
+    return 'BuddyIntent.suggestion(kind: $kind, language: $language, script: $script, options: $options)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BuddyIntentSuggestionCopyWith<$Res> implements $BuddyIntentCopyWith<$Res> {
+  factory $BuddyIntentSuggestionCopyWith(BuddyIntentSuggestion value, $Res Function(BuddyIntentSuggestion) _then) = _$BuddyIntentSuggestionCopyWithImpl;
+@useResult
+$Res call({
+ BuddySuggestionKind kind, String language, String script, List<BuddySuggestionOption> options
+});
+
+
+
+
+}
+/// @nodoc
+class _$BuddyIntentSuggestionCopyWithImpl<$Res>
+    implements $BuddyIntentSuggestionCopyWith<$Res> {
+  _$BuddyIntentSuggestionCopyWithImpl(this._self, this._then);
+
+  final BuddyIntentSuggestion _self;
+  final $Res Function(BuddyIntentSuggestion) _then;
+
+/// Create a copy of BuddyIntent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? kind = null,Object? language = null,Object? script = null,Object? options = null,}) {
+  return _then(BuddyIntentSuggestion(
+kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
+as BuddySuggestionKind,language: null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
+as String,script: null == script ? _self.script : script // ignore: cast_nullable_to_non_nullable
+as String,options: null == options ? _self._options : options // ignore: cast_nullable_to_non_nullable
+as List<BuddySuggestionOption>,
+  ));
+}
+
+
 }
 
 /// @nodoc

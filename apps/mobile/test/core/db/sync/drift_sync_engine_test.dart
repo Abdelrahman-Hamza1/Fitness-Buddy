@@ -81,7 +81,11 @@ void main() {
       final entities =
           _json('contracts/openapi/sync-entities.json')['entities']!
               as Map<String, Object?>;
-      final fixtures = _fixtures();
+      // Admitted by the server (B25 contract) before the app stores them:
+      // A66 adds the buddySummary table, A67 memoryItem; each removes its name.
+      const pendingAppTables = {'buddySummary', 'memoryItem'};
+      final fixtures = _fixtures()
+        ..removeWhere((entity, _) => pendingAppTables.contains(entity));
       expect(fixtures.keys.toSet(), {
         for (final t in db.syncedTables) t.entity,
       }, reason: 'a fixture per registered entity');

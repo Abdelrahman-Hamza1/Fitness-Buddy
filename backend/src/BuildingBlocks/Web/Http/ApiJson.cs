@@ -20,6 +20,8 @@ public static class ApiJson
         // A missing member or a null for a non-nullable one is an unreadable body (TD-043, S03 plan D1).
         options.RespectRequiredConstructorParameters = true;
         options.RespectNullableAnnotations = true;
+        // Union discriminators (`kind`, `type`, `name`) may come after other members in a client's JSON (B25).
+        options.AllowOutOfOrderMetadataProperties = true;
         return options;
     }
 

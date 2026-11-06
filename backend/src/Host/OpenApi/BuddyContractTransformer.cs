@@ -26,21 +26,30 @@ internal sealed class BuddyContractTransformer : IOpenApiDocumentTransformer
                 if (concrete.Properties?.TryGetValue(list, out var ids) == true && ids is OpenApiSchema { Type: JsonSchemaType.Array } array) { array.UniqueItems = true; }
             }
         }
-        if (!schemas.TryGetValue("BuddyIntent", out var value) || value is not OpenApiSchema union || union.AnyOf is null) { return Task.CompletedTask; }
+        // Discriminated unions: the intents (B09a), and the agent turn's events and phone tools (B25).
+        foreach (var (unionName, discriminator) in Unions) { NormalizeUnion(document, schemas, unionName, discriminator); }
+        return Task.CompletedTask;
+    }
+
+    private static readonly (string Union, string Discriminator)[] Unions =
+        [("BuddyIntent", "kind"), ("BuddyTurnEvent", "type"), ("BuddyPhoneToolCall", "name"), ("BuddyPhoneToolResult", "name")];
+
+    private static void NormalizeUnion(OpenApiDocument document, IDictionary<string, IOpenApiSchema> schemas, string unionName, string discriminator)
+    {
+        if (!schemas.TryGetValue(unionName, out var value) || value is not OpenApiSchema union || union.AnyOf is null) { return; }
         var mapping = new Dictionary<string, OpenApiSchemaReference>(StringComparer.Ordinal);
         var references = new List<IOpenApiSchema>();
         foreach (var (kind, path) in union.Discriminator!.Mapping!)
         {
             var oldName = path.Reference.Id!;
-            var name = oldName["BuddyIntent".Length..];
+            var name = oldName.StartsWith(unionName + "Buddy", StringComparison.Ordinal) ? oldName[unionName.Length..] : oldName;
             var variant = (OpenApiSchema)schemas[oldName];
             variant.Type = JsonSchemaType.Object;
-            variant.Required ??= new HashSet<string>(StringComparer.Ordinal); variant.Required.Add("kind");
-            schemas[name] = variant; schemas.Remove(oldName);
+            variant.Required ??= new HashSet<string>(StringComparer.Ordinal); variant.Required.Add(discriminator);
+            schemas.Remove(oldName); schemas[name] = variant;
             mapping[kind] = new OpenApiSchemaReference(name, document); references.Add(new OpenApiSchemaReference(name, document));
         }
         union.AnyOf = null; union.OneOf = references; union.Type = null; union.Required = null;
         union.Discriminator.Mapping = mapping;
-        return Task.CompletedTask;
     }
 }

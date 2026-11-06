@@ -14,6 +14,7 @@ import 'buddy_batch_kind.dart';
 import 'buddy_batch_path.dart';
 import 'buddy_batch_portion.dart';
 import 'buddy_batch_portion_kind.dart';
+import 'buddy_body_measurement_kind.dart';
 import 'buddy_clarify.dart';
 import 'buddy_clarify_kind.dart';
 import 'buddy_day_hint.dart';
@@ -28,6 +29,13 @@ import 'buddy_entry_reference.dart';
 import 'buddy_food_item.dart';
 import 'buddy_food_log.dart';
 import 'buddy_food_log_kind.dart';
+import 'buddy_import_metric.dart';
+import 'buddy_import_row.dart';
+import 'buddy_import_rows.dart';
+import 'buddy_import_rows_kind.dart';
+import 'buddy_measurement.dart';
+import 'buddy_measurement_kind.dart';
+import 'buddy_measurement_unit.dart';
 import 'buddy_medical.dart';
 import 'buddy_medical_kind.dart';
 import 'buddy_memory_change.dart';
@@ -47,8 +55,14 @@ import 'buddy_saved_meal_log.dart';
 import 'buddy_saved_meal_log_kind.dart';
 import 'buddy_share.dart';
 import 'buddy_stated_nutrients.dart';
+import 'buddy_suggestion.dart';
+import 'buddy_suggestion_kind.dart';
+import 'buddy_suggestion_option.dart';
 import 'buddy_weigh_in.dart';
 import 'buddy_weigh_in_kind.dart';
+import 'buddy_workout.dart';
+import 'buddy_workout_exercise.dart';
+import 'buddy_workout_kind.dart';
 
 part 'buddy_intent.freezed.dart';
 part 'buddy_intent.g.dart';
@@ -297,6 +311,48 @@ sealed class BuddyIntent with _$BuddyIntent {
     /// Day/slot to save from, for the app's local lookup.
     required BuddyDayHint? source,
   }) = BuddyIntentSavedMealCreate;
+
+  @FreezedUnionValue('measurement')
+  const factory BuddyIntent.measurement({
+    required BuddyMeasurementKind kind,
+    required String language,
+    required String script,
+    required BuddyBodyMeasurementKind measurementKind,
+    required String? customTypeId,
+    required double value,
+    required BuddyMeasurementUnit unit,
+    required String? timeHint,
+    required String? dateHint,
+  }) = BuddyIntentMeasurement;
+
+  @FreezedUnionValue('workout')
+  const factory BuddyIntent.workout({
+    required BuddyWorkoutKind kind,
+    required String? name,
+    required String language,
+    required String script,
+    required String? timeHint,
+    required String? dateHint,
+    required List<BuddyWorkoutExercise> exercises,
+  }) = BuddyIntentWorkout;
+
+  @FreezedUnionValue('importRows')
+  const factory BuddyIntent.importRows({
+    required BuddyImportRowsKind kind,
+    required String language,
+    required String script,
+    required BuddyImportMetric metric,
+    required BuddyBodyMeasurementKind? measurementKind,
+    required List<BuddyImportRow> rows,
+  }) = BuddyIntentImportRows;
+
+  @FreezedUnionValue('suggestion')
+  const factory BuddyIntent.suggestion({
+    required BuddySuggestionKind kind,
+    required String language,
+    required String script,
+    required List<BuddySuggestionOption> options,
+  }) = BuddyIntentSuggestion;
 
   const factory BuddyIntent.unrecognized() = BuddyIntentUnrecognized;
 

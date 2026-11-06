@@ -6,6 +6,10 @@ The pipeline validates bounded context, durably reserves a paid send, calls GPT-
 
 Personal names/aliases are resolved before the catalog; returned food facts and serving data come from those sources. Distinct alternatives and dimension options include the facts needed for offline taps. State mismatches retain both the source state and a stated-state dimension for client yield conversion. Only an unmatched item can expose a physically bounded, explicitly badged AI nutrient range **per 100 g**. An unmatched item without a valid range returns Clarify. No model nutrients replace a real match.
 
+## Agent turns (B25)
+
+`POST /v1/buddy/turns` and `/turns/continue` (`technical-planning/06-buddy-ai.md` §3, TD-124–TD-128) are the agentic Buddy: our own tool loop over `IChatClient`, SSE per round, a sealed continuation between phone-tool rounds and content-free ledger rows. WP1 (contract handoff) maps both routes with their bodies and answers `501`; the request records are in `Api/BuddyTurnRequests.cs` (public, with public enums: the validation generator needs them), the events, phone-tool calls and QueryPlan in `Domain/Agent/`. The intent union gains `measurement`, `workout`, `importRows` and `suggestion` (emitted from B26/A68; interpret never emits them). Interpret keeps working until A66 switches the app.
+
 ## Intents and resolution (B09a)
 
 The response carries sixteen public kinds (`technical-planning/06-buddy-ai.md` §3.2). `Application/ResolveInterpretation` dispatches each validated parsed intent to one of three resolvers:

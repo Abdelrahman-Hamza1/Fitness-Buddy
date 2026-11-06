@@ -301,5 +301,22 @@
     "editedByUser": false,
     "weekday": 6,
     "templateId": "0199e3c2-5b1a-7c3d-8e4f-0123456789c1"
+  },
+  "buddySummary": {
+    "createdAtMs": 0,
+    "origin": "synthetic",
+    "editedByUser": false,
+    "text": "synthetic summary",
+    "revision": 1,
+    "watermark": "0199e3c2-5b1a-7c3d-8e4f-0123456789d1"
+  },
+  "memoryItem": {
+    "createdAtMs": 0,
+    "origin": "synthetic",
+    "editedByUser": false,
+    "kind": "preference",
+    "key": "synthetic key",
+    "value": "synthetic value",
+    "createdFrom": "explicit"
   }
 }

@@ -517,6 +517,153 @@ const _$BuddySavedMealCreateKindEnumMap = {
   BuddySavedMealCreateKind.$unknown: r'$unknown',
 };
 
+BuddyIntentMeasurement _$BuddyIntentMeasurementFromJson(
+  Map<String, dynamic> json,
+) => BuddyIntentMeasurement(
+  kind: BuddyMeasurementKind.fromJson(json['kind'] as String),
+  language: json['language'] as String,
+  script: json['script'] as String,
+  measurementKind: BuddyBodyMeasurementKind.fromJson(
+    json['measurementKind'] as String,
+  ),
+  customTypeId: json['customTypeId'] as String?,
+  value: (json['value'] as num).toDouble(),
+  unit: BuddyMeasurementUnit.fromJson(json['unit'] as String),
+  timeHint: json['timeHint'] as String?,
+  dateHint: json['dateHint'] as String?,
+);
+
+Map<String, dynamic> _$BuddyIntentMeasurementToJson(
+  BuddyIntentMeasurement instance,
+) => <String, dynamic>{
+  'kind': _$BuddyMeasurementKindEnumMap[instance.kind]!,
+  'language': instance.language,
+  'script': instance.script,
+  'measurementKind':
+      _$BuddyBodyMeasurementKindEnumMap[instance.measurementKind]!,
+  'customTypeId': instance.customTypeId,
+  'value': instance.value,
+  'unit': _$BuddyMeasurementUnitEnumMap[instance.unit]!,
+  'timeHint': instance.timeHint,
+  'dateHint': instance.dateHint,
+};
+
+const _$BuddyMeasurementKindEnumMap = {
+  BuddyMeasurementKind.measurement: 'measurement',
+  BuddyMeasurementKind.$unknown: r'$unknown',
+};
+
+const _$BuddyBodyMeasurementKindEnumMap = {
+  BuddyBodyMeasurementKind.waist: 'waist',
+  BuddyBodyMeasurementKind.chest: 'chest',
+  BuddyBodyMeasurementKind.hips: 'hips',
+  BuddyBodyMeasurementKind.arm: 'arm',
+  BuddyBodyMeasurementKind.thigh: 'thigh',
+  BuddyBodyMeasurementKind.neck: 'neck',
+  BuddyBodyMeasurementKind.bodyFat: 'bodyFat',
+  BuddyBodyMeasurementKind.custom: 'custom',
+  BuddyBodyMeasurementKind.$unknown: r'$unknown',
+};
+
+const _$BuddyMeasurementUnitEnumMap = {
+  BuddyMeasurementUnit.cm: 'cm',
+  BuddyMeasurementUnit.valueIn: 'in',
+  BuddyMeasurementUnit.percent: 'percent',
+  BuddyMeasurementUnit.$unknown: r'$unknown',
+};
+
+BuddyIntentWorkout _$BuddyIntentWorkoutFromJson(Map<String, dynamic> json) =>
+    BuddyIntentWorkout(
+      kind: BuddyWorkoutKind.fromJson(json['kind'] as String),
+      name: json['name'] as String?,
+      language: json['language'] as String,
+      script: json['script'] as String,
+      timeHint: json['timeHint'] as String?,
+      dateHint: json['dateHint'] as String?,
+      exercises: (json['exercises'] as List<dynamic>)
+          .map((e) => BuddyWorkoutExercise.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$BuddyIntentWorkoutToJson(BuddyIntentWorkout instance) =>
+    <String, dynamic>{
+      'kind': _$BuddyWorkoutKindEnumMap[instance.kind]!,
+      'name': instance.name,
+      'language': instance.language,
+      'script': instance.script,
+      'timeHint': instance.timeHint,
+      'dateHint': instance.dateHint,
+      'exercises': instance.exercises.map((e) => e.toJson()).toList(),
+    };
+
+const _$BuddyWorkoutKindEnumMap = {
+  BuddyWorkoutKind.workout: 'workout',
+  BuddyWorkoutKind.$unknown: r'$unknown',
+};
+
+BuddyIntentImportRows _$BuddyIntentImportRowsFromJson(
+  Map<String, dynamic> json,
+) => BuddyIntentImportRows(
+  kind: BuddyImportRowsKind.fromJson(json['kind'] as String),
+  language: json['language'] as String,
+  script: json['script'] as String,
+  metric: BuddyImportMetric.fromJson(json['metric'] as String),
+  measurementKind: json['measurementKind'] == null
+      ? null
+      : BuddyBodyMeasurementKind.fromJson(json['measurementKind'] as String),
+  rows: (json['rows'] as List<dynamic>)
+      .map((e) => BuddyImportRow.fromJson(e as Map<String, dynamic>))
+      .toList(),
+);
+
+Map<String, dynamic> _$BuddyIntentImportRowsToJson(
+  BuddyIntentImportRows instance,
+) => <String, dynamic>{
+  'kind': _$BuddyImportRowsKindEnumMap[instance.kind]!,
+  'language': instance.language,
+  'script': instance.script,
+  'metric': _$BuddyImportMetricEnumMap[instance.metric]!,
+  'measurementKind':
+      _$BuddyBodyMeasurementKindEnumMap[instance.measurementKind],
+  'rows': instance.rows.map((e) => e.toJson()).toList(),
+};
+
+const _$BuddyImportRowsKindEnumMap = {
+  BuddyImportRowsKind.importRows: 'importRows',
+  BuddyImportRowsKind.$unknown: r'$unknown',
+};
+
+const _$BuddyImportMetricEnumMap = {
+  BuddyImportMetric.weight: 'weight',
+  BuddyImportMetric.measurement: 'measurement',
+  BuddyImportMetric.$unknown: r'$unknown',
+};
+
+BuddyIntentSuggestion _$BuddyIntentSuggestionFromJson(
+  Map<String, dynamic> json,
+) => BuddyIntentSuggestion(
+  kind: BuddySuggestionKind.fromJson(json['kind'] as String),
+  language: json['language'] as String,
+  script: json['script'] as String,
+  options: (json['options'] as List<dynamic>)
+      .map((e) => BuddySuggestionOption.fromJson(e as Map<String, dynamic>))
+      .toList(),
+);
+
+Map<String, dynamic> _$BuddyIntentSuggestionToJson(
+  BuddyIntentSuggestion instance,
+) => <String, dynamic>{
+  'kind': _$BuddySuggestionKindEnumMap[instance.kind]!,
+  'language': instance.language,
+  'script': instance.script,
+  'options': instance.options.map((e) => e.toJson()).toList(),
+};
+
+const _$BuddySuggestionKindEnumMap = {
+  BuddySuggestionKind.suggestion: 'suggestion',
+  BuddySuggestionKind.$unknown: r'$unknown',
+};
+
 BuddyIntentUnrecognized _$BuddyIntentUnrecognizedFromJson(
   Map<String, dynamic> json,
 ) => BuddyIntentUnrecognized($type: json['kind'] as String?);

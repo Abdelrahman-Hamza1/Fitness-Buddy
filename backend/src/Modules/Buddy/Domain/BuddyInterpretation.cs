@@ -57,6 +57,10 @@ internal sealed record BuddyStatedNutrients(BuddyNutrientBasis Basis, [property:
 [JsonDerivedType(typeof(BuddyPersonalFoodCreate), "personalFoodCreate")]
 [JsonDerivedType(typeof(BuddySavedMealLog), "savedMealLog")]
 [JsonDerivedType(typeof(BuddySavedMealCreate), "savedMealCreate")]
+[JsonDerivedType(typeof(BuddyMeasurement), "measurement")]
+[JsonDerivedType(typeof(BuddyWorkout), "workout")]
+[JsonDerivedType(typeof(BuddyImportRows), "importRows")]
+[JsonDerivedType(typeof(BuddySuggestion), "suggestion")]
 internal abstract record BuddyIntent(string Language, string Script);
 internal sealed record BuddyFoodLog(string Language, string Script, string? TimeHint, string? SlotHint,
     [property: RegularExpression(BuddyDayHints.Pattern)] string? DateHint, string? DishGroup, BuddyFoodItem[] Items) : BuddyIntent(Language, Script);
@@ -86,4 +90,30 @@ internal sealed record BuddySavedMealLog(string Language, string Script, Guid Sa
     [property: RegularExpression(BuddyDayHints.Pattern)] string? DateHint, BuddyShare? Share) : BuddyIntent(Language, Script);
 internal sealed record BuddySavedMealCreate(string Language, string Script, string Name, Guid? ActiveProposal, [property: MaxLength(30)] Guid[] Targets,
     BuddyDayHint? Source) : BuddyIntent(Language, Script);
+
+// B25 WP1: additive kinds for the agent (06 §4.3), defined now and emitted by B26 / A68. Interpret never emits them.
+internal enum BuddyBodyMeasurementKind { Waist, Chest, Hips, Arm, Thigh, Neck, BodyFat, Custom }
+internal enum BuddyMeasurementUnit { Cm, In, Percent }
+internal enum BuddyLoadUnit { Kg, Lb }
+internal enum BuddyImportMetric { Weight, Measurement }
+internal sealed record BuddyMeasurement(string Language, string Script, BuddyBodyMeasurementKind MeasurementKind, Guid? CustomTypeId,
+    [property: Range(0d, 100000d)] double Value, BuddyMeasurementUnit Unit, string? TimeHint,
+    [property: RegularExpression(BuddyDayHints.Pattern)] string? DateHint) : BuddyIntent(Language, Script);
+internal sealed record BuddyWorkout(string Language, string Script, [property: MaxLength(120)] string? Name, string? TimeHint,
+    [property: RegularExpression(BuddyDayHints.Pattern)] string? DateHint, [property: MinLength(1), MaxLength(30)] BuddyWorkoutExercise[] Exercises)
+    : BuddyIntent(Language, Script);
+/// <summary><c>exerciseRef</c> is a library code or custom exercise UUID; <c>null</c> when nothing matched (WO-033).</summary>
+internal sealed record BuddyWorkoutExercise([property: MaxLength(200)] string Mention, [property: MaxLength(64)] string? ExerciseRef,
+    [property: MaxLength(50)] BuddyWorkoutSet[] Sets, [property: MaxLength(5)] string[] Assumptions);
+internal sealed record BuddyWorkoutSet(int? Reps, [property: Range(0d, 10000d)] double? Weight, BuddyLoadUnit? Unit, bool PerDumbbell,
+    int? DurationSeconds, double? DistanceMeters);
+/// <summary>Pasted rows as read (WB-030–032); unit inference and plausibility flags are the app's.</summary>
+internal sealed record BuddyImportRows(string Language, string Script, BuddyImportMetric Metric, BuddyBodyMeasurementKind? MeasurementKind,
+    [property: MinLength(1), MaxLength(200)] BuddyImportRow[] Rows) : BuddyIntent(Language, Script);
+internal sealed record BuddyImportRow(DateOnly? Date, double? Value, [property: MaxLength(16)] string? Unit, [property: MaxLength(200)] string Original);
+/// <summary>2–4 ready food options (AI-120/121); a tap makes a food card, the app drops options that don't fit.</summary>
+internal sealed record BuddySuggestion(string Language, string Script, [property: MinLength(2), MaxLength(4)] BuddySuggestionOption[] Options)
+    : BuddyIntent(Language, Script);
+internal sealed record BuddySuggestionOption([property: MaxLength(120)] string Label, string? SlotHint,
+    [property: MinLength(1), MaxLength(10)] BuddyFoodItem[] Items);
 internal sealed record BuddyInterpretation(string PromptVersion, string Model, BuddyIntent[] Intents);

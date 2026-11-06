@@ -100,6 +100,208 @@
           }
         }
       }
+    },
+    "/v1/buddy/turns": {
+      "post": {
+        "tags": [
+          "Buddy"
+        ],
+        "operationId": "startBuddyTurn",
+        "summary": "Start a Buddy agent turn (one user message)",
+        "description": "Runs round 0 of a turn (06 §3.1): history, summary, compaction, the personal slice, profile and snapshot come from the phone; the server never reads its sync copy. Every write is a proposal event; nothing is stored. A turn costs one allowance message however many rounds or retries it takes; 429 when that reservation is denied (no provider call), a later denied send ends with done reason quota. mode weeklyReview needs the weekly block (B26) and is answered 400 until then. Any authenticated user including guests. Idempotency-Key must equal turnId. The turn is stateless on the server: content-free ledger rows and, between rounds, a sealed continuation (06 §3.4). Retry rule: after an ambiguous disconnect (no terminal event) the app may retry the same round once with the same request plus priorAttempt; it re-runs as attempt 2 without a new message charge, a third attempt streams error expired. Errors before streaming are problems; afterwards they are error events. New event types, intent kinds and enum values are additive: the app ignores unknown events and routes unknown kinds as unrecognized.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/AppVersion"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/Platform"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/DeviceId"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BuddyTurnStart"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The round as a server-sent event stream: each event has `id: {turnId}:{round}:{seq}` and `data:` one BuddyTurnEvent JSON object; a `: ping` comment every 10 s; the round ends with phoneTools, done or error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuddyTurnEvent"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "../components/problems.yaml#/components/responses/ValidationFailed"
+          },
+          "426": {
+            "$ref": "../components/problems.yaml#/components/responses/UpgradeRequired"
+          },
+          "429": {
+            "$ref": "../components/problems.yaml#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "../components/problems.yaml#/components/responses/InternalError"
+          },
+          "503": {
+            "$ref": "../components/problems.yaml#/components/responses/ServiceUnavailable"
+          },
+          "401": {
+            "description": "Invalid credentials or inactive session.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The round already ran and was acknowledged (roundAlreadyRan): start a new turn.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/buddy/turns/continue": {
+      "post": {
+        "tags": [
+          "Buddy"
+        ],
+        "operationId": "continueBuddyTurn",
+        "summary": "Continue a paused turn with phone-tool results",
+        "description": "Runs the round a phoneTools event announced (06 §3.2). results must answer exactly the pending call IDs (no missing, extra or duplicate IDs), each validating against its tool's data schema and caps; otherwise the stream answers error invalid with no send. An expired continuation (10 minutes) answers error expired. Posting round r+1 acknowledges round r. Any authenticated user including guests. Idempotency-Key must equal turnId. The turn is stateless on the server: content-free ledger rows and, between rounds, a sealed continuation (06 §3.4). Retry rule: after an ambiguous disconnect (no terminal event) the app may retry the same round once with the same request plus priorAttempt; it re-runs as attempt 2 without a new message charge, a third attempt streams error expired. Errors before streaming are problems; afterwards they are error events. New event types, intent kinds and enum values are additive: the app ignores unknown events and routes unknown kinds as unrecognized.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/AppVersion"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/Platform"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/DeviceId"
+          },
+          {
+            "$ref": "../components/headers.yaml#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BuddyTurnContinue"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The round as a server-sent event stream: each event has `id: {turnId}:{round}:{seq}` and `data:` one BuddyTurnEvent JSON object; a `: ping` comment every 10 s; the round ends with phoneTools, done or error.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuddyTurnEvent"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "../components/problems.yaml#/components/responses/ValidationFailed"
+          },
+          "426": {
+            "$ref": "../components/problems.yaml#/components/responses/UpgradeRequired"
+          },
+          "429": {
+            "$ref": "../components/problems.yaml#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "../components/problems.yaml#/components/responses/InternalError"
+          },
+          "503": {
+            "$ref": "../components/problems.yaml#/components/responses/ServiceUnavailable"
+          },
+          "401": {
+            "description": "Invalid credentials or inactive session.",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The round already ran and was acknowledged (roundAlreadyRan).",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "../components/headers.yaml#/components/headers/XRequestId"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "../components/problems.yaml#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1940,6 +2142,18 @@
           },
           {
             "$ref": "#/components/schemas/BuddySavedMealCreate"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyMeasurement"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyWorkout"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyImportRows"
+          },
+          {
+            "$ref": "#/components/schemas/BuddySuggestion"
           }
         ],
         "discriminator": {
@@ -1960,7 +2174,11 @@
             "batchClose": "#/components/schemas/BuddyBatchClose",
             "personalFoodCreate": "#/components/schemas/BuddyPersonalFoodCreate",
             "savedMealLog": "#/components/schemas/BuddySavedMealLog",
-            "savedMealCreate": "#/components/schemas/BuddySavedMealCreate"
+            "savedMealCreate": "#/components/schemas/BuddySavedMealCreate",
+            "measurement": "#/components/schemas/BuddyMeasurement",
+            "workout": "#/components/schemas/BuddyWorkout",
+            "importRows": "#/components/schemas/BuddyImportRows",
+            "suggestion": "#/components/schemas/BuddySuggestion"
           }
         }
       },
@@ -1983,6 +2201,2936 @@
             "items": {
               "$ref": "#/components/schemas/BuddyIntent"
             }
+          }
+        }
+      },
+      "BuddyBodyMeasurementKind": {
+        "type": "string",
+        "enum": [
+          "waist",
+          "chest",
+          "hips",
+          "arm",
+          "thigh",
+          "neck",
+          "bodyFat",
+          "custom"
+        ]
+      },
+      "BuddyBodyRead": {
+        "type": "string",
+        "enum": [
+          "weight",
+          "trend",
+          "measurements"
+        ]
+      },
+      "BuddyBodyUnit": {
+        "type": "string",
+        "enum": [
+          "kg",
+          "cm",
+          "percent"
+        ]
+      },
+      "BuddyBodyValue": {
+        "type": "object",
+        "required": [
+          "date",
+          "metric",
+          "value",
+          "unit"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "metric": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "weight, a measurement kind, or a custom measurement name."
+          },
+          "value": {
+            "type": "number",
+            "format": "double"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/BuddyBodyUnit"
+          }
+        }
+      },
+      "BuddyCardRevision": {
+        "type": "object",
+        "required": [
+          "proposalId",
+          "expectedRevision"
+        ],
+        "properties": {
+          "proposalId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 1,
+            "format": "int32"
+          }
+        }
+      },
+      "BuddyClaimUnit": {
+        "type": "string",
+        "enum": [
+          "kcal",
+          "g",
+          "kg",
+          "cm",
+          "percent",
+          "count",
+          "date"
+        ]
+      },
+      "BuddyClaimValue": {
+        "type": "object",
+        "description": "A number (or, for exerciseLastDate, a date) computed on the device, in canonical units. The server assigns the claim ID and renders value, unit and a code-made label from metric, operation and the plan's period (06 §4, §7).",
+        "required": [
+          "metric",
+          "operation",
+          "value",
+          "date",
+          "unit",
+          "workoutId",
+          "exerciseRef",
+          "muscleGroup"
+        ],
+        "properties": {
+          "metric": {
+            "$ref": "#/components/schemas/BuddyQueryMetric"
+          },
+          "operation": {
+            "$ref": "#/components/schemas/BuddyQueryOp"
+          },
+          "value": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "date": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/BuddyClaimUnit"
+          },
+          "workoutId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "For op last: the session found (mapped to a handle)."
+          },
+          "exerciseRef": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64
+          },
+          "muscleGroup": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64
+          }
+        }
+      },
+      "BuddyCompaction": {
+        "type": "object",
+        "required": [
+          "evicted",
+          "previousRevision"
+        ],
+        "properties": {
+          "evicted": {
+            "type": "array",
+            "maxItems": 24,
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/BuddyHistoryEntry"
+            }
+          },
+          "previousRevision": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 0,
+            "format": "int32",
+            "description": "The summary revision the phone holds (0 when it has none); the returned summary has previousRevision + 1 and is stored only if the phone's revision still matches."
+          }
+        }
+      },
+      "BuddyConversationSummary": {
+        "type": "object",
+        "required": [
+          "text",
+          "revision",
+          "watermark"
+        ],
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 1500
+          },
+          "revision": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 1,
+            "format": "int32"
+          },
+          "watermark": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The last summarised chat message ID."
+          }
+        }
+      },
+      "BuddyCoverage": {
+        "type": "object",
+        "required": [
+          "days",
+          "loggedDays"
+        ],
+        "properties": {
+          "days": {
+            "type": "integer",
+            "maximum": 400,
+            "minimum": 0,
+            "format": "int32"
+          },
+          "loggedDays": {
+            "type": "integer",
+            "maximum": 400,
+            "minimum": 0,
+            "format": "int32"
+          }
+        }
+      },
+      "BuddyDateRange": {
+        "type": "object",
+        "required": [
+          "from",
+          "to"
+        ],
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "BuddyDayTargets": {
+        "type": "object",
+        "required": [
+          "kcal",
+          "proteinG",
+          "carbsG",
+          "fatG",
+          "fiberG"
+        ],
+        "properties": {
+          "kcal": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "proteinG": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "carbsG": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "fatG": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "fiberG": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "BuddyDayTotals": {
+        "type": "object",
+        "description": "Today's eaten totals, with targets when set.",
+        "required": [
+          "kcal",
+          "proteinG",
+          "carbsG",
+          "fatG",
+          "fiberG",
+          "targets"
+        ],
+        "properties": {
+          "kcal": {
+            "type": "number",
+            "format": "double"
+          },
+          "proteinG": {
+            "type": "number",
+            "format": "double"
+          },
+          "carbsG": {
+            "type": "number",
+            "format": "double"
+          },
+          "fatG": {
+            "type": "number",
+            "format": "double"
+          },
+          "fiberG": {
+            "type": "number",
+            "format": "double"
+          },
+          "targets": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyDayTargets"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "BuddyDiaryRow": {
+        "type": "object",
+        "required": [
+          "name",
+          "id",
+          "date",
+          "slot",
+          "grams",
+          "kcal"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "slot": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "grams": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "kcal": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "BuddyDoneEvent": {
+        "type": "object",
+        "description": "Ends the turn.",
+        "required": [
+          "type",
+          "reason",
+          "usage"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "done"
+            ]
+          },
+          "reason": {
+            "$ref": "#/components/schemas/BuddyDoneReason"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/BuddyTurnUsage"
+          }
+        }
+      },
+      "BuddyDoneReason": {
+        "type": "string",
+        "enum": [
+          "answered",
+          "asked",
+          "declined",
+          "limit",
+          "quota"
+        ]
+      },
+      "BuddyEnergyUnit": {
+        "type": "string",
+        "enum": [
+          "kcal"
+        ]
+      },
+      "BuddyErrorEvent": {
+        "type": "object",
+        "description": "Ends the round with an error: unavailable, timeout, invalid (continue results don't match the pending calls), roundAlreadyRan, expired (a third attempt or an expired continuation). The message stays pending or failed (AI-177).",
+        "required": [
+          "type",
+          "code"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "error"
+            ]
+          },
+          "code": {
+            "$ref": "#/components/schemas/BuddyTurnErrorCode"
+          }
+        }
+      },
+      "BuddyExercisePr": {
+        "type": "object",
+        "required": [
+          "name",
+          "exerciseRef",
+          "kg",
+          "reps",
+          "date"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "exerciseRef": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "kg": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "reps": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "BuddyFindMyFoodsArgs": {
+        "type": "object",
+        "required": [
+          "query",
+          "kinds"
+        ],
+        "properties": {
+          "query": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1
+          },
+          "kinds": {
+            "type": "array",
+            "maxItems": 4,
+            "items": {
+              "$ref": "#/components/schemas/BuddyPersonalKind"
+            },
+            "description": "Empty means every kind."
+          }
+        }
+      },
+      "BuddyFindMyFoodsCall": {
+        "type": "object",
+        "description": "Personal foods, saved meals, batches and usual meals by name or alias (≤ 20 matches).",
+        "required": [
+          "name",
+          "callId",
+          "args"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "findMyFoods"
+            ]
+          },
+          "callId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "args": {
+            "$ref": "#/components/schemas/BuddyFindMyFoodsArgs"
+          }
+        }
+      },
+      "BuddyFindMyFoodsData": {
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/BuddyPersonalItem"
+            }
+          }
+        }
+      },
+      "BuddyFindMyFoodsResult": {
+        "type": "object",
+        "required": [
+          "name",
+          "callId",
+          "ok",
+          "error",
+          "data"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "findMyFoods"
+            ]
+          },
+          "callId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyPhoneToolError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "data": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyFindMyFoodsData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "BuddyHabitDefault": {
+        "type": "object",
+        "required": [
+          "kind",
+          "subject",
+          "value"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "subject": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 200
+          }
+        }
+      },
+      "BuddyHistoryEntry": {
+        "type": "object",
+        "required": [
+          "messageId",
+          "role",
+          "text",
+          "outcomes"
+        ],
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "role": {
+            "$ref": "#/components/schemas/BuddyHistoryRole"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "The message or reply text as shown (≤ 1000 characters; the phone truncates longer ones)."
+          },
+          "outcomes": {
+            "type": "array",
+            "maxItems": 6,
+            "items": {
+              "$ref": "#/components/schemas/BuddyOutcome"
+            }
+          }
+        }
+      },
+      "BuddyHistoryRole": {
+        "type": "string",
+        "enum": [
+          "user",
+          "buddy"
+        ]
+      },
+      "BuddyImportMetric": {
+        "type": "string",
+        "enum": [
+          "weight",
+          "measurement"
+        ]
+      },
+      "BuddyImportRow": {
+        "type": "object",
+        "required": [
+          "date",
+          "value",
+          "unit",
+          "original"
+        ],
+        "properties": {
+          "date": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "value": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "unit": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 16,
+            "description": "The unit as written, or null (\"110k\" keeps \"k\")."
+          },
+          "original": {
+            "type": "string",
+            "maxLength": 200
+          }
+        }
+      },
+      "BuddyImportRows": {
+        "type": "object",
+        "description": "Pasted dated rows as read (B26, WB-030–032); the app infers units and flags problem rows in its review table.",
+        "required": [
+          "kind",
+          "language",
+          "script",
+          "metric",
+          "measurementKind",
+          "rows"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "importRows"
+            ]
+          },
+          "language": {
+            "type": "string"
+          },
+          "script": {
+            "type": "string"
+          },
+          "metric": {
+            "$ref": "#/components/schemas/BuddyImportMetric"
+          },
+          "measurementKind": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyBodyMeasurementKind"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rows": {
+            "type": "array",
+            "maxItems": 200,
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/BuddyImportRow"
+            }
+          }
+        }
+      },
+      "BuddyLengthUnit": {
+        "type": "string",
+        "enum": [
+          "cm",
+          "in"
+        ]
+      },
+      "BuddyLinkScreen": {
+        "type": "string",
+        "enum": [
+          "diary",
+          "weightGraph",
+          "progress",
+          "exercise",
+          "workout"
+        ]
+      },
+      "BuddyLoadUnit": {
+        "type": "string",
+        "enum": [
+          "kg",
+          "lb"
+        ]
+      },
+      "BuddyMassUnit": {
+        "type": "string",
+        "enum": [
+          "kg",
+          "lb"
+        ]
+      },
+      "BuddyMeasurement": {
+        "type": "object",
+        "description": "A body measurement to log (B26). customTypeId is set exactly for kind custom.",
+        "required": [
+          "kind",
+          "language",
+          "script",
+          "measurementKind",
+          "customTypeId",
+          "value",
+          "unit",
+          "timeHint",
+          "dateHint"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "measurement"
+            ]
+          },
+          "language": {
+            "type": "string"
+          },
+          "script": {
+            "type": "string"
+          },
+          "measurementKind": {
+            "$ref": "#/components/schemas/BuddyBodyMeasurementKind"
+          },
+          "customTypeId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "value": {
+            "type": "number",
+            "maximum": 100000,
+            "minimum": 0,
+            "format": "double"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/BuddyMeasurementUnit"
+          },
+          "timeHint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "dateHint": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^(today|yesterday|daysAgo:([2-9]|[1-9][0-9]{1,2})|lastWeekday:(mon|tue|wed|thu|fri|sat|sun)|date:([0-9]{4}-)?(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$"
+          }
+        }
+      },
+      "BuddyMeasurementUnit": {
+        "type": "string",
+        "enum": [
+          "cm",
+          "in",
+          "percent"
+        ]
+      },
+      "BuddyNutrientsRequest": {
+        "type": "object",
+        "description": "Nutrients sent by the phone (same members as BuddyNutrients).",
+        "required": [
+          "kcal",
+          "proteinG",
+          "carbsG",
+          "fatG",
+          "fiberG"
+        ],
+        "properties": {
+          "kcal": {
+            "type": "number",
+            "format": "double"
+          },
+          "proteinG": {
+            "type": "number",
+            "format": "double"
+          },
+          "carbsG": {
+            "type": "number",
+            "format": "double"
+          },
+          "fatG": {
+            "type": "number",
+            "format": "double"
+          },
+          "fiberG": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "BuddyOpenCard": {
+        "type": "object",
+        "required": [
+          "kind",
+          "proposalId",
+          "revision",
+          "summary"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "proposalId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 1,
+            "format": "int32"
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 200
+          }
+        }
+      },
+      "BuddyOutcome": {
+        "type": "object",
+        "description": "What happened to one card of a history entry.",
+        "required": [
+          "kind",
+          "proposalId",
+          "status",
+          "label"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "maxLength": 32,
+            "description": "The card's intent kind (open, ≤ 32)."
+          },
+          "proposalId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BuddyOutcomeStatus"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 120,
+            "description": "The card's compact summary as the phone shows it."
+          }
+        }
+      },
+      "BuddyOutcomeStatus": {
+        "type": "string",
+        "enum": [
+          "confirmed",
+          "edited",
+          "discarded",
+          "pending"
+        ]
+      },
+      "BuddyPeriodKind": {
+        "type": "string",
+        "enum": [
+          "today",
+          "yesterday",
+          "thisWeek",
+          "lastWeek",
+          "thisMonth",
+          "lastMonth",
+          "lastNDays",
+          "since",
+          "range"
+        ]
+      },
+      "BuddyPersonalItem": {
+        "type": "object",
+        "required": [
+          "kind",
+          "ref",
+          "names",
+          "aliases",
+          "state",
+          "per100",
+          "servings",
+          "portions"
+        ],
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/BuddyPersonalKind"
+          },
+          "ref": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The local row ID (a usual meal uses its representative row's ID). Mapped to a handle; never sent to the model."
+          },
+          "names": {
+            "type": "array",
+            "maxItems": 5,
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "aliases": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "string"
+            }
+          },
+          "state": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 32
+          },
+          "per100": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyNutrientsRequest"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Nutrients per 100 g (personal foods, batches), or null."
+          },
+          "servings": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/BuddyServing"
+            }
+          },
+          "portions": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "$ref": "#/components/schemas/BuddyPortionFacts"
+            },
+            "description": "Named portions with their nutrients: a saved meal's whole meal, a batch's portion or remaining amount."
+          }
+        }
+      },
+      "BuddyPersonalKind": {
+        "type": "string",
+        "enum": [
+          "personalFood",
+          "savedMeal",
+          "batch",
+          "usual"
+        ]
+      },
+      "BuddyPhoneToolCall": {
+        "description": "One phone-tool call of a phoneTools event, discriminated by the tool name. The phone enforces each tool's scope whatever the arguments say (06 §4.2).",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/BuddyFindMyFoodsCall"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyReadDiaryCall"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyReadBodyCall"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyReadWorkoutsCall"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyReadMemoryCall"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyQueryDataCall"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "name",
+          "mapping": {
+            "findMyFoods": "#/components/schemas/BuddyFindMyFoodsCall",
+            "readDiary": "#/components/schemas/BuddyReadDiaryCall",
+            "readBody": "#/components/schemas/BuddyReadBodyCall",
+            "readWorkouts": "#/components/schemas/BuddyReadWorkoutsCall",
+            "readMemory": "#/components/schemas/BuddyReadMemoryCall",
+            "queryData": "#/components/schemas/BuddyQueryDataCall"
+          }
+        }
+      },
+      "BuddyPhoneToolError": {
+        "type": "string",
+        "description": "budgetExceeded: the turn's disclosure budget (120 rows, 48 KiB across all phone results) is spent; unsupportedPlan: the QueryPlan isn't a valid combination; invalidArgs; unavailable. Additive.",
+        "enum": [
+          "budgetExceeded",
+          "unsupportedPlan",
+          "invalidArgs",
+          "unavailable"
+        ]
+      },
+      "BuddyPhoneToolResult": {
+        "description": "One phone-tool result, discriminated by the tool name. ok false carries an error code and null data.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/BuddyFindMyFoodsResult"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyReadDiaryResult"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyReadBodyResult"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyReadWorkoutsResult"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyReadMemoryResult"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyQueryDataResult"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "name",
+          "mapping": {
+            "findMyFoods": "#/components/schemas/BuddyFindMyFoodsResult",
+            "readDiary": "#/components/schemas/BuddyReadDiaryResult",
+            "readBody": "#/components/schemas/BuddyReadBodyResult",
+            "readWorkouts": "#/components/schemas/BuddyReadWorkoutsResult",
+            "readMemory": "#/components/schemas/BuddyReadMemoryResult",
+            "queryData": "#/components/schemas/BuddyQueryDataResult"
+          }
+        }
+      },
+      "BuddyPhoneToolsEvent": {
+        "type": "object",
+        "description": "Ends the round: the phone runs the calls under its scopes and posts continue with round and continuation.",
+        "required": [
+          "type",
+          "round",
+          "continuation",
+          "calls"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "phoneTools"
+            ]
+          },
+          "round": {
+            "type": "integer",
+            "maximum": 3,
+            "minimum": 1,
+            "format": "int32"
+          },
+          "continuation": {
+            "type": "string",
+            "maxLength": 262144,
+            "minLength": 1
+          },
+          "calls": {
+            "type": "array",
+            "maxItems": 6,
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/BuddyPhoneToolCall"
+            }
+          }
+        }
+      },
+      "BuddyPortionFacts": {
+        "type": "object",
+        "required": [
+          "label",
+          "g",
+          "nutrients"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "g": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "nutrients": {
+            "$ref": "#/components/schemas/BuddyNutrientsRequest"
+          }
+        }
+      },
+      "BuddyPriorAttempt": {
+        "type": "object",
+        "description": "Retries only (06 §3.4): the failed attempt's cards. Confirmed and discarded ones are passed to the model as already handled, pending ones as still open.",
+        "required": [
+          "attempt",
+          "cards"
+        ],
+        "properties": {
+          "attempt": {
+            "type": "integer",
+            "maximum": 2,
+            "minimum": 1,
+            "format": "int32"
+          },
+          "cards": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "$ref": "#/components/schemas/BuddyPriorCard"
+            }
+          }
+        }
+      },
+      "BuddyPriorCard": {
+        "type": "object",
+        "required": [
+          "proposalId",
+          "status",
+          "line"
+        ],
+        "properties": {
+          "proposalId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BuddyPriorCardStatus"
+          },
+          "line": {
+            "type": "string",
+            "maxLength": 120,
+            "description": "The card's compact summary."
+          }
+        }
+      },
+      "BuddyPriorCardStatus": {
+        "type": "string",
+        "enum": [
+          "confirmed",
+          "discarded",
+          "pending"
+        ]
+      },
+      "BuddyProposalEvent": {
+        "type": "object",
+        "description": "A card. proposalId is UUIDv5 of (turnId, round, attempt, index), so a retry never reuses an earlier attempt's IDs. An update keeps an open card's proposalId with revision + 1 and names it in replaces; the phone drops it when expectedRevision isn't the card's current pending revision.",
+        "required": [
+          "type",
+          "proposalId",
+          "revision",
+          "replaces",
+          "intent"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "proposal"
+            ]
+          },
+          "proposalId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 1,
+            "format": "int32"
+          },
+          "replaces": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyCardRevision"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "intent": {
+            "$ref": "#/components/schemas/BuddyIntent"
+          }
+        }
+      },
+      "BuddyQueryDataCall": {
+        "type": "object",
+        "description": "A question about the user's data as a QueryPlan, answered by the device's QueryEngine with aggregates only (periods ≤ 400 days).",
+        "required": [
+          "name",
+          "callId",
+          "args"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "queryData"
+            ]
+          },
+          "callId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "args": {
+            "$ref": "#/components/schemas/BuddyQueryPlan"
+          }
+        }
+      },
+      "BuddyQueryDataResult": {
+        "type": "object",
+        "required": [
+          "name",
+          "callId",
+          "ok",
+          "error",
+          "data"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "queryData"
+            ]
+          },
+          "callId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyPhoneToolError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "data": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyQueryResultData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "BuddyQueryFilters": {
+        "type": "object",
+        "required": [
+          "slot",
+          "exerciseRef",
+          "muscleGroup",
+          "completeDaysOnly",
+          "weekdays"
+        ],
+        "properties": {
+          "slot": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "exerciseRef": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64
+          },
+          "muscleGroup": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64,
+            "description": "A library muscle group (e.g. legs), for op last."
+          },
+          "completeDaysOnly": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "null means the default: true for averages."
+          },
+          "weekdays": {
+            "type": "array",
+            "maxItems": 7,
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ISO weekdays 1 (Monday) to 7; empty means every day."
+          }
+        }
+      },
+      "BuddyQueryLink": {
+        "type": "object",
+        "required": [
+          "screen",
+          "date",
+          "from",
+          "to",
+          "exerciseRef",
+          "workoutId"
+        ],
+        "properties": {
+          "screen": {
+            "$ref": "#/components/schemas/BuddyLinkScreen"
+          },
+          "date": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "from": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "to": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "exerciseRef": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64
+          },
+          "workoutId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "BuddyQueryMetric": {
+        "type": "string",
+        "enum": [
+          "kcal",
+          "protein",
+          "carbs",
+          "fat",
+          "fiber",
+          "weight",
+          "weightTrend",
+          "measurement",
+          "workouts",
+          "sets",
+          "volume",
+          "exerciseLastDate",
+          "exercisePr",
+          "weighIns",
+          "loggedDays"
+        ]
+      },
+      "BuddyQueryOp": {
+        "type": "string",
+        "enum": [
+          "total",
+          "average",
+          "remaining",
+          "latest",
+          "change",
+          "count",
+          "max",
+          "min",
+          "last"
+        ]
+      },
+      "BuddyQueryPeriod": {
+        "type": "object",
+        "description": "today | yesterday | thisWeek | lastWeek | thisMonth | lastMonth; lastNDays with days 1–400; since with since ramadanStart | phaseStart | date (then from is the date); range with from and to (inclusive, ≤ 400 days). Members a kind doesn't use are null.",
+        "required": [
+          "kind",
+          "days",
+          "since",
+          "from",
+          "to"
+        ],
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/BuddyPeriodKind"
+          },
+          "days": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "maximum": 400,
+            "minimum": 1,
+            "format": "int32"
+          },
+          "since": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddySinceEvent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "from": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "to": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          }
+        }
+      },
+      "BuddyQueryPlan": {
+        "type": "object",
+        "description": "The frozen QueryPlan grammar (06 §6.3). Valid combinations (anything else is ok:false unsupportedPlan): remaining only with period today and kcal/protein/carbs/fat/fiber; total, average, max, min with kcal/protein/carbs/fat/fiber, sets, volume; latest, change with weight, weightTrend, measurement, exercisePr; count with workouts, sets, weighIns, loggedDays; last only with exerciseLastDate, filtered by exerciseRef or muscleGroup. Every period is at most 400 days.",
+        "required": [
+          "metric",
+          "measurementType",
+          "op",
+          "period",
+          "filters"
+        ],
+        "properties": {
+          "metric": {
+            "$ref": "#/components/schemas/BuddyQueryMetric"
+          },
+          "measurementType": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64,
+            "description": "With metric measurement: a built-in kind (waist, chest, hips, arm, thigh, neck, bodyFat) or a custom type UUID; otherwise null."
+          },
+          "op": {
+            "$ref": "#/components/schemas/BuddyQueryOp"
+          },
+          "period": {
+            "$ref": "#/components/schemas/BuddyQueryPeriod"
+          },
+          "filters": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyQueryFilters"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "BuddyQueryResultData": {
+        "type": "object",
+        "description": "QueryEngine output: computed claims, how many days the period covered and how many were logged, and an optional screen link.",
+        "required": [
+          "claims",
+          "coverage",
+          "link"
+        ],
+        "properties": {
+          "claims": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/BuddyClaimValue"
+            }
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/BuddyCoverage"
+          },
+          "link": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyQueryLink"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "BuddyQuestionEvent": {
+        "type": "object",
+        "description": "A question with 2–4 option chips (AI-061/166); a tap is the next message.",
+        "required": [
+          "type",
+          "text",
+          "options"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "question"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1
+          },
+          "options": {
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 2,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "BuddyReadBodyArgs": {
+        "type": "object",
+        "required": [
+          "range",
+          "what"
+        ],
+        "properties": {
+          "range": {
+            "$ref": "#/components/schemas/BuddyDateRange"
+          },
+          "what": {
+            "$ref": "#/components/schemas/BuddyBodyRead"
+          }
+        }
+      },
+      "BuddyReadBodyCall": {
+        "type": "object",
+        "description": "Weight and measurements: raw values over at most 31 days (≤ 31 rows); a weight trend over at most 365 days as aggregates.",
+        "required": [
+          "name",
+          "callId",
+          "args"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "readBody"
+            ]
+          },
+          "callId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "args": {
+            "$ref": "#/components/schemas/BuddyReadBodyArgs"
+          }
+        }
+      },
+      "BuddyReadBodyData": {
+        "type": "object",
+        "required": [
+          "values",
+          "trend"
+        ],
+        "properties": {
+          "values": {
+            "type": "array",
+            "maxItems": 31,
+            "items": {
+              "$ref": "#/components/schemas/BuddyBodyValue"
+            },
+            "description": "Canonical units: kg for weight, cm or percent for measurements."
+          },
+          "trend": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyWeightTrend"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "BuddyReadBodyResult": {
+        "type": "object",
+        "required": [
+          "name",
+          "callId",
+          "ok",
+          "error",
+          "data"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "readBody"
+            ]
+          },
+          "callId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyPhoneToolError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "data": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyReadBodyData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "BuddyReadDiaryArgs": {
+        "type": "object",
+        "required": [
+          "dateHint",
+          "range",
+          "slotHint",
+          "query"
+        ],
+        "properties": {
+          "dateHint": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^(today|yesterday|daysAgo:([2-9]|[1-9][0-9]{1,2})|lastWeekday:(mon|tue|wed|thu|fri|sat|sun)|date:([0-9]{4}-)?(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$",
+            "description": "A day in the closed day grammar (as on intents), or null when range is set."
+          },
+          "range": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyDateRange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "slotHint": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "query": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          }
+        }
+      },
+      "BuddyReadDiaryCall": {
+        "type": "object",
+        "description": "Diary rows: a range of at most 31 days, at most 40 rows.",
+        "required": [
+          "name",
+          "callId",
+          "args"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "readDiary"
+            ]
+          },
+          "callId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "args": {
+            "$ref": "#/components/schemas/BuddyReadDiaryArgs"
+          }
+        }
+      },
+      "BuddyReadDiaryData": {
+        "type": "object",
+        "required": [
+          "entries",
+          "truncated"
+        ],
+        "properties": {
+          "entries": {
+            "type": "array",
+            "maxItems": 40,
+            "items": {
+              "$ref": "#/components/schemas/BuddyDiaryRow"
+            }
+          },
+          "truncated": {
+            "type": "boolean",
+            "description": "True when the scope cut the rows."
+          }
+        }
+      },
+      "BuddyReadDiaryResult": {
+        "type": "object",
+        "required": [
+          "name",
+          "callId",
+          "ok",
+          "error",
+          "data"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "readDiary"
+            ]
+          },
+          "callId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyPhoneToolError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "data": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyReadDiaryData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "BuddyReadMemoryArgs": {
+        "type": "object",
+        "required": [
+          "topic"
+        ],
+        "properties": {
+          "topic": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          }
+        }
+      },
+      "BuddyReadMemoryCall": {
+        "type": "object",
+        "description": "Memory items (≤ 30).",
+        "required": [
+          "name",
+          "callId",
+          "args"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "readMemory"
+            ]
+          },
+          "callId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "args": {
+            "$ref": "#/components/schemas/BuddyReadMemoryArgs"
+          }
+        }
+      },
+      "BuddyReadMemoryData": {
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "$ref": "#/components/schemas/BuddyMemory"
+            }
+          }
+        }
+      },
+      "BuddyReadMemoryResult": {
+        "type": "object",
+        "required": [
+          "name",
+          "callId",
+          "ok",
+          "error",
+          "data"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "readMemory"
+            ]
+          },
+          "callId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyPhoneToolError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "data": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyReadMemoryData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "BuddyReadWorkoutsArgs": {
+        "type": "object",
+        "required": [
+          "range",
+          "exerciseRef"
+        ],
+        "properties": {
+          "range": {
+            "$ref": "#/components/schemas/BuddyDateRange"
+          },
+          "exerciseRef": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64
+          }
+        }
+      },
+      "BuddyReadWorkoutsCall": {
+        "type": "object",
+        "description": "Workout sessions over at most 90 days, at most 15 sessions, with PRs.",
+        "required": [
+          "name",
+          "callId",
+          "args"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "readWorkouts"
+            ]
+          },
+          "callId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "args": {
+            "$ref": "#/components/schemas/BuddyReadWorkoutsArgs"
+          }
+        }
+      },
+      "BuddyReadWorkoutsData": {
+        "type": "object",
+        "required": [
+          "sessions",
+          "prs"
+        ],
+        "properties": {
+          "sessions": {
+            "type": "array",
+            "maxItems": 15,
+            "items": {
+              "$ref": "#/components/schemas/BuddyWorkoutSessionRow"
+            }
+          },
+          "prs": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/BuddyExercisePr"
+            }
+          }
+        }
+      },
+      "BuddyReadWorkoutsResult": {
+        "type": "object",
+        "required": [
+          "name",
+          "callId",
+          "ok",
+          "error",
+          "data"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "readWorkouts"
+            ]
+          },
+          "callId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyPhoneToolError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "data": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyReadWorkoutsData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "BuddySetRow": {
+        "type": "object",
+        "required": [
+          "reps",
+          "kg",
+          "durationSeconds",
+          "distanceMeters"
+        ],
+        "properties": {
+          "reps": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "kg": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "durationSeconds": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "distanceMeters": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "BuddySinceEvent": {
+        "type": "string",
+        "enum": [
+          "ramadanStart",
+          "phaseStart",
+          "date"
+        ]
+      },
+      "BuddyStepCode": {
+        "type": "string",
+        "enum": [
+          "searchingFoods",
+          "readingDiary",
+          "readingYourFoods",
+          "readingBody",
+          "readingWorkouts",
+          "readingMemory",
+          "computing",
+          "checkingFit",
+          "writingReply",
+          "summarizing"
+        ]
+      },
+      "BuddyStepEvent": {
+        "type": "object",
+        "description": "A live step line (AI-170); the app shows an ARB text per code.",
+        "required": [
+          "type",
+          "code"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "step"
+            ]
+          },
+          "code": {
+            "$ref": "#/components/schemas/BuddyStepCode"
+          }
+        }
+      },
+      "BuddySuggestion": {
+        "type": "object",
+        "description": "2–4 food options (A68, AI-120/121); a tap creates a food card, the app drops options that don't fit.",
+        "required": [
+          "kind",
+          "language",
+          "script",
+          "options"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "suggestion"
+            ]
+          },
+          "language": {
+            "type": "string"
+          },
+          "script": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 2,
+            "items": {
+              "$ref": "#/components/schemas/BuddySuggestionOption"
+            }
+          }
+        }
+      },
+      "BuddySuggestionOption": {
+        "type": "object",
+        "required": [
+          "label",
+          "slotHint",
+          "items"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "slotHint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/BuddyFoodItem"
+            }
+          }
+        }
+      },
+      "BuddySummaryEvent": {
+        "type": "object",
+        "description": "The new conversation summary after a compact request (always before done).",
+        "required": [
+          "type",
+          "text",
+          "revision",
+          "watermark"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "summary"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 1500,
+            "minLength": 1
+          },
+          "revision": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": 1,
+            "format": "int32"
+          },
+          "watermark": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "BuddyTextEvent": {
+        "type": "object",
+        "description": "A chunk of the rendered, guarded reply; chunks arrive in order.",
+        "required": [
+          "type",
+          "text"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "text"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1
+          }
+        }
+      },
+      "BuddyTraceEvent": {
+        "type": "object",
+        "description": "Dev trace (AI-172): tool, arguments and result summary per step, for the phone only.",
+        "required": [
+          "type",
+          "steps"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trace"
+            ]
+          },
+          "steps": {
+            "type": "array",
+            "maxItems": 64,
+            "items": {
+              "$ref": "#/components/schemas/BuddyTraceStep"
+            }
+          }
+        }
+      },
+      "BuddyTraceStep": {
+        "type": "object",
+        "required": [
+          "tool",
+          "args",
+          "resultSummary",
+          "ms",
+          "tokens",
+          "usd"
+        ],
+        "properties": {
+          "tool": {
+            "type": "string"
+          },
+          "args": {
+            "type": "string"
+          },
+          "resultSummary": {
+            "type": "string"
+          },
+          "ms": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tokens": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "usd": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "BuddyTurnContinue": {
+        "type": "object",
+        "description": "Answers a paused round's phone tools (06 §3.2).",
+        "required": [
+          "turnId",
+          "round",
+          "continuation",
+          "results",
+          "priorAttempt"
+        ],
+        "properties": {
+          "turnId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "round": {
+            "type": "integer",
+            "maximum": 3,
+            "minimum": 1,
+            "format": "int32",
+            "description": "The round the phoneTools event announced (1–3)."
+          },
+          "continuation": {
+            "type": "string",
+            "maxLength": 262144,
+            "minLength": 1,
+            "description": "The phoneTools event's sealed continuation, unchanged."
+          },
+          "results": {
+            "type": "array",
+            "maxItems": 6,
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/BuddyPhoneToolResult"
+            }
+          },
+          "priorAttempt": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyPriorAttempt"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "BuddyTurnErrorCode": {
+        "type": "string",
+        "enum": [
+          "unavailable",
+          "timeout",
+          "invalid",
+          "roundAlreadyRan",
+          "expired"
+        ]
+      },
+      "BuddyTurnEvent": {
+        "description": "One event of a turn stream (06 §3.3). Text is buffered until it passes the claim renderer and guards; summary always precedes done.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/BuddyStepEvent"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyTextEvent"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyProposalEvent"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyQuestionEvent"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyPhoneToolsEvent"
+          },
+          {
+            "$ref": "#/components/schemas/BuddySummaryEvent"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyTraceEvent"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyDoneEvent"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyErrorEvent"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "step": "#/components/schemas/BuddyStepEvent",
+            "text": "#/components/schemas/BuddyTextEvent",
+            "proposal": "#/components/schemas/BuddyProposalEvent",
+            "question": "#/components/schemas/BuddyQuestionEvent",
+            "phoneTools": "#/components/schemas/BuddyPhoneToolsEvent",
+            "summary": "#/components/schemas/BuddySummaryEvent",
+            "trace": "#/components/schemas/BuddyTraceEvent",
+            "done": "#/components/schemas/BuddyDoneEvent",
+            "error": "#/components/schemas/BuddyErrorEvent"
+          }
+        }
+      },
+      "BuddyTurnMessage": {
+        "type": "object",
+        "required": [
+          "text",
+          "image"
+        ],
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1
+          },
+          "image": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 400000,
+            "description": "Optional meal photo: a base64 JPEG, at most 1024 px on its long side. Never stored."
+          }
+        }
+      },
+      "BuddyTurnMode": {
+        "type": "string",
+        "enum": [
+          "chat",
+          "weeklyReview"
+        ]
+      },
+      "BuddyTurnProfile": {
+        "type": "object",
+        "required": [
+          "memory",
+          "defaults",
+          "halal",
+          "units",
+          "ramadan"
+        ],
+        "properties": {
+          "memory": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "$ref": "#/components/schemas/BuddyMemory"
+            },
+            "description": "Up to 30 memory items (more via readMemory)."
+          },
+          "defaults": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/BuddyHabitDefault"
+            },
+            "description": "Confirmed defaults and learned habits (weighing state, cooking fat, variants, portions), the same ones the ProposalEngine uses."
+          },
+          "halal": {
+            "type": "boolean"
+          },
+          "units": {
+            "$ref": "#/components/schemas/BuddyUnits"
+          },
+          "ramadan": {
+            "$ref": "#/components/schemas/BuddyRamadan"
+          }
+        }
+      },
+      "BuddyTurnReference": {
+        "type": "object",
+        "required": [
+          "turnId"
+        ],
+        "properties": {
+          "turnId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "BuddyTurnSnapshot": {
+        "type": "object",
+        "required": [
+          "now",
+          "tzOffsetMin",
+          "slots",
+          "today",
+          "openCards"
+        ],
+        "properties": {
+          "now": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "tzOffsetMin": {
+            "type": "integer",
+            "maximum": 840,
+            "minimum": -840,
+            "format": "int32"
+          },
+          "slots": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "$ref": "#/components/schemas/BuddySlot"
+            }
+          },
+          "today": {
+            "$ref": "#/components/schemas/BuddyDayTotals"
+          },
+          "openCards": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "$ref": "#/components/schemas/BuddyOpenCard"
+            },
+            "description": "Up to 5 still-pending cards a follow-up may update with replaces."
+          }
+        }
+      },
+      "BuddyTurnStart": {
+        "type": "object",
+        "description": "Starts a turn (06 §3.1). Lists are bounded by the schema; texts are user content and never logged.",
+        "required": [
+          "turnId",
+          "mode",
+          "message",
+          "history",
+          "summary",
+          "compact",
+          "personal",
+          "profile",
+          "snapshot",
+          "ackTurn",
+          "priorAttempt",
+          "trace"
+        ],
+        "properties": {
+          "turnId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The user chat message ID (UUIDv7); equals Idempotency-Key and names the turn in SSE ids and proposal IDs."
+          },
+          "mode": {
+            "$ref": "#/components/schemas/BuddyTurnMode",
+            "description": "chat, or weeklyReview (B26: aggregates only, no phone tools)."
+          },
+          "message": {
+            "$ref": "#/components/schemas/BuddyTurnMessage"
+          },
+          "history": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "$ref": "#/components/schemas/BuddyHistoryEntry"
+            },
+            "description": "The last 12 chat entries, oldest first, with their card outcomes (TD-126)."
+          },
+          "summary": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyConversationSummary"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The phone's current conversation summary, or null."
+          },
+          "compact": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyCompaction"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Entries evicted past the summary's watermark (the phone owns compaction, 06 §6.1); the server answers with a summary event before done."
+          },
+          "personal": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/BuddyPersonalItem"
+            },
+            "description": "The personal slice: up to 20 personal foods, saved meals, open batches and usual meals pre-matched on the phone against the message tokens (fb_text normalization), with their facts. Resolved before the catalog (AI-070)."
+          },
+          "profile": {
+            "$ref": "#/components/schemas/BuddyTurnProfile"
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/BuddyTurnSnapshot"
+          },
+          "ackTurn": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyTurnReference"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The previous turn, acknowledging its final round (06 §3.4); null when there is none."
+          },
+          "priorAttempt": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyPriorAttempt"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Retries only: the cards the earlier attempt of this round produced and what happened to them."
+          },
+          "trace": {
+            "type": "boolean",
+            "description": "Dev builds only; honoured only when the server enables Buddy:Agent:TraceEnabled. Adds trace events for the phone, never logged."
+          }
+        },
+        "additionalProperties": false
+      },
+      "BuddyTurnUsage": {
+        "type": "object",
+        "required": [
+          "sends",
+          "inputTokens",
+          "outputTokens"
+        ],
+        "properties": {
+          "sends": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "inputTokens": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "outputTokens": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "BuddyUnits": {
+        "type": "object",
+        "description": "Display units for code-rendered claims. Energy is kcal only (LC-012).",
+        "required": [
+          "mass",
+          "length",
+          "energy"
+        ],
+        "properties": {
+          "mass": {
+            "$ref": "#/components/schemas/BuddyMassUnit"
+          },
+          "length": {
+            "$ref": "#/components/schemas/BuddyLengthUnit"
+          },
+          "energy": {
+            "$ref": "#/components/schemas/BuddyEnergyUnit"
+          }
+        }
+      },
+      "BuddyWeightTrend": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "startKg",
+          "endKg",
+          "changeKg",
+          "weeklyChangeKg",
+          "weighIns"
+        ],
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "startKg": {
+            "type": "number",
+            "format": "double"
+          },
+          "endKg": {
+            "type": "number",
+            "format": "double"
+          },
+          "changeKg": {
+            "type": "number",
+            "format": "double"
+          },
+          "weeklyChangeKg": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "weighIns": {
+            "type": "integer",
+            "maximum": 400,
+            "minimum": 0,
+            "format": "int32"
+          }
+        }
+      },
+      "BuddyWorkout": {
+        "type": "object",
+        "description": "A workout session to log (B26, WO-030–033).",
+        "required": [
+          "kind",
+          "name",
+          "language",
+          "script",
+          "timeHint",
+          "dateHint",
+          "exercises"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "workout"
+            ]
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "language": {
+            "type": "string"
+          },
+          "script": {
+            "type": "string"
+          },
+          "timeHint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "dateHint": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^(today|yesterday|daysAgo:([2-9]|[1-9][0-9]{1,2})|lastWeekday:(mon|tue|wed|thu|fri|sat|sun)|date:([0-9]{4}-)?(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$"
+          },
+          "exercises": {
+            "type": "array",
+            "maxItems": 30,
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/BuddyWorkoutExercise"
+            }
+          }
+        }
+      },
+      "BuddyWorkoutExercise": {
+        "type": "object",
+        "required": [
+          "mention",
+          "exerciseRef",
+          "sets",
+          "assumptions"
+        ],
+        "properties": {
+          "mention": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "exerciseRef": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64,
+            "description": "A library exercise code or a custom exercise UUID; null when nothing matched (the app asks, WO-033)."
+          },
+          "sets": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/BuddyWorkoutSet"
+            }
+          },
+          "assumptions": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "BuddyWorkoutExerciseRow": {
+        "type": "object",
+        "required": [
+          "name",
+          "exerciseRef",
+          "sets"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "exerciseRef": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "sets": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/BuddySetRow"
+            }
+          }
+        }
+      },
+      "BuddyWorkoutSessionRow": {
+        "type": "object",
+        "required": [
+          "name",
+          "id",
+          "date",
+          "exercises"
+        ],
+        "properties": {
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "exercises": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "$ref": "#/components/schemas/BuddyWorkoutExerciseRow"
+            }
+          }
+        }
+      },
+      "BuddyWorkoutSet": {
+        "type": "object",
+        "required": [
+          "reps",
+          "weight",
+          "unit",
+          "perDumbbell",
+          "durationSeconds",
+          "distanceMeters"
+        ],
+        "properties": {
+          "reps": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "weight": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "maximum": 10000,
+            "minimum": 0,
+            "format": "double"
+          },
+          "unit": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyLoadUnit"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "perDumbbell": {
+            "type": "boolean",
+            "description": "The stated weight is per dumbbell."
+          },
+          "durationSeconds": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "distanceMeters": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
           }
         }
       }

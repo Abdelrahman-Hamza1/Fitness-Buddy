@@ -60,7 +60,7 @@ internal static class ArchitectureRules
             rules[$"{root}.ModuleIsolation"] = Types().That().ResideInNamespaceMatching(Pattern(root))
                 .Should().NotDependOnAny(foreignInternals);
 
-            // Public Api records are the validation-generator exception (S03 handoff). The module-isolation
+            // Public Api records (and the enums they use) are the validation-generator exception (S03 handoff, B25). The module-isolation
             // rule still prevents another module consuming them; response DTOs remain internal by convention.
             // The admin console is no IModule: its static entry point is the root's `<Name>Module` class (B23), and
             // Razor components are always generated public, so components under Api are allowed too.
@@ -70,7 +70,9 @@ internal static class ArchitectureRules
                 (Under(type.FullName!, root + ".Api") && typeof(Microsoft.AspNetCore.Components.IComponent).IsAssignableFrom(type)) ||
                 // Razor generates a public `_Imports` class for each _Imports.razor; it holds no code.
                 (Under(type.FullName!, root + ".Api") && type.Name == "_Imports") ||
-                (Under(type.FullName!, root + ".Api") && type.GetMethod("<Clone>$") is not null));
+                (Under(type.FullName!, root + ".Api") && type.GetMethod("<Clone>$") is not null) ||
+                // Enums used by those request records must be public too (B25 turn requests).
+                (Under(type.FullName!, root + ".Api") && type.IsEnum));
             rules[$"{root}.PublicSurface"] = Types().That().ResideInNamespaceMatching(Pattern(root))
                 .And().ArePublic().And().DoNotResideInNamespaceMatching(Pattern(root + ".Contracts"))
                 .And().AreNot(allowed).Should().NotExist();

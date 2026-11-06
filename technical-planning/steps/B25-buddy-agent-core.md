@@ -29,6 +29,38 @@ Label vision, weekly review mode, workouts/measurements/imports tools, exercise 
 ## Lane
 Lane 1 (backend). A66 starts on lane 2 as soon as the contract handoff is on `main`.
 
+## Low-level plan
+
+One engineer (TD-095), lane folder `fitness_buddy_2`, stacked on the agentic-Buddy spec. One commit per WP; WP1 is handed off on its own (TD-065).
+
+**WP1 contract handoff** (`contracts/openapi/modules/buddy.yaml`, root `paths`, `sync-entities.json`, fixtures, `make gen`):
+- Paths `POST /v1/buddy/turns` (`startBuddyTurn`) and `POST /v1/buddy/turns/continue` (`continueBuddyTurn`): `200 text/event-stream` with `BuddyTurnEvent`, problems 401/409/503 (+ shared 400/426/429/500). `Idempotency-Key` required and equal to `turnId` on both (the ledger, not the replay middleware, dedupes: a stream can't be buffered for replay).
+- Requests `BuddyTurnStart` / `BuddyTurnContinue` with `priorAttempt`; events union `BuddyTurnEvent` (discriminator `type`); phone tools as two unions discriminated by `name` (`BuddyPhoneToolCall` in `phoneTools`, `BuddyPhoneToolResult` in `continue`), with per-tool args/data schemas carrying the §4.2 caps as `maxItems`; `BuddyQueryPlan` frozen grammar (flat, nullable members; valid combinations in the description, enforced by the phone's QueryEngine → `unsupportedPlan`); query results as claims without IDs or labels (the server assigns IDs and renders labels, §7).
+- Intent kinds `measurement`, `workout`, `importRows`, `suggestion` added to `BuddyIntent` (not emitted until B26/A68).
+- Sync entities `buddySummary` v1 and `memoryItem` v1: envelope-only admission (B18 pattern) and the embedded export; their `entity-payloads.json` fixtures come with the app tables (A66, A67), because the app's sync-engine test pins one fixture per app table.
+- Server: C# records for every schema (requests public in `Api/`, events and tool args internal in `Domain/Agent/`), the BuddyContractTransformer generalized to the new unions, two endpoints returning `501` until WP2, per-route body limit 1 MiB (continuation ≤ 256 KiB + results).
+
+**WP2–WP5** follow the Scope list; files under `Modules/Buddy/{Application,Domain,Infrastructure}/Agent/`, one new Buddy migration (ledger turn/round tables, RLS, erasure), migration-count assertions updated.
+
+**Decisions where 06 is silent** (simplest sound option):
+- D1 Discriminator values are camelCase (`findMyFoods`, `readDiary`, …) like every other code in the contract; the model-facing tool names stay snake_case inside the server.
+- D2 `callId` is a server-minted UUID (the provider's call IDs never reach the phone).
+- D3 Personal slice `ref` and every local reference are non-nil UUIDs (a `usual` item uses the ID of its saved meal or representative row; the phone decides).
+- D4 Quota: a denied send inside a turn ends with `done reason quota` (06 §2) — TD-128's "error quota" wording is read as this; a denied message reservation at start is the usual 429 before streaming.
+- D5 `mode: weeklyReview` is in the enum now; the `weekly` block arrives with B26 (additive, optional request member); until then the server answers 400 for that mode.
+- D6 `profile.units`: mass kg|lb, length cm|in, energy kcal only (LC-012).
+- D7 Query link targets are explicit nullable members (`date`, `from`, `to`, `exerciseRef`, `workoutId`) instead of a free `params` map.
+- D8 Claims on the wire use canonical units (kcal, g, kg, cm, percent, count, date); the server renders them in the profile's units.
+- D9 Rounds: the start request runs round 0; a `phoneTools` event announces round 1–3, which `continue` runs. SSE ids use the same numbers.
+- D10 `409 roundAlreadyRan` uses the framework's default Conflict problem `type` (as interpret's 409); it is the only 409 cause on these routes, so no new problem type.
+- D11 Request-side nutrients keep their own schema `BuddyNutrientsRequest` (oasdiff compares `oneOf` members by name, and the response `BuddyNutrients` is internal); servings reuse `BuddyServing` as interpret's request does.
+- D12 The architecture rule's public-surface exception widens from public Api records to public Api enums (request enums must be public for the validation generator); `ApiJson` allows out-of-order union discriminators (a client may send `name` after other members).
+- D13 The measurement intent's kind enum is `BuddyBodyMeasurementKind` (the generator already names the `kind` discriminator enum `BuddyMeasurementKind`).
+
 ## Progress log
+
+- 2026-11-06: low-level plan written (WP1 first, handed off on its own).
+- 2026-11-06: rebased on the spec fix-check (bf0283d9: attempt-scoped proposal IDs + `priorAttempt`, claim-labelled facts, QueryPlan `last` + `muscleGroup`, link target `workout`), reflected in WP1.
+- 2026-11-06: WP1 contract handoff committed: both turn routes (501 stubs), 104 new Buddy schemas, 4 additive intent kinds, `buddySummary`/`memoryItem` v1 admission. Conformance, lint, selftest, breaking (report: none), Dart client analyze/test, Architecture/Contract/Buddy/UserData/BuildingBlocks/Host tests green. Next: WP2 after the handoff merges.
 
 ## Outcome

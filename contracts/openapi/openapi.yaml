@@ -32,12 +32,16 @@ tags:
     description: Published food search and offline packs.
 
   - name: Buddy
-    description: Private, validated message interpretation.
+    description: Private, validated message interpretation and the Buddy agent turn stream.
 
 # Every path is defined in its module file and listed here.
 paths:
   /v1/buddy/interpret:
     $ref: './modules/buddy.yaml#/paths/~1v1~1buddy~1interpret'
+  /v1/buddy/turns:
+    $ref: './modules/buddy.yaml#/paths/~1v1~1buddy~1turns'
+  /v1/buddy/turns/continue:
+    $ref: './modules/buddy.yaml#/paths/~1v1~1buddy~1turns~1continue'
   /v1/auth/anonymous:
     $ref: './modules/identity.yaml#/paths/~1v1~1auth~1anonymous'
   /v1/auth/google:

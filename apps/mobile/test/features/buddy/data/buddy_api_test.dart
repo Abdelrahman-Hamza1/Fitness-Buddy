@@ -102,7 +102,7 @@ void main() {
           'dateHint': 'yesterday',
         },
         {
-          'kind': 'workout',
+          'kind': 'futureKind',
           'language': 'english',
           'script': 'latin',
           'exercises': ['x'],
