@@ -3,7 +3,8 @@ using FitnessBuddy.Modules.Buddy.Domain;
 namespace FitnessBuddy.Modules.Buddy.Application;
 
 internal enum InterpretStatus { Success, Pending, Conflict, Limited, Unauthorized, Unavailable }
-internal sealed record InterpretResult(InterpretStatus Status, BuddyInterpretation? Value = null);
+/// <summary><paramref name="Limit"/> is the effective daily limit when <see cref="InterpretStatus.Limited"/> (B24: the operator's override).</summary>
+internal sealed record InterpretResult(InterpretStatus Status, BuddyInterpretation? Value = null, int? Limit = null);
 internal interface IInterpretLedger
 {
     Task<InterpretResult?> ClaimAsync(InterpretInput input, CancellationToken cancellationToken);

@@ -12,5 +12,8 @@ internal sealed class UsageErasure : IOutboxHandler
         if (session.UserId is null || session.UserId != message.UserId) { throw new InvalidOperationException("Invalid usage erasure scope."); }
         await using var command = session.Command("DELETE FROM usage.daily WHERE user_id=$1"); command.Parameters.AddWithValue(session.UserId.Value);
         await command.ExecuteNonQueryAsync(cancellationToken);
+        // No direct write on the override: the erasure-only capability checks the account is being deleted (B24).
+        await using var overrides = session.Command("SELECT usage.erase_limit_override($1)"); overrides.Parameters.AddWithValue(session.UserId.Value);
+        await overrides.ExecuteNonQueryAsync(cancellationToken);
     }
 }

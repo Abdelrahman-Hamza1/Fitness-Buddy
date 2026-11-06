@@ -27,6 +27,18 @@ After success old access and refresh credentials fail. An old-token retry return
 after a lost204.401 alone does not prove deletion: A35 must handle an uncertain network outcome
 without treating every unrelated session expiry as confirmed account deletion.
 
+## Operator deletion (B24)
+
+The admin console can delete an account too (AD-011). It never runs the deletion itself: in one audited transaction on
+its own login it disables the account, revokes every session and records an operator deletion intent
+(`identity.operator_deletions`, which only the console login can create). The api role's `OperatorDeletionRunner` (every
+5 s, `Account:OperatorDeletion`) runs this same coordinator with the operator principal: `identity.begin_operator_deletion`
+requires that committed, due intent under the user lifecycle lock, so the application login can't start a deletion
+without one. Everything else is identical: the recovery fence, the in-transaction erasers (the intent is erased with the
+account), reconciliation only of a known pre-commit failure. A failure is recorded on the intent (attempts, closed error
+code, backoff up to 1 hour) only while the intent exists, so a commit whose acknowledgement was lost is never "undone".
+After an operator request, the app's own `DELETE /v1/me` gets 401 (the sessions are revoked) and the runner completes.
+
 ## Requests and workers racing deletion
 
 Identity credential mutations, sync, replay hits/new cached responses, scheduled work and queue

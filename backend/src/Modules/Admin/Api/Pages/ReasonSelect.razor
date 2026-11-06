@@ -1,0 +1,14 @@
+@* A closed reason code (B24 R#7): no free text next to an account id in the audit log. *@
+<label for="@Id">Reason</label>
+<select id="@Id" name="reason" required>
+    <option value="">Choose…</option>
+    @foreach (var reason in Reasons)
+    {
+        <option value="@reason">@reason</option>
+    }
+</select>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<string> Reasons { get; set; } = [];
+    [Parameter, EditorRequired] public string Id { get; set; } = "";
+}

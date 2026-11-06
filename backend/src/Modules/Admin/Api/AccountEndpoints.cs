@@ -30,7 +30,8 @@ internal static class AccountEndpoints
         return Page(context, antiforgery, filter, page, null, StatusCodes.Status200OK);
     }
 
-    private static async Task<IResult> DetailAsync(HttpContext context, ReadAccount read, IAntiforgery antiforgery, Guid id, CancellationToken cancellationToken)
+    private static async Task<IResult> DetailAsync(HttpContext context, ReadAccount read, ReadAccountControls readControls, IAntiforgery antiforgery, Guid id,
+        string? done, string? refused, CancellationToken cancellationToken)
     {
         var detail = await read.HandleAsync(id, cancellationToken);
         if (detail is null)
@@ -39,8 +40,14 @@ internal static class AccountEndpoints
             return TypedResults.Empty;
         }
         var view = new AccountDetailView(Row(detail.Row), detail.Documents, detail.Devices);
+        // B24: the controls, with the notice of the control that redirected here. Null if the account went away in between.
+        var controls = await readControls.HandleAsync(id, cancellationToken);
         return AdminResponses.Page<AccountPage>(AdminResponses.View(context, antiforgery, "Account " + Show.Short(id), "accounts"),
-            new Dictionary<string, object?> { ["Detail"] = view });
+            new Dictionary<string, object?>
+            {
+                ["Detail"] = view,
+                ["Controls"] = controls is null ? null : AccountControlsView.From(controls, AccountControlEndpoints.Notice(done, refused)),
+            });
     }
 
     private static async Task<IResult> FindAsync(HttpContext context, FindAccountByEmail find, ListAccounts list, IAntiforgery antiforgery,

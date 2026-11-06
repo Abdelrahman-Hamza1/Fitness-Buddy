@@ -5,9 +5,17 @@ namespace FitnessBuddy.Modules.Usage.Infrastructure;
 
 internal sealed class PostgresUsageRecorder(TimeProvider clock) : IUsageRecorder
 {
-    public async Task<bool> ReserveAsync(DatabaseSession session, string model, int ceiling, DateOnly day, bool newMessage, CancellationToken cancellationToken)
+    public async Task<UsageReservation> ReserveAsync(DatabaseSession session, string model, int defaultCeiling, DateOnly day, bool newMessage, CancellationToken cancellationToken)
     {
         var user = session.UserId ?? throw new InvalidOperationException("Missing usage owner.");
+        var ceiling = defaultCeiling;
+        await using (var limit = session.Command("SELECT daily_calls FROM usage.limit_overrides WHERE user_id=$1"))
+        {
+            limit.Parameters.AddWithValue(user);
+            if (await limit.ExecuteScalarAsync(cancellationToken) is int calls) { ceiling = calls; }
+        }
+        // The first call of a day inserts unconditionally below (only the conflict update checks the ceiling), so refuse first.
+        if (ceiling <= 0) { return new UsageReservation(false, 0); }
         await using var command = session.Command("""
             INSERT INTO usage.daily(user_id,day,model,calls,messages,input_tokens,cached_input_tokens,output_tokens,estimated_usd)
             VALUES($1,$2,$3,1,$5,0,0,0,0) ON CONFLICT(user_id,day,model) DO UPDATE SET calls=usage.daily.calls+1,messages=usage.daily.messages+excluded.messages
@@ -15,7 +23,7 @@ internal sealed class PostgresUsageRecorder(TimeProvider clock) : IUsageRecorder
             """);
         command.Parameters.AddWithValue(user); command.Parameters.AddWithValue(day);
         command.Parameters.AddWithValue(model); command.Parameters.AddWithValue(ceiling); command.Parameters.AddWithValue(newMessage ? 1 : 0);
-        return await command.ExecuteScalarAsync(cancellationToken) is not null;
+        return new UsageReservation(await command.ExecuteScalarAsync(cancellationToken) is not null, ceiling);
     }
     public async Task RecordAsync(DatabaseSession session, UsageCharge charge, CancellationToken cancellationToken)
     {

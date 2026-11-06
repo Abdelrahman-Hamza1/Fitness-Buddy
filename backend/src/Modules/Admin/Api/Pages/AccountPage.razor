@@ -1,5 +1,5 @@
 @* AD-011 detail (read): the account's summary, documents per entity type and schema version, devices without their ids.
-   Controls (revoke, disable, delete) come with B24. *@
+   B24: the account controls (revoke, disable/enable, Buddy limit, delete) follow, operators' forms only. *@
 <Layout View="View">
     <div class="table-wrap">
         <table>
@@ -51,10 +51,15 @@
             </table>
         </div>
     }
+    @if (Controls is not null)
+    {
+        <AccountControls View="View" Controls="Controls" />
+    }
     <p><a href="/admin/accounts">Back to accounts</a></p>
 </Layout>
 
 @code {
     [Parameter, EditorRequired] public PageView View { get; set; } = null!;
     [Parameter, EditorRequired] public AccountDetailView Detail { get; set; } = null!;
+    [Parameter] public AccountControlsView? Controls { get; set; }
 }

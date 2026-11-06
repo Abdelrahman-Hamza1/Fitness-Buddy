@@ -111,6 +111,34 @@ account or its handle is reused. Roles: `viewer` (read) and `operator` (also cha
   sanity flags for 14 days. Publishing or rolling back a release stays a laptop command
   ([catalog runbook](catalog.md)); installs per pack version and a maintenance message are in the backlog.
 
+### Account controls (B24, AD-011)
+
+On an account's page (`/admin/accounts/<id>`, the Controls section), operators only. Each control needs a **reason code** (owner
+request, test account, security, abuse, support, other), never free text, so no email or user content ever sits next to
+an account ID in the audit log. **Revoke all devices, disable and delete** also need the account ID typed and a sign-in
+less than 15 minutes old (the console sends you to sign in again).
+
+| Control | Effect on the app |
+|---|---|
+| Revoke one device | That device's next request gets 401; its refresh fails. A registered person sees "sign in again"; a guest's app starts a new guest account |
+| Revoke all devices | The same on every device |
+| Disable | Every session ends; sync, Buddy and every request get 401; signing in again fails (generic sign-in error, no "disabled" message yet). Queued maintenance work keeps running |
+| Enable | Signing in works again (old sessions stay ended). Refused while a deletion is pending |
+| Buddy daily limit | 0–1000 calls a day for this account; 0 turns Buddy off for it (the app shows its "limit reached" state); empty = the default |
+| Delete | The account is disabled at once; the API deletes all its server data within seconds, the same deletion as in the app (AC-031). The page then says "no such account" |
+
+What these can't do: **guests** can't be kept out (after a revoke or disable the app creates a new guest account with the
+phone's data; delete removes the old one), and **no server control wipes a phone**: the phone keeps its local data, and
+signing in again after a deletion creates a new account.
+
+A pending deletion that fails (for example, the recovery state is broken) keeps the account disabled and retries with
+backoff; the page shows the attempts and the last error code. Fix the cause (the account deletion runbook), and the next
+try completes it.
+
+**Audit rows of a deleted account** keep its pseudonymous account ID (it matches no row anywhere after the deletion) and
+only codes and numbers: no email, device ID or content. They're kept like every audit row (append-only, no retention
+job). Opening the account then shows "no such account (deleted or never existed)".
+
 ## Recovery
 
 - **A bad minimum version locked apps out:** force the minimum from configuration, which wins over the database and works

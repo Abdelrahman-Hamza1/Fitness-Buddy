@@ -92,6 +92,9 @@ public sealed class PostgresFixture : IAsyncLifetime
         await using var drop = admin.CreateCommand($"DROP DATABASE {name} WITH (FORCE)"); await drop.ExecuteNonQueryAsync(TestContext.Current.CancellationToken);
     }
 
+    /// <summary>B24 race tests: sees every backend's query text and lock waits (pg_stat_activity).</summary>
+    public string SuperuserConnection => container.GetConnectionString();
+
     public Task PauseAsync() => container.PauseAsync(TestContext.Current.CancellationToken);
     public Task UnpauseAsync() => container.UnpauseAsync(CancellationToken.None);
 

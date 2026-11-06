@@ -216,7 +216,11 @@ public sealed class AdminAuthTests(PostgresFixture postgres)
             {
                 if (capabilities[0].Capability == AdminCapability.Anonymous) { anonymous.Add(method + " " + endpoint.RoutePattern.RawText); }
                 // Route parameters get a real value, or the request would not match the endpoint at all.
-                if (capabilities[0].Capability == AdminCapability.Operate) { operate.Add((method, endpoint.RoutePattern.RawText!.Replace("{version:int}", "1", StringComparison.Ordinal))); }
+                if (capabilities[0].Capability == AdminCapability.Operate)
+                {
+                    operate.Add((method, endpoint.RoutePattern.RawText!.Replace("{version:int}", "1", StringComparison.Ordinal)
+                    .Replace("{id:guid}", Guid.NewGuid().ToString(), StringComparison.Ordinal).Replace("{key}", new string('0', 32), StringComparison.Ordinal)));
+                }
             }
         }
         Assert.Equal(["* /health/live", "* /health/ready", "GET /admin/assets/{name}", "GET /admin/signin", "POST /admin/signin"], anonymous.Order(StringComparer.Ordinal));

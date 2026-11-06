@@ -1,0 +1,105 @@
+@* AD-011 controls (B24), included by the B23b account page (AccountPage). AD-007: revoke all, disable and delete
+   need the account ID typed and a recent sign-in. Reasons are codes, never free text (R#7). *@
+@{ var id = Controls.Account.ToString("D"); var basePath = "/admin/accounts/" + id; var operate = View.Viewer?.IsOperator == true; }
+<section class="card" aria-labelledby="controls-heading">
+    <h2 id="controls-heading">Controls</h2>
+    @if (Controls.Notice is { } notice)
+    {
+        <p role="status"><span class="status info"><span aria-hidden="true">ℹ</span> Note</span> @notice</p>
+    }
+    <p>Account <code>@id</code> ·
+        @if (Controls.Deletion is not null)
+        {
+            <span class="status bad"><span aria-hidden="true">✕</span> Deletion pending</span>
+        }
+        else if (Controls.Status != "active")
+        {
+            <span class="status bad"><span aria-hidden="true">✕</span> @Controls.Status</span>
+        }
+        else if (Controls.DisabledAt is not null)
+        {
+            <span class="status warn"><span aria-hidden="true">!</span> Disabled</span>
+        }
+        else
+        {
+            <span class="status ok"><span aria-hidden="true">✓</span> Active</span>
+        }
+        · @(Controls.IsGuest ? "guest" : "registered")
+    </p>
+    @if (Controls.Deletion is { } deletion)
+    {
+        <p>Deletion requested @deletion.RequestedAt.ToString("u"). Attempts: @deletion.Attempts@(deletion.LastError is { } error ? ", last error: " + error : "")@(deletion.Attempts > 0 && deletion.NextAttemptAt is { } next ? ", next try " + next.ToString("u") : "").</p>
+    }
+    @if (Controls.IsGuest)
+    {
+        <p>This is a guest account. After a revoke or disable, the app starts a new guest account with the phone's data; delete removes this account's server data.</p>
+    }
+
+    <h3>Devices</h3>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Platform</th><th>App version</th><th>Last seen</th><th>Live sessions</th>@if (operate) { <th>Revoke</th> }</tr></thead>
+            <tbody>
+                @foreach (var device in Controls.Devices)
+                {
+                    <tr>
+                        <td>@(device.Platform ?? "unknown")</td>
+                        <td>@(device.AppVersion ?? "unknown")</td>
+                        <td>@(device.LastSeenAt?.ToString("u") ?? "never")</td>
+                        <td>@device.ActiveSessions</td>
+                        @if (operate)
+                        {
+                            <td>
+                                <form method="post" action="@(basePath + "/devices/" + device.Key + "/revoke")">
+                                    <input type="hidden" name="__csrf" value="@View.Csrf" />
+                                    <ReasonSelect Reasons="Controls.Reasons" Id="@("reason-" + device.Key)" />
+                                    <button type="submit" class="secondary">Revoke this device</button>
+                                </form>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Buddy daily limit</h3>
+    <p>@(Controls.BuddyLimit is { } limit ? (limit == 0 ? "0 calls a day: Buddy is off for this account." : limit + " calls a day.") : "Default for the account type.")</p>
+
+    @if (operate)
+    {
+        <form method="post" action="@(basePath + "/buddy-limit")">
+            <input type="hidden" name="__csrf" value="@View.Csrf" />
+            <label for="dailyCalls">Calls a day (0–1000; 0 turns Buddy off; empty = default)</label>
+            <input id="dailyCalls" name="dailyCalls" inputmode="numeric" pattern="[0-9]*" maxlength="4" value="@Controls.BuddyLimit" />
+            <ReasonSelect Reasons="Controls.Reasons" Id="reason-limit" />
+            <button type="submit">Save limit</button>
+        </form>
+
+        <h3>Sign-in and access</h3>
+        @if (Controls.DisabledAt is not null && Controls.Deletion is null)
+        {
+            <form method="post" action="@(basePath + "/enable")">
+                <input type="hidden" name="__csrf" value="@View.Csrf" />
+                <ReasonSelect Reasons="Controls.Reasons" Id="reason-enable" />
+                <button type="submit">Enable</button>
+            </form>
+        }
+        <ConfirmForm View="View" Action="@(basePath + "/revoke-all")" Label="Revoke all devices" Reasons="Controls.Reasons" Name="revoke-all" />
+        @if (Controls.DisabledAt is null)
+        {
+            <ConfirmForm View="View" Action="@(basePath + "/disable")" Label="Disable account" Reasons="Controls.Reasons" Name="disable" />
+        }
+        @if (Controls.Deletion is null)
+        {
+            <h3>Delete account</h3>
+            <p>Deletes all of this account's server data, the same deletion as in the app. The phone keeps its local data; signing in again creates a new account.</p>
+            <ConfirmForm View="View" Action="@(basePath + "/delete")" Label="Delete account" Reasons="Controls.Reasons" Name="delete" />
+        }
+    }
+</section>
+
+@code {
+    [Parameter, EditorRequired] public PageView View { get; set; } = null!;
+    [Parameter, EditorRequired] public AccountControlsView Controls { get; set; } = null!;
+}

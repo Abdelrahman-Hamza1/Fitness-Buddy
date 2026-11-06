@@ -33,6 +33,14 @@ internal sealed class IdentityErasure : IIdentityDeletion, IOutboxHandler, IDisp
         return (bool)(await command.ExecuteScalarAsync(cancellationToken))!;
     }
 
+    public async Task<bool> BeginOperatorAsync(DatabaseSession session, CancellationToken cancellationToken)
+    {
+        var user = session.UserId ?? throw new InvalidOperationException("Missing erasure owner.");
+        await using var command = session.Command("SELECT identity.begin_operator_deletion($1,$2)");
+        command.Parameters.AddWithValue(user); command.Parameters.AddWithValue(clock.GetUtcNow());
+        return (bool)(await command.ExecuteScalarAsync(cancellationToken))!;
+    }
+
     public async Task HandleAsync(QueueMessage message, DatabaseSession session, CancellationToken cancellationToken)
     {
         if (session.UserId is not Guid user || message.UserId != user) { throw new InvalidOperationException("Invalid erasure scope."); }

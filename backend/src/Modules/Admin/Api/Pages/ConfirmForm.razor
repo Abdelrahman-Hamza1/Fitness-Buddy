@@ -1,0 +1,16 @@
+@* AD-007: a destructive control needs the account ID typed and a sign-in less than 15 minutes old (checked on the server). *@
+<form method="post" action="@Action">
+    <input type="hidden" name="__csrf" value="@View.Csrf" />
+    <label for="@("confirm-" + Name)">Type the account ID to confirm. Needs a sign-in less than 15 minutes old.</label>
+    <input id="@("confirm-" + Name)" name="confirmAccountId" required autocomplete="off" spellcheck="false" />
+    <ReasonSelect Reasons="Reasons" Id="@("reason-" + Name)" />
+    <button type="submit" class="danger">@Label</button>
+</form>
+
+@code {
+    [Parameter, EditorRequired] public PageView View { get; set; } = null!;
+    [Parameter, EditorRequired] public string Action { get; set; } = "";
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    [Parameter, EditorRequired] public string Name { get; set; } = "";
+    [Parameter, EditorRequired] public IReadOnlyList<string> Reasons { get; set; } = [];
+}

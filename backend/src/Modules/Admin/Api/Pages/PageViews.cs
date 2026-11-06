@@ -48,3 +48,21 @@ public sealed record ConfigPageView(int CurrentVersion, string? PublishedBy, Dat
 
 /// <summary>The rollback review: the diff from the current version to the target and what the form needs.</summary>
 public sealed record RollbackPageView(int Target, int CurrentVersion, IReadOnlyList<ChangeView> Changes, bool RaisesMinimum, string NewMinimum, string? Notice);
+
+/// <summary>One device on the controls panel: its opaque key (never the device id), platform, version, last seen, live sessions.</summary>
+public sealed record DeviceRowView(string Key, string? Platform, string? AppVersion, DateTimeOffset? LastSeenAt, long ActiveSessions);
+
+/// <summary>A pending operator deletion: when it was requested, attempts so far, the last error code and the next try.</summary>
+public sealed record DeletionView(DateTimeOffset RequestedAt, int Attempts, string? LastError, DateTimeOffset? NextAttemptAt);
+
+/// <summary>The account controls panel (AD-011, B24). Codes, counts and timestamps only; no email, device id or content.</summary>
+public sealed record AccountControlsView(Guid Account, string Status, bool IsGuest, DateTimeOffset? DisabledAt, DeletionView? Deletion,
+    IReadOnlyList<DeviceRowView> Devices, int? BuddyLimit, IReadOnlyList<string> Reasons, string? Notice)
+{
+    internal static AccountControlsView From(FitnessBuddy.Modules.Admin.Application.AccountControlsState state, string? notice) => new(
+        state.Account, state.State.Status, state.State.IsAnonymous, state.State.DisabledAt,
+        state.State.DeletionRequestedAt is { } requested
+            ? new DeletionView(requested, state.State.DeletionAttempts ?? 0, state.State.DeletionLastError, state.State.DeletionNextAttemptAt) : null,
+        [.. state.Devices.Select(device => new DeviceRowView(device.Key, device.Platform, device.AppVersion, device.LastSeenAt, device.ActiveSessions))],
+        state.BuddyLimit, FitnessBuddy.Modules.Admin.Domain.AccountControlRules.ReasonCodes, notice);
+}

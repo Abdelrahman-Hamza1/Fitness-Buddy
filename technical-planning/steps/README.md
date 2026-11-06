@@ -257,7 +257,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [B21](B21-workout-sync.md) | Workout sync entities (server; backlog #189) | B05, B20, **A36**, **A37a** | M–L | new (A36 D6) |  | ✅ |
 | [B22](B22-off-sanity-checks.md) | Sanity checks on Open Food Facts products (repair, flag, reject; `checkLabel` note) | B10a, A28a | S–M | FD-012, research §4 |  | ✅ built, awaiting review |
 | [B23](B23-admin-console-1.md) | Admin console 1: monitor and config (D-099, AD-001–016 R1) | B03–B22 | M–L | AD-001–AD-016 |  | ✅ |
-| [B24](B24-admin-console-2.md) | Admin console 2: account controls | B23 | S–M | AD-007, AD-011 |  | ⬜ |
+| [B24](B24-admin-console-2.md) | Admin console 2: account controls | B23 | S–M | AD-007, AD-011 |  | ✅ |
 
 ```mermaid
 flowchart LR

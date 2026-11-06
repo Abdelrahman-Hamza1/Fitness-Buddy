@@ -22,6 +22,7 @@ internal static class ApiRole
             FitnessBuddy.Modules.Account.AccountModule.AddRuntimeConfigPolling(builder.Services);
             // B23: the console's batched counters (server errors, OFF lookups), written once a minute.
             builder.Services.AddHostedService<FitnessBuddy.BuildingBlocks.Ops.CounterFlushService>();
+            FitnessBuddy.Modules.Account.AccountModule.AddOperatorDeletionRunner(builder.Services, builder.Configuration);
         }
 
         // Strict numbers, camelCase enums, required members and nullable annotations (ApiJson).

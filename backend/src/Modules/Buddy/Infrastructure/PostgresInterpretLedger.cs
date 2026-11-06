@@ -34,7 +34,8 @@ internal sealed class PostgresInterpretLedger(NpgsqlDataSource source, ICurrentU
             }
         }
         var dispatchTime = clock.GetUtcNow();
-        if (!await ReserveAsync(session, dispatchTime, true, cancellationToken)) { return new(InterpretStatus.Limited); }
+        var reservation = await ReserveAsync(session, dispatchTime, true, cancellationToken);
+        if (!reservation.Reserved) { return new(InterpretStatus.Limited, Limit: reservation.Ceiling); }
         await using var insert = session.Command("""
             INSERT INTO buddy.attempts(user_id,message_id,fingerprint,created_at,expires_at,dispatched_at)
             VALUES($1,$2,$3,$4,$5,$4) ON CONFLICT(user_id,message_id) DO UPDATE SET
@@ -55,7 +56,7 @@ internal sealed class PostgresInterpretLedger(NpgsqlDataSource source, ICurrentU
         await using var advance = session.Command("UPDATE buddy.attempts SET attempts=2,dispatched_at=$3 WHERE user_id=$1 AND message_id=$2 AND attempts=1 AND recorded=1 AND response IS NULL AND expires_at>$3");
         advance.Parameters.AddWithValue(user.UserId!.Value); advance.Parameters.AddWithValue(messageId); advance.Parameters.AddWithValue(dispatchTime);
         if (await advance.ExecuteNonQueryAsync(cancellationToken) != 1) { return InterpretStatus.Pending; }
-        if (!await ReserveAsync(session, dispatchTime, false, cancellationToken)) { return InterpretStatus.Limited; }
+        if (!(await ReserveAsync(session, dispatchTime, false, cancellationToken)).Reserved) { return InterpretStatus.Limited; }
         await session.CommitAsync(cancellationToken); return InterpretStatus.Success;
     }
     public async Task<bool> RecordAsync(Guid messageId, int attempt, ProductionOutcome outcome, CancellationToken cancellationToken)
@@ -92,10 +93,11 @@ internal sealed class PostgresInterpretLedger(NpgsqlDataSource source, ICurrentU
         generation = currentGeneration;
         return true;
     }
-    private async Task<bool> ReserveAsync(DatabaseSession session, DateTimeOffset dispatchTime, bool newMessage, CancellationToken ct)
+    private async Task<UsageReservation> ReserveAsync(DatabaseSession session, DateTimeOffset dispatchTime, bool newMessage, CancellationToken ct)
     {
         var principal = await identity.ReadSessionAsync(user.UserId!.Value, user.SessionId!.Value, ct);
-        return principal is not null && await usage.ReserveAsync(session, OpenAIClientFactory.Model,
+        if (principal is null) { return new UsageReservation(false, 0); }
+        return await usage.ReserveAsync(session, OpenAIClientFactory.Model,
             principal.IsAnonymous ? options.Value.GuestDailyCalls : options.Value.RegisteredDailyCalls, DateOnly.FromDateTime(dispatchTime.UtcDateTime), newMessage, ct);
     }
 }

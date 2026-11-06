@@ -24,7 +24,7 @@ internal static class BuddyEndpoints
         {
             var now = clock.GetUtcNow();
             var seconds = (int)Math.Ceiling((new DateTimeOffset(now.UtcDateTime.Date.AddDays(1), TimeSpan.Zero) - now).TotalSeconds);
-            var limit = context.Features.Get<FitnessBuddy.Modules.Identity.Contracts.IdentitySession>()!.IsAnonymous ? options.Value.GuestDailyCalls : options.Value.RegisteredDailyCalls;
+            var limit = result.Limit ?? (context.Features.Get<FitnessBuddy.Modules.Identity.Contracts.IdentitySession>()!.IsAnonymous ? options.Value.GuestDailyCalls : options.Value.RegisteredDailyCalls);
             context.Response.Headers.RetryAfter = seconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
             context.Response.Headers["RateLimit"] = $"\"buddy\";r=0;t={seconds}";
             context.Response.Headers["RateLimit-Policy"] = $"\"buddy\";q={limit};w=86400";

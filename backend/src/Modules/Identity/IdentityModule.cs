@@ -16,7 +16,7 @@ namespace FitnessBuddy.Modules.Identity;
 public sealed class IdentityModule : IModule
 {
     public string Name => "Identity";
-    public FitnessBuddy.BuildingBlocks.Messaging.UserDataOwnership UserData => new(["users", "identities", "devices", "sessions", "refresh_tokens", "email_challenges", "audit", "throttles"], ["signing_keys"], "identity.erase");
+    public FitnessBuddy.BuildingBlocks.Messaging.UserDataOwnership UserData => new(["users", "identities", "devices", "sessions", "refresh_tokens", "email_challenges", "audit", "throttles", "operator_deletions"], ["signing_keys"], "identity.erase");
 
     /// <summary>Operator-only entry point; call with migration credentials, never from the API.</summary>
     public static Task MaintainSigningKeysAsync(string migratorConnection, string keysDirectory, string version, string operation, TimeProvider clock, CancellationToken cancellationToken) =>
@@ -41,6 +41,9 @@ public sealed class IdentityModule : IModule
         services.AddScoped<FitnessBuddy.BuildingBlocks.Auth.IUserLifecycle>(provider => (PostgresIdentityStore)provider.GetRequiredService<IIdentityStore>());
         services.AddScoped<IDeviceActivity>(provider => (PostgresIdentityStore)provider.GetRequiredService<IIdentityStore>());
         services.AddSingleton<IIdentityAdminReads, PostgresIdentityAdminReads>();
+        // B24: console controls (on the console's session) and the api role's operator-deletion runner side.
+        services.AddSingleton<IIdentityAdminControls, PostgresIdentityAdminControls>();
+        services.AddSingleton<IIdentityOperatorDeletions, PostgresOperatorDeletions>();
         services.AddScoped<IdentityErasure>();
         services.AddScoped<IIdentityDeletion>(provider => provider.GetRequiredService<IdentityErasure>());
         services.AddScoped<FitnessBuddy.BuildingBlocks.Messaging.IOutboxHandler>(provider => provider.GetRequiredService<IdentityErasure>());

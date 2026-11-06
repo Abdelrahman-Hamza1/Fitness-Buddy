@@ -325,7 +325,9 @@ updates. Read [the module](src/Modules/Catalog/README.md) and [operations](../do
   (`src/Modules/Admin/Api/Assets/VENDOR.md`); HTML errors, not problem details; outside the OpenAPI contract.
 - **Endpoints declare one capability** (`WithCapability`): `Anonymous` (sign-in, assets, health), `Session` (any admin:
   reads, sign-out, re-auth, POST-based reads) or `Operate` (changes). A test enumerates them. Every POST passes the
-  antiforgery token and a same-origin check. `RequireRecentSignIn()` guards lock-out-capable actions.
+  antiforgery token and a same-origin check. `RequireRecentSignIn()` guards lock-out-capable actions
+  whose refusal needn't be audited; account controls check the sign-in age in their handler instead, so a stale attempt is
+  an audited `needs-recent-sign-in` refusal (B24).
 - **Sign-in:** Google Identity Services with the console's Web client ID, Identity's `IGoogleIdTokenVerifier`
   (per-caller audiences), single-use challenges as nonces, the private allow-list file (`Admin:AllowListFile`, Google
   subject required), 12 h server-side sessions bound to handle + subject.
@@ -358,3 +360,9 @@ updates. Read [the module](src/Modules/Catalog/README.md) and [operations](../do
   written only through add-only definer functions (`ops.count_http_errors`, `catalog.count_lookups`); their cleanup and the
   heartbeats belong to the worker login `fb_worker` (tests run worker-only work on `PostgresFixture.Worker`). Workers report the job type
   in progress through `WorkerActivity` and `WorkerHeartbeatService`. Paused job types are skipped by the claim SQL.
+- **Account controls (B24):** revoke one device (opaque account-scoped key, never the device id) or all, disable/enable
+  (`identity.users.disabled_at`, checked by `read_session`, `check_active`, `new_session` and `rotate_refresh`; not a
+  lifecycle status, so workers keep the user's queued work), a per-account Buddy limit (`usage.limit_overrides`, 0 =
+  off; the app login can't write it, only `usage.erase_limit_override` during erasure), delete (an Identity intent the api role's `OperatorDeletionRunner` runs through the B06 coordinator). Every
+  mutating `admin_*` function takes the user lifecycle lock first and revalidates the account; a Usage write follows
+  Identity's `LockAsync` in the same session. Reason codes, not free text. Runbook: [admin console](../docs/runbooks/admin-console.md).

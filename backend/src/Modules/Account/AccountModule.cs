@@ -39,6 +39,13 @@ public sealed class AccountModule : IModule
     /// <summary>B23: keep the remote config current in a long-running role (api, worker, admin). Not for migrate or build time.</summary>
     public static void AddRuntimeConfigPolling(IServiceCollection services) => services.AddHostedService<RuntimeConfigPoller>();
 
+    /// <summary>B24: run the console's operator deletions. The api role only (it holds what the B06 coordinator needs).</summary>
+    public static void AddOperatorDeletionRunner(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOptions<OperatorDeletionOptions>().Bind(configuration.GetSection(OperatorDeletionOptions.SectionName));
+        services.AddHostedService<OperatorDeletionRunner>();
+    }
+
     /// <summary>B23: the migrate role seeds version 1 from the canonical defaults when nothing is published yet.</summary>
     public static Task SeedRemoteConfigAsync(string migratorConnection, IServiceProvider services, CancellationToken cancellationToken) =>
         PostgresRemoteConfig.SeedAsync(migratorConnection, services.GetRequiredService<RemoteConfigDefaults>().Current,

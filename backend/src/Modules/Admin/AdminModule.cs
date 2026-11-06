@@ -53,6 +53,14 @@ public static class AdminModule
         services.AddScoped<PublishConfig>();
         services.AddScoped<RollbackConfig>();
         services.AddScoped<ExportAudit>();
+        // B24 account controls.
+        services.AddScoped<AccountControlRunner>();
+        services.AddScoped<ReadAccountControls>();
+        services.AddScoped<RevokeDevice>();
+        services.AddScoped<RevokeAllDevices>();
+        services.AddScoped<SetAccountDisabled>();
+        services.AddScoped<SetBuddyLimit>();
+        services.AddScoped<RequestAccountDeletion>();
         services.AddScoped<CredentialCheck>();
         services.AddScoped<StartChallenge>();
         services.AddScoped<SignIn>();
@@ -151,6 +159,7 @@ public static class AdminModule
         AccountEndpoints.Map(group);
         JobsEndpoints.Map(group);
         ConfigEndpoints.Map(group);
+        AccountControlEndpoints.Map(group);
         return group;
     }
 

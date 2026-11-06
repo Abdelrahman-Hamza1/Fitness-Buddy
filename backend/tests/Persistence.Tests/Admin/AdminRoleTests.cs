@@ -102,15 +102,20 @@ public sealed class AdminRoleTests(PostgresFixture postgres)
         // ops: queue ids, type codes, counts, error type names, heartbeats.
         "id", "kind", "type", "state", "attempts", "error_type", "pending", "due", "done_24h", "dead", "cancelled", "oldest_due_at", "paused",
         "instance", "role", "build", "started_at", "last_beat_at", "busy_kind", "busy_type", "busy_since", "errors", "previous",
+        // B24 account controls: codes, timestamps, counts and the account-scoped opaque device key.
+        "anonymous", "disabled_at", "deletion_requested_at", "deletion_attempts", "deletion_available_at", "deletion_last_error",
+        "device_key", "is_disabled", "deletion_pending", "device_found", "revoked_sessions", "was_disabled", "created",
     };
 
     /// <summary>Every function the console login can run (B23 P3, P4). A new one is reviewed and added here.</summary>
     private static readonly string[] AdminFunctions =
     [
         "catalog.admin_lookups", "catalog.admin_off_cache", "catalog.admin_releases",
-        "identity.admin_accounts", "identity.admin_accounts_by_type", "identity.admin_devices", "identity.admin_find_by_email", "identity.admin_installs",
+        "identity.admin_accounts", "identity.admin_accounts_by_type", "identity.admin_control_state", "identity.admin_device_keys", "identity.admin_devices",
+        "identity.admin_find_by_email", "identity.admin_installs", "identity.admin_lock_account", "identity.admin_request_deletion", "identity.admin_revoke_sessions",
+        "identity.admin_set_disabled",
         "ops.admin_cancel", "ops.admin_failed", "ops.admin_heartbeats", "ops.admin_http_errors", "ops.admin_queues", "ops.admin_retry", "ops.admin_set_paused",
-        "usage.admin_spend", "usage.admin_uses",
+        "usage.admin_daily_limit", "usage.admin_set_daily_limit", "usage.admin_spend", "usage.admin_uses",
         "userdata.admin_documents", "userdata.admin_sync_summary", "userdata.admin_user_stats", "userdata.admin_users_with_issues",
     ];
 

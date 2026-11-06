@@ -194,6 +194,8 @@ public sealed class AccountConcurrencyTests(PostgresFixture database) : IAsyncLi
     }
     private sealed class LostReply(IAccountDeletion inner, Signals signals) : IAccountDeletion
     {
+        public Task<DeletionResult> DeleteForOperatorAsync(Guid userId, CancellationToken cancellationToken) => inner.DeleteForOperatorAsync(userId, cancellationToken);
+
         public async Task<DeletionResult> DeleteAsync(Guid userId, Guid sessionId, CancellationToken cancellationToken)
         {
             var result = await inner.DeleteAsync(userId, sessionId, cancellationToken);

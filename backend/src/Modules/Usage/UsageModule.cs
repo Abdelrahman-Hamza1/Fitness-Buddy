@@ -12,10 +12,11 @@ namespace FitnessBuddy.Modules.Usage;
 public sealed class UsageModule : IModule
 {
     public string Name => "Usage";
-    public UserDataOwnership UserData => new(["daily"], [], "usage.erase");
+    public UserDataOwnership UserData => new(["daily", "limit_overrides"], [], "usage.erase");
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<IUsageRecorder, PostgresUsageRecorder>(); services.AddSingleton<IUsageAdminReads, PostgresUsageAdminReads>(); services.AddScoped<IOutboxHandler, UsageErasure>();
+        services.AddScoped<IUsageRecorder, PostgresUsageRecorder>(); services.AddSingleton<IUsageAdminReads, PostgresUsageAdminReads>();
+        services.AddSingleton<IUsageAdminControls, PostgresUsageAdminControls>(); services.AddScoped<IOutboxHandler, UsageErasure>();
         services.AddSingleton(new ModuleMigration("usage", c => new UsageContext(DatabaseConfiguration.ContextOptions<UsageContext>(c, "usage"))));
     }
     public void MapEndpoints(RouteGroupBuilder group) { }
