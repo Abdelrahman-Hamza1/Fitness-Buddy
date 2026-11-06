@@ -8,9 +8,11 @@ import 'package:fb_mobile/features/workouts/application/workout_log_state.dart';
 import 'package:fb_mobile/features/workouts/presentation/workout_text.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// One set row of the log form (A37 D7): `# · last time · inputs · ✓`.
-/// The fields show last time's numbers as hints; ✓ with empty fields
-/// accepts them. Fields by type (WO-004).
+/// One set row of the log form (A37 D7, A63 D15): `# · last time · inputs ·
+/// status`. A set counts as soon as it has valid numbers; last time's
+/// numbers show as dashed hints that don't count (D-097). Fields by type
+/// (WO-004). In the normal layout the card's [SetHeaderRow] names the
+/// columns; the compact layout keeps each field's label.
 class SetRow extends StatefulWidget {
   /// Row [row] (set [number]) of an exercise of [type] (`null`: unknown,
   /// read-only).
@@ -20,10 +22,24 @@ class SetRow extends StatefulWidget {
     required this.type,
     required this.isPr,
     required this.onChanged,
-    required this.onToggle,
     required this.onRemove,
     super.key,
   });
+
+  /// Whether rows stack (A57 D20): a narrow phone or large text. The card's
+  /// header row shows only when they don't.
+  static bool isCompact(BuildContext context) =>
+      MediaQuery.sizeOf(context).width < 360 ||
+      MediaQuery.textScalerOf(context).scale(1) >= 1.3;
+
+  /// The width of the set number column.
+  static const double numberWidth = FbSpace.s7;
+
+  /// The width of the "last time" column.
+  static const double lastWidth = FbSpace.s7 + FbSpace.s2;
+
+  /// The width of the PR / error status slot.
+  static const double statusWidth = FbSpace.s6;
 
   /// The row.
   final LogSetRow row;
@@ -40,9 +56,6 @@ class SetRow extends StatefulWidget {
   /// The inputs changed.
   final ValueChanged<SetInput> onChanged;
 
-  /// ✓ was tapped.
-  final VoidCallback onToggle;
-
   /// The set was removed (its number's menu).
   final VoidCallback onRemove;
 
@@ -57,6 +70,10 @@ class _SetRowState extends State<SetRow> {
   late final TextEditingController _first;
   late final TextEditingController _second;
 
+  /// Whether one of the row's fields has focus: the issue mark waits until
+  /// focus leaves, so a half-typed set doesn't flash an error (A63 D14).
+  bool _editing = false;
+
   @override
   void initState() {
     super.initState();
@@ -68,7 +85,8 @@ class _SetRowState extends State<SetRow> {
   @override
   void didUpdateWidget(SetRow old) {
     super.didUpdateWidget(old);
-    // The controller filled the fields (✓ on a hint, Reload): show it.
+    // The controller filled the fields (Same as last time, Reload): show
+    // it.
     if (widget.row.input != _input()) {
       final (first, second) = _texts(widget.row.input);
       _first.text = first;
@@ -142,6 +160,8 @@ class _SetRowState extends State<SetRow> {
         ? ('', '')
         : _texts(SetInput.of(type, hint));
     final lastTime = hint == null ? '' : l10n.setValues(type, hint);
+    final compact = SetRow.isCompact(context);
+    final labels = setFieldLabels(l10n, type);
     Widget field(
       TextEditingController controller,
       String label,
@@ -160,6 +180,8 @@ class _SetRowState extends State<SetRow> {
               keyboardType: TextInputType.datetime,
               textInputAction: TextInputAction.next,
               enabled: type != null,
+              hideLabel: !compact,
+              dashedWhenEmpty: hintText.isNotEmpty,
               onChanged: _changed,
             )
           : FbNumberField(
@@ -170,31 +192,27 @@ class _SetRowState extends State<SetRow> {
               maxDecimals: decimals,
               textInputAction: TextInputAction.next,
               enabled: type != null,
+              hideLabel: !compact,
+              dashedWhenEmpty: hintText.isNotEmpty,
               onChanged: _changed,
             ),
     );
     final fields = switch (type) {
-      ExerciseType.weightReps => [
-        field(_first, l10n.workoutFieldKg, hints.$1),
-        field(_second, l10n.workoutFieldReps, hints.$2, decimals: 0),
-      ],
-      ExerciseType.bodyweightReps => [
-        field(_first, l10n.workoutFieldAddedKg, hints.$1),
-        field(_second, l10n.workoutFieldReps, hints.$2, decimals: 0),
-      ],
+      ExerciseType.weightReps ||
+      ExerciseType.bodyweightReps ||
       ExerciseType.assisted => [
-        field(_first, l10n.workoutFieldAssistKg, hints.$1),
-        field(_second, l10n.workoutFieldReps, hints.$2, decimals: 0),
+        field(_first, labels[0], hints.$1),
+        field(_second, labels[1], hints.$2, decimals: 0),
       ],
       ExerciseType.repsOnly => [
-        field(_first, l10n.workoutFieldReps, hints.$1, decimals: 0),
+        field(_first, labels[0], hints.$1, decimals: 0),
       ],
       ExerciseType.duration => [
-        field(_first, l10n.workoutFieldTime, hints.$1, clock: true),
+        field(_first, labels[0], hints.$1, clock: true),
       ],
       ExerciseType.distanceDuration => [
-        field(_first, l10n.workoutFieldMinutes, hints.$1),
-        field(_second, l10n.workoutFieldKm, hints.$2),
+        field(_first, labels[0], hints.$1),
+        field(_second, labels[1], hints.$2),
       ],
       null => <Widget>[],
     };
@@ -209,7 +227,7 @@ class _SetRowState extends State<SetRow> {
           key: ValueKey('workout-set-menu-${row.id}'),
           onTap: () => unawaited(_menu(context)),
           child: SizedBox.square(
-            dimension: FbSpace.s7,
+            dimension: SetRow.numberWidth,
             child: Center(
               child: Text(
                 l10n.workoutSetNumber(widget.number),
@@ -226,39 +244,38 @@ class _SetRowState extends State<SetRow> {
         child: Text(
           lastTime,
           key: ValueKey('workout-set-last-${row.id}'),
-          style: theme.textTheme.bodySmall,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
           maxLines: maxLines,
           overflow: TextOverflow.ellipsis,
         ),
       ),
     );
-    final checkbox = Checkbox(
-      key: ValueKey('workout-set-done-${row.id}'),
-      value: row.checked,
-      semanticLabel: l10n.workoutSetDone(widget.number),
-      onChanged: type == null && !row.checked ? null : (_) => widget.onToggle(),
+    // PR only on a set that counts; the issue only once focus left the row.
+    final pr = widget.isPr && row.counts;
+    final invalid = row.issue != null && !_editing;
+    final inputs = Focus(
+      canRequestFocus: false,
+      skipTraversal: true,
+      onFocusChange: (focused) => setState(() => _editing = focused),
+      child: Row(
+        children: [
+          for (final (i, f) in fields.indexed) ...[
+            if (i > 0) const SizedBox(width: FbSpace.s2),
+            f,
+          ],
+        ],
+      ),
     );
-    final pr = widget.isPr && row.checked;
-    final invalid = row.issue != null;
-    final inputs = [
-      for (final (i, f) in fields.indexed) ...[
-        if (i > 0) const SizedBox(width: FbSpace.s2),
-        f,
-      ],
-    ];
     return Padding(
       padding: const EdgeInsetsDirectional.symmetric(vertical: FbSpace.s1),
       // C1 A (A57 D20, A05, A51): at large text or on a narrow phone "last
       // time" goes above the inputs and PR or the invalid note get their
       // own reserved line; otherwise one row with a fixed status slot.
       // Either way nothing moves when a set turns PR or invalid.
-      child: Builder(
-        builder: (context) {
-          final compact =
-              MediaQuery.sizeOf(context).width < 360 ||
-              MediaQuery.textScalerOf(context).scale(1) >= 1.3;
-          if (compact) {
-            return Column(
+      child: compact
+          ? Column(
               key: ValueKey('workout-set-compact-${row.id}'),
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -268,9 +285,11 @@ class _SetRowState extends State<SetRow> {
                     Expanded(child: last()),
                   ],
                 ),
-                Row(children: [...inputs, checkbox]),
+                inputs,
                 Padding(
-                  padding: const EdgeInsetsDirectional.only(start: FbSpace.s7),
+                  padding: const EdgeInsetsDirectional.only(
+                    start: SetRow.numberWidth,
+                  ),
                   child: Text(
                     pr
                         ? l10n.workoutPr
@@ -288,46 +307,115 @@ class _SetRowState extends State<SetRow> {
                   ),
                 ),
               ],
-            );
-          }
-          return Row(
-            children: [
-              number,
-              SizedBox(width: FbSpace.s7 + FbSpace.s2, child: last()),
-              ...inputs,
-              // A fixed status slot before the checkbox (A05): PR, or an
-              // error mark for numbers that can't be saved.
-              SizedBox(
-                key: ValueKey('workout-set-status-${row.id}'),
-                width: FbSpace.s6,
-                child: Center(
-                  child: pr
-                      ? Text(
-                          l10n.workoutPr,
-                          maxLines: 1,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.primary,
-                          ),
-                        )
-                      : invalid
-                      ? Tooltip(
-                          message: l10n.workoutSetInvalid,
-                          child: Semantics(
-                            label: l10n.workoutSetInvalid,
-                            child: Icon(
-                              FbIcons.error,
-                              size: 20,
-                              color: theme.colorScheme.error,
+            )
+          : Row(
+              children: [
+                number,
+                SizedBox(width: SetRow.lastWidth, child: last()),
+                Expanded(child: inputs),
+                // A fixed status slot (A05): PR, or an error mark for
+                // numbers that can't be saved.
+                SizedBox(
+                  key: ValueKey('workout-set-status-${row.id}'),
+                  width: SetRow.statusWidth,
+                  child: Center(
+                    child: pr
+                        ? Text(
+                            l10n.workoutPr,
+                            maxLines: 1,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.primary,
                             ),
-                          ),
-                        )
-                      : null,
+                          )
+                        : invalid
+                        ? Tooltip(
+                            message: l10n.workoutSetInvalid,
+                            child: Semantics(
+                              label: l10n.workoutSetInvalid,
+                              child: Icon(
+                                FbIcons.error,
+                                size: 20,
+                                color: theme.colorScheme.error,
+                              ),
+                            ),
+                          )
+                        : null,
+                  ),
                 ),
+              ],
+            ),
+    );
+  }
+}
+
+/// The field names of an exercise [type], in field order (WO-004).
+List<String> setFieldLabels(AppLocalizations l10n, ExerciseType? type) =>
+    switch (type) {
+      ExerciseType.weightReps => [l10n.workoutFieldKg, l10n.workoutFieldReps],
+      ExerciseType.bodyweightReps => [
+        l10n.workoutFieldAddedKg,
+        l10n.workoutFieldReps,
+      ],
+      ExerciseType.assisted => [
+        l10n.workoutFieldAssistKg,
+        l10n.workoutFieldReps,
+      ],
+      ExerciseType.repsOnly => [l10n.workoutFieldReps],
+      ExerciseType.duration => [l10n.workoutFieldTime],
+      ExerciseType.distanceDuration => [
+        l10n.workoutFieldMinutes,
+        l10n.workoutFieldKm,
+      ],
+      null => const [],
+    };
+
+/// The column names above a card's set rows in the normal layout (A63
+/// D15): Set · Last · the type's fields. Hidden from screen readers (each
+/// field keeps its spoken name). Columns line up with [SetRow]'s.
+class SetHeaderRow extends StatelessWidget {
+  /// The header of an exercise of [type].
+  const new({required this.type, super.key});
+
+  /// The exercise type.
+  final ExerciseType type;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final style = theme.textTheme.labelSmall?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+    Text label(String text, {TextAlign align = TextAlign.start}) => Text(
+      text,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      textAlign: align,
+      style: style,
+    );
+    final names = setFieldLabels(l10n, type);
+    return ExcludeSemantics(
+      child: Row(
+        children: [
+          SizedBox(
+            width: SetRow.numberWidth,
+            child: label(l10n.workoutSetHeader, align: TextAlign.center),
+          ),
+          SizedBox(
+            width: SetRow.lastWidth,
+            child: label(l10n.workoutLastHeader),
+          ),
+          for (final (i, name) in names.indexed) ...[
+            if (i > 0) const SizedBox(width: FbSpace.s2),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsetsDirectional.only(start: FbSpace.s4),
+                child: label(name),
               ),
-              checkbox,
-            ],
-          );
-        },
+            ),
+          ],
+          const SizedBox(width: SetRow.statusWidth),
+        ],
       ),
     );
   }

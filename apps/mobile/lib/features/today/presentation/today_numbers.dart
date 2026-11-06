@@ -279,7 +279,8 @@ class _SetupRow extends ConsumerWidget {
 }
 
 /// The hint above the meals of an empty day (UX-050): today points at "+" and
-/// suggests adding a food; past days offer a reminder to fill gaps.
+/// suggests adding a food; past days offer a reminder to fill gaps. An
+/// inline helper (an icon and the sentence), not a card (UX-047, A63 D8).
 class EmptyDayHint extends StatelessWidget {
   /// Creates the hint for today or a past day.
   const new({required this.isToday, super.key});
@@ -292,22 +293,31 @@ class EmptyDayHint extends StatelessWidget {
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
     return Padding(
+      key: const ValueKey('today-empty-hint'),
       padding: const EdgeInsetsDirectional.fromSTEB(
         FbSpace.s4,
         0,
         FbSpace.s4,
         FbDensity.cardGap,
       ),
-      child: FbCard(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              isToday ? l10n.diaryEmptyTodayHint : l10n.diaryEmptyPastHint,
-              style: FbType.body.copyWith(color: scheme.onSurface),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: FbSpace.s3,
+        children: [
+          ExcludeSemantics(
+            child: Icon(
+              isToday ? FbIcons.add : FbIcons.diary,
+              size: 20,
+              color: scheme.onSurfaceVariant,
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: Text(
+              isToday ? l10n.diaryEmptyTodayHint : l10n.diaryEmptyPastHint,
+              style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
+            ),
+          ),
+        ],
       ),
     );
   }

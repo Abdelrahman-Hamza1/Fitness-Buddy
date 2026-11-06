@@ -1,6 +1,8 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/ui/discard_changes_sheet.dart';
 import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/workouts/application/custom_exercise_form.dart';
@@ -44,6 +46,9 @@ class _CustomState extends ConsumerState<CustomExerciseScreen> {
   final TextEditingController _aliases = TextEditingController();
   bool _filled = false;
 
+  /// Set once a save or delete is leaving: Back no longer asks.
+  bool _leaving = false;
+
   @override
   void dispose() {
     _name.dispose();
@@ -67,8 +72,10 @@ class _CustomState extends ConsumerState<CustomExerciseScreen> {
               : l10n.workoutCustomUpdated,
           undoEntryId: undoId,
         );
+        setState(() => _leaving = true);
         Navigator.of(context).pop(id);
       case WorkoutActionUnchanged():
+        setState(() => _leaving = true);
         Navigator.of(context).pop(widget.formKey.id);
       case WorkoutActionFailed(:final reason):
         showFbSnackBar(context, _failure(l10n, reason));
@@ -86,8 +93,10 @@ class _CustomState extends ConsumerState<CustomExerciseScreen> {
           message: l10n.workoutCustomDeleted,
           undoEntryId: undoId,
         );
+        setState(() => _leaving = true);
         Navigator.of(context).pop();
       case WorkoutActionUnchanged():
+        setState(() => _leaving = true);
         Navigator.of(context).pop();
       case WorkoutActionFailed(:final reason):
         showFbSnackBar(context, _failure(l10n, reason));
@@ -100,6 +109,7 @@ class _CustomState extends ConsumerState<CustomExerciseScreen> {
         WorkoutActionFailure.removed => l10n.workoutActionChanged,
         WorkoutActionFailure.inUse => l10n.workoutCustomInUse,
         WorkoutActionFailure.invalid => l10n.workoutActionRefused,
+        WorkoutActionFailure.storage => l10n.customExerciseSaveFailed,
       };
 
   @override
@@ -113,134 +123,144 @@ class _CustomState extends ConsumerState<CustomExerciseScreen> {
       _name.text = form.name;
       _aliases.text = form.aliases;
     }
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          editing ? l10n.workoutCustomEditTitle : l10n.workoutCustomNewTitle,
+    return UnsavedEditsGuard(
+      // Back with unsaved edits asks first (A63 D19, audit major 8).
+      dirty: !_leaving && _form.hasUnsavedEdits(),
+      confirmDiscard: () =>
+          showDiscardChangesSheet(context, message: l10n.workoutDiscardMessage),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            editing ? l10n.workoutCustomEditTitle : l10n.workoutCustomNewTitle,
+          ),
         ),
-      ),
-      body: form == null
-          ? (async.hasError
-                ? LoadFailedView(
-                    message: l10n.workoutsLoadFailed,
-                    onRetry: () => ref.invalidate(
-                      customExerciseFormProvider(widget.formKey),
-                    ),
-                  )
-                : const LoadingRows())
-          : ListView(
-              padding: const EdgeInsetsDirectional.all(FbSpace.s4),
-              children: [
-                FbTextField(
-                  key: const ValueKey('workout-custom-name'),
-                  controller: _name,
-                  label: l10n.workoutCustomName,
-                  maxLength: WorkoutLimits.nameMax,
-                  errorText: form.submitted && form.nameMissing
-                      ? l10n.workoutCustomNameError
-                      : null,
-                  textInputAction: TextInputAction.next,
-                  onChanged: _form.setName,
-                ),
-                const SizedBox(height: FbSpace.s2),
-                FbTextField(
-                  key: const ValueKey('workout-custom-aliases'),
-                  controller: _aliases,
-                  label: l10n.workoutCustomAliases,
-                  supportingText: l10n.workoutCustomAliasesHint,
-                  errorText: form.tooManyAliases
-                      ? l10n.workoutCustomAliasesTooMany(
-                          WorkoutLimits.aliasesMax,
-                        )
-                      : form.aliasTooLong
-                      ? l10n.workoutCustomAliasTooLong(WorkoutLimits.nameMax)
-                      : null,
-                  onChanged: _form.setAliases,
-                ),
-                FbSectionHeader(title: l10n.workoutCustomType),
-                _Chips<ExerciseType>(
-                  values: ExerciseType.values,
-                  label: l10n.exerciseType,
-                  selected: (t) => t == form.type,
-                  onTap: editing && form.inUse ? null : _form.setType,
-                ),
-                if (editing && form.inUse)
-                  Padding(
-                    padding: const EdgeInsetsDirectional.only(top: FbSpace.s1),
-                    child: Text(
-                      l10n.workoutCustomTypeLocked,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
+        body: form == null
+            ? (async.hasError
+                  ? LoadFailedView(
+                      message: l10n.workoutsLoadFailed,
+                      onRetry: () => ref.invalidate(
+                        customExerciseFormProvider(widget.formKey),
+                      ),
+                    )
+                  : const LoadingRows())
+            : ListView(
+                padding: const EdgeInsetsDirectional.all(FbSpace.s4),
+                children: [
+                  FbTextField(
+                    key: const ValueKey('workout-custom-name'),
+                    controller: _name,
+                    label: l10n.workoutCustomName,
+                    maxLength: WorkoutLimits.nameMax,
+                    errorText: form.submitted && form.nameMissing
+                        ? l10n.workoutCustomNameError
+                        : null,
+                    textInputAction: TextInputAction.next,
+                    onChanged: _form.setName,
                   ),
-                FbSectionHeader(title: l10n.workoutCustomEquipment),
-                _Chips<Equipment>(
-                  values: Equipment.values,
-                  label: l10n.equipment,
-                  selected: (e) => e == form.equipment,
-                  onTap: _form.setEquipment,
-                ),
-                const SizedBox(height: FbSpace.s4),
-                // Live: redraws as the muscles below change (WO-007).
-                Center(
-                  child: ExerciseMuscleMap(
-                    key: const ValueKey('workout-custom-map'),
-                    primary: form.primary,
-                    secondaries: form.secondaries,
+                  const SizedBox(height: FbSpace.s2),
+                  FbTextField(
+                    key: const ValueKey('workout-custom-aliases'),
+                    controller: _aliases,
+                    label: l10n.workoutCustomAliases,
+                    supportingText: l10n.workoutCustomAliasesHint,
+                    errorText: form.tooManyAliases
+                        ? l10n.workoutCustomAliasesTooMany(
+                            WorkoutLimits.aliasesMax,
+                          )
+                        : form.aliasTooLong
+                        ? l10n.workoutCustomAliasTooLong(WorkoutLimits.nameMax)
+                        : null,
+                    onChanged: _form.setAliases,
                   ),
-                ),
-                FbSectionHeader(title: l10n.workoutCustomPrimary),
-                _Chips<Muscle>(
-                  keyPrefix: 'workout-custom-primary',
-                  values: Muscle.values,
-                  label: l10n.muscle,
-                  selected: (m) => m == form.primary,
-                  onTap: _form.setPrimary,
-                ),
-                if (form.submitted && form.primaryMissing)
-                  Padding(
-                    padding: const EdgeInsetsDirectional.only(top: FbSpace.s1),
-                    child: Text(
-                      l10n.workoutCustomPrimaryError,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
+                  FbSectionHeader(title: l10n.workoutCustomType),
+                  _Chips<ExerciseType>(
+                    values: ExerciseType.values,
+                    label: l10n.exerciseType,
+                    selected: (t) => t == form.type,
+                    onTap: editing && form.inUse ? null : _form.setType,
+                  ),
+                  if (editing && form.inUse)
+                    Padding(
+                      padding: const EdgeInsetsDirectional.only(
+                        top: FbSpace.s1,
+                      ),
+                      child: Text(
+                        l10n.workoutCustomTypeLocked,
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
+                  FbSectionHeader(title: l10n.workoutCustomEquipment),
+                  _Chips<Equipment>(
+                    values: Equipment.values,
+                    label: l10n.equipment,
+                    selected: (e) => e == form.equipment,
+                    onTap: _form.setEquipment,
                   ),
-                FbSectionHeader(title: l10n.workoutCustomSecondary),
-                _Chips<Muscle>(
-                  keyPrefix: 'workout-custom-secondary',
-                  values: [
-                    for (final m in Muscle.values)
-                      if (m != form.primary) m,
-                  ],
-                  label: l10n.muscle,
-                  selected: form.secondaries.contains,
-                  onTap: _form.toggleSecondary,
-                ),
-                const SizedBox(height: FbSpace.s5),
-                FbButton.primary(
-                  key: const ValueKey('workout-custom-save'),
-                  label: l10n.workoutCustomSave,
-                  expand: true,
-                  onPressed: form.saving ? null : _save,
-                ),
-                if (editing) ...[
-                  const SizedBox(height: FbSpace.s2),
-                  if (form.inUse)
-                    Text(
-                      l10n.workoutCustomInUse,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    )
-                  else
-                    FbButton.text(
-                      label: l10n.workoutCustomDelete,
-                      icon: FbIcons.delete,
-                      expand: true,
-                      onPressed: form.saving ? null : _delete,
+                  const SizedBox(height: FbSpace.s4),
+                  // Live: redraws as the muscles below change (WO-007).
+                  Center(
+                    child: ExerciseMuscleMap(
+                      key: const ValueKey('workout-custom-map'),
+                      primary: form.primary,
+                      secondaries: form.secondaries,
                     ),
+                  ),
+                  FbSectionHeader(title: l10n.workoutCustomPrimary),
+                  _Chips<Muscle>(
+                    keyPrefix: 'workout-custom-primary',
+                    values: Muscle.values,
+                    label: l10n.muscle,
+                    selected: (m) => m == form.primary,
+                    onTap: _form.setPrimary,
+                  ),
+                  if (form.submitted && form.primaryMissing)
+                    Padding(
+                      padding: const EdgeInsetsDirectional.only(
+                        top: FbSpace.s1,
+                      ),
+                      child: Text(
+                        l10n.workoutCustomPrimaryError,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+                    ),
+                  FbSectionHeader(title: l10n.workoutCustomSecondary),
+                  _Chips<Muscle>(
+                    keyPrefix: 'workout-custom-secondary',
+                    values: [
+                      for (final m in Muscle.values)
+                        if (m != form.primary) m,
+                    ],
+                    label: l10n.muscle,
+                    selected: form.secondaries.contains,
+                    onTap: _form.toggleSecondary,
+                  ),
+                  const SizedBox(height: FbSpace.s5),
+                  FbButton.primary(
+                    key: const ValueKey('workout-custom-save'),
+                    label: l10n.workoutCustomSave,
+                    expand: true,
+                    onPressed: form.saving ? null : _save,
+                  ),
+                  if (editing) ...[
+                    const SizedBox(height: FbSpace.s2),
+                    if (form.inUse)
+                      Text(
+                        l10n.workoutCustomInUse,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      )
+                    else
+                      FbButton.text(
+                        label: l10n.workoutCustomDelete,
+                        icon: FbIcons.delete,
+                        expand: true,
+                        onPressed: form.saving ? null : _delete,
+                      ),
+                  ],
                 ],
-              ],
-            ),
+              ),
+      ),
     );
   }
 }

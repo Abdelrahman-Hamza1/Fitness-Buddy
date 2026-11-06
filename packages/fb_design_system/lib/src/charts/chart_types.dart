@@ -286,8 +286,8 @@ class FbBar {
   /// How the bar is drawn.
   final FbBarStyle style;
 
-  /// A slot still to come (e.g. a later day of this week): nothing is drawn
-  /// and it can't be selected.
+  /// A slot still to come (e.g. a later day of this week): a dashed
+  /// outline (A63 D7), no semantics, and it can't be selected.
   final bool placeholder;
 
   /// The caller's identity of the bar.

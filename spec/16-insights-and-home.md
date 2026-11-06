@@ -41,7 +41,7 @@ Top to bottom:
 
 ## 2. Progress tab
 
-- **IN-001** `[R1]` **Weekly summary** for the current week and any past week: average calories vs. budget, days within target, protein target hit days, fiber average, trend weight change, workouts done (vs. planned, when there is a plan), PRs, and the Buddy weekly review on top (AI-130).
+- **IN-001** `[R1]` **Weekly summary** for the current week and any past week: average calories vs. budget, days within target, protein target hit days, fiber average, trend weight change, workouts done (vs. planned, when there is a plan), PRs, and the Buddy weekly review on top (AI-130). On the Progress tab the week lives in the calories chart card (average vs target and a line of key numbers); the full summary opens from it and from the weekly notification (D-097).
 - **IN-002** `[R1]` **Calories chart**: daily intake vs. daily target, by week or month, with incomplete days marked differently.
 - **IN-003** `[R1]` **Macros chart**: protein, carbs, fat, fiber per day vs. targets.
 - **IN-004** `[R1]` **Weight chart** (WB-020 to WB-023).

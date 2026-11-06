@@ -1,4 +1,5 @@
 import 'package:fb_design_system/l10n/gen/fb_localizations.dart';
+import 'package:fb_design_system/src/components/dashed_input_border.dart';
 import 'package:fb_design_system/src/components/digits.dart';
 import 'package:fb_design_system/src/components/supporting_line.dart';
 import 'package:fb_design_system/src/tokens/typography.dart';
@@ -80,6 +81,11 @@ class FbDecimalInputFormatter extends TextInputFormatter {
 /// means (its range, a conversion) is the caller's job, so the caller keeps
 /// the text as typed. A screen reader reads "label, value unit". Layout is
 /// start/end only, so it mirrors in right-to-left layouts.
+///
+/// [hideLabel] drops the visible label where a header above names the
+/// column (A63 D15); the label stays the field's spoken name.
+/// [dashedWhenEmpty] draws a dashed outline while the field is empty and
+/// unfocused, for a [hint] that is only a suggestion.
 class FbNumberField extends StatelessWidget {
   /// Creates a number field.
   const new({
@@ -98,6 +104,8 @@ class FbNumberField extends StatelessWidget {
     this.focusNode,
     this.enabled = true,
     this.semanticLabel,
+    this.hideLabel = false,
+    this.dashedWhenEmpty = false,
     super.key,
   });
 
@@ -148,6 +156,12 @@ class FbNumberField extends StatelessWidget {
   /// a visible label and only their place tells them apart.
   final String? semanticLabel;
 
+  /// Whether the label is only spoken, not shown.
+  final bool hideLabel;
+
+  /// Whether an empty, unfocused field has a dashed outline.
+  final bool dashedWhenEmpty;
+
   @override
   Widget build(BuildContext context) {
     final l10n = FbLocalizations.of(context);
@@ -180,8 +194,11 @@ class FbNumberField extends StatelessWidget {
             onSubmitted: onSubmitted,
             decoration: InputDecoration(
               // Read once, in the label above, with the number and its unit.
-              label: ExcludeSemantics(child: Text(label)),
+              label: hideLabel ? null : ExcludeSemantics(child: Text(label)),
               hintText: hint,
+              enabledBorder: dashedWhenEmpty && value.text.isEmpty
+                  ? fbDashedEnabledBorder(context)
+                  : null,
               // The outline shows the error; the message is in the line.
               error: errorText == null ? null : const SizedBox.shrink(),
               suffixText: unit,

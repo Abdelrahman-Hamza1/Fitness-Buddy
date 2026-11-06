@@ -1,5 +1,6 @@
 import 'package:fb_mobile/core/account/account_providers.dart';
 import 'package:fb_mobile/core/account/account_service.dart';
+import 'package:fb_mobile/core/account/local_identity_store.dart';
 import 'package:fb_mobile/core/account/profile_registry.dart';
 import 'package:fb_mobile/core/session/session_providers.dart';
 import 'package:fb_mobile/core/session/session_state.dart';
@@ -67,6 +68,7 @@ final class SignInState {
     this.mergeBlocked = false,
     this.email,
     this.codesSent = 0,
+    this.askName = false,
   });
 
   /// Current step.
@@ -92,6 +94,10 @@ final class SignInState {
   /// countdown (A51).
   final int codesSent;
 
+  /// The done step asks "What should we call you?" (an email sign-in,
+  /// M2, A63 D10).
+  final bool askName;
+
   @override
   String toString() => 'SignInState(${step.name}, busy: $busy)';
 }
@@ -102,6 +108,9 @@ class SignInController extends _$SignInController {
   EmailChallengeRef? _challenge;
   String? _email;
   late SignInFlow _flow;
+
+  /// The profile the last sign-in committed to, for the name step (PA2).
+  String? _signedInKey;
 
   @override
   SignInState build() {
@@ -143,18 +152,21 @@ class SignInController extends _$SignInController {
   Future<void> submitCode(String code) => _run(() async {
     final challenge = _challenge;
     if (challenge == null) return const SignInState();
-    return _after(await _flow.verifyEmail(challenge, code.trim()));
+    return await _after(
+      await _flow.verifyEmail(challenge, code.trim()),
+      askName: true,
+    );
   });
 
   /// Google sign-in.
   Future<void> google() => _run(() async {
-    return _after(await _flow.signInWithGoogle());
+    return await _after(await _flow.signInWithGoogle());
   });
 
   /// The merge/discard answer after a conflict.
   Future<void> choose(ConflictChoice choice) => _run(() async {
-    final outcome = await _flow.chooseOnConflict(choice);
-    if (outcome != null) return _after(outcome);
+    final result = await _flow.chooseOnConflict(choice);
+    if (result != null) return await _after(result);
     // Email: the conflict consumed the link code; send a sign-in code.
     final email = _email;
     if (email == null) return const SignInState();
@@ -166,7 +178,32 @@ class SignInController extends _$SignInController {
     );
   });
 
-  SignInState _after(AccountOutcome outcome) {
+  /// The name typed on the done step (M2): stored for the signed-in
+  /// profile; empty skips. Either way it was asked, so it isn't offered
+  /// again. Never sent or logged.
+  Future<void> saveName(String name) async {
+    final key = _signedInKey;
+    if (key == null) return;
+    ref.read(recentSignInProvider.notifier).nameAsked();
+    if (LocalIdentity.cleanName(name) == null) return;
+    final store = ref.read(localIdentityStoreProvider);
+    try {
+      await store.setName(key, name);
+    } on Object {
+      // Editable later in Account & data.
+    }
+    if (ref.mounted) ref.invalidate(accountStatusProvider);
+  }
+
+  Future<SignInState> _after(
+    SignInResult result, {
+    bool askName = false,
+  }) async {
+    final outcome = result.outcome;
+    // Who signed in is already stored by the service (it outlives this
+    // screen). A profile switch disposes this controller: nothing to show.
+    if (result.identity case final who?) _signedInKey = who.profileKey;
+    if (!ref.mounted) return const SignInState(step: SignInStep.done);
     ref.invalidate(accountStatusProvider);
     return switch (outcome) {
       AccountOutcome.needsConflictChoice => const SignInState(
@@ -181,7 +218,11 @@ class SignInController extends _$SignInController {
         email: state.email,
         codesSent: state.codesSent,
       ),
-      _ => SignInState(step: SignInStep.done, outcome: outcome),
+      _ => SignInState(
+        step: SignInStep.done,
+        outcome: outcome,
+        askName: askName && result.identity != null,
+      ),
     };
   }
 

@@ -87,30 +87,6 @@ class ThemeSettingRow extends ConsumerWidget {
   }
 }
 
-/// "Energy: kcal", information only (LC-012: kJ is a later option).
-class EnergySettingRow extends StatelessWidget {
-  /// Creates the row.
-  const new({super.key});
-
-  @override
-  Widget build(BuildContext context) => FbListRow(
-    title: context.l10n.settingsEnergy,
-    trailing: Text(context.l10n.diaryUnitKcal),
-  );
-}
-
-/// "Language: English", information only (D-080: English UI in R1).
-class LanguageSettingRow extends StatelessWidget {
-  /// Creates the row.
-  const new({super.key});
-
-  @override
-  Widget build(BuildContext context) => FbListRow(
-    title: context.l10n.settingsLanguage,
-    trailing: Text(context.l10n.settingsLanguageEnglish),
-  );
-}
-
 /// The name of [system] ("Metric").
 String unitsName(BuildContext context, UnitSystem system) => switch (system) {
   UnitSystem.metric => context.l10n.settingsUnitsMetric,

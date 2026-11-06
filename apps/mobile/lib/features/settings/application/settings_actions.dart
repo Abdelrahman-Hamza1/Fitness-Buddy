@@ -23,6 +23,10 @@ enum SettingsFailure {
 
   /// A row no longer exists.
   removed,
+
+  /// Local storage failed (a read or write threw, A63 D20); nothing was
+  /// changed by this command.
+  storage,
 }
 
 /// Structured application outcomes, without user values in diagnostics.
@@ -131,13 +135,29 @@ final class SettingsActions {
     (current) => current.withSeason(season),
   );
 
+  /// Change one Ramadan season field by field (A63 D17): [change] runs on
+  /// the **stored** season of [hijriYear] (a new one when none) when the
+  /// write runs, so two quick edits (first day, then last day) both land
+  /// instead of the second restoring the first from an older copy.
+  Future<SettingsOutcome> updateRamadanSeason(
+    int hijriYear,
+    RamadanSeason Function(RamadanSeason current) change,
+  ) => _change(
+    AppSettings.ramadanSeasons,
+    (current) => current.withSeason(
+      change(
+        current[hijriYear] ?? RamadanSeason(hijriYear: hijriYear, on: false),
+      ),
+    ),
+  );
+
   /// Marks [date] "not fasting", or fasting again (LC-034, A41a fix rounds
   /// 1–2): a per-date setting, for a day of a Ramadan with the mode on
   /// (refused outside one), never on the diary's day marks.
   Future<SettingsOutcome> setNotFasting(
     LocalDate date, {
     required bool notFasting,
-  }) async {
+  }) => _guarded(() async {
     final seasons = await store.read(AppSettings.ramadanSeasons);
     if (RamadanCalendar(seasons).onPeriodContaining(date) == null) {
       return const SettingsFailed(SettingsFailure.invalid);
@@ -148,7 +168,7 @@ final class SettingsActions {
       AppSettings.fastingMark(date),
       notFasting ? FastingMark.notFasting : FastingMark.fasting,
     );
-  }
+  });
 
   /// How prayer times are computed (LC-033).
   Future<SettingsOutcome> setPrayerMethod(PrayerMethod value) =>
@@ -162,6 +182,21 @@ final class SettingsActions {
   /// Unset the city, with undo.
   Future<SettingsOutcome> clearCity() =>
       _set(AppSettings.cityId, null, reset: true);
+
+  /// Runs a command's own reads (A63 PA6): a refusal keeps its own
+  /// mapping, any other storage exception becomes [SettingsFailure.storage],
+  /// never an escaped error. No user value goes into the outcome.
+  Future<SettingsOutcome> _guarded(
+    Future<SettingsOutcome> Function() command,
+  ) async {
+    try {
+      return await command();
+    } on ChangeRejected catch (rejection) {
+      return _failure(rejection.failure);
+    } on Exception {
+      return const SettingsFailed(SettingsFailure.storage);
+    }
+  }
 
   SettingsFailed _failure(ChangeFailure failure) =>
       SettingsFailed(switch (failure) {
@@ -239,6 +274,9 @@ final class SettingsActions {
           : await store.put(key, value, origin: Origin.direct);
     } on ChangeRejected catch (rejection) {
       return _failure(rejection.failure);
+    } on Exception {
+      // A read, put or reset threw (A63 D20): reported, never escaped.
+      return const SettingsFailed(SettingsFailure.storage);
     }
     if (result is Rejected) return _failure(result.failure);
     final applied = result as Applied;

@@ -6,11 +6,16 @@ import 'package:material_ui/material_ui.dart' show Theme;
 /// Asks before a form with unsaved changes is left (UX-052): the typed values
 /// are not lost by a stray back gesture. Resolves to true when the user
 /// chooses to discard them.
-Future<bool> showDiscardChangesSheet(BuildContext context) async {
+///
+/// [message] says what was changed (default: a food, its first user).
+Future<bool> showDiscardChangesSheet(
+  BuildContext context, {
+  String? message,
+}) async {
   final discard = await showFbSheet<bool>(
     context,
     title: context.l10n.personalFoodDiscardTitle,
-    builder: (_) => const DiscardChangesSheet(),
+    builder: (_) => DiscardChangesSheet(message: message),
   );
   return discard ?? false;
 }
@@ -19,7 +24,10 @@ Future<bool> showDiscardChangesSheet(BuildContext context) async {
 /// discard. Pops with true to discard.
 class DiscardChangesSheet extends StatelessWidget {
   /// Creates the sheet body.
-  const new({super.key});
+  const new({this.message, super.key});
+
+  /// What was changed, or `null` for the food form's line.
+  final String? message;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +37,7 @@ class DiscardChangesSheet extends StatelessWidget {
       spacing: FbSpace.s3,
       children: [
         Text(
-          l10n.personalFoodDiscardMessage,
+          message ?? l10n.personalFoodDiscardMessage,
           style: FbType.body.copyWith(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),

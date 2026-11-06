@@ -3,7 +3,8 @@ import 'package:fb_domain/src/time/local_time.dart';
 import 'package:fb_domain/src/workouts/workout_drafts.dart';
 
 /// One set row of the log form (WO-034, A37 D8): its stable row ID, whether
-/// it's checked (done), and its last valid values. An edit that makes the
+/// it counts (the app passes "has valid numbers", D-097), and its last
+/// valid values. An edit that makes the
 /// inputs invalid keeps [value] at the last valid one, so autosave keeps the
 /// saved number.
 final class LogFormSet {
@@ -18,7 +19,8 @@ final class LogFormSet {
   /// The set row's ID, stable for the whole form visit.
   final String id;
 
-  /// Whether the set is done (only checked sets are saved).
+  /// Whether the set counts (only counted sets are saved). The app counts a
+  /// set as soon as it has valid numbers (A63 D14).
   final bool checked;
 
   /// The last valid values, with this row's [id].

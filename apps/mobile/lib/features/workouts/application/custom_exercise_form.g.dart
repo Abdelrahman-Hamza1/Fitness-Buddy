@@ -58,7 +58,7 @@ final class CustomExerciseFormProvider
 }
 
 String _$customExerciseFormHash() =>
-    r'd2e642fefb58f51212e29fe2b8947b2647e3b767';
+    r'e9a94f9e8afc95a7a2dae6b35cc83718c7ab09f8';
 
 /// The custom exercise form's view model: edits, Save and Delete as direct
 /// actions with undo (through [WorkoutActions]).

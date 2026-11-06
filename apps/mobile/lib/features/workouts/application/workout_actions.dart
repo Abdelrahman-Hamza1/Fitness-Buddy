@@ -25,6 +25,10 @@ enum WorkoutActionFailure {
 
   /// The op was refused otherwise.
   invalid,
+
+  /// Local storage failed (a write threw, A63 audit major 2); nothing was
+  /// written.
+  storage,
 }
 
 /// What a workout action did.

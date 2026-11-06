@@ -3180,12 +3180,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get meSectionDeveloper => 'Developer';
 
   @override
-  String get settingsLanguage => 'Language';
-
-  @override
-  String get settingsLanguageEnglish => 'English';
-
-  @override
   String get meGuest => 'Guest';
 
   @override
@@ -3313,9 +3307,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsCity => 'City';
-
-  @override
-  String get settingsEnergy => 'Energy';
 
   @override
   String get settingsUnitsSetMetric => 'Units set to metric';
@@ -4828,13 +4819,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signInChangeEmail => 'Use a different email';
 
   @override
-  String get guestPromptBody =>
-      'You\'re using Fitness Buddy as a guest. Create a free account and everything you\'ve logged comes with you.';
-
-  @override
-  String get guestPromptCreate => 'Create account';
-
-  @override
   String get guestPromptNotNow => 'Not now';
 
   @override
@@ -4848,11 +4832,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String progressDateRange(String start, String end) {
     return '$start – $end';
-  }
-
-  @override
-  String progressWeekAverage(String eaten, String target) {
-    return 'Average $eaten of $target kcal';
   }
 
   @override
@@ -5729,8 +5708,22 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String workoutSetDone(int number) {
-    return 'Set $number done';
+  String get workoutSameAsLast => 'Same as last time';
+
+  @override
+  String get workoutSetHeader => 'Set';
+
+  @override
+  String get workoutLastHeader => 'Last';
+
+  @override
+  String workoutSetRemoved(int number) {
+    return 'Set $number removed';
+  }
+
+  @override
+  String workoutSetRestoreFull(int max) {
+    return 'Set not brought back: an exercise holds at most $max sets';
   }
 
   @override
@@ -5813,39 +5806,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get adaptiveIntro =>
       'Your targets adapt to your results once there\'s enough data: 14 days of logging and 3 weigh-ins over 10 days.';
-
-  @override
-  String adaptiveWeighInsToGo(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count more weigh-ins until your targets can adapt',
-      one: '1 more weigh-in until your targets can adapt',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String adaptiveDaysToGo(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'Log $count more days until your targets can adapt',
-      one: 'Log 1 more day until your targets can adapt',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String adaptiveSpanToGo(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'Keep weighing in: $count more days until your targets can adapt',
-      one: 'Keep weighing in: 1 more day until your targets can adapt',
-    );
-    return '$_temp0';
-  }
 
   @override
   String adaptiveEstimate(int kcal) {
@@ -5936,10 +5896,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get checkInRaise => 'Raise by 50 kcal';
-
-  @override
-  String get checkInStale =>
-      'Your targets changed since this check-in, so it no longer applies.';
 
   @override
   String get checkInDismiss => 'Dismiss';
@@ -6476,57 +6432,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weeklySummaryTitle => 'Weekly summary';
 
   @override
-  String get weeklySummaryPastWeeks => 'Past weeks';
-
-  @override
   String get weeklySummaryNothingCounted => 'No counted days yet';
-
-  @override
-  String weeklySummaryWithinTarget(int within, int days) {
-    return '$within of $days days within target';
-  }
-
-  @override
-  String weeklySummaryProtein(int hit, int days) {
-    return 'Protein target reached on $hit of $days days';
-  }
-
-  @override
-  String weeklySummaryFiber(String grams) {
-    return 'Fiber $grams g a day on average';
-  }
-
-  @override
-  String weeklySummaryTrend(String change) {
-    return 'Trend $change';
-  }
-
-  @override
-  String weeklySummaryWorkoutsPlanned(int done, int planned) {
-    return '$done of $planned planned workouts';
-  }
-
-  @override
-  String weeklySummaryWorkouts(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count workouts',
-      one: '1 workout',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String weeklySummaryPrs(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count new personal records',
-      one: '1 new personal record',
-    );
-    return '$_temp0';
-  }
 
   @override
   String get settingsNotifications => 'Notifications';
@@ -7497,4 +7403,217 @@ class AppLocalizationsEn extends AppLocalizations {
   String targetsDayChanged(String day) {
     return '$day, changed';
   }
+
+  @override
+  String progressCaloriesWeekAvg(String kcal, String target) {
+    return 'avg $kcal / $target';
+  }
+
+  @override
+  String progressWeekInTarget(int within, int days) {
+    return 'In target $within/$days';
+  }
+
+  @override
+  String progressWeekProtein(int hit, int days) {
+    return 'Protein $hit/$days';
+  }
+
+  @override
+  String get progressWeekOpen => 'Opens this week\'s summary';
+
+  @override
+  String get progressWeekUnavailable => 'Week summary unavailable';
+
+  @override
+  String progressWeekAverageBig(String eaten, String target) {
+    return '$eaten / $target kcal avg';
+  }
+
+  @override
+  String progressTileFraction(int count, int of) {
+    return '$count/$of';
+  }
+
+  @override
+  String progressTileGrams(String grams) {
+    return '$grams g';
+  }
+
+  @override
+  String progressTileOfPlanned(int done, int planned) {
+    return '$done of $planned';
+  }
+
+  @override
+  String get progressTileInTarget => 'Days in target';
+
+  @override
+  String get progressTileProtein => 'Protein days';
+
+  @override
+  String get progressTileFiber => 'Fiber a day';
+
+  @override
+  String get progressTileTrend => 'Trend';
+
+  @override
+  String get progressTileWorkouts => 'Workouts';
+
+  @override
+  String get progressTilePrs => 'Personal records';
+
+  @override
+  String progressExercisesWeek(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count this week',
+      one: '1 this week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String progressExercisesWeekPlanned(int done, int planned) {
+    return '$done of $planned this week';
+  }
+
+  @override
+  String progressExercisesWeekPrs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count PRs',
+      one: '1 PR',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noticeReview => 'Review';
+
+  @override
+  String checkInRowPending(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Weekly check-in · new target $kcalString';
+  }
+
+  @override
+  String checkInRowApplied(int to, int from) {
+    final intl.NumberFormat toNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String toString = toNumberFormat.format(to);
+    final intl.NumberFormat fromNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String fromString = fromNumberFormat.format(from);
+
+    return 'Target now $toString (was $fromString)';
+  }
+
+  @override
+  String get checkInRowStale => 'Check-in out of date';
+
+  @override
+  String incompleteDayRow(String date, int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return '$date · $kcalString kcal · incomplete?';
+  }
+
+  @override
+  String get ramadanOfferRow => 'Ramadan targets: maintain?';
+
+  @override
+  String get guestPromptShort => 'Back up what you\'ve logged';
+
+  @override
+  String get guestPromptSignIn => 'Sign in';
+
+  @override
+  String adaptiveToGoWeighIns(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count weigh-ins',
+      one: '1 weigh-in',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adaptiveToGoDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adaptiveToGoCaption => 'still to log';
+
+  @override
+  String get adaptiveToGoSpanCaption => 'of weigh-ins still to go';
+
+  @override
+  String get adaptiveToGoLogCaption => 'of logging still to go';
+
+  @override
+  String get adaptiveHowItWorks => 'How this works';
+
+  @override
+  String get accountLoadFailed => 'Couldn\'t load your account.';
+
+  @override
+  String get accountName => 'Name';
+
+  @override
+  String get accountNameAdd => 'Add a name';
+
+  @override
+  String get accountNameSave => 'Save';
+
+  @override
+  String get accountNameSaveFailed => 'Couldn\'t save the name. Try again.';
+
+  @override
+  String get signInNameLabel => 'What should we call you?';
+
+  @override
+  String get signInNameHint => 'Shown only on this phone. You can skip.';
+
+  @override
+  String get prefsFixedFacts =>
+      'Calories are shown in kcal. The app is in English; Buddy also understands Arabic.';
+
+  @override
+  String get meTargetsLoadFailed => 'Couldn\'t load your targets.';
+
+  @override
+  String get notifLoadFailed => 'Couldn\'t load your reminder settings.';
+
+  @override
+  String get ramadanCityLoadFailed => 'Couldn\'t load your city';
+
+  @override
+  String get customExerciseSaveFailed =>
+      'Couldn\'t save on this phone. Try again.';
+
+  @override
+  String get exercisePickerLoadFailed => 'Couldn\'t load the exercises.';
+
+  @override
+  String get workoutDiscardMessage => 'You have changes that aren\'t saved.';
 }

@@ -213,9 +213,7 @@ void main() {
     );
     await tester.enterText(fields.at(0), '80');
     await tester.enterText(fields.at(1), '8');
-    await tester.tap(
-      find.descendant(of: find.byType(SetRow), matching: find.byType(Checkbox)),
-    );
+    // The set counts as soon as it has numbers (D-097): no tick.
     await tester.pump();
 
     // A switch away and back keeps the form (the visit is still open).

@@ -93,7 +93,8 @@ final class EditLog extends LogLaunch {
   String toString() => 'EditLog($sessionId)';
 }
 
-/// One set row of the form (D7).
+/// One set row of the form (D7). A set counts (is saved) as soon as it has
+/// valid numbers; last time's [hint] never counts (WO-034, D-097, A63 D14).
 @immutable
 final class LogSetRow {
   /// Row [id].
@@ -101,7 +102,6 @@ final class LogSetRow {
     required this.id,
     this.input = const SetInput(),
     this.hint,
-    this.checked = false,
     this.saved,
     this.issue,
   });
@@ -115,33 +115,34 @@ final class LogSetRow {
   /// Last time's numbers for this set ("80 × 8"), or `null`.
   final SetValues? hint;
 
-  /// Whether the set is done; only checked sets are saved (D8).
-  final bool checked;
-
-  /// The last valid values (what autosave writes while [checked]).
+  /// The last valid values: what autosave writes. `null` while nothing
+  /// valid was typed (or after the fields were cleared).
   final LoggedSet? saved;
 
   /// Why the typed values don't fit, shown as a field error; `null` when
   /// they do (or nothing is typed).
   final WorkoutSetIssue? issue;
 
-  /// This row with some fields changed ([issue] is always replaced).
+  /// Whether the set counts: it has a saved value (A63 D14).
+  bool get counts => saved != null;
+
+  /// This row with some fields changed ([issue] is always replaced);
+  /// [clearSaved] drops the saved value (A63 PA1).
   LogSetRow copyWith({
     SetInput? input,
-    bool? checked,
     LoggedSet? saved,
+    bool clearSaved = false,
     WorkoutSetIssue? issue,
   }) => LogSetRow(
     id: id,
     input: input ?? this.input,
     hint: hint,
-    checked: checked ?? this.checked,
-    saved: saved ?? this.saved,
+    saved: clearSaved ? null : saved ?? this.saved,
     issue: issue,
   );
 
   /// The domain view of this row.
-  LogFormSet toFormSet() => LogFormSet(id: id, checked: checked, value: saved);
+  LogFormSet toFormSet() => LogFormSet(id: id, checked: counts, value: saved);
 }
 
 /// One exercise card of the form, in form order.
@@ -232,16 +233,17 @@ final class LogFormState {
   /// The exercise cards in order.
   final List<LogExerciseCard> exercises;
 
-  /// Whether a session row exists (it's written at the first ✓).
+  /// Whether a session row exists (it's written with the first counted
+  /// set).
   final bool persisted;
 
   /// Autosave's state.
   final LogSaveState saveState;
 
-  /// Whether any set is checked.
-  bool get hasChecked => exercises.any((e) => e.sets.any((s) => s.checked));
+  /// Whether any set counts.
+  bool get hasSets => exercises.any((e) => e.sets.any((s) => s.counts));
 
-  /// The session autosave writes now, or `null` with no checked set (D8).
+  /// The session autosave writes now, or `null` with no counted set (D8).
   WorkoutSessionDraft? get savedDraft => LogFormDraft.savedDraftOf(
     [for (final e in exercises) e.toFormExercise()],
     date: date,
@@ -320,7 +322,7 @@ final class VisitSaved extends VisitResult {
   final TemplateUpdateOffer? offer;
 }
 
-/// The visit ended with no checked set, so the session was deleted (D8);
+/// The visit ended with no counted set, so the session was deleted (D8);
 /// [undoId] restores it as last saved.
 final class VisitDeleted extends VisitResult {
   /// Deleted; undo with [undoId].

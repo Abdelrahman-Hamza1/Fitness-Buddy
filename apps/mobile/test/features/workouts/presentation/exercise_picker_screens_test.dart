@@ -1,20 +1,26 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_domain/testing.dart';
+import 'package:fb_mobile/core/changes/apply_result.dart';
 import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/core/ui/discard_changes_sheet.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/workouts/application/exercise_library.dart';
+import 'package:fb_mobile/features/workouts/application/workout_actions.dart';
 import 'package:fb_mobile/features/workouts/application/workout_views.dart';
 import 'package:fb_mobile/features/workouts/data/workout_repository.dart';
 import 'package:fb_mobile/features/workouts/presentation/custom_exercise_screen.dart';
 import 'package:fb_mobile/features/workouts/presentation/exercise_muscle_map.dart';
 import 'package:fb_mobile/features/workouts/presentation/exercise_picker_screen.dart';
+import 'package:fb_mobile/features/workouts/presentation/template_editor_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../helpers/pump_app.dart' show unmountApp;
 import '../../today/presentation/support/today_support.dart' show phoneApp;
 import '../support/workout_harness.dart';
 
@@ -34,7 +40,7 @@ LibraryExercise _exercise(
   popularity: popularity,
 );
 
-final ExerciseLibrary _library = ExerciseLibrary([
+final List<LibraryExercise> _builtIns = [
   _exercise(
     'ex:barbell_bench_press',
     'Barbell bench press',
@@ -50,7 +56,20 @@ final ExerciseLibrary _library = ExerciseLibrary([
     popularity: 3,
     equipment: Equipment.cable,
   ),
-]);
+];
+
+final ExerciseLibrary _library = ExerciseLibrary(_builtIns);
+
+/// The pack's exercises failing while [fail] says so, and no custom
+/// exercises; the library itself is the real provider (A63 review).
+List<Override> _failingPack(bool Function() fail) => [
+  builtInExercisesProvider.overrideWith(
+    (ref) => fail()
+        ? Stream<List<LibraryExercise>>.error(StateError('catalog'))
+        : Stream.value(_builtIns),
+  ),
+  customExercisesProvider.overrideWith((ref) => Stream.value(const [])),
+];
 
 /// A screen with one button that runs [open] and keeps its result.
 Widget _opener(Future<void> Function(BuildContext context) open) => Builder(
@@ -273,6 +292,157 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     },
   );
+
+  group('A63 audit fixes', () {
+    List<Override> rig(WorkoutHarness h, {List<Override> extra = const []}) {
+      final stack = UndoStack(revert: h.applier.revert, clock: h.clock);
+      addTearDown(stack.dispose);
+      return [
+        changeSetApplierProvider.overrideWithValue(h.applier),
+        clockProvider.overrideWithValue(h.clock),
+        idGeneratorProvider.overrideWithValue(
+          SequenceIdGenerator(startMs: 0x0199e3c30000),
+        ),
+        undoStackProvider.overrideWithValue(stack),
+        workoutRepositoryProvider.overrideWithValue(h.repository),
+        exerciseLibraryProvider.overrideWith((ref) async => _library),
+        ...extra,
+      ];
+    }
+
+    testWidgets('UX-050 UX-052 T-S5 a failed exercise read shows Try again, '
+        'not "no results"; recovery re-reads the failed pack and shows the '
+        'list', (tester) async {
+      usePhoneTall(tester);
+      var fail = true;
+      await tester.pumpWidget(
+        ProviderScope(
+          retry: (_, _) => null,
+          overrides: [..._failingPack(() => fail)],
+          child: phoneApp(_opener(pickExercises)),
+        ),
+      );
+      await tester.tap(find.byType(FbButton));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('workout-pick-failed')), findsOne);
+      expect(find.byKey(const ValueKey('workout-pick-create')), findsNothing);
+      fail = false;
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(const ValueKey('workout-pick-failed')),
+          matching: find.byType(TextButton),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('workout-pick-failed')), findsNothing);
+      expect(find.byKey(const ValueKey('workout-pick-ex:squat')), findsOne);
+      // The drift streams close on a timer once the scope goes.
+      await unmountApp(tester);
+    });
+
+    testWidgets('UX-052 T-S2 a failed custom-exercise save re-enables Save '
+        'and keeps the inputs', (tester) async {
+      usePhoneTall(tester);
+      final h = WorkoutHarness();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: rig(
+            h,
+            extra: [
+              workoutActionsProvider.overrideWithValue(
+                WorkoutActions(
+                  apply: (_) async => throw DatabaseWriteException(13),
+                  undoStack: UndoStack(
+                    revert: h.applier.revert,
+                    clock: h.clock,
+                  ),
+                  ids: SequenceIdGenerator(startMs: 0x0199e3c50000),
+                  repository: h.repository,
+                ),
+              ),
+            ],
+          ),
+          child: phoneApp(
+            _opener(
+              (context) =>
+                  openCustomExercise(context, initialName: 'Cable fly'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.byType(FbButton));
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.byKey(const ValueKey('workout-custom-primary-chest')),
+      );
+      await tester.pump();
+      final save = find.byKey(const ValueKey('workout-custom-save'));
+      await tester.ensureVisible(save);
+      await tester.tap(save);
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 50)),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(CustomExerciseScreen), findsOneWidget);
+      expect(find.text('Cable fly'), findsWidgets);
+      expect(tester.widget<FbButton>(save).onPressed, isNotNull);
+    });
+
+    testWidgets('UX-052 A63 D19 T-S8 Back with unsaved template or custom '
+        'exercise edits asks before discarding', (tester) async {
+      usePhoneTall(tester);
+      final h = WorkoutHarness();
+      for (final open in <Future<Object?> Function(BuildContext)>[
+        openTemplateEditor,
+        openCustomExercise,
+      ]) {
+        await tester.pumpWidget(
+          ProviderScope(
+            key: UniqueKey(),
+            overrides: rig(h),
+            child: phoneApp(_opener(open)),
+          ),
+        );
+        await tester.tap(find.byType(FbButton));
+        await tester.pumpAndSettle();
+        // Untouched: Back leaves at once.
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+        expect(find.byType(FbButton), findsOneWidget);
+
+        await tester.tap(find.byType(FbButton));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(EditableText).first, 'Push day');
+        await tester.pump();
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+        expect(find.byType(DiscardChangesSheet), findsOneWidget);
+        // Keep editing, then discard.
+        await tester.tap(
+          find
+              .descendant(
+                of: find.byType(DiscardChangesSheet),
+                matching: find.byType(FbButton),
+              )
+              .first,
+        );
+        await tester.pumpAndSettle();
+        expect(find.byType(DiscardChangesSheet), findsNothing);
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find
+              .descendant(
+                of: find.byType(DiscardChangesSheet),
+                matching: find.byType(FbButton),
+              )
+              .last,
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('open'), findsOneWidget);
+      }
+    });
+  });
 }
 
 /// A 360 x 1600 phone, so every chip fits.

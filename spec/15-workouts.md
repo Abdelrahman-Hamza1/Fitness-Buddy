@@ -44,7 +44,7 @@ Scope: **simple strength logging, usually entered after the session** (D-028). B
 - **WO-031** `[R1]` Shorthand understood: `3x8 80`, `3×8@80`, `80x8x3`, `8,8,7 @80`, varying weights (`80x8, 85x6, 85x5`), bodyweight with load (`dips +10 3x8`), lb/kg units.
 - **WO-032** `[R1]` "Same as last push day but bench 82.5" → proposal copying the last session with that template, with the change applied.
 - **WO-033** `[R1]` Unknown exercise → Buddy asks: pick the closest match, or create a custom exercise.
-- **WO-034** `[R1]` **By form** (the main way, after the session): pick exercises, a template, or **Repeat** a past session → each exercise shows **last session's numbers** next to the input → enter or adjust sets. The form **saves as you type** (a direct action with undo, D-085).
+- **WO-034** `[R1]` **By form** (the main way, after the session): pick exercises, a template, or **Repeat** a past session → each exercise shows **last session's numbers** as hints → enter or adjust sets; a set counts as soon as it has numbers (no tick), and "Same as last time" fills the empty sets. Swipe a set sideways to remove it, with Undo. The form **saves as you type** (a direct action with undo, D-085, D-097).
 - **WO-035** `[R1]` Cardio is logged the same way, by chat ("30 min treadmill incline walk") or form (D-030). No GPS, no imports.
 
 ## 5. History & progress

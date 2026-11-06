@@ -3,26 +3,30 @@ import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/adaptive/adaptive.dart';
 import 'package:fb_mobile/features/progress/application/progress_providers.dart';
+import 'package:fb_mobile/features/progress/application/weekly_summary_providers.dart';
 import 'package:fb_mobile/features/progress/presentation/calories_section.dart';
 import 'package:fb_mobile/features/progress/presentation/goal_progress_card.dart';
 import 'package:fb_mobile/features/progress/presentation/macros_section.dart';
 import 'package:fb_mobile/features/progress/presentation/progress_period_bar.dart';
 import 'package:fb_mobile/features/progress/presentation/progress_retry.dart';
 import 'package:fb_mobile/features/progress/presentation/ramadan_comparison_card.dart';
-import 'package:fb_mobile/features/progress/presentation/weekly_summary_card.dart';
 import 'package:fb_mobile/features/progress/presentation/weight_section.dart';
+import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/today/today.dart';
+import 'package:fb_mobile/features/workouts/workouts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// The Progress tab (UX-010, IN-001–IN-009, SC-5): opens on this week. An
-/// ordered list of sections (A16 D13): the weekly summary with this week's
-/// check-in and Past weeks (A39a D2) → the incomplete-day suggestion (A38)
-/// → the period selector → calories (+ the selected bar's details) →
-/// macros → weight → goal progress → Measurements → exercise progress
-/// (A37c) → the expenditure card (A38). Later steps add one entry. Local
-/// data only: no spinner beyond skeleton cards, errors inline with Try
-/// again (UX-050–052). No streaks, scores or micronutrients (IN-020, IN-021).
+/// The Progress tab (UX-010, IN-001–IN-009, SC-5): opens on this week,
+/// pictures and numbers first (D-097, A63 D2). An ordered list of sections:
+/// zero to three one-line notices (this week's check-in, the Ramadan
+/// targets offer, the incomplete-day question) → the period selector (‹ =
+/// past weeks) → calories, whose header in week mode carries the week and
+/// opens its full summary (+ the selected bar's details) → macros → weight
+/// → goal progress → Measurements → exercise progress with this week's
+/// workouts (A37c) → the expenditure card (A38). Local data only: no
+/// spinner beyond skeleton cards, errors inline with Try again
+/// (UX-050–052). No streaks, scores or micronutrients (IN-020, IN-021).
 class ProgressScreen extends ConsumerStatefulWidget {
   /// Creates the screen.
   const new({super.key});
@@ -85,8 +89,9 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
             FbSpace.s5,
           ),
           children: [
-            const WeeklySummaryCard(),
-            gap,
+            // Notices as one-line rows (UX-047, A63 D6); each has its gap.
+            const CheckInCard(),
+            const RamadanTargetsOfferCard(),
             const IncompleteDayCard(),
             ...switch (view) {
               AsyncData(:final value) => [
@@ -136,6 +141,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
                 key: const ValueKey('progress-exercises'),
                 leading: const Icon(FbIcons.navWorkouts),
                 title: l10n.progressExercises,
+                subtitle: _workoutsThisWeek(ref),
                 trailing: const Icon(FbIcons.next),
                 onTap: () => ref
                     .read(appNavigatorProvider)
@@ -148,5 +154,22 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
         ),
       ),
     );
+  }
+
+  /// This week's workouts under Exercise progress (IN-001, A63 D4): "2 of 3
+  /// this week · 1 PR" (planned only with a plan), nothing without one.
+  String? _workoutsThisWeek(WidgetRef ref) {
+    final start = ref.watch(currentWeekStartProvider).value;
+    if (start == null) return null;
+    final week = ref.watch(weeklyWorkoutSummaryProvider(start)).value;
+    if (week == null || week.sessions == 0) return null;
+    final l10n = context.l10n;
+    return [
+      if (week.planned case final planned?)
+        l10n.progressExercisesWeekPlanned(week.sessions, planned)
+      else
+        l10n.progressExercisesWeek(week.sessions),
+      if (week.prs > 0) l10n.progressExercisesWeekPrs(week.prs),
+    ].join(' · ');
   }
 }

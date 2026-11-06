@@ -46,6 +46,11 @@ final class FbSwipeAction {
 ///
 /// The caller removes the row on dismissal. If it restores the row immediately
 /// (e.g. a rejected command), a fresh swipe identity keeps it usable.
+///
+/// With [collapseOnDismiss] false (A63 PA7) the row only slides out: it
+/// doesn't shrink and keeps its swipe identity, because the parent's removal
+/// animation owns the exit (a list that animates removed children). The
+/// parent gives a restored row a new key, so it never comes back slid out.
 class FbSwipeActions extends StatefulWidget {
   /// Creates swipe actions around [child]. With neither action the child is
   /// shown as it is.
@@ -53,6 +58,7 @@ class FbSwipeActions extends StatefulWidget {
     required this.child,
     this.dismissAction,
     this.confirmAction,
+    this.collapseOnDismiss = true,
     super.key,
   });
 
@@ -65,6 +71,10 @@ class FbSwipeActions extends StatefulWidget {
 
   /// Drag toward the end edge, past the threshold: the row snaps back.
   final FbSwipeAction? confirmAction;
+
+  /// Whether the row shrinks away after it slid out (true), or the parent's
+  /// removal collapses it (false).
+  final bool collapseOnDismiss;
 
   @override
   State<FbSwipeActions> createState() => _FbSwipeActionsState();
@@ -107,7 +117,7 @@ class _FbSwipeActionsState extends State<FbSwipeActions> {
           DismissDirection.startToEnd: fbSwipeThreshold,
         },
         movementDuration: FbMotion.of(context),
-        resizeDuration: reduced
+        resizeDuration: reduced || !widget.collapseOnDismiss
             ? null
             : FbMotion.of(context, FbMotion.structural),
         onUpdate: (details) {
@@ -125,7 +135,9 @@ class _FbSwipeActionsState extends State<FbSwipeActions> {
         onDismissed: (_) {
           // A synchronous rejection can restore the row before removal paints.
           // Never reuse the completed resize animation in that case (DY-022).
-          setState(() => _dismissKey = UniqueKey());
+          if (widget.collapseOnDismiss) {
+            setState(() => _dismissKey = UniqueKey());
+          }
           dismiss?.onTriggered();
         },
         // `background` shows when dragging toward the end edge and also

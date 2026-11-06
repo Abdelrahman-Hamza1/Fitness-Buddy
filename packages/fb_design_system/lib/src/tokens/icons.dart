@@ -24,6 +24,9 @@ abstract final class FbIcons {
   /// Delete (swipe action).
   static const IconData delete = Icons.delete_outline_rounded;
 
+  /// Fill empty sets with last time's numbers (A63 D15).
+  static const IconData sameAsLast = Icons.content_copy_rounded;
+
   /// Move to another place (swipe action). Vertical, so it needs no mirroring.
   static const IconData move = Icons.swap_vert_rounded;
 

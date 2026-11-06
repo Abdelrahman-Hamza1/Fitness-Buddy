@@ -41,7 +41,7 @@ void main() {
 
   Future<AccountOutcome> emailSignIn([String email = canaryEmail]) async {
     final f = service.newFlow();
-    return await f.verifyEmail(await f.startEmail(email), '123456');
+    return (await f.verifyEmail(await f.startEmail(email), '123456')).outcome;
   }
 
   setUp(() {
@@ -58,7 +58,7 @@ void main() {
       'profile', () async {
     final challenge = await flow().startEmail(canaryEmail);
     expect(challenge.link, isTrue);
-    final outcome = await flow().verifyEmail(challenge, '123456');
+    final outcome = (await flow().verifyEmail(challenge, '123456')).outcome;
 
     expect(outcome, AccountOutcome.upgraded);
     expect(identity.calls, ['start:link', 'link:email']);
@@ -76,15 +76,21 @@ void main() {
       identity.linkConflicts = true;
       final first = await flow().startEmail(canaryEmail);
       expect(
-        await flow().verifyEmail(first, '123456'),
+        (await flow().verifyEmail(first, '123456')).outcome,
         AccountOutcome.needsConflictChoice,
       );
       expect(session.accepted, isEmpty);
 
-      expect(await flow().chooseOnConflict(ConflictChoice.merge), isNull);
+      expect(
+        (await flow().chooseOnConflict(ConflictChoice.merge))?.outcome,
+        isNull,
+      );
       final second = await flow().startEmail(canaryEmail);
       expect(second.link, isFalse);
-      expect(await flow().verifyEmail(second, '654321'), AccountOutcome.merged);
+      expect(
+        (await flow().verifyEmail(second, '654321')).outcome,
+        AccountOutcome.merged,
+      );
 
       final active = (await registry.read()).active;
       expect(active.profileKey, ProfileRegistry.guestKey);
@@ -97,9 +103,12 @@ void main() {
       'stored and the account opened', () async {
     identity.linkConflicts = true;
     service = build(google: FakeGoogle());
-    expect(await flow().signInWithGoogle(), AccountOutcome.needsConflictChoice);
     expect(
-      await flow().chooseOnConflict(ConflictChoice.discard),
+      (await flow().signInWithGoogle()).outcome,
+      AccountOutcome.needsConflictChoice,
+    );
+    expect(
+      (await flow().chooseOnConflict(ConflictChoice.discard))?.outcome,
       AccountOutcome.switched,
     );
 
@@ -127,12 +136,12 @@ void main() {
 
     final f = service.newFlow();
     expect(
-      await f.verifyEmail(await f.startEmail(canaryEmail), '1'),
+      (await f.verifyEmail(await f.startEmail(canaryEmail), '1')).outcome,
       AccountOutcome.needsConflictChoice,
     );
     await f.chooseOnConflict(ConflictChoice.merge);
     expect(
-      await f.verifyEmail(await f.startEmail(canaryEmail), '2'),
+      (await f.verifyEmail(await f.startEmail(canaryEmail), '2')).outcome,
       AccountOutcome.mergeBlocked,
     );
     final after = await registry.read();
@@ -150,7 +159,7 @@ void main() {
     // Discard is still possible: it opens the kept copy for editing.
     await f.chooseOnConflict(ConflictChoice.discard);
     expect(
-      await f.verifyEmail(await f.startEmail(canaryEmail), '3'),
+      (await f.verifyEmail(await f.startEmail(canaryEmail), '3')).outcome,
       AccountOutcome.switched,
     );
     final opened = await registry.read();
@@ -242,7 +251,7 @@ void main() {
     final challenge = await flow().startEmail(canaryEmail);
     expect(challenge.link, isFalse);
     expect(
-      await flow().verifyEmail(challenge, '2'),
+      (await flow().verifyEmail(challenge, '2')).outcome,
       AccountOutcome.sameAccount,
     );
     expect((await registry.read()).active.profileKey, before);
@@ -269,7 +278,7 @@ void main() {
     service = build(google: FakeGoogle());
     expect(service.googleAvailable, isTrue);
 
-    expect(await flow().signInWithGoogle(), AccountOutcome.upgraded);
+    expect((await flow().signInWithGoogle()).outcome, AccountOutcome.upgraded);
 
     expect(identity.calls, ['link:google']);
     expect(session.accepted, [userA]);

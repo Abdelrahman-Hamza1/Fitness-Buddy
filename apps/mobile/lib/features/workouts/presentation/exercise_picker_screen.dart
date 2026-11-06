@@ -4,6 +4,7 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/features/workouts/application/exercise_library.dart';
 import 'package:fb_mobile/features/workouts/application/exercise_picker.dart';
 import 'package:fb_mobile/features/workouts/application/workout_views.dart';
@@ -132,8 +133,12 @@ class _PickerState extends ConsumerState<ExercisePickerScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final library =
-        ref.watch(exerciseLibraryProvider).value ?? ExerciseLibrary.empty;
+    final libraryAsync = ref.watch(exerciseLibraryProvider);
+    final library = libraryAsync.value ?? ExerciseLibrary.empty;
+    // Loading, failure and a real empty result are three states (audit
+    // major 5): never "no results" (and "create one") for a failed read.
+    final libraryFailed = libraryAsync.hasError && !libraryAsync.hasValue;
+    final libraryLoading = !libraryAsync.hasValue && !libraryFailed;
     final picker = ref.watch(exercisePickerProvider(_scope));
     final notifier = ref.read(exercisePickerProvider(_scope).notifier);
     final browseTab = widget.browseTab;
@@ -254,26 +259,35 @@ class _PickerState extends ConsumerState<ExercisePickerScreen> {
           ),
           const SizedBox(height: FbSpace.s2),
           Expanded(
-            child: ListView.builder(
-              itemCount: rows.length + 1,
-              itemBuilder: (context, i) {
-                if (i == rows.length) {
-                  final name = picker.query.trim();
-                  return FbListRow(
-                    key: const ValueKey('workout-pick-create'),
-                    leading: const Icon(FbIcons.add),
-                    title: name.isEmpty
-                        ? l10n.workoutPickCreateBlank
-                        : l10n.workoutPickCreate(name),
-                    subtitle: results.isEmpty
-                        ? l10n.workoutPickNoResults
-                        : null,
-                    onTap: _create,
-                  );
-                }
-                return rows[i]();
-              },
-            ),
+            child: libraryFailed
+                ? LoadFailedView(
+                    key: const ValueKey('workout-pick-failed'),
+                    message: l10n.exercisePickerLoadFailed,
+                    onRetry: () =>
+                        exerciseLibraryRetryProviders.forEach(ref.invalidate),
+                  )
+                : libraryLoading
+                ? const LoadingRows()
+                : ListView.builder(
+                    itemCount: rows.length + 1,
+                    itemBuilder: (context, i) {
+                      if (i == rows.length) {
+                        final name = picker.query.trim();
+                        return FbListRow(
+                          key: const ValueKey('workout-pick-create'),
+                          leading: const Icon(FbIcons.add),
+                          title: name.isEmpty
+                              ? l10n.workoutPickCreateBlank
+                              : l10n.workoutPickCreate(name),
+                          subtitle: results.isEmpty
+                              ? l10n.workoutPickNoResults
+                              : null,
+                          onTap: _create,
+                        );
+                      }
+                      return rows[i]();
+                    },
+                  ),
           ),
         ],
       ),

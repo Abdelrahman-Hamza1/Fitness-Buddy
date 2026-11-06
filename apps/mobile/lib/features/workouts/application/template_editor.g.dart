@@ -59,7 +59,7 @@ final class TemplateEditorProvider
   }
 }
 
-String _$templateEditorHash() => r'e08c7fd6ca4117852eee84479ac0a677d354d825';
+String _$templateEditorHash() => r'82a344ab307aa5181f2abd34c81260bbdb1a9375';
 
 /// The template editor (WO-020, A37 D17): name, lines of sets × reps
 /// exercises (time and cardio can't be lines), Save and Delete as direct

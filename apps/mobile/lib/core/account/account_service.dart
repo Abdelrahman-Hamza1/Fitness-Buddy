@@ -71,6 +71,45 @@ enum AccountOutcome {
   mergeBlocked,
 }
 
+/// Who signed in, for this phone's Me header (AC-005, A63 PA2): the local
+/// profile the sign-in committed to and the email and Google name of the
+/// method that authenticated. Built before the flow forgets its memory.
+/// Its [toString] carries no email or name.
+final class SignedInIdentity {
+  /// The identity of [profileKey].
+  const new({required this.profileKey, this.email, this.displayName});
+
+  /// The committed local profile.
+  final String profileKey;
+
+  /// The email used (the verified challenge's, or Google's), or `null`.
+  final String? email;
+
+  /// Google's display name, or `null` (email sign-in asks for one, M2).
+  final String? displayName;
+
+  @override
+  String toString() => 'SignedInIdentity(redacted)';
+}
+
+/// What a sign-in step ended with: the [outcome] and, when it completed a
+/// sign-in, who signed in ([identity], A63 PA2).
+final class SignInResult {
+  /// A result.
+  const new(this.outcome, {this.identity});
+
+  /// What the step did to the local profiles.
+  final AccountOutcome outcome;
+
+  /// Who signed in; `null` unless the sign-in completed.
+  final SignedInIdentity? identity;
+
+  @override
+  String toString() =>
+      'SignInResult(${outcome.name}, identity: '
+      '${identity == null ? 'none' : 'set'})';
+}
+
 /// The guest's choice when the identity already has an account (AC-003).
 enum ConflictChoice {
   /// Re-own this device's guest data into the account.
@@ -96,6 +135,7 @@ final class EmailChallengeRef {
     required this.expiresAt,
     required this.link,
     required this._identity,
+    required this._email,
   });
 
   /// Server challenge id.
@@ -109,6 +149,10 @@ final class EmailChallengeRef {
 
   /// Hash of the normalized address: binds conflict consent to it.
   final String _identity;
+
+  /// The address the code went to (memory only, for this phone's Me
+  /// header after the sign-in, A63 PA2).
+  final String _email;
 
   @override
   String toString() => 'EmailChallengeRef(link: $link)';
@@ -126,6 +170,10 @@ final class SignInFlow {
   ConflictChoice? _choice;
   String? _pendingGoogleToken;
 
+  /// The Google account that gave the pending token (A63 PA2): its email
+  /// and name, kept through the 409 choice; cleared by starting email.
+  GoogleCredential? _googleProfile;
+
   /// Whether this flow may still act.
   bool get isOpen => !_closed && identical(_service._flow, this);
 
@@ -135,6 +183,7 @@ final class SignInFlow {
     _conflictIdentity = null;
     _choice = null;
     _pendingGoogleToken = null;
+    _googleProfile = null;
   }
 
   void _ensureOpen() {
@@ -168,6 +217,8 @@ final class SignInFlow {
     final normalized = email.trim().toLowerCase();
     final identity = _hash('email|$normalized');
     _rebind(identity);
+    // An email attempt never reuses an earlier Google account (PA2).
+    _googleProfile = null;
     final active = (await _service._registry.read()).active;
     final link =
         active.kind == ProfileKind.guest && _choiceFor(identity) == null;
@@ -189,11 +240,12 @@ final class SignInFlow {
       expiresAt: challenge.expiresAt,
       link: link,
       identity: identity,
+      email: email.trim(),
     );
   }
 
   /// Verifies the code and completes sign-in or upgrade.
-  Future<AccountOutcome> verifyEmail(
+  Future<SignInResult> verifyEmail(
     EmailChallengeRef challenge,
     String code,
   ) async {
@@ -220,20 +272,26 @@ final class SignInFlow {
     if (tokens == null) {
       _conflictIdentity = identity;
       _choice = null;
-      return AccountOutcome.needsConflictChoice;
+      return const SignInResult(AccountOutcome.needsConflictChoice);
     }
-    return await _finish(tokens, linked: challenge.link, identity: identity);
+    return await _finish(
+      tokens,
+      linked: challenge.link,
+      identity: identity,
+      email: challenge._email,
+      askName: true,
+    );
   }
 
   /// Google sign-in or guest upgrade.
-  Future<AccountOutcome> signInWithGoogle() async {
+  Future<SignInResult> signInWithGoogle() async {
     _ensureOpen();
     if (!_service._google.isAvailable) {
       throw const AccountFailure(AccountFailureKind.googleUnavailable);
     }
-    final String? idToken;
+    final GoogleCredential? credential;
     try {
-      idToken = await _service._google.idToken();
+      credential = await _service._google.credential();
     } on GoogleIdTokenException catch (failure) {
       // Before any server call: nothing changed, the guest stays (AC-002).
       _ensureOpen();
@@ -245,13 +303,17 @@ final class SignInFlow {
       });
     }
     _ensureOpen();
-    if (idToken == null) return AccountOutcome.cancelled;
+    if (credential == null) {
+      return const SignInResult(AccountOutcome.cancelled);
+    }
+    final idToken = credential.idToken;
     final identity = _hash('google|$idToken');
     _rebind(identity);
+    _googleProfile = credential;
     return await _google(idToken, identity);
   }
 
-  Future<AccountOutcome> _google(String idToken, String identity) async {
+  Future<SignInResult> _google(String idToken, String identity) async {
     final active = (await _service._registry.read()).active;
     final link =
         active.kind == ProfileKind.guest && _choiceFor(identity) == null;
@@ -275,15 +337,22 @@ final class SignInFlow {
       _conflictIdentity = identity;
       _choice = null;
       _pendingGoogleToken = idToken;
-      return AccountOutcome.needsConflictChoice;
+      return const SignInResult(AccountOutcome.needsConflictChoice);
     }
-    return await _finish(tokens, linked: link, identity: identity);
+    final profile = _googleProfile;
+    return await _finish(
+      tokens,
+      linked: link,
+      identity: identity,
+      email: profile?.email,
+      displayName: profile?.displayName,
+    );
   }
 
   /// Records the merge/discard choice for the identity that hit the
   /// conflict. For Google the sign-in continues at once; for email the
   /// caller starts a new code for the same address.
-  Future<AccountOutcome?> chooseOnConflict(ConflictChoice choice) async {
+  Future<SignInResult?> chooseOnConflict(ConflictChoice choice) async {
     _ensureOpen();
     final identity = _conflictIdentity;
     if (identity == null) {
@@ -295,12 +364,21 @@ final class SignInFlow {
     return await _google(token, identity);
   }
 
-  Future<AccountOutcome> _finish(
+  /// Completes the sign-in. Who signed in ([email], [displayName] of the
+  /// method that authenticated) is captured with the committed profile
+  /// before [cancel] forgets the flow's memory (A63 PA2), and kept through
+  /// the service's `onSignedIn` even when the commit switched the profile
+  /// and so disposed the screen that started it (A63 review). A failure to
+  /// keep it is swallowed: the sign-in already succeeded.
+  Future<SignInResult> _finish(
     AuthTokens tokens, {
     required bool linked,
     required String identity,
+    String? email,
+    String? displayName,
+    bool askName = false,
   }) async {
-    final outcome = await _service._complete(
+    final (:outcome, :profileKey) = await _service._complete(
       tokens,
       linked: linked,
       choice: _choiceFor(identity),
@@ -309,10 +387,24 @@ final class SignInFlow {
     if (outcome == AccountOutcome.mergeBlocked) {
       // Consent is spent; the user may choose discard or cancel.
       _choice = null;
-    } else {
-      cancel();
+      return SignInResult(outcome);
     }
-    return outcome;
+    final who = profileKey == null
+        ? null
+        : SignedInIdentity(
+            profileKey: profileKey,
+            email: email,
+            displayName: displayName,
+          );
+    if (who != null) {
+      try {
+        await _service._onSignedIn?.call(who, askName: askName);
+      } on Object {
+        // Kept nowhere (storage failed); Me shows "Signed in".
+      }
+    }
+    cancel();
+    return SignInResult(outcome, identity: who);
   }
 
   static String _hash(String text) =>
@@ -331,6 +423,7 @@ final class AccountService {
     required this._revoke,
     this._account,
     this._removedNote,
+    this._onSignedIn,
   });
 
   final IdentityClient _identity;
@@ -345,6 +438,13 @@ final class AccountService {
   /// The new guest's one-time "account deleted" note (#241); `null` in
   /// tests that don't check it.
   final AccountRemovedNoteStore? _removedNote;
+
+  /// Keeps who signed in under the committed profile (AC-005, A63 review):
+  /// called by the flow right after the commit, here in the service, which
+  /// outlives the sign-in screen a profile switch disposes. `askName` after
+  /// an email sign-in (M2). `null` in tests that don't keep identities.
+  final Future<void> Function(SignedInIdentity who, {required bool askName})?
+  _onSignedIn;
   SignInFlow? _flow;
 
   /// Revokes an issued-but-abandoned session with its own bearer (A33
@@ -511,7 +611,9 @@ final class AccountService {
   /// Leaves a read-only copy and opens a guest profile.
   Future<void> continueAsGuest() => _transitions.continueAsGuest();
 
-  Future<AccountOutcome> _complete(
+  /// The outcome and the local profile the sign-in committed to (`null`
+  /// when nothing changed).
+  Future<({AccountOutcome outcome, String? profileKey})> _complete(
     AuthTokens tokens, {
     required bool linked,
     required ConflictChoice? choice,
@@ -522,9 +624,10 @@ final class AccountService {
     }
     final owner = _registry.ownerRefFor(tokens.userId);
     var outcome = AccountOutcome.switched;
+    String? committed;
     // Planned inside the transition lock against the current registry, and
     // only while the flow is still open (A33 security 3).
-    SignInPlan? plan(ProfilesSnapshot snapshot) {
+    SignInPlan? planOf(ProfilesSnapshot snapshot) {
       final active = snapshot.active;
       if (linked || active.ownerRef == owner) {
         // Upgrade or re-sign-in: same user, same database (AC-003, D9).
@@ -573,6 +676,13 @@ final class AccountService {
       );
     }
 
+    // The profile the plan targets is the one the sign-in commits to.
+    SignInPlan? plan(ProfilesSnapshot snapshot) {
+      final planned = planOf(snapshot);
+      committed = planned?.target.profileKey;
+      return planned;
+    }
+
     // The transition stores the tokens durably before any local change,
     // then switches the profile; deletion runs last (A33 §6).
     try {
@@ -590,8 +700,11 @@ final class AccountService {
             : AccountFailureKind.rejected,
       );
     }
-    if (outcome == AccountOutcome.mergeBlocked) _abandon(tokens);
-    return outcome;
+    if (outcome == AccountOutcome.mergeBlocked) {
+      _abandon(tokens);
+      return (outcome: outcome, profileKey: null);
+    }
+    return (outcome: outcome, profileKey: committed);
   }
 
   /// Null when the server reports an identity conflict (409).

@@ -1,8 +1,10 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/features/progress/application/progress_period.dart';
 import 'package:fb_mobile/features/progress/application/progress_providers.dart';
 import 'package:fb_mobile/features/progress/application/weight_graph_providers.dart';
+import 'package:fb_mobile/features/progress/presentation/calories_week_header.dart';
 import 'package:fb_mobile/features/progress/presentation/progress_day_details.dart';
 import 'package:fb_mobile/features/progress/presentation/progress_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,10 +36,14 @@ class CaloriesSection extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: FbSpace.s2,
         children: [
-          Semantics(
-            header: true,
-            child: Text(l10n.progressCaloriesTitle, style: FbType.title),
-          ),
+          // Week mode: the header carries the week (P1 B, A63 D2).
+          if (view.period case WeekPeriod(:final start))
+            CaloriesWeekHeader(weekStart: start)
+          else
+            Semantics(
+              header: true,
+              child: Text(l10n.progressCaloriesTitle, style: FbType.title),
+            ),
           FbBarChart(
             key: const ValueKey('progress-calories-chart'),
             bars: caloriesBars(view),

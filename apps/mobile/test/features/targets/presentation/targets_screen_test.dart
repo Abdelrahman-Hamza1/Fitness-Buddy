@@ -5,6 +5,7 @@ import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/targets/presentation/below_limit_screen.dart';
 import 'package:fb_mobile/features/targets/presentation/day_target_sheet.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
+import 'package:flutter/semantics.dart' show SemanticsAction;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart' show NumberFormat;
 import 'package:material_ui/material_ui.dart';
@@ -288,5 +289,24 @@ void main() {
       contains(matches(RegExp('changed'))),
     );
     await rig.close();
+  });
+
+  testWidgets('TG-043 UX-071 A63 T-S1 a TalkBack tap on a weekday row opens '
+      'its target editor', (tester) async {
+    final semantics = tester.ensureSemantics();
+    final rig = await TargetsScreenRig.open(
+      tester,
+      route: const TargetsRoute(),
+    );
+    final row = find.byKey(ValueKey('targets-day-${_week[6].name}'));
+    await tester.ensureVisible(row);
+    await tester.pumpAndSettle();
+    final node = tester.getSemantics(row);
+    expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+    tester.semantics.tap(find.semantics.byPredicate((n) => n.id == node.id));
+    await tester.pumpAndSettle();
+    expect(find.byType(DayTargetSheet), findsOneWidget);
+    await rig.close();
+    semantics.dispose();
   });
 }

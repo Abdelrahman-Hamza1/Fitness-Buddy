@@ -5,6 +5,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/l10n/time_format.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/features/notifications/application/notification_coordinator.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,7 +38,19 @@ class NotificationSettingsScreen extends ConsumerWidget {
         ),
       );
     }
-    final prefs = stored.value ?? NotificationPrefs.defaults;
+    // A failed read is not "the defaults" (audit major 4): say so with Try
+    // again, and offer controls only for choices that were read.
+    if (!stored.hasValue) {
+      return Scaffold(
+        appBar: AppBar(title: Text(l10n.notifSettingsTitle)),
+        body: LoadFailedView(
+          key: const ValueKey('notif-load-failed'),
+          message: l10n.notifLoadFailed,
+          onRetry: () => ref.invalidate(notificationPrefsProvider),
+        ),
+      );
+    }
+    final prefs = stored.requireValue;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.notifSettingsTitle)),
       body: ListView(

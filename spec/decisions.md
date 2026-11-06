@@ -527,3 +527,14 @@ _Entries marked **(provisional)** apply Claude's recommendation to a question th
   - **Per-day targets as a list** (TG-043): the per-day numbers are a list of the seven days, not a bar chart.
 - Why: These codify the owner's choices on the audit mockups. Step A57.
 
+
+## D-097 — Visual first: no text-only cards, honest rows, who's signed in, sets count by their numbers
+- Date / Source: 2026-11-06 · owner review of the next-UX mockups (P1 B, M1 A + M2, S1 A, W4 A, W5 A)
+- Status: Accepted by the owner. Adds UX-047, UX-048, AC-005. Amends IN-001, WO-034, UX-010.
+- Decision:
+  - No card is only sentences (UX-047). A card leads with a number, a bar, dots or a picture; notices are one-line rows with an icon and one action; longer explanations open on tap. Text stays minimal.
+  - A row that shows a value or › always opens something (UX-048). Facts that can't change are one quiet line (calories in kcal, the app in English).
+  - Progress: no "This week" text card. The week lives in the calories chart card (average vs target in its header, one line of key numbers, future days dashed); its full numbers are one tap away; past weeks stay reachable. Check-in, Ramadan targets offer and incomplete-day notices are one-line rows.
+  - Me shows who's signed in (AC-005): a letter circle, the name, the email and the sync status; a tap opens Account & data. Name and email come from Google sign-in or the email used; after an email sign-in the app asks once "What should we call you?" (skippable, editable later). They are kept only on this phone: never synced, sent to Buddy or the server, or logged. Guests see "Guest".
+  - Workout sets count as soon as they have numbers (WO-034): no tick. Last time's numbers show as grey hints that don't count; "Same as last time" fills an exercise's empty sets; swiping a set sideways removes it, with Undo.
+- Why: the owner's rule "no text-only cards; focus is visual, text minimal". Text cards were read last and skipped; rows that looked changeable but weren't felt broken; Me didn't say whose data it was; an unticked set with numbers was silently lost. Step A63.

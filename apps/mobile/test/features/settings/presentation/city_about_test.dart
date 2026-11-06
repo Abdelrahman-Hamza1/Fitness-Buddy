@@ -195,6 +195,11 @@ void main() {
     );
     expect(find.text('Fitness Buddy'), findsOneWidget);
     expect(find.text('Version 0.1.0 (1)'), findsOneWidget);
+    // UX-071 (A63 audit minor): the hidden long-press is a 48 dp target.
+    expect(
+      tester.getSize(find.byKey(const ValueKey('about-version'))).height,
+      greaterThanOrEqualTo(48),
+    );
     expect(find.text('Food data version 1'), findsOneWidget);
     expect(find.text('USDA: USDA credit'), findsOneWidget);
     expect(find.text('GeoNames: GeoNames credit'), findsOneWidget);

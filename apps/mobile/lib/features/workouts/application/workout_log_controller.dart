@@ -34,7 +34,7 @@ Future<ApplyResult> Function(ChangeSet) workoutApply(Ref ref) =>
     ref.watch(changeSetApplierProvider).apply;
 
 /// The single writer's revert for the log form (putting back a session the
-/// final delete removed while a set was checked again); injectable so
+/// final delete removed while a set was counted again); injectable so
 /// tests can make it fail.
 @riverpod
 Future<ApplyResult> Function(InverseChangeSet) workoutRevert(Ref ref) =>
@@ -52,6 +52,22 @@ Future<List<Stored<WorkoutTemplateDraft>>> Function() workoutTemplatesOnce(
 
 /// The SQL name of the session table, for `Applied.versionAfter`.
 const String _sessionTable = 'workout_sessions';
+
+/// The most set rows one exercise card holds: what a session exercise
+/// stores ([WorkoutSetBounds.maxSets] × 2, `SessionExerciseDraft`).
+const int maxSetsPerExercise = WorkoutSetBounds.maxSets * 2;
+
+/// What [WorkoutLogController.restoreSet] did with a removed set.
+enum SetRestore {
+  /// The set is back in its card.
+  restored,
+
+  /// The card already holds [maxSetsPerExercise] sets: nothing changed.
+  full,
+
+  /// The card is gone or the set is already there: nothing changed.
+  gone,
+}
 
 /// Undo label keys of the log form (the screen maps them to ARB).
 abstract final class WorkoutUndoLabels {
@@ -174,7 +190,8 @@ class WorkoutLogController extends _$WorkoutLogController {
           );
         }
         // Repeat (WO-024, D14): exercises and set counts with new IDs, all
-        // unchecked, the old numbers as hints, today's date.
+        // empty with the old numbers as hints (they don't count), today's
+        // date.
         return LogFormState(
           sessionId: sessionId,
           date: today,
@@ -196,7 +213,7 @@ class WorkoutLogController extends _$WorkoutLogController {
     }
   }
 
-  /// A form showing [stored] with every set checked (D8: edit mode).
+  /// A form showing [stored], every stored set counted (D8: edit mode).
   LogFormState _opened(Stored<WorkoutSessionDraft> stored, LocalDate today) {
     final draft = stored.draft;
     _version = stored.ref.expectedVersion;
@@ -240,7 +257,6 @@ class WorkoutLogController extends _$WorkoutLogController {
                 ? const SetInput()
                 : SetInput.of(type, s.values),
             hint: hints.elementAtOrNull(i),
-            checked: true,
             saved: s,
           ),
       ],
@@ -364,7 +380,7 @@ class WorkoutLogController extends _$WorkoutLogController {
   /// copy of the previous row (D7).
   void addSet(String cardId) {
     final card = _form.exercises.firstWhere((c) => c.id == cardId);
-    if (card.sets.length >= WorkoutSetBounds.maxSets * 2) return;
+    if (card.sets.length >= maxSetsPerExercise) return;
     final type = _library.typeOf(card.exerciseId);
     final last = card.sets.lastOrNull;
     final lastTime = LastPerformance.of(
@@ -389,81 +405,87 @@ class WorkoutLogController extends _$WorkoutLogController {
     _updateCard(cardId, (c) => c.withSets([...c.sets, row]), save: false);
   }
 
-  /// Deletes set [setId]: it leaves the saved session (D8).
-  void removeSet(String cardId, String setId) => _updateCard(
-    cardId,
-    (c) => c.withSets([
-      for (final s in c.sets)
-        if (s.id != setId) s,
-    ]),
-  );
+  /// Deletes set [setId]: it leaves the saved session (D8). Returns the
+  /// removed row and its index, for [restoreSet] (the in-form Undo, A63
+  /// D14), or `null` when there is no such set.
+  (LogSetRow, int)? removeSet(String cardId, String setId) {
+    if (_finished || _discarding || _closing) return null;
+    final card = _form.exercises.where((c) => c.id == cardId).firstOrNull;
+    final index = card?.sets.indexWhere((s) => s.id == setId) ?? -1;
+    if (card == null || index < 0) return null;
+    final row = card.sets[index];
+    _updateCard(
+      cardId,
+      (c) => c.withSets([
+        for (final s in c.sets)
+          if (s.id != setId) s,
+      ]),
+    );
+    return (row, index);
+  }
 
-  /// The inputs of set [setId] became [input]. Valid values become the
-  /// set's saved value (written if it's checked); invalid ones keep the
-  /// last valid value and show a field error on a checked set (D8).
+  /// Puts [row] (removed by [removeSet]) back into card [cardId] at
+  /// [index] (clamped), with its numbers, and saves. Returns
+  /// [SetRestore.full] without a change when the card already holds the
+  /// most sets [addSet] allows (a set added after the removal took the
+  /// place, A63 review), so the form never holds more than a session can.
+  SetRestore restoreSet(String cardId, LogSetRow row, int index) {
+    final card = _form.exercises.where((c) => c.id == cardId).firstOrNull;
+    if (card == null || card.sets.any((s) => s.id == row.id)) {
+      return SetRestore.gone;
+    }
+    if (card.sets.length >= maxSetsPerExercise) return SetRestore.full;
+    final sets = [...card.sets]..insert(index.clamp(0, card.sets.length), row);
+    _updateCard(cardId, (c) => c.withSets(sets));
+    return SetRestore.restored;
+  }
+
+  /// The inputs of set [setId] became [input] (A63 D14): valid numbers
+  /// become the set's saved value, so it counts; empty fields clear it, so
+  /// it leaves the session; numbers that don't fit keep the last valid
+  /// value and report the issue. Every edit is autosaved.
   void editSet(String cardId, String setId, SetInput input) {
     final card = _form.exercises.firstWhere((c) => c.id == cardId);
     final type = _library.typeOf(card.exerciseId);
     if (type == null) return;
     LogSetRow change(LogSetRow row) {
-      // Empty fields accept the hint only on an unchecked row; a checked
-      // row keeps its last valid value and shows the error (D8).
-      if (input.isEmpty) {
-        return row.copyWith(
-          input: input,
-          issue: row.checked ? const SetValues().issueFor(type) : null,
-        );
-      }
+      if (input.isEmpty) return row.copyWith(input: input, clearSaved: true);
       final values = input.valuesFor(type);
       final issue = values.issueFor(type);
-      if (issue != null) {
-        return row.copyWith(input: input, issue: row.checked ? issue : null);
-      }
+      if (issue != null) return row.copyWith(input: input, issue: issue);
       return row.copyWith(input: input, saved: LoggedSet(row.id, values));
     }
 
-    final row = card.sets.firstWhere((s) => s.id == setId);
-    _updateCard(cardId, (c) => _withSet(c, setId, change), save: row.checked);
+    _updateCard(cardId, (c) => _withSet(c, setId, change));
   }
 
-  /// Checks or unchecks set [setId]. Checking with empty inputs accepts the
-  /// hint; typed values override it. Returns `false` (and shows the field
-  /// error) when there's nothing valid to check.
-  bool toggleSet(String cardId, String setId) {
-    final card = _form.exercises.firstWhere((c) => c.id == cardId);
-    final row = card.sets.firstWhere((s) => s.id == setId);
-    if (row.checked) {
-      _updateCard(
-        cardId,
-        (c) => _withSet(c, setId, (s) => s.copyWith(checked: false)),
-      );
-      return true;
-    }
+  /// "Same as last time" (A63 D15): every empty row of card [cardId] that
+  /// has a hint takes the hint's numbers, so it counts. Returns how many
+  /// rows were filled (0: nothing changed, nothing saved).
+  int fillFromLastTime(String cardId) {
+    final card = _form.exercises.where((c) => c.id == cardId).firstOrNull;
+    if (card == null) return 0;
     final type = _library.typeOf(card.exerciseId);
-    if (type == null) return false;
-    final values = row.input.isEmpty ? row.hint : row.input.valuesFor(type);
-    final issue = (values ?? const SetValues()).issueFor(type);
-    if (values == null || issue != null) {
-      _updateCard(
-        cardId,
-        (c) => _withSet(c, setId, (s) => s.copyWith(issue: issue)),
-        save: false,
-      );
-      return false;
+    if (type == null) return 0;
+    var filled = 0;
+    final sets = <LogSetRow>[];
+    for (final row in card.sets) {
+      final hint = row.hint;
+      if (hint != null && row.input.isEmpty && hint.issueFor(type) == null) {
+        filled++;
+        sets.add(
+          row.copyWith(
+            input: SetInput.of(type, hint),
+            saved: LoggedSet(row.id, hint),
+          ),
+        );
+      } else {
+        sets.add(row);
+      }
     }
-    _updateCard(
-      cardId,
-      (c) => _withSet(
-        c,
-        setId,
-        (s) => s.copyWith(
-          checked: true,
-          saved: LoggedSet(s.id, values),
-          input: s.input.isEmpty ? SetInput.of(type, values) : s.input,
-        ),
-      ),
-    );
-    return true;
+    if (filled == 0) return 0;
+    _updateCard(cardId, (c) => c.withSets(sets));
+    return filled;
   }
 
   // Header.
@@ -711,7 +733,6 @@ class WorkoutLogController extends _$WorkoutLogController {
     id: id,
     input: row.input,
     hint: row.hint,
-    checked: row.checked,
     saved: switch (row.saved) {
       final s? => LoggedSet(
         id,
@@ -726,7 +747,7 @@ class WorkoutLogController extends _$WorkoutLogController {
   // Leaving (D8, D9).
 
   /// Ends the visit: writes until the newest form is stored, then deletes a
-  /// persisted session left with no checked set (normal inverse undo), or
+  /// persisted session left with no counted set (normal inverse undo), or
   /// records the visit's one Undo (a compensation frozen at the last
   /// successful write). A conflict ([VisitConflict]) or a failed write
   /// ([VisitFailed]) keeps the visit open: nothing is lost, the form offers
@@ -763,10 +784,10 @@ class WorkoutLogController extends _$WorkoutLogController {
           }
           return _close(offer: offer);
         }
-        // No checked set left: the final delete, serialized with writes.
+        // No counted set left: the final delete, serialized with writes.
         final deleted = await _exclusive(_deleteEmpty);
         if (deleted != null) return deleted;
-        // A set was checked again while the delete ran: it was undone;
+        // A set counted again while the delete ran: it was undone;
         // save the form instead.
       }
     } finally {
@@ -774,8 +795,8 @@ class WorkoutLogController extends _$WorkoutLogController {
     }
   }
 
-  /// Deletes the persisted session the form left without a checked set.
-  /// Returns the visit's result, or `null` when the form got a checked set
+  /// Deletes the persisted session the form left without a counted set.
+  /// Returns the visit's result, or `null` when the form got a counted set
   /// meanwhile (the delete is then reverted, and the caller saves again).
   Future<VisitResult?> _deleteEmpty() async {
     final form = _form;
@@ -806,7 +827,7 @@ class WorkoutLogController extends _$WorkoutLogController {
     }
     switch (result) {
       case Applied() when _form.savedDraft != null:
-        // Re-checked during the delete: put the session back as it was
+        // Counted again during the delete: put the session back as it was
         // (its inverse), then the drain writes the form on top.
         _deleteToRestore = result;
         return switch (await _restoreDeleted()) {

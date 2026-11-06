@@ -9,13 +9,15 @@ import 'package:material_ui/material_ui.dart';
 /// raised, bold and outlined, so the choice never relies on colour alone
 /// (UX-071). Each segment is at least 48 dp tall and is announced as a
 /// button in a group with its selected state. Nothing is chosen while
-/// [selected] is null.
+/// [selected] is null. With [enabled] false (A63, a choice fixed by a rule)
+/// it is dimmed, takes no taps and is announced as disabled.
 class FbSegmented<T> extends StatelessWidget {
   /// Creates the switch.
   const new({
     required this.options,
     required this.selected,
     required this.onSelected,
+    this.enabled = true,
     super.key,
   });
 
@@ -28,10 +30,13 @@ class FbSegmented<T> extends StatelessWidget {
   /// Called with the tapped option's value.
   final ValueChanged<T> onSelected;
 
+  /// Whether the options can be picked.
+  final bool enabled;
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return DecoratedBox(
+    final track = DecoratedBox(
       decoration: BoxDecoration(
         color: scheme.surfaceContainer,
         borderRadius: FbRadius.mdAll,
@@ -46,13 +51,14 @@ class FbSegmented<T> extends StatelessWidget {
                 child: _Segment(
                   label: option.label,
                   selected: option.value == selected,
-                  onTap: () => onSelected(option.value),
+                  onTap: enabled ? () => onSelected(option.value) : null,
                 ),
               ),
           ],
         ),
       ),
     );
+    return enabled ? track : Opacity(opacity: 0.5, child: track);
   }
 }
 
@@ -61,13 +67,14 @@ class _Segment extends StatelessWidget {
 
   final String label;
   final bool selected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Semantics(
       button: true,
+      enabled: onTap != null,
       selected: selected,
       inMutuallyExclusiveGroup: true,
       child: AnimatedContainer(

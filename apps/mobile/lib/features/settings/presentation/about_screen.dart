@@ -57,11 +57,20 @@ class AboutScreen extends ConsumerWidget {
                     child: GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onLongPress: () => unawaited(_testReport(context, ref)),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: value == null
-                            ? Text(l10n.aboutInfoUnavailable, style: muted)
-                            : Text(_version(l10n, value), style: muted),
+                      // A 48 dp target for the hidden gesture (UX-071,
+                      // audit minor).
+                      child: ConstrainedBox(
+                        key: const ValueKey('about-version'),
+                        constraints: const BoxConstraints(
+                          minWidth: double.infinity,
+                          minHeight: FbSpace.s7,
+                        ),
+                        child: Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: value == null
+                              ? Text(l10n.aboutInfoUnavailable, style: muted)
+                              : Text(_version(l10n, value), style: muted),
+                        ),
                       ),
                     ),
                   ),

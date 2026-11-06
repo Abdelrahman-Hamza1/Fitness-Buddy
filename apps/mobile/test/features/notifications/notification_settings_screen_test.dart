@@ -135,4 +135,33 @@ void main() {
     expect(find.byKey(const ValueKey('notif-permission')), findsNothing);
     await unmountApp(tester, container);
   });
+
+  testWidgets('UX-052 A63 T-S4 a failed read of the reminder choices shows '
+      'Try again, not the defaults as if saved', (tester) async {
+    var fail = true;
+    final container = await pumpAt(
+      tester,
+      overrides: [
+        notificationPrefsProvider.overrideWith(
+          (ref) => fail
+              ? Stream<NotificationPrefs>.error(StateError('storage'))
+              : Stream.value(NotificationPrefs.defaults),
+        ),
+      ],
+    );
+    await openMe(tester);
+    await tester.tap(find.byKey(const ValueKey('settings-notifications')));
+    await tester.pumpAndSettle();
+    final failed = find.byKey(const ValueKey('notif-load-failed'));
+    expect(failed, findsOneWidget);
+    expect(find.byKey(const ValueKey('notif-master')), findsNothing);
+    fail = false;
+    await tester.tap(
+      find.descendant(of: failed, matching: find.byType(TextButton)),
+    );
+    await tester.pumpAndSettle();
+    expect(failed, findsNothing);
+    expect(find.byKey(const ValueKey('notif-master')), findsOneWidget);
+    await unmountApp(tester, container);
+  });
 }

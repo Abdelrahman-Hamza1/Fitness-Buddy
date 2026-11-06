@@ -165,7 +165,7 @@ final class AccountTransitionsProvider
 }
 
 String _$accountTransitionsHash() =>
-    r'928691b4e8779b498b65e35b666d17590a3918fc';
+    r'298bbe4f5c8a037d6c4fb221a48669b1faa63fdb';
 
 /// True while an account transition with a journal runs (sign-in, sign-out,
 /// recovery of an interrupted one): the app shows a calm blocking state so
@@ -331,7 +331,141 @@ final class AccountServiceProvider
   }
 }
 
-String _$accountServiceHash() => r'926f726211263b204697cdb69a998a25d9c94380';
+String _$accountServiceHash() => r'8523f47493dca26263e482dca8367716b4cfbb92';
+
+/// The last sign-in on this run (A63 review): the profile it committed to
+/// and whether that profile's name is still to be asked (an email sign-in,
+/// M2). Memory only and kept alive, so it outlives the sign-in screen and
+/// the profile switch; a change tells Me to read the stored identity again.
+
+@ProviderFor(RecentSignIn)
+final recentSignInProvider = RecentSignInProvider._();
+
+/// The last sign-in on this run (A63 review): the profile it committed to
+/// and whether that profile's name is still to be asked (an email sign-in,
+/// M2). Memory only and kept alive, so it outlives the sign-in screen and
+/// the profile switch; a change tells Me to read the stored identity again.
+final class RecentSignInProvider
+    extends
+        $NotifierProvider<RecentSignIn, ({bool askName, String profileKey})?> {
+  /// The last sign-in on this run (A63 review): the profile it committed to
+  /// and whether that profile's name is still to be asked (an email sign-in,
+  /// M2). Memory only and kept alive, so it outlives the sign-in screen and
+  /// the profile switch; a change tells Me to read the stored identity again.
+  RecentSignInProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'recentSignInProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$recentSignInHash();
+
+  @$internal
+  @override
+  RecentSignIn create() => RecentSignIn();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(({bool askName, String profileKey})? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<({bool askName, String profileKey})?>(value),
+    );
+  }
+}
+
+String _$recentSignInHash() => r'2721eaa3d990328422958b82d82fea063538429f';
+
+/// The last sign-in on this run (A63 review): the profile it committed to
+/// and whether that profile's name is still to be asked (an email sign-in,
+/// M2). Memory only and kept alive, so it outlives the sign-in screen and
+/// the profile switch; a change tells Me to read the stored identity again.
+
+abstract class _$RecentSignIn
+    extends $Notifier<({bool askName, String profileKey})?> {
+  ({bool askName, String profileKey})? build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              ({bool askName, String profileKey})?,
+              ({bool askName, String profileKey})?
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                ({bool askName, String profileKey})?,
+                ({bool askName, String profileKey})?
+              >,
+              ({bool askName, String profileKey})?,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
+/// Who is signed in, per local profile, on this phone only (AC-005, TD-115).
+
+@ProviderFor(localIdentityStore)
+final localIdentityStoreProvider = LocalIdentityStoreProvider._();
+
+/// Who is signed in, per local profile, on this phone only (AC-005, TD-115).
+
+final class LocalIdentityStoreProvider
+    extends
+        $FunctionalProvider<
+          LocalIdentityStore,
+          LocalIdentityStore,
+          LocalIdentityStore
+        >
+    with $Provider<LocalIdentityStore> {
+  /// Who is signed in, per local profile, on this phone only (AC-005, TD-115).
+  LocalIdentityStoreProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'localIdentityStoreProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$localIdentityStoreHash();
+
+  @$internal
+  @override
+  $ProviderElement<LocalIdentityStore> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  LocalIdentityStore create(Ref ref) {
+    return localIdentityStore(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(LocalIdentityStore value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<LocalIdentityStore>(value),
+    );
+  }
+}
+
+String _$localIdentityStoreHash() =>
+    r'373db09c808d20573ba7728f934e061410fd2898';
 
 /// The one-time "account deleted" note's device store (#241).
 

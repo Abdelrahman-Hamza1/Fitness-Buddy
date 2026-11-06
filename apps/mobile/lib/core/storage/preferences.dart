@@ -65,6 +65,15 @@ abstract final class PreferenceKeys {
   /// Device state, never synced.
   static const firstRun = 'fb.first_run.v1';
 
+  /// Prefix of who is signed in, per local profile (AC-005, D-097, TD-115):
+  /// the account's display name and email, kept only on this phone, never
+  /// synced, sent or logged.
+  static const identity = 'fb.identity.v1';
+
+  /// The identity of [profileKey] in the [namespace] environment.
+  static String identityFor(String namespace, String profileKey) =>
+      '$identity|$namespace|$profileKey';
+
   /// The pending-scan list of [profileKey] in the [namespace] environment
   /// (`flavor|apiBaseUrl`, as the profile registry's).
   static String pendingScansFor(String namespace, String profileKey) =>

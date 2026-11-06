@@ -4542,18 +4542,6 @@ abstract class AppLocalizations {
   /// **'Developer'**
   String get meSectionDeveloper;
 
-  /// Me › Preferences (A51): the app language row, information only in R1.
-  ///
-  /// In en, this message translates to:
-  /// **'Language'**
-  String get settingsLanguage;
-
-  /// Me › Preferences: the app language (D-080: English UI in R1).
-  ///
-  /// In en, this message translates to:
-  /// **'English'**
-  String get settingsLanguageEnglish;
-
   /// Me account card (A51, D-088): a guest's title.
   ///
   /// In en, this message translates to:
@@ -4787,12 +4775,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'City'**
   String get settingsCity;
-
-  /// Settings info row: what energy is shown in.
-  ///
-  /// In en, this message translates to:
-  /// **'Energy'**
-  String get settingsEnergy;
 
   /// Undo snackbar after the units were changed to metric.
   ///
@@ -7152,18 +7134,6 @@ abstract class AppLocalizations {
   /// **'Use a different email'**
   String get signInChangeEmail;
 
-  /// Today: the gentle guest prompt (AC-002), at most once a week after the first week.
-  ///
-  /// In en, this message translates to:
-  /// **'You\'re using Fitness Buddy as a guest. Create a free account and everything you\'ve logged comes with you.'**
-  String get guestPromptBody;
-
-  /// Guest prompt: opens sign-in.
-  ///
-  /// In en, this message translates to:
-  /// **'Create account'**
-  String get guestPromptCreate;
-
   /// Guest prompt: dismisses the card.
   ///
   /// In en, this message translates to:
@@ -7187,12 +7157,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{start} – {end}'**
   String progressDateRange(String start, String end);
-
-  /// Progress week card, fixed daily targets: the average eaten against the average target over the counted days.
-  ///
-  /// In en, this message translates to:
-  /// **'Average {eaten} of {target} kcal'**
-  String progressWeekAverage(String eaten, String target);
 
   /// Progress week card: today is the week's first day, so nothing is counted yet.
   ///
@@ -8333,11 +8297,35 @@ abstract class AppLocalizations {
   /// **'{number}'**
   String workoutSetNumber(int number);
 
-  /// Log form: the checkbox that saves a set (WO-034: only checked sets are saved).
+  /// Log form: fills an exercise's empty sets with last time's numbers (WO-034, D-097).
   ///
   /// In en, this message translates to:
-  /// **'Set {number} done'**
-  String workoutSetDone(int number);
+  /// **'Same as last time'**
+  String get workoutSameAsLast;
+
+  /// Log form: column header above the set numbers of an exercise (A63 D15).
+  ///
+  /// In en, this message translates to:
+  /// **'Set'**
+  String get workoutSetHeader;
+
+  /// Log form: column header above last time's numbers of each set (A63 D15).
+  ///
+  /// In en, this message translates to:
+  /// **'Last'**
+  String get workoutLastHeader;
+
+  /// Log form: snackbar after a set was swiped away or removed, with Undo (D-097).
+  ///
+  /// In en, this message translates to:
+  /// **'Set {number} removed'**
+  String workoutSetRemoved(int number);
+
+  /// Log form: snackbar when Undo of a removed set finds the exercise already at its set limit (A63 review).
+  ///
+  /// In en, this message translates to:
+  /// **'Set not brought back: an exercise holds at most {max} sets'**
+  String workoutSetRestoreFull(int max);
 
   /// Log form: the typed values don't fit the exercise; the last valid numbers stay saved.
   ///
@@ -8483,24 +8471,6 @@ abstract class AppLocalizations {
   /// **'Your targets adapt to your results once there\'s enough data: 14 days of logging and 3 weigh-ins over 10 days.'**
   String get adaptiveIntro;
 
-  /// Progress: weigh-ins still needed before targets adapt (TG-031).
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 more weigh-in until your targets can adapt} other{{count} more weigh-ins until your targets can adapt}}'**
-  String adaptiveWeighInsToGo(int count);
-
-  /// Progress: logged (complete) days still needed before targets adapt (TG-031).
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{Log 1 more day until your targets can adapt} other{Log {count} more days until your targets can adapt}}'**
-  String adaptiveDaysToGo(int count);
-
-  /// Progress: the weigh-ins must spread over 10 days; days still to go (TG-031).
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{Keep weighing in: 1 more day until your targets can adapt} other{Keep weighing in: {count} more days until your targets can adapt}}'**
-  String adaptiveSpanToGo(int count);
-
   /// Progress: the estimated daily expenditure (TG-030).
   ///
   /// In en, this message translates to:
@@ -8596,12 +8566,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Raise by 50 kcal'**
   String get checkInRaise;
-
-  /// Progress: the check-in was made against targets the user changed since.
-  ///
-  /// In en, this message translates to:
-  /// **'Your targets changed since this check-in, so it no longer applies.'**
-  String get checkInStale;
 
   /// Progress: closes a check-in that no longer applies (keeps the current target).
   ///
@@ -9383,59 +9347,11 @@ abstract class AppLocalizations {
   /// **'Weekly summary'**
   String get weeklySummaryTitle;
 
-  /// Progress: row under this week's summary that opens earlier weeks (IN-001).
-  ///
-  /// In en, this message translates to:
-  /// **'Past weeks'**
-  String get weeklySummaryPastWeeks;
-
   /// Weekly summary headline when no day of the week counts (nothing logged, or marked incomplete).
   ///
   /// In en, this message translates to:
   /// **'No counted days yet'**
   String get weeklySummaryNothingCounted;
-
-  /// Weekly summary: counted days whose calories were within 10% of the day's target. Neutral.
-  ///
-  /// In en, this message translates to:
-  /// **'{within} of {days} days within target'**
-  String weeklySummaryWithinTarget(int within, int days);
-
-  /// Weekly summary: counted days that reached the protein target.
-  ///
-  /// In en, this message translates to:
-  /// **'Protein target reached on {hit} of {days} days'**
-  String weeklySummaryProtein(int hit, int days);
-
-  /// Weekly summary: average fiber over the counted days.
-  ///
-  /// In en, this message translates to:
-  /// **'Fiber {grams} g a day on average'**
-  String weeklySummaryFiber(String grams);
-
-  /// Weekly summary: the trend weight change over the week, e.g. "Trend −0.4 kg".
-  ///
-  /// In en, this message translates to:
-  /// **'Trend {change}'**
-  String weeklySummaryTrend(String change);
-
-  /// Weekly summary with a workout plan: sessions logged vs planned days (WO-043). Never phrased as missed.
-  ///
-  /// In en, this message translates to:
-  /// **'{done} of {planned} planned workouts'**
-  String weeklySummaryWorkoutsPlanned(int done, int planned);
-
-  /// Weekly summary without a plan: sessions logged (WO-043).
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 workout} other{{count} workouts}}'**
-  String weeklySummaryWorkouts(int count);
-
-  /// Weekly summary: exercises that set a personal record this week (WO-043).
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 new personal record} other{{count} new personal records}}'**
-  String weeklySummaryPrs(int count);
 
   /// Me › Settings row that opens the notification settings (NT-020).
   ///
@@ -10840,6 +10756,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{day}, changed'**
   String targetsDayChanged(String day);
+
+  /// Progress calories header in week mode: the week's average kcal vs the average target (D-097, IN-001).
+  ///
+  /// In en, this message translates to:
+  /// **'avg {kcal} / {target}'**
+  String progressCaloriesWeekAvg(String kcal, String target);
+
+  /// Progress calories header key line: days within target out of days with a target (IN-001).
+  ///
+  /// In en, this message translates to:
+  /// **'In target {within}/{days}'**
+  String progressWeekInTarget(int within, int days);
+
+  /// Progress calories header key line: protein target days reached (IN-001).
+  ///
+  /// In en, this message translates to:
+  /// **'Protein {hit}/{days}'**
+  String progressWeekProtein(int hit, int days);
+
+  /// Progress calories header in week mode: semantics hint of the tap (D-097).
+  ///
+  /// In en, this message translates to:
+  /// **'Opens this week\'s summary'**
+  String get progressWeekOpen;
+
+  /// Progress calories header: the week's numbers couldn't be read (content-free, UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Week summary unavailable'**
+  String get progressWeekUnavailable;
+
+  /// Weekly summary screen: the big average calories vs target number (IN-001, D-097).
+  ///
+  /// In en, this message translates to:
+  /// **'{eaten} / {target} kcal avg'**
+  String progressWeekAverageBig(String eaten, String target);
+
+  /// Weekly summary tile value: a count out of a total, e.g. 4/5.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}/{of}'**
+  String progressTileFraction(int count, int of);
+
+  /// Weekly summary tile value: grams a day (fiber).
+  ///
+  /// In en, this message translates to:
+  /// **'{grams} g'**
+  String progressTileGrams(String grams);
+
+  /// Weekly summary tile value: workouts done of planned.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {planned}'**
+  String progressTileOfPlanned(int done, int planned);
+
+  /// Weekly summary tile caption (IN-001).
+  ///
+  /// In en, this message translates to:
+  /// **'Days in target'**
+  String get progressTileInTarget;
+
+  /// Weekly summary tile caption: days the protein target was reached (IN-001).
+  ///
+  /// In en, this message translates to:
+  /// **'Protein days'**
+  String get progressTileProtein;
+
+  /// Weekly summary tile caption: average fiber per day (IN-001).
+  ///
+  /// In en, this message translates to:
+  /// **'Fiber a day'**
+  String get progressTileFiber;
+
+  /// Weekly summary tile caption: trend weight change over the week (IN-001).
+  ///
+  /// In en, this message translates to:
+  /// **'Trend'**
+  String get progressTileTrend;
+
+  /// Weekly summary tile caption (IN-001).
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts'**
+  String get progressTileWorkouts;
+
+  /// Weekly summary tile caption: new PRs this week (IN-001).
+  ///
+  /// In en, this message translates to:
+  /// **'Personal records'**
+  String get progressTilePrs;
+
+  /// Progress, Exercise progress row subtitle: workouts logged this week (D-097).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 this week} other{{count} this week}}'**
+  String progressExercisesWeek(int count);
+
+  /// Progress, Exercise progress row subtitle with a plan: workouts done of planned (D-097).
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {planned} this week'**
+  String progressExercisesWeekPlanned(int done, int planned);
+
+  /// Progress, Exercise progress row subtitle: personal records this week.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 PR} other{{count} PRs}}'**
+  String progressExercisesWeekPrs(int count);
+
+  /// The action of a one-line notice row that opens its full card (UX-047).
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get noticeReview;
+
+  /// Progress notice row: a check-in proposal is waiting (TG-034, D-097).
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly check-in · new target {kcal}'**
+  String checkInRowPending(int kcal);
+
+  /// Progress notice row: an automatic target change, until seen (TG-034, A57 A48).
+  ///
+  /// In en, this message translates to:
+  /// **'Target now {to} (was {from})'**
+  String checkInRowApplied(int to, int from);
+
+  /// Progress notice row: the targets changed since this check-in (TG-034).
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in out of date'**
+  String get checkInRowStale;
+
+  /// Progress notice row: asks whether a low day was incomplete (DY-004).
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · {kcal} kcal · incomplete?'**
+  String incompleteDayRow(String date, int kcal);
+
+  /// Progress notice row: the Ramadan targets offer (TG-060).
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan targets: maintain?'**
+  String get ramadanOfferRow;
+
+  /// Today: the guest prompt as one row (AC-002, D-097).
+  ///
+  /// In en, this message translates to:
+  /// **'Back up what you\'ve logged'**
+  String get guestPromptShort;
+
+  /// Today guest prompt row: opens sign-in (AC-002).
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get guestPromptSignIn;
+
+  /// Expenditure before enough data: weigh-ins still to log (TG-031, D-097).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 weigh-in} other{{count} weigh-ins}}'**
+  String adaptiveToGoWeighIns(int count);
+
+  /// Expenditure before enough data: days still to go (TG-031, D-097).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String adaptiveToGoDays(int count);
+
+  /// Expenditure tile caption under the weigh-ins to go (TG-031).
+  ///
+  /// In en, this message translates to:
+  /// **'still to log'**
+  String get adaptiveToGoCaption;
+
+  /// Expenditure tile caption: days the weigh-ins must still span (TG-031).
+  ///
+  /// In en, this message translates to:
+  /// **'of weigh-ins still to go'**
+  String get adaptiveToGoSpanCaption;
+
+  /// Expenditure tile caption under the logging days to go (TG-031).
+  ///
+  /// In en, this message translates to:
+  /// **'of logging still to go'**
+  String get adaptiveToGoLogCaption;
+
+  /// Expenditure before enough data: opens the explanation (TG-031, UX-047).
+  ///
+  /// In en, this message translates to:
+  /// **'How this works'**
+  String get adaptiveHowItWorks;
+
+  /// Me / Account & data: the account status couldn't be read (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your account.'**
+  String get accountLoadFailed;
+
+  /// Account & data: the row with the name shown on Me (AC-005, D-097).
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get accountName;
+
+  /// Account & data name row: no name stored yet (AC-005).
+  ///
+  /// In en, this message translates to:
+  /// **'Add a name'**
+  String get accountNameAdd;
+
+  /// Account & data name sheet: saves the name (AC-005).
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get accountNameSave;
+
+  /// Account & data name sheet: storing the name failed (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the name. Try again.'**
+  String get accountNameSaveFailed;
+
+  /// Sign-in done step (email) and the name sheet: the optional name field (AC-005, D-097).
+  ///
+  /// In en, this message translates to:
+  /// **'What should we call you?'**
+  String get signInNameLabel;
+
+  /// Supporting line under the name field (AC-005: never synced or sent).
+  ///
+  /// In en, this message translates to:
+  /// **'Shown only on this phone. You can skip.'**
+  String get signInNameHint;
+
+  /// Me › Preferences: the facts that can't change, one quiet line (UX-048, D-097).
+  ///
+  /// In en, this message translates to:
+  /// **'Calories are shown in kcal. The app is in English; Buddy also understands Arabic.'**
+  String get prefsFixedFacts;
+
+  /// Me › Targets & goal: the setup state couldn't be read (UX-051, A63 audit).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your targets.'**
+  String get meTargetsLoadFailed;
+
+  /// Me › Notifications: the stored choices couldn't be read; no defaults are shown (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your reminder settings.'**
+  String get notifLoadFailed;
+
+  /// Ramadan settings: the chosen city couldn't be read (not 'no city', UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your city'**
+  String get ramadanCityLoadFailed;
+
+  /// Custom exercise: storage failed; the inputs are kept (UX-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save on this phone. Try again.'**
+  String get customExerciseSaveFailed;
+
+  /// Exercise picker: the library couldn't be read; not 'no results' (UX-050–052).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the exercises.'**
+  String get exercisePickerLoadFailed;
+
+  /// Template and custom exercise editors: Back with unsaved edits (UX-052, A63 D19).
+  ///
+  /// In en, this message translates to:
+  /// **'You have changes that aren\'t saved.'**
+  String get workoutDiscardMessage;
 }
 
 class _AppLocalizationsDelegate

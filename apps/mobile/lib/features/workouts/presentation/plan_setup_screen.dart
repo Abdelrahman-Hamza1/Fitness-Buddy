@@ -329,62 +329,84 @@ class _DayPage extends ConsumerWidget {
       padding: const EdgeInsetsDirectional.all(FbSpace.s4),
       children: [
         FbSectionHeader(title: l10n.workoutSetupYour(name)),
-        FbCard(
-          padding: EdgeInsetsDirectional.zero,
-          child: chosen.isEmpty
-              ? Padding(
-                  padding: const EdgeInsetsDirectional.all(FbSpace.s4),
+        // An empty day leads with its action, the hint inline (UX-047,
+        // A63 D8.4): never a card with only a sentence.
+        if (chosen.isEmpty)
+          FbCard(
+            key: ValueKey('workout-setup-empty-${day.name}'),
+            padding: EdgeInsetsDirectional.zero,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                FbListRow(
+                  key: ValueKey('workout-setup-find-${day.name}'),
+                  leading: const Icon(FbIcons.search),
+                  title: l10n.workoutSetupFind,
+                  onTap: onFind,
+                ),
+                Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                    FbSpace.s4,
+                    0,
+                    FbSpace.s4,
+                    FbSpace.s3,
+                  ),
                   child: Text(
                     l10n.workoutSetupEmpty,
                     style: FbType.bodySmall.copyWith(
                       color: scheme.onSurfaceVariant,
                     ),
                   ),
-                )
-              : Column(
-                  children: [
-                    for (final (i, line) in chosen.indexed) ...[
-                      if (i > 0) const Divider(height: 1),
-                      FbListRow(
-                        key: ValueKey(
-                          'workout-setup-line-${day.name}-${line.exerciseId}',
-                        ),
-                        leading: map(line.exerciseId),
-                        title: l10n.exerciseName(library, line.exerciseId),
-                        subtitle: l10n.workoutSetupTarget(line.sets, line.reps),
-                        onTap: () => unawaited(
-                          _editTarget(
-                            context,
-                            setup,
-                            l10n.exerciseName(library, line.exerciseId),
-                            line.exerciseId,
-                          ),
-                        ),
-                        trailing: FbIconButton(
-                          key: ValueKey(
-                            'workout-setup-remove-${line.exerciseId}',
-                          ),
-                          icon: FbIcons.close,
-                          tooltip: l10n.workoutSetupRemove(
-                            l10n.exerciseName(library, line.exerciseId),
-                          ),
-                          onPressed: () => setup.remove(day, line.exerciseId),
-                        ),
-                      ),
-                    ],
-                  ],
                 ),
-        ),
-        const SizedBox(height: FbSpace.s3),
-        FbCard(
-          padding: EdgeInsetsDirectional.zero,
-          child: FbListRow(
-            key: ValueKey('workout-setup-find-${day.name}'),
-            leading: const Icon(FbIcons.search),
-            title: l10n.workoutSetupFind,
-            onTap: onFind,
+              ],
+            ),
+          )
+        else ...[
+          FbCard(
+            padding: EdgeInsetsDirectional.zero,
+            child: Column(
+              children: [
+                for (final (i, line) in chosen.indexed) ...[
+                  if (i > 0) const Divider(height: 1),
+                  FbListRow(
+                    key: ValueKey(
+                      'workout-setup-line-${day.name}-${line.exerciseId}',
+                    ),
+                    leading: map(line.exerciseId),
+                    title: l10n.exerciseName(library, line.exerciseId),
+                    subtitle: l10n.workoutSetupTarget(line.sets, line.reps),
+                    onTap: () => unawaited(
+                      _editTarget(
+                        context,
+                        setup,
+                        l10n.exerciseName(library, line.exerciseId),
+                        line.exerciseId,
+                      ),
+                    ),
+                    trailing: FbIconButton(
+                      key: ValueKey('workout-setup-remove-${line.exerciseId}'),
+                      icon: FbIcons.close,
+                      tooltip: l10n.workoutSetupRemove(
+                        l10n.exerciseName(library, line.exerciseId),
+                      ),
+                      onPressed: () => setup.remove(day, line.exerciseId),
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
-        ),
+          const SizedBox(height: FbSpace.s3),
+          FbCard(
+            padding: EdgeInsetsDirectional.zero,
+            child: FbListRow(
+              key: ValueKey('workout-setup-find-${day.name}'),
+              leading: const Icon(FbIcons.search),
+              title: l10n.workoutSetupFind,
+              onTap: onFind,
+            ),
+          ),
+        ],
         if (suggestions.isNotEmpty) ...[
           FbSectionHeader(
             title: l10n.workoutSetupSuggested(name),

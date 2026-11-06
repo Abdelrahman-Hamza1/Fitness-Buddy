@@ -162,4 +162,48 @@ void main() {
     await tester.pumpAndSettle();
     semantics.dispose();
   });
+
+  testWidgets('IN-002 A63 D7 placeholder bars paint a dashed outline and add '
+      'no semantics or hit target', (tester) async {
+    final semantics = tester.ensureSemantics();
+    final grid = FbTheme.light().colorScheme.outlineVariant;
+    final bars = [
+      for (final bar in _week().take(4)) bar,
+      for (var i = 4; i < 7; i++)
+        FbBar(at: _d0.add(Duration(days: i)), placeholder: true),
+    ];
+    final picked = <int?>[];
+    await pumpFb(
+      tester,
+      FbBarChart(
+        bars: bars,
+        describeBar: (i) => 'bar $i',
+        onSelect: picked.add,
+      ),
+    );
+    // Only the placeholders draw paths (bars are rects, grid lines lines).
+    expect(
+      _paint(),
+      paints
+        ..path(color: grid, style: PaintingStyle.stroke)
+        ..path(color: grid, style: PaintingStyle.stroke)
+        ..path(color: grid, style: PaintingStyle.stroke),
+    );
+    for (var i = 4; i < 7; i++) {
+      expect(find.semantics.byLabel('bar $i'), findsNothing);
+    }
+    final painter =
+        tester.widget<CustomPaint>(_paint()).painter! as BarChartPainter;
+    final geometry = painter.lastGeometry!;
+    await tester.tapAt(
+      tester.getTopLeft(_paint()) +
+          Offset(geometry.centerX(5), geometry.plot.center.dy),
+    );
+    expect(picked.whereType<int>(), isEmpty);
+
+    // A week with no days to come draws no dashes.
+    await pumpFb(tester, FbBarChart(bars: _week()));
+    expect(_paint(), isNot(paints..path(color: grid)));
+    semantics.dispose();
+  });
 }

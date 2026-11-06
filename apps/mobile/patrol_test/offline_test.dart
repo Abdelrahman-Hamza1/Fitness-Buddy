@@ -256,7 +256,8 @@ void main() {
     }, 'the weigh-in');
     await pumpFor(tester, const Duration(seconds: 6)); // the snackbar goes
 
-    // 4. A workout by the form: last time's sets accepted, then Done.
+    // 4. A workout by the form: "Same as last time" fills both sets (they
+    // count without a tick, D-097), then Done.
     final router = container.read(appRouterProvider)
       ..go(WorkoutLogRoute(exercises: [_id(20)]));
     await waitUntil(
@@ -264,14 +265,18 @@ void main() {
       () => find.byType(SetRow).evaluate().length == 2,
       'the two set rows',
     );
-    for (final row in tester.widgetList<SetRow>(find.byType(SetRow)).toList()) {
-      await tapExactly(
-        tester,
-        find.byKey(ValueKey('workout-set-done-${row.row.id}')),
-        'set done',
-      );
-      await pumpFor(tester, const Duration(milliseconds: 300));
-    }
+    await tapExactly(
+      tester,
+      find.byWidgetPredicate(
+        (w) =>
+            w.key is ValueKey<String> &&
+            (w.key! as ValueKey<String>).value.startsWith(
+              'workout-same-as-last-',
+            ),
+      ),
+      'same as last time',
+    );
+    await pumpFor(tester, const Duration(milliseconds: 300));
     await tapExactly(
       tester,
       find.byKey(const ValueKey('workout-log-done')),

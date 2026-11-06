@@ -1,4 +1,5 @@
 import 'package:fb_design_system/l10n/gen/fb_localizations.dart';
+import 'package:fb_design_system/src/components/dashed_input_border.dart';
 import 'package:fb_design_system/src/components/supporting_line.dart';
 import 'package:fb_design_system/src/tokens/icons.dart';
 import 'package:material_ui/material_ui.dart';
@@ -14,6 +15,11 @@ import 'package:material_ui/material_ui.dart';
 /// is the caller's job. It reads label, text, counter and error as one text
 /// field for a screen reader. Layout is start/end only, so it mirrors in
 /// right-to-left layouts.
+///
+/// [hideLabel] drops the visible label where a header above names the
+/// column (A63 D15); the label stays the field's spoken name.
+/// [dashedWhenEmpty] draws a dashed outline while the field is empty and
+/// unfocused, for a [hint] that is only a suggestion.
 class FbTextField extends StatelessWidget {
   /// Creates a text field.
   const new({
@@ -32,6 +38,8 @@ class FbTextField extends StatelessWidget {
     this.focusNode,
     this.enabled = true,
     this.textDirection,
+    this.hideLabel = false,
+    this.dashedWhenEmpty = false,
     super.key,
   });
 
@@ -85,47 +93,24 @@ class FbTextField extends StatelessWidget {
   /// follows the surrounding layout.
   final TextDirection? textDirection;
 
+  /// Whether the label is only spoken, not shown.
+  final bool hideLabel;
+
+  /// Whether an empty, unfocused field has a dashed outline.
+  final bool dashedWhenEmpty;
+
   @override
   Widget build(BuildContext context) {
     final l10n = FbLocalizations.of(context);
-    final field = TextField(
-      controller: controller,
-      focusNode: focusNode,
-      autofocus: autofocus,
-      enabled: enabled,
-      textDirection: textDirection,
-      maxLength: maxLength,
-      keyboardType: keyboardType,
-      textInputAction: textInputAction,
-      onChanged: onChanged,
-      onSubmitted: onSubmitted,
-      // The counter is drawn in the supporting line, not under the field.
-      buildCounter: (
-        context, {
-        required currentLength,
-        required isFocused,
-        required maxLength,
-      }) => null,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        // The outline shows the error; the message is in the line.
-        error: errorText == null ? null : const SizedBox.shrink(),
-        suffixIcon: ValueListenableBuilder<TextEditingValue>(
-          valueListenable: controller,
-          builder: (context, value, _) => value.text.isEmpty || !enabled
-              ? const SizedBox.shrink()
-              : IconButton(
-                  tooltip: l10n.fbTextFieldClear,
-                  icon: const Icon(FbIcons.close),
-                  onPressed: () {
-                    controller.clear();
-                    onChanged?.call('');
-                  },
-                ),
-        ),
-      ),
-    );
+    final dashed = dashedWhenEmpty ? fbDashedEnabledBorder(context) : null;
+    var field = dashed == null
+        ? _field(l10n, dashed: null)
+        : ValueListenableBuilder<TextEditingValue>(
+            valueListenable: controller,
+            builder: (context, value, _) =>
+                _field(l10n, dashed: value.text.isEmpty ? dashed : null),
+          );
+    if (hideLabel) field = Semantics(label: label, child: field);
     if (supportingLines == 0) return field;
     final limit = maxLength;
     return Column(
@@ -147,4 +132,45 @@ class FbTextField extends StatelessWidget {
       ],
     );
   }
+
+  Widget _field(FbLocalizations l10n, {required InputBorder? dashed}) =>
+      TextField(
+        controller: controller,
+        focusNode: focusNode,
+        autofocus: autofocus,
+        enabled: enabled,
+        textDirection: textDirection,
+        maxLength: maxLength,
+        keyboardType: keyboardType,
+        textInputAction: textInputAction,
+        onChanged: onChanged,
+        onSubmitted: onSubmitted,
+        // The counter is drawn in the supporting line, not under the field.
+        buildCounter: (
+          context, {
+          required currentLength,
+          required isFocused,
+          required maxLength,
+        }) => null,
+        decoration: InputDecoration(
+          labelText: hideLabel ? null : label,
+          hintText: hint,
+          enabledBorder: dashed,
+          // The outline shows the error; the message is in the line.
+          error: errorText == null ? null : const SizedBox.shrink(),
+          suffixIcon: ValueListenableBuilder<TextEditingValue>(
+            valueListenable: controller,
+            builder: (context, value, _) => value.text.isEmpty || !enabled
+                ? const SizedBox.shrink()
+                : IconButton(
+                    tooltip: l10n.fbTextFieldClear,
+                    icon: const Icon(FbIcons.close),
+                    onPressed: () {
+                      controller.clear();
+                      onChanged?.call('');
+                    },
+                  ),
+          ),
+        ),
+      );
 }

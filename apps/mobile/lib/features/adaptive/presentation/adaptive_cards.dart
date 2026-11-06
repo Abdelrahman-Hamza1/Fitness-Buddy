@@ -16,8 +16,9 @@ import 'package:material_ui/material_ui.dart';
 Future<void> _report(
   BuildContext context,
   Future<AdaptiveOutcome> Function(AdaptiveActions actions) command,
-  String Function(AppLocalizations l10n) done,
-) async {
+  String Function(AppLocalizations l10n) done, {
+  VoidCallback? onDone,
+}) async {
   final container = ProviderScope.containerOf(context);
   final host = Navigator.of(context, rootNavigator: true).context;
   final outcome = await command(container.read(adaptiveActionsProvider));
@@ -25,6 +26,7 @@ Future<void> _report(
   final l10n = host.l10n;
   switch (outcome) {
     case AdaptiveDone(:final undoEntryId):
+      onDone?.call();
       showUndoFeedback(host, message: done(l10n), undoEntryId: undoEntryId);
     case AdaptiveFailed(:final reason):
       showFbSnackBar(host, switch (reason) {
@@ -46,11 +48,13 @@ String confidenceText(AppLocalizations l10n, ExpenditureConfidence c) =>
       ExpenditureConfidence.high => l10n.adaptiveConfidenceHigh,
     };
 
-/// This week's check-in (TG-034, AI-056; shown on Progress until A39a's
-/// weekly summary): the proposal with Keep current / Use, adjustable in
-/// 50 kcal steps within ±150 of the current base and never below the
-/// floor; a check-in the targets outgrew (Dismiss only); or an automatic
-/// change with Change back. Nothing without one.
+/// This week's check-in (TG-034, AI-056) as one-line notices (UX-047,
+/// A63 D6): a proposal ("Weekly check-in · new target 2,050" · Review)
+/// whose sheet holds Keep current / Use, adjustable in 50 kcal steps within
+/// ±150 of the current base and never below the floor; a check-in the
+/// targets outgrew (Dismiss); or an automatic change (Review: Got it /
+/// Change back). Nothing is written until a button in the sheet is tapped
+/// (D-079); the sheet closes after a tap that wrote. Nothing without one.
 class CheckInCard extends ConsumerWidget {
   /// Creates the card.
   const new({super.key});
@@ -75,7 +79,7 @@ class CheckInCard extends ConsumerWidget {
       children: [
         // The unseen automatic change first: a newer proposal never hides
         // its Change back (A38 review 5).
-        if (applied != null) gap(_AppliedCard(view: applied)),
+        if (applied != null) gap(_AppliedRow(view: applied)),
         if (failed)
           gap(
             _CardLoadFailed(
@@ -88,14 +92,83 @@ class CheckInCard extends ConsumerWidget {
           ),
         if (view != null)
           gap(switch (view.kind) {
-            CheckInCardKind.pending => _ProposalCard(
-              key: ValueKey('check-in-${view.record.id}'),
-              view: view,
+            CheckInCardKind.pending => FbNoticeRow(
+              key: const ValueKey('check-in-row'),
+              icon: FbIcons.target,
+              text: context.l10n.checkInRowPending(
+                DisplayRounding.kcal(view.draft.toKcal),
+              ),
+              actionLabel: context.l10n.noticeReview,
+              actionKey: const ValueKey('check-in-review'),
+              onAction: () => _openSheet(
+                context,
+                (close) => _ProposalCard(
+                  key: ValueKey('check-in-${view.record.id}'),
+                  view: view,
+                  onDone: close,
+                ),
+              ),
             ),
-            CheckInCardKind.stale => _StaleCard(view: view),
-            CheckInCardKind.applied => _AppliedCard(view: view),
+            CheckInCardKind.stale => FbNoticeRow(
+              key: const ValueKey('check-in-row'),
+              icon: FbIcons.info,
+              text: context.l10n.checkInRowStale,
+              actionLabel: context.l10n.checkInDismiss,
+              actionKey: const ValueKey('check-in-dismiss'),
+              onAction: () => unawaited(
+                _report(
+                  context,
+                  (a) => a.keep(view.record.id),
+                  (l10n) => l10n.checkInKeptDone,
+                ),
+              ),
+            ),
+            CheckInCardKind.applied => _AppliedRow(view: view),
           }),
       ],
+    );
+  }
+}
+
+/// Opens [body] (the full card of a notice row) in a sheet; [body]'s close
+/// callback pops it after a tap that wrote.
+void _openSheet(
+  BuildContext context,
+  Widget Function(VoidCallback close) body,
+) {
+  unawaited(
+    showFbSheet<void>(
+      context,
+      builder: (sheet) => body(() {
+        if (sheet.mounted) Navigator.of(sheet).pop();
+      }),
+    ),
+  );
+}
+
+/// An automatic change as one row (A57 A48: shown until the note is seen);
+/// Review opens Got it / Change back.
+class _AppliedRow extends StatelessWidget {
+  const new({required this.view});
+
+  final CheckInCardView view;
+
+  @override
+  Widget build(BuildContext context) {
+    const kcal = DisplayRounding.kcal;
+    return FbNoticeRow(
+      key: const ValueKey('check-in-applied-row'),
+      icon: FbIcons.target,
+      text: context.l10n.checkInRowApplied(
+        kcal(view.draft.toKcal),
+        kcal(view.draft.fromKcal),
+      ),
+      actionLabel: context.l10n.noticeReview,
+      actionKey: const ValueKey('check-in-applied-review'),
+      onAction: () => _openSheet(
+        context,
+        (close) => _AppliedCard(view: view, onDone: close),
+      ),
     );
   }
 }
@@ -118,9 +191,12 @@ class _CardLoadFailed extends StatelessWidget {
 }
 
 class _ProposalCard extends StatefulWidget {
-  const new({required this.view, super.key});
+  const new({required this.view, this.onDone, super.key});
 
   final CheckInCardView view;
+
+  /// Called after a tap that wrote (the sheet closes).
+  final VoidCallback? onDone;
 
   @override
   State<_ProposalCard> createState() => _ProposalCardState();
@@ -217,6 +293,7 @@ class _ProposalCardState extends State<_ProposalCard> {
                     context,
                     (a) => a.confirmDays(draft.anomalyDates),
                     (l10n) => l10n.checkInConfirmedDaysDone,
+                    onDone: widget.onDone,
                   ),
                 ),
               ),
@@ -228,42 +305,19 @@ class _ProposalCardState extends State<_ProposalCard> {
         discardLabel: l10n.checkInKeep,
         confirmLabel: l10n.checkInUse(kcal(_kcal)),
         onDiscard: () => unawaited(
-          _report(context, (a) => a.keep(id), (l10n) => l10n.checkInKeptDone),
+          _report(
+            context,
+            (a) => a.keep(id),
+            (l10n) => l10n.checkInKeptDone,
+            onDone: widget.onDone,
+          ),
         ),
         onConfirm: () => unawaited(
           _report(
             context,
             (a) => a.accept(id, kcal: adjusted ? _kcal : null),
             (l10n) => l10n.checkInAcceptedDone,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _StaleCard extends StatelessWidget {
-  const new({required this.view});
-
-  final CheckInCardView view;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return FbProposalCard(
-      header: l10n.checkInTitle,
-      details: Text(l10n.checkInStale, style: FbType.body),
-      actions: Align(
-        alignment: AlignmentDirectional.centerEnd,
-        child: FbButton.secondary(
-          key: const ValueKey('check-in-dismiss'),
-          label: l10n.checkInDismiss,
-          onPressed: () => unawaited(
-            _report(
-              context,
-              (a) => a.keep(view.record.id),
-              (l10n) => l10n.checkInKeptDone,
-            ),
+            onDone: widget.onDone,
           ),
         ),
       ),
@@ -272,9 +326,12 @@ class _StaleCard extends StatelessWidget {
 }
 
 class _AppliedCard extends ConsumerWidget {
-  const new({required this.view});
+  const new({required this.view, this.onDone});
 
   final CheckInCardView view;
+
+  /// Called after a tap that wrote (the sheet closes).
+  final VoidCallback? onDone;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -301,9 +358,10 @@ class _AppliedCard extends ConsumerWidget {
             children: [
               FbButton.text(
                 label: l10n.checkInGotIt,
-                onPressed: () => unawaited(
-                  ref.read(adaptiveActionsProvider).dismissNote(id),
-                ),
+                onPressed: () {
+                  unawaited(ref.read(adaptiveActionsProvider).dismissNote(id));
+                  onDone?.call();
+                },
               ),
               FbButton.secondary(
                 key: const ValueKey('check-in-change-back'),
@@ -313,6 +371,7 @@ class _AppliedCard extends ConsumerWidget {
                     context,
                     (a) => a.changeBack(id),
                     (l10n) => l10n.checkInChangedBackDone,
+                    onDone: onDone,
                   ),
                 ),
               ),
@@ -355,33 +414,70 @@ class IncompleteDayCard extends ConsumerWidget {
         .format(DateTime(date.year, date.month, date.day));
     return Padding(
       padding: const EdgeInsetsDirectional.only(bottom: FbDensity.cardGap),
-      child: FbProposalCard(
-        key: ValueKey('incomplete-day-$date'),
-        header: l10n.incompleteDayTitle,
-        details: Text(
-          l10n.incompleteDayBody(
-            day,
-            DisplayRounding.kcal(suggestion.kcal),
-            suggestion.mealCount,
+      child: FbNoticeRow(
+        key: const ValueKey('incomplete-day-row'),
+        icon: FbIcons.diary,
+        text: l10n.incompleteDayRow(day, DisplayRounding.kcal(suggestion.kcal)),
+        actionLabel: l10n.noticeReview,
+        actionKey: const ValueKey('incomplete-day-review'),
+        onAction: () => _openSheet(
+          context,
+          (close) => _IncompleteDayProposal(
+            suggestion: suggestion,
+            day: day,
+            onDone: close,
           ),
-          style: FbType.body,
         ),
-        actions: FbProposalActions(
-          discardLabel: l10n.incompleteDayComplete,
-          confirmLabel: l10n.diaryMarkIncomplete,
-          onDiscard: () => unawaited(
-            _report(
-              context,
-              (a) => a.confirmComplete(date),
-              (l10n) => l10n.incompleteDayConfirmedDone,
-            ),
+      ),
+    );
+  }
+}
+
+/// The incomplete-day question in full (the sheet of its row): Complete /
+/// Mark incomplete; nothing is written before a tap (DY-004).
+class _IncompleteDayProposal extends StatelessWidget {
+  const new({
+    required this.suggestion,
+    required this.day,
+    required this.onDone,
+  });
+
+  final IncompleteDaySuggestion suggestion;
+  final String day;
+  final VoidCallback onDone;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final date = suggestion.date;
+    return FbProposalCard(
+      key: ValueKey('incomplete-day-$date'),
+      header: l10n.incompleteDayTitle,
+      details: Text(
+        l10n.incompleteDayBody(
+          day,
+          DisplayRounding.kcal(suggestion.kcal),
+          suggestion.mealCount,
+        ),
+        style: FbType.body,
+      ),
+      actions: FbProposalActions(
+        discardLabel: l10n.incompleteDayComplete,
+        confirmLabel: l10n.diaryMarkIncomplete,
+        onDiscard: () => unawaited(
+          _report(
+            context,
+            (a) => a.confirmComplete(date),
+            (l10n) => l10n.incompleteDayConfirmedDone,
+            onDone: onDone,
           ),
-          onConfirm: () => unawaited(
-            _report(
-              context,
-              (a) => a.markIncomplete(date),
-              (l10n) => l10n.diaryDayMarkedIncomplete,
-            ),
+        ),
+        onConfirm: () => unawaited(
+          _report(
+            context,
+            (a) => a.markIncomplete(date),
+            (l10n) => l10n.diaryDayMarkedIncomplete,
+            onDone: onDone,
           ),
         ),
       ),
@@ -427,15 +523,46 @@ class ExpenditureCard extends ConsumerWidget {
             child: Text(l10n.adaptiveTitle, style: FbType.title),
           ),
           if (latest == null) ...[
-            if (r.weighInsToLog > 0)
-              Text(
-                l10n.adaptiveWeighInsToGo(r.weighInsToLog),
-                style: FbType.body,
-              )
-            else if (r.spanDaysToGo > 0)
-              Text(l10n.adaptiveSpanToGo(r.spanDaysToGo), style: FbType.body),
-            if (days > 0) Text(l10n.adaptiveDaysToGo(days), style: FbType.body),
-            Text(l10n.adaptiveIntro, style: muted),
+            // Numbers first (UX-047, A63 D8.6): what is still to go, then
+            // the explanation on tap.
+            Row(
+              key: const ValueKey('expenditure-to-go'),
+              spacing: FbSpace.s2,
+              children: [
+                if (r.weighInsToLog > 0)
+                  _ToGoTile(
+                    value: l10n.adaptiveToGoWeighIns(r.weighInsToLog),
+                    caption: l10n.adaptiveToGoCaption,
+                  )
+                else if (r.spanDaysToGo > 0)
+                  _ToGoTile(
+                    value: l10n.adaptiveToGoDays(r.spanDaysToGo),
+                    caption: l10n.adaptiveToGoSpanCaption,
+                  ),
+                if (days > 0)
+                  _ToGoTile(
+                    value: l10n.adaptiveToGoDays(days),
+                    caption: l10n.adaptiveToGoLogCaption,
+                  ),
+              ],
+            ),
+            FbListRow(
+              key: const ValueKey('expenditure-how'),
+              leading: const Icon(FbIcons.help),
+              title: l10n.adaptiveHowItWorks,
+              trailing: const Icon(FbIcons.next),
+              onTap: () => _openSheet(
+                context,
+                (_) => Padding(
+                  padding: const EdgeInsetsDirectional.all(FbSpace.s4),
+                  child: Text(
+                    l10n.adaptiveIntro,
+                    key: const ValueKey('expenditure-intro'),
+                    style: FbType.body,
+                  ),
+                ),
+              ),
+            ),
           ] else ...[
             Text(
               l10n.adaptiveEstimate(DisplayRounding.kcal(latest.kcal)),
@@ -527,6 +654,45 @@ class _ExpenditureChart extends StatelessWidget {
         DisplayRounding.kcal(points.last.kcal),
       ),
       emptyLabel: l10n.adaptiveChartEmpty,
+    );
+  }
+}
+
+/// A number still to go before targets can adapt, with its caption.
+class _ToGoTile extends StatelessWidget {
+  const new({required this.value, required this.caption});
+
+  final String value;
+  final String caption;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Expanded(
+      child: Semantics(
+        container: true,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: scheme.surfaceContainerHigh,
+            borderRadius: FbRadius.mdAll,
+          ),
+          child: Padding(
+            padding: const EdgeInsetsDirectional.all(FbSpace.s3),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(value, style: FbType.numeric(FbType.title)),
+                Text(
+                  caption,
+                  style: FbType.bodySmall.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

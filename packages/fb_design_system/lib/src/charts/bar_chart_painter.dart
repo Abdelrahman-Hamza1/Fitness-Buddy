@@ -5,6 +5,7 @@ import 'package:fb_design_system/src/charts/chart_types.dart';
 import 'package:fb_design_system/src/charts/nice_scale.dart';
 import 'package:fb_design_system/src/charts/time_series_painter.dart'
     show ChartLabelCache;
+import 'package:fb_design_system/src/painting/dashed.dart';
 import 'package:fb_design_system/src/tokens/colors.dart';
 import 'package:fb_design_system/src/tokens/spacing.dart';
 import 'package:flutter/semantics.dart' show SemanticsProperties;
@@ -274,7 +275,10 @@ final class BarChartPainter extends CustomPainter {
     FbBar bar,
     double Function(double) y,
   ) {
-    if (bar.placeholder) return;
+    if (bar.placeholder) {
+      _paintPlaceholder(canvas, geometry, index, y);
+      return;
+    }
     final x = geometry.centerX(index);
     final half = geometry.barWidth / 2;
     final base = geometry.plot.bottom;
@@ -336,6 +340,39 @@ final class BarChartPainter extends CustomPainter {
           ..strokeCap = StrokeCap.round,
       );
     }
+  }
+
+  /// A day still to come (A63 D7): a dashed outline as tall as the mean of
+  /// the drawn bars' targets (none: 40 % of the plot), in the grid colour.
+  /// It has no semantics node and no hit target.
+  void _paintPlaceholder(
+    Canvas canvas,
+    BarGeometry geometry,
+    int index,
+    double Function(double) y,
+  ) {
+    final plot = geometry.plot;
+    final targets = [
+      for (final bar in bars)
+        if (!bar.placeholder && bar.target != null) bar.target!,
+    ];
+    final top = targets.isEmpty
+        ? plot.bottom - plot.height * 0.4
+        : y(targets.reduce((a, b) => a + b) / targets.length);
+    final x = geometry.centerX(index);
+    final half = geometry.barWidth / 2;
+    if (plot.bottom - top < 2 || half <= 0) return;
+    final outline = RRect.fromRectAndRadius(
+      Rect.fromLTRB(x - half, top, x + half, plot.bottom),
+      const Radius.circular(3),
+    ).deflate(0.75);
+    canvas.drawPath(
+      dashedPath(Path()..addRRect(outline)),
+      Paint()
+        ..color = colors.grid
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5,
+    );
   }
 
   /// Diagonal hatching over [rect] on a faint fill of [color].

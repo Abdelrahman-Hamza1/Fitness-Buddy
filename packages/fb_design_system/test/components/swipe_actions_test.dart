@@ -135,4 +135,34 @@ void main() {
     expect(log, ['move Oats']);
     handle.dispose();
   });
+
+  testWidgets('A63 PA7 FbSwipeActions(collapseOnDismiss: false) only slides '
+      'out: the row keeps its height for the parent to remove', (tester) async {
+    final log = <String>[];
+    await pumpFb(
+      tester,
+      // Full width, like a real list row (the swipe background needs room).
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          FbSwipeActions(
+            key: const ValueKey('row'),
+            collapseOnDismiss: false,
+            dismissAction: FbSwipeAction(
+              label: 'Remove set',
+              icon: FbIcons.delete,
+              onTriggered: () => log.add('remove'),
+            ),
+            child: const SizedBox(height: 56, child: Text('Set 1')),
+          ),
+        ],
+      ),
+      disableAnimations: false,
+    );
+    await tester.drag(find.text('Set 1'), const Offset(-300, 0));
+    await tester.pumpAndSettle();
+    expect(log, ['remove']);
+    expect(tester.getSize(find.byKey(const ValueKey('row'))).height, 56);
+    expect(tester.takeException(), isNull);
+  });
 }

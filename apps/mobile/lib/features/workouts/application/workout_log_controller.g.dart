@@ -112,14 +112,14 @@ final class WorkoutApplyProvider
 String _$workoutApplyHash() => r'7ad9059e8bf52fde17f0a4eff9743cff3c8b838d';
 
 /// The single writer's revert for the log form (putting back a session the
-/// final delete removed while a set was checked again); injectable so
+/// final delete removed while a set was counted again); injectable so
 /// tests can make it fail.
 
 @ProviderFor(workoutRevert)
 final workoutRevertProvider = WorkoutRevertProvider._();
 
 /// The single writer's revert for the log form (putting back a session the
-/// final delete removed while a set was checked again); injectable so
+/// final delete removed while a set was counted again); injectable so
 /// tests can make it fail.
 
 final class WorkoutRevertProvider
@@ -131,7 +131,7 @@ final class WorkoutRevertProvider
         >
     with $Provider<Future<ApplyResult> Function(InverseChangeSet)> {
   /// The single writer's revert for the log form (putting back a session the
-  /// final delete removed while a set was checked again); injectable so
+  /// final delete removed while a set was counted again); injectable so
   /// tests can make it fail.
   WorkoutRevertProvider._()
     : super(
@@ -291,7 +291,7 @@ final class WorkoutLogControllerProvider
 }
 
 String _$workoutLogControllerHash() =>
-    r'c81e6d3acab0044cc491e93d58c9b1c78fca7651';
+    r'a39d4e23b53d5484cc68882ae143b3d9db55a1d5';
 
 /// The log form (WO-034, A37 D7-D9, PA1-PA3): its cards and set rows,
 /// "saves as you type" through the applier (debounced, one write in flight,

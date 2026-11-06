@@ -21,8 +21,14 @@ const accountJourneyCode = '123456';
 /// The synthetic Google ID token [FakeGoogleIdTokenSource] returns (A50).
 const accountJourneyGoogleToken = 'synthetic-google-id-token';
 
+/// The synthetic Google account's email and name (A63 D10).
+const accountJourneyGoogleEmail = 'journey-google@example.invalid';
+
+/// See [accountJourneyGoogleEmail].
+const accountJourneyGoogleName = 'Journey Tester';
+
 /// Google sign-in without the plugin (A50 D10): the real plugin needs the
-/// release certificate, so journeys get a synthetic ID token instead.
+/// release certificate, so journeys get a synthetic credential instead.
 final class FakeGoogleIdTokenSource implements GoogleIdTokenSource {
   /// How often the app asked for a token / for Google sign-out.
   int tokenRequests = 0;
@@ -34,9 +40,13 @@ final class FakeGoogleIdTokenSource implements GoogleIdTokenSource {
   bool get isAvailable => true;
 
   @override
-  Future<String?> idToken() async {
+  Future<GoogleCredential?> credential() async {
     tokenRequests++;
-    return accountJourneyGoogleToken;
+    return const GoogleCredential(
+      idToken: accountJourneyGoogleToken,
+      email: accountJourneyGoogleEmail,
+      displayName: accountJourneyGoogleName,
+    );
   }
 
   @override

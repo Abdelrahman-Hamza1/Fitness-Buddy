@@ -92,4 +92,78 @@ void main() {
     );
     expect(tester.widget<TextField>(find.byType(TextField)).enabled, isFalse);
   });
+
+  testWidgets('UX-045 A63 D15 hideLabel keeps only the spoken name; '
+      'dashedWhenEmpty dashes an empty field without changing its size', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
+    await pumpFb(
+      tester,
+      FbNumberField(
+        key: const ValueKey('field'),
+        controller: controller,
+        label: 'Reps',
+        hint: '8',
+        supportingLines: 0,
+        hideLabel: true,
+        dashedWhenEmpty: true,
+      ),
+    );
+    expect(find.text('Reps'), findsNothing);
+    expect(find.text('8'), findsOne, reason: 'the hint shows');
+    // The hidden name is still spoken first; Material appends the hint.
+    expect(find.semantics.byLabel(RegExp('^Reps(\n|\$)')), findsOne);
+    InputDecoration decoration() =>
+        tester.widget<InputDecorator>(find.byType(InputDecorator)).decoration;
+    expect(decoration().enabledBorder, isA<FbDashedInputBorder>());
+    final empty = tester.getSize(find.byKey(const ValueKey('field')));
+
+    await tester.enterText(find.byType(TextField), '10');
+    await tester.pump();
+    expect(
+      decoration().enabledBorder,
+      isNot(isA<FbDashedInputBorder>()),
+      reason: "a filled field has the theme's solid outline",
+    );
+    expect(tester.getSize(find.byKey(const ValueKey('field'))), empty);
+    semantics.dispose();
+  });
+
+  testWidgets('UX-045 A63 D15 FbTextField: hideLabel and dashedWhenEmpty work '
+      'the same way', (tester) async {
+    final semantics = tester.ensureSemantics();
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
+    await pumpFb(
+      tester,
+      FbTextField(
+        key: const ValueKey('field'),
+        controller: controller,
+        label: 'Time',
+        hint: '1:30',
+        supportingLines: 0,
+        hideLabel: true,
+        dashedWhenEmpty: true,
+      ),
+    );
+    expect(find.text('Time'), findsNothing);
+    // The hidden name is still spoken first; Material appends the hint.
+    expect(find.semantics.byLabel(RegExp('^Time(\n|\$)')), findsOne);
+    InputDecoration decoration() =>
+        tester.widget<InputDecorator>(find.byType(InputDecorator)).decoration;
+    expect(decoration().enabledBorder, isA<FbDashedInputBorder>());
+    final empty = tester.getSize(find.byKey(const ValueKey('field')));
+    await tester.enterText(find.byType(TextField), '2:00');
+    await tester.pump();
+    expect(
+      decoration().enabledBorder,
+      isNot(isA<FbDashedInputBorder>()),
+      reason: "a filled field has the theme's solid outline",
+    );
+    expect(tester.getSize(find.byKey(const ValueKey('field'))), empty);
+    semantics.dispose();
+  });
 }

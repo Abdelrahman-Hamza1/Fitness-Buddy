@@ -62,7 +62,7 @@ class RamadanProposalCard extends ConsumerWidget {
     final host = Navigator.of(context, rootNavigator: true).context;
     final outcome = await ref
         .read(settingsActionsProvider)
-        .setRamadanSeason(RamadanSeason(hijriYear: period.hijriYear, on: on));
+        .updateRamadanSeason(period.hijriYear, (s) => s.copyWith(on: on));
     if (!host.mounted) return;
     reportSettingsOutcome(
       host,

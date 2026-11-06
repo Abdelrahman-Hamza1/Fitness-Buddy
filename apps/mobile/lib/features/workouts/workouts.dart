@@ -12,7 +12,8 @@ export 'application/workout_views.dart'
         TodayWorkoutPlanned,
         allWorkoutSessionsProvider,
         todayWorkoutProvider,
-        weeklyWorkoutSummaryProvider;
+        weeklyWorkoutSummaryProvider,
+        workoutWeekRetryProviders;
 export 'data/workout_op_handler.dart' show WorkoutOpHandler, planDayId;
 export 'data/workout_repository.dart';
 export 'presentation/exercise_picker_screen.dart' show ExercisePickerScreen;

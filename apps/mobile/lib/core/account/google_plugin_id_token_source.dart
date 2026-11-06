@@ -11,9 +11,9 @@ abstract interface class GoogleSignInDriver {
   /// Initializes the plugin once per process; later calls share the result.
   Future<void> ensureInitialized();
 
-  /// Shows Google's account sheet; the ID token, or `null` if Google gave
-  /// none. Throws [GoogleSignInException] (a cancel included).
-  Future<String?> authenticate();
+  /// Shows Google's account sheet; the credential, or `null` if Google gave
+  /// no ID token. Throws [GoogleSignInException] (a cancel included).
+  Future<GoogleCredential?> authenticate();
 
   /// Forgets the chosen account.
   Future<void> signOut();
@@ -43,10 +43,17 @@ final class PluginGoogleSignInDriver implements GoogleSignInDriver {
       _initialization ??= _initialize(_serverClientId);
 
   @override
-  Future<String?> authenticate() async {
-    // Only the ID token is read: never the email, name or photo (A50 D9).
+  Future<GoogleCredential?> authenticate() async {
+    // The ID token, and the email and name for this phone's "who's signed
+    // in" (A63 D10, reverses A50 D9); never the photo.
     final account = await GoogleSignIn.instance.authenticate();
-    return account.authentication.idToken;
+    final token = account.authentication.idToken;
+    if (token == null) return null;
+    return GoogleCredential(
+      idToken: token,
+      email: account.email,
+      displayName: account.displayName,
+    );
   }
 
   @override
@@ -55,10 +62,10 @@ final class PluginGoogleSignInDriver implements GoogleSignInDriver {
 
 /// Google ID tokens through `google_sign_in` (A50 D6–D9).
 ///
-/// Initializes the plugin lazily on the first [idToken] (nothing runs at
+/// Initializes the plugin lazily on the first [credential] (nothing runs at
 /// startup, rule 3). A cancel is `null`; every failure is a redacted
 /// [GoogleIdTokenException]: no plugin text, token or account detail leaves
-/// this class.
+/// this class except in the success credential.
 final class PluginGoogleIdTokenSource implements GoogleIdTokenSource {
   /// [serverClientId] is the web client ID ("" = unavailable).
   new({
@@ -87,11 +94,11 @@ final class PluginGoogleIdTokenSource implements GoogleIdTokenSource {
       _serverClientId.isNotEmpty && _platform() == TargetPlatform.android;
 
   @override
-  Future<String?> idToken() async {
+  Future<GoogleCredential?> credential() async {
     await (_initialization ??= _initialize());
-    final String? token;
+    final GoogleCredential? credential;
     try {
-      token = await _driver.authenticate();
+      credential = await _driver.authenticate();
     } on GoogleSignInException catch (error) {
       if (error.code == GoogleSignInExceptionCode.canceled) return null;
       throw GoogleIdTokenException(_kindOf(error.code));
@@ -100,10 +107,10 @@ final class PluginGoogleIdTokenSource implements GoogleIdTokenSource {
     } on Object {
       throw const GoogleIdTokenException(GoogleIdTokenFailure.failed);
     }
-    if (token == null || token.isEmpty) {
+    if (credential == null || credential.idToken.isEmpty) {
       throw const GoogleIdTokenException(GoogleIdTokenFailure.misconfigured);
     }
-    return token;
+    return credential;
   }
 
   Future<void> _initialize() async {

@@ -243,9 +243,7 @@ void main() {
     );
     await tester.enterText(fields.at(0), '80');
     await tester.enterText(fields.at(1), '8');
-    await tester.tap(
-      find.descendant(of: find.byType(SetRow), matching: find.byType(Checkbox)),
-    );
+    // The set counts as soon as it has numbers (D-097): no tick.
     await tester.pump();
 
     unawaited(router.openLocation('/workouts'));
@@ -314,9 +312,7 @@ void main() {
     );
     await tester.enterText(fields.at(0), '80');
     await tester.enterText(fields.at(1), '8');
-    await tester.tap(
-      find.descendant(of: find.byType(SetRow), matching: find.byType(Checkbox)),
-    );
+    // The set counts as soon as it has numbers (D-097): no tick.
     await tester.pump();
 
     // The same link again: nothing happens to the open visit.
@@ -372,9 +368,7 @@ void main() {
     );
     await tester.enterText(fields.at(0), '80');
     await tester.enterText(fields.at(1), '8');
-    await tester.tap(
-      find.descendant(of: find.byType(SetRow), matching: find.byType(Checkbox)),
-    );
+    // The set counts as soon as it has numbers (D-097): no tick.
     await tester.pump();
 
     // Switch to Me, then the same reminder again.

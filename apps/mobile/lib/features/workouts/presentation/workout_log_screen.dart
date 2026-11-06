@@ -487,12 +487,11 @@ class _LogState extends ConsumerState<WorkoutLogScreen> {
     );
   }
 
-  /// The cards hidden until shown (D-089): untouched ones (nothing typed
-  /// or checked) except the first untouched, so a planned workout opens on
+  /// The cards hidden until shown (D-089): untouched ones (nothing typed)
+  /// except the first untouched, so a planned workout opens on
   /// the next exercise to log.
   static Set<String> _collapsedByDefault(List<LogExerciseCard> cards) {
-    bool touched(LogExerciseCard c) =>
-        c.sets.any((s) => s.checked || !s.input.isEmpty);
+    bool touched(LogExerciseCard c) => c.sets.any((s) => !s.input.isEmpty);
     final untouched = [
       for (final c in cards)
         if (!touched(c)) c.id,
@@ -560,11 +559,11 @@ class _SessionSummary extends StatelessWidget {
       for (final c in form.exercises) c.exerciseId,
     ]);
     final logged = form.exercises
-        .where((c) => c.sets.any((s) => s.checked))
+        .where((c) => c.sets.any((s) => s.counts))
         .length;
     final sets = form.exercises.fold(
       0,
-      (n, c) => n + c.sets.where((s) => s.checked).length,
+      (n, c) => n + c.sets.where((s) => s.counts).length,
     );
     return Row(
       key: const ValueKey('workout-log-summary'),

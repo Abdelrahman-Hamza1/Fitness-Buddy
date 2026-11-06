@@ -201,28 +201,36 @@ NewLog _new([String visit = 'v1', LocalDate? date]) =>
     NewLog(visitId: visit, date: date ?? today);
 
 void main() {
-  test('WO-034 nothing is written before the first checked set', () async {
+  test('WO-034 D-097 T-W1 a set with valid numbers is saved without a tick; '
+      'a hint-only row is never saved', () async {
     final log = _Log();
     await log.seed();
     final launch = _new();
     final c = await log.open(launch);
     await c.addExercises([wid(1)]);
     final card = log.state(launch).exercises.single;
-    c
-      ..editSet(
-        card.id,
-        card.sets.single.id,
-        const SetInput(weight: '80', reps: '8'),
-      )
-      ..addSet(card.id);
+    final set1 = card.sets.single.id;
+    // Half-typed numbers (no reps yet) are not a set: nothing is written.
+    c.editSet(card.id, set1, const SetInput(weight: '80'));
     await log.fire(c);
     expect(await log.sessions(), isEmpty);
     expect(log.state(launch).persisted, isFalse);
-    expect(await c.finishVisit(), isA<VisitUnchanged>());
-    expect(await log.sessions(), isEmpty);
+    expect(log.state(launch).hasSets, isFalse);
+
+    // Valid numbers count; the added row only has a hint and never counts.
+    c
+      ..editSet(card.id, set1, const SetInput(weight: '80', reps: '8'))
+      ..addSet(card.id);
+    expect(log.state(launch).exercises.single.sets.last.hint, isNotNull);
+    expect(log.state(launch).exercises.single.sets.last.counts, isFalse);
+    await log.fire(c);
+    final stored = (await log.sessions()).single.draft.exercises.single.sets;
+    expect([for (final s in stored) s.id], [set1]);
+    expect(stored.single.values, const SetValues(reps: 8, kg: 80));
+    expect(log.state(launch).persisted, isTrue);
   });
 
-  test('WO-034 first check logs the session, later edits update it '
+  test('WO-034 the first counted set logs the session, later edits update it '
       '(debounced, one write in flight)', () async {
     final log = _Log();
     await log.seed();
@@ -232,7 +240,6 @@ void main() {
     var card = log.state(launch).exercises.single;
     final set1 = card.sets.single.id;
     c.editSet(card.id, set1, const SetInput(weight: '80', reps: '8'));
-    expect(c.toggleSet(card.id, set1), isTrue);
     // Debounced: nothing until the timer fires.
     expect(await log.sessions(), isEmpty);
     expect(log.timers.pending, 1);
@@ -248,7 +255,6 @@ void main() {
     final set2 = card.sets.last.id;
     c
       ..editSet(card.id, set2, const SetInput(weight: '80', reps: '7'))
-      ..toggleSet(card.id, set2)
       ..editSet(card.id, set1, const SetInput(weight: '82.5', reps: '8'));
     expect(log.timers.pending, 1);
     await log.fire(c);
@@ -279,13 +285,11 @@ void main() {
     final c = await log.open(launch);
     await c.addExercises([wid(1)]);
     final card = log.state(launch).exercises.single;
-    c
-      ..editSet(
-        card.id,
-        card.sets.single.id,
-        const SetInput(weight: '60', reps: '10'),
-      )
-      ..toggleSet(card.id, card.sets.single.id);
+    c.editSet(
+      card.id,
+      card.sets.single.id,
+      const SetInput(weight: '60', reps: '10'),
+    );
     expect(log.timers.pending, 1);
     final result = await c.finishVisit();
     expect(result, isA<VisitSaved>().having((r) => r.created, 'created', true));
@@ -301,7 +305,7 @@ void main() {
     expect(await log.sessions(), isEmpty);
   });
 
-  test('WO-034 edit mode opens persisted sets checked', () async {
+  test('WO-034 WO-042 T-W6 edit mode opens stored sets as counted', () async {
     final log = _Log();
     await log.seed();
     await log.h.apply([LogWorkoutSession(wid(10), sessionDraft())]);
@@ -312,24 +316,24 @@ void main() {
     expect(form.name, 'Push');
     final sets = form.exercises.single.sets;
     expect([for (final s in sets) s.id], [wid(30), wid(31), wid(32)]);
-    expect(sets.every((s) => s.checked), isTrue);
+    expect(sets.every((s) => s.counts), isTrue);
     expect(sets.first.input, const SetInput(weight: '80', reps: '8'));
     // Opening and leaving writes nothing.
     expect(await c.finishVisit(), isA<VisitUnchanged>());
     expect(await log.sessionVersion(wid(10)), 1);
   });
 
-  test('WO-034 uncheck → save → recheck keeps the set ID', () async {
+  test('WO-034 clear → save → type again keeps the set ID', () async {
     final log = _Log();
     await log.seed();
     await log.h.apply([LogWorkoutSession(wid(10), sessionDraft())]);
     final launch = EditLog(wid(10), visitId: 'e1');
     final c = await log.open(launch);
     final card = log.state(launch).exercises.single;
-    c.toggleSet(card.id, wid(32));
+    c.editSet(card.id, wid(32), const SetInput());
     await log.fire(c);
     expect(await log.h.isTombstone('workout_sets', wid(32)), isTrue);
-    c.toggleSet(card.id, wid(32));
+    c.editSet(card.id, wid(32), const SetInput(weight: '80', reps: '7'));
     await log.fire(c);
     expect(await log.h.isTombstone('workout_sets', wid(32)), isFalse);
     expect(
@@ -342,8 +346,8 @@ void main() {
     );
   });
 
-  test('WO-034 an exercise whose last set is unchecked leaves the saved '
-      'session, and comes back on re-check', () async {
+  test('WO-034 an exercise whose last set is cleared leaves the saved '
+      'session, and comes back when numbers are typed again', () async {
     final log = _Log();
     await log.seed();
     await log.h.apply([
@@ -368,20 +372,20 @@ void main() {
     ]);
     final launch = EditLog(wid(10), visitId: 'e1');
     final c = await log.open(launch);
-    c.toggleSet(wid(21), wid(40));
+    c.editSet(wid(21), wid(40), const SetInput());
     await log.fire(c);
     expect(await log.h.isTombstone('session_exercises', wid(21)), isTrue);
     // The card stays in the form.
     expect(log.state(launch).exercises, hasLength(2));
-    c.toggleSet(wid(21), wid(40));
+    c.editSet(wid(21), wid(40), const SetInput(weight: '30', reps: '12'));
     await log.fire(c);
     final exercises = (await log.sessions()).single.draft.exercises;
     expect([for (final e in exercises) e.id], [wid(20), wid(21)]);
     expect(exercises.last.sets.single.id, wid(40));
   });
 
-  test('WO-034 leaving with zero checked sets deletes the persisted session '
-      'with an undo that restores it', () async {
+  test('WO-034 A37 D8 T-W2 clearing every set: leaving deletes the persisted '
+      'session with an undo that restores it', () async {
     final log = _Log();
     await log.seed();
     await log.h.apply([LogWorkoutSession(wid(10), sessionDraft())]);
@@ -389,8 +393,9 @@ void main() {
     final launch = EditLog(wid(10), visitId: 'e1');
     final c = await log.open(launch);
     for (final s in [wid(30), wid(31), wid(32)]) {
-      c.toggleSet(wid(20), s);
+      c.editSet(wid(20), s, const SetInput());
     }
+    expect(log.state(launch).hasSets, isFalse);
     await log.fire(c);
     // Autosave never writes an empty session.
     expect(await log.sessionVersion(wid(10)), 1);
@@ -404,7 +409,8 @@ void main() {
     expect(await log.h.state(), before);
   });
 
-  test('WO-034 invalid edit of a checked set keeps the saved value', () async {
+  test('WO-034 T-W3 invalid numbers keep the last valid value saved and '
+      'report the issue', () async {
     final log = _Log();
     await log.seed();
     await log.h.apply([LogWorkoutSession(wid(10), sessionDraft())]);
@@ -416,13 +422,19 @@ void main() {
     expect(row.saved!.values, const SetValues(reps: 8, kg: 80));
     await log.fire(c);
     expect(await log.sessionVersion(wid(10)), 1);
-    // A check with nothing valid is refused with the field error.
+    // A new row with only invalid numbers reports the issue and counts
+    // nothing.
     await c.addExercises([wid(2)]);
     final fresh = log.state(launch).exercises.last;
-    expect(c.toggleSet(fresh.id, fresh.sets.single.id), isFalse);
+    c.editSet(fresh.id, fresh.sets.single.id, const SetInput(weight: '40'));
+    final freshRow = log.state(launch).exercises.last.sets.single;
+    expect(freshRow.issue, WorkoutSetIssue.reps);
+    expect(freshRow.counts, isFalse);
+    await log.fire(c);
     expect(
-      log.state(launch).exercises.last.sets.single.issue,
-      WorkoutSetIssue.reps,
+      (await log.sessions()).single.draft.exercises,
+      hasLength(1),
+      reason: 'the half-typed exercise is not saved',
     );
   });
 
@@ -488,8 +500,8 @@ void main() {
     expect(result, isA<VisitSaved>().having((r) => r.undoId, 'undo', isNull));
   });
 
-  test('WO-012 only checked working sets are saved, in kg with the typed '
-      'unit', () async {
+  test('WO-012 only working sets with numbers are saved, in kg with the '
+      'typed unit', () async {
     final log = _Log();
     await log.seed();
     final launch = _new();
@@ -502,10 +514,10 @@ void main() {
     final sets = log.state(launch).exercises.single.sets;
     c
       ..editSet(card.id, sets[0].id, const SetInput(weight: '82,5', reps: '5'))
-      ..toggleSet(card.id, sets[0].id)
       ..editSet(card.id, sets[1].id, const SetInput(weight: '40', reps: '12'))
-      ..editSet(card.id, sets[2].id, const SetInput(weight: '80', reps: '5'))
-      ..toggleSet(card.id, sets[2].id);
+      // Cleared again: it leaves the session.
+      ..editSet(card.id, sets[1].id, const SetInput())
+      ..editSet(card.id, sets[2].id, const SetInput(weight: '80', reps: '5'));
     await c.finishVisit();
     final stored = (await log.sessions()).single.draft.exercises.single.sets;
     expect([for (final s in stored) s.id], [sets[0].id, sets[2].id]);
@@ -517,7 +529,7 @@ void main() {
   });
 
   test('WO-024 Repeat copies exercises and set counts with new ids, '
-      "unchecked, today's date", () async {
+      "empty with hints, today's date", () async {
     final log = _Log();
     await log.seed();
     final past = today.plusDays(-3);
@@ -533,12 +545,16 @@ void main() {
     expect(card.id, isNot(wid(20)));
     expect(card.sets, hasLength(3));
     for (final s in card.sets) {
-      expect(s.checked, isFalse);
+      expect(s.counts, isFalse);
       expect([wid(30), wid(31), wid(32)], isNot(contains(s.id)));
     }
     expect(card.sets.last.hint, const SetValues(reps: 7, kg: 80));
-    // ✓ on an empty row accepts the hint.
-    expect(c.toggleSet(card.id, card.sets.last.id), isTrue);
+    // Typing the hint's numbers into one row counts only that row.
+    c.editSet(
+      card.id,
+      card.sets.last.id,
+      const SetInput(weight: '80', reps: '7'),
+    );
     await c.finishVisit();
     final logged = (await log.sessions()).last;
     expect(logged.draft.date, today);
@@ -707,13 +723,11 @@ void main() {
       final c = await log.open(launch);
       await c.addExercises([wid(2)]);
       final extra = log.state(launch).exercises.last;
-      c
-        ..editSet(
-          extra.id,
-          extra.sets.single.id,
-          const SetInput(weight: '30', reps: '12'),
-        )
-        ..toggleSet(extra.id, extra.sets.single.id);
+      c.editSet(
+        extra.id,
+        extra.sets.single.id,
+        const SetInput(weight: '30', reps: '12'),
+      );
       // Another editor saves before the debounce fires.
       await log.h.apply([
         UpdateWorkoutSession(
@@ -760,8 +774,9 @@ void main() {
       );
     });
 
-    test('WO-034 clearing a checked set shows the error and keeps the saved '
-        'value (reps only, time, weight × reps)', () async {
+    test('WO-034 A63 PA1 T-W2a clearing a counted set removes it (reps only, '
+        'time, weight × reps); with none left, leaving deletes the session '
+        'with Undo', () async {
       final log = _Log();
       await log.seed();
       final launch = _new();
@@ -774,9 +789,7 @@ void main() {
         const SetInput(weight: '80', reps: '8'),
       ];
       for (final (i, card) in cards.indexed) {
-        c
-          ..editSet(card.id, card.sets.single.id, inputs[i])
-          ..toggleSet(card.id, card.sets.single.id);
+        c.editSet(card.id, card.sets.single.id, inputs[i]);
       }
       await log.fire(c);
       final stored = [
@@ -788,20 +801,60 @@ void main() {
         SetValues(durationSeconds: 90),
         SetValues(reps: 8, kg: 80),
       ]);
-      for (final card in cards) {
+      // Clearing the first one autosaves the session without it.
+      c.editSet(cards.first.id, cards.first.sets.single.id, const SetInput());
+      await log.fire(c);
+      expect((await log.sessions()).single.draft.exercises, hasLength(2));
+      for (final card in cards.skip(1)) {
         c.editSet(card.id, card.sets.single.id, const SetInput());
       }
       await log.fire(c);
       for (final (i, card) in log.state(launch).exercises.indexed) {
         final row = card.sets.single;
-        expect(row.issue, isNotNull, reason: '$i');
-        expect(row.checked, isTrue);
-        expect(row.saved!.values, stored[i]);
+        expect(row.issue, isNull, reason: '$i');
+        expect(row.counts, isFalse, reason: '$i');
       }
-      expect([
-        for (final e in (await log.sessions()).single.draft.exercises)
-          e.sets.single.values,
-      ], stored);
+      // Autosave never writes an empty session; leaving deletes it.
+      expect((await log.sessions()).single.draft.exercises, hasLength(2));
+      final result = await c.finishVisit();
+      expect(result, isA<VisitDeleted>());
+      expect(await log.sessions(), isEmpty);
+      expect(
+        await log.undo.undo((result as VisitDeleted).undoId),
+        UndoOutcome.undone,
+      );
+      expect(await log.sessions(), hasLength(1));
+    });
+
+    test('WO-034 A63 PA1 T-W2b a set cleared while the first save is in '
+        'flight: the drain writes the cleared form, and leaving deletes the '
+        'session', () async {
+      final log = _Log();
+      await log.seed();
+      final launch = _new();
+      final c = await log.open(launch);
+      await c.addExercises([wid(1)]);
+      final card = log.state(launch).exercises.single;
+      final set = card.sets.single.id;
+      final gate = Completer<void>();
+      var writes = 0;
+      log.apply = (changes) async {
+        if (writes++ == 0) await gate.future;
+        return await log.h.applier.apply(changes);
+      };
+      c.editSet(card.id, set, const SetInput(weight: '80', reps: '8'));
+      final first = c.flush();
+      await pumpEventQueue();
+      // The create is in flight; the set is cleared meanwhile.
+      c.editSet(card.id, set, const SetInput());
+      gate.complete();
+      await first;
+      await log.fire(c);
+      expect(log.state(launch).persisted, isTrue);
+      expect(log.state(launch).hasSets, isFalse);
+      final result = await c.finishVisit();
+      expect(result, isA<VisitDeleted>());
+      expect(await log.sessions(), isEmpty);
     });
   });
 
@@ -853,36 +906,34 @@ void main() {
       },
     );
 
-    test(
-      'WO-034 a set checked again while the final delete runs is kept',
-      () async {
-        final log = _Log();
-        await log.seed();
-        await log.h.apply([LogWorkoutSession(wid(10), sessionDraft())]);
-        final launch = EditLog(wid(10), visitId: 'e1');
-        final c = await log.open(launch);
-        for (final set in [wid(30), wid(31), wid(32)]) {
-          c.toggleSet(wid(20), set);
-        }
-        await log.fire(c);
-        final gate = Completer<void>();
-        log.apply = (set) async {
-          if (set.ops.single is DeleteWorkoutSession) await gate.future;
-          return await log.h.applier.apply(set);
-        };
-        final leaving = c.finishVisit();
-        await pumpEventQueue();
-        expect(c.toggleSet(wid(20), wid(31)), isTrue);
-        gate.complete();
-        final result = await leaving;
-        expect(result, isA<VisitSaved>());
-        final sessions = await log.sessions();
-        expect(sessions.single.ref.id, wid(10));
-        final sets = sessions.single.draft.exercises.single.sets;
-        expect([for (final s in sets) s.id], [wid(31)]);
-        expect(sets.single.values, const SetValues(reps: 8, kg: 80));
-      },
-    );
+    test('WO-034 A63 PA1 T-W2c numbers typed again while the final delete runs '
+        'are kept', () async {
+      final log = _Log();
+      await log.seed();
+      await log.h.apply([LogWorkoutSession(wid(10), sessionDraft())]);
+      final launch = EditLog(wid(10), visitId: 'e1');
+      final c = await log.open(launch);
+      for (final set in [wid(30), wid(31), wid(32)]) {
+        c.editSet(wid(20), set, const SetInput());
+      }
+      await log.fire(c);
+      final gate = Completer<void>();
+      log.apply = (set) async {
+        if (set.ops.single is DeleteWorkoutSession) await gate.future;
+        return await log.h.applier.apply(set);
+      };
+      final leaving = c.finishVisit();
+      await pumpEventQueue();
+      c.editSet(wid(20), wid(31), const SetInput(weight: '80', reps: '8'));
+      gate.complete();
+      final result = await leaving;
+      expect(result, isA<VisitSaved>());
+      final sessions = await log.sessions();
+      expect(sessions.single.ref.id, wid(10));
+      final sets = sessions.single.draft.exercises.single.sets;
+      expect([for (final s in sets) s.id], [wid(31)]);
+      expect(sets.single.values, const SetValues(reps: 8, kg: 80));
+    });
   });
 
   /// Template `wid(70)` "Push" (2 × 8 of exercise 1, 3 × 10 of exercise 2)
@@ -984,13 +1035,11 @@ void main() {
           c.removeSet(card.id, set.id);
           continue;
         }
-        c
-          ..editSet(
-            card.id,
-            set.id,
-            SetInput(weight: '60', reps: '${reps[i][j]}'),
-          )
-          ..toggleSet(card.id, set.id);
+        c.editSet(
+          card.id,
+          set.id,
+          SetInput(weight: '60', reps: '${reps[i][j]}'),
+        );
       }
     }
     return (log, await c.finishVisit() as VisitSaved);
@@ -1040,13 +1089,11 @@ void main() {
     final c = await log.open(launch);
     await c.addExercises([wid(1)]);
     final card = log.state(launch).exercises.single;
-    c
-      ..editSet(
-        card.id,
-        card.sets.single.id,
-        const SetInput(weight: '80', reps: '8'),
-      )
-      ..toggleSet(card.id, card.sets.single.id);
+    c.editSet(
+      card.id,
+      card.sets.single.id,
+      const SetInput(weight: '80', reps: '8'),
+    );
     final result = await c.finishVisit() as VisitSaved;
     expect(result.offer, isNull);
     expect(result.undoId, isNotNull);
@@ -1096,9 +1143,7 @@ void main() {
     final c = await log.open(launch);
     for (final card in log.state(launch).exercises) {
       for (final set in card.sets) {
-        c
-          ..editSet(card.id, set.id, const SetInput(weight: '60', reps: '9'))
-          ..toggleSet(card.id, set.id);
+        c.editSet(card.id, set.id, const SetInput(weight: '60', reps: '9'));
       }
     }
     final leaving = c.finishVisit();
@@ -1106,7 +1151,7 @@ void main() {
       await pumpEventQueue();
     }
     final written = (await log.sessions()).single;
-    // In the gap: an edit, and every set unchecked (the last one too).
+    // In the gap: an edit, and every set cleared (the last one too).
     final form = log.state(launch);
     final first = form.exercises.first;
     c.editSet(
@@ -1116,14 +1161,14 @@ void main() {
     );
     for (final card in form.exercises) {
       for (final set in card.sets) {
-        c.toggleSet(card.id, set.id);
+        c.editSet(card.id, set.id, const SetInput());
       }
     }
     release.complete();
     final result = await leaving as VisitSaved;
     // The form was frozen: what's stored is what the form shows, and the
     // session wasn't deleted behind the user's back.
-    expect(log.state(launch).exercises.first.sets.first.checked, isTrue);
+    expect(log.state(launch).exercises.first.sets.first.counts, isTrue);
     final stored = (await log.sessions()).single;
     expect(stored.draft, written.draft);
     expect(stored.ref, written.ref);
@@ -1140,7 +1185,7 @@ void main() {
     final launch = EditLog(wid(10), visitId: 's1');
     final c = await log.open(launch);
     final card = log.state(launch).exercises.single;
-    // A checked set edited: the save is pending, the debounce hasn't fired.
+    // A stored set edited: the save is pending, the debounce hasn't fired.
     c.editSet(
       card.id,
       card.sets.first.id,
@@ -1170,9 +1215,7 @@ void main() {
       final c = await log.open(launch);
       for (final card in log.state(launch).exercises) {
         for (final set in card.sets) {
-          c
-            ..editSet(card.id, set.id, const SetInput(weight: '60', reps: '9'))
-            ..toggleSet(card.id, set.id);
+          c.editSet(card.id, set.id, const SetInput(weight: '60', reps: '9'));
         }
       }
       final result = await c.finishVisit() as VisitSaved;
@@ -1253,14 +1296,14 @@ void main() {
     });
 
     test('WO-034 a failed restore after the final delete keeps the form; '
-        'Retry restores the session and saves the re-checked set', () async {
+        'Retry restores the session and saves the retyped set', () async {
       final log = _Log();
       await log.seed();
       await log.h.apply([LogWorkoutSession(wid(10), sessionDraft())]);
       final launch = EditLog(wid(10), visitId: 'e1');
       final c = await log.open(launch);
       for (final set in [wid(30), wid(31), wid(32)]) {
-        c.toggleSet(wid(20), set);
+        c.editSet(wid(20), set, const SetInput());
       }
       await log.fire(c);
       final gate = Completer<void>();
@@ -1272,11 +1315,11 @@ void main() {
         ..revert = (_) async => throw DatabaseWriteException(10); // I/O
       final leaving = c.finishVisit();
       await pumpEventQueue();
-      c.toggleSet(wid(20), wid(31));
+      c.editSet(wid(20), wid(31), const SetInput(weight: '80', reps: '8'));
       gate.complete();
       expect(await leaving, isA<VisitFailed>());
       expect(log.state(launch).saveState, LogSaveState.failed);
-      expect(log.state(launch).exercises.single.sets[1].checked, isTrue);
+      expect(log.state(launch).exercises.single.sets[1].counts, isTrue);
 
       log.revert = log.h.applier.revert;
       await c.flush();
@@ -1287,6 +1330,167 @@ void main() {
         [wid(31)],
       );
       expect(await c.finishVisit(), isA<VisitSaved>());
+    });
+  });
+
+  group('A63 sets without ticks', () {
+    test('WO-024 WO-034 T-W4 Same as last time fills only empty rows that have '
+        'hints, after Repeat', () async {
+      final log = _Log();
+      await log.seed();
+      final past = today.plusDays(-3);
+      await log.h.apply([LogWorkoutSession(wid(10), sessionDraft(date: past))]);
+      final launch = NewLog(visitId: 'r1', date: past, repeatOf: wid(10));
+      final c = await log.open(launch);
+      var card = log.state(launch).exercises.single;
+      final hints = [for (final s in card.sets) s.hint];
+      expect(hints.every((h) => h != null), isTrue);
+      // The first row is typed by hand; it keeps its own numbers.
+      c.editSet(
+        card.id,
+        card.sets.first.id,
+        const SetInput(weight: '90', reps: '5'),
+      );
+      expect(c.fillFromLastTime(card.id), 2);
+      card = log.state(launch).exercises.single;
+      expect(card.sets.first.saved!.values, const SetValues(reps: 5, kg: 90));
+      expect(
+        [for (final s in card.sets.skip(1)) s.saved!.values],
+        [for (final h in hints.skip(1)) h],
+      );
+      expect(card.sets.every((s) => s.counts), isTrue);
+      // Nothing left to fill: no change.
+      expect(c.fillFromLastTime(card.id), 0);
+      await c.finishVisit();
+      final logged = (await log.sessions()).firstWhere(
+        (s) => s.ref.id != wid(10),
+      );
+      expect(logged.draft.exercises.single.sets, hasLength(3));
+    });
+
+    test('WO-020 WO-034 T-W4 Same as last time after a template start fills '
+        "the rows that have last time's numbers", () async {
+      final log = _Log();
+      await log.seed();
+      await seedPlan(log, const []);
+      // Last time: exercise 1 had one set of 8 × 70.
+      await log.h.apply([
+        LogWorkoutSession(
+          wid(10),
+          sessionDraft(date: today.plusDays(-2), sets: [lifted(30, 8, 70)]),
+        ),
+      ]);
+      final launch = NewLog(visitId: 't2', date: today, templateId: wid(70));
+      final c = await log.open(launch);
+      final card = log.state(launch).exercises.first;
+      expect(card.sets.first.hint, const SetValues(reps: 8, kg: 70));
+      expect(card.sets.every((s) => !s.counts), isTrue);
+      final filled = c.fillFromLastTime(card.id);
+      final rows = log.state(launch).exercises.first.sets;
+      expect(filled, rows.where((s) => s.counts).length);
+      expect(rows.first.saved!.values, const SetValues(reps: 8, kg: 70));
+      for (final row in rows) {
+        expect(row.counts, row.hint != null);
+      }
+    });
+
+    test('UX-030 W5 T-W5 remove then restore puts the set back at its index '
+        'with its numbers and saves', () async {
+      final log = _Log();
+      await log.seed();
+      await log.h.apply([LogWorkoutSession(wid(10), sessionDraft())]);
+      final before = await log.h.state();
+      final launch = EditLog(wid(10), visitId: 'e1');
+      final c = await log.open(launch);
+      final removed = c.removeSet(wid(20), wid(31))!;
+      expect(removed.$2, 1);
+      await log.fire(c);
+      expect(
+        [
+          for (final s
+              in (await log.sessions()).single.draft.exercises.single.sets)
+            s.id,
+        ],
+        [wid(30), wid(32)],
+      );
+      expect(
+        c.restoreSet(wid(20), removed.$1, removed.$2),
+        SetRestore.restored,
+      );
+      final rows = log.state(launch).exercises.single.sets;
+      expect([for (final s in rows) s.id], [wid(30), wid(31), wid(32)]);
+      expect(rows[1].saved, removed.$1.saved);
+      // Restoring twice adds nothing.
+      expect(c.restoreSet(wid(20), removed.$1, removed.$2), SetRestore.gone);
+      expect(log.state(launch).exercises.single.sets, hasLength(3));
+      await log.fire(c);
+      expect(
+        (await log.sessions()).single.draft.exercises.single.sets[1].values,
+        removed.$1.saved!.values,
+      );
+      // An unknown set removes nothing; the visit keeps one Undo.
+      expect(c.removeSet(wid(20), wid(99)), isNull);
+      final result = await c.finishVisit() as VisitSaved;
+      expect(await log.undo.undo(result.undoId!), UndoOutcome.undone);
+      expect(await log.h.state(), before);
+    });
+
+    test(
+      'UX-030 W5 A63 review remove, add a replacement at the limit, then '
+      'Undo: the restore is refused and the card keeps the most sets',
+      () async {
+        final log = _Log();
+        await log.seed();
+        await log.h.apply([LogWorkoutSession(wid(10), sessionDraft())]);
+        final launch = EditLog(wid(10), visitId: 'e1');
+        final c = await log.open(launch);
+        List<LogSetRow> rows() => log.state(launch).exercises.single.sets;
+        while (rows().length < maxSetsPerExercise) {
+          c.addSet(wid(20));
+        }
+        final removed = c.removeSet(wid(20), wid(31))!;
+        expect(rows(), hasLength(maxSetsPerExercise - 1));
+        c.addSet(wid(20));
+        expect(rows(), hasLength(maxSetsPerExercise));
+        expect(c.restoreSet(wid(20), removed.$1, removed.$2), SetRestore.full);
+        expect(rows(), hasLength(maxSetsPerExercise));
+        expect([for (final s in rows()) s.id], isNot(contains(wid(31))));
+        // Adding stops at the limit too, and the visit still saves.
+        c.addSet(wid(20));
+        expect(rows(), hasLength(maxSetsPerExercise));
+        await log.fire(c);
+        expect(
+          [
+            for (final s
+                in (await log.sessions()).single.draft.exercises.single.sets)
+              s.id,
+          ],
+          [wid(30), wid(32)],
+        );
+      },
+    );
+
+    test('WO-034 T-W1 stored data and the sync payload are unchanged: the '
+        'saved draft holds only sets with numbers', () async {
+      final log = _Log();
+      await log.seed();
+      final launch = _new();
+      final c = await log.open(launch);
+      await c.addExercises([wid(1)]);
+      final card = log.state(launch).exercises.single;
+      c
+        ..editSet(
+          card.id,
+          card.sets.single.id,
+          const SetInput(weight: '80', reps: '8'),
+        )
+        ..addSet(card.id);
+      final draft = log.state(launch).savedDraft!;
+      expect(draft.exercises.single.sets, hasLength(1));
+      expect(
+        draft.exercises.single.sets.single.values,
+        const SetValues(reps: 8, kg: 80),
+      );
     });
   });
 }

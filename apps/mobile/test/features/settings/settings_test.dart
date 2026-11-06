@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:drift/drift.dart'
+    show ApplyInterceptor, QueryExecutor, QueryInterceptor, driftRuntimeOptions;
+import 'package:drift/native.dart' show NativeDatabase;
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_domain/testing.dart';
 import 'package:fb_mobile/core/catalog/catalog.dart';
@@ -24,8 +27,33 @@ import '../../core/db/support/db_support.dart';
 import '../../helpers/test_phone.dart';
 import '../foods/presentation/support/sheet_support.dart';
 
+/// A storage failure (SQLite I/O): an [Exception], as drift's are.
+final class _DiskFault implements Exception {
+  const new();
+}
+
+/// Fails reads of the settings table while [failReads] (A63 PA6).
+final class _Faults extends QueryInterceptor {
+  bool failReads = false;
+
+  @override
+  Future<List<Map<String, Object?>>> runSelect(
+    QueryExecutor executor,
+    String statement,
+    List<Object?> args,
+  ) {
+    if (failReads && statement.contains('settings_kv')) {
+      throw const _DiskFault();
+    }
+    return super.runSelect(executor, statement, args);
+  }
+}
+
 final class Rig {
-  new({Future<void> Function()? beforePlan}) {
+  new({Future<void> Function()? beforePlan, QueryInterceptor? interceptor})
+    : db = interceptor == null
+          ? memoryDatabase()
+          : _interceptedDatabase(interceptor) {
     addTearDown(bus.close);
     applier = ChangeSetApplier(
       db: db,
@@ -43,7 +71,17 @@ final class Rig {
     addTearDown(stack.dispose);
     actions = SettingsActions(store: store, undoStack: stack);
   }
-  final AppDatabase db = memoryDatabase();
+  final AppDatabase db;
+
+  static AppDatabase _interceptedDatabase(QueryInterceptor interceptor) {
+    driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+    final db = AppDatabase(NativeDatabase.memory().interceptWith(interceptor));
+    addTearDown(
+      () => db.close().timeout(const Duration(seconds: 1), onTimeout: () {}),
+    );
+    return db;
+  }
+
   final bus = DomainEventBus();
   final clock = ManualClock(DateTime.utc(2026, 10, 22));
   late final ChangeSetApplier<AppDatabase> applier;
@@ -565,5 +603,131 @@ void main() {
     final info = await c.read(aboutInfoProvider.future);
     expect(info.version, '0.1.0');
     expect(info.activeCredits, isNull);
+  });
+
+  group('A63 D20 PA6 T-S3 storage failures are outcomes', () {
+    test('UX-052 a failing _write read, put or reset returns '
+        'SettingsFailed(storage); nothing escapes', () async {
+      final faults = _Faults();
+      var failPlan = false;
+      final s = Rig(
+        interceptor: faults,
+        beforePlan: () async {
+          if (failPlan) throw const _DiskFault();
+        },
+      );
+      Matcher storage() => isA<SettingsFailed>().having(
+        (f) => f.reason,
+        'reason',
+        SettingsFailure.storage,
+      );
+      faults.failReads = true;
+      expect(await s.actions.setTheme(ThemePreference.dark), storage());
+      faults.failReads = false;
+      failPlan = true;
+      expect(await s.actions.setTheme(ThemePreference.dark), storage());
+      failPlan = false;
+      expect(await s.actions.setCity('city:282615'), isA<SettingsDone>());
+      failPlan = true;
+      expect(await s.actions.clearCity(), storage());
+      failPlan = false;
+      expect(await s.store.read(AppSettings.cityId), 'city:282615');
+      expect(
+        await s.store.read(AppSettings.theme),
+        isNot(ThemePreference.dark),
+      );
+    });
+
+    test('UX-052 a failing prerequisite read (not fasting) returns '
+        'SettingsFailed(storage)', () async {
+      final faults = _Faults();
+      final s = Rig(interceptor: faults);
+      faults.failReads = true;
+      expect(
+        await s.actions.setNotFasting(LocalDate(2027, 2, 20), notFasting: true),
+        isA<SettingsFailed>().having(
+          (f) => f.reason,
+          'reason',
+          SettingsFailure.storage,
+        ),
+      );
+    });
+
+    test('UX-052 a write queued behind a failed write still runs and lands; '
+        'a refusal keeps its own mapping', () async {
+      final hold = Completer<void>();
+      final started = Completer<void>();
+      var calls = 0;
+      final s = Rig(
+        beforePlan: () async {
+          calls++;
+          if (calls == 1) {
+            started.complete();
+            await hold.future;
+            throw const _DiskFault();
+          }
+          if (calls == 3) {
+            throw const ChangeRejected(InvalidOp('refused'));
+          }
+        },
+      );
+      final first = s.actions.setTheme(ThemePreference.dark);
+      await started.future;
+      final second = s.actions.setTheme(ThemePreference.system);
+      hold.complete();
+      expect(
+        await first,
+        isA<SettingsFailed>().having(
+          (f) => f.reason,
+          'reason',
+          SettingsFailure.storage,
+        ),
+      );
+      expect(await second, isA<SettingsDone>());
+      expect(await s.store.read(AppSettings.theme), ThemePreference.system);
+      expect(
+        await s.actions.setTheme(ThemePreference.dark),
+        isA<SettingsFailed>().having(
+          (f) => f.reason,
+          'reason',
+          SettingsFailure.invalid,
+        ),
+      );
+    });
+  });
+
+  test('LC-030 LC-031 A63 D17 T-S7 two quick Ramadan edits (first day, then '
+      'last day, slow store) both land', () async {
+    final hold = Completer<void>();
+    final started = Completer<void>();
+    var once = false;
+    final s = Rig(
+      beforePlan: () async {
+        if (once) {
+          once = false;
+          started.complete();
+          await hold.future;
+        }
+      },
+    );
+    await s.store.put(
+      AppSettings.ramadanSeasons,
+      RamadanSettings([RamadanSeason(hijriYear: 1448, on: true)]),
+      origin: Origin.direct,
+    );
+    once = true;
+    final first = s.actions.updateRamadanSeason(
+      1448,
+      (season) => season.copyWith(startShift: 1),
+    );
+    await started.future;
+    final last = s.actions.updateRamadanSeason(
+      1448,
+      (season) => season.copyWith(endShift: -1),
+    );
+    hold.complete();
+    await Future.wait([first, last]);
+    final stored = (await s.store.read(AppSettings.ramadanSeasons))[1448]!;
+    expect((stored.on, stored.startShift, stored.endShift), (true, 1, -1));
   });
 }

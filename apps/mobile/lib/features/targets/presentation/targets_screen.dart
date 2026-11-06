@@ -245,8 +245,9 @@ class _WeekCardState extends ConsumerState<_WeekCard> {
               FbOption(value: true, label: l10n.targetsDifferentByDay),
             ],
             selected: different,
+            // Fixed by a rule: shown as it is, not as a choice (audit minor).
+            enabled: !forced,
             onSelected: (pick) {
-              if (forced) return;
               if (pick) {
                 setState(() => _pickedDifferent = true);
               } else if (view.differentByDay) {
@@ -473,9 +474,12 @@ class _DayTargetList extends StatelessWidget {
               final spoken = (date == view.today
                   ? l10n.targetsDayBarToday
                   : l10n.targetsDayBarLabel)(name, kcal);
+              // The merged node carries the row's tap, so TalkBack can open
+              // the day (audit major 1, TG-043).
               final row = Semantics(
                 label: changed ? l10n.targetsDayChanged(spoken) : spoken,
                 button: onTap != null,
+                onTap: onTap == null ? null : () => onTap!(date),
                 excludeSemantics: true,
                 child: FbListRow(
                   key: ValueKey('targets-day-${date.weekday.name}'),

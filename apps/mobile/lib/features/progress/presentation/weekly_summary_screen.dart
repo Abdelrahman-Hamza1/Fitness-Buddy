@@ -5,15 +5,16 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/adaptive/adaptive.dart';
 import 'package:fb_mobile/features/progress/application/weekly_summary_providers.dart';
 import 'package:fb_mobile/features/progress/presentation/progress_text.dart';
-import 'package:fb_mobile/features/progress/presentation/weekly_summary_card.dart';
+import 'package:fb_mobile/features/progress/presentation/week_summary_tiles.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Past weekly summaries (IN-001 "any past week", A39a D2): one week at a
 /// time with ‹ › between weeks, from the first week with data (workouts
-/// included) to this week. Opened from the Progress card's "Past weeks"
-/// and by the "weekly summary ready" notification (NT-004, NT-024), at
+/// included) to this week, as number tiles (A63 D3). Opened from the
+/// Progress calories header in week mode and by the "weekly summary ready"
+/// notification (NT-004, NT-024), at
 /// [start]'s week. The week shown is the route's: ‹ › go to the next
 /// week's location, so a link always shows its week, even to a screen
 /// already open (A40 review 4). Last week's and this week's summary carry
@@ -73,7 +74,7 @@ class WeeklySummaryScreen extends ConsumerWidget {
               ),
             ],
           ),
-          WeeklySummaryBlock(weekStart: shown, current: shown == current),
+          WeekSummaryTiles(weekStart: shown, current: shown == current),
           // This week's check-in reviews the weeks up to last week.
           if (!shown.isBefore(current.plusDays(-7))) const CheckInCard(),
         ],

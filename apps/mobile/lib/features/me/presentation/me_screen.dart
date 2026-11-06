@@ -53,7 +53,13 @@ class MeScreen extends ConsumerWidget {
               ),
               sliver: SliverList.list(
                 children: [
-                  const AccountCard(),
+                  // Who's signed in (M1 A, AC-005): a tap opens Account
+                  // & data.
+                  AccountCard(
+                    onTap: () => ref
+                        .read(appNavigatorProvider)
+                        .push(const MeAccountRoute()),
+                  ),
                   const SizedBox(height: FbSpace.s3),
                   const _TargetsSummary(),
                   MeGroup(

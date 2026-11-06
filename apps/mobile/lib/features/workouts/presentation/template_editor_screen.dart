@@ -1,6 +1,8 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/ui/discard_changes_sheet.dart';
 import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/workouts/application/exercise_library.dart';
@@ -51,6 +53,9 @@ class _EditorState extends ConsumerState<TemplateEditorScreen> {
   final TextEditingController _name = TextEditingController();
   bool _filled = false;
 
+  /// Set once a save or delete is leaving: Back no longer asks.
+  bool _leaving = false;
+
   @override
   void dispose() {
     _name.dispose();
@@ -78,8 +83,10 @@ class _EditorState extends ConsumerState<TemplateEditorScreen> {
               : l10n.workoutTemplateUpdated,
           undoEntryId: undoId,
         );
+        setState(() => _leaving = true);
         Navigator.of(context).pop(id);
       case WorkoutActionUnchanged():
+        setState(() => _leaving = true);
         Navigator.of(context).pop(widget.id);
       case WorkoutActionFailed(:final reason):
         showFbSnackBar(context, _failure(l10n, reason));
@@ -102,8 +109,10 @@ class _EditorState extends ConsumerState<TemplateEditorScreen> {
           message: l10n.workoutTemplateDeleted,
           undoEntryId: undoId,
         );
+        setState(() => _leaving = true);
         Navigator.of(context).pop();
       case WorkoutActionUnchanged():
+        setState(() => _leaving = true);
         Navigator.of(context).pop();
       case WorkoutActionFailed(:final reason):
         showFbSnackBar(context, _failure(l10n, reason));
@@ -121,77 +130,84 @@ class _EditorState extends ConsumerState<TemplateEditorScreen> {
       _filled = true;
       _name.text = form.name;
     }
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.id == null
-              ? l10n.workoutTemplateNewTitle
-              : l10n.workoutTemplateEditTitle,
+    return UnsavedEditsGuard(
+      // Back with unsaved edits asks first (A63 D19, audit major 8).
+      dirty: !_leaving && _editor.hasUnsavedEdits(),
+      confirmDiscard: () =>
+          showDiscardChangesSheet(context, message: l10n.workoutDiscardMessage),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            widget.id == null
+                ? l10n.workoutTemplateNewTitle
+                : l10n.workoutTemplateEditTitle,
+          ),
         ),
-      ),
-      body: form == null
-          ? (async.hasError
-                ? LoadFailedView(
-                    message: l10n.workoutsLoadFailed,
-                    onRetry: () => ref.invalidate(templateEditorProvider(_key)),
-                  )
-                : const LoadingRows())
-          : ListView(
-              padding: const EdgeInsetsDirectional.all(FbSpace.s4),
-              children: [
-                FbTextField(
-                  key: const ValueKey('workout-template-name'),
-                  controller: _name,
-                  label: l10n.workoutTemplateName,
-                  hint: l10n.workoutTemplateNameHint,
-                  maxLength: 80,
-                  errorText: form.submitted && form.nameMissing
-                      ? l10n.workoutTemplateNameError
-                      : null,
-                  onChanged: _editor.setName,
-                ),
-                FbSectionHeader(title: l10n.workoutTemplateExercises),
-                for (final (i, line) in form.lines.indexed)
-                  _LineRow(
-                    key: ValueKey('workout-template-line-${line.id}'),
-                    name: l10n.exerciseName(library, line.exerciseId),
-                    line: line,
-                    first: i == 0,
-                    last: i == form.lines.length - 1,
-                    editor: _editor,
+        body: form == null
+            ? (async.hasError
+                  ? LoadFailedView(
+                      message: l10n.workoutsLoadFailed,
+                      onRetry: () =>
+                          ref.invalidate(templateEditorProvider(_key)),
+                    )
+                  : const LoadingRows())
+            : ListView(
+                padding: const EdgeInsetsDirectional.all(FbSpace.s4),
+                children: [
+                  FbTextField(
+                    key: const ValueKey('workout-template-name'),
+                    controller: _name,
+                    label: l10n.workoutTemplateName,
+                    hint: l10n.workoutTemplateNameHint,
+                    maxLength: 80,
+                    errorText: form.submitted && form.nameMissing
+                        ? l10n.workoutTemplateNameError
+                        : null,
+                    onChanged: _editor.setName,
                   ),
-                if (form.submitted && form.empty)
-                  Text(
-                    l10n.workoutTemplateEmptyError,
-                    style: FbType.bodySmall.copyWith(
-                      color: Theme.of(context).colorScheme.error,
+                  FbSectionHeader(title: l10n.workoutTemplateExercises),
+                  for (final (i, line) in form.lines.indexed)
+                    _LineRow(
+                      key: ValueKey('workout-template-line-${line.id}'),
+                      name: l10n.exerciseName(library, line.exerciseId),
+                      line: line,
+                      first: i == 0,
+                      last: i == form.lines.length - 1,
+                      editor: _editor,
                     ),
-                  ),
-                FbButton.text(
-                  key: const ValueKey('workout-template-add'),
-                  label: l10n.workoutLogAddExercises,
-                  icon: FbIcons.add,
-                  onPressed: _add,
-                ),
-                const SizedBox(height: FbSpace.s5),
-                FbButton.primary(
-                  key: const ValueKey('workout-template-save'),
-                  label: l10n.workoutCustomSave,
-                  expand: true,
-                  onPressed: form.saving ? null : _save,
-                ),
-                if (widget.id != null) ...[
-                  const SizedBox(height: FbSpace.s2),
+                  if (form.submitted && form.empty)
+                    Text(
+                      l10n.workoutTemplateEmptyError,
+                      style: FbType.bodySmall.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
                   FbButton.text(
-                    key: const ValueKey('workout-template-delete'),
-                    label: l10n.workoutTemplateDelete,
-                    icon: FbIcons.delete,
-                    expand: true,
-                    onPressed: form.saving ? null : _delete,
+                    key: const ValueKey('workout-template-add'),
+                    label: l10n.workoutLogAddExercises,
+                    icon: FbIcons.add,
+                    onPressed: _add,
                   ),
+                  const SizedBox(height: FbSpace.s5),
+                  FbButton.primary(
+                    key: const ValueKey('workout-template-save'),
+                    label: l10n.workoutCustomSave,
+                    expand: true,
+                    onPressed: form.saving ? null : _save,
+                  ),
+                  if (widget.id != null) ...[
+                    const SizedBox(height: FbSpace.s2),
+                    FbButton.text(
+                      key: const ValueKey('workout-template-delete'),
+                      label: l10n.workoutTemplateDelete,
+                      icon: FbIcons.delete,
+                      expand: true,
+                      onPressed: form.saving ? null : _delete,
+                    ),
+                  ],
                 ],
-              ],
-            ),
+              ),
+      ),
     );
   }
 }

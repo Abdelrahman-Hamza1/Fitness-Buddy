@@ -388,7 +388,10 @@ void main() {
     expect((await registry.read()).deletion, isNull);
     final flow = service.newFlow();
     expect(
-      await flow.verifyEmail(await flow.startEmail(canaryEmail), '123456'),
+      (await flow.verifyEmail(
+        await flow.startEmail(canaryEmail),
+        '123456',
+      )).outcome,
       isNot(AccountOutcome.mergeBlocked),
     );
     expect((await registry.read()).active.kind, ProfileKind.registered);

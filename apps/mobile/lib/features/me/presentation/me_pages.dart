@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/me/presentation/me_parts.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
@@ -23,22 +24,36 @@ class MeTargetsGoalScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final setup = ref.watch(setupStatusProvider).value;
+    final setupAsync = ref.watch(setupStatusProvider);
+    final setup = setupAsync.value;
     return MePage(
       title: l10n.meTargetsGoal,
       children: [
-        MeGroup(
-          children: [
-            if (setup == SetupStatus.notSetUp)
-              MeLink(title: l10n.meSetUpTargets, route: const SetupRoute()),
-            if (setup == SetupStatus.profileUnreadable)
-              MeLink(title: l10n.setupUpdateTitle, route: const SetupRoute()),
-            if (setup == SetupStatus.setUp) ...[
-              MeLink(title: l10n.meTargets, route: const TargetsRoute()),
-              MeLink(title: l10n.meProfileGoal, route: const ProfileRoute()),
+        // Never a blank page (audit major 6): rows while it loads, a retry
+        // when it failed.
+        if (setup == null && setupAsync.hasError)
+          LoadFailedView(
+            key: const ValueKey('me-targets-failed'),
+            message: l10n.meTargetsLoadFailed,
+            onRetry: () => ref
+              ..invalidate(targetsDataProvider)
+              ..invalidate(setupStatusProvider),
+          )
+        else if (setup == null)
+          const LoadingRows(count: 2)
+        else
+          MeGroup(
+            children: [
+              if (setup == SetupStatus.notSetUp)
+                MeLink(title: l10n.meSetUpTargets, route: const SetupRoute()),
+              if (setup == SetupStatus.profileUnreadable)
+                MeLink(title: l10n.setupUpdateTitle, route: const SetupRoute()),
+              if (setup == SetupStatus.setUp) ...[
+                MeLink(title: l10n.meTargets, route: const TargetsRoute()),
+                MeLink(title: l10n.meProfileGoal, route: const ProfileRoute()),
+              ],
             ],
-          ],
-        ),
+          ),
       ],
     );
   }
@@ -126,27 +141,43 @@ class MeWorkoutsScreen extends StatelessWidget {
   }
 }
 
-/// Me › Preferences: units, theme, week start, language and energy.
+/// Me › Preferences: units, theme, week start and food names, every row
+/// changeable (UX-048, S1 A); the facts that can't change are one quiet
+/// line under them (calories in kcal, the app in English).
 class MePreferencesScreen extends StatelessWidget {
   /// Creates the screen.
   const new({super.key});
 
   @override
-  Widget build(BuildContext context) => MePage(
-    title: context.l10n.mePreferences,
-    children: const [
-      MeGroup(
-        children: [
-          UnitsSettingRow(),
-          ThemeSettingRow(),
-          WeekStartSettingRow(),
-          LanguageSettingRow(),
-          FoodNamesSettingRow(),
-          EnergySettingRow(),
-        ],
-      ),
-    ],
-  );
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return MePage(
+      title: context.l10n.mePreferences,
+      children: [
+        const MeGroup(
+          children: [
+            UnitsSettingRow(),
+            ThemeSettingRow(),
+            WeekStartSettingRow(),
+            FoodNamesSettingRow(),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            FbSpace.s4,
+            FbSpace.s3,
+            FbSpace.s4,
+            0,
+          ),
+          child: Text(
+            context.l10n.prefsFixedFacts,
+            key: const ValueKey('prefs-fixed-facts'),
+            style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 /// Me › Account & data: the account card, sync and sign-out, export, and
@@ -168,7 +199,7 @@ class MeAccountScreen extends ConsumerWidget {
         const AccountCard(),
         if (rows) ...[
           const SizedBox(height: FbSpace.s3),
-          const MeGroup(children: [AccountRows()]),
+          const MeGroup(children: [AccountNameRow(), AccountRows()]),
         ],
         MeGroup(
           title: l10n.meSectionYourData,

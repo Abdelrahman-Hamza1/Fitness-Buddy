@@ -122,10 +122,9 @@ void main() {
     expect(await c.read(ramadanTargetsOfferProvider.future), isNull);
   });
 
-  testWidgets('TG-060 J9 the weekly-summary card: Maintain is stored with '
-      'Undo, Undo brings the offer back, Keep my goal is stored too', (
-    tester,
-  ) async {
+  testWidgets('TG-060 J9 UX-047 T-P2 the offer row: nothing is stored until '
+      'a tap in its sheet; Maintain is stored with Undo, Undo brings the '
+      'offer back, Keep my goal is stored too', (tester) async {
     final r = _Rig();
     await tester.runAsync(
       () => SettingsStore(db: r.db, applier: r.applier).put(
@@ -152,11 +151,24 @@ void main() {
     );
     await settle();
     final card = find.byKey(const ValueKey('ramadan-targets-offer'));
+    final review = find.byKey(const ValueKey('ramadan-offer-review'));
     expect(card, findsOneWidget);
+    expect(find.byKey(const ValueKey('ramadan-offer-row')), findsOneWidget);
 
-    await tester.tap(find.text('Maintain during Ramadan'));
+    // Opening and closing the sheet writes nothing.
+    await tester.tap(review);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('ramadan-offer-card')), findsOneWidget);
+    await tester.tapAt(const Offset(10, 10));
     await settle();
     var season = (await tester.runAsync<RamadanSeason?>(r.stored))!;
+    expect((season.maintain, season.targetsAnswered), (false, false));
+
+    await tester.tap(review);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Maintain during Ramadan'));
+    await settle();
+    season = (await tester.runAsync<RamadanSeason?>(r.stored))!;
     expect((season.maintain, season.targetsAnswered), (true, true));
     expect(card, findsNothing);
 
@@ -166,6 +178,8 @@ void main() {
     expect((season.maintain, season.targetsAnswered), (false, false));
     expect(card, findsOneWidget);
 
+    await tester.tap(review);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Keep my goal'));
     await settle();
     season = (await tester.runAsync<RamadanSeason?>(r.stored))!;

@@ -168,17 +168,25 @@ void main() {
     ))!;
     expect(weighIns.single.kg, 97.4);
 
-    // 4. A workout by the form: last time's sets accepted, then Done (the
-    // weigh-in's snackbar would cover Done).
+    // 4. A workout by the form: "Same as last time" fills last time's sets
+    // (they count without a tick, D-097), then Done (the weigh-in's
+    // snackbar would cover Done).
     tester
         .state<ScaffoldMessengerState>(find.byType(ScaffoldMessenger).first)
         .clearSnackBars();
     router.go(WorkoutLogRoute(exercises: [wid(1)]));
     await settle(tester);
-    for (final row in tester.widgetList<SetRow>(find.byType(SetRow)).toList()) {
-      await tester.tap(find.byKey(ValueKey('workout-set-done-${row.row.id}')));
-      await tester.pump();
-    }
+    expect(find.byType(SetRow), findsWidgets);
+    await tester.tap(
+      find.byWidgetPredicate(
+        (w) =>
+            w.key is ValueKey<String> &&
+            (w.key! as ValueKey<String>).value.startsWith(
+              'workout-same-as-last-',
+            ),
+      ),
+    );
+    await tester.pump();
     await tester.tap(find.byKey(const ValueKey('workout-log-done')));
     await settle(tester);
     final sessions = (await tester.runAsync(

@@ -211,3 +211,12 @@ Future<ExerciseLibrary> exerciseLibrary(Ref ref) async {
       ),
   ]);
 }
+
+/// What "Try again" on the exercise list refreshes (UX-052, A63 review):
+/// the pack's exercises and the custom ones beneath the library, so a
+/// failure cached in either source is read afresh, then the library.
+final List<ProviderOrFamily> exerciseLibraryRetryProviders = [
+  builtInExercisesProvider,
+  customExercisesProvider,
+  exerciseLibraryProvider,
+];

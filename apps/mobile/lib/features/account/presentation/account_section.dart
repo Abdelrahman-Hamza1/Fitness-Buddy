@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:fb_design_system/fb_design_system.dart';
+import 'package:fb_mobile/core/account/local_identity_store.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/features/account/application/local_identity.dart';
 import 'package:fb_mobile/features/account/application/sign_in_controller.dart';
 import 'package:fb_mobile/features/account/presentation/sign_out_sheet.dart';
 import 'package:fb_mobile/features/sync/sync.dart';
@@ -10,33 +12,62 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The account card at the top of Me and of Me › Account & data (A33,
-/// A51 D7): a guest sees "Data on this phone only, not backed up" and Sign
-/// in; an account sees its backup state (the sync line, A34). No email or
-/// name: the phone keeps none (A33). A card-shaped placeholder while the
-/// status loads (A57 A11), so Me doesn't jump when it arrives.
+/// A51 D7, M1 A, AC-005): who is signed in. An account shows a letter
+/// circle, its name (or email), the email under a name, and its state (the
+/// sync line, A34; expired; read-only); without a stored identity (signed
+/// in before A63) it says "Signed in". A guest sees "Guest", "Data on this
+/// phone only, not backed up" and Sign in. The name and email are this
+/// phone's only (TD-115). With [onTap] (on Me) the whole card opens
+/// Account & data. A card-shaped placeholder while the status loads (A57
+/// A11), and a failed read says so with Try again (A63 D11).
 class AccountCard extends ConsumerWidget {
   /// Creates the card.
-  const new({super.key});
+  const new({this.onTap, super.key});
+
+  /// Opens Account & data; `null` on that page itself.
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
-    final status = ref.watch(accountStatusProvider).value;
-    if (status == null) return const _AccountCardSkeleton();
+    final statusAsync = ref.watch(accountStatusProvider);
+    final status = statusAsync.value;
+    if (status == null) {
+      if (statusAsync.hasError) {
+        return FbInlineBanner(
+          key: const ValueKey('account-card-error'),
+          kind: FbInlineBannerKind.error,
+          message: l10n.accountLoadFailed,
+          actionLabel: l10n.foodTryAgain,
+          onAction: () => ref.invalidate(accountStatusProvider),
+        );
+      }
+      return const _AccountCardSkeleton();
+    }
+    final guest = status == AccountStatus.guest;
+    final who = guest ? null : ref.watch(meIdentityProvider).value?.identity;
+    final name = who?.name;
+    final email = who?.email;
     final signedIn = status == AccountStatus.signedIn;
-    final (title, detail) = switch (status) {
-      AccountStatus.guest => (l10n.meGuest, l10n.meGuestDetail),
-      AccountStatus.signedIn => (
-        l10n.accountSignedIn,
-        syncStatusText(l10n, ref.watch(syncViewProvider)),
+    final stateLine = switch (status) {
+      AccountStatus.guest => l10n.meGuestDetail,
+      AccountStatus.signedIn => syncStatusText(
+        l10n,
+        ref.watch(syncViewProvider),
       ),
-      AccountStatus.sessionExpired => (
-        l10n.accountSignedIn,
-        l10n.accountSessionExpired,
-      ),
-      AccountStatus.readOnlyCopy => (l10n.meReadOnly, l10n.accountReadOnly),
+      AccountStatus.sessionExpired => l10n.accountSessionExpired,
+      AccountStatus.readOnlyCopy => l10n.accountReadOnly,
     };
+    final title =
+        name ??
+        email ??
+        switch (status) {
+          AccountStatus.guest => l10n.meGuest,
+          AccountStatus.readOnlyCopy => l10n.meReadOnly,
+          _ => l10n.accountSignedIn,
+        };
+    final lines = [if (name != null && email != null) email, stateLine];
     final action = signedIn
         ? null
         : FbButton.secondary(
@@ -54,38 +85,57 @@ class AccountCard extends ConsumerWidget {
         children: [
           Text(
             title,
+            key: const ValueKey('account-card-title'),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: FbType.body.copyWith(
               color: scheme.onSurface,
               fontWeight: FontWeight.w600,
             ),
           ),
-          Text(
-            detail,
-            style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
-          ),
+          for (final line in lines)
+            Text(
+              line,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
+            ),
         ],
       ),
     );
-    final badge = ExcludeSemantics(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: signedIn ? scheme.primaryContainer : scheme.surfaceContainer,
-          shape: BoxShape.circle,
-        ),
-        child: SizedBox.square(
-          dimension: 44,
-          child: Icon(
-            signedIn ? FbIcons.backedUp : FbIcons.phoneOnly,
-            color: signedIn
-                ? scheme.onPrimaryContainer
-                : scheme.onSurfaceVariant,
-          ),
-        ),
-      ),
-    );
+    final letterSource = name ?? email;
+    final badge = letterSource != null
+        ? FbLetterAvatar(
+            key: const ValueKey('account-card-letter'),
+            source: letterSource,
+            size: 44,
+          )
+        : ExcludeSemantics(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: guest
+                    ? scheme.surfaceContainer
+                    : scheme.primaryContainer,
+                shape: BoxShape.circle,
+              ),
+              child: SizedBox.square(
+                dimension: 44,
+                child: Icon(
+                  guest ? FbIcons.me : FbIcons.backedUp,
+                  color: guest
+                      ? scheme.onSurfaceVariant
+                      : scheme.onPrimaryContainer,
+                ),
+              ),
+            ),
+          );
+    final chevron = onTap == null
+        ? null
+        : Icon(FbIcons.next, color: scheme.onSurfaceVariant);
     return FbCard(
       key: const ValueKey('account-card'),
       padding: const EdgeInsetsDirectional.all(FbSpace.s4),
+      onTap: onTap,
       child: large
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -96,6 +146,7 @@ class AccountCard extends ConsumerWidget {
                   children: [
                     badge,
                     Expanded(child: text),
+                    ?chevron,
                   ],
                 ),
                 ?action,
@@ -107,8 +158,101 @@ class AccountCard extends ConsumerWidget {
                 badge,
                 Expanded(child: text),
                 ?action,
+                ?chevron,
               ],
             ),
+    );
+  }
+}
+
+/// Me › Account & data's name row (M2, AC-005): the name shown on Me, for
+/// an account; a tap edits it in a sheet (clear = remove). Kept on this
+/// phone only (TD-115).
+class AccountNameRow extends ConsumerWidget {
+  /// Creates the row.
+  const new({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final current = ref.watch(meIdentityProvider).value;
+    if (current == null) return const SizedBox.shrink();
+    final name = current.identity.name;
+    return FbListRow(
+      key: const ValueKey('account-name'),
+      leading: const Icon(FbIcons.me),
+      title: l10n.accountName,
+      subtitle: name ?? l10n.accountNameAdd,
+      trailing: const Icon(FbIcons.next),
+      onTap: () => unawaited(editAccountName(context, ref, name)),
+    );
+  }
+}
+
+/// Edits the name shown on Me in a sheet (M2, AC-005), from [name]; also
+/// Today's one-time prompt after a sign-in that switched profiles.
+Future<void> editAccountName(
+  BuildContext context,
+  WidgetRef ref,
+  String? name,
+) async {
+  final l10n = context.l10n;
+  final saved = await showFbSheet<String>(
+    context,
+    title: l10n.accountName,
+    builder: (sheet) => _NameSheet(initial: name ?? ''),
+  );
+  if (saved == null) return;
+  final ok = await ref.read(meIdentityProvider.notifier).setName(saved);
+  if (!ok && context.mounted) {
+    showFbSnackBar(context, context.l10n.accountNameSaveFailed);
+  }
+}
+
+/// The name field and Save; pops with the typed text.
+class _NameSheet extends StatefulWidget {
+  const new({required this.initial});
+
+  final String initial;
+
+  @override
+  State<_NameSheet> createState() => _NameSheetState();
+}
+
+class _NameSheetState extends State<_NameSheet> {
+  late final TextEditingController _name = TextEditingController(
+    text: widget.initial,
+  );
+
+  @override
+  void dispose() {
+    _name.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: FbSpace.s3,
+      children: [
+        FbTextField(
+          key: const ValueKey('account-name-field'),
+          controller: _name,
+          label: l10n.signInNameLabel,
+          supportingText: l10n.signInNameHint,
+          maxLength: LocalIdentity.nameMax,
+          keyboardType: TextInputType.name,
+          autofocus: true,
+        ),
+        FbButton.primary(
+          key: const ValueKey('account-name-save'),
+          label: l10n.accountNameSave,
+          expand: true,
+          onPressed: () => Navigator.of(context).pop(_name.text),
+        ),
+      ],
     );
   }
 }

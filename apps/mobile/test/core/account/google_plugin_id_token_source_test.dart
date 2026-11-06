@@ -12,6 +12,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 const _webId = '1234567890-webclient.apps.googleusercontent.com';
 const _token = 'canary-a50-id-token';
+const _email = 'canary-a63-google@example.invalid';
+const _name = 'CANARY-A63-name';
 const _canary = 'CANARY-A50-plugin-description';
 
 /// Records every plugin call the adapter makes.
@@ -34,10 +36,12 @@ final class _FakeDriver implements GoogleSignInDriver {
   }
 
   @override
-  Future<String?> authenticate() async {
+  Future<GoogleCredential?> authenticate() async {
     authentications++;
     if (authError case final error?) await Future<void>.error(error);
-    return token;
+    final value = token;
+    if (value == null) return null;
+    return GoogleCredential(idToken: value, email: _email, displayName: _name);
   }
 
   @override
@@ -71,12 +75,20 @@ void main() {
   setUp(() => driver = _FakeDriver());
 
   test(
-    'AC-001 google adapter returns the ID token for the web client id',
+    'AC-001 AC-005 AC-041 T-M4 google adapter returns the ID token for the '
+    'web client id, with the email and name, and never prints them',
     () async {
       final google = source();
       expect(google.isAvailable, isTrue);
 
-      expect(await google.idToken(), _token);
+      final credential = (await google.credential())!;
+      expect(credential.idToken, _token);
+      // A63 D10: the email and name come with it, and its text has none.
+      expect(credential.email, _email);
+      expect(credential.displayName, _name);
+      expect(credential.toString(), isNot(contains(_email)));
+      expect(credential.toString(), isNot(contains(_name)));
+      expect(credential.toString(), isNot(contains(_token)));
       expect(driver.inits, 1);
       expect(driver.authentications, 1);
     },
@@ -116,15 +128,15 @@ void main() {
     expect(driver.inits, 0, reason: 'construction does nothing (rule 3)');
 
     driver.initGate = Completer<void>();
-    final first = google.idToken();
-    final second = google.idToken();
+    final first = google.credential();
+    final second = google.credential();
     // Sign-out while initialization is pending never touches the plugin.
     await google.signOut();
     expect(driver.signOuts, 0);
     driver.initGate!.complete();
-    expect(await first, _token);
-    expect(await second, _token);
-    expect(await google.idToken(), _token);
+    expect((await first)?.idToken, _token);
+    expect((await second)?.idToken, _token);
+    expect((await google.credential())?.idToken, _token);
     expect(driver.inits, 1);
 
     for (final (error, kind) in <(Object, GoogleIdTokenFailure)>[
@@ -141,8 +153,8 @@ void main() {
     ]) {
       driver = _FakeDriver()..initError = error;
       final failing = source();
-      await expectLater(failing.idToken(), _failure(kind));
-      await expectLater(failing.idToken(), _failure(kind));
+      await expectLater(failing.credential(), _failure(kind));
+      await expectLater(failing.credential(), _failure(kind));
       expect(driver.inits, 1, reason: 'a failed initialization is kept');
       expect(driver.authentications, 0);
       await failing.signOut();
@@ -152,7 +164,7 @@ void main() {
 
   test('AC-001 google adapter maps a cancel to null', () async {
     driver.authError = _plugin(GoogleSignInExceptionCode.canceled);
-    expect(await source().idToken(), isNull);
+    expect(await source().credential(), isNull);
   });
 
   test('AC-001 google adapter maps plugin errors', () async {
@@ -170,7 +182,7 @@ void main() {
       if (code == GoogleSignInExceptionCode.canceled) continue;
       driver.authError = _plugin(code);
       await expectLater(
-        source().idToken(),
+        source().credential(),
         _failure(expected[code] ?? GoogleIdTokenFailure.failed),
         reason: code.name,
       );
@@ -184,13 +196,13 @@ void main() {
       (StateError(_canary), GoogleIdTokenFailure.failed),
     ]) {
       driver.authError = error;
-      await expectLater(source().idToken(), _failure(kind));
+      await expectLater(source().credential(), _failure(kind));
     }
     driver.authError = null;
     for (final token in [null, '']) {
       driver.token = token;
       await expectLater(
-        source().idToken(),
+        source().credential(),
         _failure(GoogleIdTokenFailure.misconfigured),
       );
     }
@@ -202,7 +214,7 @@ void main() {
     expect(driver.signOuts, 0);
 
     final google = source(signOutTimeout: const Duration(milliseconds: 50));
-    await google.idToken();
+    await google.credential();
     await google.signOut();
     expect(driver.signOuts, 1);
 
@@ -227,7 +239,7 @@ void main() {
       driver.authError = error;
       Object? caught;
       try {
-        await source().idToken();
+        await source().credential();
       } on Object catch (e) {
         caught = e;
       }

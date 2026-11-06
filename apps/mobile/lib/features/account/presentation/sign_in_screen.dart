@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/core/account/account_service.dart';
+import 'package:fb_mobile/core/account/local_identity_store.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/ui/step_transition.dart';
@@ -31,6 +32,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
   final _email = TextEditingController();
   final _code = TextEditingController();
+  final _name = TextEditingController();
   Timer? _ticker;
 
   /// What the last started action was, to word the busy button (A57 A79).
@@ -53,6 +55,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     _ticker?.cancel();
     _email.dispose();
     _code.dispose();
+    _name.dispose();
     super.dispose();
   }
 
@@ -259,10 +262,29 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               SignInStep.done => [
                 _Header(title: l10n.signInDone),
                 const SizedBox(height: FbSpace.s5),
+                // M2 (A63 D10): after an email sign-in, once; skippable,
+                // editable later in Account & data. Kept on this phone.
+                if (state.askName) ...[
+                  FbTextField(
+                    key: const ValueKey('sign-in-name'),
+                    controller: _name,
+                    label: l10n.signInNameLabel,
+                    supportingText: l10n.signInNameHint,
+                    maxLength: LocalIdentity.nameMax,
+                    keyboardType: TextInputType.name,
+                    textInputAction: TextInputAction.done,
+                  ),
+                  const SizedBox(height: FbSpace.s3),
+                ],
                 FbButton.primary(
+                  key: const ValueKey('sign-in-done'),
                   label: l10n.signInDoneButton,
                   expand: true,
-                  onPressed: ref.read(appNavigatorProvider).pop,
+                  onPressed: () async {
+                    if (state.askName) await controller.saveName(_name.text);
+                    if (!mounted) return;
+                    ref.read(appNavigatorProvider).pop();
+                  },
                 ),
               ],
             },

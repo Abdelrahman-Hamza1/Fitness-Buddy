@@ -398,3 +398,14 @@ Future<WeeklyWorkoutSummary> weeklyWorkoutSummary(
     prCountOf: prs.countOf,
   );
 }
+
+/// What a "Try again" on a weekly workout read refreshes (UX-052, A63
+/// review): the sessions and plan streams, the PRs and the library beneath
+/// them, then the weekly summaries (the family as a whole).
+final List<ProviderOrFamily> workoutWeekRetryProviders = [
+  allWorkoutSessionsProvider,
+  workoutPlanProvider,
+  workoutPrsProvider,
+  ...exerciseLibraryRetryProviders,
+  weeklyWorkoutSummaryProvider,
+];

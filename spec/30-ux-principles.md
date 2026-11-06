@@ -1,6 +1,6 @@
 # 30 — UX Principles
 
-_Status: **Draft v1** · 2026-10-10, amended 2026-11-05 · Main decisions: D-035, D-039, D-043, D-060, D-079, D-095._
+_Status: **Draft v1** · 2026-10-10, amended 2026-11-06 · Main decisions: D-035, D-039, D-043, D-060, D-079, D-095, D-097._
 
 The product principles (PR-1 to PR-12 in `00-vision-and-scope.md`) apply everywhere. This file turns them into concrete interface rules.
 
@@ -18,7 +18,7 @@ The product principles (PR-1 to PR-12 in `00-vision-and-scope.md`) apply everywh
 
 ## 2. Navigation
 
-- **UX-010** `[R1]` Four tabs: **Today** (home), **Progress**, **Workouts**, **Me** (account status, a targets summary, then grouped subpages: targets & goal, food & meals, workouts, Ramadan, preferences, notifications, account & data, help; "Buddy remembers" when it exists; D-088).
+- **UX-010** `[R1]` Four tabs: **Today** (home), **Progress**, **Workouts**, **Me** (who's signed in, AC-005; a targets summary, then grouped subpages: targets & goal, food & meals, workouts, Ramadan, preferences, notifications, account & data, help; "Buddy remembers" when it exists; D-088).
 - **UX-011** `[R1]` The input bar lives on Today and Workouts. Typing opens Buddy's chat as a **bottom sheet**, so the screen behind stays visible and its numbers update live when a proposal is confirmed.
 - **UX-012** `[R1]` The chat sheet can be pulled up to full height to see history, or swiped down to dismiss. Pending proposals survive dismissal (AI-045).
 - **UX-013** `[R1]` Nothing important is more than **2 taps** from Today.
@@ -46,6 +46,8 @@ The product principles (PR-1 to PR-12 in `00-vision-and-scope.md`) apply everywh
 - **UX-044** `[R1]` Source badges and estimate markers (FD-010, AI-032) are small and consistent, and readable without a legend once learned. A legend is available on tap.
 - **UX-045** `[R1]` **Nothing moves while you type, validate or wait** (D-095): fields reserve one supporting line shared by hint and error, number columns have a fixed width, skeletons are shaped like the result, and incomplete amounts show dashes instead of hiding a line.
 - **UX-046** `[R1]` **One motion vocabulary** (D-095): 200 ms for local changes, 300 ms for structural ones, one easing; zero when the phone's "Remove animations" is on; no motion on keystrokes, validation or search reorders.
+- **UX-047** `[R1]` **Visual first** (D-097): no card is only sentences; it leads with a number, bar, dots or picture. Notices are one-line rows with an icon and one action; longer explanations open on tap.
+- **UX-048** `[R1]` A row that shows a value or › always opens something; facts that can't change are one quiet line (D-097).
 
 ## 6. States
 

@@ -8,6 +8,7 @@ _Status: **Draft v1** · 2026-10-10 · Main decisions: D-007, D-008, D-018, D-02
 - **AC-002** `[R1]` **Guest mode**: the app is fully usable without an account. Data stays on the device. A gentle, dismissible prompt suggests signing in to keep data safe: after the first week, and before risky actions such as account-only features. At most once a week.
 - **AC-003** `[R1]` Signing up from guest mode carries all existing data into the account.
 - **AC-004** `[R1]` Signing out asks whether to keep or remove the local copy on that device.
+- **AC-005** `[R1]` Me shows who's signed in: a letter circle, name, email and sync status; guests see "Guest". Name and email come from Google or the email used; after an email sign-in the app asks once for a name (skippable, editable). Kept only on this phone: not synced, not sent to the server or Buddy (AC-041), not logged (D-097).
 
 ## 2. Sync (D-008)
 

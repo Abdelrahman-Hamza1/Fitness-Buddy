@@ -52,4 +52,28 @@ void main() {
     expect((season.maintain, season.targetsAnswered), (true, true));
     await unmountApp(tester, container);
   });
+
+  testWidgets('UX-052 A63 audit minor a failed city read says so with Try '
+      'again, not "no city"', (tester) async {
+    var fail = true;
+    final container = await pumpAt(
+      tester,
+      overrides: [
+        selectedCityProvider.overrideWith((ref) async {
+          if (fail) throw StateError('catalog');
+          return null;
+        }),
+      ],
+    );
+    await openMe(tester);
+    await tester.tap(find.byKey(const ValueKey('settings-ramadan')));
+    await tester.pumpAndSettle();
+    final retry = find.byKey(const ValueKey('ramadan-city-retry'));
+    expect(retry, findsOneWidget);
+    fail = false;
+    await tester.tap(retry);
+    await tester.pumpAndSettle();
+    expect(retry, findsNothing);
+    await unmountApp(tester, container);
+  });
 }

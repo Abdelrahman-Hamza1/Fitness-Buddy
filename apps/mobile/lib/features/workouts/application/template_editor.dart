@@ -103,6 +103,12 @@ final class TemplateEditorState {
   /// Whether there's no line.
   bool get empty => lines.isEmpty;
 
+  /// What the user can edit, as one comparable value (A63 D19).
+  String get contentKey => [
+    name.trim(),
+    for (final l in lines) '${l.exerciseId}:${l.sets}x${l.reps}',
+  ].join('|');
+
   /// The draft to save, or `null` when the form isn't valid.
   WorkoutTemplateDraft? get draft {
     if (nameMissing || empty) return null;
@@ -148,8 +154,24 @@ const int defaultTemplateSets = 3;
 /// actions with undo.
 @riverpod
 class TemplateEditor extends _$TemplateEditor {
+  /// What the editor opened with.
+  String? _opened;
+
+  /// Whether the form differs from what it opened with (A63 D19): Back
+  /// asks before discarding.
+  bool hasUnsavedEdits() => switch (state.value) {
+    final s? => s.contentKey != _opened,
+    null => false,
+  };
+
   @override
   Future<TemplateEditorState> build(TemplateEditorKey key) async {
+    final opened = await _load(key);
+    _opened = opened.contentKey;
+    return opened;
+  }
+
+  Future<TemplateEditorState> _load(TemplateEditorKey key) async {
     final ids = ref.read(idGeneratorProvider);
     if (key.templateId case final id?) {
       // A one-off read: the editor keeps its own edits from here on.

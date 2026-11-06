@@ -98,6 +98,16 @@ final class CustomExerciseFormState {
   /// Whether the main muscle is missing.
   bool get primaryMissing => primary == null;
 
+  /// What the user can edit, as one comparable value (A63 D19).
+  String get contentKey => [
+    name.trim(),
+    aliases.trim(),
+    type.name,
+    equipment.name,
+    primary?.name ?? '',
+    for (final m in secondaries) m.name,
+  ].join('|');
+
   /// The draft to save, or `null` while something is missing or invalid.
   CustomExerciseDraft? get draft {
     if (nameMissing || primaryMissing || tooManyAliases || aliasTooLong) {
@@ -148,8 +158,24 @@ final class CustomExerciseFormState {
 /// actions with undo (through [WorkoutActions]).
 @riverpod
 class CustomExerciseForm extends _$CustomExerciseForm {
+  /// What the form opened with.
+  String? _opened;
+
+  /// Whether the form differs from what it opened with (A63 D19): Back
+  /// asks before discarding.
+  bool hasUnsavedEdits() => switch (state.value) {
+    final s? => s.contentKey != _opened,
+    null => false,
+  };
+
   @override
   Future<CustomExerciseFormState> build(CustomExerciseKey key) async {
+    final opened = await _load(key);
+    _opened = opened.contentKey;
+    return opened;
+  }
+
+  Future<CustomExerciseFormState> _load(CustomExerciseKey key) async {
     final id = key.id;
     if (id == null) {
       return CustomExerciseFormState(
@@ -236,11 +262,17 @@ class CustomExerciseForm extends _$CustomExerciseForm {
     _set(form.copyWith(submitted: true, saving: true));
     final actions = ref.read(workoutActionsProvider);
     final stored = form.stored;
-    final outcome = stored == null
-        ? await actions.createExercise(draft)
-        : await actions.updateExercise(stored, draft);
-    if (ref.mounted) _set(_form.copyWith(saving: false));
-    return outcome;
+    // A storage failure is an outcome, never a stuck form (audit major 2):
+    // Save comes back and every input stays as typed.
+    try {
+      return stored == null
+          ? await actions.createExercise(draft)
+          : await actions.updateExercise(stored, draft);
+    } on Exception {
+      return const WorkoutActionFailed(WorkoutActionFailure.storage);
+    } finally {
+      if (ref.mounted) _set(_form.copyWith(saving: false));
+    }
   }
 
   /// Deletes the exercise (only while unused, D15).
@@ -248,11 +280,13 @@ class CustomExerciseForm extends _$CustomExerciseForm {
     final stored = _form.stored;
     if (stored == null || _form.inUse || _form.saving) return null;
     _set(_form.copyWith(saving: true));
-    final outcome = await ref
-        .read(workoutActionsProvider)
-        .deleteExercise(stored);
-    if (ref.mounted) _set(_form.copyWith(saving: false));
-    return outcome;
+    try {
+      return await ref.read(workoutActionsProvider).deleteExercise(stored);
+    } on Exception {
+      return const WorkoutActionFailed(WorkoutActionFailure.storage);
+    } finally {
+      if (ref.mounted) _set(_form.copyWith(saving: false));
+    }
   }
 }
 

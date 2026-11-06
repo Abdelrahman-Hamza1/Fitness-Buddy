@@ -41,8 +41,9 @@ Widget _app(Widget card, List<Override> overrides) => ProviderScope(
 );
 
 void main() {
-  testWidgets('TG-034 TG-035 the check-in card shows before → after, and '
-      'Adjust stays within ±150 kcal of the current target', (tester) async {
+  testWidgets('TG-034 TG-035 UX-047 T-P2 the check-in is one row; Review '
+      'opens the card with before → after, and Adjust stays within ±150 kcal '
+      'of the current target', (tester) async {
     await tester.pumpWidget(
       _app(const CheckInCard(), [
         appliedCheckInCardProvider.overrideWith((ref) async => null),
@@ -57,7 +58,12 @@ void main() {
       ]),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Weekly check-in'), findsOneWidget);
+    // One row on Progress; the proposal itself waits behind Review.
+    expect(find.byKey(const ValueKey('check-in-row')), findsOneWidget);
+    expect(find.byKey(const ValueKey('check-in-lower')), findsNothing);
+    await tester.tap(find.byKey(const ValueKey('check-in-review')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('check-in-$_id')), findsOneWidget);
     expect(find.text('2,600 → 2,460 kcal a day'), findsOneWidget);
     expect(find.text('Keep current'), findsOneWidget);
     expect(find.text('Use 2,460 kcal'), findsOneWidget);
@@ -76,7 +82,8 @@ void main() {
     expect(find.text('2,600 → 2,750 kcal a day'), findsOneWidget);
   });
 
-  testWidgets('TG-031 the expenditure card says what is still needed', (
+  testWidgets('TG-031 UX-047 T-X2 Expenditure before enough data shows the '
+      'two numbers to go and How this works opens the explanation', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -96,21 +103,21 @@ void main() {
       ]),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Expenditure'), findsOneWidget);
+    final toGo = find.byKey(const ValueKey('expenditure-to-go'));
+    expect(toGo, findsOneWidget);
     expect(
-      find.text('2 more weigh-ins until your targets can adapt'),
-      findsOneWidget,
+      find.descendant(of: toGo, matching: find.byType(DecoratedBox)),
+      findsNWidgets(2),
     );
-    expect(
-      find.text('Log 5 more days until your targets can adapt'),
-      findsOneWidget,
-    );
-    expect(find.text('Apply weekly changes automatically'), findsOneWidget);
+    expect(find.byKey(const ValueKey('adaptive-automatic')), findsOneWidget);
+    expect(find.byKey(const ValueKey('expenditure-intro')), findsNothing);
+    await tester.tap(find.byKey(const ValueKey('expenditure-how')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('expenditure-intro')), findsOneWidget);
   });
 
-  testWidgets('DY-004 the incomplete-day card asks, it never marks', (
-    tester,
-  ) async {
+  testWidgets('DY-004 UX-047 T-P2 the incomplete day is one row; Review asks, '
+      'it never marks', (tester) async {
     await tester.pumpWidget(
       _app(const IncompleteDayCard(), [
         incompleteDaySuggestionProvider.overrideWith(
@@ -124,6 +131,14 @@ void main() {
       ]),
     );
     await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('incomplete-day-row')), findsOneWidget);
+    final card = find.byKey(
+      ValueKey('incomplete-day-${LocalDate(2026, 11, 5)}'),
+    );
+    expect(card, findsNothing);
+    await tester.tap(find.byKey(const ValueKey('incomplete-day-review')));
+    await tester.pumpAndSettle();
+    expect(card, findsOneWidget);
     expect(find.text('Was this a full day?'), findsOneWidget);
     expect(find.textContaining('600 kcal logged in 1 meal'), findsOneWidget);
     expect(find.text('It was complete'), findsOneWidget);
@@ -184,14 +199,19 @@ void main() {
     );
     await tester.pumpAndSettle();
     final failed = find.byKey(const ValueKey('check-in-load-failed'));
+    final applied = find.byKey(const ValueKey('check-in-applied-row'));
     expect(failed, findsOneWidget);
-    expect(find.byKey(const ValueKey('check-in-change-back')), findsOneWidget);
+    expect(applied, findsOneWidget);
     fail = false;
     await tester.tap(
       find.descendant(of: failed, matching: find.byType(TextButton)),
     );
     await tester.pumpAndSettle();
     expect(failed, findsNothing);
+    expect(applied, findsOneWidget);
+    // Change back is one tap away, in the row's sheet.
+    await tester.tap(find.byKey(const ValueKey('check-in-applied-review')));
+    await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('check-in-change-back')), findsOneWidget);
   });
 }

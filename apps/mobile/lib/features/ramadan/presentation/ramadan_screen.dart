@@ -62,15 +62,18 @@ class _Season extends ConsumerWidget {
 
   final RamadanStatus status;
 
+  /// Writes one field of the season ([change] of the stored season, A63
+  /// D17), so quick edits of different fields all land.
   Future<void> _save(
     BuildContext context,
     WidgetRef ref,
-    RamadanSeason season,
+    int hijriYear,
+    RamadanSeason Function(RamadanSeason current) change,
   ) async {
     final host = Navigator.of(context, rootNavigator: true).context;
     final outcome = await ref
         .read(settingsActionsProvider)
-        .setRamadanSeason(season);
+        .updateRamadanSeason(hijriYear, change);
     if (!host.mounted) return;
     reportSettingsOutcome(host, outcome, () => host.l10n.ramadanSaved);
   }
@@ -107,9 +110,10 @@ class _Season extends ConsumerWidget {
     await _save(
       context,
       ref,
+      season.hijriYear,
       start
-          ? season.copyWith(startShift: picked)
-          : season.copyWith(endShift: picked),
+          ? (s) => s.copyWith(startShift: picked)
+          : (s) => s.copyWith(endShift: picked),
     );
   }
 
@@ -136,7 +140,8 @@ class _Season extends ConsumerWidget {
     await _save(
       context,
       ref,
-      season.copyWith(maintain: picked, targetsAnswered: true),
+      season.hijriYear,
+      (s) => s.copyWith(maintain: picked, targetsAnswered: true),
     );
   }
 
@@ -159,8 +164,9 @@ class _Season extends ConsumerWidget {
             ramadanDateText(context, period.end),
           ),
           value: on,
-          onChanged: (value) =>
-              unawaited(_save(context, ref, season.copyWith(on: value))),
+          onChanged: (value) => unawaited(
+            _save(context, ref, season.hijriYear, (s) => s.copyWith(on: value)),
+          ),
         ),
         // The season's rows grow in and out under the switch (A57 A14).
         FbReveal(
@@ -253,7 +259,10 @@ class _PrayerTimes extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final city = ref.watch(selectedCityProvider).value;
+    final cityAsync = ref.watch(selectedCityProvider);
+    final city = cityAsync.value;
+    // A failed read is not "no city" (audit minor): say so, with Try again.
+    final cityFailed = cityAsync.hasError && !cityAsync.hasValue;
     final method =
         ref.watch(prayerMethodProvider).value ??
         AppSettings.prayerMethod.defaultValue;
@@ -267,8 +276,20 @@ class _PrayerTimes extends ConsumerWidget {
         FbListRow(
           key: const ValueKey('ramadan-city'),
           title: l10n.settingsCity,
-          subtitle: city == null ? l10n.ramadanNoCity : cityLabel(l10n, city),
-          trailing: const Icon(FbIcons.next),
+          subtitle: city != null
+              ? cityLabel(l10n, city)
+              : cityFailed
+              ? l10n.ramadanCityLoadFailed
+              : cityAsync.isLoading
+              ? null
+              : l10n.ramadanNoCity,
+          trailing: cityFailed
+              ? FbButton.text(
+                  key: const ValueKey('ramadan-city-retry'),
+                  label: l10n.foodTryAgain,
+                  onPressed: () => ref.invalidate(selectedCityProvider),
+                )
+              : const Icon(FbIcons.next),
           onTap: () => navigator.push(const CityPickerRoute()),
         ),
         // Today's times with a chosen city (A57 A14): a row-shaped

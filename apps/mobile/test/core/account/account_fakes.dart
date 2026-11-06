@@ -266,13 +266,24 @@ final class FakeIdentity implements IdentityClient {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+/// The Google account's email in the fakes: a canary that must never reach
+/// a log, a server body or a toString (AC-041, A63 D12).
+const canaryGoogleEmail = 'canary-google-a63@example.invalid';
+
+/// The Google account's name in the fakes (a canary as well).
+const canaryGoogleName = 'Canary Googler';
+
 final class FakeGoogle implements GoogleIdTokenSource {
   new({this.available = true});
 
   final bool available;
   String? token = canaryToken;
 
-  /// Thrown by [idToken] instead of returning [token] (A50 D7).
+  /// The Google account's email and name the fake returns (A63 D10).
+  String email = canaryGoogleEmail;
+  String? displayName = canaryGoogleName;
+
+  /// Thrown by [credential] instead of returning [token] (A50 D7).
   GoogleIdTokenException? failure;
 
   /// Thrown by [signOut] (A50 D8: sign-out must still complete).
@@ -283,9 +294,15 @@ final class FakeGoogle implements GoogleIdTokenSource {
   bool get isAvailable => available;
 
   @override
-  Future<String?> idToken() async {
+  Future<GoogleCredential?> credential() async {
     if (failure case final failure?) throw failure;
-    return token;
+    final value = token;
+    if (value == null) return null;
+    return GoogleCredential(
+      idToken: value,
+      email: email,
+      displayName: displayName,
+    );
   }
 
   @override

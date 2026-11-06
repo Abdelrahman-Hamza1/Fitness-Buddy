@@ -4,6 +4,7 @@ import 'package:fb_mobile/core/account/account_service.dart';
 import 'package:fb_mobile/core/account/account_transitions.dart';
 import 'package:fb_mobile/core/account/google_id_token_source.dart';
 import 'package:fb_mobile/core/account/google_plugin_id_token_source.dart';
+import 'package:fb_mobile/core/account/local_identity_store.dart';
 import 'package:fb_mobile/core/account/open_profile_host.dart';
 import 'package:fb_mobile/core/account/profile_generation.dart';
 import 'package:fb_mobile/core/account/profile_registry.dart';
@@ -56,10 +57,12 @@ AccountTransitions accountTransitions(Ref ref) => AccountTransitions(
     fallbackRoot: () => DatabaseLocation.appSupport('local'),
     activeKey: () async =>
         (await ref.read(profileRegistryProvider).read()).activeKey,
-    // A28a review fix 1: a deleted profile's pending scans go with it.
-    onDeleted: (key) {
+    // A28a review fix 1: a deleted profile's pending scans go with it,
+    // and who was signed in on it (A63 PA3). A failure fails the deletion
+    // step, so the journal retries both.
+    onDeleted: (key) async {
       final config = ref.read(appConfigProvider);
-      return ref
+      await ref
           .read(sharedPreferencesProvider)
           .remove(
             PreferenceKeys.pendingScansFor(
@@ -67,6 +70,7 @@ AccountTransitions accountTransitions(Ref ref) => AccountTransitions(
               key,
             ),
           );
+      await ref.read(localIdentityStoreProvider).remove(key);
     },
   ),
   newTag: ref.watch(idGeneratorProvider).next,
@@ -110,7 +114,59 @@ AccountService accountService(Ref ref) => AccountService(
   revoke: ref.watch(abandonedSessionRevokerProvider),
   account: ref.watch(fbApiProvider).account,
   removedNote: ref.watch(accountRemovedNoteStoreProvider),
+  onSignedIn: keepSignedIn(ref),
 );
+
+/// The service's `onSignedIn`: stores who signed in for the committed
+/// profile, then records the sign-in in [RecentSignIn] (A63 review). The
+/// store and the record are taken from [ref] now, so the hand-off never
+/// depends on the screen or a ref a profile switch disposed.
+Future<void> Function(SignedInIdentity who, {required bool askName})
+keepSignedIn(Ref ref) {
+  final store = ref.watch(localIdentityStoreProvider);
+  final recent = ref.watch(recentSignInProvider.notifier);
+  return (who, {required askName}) async {
+    try {
+      await store.save(
+        who.profileKey,
+        LocalIdentity(name: who.displayName, email: who.email),
+      );
+    } finally {
+      recent.record(who.profileKey, askName: askName);
+    }
+  };
+}
+
+/// The last sign-in on this run (A63 review): the profile it committed to
+/// and whether that profile's name is still to be asked (an email sign-in,
+/// M2). Memory only and kept alive, so it outlives the sign-in screen and
+/// the profile switch; a change tells Me to read the stored identity again.
+@Riverpod(keepAlive: true)
+class RecentSignIn extends _$RecentSignIn {
+  @override
+  ({String profileKey, bool askName})? build() => null;
+
+  /// A sign-in committed to [profileKey], its identity stored.
+  void record(String profileKey, {required bool askName}) =>
+      state = (profileKey: profileKey, askName: askName);
+
+  /// The name was asked (answered, skipped or set elsewhere): never again.
+  void nameAsked() {
+    final current = state;
+    if (current == null || !current.askName) return;
+    state = (profileKey: current.profileKey, askName: false);
+  }
+}
+
+/// Who is signed in, per local profile, on this phone only (AC-005, TD-115).
+@Riverpod(keepAlive: true)
+LocalIdentityStore localIdentityStore(Ref ref) {
+  final config = ref.watch(appConfigProvider);
+  return LocalIdentityStore(
+    ref.watch(sharedPreferencesProvider),
+    namespace: '${config.flavor.name}|${config.apiBaseUrl}',
+  );
+}
 
 /// The one-time "account deleted" note's device store (#241).
 @Riverpod(keepAlive: true)
