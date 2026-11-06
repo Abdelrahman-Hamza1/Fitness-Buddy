@@ -288,6 +288,56 @@ void main() {
     rig.stack.dispose();
   });
 
+  testWidgets('A65 m8 UX-052 a dirty estimate asks before Back or a tap '
+      'outside closes it: Keep editing keeps it, Discard writes nothing; a '
+      'Save closes without asking', (tester) async {
+    final rig = SheetRig(catalogChoice(pita));
+    final entry = await _pumpEstimateTile(tester, rig);
+    Finder protein() => find.descendant(
+      of: find.byKey(const ValueKey('estimate-protein')),
+      matching: find.byType(EditableText),
+    );
+    Future<void> openEdit() async {
+      await _openPopup(tester, entry);
+      await tester.tap(find.byKey(const ValueKey('estimate-popup-edit')));
+      await tester.pumpAndSettle();
+    }
+
+    final submit = find.byKey(const ValueKey('estimate-submit'));
+    await openEdit();
+    await tester.enterText(protein(), '45');
+    await tester.pumpAndSettle();
+
+    // Back asks; Keep editing keeps the typed value.
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text(_l10n.sheetDiscardMessage), findsOneWidget);
+    await tester.tap(find.text(_l10n.personalFoodDiscardKeep));
+    await tester.pumpAndSettle();
+    expect(submit, findsOneWidget);
+    expect(_fieldText(tester, 'estimate-protein'), '45');
+
+    // A tap outside (the barrier) asks too; Discard closes, nothing written.
+    await tester.tapAt(const Offset(180, 4));
+    await tester.pumpAndSettle();
+    expect(find.text(_l10n.sheetDiscardMessage), findsOneWidget);
+    await tester.tap(find.text(_l10n.personalFoodDiscardConfirm));
+    await tester.pumpAndSettle();
+    expect(submit, findsNothing);
+    expect((await _entries(tester, rig)).single.snapshot.protein, 30);
+
+    // Dirty again, Save: closes without asking and writes.
+    await openEdit();
+    await tester.enterText(protein(), '50');
+    await tester.pumpAndSettle();
+    await tester.tap(submit);
+    await _settle(tester);
+    expect(find.text(_l10n.sheetDiscardMessage), findsNothing);
+    expect(submit, findsNothing);
+    expect((await _entries(tester, rig)).single.snapshot.protein, 50);
+    rig.stack.dispose();
+  });
+
   testWidgets('DY-005 popup Swap for foods: the estimate stays while '
       'searching and cancel writes nothing; picking a food replaces it in '
       'one change set and one Undo restores the estimate', (tester) async {

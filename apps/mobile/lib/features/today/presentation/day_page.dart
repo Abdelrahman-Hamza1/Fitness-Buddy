@@ -381,7 +381,7 @@ class _LoadFailed extends StatelessWidget {
         child: FbInlineBanner(
           kind: FbInlineBannerKind.error,
           message: l10n.diaryLoadFailed,
-          actionLabel: l10n.foodTryAgain,
+          actionLabel: l10n.commonTryAgain,
           onAction: onRetry,
         ),
       ),

@@ -111,8 +111,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     final verifying = busy && _action == _Action.code;
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(FbIcons.close),
+        leading: FbIconButton(
+          icon: FbIcons.close,
           tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           onPressed: _close,
         ),

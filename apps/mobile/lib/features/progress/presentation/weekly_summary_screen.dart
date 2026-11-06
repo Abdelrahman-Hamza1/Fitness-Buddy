@@ -30,7 +30,9 @@ class WeeklySummaryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final current = ref.watch(currentWeekStartProvider).value;
-    final weekStart = ref.watch(weekStartProvider).value ?? DayOfWeek.saturday;
+    final weekStart =
+        ref.watch(weekStartProvider).value ??
+        AppSettings.weekStart.defaultValue;
     final earliest = ref.watch(summaryEarliestDateProvider).value;
     Widget body;
     if (current == null) {

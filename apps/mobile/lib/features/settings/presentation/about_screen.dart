@@ -4,6 +4,7 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/core/catalog/barcode_coverage.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/ui/settings_page.dart';
 import 'package:fb_mobile/features/settings/application/about_info.dart';
 import 'package:fb_mobile/features/settings/application/test_report.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,12 +31,12 @@ class AboutScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.aboutTitle)),
       body: ListView(
-        padding: const EdgeInsetsDirectional.only(bottom: FbSpace.s6),
+        padding: SettingsPage.padding,
         children: [
           Padding(
             padding: const EdgeInsetsDirectional.symmetric(
               horizontal: FbSpace.s4,
-              vertical: FbSpace.s4,
+              vertical: FbSpace.s2,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,72 +81,121 @@ class AboutScreen extends ConsumerWidget {
               ],
             ),
           ),
-          FbSectionHeader(title: l10n.aboutCreditsTitle),
-          Padding(
-            padding: const EdgeInsetsDirectional.symmetric(
-              horizontal: FbSpace.s4,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: FbSpace.s2,
-              children: [
-                if (loading)
-                  const FbSkeleton.line(height: 40)
-                else if (value?.activeCredits case final credits?)
-                  for (final credit in credits)
+          // One settings-page layout (A65 M4): credits, the licences and
+          // privacy rows with the medical note, How it works (A65 m3,
+          // UX-010, UX-044) and this phone's barcode numbers (TD-064).
+          FbRowGroup(
+            title: l10n.aboutCreditsTitle,
+            children: [
+              Padding(
+                padding: const EdgeInsetsDirectional.all(FbSpace.s4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: FbSpace.s2,
+                  children: [
+                    if (loading)
+                      const FbSkeleton.line(height: 40)
+                    else if (value?.activeCredits case final credits?)
+                      for (final credit in credits)
+                        Text(
+                          l10n.aboutCredit(credit.name, credit.credit),
+                          style: FbType.body.copyWith(color: scheme.onSurface),
+                        )
+                    else
+                      Text(l10n.aboutCreditsUnavailable, style: muted),
+                    // Barcode lookups show Open Food Facts data (ODbL, `07`
+                    // §3).
                     Text(
-                      l10n.aboutCredit(credit.name, credit.credit),
+                      l10n.aboutCredit(l10n.aboutOffName, l10n.aboutOffCredit),
                       style: FbType.body.copyWith(color: scheme.onSurface),
-                    )
-                else
-                  Text(l10n.aboutCreditsUnavailable, style: muted),
-                // Barcode lookups show Open Food Facts data (ODbL, `07` §3).
-                Text(
-                  l10n.aboutCredit(l10n.aboutOffName, l10n.aboutOffCredit),
-                  style: FbType.body.copyWith(color: scheme.onSurface),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          settingsGroupGap,
+          FbRowGroup(
+            note: l10n.aboutNotMedical,
+            children: [
+              FbListRow(
+                leading: const Icon(FbIcons.info),
+                title: l10n.aboutLicenses,
+                trailing: const Icon(FbIcons.next),
+                onTap: () => unawaited(
+                  showFbLicensePage(
+                    context,
+                    applicationName: l10n.appTitle,
+                    applicationVersion: value == null
+                        ? ''
+                        : l10n.aboutVersion(value.version, value.build),
+                  ),
+                ),
+              ),
+              // A28a review fix 8: what the barcode scanner's ML Kit may
+              // send, now one tap away (A65 m3).
+              FbListRow(
+                key: const ValueKey('about-privacy'),
+                leading: const Icon(FbIcons.privacy),
+                title: l10n.aboutPrivacy,
+                subtitle: l10n.aboutPrivacyHint,
+                trailing: const Icon(FbIcons.next),
+                onTap: () => unawaited(
+                  showFbSheet<void>(
+                    context,
+                    title: l10n.aboutPrivacy,
+                    builder: (sheet) => Text(
+                      l10n.aboutMlKitDisclosure,
+                      key: const ValueKey('about-ml-kit'),
+                      style: FbType.body.copyWith(color: scheme.onSurface),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          FbRowGroup(
+            key: const ValueKey('about-how'),
+            title: l10n.aboutHowTitle,
+            children: [
+              FbListRow(
+                key: const ValueKey('about-how-sources'),
+                leading: const Icon(FbIcons.help),
+                title: l10n.aboutHowSources,
+                subtitle: l10n.aboutHowSourcesHint,
+                trailing: const Icon(FbIcons.next),
+                onTap: () => unawaited(showFbSourceLegend(context)),
+              ),
+              FbListRow(
+                leading: const Icon(FbIcons.check),
+                title: l10n.aboutHowUndo,
+                subtitle: l10n.aboutHowUndoHint,
+              ),
+              FbListRow(
+                leading: const Icon(FbIcons.info),
+                title: l10n.aboutHowEstimates,
+                subtitle: l10n.aboutHowEstimatesHint,
+              ),
+            ],
+          ),
+          // TD-064: the real barcode hit rate from daily use, on this phone.
+          if (ref.watch(barcodeCoverageCountsProvider).value case final c?) ...[
+            settingsGroupGap,
+            FbRowGroup(
+              children: [
+                FbListRow(
+                  key: const ValueKey('about-barcode-coverage'),
+                  leading: const Icon(FbIcons.barcode),
+                  title: l10n.aboutBarcodeTitle,
+                  subtitle: l10n.aboutBarcodeCoverage(
+                    c.found,
+                    c.incomplete,
+                    c.notFound,
+                  ),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: FbSpace.s2),
-          FbListRow(
-            title: l10n.aboutLicenses,
-            trailing: const Icon(FbIcons.next),
-            onTap: () => unawaited(
-              showFbLicensePage(
-                context,
-                applicationName: l10n.appTitle,
-                applicationVersion: value == null
-                    ? ''
-                    : l10n.aboutVersion(value.version, value.build),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsetsDirectional.all(FbSpace.s4),
-            child: Text(l10n.aboutNotMedical, style: muted),
-          ),
-          // A28a review fix 8: what the barcode scanner's ML Kit may send.
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(
-              FbSpace.s4,
-              0,
-              FbSpace.s4,
-              FbSpace.s4,
-            ),
-            child: Text(l10n.aboutMlKitDisclosure, style: muted),
-          ),
-          // TD-064: the real barcode hit rate from daily use, on this phone.
-          if (ref.watch(barcodeCoverageCountsProvider).value case final c?)
-            Padding(
-              padding: const EdgeInsetsDirectional.symmetric(
-                horizontal: FbSpace.s4,
-              ),
-              child: Text(
-                l10n.aboutBarcodeCoverage(c.found, c.incomplete, c.notFound),
-                style: muted,
-              ),
-            ),
+          ],
         ],
       ),
     );

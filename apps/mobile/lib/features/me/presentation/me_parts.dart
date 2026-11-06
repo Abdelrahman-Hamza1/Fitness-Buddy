@@ -1,42 +1,16 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/ui/settings_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// A group of Me rows (A51): an optional section header, then the rows in
-/// one card; nothing when there are no rows.
-class MeGroup extends StatelessWidget {
-  /// Creates the group.
-  const new({required this.children, this.title, super.key});
-
-  /// The header, or null.
-  final String? title;
-
-  /// The rows.
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    if (children.isEmpty) return const SizedBox.shrink();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (title case final title?) FbSectionHeader(title: title),
-        FbCard(
-          padding: EdgeInsetsDirectional.zero,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: children,
-          ),
-        ),
-      ],
-    );
-  }
-}
+/// A group of Me rows (A51): the shared settings group (A65 M4).
+typedef MeGroup = FbRowGroup;
 
 /// A Me row that opens [route]: an icon, the title, the current value or
 /// what is inside as its subtitle, and a chevron. [go] switches to the
-/// route's own tab instead of pushing it in Me.
+/// route's own tab instead of pushing it in Me; its row ends in an
+/// "other tab" arrow instead of the chevron (A65 m6).
 class MeLink extends ConsumerWidget {
   /// Creates the row.
   const new({
@@ -70,7 +44,7 @@ class MeLink extends ConsumerWidget {
     leading: icon == null
         ? null
         : Icon(icon, color: Theme.of(context).colorScheme.onSurfaceVariant),
-    trailing: const Icon(FbIcons.next),
+    trailing: Icon(go ? FbIcons.otherTab : FbIcons.next),
     onTap: () {
       final navigator = ref.read(appNavigatorProvider);
       go ? navigator.go(route) : navigator.push(route);
@@ -78,29 +52,5 @@ class MeLink extends ConsumerWidget {
   );
 }
 
-/// A Me subpage: an app bar with [title] and the [children] in one
-/// scrolling column.
-class MePage extends StatelessWidget {
-  /// Creates the page.
-  const new({required this.title, required this.children, super.key});
-
-  /// The page's title.
-  final String title;
-
-  /// Its groups.
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(title)),
-    body: ListView(
-      padding: const EdgeInsetsDirectional.fromSTEB(
-        FbSpace.s4,
-        FbSpace.s2,
-        FbSpace.s4,
-        FbSpace.s5,
-      ),
-      children: children,
-    ),
-  );
-}
+/// A Me subpage: the shared settings page layout (A65 M4).
+typedef MePage = SettingsPage;

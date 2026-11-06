@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/ui/load_states.dart';
@@ -13,15 +14,9 @@ import 'package:fb_mobile/features/workouts/application/workout_views.dart';
 import 'package:fb_mobile/features/workouts/presentation/exercise_muscle_map.dart';
 import 'package:fb_mobile/features/workouts/presentation/template_editor_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// A weekday's full name ("Monday") in [locale].
-String weekdayName(String locale, DayOfWeek day) =>
-    // 2024-01-01 was a Monday, so day N of that week is ISO weekday N.
-    DateFormat.EEEE(locale).format(DateTime(2024, 1, day.isoNumber));
-
-/// "Your plan" (WO-021, D-085, D-089): which workout each weekday trains,
+/// The weekly plan (WO-021, D-085, D-089): which workout each weekday trains,
 /// in the user's week order (a tap picks a workout or Rest, a direct action
 /// with undo); the workouts (templates) to edit or log; a new workout; and
 /// "Choose a different plan".
@@ -33,7 +28,9 @@ class WeeklyPlanScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toString();
-    final weekStart = ref.watch(weekStartProvider).value ?? DayOfWeek.saturday;
+    final weekStart =
+        ref.watch(weekStartProvider).value ??
+        AppSettings.weekStart.defaultValue;
     final planAsync = ref.watch(workoutPlanProvider);
     final templatesAsync = ref.watch(workoutTemplatesProvider);
     final library =
@@ -51,7 +48,7 @@ class WeeklyPlanScreen extends ConsumerWidget {
     };
     if (plan == null || templates == null) {
       return Scaffold(
-        appBar: AppBar(title: Text(l10n.workoutsYourPlan)),
+        appBar: AppBar(title: Text(l10n.workoutPlanTitle)),
         body: planAsync.hasError || templatesAsync.hasError
             ? LoadFailedView(
                 message: l10n.workoutsLoadFailed,
@@ -65,11 +62,11 @@ class WeeklyPlanScreen extends ConsumerWidget {
     String? nameOf(String? id) =>
         templates.where((t) => t.ref.id == id).firstOrNull?.draft.name;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.workoutsYourPlan)),
+      appBar: AppBar(title: Text(l10n.workoutPlanTitle)),
       body: ListView(
         padding: const EdgeInsetsDirectional.symmetric(vertical: FbSpace.s2),
         children: [
-          section(l10n.workoutPlanTitle),
+          section(l10n.workoutPlanDaysSection),
           Padding(
             padding: const EdgeInsetsDirectional.symmetric(
               horizontal: FbSpace.s4,
@@ -84,9 +81,9 @@ class WeeklyPlanScreen extends ConsumerWidget {
           for (final day in WeekCalendar(weekStart: weekStart).daysInOrder)
             FbListRow(
               key: ValueKey('workout-plan-day-${day.name}'),
-              title: weekdayName(locale, day),
+              title: weekdayNameIn(locale, day),
               subtitle: nameOf(plan[day]) ?? l10n.workoutPlanRest,
-              trailing: const Icon(FbIcons.expand),
+              trailing: const Icon(FbIcons.next),
               onTap: () => unawaited(
                 _choose(context, ref, day, plan[day], templates, locale),
               ),
@@ -104,7 +101,8 @@ class WeeklyPlanScreen extends ConsumerWidget {
               title: t.draft.name,
               subtitle: l10n.workoutsTemplateSummary(t.draft.items.length),
               onTap: () => unawaited(openTemplateEditor(context, id: t.ref.id)),
-              trailing: FbButton.text(
+              // Under the text at large sizes (A65 m18).
+              trailingAction: FbButton.text(
                 key: ValueKey('workouts-template-log-${t.ref.id}'),
                 label: l10n.workoutsTemplateLog,
                 onPressed: () =>
@@ -142,7 +140,7 @@ class WeeklyPlanScreen extends ConsumerWidget {
     // The empty string stands for Rest.
     final choice = await showFbSheet<String>(
       context,
-      title: weekdayName(locale, day),
+      title: weekdayNameIn(locale, day),
       builder: (sheet) => FbOptionList<String>(
         options: [
           FbOption(value: '', label: l10n.workoutPlanRest),

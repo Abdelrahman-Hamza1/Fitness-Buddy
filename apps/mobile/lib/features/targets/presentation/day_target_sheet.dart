@@ -2,14 +2,13 @@ import 'dart:async';
 
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/features/targets/application/target_form_input.dart';
 import 'package:fb_mobile/features/targets/application/targets_actions.dart';
 import 'package:fb_mobile/features/targets/application/targets_screens.dart';
 import 'package:fb_mobile/features/targets/presentation/below_limit_screen.dart';
 import 'package:fb_mobile/features/targets/presentation/targets_feedback.dart';
-import 'package:fb_mobile/features/targets/presentation/targets_screen.dart'
-    show weekdayName;
 import 'package:fb_mobile/features/targets/presentation/typed_number_field.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show NumberFormat;
@@ -108,7 +107,7 @@ class _DayTargetSheetState extends ConsumerState<DayTargetSheet> {
     String doneText(TargetsDone _) => host.l10n.targetsUpdated;
     final actions = ref.read(targetsActionsProvider);
     final view = _view;
-    final day = weekdayName(context.l10n, widget.weekday);
+    final day = weekdayNameIn(context.l10n.localeName, widget.weekday);
     Future<TargetsOutcome> run({bool acknowledged = false}) =>
         actions.setDayTarget(
           view.shown,
@@ -166,7 +165,7 @@ class _DayTargetSheetState extends ConsumerState<DayTargetSheet> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
-    final day = weekdayName(l10n, widget.weekday);
+    final day = weekdayNameIn(l10n.localeName, widget.weekday);
     final kcal = _kcal;
     final shown = kcal ?? DisplayRounding.kcal(_planned);
     final range = _range;

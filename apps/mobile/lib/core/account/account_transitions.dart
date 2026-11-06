@@ -117,8 +117,36 @@ final class AccountTransitions {
   bool deletionBoundTo(String profileKey) =>
       _deleting == profileKey && !suspended;
 
-  /// True while a live transition runs: writes are denied synchronously.
-  bool get suspended => _running > 0;
+  /// True while a live transition runs or writes are held for a removal
+  /// ([holdWrites]): writes are denied synchronously.
+  bool get suspended => _running > 0 || _writeHolds > 0;
+
+  int _writeHolds = 0;
+
+  /// Denies writes from now until the returned release runs (A65 review 1):
+  /// "Remove from this phone" holds them from before its final count check
+  /// until the removal ended, across the server logout that runs outside
+  /// the lock. Completes once the writes queued before it finished; the app
+  /// shows its busy state meanwhile. Releasing twice is a no-op.
+  Future<void Function()> holdWrites() async {
+    _writeHolds++;
+    _setBusy(1);
+    var released = false;
+    void release() {
+      if (released) return;
+      released = true;
+      _writeHolds--;
+      _setBusy(-1);
+    }
+
+    try {
+      await _host.quiesce();
+    } on Object {
+      release();
+      rethrow;
+    }
+    return release;
+  }
 
   Future<T> _exclusive<T>(Future<T> Function() body) {
     final result = _lock.then((_) => body());
@@ -260,34 +288,40 @@ final class AccountTransitions {
 
   /// Signs out (AC-004): keep marks the profile read-only; remove reserves
   /// it and opens a new, distinct, empty guest profile. The profile state is
-  /// persisted before the credentials are cleared.
-  Future<void> signOut({required bool keep}) => _live(() async {
-    if (_deleting != null) throw const DeletionRefused();
-    final snapshot = await _registry.read();
-    final active = snapshot.active;
-    final (guestKey, guestSeq) = snapshot.nextGuest();
-    // Journal the exact credential keys first, so recovery can delete them
-    // even after the pointer is gone (A33 review 2, item 1).
-    final forgetRefs = await _session.storedCredentialRefs();
-    final transition = AccountTransition(
-      kind: TransitionKind.signOut,
-      phase: TransitionPhase.preparing,
-      fromKey: active.profileKey,
-      target: keep
-          ? active.copyWith(readOnly: true)
-          : LocalProfile(profileKey: guestKey, kind: ProfileKind.guest),
-      discard: keep ? null : active.profileKey,
-      forgetRefs: forgetRefs,
-    );
-    await _registry.write(
-      snapshot.copyWith(
-        transition: transition,
-        guestSeq: keep ? null : guestSeq,
-        clearDeletion: !(snapshot.deletion?.confirmed ?? false),
-      ),
-    );
-    await _advance(transition, live: true);
-  });
+  /// persisted before the credentials are cleared. With [boundTo] it is
+  /// refused ([DeletionRefused]) unless that profile is still the active
+  /// one inside the lock (A65 review 1: the profile the user confirmed).
+  Future<void> signOut({required bool keep, String? boundTo}) =>
+      _live(() async {
+        if (_deleting != null) throw const DeletionRefused();
+        final snapshot = await _registry.read();
+        final active = snapshot.active;
+        if (boundTo != null && active.profileKey != boundTo) {
+          throw const DeletionRefused();
+        }
+        final (guestKey, guestSeq) = snapshot.nextGuest();
+        // Journal the exact credential keys first, so recovery can delete them
+        // even after the pointer is gone (A33 review 2, item 1).
+        final forgetRefs = await _session.storedCredentialRefs();
+        final transition = AccountTransition(
+          kind: TransitionKind.signOut,
+          phase: TransitionPhase.preparing,
+          fromKey: active.profileKey,
+          target: keep
+              ? active.copyWith(readOnly: true)
+              : LocalProfile(profileKey: guestKey, kind: ProfileKind.guest),
+          discard: keep ? null : active.profileKey,
+          forgetRefs: forgetRefs,
+        );
+        await _registry.write(
+          snapshot.copyWith(
+            transition: transition,
+            guestSeq: keep ? null : guestSeq,
+            clearDeletion: !(snapshot.deletion?.confirmed ?? false),
+          ),
+        );
+        await _advance(transition, live: true);
+      });
 
   // ---- account deletion (A35 fix 2) -------------------------------------
 

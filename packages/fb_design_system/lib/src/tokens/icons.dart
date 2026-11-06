@@ -188,4 +188,19 @@ abstract final class FbIcons {
 
   /// A workout (the Today line, A57).
   static const IconData workout = Icons.fitness_center_rounded;
+
+  /// Sync (Me › Account & data, A65 m11).
+  static const IconData sync = Icons.sync_rounded;
+
+  /// Sign out (Me › Account & data, A65 m11).
+  static const IconData signOut = Icons.logout_rounded;
+
+  /// Body measurements (a tape-measure ruler, A65 N3).
+  static const IconData measure = Icons.straighten_rounded;
+
+  /// Past entries (weigh-in history, A65 M3).
+  static const IconData history = Icons.history_rounded;
+
+  /// Opens in another tab (Me › Workouts rows, A65 m6).
+  static const IconData otherTab = Icons.north_east_rounded;
 }

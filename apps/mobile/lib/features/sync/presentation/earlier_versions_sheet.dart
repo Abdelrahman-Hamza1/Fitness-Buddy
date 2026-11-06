@@ -66,7 +66,7 @@ class EarlierVersionsBody extends ConsumerWidget {
                 message: error == EarlierVersionsFailure.offline
                     ? l10n.syncEarlierVersionsOffline
                     : l10n.syncEarlierVersionsFailed,
-                actionLabel: l10n.foodTryAgain,
+                actionLabel: l10n.commonTryAgain,
                 onAction: () =>
                     ref.invalidate(earlierVersionsProvider(entity, id)),
               ),

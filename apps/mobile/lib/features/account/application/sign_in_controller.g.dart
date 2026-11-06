@@ -199,7 +199,7 @@ final class AccountActionsProvider
   }
 }
 
-String _$accountActionsHash() => r'e6ca722d7d6358cb345d90ac5827b1bb59c37454';
+String _$accountActionsHash() => r'544f4e4bbc5cedc29c90f8cab87247659eeca2ea';
 
 /// Sign-out from Me › Account (AC-004). Kept alive: the section only reads
 /// it, and a sign-out outlives the frame that started it.

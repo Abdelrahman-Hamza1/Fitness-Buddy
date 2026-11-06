@@ -4,6 +4,8 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
+import 'package:fb_mobile/core/ui/settings_page.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/targets/application/targets_screens.dart';
 import 'package:fb_mobile/features/targets/presentation/goal_form.dart'
@@ -66,51 +68,58 @@ class _Body extends StatelessWidget {
       ),
     );
     final current = view.currentWeightKg;
+    // The same settings-page layout as the rest of Me (A65 M4): the
+    // profile rows in one card, the goal card, past goals in one card.
     return ListView(
-      padding: const EdgeInsetsDirectional.only(bottom: FbSpace.s6),
+      padding: SettingsPage.padding,
       children: [
-        FbSectionHeader(title: l10n.profileSectionAbout),
-        FbListRow(
-          title: l10n.profileSexLabel,
-          subtitle: sexLabel(l10n, profile.sex),
-          trailing: const Icon(FbIcons.next),
-          onTap: () => edit(ProfileField.sex),
-        ),
-        FbListRow(
-          title: l10n.profileBirthYearLabel,
-          subtitle: '${profile.birthYear}',
-          trailing: const Icon(FbIcons.next),
-          onTap: () => edit(ProfileField.birthYear),
-        ),
-        FbListRow(
-          title: l10n.profileHeightLabel,
-          subtitle: heightText(l10n, profile),
-          trailing: const Icon(FbIcons.next),
-          onTap: () => edit(ProfileField.height),
-        ),
-        FbListRow(
-          title: l10n.profileActivityLabel,
-          subtitle: activityLabel(l10n, profile.activity),
-          trailing: const Icon(FbIcons.next),
-          onTap: () => edit(ProfileField.activity),
-        ),
-        FbListRow(
-          title: l10n.profileCurrentWeight,
-          subtitle: current == null
-              ? l10n.profileCurrentWeightNone
-              : massText(l10n, current, view.units.bodyMass),
-          trailing: const Icon(FbIcons.next),
-          onTap: () => unawaited(showWeighInSheet(context)),
+        FbRowGroup(
+          title: l10n.profileSectionAbout,
+          children: [
+            FbListRow(
+              title: l10n.profileSexLabel,
+              subtitle: sexLabel(l10n, profile.sex),
+              trailing: const Icon(FbIcons.next),
+              onTap: () => edit(ProfileField.sex),
+            ),
+            FbListRow(
+              title: l10n.profileBirthYearLabel,
+              subtitle: '${profile.birthYear}',
+              trailing: const Icon(FbIcons.next),
+              onTap: () => edit(ProfileField.birthYear),
+            ),
+            FbListRow(
+              title: l10n.profileHeightLabel,
+              subtitle: heightText(l10n, profile),
+              trailing: const Icon(FbIcons.next),
+              onTap: () => edit(ProfileField.height),
+            ),
+            FbListRow(
+              title: l10n.profileActivityLabel,
+              subtitle: activityLabel(l10n, profile.activity),
+              trailing: const Icon(FbIcons.next),
+              onTap: () => edit(ProfileField.activity),
+            ),
+            FbListRow(
+              title: l10n.profileCurrentWeight,
+              subtitle: current == null
+                  ? l10n.profileCurrentWeightNone
+                  : massText(l10n, current, view.units.bodyMass),
+              trailing: const Icon(FbIcons.next),
+              onTap: () => unawaited(showWeighInSheet(context)),
+            ),
+          ],
         ),
         FbSectionHeader(title: l10n.goalSectionTitle),
-        Padding(
-          padding: const EdgeInsetsDirectional.symmetric(
-            horizontal: FbSpace.s4,
+        _GoalCard(view: view),
+        if (view.past.isEmpty) ...[
+          FbSectionHeader(title: l10n.goalPastTitle),
+          PhaseHistory(phases: view.past),
+        ] else
+          FbRowGroup(
+            title: l10n.goalPastTitle,
+            children: [PhaseHistory(phases: view.past)],
           ),
-          child: _GoalCard(view: view),
-        ),
-        FbSectionHeader(title: l10n.goalPastTitle),
-        PhaseHistory(phases: view.past),
       ],
     );
   }
@@ -230,7 +239,7 @@ class _NotSetUp extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return FbEmptyState(
-      icon: FbIcons.me,
+      icon: FbIcons.target,
       title: l10n.meSetUpTargets,
       message: l10n.targetsNotSetUpMessage,
       action: FbButton.primary(label: l10n.meSetUpTargets, onPressed: onSetUp),
@@ -244,18 +253,8 @@ class _LoadFailed extends StatelessWidget {
   final VoidCallback onRetry;
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return Padding(
-      padding: const EdgeInsetsDirectional.all(FbSpace.s4),
-      child: FbInlineBanner(
-        kind: FbInlineBannerKind.error,
-        message: l10n.targetsLoadFailed,
-        actionLabel: l10n.targetsTryAgain,
-        onAction: onRetry,
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      LoadFailedView(message: context.l10n.targetsLoadFailed, onRetry: onRetry);
 }
 
 class _Skeleton extends StatelessWidget {

@@ -139,7 +139,7 @@ abstract class AppLocalizations {
   /// Body of the update-required screen. Plain language, reassures that local data is kept.
   ///
   /// In en, this message translates to:
-  /// **'This version can\'t connect any more. Install the latest one to continue. Your data stays on your phone.'**
+  /// **'This version can\'t connect any more. Install the latest build, the same way you installed this one, to continue. Your data stays on your phone.'**
   String get updateRequiredBody;
 
   /// Button on the update-required screen: asks the server again whether this version is allowed.
@@ -2231,7 +2231,7 @@ abstract class AppLocalizations {
   /// First run welcome: third benefit's detail.
   ///
   /// In en, this message translates to:
-  /// **'Your data stays on your phone'**
+  /// **'Log after the gym, or follow a weekly plan'**
   String get welcomeWorkoutsBody;
 
   /// First run welcome: the main button, opens the questions.
@@ -3260,6 +3260,18 @@ abstract class AppLocalizations {
   /// **'Try again'**
   String get foodTryAgain;
 
+  /// Shared (A65 N6): the retry action of a failed load or action.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get commonTryAgain;
+
+  /// Shared (A65): closes a confirmation without doing anything.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get commonCancel;
+
   /// No description provided for @foodSheetClose.
   ///
   /// In en, this message translates to:
@@ -3852,6 +3864,18 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load your foods. Try again.'**
   String get yourFoodsLoadFailed;
 
+  /// Your foods: the search field over a long list (A65 m13).
+  ///
+  /// In en, this message translates to:
+  /// **'Search your foods'**
+  String get yourFoodsSearchHint;
+
+  /// Your foods: the search found nothing.
+  ///
+  /// In en, this message translates to:
+  /// **'No foods match'**
+  String get yourFoodsNoMatch;
+
   /// Your foods: shown above the list when stored foods can't be read (#100), so they aren't silently hidden.
   ///
   /// In en, this message translates to:
@@ -4236,6 +4260,12 @@ abstract class AppLocalizations {
   /// **'You\'ve changed this food but haven\'t saved it.'**
   String get personalFoodDiscardMessage;
 
+  /// Discard sheet over a half-filled form sheet (estimate, measurement, targets; A65 m8).
+  ///
+  /// In en, this message translates to:
+  /// **'What you typed here will be lost.'**
+  String get sheetDiscardMessage;
+
   /// Discard sheet: goes back to the form.
   ///
   /// In en, this message translates to:
@@ -4392,6 +4422,12 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load your saved meals. Try again.'**
   String get savedMealsLoadFailed;
 
+  /// Saved meals: the search field over a long list; finds the meal's and its foods' names (A65 m13).
+  ///
+  /// In en, this message translates to:
+  /// **'Search saved meals'**
+  String get savedMealsSearchHint;
+
   /// Saved meal screen: title while the meal's name is not loaded yet.
   ///
   /// In en, this message translates to:
@@ -4446,13 +4482,7 @@ abstract class AppLocalizations {
   /// **'Rename meal'**
   String get savedMealRenameTitle;
 
-  /// Saved meal screen: tooltip and screen-reader label of the overflow button.
-  ///
-  /// In en, this message translates to:
-  /// **'More for this meal'**
-  String get savedMealMenuTooltip;
-
-  /// Saved meal screen: overflow action that deletes the saved meal (with Undo).
+  /// Saved meal screen: the app-bar delete button's tooltip; deletes the saved meal with Undo (A65 m9).
   ///
   /// In en, this message translates to:
   /// **'Delete meal'**
@@ -4743,7 +4773,7 @@ abstract class AppLocalizations {
   /// Units choice: what imperial shows, under "Imperial".
   ///
   /// In en, this message translates to:
-  /// **'Ounces, fluid ounces, pounds'**
+  /// **'Ounces, fluid ounces, pounds · workouts stay in kg'**
   String get settingsUnitsImperialHint;
 
   /// Settings row and sheet title: the first day of the week.
@@ -5051,6 +5081,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fitness Buddy gives estimates for tracking, not medical advice.'**
   String get aboutNotMedical;
+
+  /// About: the row that opens what stays on this phone and what barcode scanning may send (A65 m3).
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get aboutPrivacy;
+
+  /// About: under the Privacy row.
+  ///
+  /// In en, this message translates to:
+  /// **'What barcode scanning may send'**
+  String get aboutPrivacyHint;
+
+  /// About: the help section header (A65 m3, UX-010).
+  ///
+  /// In en, this message translates to:
+  /// **'How it works'**
+  String get aboutHowTitle;
+
+  /// About › How it works: opens the source badge legend (UX-044).
+  ///
+  /// In en, this message translates to:
+  /// **'Where numbers come from'**
+  String get aboutHowSources;
+
+  /// About › How it works: under the badge legend row. The letters are the badge letters.
+  ///
+  /// In en, this message translates to:
+  /// **'What the small Y, D, R and ~ badges mean'**
+  String get aboutHowSourcesHint;
+
+  /// About › How it works: the Undo row title.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get aboutHowUndo;
+
+  /// About › How it works: how Undo works (UX-030).
+  ///
+  /// In en, this message translates to:
+  /// **'Every change shows Undo for a few seconds. Bigger deletes ask first.'**
+  String get aboutHowUndoHint;
+
+  /// About › How it works: the estimates row title.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimates'**
+  String get aboutHowEstimates;
+
+  /// About › How it works: what an estimate is (D-096).
+  ///
+  /// In en, this message translates to:
+  /// **'A number with ~ is a rough guess when the food isn\'t known. Replace it with the real one any time.'**
+  String get aboutHowEstimatesHint;
+
+  /// About: the row with this phone's barcode lookup counts (TD-064).
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode lookups'**
+  String get aboutBarcodeTitle;
 
   /// Export sheet: what the export contains and where it is made (AC-030).
   ///
@@ -5676,6 +5766,42 @@ abstract class AppLocalizations {
   /// **'Couldn\'t change the trend weigh-in. Try again.'**
   String get weightGraphUseForTrendFailed;
 
+  /// Weight graph: the weigh-ins list header (A65 M3).
+  ///
+  /// In en, this message translates to:
+  /// **'Entries'**
+  String get weightEntriesTitle;
+
+  /// Weight graph entry row: the day, when another weigh-in that day feeds the trend (WB-003).
+  ///
+  /// In en, this message translates to:
+  /// **'{day} · not used for the trend'**
+  String weightEntryNotUsed(String day);
+
+  /// Weight graph entry row: swipe action, deletes the weigh-in (undoable).
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get weightEntryDelete;
+
+  /// Weight graph entry row (A65): a swipe delete was refused because the weigh-in changed meanwhile (e.g. on another device); the row stays.
+  ///
+  /// In en, this message translates to:
+  /// **'This weigh-in changed since it was shown, so it wasn\'t deleted. Check it and try again.'**
+  String get weightEntryDeleteChanged;
+
+  /// Weight graph entry row (A65): a swipe delete failed for another reason; the row stays.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete the weigh-in. Try again.'**
+  String get weightEntryDeleteFailed;
+
+  /// Weight graph: shows older weigh-ins in the list.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more'**
+  String get weightEntriesShowMore;
+
   /// Weight history screen title (A15b D17): many old weigh-ins typed as rows.
   ///
   /// In en, this message translates to:
@@ -5861,6 +5987,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Measurements'**
   String get measurementsTitle;
+
+  /// Measurements: the row that shows the standard types without entries yet (A65 m14).
+  ///
+  /// In en, this message translates to:
+  /// **'More measurements'**
+  String get measurementsMore;
 
   /// Built-in measurement type.
   ///
@@ -6263,6 +6395,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile & goal'**
   String get meProfileGoal;
+
+  /// Me › Targets & goal: opens Progress, where the Expenditure card sets whether weekly check-in changes apply on their own (#289, TG-034).
+  ///
+  /// In en, this message translates to:
+  /// **'Adaptive mode'**
+  String get meAdaptiveMode;
 
   /// Me, You section: opens Targets (A13c D14).
   ///
@@ -6918,11 +7056,65 @@ abstract class AppLocalizations {
   /// **'Remove from this phone'**
   String get accountSignOutRemove;
 
-  /// Sign-out sheet option subtitle for remove.
+  /// Sign-out sheet: under 'Remove from this phone'. Honest (A65 M1): only synced data is on the server.
   ///
   /// In en, this message translates to:
-  /// **'Your account data stays safe on the server.'**
+  /// **'Synced data stays on the server. Changes that haven\'t synced are lost.'**
   String get accountSignOutRemoveDetail;
+
+  /// Sign-out confirmation sheet title (A65 M1): removing this phone's copy of the account data.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from this phone?'**
+  String get accountRemoveTitle;
+
+  /// Sign-out confirmation: nothing is waiting to sync.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything is synced. Your data stays on the server, and signing in again brings it back.'**
+  String get accountRemoveSynced;
+
+  /// Sign-out confirmation: a sync runs before removing.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing your latest changes first…'**
+  String get accountRemoveSyncing;
+
+  /// Sign-out confirmation: changes still waiting after the sync attempt (offline, signed out, or failed).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 change hasn\'t synced yet and will be lost if you remove this phone\'s copy.} other{{count} changes haven\'t synced yet and will be lost if you remove this phone\'s copy.}}'**
+  String accountRemoveUnsynced(int count);
+
+  /// Sign-out confirmation: the local sync counts couldn't be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t check for changes that haven\'t synced. Removing may lose changes made on this phone.'**
+  String get accountRemoveCheckFailed;
+
+  /// Sign-out confirmation: the destructive button when everything is synced.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get accountRemoveConfirm;
+
+  /// Sign-out confirmation: the destructive button when changes would be lost.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove anyway'**
+  String get accountRemoveAnyway;
+
+  /// Sign-out confirmation: try to sync the waiting changes again.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync now'**
+  String get accountRemoveSyncFirst;
+
+  /// Sign-out confirmation, shown again (A65): more unsynced changes appeared (or another profile opened) between the confirmation and the removal, so the removal stopped.
+  ///
+  /// In en, this message translates to:
+  /// **'Something changed after you confirmed, so nothing was removed. Check again.'**
+  String get accountRemoveChanged;
 
   /// Me › Account: leave the read-only copy and use a guest profile.
   ///
@@ -7720,6 +7912,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Weekly plan'**
   String get workoutPlanTitle;
+
+  /// Weekly plan screen: the section with each weekday's workout (A65 m5: the screen title already says Weekly plan).
+  ///
+  /// In en, this message translates to:
+  /// **'Days'**
+  String get workoutPlanDaysSection;
 
   /// Weekly plan screen intro (D-085: a plan is never required).
   ///
@@ -8921,10 +9119,10 @@ abstract class AppLocalizations {
   /// **'barcode product data © Open Food Facts contributors, under the Open Database License'**
   String get aboutOffCredit;
 
-  /// About: debug line with the on-device barcode coverage counter (TD-064).
+  /// About: the subtitle of the barcode lookups row, this phone's counts (TD-064).
   ///
   /// In en, this message translates to:
-  /// **'Barcode lookups on this phone: {found} found · {incomplete} incomplete · {notFound} not found'**
+  /// **'On this phone: {found} found · {incomplete} incomplete · {notFound} not found'**
   String aboutBarcodeCoverage(int found, int incomplete, int notFound);
 
   /// Barcode scanner: a waiting scan found later in Open Food Facts (ODbL credit included).
@@ -9046,6 +9244,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'They stay on this phone. Try again after an app update.'**
   String get syncParkedDetail;
+
+  /// Sync sheet: the banner for changes that couldn't sync, with Try again (A65 m16).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 change couldn\'t sync. It stays on this phone; try again after an app update.} other{{count} changes couldn\'t sync. They stay on this phone; try again after an app update.}}'**
+  String syncParkedBanner(int count);
 
   /// Sync sheet: when the last sync finished; time is a day and clock time.
   ///
@@ -9221,7 +9425,7 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get deleteCancel;
 
-  /// Delete screen: deletion running.
+  /// Delete screen: the delete button's label while the deletion runs (busy state).
   ///
   /// In en, this message translates to:
   /// **'Deleting…'**
@@ -9344,7 +9548,7 @@ abstract class AppLocalizations {
   /// Notification settings: the master switch (NT-020).
   ///
   /// In en, this message translates to:
-  /// **'Reminders'**
+  /// **'All reminders'**
   String get notifMaster;
 
   /// Notification settings: under the master switch. Reminders are local (TD-013).
@@ -9394,6 +9598,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reminders'**
   String get notifSectionTypes;
+
+  /// Me › Notifications: the header of the Ramadan reminders (A65 m4).
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan'**
+  String get notifSectionRamadan;
+
+  /// Me › Notifications: the note under the Ramadan reminders (A65 m4).
+  ///
+  /// In en, this message translates to:
+  /// **'These only come on Ramadan days, with Ramadan mode on and a city set in Me › Ramadan.'**
+  String get notifRamadanNote;
 
   /// Notification settings: a reminder's time row.
   ///
@@ -9662,7 +9878,7 @@ abstract class AppLocalizations {
   /// Undo snackbar after declining the proposal.
   ///
   /// In en, this message translates to:
-  /// **'You can switch Ramadan mode on in Settings'**
+  /// **'You can switch Ramadan mode on in Me › Ramadan'**
   String get ramadanNotNowDone;
 
   /// Title of Settings › Ramadan and its row.
@@ -10373,7 +10589,7 @@ abstract class AppLocalizations {
   /// **'See all'**
   String get workoutsSeeAll;
 
-  /// Workouts tab plan row and the plan page title (WO-021, D-089).
+  /// Workouts tab: the plan row (D-089 names it 'Your plan'); the screen it opens is 'Weekly plan' (WO-021, A65 m5).
   ///
   /// In en, this message translates to:
   /// **'Your plan'**
@@ -10954,6 +11170,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t save the name. Try again.'**
   String get accountNameSaveFailed;
+
+  /// Me › Account & data: snackbar after the name sheet saved (A65 m11).
+  ///
+  /// In en, this message translates to:
+  /// **'Name saved'**
+  String get accountNameSaved;
 
   /// Sign-in done step (email) and the name sheet: the optional name field (AC-005, D-097).
   ///

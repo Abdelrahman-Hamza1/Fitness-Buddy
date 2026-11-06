@@ -8,6 +8,7 @@ import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/diary/application/day_slots.dart';
 import 'package:fb_mobile/features/diary/application/saved_meal_actions.dart';
@@ -133,20 +134,6 @@ class _SavedMealScreenState extends ConsumerState<SavedMealScreen> {
     }
   }
 
-  Future<void> _openMenu(SavedMeal meal) async {
-    final l10n = context.l10n;
-    final delete = await showFbSheet<bool>(
-      context,
-      builder: (sheet) => FbListRow(
-        title: l10n.savedMealDeleteAction,
-        leading: const Icon(FbIcons.delete),
-        onTap: () => Navigator.of(sheet).pop(true),
-      ),
-    );
-    if (delete != true || !mounted) return;
-    await _delete(meal);
-  }
-
   Future<void> _delete(SavedMeal meal) async {
     final host = Navigator.of(context, rootNavigator: true).context;
     final navigator = ref.read(appNavigatorProvider);
@@ -190,10 +177,13 @@ class _SavedMealScreenState extends ConsumerState<SavedMealScreen> {
               onPressed: () =>
                   unawaited(showRenameSavedMealSheet(context, meal)),
             ),
+            // A direct action with Undo, not a one-row menu (A65 m9,
+            // backlog #106).
             FbIconButton(
-              icon: FbIcons.more,
-              tooltip: l10n.savedMealMenuTooltip,
-              onPressed: () => unawaited(_openMenu(meal)),
+              key: const ValueKey('saved-meal-delete'),
+              icon: FbIcons.delete,
+              tooltip: l10n.savedMealDeleteAction,
+              onPressed: () => unawaited(_delete(meal)),
             ),
           ],
         ],
@@ -212,20 +202,11 @@ class _SavedMealScreenState extends ConsumerState<SavedMealScreen> {
           child: FbInlineBanner(
             kind: FbInlineBannerKind.error,
             message: l10n.savedMealsLoadFailed,
-            actionLabel: l10n.foodTryAgain,
+            actionLabel: l10n.commonTryAgain,
             onAction: () => ref.invalidate(savedMealProvider(widget.id)),
           ),
         ),
-        _ => const Padding(
-          padding: EdgeInsetsDirectional.all(FbSpace.s4),
-          child: Column(
-            spacing: FbSpace.s3,
-            children: [
-              FbSkeleton.line(height: 56),
-              FbSkeleton.line(height: 56),
-            ],
-          ),
-        ),
+        _ => const LoadingRows(count: 2),
       },
     );
   }

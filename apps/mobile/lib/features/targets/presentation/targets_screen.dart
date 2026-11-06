@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/approx_text.dart';
+import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/targets/application/targets_actions.dart';
@@ -15,7 +16,7 @@ import 'package:fb_mobile/features/targets/presentation/targets_day_rollover.dar
 import 'package:fb_mobile/features/targets/presentation/targets_feedback.dart';
 import 'package:fb_mobile/features/targets/presentation/targets_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart' show DateFormat, NumberFormat;
+import 'package:intl/intl.dart' show NumberFormat;
 import 'package:material_ui/material_ui.dart';
 
 /// Me › Targets (D-090, A53 D6; TG-021/040–045/054, SF-012): a suggested
@@ -35,7 +36,7 @@ class TargetsScreen extends ConsumerWidget {
         body: switch (view) {
           AsyncData(value: final view?) => TargetsBody(view: view),
           AsyncData() => FbEmptyState(
-            icon: FbIcons.me,
+            icon: FbIcons.target,
             title: l10n.meSetUpTargets,
             message: l10n.targetsNotSetUpMessage,
             action: FbButton.primary(
@@ -220,7 +221,11 @@ class _WeekCardState extends ConsumerState<_WeekCard> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: FbSpace.s2,
         children: [
-          _Muted(l10n.targetsTodayOn(weekdayName(l10n, view.today.weekday))),
+          _Muted(
+            l10n.targetsTodayOn(
+              weekdayNameIn(l10n.localeName, view.today.weekday),
+            ),
+          ),
           Text(
             l10n.targetsTodayKcal(DisplayRounding.kcal(view.day.day.kcal)),
             key: const ValueKey('targets-today'),
@@ -401,13 +406,6 @@ class MoreOptionsSheet extends ConsumerWidget {
   }
 }
 
-/// [day]'s full name in the locale ("Friday").
-String weekdayName(AppLocalizations l10n, DayOfWeek day) {
-  // 2026-10-19 is a Monday; DayOfWeek runs Monday … Sunday.
-  final date = DateTime(2026, 10, 19 + day.index);
-  return DateFormat.EEEE(l10n.localeName).format(date);
-}
-
 class _Muted extends StatelessWidget {
   const new(this.text);
 
@@ -473,7 +471,7 @@ class _DayTargetList extends StatelessWidget {
               final kcal = DisplayRounding.kcal(view.plannedKcal(date.weekday));
               final factor = view.plan.dayFactors[date.weekday];
               final changed = factor != null && factor != 1;
-              final name = weekdayName(l10n, date.weekday);
+              final name = weekdayNameIn(l10n.localeName, date.weekday);
               final spoken = (date == view.today
                   ? l10n.targetsDayBarToday
                   : l10n.targetsDayBarLabel)(name, kcal);

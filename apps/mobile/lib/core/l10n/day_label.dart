@@ -42,9 +42,11 @@ String withDayClause(
 
 /// The full name of [day] in the app's language ("Saturday"); the settings
 /// show it for the first day of the week.
-String weekdayName(BuildContext context, DayOfWeek day) {
-  final locale = Localizations.localeOf(context).toString();
-  // 2026-10-19 is a Monday, so the ISO number counts days from there.
-  return DateFormat.EEEE(locale)
-      .format(DateTime(2026, 10, 19 + day.isoNumber - 1));
-}
+String weekdayName(BuildContext context, DayOfWeek day) =>
+    weekdayNameIn(Localizations.localeOf(context).toString(), day);
+
+/// The full name of [day] in [locale] ("Saturday"): the one weekday-name
+/// helper (A65 N9).
+String weekdayNameIn(String locale, DayOfWeek day) =>
+    // 2026-10-19 is a Monday, so the ISO number counts days from there.
+    DateFormat.EEEE(locale).format(DateTime(2026, 10, 19 + day.isoNumber - 1));

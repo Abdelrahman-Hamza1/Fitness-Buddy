@@ -20,23 +20,21 @@ Future<void> showMealMenu(
   final name = section.slot == null
       ? l10n.diarySlotOther
       : slotLabel(l10n, section.slot!);
-  final action = await showFbSheet<_MealAction>(
+  final action = await showFbActionSheet<_MealAction>(
     context,
     title: name,
-    builder: (sheet) => Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        FbListRow(
-          title: l10n.diaryMealCopyAction,
-          onTap: () => Navigator.of(sheet).pop(_MealAction.copy),
-        ),
-        FbListRow(
-          title: l10n.diaryMealSaveAction,
-          onTap: () => Navigator.of(sheet).pop(_MealAction.save),
-        ),
-      ],
-    ),
+    actions: [
+      FbAction(
+        value: _MealAction.copy,
+        label: l10n.diaryMealCopyAction,
+        icon: FbIcons.sameAsLast,
+      ),
+      FbAction(
+        value: _MealAction.save,
+        label: l10n.diaryMealSaveAction,
+        icon: FbIcons.meal,
+      ),
+    ],
   );
   if (action == null || !context.mounted) return;
   switch (action) {

@@ -31,9 +31,12 @@ extension WorkoutText on AppLocalizations {
     UntitledTitle() => workoutTitleUntitled,
   };
 
-  /// Exercise [id]'s name in [library], or "Removed exercise" (D15).
+  /// Exercise [id]'s name in [library], or "Removed exercise" (D15). While
+  /// the library is still loading ([ExerciseLibrary.empty], the screens'
+  /// stand-in) the name is blank, never a false "Removed exercise" (A65 m7).
   String exerciseName(ExerciseLibrary library, String id) =>
-      library.byId[id]?.name ?? workoutRemovedExercise;
+      library.byId[id]?.name ??
+      (identical(library, ExerciseLibrary.empty) ? '' : workoutRemovedExercise);
 
   /// One set's values for an exercise of [type], like "80 × 8" (D7).
   String setValues(ExerciseType? type, SetValues values) {

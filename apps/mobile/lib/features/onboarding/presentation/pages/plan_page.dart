@@ -170,7 +170,10 @@ class _MacroColumns extends StatelessWidget {
               color: color,
               borderRadius: FbRadius.pillAll,
             ),
-            child: const SizedBox(height: 6, width: double.infinity),
+            child: const SizedBox(
+              height: FbDensity.macroBarHeight,
+              width: double.infinity,
+            ),
           ),
           const SizedBox(height: FbSpace.s1),
           Text(

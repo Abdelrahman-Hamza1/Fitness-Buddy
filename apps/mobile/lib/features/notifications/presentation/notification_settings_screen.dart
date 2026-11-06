@@ -6,6 +6,7 @@ import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/l10n/time_format.dart';
 import 'package:fb_mobile/core/ui/load_states.dart';
+import 'package:fb_mobile/core/ui/settings_page.dart';
 import 'package:fb_mobile/features/notifications/application/notification_coordinator.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,85 +26,124 @@ class NotificationSettingsScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final stored = ref.watch(notificationPrefsProvider);
     final allowed = ref.watch(notificationsAllowedProvider).value ?? true;
-    final weekStart = ref.watch(weekStartProvider).value ?? DayOfWeek.saturday;
+    final weekStart =
+        ref.watch(weekStartProvider).value ??
+        AppSettings.weekStart.defaultValue;
     // Wait for the stored choices (A57 A13): defaults shown first and then
     // replaced would flip switches under the finger.
     if (!stored.hasValue && !stored.hasError) {
-      return Scaffold(
-        appBar: AppBar(title: Text(l10n.notifSettingsTitle)),
-        body: ListView(
-          key: const ValueKey('notif-loading'),
-          physics: const NeverScrollableScrollPhysics(),
-          children: [for (var i = 0; i < 6; i++) FbSkeleton.row()],
-        ),
+      return SettingsPage(
+        title: l10n.notifSettingsTitle,
+        children: const [LoadingRows(key: ValueKey('notif-loading'), count: 6)],
       );
     }
     // A failed read is not "the defaults" (audit major 4): say so with Try
     // again, and offer controls only for choices that were read.
     if (!stored.hasValue) {
-      return Scaffold(
-        appBar: AppBar(title: Text(l10n.notifSettingsTitle)),
-        body: LoadFailedView(
-          key: const ValueKey('notif-load-failed'),
-          message: l10n.notifLoadFailed,
-          onRetry: () => ref.invalidate(notificationPrefsProvider),
-        ),
+      return SettingsPage(
+        title: l10n.notifSettingsTitle,
+        children: [
+          LoadFailedView(
+            key: const ValueKey('notif-load-failed'),
+            message: l10n.notifLoadFailed,
+            onRetry: () => ref.invalidate(notificationPrefsProvider),
+          ),
+        ],
       );
     }
     final prefs = stored.requireValue;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.notifSettingsTitle)),
-      body: ListView(
-        padding: const EdgeInsetsDirectional.only(bottom: FbSpace.s5),
-        children: [
-          if (!allowed)
-            Padding(
-              padding: const EdgeInsetsDirectional.all(FbSpace.s4),
-              child: FbInlineBanner(
-                key: const ValueKey('notif-permission'),
-                kind: FbInlineBannerKind.info,
-                message: l10n.notifPermissionOff,
-                actionLabel: l10n.notifPermissionAllow,
-                onAction: () => unawaited(
-                  ref.read(notificationPermissionProvider).request(),
-                ),
+    List<Widget> groups(Iterable<NotificationType> types) => [
+      for (final type in types) ...[
+        settingsGroupGap,
+        FbRowGroup(children: _typeRows(context, ref, prefs, type, weekStart)),
+      ],
+    ];
+    // The same settings-page layout as the rest of Me (A65 M4): the master
+    // switch and quiet hours in one card, then one card per reminder with
+    // its time and day inside it (m4), the Ramadan pair apart with a note.
+    return SettingsPage(
+      title: l10n.notifSettingsTitle,
+      children: [
+        if (!allowed)
+          Padding(
+            padding: const EdgeInsetsDirectional.only(bottom: FbSpace.s3),
+            child: FbInlineBanner(
+              key: const ValueKey('notif-permission'),
+              kind: FbInlineBannerKind.info,
+              message: l10n.notifPermissionOff,
+              actionLabel: l10n.notifPermissionAllow,
+              onAction: () =>
+                  unawaited(ref.read(notificationPermissionProvider).request()),
+            ),
+          ),
+        FbRowGroup(
+          children: [
+            FbSwitchRow(
+              key: const ValueKey('notif-master'),
+              title: l10n.notifMaster,
+              subtitle: l10n.notifMasterHint,
+              value: prefs.enabled,
+              onChanged: (on) => unawaited(
+                _save(context, ref, (p) => p.copyWith(enabled: on)),
               ),
             ),
-          FbSwitchRow(
-            key: const ValueKey('notif-master'),
-            title: l10n.notifMaster,
-            subtitle: l10n.notifMasterHint,
-            value: prefs.enabled,
-            onChanged: (on) =>
-                unawaited(_save(context, ref, (p) => p.copyWith(enabled: on))),
-          ),
-          // Everything under the master switch grows in and out with it
-          // (A57 A13); the switch itself stays put.
-          FbReveal(
-            visible: prefs.enabled,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                FbListRow(
-                  key: const ValueKey('notif-quiet'),
-                  title: l10n.notifQuietHours,
-                  subtitle: l10n.notifQuietRange(
-                    _time(context, prefs.quietStart),
-                    _time(context, prefs.quietEnd),
-                  ),
-                  trailing: const Icon(FbIcons.next),
-                  onTap: () => unawaited(_pickQuiet(context, ref, prefs)),
+            // Everything under the master switch grows in and out with it
+            // (A57 A13); the switch itself stays put.
+            FbReveal(
+              visible: prefs.enabled,
+              child: FbListRow(
+                key: const ValueKey('notif-quiet'),
+                title: l10n.notifQuietHours,
+                subtitle: l10n.notifQuietRange(
+                  _time(context, prefs.quietStart),
+                  _time(context, prefs.quietEnd),
                 ),
-                FbSectionHeader(title: l10n.notifSectionTypes),
-                for (final type in NotificationType.values)
-                  ..._typeRows(context, ref, prefs, type, weekStart),
-              ],
+                trailing: const Icon(FbIcons.next),
+                onTap: () => unawaited(_pickQuiet(context, ref, prefs)),
+              ),
             ),
+          ],
+        ),
+        FbReveal(
+          visible: prefs.enabled,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              FbSectionHeader(title: l10n.notifSectionTypes),
+              ...groups(_everyDay),
+              FbSectionHeader(title: l10n.notifSectionRamadan),
+              ...groups(_ramadan),
+              Padding(
+                key: const ValueKey('notif-ramadan-note'),
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  FbSpace.s4,
+                  FbSpace.s2,
+                  FbSpace.s4,
+                  0,
+                ),
+                child: Text(
+                  l10n.notifRamadanNote,
+                  style: FbType.bodySmall.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
+
+  /// The Ramadan reminders, shown apart (A65 m4): they only fire on Ramadan
+  /// days with Ramadan mode on and a city.
+  static const List<NotificationType> _ramadan = [
+    NotificationType.suhoor,
+    NotificationType.iftar,
+  ];
+
+  static Iterable<NotificationType> get _everyDay =>
+      NotificationType.values.where((t) => !_ramadan.contains(t));
 
   List<Widget> _typeRows(
     BuildContext context,

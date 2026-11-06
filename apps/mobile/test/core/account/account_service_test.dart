@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:fb_mobile/core/account/account_service.dart';
 import 'package:fb_mobile/core/account/account_transitions.dart';
 import 'package:fb_mobile/core/account/google_id_token_source.dart';
 import 'package:fb_mobile/core/account/profile_registry.dart';
+import 'package:fb_mobile/core/account/profile_write_gate.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -212,6 +215,8 @@ void main() {
     await service.signOut(SignOutChoice.remove);
 
     expect(log.events, [
+      // Writes held (A65 review 1), then the transition's own quiesce.
+      'quiesce',
       'quiesce',
       'activate:guest-2',
       'end',
@@ -381,5 +386,92 @@ void main() {
     for (final secret in [userA, canaryToken, canaryEmail]) {
       expect(raw, isNot(contains(secret)));
     }
+  });
+
+  group('A65 review 1 removal bound to the confirmation', () {
+    late AccountTransitions transitions;
+
+    setUp(() {
+      transitions = AccountTransitions(
+        registry: registry,
+        session: session,
+        host: host,
+        newTag: () => 'tag-${++tags}',
+      );
+      service = AccountService(
+        identity: identity,
+        transitions: transitions,
+        registry: registry,
+        google: FakeGoogle(available: false),
+        revoke: (token) async => revoked.add(token),
+      );
+    });
+
+    test('AC-004 A65 writes are denied from before the final count check '
+        'through a slow logout until the removal ended', () async {
+      await emailSignIn();
+      final key = (await registry.read()).activeKey;
+      identity.logoutHold = Completer<void>();
+      var checkedWhileHeld = false;
+      final removal = service.signOut(
+        SignOutChoice.remove,
+        profileKey: key,
+        stillConfirmed: () async {
+          checkedWhileHeld = transitions.suspended;
+          return true;
+        },
+      );
+      // Denied synchronously, before the logout even started.
+      expect(transitions.suspended, isTrue);
+      await pumpEventQueue();
+      expect(checkedWhileHeld, isTrue);
+      expect(identity.calls, contains('logout'));
+      // The logout waits on the network: a write attempted now (a new
+      // entry, an Undo) is still denied by the applier's gate.
+      final gate = ProfileWriteGate(
+        registry,
+        suspended: () => transitions.suspended,
+      );
+      expect(await gate.denial(key), 'transition');
+      expect((await registry.read()).activeKey, key);
+
+      identity.logoutHold!.complete();
+      expect(await removal, isTrue);
+      expect(transitions.suspended, isFalse);
+      expect(await gate.denial(null), isNull);
+      expect((await registry.read()).active.kind, ProfileKind.guest);
+    });
+
+    test('AC-004 A65 more unsynced changes than confirmed stop the removal: '
+        'nothing logged out, nothing removed, writes allowed again', () async {
+      await emailSignIn();
+      final key = (await registry.read()).activeKey;
+      identity.calls.clear();
+      final removed = await service.signOut(
+        SignOutChoice.remove,
+        profileKey: key,
+        stillConfirmed: () async => false,
+      );
+      expect(removed, isFalse);
+      expect(identity.calls, isNot(contains('logout')));
+      expect((await registry.read()).activeKey, key);
+      expect((await registry.read()).active.kind, ProfileKind.registered);
+      expect(transitions.suspended, isFalse);
+    });
+
+    test('AC-004 A65 another active profile than the confirmed one stops '
+        'the removal before any check', () async {
+      await emailSignIn();
+      var checked = false;
+      final removed = await service.signOut(
+        SignOutChoice.remove,
+        profileKey: 'some-other-profile',
+        stillConfirmed: () async => checked = true,
+      );
+      expect(removed, isFalse);
+      expect(checked, isFalse);
+      expect((await registry.read()).active.kind, ProfileKind.registered);
+      expect(transitions.suspended, isFalse);
+    });
   });
 }

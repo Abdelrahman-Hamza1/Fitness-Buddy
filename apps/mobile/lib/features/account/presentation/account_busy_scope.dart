@@ -7,7 +7,9 @@ import 'package:material_ui/material_ui.dart';
 /// Covers the app with a calm "Updating your account…" state while an
 /// account transition with a journal runs (A33 re-check 3), so no
 /// profile-dependent form can open until the profile generation switched.
-/// Usually a fraction of a second; local only, never waits for the network.
+/// Usually a fraction of a second, local only. "Remove from this phone"
+/// also holds it across its bounded, best-effort server logout (A65 review
+/// 1: no write may land between the confirmation and the removal).
 class AccountBusyScope extends ConsumerWidget {
   /// Wraps [child].
   const new({required this.child, super.key});

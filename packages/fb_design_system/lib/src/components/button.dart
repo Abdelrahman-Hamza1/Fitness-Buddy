@@ -1,9 +1,11 @@
 import 'package:material_ui/material_ui.dart';
 
-enum _FbButtonKind { primary, secondary, text }
+enum _FbButtonKind { primary, secondary, text, destructive }
 
 /// A button (UX-021). [FbButton.primary] is filled and dominant: one per
 /// screen or sheet. [FbButton.secondary] is outlined, [FbButton.text] is plain.
+/// [FbButton.destructive] is the filled button of an action that can't be
+/// undone (delete, remove): the muted error-container tone, never brand ink.
 ///
 /// A null [onPressed] disables it.
 class FbButton extends StatelessWidget {
@@ -37,6 +39,17 @@ class FbButton extends StatelessWidget {
     super.key,
   }) : _kind = _FbButtonKind.text;
 
+  /// The filled button of an irreversible action (A65 m12): it reads as
+  /// "careful", not as the screen's main path.
+  const new destructive({
+    required this.label,
+    required this.onPressed,
+    this.icon,
+    this.expand = false,
+    this.busy = false,
+    super.key,
+  }) : _kind = _FbButtonKind.destructive;
+
   /// The (already translated) label.
   final String label;
 
@@ -65,7 +78,7 @@ class FbButton extends StatelessWidget {
         : icon == null
         ? null
         : Icon(icon, size: 20);
-    final Widget button = switch (_kind) {
+    final button = switch (_kind) {
       _FbButtonKind.primary =>
         leading == null
             ? FilledButton(onPressed: onPressed, child: text)
@@ -86,11 +99,29 @@ class FbButton extends StatelessWidget {
         leading == null
             ? TextButton(onPressed: onPressed, child: text)
             : TextButton.icon(onPressed: onPressed, icon: leading, label: text),
+      _FbButtonKind.destructive => _destructive(context, text, leading),
     };
     final sized = expand
         ? SizedBox(width: double.infinity, child: button)
         : button;
     return busy ? Semantics(liveRegion: true, child: sized) : sized;
+  }
+
+  Widget _destructive(BuildContext context, Widget text, Widget? leading) {
+    final scheme = Theme.of(context).colorScheme;
+    final style = FilledButton.styleFrom(
+      // The palette checks error on errorContainer for contrast (AA).
+      backgroundColor: scheme.errorContainer,
+      foregroundColor: scheme.error,
+    );
+    return leading == null
+        ? FilledButton(onPressed: onPressed, style: style, child: text)
+        : FilledButton.icon(
+            onPressed: onPressed,
+            style: style,
+            icon: leading,
+            label: text,
+          );
   }
 }
 

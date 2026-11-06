@@ -1,8 +1,12 @@
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/features/body/application/weigh_in_actions.dart'
+    show WeighInOutcome;
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -11,6 +15,21 @@ import '../../body/support/weigh_in_sheet_support.dart'
     show SheetRig, button, settle, unmount;
 import '../../today/presentation/support/today_support.dart' show phoneApp;
 import '../support/weight_graph_support.dart';
+
+final AppLocalizations _l10n = lookupAppLocalizations(const Locale('en'));
+
+/// Refuses the first deletion as a version conflict (another device
+/// changed the weigh-in), then deletes for real.
+final class _RefuseFirstDelete extends WeighInActions {
+  bool _refused = false;
+
+  @override
+  Future<WeighInOutcome> delete(WeighIn weighIn) async {
+    if (_refused) return await super.delete(weighIn);
+    _refused = true;
+    return const WeighInFailed(WeighInFailure.changed);
+  }
+}
 
 FbTimeSeriesChart chartOf(WidgetTester tester) =>
     tester.widget<FbTimeSeriesChart>(find.byType(FbTimeSeriesChart));
@@ -64,8 +83,15 @@ void main() {
     await pumpGraph(tester, graphApp(graphOverrides(weighIns: history)));
     await selectPoint(tester, fixtureId(730));
     final last = history.last;
+    // The entries list below also shows the value: look inside the card.
+    final details = find
+        .ancestor(of: find.text('After the run'), matching: find.byType(FbCard))
+        .first;
     expect(
-      find.text('${last.input.value.toStringAsFixed(1)} kg'),
+      find.descendant(
+        of: details,
+        matching: find.text('${last.input.value.toStringAsFixed(1)} kg'),
+      ),
       findsOneWidget,
     );
     expect(find.text('After the run'), findsOneWidget);
@@ -83,17 +109,19 @@ void main() {
   group('with the write path', () {
     Future<SheetRig> pumpWithRig(
       WidgetTester tester,
-      List<WeighInDraft> drafts,
-    ) async {
+      List<WeighInDraft> drafts, {
+      double height = 1400,
+      List<Override> extra = const [],
+    }) async {
       final rig = SheetRig();
       await rig.seed(tester, drafts);
       tester.view
-        ..physicalSize = const Size(360, 1400)
+        ..physicalSize = Size(360, height)
         ..devicePixelRatio = 1;
       addTearDown(tester.view.reset);
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [...rig.overrides, ...graphExtras()],
+          overrides: [...rig.overrides, ...graphExtras(), ...extra],
           child: phoneApp(const WeightGraphScreen()),
         ),
       );
@@ -127,6 +155,134 @@ void main() {
         undone.firstWhere((w) => w.id == fixtureId(3)).preferredForDay,
         isFalse,
       );
+      await unmount(tester, rig);
+    });
+
+    testWidgets('A65 M3 a pinned Log weigh-in opens the sheet to log', (
+      tester,
+    ) async {
+      final rig = await pumpWithRig(tester, [
+        weighInDraft(97, date: day17.plusDays(-2)),
+        weighInDraft(96.8, date: day17),
+      ]);
+      await tester.tap(find.byKey(const ValueKey('weight-graph-log')));
+      await settle(tester);
+      expect(find.byType(WeighInSheet), findsOneWidget);
+      expect(tester.widget<WeighInSheet>(find.byType(WeighInSheet)).edit, null);
+      await unmount(tester, rig);
+    });
+
+    testWidgets('A65 M3 WB-003 the entries list is newest first, marks a '
+        'weigh-in not used for the trend, and a tap edits it', (tester) async {
+      final rig = await pumpWithRig(tester, [
+        weighInDraft(97, date: day17.plusDays(-2)),
+        weighInDraft(96.8, date: day17),
+        weighInDraft(97.6, date: day17, hour: 9),
+      ], height: 2400);
+      final entries = find.byWidgetPredicate(
+        (w) =>
+            w is FbSwipeActions &&
+            (w.key as ValueKey<String>?)?.value.startsWith('weight-entry-') ==
+                true,
+      );
+      expect(entries, findsNWidgets(3));
+      final ids = [
+        for (final e in tester.widgetList<FbSwipeActions>(entries))
+          (e.key! as ValueKey<String>).value,
+      ];
+      expect(ids.first, 'weight-entry-${fixtureId(3)}');
+      expect(ids.last, 'weight-entry-${fixtureId(1)}');
+      final notUsed = tester.widget<FbListRow>(
+        find.descendant(
+          of: find.byKey(ValueKey('weight-entry-${fixtureId(3)}')),
+          matching: find.byType(FbListRow),
+        ),
+      );
+      final used = tester.widget<FbListRow>(
+        find.descendant(
+          of: find.byKey(ValueKey('weight-entry-${fixtureId(2)}')),
+          matching: find.byType(FbListRow),
+        ),
+      );
+      expect(notUsed.subtitle, isNot(used.subtitle));
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(ValueKey('weight-entry-${fixtureId(1)}')),
+          matching: find.byType(FbListRow),
+        ),
+      );
+      await settle(tester);
+      expect(
+        tester.widget<WeighInSheet>(find.byType(WeighInSheet)).edit?.id,
+        fixtureId(1),
+      );
+      await unmount(tester, rig);
+    });
+
+    /// Swipes entry `fixtureId(n)` toward the start edge, as a finger does.
+    Future<void> swipeAway(WidgetTester tester, int n) async {
+      await tester.drag(
+        find.descendant(
+          of: find.byKey(ValueKey('weight-entry-${fixtureId(n)}')),
+          matching: find.byType(FbListRow),
+        ),
+        const Offset(-600, 0),
+      );
+      await settle(tester);
+    }
+
+    testWidgets('A65 M3 UX-030 swiping an entry away deletes it with Undo; '
+        'the restored row swipes away again', (tester) async {
+      final rig = await pumpWithRig(tester, [
+        weighInDraft(97, date: day17.plusDays(-2)),
+        weighInDraft(96.8, date: day17),
+      ], height: 2400);
+      await swipeAway(tester, 1);
+      expect((await rig.live(tester)).map((w) => w.id), [fixtureId(2)]);
+      expect(find.text(_l10n.weighInDeleted), findsOneWidget);
+      await tester.tap(find.byType(SnackBarAction));
+      await settle(tester);
+      expect((await rig.live(tester)).map((w) => w.id), hasLength(2));
+      expect(find.byKey(ValueKey('weight-entry-${fixtureId(1)}')), findsOne);
+
+      await swipeAway(tester, 1);
+      expect((await rig.live(tester)).map((w) => w.id), [fixtureId(2)]);
+      await unmount(tester, rig);
+    });
+
+    testWidgets('A65 review 4 a refused deletion says the weigh-in changed '
+        '(not that it was deleted) and the row stays usable', (tester) async {
+      final actions = _RefuseFirstDelete();
+      final rig = await pumpWithRig(
+        tester,
+        [
+          weighInDraft(97, date: day17.plusDays(-2)),
+          weighInDraft(96.8, date: day17),
+        ],
+        height: 2400,
+        extra: [weighInActionsProvider.overrideWith(() => actions)],
+      );
+      await swipeAway(tester, 1);
+      expect(find.text(_l10n.weightEntryDeleteChanged), findsOneWidget);
+      expect(find.text(_l10n.weighInRemoved), findsNothing);
+      expect((await rig.live(tester)).map((w) => w.id), hasLength(2));
+      final row = find.byKey(ValueKey('weight-entry-${fixtureId(1)}'));
+      expect(row, findsOne);
+
+      // Still usable: the same row swipes away for real now.
+      await swipeAway(tester, 1);
+      expect((await rig.live(tester)).map((w) => w.id), [fixtureId(2)]);
+      await unmount(tester, rig);
+    });
+
+    testWidgets('A65 M3 Add past weigh-ins is a labelled row, not an icon', (
+      tester,
+    ) async {
+      final rig = await pumpWithRig(tester, [
+        weighInDraft(97, date: day17),
+      ], height: 2400);
+      expect(find.byKey(const ValueKey('weight-graph-history')), findsOne);
+      expect(find.byIcon(FbIcons.diary), findsNothing);
       await unmount(tester, rig);
     });
 

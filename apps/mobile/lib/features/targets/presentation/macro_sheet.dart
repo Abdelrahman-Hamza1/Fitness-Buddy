@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/ui/discard_changes_sheet.dart';
 import 'package:fb_mobile/features/targets/application/target_form_input.dart';
 import 'package:fb_mobile/features/targets/application/targets_actions.dart';
 import 'package:fb_mobile/features/targets/application/targets_screens.dart';
@@ -17,8 +18,12 @@ import 'package:material_ui/material_ui.dart';
 Future<void> showMacroSheet(
   BuildContext context, {
   required TargetsView view,
-}) =>
-    showFbStatefulSheet<void>(context, builder: (_) => MacroSheet(view: view));
+}) => showFbStatefulSheet<void>(
+  context,
+  // Typed amounts ask before they are lost (A65 m8).
+  enableDrag: false,
+  builder: (_) => MacroSheet(view: view),
+);
 
 /// How one macro is set.
 enum _Kind { byDefault, grams, percent }
@@ -90,6 +95,28 @@ class _MacroSheetState extends ConsumerState<MacroSheet> {
   late VersionedId _shown = widget.view.shown;
   bool _showErrors = false;
 
+  /// The choices as opened, to tell edits (A65 m8).
+  late final List<Object> _opened;
+
+  List<Object> get _choices => [
+    for (final d in [_protein, _fat, _carbs, _fiber]) ...[d.kind, d.text],
+    _proteinOnly,
+  ];
+
+  bool get _dirty {
+    final now = _choices;
+    for (var i = 0; i < now.length; i++) {
+      if (now[i] != _opened[i]) return true;
+    }
+    return false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _opened = _choices;
+  }
+
   /// The settings, or null while an amount is unusable.
   MacroSettings? get _settings {
     final protein = _protein.read();
@@ -157,58 +184,62 @@ class _MacroSheetState extends ConsumerState<MacroSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return FbSheet(
-      title: l10n.targetsMacroSettings,
-      actions: FbButton.primary(
-        label: l10n.targetsSave,
-        expand: true,
-        onPressed: _saving ? null : () => unawaited(_save()),
-      ),
-      child: Padding(
-        // Lifts the sheet above the keyboard.
-        padding: EdgeInsetsDirectional.only(
-          bottom: MediaQuery.viewInsetsOf(context).bottom,
+    return SheetDiscardGuard(
+      dirty: _dirty && !_saving,
+      child: FbSheet(
+        showHandle: false,
+        title: l10n.targetsMacroSettings,
+        actions: FbButton.primary(
+          label: l10n.targetsSave,
+          expand: true,
+          onPressed: _saving ? null : () => unawaited(_save()),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: FbSpace.s4,
-          children: [
-            if (_failure case final reason?)
-              SaveFailedBanner(reason: reason, onReload: _reload),
-            _MacroRow(
-              label: l10n.targetsMacroProtein,
-              draft: _protein,
-              showErrors: _showErrors,
-              onChanged: (d) => setState(() => _protein = d),
-            ),
-            FbSwitchRow(
-              title: l10n.targetsMacroProteinOnly,
-              subtitle: l10n.targetsMacroProteinOnlyHint,
-              value: _proteinOnly,
-              onChanged: (on) => setState(() => _proteinOnly = on),
-            ),
-            if (!_proteinOnly) ...[
+        child: Padding(
+          // Lifts the sheet above the keyboard.
+          padding: EdgeInsetsDirectional.only(
+            bottom: MediaQuery.viewInsetsOf(context).bottom,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: FbSpace.s4,
+            children: [
+              if (_failure case final reason?)
+                SaveFailedBanner(reason: reason, onReload: _reload),
               _MacroRow(
-                label: l10n.targetsMacroFat,
-                draft: _fat,
+                label: l10n.targetsMacroProtein,
+                draft: _protein,
                 showErrors: _showErrors,
-                onChanged: (d) => setState(() => _fat = d),
+                onChanged: (d) => setState(() => _protein = d),
               ),
+              FbSwitchRow(
+                title: l10n.targetsMacroProteinOnly,
+                subtitle: l10n.targetsMacroProteinOnlyHint,
+                value: _proteinOnly,
+                onChanged: (on) => setState(() => _proteinOnly = on),
+              ),
+              if (!_proteinOnly) ...[
+                _MacroRow(
+                  label: l10n.targetsMacroFat,
+                  draft: _fat,
+                  showErrors: _showErrors,
+                  onChanged: (d) => setState(() => _fat = d),
+                ),
+                _MacroRow(
+                  label: l10n.targetsMacroCarbs,
+                  draft: _carbs,
+                  showErrors: _showErrors,
+                  onChanged: (d) => setState(() => _carbs = d),
+                ),
+              ],
               _MacroRow(
-                label: l10n.targetsMacroCarbs,
-                draft: _carbs,
+                label: l10n.targetsMacroFiber,
+                draft: _fiber,
                 showErrors: _showErrors,
-                onChanged: (d) => setState(() => _carbs = d),
+                gramsOnly: true,
+                onChanged: (d) => setState(() => _fiber = d),
               ),
             ],
-            _MacroRow(
-              label: l10n.targetsMacroFiber,
-              draft: _fiber,
-              showErrors: _showErrors,
-              gramsOnly: true,
-              onChanged: (d) => setState(() => _fiber = d),
-            ),
-          ],
+          ),
         ),
       ),
     );

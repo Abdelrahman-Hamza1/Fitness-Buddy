@@ -78,8 +78,8 @@ class _Shell extends ConsumerWidget {
 AppBar _bar(BuildContext context, {required VoidCallback onClose}) {
   final l10n = context.l10n;
   return AppBar(
-    leading: IconButton(
-      icon: const Icon(FbIcons.close),
+    leading: FbIconButton(
+      icon: FbIcons.close,
       tooltip: l10n.setupClose,
       onPressed: onClose,
     ),
@@ -315,12 +315,10 @@ class _FlowState extends ConsumerState<_Flow> {
     final first = draft.before == null;
     final leading = draft.saved
         ? null
-        : IconButton(
-            icon: Icon(
-              first && draft.mode == SetupMode.setup
-                  ? FbIcons.close
-                  : FbIcons.previous,
-            ),
+        : FbIconButton(
+            icon: first && draft.mode == SetupMode.setup
+                ? FbIcons.close
+                : FbIcons.previous,
             tooltip: first && draft.mode == SetupMode.setup
                 ? l10n.setupClose
                 : l10n.setupBack,
@@ -511,8 +509,8 @@ class _UpdateNeeded extends ConsumerWidget {
     final l10n = context.l10n;
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(FbIcons.close),
+        leading: FbIconButton(
+          icon: FbIcons.close,
           tooltip: l10n.setupClose,
           onPressed: () => _Flow._close(context, ref),
         ),

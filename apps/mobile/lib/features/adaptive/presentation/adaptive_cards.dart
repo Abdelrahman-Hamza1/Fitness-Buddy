@@ -185,7 +185,7 @@ class _CardLoadFailed extends StatelessWidget {
   Widget build(BuildContext context) => FbInlineBanner(
     kind: FbInlineBannerKind.info,
     message: message,
-    actionLabel: context.l10n.foodTryAgain,
+    actionLabel: context.l10n.commonTryAgain,
     onAction: onRetry,
   );
 }

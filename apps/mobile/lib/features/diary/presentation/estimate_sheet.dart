@@ -5,6 +5,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/core/ui/discard_changes_sheet.dart';
 import 'package:fb_mobile/core/ui/success_haptic.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/diary/application/diary_actions.dart';
@@ -27,6 +28,8 @@ Future<void> showEstimateSheet(
   DiaryEntry? entry,
 }) => showFbStatefulSheet<void>(
   context,
+  // A half-filled estimate asks before it is lost (A65 m8).
+  enableDrag: false,
   builder: (_) => EstimateSheet(
     date: date,
     slotId: slotId ?? entry?.slotId,
@@ -43,28 +46,26 @@ Future<void> showEstimatePopup(BuildContext context, DiaryEntry entry) =>
     showFbSheet<void>(
       context,
       title: context.l10n.estimatePopupTitle,
+      // The one action-sheet style (A65 m9).
       builder: (sheet) => Consumer(
-        builder: (context, ref, _) => Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: FbSpace.s2,
-          children: [
-            FbButton.secondary(
+        builder: (context, ref, _) => FbActionList<VoidCallback>(
+          onSelected: (run) => run(),
+          actions: [
+            FbAction(
               key: const ValueKey('estimate-popup-edit'),
               label: context.l10n.estimateEdit,
               icon: FbIcons.edit,
-              expand: true,
-              onPressed: () {
+              value: () {
                 final host = Navigator.of(context, rootNavigator: true).context;
                 Navigator.of(sheet).pop();
                 unawaited(showEstimateSheet(host, entry: entry));
               },
             ),
-            FbButton.secondary(
+            FbAction(
               key: const ValueKey('estimate-popup-swap'),
               label: context.l10n.estimateSwap,
               icon: FbIcons.search,
-              expand: true,
-              onPressed: () {
+              value: () {
                 Navigator.of(sheet).pop();
                 changeFoodOf(ref, entry);
               },
@@ -120,6 +121,28 @@ class _EstimateSheetState extends ConsumerState<EstimateSheet> {
   bool _padOpen = true;
   bool _saving = false;
   DiaryActionFailure? _failure;
+
+  /// The fields as opened, to tell typed edits (A65 m8).
+  late final List<String> _opened;
+
+  List<String> get _fields => [
+    _kcal.text,
+    for (final c in [_name, _protein, _carbs, _fat]) c.text,
+  ];
+
+  bool get _dirty {
+    final now = _fields;
+    for (var i = 0; i < now.length; i++) {
+      if (now[i] != _opened[i]) return true;
+    }
+    return false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _opened = _fields;
+  }
 
   @override
   void dispose() {
@@ -228,101 +251,105 @@ class _EstimateSheetState extends ConsumerState<EstimateSheet> {
       _ => '',
     };
     final error = problem != null || _failure != null;
-    return FbSheet(
-      title: slot == null
-          ? l10n.estimateSheetTitleNoMeal
-          : l10n.estimateSheetTitle(slotLabel(l10n, slot)),
-      actions: FbButton.primary(
-        key: const ValueKey('estimate-submit'),
-        label: widget.entry == null
-            ? l10n.estimateAdd(kcalShown)
-            : l10n.estimateSave(kcalShown),
-        expand: true,
-        busy: _saving,
-        onPressed: canSave ? () => _submit(draft) : null,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: FbSpace.s3,
-        children: [
-          FbAmountDisplay(
-            key: const ValueKey('estimate-kcal'),
-            amount: kcalShown,
-            unit: l10n.diaryUnitKcal,
-            semanticLabel: l10n.estimateKcalLabel(kcalShown),
-            active: _padOpen,
-            onTap: () {
-              FocusScope.of(context).unfocus();
-              setState(() => _padOpen = !_padOpen);
-            },
-            onKey: _onKey,
-          ),
-          if (_padOpen)
-            FbNumberPad(
+    return SheetDiscardGuard(
+      dirty: _dirty && !_saving,
+      child: FbSheet(
+        showHandle: false,
+        title: slot == null
+            ? l10n.estimateSheetTitleNoMeal
+            : l10n.estimateSheetTitle(slotLabel(l10n, slot)),
+        actions: FbButton.primary(
+          key: const ValueKey('estimate-submit'),
+          label: widget.entry == null
+              ? l10n.estimateAdd(kcalShown)
+              : l10n.estimateSave(kcalShown),
+          expand: true,
+          busy: _saving,
+          onPressed: canSave ? () => _submit(draft) : null,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: FbSpace.s3,
+          children: [
+            FbAmountDisplay(
+              key: const ValueKey('estimate-kcal'),
+              amount: kcalShown,
+              unit: l10n.diaryUnitKcal,
+              semanticLabel: l10n.estimateKcalLabel(kcalShown),
+              active: _padOpen,
+              onTap: () {
+                FocusScope.of(context).unfocus();
+                setState(() => _padOpen = !_padOpen);
+              },
               onKey: _onKey,
-              onDone: () => setState(() => _padOpen = false),
-              allowDecimal: false,
             ),
-          Focus(
-            onFocusChange: (focused) {
-              if (focused) setState(() => _padOpen = false);
-            },
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: FbSpace.s3,
-              children: [
-                FbTextField(
-                  key: const ValueKey('estimate-name'),
-                  controller: _name,
-                  label: l10n.estimateName,
-                  maxLength: UserEstimate.maxNameLength,
-                  onChanged: (_) => setState(() {}),
-                ),
-                if (!_macrosOpen)
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: FbButton.text(
-                      key: const ValueKey('estimate-macros'),
-                      label: l10n.estimateMacros,
-                      onPressed: () => setState(() => _macrosOpen = true),
+            if (_padOpen)
+              FbNumberPad(
+                onKey: _onKey,
+                onDone: () => setState(() => _padOpen = false),
+                allowDecimal: false,
+              ),
+            Focus(
+              onFocusChange: (focused) {
+                if (focused) setState(() => _padOpen = false);
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: FbSpace.s3,
+                children: [
+                  FbTextField(
+                    key: const ValueKey('estimate-name'),
+                    controller: _name,
+                    label: l10n.estimateName,
+                    maxLength: UserEstimate.maxNameLength,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  if (!_macrosOpen)
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: FbButton.text(
+                        key: const ValueKey('estimate-macros'),
+                        label: l10n.estimateMacros,
+                        onPressed: () => setState(() => _macrosOpen = true),
+                      ),
+                    ),
+                  FbReveal(
+                    visible: _macrosOpen,
+                    child: Row(
+                      spacing: FbSpace.s2,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (final (key, controller, field) in [
+                          ('estimate-protein', _protein, NutrientField.protein),
+                          ('estimate-carbs', _carbs, NutrientField.carbs),
+                          ('estimate-fat', _fat, NutrientField.fat),
+                        ])
+                          Expanded(
+                            child: FbNumberField(
+                              key: ValueKey(key),
+                              controller: controller,
+                              label: nutrientLabel(l10n, field),
+                              unit: l10n.unitG,
+                              maxDecimals: 1,
+                              onChanged: (_) => setState(() {}),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                FbReveal(
-                  visible: _macrosOpen,
-                  child: Row(
-                    spacing: FbSpace.s2,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      for (final (key, controller, field) in [
-                        ('estimate-protein', _protein, NutrientField.protein),
-                        ('estimate-carbs', _carbs, NutrientField.carbs),
-                        ('estimate-fat', _fat, NutrientField.fat),
-                      ])
-                        Expanded(
-                          child: FbNumberField(
-                            key: ValueKey(key),
-                            controller: controller,
-                            label: nutrientLabel(l10n, field),
-                            unit: l10n.unitG,
-                            maxDecimals: 1,
-                            onChanged: (_) => setState(() {}),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Text(
-            message,
-            key: const ValueKey('estimate-message'),
-            maxLines: 2,
-            style: error
-                ? FbType.bodySmall.copyWith(color: scheme.error)
-                : muted,
-          ),
-        ],
+            Text(
+              message,
+              key: const ValueKey('estimate-message'),
+              maxLines: 2,
+              style: error
+                  ? FbType.bodySmall.copyWith(color: scheme.error)
+                  : muted,
+            ),
+          ],
+        ),
       ),
     );
   }

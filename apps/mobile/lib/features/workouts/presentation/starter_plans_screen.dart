@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
@@ -12,7 +13,6 @@ import 'package:fb_mobile/features/workouts/application/workout_views.dart';
 import 'package:fb_mobile/features/workouts/presentation/exercise_muscle_map.dart';
 import 'package:fb_mobile/features/workouts/presentation/plan_setup_screen.dart';
 import 'package:fb_mobile/features/workouts/presentation/template_editor_screen.dart';
-import 'package:fb_mobile/features/workouts/presentation/weekly_plan_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -108,27 +108,7 @@ class _ChooserState extends ConsumerState<StarterPlansScreen> {
                           color: scheme.onSurfaceVariant,
                         ),
                       ),
-                      if (tag != null)
-                        Container(
-                          padding: const EdgeInsetsDirectional.symmetric(
-                            horizontal: FbSpace.s2,
-                            vertical: FbSpace.s1,
-                          ),
-                          decoration: BoxDecoration(
-                            color: selected
-                                ? scheme.primaryContainer
-                                : scheme.surfaceContainerHighest,
-                            borderRadius: FbRadius.mdAll,
-                          ),
-                          child: Text(
-                            tag,
-                            style: FbType.caption.copyWith(
-                              color: selected
-                                  ? scheme.onPrimaryContainer
-                                  : scheme.onSurface,
-                            ),
-                          ),
-                        ),
+                      if (tag != null) FbTag(label: tag, selected: selected),
                     ],
                   ),
                 ),
@@ -284,7 +264,8 @@ class _ChooserState extends ConsumerState<StarterPlansScreen> {
   /// screen saves it (and stays open with every choice if saving fails).
   Future<void> _starter(StarterPlan plan) async {
     final l10n = context.l10n;
-    final weekStart = ref.read(weekStartProvider).value ?? DayOfWeek.saturday;
+    final weekStart =
+        ref.read(weekStartProvider).value ?? AppSettings.weekStart.defaultValue;
     final days = await showFbSheet<Set<DayOfWeek>>(
       context,
       title: l10n.workoutStarterPlan(plan.name),
@@ -354,7 +335,7 @@ class _SheetState extends State<StarterPlanSheet> {
             ).daysInOrder)
               FbChoiceChip(
                 key: ValueKey('workout-starter-day-${day.name}'),
-                label: weekdayName(locale, day),
+                label: weekdayNameIn(locale, day),
                 dropdown: false,
                 selected: _days.contains(day),
                 onTap: () => setState(

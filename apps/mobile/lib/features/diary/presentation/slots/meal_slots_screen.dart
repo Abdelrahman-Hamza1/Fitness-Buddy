@@ -4,6 +4,7 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/diary/application/slot_actions.dart';
 import 'package:fb_mobile/features/diary/application/slot_providers.dart';
@@ -61,18 +62,7 @@ class _Skeleton extends StatelessWidget {
   const new();
 
   @override
-  Widget build(BuildContext context) => const Padding(
-    padding: EdgeInsetsDirectional.all(FbSpace.s4),
-    child: Column(
-      spacing: FbSpace.s4,
-      children: [
-        FbSkeleton.line(height: 40),
-        FbSkeleton.line(height: 40),
-        FbSkeleton.line(height: 40),
-        FbSkeleton.line(height: 40),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) => const LoadingRows();
 }
 
 class _Meals extends ConsumerWidget {

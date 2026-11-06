@@ -467,21 +467,51 @@ final class AccountService {
   /// Signs out (AC-004). Offline is fine: the server logout is best effort.
   /// The transition persists the read-only/removal state before it clears
   /// the credentials. Any sign-in flow is discarded first.
-  Future<void> signOut(SignOutChoice choice) async {
+  ///
+  /// Removing is bound to what the user confirmed (A65 review 1): writes
+  /// are held ([AccountTransitions.holdWrites]) and the queued ones finish
+  /// before anything else, and stay held through the logout and the
+  /// removal. Then [profileKey] (when given) must still be the active
+  /// profile and [stillConfirmed] (the final unsynced-count check) must
+  /// pass; otherwise nothing changes and this returns `false` (ask again).
+  /// Returns `true` once signed out.
+  Future<bool> signOut(
+    SignOutChoice choice, {
+    String? profileKey,
+    Future<bool> Function()? stillConfirmed,
+  }) async {
     _flow?.cancel();
     _flow = null;
+    final keep = choice == SignOutChoice.keep;
+    final release = keep ? null : await _transitions.holdWrites();
     try {
-      await _identity.logoutSession();
-    } on Object {
-      // Best effort; the local credentials are forgotten below either way.
+      if (!keep) {
+        final active = (await _registry.read()).activeKey;
+        if (profileKey != null && active != profileKey) return false;
+        if (stillConfirmed != null && !await stillConfirmed()) return false;
+      }
+      try {
+        await _identity.logoutSession();
+      } on Object {
+        // Best effort; the local credentials are forgotten below either way.
+      }
+      try {
+        // Bounded and best effort in the adapter too (A50 D8).
+        await _google.signOut();
+      } on Object {
+        // Google keeps its account choice; the app signs out regardless.
+      }
+      try {
+        await _transitions.signOut(keep: keep, boundTo: profileKey);
+      } on DeletionRefused {
+        // Another profile became active inside the lock: nothing changed.
+        if (profileKey != null) return false;
+        rethrow;
+      }
+      return true;
+    } finally {
+      release?.call();
     }
-    try {
-      // Bounded and best effort in the adapter too (A50 D8).
-      await _google.signOut();
-    } on Object {
-      // Google keeps its account choice; the app signs out regardless.
-    }
-    await _transitions.signOut(keep: choice == SignOutChoice.keep);
   }
 
   /// Deletes the account of profile [profileKey] (the one the user

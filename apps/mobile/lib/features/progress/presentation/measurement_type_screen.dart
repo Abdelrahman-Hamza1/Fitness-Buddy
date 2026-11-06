@@ -6,6 +6,7 @@ import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/progress/application/graph_window.dart';
@@ -66,14 +67,9 @@ class MeasurementTypeScreen extends ConsumerWidget {
           name: name,
           unit: measurementDisplayUnit(value.ref.kind, length),
         ),
-        AsyncError() => FbEmptyState(
-          icon: FbIcons.chart,
-          title: l10n.measurementsTitle,
+        AsyncError() => LoadFailedView(
           message: l10n.measurementError,
-          action: FbButton.secondary(
-            label: l10n.measurementTryAgain,
-            onPressed: () => ref.invalidate(measurementsProvider),
-          ),
+          onRetry: () => ref.invalidate(measurementsProvider),
         ),
         _ => const Padding(
           padding: EdgeInsetsDirectional.all(FbSpace.s4),
@@ -110,16 +106,21 @@ class MeasurementTypeScreen extends ConsumerWidget {
     MeasurementType type,
   ) async {
     final l10n = context.l10n;
-    final choice = await showFbSheet<String>(
+    final choice = await showFbActionSheet<String>(
       context,
-      builder: (sheet) => FbOptionList<String>(
-        options: [
-          FbOption(value: 'rename', label: l10n.measurementRenameType),
-          FbOption(value: 'delete', label: l10n.measurementDeleteType),
-        ],
-        selected: null,
-        onSelected: (value) => Navigator.of(sheet).pop(value),
-      ),
+      actions: [
+        FbAction(
+          value: 'rename',
+          label: l10n.measurementRenameType,
+          icon: FbIcons.edit,
+        ),
+        FbAction(
+          value: 'delete',
+          label: l10n.measurementDeleteType,
+          icon: FbIcons.delete,
+          destructive: true,
+        ),
+      ],
     );
     if (!context.mounted) return;
     switch (choice) {

@@ -10,6 +10,7 @@ import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/notifications/notifications.dart';
 import 'package:fb_mobile/features/onboarding/onboarding.dart';
+import 'package:fb_mobile/features/progress/progress.dart';
 import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
@@ -298,5 +299,30 @@ void main() {
     await tester.pumpAndSettle();
     expect(failed, findsNothing);
     expect(_row('Set up profile & targets'), findsOneWidget);
+  });
+
+  testWidgets('#289 A65 Me › Targets & goal links Adaptive mode to Progress, '
+      'and m6 Me › Workouts rows show they open another tab', (tester) async {
+    final c = await pumpAt(
+      tester,
+      overrides: _setupOverrides(() async => SetupStatus.setUp),
+    );
+    await openMePage(tester, 'Targets & goal');
+    final adaptive = find.byKey(const ValueKey('me-adaptive-mode'));
+    expect(adaptive, findsOneWidget);
+    await _tap(tester, adaptive);
+    expect(find.byType(ProgressScreen), findsOneWidget);
+    await unmountApp(tester, c);
+
+    final w = await pumpAt(tester);
+    await openMePage(tester, 'Workouts');
+    expect(
+      find.descendant(
+        of: _row('Weekly plan'),
+        matching: find.byIcon(FbIcons.otherTab),
+      ),
+      findsOneWidget,
+    );
+    await unmountApp(tester, w);
   });
 }

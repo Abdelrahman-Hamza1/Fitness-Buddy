@@ -5,6 +5,8 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
+import 'package:fb_mobile/core/ui/settings_page.dart';
 import 'package:fb_mobile/features/ramadan/application/ramadan_providers.dart';
 import 'package:fb_mobile/features/ramadan/presentation/ramadan_text.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
@@ -24,35 +26,30 @@ class RamadanScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final status = ref.watch(ramadanStatusProvider);
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.ramadanTitle)),
-      body: ListView(
-        padding: const EdgeInsetsDirectional.only(bottom: FbSpace.s5),
-        children: [
-          switch (status) {
-            AsyncData(value: final s?) => _Season(status: s),
-            AsyncData() => Padding(
-              padding: const EdgeInsetsDirectional.all(FbSpace.s4),
-              child: Text(l10n.ramadanOutsideTable, style: FbType.body),
-            ),
-            AsyncError() => Padding(
-              padding: const EdgeInsetsDirectional.all(FbSpace.s4),
-              child: FbInlineBanner(
-                kind: FbInlineBannerKind.error,
-                message: l10n.ramadanLoadFailed,
-                actionLabel: l10n.mealTimesTryAgain,
-                onAction: () => ref.invalidate(ramadanSettingsProvider),
-              ),
-            ),
-            // Shaped like the rows that replace it (A57 A14).
-            _ => Column(
-              key: const ValueKey('ramadan-loading'),
-              children: [for (var i = 0; i < 3; i++) FbSkeleton.row()],
-            ),
-          },
-          const _PrayerTimes(),
-        ],
-      ),
+    // The same settings-page layout as the rest of Me (A65 M4).
+    return SettingsPage(
+      title: l10n.ramadanTitle,
+      children: [
+        switch (status) {
+          AsyncData(value: final s?) => _Season(status: s),
+          // Past the calendar table: a designed empty state (A65 N8).
+          AsyncData() => FbEmptyState(
+            key: const ValueKey('ramadan-outside-table'),
+            icon: FbIcons.ramadan,
+            title: l10n.ramadanTitle,
+            message: l10n.ramadanOutsideTable,
+          ),
+          AsyncError() => LoadFailedView(
+            key: const ValueKey('ramadan-load-failed'),
+            message: l10n.ramadanLoadFailed,
+            onRetry: () => ref.invalidate(ramadanSettingsProvider),
+          ),
+          // Shaped like the rows that replace it (A57 A14).
+          _ => const LoadingRows(key: ValueKey('ramadan-loading'), count: 3),
+        },
+        settingsGroupGap,
+        const _PrayerTimes(),
+      ],
     );
   }
 }
@@ -152,10 +149,10 @@ class _Season extends ConsumerWidget {
     final season =
         status.season ?? RamadanSeason(hijriYear: period.hijriYear, on: false);
     final on = season.on;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return FbRowGroup(
+      title: l10n.ramadanSeasonHeader(period.hijriYear),
+      note: l10n.ramadanCalendarNote,
       children: [
-        FbSectionHeader(title: l10n.ramadanSeasonHeader(period.hijriYear)),
         FbSwitchRow(
           key: const ValueKey('ramadan-mode'),
           title: l10n.ramadanMode,
@@ -210,20 +207,6 @@ class _Season extends ConsumerWidget {
               .read(appNavigatorProvider)
               .push(const RamadanMealSlotsRoute()),
         ),
-        Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(
-            FbSpace.s4,
-            FbSpace.s2,
-            FbSpace.s4,
-            FbSpace.s2,
-          ),
-          child: Text(
-            l10n.ramadanCalendarNote,
-            style: FbType.bodySmall.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -269,10 +252,9 @@ class _PrayerTimes extends ConsumerWidget {
     final today = ref.watch(todayProvider).value;
     final times = today == null ? null : ref.watch(prayerTimesProvider(today));
     final navigator = ref.read(appNavigatorProvider);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return FbRowGroup(
+      title: l10n.ramadanPrayerTimes,
       children: [
-        FbSectionHeader(title: l10n.ramadanPrayerTimes),
         FbListRow(
           key: const ValueKey('ramadan-city'),
           title: l10n.settingsCity,
@@ -283,13 +265,15 @@ class _PrayerTimes extends ConsumerWidget {
               : cityAsync.isLoading
               ? null
               : l10n.ramadanNoCity,
-          trailing: cityFailed
+          trailing: cityFailed ? null : const Icon(FbIcons.next),
+          // Under the text at large sizes (A65 m18).
+          trailingAction: cityFailed
               ? FbButton.text(
                   key: const ValueKey('ramadan-city-retry'),
-                  label: l10n.foodTryAgain,
+                  label: l10n.commonTryAgain,
                   onPressed: () => ref.invalidate(selectedCityProvider),
                 )
-              : const Icon(FbIcons.next),
+              : null,
           onTap: () => navigator.push(const CityPickerRoute()),
         ),
         // Today's times with a chosen city (A57 A14): a row-shaped

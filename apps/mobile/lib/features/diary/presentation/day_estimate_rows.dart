@@ -240,29 +240,27 @@ Future<void> showDayEstimatePopup(
 }) => showFbSheet<void>(
   context,
   title: context.l10n.estimatePopupTitle,
+  // The one action-sheet style (A65 m9).
   builder: (sheet) => Consumer(
-    builder: (context, ref, _) => Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: FbSpace.s2,
-      children: [
+    builder: (context, ref, _) => FbActionList<VoidCallback>(
+      onSelected: (run) => run(),
+      actions: [
         if (!superseded)
-          FbButton.secondary(
+          FbAction(
             key: const ValueKey('day-estimate-popup-edit'),
             label: context.l10n.estimateEdit,
             icon: FbIcons.edit,
-            expand: true,
-            onPressed: () {
+            value: () {
               final host = Navigator.of(context, rootNavigator: true).context;
               Navigator.of(sheet).pop();
               unawaited(showDayEstimateSheet(host, mark));
             },
           ),
-        FbButton.secondary(
+        FbAction(
           key: const ValueKey('day-estimate-popup-swap'),
           label: context.l10n.estimateSwap,
           icon: FbIcons.search,
-          expand: true,
-          onPressed: () {
+          value: () {
             final host = Navigator.of(context, rootNavigator: true).context;
             Navigator.of(sheet).pop();
             if (superseded) {

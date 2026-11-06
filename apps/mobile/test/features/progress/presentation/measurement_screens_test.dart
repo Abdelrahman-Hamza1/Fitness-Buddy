@@ -55,6 +55,19 @@ void main() {
     await unmountMeasure(tester, graph);
   });
 
+  testWidgets('A65 m14 types in use come first; unused standard types wait '
+      'under More measurements', (tester) async {
+    final rig = MeasureRig();
+    await rig.seed(tester, [CreateMeasurement(mId(1), measureDraft(92))]);
+    await pumpMeasure(tester, rig, const MeasurementsScreen());
+    expect(find.byKey(const ValueKey('measurement-row-waist')), findsOneWidget);
+    expect(find.byKey(const ValueKey('measurement-row-hips')), findsNothing);
+    await tester.tap(find.byKey(const ValueKey('measurements-more')));
+    await settleMeasure(tester);
+    expect(find.byKey(const ValueKey('measurement-row-hips')), findsOneWidget);
+    await unmountMeasure(tester, rig);
+  });
+
   testWidgets('WB-040 UX-030 editing a measurement; deleting with undo from '
       'the list and from the sheet', (tester) async {
     final rig = MeasureRig();

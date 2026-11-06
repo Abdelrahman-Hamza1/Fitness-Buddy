@@ -417,7 +417,7 @@ final class WeekCalendarProvider
   }
 }
 
-String _$weekCalendarHash() => r'43ab2ac8018a596ec05eb566cd675c47373ebc82';
+String _$weekCalendarHash() => r'75b1db1ee9d439734105ea03a8579e7a756048e4';
 
 /// Owner's halal preference (downstream filtering arrives in A24).
 

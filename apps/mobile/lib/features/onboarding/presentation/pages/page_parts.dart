@@ -102,15 +102,19 @@ class SetupBenefit extends StatelessWidget {
                 borderRadius: FbRadius.mdAll,
               ),
               child: SizedBox.square(
-                dimension: 36,
-                child: Icon(icon, size: 20, color: scheme.onPrimaryContainer),
+                dimension: FbSize.iconTile,
+                child: Icon(
+                  icon,
+                  size: FbSize.iconSmall,
+                  color: scheme.onPrimaryContainer,
+                ),
               ),
             ),
           ),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 2,
+              spacing: FbSize.lineGap,
               children: [
                 Text(
                   title,

@@ -28,7 +28,7 @@
   "@updateRequiredTitle": {
     "description": "Title of the screen shown when this app version is too old to talk to the server."
   },
-  "updateRequiredBody": "This version can't connect any more. Install the latest one to continue. Your data stays on your phone.",
+  "updateRequiredBody": "This version can't connect any more. Install the latest build, the same way you installed this one, to continue. Your data stays on your phone.",
   "@updateRequiredBody": {
     "description": "Body of the update-required screen. Plain language, reassures that local data is kept."
   },
@@ -2108,7 +2108,7 @@
   "@welcomeWorkoutsTitle": {
     "description": "First run welcome: third benefit."
   },
-  "welcomeWorkoutsBody": "Your data stays on your phone",
+  "welcomeWorkoutsBody": "Log after the gym, or follow a weekly plan",
   "@welcomeWorkoutsBody": {
     "description": "First run welcome: third benefit's detail."
   },
@@ -3049,6 +3049,14 @@
   "foodSearchNotReadyTitle": "Nothing to search yet",
   "foodSearchNotReadyMessage": "The food database isn't ready yet. Foods you log will show up here.",
   "foodTryAgain": "Try again",
+  "commonTryAgain": "Try again",
+  "@commonTryAgain": {
+    "description": "Shared (A65 N6): the retry action of a failed load or action."
+  },
+  "commonCancel": "Cancel",
+  "@commonCancel": {
+    "description": "Shared (A65): closes a confirmation without doing anything."
+  },
   "foodSheetClose": "Close",
   "diaryDateToday": "Today",
   "@diaryDateToday": {
@@ -3580,6 +3588,14 @@
   "@yourFoodsLoadFailed": {
     "description": "Your foods: shown when the list could not be read."
   },
+  "yourFoodsSearchHint": "Search your foods",
+  "@yourFoodsSearchHint": {
+    "description": "Your foods: the search field over a long list (A65 m13)."
+  },
+  "yourFoodsNoMatch": "No foods match",
+  "@yourFoodsNoMatch": {
+    "description": "Your foods: the search found nothing."
+  },
   "yourFoodsUnreadable": "{count, plural, =1{1 food can't be shown. It may be damaged or come from a newer app version.} other{{count} foods can't be shown. They may be damaged or come from a newer app version.}}",
   "@yourFoodsUnreadable": {
     "description": "Your foods: shown above the list when stored foods can't be read (#100), so they aren't silently hidden.",
@@ -3902,6 +3918,10 @@
   "@personalFoodDiscardMessage": {
     "description": "Discard sheet: what is at stake."
   },
+  "sheetDiscardMessage": "What you typed here will be lost.",
+  "@sheetDiscardMessage": {
+    "description": "Discard sheet over a half-filled form sheet (estimate, measurement, targets; A65 m8)."
+  },
   "personalFoodDiscardKeep": "Keep editing",
   "@personalFoodDiscardKeep": {
     "description": "Discard sheet: goes back to the form."
@@ -4037,6 +4057,10 @@
   "@savedMealsLoadFailed": {
     "description": "Saved meals: banner when the list can't be read."
   },
+  "savedMealsSearchHint": "Search saved meals",
+  "@savedMealsSearchHint": {
+    "description": "Saved meals: the search field over a long list; finds the meal's and its foods' names (A65 m13)."
+  },
   "savedMealDefaultTitle": "Saved meal",
   "@savedMealDefaultTitle": {
     "description": "Saved meal screen: title while the meal's name is not loaded yet."
@@ -4086,13 +4110,9 @@
   "@savedMealRenameTitle": {
     "description": "Title of the sheet that renames a saved meal."
   },
-  "savedMealMenuTooltip": "More for this meal",
-  "@savedMealMenuTooltip": {
-    "description": "Saved meal screen: tooltip and screen-reader label of the overflow button."
-  },
   "savedMealDeleteAction": "Delete meal",
   "@savedMealDeleteAction": {
-    "description": "Saved meal screen: overflow action that deletes the saved meal (with Undo)."
+    "description": "Saved meal screen: the app-bar delete button's tooltip; deletes the saved meal with Undo (A65 m9)."
   },
   "savedMealRenamedMessage": "Renamed to \"{name}\"",
   "@savedMealRenamedMessage": {
@@ -4345,7 +4365,7 @@
   "@settingsUnitsImperial": {
     "description": "Units choice: imperial."
   },
-  "settingsUnitsImperialHint": "Ounces, fluid ounces, pounds",
+  "settingsUnitsImperialHint": "Ounces, fluid ounces, pounds · workouts stay in kg",
   "@settingsUnitsImperialHint": {
     "description": "Units choice: what imperial shows, under \"Imperial\"."
   },
@@ -4607,6 +4627,46 @@
   "aboutNotMedical": "Fitness Buddy gives estimates for tracking, not medical advice.",
   "@aboutNotMedical": {
     "description": "About: the line saying the app is not medical advice (SF-040)."
+  },
+  "aboutPrivacy": "Privacy",
+  "@aboutPrivacy": {
+    "description": "About: the row that opens what stays on this phone and what barcode scanning may send (A65 m3)."
+  },
+  "aboutPrivacyHint": "What barcode scanning may send",
+  "@aboutPrivacyHint": {
+    "description": "About: under the Privacy row."
+  },
+  "aboutHowTitle": "How it works",
+  "@aboutHowTitle": {
+    "description": "About: the help section header (A65 m3, UX-010)."
+  },
+  "aboutHowSources": "Where numbers come from",
+  "@aboutHowSources": {
+    "description": "About › How it works: opens the source badge legend (UX-044)."
+  },
+  "aboutHowSourcesHint": "What the small Y, D, R and ~ badges mean",
+  "@aboutHowSourcesHint": {
+    "description": "About › How it works: under the badge legend row. The letters are the badge letters."
+  },
+  "aboutHowUndo": "Undo",
+  "@aboutHowUndo": {
+    "description": "About › How it works: the Undo row title."
+  },
+  "aboutHowUndoHint": "Every change shows Undo for a few seconds. Bigger deletes ask first.",
+  "@aboutHowUndoHint": {
+    "description": "About › How it works: how Undo works (UX-030)."
+  },
+  "aboutHowEstimates": "Estimates",
+  "@aboutHowEstimates": {
+    "description": "About › How it works: the estimates row title."
+  },
+  "aboutHowEstimatesHint": "A number with ~ is a rough guess when the food isn't known. Replace it with the real one any time.",
+  "@aboutHowEstimatesHint": {
+    "description": "About › How it works: what an estimate is (D-096)."
+  },
+  "aboutBarcodeTitle": "Barcode lookups",
+  "@aboutBarcodeTitle": {
+    "description": "About: the row with this phone's barcode lookup counts (TD-064)."
   },
   "exportWhat": "Your diary, foods, saved meals and settings as CSV spreadsheet files and one JSON file.",
   "@exportWhat": {
@@ -5048,6 +5108,35 @@
   "@weightGraphUseForTrendChanged": {"description": "Snack bar: Use for trend was refused because the day's weigh-ins changed meanwhile (nothing was written)."},
   "weightGraphUseForTrendFailed": "Couldn't change the trend weigh-in. Try again.",
   "@weightGraphUseForTrendFailed": {"description": "Snack bar: Use for trend was refused (nothing was written)."},
+  "weightEntriesTitle": "Entries",
+  "@weightEntriesTitle": {
+    "description": "Weight graph: the weigh-ins list header (A65 M3)."
+  },
+  "weightEntryNotUsed": "{day} · not used for the trend",
+  "@weightEntryNotUsed": {
+    "description": "Weight graph entry row: the day, when another weigh-in that day feeds the trend (WB-003).",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "weightEntryDelete": "Delete",
+  "@weightEntryDelete": {
+    "description": "Weight graph entry row: swipe action, deletes the weigh-in (undoable)."
+  },
+  "weightEntryDeleteChanged": "This weigh-in changed since it was shown, so it wasn't deleted. Check it and try again.",
+  "@weightEntryDeleteChanged": {
+    "description": "Weight graph entry row (A65): a swipe delete was refused because the weigh-in changed meanwhile (e.g. on another device); the row stays."
+  },
+  "weightEntryDeleteFailed": "Couldn't delete the weigh-in. Try again.",
+  "@weightEntryDeleteFailed": {
+    "description": "Weight graph entry row (A65): a swipe delete failed for another reason; the row stays."
+  },
+  "weightEntriesShowMore": "Show more",
+  "@weightEntriesShowMore": {
+    "description": "Weight graph: shows older weigh-ins in the list."
+  },
   "weightHistoryTitle": "Past weigh-ins",
   "@weightHistoryTitle": {"description": "Weight history screen title (A15b D17): many old weigh-ins typed as rows."},
   "weightHistoryOpen": "Add past weigh-ins",
@@ -5110,6 +5199,10 @@
   "@progressExercises": {"description": "Progress tab row opening every exercise's progress (IN-006, A37 D13)."},
   "measurementsTitle": "Measurements",
   "@measurementsTitle": {"description": "Measurements screen title and the Progress row that opens it (A15b D18)."},
+  "measurementsMore": "More measurements",
+  "@measurementsMore": {
+    "description": "Measurements: the row that shows the standard types without entries yet (A65 m14)."
+  },
   "measurementKindWaist": "Waist",
   "@measurementKindWaist": {"description": "Built-in measurement type."},
   "measurementKindChest": "Chest",
@@ -5245,6 +5338,10 @@
   "meProfileGoal": "Profile & goal",
   "@meProfileGoal": {
     "description": "Me, You section: opens Profile & goal (A13c D13)."
+  },
+  "meAdaptiveMode": "Adaptive mode",
+  "@meAdaptiveMode": {
+    "description": "Me › Targets & goal: opens Progress, where the Expenditure card sets whether weekly check-in changes apply on their own (#289, TG-034)."
   },
   "meTargets": "Targets",
   "@meTargets": {
@@ -5820,9 +5917,50 @@
   "@accountSignOutRemove": {
     "description": "Sign-out sheet option: wipe local data (AC-004)."
   },
-  "accountSignOutRemoveDetail": "Your account data stays safe on the server.",
+  "accountSignOutRemoveDetail": "Synced data stays on the server. Changes that haven't synced are lost.",
   "@accountSignOutRemoveDetail": {
-    "description": "Sign-out sheet option subtitle for remove."
+    "description": "Sign-out sheet: under 'Remove from this phone'. Honest (A65 M1): only synced data is on the server."
+  },
+  "accountRemoveTitle": "Remove from this phone?",
+  "@accountRemoveTitle": {
+    "description": "Sign-out confirmation sheet title (A65 M1): removing this phone's copy of the account data."
+  },
+  "accountRemoveSynced": "Everything is synced. Your data stays on the server, and signing in again brings it back.",
+  "@accountRemoveSynced": {
+    "description": "Sign-out confirmation: nothing is waiting to sync."
+  },
+  "accountRemoveSyncing": "Syncing your latest changes first…",
+  "@accountRemoveSyncing": {
+    "description": "Sign-out confirmation: a sync runs before removing."
+  },
+  "accountRemoveUnsynced": "{count, plural, =1{1 change hasn't synced yet and will be lost if you remove this phone's copy.} other{{count} changes haven't synced yet and will be lost if you remove this phone's copy.}}",
+  "@accountRemoveUnsynced": {
+    "description": "Sign-out confirmation: changes still waiting after the sync attempt (offline, signed out, or failed).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accountRemoveCheckFailed": "Couldn't check for changes that haven't synced. Removing may lose changes made on this phone.",
+  "@accountRemoveCheckFailed": {
+    "description": "Sign-out confirmation: the local sync counts couldn't be read."
+  },
+  "accountRemoveConfirm": "Remove",
+  "@accountRemoveConfirm": {
+    "description": "Sign-out confirmation: the destructive button when everything is synced."
+  },
+  "accountRemoveAnyway": "Remove anyway",
+  "@accountRemoveAnyway": {
+    "description": "Sign-out confirmation: the destructive button when changes would be lost."
+  },
+  "accountRemoveSyncFirst": "Sync now",
+  "@accountRemoveSyncFirst": {
+    "description": "Sign-out confirmation: try to sync the waiting changes again."
+  },
+  "accountRemoveChanged": "Something changed after you confirmed, so nothing was removed. Check again.",
+  "@accountRemoveChanged": {
+    "description": "Sign-out confirmation, shown again (A65): more unsynced changes appeared (or another profile opened) between the confirmation and the removal, so the removal stopped."
   },
   "accountContinueAsGuest": "Continue as guest",
   "@accountContinueAsGuest": {
@@ -6162,6 +6300,10 @@
   "@workoutTemplateDeleted": {"description": "Undo snackbar after deleting a template."},
   "workoutPlanTitle": "Weekly plan",
   "@workoutPlanTitle": {"description": "Weekly plan screen title (WO-021)."},
+  "workoutPlanDaysSection": "Days",
+  "@workoutPlanDaysSection": {
+    "description": "Weekly plan screen: the section with each weekday's workout (A65 m5: the screen title already says Weekly plan)."
+  },
   "workoutPlanIntro": "Optional. Pick a workout for any weekday; the other days are rest days.",
   "@workoutPlanIntro": {"description": "Weekly plan screen intro (D-085: a plan is never required)."},
   "workoutPlanRest": "Rest",
@@ -6707,9 +6849,9 @@
   "@aboutOffCredit": {
     "description": "About: credit line for Open Food Facts."
   },
-  "aboutBarcodeCoverage": "Barcode lookups on this phone: {found} found · {incomplete} incomplete · {notFound} not found",
+  "aboutBarcodeCoverage": "On this phone: {found} found · {incomplete} incomplete · {notFound} not found",
   "@aboutBarcodeCoverage": {
-    "description": "About: debug line with the on-device barcode coverage counter (TD-064).",
+    "description": "About: the subtitle of the barcode lookups row, this phone's counts (TD-064).",
     "placeholders": {
       "found": {
         "type": "int",
@@ -6835,6 +6977,15 @@
   "syncParkedDetail": "They stay on this phone. Try again after an app update.",
   "@syncParkedDetail": {
     "description": "Sync sheet: explanation under the couldn't-sync count."
+  },
+  "syncParkedBanner": "{count, plural, =1{1 change couldn't sync. It stays on this phone; try again after an app update.} other{{count} changes couldn't sync. They stay on this phone; try again after an app update.}}",
+  "@syncParkedBanner": {
+    "description": "Sync sheet: the banner for changes that couldn't sync, with Try again (A65 m16).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "syncLastSync": "Last sync: {time}",
   "@syncLastSync": {
@@ -6969,7 +7120,7 @@
   },
   "deleteInProgress": "Deleting…",
   "@deleteInProgress": {
-    "description": "Delete screen: deletion running."
+    "description": "Delete screen: the delete button's label while the deletion runs (busy state)."
   },
   "deleteOffline": "Deleting your account needs a connection. Try again when you're online.",
   "@deleteOffline": {
@@ -7025,7 +7176,7 @@
   "@settingsNotifications": {"description": "Me › Settings row that opens the notification settings (NT-020)."},
   "notifSettingsTitle": "Notifications",
   "@notifSettingsTitle": {"description": "Notification settings screen title (NT-020)."},
-  "notifMaster": "Reminders",
+  "notifMaster": "All reminders",
   "@notifMaster": {"description": "Notification settings: the master switch (NT-020)."},
   "notifMasterHint": "Made on this phone; nothing is sent anywhere",
   "@notifMasterHint": {"description": "Notification settings: under the master switch. Reminders are local (TD-013)."},
@@ -7043,6 +7194,14 @@
   "@notifQuietUntil": {"description": "Notification settings: picks when quiet hours end."},
   "notifSectionTypes": "Reminders",
   "@notifSectionTypes": {"description": "Notification settings: the section header over the reminder types."},
+  "notifSectionRamadan": "Ramadan",
+  "@notifSectionRamadan": {
+    "description": "Me › Notifications: the header of the Ramadan reminders (A65 m4)."
+  },
+  "notifRamadanNote": "These only come on Ramadan days, with Ramadan mode on and a city set in Me › Ramadan.",
+  "@notifRamadanNote": {
+    "description": "Me › Notifications: the note under the Ramadan reminders (A65 m4)."
+  },
   "notifTime": "Time",
   "@notifTime": {"description": "Notification settings: a reminder's time row."},
   "notifTimeInQuiet": "In quiet hours: won't show",
@@ -7131,7 +7290,7 @@
   "@ramadanNotNow": {"description": "Proposal card: decline (can be switched on later in Settings)."},
   "ramadanSwitchedOn": "Ramadan mode is on",
   "@ramadanSwitchedOn": {"description": "Undo snackbar after switching Ramadan mode on."},
-  "ramadanNotNowDone": "You can switch Ramadan mode on in Settings",
+  "ramadanNotNowDone": "You can switch Ramadan mode on in Me › Ramadan",
   "@ramadanNotNowDone": {"description": "Undo snackbar after declining the proposal."},
   "ramadanTitle": "Ramadan",
   "@ramadanTitle": {"description": "Title of Settings › Ramadan and its row."},
@@ -7370,7 +7529,7 @@
   "workoutsSeeAll": "See all",
   "@workoutsSeeAll": {"description": "Workouts tab: opens the whole history (WO-040)."},
   "workoutsYourPlan": "Your plan",
-  "@workoutsYourPlan": {"description": "Workouts tab plan row and the plan page title (WO-021, D-089)."},
+  "@workoutsYourPlan": {"description": "Workouts tab: the plan row (D-089 names it 'Your plan'); the screen it opens is 'Weekly plan' (WO-021, A65 m5)."},
   "workoutsNoPlan": "No plan",
   "@workoutsNoPlan": {"description": "Workouts tab plan row without a weekly plan (D-085: never required)."},
   "workoutsThisWeek": "This week",
@@ -7564,6 +7723,10 @@
   "@accountNameSave": {"description": "Account & data name sheet: saves the name (AC-005)."},
   "accountNameSaveFailed": "Couldn't save the name. Try again.",
   "@accountNameSaveFailed": {"description": "Account & data name sheet: storing the name failed (UX-052)."},
+  "accountNameSaved": "Name saved",
+  "@accountNameSaved": {
+    "description": "Me › Account & data: snackbar after the name sheet saved (A65 m11)."
+  },
   "signInNameLabel": "What should we call you?",
   "@signInNameLabel": {"description": "Sign-in done step (email) and the name sheet: the optional name field (AC-005, D-097)."},
   "signInNameHint": "Shown only on this phone. You can skip.",

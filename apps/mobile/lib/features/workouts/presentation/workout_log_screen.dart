@@ -251,28 +251,29 @@ class _LogState extends ConsumerState<WorkoutLogScreen> {
 
   Future<void> _menu(LogFormState form) async {
     final l10n = context.l10n;
-    final action = await showFbSheet<_MenuAction>(
+    final action = await showFbActionSheet<_MenuAction>(
       context,
-      builder: (sheet) => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (!widget.inToday && form.persisted)
-            FbListRow(
-              title: l10n.workoutsRepeat,
-              onTap: () => Navigator.of(sheet).pop(_MenuAction.repeat),
-            ),
-          if (form.persisted)
-            FbListRow(
-              key: const ValueKey('workout-log-save-template'),
-              title: l10n.workoutLogSaveAsTemplate,
-              onTap: () => Navigator.of(sheet).pop(_MenuAction.saveAsTemplate),
-            ),
-          FbListRow(
-            title: l10n.workoutLogDelete,
-            onTap: () => Navigator.of(sheet).pop(_MenuAction.delete),
+      actions: [
+        if (!widget.inToday && form.persisted)
+          FbAction(
+            value: _MenuAction.repeat,
+            label: l10n.workoutsRepeat,
+            icon: FbIcons.sameAsLast,
           ),
-        ],
-      ),
+        if (form.persisted)
+          FbAction(
+            key: const ValueKey('workout-log-save-template'),
+            value: _MenuAction.saveAsTemplate,
+            label: l10n.workoutLogSaveAsTemplate,
+            icon: FbIcons.add,
+          ),
+        FbAction(
+          value: _MenuAction.delete,
+          label: l10n.workoutLogDelete,
+          icon: FbIcons.delete,
+          destructive: true,
+        ),
+      ],
     );
     if (!mounted || action == null) return;
     // Read before leaving: the screen is gone after its pop.

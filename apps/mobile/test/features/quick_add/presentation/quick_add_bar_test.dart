@@ -191,11 +191,14 @@ void main() {
     await _pumpReal(tester, rig, _Taps(), animate: true);
     await log(tester, rig, _lunchHistory());
     expect(_chip('Food 1'), findsOneWidget);
+    // The chips have switchers of their own; the row's is the outermost.
     final switcher = tester.widget<AnimatedSwitcher>(
-      find.descendant(
-        of: find.byType(QuickAddBar),
-        matching: find.byType(AnimatedSwitcher),
-      ),
+      find
+          .descendant(
+            of: find.byType(QuickAddBar),
+            matching: find.byType(AnimatedSwitcher),
+          )
+          .first,
     );
     expect(switcher.layoutBuilder, same(FbInert.switcherLayout));
     rig.stack.dispose();

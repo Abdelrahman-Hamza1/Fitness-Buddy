@@ -125,7 +125,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
               padding: EdgeInsetsDirectional.zero,
               child: FbListRow(
                 key: const ValueKey('progress-measurements'),
-                leading: const Icon(FbIcons.progress),
+                leading: const Icon(FbIcons.measure),
                 title: l10n.measurementsTitle,
                 trailing: const Icon(FbIcons.next),
                 onTap: () => ref

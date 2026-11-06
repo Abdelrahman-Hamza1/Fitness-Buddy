@@ -56,3 +56,33 @@ class DiscardChangesSheet extends StatelessWidget {
     );
   }
 }
+
+/// Guards a form sheet with edits (A65 m8, UX-052): while [dirty], a tap
+/// outside or Back asks first with the discard sheet, and closes only when
+/// the user discards. Show the sheet with `enableDrag: false` (a swipe
+/// down pops past this guard).
+class SheetDiscardGuard extends StatelessWidget {
+  /// Guards [child] while [dirty].
+  const new({required this.dirty, required this.child, super.key});
+
+  /// The sheet holds typed values that would be lost.
+  final bool dirty;
+
+  /// The sheet.
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => PopScope<Object?>(
+    canPop: !dirty,
+    onPopInvokedWithResult: (didPop, _) async {
+      if (didPop) return;
+      final navigator = Navigator.of(context);
+      final discard = await showDiscardChangesSheet(
+        context,
+        message: context.l10n.sheetDiscardMessage,
+      );
+      if (discard && navigator.mounted) navigator.pop();
+    },
+    child: child,
+  );
+}

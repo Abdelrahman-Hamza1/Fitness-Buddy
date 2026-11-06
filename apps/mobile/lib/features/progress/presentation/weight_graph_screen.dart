@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/progress/application/graph_window.dart';
@@ -16,8 +20,10 @@ import 'package:material_ui/material_ui.dart';
 
 /// The weight graph (WB-020–023, IN-004): weigh-ins as faint dots, the
 /// trend line, the goal line, the projection cone, goal phases; ranges,
-/// pan, tap a point for its details with Edit and Use for trend, and the
-/// summary numbers. Opened from Today's weight card and the Progress tab.
+/// pan, tap a point for its details with Edit and Use for trend, the
+/// summary numbers, and the weigh-ins as rows (tap to edit, swipe to delete
+/// with Undo) under a pinned "Log weigh-in" (A65 M3, like a measurement
+/// type's screen). Opened from Today's weight card and the Progress tab.
 class WeightGraphScreen extends ConsumerStatefulWidget {
   /// Creates the screen.
   const new({super.key});
@@ -53,17 +59,29 @@ class _WeightGraphScreenState extends ConsumerState<WeightGraphScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final model = ref.watch(weightGraphProvider);
+    final hasData = model.value?.weighIns.isNotEmpty ?? false;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.weightGraphTitle),
-        actions: [
-          FbIconButton(
-            icon: FbIcons.diary,
-            tooltip: l10n.weightHistoryOpen,
-            onPressed: _openHistory,
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text(l10n.weightGraphTitle)),
+      // The empty state has its own Log button.
+      bottomNavigationBar: !hasData
+          ? null
+          : SafeArea(
+              child: Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  FbSpace.s4,
+                  FbSpace.s2,
+                  FbSpace.s4,
+                  FbSpace.s4,
+                ),
+                child: FbButton.primary(
+                  key: const ValueKey('weight-graph-log'),
+                  label: l10n.weightGraphLog,
+                  icon: FbIcons.add,
+                  expand: true,
+                  onPressed: () => unawaited(showWeighInSheet(context)),
+                ),
+              ),
+            ),
       body: switch (model) {
         AsyncData(:final value) when value.weighIns.isEmpty => FbEmptyState(
           icon: FbIcons.chart,
@@ -84,15 +102,13 @@ class _WeightGraphScreenState extends ConsumerState<WeightGraphScreen> {
             ],
           ),
         ),
-        AsyncData(:final value) => _Graph(model: value),
-        AsyncError() => FbEmptyState(
-          icon: FbIcons.chart,
-          title: l10n.weightGraphTitle,
+        AsyncData(:final value) => _Graph(
+          model: value,
+          onOpenHistory: _openHistory,
+        ),
+        AsyncError() => LoadFailedView(
           message: l10n.weightGraphError,
-          action: FbButton.secondary(
-            label: l10n.weightGraphTryAgain,
-            onPressed: () => ref.invalidate(weightGraphProvider),
-          ),
+          onRetry: () => ref.invalidate(weightGraphProvider),
         ),
         _ => const Padding(
           padding: EdgeInsetsDirectional.all(FbSpace.s4),
@@ -104,9 +120,12 @@ class _WeightGraphScreenState extends ConsumerState<WeightGraphScreen> {
 }
 
 class _Graph extends ConsumerWidget {
-  const new({required this.model});
+  const new({required this.model, required this.onOpenHistory});
 
   final WeightGraphModel model;
+
+  /// Opens "Add past weigh-ins".
+  final VoidCallback onOpenHistory;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -231,6 +250,8 @@ class _Graph extends ConsumerWidget {
           _Details(weighIn: selected, model: model),
         const SizedBox(height: FbSpace.s3),
         _Stats(model: model),
+        const SizedBox(height: FbSpace.s3),
+        _Entries(model: model, onOpenHistory: onOpenHistory),
       ],
     );
   }
@@ -426,6 +447,98 @@ class _Stats extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+/// The weigh-ins newest first (A65 M3): value as typed and the day, with
+/// "not used for the trend" when another weigh-in feeds that day; tap to
+/// edit (the sheet has Delete), swipe to delete with Undo. "Add past
+/// weigh-ins" opens the batch screen. Shows 30 rows at a time.
+class _Entries extends ConsumerStatefulWidget {
+  const new({required this.model, required this.onOpenHistory});
+
+  final WeightGraphModel model;
+  final VoidCallback onOpenHistory;
+
+  @override
+  ConsumerState<_Entries> createState() => _EntriesState();
+}
+
+class _EntriesState extends ConsumerState<_Entries> {
+  static const _page = 30;
+  int _shown = _page;
+
+  Future<void> _delete(WeighIn weighIn) async {
+    final host = Navigator.of(context, rootNavigator: true).context;
+    final outcome = await ref
+        .read(weighInActionsProvider.notifier)
+        .delete(weighIn);
+    if (!host.mounted) return;
+    switch (outcome) {
+      case WeighInDone(:final undoId):
+        showUndoFeedback(
+          host,
+          message: host.l10n.weighInDeleted,
+          undoEntryId: undoId,
+        );
+      // Only a weigh-in that is really gone says so; a refused deletion
+      // leaves the row (A65 review 4).
+      case WeighInFailed(:final reason):
+        final l10n = host.l10n;
+        showFbSnackBar(host, switch (reason) {
+          WeighInFailure.removed => l10n.weighInRemoved,
+          WeighInFailure.changed => l10n.weightEntryDeleteChanged,
+          WeighInFailure.invalid ||
+          WeighInFailure.future => l10n.weightEntryDeleteFailed,
+        });
+      default:
+        break;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final model = widget.model;
+    final newest = model.weighIns.reversed.toList();
+    final shown = newest.take(_shown);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        FbSectionHeader(title: l10n.weightEntriesTitle),
+        FbListRow(
+          key: const ValueKey('weight-graph-history'),
+          leading: const Icon(FbIcons.history),
+          title: l10n.weightHistoryOpen,
+          trailing: const Icon(FbIcons.next),
+          onTap: widget.onOpenHistory,
+        ),
+        for (final w in shown)
+          FbSwipeActions(
+            key: ValueKey<String>('weight-entry-${w.id}'),
+            dismissAction: FbSwipeAction(
+              label: l10n.weightEntryDelete,
+              icon: FbIcons.delete,
+              onTriggered: () => unawaited(_delete(w)),
+            ),
+            child: FbListRow(
+              title: weighInInputText(l10n, w.input),
+              subtitle: model.trend.pointOn(w.localDate)?.weighInId == w.id
+                  ? dayLabel(context, w.localDate, model.today)
+                  : l10n.weightEntryNotUsed(
+                      dayLabel(context, w.localDate, model.today),
+                    ),
+              onTap: () => unawaited(showWeighInSheet(context, edit: w)),
+            ),
+          ),
+        if (newest.length > _shown)
+          FbButton.text(
+            key: const ValueKey('weight-entries-more'),
+            label: l10n.weightEntriesShowMore,
+            onPressed: () => setState(() => _shown += _page),
+          ),
+      ],
     );
   }
 }

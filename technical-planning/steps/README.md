@@ -220,6 +220,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A62b](A62-estimates.md) | Estimates (b): day estimate on the day mark (dayMark v2; E2 A) | Claude (Opus plan + build), two Codex reviews (Risky) | A62a | M | new (owner UX review 2026-11-06) |  | ✅ |
 | [A63](A63-ui-polish-2.md) | UI polish 2 (owner 2026-11-06): Progress week in the calories card + no text-only cards, Me header with name (phone only), honest Preferences + settings audit fixes, workout sets without ticks (Same as last time, swipe to remove) | Claude (Opus plan + build), two Codex reviews (Risky) | A57 | L | new (owner mockups 2026-11-06 + Codex settings audit) |  | ✅ done (owner acceptance by use, TD-037) |
 | [A64](A64-rebrand.md) | Rebrand (owner 2026-11-06): Momentum mark (three rising shapes) + Ink & Sky palette, Outfit titles, launcher/themed icon, splash, Buddy avatar; nothing of Embrace left | Claude (Opus plan + build), one Codex review | A62, A63 | M–L | new (owner design session 2026-11-06) |  | ✅ done (owner one-shot; device checks #155) |
+| [A65](A65-screen-audit-fixes.md) | Screen audit fixes (owner 2026-11-06, Opus audit of every screen): safe sign-out, weigh-in entries list, one settings layout, menus, sheet guards, copy | Claude (Opus build), Codex review + fix-check | A64 | L | new (owner 2026-11-06) |  | ✅ done (with backlog sweep 3) |
 
 **A44 runs right after A22 (owner request, 2026-10-29):** the "Embrace" identity (palette, fonts, icon) lands before the remaining screens are built, an exception to "the number is the order" like the dish batches below.
 
@@ -297,6 +298,14 @@ Chores and backlog sweeps that aren't steps (one combined branch, one Codex revi
 - Partly: #129 storage and sharing export failures have their own copy.
 - New: #267 (check the Ramadan-day startup benchmark next season).
 - Assessed and left open: #103 DS divider (A42 re-renders the personal food form golden: after A42), #230 recompute from the adaptive expenditure (changes the targets math; needs the estimate pipeline in `TargetsActions`, a targets step), #255 maintain edge cases (weekly-mode math), #186 resume trigger for the pack check (bootstrap path, A42's area), #203/#236 (bigger UI wiring), #226 (phase 2).
+
+**Backlog sweep 3 (2026-11-06)**, branches `chore/backlog-sweep-3-platform`, `chore/backlog-sweep-3-app` and, with the A65 screen audit fixes, `step/A65-screen-audit-fixes`: every open row assessed once more; the backlog now keeps only open items (done rows are deleted, git history keeps them; reasons are in `evidence/sweep-3-*.md`).
+- Fixed (platform): #8 #9 #12 #14 #23 #50 #52 #80 #112 #139, partly #47 (cache) and #132 (2 MiB page budget).
+- Fixed (app): #37 #88 #117 #119 #135 #136 #198 #210 #271 #272 #275 #281 #282 #284 #286 #290 #291 #294 #297, the dead training-day setting, the nightly OF-01 test; partly #236. With A65: #289, partly #165.
+- Closed: #3 #17 #18 #25 #67 #60 #71 #73 #109 #153 #188 #194 #196 #200 #217 #262 #274 #276 (non-Buddy) #287 #298.
+- Owner clean-up removed the done rows and 41 stale owner checks (daily use replaces them). #205 was fixed, then reverted after Codex review (registry mutations while unreadable, guest key reuse): open for its own step.
+- New rows #300-#312: unproven nightly fix, six unmerged Dependabot PRs, cache recheck, #132 response size, #136 gap, and the A65 UX leftovers.
+- Assessed and left open: #68 and #77 (reopened), #1 (upstream), #21 and #110 (need a validator or are too broad), #203, #222, #255, #268, #280, #206, #44, #65.
 
 ## 5. Milestones
 

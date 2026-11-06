@@ -58,7 +58,8 @@ Stream<NotificationPrefs> notificationPrefs(Ref ref) =>
 /// One shared calendar for future weekly views.
 @riverpod
 WeekCalendar weekCalendar(Ref ref) => WeekCalendar(
-  weekStart: ref.watch(weekStartProvider).value ?? DayOfWeek.saturday,
+  weekStart:
+      ref.watch(weekStartProvider).value ?? AppSettings.weekStart.defaultValue,
 );
 
 /// Owner's halal preference (downstream filtering arrives in A24).

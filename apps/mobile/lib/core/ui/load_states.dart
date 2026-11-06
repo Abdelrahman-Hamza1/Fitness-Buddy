@@ -26,7 +26,7 @@ class LoadFailedView extends StatelessWidget {
       child: FbInlineBanner(
         kind: FbInlineBannerKind.error,
         message: message,
-        actionLabel: context.l10n.foodTryAgain,
+        actionLabel: context.l10n.commonTryAgain,
         onAction: onRetry,
       ),
     ),

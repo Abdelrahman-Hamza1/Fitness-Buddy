@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/settings/settings_store.dart';
 import 'package:fb_mobile/features/notifications/notifications.dart';
@@ -162,6 +163,35 @@ void main() {
     await tester.pumpAndSettle();
     expect(failed, findsNothing);
     expect(find.byKey(const ValueKey('notif-master')), findsOneWidget);
+    await unmountApp(tester, container);
+  });
+
+  testWidgets('A65 m4 M4 each reminder sits in its own card with its time; '
+      'the Ramadan pair comes last under a note', (tester) async {
+    final container = await pumpAt(tester);
+    await openMe(tester);
+    await tester.tap(find.byKey(const ValueKey('settings-notifications')));
+    await tester.pumpAndSettle();
+    // The log reminder's switch and time share one card.
+    final card = find.ancestor(
+      of: find.byKey(const ValueKey('notif-logReminder')),
+      matching: find.byType(FbCard),
+    );
+    expect(
+      find.descendant(
+        of: card,
+        matching: find.byKey(const ValueKey('notif-logReminder-time')),
+      ),
+      findsOneWidget,
+    );
+    final note = find.byKey(const ValueKey('notif-ramadan-note'));
+    await tester.scrollUntilVisible(note, 200);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('notif-iftar')), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.byKey(const ValueKey('notif-iftar'))).dy,
+      lessThan(tester.getTopLeft(note).dy),
+    );
     await unmountApp(tester, container);
   });
 }

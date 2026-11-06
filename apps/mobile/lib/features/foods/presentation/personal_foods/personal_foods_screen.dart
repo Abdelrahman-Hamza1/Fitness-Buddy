@@ -2,6 +2,7 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/text/name_filter.dart';
 import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
@@ -11,15 +12,30 @@ import 'package:material_ui/material_ui.dart';
 /// Your foods (FD-070, UX-050, A09 D10): the foods the user made, by name,
 /// each with the ⓨ badge. A tap opens the form; "New food" starts an empty
 /// one. Nothing here writes.
-class PersonalFoodsScreen extends ConsumerWidget {
+class PersonalFoodsScreen extends ConsumerStatefulWidget {
   /// Creates the screen.
   const new({super.key});
+
+  @override
+  ConsumerState<PersonalFoodsScreen> createState() =>
+      _PersonalFoodsScreenState();
+}
+
+class _PersonalFoodsScreenState extends ConsumerState<PersonalFoodsScreen> {
+  /// Filters a long list by name (A65 m13).
+  final TextEditingController _query = TextEditingController();
+
+  @override
+  void dispose() {
+    _query.dispose();
+    super.dispose();
+  }
 
   void _open(WidgetRef ref, PersonalFoodRoute route) =>
       ref.read(appNavigatorProvider).push(route);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final foods = ref.watch(personalFoodsProvider);
     // Rows that can't be read stay counted, never silently hidden (#100).
@@ -74,19 +90,7 @@ class PersonalFoodsScreen extends ConsumerWidget {
           onPressed: () => _open(ref, const PersonalFoodRoute()),
         ),
       ),
-      // Built as it scrolls, keyed by food (A57 A76).
-      AsyncData(:final value) => ListView.builder(
-        itemCount: value.length,
-        findChildIndexCallback: (key) {
-          final index = value.indexWhere((f) => ValueKey(f.id) == key);
-          return index < 0 ? null : index;
-        },
-        itemBuilder: (context, i) => _FoodRow(
-          key: ValueKey(value[i].id),
-          food: value[i],
-          onTap: () => _open(ref, PersonalFoodRoute(id: value[i].id)),
-        ),
-      ),
+      AsyncData(:final value) => _list(context, ref, value),
       AsyncError() => Padding(
         padding: const EdgeInsetsDirectional.all(FbSpace.s4),
         child: FbInlineBanner(
@@ -98,6 +102,67 @@ class PersonalFoodsScreen extends ConsumerWidget {
       ),
       _ => const LoadingRows(count: 3),
     };
+  }
+
+  /// The foods, with a search field once the list is long (A65 m13).
+  Widget _list(BuildContext context, WidgetRef ref, List<PersonalFood> all) {
+    final l10n = context.l10n;
+    final searchable = all.length > listSearchThreshold;
+    final value = searchable
+        ? [
+            for (final f in all)
+              if (namesMatch([f.names.en, f.names.ar], _query.text)) f,
+          ]
+        : all;
+    // Built as it scrolls, keyed by food (A57 A76).
+    final list = value.isEmpty
+        ? Padding(
+            key: const ValueKey('your-foods-no-match'),
+            padding: const EdgeInsetsDirectional.all(FbSpace.s4),
+            child: Text(
+              l10n.yourFoodsNoMatch,
+              style: FbType.body.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          )
+        : ListView.builder(
+            itemCount: value.length,
+            findChildIndexCallback: (key) {
+              final index = value.indexWhere((f) => ValueKey(f.id) == key);
+              return index < 0 ? null : index;
+            },
+            itemBuilder: (context, i) => _FoodRow(
+              key: ValueKey(value[i].id),
+              food: value[i],
+              onTap: () => _open(ref, PersonalFoodRoute(id: value[i].id)),
+            ),
+          );
+    if (!searchable) return list;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            FbSpace.s4,
+            FbSpace.s3,
+            FbSpace.s4,
+            FbSpace.s2,
+          ),
+          child: FbSearchField(
+            key: const ValueKey('your-foods-search'),
+            controller: _query,
+            hint: l10n.yourFoodsSearchHint,
+            onChanged: (_) => setState(() {}),
+          ),
+        ),
+        Expanded(
+          child: value.isEmpty
+              ? Align(alignment: AlignmentDirectional.topStart, child: list)
+              : list,
+        ),
+      ],
+    );
   }
 }
 

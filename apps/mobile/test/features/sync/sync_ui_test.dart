@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_mobile/features/sync/application/sync_view.dart';
 import 'package:fb_mobile/features/sync/sync.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,9 +16,10 @@ SyncView _view({
   int parked = 0,
   SyncProblem problem = SyncProblem.none,
   int? oldest,
+  bool running = false,
 }) => SyncView(
   enabled: true,
-  running: false,
+  running: running,
   restoring: false,
   restoredRows: 0,
   problem: problem,
@@ -81,11 +83,27 @@ void main() {
   });
 
   testWidgets('the sync sheet shows the state, Try again for parked '
-      'changes and Sync now', (tester) async {
+      'changes and Sync now (A65 m16: no pull-to-refresh)', (tester) async {
     await _pump(tester, const SyncSheetBody(), _view(pending: 1, parked: 2));
     expect(find.byKey(const ValueKey('sync-sheet-status')), findsOneWidget);
+    expect(find.byKey(const ValueKey('sync-sheet-parked')), findsOneWidget);
     expect(find.byKey(const ValueKey('sync-now')), findsOneWidget);
-    expect(find.byType(RefreshIndicator), findsOneWidget);
+    expect(find.byType(RefreshIndicator), findsNothing);
+  });
+
+  testWidgets('A65 m16 a running sync shows Sync now busy and disabled', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      const SyncSheetBody(),
+      _view(pending: 1, running: true),
+    );
+    final button = tester.widget<FbButton>(
+      find.byKey(const ValueKey('sync-now')),
+    );
+    expect(button.busy, isTrue);
+    expect(button.onPressed, isNull);
   });
 
   testWidgets('earlier versions list each version with Restore', (

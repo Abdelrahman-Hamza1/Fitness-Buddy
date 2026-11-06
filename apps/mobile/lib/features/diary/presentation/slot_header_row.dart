@@ -73,9 +73,9 @@ class SlotHeaderTile extends ConsumerWidget {
           // The "+" leads, so the end of the row stays small at large text
           // sizes: the name and the summary keep the room.
           leading: slot != null && slot.active
-              ? IconButton(
+              ? FbIconButton(
                   tooltip: l10n.diarySlotAddTooltip(name),
-                  icon: const Icon(FbIcons.add),
+                  icon: FbIcons.add,
                   onPressed: () => ref
                       .read(appNavigatorProvider)
                       .push(FoodSearchRoute(date: date, slotId: slot.id)),
@@ -112,9 +112,9 @@ Widget? _trailing(
   final l10n = context.l10n;
   final menu = empty
       ? null
-      : IconButton(
+      : FbIconButton(
           tooltip: l10n.diaryMealMenuTooltip(name),
-          icon: const Icon(FbIcons.more),
+          icon: FbIcons.more,
           onPressed: () =>
               unawaited(showMealMenu(context, section: section, date: date)),
         );

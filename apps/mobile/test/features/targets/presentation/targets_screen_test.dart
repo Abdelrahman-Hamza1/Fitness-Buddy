@@ -258,6 +258,44 @@ void main() {
     await rig.close();
   });
 
+  testWidgets('A65 m8 UX-052 dirty macro targets ask before Back or a tap '
+      'outside closes them; Keep editing keeps the typed amount; Save closes '
+      'without asking', (tester) async {
+    final rig = await TargetsScreenRig.open(
+      tester,
+      route: const TargetsRoute(),
+    );
+    await rig.tap('More options');
+    await rig.tap('Macro targets');
+    await tester.tap(find.widgetWithText(FbChoiceChip, 'Grams').first);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextField, 'Protein'), '140');
+    await tester.pumpAndSettle();
+
+    Future<void> keepEditing() async {
+      expect(find.text('Discard changes?'), findsOneWidget);
+      await tester.tap(find.text('Keep editing'));
+      await tester.pumpAndSettle();
+      expect(find.text('Discard changes?'), findsNothing);
+      expect(find.widgetWithText(TextField, 'Protein'), findsOneWidget);
+      expect(find.text('140'), findsOneWidget, reason: 'the typed amount');
+    }
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    await keepEditing();
+    // Outside the sheet: the barrier.
+    await tester.tapAt(const Offset(180, 4));
+    await tester.pumpAndSettle();
+    await keepEditing();
+
+    await rig.tapAndSettle('Save');
+    expect(find.text('Discard changes?'), findsNothing);
+    expect(find.widgetWithText(TextField, 'Protein'), findsNothing);
+    expect((await _current(rig)).macros.protein?.value, 140);
+    await rig.close();
+  });
+
   testWidgets('TG-041 More options › the balancing switch turns rebalancing '
       'off', (tester) async {
     final rig = await TargetsScreenRig.open(

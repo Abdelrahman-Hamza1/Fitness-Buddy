@@ -136,15 +136,22 @@ final class DriftSyncStore implements SyncStore {
   /// drift query stream treats a pause like a cancel (closing the query
   /// and scheduling a cleanup timer each time a watcher rebuilds). This
   /// controller buffers while paused.
-  Stream<LocalSyncCounts> watchCounts() {
+  ///
+  /// A failed read is skipped (the indicator keeps its last numbers) unless
+  /// [reportErrors]: a destructive check (A65 review 3, "Remove from this
+  /// phone") gets the error, so it never trusts an old or missing count.
+  Stream<LocalSyncCounts> watchCounts({bool reportErrors = false}) {
     StreamSubscription<Set<TableUpdate>>? updates;
     late final StreamController<LocalSyncCounts> controller;
     Future<void> emit() async {
       try {
         final value = await counts();
         if (!controller.isClosed) controller.add(value);
-      } on Object {
-        // A closing database: the stream ends with its listener.
+      } on Object catch (error, stack) {
+        // Otherwise a closing database: the stream ends with its listener.
+        if (reportErrors && !controller.isClosed) {
+          controller.addError(error, stack);
+        }
       }
     }
 

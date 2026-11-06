@@ -40,7 +40,9 @@ class WeekStartSettingRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final weekStart = ref.watch(weekStartProvider).value ?? DayOfWeek.saturday;
+    final weekStart =
+        ref.watch(weekStartProvider).value ??
+        AppSettings.weekStart.defaultValue;
     return FbListRow(
       title: context.l10n.settingsWeekStart,
       subtitle: weekdayName(context, weekStart),

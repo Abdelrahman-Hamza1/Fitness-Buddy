@@ -51,6 +51,19 @@ class MeTargetsGoalScreen extends ConsumerWidget {
               if (setup == SetupStatus.setUp) ...[
                 MeLink(title: l10n.meTargets, route: const TargetsRoute()),
                 MeLink(title: l10n.meProfileGoal, route: const ProfileRoute()),
+                // #289 (owner-approved): the weekly check-in mode, set on
+                // Progress › Expenditure.
+                MeLink(
+                  key: const ValueKey('me-adaptive-mode'),
+                  title: l10n.meAdaptiveMode,
+                  subtitle: switch (ref.watch(checkInModeProvider).value) {
+                    CheckInMode.automatic => l10n.adaptiveAutomaticOn,
+                    CheckInMode.ask => l10n.adaptiveAutomaticOff,
+                    null => null,
+                  },
+                  route: const ProgressRoute(),
+                  go: true,
+                ),
               ],
             ],
           ),

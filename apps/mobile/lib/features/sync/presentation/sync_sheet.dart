@@ -8,8 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The sync detail sheet (AC-013, UX-053): the status, the last sync time,
-/// changes that couldn't sync with "Try again", and "Sync now". Pull down
-/// to sync too.
+/// changes that couldn't sync as a banner with "Try again", and "Sync now"
+/// (busy while a run is on, A65 m16; no pull-to-refresh in a sheet).
 class SyncSheetBody extends ConsumerWidget {
   /// Creates the sheet's content.
   const new({super.key});
@@ -17,55 +17,39 @@ class SyncSheetBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final scheme = Theme.of(context).colorScheme;
     final view = ref.watch(syncViewProvider);
     final actions = ref.read(syncActionsProvider.notifier);
     final last = view.lastSuccessMs;
-    return RefreshIndicator(
-      onRefresh: actions.syncNow,
-      child: ListView(
-        shrinkWrap: true,
-        physics: const AlwaysScrollableScrollPhysics(),
-        children: [
-          FbListRow(
-            key: const ValueKey('sync-sheet-status'),
-            title: syncStatusText(l10n, view),
-            subtitle: last == null
-                ? l10n.syncNeverSynced
-                : l10n.syncLastSync(
-                    instantText(context, last, nowMs: view.nowMs),
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: FbSpace.s3,
+      children: [
+        FbListRow(
+          key: const ValueKey('sync-sheet-status'),
+          title: syncStatusText(l10n, view),
+          subtitle: last == null
+              ? l10n.syncNeverSynced
+              : l10n.syncLastSync(
+                  instantText(context, last, nowMs: view.nowMs),
+                ),
+        ),
+        if (view.parked > 0)
+          FbInlineBanner(
+            key: const ValueKey('sync-sheet-parked'),
+            kind: FbInlineBannerKind.error,
+            message: l10n.syncParkedBanner(view.parked),
+            actionBelow: true,
+            actionLabel: l10n.syncTryAgain,
+            onAction: () => unawaited(actions.retryParked()),
           ),
-          if (view.parked > 0) ...[
-            FbListRow(
-              title: l10n.syncStatusParked(view.parked),
-              subtitle: l10n.syncParkedDetail,
-            ),
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: FbButton.text(
-                label: l10n.syncTryAgain,
-                onPressed: () => unawaited(actions.retryParked()),
-              ),
-            ),
-          ],
-          Padding(
-            padding: const EdgeInsetsDirectional.only(top: FbSpace.s3),
-            child: FbButton.primary(
-              key: const ValueKey('sync-now'),
-              label: l10n.syncNow,
-              onPressed: view.running
-                  ? null
-                  : () => unawaited(actions.syncNow()),
-            ),
-          ),
-          if (view.running)
-            Padding(
-              padding: const EdgeInsetsDirectional.only(top: FbSpace.s2),
-              child: LinearProgressIndicator(color: scheme.primary),
-            ),
-        ],
-      ),
+        FbButton.primary(
+          key: const ValueKey('sync-now'),
+          label: view.running ? l10n.syncStatusSyncing : l10n.syncNow,
+          busy: view.running,
+          expand: true,
+          onPressed: view.running ? null : () => unawaited(actions.syncNow()),
+        ),
+      ],
     );
   }
 }
@@ -88,6 +72,7 @@ class SyncAccountRow extends ConsumerWidget {
     final view = ref.watch(syncViewProvider);
     return FbListRow(
       key: const ValueKey('account-sync-row'),
+      leading: const Icon(FbIcons.sync),
       title: l10n.syncRowTitle,
       subtitle: syncStatusText(l10n, view),
       trailing: const Icon(FbIcons.next),

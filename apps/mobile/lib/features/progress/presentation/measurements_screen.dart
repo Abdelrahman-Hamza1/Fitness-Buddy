@@ -6,6 +6,7 @@ import 'package:fb_mobile/core/l10n/day_label.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,13 +15,34 @@ import 'package:material_ui/material_ui.dart';
 /// Body measurements (WB-040, A15b D18): a row per type (waist, chest,
 /// hips, arm, thigh, neck, body fat, then custom types by name) with its
 /// latest value and date, "Add measurement" and "Add custom measurement".
-/// A row opens the type's graph.
-class MeasurementsScreen extends ConsumerWidget {
+/// A row opens the type's graph. Types in use (and custom types) come first;
+/// the unused standard types wait under "More measurements" (A65 m14).
+class MeasurementsScreen extends ConsumerStatefulWidget {
   /// Creates the screen.
   const new({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MeasurementsScreen> createState() => _MeasurementsScreenState();
+}
+
+class _MeasurementsScreenState extends ConsumerState<MeasurementsScreen> {
+  bool _more = false;
+
+  Widget _row(MeasurementTypeView view, LengthUnit length) => FbListRow(
+    key: ValueKey('measurement-row-${view.ref.key}'),
+    title: measurementTypeName(
+      context.l10n,
+      view.ref,
+      customName: view.customName,
+    ),
+    subtitle: _latest(context, ref, view, length),
+    trailing: const Icon(FbIcons.next),
+    onTap: () =>
+        ref.read(appNavigatorProvider).push(MeasurementTypeRoute(view.ref.key)),
+  );
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final views = ref.watch(latestByTypeProvider);
     final length =
@@ -43,47 +65,36 @@ class MeasurementsScreen extends ConsumerWidget {
           padding: const EdgeInsetsDirectional.symmetric(vertical: FbSpace.s2),
           children: [
             for (final view in value)
-              FbListRow(
-                title: measurementTypeName(
-                  l10n,
-                  view.ref,
-                  customName: view.customName,
-                ),
-                subtitle: _latest(context, ref, view, length),
-                trailing: const Icon(FbIcons.next),
-                onTap: () => ref
-                    .read(appNavigatorProvider)
-                    .push(MeasurementTypeRoute(view.ref.key)),
+              if (_tracked(view)) _row(view, length),
+            if (value.any((v) => !_tracked(v))) ...[
+              FbDisclosureRow(
+                key: const ValueKey('measurements-more'),
+                title: l10n.measurementsMore,
+                expanded: _more,
+                onToggle: () => setState(() => _more = !_more),
               ),
+              if (_more)
+                for (final view in value)
+                  if (!_tracked(view)) _row(view, length),
+            ],
             Padding(
               padding: const EdgeInsetsDirectional.all(FbSpace.s4),
               child: _AddButtons(views: value),
             ),
           ],
         ),
-        AsyncError() => FbEmptyState(
-          icon: FbIcons.chart,
-          title: l10n.measurementsTitle,
+        AsyncError() => LoadFailedView(
           message: l10n.measurementError,
-          action: FbButton.secondary(
-            label: l10n.measurementTryAgain,
-            onPressed: () => ref.invalidate(measurementsProvider),
-          ),
+          onRetry: () => ref.invalidate(measurementsProvider),
         ),
-        _ => const Padding(
-          padding: EdgeInsetsDirectional.all(FbSpace.s4),
-          child: Column(
-            spacing: FbSpace.s3,
-            children: [
-              FbSkeleton.line(height: 56),
-              FbSkeleton.line(height: 56),
-              FbSkeleton.line(height: 56),
-            ],
-          ),
-        ),
+        _ => const LoadingRows(count: 3),
       },
     );
   }
+
+  /// In use: it has entries, or it is the user's own type.
+  static bool _tracked(MeasurementTypeView view) =>
+      view.type != null || view.series.points.isNotEmpty;
 
   static String _latest(
     BuildContext context,

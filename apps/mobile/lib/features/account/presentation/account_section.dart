@@ -39,7 +39,7 @@ class AccountCard extends ConsumerWidget {
           key: const ValueKey('account-card-error'),
           kind: FbInlineBannerKind.error,
           message: l10n.accountLoadFailed,
-          actionLabel: l10n.foodTryAgain,
+          actionLabel: l10n.commonTryAgain,
           onAction: () => ref.invalidate(accountStatusProvider),
         );
       }
@@ -81,7 +81,7 @@ class AccountCard extends ConsumerWidget {
     final text = MergeSemantics(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 2,
+        spacing: FbSize.lineGap,
         children: [
           Text(
             title,
@@ -108,7 +108,7 @@ class AccountCard extends ConsumerWidget {
         ? FbLetterAvatar(
             key: const ValueKey('account-card-letter'),
             source: letterSource,
-            size: 44,
+            size: FbSize.avatar,
           )
         : ExcludeSemantics(
             child: DecoratedBox(
@@ -119,7 +119,7 @@ class AccountCard extends ConsumerWidget {
                 shape: BoxShape.circle,
               ),
               child: SizedBox.square(
-                dimension: 44,
+                dimension: FbSize.avatar,
                 child: Icon(
                   guest ? FbIcons.me : FbIcons.backedUp,
                   color: guest
@@ -204,9 +204,12 @@ Future<void> editAccountName(
   );
   if (saved == null) return;
   final ok = await ref.read(meIdentityProvider.notifier).setName(saved);
-  if (!ok && context.mounted) {
-    showFbSnackBar(context, context.l10n.accountNameSaveFailed);
-  }
+  if (!context.mounted) return;
+  // Feedback either way (A65 m11).
+  showFbSnackBar(
+    context,
+    ok ? context.l10n.accountNameSaved : context.l10n.accountNameSaveFailed,
+  );
 }
 
 /// The name field and Save; pops with the typed text.
@@ -222,7 +225,13 @@ class _NameSheet extends StatefulWidget {
 class _NameSheetState extends State<_NameSheet> {
   late final TextEditingController _name = TextEditingController(
     text: widget.initial,
-  );
+  )..addListener(_changed);
+
+  /// Save is off until the name differs from the stored one (A65 m11);
+  /// clearing a stored name still saves (it removes the name).
+  bool get _dirty => _name.text.trim() != widget.initial.trim();
+
+  void _changed() => setState(() {});
 
   @override
   void dispose() {
@@ -250,7 +259,9 @@ class _NameSheetState extends State<_NameSheet> {
           key: const ValueKey('account-name-save'),
           label: l10n.accountNameSave,
           expand: true,
-          onPressed: () => Navigator.of(context).pop(_name.text),
+          onPressed: _dirty
+              ? () => Navigator.of(context).pop(_name.text)
+              : null,
         ),
       ],
     );
@@ -279,16 +290,16 @@ class AccountRows extends ConsumerWidget {
         if (account) const SyncAccountRow(),
         if (status == AccountStatus.readOnlyCopy)
           FbListRow(
+            leading: const Icon(FbIcons.me),
             title: l10n.accountContinueAsGuest,
             onTap: () => unawaited(actions.continueAsGuest()),
           ),
         if (account)
           FbListRow(
+            key: const ValueKey('account-sign-out'),
+            leading: const Icon(FbIcons.signOut),
             title: l10n.accountSignOut,
-            onTap: () async {
-              final choice = await showSignOutSheet(context);
-              if (choice != null) await actions.signOut(choice);
-            },
+            onTap: () => unawaited(runSignOut(context, actions)),
           ),
       ],
     );
@@ -337,7 +348,11 @@ class _AccountCardSkeleton extends StatelessWidget {
       child: Row(
         spacing: FbSpace.s3,
         children: [
-          const FbSkeleton.box(width: 44, height: 44, radius: 22),
+          const FbSkeleton.box(
+            width: FbSize.avatar,
+            height: FbSize.avatar,
+            radius: FbSize.avatar / 2,
+          ),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

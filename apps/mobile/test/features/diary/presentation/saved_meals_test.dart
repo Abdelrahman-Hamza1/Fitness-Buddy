@@ -238,9 +238,8 @@ void main() {
         'brings it back', (tester) async {
       final rig = await _pumpMeal(tester, screen: _detail);
 
-      await tester.tap(find.byTooltip('More for this meal'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Delete meal'));
+      // A65 m9: Delete is a direct action in the app bar (with Undo).
+      await tester.tap(find.byKey(const ValueKey('saved-meal-delete')));
       await settle(tester);
 
       // The screen goes back to the list (the test navigator only records).

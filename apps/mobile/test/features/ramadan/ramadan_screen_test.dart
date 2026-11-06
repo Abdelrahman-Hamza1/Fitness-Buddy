@@ -76,4 +76,18 @@ void main() {
     expect(retry, findsNothing);
     await unmountApp(tester, container);
   });
+
+  testWidgets('A65 N8 M4 past the calendar table Ramadan shows a designed '
+      'empty state, and the prayer times stay in their group', (tester) async {
+    final container = await pumpAt(
+      tester,
+      overrides: [ramadanStatusProvider.overrideWith((ref) async => null)],
+    );
+    await openMe(tester);
+    await tester.tap(find.byKey(const ValueKey('settings-ramadan')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('ramadan-outside-table')), findsOneWidget);
+    expect(find.byKey(const ValueKey('ramadan-method')), findsOneWidget);
+    await unmountApp(tester, container);
+  });
 }

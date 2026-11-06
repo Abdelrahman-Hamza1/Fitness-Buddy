@@ -4,6 +4,10 @@ import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/me/application/me_summary.dart';
 import 'package:fb_mobile/features/me/me.dart';
+import 'package:fb_mobile/features/notifications/application/notification_coordinator.dart'
+    show notificationsAllowedProvider;
+import 'package:fb_mobile/features/notifications/notifications.dart';
+import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -107,4 +111,31 @@ Future<void> main() async {
       ),
     ),
   ]);
+  // A65 M4 m19: the Me pages that had no goldens, in the shared layout.
+  await _golden(
+    'NT-020 A65 M4 m4 UX-070 notifications: grouped reminders',
+    'notification_settings',
+    const NotificationSettingsScreen(),
+    [
+      ...base,
+      ...fakeSettings(),
+      notificationPrefsProvider.overrideWith(
+        (ref) => Stream.value(NotificationPrefs()),
+      ),
+      notificationsAllowedProvider.overrideWith((ref) async => true),
+    ],
+    height: 900,
+  );
+  await _golden(
+    'LC-030 A65 M4 N8 UX-070 ramadan: past the calendar table',
+    'ramadan_outside_table',
+    const RamadanScreen(),
+    [
+      ...fakeToday(),
+      ...base,
+      ...fakeSettings(city: nablus),
+      ramadanStatusProvider.overrideWith((ref) async => null),
+      prayerTimesProvider.overrideWith((ref, date) async => null),
+    ],
+  );
 }

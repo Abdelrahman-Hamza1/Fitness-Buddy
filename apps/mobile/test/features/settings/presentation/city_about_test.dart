@@ -312,4 +312,38 @@ void main() {
     expect(find.text('City set to Nablus · نابلس'), findsOneWidget);
     await unmountApp(tester, container);
   });
+
+  testWidgets('A65 m3 UX-044 About has How it works with the source legend; '
+      'the ML Kit note is one tap away under Privacy', (tester) async {
+    final container = await _openAt(
+      tester,
+      const AboutRoute(),
+      config: prodConfig,
+    );
+    expect(find.byKey(const ValueKey('about-ml-kit')), findsNothing);
+    final privacy = find.byKey(const ValueKey('about-privacy'));
+    await tester.ensureVisible(privacy);
+    await tester.tap(privacy);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('about-ml-kit')), findsOneWidget);
+    await tester.tapAt(const Offset(10, 10));
+    await tester.pumpAndSettle();
+
+    final sources = find.byKey(const ValueKey('about-how-sources'));
+    await tester.scrollUntilVisible(sources, 200);
+    final l10n = FbLocalizations.of(tester.element(sources));
+    await tester.tap(sources);
+    await tester.pumpAndSettle();
+    // The legend sheet draws plain badge glyphs (not tappable FbSourceBadges):
+    // check its four rows.
+    for (final title in [
+      l10n.fbSourceYoursTitle,
+      l10n.fbSourceDatabaseTitle,
+      l10n.fbSourceReferenceTitle,
+      l10n.fbSourceEstimateTitle,
+    ]) {
+      expect(find.text(title), findsOneWidget);
+    }
+    await unmountApp(tester, container);
+  });
 }

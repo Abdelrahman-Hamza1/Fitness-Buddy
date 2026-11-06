@@ -192,6 +192,9 @@ final class FakeIdentity implements IdentityClient {
   bool offline = false;
   Completer<void>? hold;
 
+  /// Holds the server logout (a slow network, A65 review 1).
+  Completer<void>? logoutHold;
+
   /// Thrown by every token-issuing call (e.g. a 401 problem).
   DioException? refuse;
 
@@ -257,6 +260,7 @@ final class FakeIdentity implements IdentityClient {
   @override
   Future<void> logoutSession() async {
     calls.add('logout');
+    await logoutHold?.future;
     if (offline) {
       throw DioException(requestOptions: RequestOptions(path: '/v1/auth'));
     }

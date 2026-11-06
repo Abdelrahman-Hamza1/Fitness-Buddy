@@ -33,7 +33,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updateRequiredBody =>
-      'This version can\'t connect any more. Install the latest one to continue. Your data stays on your phone.';
+      'This version can\'t connect any more. Install the latest build, the same way you installed this one, to continue. Your data stays on your phone.';
 
   @override
   String get updateRequiredCheckAgain => 'Check again';
@@ -1562,7 +1562,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcomeWorkoutsTitle => 'Workouts with or without a plan';
 
   @override
-  String get welcomeWorkoutsBody => 'Your data stays on your phone';
+  String get welcomeWorkoutsBody =>
+      'Log after the gym, or follow a weekly plan';
 
   @override
   String get welcomeStart => 'Get started';
@@ -2273,6 +2274,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get foodTryAgain => 'Try again';
 
   @override
+  String get commonTryAgain => 'Try again';
+
+  @override
+  String get commonCancel => 'Cancel';
+
+  @override
   String get foodSheetClose => 'Close';
 
   @override
@@ -2669,6 +2676,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yourFoodsLoadFailed => 'Couldn\'t load your foods. Try again.';
 
   @override
+  String get yourFoodsSearchHint => 'Search your foods';
+
+  @override
+  String get yourFoodsNoMatch => 'No foods match';
+
+  @override
   String yourFoodsUnreadable(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2920,6 +2933,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'You\'ve changed this food but haven\'t saved it.';
 
   @override
+  String get sheetDiscardMessage => 'What you typed here will be lost.';
+
+  @override
   String get personalFoodDiscardKeep => 'Keep editing';
 
   @override
@@ -3021,6 +3037,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Couldn\'t load your saved meals. Try again.';
 
   @override
+  String get savedMealsSearchHint => 'Search saved meals';
+
+  @override
   String get savedMealDefaultTitle => 'Saved meal';
 
   @override
@@ -3050,9 +3069,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get savedMealRenameTitle => 'Rename meal';
-
-  @override
-  String get savedMealMenuTooltip => 'More for this meal';
 
   @override
   String get savedMealDeleteAction => 'Delete meal';
@@ -3234,7 +3250,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsUnitsImperial => 'Imperial';
 
   @override
-  String get settingsUnitsImperialHint => 'Ounces, fluid ounces, pounds';
+  String get settingsUnitsImperialHint =>
+      'Ounces, fluid ounces, pounds · workouts stay in kg';
 
   @override
   String get settingsWeekStart => 'Week starts on';
@@ -3409,6 +3426,38 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get aboutNotMedical =>
       'Fitness Buddy gives estimates for tracking, not medical advice.';
+
+  @override
+  String get aboutPrivacy => 'Privacy';
+
+  @override
+  String get aboutPrivacyHint => 'What barcode scanning may send';
+
+  @override
+  String get aboutHowTitle => 'How it works';
+
+  @override
+  String get aboutHowSources => 'Where numbers come from';
+
+  @override
+  String get aboutHowSourcesHint => 'What the small Y, D, R and ~ badges mean';
+
+  @override
+  String get aboutHowUndo => 'Undo';
+
+  @override
+  String get aboutHowUndoHint =>
+      'Every change shows Undo for a few seconds. Bigger deletes ask first.';
+
+  @override
+  String get aboutHowEstimates => 'Estimates';
+
+  @override
+  String get aboutHowEstimatesHint =>
+      'A number with ~ is a rough guess when the food isn\'t known. Replace it with the real one any time.';
+
+  @override
+  String get aboutBarcodeTitle => 'Barcode lookups';
 
   @override
   String get exportWhat =>
@@ -3812,6 +3861,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'Couldn\'t change the trend weigh-in. Try again.';
 
   @override
+  String get weightEntriesTitle => 'Entries';
+
+  @override
+  String weightEntryNotUsed(String day) {
+    return '$day · not used for the trend';
+  }
+
+  @override
+  String get weightEntryDelete => 'Delete';
+
+  @override
+  String get weightEntryDeleteChanged =>
+      'This weigh-in changed since it was shown, so it wasn\'t deleted. Check it and try again.';
+
+  @override
+  String get weightEntryDeleteFailed =>
+      'Couldn\'t delete the weigh-in. Try again.';
+
+  @override
+  String get weightEntriesShowMore => 'Show more';
+
+  @override
   String get weightHistoryTitle => 'Past weigh-ins';
 
   @override
@@ -3931,6 +4002,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get measurementsTitle => 'Measurements';
+
+  @override
+  String get measurementsMore => 'More measurements';
 
   @override
   String get measurementKindWaist => 'Waist';
@@ -4170,6 +4244,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get meProfileGoal => 'Profile & goal';
+
+  @override
+  String get meAdaptiveMode => 'Adaptive mode';
 
   @override
   String get meTargets => 'Targets';
@@ -4634,7 +4711,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountSignOutRemoveDetail =>
-      'Your account data stays safe on the server.';
+      'Synced data stays on the server. Changes that haven\'t synced are lost.';
+
+  @override
+  String get accountRemoveTitle => 'Remove from this phone?';
+
+  @override
+  String get accountRemoveSynced =>
+      'Everything is synced. Your data stays on the server, and signing in again brings it back.';
+
+  @override
+  String get accountRemoveSyncing => 'Syncing your latest changes first…';
+
+  @override
+  String accountRemoveUnsynced(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count changes haven\'t synced yet and will be lost if you remove this phone\'s copy.',
+      one: '1 change hasn\'t synced yet and will be lost if you remove this phone\'s copy.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get accountRemoveCheckFailed =>
+      'Couldn\'t check for changes that haven\'t synced. Removing may lose changes made on this phone.';
+
+  @override
+  String get accountRemoveConfirm => 'Remove';
+
+  @override
+  String get accountRemoveAnyway => 'Remove anyway';
+
+  @override
+  String get accountRemoveSyncFirst => 'Sync now';
+
+  @override
+  String get accountRemoveChanged =>
+      'Something changed after you confirmed, so nothing was removed. Check again.';
 
   @override
   String get accountContinueAsGuest => 'Continue as guest';
@@ -5199,6 +5315,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workoutPlanTitle => 'Weekly plan';
+
+  @override
+  String get workoutPlanDaysSection => 'Days';
 
   @override
   String get workoutPlanIntro =>
@@ -6098,7 +6217,7 @@ class AppLocalizationsEn extends AppLocalizations {
         intl.NumberFormat.decimalPattern(localeName);
     final String notFoundString = notFoundNumberFormat.format(notFound);
 
-    return 'Barcode lookups on this phone: $foundString found · $incompleteString incomplete · $notFoundString not found';
+    return 'On this phone: $foundString found · $incompleteString incomplete · $notFoundString not found';
   }
 
   @override
@@ -6196,6 +6315,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get syncParkedDetail =>
       'They stay on this phone. Try again after an app update.';
+
+  @override
+  String syncParkedBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count changes couldn\'t sync. They stay on this phone; try again after an app update.',
+      one: '1 change couldn\'t sync. It stays on this phone; try again after an app update.',
+    );
+    return '$_temp0';
+  }
 
   @override
   String syncLastSync(String time) {
@@ -6365,7 +6496,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifSettingsTitle => 'Notifications';
 
   @override
-  String get notifMaster => 'Reminders';
+  String get notifMaster => 'All reminders';
 
   @override
   String get notifMasterHint => 'Made on this phone; nothing is sent anywhere';
@@ -6393,6 +6524,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifSectionTypes => 'Reminders';
+
+  @override
+  String get notifSectionRamadan => 'Ramadan';
+
+  @override
+  String get notifRamadanNote =>
+      'These only come on Ramadan days, with Ramadan mode on and a city set in Me › Ramadan.';
 
   @override
   String get notifTime => 'Time';
@@ -6534,7 +6672,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ramadanSwitchedOn => 'Ramadan mode is on';
 
   @override
-  String get ramadanNotNowDone => 'You can switch Ramadan mode on in Settings';
+  String get ramadanNotNowDone =>
+      'You can switch Ramadan mode on in Me › Ramadan';
 
   @override
   String get ramadanTitle => 'Ramadan';
@@ -7511,6 +7650,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountNameSaveFailed => 'Couldn\'t save the name. Try again.';
+
+  @override
+  String get accountNameSaved => 'Name saved';
 
   @override
   String get signInNameLabel => 'What should we call you?';

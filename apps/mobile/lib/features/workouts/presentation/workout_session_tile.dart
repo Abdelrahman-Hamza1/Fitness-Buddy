@@ -48,7 +48,8 @@ class WorkoutSessionTile extends StatelessWidget {
         l10n.workoutSessionSummary(summary.exerciseCount, summary.setCount),
         if (summary.prCount > 0) l10n.workoutPrCount(summary.prCount),
       ].join(' · '),
-      trailing: trailing,
+      // A button: under the text at large sizes (A65 m18).
+      trailingAction: trailing,
       onTap: onTap,
     );
   }

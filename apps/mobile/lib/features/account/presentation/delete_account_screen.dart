@@ -82,60 +82,54 @@ class DeleteAccountScreen extends ConsumerWidget {
               ),
             ],
             const SizedBox(height: FbSpace.s4),
-            if (busy)
-              const Center(child: CircularProgressIndicator())
-            else
-              ...switch (phase) {
-                DeletePhase.sessionEnded => [
-                  FbButton.primary(
-                    key: const ValueKey('delete-remove-local'),
-                    label: l10n.deleteRemoveLocal,
-                    onPressed: () => unawaited(controller.removeLocal()),
-                  ),
-                  const SizedBox(height: FbSpace.s2),
-                  FbButton.secondary(
-                    label: l10n.deleteSignInAgain,
-                    onPressed: () => ref
-                        .read(appNavigatorProvider)
-                        .push(const SignInRoute()),
-                  ),
-                ],
-                DeletePhase.needsSignIn => [
-                  FbButton.primary(
-                    label: l10n.deleteSignInAgain,
-                    onPressed: () => ref
-                        .read(appNavigatorProvider)
-                        .push(const SignInRoute()),
-                  ),
-                ],
-                DeletePhase.wipeFailed => [
-                  FbButton.primary(
-                    key: const ValueKey('delete-remove-local'),
-                    label: l10n.deleteRetry,
-                    onPressed: () => unawaited(controller.removeLocal()),
-                  ),
-                ],
-                DeletePhase.offline || DeletePhase.uncertain => [
-                  FbButton.primary(
-                    key: const ValueKey('delete-retry'),
-                    label: l10n.deleteRetry,
-                    onPressed: () => unawaited(controller.delete(guest: guest)),
-                  ),
-                ],
-                DeletePhase.ready || DeletePhase.deleting => [
-                  FbButton.primary(
-                    key: const ValueKey('delete-continue'),
-                    label: l10n.deleteContinue,
-                    onPressed: status == null
-                        ? null
-                        : () => unawaited(confirmAndDelete()),
-                  ),
-                ],
-              },
-            if (busy) ...[
-              const SizedBox(height: FbSpace.s2),
-              Center(child: body(l10n.deleteInProgress)),
-            ],
+            // Irreversible actions use the destructive tone, and the running
+            // deletion is the button's busy state (A65 m12).
+            ...switch (phase) {
+              DeletePhase.sessionEnded => [
+                FbButton.destructive(
+                  key: const ValueKey('delete-remove-local'),
+                  label: l10n.deleteRemoveLocal,
+                  onPressed: () => unawaited(controller.removeLocal()),
+                ),
+                const SizedBox(height: FbSpace.s2),
+                FbButton.secondary(
+                  label: l10n.deleteSignInAgain,
+                  onPressed: () =>
+                      ref.read(appNavigatorProvider).push(const SignInRoute()),
+                ),
+              ],
+              DeletePhase.needsSignIn => [
+                FbButton.primary(
+                  label: l10n.deleteSignInAgain,
+                  onPressed: () =>
+                      ref.read(appNavigatorProvider).push(const SignInRoute()),
+                ),
+              ],
+              DeletePhase.wipeFailed => [
+                FbButton.destructive(
+                  key: const ValueKey('delete-remove-local'),
+                  label: l10n.deleteRetry,
+                  onPressed: () => unawaited(controller.removeLocal()),
+                ),
+              ],
+              DeletePhase.offline || DeletePhase.uncertain => [
+                FbButton.primary(
+                  key: const ValueKey('delete-retry'),
+                  label: l10n.deleteRetry,
+                  onPressed: () => unawaited(controller.delete(guest: guest)),
+                ),
+              ],
+              DeletePhase.ready || DeletePhase.deleting => [
+                FbButton.destructive(
+                  key: const ValueKey('delete-continue'),
+                  label: busy ? l10n.deleteInProgress : l10n.deleteContinue,
+                  busy: busy,
+                  onPressed: status == null || busy
+                      ? null
+                      : () => unawaited(confirmAndDelete()),
+                ),
+              ],
+            },
           ],
         ),
       ),
@@ -161,7 +155,7 @@ class _ConfirmBody extends StatelessWidget {
           style: FbType.body.copyWith(color: scheme.onSurface),
         ),
         const SizedBox(height: FbSpace.s4),
-        FbButton.primary(
+        FbButton.destructive(
           key: const ValueKey('delete-confirm'),
           label: l10n.deleteConfirmYes,
           onPressed: () => Navigator.of(context).pop(true),

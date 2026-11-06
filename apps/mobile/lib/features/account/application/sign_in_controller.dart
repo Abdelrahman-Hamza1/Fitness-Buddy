@@ -4,6 +4,8 @@ import 'package:fb_mobile/core/account/local_identity_store.dart';
 import 'package:fb_mobile/core/account/profile_registry.dart';
 import 'package:fb_mobile/core/session/session_providers.dart';
 import 'package:fb_mobile/core/session/session_state.dart';
+import 'package:fb_mobile/core/sync/sync_providers.dart';
+import 'package:fb_mobile/features/account/application/sign_out_check.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'sign_in_controller.g.dart';
@@ -264,6 +266,38 @@ class AccountActions extends _$AccountActions {
     await ref.read(accountServiceProvider).signOut(choice);
     ref.invalidate(accountStatusProvider);
   }
+
+  /// Removes this phone's copy as [confirmed] (A65 review 1): bound to the
+  /// confirmed profile; writes are held before the final count is read and
+  /// until the removal ended. Returns `false`, with nothing changed, when
+  /// the profile changed or there are more unsynced changes than were
+  /// shown (ask again), `true` once removed.
+  Future<bool> removeCopy(RemoveConfirmation confirmed) async {
+    final removed = await ref
+        .read(accountServiceProvider)
+        .signOut(
+          SignOutChoice.remove,
+          profileKey: confirmed.profileKey,
+          stillConfirmed: () async => confirmed.covers(await _unsyncedNow()),
+        );
+    if (ref.mounted) ref.invalidate(accountStatusProvider);
+    return removed;
+  }
+
+  /// The unsynced count read once, `null` when it can't be read.
+  Future<int?> _unsyncedNow() async {
+    try {
+      final counts = await ref.read(syncStoreProvider).counts();
+      return counts.pendingRows + counts.parked;
+    } on Object {
+      return null;
+    }
+  }
+
+  /// Runs a sync before this phone's copy is removed (A65 M1). Finishes when
+  /// the run ends; whether everything synced is read from the counts.
+  Future<void> syncBeforeRemove() =>
+      ref.read(syncControllerProvider.notifier).syncNow().then((_) {});
 
   /// Opens a guest profile, leaving the read-only copy.
   Future<void> continueAsGuest() async {
