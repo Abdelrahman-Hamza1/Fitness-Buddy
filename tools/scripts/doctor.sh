@@ -31,6 +31,15 @@ for tool in git make python3 curl xz tar unzip; do
   fi
 done
 
+# The checks below parse JSON with python3: without it, report and stop here
+# instead of failing on the first parse (backlog #8).
+if ! have python3; then
+  echo
+  for p in "${problems[@]}"; do printf 'problem: %s\n' "$p"; done
+  echo "doctor: NOT READY"
+  exit 1
+fi
+
 echo
 echo "Flutter / Dart (pinned in .fvmrc: $FLUTTER_VERSION)"
 if have "$FLUTTER"; then

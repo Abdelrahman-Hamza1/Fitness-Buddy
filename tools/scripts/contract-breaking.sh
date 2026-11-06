@@ -226,7 +226,15 @@ fi
 if in_actions; then
   # One annotation per finding (exit 1 = findings, expected here). On stderr,
   # like the report above, so it stays after the stop-commands block ends.
-  tool oasdiff "${args[@]}" --format githubactions >&2 || (($? == 1)) || echo "$name: warning: could not print the annotations" >&2
+  # Only annotation lines pass through (the same filter as contract-conformance,
+  # backlog #23): any other oasdiff output line is dropped, never executed.
+  ann_rc=0
+  tool oasdiff "${args[@]}" --format githubactions >"$out" || ann_rc=$?
+  if ((ann_rc <= 1)); then
+    sed -n -E '/^::(error|warning|notice)( |::)/p' "$out" >&2
+  else
+    echo "$name: warning: could not print the annotations" >&2
+  fi
 fi
 write_summary "Contract: breaking changes (blocking)"
 exit 1

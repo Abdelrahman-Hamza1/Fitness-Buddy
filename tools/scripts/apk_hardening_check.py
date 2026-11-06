@@ -107,7 +107,11 @@ class Element:
         self.texts = []
 
 
-ATTR_RE = re.compile(r"(?P<name>[\w.-]+)(?:\(0x[0-9a-f]+\))?=(?P<value>.*)$")
+ATTR_RE = re.compile(r"(?P<name>[\w.-]+)(?:\((?P<id>0x[0-9a-f]+)\))?=(?P<value>.*)$")
+# Android framework attribute IDs (package 0x01). The platform resolves manifest
+# attributes by ID, so `debuggable(0x0101000f)` without the android namespace
+# still means android:debuggable: such an attribute is rejected (backlog #52).
+FRAMEWORK_ATTR_ID = re.compile(r"0x01[0-9a-f]{6}")
 
 
 def parse_xmltree(text, what):
@@ -145,6 +149,9 @@ def parse_xmltree(text, what):
             if not m:
                 raise DumpError(f"{what}: unreadable attribute: {line}")
             key = prefix + m.group("name")
+            if prefix != "android:" and m.group("id") and FRAMEWORK_ATTR_ID.fullmatch(m.group("id")):
+                raise DumpError(f"{what}: attribute {key} has an android resource id "
+                                f"({m.group('id')}) but no android namespace")
             if key in stack[-1].attrs:
                 raise DumpError(f"{what}: duplicate attribute")
             stack[-1].attrs[key] = m.group("value")

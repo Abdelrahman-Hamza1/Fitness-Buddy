@@ -296,6 +296,9 @@ rules:
       functionOptions: { format: date }
 
   # --- Unions (S02 A4) -----------------------------------------------------------
+  # Known limit (accepted, backlog #25): it compares the mapping's entry count
+  # with the branch count, not the targets (Spectral's resolved document loses
+  # $ref identity). Review mapping targets by eye.
   fb-oneof-discriminator:
     description: >-
       Every oneOf and anyOf, except a two-branch null-wrap, has

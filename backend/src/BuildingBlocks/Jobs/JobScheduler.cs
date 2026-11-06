@@ -42,7 +42,13 @@ public sealed class JobScheduler(NpgsqlDataSource source, TimeProvider clock, II
     public async Task<bool> TickAsync(CancellationToken cancellationToken)
     {
         var candidates = new List<Candidate>();
-        await using (var discover = source.CreateCommand("SELECT name,user_id FROM ops.schedules WHERE next_due <= $1 ORDER BY next_due,name LIMIT 32"))
+        // The earliest due schedules plus each owner's earliest one, so a busy owner can't hide others (backlog #80).
+        await using (var discover = source.CreateCommand("""
+            WITH due AS (SELECT name,user_id,next_due FROM ops.schedules WHERE next_due <= $1),
+            earliest AS (SELECT * FROM due ORDER BY next_due,name LIMIT 32),
+            per_owner AS (SELECT * FROM (SELECT DISTINCT ON (user_id) * FROM due ORDER BY user_id,next_due,name) owners ORDER BY next_due,name LIMIT 32)
+            SELECT name,user_id FROM (SELECT * FROM earliest UNION SELECT * FROM per_owner) candidates ORDER BY next_due,name
+            """))
         {
             discover.Parameters.AddWithValue(clock.GetUtcNow());
             await using var reader = await discover.ExecuteReaderAsync(cancellationToken);

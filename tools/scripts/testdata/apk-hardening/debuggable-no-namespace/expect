@@ -1,0 +1,2 @@
+error
+AndroidManifest.xml: attribute debuggable has an android resource id (0x0101000f) but no android namespace

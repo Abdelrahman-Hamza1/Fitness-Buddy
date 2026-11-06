@@ -84,11 +84,20 @@ public sealed class BuddyApiTests(PostgresFixture postgres)
         await using var api = new BuddyApi(postgres, h, wire); using var client = api.CreateClient(); Headers(client, h); await SignIn(client, h);
         var id = Guid.CreateVersion7(); var first = Send(client, h, id);
         await wire.Started.Task.WaitAsync(TimeSpan.FromSeconds(10), Ct);
+        // buddy.attempts forces RLS, so count as the user (backlog #139: the migrator connection always read 0).
+        // The claim is committed before the send, so the row is visible now: the check below can fail.
+        var user = Guid.Parse((await h.Tokens.ValidateAsync(client.DefaultRequestHeaders.Authorization!.Parameter!, Ct))!.FindFirst("sub")!.Value);
+        Assert.Equal(1L, await AttemptsAsync(user, id));
         using (var erased = await client.DeleteAsync("/v1/me", Ct)) { Assert.Equal(HttpStatusCode.NoContent, erased.StatusCode); }
         wire.Continue.TrySetResult(); using var result = await first; Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode); Assert.Equal(1, wire.Calls);
-        await using var admin = FitnessBuddy.BuildingBlocks.Persistence.DatabaseConfiguration.CreateSource(postgres.MigratorConnection);
-        await using var count = admin.CreateCommand("SELECT count(*) FROM buddy.attempts WHERE message_id=$1"); count.Parameters.AddWithValue(id);
-        Assert.Equal(0L, await count.ExecuteScalarAsync(Ct));
+        Assert.Equal(0L, await AttemptsAsync(user, id));
+    }
+
+    private async Task<long> AttemptsAsync(Guid user, Guid messageId)
+    {
+        await using var session = await postgres.SessionAsync(user);
+        await using var count = session.Command("SELECT count(*) FROM buddy.attempts WHERE message_id=$1"); count.Parameters.AddWithValue(messageId);
+        return (long)(await count.ExecuteScalarAsync(Ct))!;
     }
 
     [Fact]

@@ -64,6 +64,20 @@ if [[ $id == - ]]; then
 fi
 echo "ci-nightly: run $id started $started: $status/$conclusion"
 echo "  $url"
+# GitHub disables a scheduled workflow after 60 days without repository activity
+# (backlog #12), and then no new nightly appears: warn when the latest is stale.
+age_h=$(python3 -I -c '
+import sys
+from datetime import datetime, timezone
+try:
+    started = datetime.fromisoformat(sys.argv[1].replace("Z", "+00:00"))
+    print(int((datetime.now(timezone.utc) - started).total_seconds() // 3600))
+except ValueError:
+    print(-1)
+' "$started")
+if ((age_h > 36)); then
+  echo "ci-nightly: warning: the latest nightly is ${age_h} h old; is the schedule disabled (60 days without activity)? Re-enable it under Actions > CI" >&2
+fi
 if [[ $status != completed ]]; then
   exit 2
 fi

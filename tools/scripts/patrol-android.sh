@@ -78,6 +78,21 @@ case "$mode" in
       || die "no single device: start an emulator or connect a phone (with several, set ANDROID_SERIAL)"
     device_args=()
     [[ -n "${ANDROID_SERIAL:-}" ]] && device_args=(--device "$ANDROID_SERIAL")
+    # Readiness (backlog #112): an emulator can report "device" before Android
+    # has finished booting, and the run then hangs with no test output. Wait for
+    # sys.boot_completed and a package manager that answers, then wake the
+    # screen; give up readably instead of timing out silently.
+    ready_timeout="${PATROL_READY_TIMEOUT_S:-240}"
+    waited=0
+    until [[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" == 1 ]] \
+      && adb shell pm path android >/dev/null 2>&1; do
+      ((waited < ready_timeout)) \
+        || die "emulator/device did not start: Android not booted after ${ready_timeout}s (sys.boot_completed, pm)"
+      sleep 5
+      waited=$((waited + 5))
+    done
+    adb shell input keyevent 82 >/dev/null 2>&1 || true
+    log "device ready (waited ${waited}s)"
     "${patrol[@]}" test "${flavor_args[@]}" "${device_args[@]}" "${extra_args[@]}"
     ;;
 esac

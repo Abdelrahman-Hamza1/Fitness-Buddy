@@ -250,6 +250,38 @@ public sealed class QueueTests(PostgresFixture database) : IAsyncLifetime
         Assert.False(await Processor().DispatchOutboxAsync(Ct));
     }
 
+    [Fact]
+    [Trait("Rule", "04.3.4-jobs")]
+    public async Task A_busy_owner_with_33_due_jobs_does_not_starve_a_later_free_owner()
+    {
+        // Backlog #80: discovery used to read only the 32 earliest rows, all the busy owner's here.
+        var busy = Guid.CreateVersion7();
+        var free = Guid.CreateVersion7();
+        await using (var seed = await database.SessionAsync(busy))
+        {
+            for (var i = 0; i < 33; i++) { await Writer(seed).EnqueueAsync("test.job", new { }, null, Ct); }
+            await seed.CommitAsync(Ct);
+        }
+        clock.Advance(TimeSpan.FromSeconds(1));
+        Guid freeJob;
+        await using (var seed = await database.SessionAsync(free))
+        {
+            freeJob = await Writer(seed).EnqueueAsync("test.job", new { }, null, Ct);
+            await seed.CommitAsync(Ct);
+        }
+        var handled = new List<Guid>();
+        handler.Execute = (message, session, ct) => { handled.Add(message.Id); return EffectAsync(session, message.Id, ct); };
+        await using (var held = await database.SessionAsync(busy))
+        {
+            await UserLifecycleLock.AcquireAsync(held, busy, Ct);
+            Assert.True(await Processor().RunJobAsync(Ct));
+            Assert.Equal([freeJob], handled);
+            Assert.False(await Processor().RunJobAsync(Ct));
+        }
+        Assert.True(await Processor().RunJobAsync(Ct));
+        Assert.Equal(2, handled.Count);
+    }
+
     private QueueWriter Writer(DatabaseSession session) => new(session, clock, new UuidV7IdGenerator(clock));
     private QueueProcessor Processor(QueuePolicy? policy = null) => new(database.App, clock, [handler], [handler], policy ?? new QueuePolicy(), NullLogger<QueueProcessor>.Instance, new SyntheticLifecycle(), database.Recovery);
 

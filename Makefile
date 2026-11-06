@@ -15,9 +15,11 @@ REPO_ROOT := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 
 # --- Toolchain (D1-D3) --------------------------------------------------------
 # Flutter/Dart: pinned in .fvmrc, installed by tools/scripts/setup-flutter.sh.
-FLUTTER_VERSION := $(shell python3 -I -c 'import json,sys; print(json.load(open(sys.argv[1]))["flutter"])' '$(REPO_ROOT)/.fvmrc' 2>/dev/null)
+# Read with sed, not python3, so a machine without python3 still parses the
+# Makefile and `make doctor` can report the missing tool (backlog #8).
+FLUTTER_VERSION := $(shell sed -n 's/^[[:space:]]*"flutter"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' '$(REPO_ROOT)/.fvmrc' 2>/dev/null | head -n 1)
 ifeq ($(strip $(FLUTTER_VERSION)),)
-$(error Could not read the "flutter" version from $(REPO_ROOT)/.fvmrc (is python3 installed?))
+$(error Could not read the "flutter" version from $(REPO_ROOT)/.fvmrc)
 endif
 FLUTTER_ROOT ?= $(HOME)/development/flutter-$(FLUTTER_VERSION)
 FLUTTER ?= $(FLUTTER_ROOT)/bin/flutter
@@ -166,13 +168,15 @@ deps-dart: ## Resolve Dart dependencies for the whole workspace (flutter pub get
 	cd '$(REPO_ROOT)' && '$(FLUTTER)' pub get $(PUB_GET_FLAGS)
 
 .PHONY: check-dart
-check-dart: ## Verify Dart formatting, analyze (very_good_analysis + riverpod_lint, infos are errors), app-check, frozen migrations
+check-dart: ## Verify Dart formatting, analyze (very_good_analysis + riverpod_lint, infos are errors), app-check, frozen migrations, pub.dev-only lock
 	cd '$(REPO_ROOT)' && '$(DART)' format --output=none --set-exit-if-changed .
 	cd '$(REPO_ROOT)' && '$(DART)' analyze --fatal-infos
 	$(APP_CHECK)
 	@bash '$(REPO_ROOT)/tools/scripts/check-frozen-migrations-selftest.sh'
 	@bash '$(REPO_ROOT)/tools/scripts/check-frozen-migrations.sh'
 	PYTHONDONTWRITEBYTECODE=1 python3 -I -m unittest discover -s '$(REPO_ROOT)/tools/scripts' -p 'test_off*.py'
+	PYTHONDONTWRITEBYTECODE=1 python3 -I -m unittest discover -s '$(REPO_ROOT)/tools/scripts' -p 'test_pub_lock.py'
+	python3 -I '$(REPO_ROOT)/tools/scripts/check-pub-lock.py' '$(REPO_ROOT)/pubspec.lock'
 
 # The app's architecture rules the analyzer can't express (S06 plan D16):
 # import boundaries, the single-writer write path (A01 D12), raw user-facing

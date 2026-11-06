@@ -4,7 +4,8 @@
 # passes the real good ones. No Android SDK needed: it runs on captured aapt2
 # dumps in tools/scripts/testdata/apk-hardening/<case>/:
 #   flavor   dev | staging | prod
-#   expect   "pass", or "fail" + a line the check must print as an error
+#   expect   "pass", or "fail" (exit 1) / "error" (exit 2, an unreadable or
+#            rejected dump) + a line the check must print as an error
 #   base     optional: the case whose files this one starts from; its own files
 #            replace them (so a bad case holds only what it breaks)
 #   badging.txt, resources.txt, xmltree/<path in the APK>.txt   the dumps
@@ -49,9 +50,9 @@ for dir in "$fixtures"/*/; do
     >"$work/$case_name.out" 2>"$work/$case_name.err" || rc=$?
   if [[ "$verdict" == pass && $rc -eq 0 ]]; then
     printf '  ok    %-26s passes\n' "$case_name"
-  elif [[ "$verdict" == fail && $rc -eq 1 ]] \
+  elif { [[ "$verdict" == fail && $rc -eq 1 ]] || [[ "$verdict" == error && $rc -eq 2 ]]; } \
     && grep -qxF -- "apk-hardening: error: $message" "$work/$case_name.err"; then
-    printf '  ok    %-26s fails: %s\n' "$case_name" "$message"
+    printf '  ok    %-26s %s: %s\n' "$case_name" "${verdict/fail/fails}" "$message"
   else
     printf '  FAIL  %-26s expected %s%s, got exit %d:\n' "$case_name" "$verdict" "${message:+ ($message)}" "$rc"
     sed 's/^/        | /' "$work/$case_name.err" "$work/$case_name.out"

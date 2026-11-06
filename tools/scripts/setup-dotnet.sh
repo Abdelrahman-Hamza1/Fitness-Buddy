@@ -116,12 +116,17 @@ if not url or not digest:
 print(url, digest)
 '
 
-# Prints the host of URL $1 if it is https, nothing otherwise.
+# Prints the host of URL $1 if it is https, nothing otherwise (also for a URL
+# that urllib can't parse, e.g. a non-numeric port: no traceback, backlog #14).
 readonly URL_HOST_PY='
 import sys
 from urllib.parse import urlsplit
-u = urlsplit(sys.argv[1])
-if u.scheme == "https" and u.hostname and u.port is None and not u.username:
+try:
+    u = urlsplit(sys.argv[1])
+    ok = u.scheme == "https" and u.hostname and u.port is None and not u.username
+except ValueError:
+    ok = False
+if ok:
     print(u.hostname)
 '
 
@@ -172,8 +177,9 @@ main() {
   # only. Nothing in it is trusted until the sha512 check has passed.
   local work
   work="$(mktemp -d "$parent/.dotnet-sdk-$version.tmp.XXXXXX")"
+  # Expand $work now, shell-quoted (%q), so any character in the path is safe.
   # shellcheck disable=SC2064  # expand $work now, on purpose
-  trap "rm -rf -- '$work'" EXIT
+  trap "rm -rf -- $(printf '%q' "$work")" EXIT
   mkdir "$work/meta" "$work/download" "$work/stage"
 
   local channel="${version%.*}"
@@ -188,7 +194,7 @@ main() {
     || die "no verifiable SDK archive for $version ($RID) in the release metadata (see above)"
   read -r url sha512 <<<"$info"
 
-  host="$(python3 -I -c "$URL_HOST_PY" "$url")"
+  host="$(python3 -I -c "$URL_HOST_PY" "$url")" || host=""
   [[ "$host" == "$ARCHIVE_HOST" ]] \
     || die "unexpected archive URL in the release metadata: $url (want https://$ARCHIVE_HOST/...)"
   local file="dotnet-sdk-$version-$RID.tar.gz"

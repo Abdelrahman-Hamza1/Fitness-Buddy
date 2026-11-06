@@ -10,7 +10,7 @@
 # cooldown: a release must be 7 days old before a version-update PR proposes it,
 # so a compromised or broken release has time to be caught and yanked first.
 # Supported (default-days) by every ecosystem used here: pub, nuget, dotnet-sdk,
-# github-actions, docker, docker-compose (GitHub docs, checked 2026-10).
+# github-actions, docker, docker-compose, gradle (GitHub docs, checked 2026-10).
 # Security updates are not delayed by it.
 version: 2
 
@@ -156,3 +156,24 @@ updates:
     groups:
       postgres-minor-patch:
         update-types: [minor, patch]
+
+  # The Android build (backlog #50): AGP, the Kotlin Gradle plugin, the androidx
+  # test orchestrator and the Gradle wrapper (with its distributionSha256Sum).
+  # Majors are ignored: AGP and Kotlin majors must stay inside the range the
+  # pinned Flutter SDK supports, so they move with a Flutter bump, on purpose.
+  # A bump PR runs the android build job in CI like any app change.
+  - package-ecosystem: gradle
+    directory: /apps/mobile/android
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore(deps)
+    cooldown:
+      default-days: 7
+    groups:
+      gradle-minor-patch:
+        update-types: [minor, patch]
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']

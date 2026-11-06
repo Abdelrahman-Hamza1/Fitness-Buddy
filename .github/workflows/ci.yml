@@ -310,8 +310,13 @@ jobs:
         with:
           global-json-file: backend/global.json
 
-      - name: Cache NuGet packages
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      # Restored everywhere, saved only on main (backlog #47): each merge/** and
+      # PR ref used to save its own ~260 MB copy, which pushed the repo past the
+      # 10 GB Actions cache limit and evicted main's Gradle and Flutter caches.
+      # Other refs can read main's caches; the nightly run on main refreshes it.
+      - name: Restore NuGet packages (cache)
+        id: nuget-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('backend/Directory.Packages.props', 'backend/**/*.csproj', 'backend/global.json') }}
@@ -324,6 +329,13 @@ jobs:
         run: |
           : "${DOTNET_ROOT:?setup-dotnet did not export DOTNET_ROOT}"
           make deps-dotnet check-dotnet DOTNET="$DOTNET_ROOT/dotnet" DOTNET_ROOT="$DOTNET_ROOT"
+
+      - name: Save NuGet packages (cache, main only)
+        if: github.ref == 'refs/heads/main' && steps.nuget-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.nuget/packages
+          key: ${{ steps.nuget-cache.outputs.cache-primary-key }}
 
       # Rebuilds the Host (incremental after the build above, which already wrote
       # backend/artifacts/openapi/server.json) and diffs that document against
@@ -835,12 +847,20 @@ jobs:
           fi
           # Patrol's per-test and total lines, without colour codes (the last
           # lines of the output if none match).
+          # An attempt with no Patrol result line never ran a test (backlog
+          # #112): say so, then show the last lines.
+          # $2 = the attempt's step outcome: an attempt that never ran is
+          # skipped; one that ran but left no log failed before Patrol started.
           results() {
-            [[ -f "$1" ]] || return 0
+            [[ -n "$2" && "$2" != skipped ]] || return 0
+            if [[ ! -f "$1" ]]; then
+              echo "no test output: the attempt ($2) failed before Patrol started (no log; emulator boot?)"
+              return 0
+            fi
             local clean
             clean="$(sed 's/\x1b\[[0-9;]*[A-Za-z]//g' "$1")"
             grep -E '[A-Z]{2,3}-[0-9]{3}|Total:|Successful:|Failed:|Skipped:|Duration:' <<<"$clean" \
-              || tail -n 15 <<<"$clean"
+              || { echo "no test output: the emulator or the test build did not start (last lines):"; tail -n 15 <<<"$clean"; }
           }
           {
             echo "### Android integration tests (Patrol, API 34 google_apis x86_64)"
@@ -852,7 +872,8 @@ jobs:
             echo "- Job time: $(( $(date +%s) - START )) s"
             echo "- Disk free: $(df -h --output=avail / | tail -n 1 | tr -d ' ')"
             for n in 1 2; do
-              lines="$(results "$RUNNER_TEMP/patrol-attempt-$n.log")"
+              outcome="$IT1"; ((n == 1)) || outcome="$IT2"
+              lines="$(results "$RUNNER_TEMP/patrol-attempt-$n.log" "$outcome")"
               [[ -n "$lines" ]] || continue
               fence='```'
               printf '\nAttempt %s:\n%s\n%s\n%s\n' "$n" "$fence" "$lines" "$fence"
@@ -860,7 +881,8 @@ jobs:
           } >>"$GITHUB_STEP_SUMMARY"
           # Also as annotations: readable through the API without a login.
           for n in 1 2; do
-            lines="$(results "$RUNNER_TEMP/patrol-attempt-$n.log")"
+            outcome="$IT1"; ((n == 1)) || outcome="$IT2"
+            lines="$(results "$RUNNER_TEMP/patrol-attempt-$n.log" "$outcome")"
             [[ -n "$lines" ]] || continue
             lines="${lines//'%'/'%25'}"
             echo "::notice title=Patrol attempt $n::${lines//$'\n'/'%0A'}"

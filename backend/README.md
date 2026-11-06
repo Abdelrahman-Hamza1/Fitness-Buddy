@@ -178,21 +178,7 @@ When conformance fails, the contract wins: fix the C#, or change the contract fi
 - `ProblemDetailsSchemaTransformer`: the framework's `ProblemDetails` schema is all-nullable and all-optional. This rewrites it into the contract's RFC 9457 shape: `type` (uri-reference), `title`, `status` (int32) required and non-null, `detail`, `instance` and `traceId` optional. On `HttpValidationProblemDetails` (the contract's `ValidationProblemDetails`) it also makes `errors` required and non-null.
 - `ClientHeadersOperationTransformer`: the client headers, on every operation with `ClientHeadersMetadata`.
 - `ResponseHeadersOperationTransformer`: `X-Request-Id` on every response; `Retry-After`, `RateLimit` and `RateLimit-Policy` on 429.
-- **Deferred: enum schema transformer.** .NET 10 emits string enums as `enum: [...]` *without* `type: string`. The first step that adds an enum to the API adds this transformer (proven in the S02 research) and a conformance check of the enum:
-
-  ```csharp
-  // .NET 10 emits string enums as `enum: [...]` without `type: string`.
-  options.AddSchemaTransformer((schema, context, ct) =>
-  {
-      var type = Nullable.GetUnderlyingType(context.JsonTypeInfo.Type) ?? context.JsonTypeInfo.Type;
-      if (type.IsEnum && schema.Enum is { Count: > 0 })
-      {
-          schema.Type = JsonSchemaType.String;
-      }
-
-      return Task.CompletedTask;
-  });
-  ```
+- `BuddyContractTransformer` (B09a) types the API's string enums: .NET 10 emits them as `enum: [...]` *without* `type: string` (and with a `null` member when a use is nullable), so it sets `type: string` and drops the `null` on every `Buddy*` schema; conformance checks the result. A module outside Buddy that adds an enum to the API widens that rule to its schemas (or moves it into a shared schema transformer) in the same step.
 
 **Startup must stay side-effect free (rule for S04 on).** To write the document, the build runs the Host's `Program.cs` inside the `GetDocument.Insider` tool, with no database, secrets or network. Any startup work with side effects (database migrations, connecting to Postgres, starting jobs, failing on missing secrets, options `ValidateOnStart`) must be skipped there, with `PlatformSetup.IsBuildTimeDocument`:
 

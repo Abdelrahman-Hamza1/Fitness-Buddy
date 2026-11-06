@@ -155,6 +155,31 @@ public sealed class SyncTests(PostgresFixture database)
     }
 
     [Fact, Trait("Rule", "05.5-cursors")]
+    public async Task Pull_and_history_pages_stop_at_the_byte_budget_but_always_carry_one_row()
+    {
+        // Backlog #132: four ~800 KB rows fit two per 2 MiB page; the client pages on until an empty page.
+        var user = Guid.NewGuid(); var big = new string('x', 800 * 1024);
+        var ids = Enumerable.Range(0, 4).Select(_ => Guid.NewGuid()).ToArray();
+        await Store.PushAsync(user, [.. ids.Select(id => Version(id, 0, text: big))], Now, Ct);
+        var seen = new List<Guid>(); long cursor = 0; var pages = 0;
+        while (true)
+        {
+            var page = await Store.PullAsync(user, cursor, 500, false, Ct);
+            if (page.Changes.Count == 0) { break; }
+            Assert.True(page.Changes.Count <= 2, $"page {pages} has {page.Changes.Count} rows over the budget");
+            seen.AddRange(page.Changes.Select(row => row.Version.Id)); cursor = long.Parse(page.NextCursor, CultureInfo.InvariantCulture); pages++;
+        }
+        Assert.Equal(2, pages);
+        Assert.Equal(ids.Order(), seen.Order());
+        // Replacing every row moves the old versions to history: the same budget applies there.
+        await Store.PushAsync(user, [.. ids.Select(id => Version(id, 1))], Now, Ct);
+        Assert.Equal(2, (await Store.PullAsync(user, 0, 500, true, Ct)).Changes.Count);
+        // One row larger than the budget is still delivered alone, so paging never stalls.
+        var tiny = new PostgresSyncStore(database.App, new FitnessBuddy.Modules.Identity.Infrastructure.PostgresIdentityStore(database.App, new TestClock()), TimeProvider.System, new FitnessBuddy.BuildingBlocks.Ids.UuidV7IdGenerator(TimeProvider.System)) { PageByteBudget = 10 };
+        Assert.Single((await tiny.PullAsync(user, 0, 500, false, Ct)).Changes);
+    }
+
+    [Fact, Trait("Rule", "05.5-cursors")]
     public async Task Rows_updated_while_paging_move_forward_and_are_delivered_again()
     {
         var user = Guid.NewGuid(); var a = Guid.NewGuid(); var b = Guid.NewGuid();

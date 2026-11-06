@@ -13,6 +13,12 @@ namespace FitnessBuddy.Modules.UserData.Infrastructure;
 
 internal sealed class PostgresSyncStore(NpgsqlDataSource source, IIdentityAccess identity, TimeProvider clock, IIdGenerator ids) : ISyncStore
 {
+    /// <summary>Payload bytes per pull/history page (backlog #132). `limit` alone allowed a 500-row page of
+    /// max-size rows (~190 MB escaped). A page always carries at least one row; clients page until empty.</summary>
+    internal const int DefaultPageByteBudget = 2 * 1024 * 1024;
+
+    internal int PageByteBudget { get; init; } = DefaultPageByteBudget;
+
     internal async Task<IReadOnlyList<VersionResult>> PushAsync(Guid userId, IReadOnlyList<SyncVersion> versions, DateTimeOffset now, CancellationToken cancellationToken)
     {
         await using var session = new DatabaseSession();
@@ -79,7 +85,7 @@ internal sealed class PostgresSyncStore(NpgsqlDataSource source, IIdentityAccess
         var sequence = history ? "userdata.history_seq" : "userdata.document_seq";
         await using var high = session.Command($"SELECT CASE WHEN is_called THEN last_value ELSE 0 END FROM {sequence}");
         if (cursor > (long)(await high.ExecuteScalarAsync(cancellationToken))!) { return new VersionPage([], "0", current, "cursorInvalid"); }
-        var page = await PageAsync(session, principal.UserId, cursor, limit, history, entity, id, cancellationToken, clock.GetUtcNow() - TimeSpan.FromDays(30));
+        var page = await PageAsync(session, principal.UserId, cursor, limit, history, entity, id, PageByteBudget, cancellationToken, clock.GetUtcNow() - TimeSpan.FromDays(30));
         await session.CommitAsync(cancellationToken);
         return page with { DatasetId = current };
     }
@@ -197,15 +203,15 @@ internal sealed class PostgresSyncStore(NpgsqlDataSource source, IIdentityAccess
     {
         await using var session = new DatabaseSession();
         await session.BeginAsync(source, userId, cancellationToken);
-        return await PageAsync(session, userId, cursor, limit, history, null, null, cancellationToken);
+        return await PageAsync(session, userId, cursor, limit, history, null, null, PageByteBudget, cancellationToken);
     }
 
     private static async Task<VersionPage> PageAsync(DatabaseSession session, Guid userId, long cursor, int limit, bool history,
-        string? entity, Guid? id, CancellationToken cancellationToken, DateTimeOffset? historyCutoff = null)
+        string? entity, Guid? id, int byteBudget, CancellationToken cancellationToken, DateTimeOffset? historyCutoff = null)
     {
         // Table is a code-owned choice, never user input. Both cursor spaces obey the same ordering rule.
         var table = history ? "userdata.row_history" : "userdata.documents";
-        await using var command = session.Command($"SELECT entity,id,schema_version,hlc,device_id,deleted_at,payload,server_seq,compacted FROM {table} WHERE user_id=$1 AND server_seq>$2 AND ($4::text IS NULL OR entity=$4) AND ($5::uuid IS NULL OR id=$5) {(history ? "AND ($6::timestamptz IS NULL OR replaced_at>$6)" : "")} ORDER BY server_seq LIMIT $3");
+        await using var command = session.Command($"SELECT entity,id,schema_version,hlc,device_id,deleted_at,payload,server_seq,compacted,octet_length(payload::text) FROM {table} WHERE user_id=$1 AND server_seq>$2 AND ($4::text IS NULL OR entity=$4) AND ($5::uuid IS NULL OR id=$5) {(history ? "AND ($6::timestamptz IS NULL OR replaced_at>$6)" : "")} ORDER BY server_seq LIMIT $3");
         command.Parameters.AddWithValue(userId);
         command.Parameters.AddWithValue(cursor);
         command.Parameters.AddWithValue(limit);
@@ -213,9 +219,13 @@ internal sealed class PostgresSyncStore(NpgsqlDataSource source, IIdentityAccess
         command.Parameters.AddWithValue(NpgsqlDbType.Uuid, (object?)id ?? DBNull.Value);
         if (history) { command.Parameters.AddWithValue(NpgsqlDbType.TimestampTz, (object?)historyCutoff ?? DBNull.Value); }
         var rows = new List<StoredVersion>();
+        long bytes = 0;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
         {
+            // Stop before the row that would cross the budget; it starts the next page (nextCursor is the last row sent).
+            bytes += reader.GetInt32(9);
+            if (rows.Count > 0 && bytes > byteBudget) { break; }
             var version = new SyncVersion(reader.GetString(0), reader.GetGuid(1), reader.GetInt32(2), reader.GetString(3), reader.GetGuid(4),
                 reader.IsDBNull(5) ? null : reader.GetFieldValue<DateTimeOffset>(5), reader.GetFieldValue<JsonElement>(6));
             rows.Add(new StoredVersion(version, reader.GetInt64(7).ToString(CultureInfo.InvariantCulture), reader.GetBoolean(8)));

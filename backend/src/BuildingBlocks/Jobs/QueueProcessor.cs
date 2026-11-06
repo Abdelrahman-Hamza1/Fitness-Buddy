@@ -79,8 +79,10 @@ public sealed partial class QueueProcessor
         var table = outbox ? "outbox" : "jobs";
         var typeColumn = outbox ? "event_type" : "job_type";
         var candidates = new List<Candidate>();
-        // Discovery never holds a queue row while waiting for its owner's lifecycle lock.
-        await using (var discover = source.CreateCommand($"SELECT id,{typeColumn},user_id FROM ops.{table} WHERE state='pending' AND available_at <= $1 ORDER BY available_at,id LIMIT 32"))
+        // Discovery never holds a queue row while waiting for its owner's lifecycle lock. Candidates are the
+        // earliest due rows plus each owner's earliest due row, so a busy owner's backlog can't hide other
+        // owners' items (backlog #80). Earliest first; the global → user → row lock order is unchanged.
+        await using (var discover = source.CreateCommand(DiscoverySql(table, typeColumn)))
         {
             discover.Parameters.AddWithValue(clock.GetUtcNow());
             await using var reader = await discover.ExecuteReaderAsync(cancellationToken);
@@ -91,6 +93,17 @@ public sealed partial class QueueProcessor
         { if (await TryProcessAsync(outbox, candidate, cancellationToken)) { return true; } }
         return false;
     }
+
+    /// <summary>Up to <see cref="DiscoveryLimit"/> earliest due rows, plus the earliest due row of up to
+    /// <see cref="DiscoveryLimit"/> owners (the owner-less system items count as one owner), earliest first.</summary>
+    private static string DiscoverySql(string table, string typeColumn) => $"""
+        WITH due AS (SELECT id,{typeColumn} AS type,user_id,available_at FROM ops.{table} WHERE state='pending' AND available_at <= $1),
+        earliest AS (SELECT * FROM due ORDER BY available_at,id LIMIT {DiscoveryLimit}),
+        per_owner AS (SELECT * FROM (SELECT DISTINCT ON (user_id) * FROM due ORDER BY user_id,available_at,id) owners ORDER BY available_at,id LIMIT {DiscoveryLimit})
+        SELECT id,type,user_id FROM (SELECT * FROM earliest UNION SELECT * FROM per_owner) candidates ORDER BY available_at,id
+        """;
+
+    private const int DiscoveryLimit = 32;
 
     private async Task<bool> TryProcessAsync(bool outbox, Candidate candidate, CancellationToken cancellationToken)
     {
