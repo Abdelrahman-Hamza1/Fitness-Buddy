@@ -13,13 +13,13 @@ environment:
 # plugin, pinned in the root analysis_options.yaml.
 dependencies:
   # UUIDv5 natural IDs (A01 D6). Already in the lockfile.
-  crypto: ^3.0.7
+  crypto: ^3.0.8
   # Same exact pin as fb_api_client (its generated code runs on it).
   dio: 5.11.1
   # Local database (A01 D13-D15). Exact pin: drift and drift_dev are a codegen
   # pair, bumped together on purpose (like riverpod). No drift_flutter (why:
   # lib/core/db/connection.dart).
-  drift: 2.35.2
+  drift: 2.35.3
   fb_api_client:
     path: ../../packages/fb_api_client
   # Tokens, themes and components (A02). Screens build UI from it only.
@@ -84,7 +84,7 @@ dev_dependencies:
   build_runner: 2.16.1
   # drift's code generator and migration tooling (make-migrations), pinned
   # with drift.
-  drift_dev: 2.35.1
+  drift_dev: 2.35.2
   flutter_test:
     sdk: flutter
   # A21 engine-only profile gate: Flutter SDK device test runner.
