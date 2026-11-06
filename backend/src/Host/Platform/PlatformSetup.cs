@@ -46,6 +46,8 @@ internal static class PlatformSetup
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IIdGenerator, UuidV7IdGenerator>();
         services.AddSingleton<IFeatureFlags, OptionsFeatureFlags>();
+        // Configuration-only defaults; the Account module replaces both with the published remote config (B23).
+        services.AddSingleton<IClientCompatibility, OptionsClientCompatibility>();
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, HttpCurrentUser>();
 

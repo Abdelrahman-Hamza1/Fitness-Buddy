@@ -50,7 +50,8 @@ this project or volume. No automatic network exposure or container restart after
 4. Open [Tailscale Access controls](https://login.tailscale.com/admin/acls) yourself. For this
    dedicated two-device tailnet, apply the **whole private** `tailnet-policy.json` printed by
    the policy command, replacing the default allow-all rules. It grants only A55 IPv4/IPv6
-   addresses → laptop IPv4/IPv6 TCP443. The generated tests assert allowed 443 and denied
+   addresses → laptop IPv4/IPv6 TCP443 and, since B23, the A55 and the laptop → the tagged console node `tag:fb-admin`
+   TCP443 (its own hostname, see [admin console](admin-console.md)). The generated tests assert allowed 443 and denied
    SSH/direct API/another source. Save only when policy validation passes. If you add another
    device, preserve default-deny and add a negative assertion for its real address. Policy
    tests are not proof of a physical third-device test. This complete policy is suitable only

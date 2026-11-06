@@ -10,6 +10,7 @@
     <Project Path="src/Modules/Buddy/FitnessBuddy.Modules.Buddy.csproj" />
     <Project Path="src/Modules/Account/FitnessBuddy.Modules.Account.csproj" />
     <Project Path="src/Modules/UserData/FitnessBuddy.Modules.UserData.csproj" />
+    <Project Path="src/Modules/Admin/FitnessBuddy.Modules.Admin.csproj" />
   </Folder>
   <Folder Name="/tools/">
     <Project Path="tools/BuddySpike/FitnessBuddy.BuddySpike.csproj" />

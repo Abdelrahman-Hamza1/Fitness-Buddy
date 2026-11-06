@@ -10,6 +10,7 @@ public sealed class RoleTests
         { ["api"], nameof(HostRole.Api), [] },
         { ["worker"], nameof(HostRole.Worker), [] },
         { ["migrate"], nameof(HostRole.Migrate), [] },
+        { ["admin"], nameof(HostRole.Admin), [] },
         { ["--contentRoot", "/x"], nameof(HostRole.Api), ["--contentRoot", "/x"] },
         { ["--environment=Testing"], nameof(HostRole.Api), ["--environment=Testing"] },
         { ["migrate", "--foo=1"], nameof(HostRole.Migrate), ["--foo=1"] },

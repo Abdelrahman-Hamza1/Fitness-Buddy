@@ -9,7 +9,13 @@ x-runtime: &runtime
   security_opt: [no-new-privileges:true]
   stop_grace_period: 30s
   restart: "no"
+# B23: the remote-config defaults every role reads (the migrate role seeds version 1 from them), so they can never differ
+# between roles. Change values here only, never per service. The override (recovery) comes from `set-override`.
+x-remote-config: &remote-config
+  Clients__MinimumAppVersion: "0.1.0"
+  Clients__MinimumAppVersionOverride: ${FB_PHONE_MIN_VERSION_OVERRIDE:-}
 x-environment: &environment
+  <<: *remote-config
   DOTNET_ENVIRONMENT: Production
   ASPNETCORE_ENVIRONMENT: Production
   ConnectionStrings__Application: Host=postgres;Database=fitness_buddy;Username=fb_app;Password=${FB_PHONE_APP_PASSWORD:?}
@@ -27,6 +33,8 @@ services:
       FB_PHONE_APP_PASSWORD: ${FB_PHONE_APP_PASSWORD:?}
       FB_PHONE_MIGRATOR_PASSWORD: ${FB_PHONE_MIGRATOR_PASSWORD:?}
       FB_PHONE_BACKUP_PASSWORD: ${FB_PHONE_BACKUP_PASSWORD:?}
+      # B23: read by the controller's ensure-admin-role step through psql's \getenv, never on a command line.
+      FB_PHONE_CONSOLE_PASSWORD: ${FB_PHONE_CONSOLE_PASSWORD:?}
     volumes:
       - phone-data:/var/lib/postgresql
       - ./init-roles.sh:/docker-entrypoint-initdb.d/001-roles.sh:ro
@@ -41,6 +49,7 @@ services:
     <<: *runtime
     command: [migrate]
     environment:
+      <<: *remote-config
       DOTNET_ENVIRONMENT: Production
       ConnectionStrings__Migrator: Host=postgres;Database=fitness_buddy;Username=fb_migrator;Password=${FB_PHONE_MIGRATOR_PASSWORD:?}
     depends_on:
@@ -59,5 +68,61 @@ services:
     environment: *environment
     depends_on:
       migrate: {condition: service_completed_successfully}
+  # B23 admin console: only with the `admin` profile (the controller adds it once the console is configured). Reached only
+  # through its own tailnet node `fb-admin` (the admin-tailscale sidecar below), so its cookies never share a hostname with
+  # the API. The loopback port is for the controller's readiness check only. Its only database login is fb_admin.
+  admin:
+    <<: *runtime
+    profiles: [admin]
+    command: [admin]
+    user: "${FB_PHONE_UID:?}"
+    ports: ["127.0.0.1:5197:8081"]
+    environment:
+      <<: *remote-config
+      DOTNET_ENVIRONMENT: Production
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Admin: Host=postgres;Database=fitness_buddy;Username=fb_admin;Password=${FB_PHONE_CONSOLE_PASSWORD:?}
+      Admin__Url: http://0.0.0.0:8081
+      Admin__GoogleClientId: ${FB_PHONE_CONSOLE_CLIENT_ID:?}
+      Admin__AllowListFile: /console/allow-list.json
+      Admin__BackupStatusFile: /status/backup.json
+      # No Proxy__TrustedNetworks: only loopback is trusted, which is the sidecar in this network namespace. Clients on the
+      # published port arrive from the bridge gateway, so they can't supply X-Forwarded-For.
+      Observability__ConsoleExporter: "false"
+      Sentry__Dsn: ""
+    volumes:
+      - {type: bind, source: "${FB_PHONE_CONSOLE_DIR:?}", target: /console, read_only: true}
+      - {type: bind, source: "${FB_PHONE_STATUS_DIR:?}", target: /status, read_only: true}
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+  # The console's own tailnet node (B23 security review): HTTPS 443 on https://fb-admin.<tailnet>.ts.net -> the console on
+  # 127.0.0.1:8081 in the console's network namespace. Serve only, never Funnel (the fixed serve file has no AllowFunnel and
+  # the tailnet policy grants no funnel attribute). Tagged tag:fb-admin; the auth key is single-use, its state private.
+  admin-tailscale:
+    image: tailscale/tailscale:v1.104.4@sha256:ed6480b33c6eb67c9cbd203ed42b9fb57e361986725b6856def71b7a3d9e276c
+    profiles: [admin]
+    network_mode: service:admin
+    user: "${FB_PHONE_UID:?}"
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      TS_HOSTNAME: fb-admin
+      TS_AUTHKEY: file:/authkey/authkey
+      TS_AUTH_ONCE: "true"
+      TS_EXTRA_ARGS: --advertise-tags=tag:fb-admin
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_SOCKET: /tmp/tailscaled.sock
+      TS_USERSPACE: "true"
+      TS_ACCEPT_DNS: "false"
+      TS_KUBE_SECRET: ""
+      TS_SERVE_CONFIG: /serve/admin-serve.json
+    volumes:
+      - {type: bind, source: "${FB_PHONE_CONSOLE_TS_DIR:?}", target: /var/lib/tailscale}
+      - {type: bind, source: "${FB_PHONE_CONSOLE_KEY_DIR:?}", target: /authkey, read_only: true}
+      - {type: bind, source: "${FB_PHONE_CONSOLE_SERVE:?}", target: /serve/admin-serve.json, read_only: true}
+    stop_grace_period: 30s
+    restart: "no"
 volumes:
   phone-data:

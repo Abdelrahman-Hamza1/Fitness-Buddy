@@ -2,7 +2,6 @@ using FitnessBuddy.BuildingBlocks.Clients;
 using FitnessBuddy.BuildingBlocks.Web.Http;
 using FitnessBuddy.BuildingBlocks.Web.Problems;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace FitnessBuddy.Host.Http;
 
@@ -18,7 +17,7 @@ namespace FitnessBuddy.Host.Http;
 /// </summary>
 internal sealed class ClientHeadersMiddleware(
     RequestDelegate next,
-    IOptionsMonitor<ClientCompatibilityOptions> compatibility,
+    IClientCompatibility compatibility,
     IProblemDetailsService problemDetails)
 {
     public const string UpgradeRequiredDetail = "This app version is no longer supported. Update the app.";
@@ -35,7 +34,7 @@ internal sealed class ClientHeadersMiddleware(
         var headers = context.Request.Headers;
         var hasVersion = AppVersion.TryParse(Single(headers, ClientHeadersMetadata.AppVersionHeader), out var version);
         if (hasVersion
-            && version < compatibility.CurrentValue.GetMinimumAppVersion()
+            && version < compatibility.MinimumAppVersion
             && metadata.GetMetadata<AllowOutdatedClientsMetadata>() is null)
         {
             await WriteProblemAsync(context, StatusCodes.Status426UpgradeRequired, new ProblemDetails

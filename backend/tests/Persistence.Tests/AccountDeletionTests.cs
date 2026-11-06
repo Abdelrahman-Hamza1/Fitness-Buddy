@@ -177,6 +177,7 @@ public sealed class AccountDeletionTests(PostgresFixture database)
     {
         var policies = ModuleCatalog.All.ToDictionary(module => module.Name.ToLowerInvariant(), module => module.UserData, StringComparer.Ordinal);
         policies.Add("ops", OpsErasure.Ownership);
+        policies.Add("admin", FitnessBuddy.Modules.Admin.AdminModule.Ownership);
         await using var owner = DatabaseConfiguration.CreateSource(database.MigratorConnection);
         await using var catalog = owner.CreateCommand("""
             SELECT t.table_schema,t.table_name,EXISTS(SELECT 1 FROM information_schema.columns c

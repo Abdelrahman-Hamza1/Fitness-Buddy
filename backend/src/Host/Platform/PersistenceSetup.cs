@@ -9,6 +9,9 @@ internal sealed class DatabaseOptions
 {
     public string Application { get; set; } = "";
     public string Migrator { get; set; } = "";
+
+    /// <summary>The console login fb_admin (B23). Only the admin role receives it; it never gets Application or Migrator.</summary>
+    public string Admin { get; set; } = "";
 }
 
 internal static class PersistenceSetup
@@ -25,6 +28,7 @@ internal static class PersistenceSetup
         builder.Services.AddSingleton<FitnessBuddy.BuildingBlocks.Recovery.RecoveryBarrier>();
         builder.Services.AddSingleton<RecoveryRequestGate>();
         builder.Services.AddSingleton<MigrationRunner>();
+        builder.Services.AddSingleton(FitnessBuddy.Modules.Admin.AdminModule.Migration);
         builder.Services.AddScoped<QueueWriter>();
         builder.Services.AddSingleton(new QueuePolicy());
         builder.Services.AddScoped<QueueProcessor>();

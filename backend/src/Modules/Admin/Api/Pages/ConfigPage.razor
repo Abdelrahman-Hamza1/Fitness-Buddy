@@ -1,0 +1,126 @@
+@* AD-012: what /v1/config serves plus the server switches. Draft → diff → publish with a reason → history → roll back. *@
+<Layout View="View">
+    @if (Config.ActiveOverride is { } forced)
+    {
+        <p class="notice" role="alert"><span aria-hidden="true">⚠</span> Override active: the server forces minimum app version @forced (Clients__MinimumAppVersionOverride). Published versions don't change the minimum until it's removed.</p>
+    }
+    @if (Config.Notice is { } notice)
+    {
+        <p class="card" role="status"><span class="status info"><span aria-hidden="true">ℹ</span> Note</span> @notice</p>
+    }
+    @foreach (var error in Config.Errors)
+    {
+        <p class="notice" role="alert"><span aria-hidden="true">⚠</span> @error</p>
+    }
+
+    <section class="card">
+        <h2>In effect: @(Config.CurrentVersion == 0 ? "server defaults (nothing published yet)" : "version " + Config.CurrentVersion)</h2>
+        @if (Config.PublishedAt is { } at)
+        {
+            <p class="muted">Published @at.UtcDateTime.ToString("yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture) UTC by @Config.PublishedBy: @Config.Reason</p>
+        }
+        <p>Active installs (7 days): <strong>@Config.ActiveInstalls</strong> · newest reported version: <strong>@(Config.NewestReported ?? "none")</strong></p>
+        <div class="table-wrap">
+            <table>
+                <tbody>
+                    <tr><th>Minimum app version</th><td><code>@Config.Current.MinimumAppVersion</code></td></tr>
+                    @foreach (var flag in Config.Current.AppFlags) { <tr><th>App flag <code>@flag.Key</code></th><td>@flag.Value</td></tr> }
+                    @foreach (var threshold in Config.Current.Thresholds) { <tr><th>Threshold <code>@threshold.Key</code></th><td>@threshold.Value</td></tr> }
+                    @foreach (var server in Config.Current.ServerSwitches) { <tr><th>Server switch <code>@server.Key</code></th><td>@server.Value</td></tr> }
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    @if (Config.Draft is { } draft)
+    {
+        <section class="card">
+            <h2>Draft (revision @draft.Revision, by @draft.UpdatedBy)</h2>
+            <ChangeTable Changes="draft.Changes" />
+            @if (View.Viewer?.IsOperator == true)
+            {
+                <form method="post" action="/admin/config/publish">
+                    <input type="hidden" name="__csrf" value="@View.Csrf" />
+                    <input type="hidden" name="baseVersion" value="@draft.BaseVersion" />
+                    <input type="hidden" name="revision" value="@draft.Revision" />
+                    <input type="hidden" name="hash" value="@draft.Hash" />
+                    <label for="reason">Reason (required)</label>
+                    <input id="reason" name="reason" required maxlength="500" style="width: 100%" />
+                    @if (draft.RaisesMinimum)
+                    {
+                        <label for="typedVersion">Type the new minimum version (@draft.NewMinimum) to confirm. Needs a sign-in less than 15 minutes old.</label>
+                        <input id="typedVersion" name="typedVersion" required autocomplete="off" />
+                    }
+                    <p><button type="submit">Publish</button></p>
+                </form>
+                <form method="post" action="/admin/config/draft/discard">
+                    <input type="hidden" name="__csrf" value="@View.Csrf" />
+                    <button type="submit" class="secondary">Discard draft</button>
+                </form>
+            }
+        </section>
+    }
+
+    @if (View.Viewer?.IsOperator == true)
+    {
+        <section class="card">
+            <h2>@(Config.Draft is null ? "Start a draft" : "Edit the draft")</h2>
+            <form method="post" action="/admin/config/draft">
+                <input type="hidden" name="__csrf" value="@View.Csrf" />
+                <label for="minimumAppVersion">Minimum app version (the "Update the app" kill switch)</label>
+                <input id="minimumAppVersion" name="minimumAppVersion" value="@Config.Form.MinimumAppVersion" required pattern="\d+\.\d+\.\d+" />
+                <label for="appFlags">App flags, one per line: name = on or name = off</label>
+                <textarea id="appFlags" name="appFlags" rows="5" style="width: 100%">@Config.Form.AppFlagsText</textarea>
+                @foreach (var threshold in Config.Form.Thresholds)
+                {
+                    <label for="@("t-" + threshold.Key)">Threshold <code>@threshold.Key</code> (@threshold.Range; empty = app default)</label>
+                    <input id="@("t-" + threshold.Key)" name="@("threshold." + threshold.Key)" value="@threshold.Value" inputmode="decimal" />
+                }
+                @foreach (var server in Config.Form.Switches)
+                {
+                    <label><input type="checkbox" name="@("server." + server.Key)" value="on" checked="@server.On" /> Server switch <code>@server.Key</code> on</label>
+                }
+                <p><button type="submit">Save draft</button></p>
+            </form>
+        </section>
+    }
+
+    <section>
+        <h2>History</h2>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Version</th><th>When (UTC)</th><th>By</th><th>Reason</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var row in Config.History)
+                    {
+                        <tr>
+                            <td>@row.Version @(row.RolledBackFrom is { } from ? "(rollback to " + from + ")" : "")</td>
+                            <td>@row.PublishedAt.UtcDateTime.ToString("yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture)</td>
+                            <td>@row.PublishedBy</td>
+                            <td>@row.Reason</td>
+                            <td>
+                                @if (row.Current)
+                                {
+                                    <span class="status ok"><span aria-hidden="true">✓</span> In effect</span>
+                                }
+                                else
+                                {
+                                    <a href="@("/admin/config/rollback/" + row.Version)">Review rollback</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @if (Config.OlderBefore is { } older)
+        {
+            <p><a href="@("/admin/config?before=" + older)">Older versions</a></p>
+        }
+    </section>
+</Layout>
+
+@code {
+    [Parameter, EditorRequired] public PageView View { get; set; } = null!;
+    [Parameter, EditorRequired] public ConfigPageView Config { get; set; } = null!;
+}

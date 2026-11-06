@@ -39,6 +39,8 @@ public sealed class IdentityModule : IModule
         services.AddScoped<IIdentityStore, PostgresIdentityStore>();
         services.AddScoped<IIdentityAccess>(provider => provider.GetRequiredService<IIdentityStore>());
         services.AddScoped<FitnessBuddy.BuildingBlocks.Auth.IUserLifecycle>(provider => (PostgresIdentityStore)provider.GetRequiredService<IIdentityStore>());
+        services.AddScoped<IDeviceActivity>(provider => (PostgresIdentityStore)provider.GetRequiredService<IIdentityStore>());
+        services.AddSingleton<IIdentityAdminReads, PostgresIdentityAdminReads>();
         services.AddScoped<IdentityErasure>();
         services.AddScoped<IIdentityDeletion>(provider => provider.GetRequiredService<IdentityErasure>());
         services.AddScoped<FitnessBuddy.BuildingBlocks.Messaging.IOutboxHandler>(provider => provider.GetRequiredService<IdentityErasure>());
@@ -47,9 +49,12 @@ public sealed class IdentityModule : IModule
         services.AddSingleton<IEmailSender, LocalFileEmailSender>();
         services.AddHostedService<EmailFileReaper>();
         services.AddHttpClient("google-identity", client => client.Timeout = TimeSpan.FromSeconds(5));
-        services.AddSingleton<IGoogleIdentityVerifier>(provider => new GoogleIdentityVerifier(
+        // One verifier instance (one JWKS cache) behind the app port and the public contract the console uses (B23).
+        services.AddSingleton(provider => new GoogleIdentityVerifier(
             provider.GetRequiredService<IHttpClientFactory>().CreateClient("google-identity"),
             provider.GetRequiredService<Microsoft.Extensions.Options.IOptions<IdentityOptions>>(), provider.GetRequiredService<TimeProvider>()));
+        services.AddSingleton<IGoogleIdentityVerifier>(provider => provider.GetRequiredService<GoogleIdentityVerifier>());
+        services.AddSingleton<IGoogleIdTokenVerifier>(provider => provider.GetRequiredService<GoogleIdentityVerifier>());
         services.AddSingleton(new ModuleMigration("identity", connection => new IdentityContext(DatabaseConfiguration.ContextOptions<IdentityContext>(connection, "identity"))));
     }
     public static void MapPublicEndpoints(IEndpointRouteBuilder app) => IdentityEndpoints.MapPublicEndpoints(app);

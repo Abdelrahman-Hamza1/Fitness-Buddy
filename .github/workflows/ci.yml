@@ -409,7 +409,7 @@ jobs:
     if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-24.04
     # A34 D20: 1,000 real-API sync runs (~7 min) on nightly and manual runs.
-    timeout-minutes: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 30 || 15 }}
+    timeout-minutes: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 40 || 15 }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -423,6 +423,18 @@ jobs:
         env:
           PHONE_SERVER_SMOKE_IMAGE: fitness-buddy-api:smoke
         run: make phone-server-smoke
+
+      # B23 T17 (a6): a real existing-volume upgrade from the parent commit's image. Two image builds, so nightly/manual only;
+      # every push runs the light variant above.
+      - name: Laptop stack upgrade from the previous image (B23 T17, synthetic only)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        env:
+          PHONE_SERVER_SMOKE_IMAGE: fitness-buddy-api:smoke
+          # The pinned pre-B23 baseline (see the script header); fetched explicitly, the checkout is shallow.
+          UPGRADE_BASE_REV: bd9f9ffe4d6f8b310ef6527080c9a454ddffd12d
+        run: |
+          git fetch --no-tags --depth=1 origin "$UPGRADE_BASE_REV"
+          make phone-server-upgrade-smoke
 
       - name: Set up Flutter for the sync harness (version from .fvmrc)
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0

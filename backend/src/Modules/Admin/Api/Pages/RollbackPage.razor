@@ -1,0 +1,25 @@
+@* AD-006: one-step rollback = a new version with the old document, after reviewing the diff and its reach. *@
+<Layout View="View">
+    <p>Current version: @Rollback.CurrentVersion. Rolling back publishes version @(Rollback.CurrentVersion + 1) with version @Rollback.Target's values.</p>
+    <ChangeTable Changes="Rollback.Changes" />
+    @if (View.Viewer?.IsOperator == true)
+    {
+        <form method="post" action="@("/admin/config/rollback/" + Rollback.Target)">
+            <input type="hidden" name="__csrf" value="@View.Csrf" />
+            <input type="hidden" name="expectedVersion" value="@Rollback.CurrentVersion" />
+            <label for="reason">Reason (required)</label>
+            <input id="reason" name="reason" required maxlength="500" style="width: 100%" />
+            @if (Rollback.RaisesMinimum)
+            {
+                <label for="typedVersion">This raises the minimum. Type @Rollback.NewMinimum to confirm. Needs a sign-in less than 15 minutes old.</label>
+                <input id="typedVersion" name="typedVersion" required autocomplete="off" />
+            }
+            <p><button type="submit">Roll back</button> <a href="/admin/config">Cancel</a></p>
+        </form>
+    }
+</Layout>
+
+@code {
+    [Parameter, EditorRequired] public PageView View { get; set; } = null!;
+    [Parameter, EditorRequired] public RollbackPageView Rollback { get; set; } = null!;
+}

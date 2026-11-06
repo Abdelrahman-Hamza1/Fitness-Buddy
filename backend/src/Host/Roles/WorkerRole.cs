@@ -12,6 +12,7 @@ internal static class WorkerRole
         builder.AddFbPlatform();
         builder.AddFbPersistence();
         builder.Services.AddHostedService<DatabaseWorker>();
+        FitnessBuddy.Modules.Account.AccountModule.AddRuntimeConfigPolling(builder.Services);
         builder.AddFbObservability("worker");
         using var host = builder.Build();
         await host.RunAsync();

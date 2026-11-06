@@ -1,0 +1,29 @@
+@* Sign-in and re-auth (B23 P2): Google's button with this challenge's nonce; the credential posts back in a same-origin form. *@
+<Layout View="View">
+    <Head>
+        <script src="https://accounts.google.com/gsi/client" async></script>
+        <script src="/admin/assets/admin-signin.js" defer></script>
+    </Head>
+    <ChildContent>
+        @if (Step.Notice is { } notice)
+        {
+            <p class="notice" role="alert"><span aria-hidden="true">⚠</span> @notice</p>
+        }
+        <p>@(Step.ReturnPath is null ? "Sign in with your allow-listed Google account." : "This action needs a recent sign-in. Sign in again with the same Google account.")</p>
+        <form id="signin-form" method="post" action="@Step.Action" hx-boost="false">
+            <input type="hidden" name="__csrf" value="@View.Csrf" />
+            <input type="hidden" name="credential" value="" />
+            @if (Step.ReturnPath is { } back)
+            {
+                <input type="hidden" name="return" value="@back" />
+            }
+        </form>
+        <div id="gsi" data-client-id="@Step.ClientId" data-nonce="@Step.Nonce"></div>
+        <noscript><p>Sign-in needs JavaScript for Google's button.</p></noscript>
+    </ChildContent>
+</Layout>
+
+@code {
+    [Parameter, EditorRequired] public PageView View { get; set; } = null!;
+    [Parameter, EditorRequired] public GoogleStepView Step { get; set; } = null!;
+}

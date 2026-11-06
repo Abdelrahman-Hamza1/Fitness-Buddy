@@ -11,11 +11,12 @@ internal sealed class BuddyConcurrency(IOptions<BuddyOptions> options) : IDispos
     public void Dispose() => gate.Dispose();
 }
 internal sealed class InterpretMessage(IInterpretLedger ledger, IProductionLlmClient provider, ResolveInterpretation resolver,
-    BuddyConcurrency concurrency, IOptions<BuddyOptions> options)
+    BuddyConcurrency concurrency, IOptions<BuddyOptions> options, FitnessBuddy.BuildingBlocks.Features.IFeatureFlags flags)
 {
     public async Task<InterpretResult> ExecuteAsync(InterpretInput input, CancellationToken cancellationToken)
     {
-        if (!options.Value.Enabled || !concurrency.Enter()) { return new(InterpretStatus.Unavailable); }
+        // B23: the console's AI switch (server flag buddy.ai) can turn Buddy off, never on where it isn't configured.
+        if (!options.Value.Enabled || !flags.IsEnabled("buddy.ai") || !concurrency.Enter()) { return new(InterpretStatus.Unavailable); }
         try
         {
             var existing = await ledger.ClaimAsync(input, cancellationToken); if (existing is not null) { return existing; }

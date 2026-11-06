@@ -1,0 +1,49 @@
+/* Fitness Buddy admin console (B23, AD-008). Ink & Sky light tokens from fb_design_system (TD-116). */
+:root {
+  --brand: #1E2A32; --on-brand: #FFFFFF; --brand-container: #E6EEF2;
+  --surface: #FAFAF8; --surface-container: #FFFFFF; --surface-high: #EEF1F3;
+  --on-surface: #1A2329; --on-surface-variant: #57636B;
+  --outline: #7E8A92; --outline-variant: #E5E9EC;
+  --success: #14773A; --info: #0369A1; --error: #A2402F; --error-container: #FBEAE6;
+  --spark: #6EC8FF; --spark-container: #DDF1FF; --on-spark-container: #06324D;
+  --radius: 12px;
+}
+* { box-sizing: border-box; }
+html { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--on-surface); background: var(--surface); }
+body { margin: 0; line-height: 1.5; }
+a { color: var(--info); }
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; padding: 12px 20px; background: var(--brand); color: var(--on-brand); }
+.bar a, .bar .link { color: var(--on-brand); }
+.brand { font-weight: 700; text-decoration: none; }
+.brand span { color: var(--spark); font-weight: 600; }
+nav { display: flex; flex-wrap: wrap; gap: 4px 16px; flex: 1; }
+nav a { text-decoration: none; padding: 4px 0; }
+nav a[aria-current="page"] { border-bottom: 2px solid var(--spark); }
+.who { display: flex; align-items: center; gap: 12px; margin: 0; font-size: 0.9rem; }
+main { max-width: 1100px; margin: 0 auto; padding: 20px; }
+h1 { font-size: 1.5rem; margin: 8px 0 16px; }
+h2 { font-size: 1.15rem; margin: 24px 0 8px; }
+.card { background: var(--surface-container); border: 1px solid var(--outline-variant); border-radius: var(--radius); padding: 16px; margin: 12px 0; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--outline-variant); border-radius: var(--radius); background: var(--surface-container); }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+th, td { text-align: start; padding: 8px 12px; border-bottom: 1px solid var(--outline-variant); white-space: nowrap; }
+th { color: var(--on-surface-variant); font-weight: 600; background: var(--surface-high); }
+.status { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.status.ok { color: var(--success); } .status.warn { color: #8A5A00; } .status.bad { color: var(--error); } .status.info { color: var(--info); }
+.notice { background: var(--error-container); color: var(--error); padding: 10px 14px; border-radius: var(--radius); }
+.code, code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--surface-high); padding: 2px 6px; border-radius: 6px; overflow-x: auto; }
+pre.code { padding: 12px; white-space: pre-wrap; word-break: break-all; }
+button, .button { font: inherit; border-radius: 999px; padding: 8px 16px; border: 1px solid var(--brand); background: var(--brand); color: var(--on-brand); cursor: pointer; }
+button.secondary { background: transparent; color: var(--brand); }
+button.danger { background: var(--error); border-color: var(--error); }
+button.link { background: none; border: none; padding: 0; text-decoration: underline; }
+input, select, textarea { font: inherit; padding: 8px 10px; border: 1px solid var(--outline); border-radius: 8px; background: var(--surface-container); color: var(--on-surface); max-width: 100%; }
+label { display: block; margin: 10px 0 4px; font-weight: 600; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: end; }
+.muted { color: var(--on-surface-variant); }
+.diff-add { color: var(--success); } .diff-remove { color: var(--error); }
+@media (max-width: 640px) {
+  .bar { flex-direction: column; align-items: flex-start; }
+  nav { flex-direction: column; gap: 2px; }
+  main { padding: 12px; }
+}

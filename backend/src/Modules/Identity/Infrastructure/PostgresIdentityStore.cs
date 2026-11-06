@@ -6,7 +6,7 @@ using NpgsqlTypes;
 
 namespace FitnessBuddy.Modules.Identity.Infrastructure;
 
-internal sealed class PostgresIdentityStore(NpgsqlDataSource source, TimeProvider clock) : IIdentityStore, FitnessBuddy.BuildingBlocks.Auth.IUserLifecycle
+internal sealed class PostgresIdentityStore(NpgsqlDataSource source, TimeProvider clock) : IIdentityStore, IDeviceActivity, FitnessBuddy.BuildingBlocks.Auth.IUserLifecycle
 {
     public Task<IdentitySession?> CreateGuestAsync(Guid user, SessionMaterial m, CancellationToken ct) =>
         ReadAsync("SELECT * FROM identity.create_guest($1,$2,$3,$4,$5)", [user, m.SessionId, m.DeviceId, m.RefreshHash, Now], ct);
@@ -16,6 +16,12 @@ internal sealed class PostgresIdentityStore(NpgsqlDataSource source, TimeProvide
         ReadAsync("SELECT * FROM identity.rotate_refresh($1,$2,$3)", [oldHash, newHash, Now], ct);
     public Task<IdentitySession?> ReadSessionAsync(Guid userId, Guid sessionId, CancellationToken cancellationToken) =>
         ReadAsync("SELECT * FROM identity.read_session($1,$2,$3)", [userId, sessionId, Now], cancellationToken);
+    public async Task TouchAsync(Guid userId, Guid sessionId, string appVersion, string platform, CancellationToken cancellationToken)
+    {
+        // Its own statement, outside any caller transaction (B23 P4).
+        await using var command = Command("SELECT identity.touch_device($1,$2,$3,$4,$5)", [userId, sessionId, appVersion, platform, Now]);
+        await command.ExecuteNonQueryAsync(cancellationToken);
+    }
     public async Task RevokeAsync(Guid user, Guid session, CancellationToken ct)
     {
         await using var command = Command("SELECT identity.revoke_session($1,$2,$3)", [user, session, Now]);

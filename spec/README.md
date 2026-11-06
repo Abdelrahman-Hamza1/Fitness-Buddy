@@ -43,7 +43,7 @@ Rules:
 | DY | `12-diary-meals-recipes.md` | SF | `21-safety-and-wellbeing.md` |
 | TG | `13-targets-and-goals.md` | UX | `30-ux-principles.md` |
 | WB | `14-weight-and-body.md` | AT, AQ, T, OF | `40-acceptance-criteria.md` |
-| WO | `15-workouts.md` | | |
+| WO | `15-workouts.md` | AD | `22-admin-console.md` |
 
 ## File map
 
@@ -69,5 +69,6 @@ Rules:
 | `18-localization-and-culture.md` | Languages, units, Ramadan mode, halal, regional food | ✅ draft v1 |
 | `20-accounts-and-data.md` | Sign-in, guest mode, sync, offline, export, deletion, privacy promises | ✅ draft v1 |
 | `21-safety-and-wellbeing.md` | Age gate, calorie floor, rate limits, language, Buddy's limits | ✅ draft v1 |
+| `22-admin-console.md` | Owner-only admin console: privacy, access, windows (D-099) | ✅ draft v1 |
 | `30-ux-principles.md` | Speed targets, navigation, proposal card pattern, visuals, states, onboarding | ✅ draft v1 |
 | `40-acceptance-criteria.md` | R1 done criteria, AI quality thresholds, 41-case test set, offline scenarios | ✅ draft v1 |

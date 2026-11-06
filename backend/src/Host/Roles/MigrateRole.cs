@@ -27,6 +27,8 @@ internal static partial class MigrateRole
         {
             var stopping = host.Services.GetRequiredService<IHostApplicationLifetime>().ApplicationStopping;
             await host.Services.GetRequiredService<MigrationRunner>().RunAsync(connection, stopping);
+            // B23: version 1 of the remote config, from the same configuration keys every role reads (idempotent).
+            await FitnessBuddy.Modules.Account.AccountModule.SeedRemoteConfigAsync(connection, host.Services, stopping);
             await FitnessBuddy.BuildingBlocks.Recovery.RecoveryMaintenance.RunAsync(connection,
                 host.Services.GetRequiredService<IOptions<FitnessBuddy.BuildingBlocks.Recovery.RecoveryOptions>>().Value,
                 host.Services.GetRequiredService<FitnessBuddy.BuildingBlocks.Ids.IIdGenerator>(),

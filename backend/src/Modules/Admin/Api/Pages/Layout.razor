@@ -1,0 +1,57 @@
+@* The console shell (AD-008): Ink & Sky look, a menu that stacks at phone width, status as icon + word. *@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="htmx-config" content="@HtmxConfig" />
+    <title>@View.Title · Fitness Buddy admin</title>
+    <link rel="stylesheet" href="/admin/assets/admin.css" />
+    <script src="/admin/assets/htmx-2.0.11.min.js" integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" defer></script>
+    @Head
+</head>
+<body hx-boost="true" hx-headers="@CsrfHeader">
+    <header class="bar">
+        <a class="brand" href="/admin">Fitness Buddy <span>admin</span></a>
+        @if (View.Viewer is { } viewer)
+        {
+            <nav aria-label="Console">
+                @foreach (var (section, label, href) in Sections)
+                {
+                    <a href="@href" aria-current="@(View.Section == section ? "page" : null)">@label</a>
+                }
+            </nav>
+            <form class="who" method="post" action="/admin/signout" hx-boost="false">
+                <input type="hidden" name="__csrf" value="@View.Csrf" />
+                <span>@viewer.Handle · @(viewer.IsOperator ? "operator" : "viewer")</span>
+                <button type="submit" class="link">Sign out</button>
+            </form>
+        }
+    </header>
+    <main id="main">
+        <h1>@View.Title</h1>
+        @ChildContent
+    </main>
+</body>
+</html>
+
+@code {
+    // No eval (so no hx-on), no injected indicator styles (strict CSP), same-origin only; 4xx/5xx pages are swapped in
+    // so a refusal message is visible.
+    private const string HtmxConfig = """{"allowEval":false,"includeIndicatorStyles":false,"selfRequestsOnly":true,"allowScriptTags":false,"historyCacheSize":0,"responseHandling":[{"code":"204","swap":false},{"code":"[2345]..","swap":true}]}""";
+
+    // The console's windows, in menu order. Windows join this list as they are built (B23a: config, audit; B23b: the rest).
+    private static readonly (string Section, string Label, string Href)[] Sections =
+    [
+        ("home", "Home", "/admin"),
+        ("config", "Remote config", "/admin/config"),
+        ("audit", "Audit log", "/admin/audit"),
+    ];
+
+    [Parameter, EditorRequired] public PageView View { get; set; } = null!;
+    [Parameter] public RenderFragment? Head { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string CsrfHeader => System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, string> { ["X-CSRF-Token"] = View.Csrf });
+}

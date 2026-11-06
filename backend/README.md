@@ -29,13 +29,14 @@ Code style: `.editorconfig` at the repo root (C# section). Style and analyzer wa
 
 ## Roles
 
-One executable, three roles, chosen by the first argument (`args[0]`, when it doesn't start with `-`; default `api`): `FitnessBuddy.Host [api|worker|migrate] [host options]`. Anything else exits with code 2 and a usage line. The role token is removed before the host builder sees the arguments.
+One executable, four roles, chosen by the first argument (`args[0]`, when it doesn't start with `-`; default `api`): `FitnessBuddy.Host [api|worker|migrate|admin] [host options]`. Anything else exits with code 2 and a usage line. The role token is removed before the host builder sees the arguments.
 
 | Role | Does |
 |---|---|
 | `api` | Stateless HTTP (`WebApplication`) |
 | `worker` | Polls durable outbox/jobs and UTC schedules using fb_app; handles shutdown cancellation without consuming attempts |
 | `migrate` | Applies registered schema migrations with fb_migrator; verifies/explicitly initializes recovery state and holds the global maintenance lock for seeds, keys and dataset rotation; exits1 on failure |
+| `admin` | The owner-only console (B23, D-099): its own loopback listener (`Admin:Url`), only `/admin` and health, the `fb_admin` login (`ConnectionStrings:Admin`); never maps `/v1`, and `api` never maps `/admin` |
 
 `api` and `worker` share `PlatformSetup.AddFbPlatform` (options with validation on start, `TimeProvider`, ids, flags, the current user, every module's services). Shutdown waits up to 25 s for in-flight work (under Kamal's 30 s stop wait).
 
@@ -315,3 +316,25 @@ user/row locks. The Host uses a separate bounded gate pool to avoid exhausting b
 Release import, shared C# normalization, authenticated online food search/detail and immutable
 offline packs are implemented. `IFoodResolver` is ready for B08; A24 owns app online merge/pack
 updates. Read [the module](src/Modules/Catalog/README.md) and [operations](../docs/runbooks/catalog.md).
+
+## Admin console and remote config (B23)
+
+- **Admin role** (`FitnessBuddy.Host admin`): the owner-only console under `/admin`, on its own loopback listener
+  (`Admin:Url`), with the `fb_admin` login only (`ConnectionStrings:Admin`). `api` never maps `/admin`; `admin` never
+  maps `/v1`. Pages are static server-rendered Razor components from Minimal API endpoints plus vendored htmx
+  (`src/Modules/Admin/Api/Assets/VENDOR.md`); HTML errors, not problem details; outside the OpenAPI contract.
+- **Endpoints declare one capability** (`WithCapability`): `Anonymous` (sign-in, assets, health), `Session` (any admin:
+  reads, sign-out, re-auth, POST-based reads) or `Operate` (changes). A test enumerates them. Every POST passes the
+  antiforgery token and a same-origin check. `RequireRecentSignIn()` guards lock-out-capable actions.
+- **Sign-in:** Google Identity Services with the console's Web client ID, Identity's `IGoogleIdTokenVerifier`
+  (per-caller audiences), single-use challenges as nonces, the private allow-list file (`Admin:AllowListFile`, Google
+  subject required), 12 h server-side sessions bound to handle + subject.
+- **Data access:** the console reads other modules only through their `*.Contracts`, implemented with content-free
+  `<schema>.admin_*` SECURITY DEFINER functions that only `fb_admin` can execute (TD-118 candidate). `fb_admin` has no
+  user-table grants; `fb_app` has none on `admin`. Mutating contracts take the caller's `DatabaseSession`, so a change
+  and its audit row commit together. `admin.audit_log` and `account.config_versions` are append-only (grants + triggers).
+- **Remote config:** `account.config_versions` (append-only; rollback = new version) behind `IClientCompatibility`
+  (the 426 gate) and `IFeatureFlags`, cached and polled every 5 s (`Account:RemoteConfig:PollSeconds`). The migrate role
+  seeds version 1 from `Clients:MinimumAppVersion`, `Account:ClientConfig:*` and `FeatureFlags:*`; set those keys
+  for every role alike (one compose anchor). `Clients:MinimumAppVersionOverride` wins everywhere (recovery).
+  `GET /v1/config` keeps its response. Operations: [admin console runbook](../docs/runbooks/admin-console.md).

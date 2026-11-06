@@ -14,12 +14,20 @@ namespace FitnessBuddy.Modules.Account;
 public sealed class AccountModule : IModule
 {
     public string Name => "Account";
-    public FitnessBuddy.BuildingBlocks.Messaging.UserDataOwnership UserData => new(["deletion_requests"], [], "account.erase");
+    public FitnessBuddy.BuildingBlocks.Messaging.UserDataOwnership UserData => new(["deletion_requests"], ["config_versions"], "account.erase");
 
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddOptions<ClientConfigOptions>().Bind(configuration.GetSection(ClientConfigOptions.SectionName));
         services.AddSingleton<GetClientConfig>();
+        // B23: the published remote config replaces the configuration-only minimum version and server flags.
+        services.AddOptions<RemoteConfigPollOptions>().Bind(configuration.GetSection(RemoteConfigPollOptions.SectionName));
+        services.AddSingleton<RemoteConfigDefaults>();
+        services.AddSingleton<RuntimeConfigCache>();
+        services.AddSingleton<IRuntimeConfig>(provider => provider.GetRequiredService<RuntimeConfigCache>());
+        services.AddSingleton<FitnessBuddy.BuildingBlocks.Clients.IClientCompatibility>(provider => provider.GetRequiredService<RuntimeConfigCache>());
+        services.AddSingleton<FitnessBuddy.BuildingBlocks.Features.IFeatureFlags>(provider => provider.GetRequiredService<RuntimeConfigCache>());
+        services.AddSingleton<Contracts.IRemoteConfigAdmin, PostgresRemoteConfig>();
         services.AddScoped<DeleteAccount>();
         services.AddScoped<IAccountDeletion, PostgresAccountDeletion>();
         services.AddScoped<IOutboxHandler, AccountErasureHandler>();
@@ -27,6 +35,14 @@ public sealed class AccountModule : IModule
         // Every module calls this itself: the validation source generator only sees this assembly's endpoints and DTOs.
         services.AddValidation();
     }
+
+    /// <summary>B23: keep the remote config current in a long-running role (api, worker, admin). Not for migrate or build time.</summary>
+    public static void AddRuntimeConfigPolling(IServiceCollection services) => services.AddHostedService<RuntimeConfigPoller>();
+
+    /// <summary>B23: the migrate role seeds version 1 from the canonical defaults when nothing is published yet.</summary>
+    public static Task SeedRemoteConfigAsync(string migratorConnection, IServiceProvider services, CancellationToken cancellationToken) =>
+        PostgresRemoteConfig.SeedAsync(migratorConnection, services.GetRequiredService<RemoteConfigDefaults>().Current,
+            services.GetRequiredService<TimeProvider>().GetUtcNow(), cancellationToken);
 
     public void MapEndpoints(RouteGroupBuilder group)
     {

@@ -1,0 +1,63 @@
+@* AD-016: newest first; filter by area, person and day range; CSV export. Read-only: the console can't edit or delete rows. *@
+<Layout View="View">
+    <form class="filters card" method="get" action="/admin/audit">
+        <div><label for="area">Window</label><input id="area" name="area" value="@List.Area" placeholder="e.g. config" maxlength="64" /></div>
+        <div><label for="actor">Person</label><input id="actor" name="actor" value="@List.Actor" placeholder="e.g. owner" maxlength="64" /></div>
+        <div><label for="from">From (UTC)</label><input id="from" name="from" type="date" value="@List.From" /></div>
+        <div><label for="to">To (UTC)</label><input id="to" name="to" type="date" value="@List.To" /></div>
+        <div><button type="submit">Filter</button></div>
+        <div><a class="button secondary" href="@ExportHref" hx-boost="false">Export CSV</a></div>
+    </form>
+    @if (List.Notice is { } notice)
+    {
+        <p class="notice" role="status"><span aria-hidden="true">⚠</span> @notice</p>
+    }
+    @if (List.Rows.Count == 0)
+    {
+        <p class="muted">No entries.</p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>When (UTC)</th><th>Who</th><th>Window</th><th>Action</th><th>Target</th><th>Outcome</th><th>Reason</th><th>Change</th></tr></thead>
+                <tbody>
+                    @foreach (var row in List.Rows)
+                    {
+                        <tr>
+                            <td>@row.OccurredAt.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture)</td>
+                            <td>@row.Actor</td>
+                            <td>@row.Area</td>
+                            <td>@row.Action</td>
+                            <td>@row.Target</td>
+                            <td><span class="status @(row.Outcome == "ok" ? "ok" : "warn")"><span aria-hidden="true">@(row.Outcome == "ok" ? "✓" : "!")</span> @row.Outcome</span></td>
+                            <td>@row.Reason</td>
+                            <td>
+                                @if (row.Before is not null || row.After is not null)
+                                {
+                                    <details><summary>Before → after</summary><pre class="code">@row.Before</pre><pre class="code">@row.After</pre></details>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @if (List.NextCursor is { } next)
+        {
+            <p><a href="@NextHref(next)">Older entries</a></p>
+        }
+    }
+</Layout>
+
+@code {
+    [Parameter, EditorRequired] public PageView View { get; set; } = null!;
+    [Parameter, EditorRequired] public AuditListView List { get; set; } = null!;
+
+    private string Query => string.Join("&", new[] { ("area", List.Area), ("actor", List.Actor), ("from", List.From), ("to", List.To) }
+        .Where(pair => !string.IsNullOrEmpty(pair.Item2)).Select(pair => pair.Item1 + "=" + Uri.EscapeDataString(pair.Item2!)));
+
+    private string ExportHref => "/admin/audit/export.csv" + (Query.Length > 0 ? "?" + Query : "");
+
+    private string NextHref(long next) => "/admin/audit?" + (Query.Length > 0 ? Query + "&" : "") + "cursor=" + next.ToString(System.Globalization.CultureInfo.InvariantCulture);
+}

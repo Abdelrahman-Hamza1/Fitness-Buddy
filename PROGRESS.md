@@ -1,12 +1,12 @@
 # Fitness Buddy: progress
 
-**78 of 103 steps done** · `▓▓▓▓▓▓▓░░░` 75%
+**78 of 105 steps done** · `▓▓▓▓▓▓▓░░░` 74%
 
-App 61/79 · Backend 17/24 · Foundation 7/7
+App 61/79 · Backend 17/26 · Foundation 7/7
 
 ## Now
 
-- Nothing marked in progress on the board.
+- 🟨 building [B23](technical-planning/steps/B23-admin-console-1.md) Admin console 1: monitor and config (D-099, AD-001–016 R1) · R1
 
 ## Milestones
 
@@ -20,7 +20,7 @@ App 61/79 · Backend 17/24 · Foundation 7/7
 | ⬜ | **M4** Dogfood 2 | `░░░░░` 0/8 | A25 A26 A27 A28b A29 A31 +2 |
 | ⬜ | **M6** Workouts, review &… | `░░░░░` 0/4 | A37b A39b A41b B12 |
 | ⬜ | **M7** Production | `░░░░░` 0/3 | A43 B13 B14 |
-| 🟨 | **R1** done | `▓▓▓░░` 12/19 | A32 A58 A59 A60 A61 B15 +2 |
+| 🟨 | **R1** done | `▓▓░░░` 12/21 | A32 A58 A59 A60 A61 B15 +4 |
 
 ✅ reached · 🟨 in progress · ⬜ ahead. Each step counts toward the first milestone that needs it.
 

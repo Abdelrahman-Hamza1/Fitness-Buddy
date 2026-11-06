@@ -10,6 +10,7 @@ COPY src/Modules/Identity/FitnessBuddy.Modules.Identity.csproj src/Modules/Ident
 COPY src/Modules/UserData/FitnessBuddy.Modules.UserData.csproj src/Modules/UserData/
 COPY src/Modules/Catalog/FitnessBuddy.Modules.Catalog.csproj src/Modules/Catalog/
 COPY src/Modules/Usage/FitnessBuddy.Modules.Usage.csproj src/Modules/Usage/
+COPY src/Modules/Admin/FitnessBuddy.Modules.Admin.csproj src/Modules/Admin/
 COPY src/Host/FitnessBuddy.Host.csproj src/Host/
 RUN dotnet restore src/Host/FitnessBuddy.Host.csproj
 COPY src/ src/

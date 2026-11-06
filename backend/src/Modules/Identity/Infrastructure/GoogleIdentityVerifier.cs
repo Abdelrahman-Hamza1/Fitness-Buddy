@@ -1,20 +1,27 @@
 using System.Text.Json;
 using FitnessBuddy.Modules.Identity.Application;
+using FitnessBuddy.Modules.Identity.Contracts;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
 namespace FitnessBuddy.Modules.Identity.Infrastructure;
 
-internal sealed class GoogleIdentityVerifier(HttpClient http, IOptions<IdentityOptions> options, TimeProvider clock) : IGoogleIdentityVerifier, IDisposable
+internal sealed class GoogleIdentityVerifier(HttpClient http, IOptions<IdentityOptions> options, TimeProvider clock) : IGoogleIdentityVerifier, IGoogleIdTokenVerifier, IDisposable
 {
     private readonly SemaphoreSlim gate = new(1);
     private JsonWebKeySet? keys;
     private DateTimeOffset refreshed = DateTimeOffset.MinValue;
     private readonly JsonWebTokenHandler handler = new() { MapInboundClaims = false, MaximumTokenSizeInBytes = 16384 };
-    public async Task<GoogleIdentity?> VerifyAsync(string idToken, CancellationToken ct)
+    public async Task<GoogleIdentity?> VerifyAsync(string idToken, CancellationToken ct) =>
+        await VerifyAsync(idToken, options.Value.GoogleClientIds, ct) is { } verified ? new GoogleIdentity(verified.Subject, verified.Email) : null;
+
+    /// <summary>The one verification path; app sign-in passes the configured app client IDs, the console its Web client ID.</summary>
+    public async Task<VerifiedGoogleToken?> VerifyAsync(string idToken, IReadOnlyCollection<string> audiences, CancellationToken ct)
     {
-        if (idToken.Length is < 1 or > 16384 || options.Value.GoogleClientIds.Length == 0 || !handler.CanReadToken(idToken)) { return null; }
+        ArgumentNullException.ThrowIfNull(idToken);
+        ArgumentNullException.ThrowIfNull(audiences);
+        if (idToken.Length is < 1 or > 16384 || audiences.Count == 0 || audiences.Any(string.IsNullOrWhiteSpace) || !handler.CanReadToken(idToken)) { return null; }
         var jwt = handler.ReadJsonWebToken(idToken);
         if (jwt.Alg != SecurityAlgorithms.RsaSha256 || string.IsNullOrEmpty(jwt.Kid)) { return null; }
         await gate.WaitAsync(ct);
@@ -51,7 +58,7 @@ internal sealed class GoogleIdentityVerifier(HttpClient http, IOptions<IdentityO
         var result = await handler.ValidateTokenAsync(idToken, new TokenValidationParameters
         {
             ValidIssuers = ["https://accounts.google.com", "accounts.google.com"],
-            ValidAudiences = options.Value.GoogleClientIds,
+            ValidAudiences = audiences,
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateIssuerSigningKey = true,
@@ -68,7 +75,9 @@ internal sealed class GoogleIdentityVerifier(HttpClient http, IOptions<IdentityO
             || !jwt.TryGetPayloadValue<bool>("email_verified", out var verified) || !verified
             || !jwt.TryGetPayloadValue<string>("email", out var email) || email.Length > 254
             || string.IsNullOrEmpty(jwt.Subject) || jwt.Subject.Length > 255) { return null; }
-        return new GoogleIdentity(jwt.Subject, email);
+        DateTimeOffset? authTime = jwt.TryGetPayloadValue<long>("auth_time", out var auth) ? DateTimeOffset.FromUnixTimeSeconds(auth) : null;
+        var nonce = jwt.TryGetPayloadValue<string>("nonce", out var value) && value.Length <= 512 ? value : null;
+        return new VerifiedGoogleToken(jwt.Subject, email, DateTimeOffset.FromUnixTimeSeconds(iat), authTime, nonce);
     }
     public void Dispose() => gate.Dispose();
 }

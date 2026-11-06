@@ -4,13 +4,15 @@ using FitnessBuddy.Modules.Identity.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FitnessBuddy.Modules.Identity.Infrastructure;
 
-internal sealed class IdentityBearerEvents(IIdentityTokens tokens, IIdentityAccess access, IOptions<IdentityOptions> options) : JwtBearerEvents
+internal sealed partial class IdentityBearerEvents(IIdentityTokens tokens, IIdentityAccess access, IDeviceActivity devices, IOptions<IdentityOptions> options,
+    ILogger<IdentityBearerEvents> logger) : JwtBearerEvents
 {
     public override async Task MessageReceived(MessageReceivedContext context)
     {
@@ -27,11 +29,32 @@ internal sealed class IdentityBearerEvents(IIdentityTokens tokens, IIdentityAcce
             context.HttpContext.Features.Set(live);
             context.Principal = principal;
             context.Success();
+            await TouchDeviceAsync(context.HttpContext, user, session);
         }
         catch (OperationCanceledException) when (context.HttpContext.RequestAborted.IsCancellationRequested) { throw; }
         // Credential lookup or validation failures never fall back to an authenticated/anonymous user.
         catch (Exception) { context.Fail("Authentication unavailable."); }
     }
+    /// <summary>
+    /// B23: install activity for the console (last seen, app version). Best effort and outside any transaction: a failure is
+    /// logged as its type and the request continues; cancellation still propagates.
+    /// </summary>
+    private async Task TouchDeviceAsync(HttpContext http, Guid user, Guid session)
+    {
+        if (http.Features.Get<FitnessBuddy.BuildingBlocks.Clients.ClientInfo>() is not { } client) { return; }
+        try
+        {
+            var platform = client.Platform == FitnessBuddy.BuildingBlocks.Clients.ClientPlatform.Ios
+                ? FitnessBuddy.BuildingBlocks.Clients.ClientPlatforms.Ios : FitnessBuddy.BuildingBlocks.Clients.ClientPlatforms.Android;
+            await devices.TouchAsync(user, session, client.AppVersion.ToString(), platform, http.RequestAborted);
+        }
+        catch (OperationCanceledException) when (http.RequestAborted.IsCancellationRequested) { throw; }
+        catch (Exception exception) { LogTouchFailed(logger, exception.GetType().Name); }
+    }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Device activity not recorded: {ErrorType}")]
+    private static partial void LogTouchFailed(ILogger logger, string errorType);
+
     public override async Task Challenge(JwtBearerChallengeContext context)
     {
         context.HandleResponse();

@@ -15,6 +15,11 @@ internal interface IIdentityStore : IIdentityAccess
 
 // Constructed by validated adapter output only, never by HTTP request binding.
 internal sealed record GoogleIdentity(string Subject, string Email);
+/// <summary>B23: records that a validated session's device was seen, with the client's version and platform (at most hourly).</summary>
+internal interface IDeviceActivity
+{
+    Task TouchAsync(Guid userId, Guid sessionId, string appVersion, string platform, CancellationToken cancellationToken);
+}
 internal interface IGoogleIdentityVerifier
 {
     Task<GoogleIdentity?> VerifyAsync(string idToken, CancellationToken ct);

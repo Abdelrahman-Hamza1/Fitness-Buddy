@@ -1,0 +1,32 @@
+@* The diff with reach (AD-006). Status = icon + word (AD-008). *@
+@if (Changes.Count == 0)
+{
+    <p class="muted">No changes.</p>
+}
+else
+{
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Part</th><th>Key</th><th>Before</th><th>After</th><th>Reach</th></tr></thead>
+            <tbody>
+                @foreach (var change in Changes)
+                {
+                    <tr>
+                        <td>@change.Section</td>
+                        <td><code>@change.Key</code></td>
+                        <td class="diff-remove">@(change.Old ?? "(not set)")</td>
+                        <td class="diff-add">@(change.New ?? "(removed)")</td>
+                        <td style="white-space: normal">
+                            <span class="status @(change.Blocked ? "bad" : "info")"><span aria-hidden="true">@(change.Blocked ? "✕" : "ℹ")</span> @(change.Blocked ? "Blocked" : "Reach")</span>
+                            @change.Reach
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<ChangeView> Changes { get; set; } = [];
+}

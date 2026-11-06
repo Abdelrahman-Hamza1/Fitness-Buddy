@@ -18,7 +18,7 @@ public sealed class InterpretFlowTests
         var provider = new ScriptedProvider(JsonSerializer.Serialize(output, InterpretProtocol.Json));
         var options = Options.Create(new BuddyOptions { Enabled = true });
         using var concurrency = new BuddyConcurrency(options);
-        var flow = new InterpretMessage(new AcceptingLedger(), provider, new ResolveInterpretation(new FakeCatalog()), concurrency, options);
+        var flow = new InterpretMessage(new AcceptingLedger(), provider, new ResolveInterpretation(new FakeCatalog()), concurrency, options, new AllFlagsOn());
         var result = await flow.ExecuteAsync(input, Ct);
         Assert.Equal(InterpretStatus.Success, result.Status);
         return (result.Value!, provider);
@@ -212,4 +212,10 @@ public sealed class InterpretFlowTests
         public Task<bool> RecordAsync(Guid messageId, int attempt, ProductionOutcome outcome, CancellationToken cancellationToken) => Task.FromResult(true);
         public Task<bool> CompleteAsync(Guid messageId, BuddyInterpretation result, CancellationToken cancellationToken) => Task.FromResult(true);
     }
+}
+
+/// <summary>B23: the AI switch is on in these flow tests.</summary>
+internal sealed class AllFlagsOn : FitnessBuddy.BuildingBlocks.Features.IFeatureFlags
+{
+    public bool IsEnabled(string name) => true;
 }

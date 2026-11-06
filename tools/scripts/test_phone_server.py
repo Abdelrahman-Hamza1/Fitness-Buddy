@@ -142,7 +142,7 @@ class PhoneServerTests(unittest.TestCase):
         phone.init(self.state)
         self.assertEqual(first, (self.state / 'credentials.json').read_bytes())
         values = json.loads(first)
-        self.assertEqual(len(set(values.values())), 4)
+        self.assertEqual(len(set(values.values())), 5)
         self.assertEqual(stat.S_IMODE((self.state / 'credentials.json').stat().st_mode), 0o600)
 
     def test_existing_data_without_credentials_refuses_regeneration(self):
@@ -369,6 +369,136 @@ class PhoneServerTests(unittest.TestCase):
         config['TCP']['8443'] = {'HTTPS': True}
         self.assertFalse(phone.owned_mapping(config, 'test.example.ts.net'))
 
+    def test_console_node_serves_exactly_one_https_route_and_never_funnel(self):
+        # B23 security review: the console has its own hostname; the laptop node never serves it.
+        dns = 'fb-admin.example.ts.net'
+        config = {'TCP': {'443': {'HTTPS': True}}, 'Web': {dns + ':443': {'Handlers': {'/': {'Proxy': 'http://127.0.0.1:8081'}}}}}
+        self.assertTrue(phone.console_mapping(config, dns))
+        for change in (lambda c: c['AllowFunnel'].update({dns + ':443': True}),
+                       lambda c: c['TCP'].update({'8443': {'HTTPS': True}}),
+                       lambda c: c['TCP'].update({'22': {'TCPForward': '127.0.0.1:22'}}),
+                       lambda c: c['Web'].update({dns + ':8443': {'Handlers': {'/': {'Proxy': 'http://127.0.0.1:8081'}}}}),
+                       lambda c: c['Web'][dns + ':443']['Handlers'].update({'/x': {'Path': '/'}}),
+                       lambda c: c.update({'Services': {'svc:fb-admin': {'TCP': {'443': {'HTTPS': True}}}}})):
+            changed = json.loads(json.dumps(config))
+            changed.setdefault('AllowFunnel', {})
+            change(changed)
+            self.assertFalse(phone.console_mapping(changed, dns))
+        self.assertFalse(phone.console_mapping(config, 'test.example.ts.net'))
+        # The laptop node's own mapping refuses any second route, the old 8443 console route included.
+        laptop = {'TCP': {'443': {'HTTPS': True}, '8443': {'HTTPS': True}},
+                  'Web': {'test.example.ts.net:443': {'Handlers': {'/': {'Proxy': 'http://127.0.0.1:5199'}}},
+                          'test.example.ts.net:8443': {'Handlers': {'/': {'Proxy': 'http://127.0.0.1:5197'}}}}}
+        self.assertFalse(phone.owned_mapping(laptop, 'test.example.ts.net'))
+        # The shipped sidecar serve file is exactly that one route.
+        shipped = json.loads((Path(__file__).resolve().parents[2] / 'infra/phone-server/admin-serve.json').read_text())
+        self.assertEqual(shipped, phone.CONSOLE_SERVE)
+        self.assertTrue(phone.console_mapping(json.loads(json.dumps(shipped).replace('${TS_CERT_DOMAIN}', dns)), dns))
+
+    def test_console_node_must_be_fb_admin_tagged_with_certificates_and_one_route(self):
+        self.selected()
+        dns = 'fb-admin.example.ts.net'
+        good = {'BackendState': 'Running', 'Self': {'DNSName': dns + '.', 'Tags': ['tag:fb-admin']}, 'CertDomains': [dns]}
+        route = {'TCP': {'443': {'HTTPS': True}}, 'Web': {dns + ':443': {'Handlers': {'/': {'Proxy': 'http://127.0.0.1:8081'}}}}}
+        with patch.object(phone, 'console_tailscale', side_effect=[good, route]):
+            self.assertEqual(phone.verify_console_node(self.state, attempts=1), dns)
+        for node, serving, message in [
+                ({**good, 'Self': {'DNSName': 'fb-admin-1.example.ts.net.', 'Tags': ['tag:fb-admin']}}, route, 'not named'),
+                ({**good, 'Self': {'DNSName': dns + '.', 'Tags': []}}, route, 'exactly tag:fb-admin'),
+                ({**good, 'CertDomains': []}, route, 'HTTPS certificates'),
+                (good, {**route, 'AllowFunnel': {dns + ':443': True}}, 'single HTTPS route'),
+                ({'BackendState': 'NeedsLogin'}, route, 'login failed')]:
+            with patch.object(phone, 'console_tailscale', side_effect=[node, serving]):
+                with self.assertRaisesRegex(phone.Failure, message):
+                    phone.verify_console_node(self.state, attempts=1)
+        with patch.object(phone, 'console_tailscale', side_effect=phone.Failure('no container')), patch.object(phone.time, 'sleep'):
+            with self.assertRaisesRegex(phone.Failure, 'did not join'):
+                phone.verify_console_node(self.state, attempts=2)
+
+    def test_console_auth_key_is_private_validated_and_needed_before_the_first_start(self):
+        for bad in ('', 'tskey-api-abc-def', 'tskey-auth-abc', 'tskey-auth-abc-def ghi', 'x' * 300):
+            with self.assertRaises(phone.Failure):
+                phone.configure_console_key(self.state, bad)
+        self.assertFalse((self.state / 'console-tailscale-key' / 'authkey').exists())
+        # Built at runtime so no key-shaped literal sits in git (secret scanners flag it).
+        fake = '-'.join(('tskey', 'auth', 'k' + 'Test0', 'fake' * 4))
+        phone.configure_console_key(self.state, f' {fake} \n')
+        key = self.state / 'console-tailscale-key' / 'authkey'
+        self.assertEqual(key.read_bytes(), fake.encode())
+        self.assertEqual(stat.S_IMODE(key.stat().st_mode), 0o600)
+        self.assertEqual(stat.S_IMODE((self.state / 'console-tailscale').stat().st_mode), 0o700)
+        env = phone.secrets_env(self.state)
+        self.assertNotIn('tskey', json.dumps(env))
+        self.assertEqual(env['FB_PHONE_CONSOLE_KEY_DIR'], str(self.state / 'console-tailscale-key'))
+        self.assertFalse(phone.console_node_joined(self.state))
+        (self.state / 'console-tailscale' / 'tailscaled.state').write_text('{}')
+        self.assertTrue(phone.console_node_joined(self.state))
+
+    def test_console_credential_is_added_to_old_state_without_touching_existing_secrets(self):
+        path = self.state / 'credentials.json'
+        old = {k: v for k, v in phone.read_json(path).items() if k != 'FB_PHONE_CONSOLE_PASSWORD'}
+        phone.json_write(path, old)
+        env = phone.secrets_env(self.state)
+        after = phone.read_json(path)
+        self.assertEqual(old, {k: v for k, v in after.items() if k != 'FB_PHONE_CONSOLE_PASSWORD'})
+        self.assertRegex(after['FB_PHONE_CONSOLE_PASSWORD'], '^[0-9a-f]{64}$')
+        self.assertEqual(env['FB_PHONE_CONSOLE_PASSWORD'], after['FB_PHONE_CONSOLE_PASSWORD'])
+        self.assertEqual(phone.read_json(path), phone.read_json(path))
+        self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
+
+    def test_admin_allow_list_is_private_pending_until_pinned_and_rejects_bad_input(self):
+        phone.admin_allow(self.state, 'owner', 'operator', None, 'Owner@Example.com')
+        allow = phone.read_json(self.state / 'console' / 'allow-list.json')
+        self.assertEqual(allow, {'admins': [], 'pending': [{'handle': 'owner', 'email': 'Owner@Example.com', 'role': 'operator'}]})
+        phone.admin_allow(self.state, 'owner', 'operator', '112233445566778899', 'Owner@Example.com')
+        allow = phone.read_json(self.state / 'console' / 'allow-list.json')
+        self.assertEqual(allow['pending'], [])
+        self.assertEqual(allow['admins'][0]['googleSubject'], '112233445566778899')
+        self.assertEqual(stat.S_IMODE((self.state / 'console' / 'allow-list.json').stat().st_mode), 0o600)
+        for handle, role, subject, email in [('Owner', 'operator', None, 'a@b.co'), ('owner', 'root', None, 'a@b.co'),
+                                             ('owner', 'viewer', 'abc', 'a@b.co'), ('owner', 'viewer', None, 'not-an-email')]:
+            with self.assertRaises(phone.Failure):
+                phone.admin_allow(self.state, handle, role, subject, email)
+
+    def test_console_runs_only_when_configured_and_the_override_is_validated(self):
+        self.assertNotIn('--profile', phone.compose_command(self.state_with_compose(), 'ps'))
+        with self.assertRaises(phone.Failure):
+            phone.configure_console(self.state, 'not-a-client')
+        phone.configure_console(self.state, '1234-abc.apps.googleusercontent.com')
+        self.assertNotIn('--profile', phone.compose_command(self.state, 'ps'))
+        phone.admin_allow(self.state, 'owner', 'operator', None, 'owner@example.com')
+        self.assertIn('admin', phone.compose_command(self.state, 'ps'))
+        # A changed serve file (say, with Funnel) stops every compose command until prepare copies the shipped one again.
+        phone.json_write(self.state / 'admin-serve.json', {**phone.CONSOLE_SERVE, 'AllowFunnel': {'${TS_CERT_DOMAIN}:443': True}})
+        with self.assertRaisesRegex(phone.Failure, 'serve file changed'):
+            phone.compose_command(self.state, 'ps')
+        self.state_with_compose()
+        env = phone.secrets_env(self.state)
+        self.assertEqual(env['FB_PHONE_CONSOLE_CLIENT_ID'], '1234-abc.apps.googleusercontent.com')
+        self.assertEqual(env['FB_PHONE_MIN_VERSION_OVERRIDE'], '')
+        phone.set_override(self.state, '1.2.3')
+        self.assertEqual(phone.secrets_env(self.state)['FB_PHONE_MIN_VERSION_OVERRIDE'], '1.2.3')
+        with self.assertRaises(phone.Failure):
+            phone.set_override(self.state, '01.2.3')
+        phone.set_override(self.state, '')
+        self.assertEqual(phone.secrets_env(self.state)['FB_PHONE_MIN_VERSION_OVERRIDE'], '')
+
+    def test_admin_role_password_never_reaches_argv(self):
+        with patch.object(phone, 'compose', return_value=b'') as compose:
+            phone.ensure_admin_role(self.state)
+        args, kwargs = compose.call_args
+        password = phone.read_json(self.state / 'credentials.json')['FB_PHONE_CONSOLE_PASSWORD']
+        self.assertNotIn(password, ' '.join(map(str, args)))
+        self.assertNotIn(password.encode(), kwargs['data'])
+        self.assertIn(b'\\getenv console_password FB_PHONE_CONSOLE_PASSWORD', kwargs['data'])
+        self.assertIn(b'NOBYPASSRLS', kwargs['data'])
+
+    def state_with_compose(self):
+        for name in ('compose.yml', 'init-roles.sh', 'admin-serve.json'):
+            phone.atomic(self.state / name, (Path(__file__).resolve().parents[2] / 'infra/phone-server' / name).read_bytes())
+        (self.state / 'init-roles.sh').chmod(0o644)
+        return self.state
+
     def test_generated_policy_is_dual_stack_and_only_phone_to_https(self):
         current = {'Self': {'ID': 'laptop', 'TailscaleIPs': ['100.64.0.2', 'fd7a:115c:a1e0::2'],
                             'DNSName': 'test.example.ts.net.'},
@@ -378,11 +508,31 @@ class PhoneServerTests(unittest.TestCase):
             phone.policy(self.state)
         policy = phone.read_json(self.state / 'tailnet-policy.json')
         self.assertEqual(policy['acls'], [])
-        self.assertEqual(policy['grants'], [{'src': ['100.64.0.3', 'fd7a:115c:a1e0::3'],
-                                             'dst': ['100.64.0.2', 'fd7a:115c:a1e0::2'], 'ip': ['tcp:443']}])
-        self.assertIn('[fd7a:115c:a1e0::2]:443', policy['tests'][1]['accept'])
+        phone_ips, laptop_ips = ['100.64.0.3', 'fd7a:115c:a1e0::3'], ['100.64.0.2', 'fd7a:115c:a1e0::2']
+        self.assertEqual(policy['grants'], [{'src': phone_ips, 'dst': laptop_ips, 'ip': ['tcp:443']},
+                                            {'src': phone_ips + laptop_ips, 'dst': ['tag:fb-admin'], 'ip': ['tcp:443']}])
+        # B23: the console node is tagged (owned by tailnet admins), reachable on 443 only, and reaches nothing itself.
+        self.assertEqual(policy['tagOwners'], {'tag:fb-admin': ['autogroup:admin']})
+        self.assertNotIn('nodeAttrs', policy)
+        by_source = {}
         for check in policy['tests']:
+            by_source.setdefault(check['src'], []).append(check)
+        phone_v6 = by_source['fd7a:115c:a1e0::3'][0]
+        self.assertIn('[fd7a:115c:a1e0::2]:443', phone_v6['accept'])
+        self.assertIn('tag:fb-admin:443', phone_v6['accept'])
+        for denied in ('[fd7a:115c:a1e0::2]:5197', '[fd7a:115c:a1e0::2]:8443', 'tag:fb-admin:8081', 'tag:fb-admin:22'):
+            self.assertIn(denied, phone_v6['deny'])
+        self.assertIn('tag:fb-admin:443', by_source['100.64.0.2'][0]['accept'])
+        self.assertIn('100.64.0.2:443', by_source['tag:fb-admin'][0]['deny'])
+        self.assertIn('100.64.0.3:22', by_source['tag:fb-admin'][0]['deny'])
+        self.assertIn('tag:fb-admin:443', by_source['100.64.0.1'][0]['deny'])
+        self.assertIn('100.64.0.2:443', by_source['100.64.0.1'][0]['deny'])
+        for check in policy['tests']:
+            if check['src'].startswith('tag:'):
+                continue
             for destination in check.get('accept', []) + check.get('deny', []):
+                if destination.startswith('tag:'):
+                    continue
                 address = destination.rsplit(':', 1)[0].strip('[]')
                 self.assertEqual(ipaddress.ip_address(check['src']).version, ipaddress.ip_address(address).version)
         self.assertFalse((self.state / 'policy-confirmed.json').exists())

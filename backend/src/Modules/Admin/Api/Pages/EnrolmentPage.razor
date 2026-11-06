@@ -1,0 +1,12 @@
+@* B23 P2 enrolment: the signer's own Google subject, to pin in the allow-list. No session is created. *@
+<Layout View="View">
+    <p>Your email is on the allow-list, but your Google account isn't pinned yet. Nobody is signed in.</p>
+    <p>On the server, pin this Google account and sign in again:</p>
+    <pre class="code">make serve-phone-admin-allow ADMIN_SUBJECT=@Subject</pre>
+    <p><a href="/admin/signin">Back to sign-in</a></p>
+</Layout>
+
+@code {
+    [Parameter, EditorRequired] public PageView View { get; set; } = null!;
+    [Parameter, EditorRequired] public string Subject { get; set; } = "";
+}

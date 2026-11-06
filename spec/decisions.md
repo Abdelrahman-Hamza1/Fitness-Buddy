@@ -556,3 +556,14 @@ _Entries marked **(provisional)** apply Claude's recommendation to a question th
 - Status: Accepted by the owner. **Supersedes the Embrace palette named in D-082 and D-083** (the light default of D-083 stays). Amends UX-040.
 - Decision: The app's identity becomes **Momentum** in **Ink & Sky**: a mark of three slanted rounded shapes rising left to right, an ink blue-grey brand with a sky-blue spark, in light and dark, everywhere the app shows its identity (the app icon and the phone's themed icon, the start screen, the welcome page, About, Buddy's avatar). The name is set on two lines, "Fitness / Buddy". Protein's colour moves to violet so no macro looks like the sky spark; each macro keeps one colour, and going over a target stays neutral grey. The app still opens in light by default; layouts, words and features don't change.
 - Why: The owner wanted a calmer, more grown-up look that says "progress" after using the app daily. Technical details: TD-116 (step A64).
+
+## D-099 — An owner-only admin console (web)
+- Date / Source: 2026-11-06 · owner ("You know what we are missing? An admin dashboard… a web app… good enough to actually monitor and control everything") → draft spec and window designs → "I like the suggestions, all rec."
+- Status: Accepted by the owner. Adds `22-admin-console.md` (AD-001…). **Clarifies D-004:** "no web dashboard" means no user-facing web app; an admin console for the operator is allowed.
+- Decision:
+  - A private web console to monitor and control the service: Overview, Accounts (+ detail), Remote config & flags, Buddy & AI, Jobs & sync, Catalog, Audit log.
+  - **No user content, ever:** counts, sizes, timings and pseudonymous account IDs only; emails masked, exact-match search only.
+  - **Access:** reachable only over Tailscale (no public URL), then Google sign-in against an allow-list; roles viewer and operator from the start, the owner as the only admin in R1.
+  - **Safe controls:** drafts with a diff before publish, one-click rollback for config, every action in an append-only audit log, typed confirmation and recent sign-in for destructive actions.
+  - Built in two steps (B23 monitor + config, B24 account controls), the AI window with phase 2.
+- Why: Today checking health or flipping a flag needs SSH and SQL. The console makes operating the service safe and quick from a laptop or phone, without weakening privacy. Design canvas: https://claude.ai/artifact/9JHiZLSwJBR7PYpzWDQAZv

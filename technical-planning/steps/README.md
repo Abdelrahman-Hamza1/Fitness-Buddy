@@ -3,7 +3,7 @@
 R1 is built on **two tracks** (TD-063), both built by Claude since TD-085 (2026-10-28; Codex retired):
 
 - **App track `A01–A50`**: the Flutter app, the Dart packages and tools, the food data. The **By** column records who built each finished step (Codex built some no-UI steps under TD-078).
-- **Backend track `B01–B22`**: the API, the Buddy server, infrastructure and deploys (B01–B08 and B17 built by Codex; the rest by Claude).
+- **Backend track `B01–B24`**: the API, the Buddy server, infrastructure and deploys (B01–B08 and B17 built by Codex; the rest by Claude).
 
 **Within a track the number is the order.** The only waits are the dependencies on the other track, shown in **bold** on the board (§4) and listed in §6. The finished foundation steps keep their old IDs (`S01`–`S04`, `S06a/b`, `S08`); old `Sxx` IDs are never reused, so a commit called `S04: …` is always the old plan and `A01: …` / `B01: …` the new one (§8).
 
@@ -256,6 +256,8 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [B20](B20-measurement-sync.md) | Measurement sync entities (server) | B05, B19, **A15b** (contract) | M | new (A15b plan) |  | ✅ |
 | [B21](B21-workout-sync.md) | Workout sync entities (server; backlog #189) | B05, B20, **A36**, **A37a** | M–L | new (A36 D6) |  | ✅ |
 | [B22](B22-off-sanity-checks.md) | Sanity checks on Open Food Facts products (repair, flag, reject; `checkLabel` note) | B10a, A28a | S–M | FD-012, research §4 |  | ✅ built, awaiting review |
+| [B23](B23-admin-console-1.md) | Admin console 1: monitor and config (D-099, AD-001–016 R1) | B03–B22 | M–L | AD-001–AD-016 |  | 🟨 B23a merged, B23b in progress |
+| [B24](B24-admin-console-2.md) | Admin console 2: account controls | B23 | S–M | AD-007, AD-011 |  | ⬜ |
 
 ```mermaid
 flowchart LR

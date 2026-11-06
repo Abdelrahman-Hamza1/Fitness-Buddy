@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <!-- Admin console (B23, D-099, spec 22): the owner-only console, run only by the `admin` process role.
+       Not an IModule: no /v1 group and no OpenAPI tag (TD-117 candidate). -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\FitnessBuddy.BuildingBlocks.csproj" />
+    <ProjectReference Include="../Identity/FitnessBuddy.Modules.Identity.csproj" />
+    <ProjectReference Include="../Account/FitnessBuddy.Modules.Account.csproj" />
+  </ItemGroup>
+
+  <!-- Static assets are embedded and served by the admin role (no static web assets pipeline in the image). -->
+  <ItemGroup>
+    <EmbeddedResource Include="Api/Assets/**" LogicalName="admin-assets/%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="FitnessBuddy.Persistence.Tests" />
+    <InternalsVisibleTo Include="FitnessBuddy.Host.Tests" />
+  </ItemGroup>
+</Project>

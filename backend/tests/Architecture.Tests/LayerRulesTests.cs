@@ -9,8 +9,10 @@ namespace FitnessBuddy.Architecture.Tests;
 [Trait("Rule", "04.3-module-boundaries")]
 public sealed class LayerRulesTests
 {
+    // The admin console (B23) is a module outside the catalogue (admin role only); the same rules apply to it.
     private static readonly ModuleBoundary[] Modules = [.. ModuleCatalog.All.Select(module =>
-        new ModuleBoundary(module.GetType().Namespace!, module.GetType().Assembly))];
+        new ModuleBoundary(module.GetType().Namespace!, module.GetType().Assembly)),
+        new ModuleBoundary(typeof(FitnessBuddy.Modules.Admin.AdminModule).Namespace!, typeof(FitnessBuddy.Modules.Admin.AdminModule).Assembly)];
 
     private static readonly ArchitectureModel Architecture = new ArchLoader()
         .LoadAssemblies([BuildingBlocksAssembly.Assembly, typeof(Program).Assembly, .. Modules.Select(module => module.Assembly)])

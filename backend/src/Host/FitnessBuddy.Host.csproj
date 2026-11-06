@@ -41,4 +41,6 @@
     <InternalsVisibleTo Include="FitnessBuddy.Persistence.Tests" />
   </ItemGroup>
   <ItemGroup><ProjectReference Include="../Modules/Usage/FitnessBuddy.Modules.Usage.csproj" /></ItemGroup>
+  <!-- The admin console is mapped only by the admin role, never by api (B23). -->
+  <ItemGroup><ProjectReference Include="../Modules/Admin/FitnessBuddy.Modules.Admin.csproj" /></ItemGroup>
 </Project>

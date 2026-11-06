@@ -24,6 +24,8 @@ public sealed class PostgresFixture : IAsyncLifetime
     public NpgsqlDataSource App { get; private set; } = null!;
     public string MigratorConnection { get; private set; } = "";
     public string AppConnection { get; private set; } = "";
+    /// <summary>The B23 console login (fb_admin), as the admin role uses it.</summary>
+    public string AdminConnection { get; private set; } = "";
     public MigrationRunner Runner { get; private set; } = null!;
 
     public async ValueTask InitializeAsync()
@@ -40,6 +42,9 @@ public sealed class PostgresFixture : IAsyncLifetime
         };
         AppConnection = appSettings.ConnectionString;
         App = DatabaseConfiguration.CreateSource(AppConnection);
+        appSettings.Username = "fb_admin";
+        appSettings.Password = "local-admin-console-only";
+        AdminConnection = appSettings.ConnectionString;
         appSettings.Username = "fb_migrator";
         appSettings.Password = "local-migrator-only";
         MigratorConnection = appSettings.ConnectionString;
@@ -48,6 +53,7 @@ public sealed class PostgresFixture : IAsyncLifetime
             new ModuleMigration("usage", c => new FitnessBuddy.Modules.Usage.Infrastructure.UsageContext(DatabaseConfiguration.ContextOptions<FitnessBuddy.Modules.Usage.Infrastructure.UsageContext>(c, "usage"))),
             new ModuleMigration("catalog", connection => new CatalogContext(DatabaseConfiguration.ContextOptions<CatalogContext>(connection, "catalog"))),
             new ModuleMigration("account", connection => new AccountContext(DatabaseConfiguration.ContextOptions<AccountContext>(connection, "account"))),
+            FitnessBuddy.Modules.Admin.AdminModule.Migration,
             new ModuleMigration("identity", connection => new IdentityContext(DatabaseConfiguration.ContextOptions<IdentityContext>(connection, "identity"))),
             new ModuleMigration("ops", connection => new OpsDbContext(DatabaseConfiguration.ContextOptions<OpsDbContext>(connection, "ops"))),
             new ModuleMigration("userdata", connection => new UserDataContext(DatabaseConfiguration.ContextOptions<UserDataContext>(connection, "userdata"))),

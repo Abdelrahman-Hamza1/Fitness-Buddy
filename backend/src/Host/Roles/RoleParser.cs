@@ -6,13 +6,16 @@ internal enum HostRole
     Api,
     Worker,
     Migrate,
+
+    /// <summary>The owner-only admin console (B23): its own loopback listener and database login, never the public API.</summary>
+    Admin,
 }
 
 internal static class RoleParser
 {
     public const int UsageExitCode = 2;
 
-    public const string Usage = "Usage: FitnessBuddy.Host [api|worker|migrate] [host options]. Default: api.";
+    public const string Usage = "Usage: FitnessBuddy.Host [api|worker|migrate|admin] [host options]. Default: api.";
 
     /// <summary>
     /// The role is <c>args[0]</c> when it doesn't start with <c>-</c>; otherwise it is <c>api</c>, so
@@ -39,6 +42,9 @@ internal static class RoleParser
                 return true;
             case "migrate":
                 role = HostRole.Migrate;
+                return true;
+            case "admin":
+                role = HostRole.Admin;
                 return true;
             default:
                 return false;

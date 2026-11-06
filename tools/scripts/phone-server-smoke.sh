@@ -32,10 +32,18 @@ image = phone.run(['docker', 'image', 'inspect', '--format', '{{.Id}}', sys.argv
 with tempfile.TemporaryDirectory(prefix='b03-smoke-') as temp:
     state = Path(temp)
     phone.init(state)
-    for name in ('compose.yml', 'init-roles.sh'):
+    for name in ('compose.yml', 'init-roles.sh', 'admin-serve.json'):
         text = (repo / 'infra/phone-server' / name).read_text()
         if name == 'compose.yml':
-            text = text.replace('127.0.0.1:5199:8080', '127.0.0.1::8080')
+            text = text.replace('127.0.0.1:5199:8080', '127.0.0.1::8080').replace('127.0.0.1:5197:8081', '127.0.0.1::8081')
+            # B23 T17-light (every push): non-default remote-config values reach every role through the one anchor, including
+            # migrate's seed. The real upgrade from the previous main image is phone-server-upgrade-smoke.sh (nightly, manual).
+            text = text.replace('  Clients__MinimumAppVersionOverride: ${FB_PHONE_MIN_VERSION_OVERRIDE:-}\n',
+                                '  Clients__MinimumAppVersionOverride: ${FB_PHONE_MIN_VERSION_OVERRIDE:-}\n'
+                                '  Account__ClientConfig__FeatureFlags__smokeFlag: "true"\n'
+                                '  Account__ClientConfig__Thresholds__proposalQuestionKcalDelta: "70"\n'
+                                '  FeatureFlags__smokeServer: "true"\n')
+            assert 'smokeFlag' in text
         phone.atomic(state / name, text.encode())
         if name == 'init-roles.sh':
             (state / name).chmod(0o644)
@@ -48,7 +56,15 @@ with tempfile.TemporaryDirectory(prefix='b03-smoke-') as temp:
         network = json.loads(phone.run(['docker', 'network', 'inspect', phone.PROJECT + '_default']))[0]
         gateway = network['IPAM']['Config'][0]['Gateway']
         phone.json_write(state / 'gateway.json', {'gateway': gateway})
-        phone.compose(state, 'up', '-d', 'migrate', 'api', 'worker')
+        # B23 T17-light: a volume from before the console has no fb_admin role; ensure-admin-role creates it with its password.
+        phone.sql(state, 'REVOKE CONNECT ON DATABASE fitness_buddy FROM fb_admin; DROP ROLE fb_admin;')
+        phone.ensure_admin_role(state)
+        assert phone.sql(state, "SELECT rolcanlogin,rolsuper,rolbypassrls,rolinherit FROM pg_roles WHERE rolname='fb_admin';").strip() == 't|f|f|f'
+        phone.ensure_admin_role(state)
+        phone.configure_console(state, '1234567890-smoke.apps.googleusercontent.com')
+        phone.json_write(state / 'console' / 'allow-list.json', {'admins': [{'handle': 'owner', 'googleSubject': '1234567890',
+                         'email': 'owner@example.invalid', 'role': 'operator'}], 'pending': []})
+        phone.compose(state, 'up', '-d', 'migrate', 'api', 'worker', 'admin')
         port = phone.compose(state, 'port', 'api', '8080').decode().strip().split(':')[-1]
         base = 'http://127.0.0.1:' + port
         for _ in range(60):
@@ -75,6 +91,52 @@ with tempfile.TemporaryDirectory(prefix='b03-smoke-') as temp:
         with urllib.request.urlopen(urllib.request.Request(base + '/v1/config', headers=headers)) as response:
             config = json.load(response)
             assert set(config) == {'featureFlags', 'minimumAppVersion', 'thresholds'}
+            # B23 T17: the seeded version 1 serves exactly the configured (non-default) values.
+            assert config['featureFlags'] == {'smokeFlag': True} and config['thresholds'] == {'proposalQuestionKcalDelta': 70}, config
+        seeded = phone.sql(state, "SELECT version, document->'featureFlags'->>'smokeFlag', document->'serverFlags'->>'smokeServer', document->'serverFlags'->>'buddy.ai' FROM account.config_versions;").strip()
+        assert seeded == '1|true|true|true', seeded
+        console_port = phone.compose(state, 'port', 'admin', '8081').decode().strip().split(':')[-1]
+        console = 'http://127.0.0.1:' + console_port
+        for _ in range(60):
+            if phone.ready(console):
+                break
+            time.sleep(1)
+        else:
+            raise AssertionError('synthetic console did not become ready')
+        admin_id = phone.compose(state, 'ps', '-q', 'admin').decode().strip()
+        admin_meta = json.loads(phone.run(['docker', 'inspect', admin_id]))[0]
+        assert admin_meta['Config']['User'] == str(os.getuid()) and admin_meta['HostConfig']['ReadonlyRootfs']
+        # The image's EXPOSEd API port is unpublished here (None); every published port is loopback.
+        assert all('127.0.0.1' == entry['HostIp'] for entries in admin_meta['NetworkSettings']['Ports'].values() for entry in entries or [])
+        admin_env = dict(item.split('=', 1) for item in admin_meta['Config']['Env'])
+        assert 'ConnectionStrings__Application' not in admin_env and 'ConnectionStrings__Migrator' not in admin_env
+        assert 'fb_admin' in admin_env['ConnectionStrings__Admin']
+        # B23 security review: only loopback (the sidecar in this namespace) is a trusted proxy, so a client on the published
+        # port can't claim HTTPS or another address; and the console's tailnet node is a hardened, port-less sidecar.
+        assert not any(key.startswith('Proxy__TrustedNetworks') for key in admin_env)
+        with urllib.request.urlopen(urllib.request.Request(console + '/admin/signin', headers={'X-Forwarded-Proto': 'https', 'X-Forwarded-For': '100.64.0.7'})) as response:
+            assert 'Strict-Transport-Security' not in response.headers
+        rendered = json.loads(phone.compose(state, 'config', '--format', 'json'))['services']['admin-tailscale']
+        assert rendered['network_mode'] == 'service:admin' and not rendered.get('ports'), rendered
+        assert rendered['user'] == str(os.getuid()) and rendered['read_only'] and rendered['cap_drop'] == ['ALL']
+        assert '@sha256:' in rendered['image'] and rendered['environment']['TS_HOSTNAME'] == 'fb-admin'
+        assert rendered['environment']['TS_EXTRA_ARGS'] == '--advertise-tags=tag:fb-admin'
+        assert rendered['environment']['TS_AUTHKEY'] == 'file:/authkey/authkey' and rendered['environment']['TS_AUTH_ONCE'] == 'true'
+        mounts = {volume['target']: volume for volume in rendered['volumes']}
+        assert mounts['/authkey']['read_only'] and mounts['/serve/admin-serve.json']['read_only']
+        assert json.loads(Path(mounts['/serve/admin-serve.json']['source']).read_text()) == phone.CONSOLE_SERVE
+        class NoRedirect(urllib.request.HTTPRedirectHandler):
+            def redirect_request(self, *args, **kwargs):
+                return None
+        opener = urllib.request.build_opener(NoRedirect)
+        for url, expected in [(console + '/admin', 302), (console + '/v1/config', 302), (base + '/admin', 404), (base + '/admin/signin', 404)]:
+            try:
+                status = opener.open(urllib.request.Request(url, headers=headers)).status
+            except urllib.error.HTTPError as error:
+                status = error.code
+            assert status == expected, (url, status)
+        with urllib.request.urlopen(console + '/admin/signin') as response:
+            assert response.status == 200 and "frame-ancestors 'none'" in response.headers['Content-Security-Policy']
             assert 'Strict-Transport-Security' not in response.headers
         forwarded = dict(headers, **{'X-Forwarded-Proto': 'https', 'X-Forwarded-For': '100.64.0.3'})
         with urllib.request.urlopen(urllib.request.Request(base + '/v1/config', headers=forwarded)) as response:

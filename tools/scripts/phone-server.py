@@ -27,7 +27,16 @@ _CANDIDATE_REPO = Path(__file__).resolve().parents[2]
 REPO = _CANDIDATE_REPO if (_CANDIDATE_REPO / '.git').exists() else None
 DEFAULT_STATE = Path.home() / '.local/share/fitness-buddy/phone-server'
 PROJECT = 'fitness-buddy-phone'
-PASSWORD_KEYS = ('ADMIN', 'MIGRATOR', 'APP', 'BACKUP')
+PASSWORD_KEYS = ('ADMIN', 'MIGRATOR', 'APP', 'BACKUP', 'CONSOLE')
+# B23: the console's own database login (fb_admin) joined later; older states get it added, never the others regenerated.
+LATER_PASSWORD_KEYS = ('CONSOLE',)
+CONSOLE_PORT = 5197
+# B23 security review: the console has its own tailnet node, so its cookies never share a hostname with the API (cookies
+# are not port-isolated). The admin-tailscale sidecar joins as this name with this tag and serves only HTTPS 443.
+CONSOLE_NODE = 'fb-admin'
+CONSOLE_TAG = 'tag:fb-admin'
+CONSOLE_UPSTREAM = 'http://127.0.0.1:8081'
+AUTH_KEY = re.compile(r'tskey-auth-[A-Za-z0-9]{1,64}-[A-Za-z0-9]{1,128}')
 
 
 class Failure(Exception):
@@ -88,7 +97,17 @@ def safe_dir(path):
     private(path, directory=True)
 
 
+def add_later_credentials(state):
+    path = state / 'credentials.json'
+    credentials = read_json(path)
+    missing = {f'FB_PHONE_{key}_PASSWORD' for key in LATER_PASSWORD_KEYS} - set(credentials)
+    if missing:
+        # A role added after the volume was created gets its own fresh secret; existing secrets are never touched.
+        json_write(path, {**credentials, **{name: secrets.token_hex(32) for name in sorted(missing)}})
+
+
 def secrets_env(state):
+    add_later_credentials(state)
     credentials = read_json(state / 'credentials.json')
     expected = {f'FB_PHONE_{key}_PASSWORD' for key in PASSWORD_KEYS}
     if set(credentials) != expected or any(not isinstance(v, str) or not re.fullmatch(r'[0-9a-f]{64}', v)
@@ -99,6 +118,11 @@ def secrets_env(state):
                                            'XDG_RUNTIME_DIR', 'DOCKER_CONFIG') if key in os.environ}
     env.update(credentials)
     env.update(FB_PHONE_IMAGE='sha256:' + '0' * 64, FB_PHONE_PROXY_CIDR='127.0.0.1/32')
+    # B23 console: private read-only mounts, the operator UID (the files are 0600) and the recovery override.
+    env.update(FB_PHONE_UID=str(os.getuid()), FB_PHONE_CONSOLE_DIR=str(state / 'console'), FB_PHONE_STATUS_DIR=str(state / 'status'),
+               FB_PHONE_CONSOLE_CLIENT_ID=console_client_id(state) or 'unset', FB_PHONE_MIN_VERSION_OVERRIDE=min_version_override(state),
+               FB_PHONE_CONSOLE_TS_DIR=str(state / 'console-tailscale'), FB_PHONE_CONSOLE_KEY_DIR=str(state / 'console-tailscale-key'),
+               FB_PHONE_CONSOLE_SERVE=str(state / 'admin-serve.json'))
     image = state / 'image.json'
     if image.exists():
         config = read_json(image)
@@ -115,8 +139,176 @@ def secrets_env(state):
 def compose_command(state, *args):
     private(state / 'compose.yml')
     private(state / 'init-roles.sh', public_read=True)
-    return ['docker', 'compose', '--env-file', '/dev/null', '-p', PROJECT,
+    profiles = []
+    if console_configured(state):
+        private(state / 'admin-serve.json')
+        if json.loads((state / 'admin-serve.json').read_text()) != CONSOLE_SERVE:
+            raise Failure('Console serve file changed; run prepare again')
+        profiles = ['--profile', 'admin']
+    return ['docker', 'compose', '--env-file', '/dev/null', '-p', PROJECT, *profiles,
             '-f', str(state / 'compose.yml'), *identity_compose_args(state), *recovery_compose_args(state), *buddy_compose_args(state), *args]
+
+
+# ---- B23 admin console -------------------------------------------------------------------------------------------
+
+HANDLE = re.compile(r'[a-z][a-z0-9-]{0,31}')
+EMAIL = re.compile(r'[^@\s]{1,64}@[^@\s]{1,189}\.[^@\s]{1,63}')
+SUBJECT = re.compile(r'[0-9]{5,255}')
+VERSION = re.compile(r'(0|[1-9][0-9]{0,8})\.(0|[1-9][0-9]{0,8})\.(0|[1-9][0-9]{0,8})')
+
+
+def console_client_id(state):
+    path = state / 'console' / 'config.json'
+    if not path.exists():
+        return None
+    value = read_json(path).get('GoogleClientId')
+    if not isinstance(value, str) or not re.fullmatch(r'[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com', value):
+        raise Failure('Invalid console client ID; run configure-console again')
+    return value
+
+
+def console_configured(state):
+    allow = state / 'console' / 'allow-list.json'
+    return console_client_id(state) is not None and allow.exists()
+
+
+def min_version_override(state):
+    path = state / 'override.json'
+    if not path.exists():
+        return ''
+    value = read_json(path).get('minimumAppVersion', '')
+    if value and not VERSION.fullmatch(value):
+        raise Failure('Invalid minimum-version override')
+    return value
+
+
+# The sidecar's whole Serve configuration (infra/phone-server/admin-serve.json): one HTTPS route, no Funnel.
+CONSOLE_SERVE = {'TCP': {'443': {'HTTPS': True}}, 'Web': {'${TS_CERT_DOMAIN}:443': {'Handlers': {'/': {'Proxy': CONSOLE_UPSTREAM}}}}}
+
+
+def configure_console_key(state, key):
+    """Stores the owner's single-use, tagged (tag:fb-admin) Tailscale auth key for the console node, 0600, never on argv."""
+    init(state)
+    key = (key or '').strip()
+    if not AUTH_KEY.fullmatch(key):
+        raise Failure('Expected a Tailscale auth key (tskey-auth-…); create it in the admin console, tagged tag:fb-admin, not reusable')
+    atomic(state / 'console-tailscale-key' / 'authkey', key.encode())
+    print('Console node auth key stored privately; it is used once, at the first start of the console node')
+
+
+def console_node_joined(state):
+    """True once the sidecar has its node state, after which it never needs the auth key again (TS_AUTH_ONCE)."""
+    return (state / 'console-tailscale' / 'tailscaled.state').exists()
+
+
+def console_dns(state):
+    """https://fb-admin.<tailnet>: the tailnet suffix is the laptop's own MagicDNS suffix."""
+    laptop = read_json(state / 'devices.json')['dns']
+    return CONSOLE_NODE + '.' + laptop.split('.', 1)[1]
+
+
+def console_mapping(config, dns):
+    """The sidecar serves exactly one route (HTTPS 443 → the console) and nothing else: no Funnel, no TCP forward, no Service."""
+    web = {dns + ':443': {'Handlers': {'/': {'Proxy': CONSOLE_UPSTREAM}}}}
+    others = {key: value for key, value in config.items() if key not in ('Web', 'TCP', 'AllowFunnel')}
+    return (config.get('Web') == web and config.get('TCP') == {'443': {'HTTPS': True}}
+            and not any((config.get('AllowFunnel') or {}).values()) and not any(others.values()))
+
+
+def console_tailscale(state, *args):
+    return json.loads(compose(state, 'exec', '-T', 'admin-tailscale', 'tailscale', '--socket=/tmp/tailscaled.sock', *args, '--json', timeout=30))
+
+
+def verify_console_node(state, attempts=60):
+    """Waits for the console node and checks it is exactly fb-admin.<tailnet>, tagged, serving one route, never Funnel."""
+    dns = console_dns(state)
+    for _ in range(attempts):
+        try:
+            node = console_tailscale(state, 'status')
+        except (Failure, ValueError):
+            node = {}
+        backend = node.get('BackendState')
+        if backend == 'NeedsLogin':
+            raise Failure('Console node login failed: create a new tagged auth key, run make serve-phone-console-key, then serve-phone')
+        if backend == 'Running' and (node.get('Self') or {}).get('DNSName'):
+            break
+        time.sleep(1)
+    else:
+        raise Failure('Console node did not join the tailnet (check the auth key and the tag owner in the policy)')
+    me = node['Self']
+    if me['DNSName'].rstrip('.') != dns:
+        raise Failure(f'Console node is not named {CONSOLE_NODE}; remove the old {CONSOLE_NODE} machine in Tailscale, then start again')
+    if (me.get('Tags') or []) != [CONSOLE_TAG]:
+        raise Failure(f'Console node must carry exactly {CONSOLE_TAG}; use a key tagged with it')
+    if dns not in (node.get('CertDomains') or []):
+        raise Failure('Enable HTTPS certificates in Tailscale DNS first')
+    serving = console_tailscale(state, 'serve', 'status')
+    if not console_mapping(serving, dns):
+        raise Failure('Console node Serve configuration is not the single HTTPS route; stopped')
+    return dns
+
+
+def configure_console(state, client_id):
+    init(state)
+    if not re.fullmatch(r'[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com', client_id or ''):
+        raise Failure('Expected the console Web OAuth client ID (…apps.googleusercontent.com)')
+    safe_dir(state / 'console')
+    json_write(state / 'console' / 'config.json', {'GoogleClientId': client_id})
+    print('Console client ID recorded; add an admin with admin-allow, then start the stack')
+
+
+def admin_allow(state, handle, role, subject, email):
+    """Adds or updates one admin. Without a subject the email is pending: its first sign-in shows the subject to pin."""
+    init(state)
+    if not HANDLE.fullmatch(handle or '') or role not in ('viewer', 'operator'):
+        raise Failure('Handle is lowercase letters, digits or -, role is viewer or operator')
+    email = (email or '').strip()
+    if not EMAIL.fullmatch(email):
+        raise Failure('Enter a valid email address')
+    if subject is not None and not SUBJECT.fullmatch(subject):
+        raise Failure('A Google subject is the numeric ID the console shows on its setup page')
+    safe_dir(state / 'console')
+    path = state / 'console' / 'allow-list.json'
+    current = read_json(path) if path.exists() else {'admins': [], 'pending': []}
+    admins = [entry for entry in current.get('admins', []) if entry['handle'] != handle]
+    pending = [entry for entry in current.get('pending', []) if entry['handle'] != handle]
+    if subject is None:
+        pending.append({'handle': handle, 'email': email, 'role': role})
+    else:
+        admins.append({'handle': handle, 'googleSubject': subject, 'email': email, 'role': role})
+    json_write(path, {'admins': admins, 'pending': pending})
+    print('Allow-list updated (' + ('pinned' if subject else 'pending: sign in once to see the subject to pin') + '); applies within 10 s')
+
+
+def set_override(state, version):
+    init(state)
+    if version and not VERSION.fullmatch(version):
+        raise Failure('Use MAJOR.MINOR.PATCH, or an empty value to clear the override')
+    if version:
+        json_write(state / 'override.json', {'minimumAppVersion': version})
+    else:
+        (state / 'override.json').unlink(missing_ok=True)
+    print('Minimum-version override ' + ('set' if version else 'cleared') + '; restart the stack with serve-phone to apply')
+
+
+def ensure_admin_role(state):
+    """The console login on an existing or fresh volume: created if missing, given its private password (B23 WP7)."""
+    # The password comes from the container's environment, never argv; psql reads the statement on stdin.
+    statement = r"""\getenv console_password FB_PHONE_CONSOLE_PASSWORD
+DO $$BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'fb_admin') THEN
+    CREATE ROLE fb_admin NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS NOINHERIT;
+  END IF;
+END$$;
+ALTER ROLE fb_admin WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS NOINHERIT PASSWORD :'console_password';
+GRANT CONNECT ON DATABASE fitness_buddy TO fb_admin;
+"""
+    sql(state, statement)
+
+
+def write_backup_status(state):
+    safe_dir(state / 'status')
+    json_write(state / 'status' / 'backup.json', {'completedAt': dt.datetime.now(dt.timezone.utc).isoformat(), 'ok': True})
 
 
 def compose(state, *args, data=None, timeout=300):
@@ -369,6 +561,10 @@ def init(state):
             raise Failure('Existing phone volume but no credentials; recover the original credentials')
         json_write(path, {f'FB_PHONE_{key}_PASSWORD': secrets.token_hex(32) for key in PASSWORD_KEYS})
     safe_dir(state / 'backups')
+    safe_dir(state / 'console')
+    safe_dir(state / 'status')
+    safe_dir(state / 'console-tailscale')
+    safe_dir(state / 'console-tailscale-key')
 
 
 def prepare(state):
@@ -391,7 +587,7 @@ def prepare(state):
         run(['docker', 'build', '--label', f'org.opencontainers.image.revision={revision}',
              '--iidfile', str(path / 'image-id'), str(path / 'backend')], timeout=1200)
         image = (path / 'image-id').read_text().strip()
-    for name in ('compose.yml', 'init-roles.sh'):
+    for name in ('compose.yml', 'init-roles.sh', 'admin-serve.json'):
         atomic(state / name, (REPO / 'infra/phone-server' / name).read_bytes())
         if name == 'init-roles.sh':
             (state / name).chmod(0o644)
@@ -422,13 +618,22 @@ def policy(state):
     denied_v6 = next(f'fd7a:115c:a1e0::{n:x}' for n in range(1, 255)
                      if f'fd7a:115c:a1e0::{n:x}' not in laptop_ips + phone_ips)
     same_family = lambda src, dst: ipaddress.ip_address(src).version == ipaddress.ip_address(dst).version
+    console = lambda port: f'{CONSOLE_TAG}:{port}'
     config = {
+        # B23: the console node is tagged; only tailnet admins (the owner) may create keys for the tag.
+        'tagOwners': {CONSOLE_TAG: ['autogroup:admin']},
         'acls': [],
-        'grants': [{'src': phone_ips, 'dst': laptop_ips, 'ip': ['tcp:443']}],
+        'grants': [{'src': phone_ips, 'dst': laptop_ips, 'ip': ['tcp:443']},
+                   # The owner's two devices reach the console node on HTTPS only. The node itself reaches nothing.
+                   {'src': phone_ips + laptop_ips, 'dst': [CONSOLE_TAG], 'ip': ['tcp:443']}],
+        # No nodeAttrs: no device, the console node included, can turn on Funnel.
         'tests': [
-            *({'src': ip, 'accept': [target(dst, 443) for dst in laptop_ips if same_family(ip, dst)],
-               'deny': [target(dst, port) for dst in laptop_ips if same_family(ip, dst) for port in (22, 5199)]} for ip in phone_ips),
-            *({'src': ip, 'deny': [target(dst, 443) for dst in laptop_ips if same_family(ip, dst)]}
+            *({'src': ip, 'accept': [target(dst, 443) for dst in laptop_ips if same_family(ip, dst)] + [console(443)],
+               'deny': [target(dst, port) for dst in laptop_ips if same_family(ip, dst) for port in (22, 5199, CONSOLE_PORT, 8443)]
+                       + [console(port) for port in (22, 80, 8081, 8443)]} for ip in phone_ips),
+            *({'src': ip, 'accept': [console(443)], 'deny': [console(port) for port in (22, 80, 8081)]} for ip in laptop_ips),
+            {'src': CONSOLE_TAG, 'deny': [target(dst, port) for dst in laptop_ips + phone_ips for port in (22, 443, 5199)]},
+            *({'src': ip, 'deny': [target(dst, 443) for dst in laptop_ips if same_family(ip, dst)] + [console(443)]}
               for ip in (denied_ip, denied_v6) if any(same_family(ip, dst) for dst in laptop_ips)),
         ],
     }
@@ -483,6 +688,7 @@ def accept_unencrypted_storage(state):
 
 
 def owned_mapping(config, dns):
+    # The laptop node serves exactly the API route; the console is never served from this hostname (B23).
     return (config.get('Web') == {dns + ':443': {'Handlers': {'/': {'Proxy': 'http://127.0.0.1:5199'}}}} and
             config.get('TCP') == {'443': {'HTTPS': True}} and
             not any((config.get('AllowFunnel') or {}).values()))
@@ -513,7 +719,8 @@ def activation_checks(state):
     serving = json.loads(run(['tailscale', 'serve', 'status', '--json']))
     if serving:
         receipt = state / 'serving.json'
-        if not (receipt.exists() and read_json(receipt).get('dns') == selected['dns'] and owned_mapping(serving, selected['dns'])):
+        if not (receipt.exists() and read_json(receipt).get('dns') == selected['dns']
+                and owned_mapping(serving, selected['dns'])):
             raise Failure('Existing Tailscale Serve configuration; inspect it before starting this stack')
     return selected['dns']
 
@@ -542,13 +749,30 @@ def up(state):
     networks = json.loads(run(['docker', 'network', 'inspect', PROJECT + '_default']))
     gateway = networks[0]['IPAM']['Config'][0]['Gateway']
     json_write(state / 'gateway.json', {'gateway': str(ipaddress.IPv4Address(gateway))})
-    compose(state, 'up', '-d', '--force-recreate', 'migrate', 'api', 'worker')
+    # B23: the console login exists with its private password before migrations grant to it.
+    ensure_admin_role(state)
+    console = console_configured(state)
+    if console and not console_node_joined(state) and not (state / 'console-tailscale-key' / 'authkey').exists():
+        raise Failure('The console node needs its auth key once: make serve-phone-console-key (see the admin-console runbook)')
+    compose(state, 'up', '-d', '--force-recreate', 'migrate', 'api', 'worker', *(['admin', 'admin-tailscale'] if console else []))
     for _ in range(60):
         if ready('http://127.0.0.1:5199'):
             break
         time.sleep(1)
     else:
         raise Failure('API readiness timed out; Serve was not enabled')
+    if console:
+        for _ in range(60):
+            if ready(f'http://127.0.0.1:{CONSOLE_PORT}'):
+                break
+            time.sleep(1)
+        else:
+            raise Failure('Console readiness timed out (check its allow-list); Serve was not enabled')
+        try:
+            verify_console_node(state)
+        except Failure:
+            compose(state, 'stop', 'admin-tailscale', 'admin')
+            raise
     # Never invoke Funnel. This command uses only the already-confirmed tailnet policy.
     run(['tailscale', 'serve', '--bg', '--yes', '--https=443', 'http://127.0.0.1:5199'], timeout=30)
     json_write(state / 'serving.json', {'dns': dns})
@@ -605,6 +829,7 @@ def backup(state):
                     private(manifest)
                     manifest.unlink()
                 path.unlink()
+    write_backup_status(state)
     print('Backup complete with protected generation/digest; seven-day local retention')
     return folder / name
 
@@ -642,9 +867,12 @@ def restore_check(state):
             compose(state, 'exec', '-T', 'postgres', 'sh', '-c',
                     'export PGPASSWORD="$POSTGRES_PASSWORD"; exec pg_restore -w -h 127.0.0.1 -U postgres --role=fb_migrator --exit-on-error --no-owner -d "$1"',
                     'sh', scratch, data=archive.read_bytes(), timeout=900)
-            count = sql(state, "SELECT count(*) FROM pg_tables WHERE schemaname IN ('ops','userdata','identity','account','catalog');", database=scratch).strip()
+            count = sql(state, "SELECT count(*) FROM pg_tables WHERE schemaname IN ('ops','userdata','identity','account','catalog','admin');", database=scratch).strip()
             if not count.isdecimal() or int(count) < 1:
                 raise Failure('Restore has no expected module tables')
+            console = sql(state, "SELECT count(*) FROM pg_tables WHERE (schemaname, tablename) IN (('admin','audit_log'),('admin','sessions'),('account','config_versions'));", database=scratch).strip()
+            if console != '3':
+                raise Failure('Restore is missing the console and remote-config tables')
             restored = sql(state, 'SELECT generation::text FROM ops.recovery WHERE singleton;', database=scratch).strip()
             if restored != generation:
                 raise Failure('Restored recovery state does not match protected generation')
@@ -695,6 +923,14 @@ def status(state):
     image = read_json(state / 'image.json')
     print('Main revision: ' + image['revision'])
     print('Loopback ready: ' + str(ready('http://127.0.0.1:5199')))
+    if console_configured(state):
+        print('Console loopback ready: ' + str(ready(f'http://127.0.0.1:{CONSOLE_PORT}')))
+        if (state / 'devices.json').exists():
+            print(f'Private console (laptop and A55 over Tailscale): https://{console_dns(state)}/admin')
+        print('Console node joined: ' + str(console_node_joined(state)))
+    override = min_version_override(state)
+    if override:
+        print('Minimum-version override ACTIVE: ' + override)
     if (state / 'serving.json').exists():
         dns = read_json(state / 'serving.json')['dns']
         print('Private HTTPS: https://' + dns)
@@ -712,11 +948,27 @@ def status(state):
         print('Newest backup matches protected generation/digest: ' + str(safe))
 
 
+def read_secret(prompt):
+    if sys.stdin.isatty():
+        import getpass
+        return getpass.getpass(prompt)
+    return sys.stdin.readline().strip()
+
+
+def read_email():
+    return read_secret('Admin email (not echoed): ')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--state', type=Path, default=DEFAULT_STATE)
     parser.add_argument('--google-clients', type=Path, default=Path.home() / '.local/share/fitness-buddy/identity/google-clients.json')
-    parser.add_argument('command', choices=['catalog-import', 'configure-buddy', 'configure-identity', 'prepare', 'policy', 'confirm-policy', 'accept-unencrypted-storage', 'up', 'stop', 'backup', 'restore-check', 'install-timer', 'status'])
+    parser.add_argument('command', choices=['catalog-import', 'configure-buddy', 'configure-identity', 'configure-console', 'admin-allow', 'configure-console-key', 'set-override', 'ensure-admin-role', 'prepare', 'policy', 'confirm-policy', 'accept-unencrypted-storage', 'up', 'stop', 'backup', 'restore-check', 'install-timer', 'status'])
+    parser.add_argument('--client-id', default=None)
+    parser.add_argument('--handle', default='owner')
+    parser.add_argument('--role', default='operator')
+    parser.add_argument('--subject', default=None)
+    parser.add_argument('--version', default='')
     parser.add_argument('--openai-key-file', type=Path, default=Path.home() / '.config/fitness-buddy/openai-api-key')
     parser.add_argument('--catalog-dir', type=Path, default=Path('build/catalog'))
     args = parser.parse_args()
@@ -732,7 +984,14 @@ def main():
             {'configure-buddy': lambda target: configure_buddy(target, args.openai_key_file), 'catalog-import': lambda target: catalog_import(target, args.catalog_dir), 'configure-identity': lambda target: configure_identity(target, args.google_clients), 'prepare': prepare, 'policy': policy, 'confirm-policy': confirm_policy, 'up': up,
              'accept-unencrypted-storage': accept_unencrypted_storage,
              'stop': stop, 'backup': backup, 'restore-check': restore_check,
-             'install-timer': install_timer, 'status': status}[args.command](state)
+             'install-timer': install_timer, 'status': status,
+             'configure-console': lambda target: configure_console(target, args.client_id),
+             # The email is read from stdin (prompted when interactive), never from argv or the shell history.
+             'admin-allow': lambda target: admin_allow(target, args.handle, args.role, args.subject or None, read_email()),
+             'set-override': lambda target: set_override(target, args.version.strip()),
+             # The auth key is read at a hidden prompt (or stdin), never from argv or the shell history.
+             'configure-console-key': lambda target: configure_console_key(target, read_secret('Console node auth key (not echoed): ')),
+             'ensure-admin-role': ensure_admin_role}[args.command](state)
     except (Failure, OSError, ValueError, KeyError, StopIteration) as exc:
         message = str(exc) if isinstance(exc, Failure) else 'operation failed; inspect private setup and prerequisites'
         print('phone-server: ' + message, file=sys.stderr)

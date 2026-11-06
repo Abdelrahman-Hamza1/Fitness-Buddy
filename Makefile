@@ -131,7 +131,7 @@ test-dotnet: catalog-pack catalog-client-smoke ## Run the backend tests (xUnit v
 
 API_COMPOSE := docker compose -f '$(REPO_ROOT)/infra/compose/docker-compose.yml'
 
-.PHONY: up
+.PHONY: up up-admin
 up: ## Build and start api + worker + Postgres, apply migrations, then wait for readiness
 	$(API_COMPOSE) up -d --build --force-recreate migrate api worker postgres
 	@for attempt in {1..30}; do \
@@ -141,6 +141,10 @@ up: ## Build and start api + worker + Postgres, apply migrations, then wait for 
 	done; $(API_COMPOSE) logs api; echo 'API readiness timed out' >&2; exit 1
 
 .PHONY: down
+up-admin: ## B23: also start the admin console on 127.0.0.1:5196 (needs FB_ADMIN_GOOGLE_CLIENT_ID and FB_ADMIN_CONSOLE_DIR with allow-list.json)
+	@test -n "$$FB_ADMIN_GOOGLE_CLIENT_ID" && test -f "$$FB_ADMIN_CONSOLE_DIR/allow-list.json" || { echo "Set FB_ADMIN_GOOGLE_CLIENT_ID and FB_ADMIN_CONSOLE_DIR (with allow-list.json); see docs/runbooks/admin-console.md"; exit 2; }
+	$(API_COMPOSE) --profile admin up -d --build admin
+
 down: ## Stop local backend containers and network (preserves database volume)
 	$(API_COMPOSE) down
 
@@ -532,7 +536,7 @@ eval-schema: eval-cli ## Regenerate Buddy's internal schema from C# records
 ##@ Private laptop test server (B03)
 
 PHONE_SERVER := python3 '$(REPO_ROOT)/tools/scripts/phone-server.py'
-.PHONY: serve-phone-prepare serve-phone-policy serve-phone serve-phone-stop serve-phone-status serve-phone-backup serve-phone-restore-check serve-phone-timer phone-server-check phone-server-smoke
+.PHONY: serve-phone-prepare serve-phone-policy serve-phone serve-phone-stop serve-phone-status serve-phone-backup serve-phone-restore-check serve-phone-timer serve-phone-console serve-phone-console-key serve-phone-admin-allow serve-phone-override phone-server-check phone-server-smoke phone-server-upgrade-smoke
 serve-phone-prepare: ## Build an immutable backend image from origin/main and prepare private state outside git
 	$(PHONE_SERVER) prepare
 serve-phone-policy: ## Generate the private A55-only tailnet policy for owner application
@@ -549,11 +553,21 @@ serve-phone-restore-check: ## Restore latest phone backup into an isolated scrat
 	$(PHONE_SERVER) restore-check
 serve-phone-timer: ## Enable the nightly backup user timer (requires prepared private snapshot)
 	$(PHONE_SERVER) install-timer
+serve-phone-console: ## B23: record the console's Google Web client ID (CONSOLE_CLIENT_ID=…apps.googleusercontent.com)
+	$(PHONE_SERVER) configure-console --client-id '$(CONSOLE_CLIENT_ID)'
+serve-phone-console-key: ## B23: store the console node's single-use Tailscale auth key (tagged tag:fb-admin; hidden prompt)
+	$(PHONE_SERVER) configure-console-key
+serve-phone-admin-allow: ## B23: add an admin (prompts for the email; ADMIN_SUBJECT pins it, ADMIN_HANDLE/ADMIN_ROLE default owner/operator)
+	$(PHONE_SERVER) admin-allow --handle '$(or $(ADMIN_HANDLE),owner)' --role '$(or $(ADMIN_ROLE),operator)' $(if $(ADMIN_SUBJECT),--subject '$(ADMIN_SUBJECT)')
+serve-phone-override: ## B23 recovery: force the minimum app version (VERSION=x.y.z), or clear it (VERSION=); then make serve-phone
+	$(PHONE_SERVER) set-override --version '$(VERSION)'
 phone-server-check: ## Offline safety tests for laptop operations, no Tailscale or paid API access
 	PYTHONDONTWRITEBYTECODE=1 python3 -I -m unittest discover -s '$(REPO_ROOT)/tools/scripts' -p test_phone_server.py
-	bash -n '$(REPO_ROOT)/tools/scripts/setup-tailscale.sh' '$(REPO_ROOT)/infra/phone-server/init-roles.sh'
+	bash -n '$(REPO_ROOT)/tools/scripts/setup-tailscale.sh' '$(REPO_ROOT)/infra/phone-server/init-roles.sh' '$(REPO_ROOT)/tools/scripts/phone-server-upgrade-smoke.sh'
 phone-server-smoke: phone-server-check ## Synthetic Docker isolation/backup/restore/proxy smoke; no phone or Tailscale changes
 	@bash '$(REPO_ROOT)/tools/scripts/phone-server-smoke.sh'
+phone-server-upgrade-smoke: ## B23 T17: real upgrade from the base revision's image on one synthetic volume (heavy: two builds; nightly CI)
+	@bash '$(REPO_ROOT)/tools/scripts/phone-server-upgrade-smoke.sh'
 
 .PHONY: gen-sync-schemas check-sync-schemas
 gen-sync-schemas: ## Export bounded sync schemas from the contract

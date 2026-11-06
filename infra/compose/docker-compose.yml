@@ -9,7 +9,13 @@ x-runtime: &runtime
   security_opt:
     - no-new-privileges:true
   stop_grace_period: 30s
+# B23: the remote-config defaults every role reads; the migrate role seeds version 1 from them. FB_MIN_APP_VERSION
+# (the update-screen demo) is the override, so it still wins after version 1 exists.
+x-remote-config: &remote-config
+  Clients__MinimumAppVersion: "0.1.0"
+  Clients__MinimumAppVersionOverride: "${FB_MIN_APP_VERSION:-}"
 x-app-environment: &app-environment
+  <<: *remote-config
   # Local-only credentials. S05 provisions environment secrets independently.
   ASPNETCORE_ENVIRONMENT: Development
   DOTNET_ENVIRONMENT: Development
@@ -35,6 +41,22 @@ services:
       timeout: 3s
       retries: 30
     stop_grace_period: 30s
+  # Idempotent role provisioning on every start (fresh or existing volume), before migrations grant to the roles.
+  roles:
+    image: postgres:18.6-bookworm@sha256:afc7e2d441324c0388fa80c3d24f733b4194a4eb7f47dd8ee2b08eb1a24a647c
+    command: [psql, -X, -q, -w, -h, postgres, -U, postgres, -d, fitness_buddy, -v, ON_ERROR_STOP=1, -f, /roles/ensure-roles.sql]
+    environment:
+      PGPASSWORD: local-admin-only
+    volumes:
+      - ./postgres/ensure-roles.sql:/roles/ensure-roles.sql:ro
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      postgres:
+        condition: service_healthy
   migrate:
     <<: *runtime
     build:
@@ -42,18 +64,18 @@ services:
       dockerfile: Dockerfile
     command: [migrate]
     environment:
+      <<: *remote-config
       DOTNET_ENVIRONMENT: Development
       ConnectionStrings__Migrator: Host=postgres;Database=fitness_buddy;Username=fb_migrator;Password=local-migrator-only
     depends_on:
-      postgres:
-        condition: service_healthy
+      roles:
+        condition: service_completed_successfully
   api:
     <<: *runtime
     ports:
       - "127.0.0.1:5198:8080"
     environment:
       <<: *app-environment
-      Clients__MinimumAppVersion: "${FB_MIN_APP_VERSION:-0.1.0}"
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -61,6 +83,30 @@ services:
     <<: *runtime
     command: [worker]
     environment: *app-environment
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+  # B23 admin console, opt-in (`make up-admin`): loopback 5196, its own fb_admin login, a local allow-list file.
+  admin:
+    <<: *runtime
+    profiles: [admin]
+    command: [admin]
+    ports:
+      - "127.0.0.1:5196:8081"
+    environment:
+      <<: *remote-config
+      ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_ENVIRONMENT: Development
+      ConnectionStrings__Admin: Host=postgres;Database=fitness_buddy;Username=fb_admin;Password=local-admin-console-only
+      Admin__Url: http://0.0.0.0:8081
+      Admin__GoogleClientId: "${FB_ADMIN_GOOGLE_CLIENT_ID:-unset}"
+      Admin__AllowListFile: /console/allow-list.json
+      Observability__ConsoleExporter: "true"
+    volumes:
+      - type: bind
+        source: "${FB_ADMIN_CONSOLE_DIR:-./admin-console-missing}"
+        target: /console
+        read_only: true
     depends_on:
       migrate:
         condition: service_completed_successfully

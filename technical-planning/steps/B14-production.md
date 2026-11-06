@@ -50,6 +50,8 @@ A second storage provider account (e.g. Backblaze B2), an alert contact, and an 
 
 ---
 
+**Cross-card note (B23, 2026-11-06):** production must provision `fb_admin` (own secret, no memberships) before migrations and expose the `admin` role only over Tailscale; the laptop's `ensure-admin-role` step is the reference. See B23 P3/P5.
+
 ## Low-level plan
 _Written in Phase B._
 
