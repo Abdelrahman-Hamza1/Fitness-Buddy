@@ -54,7 +54,13 @@ class _BadgeGlyph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = context.fbColors.badge;
+    // The estimate badge wears the sky tint (TD-116): the spark container
+    // fill with its text colour; the others stay monochrome (UX-044).
+    final scheme = Theme.of(context).colorScheme;
+    final estimate = source == FbSource.estimate;
+    final color = estimate
+        ? scheme.onSecondaryContainer
+        : context.fbColors.badge;
     return SizedBox(
       width: _badgeSize,
       height: _badgeSize,
@@ -62,6 +68,7 @@ class _BadgeGlyph extends StatelessWidget {
         key: const ValueKey('fb-source-badge-circle'),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
+          color: estimate ? scheme.secondaryContainer : null,
           border: Border.all(color: color),
         ),
         // The badge is a fixed-size mark: it doesn't follow the text scale.

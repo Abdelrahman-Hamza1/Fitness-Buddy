@@ -22,8 +22,10 @@ abstract final class FbTheme {
       onPrimaryContainer: p.onBrandContainer,
       secondary: p.brand,
       onSecondary: p.onBrand,
-      secondaryContainer: p.brandContainer,
-      onSecondaryContainer: p.onBrandContainer,
+      // The sky tint (TD-116): small highlights such as the input bar's
+      // badge and the chart's highlight band.
+      secondaryContainer: p.sparkContainer,
+      onSecondaryContainer: p.onSparkContainer,
       error: p.error,
       onError: p.surface,
       errorContainer: p.errorContainer,

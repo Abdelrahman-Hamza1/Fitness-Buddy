@@ -3,9 +3,10 @@ import 'package:fb_design_system/src/brand/brand_mark.dart';
 import 'package:fb_design_system/src/tokens/colors.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Buddy's avatar (A44 D13): a disc with the mini Embrace mark, two heads
-/// above two overlapping arcs. Decorative, so excluded from semantics: the
-/// text next to it says who is talking.
+/// Buddy's avatar (A44 D13, Momentum TD-116): the mini Momentum mark (soft,
+/// mid and the sky spark) on a plate disc, the ink on light and the dark
+/// surface on dark. Decorative, so excluded from semantics: the text next to it
+/// says who is talking.
 class FbBuddyAvatar extends StatelessWidget {
   /// Creates the avatar, [size] dp across.
   const new({this.size = 28, super.key});
@@ -21,20 +22,21 @@ class FbBuddyAvatar extends StatelessWidget {
         dimension: size,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: colors.avatarBackground,
+            color: colors.markPlate,
             shape: BoxShape.circle,
           ),
           child: CustomPaint(
             painter: FbMarkPainter(
-              shapes: fbEmbraceMini,
+              shapes: fbMomentumMini,
               viewBox: const Rect.fromLTWH(
                 0,
                 0,
-                fbEmbraceMiniCanvas,
-                fbEmbraceMiniCanvas,
+                fbMomentumMiniCanvas,
+                fbMomentumMiniCanvas,
               ),
-              a: colors.avatarForeground,
-              b: colors.mint,
+              soft: colors.markSoft,
+              mid: colors.markMid,
+              strong: colors.spark,
             ),
           ),
         ),

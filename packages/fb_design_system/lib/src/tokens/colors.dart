@@ -16,9 +16,11 @@ final class FbColors extends ThemeExtension<FbColors> {
     required this.info,
     required this.badge,
     required this.skeleton,
-    required this.mint,
-    required this.avatarBackground,
-    required this.avatarForeground,
+    required this.spark,
+    required this.markSoft,
+    required this.markMid,
+    required this.markStrong,
+    required this.markPlate,
   });
 
   /// The roles of [palette].
@@ -32,9 +34,11 @@ final class FbColors extends ThemeExtension<FbColors> {
     info: palette.info,
     badge: palette.onSurfaceVariant,
     skeleton: palette.surfaceContainerHigh,
-    mint: palette.mint,
-    avatarBackground: palette.avatarBackground,
-    avatarForeground: palette.avatarForeground,
+    spark: palette.spark,
+    markSoft: palette.markSoft,
+    markMid: palette.markMid,
+    markStrong: palette.markStrong,
+    markPlate: palette.markPlate,
   );
 
   /// Protein (UX-042).
@@ -64,15 +68,21 @@ final class FbColors extends ThemeExtension<FbColors> {
   /// Skeleton placeholders (UX-051).
   final Color skeleton;
 
-  /// The logo's mint: the Embrace mark's second figure and small highlights.
-  /// Decoration only, never text.
-  final Color mint;
+  /// The sky spark: the Momentum mark's strong shape on the plate and on
+  /// dark, small highlights. Decoration only, never text.
+  final Color spark;
 
-  /// The Buddy avatar's disc.
-  final Color avatarBackground;
+  /// The Momentum mark's short (start) shape.
+  final Color markSoft;
 
-  /// The Buddy avatar's first figure (the second is [mint]).
-  final Color avatarForeground;
+  /// The Momentum mark's middle shape.
+  final Color markMid;
+
+  /// The Momentum mark's tall (end) shape on the theme's surfaces.
+  final Color markStrong;
+
+  /// The Buddy avatar's plate (the mark on it is soft, mid and [spark]).
+  final Color markPlate;
 
   @override
   FbColors copyWith({
@@ -85,9 +95,11 @@ final class FbColors extends ThemeExtension<FbColors> {
     Color? info,
     Color? badge,
     Color? skeleton,
-    Color? mint,
-    Color? avatarBackground,
-    Color? avatarForeground,
+    Color? spark,
+    Color? markSoft,
+    Color? markMid,
+    Color? markStrong,
+    Color? markPlate,
   }) => FbColors(
     protein: protein ?? this.protein,
     carbs: carbs ?? this.carbs,
@@ -98,9 +110,11 @@ final class FbColors extends ThemeExtension<FbColors> {
     info: info ?? this.info,
     badge: badge ?? this.badge,
     skeleton: skeleton ?? this.skeleton,
-    mint: mint ?? this.mint,
-    avatarBackground: avatarBackground ?? this.avatarBackground,
-    avatarForeground: avatarForeground ?? this.avatarForeground,
+    spark: spark ?? this.spark,
+    markSoft: markSoft ?? this.markSoft,
+    markMid: markMid ?? this.markMid,
+    markStrong: markStrong ?? this.markStrong,
+    markPlate: markPlate ?? this.markPlate,
   );
 
   @override
@@ -117,9 +131,11 @@ final class FbColors extends ThemeExtension<FbColors> {
       info: mix(info, other.info),
       badge: mix(badge, other.badge),
       skeleton: mix(skeleton, other.skeleton),
-      mint: mix(mint, other.mint),
-      avatarBackground: mix(avatarBackground, other.avatarBackground),
-      avatarForeground: mix(avatarForeground, other.avatarForeground),
+      spark: mix(spark, other.spark),
+      markSoft: mix(markSoft, other.markSoft),
+      markMid: mix(markMid, other.markMid),
+      markStrong: mix(markStrong, other.markStrong),
+      markPlate: mix(markPlate, other.markPlate),
     );
   }
 }

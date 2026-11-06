@@ -408,13 +408,13 @@ _Entries marked **(provisional)** apply Claude's recommendation to a question th
 
 ## D-082 — Dark by default, in the Embrace palette
 - Date / Source: 2026-10-29 · owner, after the design-canvas review ("The UI looks amazing"), answering TQ-23: "Well the new default will be the palette we decided, the minty stuff. OK anyways."
-- Status: Accepted. Amends UX-040. **The default is superseded by D-083** (light, 2026-10-30); the palette part stands.
+- Status: Accepted. Amends UX-040. **The default is superseded by D-083** (light, 2026-10-30); **the palette part is superseded by D-098** (Ink & Sky, 2026-11-06).
 - Decision: The app opens in the **dark theme by default**, in the "Embrace" brand palette (dark "Deep Forest", teal and mint; light "Mint Cream"). Light and dark themes both stay, and Me › Settings › Theme still offers System / Light / Dark.
 - Why: The owner prefers dark, and the approved Embrace identity is designed dark-first. Following the system stays available as a setting. Technical details: TD-098 (step A44).
 
 ## D-083 — Light by default
 - Date / Source: 2026-10-30 · owner, after the first phone checks of the prod build ("rec for all")
-- Status: Accepted. **Supersedes D-082's default** (the Embrace palette stays). Amends UX-040.
+- Status: Accepted. **Supersedes D-082's default** (the Embrace palette stayed until D-098 replaced it with Ink & Sky; the light default stands). Amends UX-040.
 - Decision: The app opens in the **light theme** ("Mint Cream") by default. Dark and System stay as choices in Me › Settings › Theme.
 - Why: On the phone the owner preferred light for daily use. Technical details: TD-107 (step A45).
 
@@ -550,3 +550,9 @@ _Entries marked **(provisional)** apply Claude's recommendation to a question th
   - Me shows who's signed in (AC-005): a letter circle, the name, the email and the sync status; a tap opens Account & data. Name and email come from Google sign-in or the email used; after an email sign-in the app asks once "What should we call you?" (skippable, editable later). They are kept only on this phone: never synced, sent to Buddy or the server, or logged. Guests see "Guest".
   - Workout sets count as soon as they have numbers (WO-034): no tick. Last time's numbers show as grey hints that don't count; "Same as last time" fills an exercise's empty sets; swiping a set sideways removes it, with Undo.
 - Why: the owner's rule "no text-only cards; focus is visual, text minimal". Text cards were read last and skipped; rows that looked changeable but weren't felt broken; Me didn't say whose data it was; an unticked set with numbers was silently lost. Step A63.
+
+## D-098 — Momentum identity in Ink & Sky
+- Date / Source: 2026-11-06 · owner, after a week of daily use and a design session ("Let's take the 3 lines as codex drew it but with different color theme" → "Let's go with ink and sky. Let the rebranding begin!")
+- Status: Accepted by the owner. **Supersedes the Embrace palette named in D-082 and D-083** (the light default of D-083 stays). Amends UX-040.
+- Decision: The app's identity becomes **Momentum** in **Ink & Sky**: a mark of three slanted rounded shapes rising left to right, an ink blue-grey brand with a sky-blue spark, in light and dark, everywhere the app shows its identity (the app icon and the phone's themed icon, the start screen, the welcome page, About, Buddy's avatar). The name is set on two lines, "Fitness / Buddy". Protein's colour moves to violet so no macro looks like the sky spark; each macro keeps one colour, and going over a target stays neutral grey. The app still opens in light by default; layouts, words and features don't change.
+- Why: The owner wanted a calmer, more grown-up look that says "progress" after using the app daily. Technical details: TD-116 (step A64).

@@ -5,31 +5,33 @@ import 'package:material_ui/material_ui.dart';
 
 /// Sizes of [FbBrandLockup].
 enum FbLockupSize {
-  /// A 26 dp figure with a 20 sp wordmark.
-  small(26, 20),
+  /// A 27 dp tall mark with a 16 sp wordmark.
+  small(27, 16),
 
-  /// A 36 dp figure with a 28 sp wordmark (About).
-  medium(36, 28),
+  /// A 37 dp tall mark with a 22 sp wordmark (About).
+  medium(37, 22),
 
-  /// A 42 dp figure with a 32 sp wordmark (the first setup page).
-  large(42, 32);
+  /// A 44 dp tall mark with a 26 sp wordmark (the welcome page).
+  large(44, 26);
 
   new(this.mark, this.wordmark);
 
-  /// The figure's size in dp at text scale 1 (about 1.3 × the wordmark).
+  /// The mark's height in dp at text scale 1 (about 0.8 of the two-line
+  /// wordmark's height).
   final double mark;
 
   /// The wordmark's font size in sp.
   final double wordmark;
 }
 
-/// The Embrace mark with the "Fitness Buddy" wordmark (Nunito 900) beside it
-/// (A44 D13). The mark is drawn cropped to the figure, so its start edge
-/// lines up with the text column, about 1.3 × the wordmark size; it grows
-/// with the text scale up to [maxMarkScale], so it never looks tiny next to
-/// enlarged text. The app passes the [name] (the DS owns no app strings);
-/// screen readers hear it once, as its own header node. The wordmark wraps
-/// rather than overflowing at large text sizes.
+/// The Momentum mark with the wordmark beside it, "Fitness / Buddy" on two
+/// lines in Outfit extra-bold and the brand colour (A64, TD-116). The mark is
+/// drawn cropped to its bounds, so its start edge lines up with the text
+/// column; it grows with the text scale up to [maxMarkScale], so it never
+/// looks tiny next to enlarged text. The app passes the [name] (the DS owns
+/// no app strings): its first space becomes the line break, and screen
+/// readers hear the name once, as its own header node. The wordmark wraps
+/// further rather than overflowing at large text sizes.
 class FbBrandLockup extends StatelessWidget {
   /// Creates the lockup.
   const new({required this.name, this.size = FbLockupSize.medium, super.key});
@@ -59,12 +61,12 @@ class FbBrandLockup extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           FbBrandMark(size: mark, cropped: true),
-          const SizedBox(width: FbSpace.s2),
+          const SizedBox(width: FbSpace.s3),
           Flexible(
             child: Text(
-              name,
+              name.replaceFirst(' ', '\n'),
               style: FbType.wordmark(size.wordmark)
-                  .copyWith(color: scheme.onPrimaryContainer),
+                  .copyWith(color: scheme.primary),
             ),
           ),
         ],

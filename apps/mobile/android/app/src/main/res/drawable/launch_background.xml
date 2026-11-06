@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The launch window on API 26-30 (A44 D12, A45 D7): the light window
-     colour with the reversed Embrace mark in the middle, on a round plate in
-     the flavor's launcher colour (the cream-and-mint mark would vanish on
-     cream). Android 12+ uses the system splash (values-v31/styles.xml),
+<!-- The launch window on API 26-30 (A44 D12, A45 D7, A64): the light window
+     colour with the Momentum mark in the middle, on a round plate in the
+     flavor's launcher colour (the plate colourway's pale shapes would vanish
+     on the light window). Android 12+ uses the system splash (values-v31/styles.xml),
      which draws the plate itself. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/fb_window_background" />

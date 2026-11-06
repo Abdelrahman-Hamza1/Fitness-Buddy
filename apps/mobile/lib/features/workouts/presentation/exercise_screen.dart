@@ -252,7 +252,7 @@ class _Records extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(value, style: FbType.title),
+                      Text(value, style: FbType.numeric(FbType.title)),
                       Text(
                         label,
                         style: FbType.caption.copyWith(

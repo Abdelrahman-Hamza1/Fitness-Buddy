@@ -24,9 +24,9 @@ abstract final class FbSpace {
   static const double s7 = 48;
 }
 
-/// Corner radii (Embrace, TD-098). Buttons are pills: a 24 dp radius on the
-/// 48 dp button (see `component_themes.dart`), so a label that wraps at large
-/// text keeps normal corners.
+/// Corner radii (TD-098, kept by TD-116). Buttons are pills: a 24 dp radius
+/// on the 48 dp button (see `component_themes.dart`), so a label that wraps
+/// at large text keeps normal corners.
 abstract final class FbRadius {
   /// 8: small elements (badges inside cards, bar caps).
   static const double sm = 8;

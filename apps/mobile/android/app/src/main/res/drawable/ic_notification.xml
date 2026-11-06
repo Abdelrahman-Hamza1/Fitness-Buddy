@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The notification small icon (A64, TD-116): the one-colour Momentum mark,
+     cropped to a 58-unit square around it (the group moves the 108 canvas so
+     the mark fills the 24 dp icon with a 3-unit margin); the system tints it,
+     only the alpha counts. The pathData strings are verbatim copies of
+     fbMomentumMark in packages/fb_design_system/lib/src/brand/brand_geometry.dart
+     (the source), checked by apps/mobile/test/android/brand_sync_test.dart. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="58"
+    android:viewportHeight="58">
+    <group
+        android:translateX="-25"
+        android:translateY="-25">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M31.74 60.15 C33 57.04 36.54 54.52 39.65 54.52 C42.77 54.52 44.27 57.04 43.01 60.15 L39.9 67.86 C38.64 70.98 35.1 73.5 31.98 73.5 C28.87 73.5 27.37 70.98 28.63 67.86 Z" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M49.22 50.66 C50.48 47.55 54.02 45.03 57.13 45.03 C60.24 45.03 61.75 47.55 60.49 50.66 L53.54 67.86 C52.28 70.98 48.74 73.5 45.63 73.5 C42.52 73.5 41.01 70.98 42.27 67.86 Z" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M66.94 40.58 C68.33 37.14 72.24 34.35 75.68 34.35 C79.12 34.35 80.78 37.14 79.39 40.58 L68.61 67.27 C67.22 70.71 63.3 73.5 59.86 73.5 C56.42 73.5 54.76 70.71 56.15 67.27 Z" />
+    </group>
+</vector>

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Colour theme</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Outfit:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1440px; height: 820px; box-sizing: border-box; padding: 36px 40px; background: #FFFFFF; font-family: Inter, sans-serif; color: {{p.text}}; display: flex; gap: 36px">
+
+<div style="width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font: 600 13px Inter, sans-serif; color: {{p.muted}}; letter-spacing: 1px">THEME {{p.num}}</span>
+<span style="font: 800 34px Outfit, sans-serif; line-height: 38px; color: {{p.text}}">{{p.name}}</span>
+<span style="font-size: 14px; line-height: 20px; color: {{p.muted}}">{{p.mood}}</span>
+</div>
+<div style="border-radius: 20px; background: {{p.bg}}; padding: 18px; display: flex; align-items: center; gap: 12px">
+<svg viewBox="0 0 100 100" width="64" height="64" aria-hidden="true"><g transform="translate(3.17,3.00)"><g transform="skewX(-22)"><rect x="32.32" y="48" width="19" height="32" rx="9.5" fill="{{p.light}}"></rect></g><g transform="skewX(-22)"><rect x="55.32" y="32" width="19" height="48" rx="9.5" fill="{{p.mid}}"></rect></g><g transform="skewX(-22)"><rect x="78.32" y="14" width="21" height="66" rx="10.5" fill="{{p.brand}}"></rect></g></g></svg>
+<div style="font: 800 26px Outfit, sans-serif; line-height: 26px; color: {{p.brand}}">Fitness<br>Buddy</div>
+</div>
+<div style="display: flex; gap: 12px; align-items: center">
+<div style="width: 76px; height: 76px; border-radius: 19px; background: {{p.brand}}; display: flex; align-items: center; justify-content: center">
+<svg viewBox="0 0 100 100" width="58" height="58" aria-hidden="true"><g transform="translate(3.17,3.00)"><g transform="skewX(-22)"><rect x="32.32" y="48" width="19" height="32" rx="9.5" fill="{{p.light}}"></rect></g><g transform="skewX(-22)"><rect x="55.32" y="32" width="19" height="48" rx="9.5" fill="{{p.mid}}"></rect></g><g transform="skewX(-22)"><rect x="78.32" y="14" width="21" height="66" rx="10.5" fill="{{p.accent}}"></rect></g></g></svg>
+</div>
+<div style="width: 76px; height: 76px; border-radius: 19px; background: {{p.darkBg}}; display: flex; align-items: center; justify-content: center">
+<svg viewBox="0 0 100 100" width="58" height="58" aria-hidden="true"><g transform="translate(3.17,3.00)"><g transform="skewX(-22)"><rect x="32.32" y="48" width="19" height="32" rx="9.5" fill="{{p.light}}"></rect></g><g transform="skewX(-22)"><rect x="55.32" y="32" width="19" height="48" rx="9.5" fill="{{p.mid}}"></rect></g><g transform="skewX(-22)"><rect x="78.32" y="14" width="21" height="66" rx="10.5" fill="{{p.accent}}"></rect></g></g></svg>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: {{p.muted}}"><span>App icon</span><span>and on dark</span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{sw}}" as="s" hint-placeholder-count="6">
+<div style="display: flex; align-items: center; gap: 10px">
+<div style="width: 30px; height: 30px; border-radius: 9px; background: {{s.hex}}; border: 1px solid rgba(0,0,0,0.08); flex-shrink: 0"></div>
+<span style="font-size: 13px; font-weight: 600; width: 84px">{{s.role}}</span>
+<span style="font-size: 12px; color: {{p.muted}}">{{s.hex}} · {{s.use}}</span>
+</div>
+</sc-for>
+</div>
+<div style="margin-top: auto; border-radius: 16px; background: {{p.darkBg}}; padding: 12px; display: flex; align-items: center; gap: 12px">
+<svg viewBox="0 0 100 100" width="44" height="44" aria-hidden="true"><circle cx="50" cy="50" r="40" fill="none" stroke="{{p.darkCard}}" stroke-width="12"></circle><circle cx="50" cy="50" r="40" fill="none" stroke="{{p.darkBrand}}" stroke-width="12" stroke-linecap="round" stroke-dasharray="103 251" transform="rotate(-90 50 50)"></circle></svg>
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font: 700 15px Outfit, sans-serif; color: {{p.darkText}}">Dark mode</span><span style="font-size: 12px; color: {{p.darkMuted}}">Same family, lighter brand</span></div>
+</div>
+</div>
+
+<div style="display: flex; gap: 28px">
+
+<div style="width: 300px; height: 748px; border-radius: 40px; border: 8px solid #16161A; box-sizing: border-box; overflow: hidden; background: {{p.bg}}; display: flex; flex-direction: column">
+<div style="padding: 18px 16px 10px; display: flex; align-items: center; gap: 10px">
+<svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true"><g transform="translate(3.17,3.00)"><g transform="skewX(-22)"><rect x="32.32" y="48" width="19" height="32" rx="9.5" fill="{{p.light}}"></rect></g><g transform="skewX(-22)"><rect x="55.32" y="32" width="19" height="48" rx="9.5" fill="{{p.mid}}"></rect></g><g transform="skewX(-22)"><rect x="78.32" y="14" width="21" height="66" rx="10.5" fill="{{p.brand}}"></rect></g></g></svg>
+<div style="display: flex; flex-direction: column; flex-grow: 1"><span style="font: 800 22px Outfit, sans-serif">Today</span><span style="font-size: 11px; color: {{p.muted}}">Friday, 6 November</span></div>
+<div style="width: 32px; height: 32px; border-radius: 999px; background: {{p.tint}}; color: {{p.onTint}}; font: 700 14px Outfit, sans-serif; display: flex; align-items: center; justify-content: center">A</div>
+</div>
+<div style="margin: 0 12px; padding: 14px; border-radius: 20px; background: {{p.card}}; border: 1px solid {{p.line}}; display: flex; flex-direction: column; gap: 11px">
+<div style="display: flex; align-items: center; gap: 14px">
+<div style="position: relative; width: 92px; height: 92px">
+<svg viewBox="0 0 100 100" width="92" height="92" aria-hidden="true"><circle cx="50" cy="50" r="40" fill="none" stroke="{{p.high}}" stroke-width="10"></circle><circle cx="50" cy="50" r="40" fill="none" stroke="{{p.brand}}" stroke-width="10" stroke-linecap="round" stroke-dasharray="103 251" transform="rotate(-90 50 50)"></circle></svg>
+<div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center"><span style="font: 800 20px Outfit, sans-serif">1,240</span><span style="font-size: 10px; color: {{p.muted}}">kcal left</span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: {{p.muted}}"><span>Eaten <b style="color: {{p.text}}">~860</b></span><span>Target <b style="color: {{p.text}}">2,100</b></span><span>Burned <b style="color: {{p.text}}">320</b></span></div>
+</div>
+<sc-for list="{{macros}}" as="m" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; gap: 3px">
+<div style="display: flex; justify-content: space-between; font-size: 11px; color: {{p.muted}}"><span>{{m.name}}</span><span>{{m.val}}</span></div>
+<div style="height: 7px; border-radius: 999px; background: {{p.high}}"><div style="height: 7px; border-radius: 999px; width: {{m.w}}; background: {{m.color}}"></div></div>
+</div>
+</sc-for>
+</div>
+<div style="margin: 12px 12px 0; border-radius: 20px; background: {{p.card}}; border: 1px solid {{p.line}}">
+<div style="padding: 11px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid {{p.line}}"><div style="display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 13px">Breakfast</span><span style="font-size: 11px; color: {{p.muted}}">Quick estimate</span></div><span style="font-size: 12px; font-weight: 700; color: {{p.onAccent}}; background: {{p.accentSoft}}; padding: 4px 10px; border-radius: 999px">≈ 700</span></div>
+<div style="padding: 11px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid {{p.line}}"><div style="display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 13px">Lunch</span><span style="font-size: 11px; color: {{p.muted}}">Labneh, cucumber</span></div><span style="font-size: 13px; font-weight: 600">160</span></div>
+<div style="padding: 11px 14px; display: flex; justify-content: space-between; align-items: center"><span style="font-weight: 600; font-size: 13px">Dinner</span><button type="button" style="border: 1px solid {{p.brand}}; background: transparent; color: {{p.brand}}; border-radius: 999px; padding: 5px 13px; font: 600 12px Inter, sans-serif">Add</button></div>
+</div>
+<div style="margin: 12px 12px 0; padding: 12px 14px; border-radius: 20px; background: {{p.card}}; border: 1px solid {{p.line}}; display: flex; align-items: center; justify-content: space-between">
+<div style="display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 13px">Push day</span><span style="font-size: 11px; color: {{p.muted}}">4 exercises · 45 min</span></div>
+<span style="font-size: 12px; font-weight: 600; color: {{p.onTint}}; background: {{p.tint}}; padding: 4px 10px; border-radius: 999px">Start</span>
+</div>
+<div style="margin: auto 12px 12px; display: flex; justify-content: center"><button type="button" style="border: 0; border-radius: 999px; background: {{p.brand}}; color: #FFFFFF; font: 600 15px Inter, sans-serif; padding: 12px 30px">Log food</button></div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 8px 4px 12px; border-top: 1px solid {{p.line}}; background: {{p.card}}">
+<sc-for list="{{tabsToday}}" as="t" hint-placeholder-count="4"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><div style="width: 44px; height: 24px; border-radius: 999px; background: {{t.pill}}; display: flex; align-items: center; justify-content: center"><div style="width: 12px; height: 12px; border-radius: 4px; border: 2px solid {{t.ink}}"></div></div><span style="font-size: 10px; font-weight: 600; color: {{t.ink}}">{{t.name}}</span></div></sc-for>
+</div>
+</div>
+
+<div style="width: 300px; height: 748px; border-radius: 40px; border: 8px solid #16161A; box-sizing: border-box; overflow: hidden; background: {{p.bg}}; display: flex; flex-direction: column">
+<div style="padding: 18px 16px 10px; display: flex; flex-direction: column"><span style="font: 800 22px Outfit, sans-serif">Progress</span><span style="font-size: 11px; color: {{p.muted}}">This week · 2–8 Nov</span></div>
+<div style="margin: 0 12px; padding: 14px; border-radius: 20px; background: {{p.card}}; border: 1px solid {{p.line}}; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-weight: 600; font-size: 13px">Calories</span><span style="font-size: 12px; color: {{p.muted}}">avg <b style="color: {{p.text}}">1,950</b> / 2,100</span></div>
+<div style="position: relative; height: 130px; display: flex; align-items: flex-end; gap: 9px; padding: 0 2px">
+<div style="position: absolute; left: 0; right: 0; top: 16px; border-top: 2px dashed {{p.muted}}; opacity: 0.45"></div>
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="7"><div style="flex: 1; height: {{b.h}}; border-radius: 8px; background: {{b.color}}"></div></sc-for>
+</div>
+<div style="display: flex; gap: 9px; padding: 0 2px"><sc-for list="{{bars}}" as="b" hint-placeholder-count="7"><span style="flex: 1; text-align: center; font-size: 10px; color: {{p.muted}}">{{b.d}}</span></sc-for></div>
+<div style="display: flex; gap: 12px; font-size: 10px; color: {{p.muted}}"><span style="display: flex; align-items: center; gap: 4px"><span style="width: 9px; height: 9px; border-radius: 3px; background: {{p.brand}}"></span>Logged</span><span style="display: flex; align-items: center; gap: 4px"><span style="width: 9px; height: 9px; border-radius: 3px; background: {{p.light}}"></span>Estimate</span><span style="display: flex; align-items: center; gap: 4px"><span style="width: 9px; height: 9px; border-radius: 3px; background: {{p.mid}}"></span>Today</span></div>
+</div>
+<div style="margin: 12px 12px 0; padding: 14px; border-radius: 20px; background: {{p.card}}; border: 1px solid {{p.line}}; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-weight: 600; font-size: 13px">Weight trend</span><span style="font-size: 11px; color: {{p.muted}}">−0.6 kg this week</span></div>
+<span style="font: 800 28px Outfit, sans-serif">72.4 <span style="font-size: 15px; color: {{p.muted}}">kg</span></span>
+<svg viewBox="0 0 260 80" width="244" height="76" aria-hidden="true"><path d="M0 70 H260" stroke="{{p.line}}" stroke-width="1"></path><path d="M6 22 L46 28 L86 26 L126 36 L166 40 L206 46 L250 52" fill="none" stroke="{{p.brand}}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="6" cy="22" r="4" fill="{{p.mid}}"></circle><circle cx="86" cy="26" r="4" fill="{{p.mid}}"></circle><circle cx="166" cy="40" r="4" fill="{{p.mid}}"></circle><circle cx="250" cy="52" r="6" fill="{{p.brand}}"></circle></svg>
+</div>
+<div style="margin: 12px 12px 0; padding: 14px; border-radius: 20px; background: {{p.card}}; border: 1px solid {{p.line}}; display: flex; align-items: center; justify-content: space-between">
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="font-weight: 600; font-size: 13px">Workouts</span><span style="font-size: 12px; color: {{p.muted}}">3 of 4 this week</span></div>
+<div style="display: flex; gap: 6px"><sc-for list="{{sessions}}" as="s" hint-placeholder-count="4"><div style="width: 20px; height: 20px; border-radius: 999px; background: {{s}}"></div></sc-for></div>
+</div>
+<div style="margin: auto 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 8px 4px 12px; border-top: 1px solid {{p.line}}; background: {{p.card}}">
+<sc-for list="{{tabsProg}}" as="t" hint-placeholder-count="4"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><div style="width: 44px; height: 24px; border-radius: 999px; background: {{t.pill}}; display: flex; align-items: center; justify-content: center"><div style="width: 12px; height: 12px; border-radius: 4px; border: 2px solid {{t.ink}}"></div></div><span style="font-size: 10px; font-weight: 600; color: {{t.ink}}">{{t.name}}</span></div></sc-for>
+</div>
+</div>
+
+<div style="width: 300px; height: 748px; border-radius: 40px; border: 8px solid #16161A; box-sizing: border-box; overflow: hidden; background: {{p.bg}}; display: flex; flex-direction: column">
+<div style="padding: 18px 16px 10px; display: flex; flex-direction: column; gap: 10px">
+<span style="font: 800 22px Outfit, sans-serif">Add to Dinner</span>
+<label style="display: flex; align-items: center; gap: 8px; padding: 11px 14px; border-radius: 14px; background: {{p.card}}; border: 2px solid {{p.brand}}"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="{{p.muted}}" stroke-width="2.4"></circle><path d="M16 16 L21 21" stroke="{{p.muted}}" stroke-width="2.4" stroke-linecap="round"></path></svg><input type="text" value="chicken" aria-label="Search food" style="border: 0; outline: 0; background: transparent; font: 500 14px Inter, sans-serif; color: {{p.text}}; width: 180px"></label>
+<div style="display: flex; gap: 6px"><sc-for list="{{chips}}" as="c" hint-placeholder-count="4"><span style="font-size: 12px; font-weight: 600; padding: 6px 11px; border-radius: 999px; background: {{c.bg}}; color: {{c.ink}}; border: 1px solid {{c.border}}">{{c.name}}</span></sc-for></div>
+</div>
+<div style="margin: 0 12px; border-radius: 20px; background: {{p.card}}; border: 1px solid {{p.line}}">
+<sc-for list="{{foods}}" as="f" hint-placeholder-count="5">
+<div style="padding: 11px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid {{p.line}}">
+<div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0"><span style="font-weight: 600; font-size: 13px">{{f.name}}</span><span style="font-size: 11px; color: {{p.muted}}">{{f.portion}} · {{f.kcal}} kcal</span></div>
+<span style="font-size: 10px; font-weight: 700; color: {{p.onTint}}; background: {{p.tint}}; padding: 3px 7px; border-radius: 6px">{{f.src}}</span>
+<div style="width: 28px; height: 28px; border-radius: 999px; background: {{f.addBg}}; color: {{f.addInk}}; font: 700 16px Inter, sans-serif; display: flex; align-items: center; justify-content: center">+</div>
+</div>
+</sc-for>
+</div>
+<div style="margin: auto 12px 14px; padding: 12px 14px; border-radius: 18px; background: {{p.brand}}; display: flex; align-items: center; justify-content: space-between">
+<div style="display: flex; flex-direction: column"><span style="font-size: 12px; color: #FFFFFF; opacity: 0.8">1 item selected</span><span style="font: 700 15px Outfit, sans-serif; color: #FFFFFF">Grilled chicken · 280 kcal</span></div>
+<span style="font-size: 13px; font-weight: 700; color: {{p.onAccent}}; background: {{p.accent}}; padding: 7px 14px; border-radius: 999px">Add</span>
+</div>
+</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["plum","navy","forest","ink","teal","cocoa","cobalt","charcoal","inkLime","inkMint","inkAmber","inkLilac","inkSky","charLime","charBlue","charPink","charMint","charSun"],"default":"plum"},"$preview":{"width":1440,"height":820}}'>
+class Component extends DCLogic {
+renderVals() {
+const base = { card: '#FFFFFF', protein: '#3D5FD9', carbs: '#B9760F', fat: '#C2457A', fiber: '#5E8A12' };
+const T = {
+plum: { num: '1', name: 'Plum & Lime', mood: 'Codex’s original. Bold, modern, very ownable. Lime is the spark.', brand: '#38214D', accent: '#D7F75B', accentSoft: '#EEFBC2', onAccent: '#1E2A05', mid: '#B48CE6', light: '#DCCBF0', bg: '#F9F7F3', tint: '#EFE7F6', onTint: '#38214D', text: '#241530', muted: '#5E5468', high: '#EEEAF2', line: '#E8E2EE', darkBg: '#140C1C', darkCard: '#271B33', darkBrand: '#C9A6F0', darkText: '#F1ECF6', darkMuted: '#B3A8BF' },
+navy: { num: '2', name: 'Navy & Lime', mood: 'Same spark, more serious. Navy reads trustworthy and calm.', brand: '#1B2A4A', accent: '#D7F75B', accentSoft: '#EEFBC2', onAccent: '#1E2A05', mid: '#7FA7E8', light: '#C9D8F2', bg: '#F8F9FB', tint: '#E4EBF6', onTint: '#1B2A4A', text: '#152036', muted: '#556274', high: '#EDF1F6', line: '#E3E8EF', darkBg: '#0D1422', darkCard: '#1A2438', darkBrand: '#9DB8E3', darkText: '#E9EEF6', darkMuted: '#A6B1C2', protein: '#7C4DDB' },
+forest: { num: '3', name: 'Forest & Lime', mood: 'Fresh and natural. The most food-friendly; gentle on the eyes.', brand: '#163A2E', accent: '#D7F75B', accentSoft: '#EEFBC2', onAccent: '#1E2A05', mid: '#7DBF9A', light: '#CBE6D6', bg: '#F7F8F4', tint: '#E1EEE6', onTint: '#163A2E', text: '#142019', muted: '#55625A', high: '#ECF0EA', line: '#E2E8DF', darkBg: '#0C1510', darkCard: '#18261F', darkBrand: '#8FD3AE', darkText: '#E8EFEA', darkMuted: '#A6B4AB', fiber: '#8A6BD6' },
+ink: { num: '4', name: 'Ink & Coral', mood: 'Cool blue-grey with a warm coral spark. Grown-up, friendly.', brand: '#1E2A32', accent: '#FF8A65', accentSoft: '#FFE3D9', onAccent: '#4A1A0B', mid: '#8FB3C4', light: '#D3E3EA', bg: '#FAFAF8', tint: '#E6EEF2', onTint: '#1E2A32', text: '#1A2329', muted: '#57636B', high: '#EEF1F3', line: '#E5E9EC', darkBg: '#0E1418', darkCard: '#1A242B', darkBrand: '#A9CDDC', darkText: '#EAF0F3', darkMuted: '#A7B3BA' },
+teal: { num: '5', name: 'Deep Teal & Peach', mood: 'Today’s family, deeper and warmer. The smallest change.', brand: '#0F4C4A', accent: '#FFB38A', accentSoft: '#FFE8DA', onAccent: '#4D230C', mid: '#6FC2B7', light: '#CBEAE5', bg: '#F6FAF9', tint: '#DDEFEC', onTint: '#0F4C4A', text: '#13221F', muted: '#52625F', high: '#E8F0EE', line: '#DFE9E6', darkBg: '#0B1513', darkCard: '#16231F', darkBrand: '#7FD3C7', darkText: '#E6EFEC', darkMuted: '#A3B3AF' },
+cocoa: { num: '6', name: 'Cocoa & Sky', mood: 'Warm earthy brown with a cool sky spark. Cosy, food-like.', brand: '#3B2A22', accent: '#8ED1F0', accentSoft: '#DDF1FB', onAccent: '#0B3346', mid: '#C9A27E', light: '#EBDCCB', bg: '#FBF8F4', tint: '#F1E8DF', onTint: '#3B2A22', text: '#2A1F19', muted: '#6B5E55', high: '#F2ECE5', line: '#ECE4DA', darkBg: '#16110E', darkCard: '#251D18', darkBrand: '#E3C3A3', darkText: '#F3EDE7', darkMuted: '#B9AB9F' },
+cobalt: { num: '7', name: 'Cobalt & Sun', mood: 'Bright and sporty. The most energetic, gym-like option.', brand: '#1E3FAE', accent: '#FFD23F', accentSoft: '#FFF3C4', onAccent: '#3D2E00', mid: '#7B9BF0', light: '#D3DEFB', bg: '#F7F8FC', tint: '#E3E9FB', onTint: '#1E3FAE', text: '#141B33', muted: '#535C78', high: '#ECEFF8', line: '#E2E6F2', darkBg: '#0C1126', darkCard: '#18203B', darkBrand: '#9FB6FF', darkText: '#EAEEFA', darkMuted: '#A6AFCB', protein: '#8A4FD6' },
+charcoal: { num: '8', name: 'Charcoal & Tangerine', mood: 'Neutral and techy: grey everywhere, one orange spark.', brand: '#24262B', accent: '#FF7A1A', accentSoft: '#FFE2CC', onAccent: '#4A1F00', mid: '#A7ADB8', light: '#E1E4E9', bg: '#FAFAFA', tint: '#ECEEF1', onTint: '#24262B', text: '#1C1D21', muted: '#5C606A', high: '#EFF0F2', line: '#E6E7EA', darkBg: '#111214', darkCard: '#1E2024', darkBrand: '#D9DCE2', darkText: '#EEEFF2', darkMuted: '#A9ADB5', carbs: '#A68A00' }
+};
+const mk = (b, num, name, mood, a, extra) => ({ ...b, num, name, mood, accent: a[0], accentSoft: a[1], onAccent: a[2], ...(extra || {}) });
+const ink = T.ink, ch = T.charcoal;
+T.inkLime = mk(ink, 'INK 2', 'Ink & Lime', 'Calm ink with a zesty lime pop. Fresh and modern.', ['#D7F75B', '#EEFBC2', '#1E2A05'], { fiber: '#8A6BD6' });
+T.inkMint = mk(ink, 'INK 3', 'Ink & Mint', 'Cool and clean. Feels healthy and quiet.', ['#5EE6B5', '#D6F7EA', '#053A27'], { fiber: '#8A6BD6' });
+T.inkAmber = mk(ink, 'INK 4', 'Ink & Amber', 'Warm golden spark. Cosy, food-like, still serious.', ['#FFC247', '#FFF0CC', '#3D2A00'], { carbs: '#9A6A00' });
+T.inkLilac = mk(ink, 'INK 5', 'Ink & Lilac', 'Soft and friendly. The gentlest of the Ink set.', ['#B9A4FF', '#ECE6FF', '#2A1A66'] );
+T.inkSky = mk(ink, 'INK 6', 'Ink & Sky', 'Blue on blue-grey. Airy, very calm, least playful.', ['#6EC8FF', '#DDF1FF', '#06324D'], { protein: '#7C4DDB' });
+T.charLime = mk(ch, 'CHARCOAL 2', 'Charcoal & Lime', 'Techy and electric. Like a smartwatch face.', ['#C8F04A', '#EEFAC8', '#233000'], { fiber: '#8A6BD6' });
+T.charBlue = mk(ch, 'CHARCOAL 3', 'Charcoal & Electric Blue', 'Crisp and digital. Feels precise.', ['#4C8DFF', '#DCE8FF', '#0B2A66'], { protein: '#8A4FD6' });
+T.charPink = mk(ch, 'CHARCOAL 4', 'Charcoal & Pink', 'Bold and playful against neutral grey.', ['#FF7EB6', '#FFE0EE', '#5C0F33'], { fat: '#8A4FD6' });
+T.charMint = mk(ch, 'CHARCOAL 5', 'Charcoal & Mint', 'Clean and fresh. Grey with a healthy pop.', ['#4FD1A5', '#D3F4E8', '#053A27'], { fiber: '#8A6BD6' });
+T.charSun = mk(ch, 'CHARCOAL 6', 'Charcoal & Sun', 'Sunny yellow on grey. Cheerful, high-energy.', ['#FFD23F', '#FFF3C4', '#3D2E00'], { carbs: '#9A6A00' });
+T.ink.num = 'INK 1'; T.charcoal.num = 'CHARCOAL 1';
+const id = this.props.theme ?? 'plum';
+const p = { ...base, ...(T[id] || T.plum) };
+const tabs = (active) => ['Today', 'Progress', 'Workouts', 'Me'].map((name, i) => ({ name, pill: i === active ? p.tint : 'transparent', ink: i === active ? p.onTint : p.muted }));
+const kcal = [1850, 2210, 1900, 1960, 2050, 1700, 860];
+const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+const bars = kcal.map((k, i) => ({ d: days[i], h: Math.round((k / 2400) * 130) + 'px', color: i === 2 ? p.light : (i === 6 ? p.mid : p.brand) }));
+const sw = [
+{ role: 'Brand', hex: p.brand, use: 'buttons, rings' },
+{ role: 'Spark', hex: p.accent, use: 'icon, highlights' },
+{ role: 'Mid', hex: p.mid, use: 'logo, charts' },
+{ role: 'Soft', hex: p.light, use: 'logo, estimates' },
+{ role: 'Background', hex: p.bg, use: 'screens' },
+{ role: 'Text', hex: p.text, use: 'all text' }
+];
+const chips = ['Recent', 'Saved', 'Dishes', 'Store'].map((name, i) => ({ name, bg: i === 0 ? p.tint : p.card, ink: i === 0 ? p.onTint : p.muted, border: i === 0 ? p.tint : p.line }));
+const foods = [
+{ name: 'Grilled chicken breast', portion: '150 g', kcal: '248', src: 'USDA', sel: true },
+{ name: 'Chicken shawarma wrap', portion: '1 wrap', kcal: '520', src: 'Dish' },
+{ name: 'Musakhan (chicken)', portion: '1 piece', kcal: '610', src: 'Dish' },
+{ name: 'Chicken soup', portion: '1 bowl', kcal: '180', src: 'Dish' },
+{ name: 'Chicken salad', portion: '1 tub', kcal: '310', src: 'Store' }
+].map((f) => ({ ...f, addBg: f.sel ? p.brand : p.tint, addInk: f.sel ? '#FFFFFF' : p.onTint }));
+return {
+p, sw, bars, chips, foods,
+tabsToday: tabs(0), tabsProg: tabs(1),
+sessions: [p.brand, p.brand, p.brand, p.high],
+macros: [
+{ name: 'Protein', val: '62 / 140 g', w: '44%', color: p.protein },
+{ name: 'Carbs', val: '90 / 220 g', w: '41%', color: p.carbs },
+{ name: 'Fat', val: '31 / 70 g', w: '44%', color: p.fat }
+]
+};
+}
+}
+</script>
+</body>
+</html>

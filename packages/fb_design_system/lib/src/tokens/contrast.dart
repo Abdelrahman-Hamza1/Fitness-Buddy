@@ -70,11 +70,13 @@ final class FbContrastPair {
 /// Every foreground/background pair the design system uses in [palette]
 /// (UX-071). All text, large or not, is held to 4.5:1.
 ///
-/// Not pairs, on purpose: `outlineVariant` and `mint` on the surfaces are
-/// decoration and carry no information. The Embrace brand mark and the
-/// "Fitness Buddy" lockup are a logo, which WCAG 2.2 SC 1.4.11 exempts: on
-/// light, the mark's mint figure on cream is about 1.4:1 by design (TD-098,
-/// A44 PA8). The Buddy avatar's figures are checked against its disc.
+/// Not pairs, on purpose: `outlineVariant`, `spark`, `markSoft` and
+/// `markMid` on the surfaces are decoration and carry no information (the
+/// spark on the light surface is about 1.8:1, so it is never text or thin
+/// data there). The Momentum mark and the "Fitness Buddy" lockup are a logo,
+/// which WCAG 2.2 SC 1.4.11 exempts: on light, the mark's soft shape on the
+/// off-white is about 1.3:1 by design (TD-116). The Buddy avatar's shapes are
+/// checked against its plate.
 List<FbContrastPair> fbContrastPairs(FbPalette palette) {
   final p = palette;
   final surfaces = <String, Color>{
@@ -166,23 +168,34 @@ List<FbContrastPair> fbContrastPairs(FbPalette palette) {
       FbContrastKind.ui,
     ),
     FbContrastPair(
-      'wordmark (onBrandContainer) on surface',
-      p.onBrandContainer,
+      'wordmark (brand) on surface',
+      p.brand,
       p.surface,
       FbContrastKind.text,
     ),
     FbContrastPair(
-      'avatarForeground on avatarBackground',
-      p.avatarForeground,
-      p.avatarBackground,
-      FbContrastKind.ui,
+      'onSparkContainer on sparkContainer',
+      p.onSparkContainer,
+      p.sparkContainer,
+      FbContrastKind.text,
     ),
     FbContrastPair(
-      'mint on avatarBackground',
-      p.mint,
-      p.avatarBackground,
-      FbContrastKind.ui,
+      'onSurface on sparkContainer',
+      p.onSurface,
+      p.sparkContainer,
+      FbContrastKind.text,
     ),
+    for (final MapEntry(key: name, value: shape) in {
+      'markSoft': p.markSoft,
+      'markMid': p.markMid,
+      'spark': p.spark,
+    }.entries)
+      FbContrastPair(
+        '$name on markPlate',
+        shape,
+        p.markPlate,
+        FbContrastKind.ui,
+      ),
     FbContrastPair(
       'snackbar text',
       p.inverseOnSurface,

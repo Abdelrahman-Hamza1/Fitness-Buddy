@@ -58,19 +58,34 @@ void main() {
       }
     });
 
-    test('UX-071 mint is never a text role: no contrast pair uses mint as '
-        'text ($name)', () {
-      final mint = FbPalette.of(brightness).mint;
+    test('UX-071 the spark and the mark shapes are never a text role: no '
+        'contrast pair uses them as text ($name)', () {
+      final p = FbPalette.of(brightness);
+      final decoration = {p.spark, p.markSoft, p.markMid};
       expect([
         for (final pair in pairs)
-          if (pair.kind == FbContrastKind.text && pair.foreground == mint)
+          if (pair.kind == FbContrastKind.text &&
+              decoration.contains(pair.foreground))
             pair.name,
       ], isEmpty);
-      // The avatar's mint figure is checked as non-text UI on its disc.
-      expect(
-        pairs.where((p) => p.name == 'mint on avatarBackground').single.kind,
-        FbContrastKind.ui,
-      );
+      // The avatar's shapes are checked as non-text UI on its plate.
+      for (final shape in ['markSoft', 'markMid', 'spark']) {
+        expect(
+          pairs.where((p) => p.name == '$shape on markPlate').single.kind,
+          FbContrastKind.ui,
+        );
+      }
+    });
+
+    test('UX-071 text on the spark container meets WCAG AA ($name)', () {
+      final spark = [
+        for (final pair in pairs)
+          if (pair.name.endsWith('on sparkContainer')) pair,
+      ];
+      expect(spark, hasLength(2));
+      for (final pair in spark) {
+        expect(pair.ratio, greaterThanOrEqualTo(4.5), reason: '$pair');
+      }
     });
   }
 

@@ -1,6 +1,5 @@
 import 'package:fb_design_system/l10n/gen/fb_localizations.dart';
 import 'package:fb_design_system/src/components/sheet.dart';
-import 'package:fb_design_system/src/tokens/colors.dart';
 import 'package:fb_design_system/src/tokens/spacing.dart';
 import 'package:fb_design_system/src/tokens/typography.dart';
 import 'package:material_ui/material_ui.dart';
@@ -40,6 +39,8 @@ class FbEstimateMarker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = FbLocalizations.of(context);
+    // The spark container (sparkContainer / onSparkContainer).
+    final scheme = Theme.of(context).colorScheme;
     return Semantics(
       button: true,
       label: semanticsLabel ?? l10n.fbSourceEstimateTitle,
@@ -59,11 +60,22 @@ class FbEstimateMarker extends StatelessWidget {
           child: Center(
             widthFactor: 1,
             heightFactor: 1,
-            child: Padding(
-              padding: const EdgeInsets.all(FbSpace.s1),
-              child: Text(
-                l10n.fbSourceBadgeEstimate,
-                style: FbType.title.copyWith(color: context.fbColors.badge),
+            // The sky tint marks estimates (TD-116); a decoration only, so
+            // the marker's size is unchanged.
+            child: DecoratedBox(
+              key: const ValueKey('fb-estimate-marker-tint'),
+              decoration: ShapeDecoration(
+                color: scheme.secondaryContainer,
+                shape: const StadiumBorder(),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(FbSpace.s1),
+                child: Text(
+                  l10n.fbSourceBadgeEstimate,
+                  style: FbType.title.copyWith(
+                    color: scheme.onSecondaryContainer,
+                  ),
+                ),
               ),
             ),
           ),

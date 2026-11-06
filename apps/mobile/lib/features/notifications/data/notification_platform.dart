@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fb_design_system/fb_design_system.dart' show FbBrandColors;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show MissingPluginException;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -86,7 +87,8 @@ abstract interface class NotificationPlatform {
 /// [NotificationPlatform] over `flutter_local_notifications` (A40 D7):
 /// every notification **inexact** (`inexactAllowWhileIdle`: no exact-alarm
 /// permission, battery friendly; none of the types needs the minute), one
-/// "Reminders" channel, the monochrome launcher layer as the small icon.
+/// "Reminders" channel, the one-colour Momentum mark as the small icon
+/// (`ic_notification`, A64) with the brand ink as the accent colour.
 /// Instants are passed in UTC, so no time-zone database is needed: the
 /// coordinator re-plans when the zone changes (resume).
 final class PluginNotificationPlatform implements NotificationPlatform {
@@ -117,7 +119,7 @@ final class PluginNotificationPlatform implements NotificationPlatform {
     return _initialized ??= _plugin
         .initialize(
           settings: const InitializationSettings(
-            android: AndroidInitializationSettings('ic_launcher_monochrome'),
+            android: AndroidInitializationSettings('ic_notification'),
           ),
           onDidReceiveNotificationResponse: (response) =>
               onTap(response.payload),
@@ -152,6 +154,7 @@ final class PluginNotificationPlatform implements NotificationPlatform {
           channel.name,
           channelDescription: channel.description,
           category: AndroidNotificationCategory.reminder,
+          color: FbBrandColors.plate,
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,

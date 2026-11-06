@@ -193,7 +193,9 @@ void main() {
       config: prodConfig,
       credits: _credits,
     );
-    expect(find.text('Fitness Buddy'), findsOneWidget);
+    // The lockup sets the name on two lines (A64) and reads it once.
+    expect(find.text('Fitness\nBuddy'), findsOneWidget);
+    expect(find.bySemanticsLabel('Fitness Buddy'), findsOneWidget);
     expect(find.text('Version 0.1.0 (1)'), findsOneWidget);
     // UX-071 (A63 audit minor): the hidden long-press is a 48 dp target.
     expect(

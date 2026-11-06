@@ -11,9 +11,10 @@ const RoundedRectangleBorder _mdShape = RoundedRectangleBorder(
   borderRadius: FbRadius.mdAll,
 );
 
-// Pill buttons, 48 tall (Embrace recipes). A radius of half the height
-// rather than a StadiumBorder: identical at 48 dp, but a label that wraps at
-// large text sizes keeps normal corners instead of huge round ends.
+// Pill buttons, 48 tall (identity recipes, TD-098; kept by TD-116). A
+// radius of half the height rather than a StadiumBorder: identical at 48 dp,
+// but a label that wraps at large text sizes keeps normal corners instead of
+// huge round ends.
 const RoundedRectangleBorder _pillShape = RoundedRectangleBorder(
   borderRadius: BorderRadius.all(Radius.circular(_minTouch / 2)),
 );

@@ -29,7 +29,7 @@ void main() {
     expect(arc.getBounds().top, closeTo(0, 0.01));
 
     // Every shape of both marks parses.
-    for (final shape in [...fbEmbraceMark, ...fbEmbraceMini]) {
+    for (final shape in [...fbMomentumMark, ...fbMomentumMini]) {
       expect(() => parseFbMarkPath(shape.d), returnsNormally, reason: shape.d);
     }
   });
@@ -64,24 +64,103 @@ void main() {
     }
   });
 
-  test('A44-D9 every mark shape lies inside the adaptive-icon safe zone', () {
-    const centre = Offset(54, 54);
-    const safe = 33.0;
-    var worst = 0.0;
-    for (final shape in fbEmbraceMark) {
-      final half = (shape.strokeWidth ?? 0) / 2;
-      for (final metric in parseFbMarkPath(shape.d).computeMetrics()) {
-        final steps = (metric.length / 0.5).ceil();
-        for (var i = 0; i <= steps; i++) {
-          final p = metric
-              .getTangentForOffset(math.min(metric.length, i * 0.5))!
-              .position;
-          worst = math.max(worst, (p - centre).distance + half);
+  test('A64 the Momentum paths are the reference pills skewed 22°, scaled '
+      'about the centre of their enclosing circle', () {
+    // The owner-approved drawing (A64 card): rects on a 100 canvas with
+    // corner radius w / 2, under translate(3.17, 3) skewX(-22°).
+    const pills = [
+      (x: 32.32, y: 48.0, w: 19.0, h: 32.0),
+      (x: 55.32, y: 32.0, w: 19.0, h: 48.0),
+      (x: 78.32, y: 14.0, w: 21.0, h: 66.0),
+    ];
+    const k = 0.5522847498307936;
+    final tan = math.tan(22 * math.pi / 180);
+    const centre = Offset(49.78289487858571, 50.127645657822924);
+    const enclosing = 52.26074955015602;
+
+    List<Offset> outline(({double x, double y, double w, double h}) p) {
+      final (:x, :y, :w, :h) = p;
+      final r = w / 2;
+      return [
+        Offset(x, y + r),
+        Offset(x, y + r - k * r),
+        Offset(x + r - k * r, y),
+        Offset(x + r, y),
+        Offset(x + r + k * r, y),
+        Offset(x + w, y + r - k * r),
+        Offset(x + w, y + r),
+        Offset(x + w, y + h - r),
+        Offset(x + w, y + h - r + k * r),
+        Offset(x + r + k * r, y + h),
+        Offset(x + r, y + h),
+        Offset(x + r - k * r, y + h),
+        Offset(x, y + h - r + k * r),
+        Offset(x, y + h - r),
+      ];
+    }
+
+    for (final (marks, canvas, radius) in [
+      (fbMomentumMark, fbMomentumMarkCanvas, 31.0),
+      (fbMomentumMini, fbMomentumMiniCanvas, 10.5),
+    ]) {
+      expect(marks.map((s) => s.tone), FbMarkTone.values);
+      final scale = radius / enclosing;
+      for (var i = 0; i < pills.length; i++) {
+        final d = marks[i].d;
+        expect(
+          RegExp('[A-Z]').allMatches(d).map((m) => m[0]).join(),
+          'MCCLCCZ',
+          reason: d,
+        );
+        final numbers = [
+          for (final m in RegExp(r'-?\d+(\.\d+)?').allMatches(d))
+            double.parse(m[0]!),
+        ];
+        final expected = [
+          for (final p in outline(pills[i])) ...[
+            (p.dx - tan * p.dy + 3.17 - centre.dx) * scale + canvas / 2,
+            (p.dy + 3 - centre.dy) * scale + canvas / 2,
+          ],
+        ];
+        expect(numbers, hasLength(expected.length), reason: d);
+        for (var j = 0; j < numbers.length; j++) {
+          expect(numbers[j], closeTo(expected[j], 0.006), reason: '$d #$j');
         }
       }
     }
-    expect(worst, lessThanOrEqualTo(safe));
-    // The design aims for r <= 31 (A44 D9); keep a little margin visible.
-    expect(worst, lessThan(31.5));
+  });
+
+  test('A64 the mark lies inside the adaptive-icon safe zone, the mini mark '
+      'inside its disc, and the figure rect holds the mark', () {
+    // Points along the outline (getBounds would include control points).
+    List<Offset> outline(List<FbMarkShape> shapes) => [
+      for (final shape in shapes)
+        for (final metric in parseFbMarkPath(shape.d).computeMetrics())
+          for (var i = 0; i <= (metric.length / 0.25).ceil(); i++)
+            metric
+                .getTangentForOffset(math.min(metric.length, i * 0.25))!
+                .position,
+    ];
+    double reach(List<FbMarkShape> shapes, Offset centre) =>
+        outline(shapes).map((p) => (p - centre).distance).reduce(math.max);
+
+    final mark = reach(fbMomentumMark, const Offset(54, 54));
+    expect(mark, lessThanOrEqualTo(33));
+    // The design aims for r 31 (a little margin inside the safe circle).
+    expect(mark, lessThan(31.1));
+    expect(reach(fbMomentumMini, const Offset(14, 14)), lessThan(10.6));
+
+    final figure = fbMomentumMarkFigure.inflate(0.01);
+    for (final p in outline(fbMomentumMark)) {
+      expect(figure.contains(p), isTrue, reason: '$p');
+    }
+  });
+
+  test('A64 the fixed launcher colours equal the light palette roles', () {
+    final light = FbPalette.of(Brightness.light);
+    expect(FbBrandColors.plate, light.brand);
+    expect(FbBrandColors.soft, light.markSoft);
+    expect(FbBrandColors.mid, light.markMid);
+    expect(FbBrandColors.spark, light.spark);
   });
 }

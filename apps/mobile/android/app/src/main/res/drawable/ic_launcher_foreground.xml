@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The Embrace mark reversed onto the launcher plate (A44 D10/D11): the
-     adaptive icon foreground and the Android 12+ splash icon.
-     The pathData strings are verbatim copies of fbEmbraceMark in
+<!-- The Momentum mark on the launcher plate (A64, TD-116): soft, mid and the
+     sky spark. The adaptive icon foreground and the Android 12+ splash icon.
+     The pathData strings are verbatim copies of fbMomentumMark in
      packages/fb_design_system/lib/src/brand/brand_geometry.dart (the source),
      checked by apps/mobile/test/android/brand_sync_test.dart. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
@@ -10,19 +10,12 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
     <path
-        android:fillColor="#FFFAF9F4"
-        android:pathData="M39.75 31.4 A7.25 7.25 0 1 1 54.25 31.4 A7.25 7.25 0 1 1 39.75 31.4 Z" />
+        android:fillColor="#FFD3E3EA"
+        android:pathData="M31.74 60.15 C33 57.04 36.54 54.52 39.65 54.52 C42.77 54.52 44.27 57.04 43.01 60.15 L39.9 67.86 C38.64 70.98 35.1 73.5 31.98 73.5 C28.87 73.5 27.37 70.98 28.63 67.86 Z" />
     <path
-        android:fillColor="#FFA8E3CB"
-        android:pathData="M58 33.5 A7.25 7.25 0 1 1 72.5 33.5 A7.25 7.25 0 1 1 58 33.5 Z" />
+        android:fillColor="#FF8FB3C4"
+        android:pathData="M49.22 50.66 C50.48 47.55 54.02 45.03 57.13 45.03 C60.24 45.03 61.75 47.55 60.49 50.66 L53.54 67.86 C52.28 70.98 48.74 73.5 45.63 73.5 C42.52 73.5 41.01 70.98 42.27 67.86 Z" />
     <path
-        android:pathData="M38.43 45.66 A16.2 16.2 0 1 0 57 72.19"
-        android:strokeColor="#FFFAF9F4"
-        android:strokeLineCap="round"
-        android:strokeWidth="12.5" />
-    <path
-        android:pathData="M47.25 59.25 L60.45 51.29 A10.75 10.75 0 0 1 73.33 68.36"
-        android:strokeColor="#FFA8E3CB"
-        android:strokeLineCap="round"
-        android:strokeWidth="12.5" />
+        android:fillColor="#FF6EC8FF"
+        android:pathData="M66.94 40.58 C68.33 37.14 72.24 34.35 75.68 34.35 C79.12 34.35 80.78 37.14 79.39 40.58 L68.61 67.27 C67.22 70.71 63.3 73.5 59.86 73.5 C56.42 73.5 54.76 70.71 56.15 67.27 Z" />
 </vector>

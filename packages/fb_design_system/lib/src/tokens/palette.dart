@@ -1,10 +1,11 @@
 import 'package:material_ui/material_ui.dart';
 
-/// Every colour role of the palette in one brightness: "Embrace" (TD-098), the
-/// owner's identity from the design canvas: a deep-teal brand with a mint
-/// accent, on green-black ("Deep Forest", dark) or cream ("Mint Cream",
-/// light) neutrals. One brand palette in R1: a second one would be two more
-/// consts and the switch in [FbPalette.of], all in this file.
+/// Every colour role of the palette in one brightness: "Ink & Sky" (TD-116),
+/// the owner's identity of 2026-11-06: an ink blue-grey brand with a sky-blue
+/// spark, on cool off-white (light) or blue-black (dark) neutrals, and the
+/// Momentum mark's soft / mid / strong shapes. One brand palette in R1: a
+/// second one would be two more consts and the switch in [FbPalette.of], all
+/// in this file.
 ///
 /// Raw values: widgets read them through the theme
 /// (`Theme.of(context).colorScheme`, `context.fbColors`), not from here.
@@ -35,15 +36,19 @@ final class FbPalette {
     required this.inverseSurface,
     required this.inverseOnSurface,
     required this.inversePrimary,
-    required this.mint,
-    required this.avatarBackground,
-    required this.avatarForeground,
+    required this.spark,
+    required this.sparkContainer,
+    required this.onSparkContainer,
+    required this.markSoft,
+    required this.markMid,
+    required this.markStrong,
+    required this.markPlate,
   });
 
   /// The palette in [brightness].
   factory of(Brightness brightness) => switch (brightness) {
-    Brightness.light => _embraceLight,
-    Brightness.dark => _embraceDark,
+    Brightness.light => _inkSkyLight,
+    Brightness.dark => _inkSkyDark,
   };
 
   /// Light or dark.
@@ -119,80 +124,103 @@ final class FbPalette {
   /// Snackbar action ([brand] seen on [inverseSurface]).
   final Color inversePrimary;
 
-  /// The logo's mint (the second figure of the Embrace mark): decoration
-  /// only, never text and never information.
-  final Color mint;
+  /// The sky spark: the Momentum mark's strong shape on the plate and on
+  /// dark, and small highlights. Decoration only: never text, and never thin
+  /// data on a light surface (about 1.8:1 there).
+  final Color spark;
 
-  /// The Buddy avatar's disc.
-  final Color avatarBackground;
+  /// A calm sky tint for small highlights with text on them.
+  final Color sparkContainer;
 
-  /// The Buddy avatar's first figure (the second one is [mint]).
-  final Color avatarForeground;
+  /// Text and icons on [sparkContainer].
+  final Color onSparkContainer;
+
+  /// The Momentum mark's short (start) shape.
+  final Color markSoft;
+
+  /// The Momentum mark's middle shape.
+  final Color markMid;
+
+  /// The Momentum mark's tall (end) shape on the theme's surfaces: the brand
+  /// ink on light, the [spark] on dark.
+  final Color markStrong;
+
+  /// The plate the mark sits on in the Buddy avatar (the mark on it is
+  /// [markSoft], [markMid] and [spark]): the ink on light, the dark surface
+  /// on dark (an edge on the input bar and on cards).
+  final Color markPlate;
 }
 
-// Values from technical-planning/design/embrace/README.md. Deviations (all
-// in light, for WCAG AA; listed in the A44 card's Outcome): outline #87938E ->
-// #808C87 and overTarget #8C918E -> #686E6B. Roles the identity doesn't
-// define (success, info, the inverse roles) are derived and AA-checked by
-// test/tokens/contrast_test.dart. The light avatar uses the launcher
-// colourway (a brand disc), since mint on brandContainer is invisible.
+// Values from technical-planning/design/momentum/README.md (TD-116). Roles
+// the identity doesn't fix (outline, overTarget, the dark outlineVariant, the
+// inverse roles) are derived and AA-checked by test/tokens/contrast_test.dart;
+// carbs, fat, fiber, success, info and error keep their earlier values,
+// re-checked on the new neutrals.
 
-const _embraceLight = FbPalette(
+const _inkSkyLight = FbPalette(
   brightness: Brightness.light,
-  brand: Color(0xFF0B6E5F),
+  brand: Color(0xFF1E2A32),
   onBrand: Color(0xFFFFFFFF),
-  brandContainer: Color(0xFFD3F0E3),
-  onBrandContainer: Color(0xFF0A3B33),
-  surface: Color(0xFFFAF9F4),
+  brandContainer: Color(0xFFE6EEF2),
+  onBrandContainer: Color(0xFF1E2A32),
+  surface: Color(0xFFFAFAF8),
   surfaceContainer: Color(0xFFFFFFFF),
-  surfaceContainerHigh: Color(0xFFEFF2EC),
-  onSurface: Color(0xFF13201D),
-  onSurfaceVariant: Color(0xFF53625D),
-  outline: Color(0xFF808C87),
-  outlineVariant: Color(0xFFE2E7E1),
-  protein: Color(0xFF3D5FD9),
+  surfaceContainerHigh: Color(0xFFEEF1F3),
+  onSurface: Color(0xFF1A2329),
+  onSurfaceVariant: Color(0xFF57636B),
+  outline: Color(0xFF7E8A92),
+  outlineVariant: Color(0xFFE5E9EC),
+  protein: Color(0xFF7C4DDB),
   carbs: Color(0xFFB9760F),
   fat: Color(0xFFC2457A),
   fiber: Color(0xFF5E8A12),
-  overTarget: Color(0xFF686E6B),
+  overTarget: Color(0xFF666D72),
   success: Color(0xFF14773A),
   info: Color(0xFF0369A1),
   error: Color(0xFFA2402F),
   errorContainer: Color(0xFFFBEAE6),
-  inverseSurface: Color(0xFF13201D),
-  inverseOnSurface: Color(0xFFFAF9F4),
-  inversePrimary: Color(0xFF6FD6B6),
-  mint: Color(0xFFA8E3CB),
-  avatarBackground: Color(0xFF0B6E5F),
-  avatarForeground: Color(0xFFFFFFFF),
+  inverseSurface: Color(0xFF1A2329),
+  inverseOnSurface: Color(0xFFFAFAF8),
+  inversePrimary: Color(0xFFA9CDDC),
+  spark: Color(0xFF6EC8FF),
+  sparkContainer: Color(0xFFDDF1FF),
+  onSparkContainer: Color(0xFF06324D),
+  markSoft: Color(0xFFD3E3EA),
+  markMid: Color(0xFF8FB3C4),
+  markStrong: Color(0xFF1E2A32),
+  markPlate: Color(0xFF1E2A32),
 );
 
-const _embraceDark = FbPalette(
+const _inkSkyDark = FbPalette(
   brightness: Brightness.dark,
-  brand: Color(0xFF6FD6B6),
-  onBrand: Color(0xFF04241D),
-  brandContainer: Color(0xFF123F36),
-  onBrandContainer: Color(0xFFBFEEDD),
-  surface: Color(0xFF0C1412),
-  surfaceContainer: Color(0xFF141E1B),
-  surfaceContainerHigh: Color(0xFF1D2925),
-  onSurface: Color(0xFFE8EFEC),
-  onSurfaceVariant: Color(0xFF9DAEA8),
-  outline: Color(0xFF6C7C77),
-  outlineVariant: Color(0xFF24322E),
-  protein: Color(0xFF8EA8FF),
+  brand: Color(0xFFA9CDDC),
+  onBrand: Color(0xFF0E1418),
+  brandContainer: Color(0xFF22343F),
+  onBrandContainer: Color(0xFFD6E8F0),
+  surface: Color(0xFF0E1418),
+  surfaceContainer: Color(0xFF1A242B),
+  surfaceContainerHigh: Color(0xFF24303A),
+  onSurface: Color(0xFFEAF0F3),
+  onSurfaceVariant: Color(0xFFA7B3BA),
+  outline: Color(0xFF717F88),
+  outlineVariant: Color(0xFF2B3740),
+  protein: Color(0xFFB79BFF),
   carbs: Color(0xFFF2BE5C),
   fat: Color(0xFFF29AC0),
   fiber: Color(0xFFB5D86A),
-  overTarget: Color(0xFF8F9A96),
+  overTarget: Color(0xFF8E989E),
   success: Color(0xFF86EFAC),
   info: Color(0xFF7DD3FC),
   error: Color(0xFFF0B4A8),
   errorContainer: Color(0xFF3A1E19),
-  inverseSurface: Color(0xFFE8EFEC),
-  inverseOnSurface: Color(0xFF0C1412),
-  inversePrimary: Color(0xFF0B6E5F),
-  mint: Color(0xFFA8E3CB),
-  avatarBackground: Color(0xFF123F36),
-  avatarForeground: Color(0xFF6FD6B6),
+  inverseSurface: Color(0xFFEAF0F3),
+  inverseOnSurface: Color(0xFF0E1418),
+  inversePrimary: Color(0xFF1E2A32),
+  spark: Color(0xFF6EC8FF),
+  sparkContainer: Color(0xFF12384F),
+  onSparkContainer: Color(0xFFDDF1FF),
+  markSoft: Color(0xFFD3E3EA),
+  markMid: Color(0xFF8FB3C4),
+  markStrong: Color(0xFF6EC8FF),
+  markPlate: Color(0xFF0E1418),
 );

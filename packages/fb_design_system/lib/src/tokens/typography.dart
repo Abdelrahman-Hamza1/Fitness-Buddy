@@ -1,10 +1,11 @@
 import 'package:fb_design_system/src/tokens/density.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// The type scale (A02 §3.2, Embrace TD-098): Nunito (rounded, like the logo
-/// wordmark) for display numbers, titles and the wordmark; Inter for body,
-/// labels, buttons and chips. Noto Sans Arabic is the fallback for Arabic text
-/// in every style. Sizes are in sp (they follow the system font scale).
+/// The type scale (A02 §3.2, Momentum TD-116): Outfit (geometric, like the
+/// logo wordmark) for display numbers, titles and the wordmark; Inter for
+/// body, labels, buttons and chips. Noto Sans Arabic is the fallback for
+/// Arabic text in every style. Sizes are in sp (they follow the system font
+/// scale).
 ///
 /// Colours are not set here: the text inherits them from the theme.
 abstract final class FbType {
@@ -12,7 +13,7 @@ abstract final class FbType {
   static const String package = 'fb_design_system';
 
   /// Display family (Latin): big numbers, titles, the wordmark.
-  static const String displayFamily = 'Nunito';
+  static const String displayFamily = 'Outfit';
 
   /// Body family (Latin): everything else.
   static const String bodyFamily = 'Inter';
@@ -20,9 +21,12 @@ abstract final class FbType {
   /// Fallback family (Arabic).
   static const String arabicFamily = 'NotoSansArabic';
 
+  // Every Outfit style carries tabular figures (A64): Outfit's default digits
+  // are proportional, so a number in a title would otherwise jitter as it
+  // changes. tnum only touches digits, so text is unaffected.
   static const List<FontFeature> _tabular = [FontFeature.tabularFigures()];
 
-  /// Nunito extra-bold, tabular: the big number (HM-001). 40/48 in the
+  /// Outfit extra-bold, tabular (Outfit has `tnum`): the big number (HM-001). 40/48 in the
   /// compact density, 48/56 in the comfortable one ([FbDensity]).
   static const TextStyle display = TextStyle(
     fontFamily: displayFamily,
@@ -34,7 +38,7 @@ abstract final class FbType {
     fontFeatures: _tabular,
   );
 
-  /// 24/32, Nunito extra-bold: screen titles.
+  /// 24/32, Outfit extra-bold: screen titles.
   static const TextStyle headline = TextStyle(
     fontFamily: displayFamily,
     package: package,
@@ -42,9 +46,10 @@ abstract final class FbType {
     fontSize: 24,
     height: 32 / 24,
     fontWeight: FontWeight.w800,
+    fontFeatures: _tabular,
   );
 
-  /// 18/24, Nunito bold: section and card titles.
+  /// 18/24, Outfit bold: section and card titles.
   static const TextStyle title = TextStyle(
     fontFamily: displayFamily,
     package: package,
@@ -52,6 +57,7 @@ abstract final class FbType {
     fontSize: 18,
     height: 24 / 18,
     fontWeight: FontWeight.w700,
+    fontFeatures: _tabular,
   );
 
   /// 16/24, Inter regular.
@@ -114,20 +120,24 @@ abstract final class FbType {
     fontWeight: FontWeight.w500,
   );
 
-  /// The "Fitness Buddy" wordmark at [size]: Nunito black (900).
+  /// The "Fitness / Buddy" wordmark at [size]: Outfit extra-bold (800), set
+  /// tight (two stacked lines in the lockup).
   static TextStyle wordmark(double size) => TextStyle(
     fontFamily: displayFamily,
     package: package,
     fontFamilyFallback: const [arabicFamily],
     fontSize: size,
-    height: 1.2,
-    fontWeight: FontWeight.w900,
+    height: 1.05,
+    fontWeight: FontWeight.w800,
+    fontFeatures: _tabular,
   );
 
   /// [style] with tabular figures, so digits line up in columns and don't
   /// jitter while they change.
   static TextStyle numeric(TextStyle style) =>
-      style.copyWith(fontFeatures: [...?style.fontFeatures, ..._tabular]);
+      (style.fontFeatures ?? const []).contains(_tabular.single)
+      ? style
+      : style.copyWith(fontFeatures: [...?style.fontFeatures, ..._tabular]);
 
   /// The scale as a Material [TextTheme], so material_ui widgets pick it up.
   static const TextTheme textTheme = TextTheme(

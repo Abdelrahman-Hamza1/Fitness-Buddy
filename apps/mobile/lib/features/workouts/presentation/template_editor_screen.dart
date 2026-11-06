@@ -329,7 +329,9 @@ class TemplateStepper extends StatelessWidget {
             tooltip: l10n.workoutTemplateLess(label),
             onPressed: () => onChanged(value - 1),
           ),
-          ExcludeSemantics(child: Text('$value', style: FbType.title)),
+          ExcludeSemantics(
+            child: Text('$value', style: FbType.numeric(FbType.title)),
+          ),
           FbIconButton(
             icon: FbIcons.add,
             tooltip: l10n.workoutTemplateMore(label),

@@ -28,9 +28,13 @@ List<(String, Color)> paletteRoles(FbPalette palette) => [
   ('inverseSurface', palette.inverseSurface),
   ('inverseOnSurface', palette.inverseOnSurface),
   ('inversePrimary', palette.inversePrimary),
-  ('mint', palette.mint),
-  ('avatarBackground', palette.avatarBackground),
-  ('avatarForeground', palette.avatarForeground),
+  ('spark', palette.spark),
+  ('sparkContainer', palette.sparkContainer),
+  ('onSparkContainer', palette.onSparkContainer),
+  ('markSoft', palette.markSoft),
+  ('markMid', palette.markMid),
+  ('markStrong', palette.markStrong),
+  ('markPlate', palette.markPlate),
 ];
 
 /// The type styles with their names, largest first.

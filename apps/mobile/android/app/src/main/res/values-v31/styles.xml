@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Android 12+ splash (A44 D12): the reversed mark on the flavor's
+    <!-- Android 12+ splash (A44 D12, A64): the Momentum mark on the flavor's
          plate colour, on the light window background (TD-107, A45 D7). The
          window background is a solid colour, not the pre-12 layer-list, so
          no second mark shows behind the system splash. -->

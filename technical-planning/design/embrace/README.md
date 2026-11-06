@@ -1,3 +1,5 @@
+> **Superseded (2026-11-06):** the app now uses the Momentum identity in Ink & Sky (`../momentum/README.md`, TD-116, spec D-098, step A64). This page is kept as history.
+
 # "Embrace" visual identity
 
 _Source: the design canvas the owner reviewed on 2026-10-29 ("The UI looks amazing"; logo direction "B / The Embrace"). Copied from the canvas's shared spec so steps can reference it; the canvas artboards (static HTML mock-ups, 390×844) are in `artboards/`, and a downsized copy of the owner's logo draft is `logo-embrace-draft.png`. Implemented by step A44 (`../../steps/A44-brand-identity.md`); the decision is the identity TD in `../../12-decisions-and-questions.md`. Where the app's code and this page differ after A44, the A44 Outcome lists why._

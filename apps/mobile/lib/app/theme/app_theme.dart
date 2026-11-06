@@ -5,7 +5,7 @@ import 'package:material_ui/material_ui.dart';
 /// the system's on the user's choice in Settings.
 ///
 /// They come from the design system (A02): [FbTheme] builds them from the
-/// tokens, in the "Embrace" palette (TD-098).
+/// tokens, in the "Ink & Sky" palette (TD-116).
 abstract final class AppTheme {
   /// The light theme.
   static final ThemeData light = FbTheme.light();

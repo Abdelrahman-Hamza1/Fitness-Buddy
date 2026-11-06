@@ -7,7 +7,7 @@ bool _registered = false;
 /// The bundled fonts and their SIL OFL 1.1 texts in `assets/fonts/`.
 const List<(String, String)> fbFontLicenses = [
   ('Inter', 'OFL-Inter.txt'),
-  ('Nunito', 'OFL-Nunito.txt'),
+  ('Outfit', 'OFL-Outfit.txt'),
   ('Noto Sans Arabic', 'OFL-NotoSansArabic.txt'),
 ];
 

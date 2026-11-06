@@ -46,16 +46,48 @@ void main() {
     }
   });
 
-  test('UX-042 protein is blue and every macro colour differs from the brand '
-      'and from each other', () {
+  test('UX-042 protein is violet, and every macro colour differs from the '
+      'brand, the spark and each other', () {
     for (final b in Brightness.values) {
       final p = FbPalette.of(b);
       final hue = HSLColor.fromColor(p.protein).hue;
-      expect(hue, inInclusiveRange(200, 250), reason: '$b protein hue $hue');
+      expect(hue, inInclusiveRange(250, 290), reason: '$b protein hue $hue');
       final macros = [p.protein, p.carbs, p.fat, p.fiber];
       expect(macros.toSet(), hasLength(4), reason: '$b');
       expect(macros, isNot(contains(p.brand)), reason: '$b');
-      expect(macros, isNot(contains(p.mint)), reason: '$b');
+      expect(macros, isNot(contains(p.spark)), reason: '$b');
+      // Far enough round the colour wheel not to read as the sky spark.
+      final spark = HSLColor.fromColor(p.spark).hue;
+      for (final macro in macros) {
+        final h = HSLColor.fromColor(macro).hue;
+        final distance = (h - spark).abs() % 360;
+        expect(
+          distance > 180 ? 360 - distance : distance,
+          greaterThan(40),
+          reason: '$b $macro',
+        );
+      }
+    }
+  });
+
+  test('UX-040 the Momentum mark roles: strong is the brand on light and the '
+      'spark on dark; the avatar plate is the ink on light and the dark '
+      'surface on dark', () {
+    final light = FbPalette.of(Brightness.light);
+    final dark = FbPalette.of(Brightness.dark);
+    expect(light.markStrong, light.brand);
+    expect(dark.markStrong, dark.spark);
+    expect(light.markPlate, light.brand);
+    expect(dark.markPlate, dark.surface);
+    for (final theme in [FbTheme.light(), FbTheme.dark()]) {
+      final p = FbPalette.of(theme.brightness);
+      final c = theme.extension<FbColors>()!;
+      expect(
+        [c.spark, c.markSoft, c.markMid, c.markStrong, c.markPlate],
+        [p.spark, p.markSoft, p.markMid, p.markStrong, p.markPlate],
+      );
+      expect(theme.colorScheme.secondaryContainer, p.sparkContainer);
+      expect(theme.colorScheme.onSecondaryContainer, p.onSparkContainer);
     }
   });
 

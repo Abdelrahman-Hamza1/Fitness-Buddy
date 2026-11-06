@@ -40,4 +40,26 @@ void main() {
     expect(find.bySemanticsLabel('Fitness Buddy'), findsOneWidget);
     handle.dispose();
   });
+
+  testWidgets('A64 the lockup sets the name on two lines (Fitness / Buddy) '
+      'next to the cropped mark, which keeps its aspect', (tester) async {
+    await pumpFb(
+      tester,
+      const Column(
+        children: [
+          FbBrandLockup(name: 'Fitness Buddy', size: FbLockupSize.large),
+          FbBrandMark(key: Key('cropped'), size: 40, cropped: true),
+          FbBrandMark(key: Key('full'), size: 40),
+        ],
+      ),
+    );
+    expect(find.text('Fitness\nBuddy'), findsOneWidget);
+    final cropped = tester.getSize(find.byKey(const Key('cropped')));
+    expect(cropped.height, 40);
+    expect(
+      cropped.width / cropped.height,
+      closeTo(fbMomentumMarkFigure.width / fbMomentumMarkFigure.height, 1e-9),
+    );
+    expect(tester.getSize(find.byKey(const Key('full'))), const Size(40, 40));
+  });
 }

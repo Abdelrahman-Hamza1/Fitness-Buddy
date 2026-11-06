@@ -28,7 +28,7 @@ Selection rules, in order: (1) fits the drivers in `01` §1; (2) mature, maintai
 | Errors / performance | **sentry_flutter** | Crashes, release health, traces, PII scrubbing | Crashlytics |
 | R2 extras | `health`, `home_widget`, a share-intent package | Picked when R2 starts | — |
 
-**Fonts:** bundled Latin + Arabic pair with matching weights, e.g. Inter + IBM Plex Sans Arabic (chosen in A02).
+**Fonts:** bundled variable OFL fonts: Outfit (titles, key numbers, wordmark; TD-116) + Inter (body; A02) with Noto Sans Arabic as the Arabic fallback.
 
 ## 2. Backend (`04`)
 

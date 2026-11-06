@@ -72,8 +72,9 @@ void main() {
     );
   });
 
-  test('A44-D11 every flavor has a launcher plate colour, and the adaptive '
-      'icon declares background, foreground and monochrome', () {
+  test('A44-D11 A64 every flavor has its own launcher plate colour (prod '
+      'ink, dev violet, staging amber), and the adaptive icon declares '
+      'background, foreground and monochrome', () {
     final plates = {
       for (final flavor in ['main', 'dev', 'staging'])
         flavor: colorResource(
@@ -84,6 +85,8 @@ void main() {
     expect(plates.values, everyElement(isNotNull));
     expect(plates.values.toSet(), hasLength(3), reason: '$plates');
     expect(plates['main'], FbBrandColors.plate.toARGB32());
+    expect(plates['dev'], 0xFF5B4A8F);
+    expect(plates['staging'], 0xFF8A5A12);
 
     final icon = readAndroid('main/res/mipmap-anydpi-v26/ic_launcher.xml');
     String layer(String tag) =>

@@ -1,6 +1,6 @@
 # 30 — UX Principles
 
-_Status: **Draft v1** · 2026-10-10, amended 2026-11-06 · Main decisions: D-035, D-039, D-043, D-060, D-079, D-095, D-097._
+_Status: **Draft v1** · 2026-10-10, amended 2026-11-06 · Main decisions: D-035, D-039, D-043, D-060, D-079, D-095, D-097, D-098._
 
 The product principles (PR-1 to PR-12 in `00-vision-and-scope.md`) apply everywhere. This file turns them into concrete interface rules.
 
@@ -39,7 +39,7 @@ The product principles (PR-1 to PR-12 in `00-vision-and-scope.md`) apply everywh
 
 ## 5. Visual direction (D-035, D-039)
 
-- **UX-040** `[R1]` Light and dark themes in the Embrace palette, **light by default**; Settings offers System / Light / Dark (D-082, D-083).
+- **UX-040** `[R1]` Light and dark themes in the Ink & Sky palette with the Momentum mark, **light by default**; Settings offers System / Light / Dark (D-082, D-083, D-098).
 - **UX-041** `[R1]` **Clean, not empty**: generous spacing, few colours, large key numbers, secondary information present but quieter. No clutter, no ad slots, no upsell banners.
 - **UX-042** `[R1]` Colour carries meaning consistently (e.g. one colour per macro across all screens). Over-target is a neutral tone, never alarm red (SF-021).
 - **UX-043** `[R1]` A modern look: the opposite of the dated look the owner disliked in MyFitnessPal and Cronometer (D-039).

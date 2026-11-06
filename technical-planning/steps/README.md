@@ -219,6 +219,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A62a](A62-estimates.md) | Estimates (a): meal estimates + knowledge-aware totals (diaryEntry/savedMealItem v2; owner design 2026-11-06 E1 A+B, E3 A) | Claude (Opus plan + build), two Codex reviews (Risky) | A57, A38, A16, A39a, A34, **B05** | L | new (owner UX review 2026-11-06) |  | ✅ |
 | [A62b](A62-estimates.md) | Estimates (b): day estimate on the day mark (dayMark v2; E2 A) | Claude (Opus plan + build), two Codex reviews (Risky) | A62a | M | new (owner UX review 2026-11-06) |  | ✅ |
 | [A63](A63-ui-polish-2.md) | UI polish 2 (owner 2026-11-06): Progress week in the calories card + no text-only cards, Me header with name (phone only), honest Preferences + settings audit fixes, workout sets without ticks (Same as last time, swipe to remove) | Claude (Opus plan + build), two Codex reviews (Risky) | A57 | L | new (owner mockups 2026-11-06 + Codex settings audit) |  | ✅ done (owner acceptance by use, TD-037) |
+| [A64](A64-rebrand.md) | Rebrand (owner 2026-11-06): Momentum mark (three rising shapes) + Ink & Sky palette, Outfit titles, launcher/themed icon, splash, Buddy avatar; nothing of Embrace left | Claude (Opus plan + build), one Codex review | A62, A63 | M–L | new (owner design session 2026-11-06) |  | ✅ done (owner one-shot; device checks #155) |
 
 **A44 runs right after A22 (owner request, 2026-10-29):** the "Embrace" identity (palette, fonts, icon) lands before the remaining screens are built, an exception to "the number is the order" like the dish batches below.
 

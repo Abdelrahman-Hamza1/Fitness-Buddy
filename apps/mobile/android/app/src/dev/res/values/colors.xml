@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- The dev flavor's launcher plate (A44 D11): slate. -->
-    <color name="ic_launcher_background">#FF3F4A5A</color>
+    <!-- The dev flavor's launcher plate (A44 D11, A64): violet, clearly
+         apart from prod's ink. -->
+    <color name="ic_launcher_background">#FF5B4A8F</color>
 </resources>

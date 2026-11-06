@@ -4,11 +4,11 @@ import 'package:fb_design_system/fb_design_system.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('SF-040 the licence registry lists Inter, Noto Sans Arabic and Nunito '
+  test('SF-040 the licence registry lists Inter, Noto Sans Arabic and Outfit '
       'with their OFL text', () {
     expect([
       for (final (name, _) in fbFontLicenses) name,
-    ], unorderedEquals(['Inter', 'Noto Sans Arabic', 'Nunito']));
+    ], unorderedEquals(['Inter', 'Noto Sans Arabic', 'Outfit']));
     final pubspec = File('pubspec.yaml').readAsStringSync();
     for (final (_, file) in fbFontLicenses) {
       final text = File('assets/fonts/$file').readAsStringSync();
