@@ -1,12 +1,12 @@
 # 10 — AI Assistant ("Buddy")
 
-_Status: **Draft v1** · 2026-10-10 · Main decisions: D-010 to D-018, D-036, D-043 to D-046, D-062, D-063, D-066, D-072, D-077, D-079, D-080._
+_Status: **Draft v1** · 2026-10-10 · Main decisions: D-010 to D-018, D-036, D-043 to D-046, D-062, D-063, D-066, D-072, D-077, D-079, D-080, D-100 (agent)._
 
 Requirement format: **ID** `[release]` statement. Releases: R1 owner · R2 friends · R3 public · Later.
 
 ## 1. Role
 
-Buddy is the main way to put data into the app. You write (or photograph) what happened, and Buddy turns it into a **proposal** that you confirm. Buddy also answers questions about your own data, suggests what to eat, and writes a weekly review.
+Buddy is the main way to put data into the app. You write (or photograph) what happened, and Buddy turns it into a **proposal** that you confirm. Buddy also answers questions about your own data, suggests what to eat, and writes a weekly review. Since D-100 Buddy is an **agent**: it works in steps (look up, compute, check, act) and holds a conversation (§15).
 
 - **AI-001** `[R1]` Buddy is reached from the input bar, which is always visible at the bottom of the Today screen (D-043) and the Workouts screen. Typing in the bar opens the chat sheet over the current screen, and the screen's numbers stay visible above it (see `30-ux-principles.md`).
 - **AI-002** `[R1]` Buddy handles: food logging, diary corrections, weigh-ins, workouts, batch dishes, personal foods and memory ("remember that…"), questions about your data, food suggestions, and the weekly review.
@@ -64,7 +64,7 @@ This is the most important interaction in the app. It must feel **instant, clear
  ⓓ database  ⓛ label  ⓡ reference dish  ~ estimate
 ```
 
-- **AI-030** `[R1]` After a message is sent, a proposal card appears in the chat sheet **within 5 s in 9 out of 10 cases** (D-060). A skeleton card shows right away while Buddy works, so the user never stares at nothing.
+- **AI-030** `[R1]` After a simple logging message is sent, a proposal card appears in the chat sheet **within 5 s in 9 out of 10 cases** (D-060). Buddy's live progress (AI-170) shows within 1 s, so the user never stares at nothing. Multi-step requests (suggestions, questions over weeks of data) may take longer, and show each step while they run (D-100).
 - **AI-031** `[R1]` The card shows: target meal slot and time; a dish name when items were cooked together; one line per item (name, amount + unit, kcal, source badge); the card's total kcal, protein, carbs, fat and fiber; and **what today's remaining calories will be after logging** it.
 - **AI-032** `[R1]` Estimated values show a `~` marker. Tapping it shows the likely range and why (D-045). Your own estimates (DY-005, DY-006) have no range: tapping "~" shows "~ Your estimate" with Edit and Swap for foods (D-096).
 - **AI-033** `[R1]` Every assumption Buddy made is shown on the card as a tappable **assumption chip** (e.g. "raw weight", "1 tsp oil assumed", "chicken maqluba", "your share: ¼"). Tapping a chip shows the alternatives, and picking one updates the numbers immediately.
@@ -82,7 +82,7 @@ This is the most important interaction in the app. It must feel **instant, clear
 - **AI-041** `[R1]` Tap an item name to swap the matched food: up to 3 alternatives are shown first (one best guess per distinct option, never duplicates, PR-5), with search below them.
 - **AI-042** `[R1]` Swipe an item to remove it. "+ add item" adds one by text or search.
 - **AI-043** `[R1]` Tap the slot or time to change it.
-- **AI-044** `[R1]` Typing a follow-up while a card is open ("make it 2 eggs", "the rice was cooked") **updates that card** instead of creating a new one. What changed is briefly highlighted.
+- **AI-044** `[R1]` Typing a follow-up while a card is open ("make it 2 eggs", "the rice was cooked") **updates that card** instead of creating a new one. What changed is briefly highlighted. Follow-ups work across the whole conversation (AI-164), not only on the newest card.
 
 ### 4.4 Unconfirmed proposals
 
@@ -153,7 +153,7 @@ Details are in `12-diary-meals-recipes.md` §5. Buddy's part:
 ## 10. Questions about your data
 
 - **AI-110** `[R1]` Answers questions about the user's own data: remaining calories and macros, past days and weeks, averages, weight trend, goal progress, workout history and PRs. Examples: "how much protein left", "avg calories last week", "when did I last do legs", "how much did I lose since ramadan".
-- **AI-111** `[R1]` Numbers in answers are **calculated from the data, never made up by the AI**. If the data can't answer, Buddy says so.
+- **AI-111** `[R1]` Numbers in answers are **calculated from the data, never made up by the AI**. If the data can't answer, Buddy says so. Every number in a Buddy reply must come from a lookup or calculation made in that turn; a reply with any other number is rewritten or replaced (AI-175).
 - **AI-112** `[R1]` Where it helps, an answer includes a tappable link to the relevant chart or diary day.
 
 ## 11. Suggestions (D-066)
@@ -177,11 +177,49 @@ Details are in `12-diary-meals-recipes.md` §5. Buddy's part:
 
 ## 14. Failure handling
 
-- **AI-150** `[R1]` Not understood → Buddy says what it didn't get and asks, with chips where possible. It never logs a guess silently.
+- **AI-150** `[R1]` Not understood → Buddy says what it didn't get and asks, with chips where possible. It never logs a guess silently. When a multi-step turn fails part-way, Buddy keeps what it already proposed and says what it couldn't finish (AI-177).
 - **AI-151** `[R1]` Food not found anywhere → an estimated proposal (clearly marked), plus options: scan the label, search, or create a personal food.
 - **AI-152** `[R1]` Vague message ("ate a lot at the wedding") → Buddy asks what was eaten, offering typical items for that kind of occasion as chips.
 - **AI-153** `[R1]` AI service unavailable → pending item, as for offline (AI-047), and the manual search path stays available.
 - **AI-154** `[R3]` Daily AI allowance used up (`02-monetization.md`) → Buddy says so once, clearly. Manual search, barcode and quick-add keep working. Nothing already typed is lost; it stays pending until the allowance resets.
+
+## 15. Buddy as an agent (D-100)
+
+Buddy works in **steps**: for each message it decides what to look up, has the app or server compute what's needed, checks the result, and then answers, asks, or proposes actions. Everything in §1–§14 still holds; this section says how the agent behaves.
+
+### 15.1 Deciding and acting
+
+- **AI-160** `[R1]` For each message Buddy may take several steps (look up foods or dishes, read part of your data, compute, check a fit) before it replies. It takes only the steps the message needs: "2 eggs" goes straight to a card.
+- **AI-161** `[R1]` Buddy's actions are always **proposals** (D-079): log food, edit, move, copy or delete diary entries, weigh-ins, measurements, workouts, saved meals, batches, personal foods, memory changes and imports. Buddy can't write anything itself; only your confirmation applies a card (AQ-01).
+- **AI-162** `[R1]` One reply may carry **several cards** (AI-015). When it carries two or more, an **Apply all** button confirms every still-open card of that reply, as currently shown, in one tap, with one Undo; each card can still be adjusted, confirmed or discarded on its own first.
+- **AI-163** `[R1]` Buddy may answer without any card: a question about your data (§10), a suggestion (§11), or a short conversational reply ("nice, protein's on track"). It still never gives unrequested food advice (AI-122).
+
+### 15.2 Conversation
+
+- **AI-164** `[R1]` Buddy remembers the **recent conversation**: your last messages, its replies, and what happened to each card (confirmed, changed, discarded). So "make it 2", "actually that was yesterday" and "what about dinner then?" work without repeating yourself.
+- **AI-165** `[R1]` Older conversation is kept as a **short summary** on the phone, so Buddy keeps the thread of a long chat. The summary is shown under "Buddy remembers" (AI-082) and can be cleared.
+- **AI-166** `[R1]` When Buddy can't decide something that matters, it **asks** with 2–4 chips (AI-063). It asks at most 2 questions per message (AI-061); the answer continues the same task. Questions inside a card stay as they are (AI-034).
+- **AI-167** `[R1]` The conversation, its summary and Buddy's memory are stored **on the phone** and sync like your other data, so they survive a phone change. Buddy itself works only from what the phone sends with each message: it keeps nothing of the conversation between messages and never reads the synced copy.
+
+### 15.3 What Buddy can see
+
+- **AI-168** `[R1]` **Shared knowledge comes from the server**: the food catalog, branded foods, reference dishes, barcodes, portions, cooking yields, nutrition maths and halal flags. Using them sends nothing about you.
+- **AI-169** `[R1]` **Your data comes from your phone, only when needed**: your own foods, saved meals, open batches, diary, weight, measurements, workouts and memory. Each message carries a small snapshot (the time, today's totals and targets, your meal slots and open cards) and the few of your own foods and saved meals whose names match the message, so "my shake" is matched at once. For more, Buddy asks the phone for the one piece the message needs (for example "same as yesterday", "how did I do last week"). The phone decides how much it hands over: each kind of read has a limit (for example at most a month of diary entries), and one message can never read more than a small, fixed amount in total. No name, email or account details ever reach the AI (AC-041).
+
+### 15.4 Seeing it work
+
+- **AI-170** `[R1]` While Buddy works, the chat shows its **current step** in plain words ("searching foods…", "checking your diary…", "working out what fits…"), and the reply text streams in as it's written.
+- **AI-171** `[R1]` You can **stop** Buddy while it works. Nothing it was preparing is applied; cards already shown stay. If the connection drops mid-reply, Buddy picks the same message up again once without showing cards twice or counting it twice.
+- **AI-172** `[R1]` A **trace view**, only in developer builds and the owner's build, shows each step of a turn: what Buddy looked up, what came back, how long it took and what it cost. The trace stays on the phone and is never sent anywhere.
+
+### 15.5 Limits and safety
+
+- **AI-173** `[R1]` A turn has a **step limit and a time limit**. When it runs out, Buddy replies with what it has (cards so far, or a question) instead of failing.
+- **AI-174** `[R1]` Every step counts toward the daily AI allowance (AI-154, `02-monetization.md`). A single message costs one message of the allowance however many steps it takes.
+- **AI-175** `[R1]` **Numbers in Buddy's own words** (replies, questions and their chips, suggestions, the weekly review, the summary) are filled in by the app's code from that turn's lookups and calculations, each with its own unit and period, never typed by the AI. A reply with any other number (apart from times, dates and small counts) is rewritten once, then replaced by a plain template (AI-111).
+- **AI-176** `[R1]` Medical, off-topic and supplement-dosing requests get the **templated** replies of AI-003 and `21-safety-and-wellbeing.md`, never improvised text. Buddy's words never use food judgements (AI-142).
+- **AI-177** `[R1]` If something fails part-way (the AI service drops, the phone goes offline), cards already shown stay, and Buddy says what it couldn't finish. An unprocessed message stays pending (AI-047, AI-153).
+- **AI-178** `[R1]` Buddy's AI quality is judged by **experiments and the owner's use** (D-100), against the targets in `40-acceptance-criteria.md` §2. There's no AI test suite; the only automated Buddy check is that nothing is written without confirmation (AQ-01).
 
 ## Open questions
 

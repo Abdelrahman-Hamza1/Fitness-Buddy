@@ -5,7 +5,7 @@ _Status: **Draft v1** · 2026-10-10 · Main decisions: D-060, D-075, D-076, D-07
 ## 1. R1 is "done" when
 
 - **AT-001** Every requirement tagged `[R1]` across the spec is implemented, or explicitly moved to a later release by a new decision.
-- **AT-002** The AI test set (§3) meets every threshold in §2.
+- **AT-002** Buddy meets the thresholds in §2, judged by experiments on the §3 cases and the owner's daily use (D-100). AQ-01 (nothing written without confirmation) is the one automated check.
 - **AT-003** Every item on the must-cover list (`11` §6) exists as a reviewed reference dish or a database food, and can be found by English, Arabic and Arabizi name.
 - **AT-004** The speed targets in `30-ux-principles.md` §1 are met on a mid-range Android phone (the Samsung A55). The same check on a recent iPhone happens in R2 (D-081).
 - **AT-005** The offline scenarios in §4 pass.
@@ -14,7 +14,7 @@ _Status: **Draft v1** · 2026-10-10 · Main decisions: D-060, D-075, D-076, D-07
 
 ## 2. AI quality thresholds
 
-Measured on the test set (§3), expanded to **at least 150 messages** before sign-off. The expanded set includes more of each category, and Arabic-script and Arabizi messages written the way the owner writes them (at least a quarter of the cases). Arabic and Arabizi versions of **every** case come in R2 (D-080).
+**Since D-100 these are targets, not a test-suite gate.** They're checked by experiments (the §3 cases tried by hand or in small live runs, Arabic and Arabizi included) and by the owner's daily use; there's no eval suite and no 150-case set. AQ-01 stays an automated check. Arabic and Arabizi versions of every case come in R2 (D-080).
 
 | ID | Metric | Threshold |
 |---|---|---|
@@ -33,7 +33,7 @@ Measured on the test set (§3), expanded to **at least 150 messages** before sig
 
 ## 3. AI test set — core cases (D-076)
 
-Written in the owner's style: lowercase, short, typos, mixed languages. "Expected" describes the proposal. Values marked ≈ are reference points for AQ-04/05, to be finalised with the chosen food data.
+Written in the owner's style: lowercase, short, typos, mixed languages. "Expected" describes the proposal. Since D-100 they are the experiment script for trying Buddy, not automated test cases. Values marked ≈ are reference points for AQ-04/05, to be finalised with the chosen food data.
 
 Assume no saved defaults unless the case says otherwise.
 

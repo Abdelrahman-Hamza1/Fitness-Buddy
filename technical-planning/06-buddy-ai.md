@@ -1,244 +1,243 @@
-# 06 — Buddy: AI Architecture
+# 06 — Buddy: AI Architecture (agent, D-100)
 
-_How Buddy meets `10-ai-assistant.md` and the AQ thresholds in `40-acceptance-criteria.md`, cheaply and without ever inventing numbers. Server side: the **Buddy module** of the API (`04`). Client side: `ProposalEngine`, `QueryEngine` and `UserModel` in `fb_domain`._
+_How Buddy meets `10-ai-assistant.md` (§1–§15) as an **agent**: a tool loop on the server, shared knowledge from the server, personal data from the phone on demand, every write a proposal. Decisions: TD-124 (loop and budgets), TD-125 (turn protocol and recovery), TD-126 (conversation and context), TD-127 (tools, scopes, proposal identity, facts), TD-128 (quality, retirement, limits). TD-035 still holds for the stack (Microsoft.Extensions.AI, no framework, versioned prompts, content-free telemetry). Server side: the **Buddy module** (`04`). Client side: the turn runner, phone tools and cards in `apps/mobile/lib/features/buddy`, the deterministic engines in `fb_domain`._
 
 ## 1. Principles
 
-1. **AI understands, code decides.** The model outputs a *structured interpretation*: foods, amounts, states, references. Every number and every spec rule (thresholds, question budget, safety floors) is deterministic Dart in `fb_domain`. Prompts aren't policy.
-2. **Hot path = one model call.** Parse → deterministic retrieval → client computation. A second call happens only when measured to help (low-confidence rerank).
-3. **Stateless API, minimum context.** The app sends exactly the context a request needs (AC-041). The API forgets after responding.
-4. **Every model output is validated** against a JSON schema. Production: invalid → one repair retry → otherwise a graceful "didn't get that" (AI-150). The owner-limited B02 spike disables all retries (TD-067).
-5. **Measured, not assumed.** Every prompt or model change runs the eval suite (§11).
+1. **AI interprets and decides, code computes.** The model chooses steps and actions. Every number comes from the catalog, the user's data or code (`compute`, ProposalEngine, QueryEngine), and every number in Buddy's words is a **code-filled fact** (§7). The badged AI estimate (AI-070) is the only model number, as before.
+2. **Nothing is written without confirmation.** Action tools emit proposals; only `ChangeSetApplier` on the phone writes, and only after a user tap (D-079, AQ-01). The Buddy module has no write path to user data (an architecture rule, tested).
+3. **Server-first knowledge, phone-held data.** Shared data (foods, dishes, barcodes, portions, yields, halal flags) is a server tool. Personal data reaches the model only as (a) a small pre-matched slice in each request and (b) phone tools with **phone-enforced scopes and a per-turn disclosure budget** (§4.2).
+4. **Stateless execution.** The Buddy agent keeps no conversation or turn state between rounds beyond **content-free ledger rows** (TD-125); a paused turn's model context travels in a sealed continuation. The chat, its summary and memory are **user data**: stored on the phone and synced like other entities (the server's sync copy, B05/B18), but the agent never reads them from the server, only what the phone sends in a request.
+5. **Minimum context, no identity.** Handles instead of IDs, no name/email/account fields, an allowlisted snapshot (AC-041).
+6. **Experiments, not an eval gate** (TD-128). The trace view (AI-172) shows what each step did; tuning follows the owner's use.
 
-## 2. Pipeline overview
+## 2. A turn
 
 ```mermaid
-flowchart TB
-  subgraph Phone
-    M[Message + photo?] --> CTX[Context builder<br/>personal-food candidates, user model slice,<br/>recent entries, open batches, active card,<br/>now/tz/slots/ramadan]
-    CTX --> REQ[POST /v1/buddy/interpret]
-    INT[Interpretation] --> PE[ProposalEngine<br/>fb_domain]
-    PE --> CARD[Proposal cards]
-    CARD -->|chip / edit| PE
-    CARD -->|Log it| APPLY[ChangeSetApplier]
-  end
-  subgraph API["API · Buddy module"]
-    REQ --> LLM1[ILlmClient: parse to intents<br/>JSON schema, low effort]
-    LLM1 --> RES[Resolver: Catalog IFoodResolver<br/>+ personal candidates]
-    RES -->|low confidence only| LLM2[ILlmClient: rerank]
-    RES --> INT
-    LLM2 --> INT
-  end
+sequenceDiagram
+  participant P as Phone (turn runner)
+  participant S as API · Buddy agent
+  participant M as Model (gpt-6-luna)
+  P->>S: POST /v1/buddy/turns {turnId, message, history, compact?, personal, profile, snapshot}
+  S->>M: step 1 (system prompt agent-v1 + context + tools)
+  M-->>S: calls propose_food_log(mentions)
+  S->>S: resolve (personal slice → catalog → dish → estimate) → BuddyIntent
+  S-->>P: event proposal {proposalId, revision 1, intent}
+  S->>S: action-only step → templated one-liner (no extra send)
+  S-->>P: events text, done
 ```
 
-## 3. The interpret contract (public, in `contracts/`)
+When the model calls a **phone tool**, the round ends with a `phoneTools` event `{calls, continuation}`; the phone runs the calls locally under its scopes and posts `POST /v1/buddy/turns/continue {turnId, round, continuation, results}`, which streams the next round. Several phone calls in one step are answered together.
 
-### 3.1 Request
+**The loop (TD-124), per step:**
+1. Check the **turn budget** (below). Exhausted → deterministic wrap-up (step 5), no send.
+2. Reserve a send in Usage and record it on the ledger round (content-free). Quota denied → wrap-up with `done reason quota`.
+3. Call the model with the messages so far and the tool declarations (no automatic invocation); at most **6 tool calls** per step are honoured, extra calls get `error tooMany` results.
+4. No tool calls → final text: render facts and run the guards (§7), stream it, emit any `summary` (§6), then `done`. Tool calls → run every server tool (parallel, each ≤ 5 s), append size-capped results (≤ 8 KiB per result to the model). Any phone tool among them → seal the continuation, emit `phoneTools`, end the round. A terminal tool (`ask_user`, `decline`) ends the turn after its event.
+5. **Wrap-up at any limit** (steps, sends, tokens, deadline, quota): no model call. The server emits a templated line ("Here's what I have so far" + the cards already emitted, or "I couldn't finish that, try again" when there are none) and `done reason limit|quota`.
+
+**One turn budget, authoritative on the server** (config `Buddy:Agent`): deadline **60 s from the turn's first start** (ledger time, not the phone's), **10 sends** (model steps, guard rewrites and the summary step all count), **3 phone rounds**, **64k input / 8k output tokens** cumulative. The counters live in the ledger turn row and in the continuation (the ledger wins). A send costs allowance sends; the turn costs **one** allowance message however many rounds or retries it takes.
+
+**Cancellation.** The stop button closes the stream: the server cancels the in-flight model call and records the round as cancelled. The server can't tell a stop from a dropped connection, so a cancelled round is retry-eligible like any unacknowledged round (§3.4); the phone simply never retries after a user stop. If the turn is paused on a phone round, stopping means the phone simply never posts `continue`; the continuation expires (10 min) and nothing else runs. No cancel endpoint. Late events or results for a stopped turn are ignored by the phone.
+
+**Fast path.** For "2 eggs" the model calls `propose_food_log` directly; the tool resolves foods with the request's **personal slice first** (AI-070 precedence, §3.1), then the catalog, reference dishes and the badged estimate. When every call of a step is an action tool and the message asked nothing, the server ends the turn with a templated one-liner ("Here's your breakfast · {fact} left after this") without another model call: one send per simple log.
+
+## 3. Contract (TD-125, `contracts/openapi/modules/buddy.yaml`)
+
+### 3.1 Start
 
 ```text
-InterpretRequest {
-  requestId            // = chat message id (Idempotency-Key, MN-005), UUIDv7
-  text, image?         // image: JPEG ≤ 1024 px (B10)
-  now, tzOffsetMin, ramadan { active, fajr, maghrib }
-  slots [ {id, name, window} ]                         // ≤ 12; ids may be natural UUIDv5 (TD-070)
-  activeProposal?      // the open card (AI-044), UUIDv7; required when activeCard is sent
-  context {
-    personalFoods [ {id, names, aliases, state, nutrients, servings} ]  // pre-filtered on device vs. the message, ≤ 30
-    savedMeals [ {id, name} ], openBatches [ {id, name} ]               // ≤ 20 each
-    memory [ {kind, key, value} ]                      // the relevant user-model slice (§5), ≤ 20; kind is open (memoryKind codes)
-    recentEntries [ {id, date, slot, name, grams} ]    // newest first, ≤ 30 (~3 days), for "the rice", "yesterday's dinner"
-    customExercises [ {id, name} ]                     // ≤ 20
-    activeCard? { slot, time, lines [ {name, amount, unitCode, state} ] }  // ≤ 30 lines; follow-ups to the open card (B09a, A22 PA6)
-  }
+BuddyTurnStart {
+  turnId               // chat message id, UUIDv7, = Idempotency-Key
+  mode                 // chat | weeklyReview
+  message { text ≤ 2000, image? (JPEG ≤ 1024 px, base64) }
+  history [≤ 12] { messageId, role user|buddy, text ≤ 1000, outcomes [≤ 6] { proposalId, kind, status confirmed|edited|discarded|pending, label ≤ 120 } }
+  summary? { text ≤ 1500, revision, watermark (last summarised messageId) }
+  compact? { evicted [≤ 24 entries, same shape as history], previousRevision }   // §6
+  personal [≤ 20] { ref (local ID), kind personalFood|savedMeal|batch|usual, names, aliases, state?, per100?, servings?, portions? }   // pre-matched on the phone against the message tokens
+  profile { memory [≤ 30] {kind, key, value}, defaults [≤ 20] {kind, subject, value} (confirmed habits: weighing state, cooking fat, variants, portions), halal, units {mass, energy}, ramadan {active, fajr?, maghrib?} }
+  snapshot { now, tzOffsetMin, slots [≤ 12] {id, name, window}, today { kcal, protein, carbs, fat, fiber, targets {…} }, openCards [≤ 5] { proposalId, revision, kind, summary ≤ 200 } }
+  weekly? { WeeklySummary aggregates }   // mode weeklyReview only
+  ackTurn? { turnId }  // acknowledges the previous turn's final round (§3.4)
+  priorAttempt?        // retries only (§3.4)
+  trace: bool          // dev builds only; honoured only when Buddy:Agent:TraceEnabled
 }
 ```
 
-Context reference IDs are any non-nil UUID and distinct per list; names and values are ≤ 200 characters. **What the provider sees is an allowlisted projection** (`ProductionProtocol.Input`, AC-041): the message, time and Ramadan context, slot names/windows, personal-food names/aliases/state, the memory slice, custom-exercise names, and `recentEntries`/`savedMeals`/`openBatches` as **list positions (`ref`)** with date/slot/name only. IDs, entry grams, nutrients, servings and `activeProposal` are never forwarded. The active card forwards only its slot, time and line name/amount/unitCode/state (so its amounts do reach the model).
+The **personal slice** is how personal-food precedence holds without a phone round trip: the phone matches the message's normalized tokens against its personal foods, saved meals, open batches and usual meals (fb_text normalization, the same one the catalog uses) and sends the best ≤ 20 with their facts. `ResolveFoods` consumes it exactly as it consumed interpret's `personalFoods`. Confirmed defaults and learned habits ride in `profile.defaults`, so the ProposalEngine and the model see the same defaults.
 
-No name, email, user ID or account details are in the payload (AC-041). The API knows the user from the JWT for rate limiting and usage, but **never forwards identity to the AI provider**.
-
-### 3.2 Response: a list of typed intents
-
-Public kinds (`interpret-v2`, B08 + B09a; the contract's discriminated `BuddyIntent` union):
-
-| Intent (`kind`) | Content | Becomes |
-|---|---|---|
-| `foodLog` | timeHint, slotHint, **dateHint**, optional dishGroup, items[] (§3.3) | food proposal (AI-030–034) |
-| `weighIn` | value, unit, timeHint, **dateHint** | proposal (AI-052) |
-| `diaryEdit` | `targets` (request entry IDs; `[]` = look up by the reference's day/slot), `reference {mention, dateHint, slotHint, scope}`, `patch {amount (absolute) \| replacement (a resolved food item), move {dateHint, slotHint, timeHint}}` | before→after proposal (AI-050, AI-090) |
-| `diaryDelete` | `targets`, `reference` | delete proposal (AI-051) |
-| `ambiguousReference` | `operation` edit\|delete, `candidates` (≥ 2 request entry IDs), `reference`, the would-be `patch` | "which one?" chips; the tap applies the carried patch (AI-091, T29). **Server policy only, never the model** (§3.4) |
-| `diaryCopy` | `source` and `target` day hints (null target members: today, the source's slot, now) | proposal (DY-032, T23) |
-| `savedMealLog` | `savedMealId` (request ID), hints, share | proposal (DY-031) |
-| `savedMealCreate` | name, exactly one source: `activeProposal`, `targets` or `source` day hint | proposal (DY-031) |
-| `memoryChange` | operation remember\|forget, memoryKind, subject, dimension, value, amount, food (real matches only) | proposal (AI-055); the server never applies defaults (TD-032) |
-| `batch` | name, ingredients[] (food items), cookedWeight, path hint, eatenNow portion, hints | proposal (AI-100, DY-040–042) |
-| `batchPortion` | `batchId` (request ID), portion **xor** `rest: true`, hints | proposal (AI-101/102, DY-043) |
-| `batchClose` | `batchId` | closes the batch without logging (DY-044) |
-| `personalFoodCreate` | name, aliases ≤ 5, components[] (food items), `stated` (transcribed user figures, TD-092) | personal-food form (AI-054) |
-| `clarify` | reason: unclear, unsupported, offTopic, invalidInterpretation, unmatchedFood, referenceNotFound, medical | question without a proposal (AI-150, AI-152, T11) |
-| `outOfScope` / `medical` | — | templated decline (AI-003, SF-030) |
-
-Still to come: `Measurement` (WB-040), `Workout` (WO-030–033), `Question` with a **QueryPlan** (§6, B11) and `SuggestRequest` (§7, B11). **New kinds and enum values are additive (04 §4.2):** the app routes an unknown kind, an unknown enum value or a `dateHint` it can't parse as `unrecognized` ("Buddy can't do that in this version yet"), never a destructive default.
-
-One message can yield several intents (AI-015, T39). Each carries the detected `language` and `script` (EN / AR / Arabizi). **In R1, replies are English** (AI-143, D-080). The language is recorded for per-language eval scores and for R2 (AI-141).
-
-### 3.3 Food items carry their alternatives
-
-The response contains **everything the client needs to recompute any alternative**, so taps never need the network:
+### 3.2 Continue
 
 ```text
-FoodItem {
-  mention                 // "200g rice"
-  match: FoodCandidate    // best match: catalog/personal/reference id, names, per-100 nutrients, state, servings, source
-  alternatives: [FoodCandidate] ≤ 3, distinct (PR-5, AI-041)
-  amount: { value, unit, grams?, portionWord?, explicit }
-  share?: { fraction | people | plates }                   // D-072 "we were 6"
-  dimensions: [
-    { kind: state,   options: [raw → candidate A, cooked → candidate B], statedValue? }
-    { kind: fat,     options: [none, 1 tsp oil, 1 tbsp oil, ...], statedValue? }
-    { kind: variant, options: [chicken → ref X, cauliflower → ref Y] }
-    { kind: portion, options: [small 250 g, medium 350 g, large 450 g] }
-  ]
-  estimate?: { range, reason }
+BuddyTurnContinue { turnId, round, continuation (opaque string ≤ 256 KiB), results [ { callId, ok, data? (tool-specific schema), error? code } ], priorAttempt? }
+
+PriorAttempt { attempt, cards [≤ 12] { proposalId, status confirmed|discarded|pending, line ≤ 120 (the card's compact summary) } }   // retries only
+```
+
+The server opens the continuation and checks that `results` answers **exactly** the pending call IDs (no missing, extra or duplicate IDs) and that each `data` validates against its tool's result schema and size cap; otherwise `error invalid` with no send.
+
+### 3.3 Events (`text/event-stream`)
+
+Every event carries an SSE `id:` = `{turnId}:{round}:{seq}` and `data:` = one `BuddyTurnEvent` JSON.
+
+| `type` | Payload | App |
+|---|---|---|
+| `step` | `code`: searchingFoods, readingDiary, readingYourFoods, readingBody, readingWorkouts, readingMemory, computing, checkingFit, writingReply, summarizing | live step line (AI-170), ARB text per code |
+| `text` | `text` (a chunk of the rendered, guarded reply; chunks in order) | reply text |
+| `proposal` | `proposalId`, `revision`, `replaces?` {proposalId, expectedRevision}, `intent` (a `BuddyIntent`: the B09a union + `measurement`, `workout`, `importRows`, `suggestion`) | ProposalSessionWriter create/update → card |
+| `question` | `text`, `options` [2–4] (rendered and guarded like replies) | chips; the tap is the next message (AI-166) |
+| `phoneTools` | `round`, `continuation`, `calls` [ {callId, name, args} ] | turn runner runs them, posts continue |
+| `summary` | `text` ≤ 1500, `revision`, `watermark` | stored on the phone (AI-165); always **before** `done` |
+| `trace` | `steps` [ {tool, args, resultSummary, ms, tokens, usd} ] | dev trace view (AI-172) |
+| `done` | `reason` answered\|asked\|declined\|limit\|quota, `usage` {sends, inputTokens, outputTokens} | ends the turn |
+| `error` | `code` unavailable\|timeout\|invalid\|roundAlreadyRan\|expired | message stays pending or failed (AI-177) |
+
+**Streaming:** model text is buffered until it passes the fact renderer and guards (§7), then sent in `text` chunks; live progress comes from `step` events. **Transport rules:** flush after every event; a heartbeat comment (`: ping`) every 10 s; headers `Cache-Control: no-cache`, `X-Accel-Buffering: no`; no response compression on these routes. Unknown event types and intent kinds are ignored or routed as `unrecognized` (additive rule, `04` §4.2). Errors before streaming use the usual problem responses (400/401/409/426/429/503).
+
+### 3.4 Identity, continuation and recovery (TD-125)
+
+- **Proposal identity:** `proposalId` = UUIDv5 of `(turnId, round, attempt, index)` (index = order of action calls in that attempt), so a retry's cards never reuse an earlier attempt's IDs. `revision` starts at 1. An update to an earlier card ("make it 2") is an action call with `replaces {proposalId, expectedRevision}` naming an open card from `snapshot.openCards` or history; the new event keeps that `proposalId` with `revision + 1`. The phone's `ProposalSessionWriter` creates or updates; an update whose `expectedRevision` isn't the card's current pending revision is dropped (the card shows "changed meanwhile", AI-044). **Confirm and Apply all** resolve only cards that are still pending at their current revision, in one ChangeSet transaction (one Undo).
+- **Continuation:** AES-256-GCM over `{userId, turnId, round, expiresAt (10 min), messages, handleMap, pendingCallIds, budget}`; the key is a server file outside git (`Buddy:Agent:SealKeyFile`), never logged. Associated data binds the API version. Opening checks user, turn, round, expiry and the ledger round state.
+- **Ledger** (content-free): a turn row `(turnId, startedAt, sends, tokens, rounds, messageCharged)` and a round row `(turnId, round, state started|completed|cancelled, attempts)`; `attempt` = the round row's attempt number (1, then 2). A round is **completed** when the server has flushed its terminal event (`phoneTools`, `done`, `error`). It is **acknowledged** when the phone posts the next round (`continue` for round r+1), sends `ackTurn` with its next turn, or 10 minutes pass.
+- **Recovery after an ambiguous disconnect** (the stream broke before a terminal event, the app died, or the round was cancelled by a disconnect): the phone **retries the same round once with the same request** (the same start body, or the same continuation and results) plus `priorAttempt`. The server: round `started`, `cancelled`, or completed-but-unacknowledged → re-runs it as attempt 2 within the remaining turn budget, **no new allowance message** (sends still count); a third attempt → `error expired`; round acknowledged → `409 roundAlreadyRan`.
+- **Reconciling a retry:** the server gives the model the prior attempt's cards as "already handled, do not propose again" (confirmed and discarded ones) or "still open" (pending ones, which the retry may update with `replaces`). On the phone, cards of the earlier attempt that were **confirmed stay**; cards still **pending are dropped** when the retry's first `proposal` or its `done` arrives, unless the retry updated them. **Residual risk:** the model may still re-propose something already confirmed; a card whose food, meal and amount match a card confirmed earlier in the same turn shows a **"possible duplicate"** hint. If the retry also fails, the message is marked failed with "Try again", which starts a new turn.
+- **Phone checkpoint** (durable, A66): per in-flight turn the phone stores `turnId`, round, the request body or continuation + results it last sent, the last event `id`, and the proposals received (A23a's durable proposals). After a restart it resumes from the checkpoint by the retry rule above.
+
+## 4. Tools (TD-127)
+
+Tool arguments and results are JSON schemas generated from C# records (internal, versioned with the prompt; the phone-tool call/result schemas are public in the contract). Handles (`f1` food candidate, `d1` reference dish, `e1` diary entry, `p1` personal item, `m1` saved meal, `b1` batch, `c1` open card, `x1` exercise) are turn-scoped and mapped by the server. **Facts are claims:** every tool result that carries a number the model may mention also lists it as a code-labelled claim `{id, metric, operation, period, value, unit, label}`, where `label` is rendered by code from metric + operation + period (e.g. `{id:"k3", metric:"energy", operation:"remaining", period:"today", value:640, unit:"kcal", label:"left today"}` → "640 kcal left today"); the model refers to claims by ID only (§7).
+
+### 4.1 Server tools (inline)
+
+| Tool | Input | Output to the model |
+|---|---|---|
+| `search_foods` | `query` (canonical English), `arabic?`, `state?`, `kind?` food\|dish\|branded, `limit ≤ 8` | candidates: handle, name, state, per-100 g kcal/P/C/F as facts, servings, source, verified |
+| `get_dish` | `dish` handle | variants (handles), typical portions (g) as facts, ingredients summary |
+| `lookup_barcode` | `code` | product handle or not found |
+| `compute` | `items` [ {food handle, amount, unit, state?, fat?} ] | per-item grams and kcal/macros, totals, yield conversions (code, FD-060/062), all as facts |
+| `check_fit` (B26) | `options` [items] | per option: fits kcal/protein against the snapshot's remaining, by how much (facts) |
+| `exercise_search` (B26) | `query` | exercise handles from the library + custom names |
+
+### 4.2 Phone tools (pause the turn; run and **scoped by the phone**)
+
+The phone is the data holder, so it enforces each tool's scope whatever the arguments say, and it keeps a **per-turn disclosure budget**: at most **120 rows and 48 KiB across all phone results of a turn**; past it, calls return `ok:false budgetExceeded`. No phone tools in `weeklyReview` mode.
+
+| Tool | Input | Scope enforced on the phone | Output |
+|---|---|---|---|
+| `find_my_foods` | `query`, `kinds?` personalFood\|savedMeal\|batch\|usual | ≤ 20 matches by name/alias | handles, names, aliases, state, per-100 facts or portions |
+| `read_diary` | `date` hint or `range`, `slot?`, `query?` | range ≤ **31 days**, ≤ 40 rows | entries: handle, date, slot, name, grams, kcal |
+| `read_body` | `range`, `what` weight\|trend\|measurements | trend over ≤ 365 days as aggregates; raw values ≤ 31 days, ≤ 31 rows | values and trend (code-computed facts) |
+| `read_workouts` | `range`, `exercise?` | ≤ 90 days, ≤ 15 sessions | sessions, sets, PRs |
+| `read_memory` | `topic?` | ≤ 30 items | memory items |
+| `query_data` (A68) | a QueryPlan (§6.3) | any period ≤ 400 days; returns **aggregates only** | computed facts + a link target |
+
+The app returns local IDs; the server swaps them for handles before the model sees them. **Why this matters:** confirmation protects writes, not reads. Text in a message, a label photo or a tool result could try to make Buddy read more of your data than the question needs; the scopes and the budget bound what a single turn can ever send to the model, and the trace view shows every read.
+
+### 4.3 Action tools (emit `proposal`, never write)
+
+Every action tool takes an optional `replaces {card handle}` to update an open card instead of creating one (§3.4).
+
+| Tool | Emits `BuddyIntent` | Resolution |
+|---|---|---|
+| `propose_food_log` | `foodLog` (items with alternatives and dimensions, §5) | B08 `ResolveFoods`: personal slice → catalog → reference dish → badged estimate |
+| `propose_diary_edit` / `propose_diary_delete` / `propose_diary_copy` | `diaryEdit`, `diaryDelete`, `ambiguousReference`, `diaryCopy` | `ResolveReferences`, TD-091 policy over entry handles |
+| `propose_saved_meal` | `savedMealLog`, `savedMealCreate` | handles → IDs |
+| `propose_batch` | `batch`, `batchPortion`, `batchClose` | `ResolveCreations` |
+| `propose_personal_food` | `personalFoodCreate` (stated figures literal, TD-092) | `ResolveCreations` |
+| `propose_memory` | `memoryChange` | real matches only (TD-032) |
+| `propose_weigh_in` | `weighIn` | — |
+| `propose_measurement` (B26) | `measurement` | units checked |
+| `propose_workout` (B26) | `workout` (exercise handles, sets) | exercise library + set-notation cross-check (WO-030–033) |
+| `propose_import` (B26) | `importRows` | unit inference + plausibility flags on the phone |
+| `suggest_foods` | `suggestion` (2–4 options, each a ready `foodLog`) | resolved + `check_fit`; the app drops options that don't fit |
+
+Each returns to the model a compact code-computed summary with facts ("card c2: chicken shawarma 1 sandwich, {k3} kcal, lunch").
+
+### 4.4 Terminal tools
+
+`ask_user {text, options[2–4]}` (≤ 2 per turn, AI-061; text and options rendered and guarded like replies) and `decline {reason offTopic|medical|supplements}` (templated text, SF-030).
+
+## 5. Food items and the ProposalEngine (kept)
+
+`propose_food_log` emits the same `FoodItem` shape as interpret did: match + ≤ 3 distinct alternatives, amount, share, dimensions (state, fat, variant, portion) and an optional badged estimate, so the app's deterministic ProposalEngine (A21) keeps doing the question policy (AI-060/061), yields, fat lines and totals offline. The agent may ask with `ask_user` before proposing, but a card's own dimension questions stay the engine's.
+
+## 6. Conversation, memory, questions about data
+
+### 6.1 History and compaction (TD-126)
+
+- The phone keeps the chat (A22a/A23a storage) and sends the last ≤ 12 entries with card outcomes, plus the current summary `{text, revision, watermark}`.
+- **The phone owns compaction.** When entries fall out of the 12-entry window past the summary's watermark, the next start request carries `compact { evicted (≤ 24 entries, oldest first), previousRevision }`. The server answers the message, then runs one summary step over the old summary + evicted entries (counted in the turn budget) and emits `summary {text, revision = previousRevision + 1, watermark = last evicted messageId}` **before** `done`. The phone stores it only if its current revision is still `previousRevision`. If the budget runs out, no summary is sent and the phone retries compaction on the next turn. More than 24 evicted entries: the phone sends the newest 24 and moves the watermark past the rest.
+
+### 6.2 Storage and sync
+
+| Data | Local storage | Sync |
+|---|---|---|
+| Chat messages, proposals, card outcomes | existing `chatMessage` and `proposal` entities (A22a/A23a, B18) | existing (B18) |
+| Conversation summary | new `buddySummary` entity: one row per user `{text, revision, watermark}` (A66) | **new sync entity**, server admission in B25's contract handoff |
+| Memory items | new `memoryItem` entity `{kind, key, value, createdFrom explicit\|learned}` (A67; the A66 profile reads it when present) | **new sync entity**, server admission in B25's contract handoff |
+| Turn checkpoints, traces | local only (A66), never synced | — |
+
+Syncing makes the chat survive a phone change like other data (SC-6). The agent still only sees what a request carries.
+
+### 6.3 Questions about your data: the QueryPlan grammar (frozen in B25's handoff)
+
+```text
+QueryPlan {
+  metric: kcal | protein | carbs | fat | fiber | weight | weightTrend | measurement(typeKey) | workouts | sets | volume | exerciseLastDate | exercisePr | weighIns | loggedDays
+  op:     total | average | remaining | latest | change | count | max | min | last
+  period: today | yesterday | thisWeek | lastWeek | thisMonth | lastMonth | lastNDays(n 1–400) | since(event ramadanStart|phaseStart|date) | range(from, to)  // ≤ 400 days
+  filters?: { slot?, exercise? (handle), muscleGroup? (library group, e.g. legs), completeDaysOnly? (default true for averages), weekdays? }
 }
+→ { facts [ claims as in §4, provenance:"query" ], coverage {days, loggedDays}, link? { screen diary|weightGraph|progress|exercise|workout, params } }
 ```
 
-The **ProposalEngine** (client, deterministic) then:
-1. Resolves each dimension: stated by the user → saved default (user model) → otherwise a question candidate.
-2. Computes kcal under each option, and **asks only if** they differ by > 20% **and** > 50 kcal (AI-060; thresholds served by `/v1/config`). It keeps **at most 2 questions**, ranked by kcal impact (AI-061). The rest become assumption chips (AI-033/034).
-3. Applies yield factors when the stated state ≠ the matched food's state, and records "200 g dry ≈ 500 g cooked" (FD-060/062).
-4. Adds cooking fat as its own line (AI-022/064), with the "all oil eaten" chip (FD-061).
-5. Computes totals and "today after this" from local data (AI-031).
-6. Emits the draft `ChangeSet`.
+Valid combinations (others are unsupported); every metric has at least one: `remaining` only with `today` and the nutrients (kcal, protein, carbs, fat, fiber); `total`/`average`/`max`/`min` with the nutrients, sets and volume; `latest`/`change` with weight, weightTrend, measurement and exercisePr; `count` with workouts, sets, weighIns and loggedDays; **`last` only with exerciseLastDate**, filtered by `exercise` or `muscleGroup`, returning the date as a claim ("last done"), the workout's handle and the exercise's muscle group ("when did I last do legs"). **Units** come from the profile (kcal, g, kg/lb, cm/in). An unsupported plan returns `ok:false unsupportedPlan`; the model then says it can't tell that from your data (AI-111) or asks. The device's `QueryEngine` (A68) computes every number (AQ-09).
 
-The engine guarantees at most 2 engine questions per message, because it's code (TD-081). The eval measures AQ-08 ("> 2 questions: 0 cases") as engine questions **plus routed `clarify` intents**, because a clarify is a question to the user too (B09b PA18). An AQ-08 miss caused by a clarify is a policy finding for the chat flow (A22/A23), never a threshold change. The model's job is to *detect* the dimensions, and the eval measures that.
+### 6.4 Memory and the user model
 
-### 3.4 References, day hints and the internal grammar (B09a)
+Explicit memory items and learned habits live on the phone; a ≤ 30-item memory slice and ≤ 20 confirmed defaults go in `profile`, more via `read_memory`. Memory changes are proposals (AI-055). No hidden model-written profile; the summary is shown and clearable in "Buddy remembers".
 
-**Internal grammar `interpret-v2`** (`Domain/ParsedMessage.cs`, snapshot `interpret-v2.schema.json`): one flat intent object with grouped nullable members (`reference`, `move`, `listRef`, `portion`, `memory`, `batch`, `create`, `stated`, plus `dateHint`), not an `anyOf` union (B09 D5). The model links mentions by **list position**: `reference.refs` (recentEntries, scope one|all) or one `listRef` (savedMeals or openBatches). Server validation checks range, uniqueness and the right list per kind. An invalid index is invalid output: one repair naming the closed code `refRange`, then `clarify`. Nothing to link to (a null `listRef`, an empty list, "save this" without `activeProposal`) is `clarify referenceNotFound` **without** a repair (PA8). Relative amount edits ("add 50g", "double it") are `clarify unsupported` (PA15).
+## 7. Facts and guards on model text
 
-**Reference policy (TD-091, AI-091):** server code over the model-linked candidates, in this order:
-1. no linked entry: if the reference has a date or slot hint, `targets: []` (the app looks the day/slot up locally and asks); otherwise `clarify referenceNotFound`;
-2. scope all, or exactly one linked entry: those entries are the targets;
-3. several entries with a date/slot qualifier: `ambiguousReference` with all of them;
-4. several unqualified: the **newest (date, slot) group** (newest = latest date, then list position). One entry → it's the target; more → `ambiguousReference` with that group.
+- **Code-filled claims** (AI-175): the model never writes a number for a quantity. It writes `{fact:k3}` references to claims from that turn's tool results, the snapshot or the profile; the server renders **value, unit and the code-made label together** ("640 kcal left today", "2,100 kcal target today"), so a target can't be presented as what's left. The model's own wording around a claim is not checked. Any bare number left in model text, other than a **whitelist** (clock times, calendar dates and weekday/day counts, and the integers 1–10 not followed by a unit word or symbol), triggers **one rewrite** step naming the problem, then a **template** built from the facts. An unknown fact ID is treated the same way. This applies to replies, `ask_user` text and options, suggestion text, the weekly review and summaries.
+- **Banned words** (SF-020, AI-142) on all model text → the same rewrite → template.
+- **Declines** are templates (AI-176).
+- **Injection:** confirmation bounds what injected text can *write*; the phone scopes and disclosure budget (§4.2) bound what it can make Buddy *read*, and nothing read leaves the turn except into proposals and replies the user sees.
 
-`savedMealCreate` uses the same policy; an ambiguous save is `clarify unclear` (there's no save chip). Every UUID in a response comes from the request (PA5), and candidate keys come from personal facts or the catalog resolver.
+## 8. Other flows
 
-**Day hints (D8):** closed grammar `today | yesterday | daysAgo:N (2–999) | lastWeekday:mon…sun | date:[YYYY-]MM-DD`. The model only **transcribes** a stated day ("October 3rd" = `date:10-03`; numeric dates are day first) and never calculates one from `now`. The server checks the format and that the date exists. The app resolves the hint locally: a missing year is the most recent past occurrence, and future dates are rejected. `slotHint` is the exact provided slot name when one matches, else a canonical English slot word; `timeHint` stays literal. `foodLog`, `weighIn`, `batch`, `batchPortion` and `savedMealLog` carry `dateHint` when the user states a day.
-
-## 4. Number sources & resolution (AI-070)
-
-Resolution order inside the API's resolver (mirrored for personal foods on the client):
-1. **Personal context** (IDs the client sent). The model links mentions to them ("my shake").
-2. **Verified catalog** (generic + branded), in the right state.
-3. **Reference dishes** (reviewed, `07` §4).
-4. **AI estimate**, only when nothing matches: per-item kcal and macros **with a range**, marked `estimate` + "AI estimate" (AI-070/151, AQ-10). This is the **only** place model numbers enter, and they're always badged.
-
-Retrieval: the model supplies a **canonical English name** (+ Arabic name when relevant) per mention → normalized query (C# normalization, TD-030) → trigram + alias match → filter by state/kind → rank (exact alias > similarity > verified > popularity). Because the model translates to a canonical English name, Arabic and Arabizi messages match even foods that have only English names (D-080).
-
-## 5. Ask-vs-assume and the user model (TQ-07, TD-032)
-
-The owner asked for Buddy to build a **"mental model" of each user**. Design:
-
-| Part | What | Where |
-|---|---|---|
-| **Explicit memory** | Things the user said or confirmed: "I weigh rice raw", "my shake = …", "my bowl ≈ 350 g", nicknames, favourite brands (AI-080) | `memory_items` (created_from = explicit) |
-| **Learned habits** | Derived **deterministically from confirmed data**: usual foods per slot and weekday, usual portions per food, usual cooking fat, usual variant per dish, usual brands, typical meal times, answers given twice (AI-065) | `UserModel` in `fb_domain`, computed from diary + `answer_log` + proposal outcomes. Promoted to `memory_items` (created_from = learned) **only after the user accepts an offer** |
-| **Use** | The context builder sends the **relevant slice** (≤ ~20 items) with each request. The ProposalEngine uses defaults to skip questions. Quick-add chips and suggestions rank by habits (AI-083, DY-030) | Client |
-| **Transparency** | Everything Buddy uses is listed on **"Buddy remembers"** (AI-082) in plain language, and is editable and deletable. Nothing is remembered in secret | Client |
-
-**Deliberately not built:** a hidden, model-written free-text profile of the user. It would conflict with AI-082 (nothing secret) and AC-041 (minimum context), and its effect on numbers can't be tested. The structured model above is testable, private and on-device.
-
-**Learning loop:** every proposal records its outcome (confirmed unchanged / which chips changed / discarded). That feeds the user model and, in R1, the owner's own eval cases (TQ-07 answered: real messages may become test cases, exported only when the owner chooses).
-
-- **AI-065 offer to remember:** the second identical answer to the same `question_kind` → the engine attaches a Memory proposal.
-- **AI-084 weighing nudge:** a domain rule over diary stats (an estimated food logged weekly or more, no nudge for it in 30 days) → a one-line suggestion on the proposal.
-
-## 6. Questions about your data: numbers never from the model (AI-110–112, AQ-09)
-
-The model translates the question into a **QueryPlan** from a closed grammar, plus an answer template:
-
-```text
-QueryPlan { metric: protein | kcal | carbs | fat | fiber | weight_trend | weigh_in | workouts | exercise_last_date | exercise_pr | ...
-            op: remaining | sum | avg | latest | change | count | max
-            period: today | yesterday | this_week | last_week | last_n_days(n) | since(event: ramadan|phase_start|date) | range(a,b)
-            filters: { slot?, exercise_id?, complete_days_only? } }
-template: "{remaining_g} g protein left ({eaten_g}/{target_g})"
-link: { screen: diary|chart|exercise, params }
-```
-
-The device's `QueryEngine` runs the plan on local data and fills the template. If the plan can't run, Buddy says it can't tell from your data (AI-111). **AQ-09 = 100%** becomes a property of plain, unit-tested code. It works offline-queued, on unsynced data, and for guests.
-
-## 7. Suggestions (AI-120–122)
-
-The client sends remaining kcal and protein, the halal flag, time of day / Ramadan phase, the top ~30 habitual foods, and open batches. The model proposes 2–4 options referencing those IDs or generic catalog foods with amounts. The API resolves generic names to catalog items. The client computes the real numbers, **drops options that don't fit** (a deterministic check), and shows the rest. Tapping one creates a normal proposal (AI-121). Halal: catalog flags + a model instruction + a client-side warning check (FD-081/082).
-
-## 8. Photos, labels, imports, weekly review
-
-| Flow | Model task (API) | Deterministic part (app) |
-|---|---|---|
-| **Photo + text** (AI-011) | Vision → the same `Interpretation` schema. Portion from a photo is always `estimate` | Same engine. Badges forced to `~` unless the text gives grams |
-| **Label photo** (FD-040–042) | Vision → `LabelExtraction` {basis per 100 / serving, serving size, nutrients, name guess, per-field confidence} | Sanity check (FD-012: kcal ≈ 4P+4C+9F ± tolerance), unit normalization, highlighted uncertain fields → review screen → `PersonalFood` change set linked to the barcode |
-| **Paste import** (WB-030–032) | Text → rows {date, value, unit?, original text} | Unit inference ("110k" → kg, flagged), implausible jumps (WB-005), duplicates → review table (AI-057) |
-| **Weekly review** (AI-130–132) | The app sends **only aggregates** (the deterministic `WeeklySummary` + the check-in proposal). The model writes ≤ 2 short observations | **NumberGuard on the device:** every number in the text must exist in the aggregates, else regenerate once, else use a template. Banned-word check (SF-020). Cached per week |
-| **Workout text** (WO-030–033) | Parse to exercises + sets. The exercise library (≈ 100 names + aliases) is in the **cached system prompt**, and custom exercises go in the context | Per-dumbbell semantics (WO-005), unit conversion, PR detection, "same as last push" copy. A deterministic set-notation parser (`3x8 80`, `80x8x3`, `8,8,7 @80`) cross-checks the model (AQ-03) |
-
-## 9. Provider strategy & privacy
-
-- **`ILlmClient` port** with one adapter per provider (official SDKs where stable, REST otherwise). A **task routing table** in configuration: `interpret`, `rerank`, `vision_food`, `vision_label`, `import`, `suggest`, `review` → (provider, model, effort, max tokens, timeout).
-- **Selection:** owner-selected OpenAI `gpt-6-luna`, initially low effort for interpret (TD-008/067). B02 is a three-prompt integration smoke, not a provider bake-off. Broader quality and task-specific decisions remain B08/B10/B12/B15.
-- **Fallback:** none for now (owner, TD-067). B02 makes no repair or provider retries; on failure return an outcome and keep the caller message pending (AI-153). B08 defines production retry policy with the owner's paid-call scope.
-- **Privacy (AC-040–042):** paid API tiers only (no training on our data). No identity in prompts. Photos aren't stored by us. **Zero data retention** is requested before R3 (TQ-06 answered: standard terms for R1/R2).
-- **Prompt registry:** versioned prompt files in `backend/src/Modules/Buddy/Prompts/`. Each response records `promptVersion` + `model`. Changes go through a PR + eval run.
-- **Prompt caching:** static parts first (rules, schema, exercise library, few-shot examples), volatile context last.
-- **Content-free logs:** the API logs task, model, prompt version, latency, tokens, cost and outcome code. **Never message text** (`09` §4).
-
-### 9.1 The AI stack (TD-035)
-
-| Layer | Choice | Why |
-|---|---|---|
-| Framework | **None.** No agent or orchestration framework (Microsoft Agent Framework, Semantic Kernel, LangChain…) | Buddy isn't an autonomous agent: one structured model call per message, then deterministic code. Frameworks add abstraction, churn and hidden prompts we'd have to fight. We can revisit for Later features (program generation, meal planning) |
-| Client interface | **Microsoft.Extensions.AI** (`IChatClient`): Microsoft's standard .NET abstraction for chat models | One interface for every provider. Middleware pipeline (OpenTelemetry, retries, caching). The official Anthropic C# SDK implements it (`AsIChatClient`), and so does the OpenAI .NET library. B02 implements OpenAI only; any other provider is future owner-approved scope |
-| Our port | `ILlmClient` (Buddy module, Application layer): B02 `InterpretAsync`; label/import/suggest/review ports added by their owning steps | Task-level, provider-agnostic, on `IChatClient`. B02 accounts for cost and logs codes only, with no retries/fallback (TD-067); B08 owns production routing/repair policy |
-| Provider features | Prompt caching, reasoning effort, native JSON-schema output, vision: set through provider options where the abstraction doesn't cover them | Keeps the speed and cost wins. B02 wire-tests the OpenAI feature mapping; other providers are deferred |
-| Structured output | JSON schemas generated from C# records (internal, per task) → model native structured output → **our validation** → one repair retry → else `Clarify` | Reliable parsing. Public DTOs never depend on prompts |
-| Prompts | Versioned text files in `backend/src/Modules/Buddy/Prompts/` with simple placeholders. Version recorded on every response | Reviewable diffs. Every change runs the eval |
-| Observability | OpenTelemetry GenAI conventions (latency, tokens, model, cost) with **message content capture disabled** | Privacy (AC-041, `09` §4) |
-| Quality | **`tools/buddy_eval`** (§11) is the judge for every prompt/model change | Measured, not assumed |
-| Models | OpenAI `gpt-6-luna`, selected by the owner (TD-008/067); no automatic fallback | B02 small smoke observations only; broad quality/latency evidence remains B08/B15 |
-
-## 10. Latency & cost budgets
-
-**Latency target (AQ-12):** proposal ≤ 5 s for ≥ 90% of messages.
-
-| Step | Budget |
+| Flow | How |
 |---|---|
-| Client context build (local SQL + fuzzy match) | ≤ 100 ms |
-| Network West Bank ↔ Germany (TLS reused) | ≈ 100–200 ms |
-| Model parse call (small model, low effort, cached prefix) | Target ≈ 1.0–2.5 s (not established by B02; three smoke samples were 3.38–4.96 s) |
-| Retrieval (Postgres trigram, indexed) | ≤ 150 ms |
-| Client ProposalEngine + render | ≤ 50 ms |
-| **Total p90 target** | **≤ 3.5 s** (headroom for a rerank or a slow network) |
+| Meal photo (AI-011) | the image goes in the start request; the model sees it and proposes as usual; portions from a photo alone are `estimate` |
+| Label photo (FD-040–042) | not the agent: `POST /v1/buddy/label` → one structured vision call → `LabelExtraction` → the app's review screen (B26, A69) |
+| Paste import (WB-030–032) | `propose_import` rows → review table (B26, A69) |
+| Weekly review (AI-130–132) | `mode: weeklyReview` with the `WeeklySummary` aggregates as facts, no phone tools, code-filled facts and guards; cached per week on the phone (B26, A68) |
+| Ramadan (RM-*) | `profile.ramadan` in context; Ramadan slot names and suhoor/iftar wording in the prompt (B26, A68) |
 
-If p90 misses: stream intents (SSE) so the first card renders while the rest finish, and/or route to a faster model.
+## 9. Provider, privacy, cost
 
-**Cost per food message** (planning estimate for representative meals, not established by B02's three egg prompts): ≈ 2,000–3,000 input tokens (mostly cached) + 300–500 output tokens ≈ **$0.0003–0.001**. 15 messages a day ≈ **$0.15–0.45 per user per month**. Vision calls cost a few times more but are rarer. Repeat logging never uses AI (MN-021).
+- **Model:** OpenAI `gpt-6-luna` through the Responses API (`store:false`, low effort) via `IChatClient`; routing task `agent` (plus `label`). Other providers need the owner (paid vendor gate). No retries or fallback (TD-067).
+- **Privacy (AC-040–042):** no identity, handles not IDs, size-capped phone results, photos not stored, no message or tool content in logs or traces (OpenTelemetry content capture off; the dev `trace` event goes only to the phone).
+- **Logs:** turn ID hash, step count, tool names, outcome codes, latency, tokens, estimated cost.
+- **Prompt caching:** the system prompt and tool declarations first and static; profile and history next; the message and tool results last.
+- **Limits** (TD-124, TD-128): one turn budget across rounds (§2); Usage counts every send and one message per turn; laptop defaults 100 messages / 400 sends a day (guest 30/120). Expected cost: a simple log ≈ 1–2 sends, a suggestion or data question ≈ 3–5; with caching ≈ $0.001–0.004 per turn.
 
-## 11. Evaluation: the AI quality system
+## 10. Latency
 
-`tools/buddy_eval` (Dart CLI) is how we know Buddy is good enough (AT-002). Built in B02, grown in every Buddy step.
+| Turn | Target |
+|---|---|
+| First `step` event | ≤ 1 s |
+| Simple log → card | ≤ 5 s for 9/10 (AI-030); one model step + resolver ≈ 2.5–4 s |
+| Multi-step (suggestion, history question) | ≤ 15 s typical, 60 s cap, live steps throughout |
 
-- **Test set:** `tools/buddy_eval/cases/*.yaml`. B02 starts with three short synthetic EN/AR/Arabizi prompts under the owner's explicit paid-test limit (TD-067); these are not acceptance evidence. B08/B15 expand to T01–T41 plus Arabic-script/Arabizi cases (≥ ¼ of cases), then ≥ 150 (`spec/40` §2). Full Arabic + Arabizi versions of every case come in R2 (D-080). Each case holds: message, starting state (defaults, open batches, recent entries) and the **expected structured outcome** (intents, food IDs, grams, questions asked or not, estimate flags, slot/date).
-- **Runner:** B02 uses a private CLI pipe and parse-only graders, offline by default. B08/B15 extend it to a **real API instance** (local Docker or staging) and the **real `ProposalEngine`** (Dart, A21). It computes AQ-01–12 with per-language breakdowns and writes a Markdown report + JSON for trends. **B09b (built):** Persistence.Tests imports the generated release into a scratch database, replays the recorded M3 and plain B09 interpretations through the real loopback API and catalog resolver, and the Dart CLI's AQ mode runs fb_domain's `ProposalEvaluation` on each raw response with production policy (`/v1/config` thresholds, default slots, release yields). It writes `B09b-aq-{m3,b09}.json` with AQ-02/03/04/06/07/08/10 per language (AQ-05 `n/a` until reference dishes ship, AQ-01 structural, AQ-09 in B11, AQ-12 needs live runs in B15); the CI `eval` job gates them against `spec/40` §2 with a shrink-only known-miss baseline. Expectations come from the spec text and release facts, never from observed output (`tools/buddy_eval/README.md`).
-- **Graders:** deterministic wherever possible (IDs, grams, ±% kcal, counts). Only free-text quality (tone, AI-131) uses a model judge, reported separately.
-- **When it runs:** B02 CI runs offline SDK fixture replay and deterministic parse grading with no key or paid calls. Live smoke is explicit and ≤3 requests, no retries (TD-067). The broader acceptance/nightly system remains B08/B15; paid execution must respect the owner's scope.
-- **Owner feedback loop:** discarded or heavily edited proposals in real use become candidate cases. The owner exports them with one action (TQ-07).
+## 11. App components
 
-## 12. Safety in the AI layer
+- **Turn runner** (`BuddyTurnRunner`): builds the start request (history, compaction, personal slice, profile, snapshot), reads the SSE stream (a small framing reader over the generated event types, heartbeat-aware), runs phone tools under their scopes and budget, posts continue, keeps the durable turn checkpoint and applies the retry rule (§3.4), handles stop and failures. Offline or unavailable → the message stays pending and runs when online (AI-047, A23b scope).
+- **Phone tools** (`buddy/application/tools/`): one class per tool over the existing repositories, enforcing §4.2's scopes and the per-turn disclosure budget, returning IDs (the server swaps them for handles).
+- **Thread UI:** live step line, reply text, question chips, several cards per reply with **Apply all** (only still-pending current revisions, one ChangeSet, one Undo), card updates in place by `proposalId`/`revision`, stop button, pending strip.
+- **Trace view** (dev builds and the owner's build): per turn, the `trace` steps, stored with the message locally, never synced.
+- **Cards:** the existing food card plus before→after edit, delete, copy, saved meal, weigh-in, memory, batch, personal food (A67); answers with links and suggestions (A68); workout, measurement, import table, label review (A69).
 
-- Off-topic, medical, supplement dosing → `OutOfScope` / `Medical` intents → **templated** replies, not model-written (AI-003, SF-030).
-- No moral food words (SF-020, AI-142): a banned-word check on all model-written text (review, clarifications) → regenerate or use a template.
-- R2: a concerning-content flag from the parser + deterministic low-intake detection (SF-031/032) → a curated care message. Never improvised by the model.
-- Prompt injection (in messages, label photos, R2 recipe pages) is harmless by design: the output is schema-validated data that can't write anything, and the user confirms every change.
+## 12. What was retired (TD-128)
+
+`POST /v1/buddy/interpret`, its single-call prompt and parser (removed after A66 switches the app), `tools/buddy_eval` and the CI `eval` job with the AQ known-miss baseline (TD-097). The resolvers (`ResolveFoods`, `ResolveReferences`, `ResolveCreations`), the closed day-hint grammar and the reference policy (TD-091) live on inside the action tools.

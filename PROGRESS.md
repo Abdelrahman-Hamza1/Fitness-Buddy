@@ -1,8 +1,8 @@
 # Fitness Buddy: progress
 
-**80 of 105 steps done** · `▓▓▓▓▓▓▓░░░` 76%
+**80 of 111 steps done** · `▓▓▓▓▓▓▓░░░` 72%
 
-App 61/79 · Backend 19/26 · Foundation 7/7
+App 61/83 · Backend 19/28 · Foundation 7/7
 
 ## Now
 
@@ -15,12 +15,12 @@ App 61/79 · Backend 19/26 · Foundation 7/7
 | ✅ | **M1** Dogfood 1 | `▓▓▓▓▓` 14/14 | — |
 | ✅ | **M2** Targets & weight | `▓▓▓▓▓` 9/9 | — |
 | ✅ | **M5** Accounts & sync | `▓▓▓▓▓` 20/20 | — |
-| ✅ | **M2b** Solid app (no AI) | `▓▓▓▓▓` 22/22 | — |
-| 🟨 | **M3** Buddy on the laptop | `▓░░░░` 1/4 | A23b A48 A49 #148 #149 #150 #151 |
-| ⬜ | **M4** Dogfood 2 | `░░░░░` 0/8 | A25 A26 A27 A28b A29 A31 +2 |
-| ⬜ | **M6** Workouts, review &… | `░░░░░` 0/4 | A37b A39b A41b B12 |
-| ⬜ | **M7** Production | `░░░░░` 0/3 | A43 B13 B14 |
-| 🟨 | **R1** done | `▓▓▓░░` 14/21 | A32 A58 A59 A60 A61 B15 +2 |
+| 🟨 | **M2b** Solid app (no AI) | `▓▓▓░░` 22/30 | A25 A26 A27 A28b A29 A37b +2 |
+| 🟨 | **M3** Buddy agent on the… | `▓▓░░░` 15/33 | A23b A39b A41b A58 A59 A60 +12 |
+| ⬜ | **M4** Dogfood 2 | `░░░░░` 0/2 | A67 A68 B26 |
+| ⬜ | **M6** Workouts, body &… | `░░░░░` 0/0 | A69 B26 |
+| ⬜ | **M7** Production | `░░░░░` 0/1 | A43 B14 |
+| ⬜ | **R1** done | `░░░░░` 0/2 | A31 A32 A43 B16 |
 
 ✅ reached · 🟨 in progress · ⬜ ahead. Each step counts toward the first milestone that needs it.
 
@@ -28,15 +28,11 @@ App 61/79 · Backend 19/26 · Foundation 7/7
 
 Not started, every dependency done; earliest milestone first:
 
-- [A23b](technical-planning/steps/A23-message-lifecycle.md) Message queue, failures & pending strip (split from A23) · M3
-- [A26](technical-planning/steps/A26-memory-user-model.md) Memory & user model (app) · M4
-- [B10b](technical-planning/steps/B10-barcode-vision-import.md) Label & meal photos, paste import (split from B10) · M4
-- [B11](technical-planning/steps/B11-buddy-qa-suggestions.md) Buddy Q&A & suggestions · M4
-- [B12](technical-planning/steps/B12-buddy-workouts-review-ramadan.md) Buddy workouts, weekly review & Ramadan · M6
+- [B13](technical-planning/steps/B13-staging-infrastructure.md) Staging on Hetzner & deploy pipeline · M3
+- [B25](technical-planning/steps/B25-buddy-agent-core.md) Buddy agent core (D-100): turn endpoints + SSE, own tool loop, sealed continuation, server + action tools, guards, summary, trace, per-step limits · M3
 
 ## Waiting on you
 
-- **#154** ⚠️ Owner-gated live smoke of interpret-v2 (≤ 10 sends, ≈ $0.01): proves strict-mode…
 - **#127** Before logging real data on prod: run tools/scripts/verify-key-backup.sh against the…
 - **#126** Run the emulator/phone envelope-sink proof (docs/runbooks/crash-reports.md: native…
 - **#74** Owner (2026-10-18): "a lot of scrolling… I want better UX in the future". Real Today…
@@ -46,7 +42,8 @@ Not started, every dependency done; earliest milestone first:
 - **#285** T-R5: barcode camera resume (A63) is not automated (MobileScannerController has no…
 - **#267** On a Ramadan fasting day Today now waits for the day's meal mode, which includes the…
 - **#253** Prayer times: opt-in device location (LC-033's alternative to the city; needs the…
-- …and 8 more owner items in the [backlog](technical-planning/steps/backlog.md)
+- **#251** flutter_local_notifications' boot receiver fires reminders whose time passed during a…
+- …and 7 more owner items in the [backlog](technical-planning/steps/backlog.md)
 
 ---
 
