@@ -36,7 +36,7 @@ public sealed class DeviceActivityTests(PostgresFixture postgres)
         Assert.Equal(before, await LastSeenAsync(guest.UserId));
 
         await using var adminSource = DatabaseConfiguration.CreateSource(postgres.AdminConnection);
-        var installs = await new PostgresIdentityAdminReads(adminSource).InstallsAsync(h.Clock.GetUtcNow().AddDays(-1), Ct);
+        var installs = await new PostgresIdentityAdminReads(adminSource, Microsoft.Extensions.Options.Options.Create(new FitnessBuddy.Modules.Identity.Application.IdentityOptions())).InstallsAsync(h.Clock.GetUtcNow().AddDays(-1), Ct);
         Assert.Contains(installs, row => row.AppVersion == newer && row.Platform == "android" && row.Installs == 1);
         Assert.DoesNotContain(installs, row => row.AppVersion == version);
 

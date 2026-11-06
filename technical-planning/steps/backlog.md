@@ -138,3 +138,7 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 310 | A65 | Lift bottom-pinned actions above a shown snackbar instead of clearing Undo snackbars (#263) | minor | next UX polish | open |
 | 311 | A65 | Adaptive mode row opens the Progress tab top: open it scrolled to the Expenditure card (#289) | nit | next UX polish | open |
 | 312 | A65 | Single-field sheets (day estimate, manual target, measurement, nutrient override, custom type) have no discard guard (m8) | nit | next UX polish | open |
+| 313 | B23 (O2) | Console: publish a ready catalog release and roll back to the previous one (AD-015). Today the B07 import publishes atomically through the migrate role under the recovery fence; a console rollback must re-materialise the previous release's reference rows | minor | admin console 2+ | open |
+| 314 | B23 (O2) | Console: installs per catalog release (AD-015). The app doesn't report its pack version; needs a client header or a `/v1` field (contract change) | minor | with the next contract change | open |
+| 315 | B23 (O2) | Console: maintenance message (AD-012). Needs a contract field or a new problem type so the app can show it | minor | with the next contract change | open |
+| 316 | B23b | Overview's Buddy health shows the `buddy.ai` server switch and today's calls, not whether the API has Buddy configured (`Buddy:Enabled` is the api role's setting, the console doesn't receive it); also AI spend shows "no cap set" until AD-013 (phase 2) | nit | AD-013 / phase 2 | open |

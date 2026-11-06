@@ -15,7 +15,7 @@ public sealed class UsageModule : IModule
     public UserDataOwnership UserData => new(["daily"], [], "usage.erase");
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<IUsageRecorder, PostgresUsageRecorder>(); services.AddScoped<IOutboxHandler, UsageErasure>();
+        services.AddScoped<IUsageRecorder, PostgresUsageRecorder>(); services.AddSingleton<IUsageAdminReads, PostgresUsageAdminReads>(); services.AddScoped<IOutboxHandler, UsageErasure>();
         services.AddSingleton(new ModuleMigration("usage", c => new UsageContext(DatabaseConfiguration.ContextOptions<UsageContext>(c, "usage"))));
     }
     public void MapEndpoints(RouteGroupBuilder group) { }

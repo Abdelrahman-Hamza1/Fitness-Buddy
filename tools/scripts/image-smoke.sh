@@ -73,6 +73,7 @@ recovery_volume="$(docker volume create "fitness-buddy-smoke-recovery-$$")"
 docker run --rm --user 0 -v "$recovery_volume:/recovery" "$pg_image" sh -c 'chown 1654:1654 /recovery && chmod 700 /recovery'
 recovery_flags=(-v "$recovery_volume:/recovery:rw" -e Recovery__Directory=/recovery)
 app_connection='Host=postgres;Database=fitness_buddy;Username=fb_app;Password=local-app-only'
+worker_connection='Host=postgres;Database=fitness_buddy;Username=fb_worker;Password=local-worker-only'
 migrator_connection='Host=postgres;Database=fitness_buddy;Username=fb_migrator;Password=local-migrator-only'
 for migration_run in 1 2; do
   docker run --rm "${runtime_flags[@]}" "${recovery_flags[@]}" -e "ConnectionStrings__Migrator=$migrator_connection" "$image" migrate --Recovery:Initialize=true >"$work/migrate-$migration_run"
@@ -80,7 +81,7 @@ done
 container="$(docker run -d "${runtime_flags[@]}" "${recovery_flags[@]}" \
   -e ASPNETCORE_ENVIRONMENT=Development -e Observability__ConsoleExporter=true \
   -e "ConnectionStrings__Application=$app_connection" -p 127.0.0.1::8080 "$image")"
-worker="$(docker run -d "${runtime_flags[@]}" -v "$recovery_volume:/recovery:ro" -e Recovery__Directory=/recovery -e "ConnectionStrings__Application=$app_connection" "$image" worker)"
+worker="$(docker run -d "${runtime_flags[@]}" -v "$recovery_volume:/recovery:ro" -e Recovery__Directory=/recovery -e "ConnectionStrings__Worker=$worker_connection" "$image" worker)"
 port="$(docker port "$container" 8080/tcp | sed -n 's/^127\.0\.0\.1://p')"
 [[ "$port" =~ ^[0-9]+$ ]]
 base_url="http://127.0.0.1:$port"

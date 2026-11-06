@@ -34,7 +34,7 @@ One executable, four roles, chosen by the first argument (`args[0]`, when it doe
 | Role | Does |
 |---|---|
 | `api` | Stateless HTTP (`WebApplication`) |
-| `worker` | Polls durable outbox/jobs and UTC schedules using fb_app; handles shutdown cancellation without consuming attempts |
+| `worker` | Polls durable outbox/jobs and UTC schedules using fb_worker (`ConnectionStrings:Worker`, B23b: fb_app's privileges plus heartbeats and counter cleanup); handles shutdown cancellation without consuming attempts |
 | `migrate` | Applies registered schema migrations with fb_migrator; verifies/explicitly initializes recovery state and holds the global maintenance lock for seeds, keys and dataset rotation; exits1 on failure |
 | `admin` | The owner-only console (B23, D-099): its own loopback listener (`Admin:Url`), only `/admin` and health, the `fb_admin` login (`ConnectionStrings:Admin`); never maps `/v1`, and `api` never maps `/admin` |
 
@@ -103,7 +103,7 @@ Build-time OpenAPI generation never opens a database or runs migrations.
 - Infrastructure repositories start `UserDatabase.BeginAsync(ct)` (identity from ICurrentUser), create a context with `session.Connection`, and call `session.EnlistAsync(context, ct)`. Use the injected clock/UUIDv7 generator for values. Context and raw commands then share one transaction. User-owned tables require ENABLE + FORCE RLS with USING and WITH CHECK against `NULLIF(current_setting('app.user_id', true), '')::uuid`. No identity means no rows; never set a session-level user. Ordinary repositories still scope queries by the principal.
 - `QueueWriter` uses that same scoped session. Publish events before committing the business change. User identity is copied from the session into the durable envelope and set transaction-locally by the worker. System jobs have no user context. `ops.*` is internal infrastructure owned by BuildingBlocks; product modules never query it directly. Product modules and the isolated test-only module use this same transaction pattern.
 - Register database-only `IOutboxHandler` / `IJobHandler` implementations. Their writes use the supplied session, with **no commits or network calls**. Keep event type and handler name stable across deploys. Effects, per-handler processed marker and acknowledgement commit together. A crash rolls them all back; duplicate delivery skips processed handlers. This provides exactly-once database effects, not exactly-once remote calls. External adapters must accept a stable operation key and be independently idempotent.
-- Default retries: five attempts, starting at 5 seconds, doubling to a one-hour cap. Failures roll back to a savepoint before persisting attempts. Exhausted/unknown message types become dead letters; payloads and exception messages never enter logs. Shutdown cancellation rolls back without counting an attempt. Dead letters remain for inspection; there is no public administrative queue API.
+- Default retries: five attempts, starting at 5 seconds, doubling to a one-hour cap. Failures roll back to a savepoint before persisting attempts. Exhausted/unknown message types become dead letters; payloads and exception messages never enter logs. Shutdown cancellation rolls back without counting an attempt. Dead letters remain for inspection; there is no public administrative queue API (the owner console retries, cancels and pauses through `IOpsAdministration`, B23).
 - `JobScheduler.RegisterAsync` uses five-field UTC cron. Durable cursors survive restarts; missed ticks coalesce into one run. Claims and uniquely keyed job insertion share a transaction. The worker registers `ops.cleanup` every five minutes: expired replay records and completed queue records older than seven days are removed; dead letters stay. Future history/account purge handlers arrive with their modules.
 - An unsafe POST opts in using `.RequireIdempotency()` and declares its header/400/409 responses in the contract **before** becoming a product endpoint. The middleware requires authenticated ICurrentUser (B04 must define any pre-auth scope), serializes user + method + path + key, fingerprints body bytes/content type/query, and commits business effects + response atomically. Replays last 24 h; changed fingerprints get 409. Buffers: 256 KiB request, 1 MiB response. 5xx, exceptions and cancellation roll back. Only ETag/Location replay; never cookies. Problem bodies refresh traceId to match the current X-Request-Id. All actual product POSTs are still later steps.
 - Postgres logs only infrastructure-level FATAL/PANIC messages, with terse detail and statement/parameter logging disabled; ordinary SQL errors can echo private values. API/worker logs retain scrubbed error types and IDs. Carry these settings into B13.
@@ -338,3 +338,23 @@ updates. Read [the module](src/Modules/Catalog/README.md) and [operations](../do
   seeds version 1 from `Clients:MinimumAppVersion`, `Account:ClientConfig:*` and `FeatureFlags:*`; set those keys
   for every role alike (one compose anchor). `Clients:MinimumAppVersionOverride` wins everywhere (recovery).
   `GET /v1/config` keeps its response. Operations: [admin console runbook](../docs/runbooks/admin-console.md).
+- **Monitor windows (B23b):** Overview (home), Accounts (read; exact-email lookup by POST, rate-limited, audited without
+  the term; email sign-in accounts match by Identity's keyed address hash, so the admin role needs `Identity:PepperFile`
+  to find them), Jobs & sync (retry/cancel/pause through `IOpsAdministration`, each with its audit row in one transaction; the
+  `ops` function reports what it found under the row lock as a `QueueChange`, audited as `ok`, `no-op` or `refused`), Catalog (read). Options: `Admin:ApiReadyUrl`, `Admin:BackupStatusFile`,
+  `Admin:GrafanaUrl`, `Admin:SentryUrl`, `Admin:LookupPermitPerMinute`.
+- **Adding an `admin_*` function:** in the owning module's migration, `SECURITY DEFINER`, `SET search_path=pg_catalog,pg_temp`
+  with schema-qualified names, `REVOKE ALL … FROM PUBLIC`, `GRANT EXECUTE … TO fb_admin` only, and result columns that are
+  counts, sizes, closed codes, timestamps, pseudonymous ids or masked emails. Any text a writer controls (types, codes,
+  error types, roles, builds, versions, email domains) is returned only when it is in a closed list the caller passes
+  (`QueueVocabulary`, `LookupOutcomes`/`OffSanity.Rules`, `SyncPayloads.EntityCodes`) or matches a version or host-name
+  shape; anything else reads `other` (B23b). A new job or event handler goes into `QueueVocabulary.Default` (a Host test
+  checks). Add it and any new column name to the lists
+  in `AdminRoleTests` (the inventory fails otherwise), expose it through the module's `*.Contracts` interface, and render any
+  new page so `AdminNoContentTests` scans it (it enumerates every GET route; give it seeded ids for route parameters).
+- **Console telemetry:** in-transaction counters use `DatabaseSession.TryInSavepointAsync` (a server-reported statement error
+  rolls back alone; connection loss propagates). Global counters use `CounterBatch<T>` + `ICounterFlush`, flushed by the api
+  role's `CounterFlushService` once a minute; a failed flush is logged by error type and dropped. Global counters are
+  written only through add-only definer functions (`ops.count_http_errors`, `catalog.count_lookups`); their cleanup and the
+  heartbeats belong to the worker login `fb_worker` (tests run worker-only work on `PostgresFixture.Worker`). Workers report the job type
+  in progress through `WorkerActivity` and `WorkerHeartbeatService`. Paused job types are skipped by the claim SQL.

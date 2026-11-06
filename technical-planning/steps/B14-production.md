@@ -51,6 +51,7 @@ A second storage provider account (e.g. Backblaze B2), an alert contact, and an 
 ---
 
 **Cross-card note (B23, 2026-11-06):** production must provision `fb_admin` (own secret, no memberships) before migrations and expose the `admin` role only over Tailscale; the laptop's `ensure-admin-role` step is the reference. See B23 P3/P5.
+**Cross-card note (B23b, 2026-11-07):** also provision the worker login `fb_worker` (`LOGIN NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE INHERIT`, its own secret, `GRANT fb_app TO fb_worker WITH INHERIT TRUE, SET FALSE`, CONNECT) before migrations, and give the worker only `ConnectionStrings:Worker` (never the API's `Application`); the laptop's `ensure-worker-role` step is the reference.
 
 ## Low-level plan
 _Written in Phase B._

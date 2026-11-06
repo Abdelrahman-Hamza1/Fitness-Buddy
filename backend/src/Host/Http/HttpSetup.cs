@@ -43,6 +43,10 @@ internal static class HttpSetup
 
         services.AddFbRateLimiting();
         services.AddSingleton<UserRequestLimiter>();
+        // B23: approximate 5xx counts for the console, flushed in batches by CounterFlushService.
+        services.AddSingleton(provider => new FitnessBuddy.BuildingBlocks.Ops.ServerErrorCounter(provider.GetRequiredService<Npgsql.NpgsqlDataSource>,
+            provider.GetRequiredService<TimeProvider>(), provider.GetRequiredService<FitnessBuddy.BuildingBlocks.Recovery.RecoveryBarrier>()));
+        services.AddSingleton<FitnessBuddy.BuildingBlocks.Ops.ICounterFlush>(provider => provider.GetRequiredService<FitnessBuddy.BuildingBlocks.Ops.ServerErrorCounter>());
         services.AddHealthChecks();
 
         return builder;
@@ -52,6 +56,7 @@ internal static class HttpSetup
     {
         app.UseForwardedHeaders();
         app.UseMiddleware<RequestIdMiddleware>();
+        app.UseMiddleware<ServerErrorCounting>();
         app.UseExceptionHandler();
         if (!app.Environment.IsDevelopment())
         {

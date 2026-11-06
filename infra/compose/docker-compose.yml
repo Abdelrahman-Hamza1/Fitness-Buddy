@@ -14,12 +14,10 @@ x-runtime: &runtime
 x-remote-config: &remote-config
   Clients__MinimumAppVersion: "0.1.0"
   Clients__MinimumAppVersionOverride: "${FB_MIN_APP_VERSION:-}"
-x-app-environment: &app-environment
+x-runtime-environment: &runtime-environment
   <<: *remote-config
-  # Local-only credentials. S05 provisions environment secrets independently.
   ASPNETCORE_ENVIRONMENT: Development
   DOTNET_ENVIRONMENT: Development
-  ConnectionStrings__Application: Host=postgres;Database=fitness_buddy;Username=fb_app;Password=local-app-only
   Observability__ConsoleExporter: "true"
 services:
   postgres:
@@ -75,14 +73,19 @@ services:
     ports:
       - "127.0.0.1:5198:8080"
     environment:
-      <<: *app-environment
+      <<: *runtime-environment
+      # Local-only credentials. S05 provisions environment secrets independently.
+      ConnectionStrings__Application: Host=postgres;Database=fitness_buddy;Username=fb_app;Password=local-app-only
     depends_on:
       migrate:
         condition: service_completed_successfully
   worker:
     <<: *runtime
     command: [worker]
-    environment: *app-environment
+    # B23b: the worker's own login (heartbeats, counter cleanup); it never gets the API's.
+    environment:
+      <<: *runtime-environment
+      ConnectionStrings__Worker: Host=postgres;Database=fitness_buddy;Username=fb_worker;Password=local-worker-only
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -101,6 +104,7 @@ services:
       Admin__Url: http://0.0.0.0:8081
       Admin__GoogleClientId: "${FB_ADMIN_GOOGLE_CLIENT_ID:-unset}"
       Admin__AllowListFile: /console/allow-list.json
+      Admin__ApiReadyUrl: http://api:8080
       Observability__ConsoleExporter: "true"
     volumes:
       - type: bind

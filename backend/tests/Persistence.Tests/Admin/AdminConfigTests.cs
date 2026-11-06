@@ -197,6 +197,8 @@ public sealed partial class AdminConfigTests(PostgresFixture postgres)
             .Where(endpoint => endpoint.Metadata.GetMetadata<HttpMethodMetadata>()?.HttpMethods.Contains("GET") == true)
             .Select(endpoint => endpoint.RoutePattern.RawText!)
             .Where(path => path.StartsWith("/admin", StringComparison.Ordinal) && !path.Contains("/assets/", StringComparison.Ordinal) && path != "/admin/signin")
+            // Account pages need a real account id: AdminNoContentTests (T10b) renders them for each seeded account.
+            .Where(path => !path.Contains("{id:guid}", StringComparison.Ordinal))
             .Select(path => path.Replace("{version:int}", "1", StringComparison.Ordinal))
             // Paged and filtered variants render through the same code with other rows.
             .Concat(["/admin/config?before=2", "/admin/audit?area=config", "/admin/audit/export.csv?area=config"]).Distinct().ToArray();

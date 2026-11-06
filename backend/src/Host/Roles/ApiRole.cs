@@ -17,7 +17,12 @@ internal static class ApiRole
         builder.AddFbPersistence();
         builder.AddFbObservability("api");
         builder.AddFbHttp();
-        if (!PlatformSetup.IsBuildTimeDocument) { FitnessBuddy.Modules.Account.AccountModule.AddRuntimeConfigPolling(builder.Services); }
+        if (!PlatformSetup.IsBuildTimeDocument)
+        {
+            FitnessBuddy.Modules.Account.AccountModule.AddRuntimeConfigPolling(builder.Services);
+            // B23: the console's batched counters (server errors, OFF lookups), written once a minute.
+            builder.Services.AddHostedService<FitnessBuddy.BuildingBlocks.Ops.CounterFlushService>();
+        }
 
         // Strict numbers, camelCase enums, required members and nullable annotations (ApiJson).
         builder.Services.ConfigureHttpJsonOptions(options => ApiJson.Configure(options.SerializerOptions));

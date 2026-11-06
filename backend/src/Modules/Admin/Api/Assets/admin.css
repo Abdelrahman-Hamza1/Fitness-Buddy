@@ -47,3 +47,8 @@ label { display: block; margin: 10px 0 4px; font-weight: 600; }
   nav { flex-direction: column; gap: 2px; }
   main { padding: 12px; }
 }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.grid .card { margin: 0; }
+.alerts { list-style: none; padding: 0; margin: 0; }
+.alerts li { padding: 6px 0; }
+form.inline { display: inline; margin: 0; }

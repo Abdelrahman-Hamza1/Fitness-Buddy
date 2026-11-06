@@ -4,7 +4,7 @@
 #    UPGRADE_BASE_REV) and runs it with ITS OWN compose file, non-default remote config and synthetic data (an account + a
 #    synced weigh-in, an RLS table). Captures /v1/config and the account's pull.
 # 2. Upgrades the same volume to the current image with the current compose file exactly as `serve-phone` does
-#    (ensure-admin-role, migrate, api, worker, admin; no Tailscale), then checks /v1/config is identical, version 1 is seeded
+#    (ensure-admin-role, ensure-worker-role, migrate, api, worker, admin; no Tailscale), then checks /v1/config is identical, version 1 is seeded
 #    with those values, the data is unchanged, the console is ready, and backup + restore-check pass.
 # The baseline is pinned on purpose: this script assumes the pre-B23 layout (no fb_admin role, config in x-environment).
 # Move it forward deliberately, together with those assumptions, when a later layout change needs a newer baseline.
@@ -81,6 +81,7 @@ def start(state, *services):
     phone.json_write(state / 'gateway.json', {'gateway': gateway})
     if 'admin' in services:
         phone.ensure_admin_role(state)  # exactly what `up` does before migrate
+        phone.ensure_worker_role(state)
     phone.compose(state, 'up', '-d', '--force-recreate', *services)
     base = 'http://127.0.0.1:' + phone.compose(state, 'port', 'api', '8080').decode().strip().split(':')[-1]
     for _ in range(90):
@@ -109,7 +110,7 @@ with tempfile.TemporaryDirectory(prefix='b23-upgrade-') as temp:
         # ---- 1. The base revision, as deployed before this change --------------------------------------------------
         install(state, base_files, 'x-environment: &environment\n', base_tag)
         base = start(state, 'migrate', 'api', 'worker')
-        assert phone.sql(state, "SELECT count(*) FROM pg_roles WHERE rolname='fb_admin';").strip() == '0', 'base volume already has the console role'
+        assert phone.sql(state, "SELECT count(*) FROM pg_roles WHERE rolname IN ('fb_admin','fb_worker');").strip() == '0', 'base volume already has the console or worker role'
         config_before, parsed = call(base, '/v1/config', method='GET')
         assert parsed['minimumAppVersion'] == '0.0.9' and parsed['featureFlags'] == {'upgradeFlag': True}, parsed
         assert parsed['thresholds'] == {'proposalQuestionKcalDelta': 70}, parsed
@@ -154,6 +155,14 @@ INSERT INTO userdata.b23_upgrade VALUES (gen_random_uuid(), 11), (gen_random_uui
         # A second start (the next serve-phone) is a no-op for roles, seed and data.
         start(state, 'migrate', 'api', 'worker', 'admin')
         assert phone.sql(state, 'SELECT count(*) FROM account.config_versions;').strip() == '1'
+        # B23b: the upgraded worker runs on its own login and beats; the API login can't write heartbeats.
+        for _ in range(60):
+            if phone.sql(state, 'SELECT count(*) FROM ops.worker_heartbeats;').strip() != '0':
+                break
+            time.sleep(1)
+        else:
+            raise AssertionError('the upgraded worker wrote no heartbeat on fb_worker')
+        assert phone.sql(state, "SELECT has_table_privilege('fb_app','ops.worker_heartbeats','INSERT'), has_table_privilege('fb_worker','ops.worker_heartbeats','INSERT');").strip() == 'f|t'
         phone.backup(state)
         phone.restore_check(state)  # requires admin.* and account.config_versions in the restored dump
         print('B23 T17 upgrade: base image -> current on one volume; /v1/config byte-identical with non-default values; v1 seeded once; '

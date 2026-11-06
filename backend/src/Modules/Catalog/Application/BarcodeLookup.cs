@@ -12,13 +12,51 @@ internal sealed record BarcodeResult(BarcodeStatus Status, OffProduct? Product =
 /// Products live 30 days, unknown codes 1 day; an expired product is served for 7 more days while OFF can't be asked.
 /// Every OFF product, fresh or cached, goes through <see cref="OffSanity"/> (B22): impossible or unusable rows answer
 /// not-found, doubtful ones carry a check-the-label flag. OFF data stays in the cache table; nothing here writes catalog release tables (`07` §3).</summary>
-internal sealed partial class BarcodeLookup(IOffCache cache, IOffClient client, OffGate gate, TimeProvider clock, ILogger<BarcodeLookup>? logger = null)
+/// <summary>Counts lookup outcomes and sanity rules for the console (B23); closed codes only, never a barcode.</summary>
+internal interface IOffLookupCounters
+{
+    void Record(string outcome, string rule = "");
+}
+
+/// <summary>The closed lookup outcome codes (B23); the console shows a counted outcome only when it is one of these.</summary>
+internal static class LookupOutcomes
+{
+    public const string FoundComplete = "found-complete";
+    public const string FoundPartial = "found-partial";
+    public const string NotFound = "not-found";
+    public const string Invalid = "invalid";
+    public const string Limited = "limited";
+    public const string Unavailable = "unavailable";
+    public const string SanityReject = "sanity-reject";
+    public const string SanityWarn = "sanity-warn";
+    public const string SanityRepair = "sanity-repair";
+
+    public static readonly string[] All = [FoundComplete, FoundPartial, NotFound, Invalid, Limited, Unavailable, SanityReject, SanityWarn, SanityRepair];
+}
+
+internal sealed partial class BarcodeLookup(IOffCache cache, IOffClient client, OffGate gate, TimeProvider clock, ILogger<BarcodeLookup>? logger = null,
+    IOffLookupCounters? counters = null)
 {
     public static readonly TimeSpan FoundTtl = TimeSpan.FromDays(30);
     public static readonly TimeSpan NotFoundTtl = TimeSpan.FromDays(1);
     public static readonly TimeSpan StaleGrace = TimeSpan.FromDays(7);
 
     public async Task<BarcodeResult> LookupAsync(string raw, Guid user, CancellationToken cancellationToken)
+    {
+        var result = await ResolveAsync(raw, user, cancellationToken);
+        counters?.Record(result.Status switch
+        {
+            BarcodeStatus.Found when result.Product?.Per100.Complete == true => LookupOutcomes.FoundComplete,
+            BarcodeStatus.Found => LookupOutcomes.FoundPartial,
+            BarcodeStatus.NotFound => LookupOutcomes.NotFound,
+            BarcodeStatus.Invalid => LookupOutcomes.Invalid,
+            BarcodeStatus.UserLimited => LookupOutcomes.Limited,
+            _ => LookupOutcomes.Unavailable,
+        });
+        return result;
+    }
+
+    private async Task<BarcodeResult> ResolveAsync(string raw, Guid user, CancellationToken cancellationToken)
     {
         var code = Gtin.Normalize(raw);
         if (code is null) { return new(BarcodeStatus.Invalid); }
@@ -74,7 +112,14 @@ internal sealed partial class BarcodeLookup(IOffCache cache, IOffClient client, 
     {
         if (product is null) { return new(BarcodeStatus.NotFound); }
         var verdict = OffSanity.Check(product.Per100, product.Basis);
-        if (verdict.Rejected) { LogRejected(string.Join(',', verdict.Rejects)); return new(BarcodeStatus.NotFound); }
+        if (verdict.Rejected)
+        {
+            foreach (var rule in verdict.Rejects) { counters?.Record(LookupOutcomes.SanityReject, rule); }
+            LogRejected(string.Join(',', verdict.Rejects));
+            return new(BarcodeStatus.NotFound);
+        }
+        foreach (var rule in verdict.Warnings) { counters?.Record(LookupOutcomes.SanityWarn, rule); }
+        foreach (var rule in product.Corrections ?? []) { counters?.Record(LookupOutcomes.SanityRepair, rule); }
         var scaled = product.Corrections?.Contains(OffSanity.PerServingScaled) == true || product.Corrections?.Contains(OffSanity.PerServingInPer100) == true;
         return new(BarcodeStatus.Found, product, CheckLabel: verdict.Warnings.Length > 0 || scaled);
     }

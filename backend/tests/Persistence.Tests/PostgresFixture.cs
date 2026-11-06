@@ -22,6 +22,9 @@ public sealed class PostgresFixture : IAsyncLifetime
     public string RecoveryDirectory { get; } = Path.Combine(Path.GetTempPath(), "fb-recovery-db-" + Guid.NewGuid());
     public FitnessBuddy.BuildingBlocks.Recovery.RecoveryBarrier Recovery { get; private set; } = null!;
     public NpgsqlDataSource App { get; private set; } = null!;
+    /// <summary>The B23b worker login (fb_worker), as the worker role uses it: fb_app's privileges plus heartbeats and counter cleanup.</summary>
+    public NpgsqlDataSource Worker { get; private set; } = null!;
+    public string WorkerConnection { get; private set; } = "";
     public string MigratorConnection { get; private set; } = "";
     public string AppConnection { get; private set; } = "";
     /// <summary>The B23 console login (fb_admin), as the admin role uses it.</summary>
@@ -42,6 +45,10 @@ public sealed class PostgresFixture : IAsyncLifetime
         };
         AppConnection = appSettings.ConnectionString;
         App = DatabaseConfiguration.CreateSource(AppConnection);
+        appSettings.Username = "fb_worker";
+        appSettings.Password = "local-worker-only";
+        WorkerConnection = appSettings.ConnectionString;
+        Worker = DatabaseConfiguration.CreateSource(WorkerConnection);
         appSettings.Username = "fb_admin";
         appSettings.Password = "local-admin-console-only";
         AdminConnection = appSettings.ConnectionString;
@@ -109,9 +116,18 @@ public sealed class PostgresFixture : IAsyncLifetime
         return session;
     }
 
+    /// <summary>A transaction on the worker login, for what only the worker role runs (job handlers that expire counters).</summary>
+    public async Task<DatabaseSession> WorkerSessionAsync(Guid? userId = null)
+    {
+        var session = new DatabaseSession();
+        await session.BeginAsync(Worker, userId, TestContext.Current.CancellationToken);
+        return session;
+    }
+
     public async ValueTask DisposeAsync()
     {
         await App.DisposeAsync();
+        await Worker.DisposeAsync();
         await container.DisposeAsync();
         if (Directory.Exists(RecoveryDirectory)) { Directory.Delete(RecoveryDirectory, recursive: true); }
     }

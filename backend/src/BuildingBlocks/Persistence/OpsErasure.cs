@@ -6,7 +6,7 @@ namespace FitnessBuddy.BuildingBlocks.Persistence;
 /// <summary>Ops owns infrastructure bytes and markers. Caller holds the lifecycle lock and transaction.</summary>
 public static class OpsErasure
 {
-    public static UserDataOwnership Ownership { get; } = new(["outbox", "jobs", "processed_messages", "schedules", "idempotency"], ["recovery"], null);
+    public static UserDataOwnership Ownership { get; } = new(["outbox", "jobs", "processed_messages", "schedules", "idempotency"], ["recovery", "worker_heartbeats", "http_errors_hourly", "queue_pauses"], null);
 
     public static async Task DeleteUserAsync(DatabaseSession session, CancellationToken cancellationToken)
     {

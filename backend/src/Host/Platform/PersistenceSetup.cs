@@ -12,18 +12,31 @@ internal sealed class DatabaseOptions
 
     /// <summary>The console login fb_admin (B23). Only the admin role receives it; it never gets Application or Migrator.</summary>
     public string Admin { get; set; } = "";
+
+    /// <summary>The worker login fb_worker (B23b): fb_app's privileges plus heartbeats and counter cleanup. Only the worker role uses it.</summary>
+    public string Worker { get; set; } = "";
 }
 
 internal static class PersistenceSetup
 {
-    public static void AddFbPersistence(this IHostApplicationBuilder builder, bool migrate = false)
+    /// <summary>The shared persistence services. The worker role (<paramref name="worker"/>) connects as fb_worker, every other role
+    /// as fb_app; the migrate role reads <c>Migrator</c> itself.</summary>
+    public static void AddFbPersistence(this IHostApplicationBuilder builder, bool migrate = false, bool worker = false)
     {
         var options = builder.Services.AddOptions<DatabaseOptions>().BindConfiguration("ConnectionStrings");
-        if (!migrate && !PlatformSetup.IsBuildTimeDocument)
+        if (worker)
+        {
+            options.Validate(settings => !string.IsNullOrWhiteSpace(settings.Worker), "ConnectionStrings:Worker is required.").ValidateOnStart();
+        }
+        else if (!migrate && !PlatformSetup.IsBuildTimeDocument)
         {
             options.Validate(settings => !string.IsNullOrWhiteSpace(settings.Application), "ConnectionStrings:Application is required.").ValidateOnStart();
         }
-        builder.Services.AddFbDatabase(provider => provider.GetRequiredService<IOptions<DatabaseOptions>>().Value.Application);
+        builder.Services.AddFbDatabase(provider =>
+        {
+            var settings = provider.GetRequiredService<IOptions<DatabaseOptions>>().Value;
+            return worker ? settings.Worker : settings.Application;
+        });
         builder.Services.Configure<FitnessBuddy.BuildingBlocks.Recovery.RecoveryOptions>(builder.Configuration.GetSection("Recovery"));
         builder.Services.AddSingleton<FitnessBuddy.BuildingBlocks.Recovery.RecoveryBarrier>();
         builder.Services.AddSingleton<RecoveryRequestGate>();

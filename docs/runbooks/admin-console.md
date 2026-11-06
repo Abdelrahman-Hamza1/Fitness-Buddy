@@ -58,8 +58,8 @@ Do these in order, on the laptop, from a clean `main` that includes B23. `<tailn
    make serve-phone-admin-allow            # handle owner, role operator (ADMIN_HANDLE / ADMIN_ROLE to change)
    ```
 
-5. **Start.** `make serve-phone-prepare`, then `make serve-phone`. The controller makes sure the `fb_admin` login exists
-   (`ensure-admin-role`), runs migrations (they seed remote config version 1 from the current settings), starts api,
+5. **Start.** `make serve-phone-prepare`, then `make serve-phone`. The controller makes sure the `fb_admin` and `fb_worker`
+   logins exist with their own passwords (`ensure-admin-role`, `ensure-worker-role`; an old state gets the new secret), runs migrations (they seed remote config version 1 from the current settings), starts api,
    worker, the console and its node, and refuses to go on unless the node is exactly `fb-admin.<tailnet>`, tagged
    `tag:fb-admin`, has its HTTPS certificate and serves exactly one route (HTTPS 443 → the console) with no Funnel. Then
    it serves the API on the laptop's own name as before (exactly one route). `make serve-phone-status` shows both.
@@ -88,6 +88,28 @@ account or its handle is reused. Roles: `viewer` (read) and `operator` (also cha
   Google sign-in step by the same account in this browser; it doesn't make Google ask for your password again.
 - **Audit log:** every sign-in, refused sign-in, change and export, newest first; filter and export CSV. It can't be
   edited or deleted.
+- **Overview (home):** health of the API (its readiness, probed on the compose network), database, workers (heartbeats
+  every 30 s), backups (the controller's status file after each backup), catalog and Buddy; installs in 1/7/30 days,
+  accounts by type, server errors in 24 h, AI spend this month ("no cap set" until phase 2), app versions in use and open
+  alerts, each linking to the window behind it. Error and lookup counts are approximate (written once a minute).
+- **Accounts:** newest first, filter by type or "sync issues" (rejects in the last 7 days, most first); both filters apply
+  before the page is cut, and the issue list pages on ("More accounts with issues"). Find an account only by its
+  **exact** email (case and spaces ignored); partial or wildcard searches never match. The lookup is audited without the
+  address and limited to 10 a minute. Email sign-in accounts never store the address (only its keyed hash), so their email
+  column says "not stored (email sign-in)" and the lookup finds them only when the console has Identity's lookup key: on the
+  laptop the controller mounts just the pepper into the console (read-only, `Identity__PepperFile`); without it the result
+  says those accounts weren't searched and the audit row reads `no-match-partial`. The detail page shows documents per
+  entity type and the devices without their ids.
+  Account controls (revoke, disable, delete) come with B24.
+- **Jobs & sync:** queues per type with pending, due, in progress (as of the last heartbeat, jobs and events counted
+  separately), failed and oldest due item. A type or error the console doesn't know reads `other`. Operators can retry a
+  failed item, cancel a pending or failed job, and pause/resume a job type (`ops.cleanup` can't be paused; events never
+  pause). Each request has exactly one audit row with the state found under the lock: `ok` (before → after), `no-op` (it
+  already was so, e.g. a resubmitted form) or `refused` (wrong state, missing, or a worker is running it right now:
+  "busy", try again later). Sync shows pushes, pulls and rejects by reason in 7 days.
+- **Catalog:** releases (version, foods and change, pack size, current), the Open Food Facts cache, lookup outcomes and
+  sanity flags for 14 days. Publishing or rolling back a release stays a laptop command
+  ([catalog runbook](catalog.md)); installs per pack version and a maintenance message are in the backlog.
 
 ## Recovery
 
@@ -107,12 +129,16 @@ account or its handle is reused. Roles: `viewer` (read) and `operator` (also cha
   Tailscale and delete `console-tailscale/` in the state folder, then add a new key. The API keeps running either way.
 - **Can't sign in:** check the allow-list file (an invalid file means nobody can sign in, and readiness reports
   `allow-list-invalid`), the pinned subject, and the client ID's JavaScript origins. Fix the file; no restart needed.
+- **A job type is paused and work piles up:** Jobs & sync → Resume. Pauses survive restarts (they are rows in
+  `ops.queue_pauses`).
+- **"No worker heartbeat" alert:** the worker container is down or can't reach the database; `make serve-phone-status`,
+  then `make serve-phone`.
 - **Database unreachable:** API and worker keep the last good config; after a restart they use the settings' defaults
   (never "no minimum").
 
 ## Local development
 
-`make up` now runs a one-shot `roles` step before migrations that creates any missing development login (B23: `fb_admin`),
+`make up` now runs a one-shot `roles` step before migrations that creates any missing development login (B23: `fb_admin`; B23b: `fb_worker`, which the worker now uses),
 so an existing local volume upgrades without a reset. `make up-admin` also starts the console on `http://localhost:5196/admin`; it needs
 `FB_ADMIN_GOOGLE_CLIENT_ID` (a Web client with that origin) and `FB_ADMIN_CONSOLE_DIR` pointing at a folder with an
 `allow-list.json` in the same format as above. Tests use a fake Google verifier; never put a real account in fixtures.

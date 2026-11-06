@@ -87,7 +87,32 @@ public sealed class AdminRoleTests(PostgresFixture postgres)
     }
 
     /// <summary>The result columns every admin_* function may return (B23 P3): counts, codes, versions, timestamps; never content.</summary>
-    private static readonly HashSet<string> AllowedColumns = new(StringComparer.Ordinal) { "app_version", "platform", "installs" };
+    private static readonly HashSet<string> AllowedColumns = new(StringComparer.Ordinal)
+    {
+        // identity (B23a WP4, B23b WP8): pseudonymous ids, closed codes, counts, times and the masked email (AD-002).
+        "app_version", "platform", "installs", "account_type", "status", "accounts", "user_id", "masked_email", "email_state", "created_at", "last_seen_at", "devices",
+        "active_sessions",
+        // userdata: counts, sizes, entity codes, times.
+        "documents", "storage_bytes", "rejects", "last_push_at", "last_pull_at", "pushes", "pulls", "changes_in", "stale", "clock_drift",
+        "version_conflict", "unsupported", "invalid_payload", "dataset_mismatch", "cursor_invalid", "entity", "schema_version", "deleted",
+        // usage: totals only.
+        "calls", "messages", "estimated_usd",
+        // catalog: releases, cache sizes, lookup codes.
+        "version", "foods", "pack_bytes", "sha_prefix", "is_current", "products", "unknown_codes", "expiring_7d", "day", "outcome", "rule", "lookups",
+        // ops: queue ids, type codes, counts, error type names, heartbeats.
+        "id", "kind", "type", "state", "attempts", "error_type", "pending", "due", "done_24h", "dead", "cancelled", "oldest_due_at", "paused",
+        "instance", "role", "build", "started_at", "last_beat_at", "busy_kind", "busy_type", "busy_since", "errors", "previous",
+    };
+
+    /// <summary>Every function the console login can run (B23 P3, P4). A new one is reviewed and added here.</summary>
+    private static readonly string[] AdminFunctions =
+    [
+        "catalog.admin_lookups", "catalog.admin_off_cache", "catalog.admin_releases",
+        "identity.admin_accounts", "identity.admin_accounts_by_type", "identity.admin_devices", "identity.admin_find_by_email", "identity.admin_installs",
+        "ops.admin_cancel", "ops.admin_failed", "ops.admin_heartbeats", "ops.admin_http_errors", "ops.admin_queues", "ops.admin_retry", "ops.admin_set_paused",
+        "usage.admin_spend", "usage.admin_uses",
+        "userdata.admin_documents", "userdata.admin_sync_summary", "userdata.admin_user_stats", "userdata.admin_users_with_issues",
+    ];
 
     [Fact]
     [Trait("Rule", "B23.P3-admin-functions")]
@@ -117,7 +142,10 @@ public sealed class AdminRoleTests(PostgresFixture postgres)
                 foreach (var column in reader.GetString(5).Split(',', StringSplitOptions.RemoveEmptyEntries)) { Assert.Contains(column, AllowedColumns); }
             }
         }
-        Assert.Contains("identity.admin_installs", names);
+        Assert.Equal(AdminFunctions, names);
+        // Neither the application login nor PUBLIC can run any of them.
+        await using var app = owner.CreateCommand("SELECT count(*) FROM pg_proc p WHERE p.proname LIKE 'admin!_%' ESCAPE '!' AND (has_function_privilege('fb_app', p.oid, 'EXECUTE') OR has_function_privilege('public', p.oid, 'EXECUTE'))");
+        Assert.Equal(0L, await app.ExecuteScalarAsync(Ct));
     }
 
     [Fact]

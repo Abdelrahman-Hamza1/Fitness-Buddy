@@ -58,12 +58,17 @@ internal sealed partial class AdminApp : IAsyncDisposable
             builder.Configuration.AddInMemoryCollection(settings);
             builder.Services.AddSingleton<TimeProvider>(clock);
             builder.Services.AddSingleton<IGoogleIdTokenVerifier>(new FakeGoogle(clock));
+            builder.Services.AddSingleton(TestVocabulary);
             configure?.Invoke(builder);
         });
         map?.Invoke(app);
         await app.StartAsync(TestContext.Current.CancellationToken);
         return new AdminApp(app, directory, clock);
     }
+
+    /// <summary>The queue codes the console shows as they are: the real ones plus the seeds' test types (B23b).</summary>
+    public static FitnessBuddy.BuildingBlocks.Ops.QueueVocabulary TestVocabulary { get; } =
+        FitnessBuddy.BuildingBlocks.Ops.QueueVocabulary.Default.With(["test.monitor", "test.retry-once", "test.held"], ["test.monitor-event", "test.busy-event"]);
 
     /// <summary>owner (operator) and reader (viewer) are pinned; newbie is pending.</summary>
     public static object DefaultAllowList => new

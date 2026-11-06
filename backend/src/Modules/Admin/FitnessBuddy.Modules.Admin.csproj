@@ -9,6 +9,9 @@
     <ProjectReference Include="..\..\BuildingBlocks\FitnessBuddy.BuildingBlocks.csproj" />
     <ProjectReference Include="../Identity/FitnessBuddy.Modules.Identity.csproj" />
     <ProjectReference Include="../Account/FitnessBuddy.Modules.Account.csproj" />
+    <ProjectReference Include="../UserData/FitnessBuddy.Modules.UserData.csproj" />
+    <ProjectReference Include="../Usage/FitnessBuddy.Modules.Usage.csproj" />
+    <ProjectReference Include="../Catalog/FitnessBuddy.Modules.Catalog.csproj" />
   </ItemGroup>
 
   <!-- Static assets are embedded and served by the admin role (no static web assets pipeline in the image). -->

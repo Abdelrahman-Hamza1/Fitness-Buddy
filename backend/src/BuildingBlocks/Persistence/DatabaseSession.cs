@@ -47,6 +47,29 @@ public sealed class DatabaseSession : IAsyncDisposable
 
     public async Task CommitAsync(CancellationToken cancellationToken) => await Transaction.CommitAsync(cancellationToken);
 
+    /// <summary>
+    /// Runs best-effort telemetry SQL inside this transaction under a savepoint (B23 R2#1). A statement error the server
+    /// reports (<see cref="PostgresException"/>: constraint, check, permission, lock timeout) rolls back to the savepoint and is
+    /// returned, so the caller's own work still commits. Connection loss, cancellation and anything else propagate, so a request
+    /// never reports success for work that wasn't committed.
+    /// </summary>
+    public async Task<PostgresException?> TryInSavepointAsync(Func<Task> write, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(write);
+        await Transaction.SaveAsync("telemetry", cancellationToken);
+        try
+        {
+            await write();
+            await Transaction.ReleaseAsync("telemetry", cancellationToken);
+            return null;
+        }
+        catch (PostgresException error)
+        {
+            await Transaction.RollbackAsync("telemetry", cancellationToken);
+            return error;
+        }
+    }
+
     public async ValueTask DisposeAsync()
     {
         if (transaction is not null) { await transaction.DisposeAsync(); }

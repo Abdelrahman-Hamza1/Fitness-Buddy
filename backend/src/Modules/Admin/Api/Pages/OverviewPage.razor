@@ -1,0 +1,119 @@
+@* AD-010: health, installs, accounts, errors, AI spend, app versions, open alerts with their window, dashboard links. Counts only. *@
+<Layout View="View">
+    <section aria-labelledby="alerts">
+        <h2 id="alerts">Open alerts</h2>
+        @if (Overview.Alerts.Count == 0)
+        {
+            <p><StatusBadge Kind="ok" Word="No open alerts" /></p>
+        }
+        else
+        {
+            <ul class="alerts">
+                @foreach (var alert in Overview.Alerts)
+                {
+                    <li><StatusBadge Kind="bad" Word="Alert" /> @alert.Message <a href="@alert.Link">Open</a></li>
+                }
+            </ul>
+        }
+    </section>
+
+    <h2>Health</h2>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Part</th><th>Status</th><th>Detail</th></tr></thead>
+            <tbody>
+                @foreach (var part in Overview.Health)
+                {
+                    <tr><td>@part.Name</td><td><StatusBadge Kind="@part.Kind" Word="@part.Word" /></td><td>@part.Detail</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="grid">
+        <section class="card">
+            <h2>Active installs</h2>
+            <table>
+                <tbody>
+                    @foreach (var row in Overview.Installs)
+                    {
+                        <tr><td>@row.Key</td><td>@row.Value</td></tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+        <section class="card">
+            <h2>Accounts</h2>
+            <table>
+                <thead><tr><th>Type</th><th>Status</th><th>Accounts</th></tr></thead>
+                <tbody>
+                    @foreach (var row in Overview.Accounts)
+                    {
+                        <tr><td>@row.Type</td><td>@row.Status</td><td>@Show.Count(row.Accounts)</td></tr>
+                    }
+                </tbody>
+            </table>
+            <p><a href="/admin/accounts">All accounts</a></p>
+        </section>
+        <section class="card">
+            <h2>Server errors (24 h, approximate)</h2>
+            @if (Overview.ServerErrors.Count == 0)
+            {
+                <p><StatusBadge Kind="ok" Word="None" /></p>
+            }
+            else
+            {
+                <table>
+                    <thead><tr><th>Role</th><th>Status</th><th>Count</th></tr></thead>
+                    <tbody>
+                        @foreach (var row in Overview.ServerErrors)
+                        {
+                            <tr><td>@row.Role</td><td>@row.Status</td><td>@Show.Count(row.Errors)</td></tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+        <section class="card">
+            <h2>AI spend this month</h2>
+            <p>@Overview.SpendUsd estimated, @Show.Count(Overview.SpendCalls) calls. <span class="muted">No cap set (phase 2).</span></p>
+        </section>
+    </div>
+
+    <h2>App versions in use (30 days)</h2>
+    @if (Overview.Versions.Count == 0)
+    {
+        <p class="muted">No installs reported a version in the last 30 days.</p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Version</th><th>Platform</th><th>Installs</th></tr></thead>
+                <tbody>
+                    @foreach (var row in Overview.Versions)
+                    {
+                        <tr><td>@row.AppVersion</td><td>@row.Platform</td><td>@Show.Count(row.Installs)</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (Overview.Links.Count > 0)
+    {
+        <h2>Dashboards</h2>
+        <p>
+            @foreach (var link in Overview.Links)
+            {
+                <a class="button secondary" href="@link.Url" rel="noreferrer noopener" target="_blank">@link.Label</a>
+            }
+        </p>
+    }
+    <p class="muted">Times are UTC. This page shows counts only, never user content.</p>
+</Layout>
+
+@code {
+    [Parameter, EditorRequired] public PageView View { get; set; } = null!;
+    [Parameter, EditorRequired] public OverviewView Overview { get; set; } = null!;
+}

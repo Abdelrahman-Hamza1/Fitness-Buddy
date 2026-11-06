@@ -147,7 +147,7 @@ public sealed class BarcodeLookupTests(PostgresFixture postgres)
             insert.Parameters.AddWithValue(fresh); insert.Parameters.AddWithValue(clock.GetUtcNow() - TimeSpan.FromDays(6));
             await insert.ExecuteNonQueryAsync(Ct);
         }
-        await using (var session = await postgres.SessionAsync())
+        await using (var session = await postgres.WorkerSessionAsync())
         {
             await new OffCacheExpiryJob(clock).HandleAsync(new FitnessBuddy.BuildingBlocks.Messaging.QueueMessage(Guid.NewGuid(), OffCacheExpiryJob.Type, "{}", null, 1), session, Ct);
             await session.CommitAsync(Ct);

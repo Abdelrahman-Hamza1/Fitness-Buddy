@@ -1,0 +1,60 @@
+@* AD-011 detail (read): the account's summary, documents per entity type and schema version, devices without their ids.
+   Controls (revoke, disable, delete) come with B24. *@
+<Layout View="View">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Account</th><th>Type</th><th>Email</th><th>Status</th><th>Created</th><th>Last seen</th><th>App</th><th>Devices</th>
+                    <th>Documents</th><th>Storage</th><th>Sync (7 d)</th><th>AI uses (30 d)</th></tr>
+            </thead>
+            <tbody><AccountCells Row="Detail.Row" /></tbody>
+        </table>
+    </div>
+
+    <h2>Documents by type</h2>
+    @if (Detail.Documents.Count == 0)
+    {
+        <p class="muted">No synced documents.</p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Entity</th><th>Schema version</th><th>Live</th><th>Deleted</th></tr></thead>
+                <tbody>
+                    @foreach (var row in Detail.Documents)
+                    {
+                        <tr><td>@row.Entity</td><td>@row.SchemaVersion</td><td>@Show.Count(row.Documents)</td><td>@Show.Count(row.Deleted)</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <h2>Devices</h2>
+    @if (Detail.Devices.Count == 0)
+    {
+        <p class="muted">No devices.</p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Device</th><th>Platform</th><th>App version</th><th>Last seen</th><th>Active sessions</th></tr></thead>
+                <tbody>
+                    @for (var i = 0; i < Detail.Devices.Count; i++)
+                    {
+                        var device = Detail.Devices[i];
+                        <tr><td>Device @(i + 1)</td><td>@(device.Platform ?? Show.None)</td><td>@(device.AppVersion ?? Show.None)</td><td>@Show.Time(device.LastSeenAt)</td><td>@device.ActiveSessions</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    <p><a href="/admin/accounts">Back to accounts</a></p>
+</Layout>
+
+@code {
+    [Parameter, EditorRequired] public PageView View { get; set; } = null!;
+    [Parameter, EditorRequired] public AccountDetailView Detail { get; set; } = null!;
+}

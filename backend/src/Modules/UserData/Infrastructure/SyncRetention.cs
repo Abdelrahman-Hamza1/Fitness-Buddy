@@ -7,9 +7,18 @@ using FitnessBuddy.Modules.UserData.Domain;
 
 namespace FitnessBuddy.Modules.UserData.Infrastructure;
 
+/// <summary>The per-user retention schedule: registered by the first push or sync count, hourly.</summary>
+internal static class SyncRetention
+{
+    public const string JobType = "userdata.cleanup";
+    public const string Cron = "0 * * * *";
+
+    public static string ScheduleName(Guid userId) => JobType + ":" + userId;
+}
+
 internal sealed class SyncRetentionJob(TimeProvider clock, IIdGenerator ids) : IJobHandler
 {
-    public string JobType => "userdata.cleanup";
+    public string JobType => SyncRetention.JobType;
     public async Task HandleAsync(QueueMessage message, DatabaseSession session, CancellationToken cancellationToken)
     {
         if (message.UserId is not { } user || session.UserId != user) { throw new InvalidOperationException("Missing cleanup owner."); }
@@ -50,6 +59,13 @@ internal sealed class SyncRetentionJob(TimeProvider clock, IIdGenerator ids) : I
             """);
         compact.Parameters.AddWithValue(user); compact.Parameters.AddWithValue(cutoff);
         var compacted = await compact.ExecuteNonQueryAsync(cancellationToken);
+        // The console's sync counts (B23 P3): 90 days.
+        await using (var counts = session.Command("DELETE FROM userdata.sync_daily WHERE user_id=$1 AND day<$2"))
+        {
+            counts.Parameters.AddWithValue(user);
+            counts.Parameters.AddWithValue(DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime).AddDays(-90));
+            await counts.ExecuteNonQueryAsync(cancellationToken);
+        }
         if (versions.Count == 1000 || expired == 1000 || compacted == 1000)
         { await new QueueWriter(session, clock, ids).EnqueueForUserAsync(JobType, user, new { }, cancellationToken); }
     }

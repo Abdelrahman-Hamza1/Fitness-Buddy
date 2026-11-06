@@ -18,7 +18,6 @@ x-environment: &environment
   <<: *remote-config
   DOTNET_ENVIRONMENT: Production
   ASPNETCORE_ENVIRONMENT: Production
-  ConnectionStrings__Application: Host=postgres;Database=fitness_buddy;Username=fb_app;Password=${FB_PHONE_APP_PASSWORD:?}
   Observability__ConsoleExporter: "false"
   Sentry__Dsn: ""
 services:
@@ -35,6 +34,8 @@ services:
       FB_PHONE_BACKUP_PASSWORD: ${FB_PHONE_BACKUP_PASSWORD:?}
       # B23: read by the controller's ensure-admin-role step through psql's \getenv, never on a command line.
       FB_PHONE_CONSOLE_PASSWORD: ${FB_PHONE_CONSOLE_PASSWORD:?}
+      # B23b: the worker login's password, read the same way by the controller's ensure-worker-role step.
+      FB_PHONE_WORKER_PASSWORD: ${FB_PHONE_WORKER_PASSWORD:?}
     volumes:
       - phone-data:/var/lib/postgresql
       - ./init-roles.sh:/docker-entrypoint-initdb.d/001-roles.sh:ro
@@ -59,13 +60,17 @@ services:
     ports: ["127.0.0.1:5199:8080"]
     environment:
       <<: *environment
+      ConnectionStrings__Application: Host=postgres;Database=fitness_buddy;Username=fb_app;Password=${FB_PHONE_APP_PASSWORD:?}
       Proxy__TrustedNetworks__0: ${FB_PHONE_PROXY_CIDR:?determine the bridge gateway first}
     depends_on:
       migrate: {condition: service_completed_successfully}
   worker:
     <<: *runtime
     command: [worker]
-    environment: *environment
+    # B23b: its own login (heartbeats, counter cleanup), never the API's.
+    environment:
+      <<: *environment
+      ConnectionStrings__Worker: Host=postgres;Database=fitness_buddy;Username=fb_worker;Password=${FB_PHONE_WORKER_PASSWORD:?}
     depends_on:
       migrate: {condition: service_completed_successfully}
   # B23 admin console: only with the `admin` profile (the controller adds it once the console is configured). Reached only
@@ -86,6 +91,8 @@ services:
       Admin__GoogleClientId: ${FB_PHONE_CONSOLE_CLIENT_ID:?}
       Admin__AllowListFile: /console/allow-list.json
       Admin__BackupStatusFile: /status/backup.json
+      # The Overview's API health probe (B23b): /health/ready on the compose network, never a public URL.
+      Admin__ApiReadyUrl: http://api:8080
       # No Proxy__TrustedNetworks: only loopback is trusted, which is the sidecar in this network namespace. Clients on the
       # published port arrive from the bridge gateway, so they can't supply X-Forwarded-For.
       Observability__ConsoleExporter: "false"

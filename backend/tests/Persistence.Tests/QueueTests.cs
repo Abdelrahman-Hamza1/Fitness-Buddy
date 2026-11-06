@@ -201,7 +201,8 @@ public sealed class QueueTests(PostgresFixture database) : IAsyncLifetime
     public async Task Cleanup_removes_expired_replays_and_old_completed_items_but_keeps_dead_letters()
     {
         var expired = clock.GetUtcNow() - TimeSpan.FromDays(8);
-        await using (var session = await database.SessionAsync())
+        // ops.cleanup runs in the worker role, on its login (it alone expires the console counters, B23b).
+        await using (var session = await database.WorkerSessionAsync())
         {
             await using var seed = session.Command("""
                 WITH replay AS(INSERT INTO ops.idempotency VALUES('scope','expired','fp',200,NULL,''::bytea,'{}',$1,$1) RETURNING scope_hash)

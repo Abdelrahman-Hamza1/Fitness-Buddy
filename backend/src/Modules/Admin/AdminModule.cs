@@ -59,6 +59,18 @@ public static class AdminModule
         services.AddScoped<ReAuthenticate>();
         services.AddScoped<SignOut>();
         services.AddScoped<ResolveSession>();
+        // B23b monitor windows: Overview, Accounts, Jobs & sync, Catalog.
+        services.AddHttpClient(HttpApiHealth.ClientName, client => client.Timeout = TimeSpan.FromSeconds(3))
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false, UseCookies = false }).RemoveAllLoggers();
+        services.AddSingleton<IApiHealth, HttpApiHealth>();
+        services.AddSingleton<IBackupStatus, FileBackupStatus>();
+        services.AddScoped<ReadOverview>();
+        services.AddScoped<ListAccounts>();
+        services.AddScoped<ReadAccount>();
+        services.AddScoped<FindAccountByEmail>();
+        services.AddScoped<ReadJobsAndSync>();
+        services.AddScoped<QueueActions>();
+        services.AddScoped<ReadCatalog>();
         services.AddHealthChecks().AddCheck<FileAllowList>("allow-list", tags: ["ready"]);
 
         // The console's own scheme is the default here (the platform also registers the API's bearer scheme).
@@ -100,6 +112,12 @@ public static class AdminModule
                 return RateLimitPartition.GetFixedWindowLimiter(context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
                     _ => new FixedWindowRateLimiterOptions { PermitLimit = permit, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 });
             });
+            options.AddPolicy(AccountEndpoints.LookupRateLimit, context =>
+            {
+                var permit = context.RequestServices.GetRequiredService<IOptions<AdminOptions>>().Value.LookupPermitPerMinute;
+                return RateLimitPartition.GetFixedWindowLimiter(context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    _ => new FixedWindowRateLimiterOptions { PermitLimit = permit, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 });
+            });
             // Plus one process-wide bucket for the same endpoints, which no forwarded address can multiply.
             options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
             {
@@ -129,6 +147,9 @@ public static class AdminModule
         AuthEndpoints.Map(group);
         AssetEndpoints.Map(group);
         AuditEndpoints.Map(group);
+        OverviewEndpoints.Map(group);
+        AccountEndpoints.Map(group);
+        JobsEndpoints.Map(group);
         ConfigEndpoints.Map(group);
         return group;
     }

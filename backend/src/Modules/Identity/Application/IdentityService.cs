@@ -31,10 +31,10 @@ internal sealed class IdentityService(IIdentityStore store, IIdentityTokens toke
     {
         var id = ids.NewId();
         var expires = clock.GetUtcNow().AddMinutes(10);
-        var normalized = address.Trim().ToLowerInvariant();
+        var normalized = EmailAddresses.Normalize(address);
         if (purpose == "link" && (principal is null || !principal.IsAnonymous)) { return (id, expires); }
         var code = RandomNumberGenerator.GetInt32(1000000).ToString("D6", CultureInfo.InvariantCulture);
-        var allowed = await store.StartEmailAsync(id, tokens.ProtectLookup("email-address", normalized), CodeHash(id, code, purpose), purpose,
+        var allowed = await store.StartEmailAsync(id, tokens.ProtectLookup(EmailAddresses.LookupDomain, normalized), CodeHash(id, code, purpose), purpose,
             purpose == "link" ? principal : null, tokens.ProtectLookup("email-ip", ip), ct);
         if (allowed) { await email.SendAsync(id, normalized, code, expires, ct); }
         return (id, expires);

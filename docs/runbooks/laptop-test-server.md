@@ -126,7 +126,7 @@ stdout/stderr, SQL errors and credentials are never echoed by the controller.
 
 The dedicated non-superuser `fb_backup` has `pg_read_all_data` and BYPASSRLS, needed to include
 all users' FORCE RLS rows. It has no write, create-database or create-role permission. Application
-containers receive only fb_app; migrate receives only fb_migrator. Backup and scratch restore
+API receives only fb_app, the worker only fb_worker (B23b), the console only fb_admin; migrate receives only fb_migrator. Backup and scratch restore
 commands execute through the private Postgres container. No backup credential is given to API.
 
 B06 adds private `recovery/generation` (0700 directory,0600 file) and a matching global DB row.

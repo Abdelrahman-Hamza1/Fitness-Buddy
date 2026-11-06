@@ -46,7 +46,7 @@ internal sealed class IdentityErasure : IIdentityDeletion, IOutboxHandler, IDisp
                 byte[]? hash = reader.GetString(0) switch
                 {
                     "email" or "challenge" => Convert.FromHexString(reader.GetString(1)),
-                    "google" when !string.IsNullOrWhiteSpace(reader.GetString(2)) => HMACSHA256.HashData(pepper ?? throw new InvalidOperationException("Identity lookup material unavailable."), Encoding.UTF8.GetBytes("email-address\0" + reader.GetString(2).Trim().ToLowerInvariant())),
+                    "google" when !string.IsNullOrWhiteSpace(reader.GetString(2)) => HMACSHA256.HashData(pepper ?? throw new InvalidOperationException("Identity lookup material unavailable."), Encoding.UTF8.GetBytes(EmailAddresses.LookupDomain + "\0" + EmailAddresses.Normalize(reader.GetString(2)))),
                     _ => null,
                 };
                 if (hash is not null) { addresses[Convert.ToHexStringLower(hash)] = hash; }

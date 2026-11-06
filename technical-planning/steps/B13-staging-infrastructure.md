@@ -59,6 +59,7 @@ Create the accounts in `steps/README.md` §3 (Hetzner, domain + Cloudflare, Graf
 ---
 
 **Cross-card note (B23, 2026-11-06):** provision the `fb_admin` database login (console role: `LOGIN NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE NOINHERIT`, CONNECT only, its own secret) before the first `migrate`, since B23 migrations grant to it and fail closed without it; run the `admin` role on loopback behind Tailscale only (never the public proxy). See B23 P3/P5.
+**Cross-card note (B23b, 2026-11-07):** provision the worker login `fb_worker` too (`LOGIN NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE INHERIT`, its own secret, `GRANT fb_app TO fb_worker WITH INHERIT TRUE, SET FALSE`, CONNECT) before the first `migrate` (B23b migrations grant to it and fail closed without it); the worker gets only `ConnectionStrings:Worker`, never the API's login.
 
 ## Low-level plan
 _Written in Phase B._

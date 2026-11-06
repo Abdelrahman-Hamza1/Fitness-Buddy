@@ -97,7 +97,8 @@ Cheap now, expensive later, so from the **first screen**:
 
 - **App flavors:** `dev` (local API + worker + Postgres: `make up`, via `adb reverse`), `staging`, `prod`, each pointing at its own API base URL. Config via `--dart-define-from-file` (`apps/mobile/config/<flavor>.json`); from A11 the staging and prod CI builds take the URL from a GitHub Actions variable: the laptop test server until production (TD-064). The owner's daily app is the prod flavor.
 - **Remote config:** `GET /v1/config` returns the minimum app version, feature flags (e.g. `buddy.photo_enabled`) and client thresholds (AI-060 values, so tuning needs no release). Cached locally, with safe defaults offline.
-- **API configuration:** standard .NET configuration (appsettings + environment variables + secrets). Feature flags in config, read through an `IFeatureFlags` port.
+- **API configuration:** standard .NET configuration (appsettings + environment variables + secrets). Feature flags read through an `IFeatureFlags` port.
+- **Versioned remote config (B23, TD-120 candidate):** what `GET /v1/config` serves plus the server switches (`buddy.ai`) live in Account's append-only `config_versions`, seeded as version 1 from the configuration defaults, edited in the owner console (draft → diff with reach → publish → rollback as a new version) and picked up by every role within about 5 s. The minimum app version can't be raised above the newest version an active install reported in 7 days; `Clients:MinimumAppVersionOverride` wins everywhere for recovery. The response shape is unchanged.
 - Unfinished features ship dark behind flags rather than living on long branches.
 
 

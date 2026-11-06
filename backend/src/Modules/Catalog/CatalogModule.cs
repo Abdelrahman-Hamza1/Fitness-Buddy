@@ -16,7 +16,7 @@ namespace FitnessBuddy.Modules.Catalog;
 public sealed class CatalogModule : IModule
 {
     public string Name => "Catalog";
-    public UserDataOwnership UserData => new([], ["pack_releases", "current_release", "foods", "dishes", "names", "servings", "yields", "exercises", "cities", "off_cache"], null);
+    public UserDataOwnership UserData => new([], ["pack_releases", "current_release", "foods", "dishes", "names", "servings", "yields", "exercises", "cities", "off_cache", "off_lookup_daily"], null);
     public static Task ImportAsync(string migratorConnection, string directory, CancellationToken cancellationToken) => CatalogImporter.ImportAsync(migratorConnection, directory, cancellationToken);
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
@@ -31,6 +31,9 @@ public sealed class CatalogModule : IModule
             .RemoveAllLoggers();
         services.AddSingleton<OffGate>();
         services.AddScoped<IOffClient, OpenFoodFactsClient>(); services.AddScoped<IOffCache, PostgresOffCache>(); services.AddScoped<BarcodeLookup>();
+        services.AddSingleton<OffLookupCounters>(); services.AddSingleton<IOffLookupCounters>(p => p.GetRequiredService<OffLookupCounters>());
+        services.AddSingleton<FitnessBuddy.BuildingBlocks.Ops.ICounterFlush>(p => p.GetRequiredService<OffLookupCounters>());
+        services.AddSingleton<ICatalogAdminReads, PostgresCatalogAdminReads>();
         services.AddScoped<IJobHandler, OffCacheExpiryJob>(); services.AddSingleton(OffCacheExpiryJob.Schedule);
         services.AddSingleton(new ModuleMigration("catalog", connection => new CatalogContext(DatabaseConfiguration.ContextOptions<CatalogContext>(connection, "catalog"))));
     }

@@ -1,0 +1,172 @@
+@using FitnessBuddy.BuildingBlocks.Ops
+@* AD-014: queues by state, in progress from heartbeats, failed items (retry, cancel), pause/resume a job type; sync pushes, pulls,
+   rejects by reason and documents by entity and schema version. Ids, type codes, counts and error type names only. *@
+<Layout View="View">
+    @if (Jobs.Notice is { } notice)
+    {
+        <p class="@(Jobs.NoticeIsError ? "notice" : "card")" role="status"><StatusBadge Kind="@(Jobs.NoticeIsError ? "warn" : "ok")" Word="@notice" /></p>
+    }
+    <h2>Queues</h2>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Kind</th><th>Type</th><th>State</th><th>Pending</th><th>Due</th><th>In progress</th><th>Done (24 h)</th><th>Failed</th><th>Cancelled</th><th>Oldest due</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var queue in Jobs.Queues)
+                {
+                    <tr>
+                        <td>@OpsQueues.Code(queue.Kind)</td>
+                        <td><code>@queue.Type</code></td>
+                        <td>
+                            @if (queue.Paused)
+                            {
+                                <StatusBadge Kind="warn" Word="paused" />
+                            }
+                            else if (queue.Dead > 0)
+                            {
+                                <StatusBadge Kind="bad" Word="failures" />
+                            }
+                            else
+                            {
+                                <StatusBadge Kind="ok" Word="running" />
+                            }
+                        </td>
+                        <td>@Show.Count(queue.Pending)</td>
+                        <td>@Show.Count(queue.Due)</td>
+                        <td>@(Jobs.InProgress.TryGetValue((queue.Kind, queue.Type), out var busy) ? busy.ToString(System.Globalization.CultureInfo.InvariantCulture) : "0")</td>
+                        <td>@Show.Count(queue.Done24h)</td>
+                        <td>@Show.Count(queue.Dead)</td>
+                        <td>@Show.Count(queue.Cancelled)</td>
+                        <td>@Show.Age(queue.OldestDueAt, Now)</td>
+                        <td>
+                            @if (Operator && queue.Kind == QueueKind.Job && OpsQueues.IsPausable(queue.Type))
+                            {
+                                <form class="inline" method="post" action="/admin/jobs/pause">
+                                    <input type="hidden" name="__csrf" value="@View.Csrf" />
+                                    <input type="hidden" name="type" value="@queue.Type" />
+                                    <input type="hidden" name="paused" value="@(queue.Paused ? "0" : "1")" />
+                                    <button type="submit" class="secondary">@(queue.Paused ? "Resume" : "Pause")</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <p class="muted">"In progress" is as of each worker's last heartbeat (every 30 s).</p>
+
+    <h2>Failed items</h2>
+    @if (Jobs.Failed.Count == 0)
+    {
+        <p><StatusBadge Kind="ok" Word="None" /></p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Item</th><th>Kind</th><th>Type</th><th>State</th><th>Attempts</th><th>Error type</th><th>Created</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var item in Jobs.Failed)
+                    {
+                        <tr>
+                            <td><code>@Show.Short(item.Id)</code></td>
+                            <td>@OpsQueues.Code(item.Kind)</td>
+                            <td><code>@item.Type</code></td>
+                            <td><StatusBadge Kind="@(item.State == "dead" ? "bad" : "info")" Word="@(item.State == "dead" ? "failed" : item.State)" /></td>
+                            <td>@item.Attempts</td>
+                            <td>@(item.ErrorType ?? Show.None)</td>
+                            <td>@Show.Time(item.CreatedAt)</td>
+                            <td>
+                                @if (Operator && item.State == "dead")
+                                {
+                                    <form class="inline" method="post" action="/admin/jobs/retry">
+                                        <input type="hidden" name="__csrf" value="@View.Csrf" />
+                                        <input type="hidden" name="kind" value="@OpsQueues.Code(item.Kind)" />
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit">Retry</button>
+                                    </form>
+                                    @if (item.Kind == QueueKind.Job)
+                                    {
+                                        <form class="inline" method="post" action="/admin/jobs/cancel">
+                                            <input type="hidden" name="__csrf" value="@View.Csrf" />
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="secondary">Cancel</button>
+                                        </form>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <h2>Workers</h2>
+    @if (Jobs.Workers.Count == 0)
+    {
+        <p><StatusBadge Kind="bad" Word="No heartbeat" /></p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Instance</th><th>Build</th><th>Started</th><th>Last heartbeat</th><th>In progress</th></tr></thead>
+                <tbody>
+                    @foreach (var worker in Jobs.Workers)
+                    {
+                        <tr>
+                            <td><code>@Show.Short(worker.Instance)</code></td>
+                            <td>@worker.Build</td>
+                            <td>@Show.Time(worker.StartedAt)</td>
+                            <td>@Show.Age(worker.LastBeatAt, Now) ago</td>
+                            <td>@(worker.BusyType is { } type ? (worker.BusyKind is { } kind ? OpsQueues.Code(kind) + " " : "") + type + " since " + Show.Time(worker.BusySince) : "idle")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <h2>Sync (7 days)</h2>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Pushes</th><th>Pulls</th><th>Changes in</th><th>Stale</th><th>Clock drift</th><th>Version conflict</th><th>Unsupported</th><th>Invalid payload</th><th>Dataset mismatch</th><th>Cursor invalid</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td>@Show.Count(Jobs.Sync.Pushes)</td><td>@Show.Count(Jobs.Sync.Pulls)</td><td>@Show.Count(Jobs.Sync.ChangesIn)</td><td>@Show.Count(Jobs.Sync.Stale)</td>
+                    <td>@Show.Count(Jobs.Sync.ClockDrift)</td><td>@Show.Count(Jobs.Sync.VersionConflict)</td><td>@Show.Count(Jobs.Sync.Unsupported)</td>
+                    <td>@Show.Count(Jobs.Sync.InvalidPayload)</td><td>@Show.Count(Jobs.Sync.DatasetMismatch)</td><td>@Show.Count(Jobs.Sync.CursorInvalid)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <h2>Documents by entity and schema version</h2>
+    <p class="muted">The server side of the app's deferred documents: what each schema version holds.</p>
+    @if (Jobs.Documents.Count == 0)
+    {
+        <p class="muted">No documents.</p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Entity</th><th>Schema version</th><th>Live</th><th>Deleted</th></tr></thead>
+                <tbody>
+                    @foreach (var row in Jobs.Documents)
+                    {
+                        <tr><td>@row.Entity</td><td>@row.SchemaVersion</td><td>@Show.Count(row.Documents)</td><td>@Show.Count(row.Deleted)</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</Layout>
+
+@code {
+    [Parameter, EditorRequired] public PageView View { get; set; } = null!;
+    [Parameter, EditorRequired] public JobsView Jobs { get; set; } = null!;
+    [Parameter, EditorRequired] public DateTimeOffset Now { get; set; }
+
+    private bool Operator => View.Viewer?.IsOperator == true;
+}

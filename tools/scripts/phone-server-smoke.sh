@@ -61,6 +61,12 @@ with tempfile.TemporaryDirectory(prefix='b03-smoke-') as temp:
         phone.ensure_admin_role(state)
         assert phone.sql(state, "SELECT rolcanlogin,rolsuper,rolbypassrls,rolinherit FROM pg_roles WHERE rolname='fb_admin';").strip() == 't|f|f|f'
         phone.ensure_admin_role(state)
+        # B23b: likewise the worker login: created on an old volume, a member of fb_app without SET, idempotent.
+        phone.sql(state, 'REVOKE CONNECT ON DATABASE fitness_buddy FROM fb_worker; DROP ROLE fb_worker;')
+        phone.ensure_worker_role(state)
+        assert phone.sql(state, "SELECT rolcanlogin,rolsuper,rolbypassrls,rolinherit FROM pg_roles WHERE rolname='fb_worker';").strip() == 't|f|f|t'
+        assert phone.sql(state, "SELECT r.rolname, m.inherit_option, m.set_option FROM pg_auth_members m JOIN pg_roles r ON r.oid=m.roleid JOIN pg_roles w ON w.oid=m.member WHERE w.rolname='fb_worker';").strip() == 'fb_app|t|f'
+        phone.ensure_worker_role(state)
         phone.configure_console(state, '1234567890-smoke.apps.googleusercontent.com')
         phone.json_write(state / 'console' / 'allow-list.json', {'admins': [{'handle': 'owner', 'googleSubject': '1234567890',
                          'email': 'owner@example.invalid', 'role': 'operator'}], 'pending': []})
@@ -111,6 +117,17 @@ with tempfile.TemporaryDirectory(prefix='b03-smoke-') as temp:
         admin_env = dict(item.split('=', 1) for item in admin_meta['Config']['Env'])
         assert 'ConnectionStrings__Application' not in admin_env and 'ConnectionStrings__Migrator' not in admin_env
         assert 'fb_admin' in admin_env['ConnectionStrings__Admin']
+        # B23b: the worker has only its own login and beats on it; the API login can't write heartbeats.
+        worker_meta = json.loads(phone.run(['docker', 'inspect', phone.compose(state, 'ps', '-q', 'worker').decode().strip()]))[0]
+        worker_env = dict(item.split('=', 1) for item in worker_meta['Config']['Env'])
+        assert 'ConnectionStrings__Application' not in worker_env and 'fb_worker' in worker_env['ConnectionStrings__Worker']
+        for _ in range(60):
+            if phone.sql(state, 'SELECT count(*) FROM ops.worker_heartbeats;').strip() != '0':
+                break
+            time.sleep(1)
+        else:
+            raise AssertionError('the worker wrote no heartbeat on fb_worker')
+        assert phone.sql(state, "SELECT has_table_privilege('fb_app','ops.worker_heartbeats','INSERT,UPDATE,DELETE');").strip() == 'f'
         # B23 security review: only loopback (the sidecar in this namespace) is a trusted proxy, so a client on the published
         # port can't claim HTTPS or another address; and the console's tailnet node is a hardened, port-less sidecar.
         assert not any(key.startswith('Proxy__TrustedNetworks') for key in admin_env)

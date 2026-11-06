@@ -1,0 +1,71 @@
+@* AD-011 (read): accounts with type, masked email, activity, storage, sync health and AI uses. Find by exact email only (AD-002):
+   the address is posted, never put in a URL, and there is no partial search or listing by email. *@
+<Layout View="View">
+    <form class="filters card" method="post" action="/admin/accounts/find" hx-boost="false">
+        <input type="hidden" name="__csrf" value="@View.Csrf" />
+        <div><label for="email">Find by exact email</label><input id="email" name="email" type="email" autocomplete="off" maxlength="320" required /></div>
+        <div><button type="submit">Find</button></div>
+    </form>
+    <form class="filters" method="get" action="/admin/accounts">
+        <div>
+            <label for="type">Type</label>
+            <select id="type" name="type">
+                <option value="" selected="@(Accounts.Type is null)">All</option>
+                @foreach (var type in Types)
+                {
+                    <option value="@type" selected="@(Accounts.Type == type)">@type</option>
+                }
+            </select>
+        </div>
+        <div><label><input type="checkbox" name="issues" value="1" checked="@Accounts.SyncIssues" /> Sync issues (7 days)</label></div>
+        <div><button type="submit" class="secondary">Filter</button></div>
+    </form>
+    @if (Accounts.Notice is { } notice)
+    {
+        <p class="notice" role="status"><span aria-hidden="true">⚠</span> @notice</p>
+    }
+    @if (Accounts.ScanLimited)
+    {
+        <p class="notice" role="status"><span aria-hidden="true">⚠</span> Only part of the accounts with sync issues was checked for this page. More may match: <a href="@IssueHref(Accounts.NextIssue!)">keep looking</a>.</p>
+    }
+    @if (Accounts.Rows.Count == 0)
+    {
+        <p class="muted">No accounts.</p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Account</th><th>Type</th><th>Email</th><th>Status</th><th>Created</th><th>Last seen</th><th>App</th><th>Devices</th>
+                        <th>Documents</th><th>Storage</th><th>Sync (7 d)</th><th>AI uses (30 d)</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in Accounts.Rows)
+                    {
+                        <AccountCells Row="row" Link="true" />
+                    }
+                </tbody>
+            </table>
+        </div>
+        @if (Accounts.Next is { } next)
+        {
+            <p><a href="@NextHref(next)">Older accounts</a></p>
+        }
+        @if (Accounts.NextIssue is { } issue && !Accounts.ScanLimited)
+        {
+            <p><a href="@IssueHref(issue)">More accounts with issues</a></p>
+        }
+    }
+</Layout>
+
+@code {
+    [Parameter, EditorRequired] public PageView View { get; set; } = null!;
+    [Parameter, EditorRequired] public AccountsView Accounts { get; set; } = null!;
+
+    private static readonly string[] Types = ["guest", "google", "email", "registered"];
+
+    private string NextHref(Guid next) => "/admin/accounts?" + (Accounts.Type is { } type ? "type=" + type + "&" : "") + "before=" + next;
+
+    private string IssueHref(string after) => "/admin/accounts?issues=1&" + (Accounts.Type is { } type ? "type=" + type + "&" : "") + "after=" + after;
+}

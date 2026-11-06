@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace FitnessBuddy.Modules.Admin.Api;
 
-/// <summary>Sign-in, enrolment, re-auth and sign-out (B23 P2) plus the console home.</summary>
+/// <summary>Sign-in, enrolment, re-auth and sign-out (B23 P2). The console home is the Overview (<see cref="OverviewEndpoints"/>).</summary>
 internal static class AuthEndpoints
 {
     public const string SignInRateLimit = "admin-signin";
@@ -20,8 +20,6 @@ internal static class AuthEndpoints
         group.MapGet("/reauth", ReAuthPageAsync).WithCapability(AdminCapability.Session).RequireRateLimiting(SignInRateLimit).WithMetadata(new GoogleSignInPage());
         group.MapPost("/reauth", ReAuthAsync).WithCapability(AdminCapability.Session).RequireRateLimiting(SignInRateLimit).WithMetadata(new GoogleSignInPage());
         group.MapPost("/signout", SignOutAsync).WithCapability(AdminCapability.Session);
-        // One route: routing ignores a trailing slash, so "/admin/" matches it too (a second "/" route would be ambiguous).
-        group.MapGet("", Home).WithCapability(AdminCapability.Session);
     }
 
     private static async Task<IResult> SignInPageAsync(HttpContext context, StartChallenge start, IAntiforgery antiforgery, IOptions<AdminOptions> options,
@@ -86,9 +84,6 @@ internal static class AuthEndpoints
         AdminCookies.Delete(context, AdminCookies.Session);
         return TypedResults.Redirect(AdminModule.PathBase + "/signin");
     }
-
-    private static Microsoft.AspNetCore.Http.HttpResults.RazorComponentResult<HomePage> Home(HttpContext context, IAntiforgery antiforgery) =>
-        AdminResponses.Page<HomePage>(AdminResponses.View(context, antiforgery, "Console", "home"));
 
     private static async Task<IResult> SignInStepAsync(HttpContext context, StartChallenge start, IAntiforgery antiforgery, IOptions<AdminOptions> options,
         TimeProvider clock, string? notice, int status, CancellationToken cancellationToken)

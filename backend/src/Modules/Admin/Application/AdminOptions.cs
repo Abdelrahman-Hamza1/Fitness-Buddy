@@ -34,11 +34,37 @@ internal sealed class AdminOptions : IValidatableObject
     [Range(1, 100000)]
     public int SignInPermitPerMinuteTotal { get; set; } = 30;
 
+    /// <summary>Exact-email lookups per IP and minute (AD-002, B23 P2).</summary>
+    [Range(1, 10000)]
+    public int LookupPermitPerMinute { get; set; } = 10;
+
+    /// <summary>The API's base URL inside the stack (e.g. <c>http://api:8080</c>); the Overview probes its <c>/health/ready</c>. Empty: not shown.</summary>
+    public string ApiReadyUrl { get; set; } = "";
+
+    /// <summary>The controller's backup status file (<c>{completedAt, ok}</c>), mounted read-only. Empty: not shown.</summary>
+    public string BackupStatusFile { get; set; } = "";
+
+    /// <summary>Optional dashboard links on the Overview (AD-010); hidden when empty. Only http(s) URLs are accepted.</summary>
+    public string GrafanaUrl { get; set; } = "";
+
+    public string SentryUrl { get; set; } = "";
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (!string.IsNullOrEmpty(AllowListFile) && !Path.IsPathFullyQualified(AllowListFile))
         {
             yield return new ValidationResult("Must be an absolute path.", [nameof(AllowListFile)]);
+        }
+        if (!string.IsNullOrEmpty(BackupStatusFile) && !Path.IsPathFullyQualified(BackupStatusFile))
+        {
+            yield return new ValidationResult("Must be an absolute path.", [nameof(BackupStatusFile)]);
+        }
+        foreach (var (name, value) in new[] { (nameof(ApiReadyUrl), ApiReadyUrl), (nameof(GrafanaUrl), GrafanaUrl), (nameof(SentryUrl), SentryUrl) })
+        {
+            if (value.Length > 0 && !(Uri.TryCreate(value, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)))
+            {
+                yield return new ValidationResult("Must be an absolute http(s) URL.", [name]);
+            }
         }
     }
 }

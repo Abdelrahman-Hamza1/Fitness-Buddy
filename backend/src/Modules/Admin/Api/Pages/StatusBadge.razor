@@ -1,0 +1,9 @@
+@* AD-008: status as icon + word, never colour alone. Kind: ok, warn, bad, info. *@
+<span class="status @Kind"><span aria-hidden="true">@Icon</span> @Word</span>
+
+@code {
+    [Parameter, EditorRequired] public string Kind { get; set; } = "info";
+    [Parameter, EditorRequired] public string Word { get; set; } = "";
+
+    private string Icon => Kind switch { "ok" => "✓", "warn" => "!", "bad" => "✕", _ => "•" };
+}

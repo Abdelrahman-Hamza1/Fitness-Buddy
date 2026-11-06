@@ -30,6 +30,10 @@ internal static class AdminRole
             .Validate(settings => !string.IsNullOrWhiteSpace(settings.Admin), "ConnectionStrings:Admin is required.").ValidateOnStart();
         builder.Services.AddFbDatabase(provider => provider.GetRequiredService<IOptions<DatabaseOptions>>().Value.Admin);
         builder.Services.AddHealthChecks().AddCheck<DatabaseReadiness>("database", tags: ["ready"]);
+        // The codes the console shows as they are; tests add their own handler types (B23b).
+        builder.Services.AddSingleton(FitnessBuddy.BuildingBlocks.Ops.QueueVocabulary.Default);
+        builder.Services.AddSingleton<FitnessBuddy.BuildingBlocks.Ops.IOpsAdministration>(provider => new FitnessBuddy.BuildingBlocks.Ops.PostgresOpsAdministration(
+            provider.GetRequiredService<Npgsql.NpgsqlDataSource>(), provider.GetRequiredService<FitnessBuddy.BuildingBlocks.Ops.QueueVocabulary>()));
         builder.AddFbObservability("admin");
 
         var proxy = builder.Services.AddOptions<ProxyOptions>().Bind(builder.Configuration.GetSection(ProxyOptions.SectionName)).ValidateDataAnnotations();

@@ -41,11 +41,14 @@
     // so a refusal message is visible.
     private const string HtmxConfig = """{"allowEval":false,"includeIndicatorStyles":false,"selfRequestsOnly":true,"allowScriptTags":false,"historyCacheSize":0,"responseHandling":[{"code":"204","swap":false},{"code":"[2345]..","swap":true}]}""";
 
-    // The console's windows, in menu order. Windows join this list as they are built (B23a: config, audit; B23b: the rest).
+    // The console's windows, in menu order (spec 22).
     private static readonly (string Section, string Label, string Href)[] Sections =
     [
-        ("home", "Home", "/admin"),
+        ("home", "Overview", "/admin"),
+        ("accounts", "Accounts", "/admin/accounts"),
         ("config", "Remote config", "/admin/config"),
+        ("jobs", "Jobs & sync", "/admin/jobs"),
+        ("catalog", "Catalog", "/admin/catalog"),
         ("audit", "Audit log", "/admin/audit"),
     ];
 

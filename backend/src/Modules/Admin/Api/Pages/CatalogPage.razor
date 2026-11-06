@@ -1,0 +1,45 @@
+@* AD-015 (read): releases, the Open Food Facts cache, lookup outcomes and B22 sanity rules per day. Publishing a release and rolling
+   back stay laptop commands (owner O2). Never a barcode or a product. *@
+<Layout View="View">
+    <h2>Releases</h2>
+    @if (Catalog.Releases.Count == 0)
+    {
+        <p><StatusBadge Kind="bad" Word="No release published" /></p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Version</th><th>Status</th><th>Schema</th><th>Foods</th><th>Change</th><th>Pack size</th><th>SHA-256</th></tr></thead>
+                <tbody>
+                    @foreach (var row in Catalog.Releases)
+                    {
+                        <tr>
+                            <td>@row.Release.Version</td>
+                            <td><StatusBadge Kind="@(row.Release.Current ? "ok" : "info")" Word="@(row.Release.Current ? "current" : "previous")" /></td>
+                            <td>@row.Release.SchemaVersion</td>
+                            <td>@Show.Count(row.Release.Foods)</td>
+                            <td>@(row.FoodChange is { } change ? (change >= 0 ? "+" : "") + change.ToString(System.Globalization.CultureInfo.InvariantCulture) : Show.None)</td>
+                            <td>@Show.Bytes(row.Release.PackBytes)</td>
+                            <td><code>@row.Release.ShaPrefix…</code></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    <p class="muted">Publishing and rolling back a release are laptop commands for now (see the runbook).</p>
+
+    <h2>Open Food Facts cache</h2>
+    <p>@Show.Count(Catalog.Cache.Products) cached products, @Show.Count(Catalog.Cache.UnknownCodes) unknown codes, @Show.Count(Catalog.Cache.Expiring7Days) expiring in 7 days.</p>
+
+    <h2>Lookups (14 days, approximate)</h2>
+    <CountTable Rows="Catalog.Outcomes" ShowRule="false" Empty="No lookups." />
+    <h2>Sanity flags (B22)</h2>
+    <CountTable Rows="Catalog.Sanity" ShowRule="true" Empty="No sanity flags." />
+</Layout>
+
+@code {
+    [Parameter, EditorRequired] public PageView View { get; set; } = null!;
+    [Parameter, EditorRequired] public CatalogView Catalog { get; set; } = null!;
+}

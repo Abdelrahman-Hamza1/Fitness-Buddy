@@ -1,0 +1,26 @@
+@using FitnessBuddy.Modules.Catalog.Contracts
+@* Lookup counts per UTC day: outcome (and the sanity rule) with a count. *@
+@if (Rows.Count == 0)
+{
+    <p class="muted">@Empty</p>
+}
+else
+{
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Day (UTC)</th><th>Outcome</th>@if (ShowRule) { <th>Rule</th> }<th>Count</th></tr></thead>
+            <tbody>
+                @foreach (var row in Rows)
+                {
+                    <tr><td>@Show.Day(row.Day)</td><td>@row.Outcome</td>@if (ShowRule) { <td>@row.Rule</td> }<td>@Show.Count(row.Lookups)</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<LookupCount> Rows { get; set; } = null!;
+    [Parameter] public bool ShowRule { get; set; }
+    [Parameter] public string Empty { get; set; } = "";
+}

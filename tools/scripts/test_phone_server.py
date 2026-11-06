@@ -142,7 +142,7 @@ class PhoneServerTests(unittest.TestCase):
         phone.init(self.state)
         self.assertEqual(first, (self.state / 'credentials.json').read_bytes())
         values = json.loads(first)
-        self.assertEqual(len(set(values.values())), 5)
+        self.assertEqual(len(set(values.values())), 6)
         self.assertEqual(stat.S_IMODE((self.state / 'credentials.json').stat().st_mode), 0o600)
 
     def test_existing_data_without_credentials_refuses_regeneration(self):
@@ -445,6 +445,53 @@ class PhoneServerTests(unittest.TestCase):
         self.assertEqual(env['FB_PHONE_CONSOLE_PASSWORD'], after['FB_PHONE_CONSOLE_PASSWORD'])
         self.assertEqual(phone.read_json(path), phone.read_json(path))
         self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
+
+    def test_worker_credential_is_added_to_old_state_without_touching_existing_secrets(self):
+        path = self.state / 'credentials.json'
+        old = {k: v for k, v in phone.read_json(path).items() if k not in ('FB_PHONE_CONSOLE_PASSWORD', 'FB_PHONE_WORKER_PASSWORD')}
+        phone.json_write(path, old)
+        env = phone.secrets_env(self.state)
+        after = phone.read_json(path)
+        self.assertEqual(old, {k: v for k, v in after.items() if k not in ('FB_PHONE_CONSOLE_PASSWORD', 'FB_PHONE_WORKER_PASSWORD')})
+        self.assertRegex(after['FB_PHONE_WORKER_PASSWORD'], '^[0-9a-f]{64}$')
+        self.assertNotEqual(after['FB_PHONE_WORKER_PASSWORD'], after['FB_PHONE_CONSOLE_PASSWORD'])
+        self.assertEqual(env['FB_PHONE_WORKER_PASSWORD'], after['FB_PHONE_WORKER_PASSWORD'])
+
+    def test_worker_role_password_never_reaches_argv_and_it_cannot_set_role(self):
+        with patch.object(phone, 'compose', return_value=b'') as compose:
+            phone.ensure_worker_role(self.state)
+        args, kwargs = compose.call_args
+        password = phone.read_json(self.state / 'credentials.json')['FB_PHONE_WORKER_PASSWORD']
+        self.assertNotIn(password, ' '.join(map(str, args)))
+        self.assertNotIn(password.encode(), kwargs['data'])
+        self.assertIn(b'\\getenv worker_password FB_PHONE_WORKER_PASSWORD', kwargs['data'])
+        self.assertIn(b'GRANT fb_app TO fb_worker WITH INHERIT TRUE, SET FALSE', kwargs['data'])
+        self.assertIn(b'NOBYPASSRLS', kwargs['data'])
+
+    def test_console_gets_only_the_identity_pepper_and_old_overlays_gain_it(self):
+        clients = self.state / 'clients.json'
+        phone.json_write(clients, {'AndroidClientId': '1-a.apps.googleusercontent.com', 'WebClientId': '1-b.apps.googleusercontent.com'})
+        phone.configure_identity(self.state, clients)
+        overlay = phone.read_json(self.state / 'identity-compose.json')['services']
+        self.assertEqual(overlay['admin'], phone.console_identity(self.state))
+        self.assertEqual([v['source'] for v in overlay['admin']['volumes']], [str(self.state / 'identity' / 'pepper')])
+        self.assertTrue(all(v['read_only'] for v in overlay['admin']['volumes']))
+        self.assertNotIn('FB_IDENTITY_CONFIG_FILE', overlay['admin']['environment'])
+        # A pre-B23b overlay without the console entry gets it; api/worker/migrate are kept as they were.
+        old = {name: entry for name, entry in overlay.items() if name != 'admin'}
+        phone.json_write(self.state / 'identity-compose.json', {'services': old})
+        phone.identity_compose_args(self.state)
+        after = phone.read_json(self.state / 'identity-compose.json')['services']
+        self.assertEqual({name: entry for name, entry in after.items() if name != 'admin'}, old)
+        self.assertEqual(after['admin'], phone.console_identity(self.state))
+
+    def test_compose_gives_the_worker_only_its_own_login(self):
+        text = (Path(__file__).resolve().parents[2] / 'infra/phone-server/compose.yml').read_text()
+        worker = text[text.index('  worker:\n'):text.index('  # B23 admin console')]
+        self.assertIn('Username=fb_worker', worker)
+        self.assertNotIn('ConnectionStrings__Application', worker)
+        api = text[text.index('  api:\n'):text.index('  worker:\n')]
+        self.assertIn('Username=fb_app', api)
 
     def test_admin_allow_list_is_private_pending_until_pinned_and_rejects_bad_input(self):
         phone.admin_allow(self.state, 'owner', 'operator', None, 'Owner@Example.com')

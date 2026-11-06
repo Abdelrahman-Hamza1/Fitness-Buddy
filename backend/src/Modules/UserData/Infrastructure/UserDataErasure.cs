@@ -17,6 +17,7 @@ internal sealed class UserDataErasure : IOutboxHandler
             "DELETE FROM userdata.row_history WHERE user_id=$1",
             "DELETE FROM userdata.version_receipts WHERE user_id=$1",
             "DELETE FROM userdata.documents WHERE user_id=$1",
+            "DELETE FROM userdata.sync_daily WHERE user_id=$1",
         })
         {
             var command = new NpgsqlBatchCommand(statement);

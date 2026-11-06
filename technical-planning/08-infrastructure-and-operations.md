@@ -113,6 +113,8 @@ Kubernetes (k3s on VMs, or a managed cluster) with the **same images and the sam
 | Uptime | External monitor (different provider) | `/health/ready` and a synthetic `/v1/config` call every minute (three client headers, fixed device UUID) |
 | Alerts | Grafana alerting → email/phone push | 5xx rate, Buddy p90 > 5 s, AI cost per day over budget, disk > 80%, **backup age > 26 h**, **failed restore test**, certificate expiry, job queue stuck |
 
+**Owner console (B23, `spec/22`):** the `admin` role's Overview shows the same health at a glance without Grafana: API readiness, database, worker heartbeats, the last backup (the controller's status file), catalog, Buddy, installs, 5xx counts (24 h), AI spend, and open alerts (backup > 26 h, no worker beat > 2 min, failed queue items, a due item waiting > 10 min, readiness failing, any 5xx, the minimum-version override set, no catalog release). It links to Grafana/Sentry when `Admin:GrafanaUrl`/`Admin:SentryUrl` are set. Runbook: `docs/runbooks/admin-console.md`. Roles: `api`, `worker`, `migrate`, `admin`; logins `fb_app` (api), `fb_worker` (worker, B23b: a member of `fb_app` plus heartbeats and counter cleanup), `fb_migrator`, `fb_admin` (B13/B14 provision `fb_admin` and `fb_worker` too).
+
 If the free tiers run out (R3), the same OpenTelemetry signals can go to a self-hosted Grafana stack on a small ops VM. Nothing in the app changes.
 
 ## 8. Runbooks (`docs/runbooks/`, written in B14, kept current)

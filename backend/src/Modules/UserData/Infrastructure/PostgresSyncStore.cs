@@ -11,7 +11,8 @@ using NpgsqlTypes;
 
 namespace FitnessBuddy.Modules.UserData.Infrastructure;
 
-internal sealed class PostgresSyncStore(NpgsqlDataSource source, IIdentityAccess identity, TimeProvider clock, IIdGenerator ids) : ISyncStore
+internal sealed partial class PostgresSyncStore(NpgsqlDataSource source, IIdentityAccess identity, TimeProvider clock, IIdGenerator ids,
+    Microsoft.Extensions.Logging.ILogger<PostgresSyncStore>? logger = null) : ISyncStore
 {
     /// <summary>Payload bytes per pull/history page (backlog #132). `limit` alone allowed a 500-row page of
     /// max-size rows (~190 MB escaped). A page always carries at least one row; clients page until empty.</summary>
@@ -40,7 +41,7 @@ internal sealed class PostgresSyncStore(NpgsqlDataSource source, IIdentityAccess
                 new(version.Entity, version.Id, version.Hlc, "invalid", invalid));
         }
         await new QueueWriter(session, clock, ids)
-            .ScheduleUserAsync("userdata.cleanup:" + userId, "0 * * * *", "userdata.cleanup", now.AddHours(1), cancellationToken);
+            .ScheduleUserAsync(SyncRetention.ScheduleName(userId), SyncRetention.Cron, SyncRetention.JobType, now.AddHours(1), cancellationToken);
         return results;
     }
 
@@ -52,6 +53,8 @@ internal sealed class PostgresSyncStore(NpgsqlDataSource source, IIdentityAccess
         var current = await DatasetAsync(session, cancellationToken);
         var results = dataset != current ? versions.Select(v => new VersionResult(v.Entity, v.Id, v.Hlc, "invalid", "datasetMismatch")).ToArray() :
             await PushInTransactionAsync(session, principal.UserId, versions, now, true, cancellationToken);
+        // Every push outcome commits (a dataset mismatch writes nothing else), so its counts go in the same transaction.
+        await CountAsync(session, principal.UserId, SyncCounts.Push(results), true, now, cancellationToken);
         await session.CommitAsync(cancellationToken);
         return new PushOutcome(results, now, current);
     }
@@ -81,14 +84,33 @@ internal sealed class PostgresSyncStore(NpgsqlDataSource source, IIdentityAccess
         await using var session = await AuthenticatedAsync(principal, cancellationToken);
         if (session is null) { return null; }
         var current = await DatasetAsync(session, cancellationToken);
-        if (dataset != current && (dataset.HasValue || cursor != 0)) { return new VersionPage([], "0", current, "datasetMismatch"); }
-        var sequence = history ? "userdata.history_seq" : "userdata.document_seq";
-        await using var high = session.Command($"SELECT CASE WHEN is_called THEN last_value ELSE 0 END FROM {sequence}");
-        if (cursor > (long)(await high.ExecuteScalarAsync(cancellationToken))!) { return new VersionPage([], "0", current, "cursorInvalid"); }
-        var page = await PageAsync(session, principal.UserId, cursor, limit, history, entity, id, PageByteBudget, cancellationToken, clock.GetUtcNow() - TimeSpan.FromDays(30));
+        VersionPage page;
+        if (dataset != current && (dataset.HasValue || cursor != 0)) { page = new VersionPage([], "0", current, "datasetMismatch"); }
+        else
+        {
+            var sequence = history ? "userdata.history_seq" : "userdata.document_seq";
+            await using var high = session.Command($"SELECT CASE WHEN is_called THEN last_value ELSE 0 END FROM {sequence}");
+            page = cursor > (long)(await high.ExecuteScalarAsync(cancellationToken))! ? new VersionPage([], "0", current, "cursorInvalid")
+                : await PageAsync(session, principal.UserId, cursor, limit, history, entity, id, PageByteBudget, cancellationToken, clock.GetUtcNow() - TimeSpan.FromDays(30));
+        }
+        // A pull writes nothing else, so its own transaction is the short one the counts need, also for the two rejections
+        // (B23 R#6): they now commit just the counts. An infrastructure failure above throws before anything is counted.
+        await CountAsync(session, principal.UserId, SyncCounts.Pull(page.Reason), false, clock.GetUtcNow(), cancellationToken);
         await session.CommitAsync(cancellationToken);
         return page with { DatasetId = current };
     }
+
+    private async Task CountAsync(DatabaseSession session, Guid userId, SyncCounts counts, bool push, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        // A counter failure never changes the sync answer: it's logged by error type and dropped (B23 P4).
+        if (await SyncCounters.RecordAsync(session, userId, counts, push, now, clock, ids, cancellationToken) is { } error && logger is { } log)
+        {
+            LogCounterDropped(log, error.SqlState);
+        }
+    }
+
+    [Microsoft.Extensions.Logging.LoggerMessage(Level = Microsoft.Extensions.Logging.LogLevel.Warning, Message = "Sync counter dropped with SQL state {SqlState}")]
+    private static partial void LogCounterDropped(Microsoft.Extensions.Logging.ILogger logger, string sqlState);
 
     private static async Task<VersionResult> ApplyAsync(DatabaseSession session, Guid userId, SyncVersion version, DateTimeOffset now, CancellationToken cancellationToken)
     {

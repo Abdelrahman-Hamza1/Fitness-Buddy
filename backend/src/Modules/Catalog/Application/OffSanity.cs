@@ -29,6 +29,10 @@ internal static class OffSanity
     public const string MacrosTooHeavy = "macros-too-heavy";
     public const string EnergyMacrosMismatch = "energy-macros-mismatch";
 
+    /// <summary>Every rule name above: the console shows a counted rule only when it is one of these (B23b).</summary>
+    public static readonly string[] Rules = [KjConverted, KjInKcal, PerServingScaled, PerServingInPer100, Negative, MissingEnergy, MissingMacros,
+        EnergyTooHigh, MacrosTooHeavy, EnergyMacrosMismatch];
+
     // FD-012 (fb_domain SanityTolerance defaults).
     private const double OkKcal = 15, OkFraction = 0.15, MaxKcalPer100 = 920, MaxMacroGramsPer100g = 105;
     private const double KjPerKcal = 4.184;

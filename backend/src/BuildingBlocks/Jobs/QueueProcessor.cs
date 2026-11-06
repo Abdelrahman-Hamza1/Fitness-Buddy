@@ -25,10 +25,13 @@ public sealed partial class QueueProcessor
     private readonly ILogger<QueueProcessor> logger;
     private readonly IUserLifecycle lifecycle;
     private readonly RecoveryBarrier recovery;
+    private readonly WorkerActivity? activity;
 
     public QueueProcessor(NpgsqlDataSource source, TimeProvider clock, IEnumerable<IOutboxHandler> outboxHandlers,
-        IEnumerable<IJobHandler> jobHandlers, QueuePolicy policy, ILogger<QueueProcessor> logger, IUserLifecycle lifecycle, RecoveryBarrier recovery)
+        IEnumerable<IJobHandler> jobHandlers, QueuePolicy policy, ILogger<QueueProcessor> logger, IUserLifecycle lifecycle, RecoveryBarrier recovery,
+        WorkerActivity? activity = null)
     {
+        this.activity = activity;
         this.source = source;
         this.clock = clock;
         this.outboxHandlers = outboxHandlers.ToArray();
@@ -97,13 +100,17 @@ public sealed partial class QueueProcessor
     /// <summary>Up to <see cref="DiscoveryLimit"/> earliest due rows, plus the earliest due row of up to
     /// <see cref="DiscoveryLimit"/> owners (the owner-less system items count as one owner), earliest first.</summary>
     private static string DiscoverySql(string table, string typeColumn) => $"""
-        WITH due AS (SELECT id,{typeColumn} AS type,user_id,available_at FROM ops.{table} WHERE state='pending' AND available_at <= $1),
+        WITH due AS (SELECT id,{typeColumn} AS type,user_id,available_at FROM ops.{table} WHERE state='pending' AND available_at <= $1{NotPaused(table)}),
         earliest AS (SELECT * FROM due ORDER BY available_at,id LIMIT {DiscoveryLimit}),
         per_owner AS (SELECT * FROM (SELECT DISTINCT ON (user_id) * FROM due ORDER BY user_id,available_at,id) owners ORDER BY available_at,id LIMIT {DiscoveryLimit})
         SELECT id,type,user_id FROM (SELECT * FROM earliest UNION SELECT * FROM per_owner) candidates ORDER BY available_at,id
         """;
 
     private const int DiscoveryLimit = 32;
+
+    /// <summary>Job types the console paused (B23, AD-014) are neither discovered nor claimed; events are never paused.</summary>
+    private static string NotPaused(string table) =>
+        table == "jobs" ? " AND NOT EXISTS(SELECT 1 FROM ops.queue_pauses p WHERE p.job_type=ops.jobs.job_type)" : "";
 
     private async Task<bool> TryProcessAsync(bool outbox, Candidate candidate, CancellationToken cancellationToken)
     {
@@ -115,7 +122,7 @@ public sealed partial class QueueProcessor
         await recovery.VerifyAsync(session, cancellationToken);
         if (candidate.UserId is Guid owner && !await UserLifecycleLock.TryAcquireAsync(session, owner, cancellationToken)) { return false; }
         QueueMessage message;
-        await using (var claim = session.Command($"SELECT id,{typeColumn},payload::text,user_id,attempts FROM ops.{table} WHERE id=$1 AND state='pending' AND available_at <= $2 AND user_id IS NOT DISTINCT FROM $3 AND {typeColumn}=$4 FOR UPDATE SKIP LOCKED"))
+        await using (var claim = session.Command($"SELECT id,{typeColumn},payload::text,user_id,attempts FROM ops.{table} WHERE id=$1 AND state='pending' AND available_at <= $2 AND user_id IS NOT DISTINCT FROM $3 AND {typeColumn}=$4{NotPaused(table)} FOR UPDATE SKIP LOCKED"))
         {
             claim.Parameters.AddWithValue(candidate.Id); claim.Parameters.AddWithValue(clock.GetUtcNow());
             claim.Parameters.AddWithValue(NpgsqlTypes.NpgsqlDbType.Uuid, (object?)candidate.UserId ?? DBNull.Value);
@@ -131,6 +138,8 @@ public sealed partial class QueueProcessor
             return true;
         }
         await session.Transaction.SaveAsync("handler_effects", cancellationToken);
+        // What the worker's heartbeat reports as in progress (B23 R#11); the claim's row lock alone can't be seen as running.
+        using var busy = activity?.Begin(outbox ? Ops.QueueKind.Event : Ops.QueueKind.Job, message.Type);
         try
         {
             if (outbox) { await DispatchAsync(message, session, cancellationToken); }

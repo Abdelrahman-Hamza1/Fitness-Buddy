@@ -27,9 +27,10 @@ _CANDIDATE_REPO = Path(__file__).resolve().parents[2]
 REPO = _CANDIDATE_REPO if (_CANDIDATE_REPO / '.git').exists() else None
 DEFAULT_STATE = Path.home() / '.local/share/fitness-buddy/phone-server'
 PROJECT = 'fitness-buddy-phone'
-PASSWORD_KEYS = ('ADMIN', 'MIGRATOR', 'APP', 'BACKUP', 'CONSOLE')
-# B23: the console's own database login (fb_admin) joined later; older states get it added, never the others regenerated.
-LATER_PASSWORD_KEYS = ('CONSOLE',)
+PASSWORD_KEYS = ('ADMIN', 'MIGRATOR', 'APP', 'BACKUP', 'CONSOLE', 'WORKER')
+# B23: the console's own database login (fb_admin) joined later, B23b the worker's (fb_worker); older states get them
+# added, never the others regenerated.
+LATER_PASSWORD_KEYS = ('CONSOLE', 'WORKER')
 CONSOLE_PORT = 5197
 # B23 security review: the console has its own tailnet node, so its cookies never share a hostname with the API (cookies
 # are not port-isolated). The admin-tailscale sidecar joins as this name with this tag and serves only HTTPS 443.
@@ -306,6 +307,22 @@ GRANT CONNECT ON DATABASE fitness_buddy TO fb_admin;
     sql(state, statement)
 
 
+def ensure_worker_role(state):
+    """The worker login on an existing or fresh volume (B23b): created if missing, a member of fb_app that can't SET ROLE to it,
+    given its private password. Only it writes heartbeats and expires the console counters."""
+    statement = r"""\getenv worker_password FB_PHONE_WORKER_PASSWORD
+DO $$BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'fb_worker') THEN
+    CREATE ROLE fb_worker NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS INHERIT;
+  END IF;
+END$$;
+ALTER ROLE fb_worker WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS INHERIT PASSWORD :'worker_password';
+GRANT fb_app TO fb_worker WITH INHERIT TRUE, SET FALSE;
+GRANT CONNECT ON DATABASE fitness_buddy TO fb_worker;
+"""
+    sql(state, statement)
+
+
 def write_backup_status(state):
     safe_dir(state / 'status')
     json_write(state / 'status' / 'backup.json', {'completedAt': dt.datetime.now(dt.timezone.utc).isoformat(), 'ok': True})
@@ -315,11 +332,22 @@ def compose(state, *args, data=None, timeout=300):
     return run(compose_command(state, *args), env=secrets_env(state), data=data, timeout=timeout)
 
 
+def console_identity(state):
+    """B23b: the console gets only Identity's lookup key (the pepper, read-only), so its exact-email lookup can find email
+    sign-in accounts by their keyed hash. Never the signing keys, the identity config or the email folder."""
+    return {'environment': {'Identity__PepperFile': '/identity-pepper/pepper'},
+            'volumes': [{'type': 'bind', 'source': str(state / 'identity' / 'pepper'), 'target': '/identity-pepper/pepper', 'read_only': True}]}
+
+
 def identity_compose_args(state):
     overlay = state / 'identity-compose.json'
     if not overlay.exists():
         return []
     private(overlay)
+    services = read_json(overlay)['services']
+    if services.get('admin') != console_identity(state):
+        # An overlay written before B23b has no console entry; add it (the other services are never changed here).
+        json_write(overlay, {'services': {**services, 'admin': console_identity(state)}})
     safe_dir(state / 'identity')
     safe_dir(state / 'identity' / 'email')
     config = read_json(state / 'identity' / 'config.json')
@@ -528,7 +556,7 @@ def configure_identity(state, clients_path):
                'volumes': [{'type': 'bind', 'source': str(folder), 'target': '/identity', 'read_only': True},
                            {'type': 'bind', 'source': str(folder / 'email'), 'target': '/identity/email'}]}
     migrate = {**runtime, 'command': ['migrate', '--Identity:KeyOperation=ensure', '--Identity:WrappingVersion=v1']}
-    json_write(state / 'identity-compose.json', {'services': {'api': runtime, 'worker': runtime, 'migrate': migrate}})
+    json_write(state / 'identity-compose.json', {'services': {'api': runtime, 'worker': runtime, 'migrate': migrate, 'admin': console_identity(state)}})
     identity_compose_args(state)
     if (state / 'recovery-compose.json').exists():
         configure_recovery(state)
@@ -749,8 +777,9 @@ def up(state):
     networks = json.loads(run(['docker', 'network', 'inspect', PROJECT + '_default']))
     gateway = networks[0]['IPAM']['Config'][0]['Gateway']
     json_write(state / 'gateway.json', {'gateway': str(ipaddress.IPv4Address(gateway))})
-    # B23: the console login exists with its private password before migrations grant to it.
+    # B23: the console and worker logins exist with their private passwords before migrations grant to them.
     ensure_admin_role(state)
+    ensure_worker_role(state)
     console = console_configured(state)
     if console and not console_node_joined(state) and not (state / 'console-tailscale-key' / 'authkey').exists():
         raise Failure('The console node needs its auth key once: make serve-phone-console-key (see the admin-console runbook)')
@@ -963,7 +992,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--state', type=Path, default=DEFAULT_STATE)
     parser.add_argument('--google-clients', type=Path, default=Path.home() / '.local/share/fitness-buddy/identity/google-clients.json')
-    parser.add_argument('command', choices=['catalog-import', 'configure-buddy', 'configure-identity', 'configure-console', 'admin-allow', 'configure-console-key', 'set-override', 'ensure-admin-role', 'prepare', 'policy', 'confirm-policy', 'accept-unencrypted-storage', 'up', 'stop', 'backup', 'restore-check', 'install-timer', 'status'])
+    parser.add_argument('command', choices=['catalog-import', 'configure-buddy', 'configure-identity', 'configure-console', 'admin-allow', 'configure-console-key', 'set-override', 'ensure-admin-role', 'ensure-worker-role', 'prepare', 'policy', 'confirm-policy', 'accept-unencrypted-storage', 'up', 'stop', 'backup', 'restore-check', 'install-timer', 'status'])
     parser.add_argument('--client-id', default=None)
     parser.add_argument('--handle', default='owner')
     parser.add_argument('--role', default='operator')
@@ -991,7 +1020,7 @@ def main():
              'set-override': lambda target: set_override(target, args.version.strip()),
              # The auth key is read at a hidden prompt (or stdin), never from argv or the shell history.
              'configure-console-key': lambda target: configure_console_key(target, read_secret('Console node auth key (not echoed): ')),
-             'ensure-admin-role': ensure_admin_role}[args.command](state)
+             'ensure-admin-role': ensure_admin_role, 'ensure-worker-role': ensure_worker_role}[args.command](state)
     except (Failure, OSError, ValueError, KeyError, StopIteration) as exc:
         message = str(exc) if isinstance(exc, Failure) else 'operation failed; inspect private setup and prerequisites'
         print('phone-server: ' + message, file=sys.stderr)

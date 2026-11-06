@@ -1,0 +1,56 @@
+@* One account row's cells (list and detail). No user content: ids, codes, counts, sizes, times and the masked email only. *@
+@using FitnessBuddy.Modules.Identity.Contracts
+<tr>
+    <td>
+        @if (Link)
+        {
+            <a href="/admin/accounts/@Row.Account.Id"><code>@Show.Short(Row.Account.Id)</code></a>
+        }
+        else
+        {
+            <code>@Row.Account.Id</code>
+        }
+    </td>
+    <td>@Row.Account.Type</td>
+    <td>
+        @switch (Row.Account.EmailState)
+        {
+            case AdminEmailState.Masked:
+                @Row.Account.MaskedEmail
+                break;
+            case AdminEmailState.NotStored:
+                <span class="muted">not stored (email sign-in)</span>
+                break;
+            case AdminEmailState.Hidden:
+                <span class="muted">hidden</span>
+                break;
+            default:
+                @Show.None
+                break;
+        }
+    </td>
+    <td><StatusBadge Kind="@(Row.Account.Status == "active" ? "ok" : "warn")" Word="@Row.Account.Status" /></td>
+    <td>@Show.Time(Row.Account.CreatedAt)</td>
+    <td>@Show.Time(Row.Account.LastSeenAt)</td>
+    <td>@(Row.Account.AppVersion ?? Show.None)</td>
+    <td>@Show.Count(Row.Account.Devices)</td>
+    <td>@Show.Count(Row.Documents)</td>
+    <td>@Show.Bytes(Row.StorageBytes)</td>
+    <td>
+        @if (Row.Rejects7Days > 0)
+        {
+            <StatusBadge Kind="warn" Word="@(Show.Count(Row.Rejects7Days) + " rejects")" />
+        }
+        else
+        {
+            <StatusBadge Kind="ok" Word="ok" />
+        }
+        <span class="muted">push @Show.Time(Row.LastPushAt), pull @Show.Time(Row.LastPullAt)</span>
+    </td>
+    <td>@Show.Count(Row.AiUses30Days)</td>
+</tr>
+
+@code {
+    [Parameter, EditorRequired] public AccountRowView Row { get; set; } = null!;
+    [Parameter] public bool Link { get; set; }
+}

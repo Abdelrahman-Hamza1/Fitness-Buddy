@@ -11,6 +11,9 @@ internal static class SyncPayloads
     private static readonly JsonDocument Registry = JsonDocument.Parse(typeof(SyncPayloads).Assembly.GetManifestResourceStream(
         "FitnessBuddy.Modules.UserData.Infrastructure.Schemas.entities.json")!);
 
+    /// <summary>The closed sync entity codes (the contract registry): the console shows an entity only when it is one of these (B23b).</summary>
+    public static string[] EntityCodes { get; } = [.. Registry.RootElement.GetProperty("entities").EnumerateObject().Select(entity => entity.Name)];
+
     public static string? InvalidReason(SyncVersion version)
     {
         if (version.DeletedAt is { } deleted && deleted.Ticks % 10 != 0) { return "invalidPayload"; }
