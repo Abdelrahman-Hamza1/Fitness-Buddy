@@ -153,3 +153,6 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 329 | A69 | Workout picks and import accepts survive a restart (they live in memory; a reopened card asks again) | nit | next Buddy step | open |
 | 330 | A69 | Re-encode a non-JPEG gallery picture (a transparent PNG stays PNG after the native resize and is refused today) | nit | when a photo complaint comes | open |
 | 331 | A69 | Custom measurement names on Buddy's measurement card, and `readBody` measurements / `readWorkouts` PRs in the phone tools | nit | next Buddy step | open |
+| 332 | B26 | Live smoke: for "bench 3x8 80" the model left `exerciseRef` empty, so the app asks for a pick; tune `agent-v1` to call `exercise_search` before `propose_workout` | minor | next Buddy tuning | open |
+| 333 | B25 | Live smoke: the `retry` and `label` scenarios have not run against the real provider (budget); run them in the next live session | minor | next Buddy tuning | open |
+| 334 | A66 | Acceptance seed writes today's weigh-in at local midnight with offset 0; with the laptop date ahead of UTC (EET after midnight) it is "in the future" and the apply is rejected. CI runs in UTC, so only local runs fail | nit | test infra | open |
