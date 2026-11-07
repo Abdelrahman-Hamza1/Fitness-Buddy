@@ -52,5 +52,8 @@ Two weeks of exclusive use. A final sign-off.
 ## Low-level plan
 _Written in Phase B._
 
+## Progress log
+- 2026-11-07: **Security review (pre-production part) done** while production waits for B13/B14. Five Codex read-only audits (identity/auth; server authorization, data and privacy; Buddy AI; mobile app; infrastructure, secrets and supply chain), checklist basis OWASP ASVS 4 L1 (+ selected L2 for auth/session) and MASVS-lite; plus `dotnet list package --vulnerable` (clean), OSV check of all 200 pub packages (clean), and a secret/tailnet-name scan of tracked files (clean). **No critical or high findings.** Fixes on `chore/security-audit-server` and `chore/security-audit-app`; record in `evidence/B16-security-audit.md`. Still open for B16: the production parts (server hardening/TLS scan on Hetzner, restore drill, AT-006 on production), traceability report, AT-007.
+
 ## Outcome
 _Written in Phase E._

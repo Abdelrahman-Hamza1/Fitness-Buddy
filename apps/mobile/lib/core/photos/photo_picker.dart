@@ -60,6 +60,18 @@ final class PhotoUnavailable extends PhotoPick {
 /// ([OwnedPhotoFiles]), deleted right after reading (success, refusal or
 /// failure), and a leftover is deleted on the next [sweep]; it is never
 /// written to the database, logged or reported.
+///
+/// Known residue (security audit 2026-11-07, Android, image_picker_android
+/// 0.8.13+25): for a gallery pick the plugin first copies the original,
+/// EXIF included, to `<cache>/<random UUID>/<name>` (`FileUtils
+/// .getPathFromUri`), then hands back only the resized copy
+/// (`<cache>/<name>`); it never deletes that original (only a camera
+/// original is deleted after scaling; `deleteOnExit` is unreliable on
+/// Android). The UUID path never reaches Dart, so there is no owned path
+/// to delete: finding it would take a pattern search of the cache, which
+/// [OwnedPhotoFiles] rules out. Picking without resizing (to own the
+/// original) would need a Dart JPEG encoder, a new dependency. The copy
+/// stays in the app's private cache until Android clears it. Backlogged.
 class PhotoPicker {
   /// Over the platform's image picker.
   const new();

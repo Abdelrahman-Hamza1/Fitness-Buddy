@@ -28,6 +28,11 @@ age threshold, not a guaranteed deletion deadline: copies can remain longer if
 the app is not reopened, the budget is exhausted or storage cleanup fails.
 share_plus also clears its own cache on the next share; complete receipt before
 starting another export.
+Each handoff copy is recorded for its local profile (app-private
+`export_handoffs.json`, paths only): removing that profile (account deletion,
+sign-out "remove") deletes its copies at once, which also ends a receiver's
+temporary URI access. An export still running when its profile is switched away
+from writes and shares nothing; copies a share made during the switch are deleted.
 Android handoff does not prove delivery: an unavailable result may also mean dismissal.
 Recipients and chosen share targets can retain their own copies. Exports contain private diary data.
 

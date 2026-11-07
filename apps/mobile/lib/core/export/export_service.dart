@@ -3,6 +3,7 @@ import 'dart:isolate';
 
 import 'package:fb_mobile/core/export/export_builder.dart';
 import 'package:fb_mobile/core/export/export_cache_sweeper.dart';
+import 'package:fb_mobile/core/export/export_handoffs.dart';
 import 'package:fb_mobile/core/export/export_sharer.dart';
 import 'package:fb_mobile/core/export/export_snapshot.dart';
 
@@ -75,6 +76,10 @@ final class DataExportService {
     required this.sharer,
     required this.now,
     required this.appInfo,
+    this.handoffs,
+    this.profileKey,
+    this.generation,
+    this.profileRemoved,
   });
 
   /// Reads the active profile as plain rows.
@@ -94,7 +99,33 @@ final class DataExportService {
 
   /// Installed app metadata, resolved without a network call.
   final Future<({String version, String build})> Function() appInfo;
+
+  /// Where the share copies are recorded per profile, so removing the
+  /// profile deletes them (security audit 2026-11-07).
+  final ExportHandoffs? handoffs;
+
+  /// The open profile's key, read when the export starts.
+  final Future<String> Function()? profileKey;
+
+  /// The profile generation: a change while the export runs means its
+  /// profile was switched away from (and maybe removed), so nothing more is
+  /// written or shared, and copies already handed over are deleted.
+  final int Function()? generation;
+
+  /// Whether the profile `key` is gone (deleted or removed at sign-out), as
+  /// opposed to switched away from: only a removal deletes copies whose
+  /// share may still be read by the recipient.
+  final Future<bool> Function(String key)? profileRemoved;
   bool _working = false;
+
+  /// Unknown counts as removed: deleting a copy only costs a re-share.
+  Future<bool> _removed(String key) async {
+    try {
+      return await profileRemoved?.call(key) ?? true;
+    } on Object {
+      return true;
+    }
+  }
 
   /// Sweeps aged handoffs and builds one export; concurrent calls skip.
   Future<ExportOutcome> export({
@@ -105,7 +136,19 @@ final class DataExportService {
     _working = true;
     Directory? exportDir;
     var stage = ExportFailureKind.storage;
+    final gen = generation;
+    final startedIn = gen?.call();
+    // A failing read (its provider rebuilt for another profile) is stale.
+    bool stale() {
+      try {
+        return gen != null && gen() != startedIn;
+      } on Object {
+        return true;
+      }
+    }
+
     try {
+      final key = await profileKey?.call();
       final root = await temporaryDirectory();
       final dir = exportDir = Directory('${root.path}/export');
       await ExportCacheSweeper(
@@ -121,15 +164,9 @@ final class DataExportService {
       final info = await appInfo();
       final date = now();
       stage = ExportFailureKind.encoding;
-      final files = await Isolate.run(
-        () => ExportBuilder.build(
-          snapshot,
-          exportedAt: date,
-          version: info.version,
-          build: info.build,
-        ),
-      );
+      final files = await _encode(snapshot, date, info);
       stage = ExportFailureKind.storage;
+      if (stale()) return const ExportAbandoned();
       final paths = <File>[];
       for (final file in files) {
         final path = File('${dir.path}/${file.name}');
@@ -137,8 +174,32 @@ final class DataExportService {
         paths.add(path);
       }
       if (isCancelled?.call() ?? false) return const ExportAbandoned();
+      // share_plus (Android) copies each file to `<cache>/share_plus/<name>`
+      // before the intent: those copies are recorded for this profile first,
+      // so a kill mid-share still leaves them findable by the removal.
+      final copies = [
+        for (final file in files) '${root.path}/share_plus/${file.name}',
+      ];
+      if (key != null) await handoffs?.record(key, copies);
+      // Checked after recording: a removal that ran before the record
+      // finds nothing, and this export then never creates the copies.
+      if (stale()) return const ExportAbandoned();
       stage = ExportFailureKind.sharing;
-      return switch (await sharer.share(paths)) {
+      final ExportShareResult shared;
+      try {
+        shared = await sharer.share(paths);
+      } finally {
+        // The profile was removed while the sheet was open (or the share
+        // failed after copying): its removal may have run before the
+        // platform finished copying, so delete this export's copies now. A
+        // plain switch keeps them (the recipient may still be reading; the
+        // 24-hour sweep ages them out).
+        if (stale() && key != null && await _removed(key)) {
+          await handoffs?.removePaths(key, copies);
+        }
+      }
+      if (stale()) return const ExportAbandoned();
+      return switch (shared) {
         ExportShareResult.dismissed => const Dismissed(),
         ExportShareResult.shared => Shared(
           fileCount: files.length,
@@ -166,4 +227,19 @@ final class DataExportService {
       }
     }
   }
+
+  /// Encodes off the UI thread. Static, so the isolate's closure captures
+  /// only the snapshot and metadata, never this export's state.
+  static Future<List<ExportFile>> _encode(
+    ExportSnapshot snapshot,
+    DateTime date,
+    ({String version, String build}) info,
+  ) => Isolate.run(
+    () => ExportBuilder.build(
+      snapshot,
+      exportedAt: date,
+      version: info.version,
+      build: info.build,
+    ),
+  );
 }

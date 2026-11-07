@@ -13,6 +13,7 @@ import 'package:fb_mobile/core/api/api_providers.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/db/database_location.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
+import 'package:fb_mobile/core/export/export_providers.dart';
 import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/session/session_providers.dart';
 import 'package:fb_mobile/core/session/session_service.dart';
@@ -58,8 +59,8 @@ AccountTransitions accountTransitions(Ref ref) => AccountTransitions(
     activeKey: () async =>
         (await ref.read(profileRegistryProvider).read()).activeKey,
     // A28a review fix 1: a deleted profile's pending scans go with it,
-    // and who was signed in on it (A63 PA3). A failure fails the deletion
-    // step, so the journal retries both.
+    // who was signed in on it (A63 PA3) and its export copies. A scan or
+    // identity failure fails the deletion step, so the journal retries.
     onDeleted: (key) async {
       final config = ref.read(appConfigProvider);
       await ref
@@ -71,6 +72,9 @@ AccountTransitions accountTransitions(Ref ref) => AccountTransitions(
             ),
           );
       await ref.read(localIdentityStoreProvider).remove(key);
+      // Security audit 2026-11-07: its export share copies go at once
+      // (best effort; the 24-hour sweep is the backstop).
+      await ref.read(exportHandoffsProvider).removeProfile(key);
     },
   ),
   newTag: ref.watch(idGeneratorProvider).next,

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:fb_mobile/core/api/api_providers.dart';
 import 'package:fb_mobile/core/export/export_cache_sweeper.dart';
+import 'package:fb_mobile/core/export/export_handoffs.dart';
 import 'package:fb_mobile/core/export/export_providers.dart';
 import 'package:fb_mobile/core/export/export_registry.dart';
 import 'package:fb_mobile/core/export/export_service.dart';
@@ -19,12 +20,17 @@ import '../db/support/db_support.dart';
 final class _Sharer implements ExportSharer {
   ExportShareResult result = ExportShareResult.shared;
   bool fail = false;
+  bool failAfterCopy = false;
   List<File> files = [];
   final copies = <File>[];
+
+  /// Runs as the sheet opens, before the platform has copied anything.
+  Future<void> Function()? beforeCopy;
   @override
   Future<ExportShareResult> share(List<File> files) async {
     if (fail) throw const FileSystemException('private canary');
     this.files = files;
+    await beforeCopy?.call();
     for (final file in files) {
       expect(await file.length(), greaterThan(0));
       final copy = File(
@@ -33,6 +39,7 @@ final class _Sharer implements ExportSharer {
       await copy.parent.create(recursive: true);
       copies.add(await file.copy(copy.path));
     }
+    if (failAfterCopy) throw const FileSystemException('private canary');
     return result;
   }
 }
@@ -175,6 +182,118 @@ void main() {
     await sweep;
     expect(completed, isTrue);
     expect(tester.takeException(), isNull);
+  });
+  group('AC-030 export copies go with their profile (audit 2026-11-07)', () {
+    late ExportHandoffs handoffs;
+    late int generation;
+    late bool removed;
+    late DataExportService scoped;
+    setUp(() {
+      removed = false;
+      handoffs = ExportHandoffs(
+        () async => File('${root.path}/support/export_handoffs.json'),
+      );
+      generation = 0;
+      scoped = DataExportService(
+        readSnapshot: ({required settingNames}) async {
+          await wait?.future;
+          return ExportSnapshot(
+            schemaVersion: 4,
+            rows: {for (final spec in exportRegistryV1) spec.entity: []},
+          );
+        },
+        temporaryDirectory: () async => root,
+        sharer: sharer,
+        now: () => DateTime(2026, 10, 24),
+        appInfo: () async => (version: '0.1.0', build: '1'),
+        handoffs: handoffs,
+        profileKey: () async => 'p1',
+        generation: () => generation,
+        profileRemoved: (_) async => removed,
+      );
+    });
+    List<File> shareCache() {
+      final dir = Directory('${root.path}/share_plus');
+      return dir.existsSync() ? dir.listSync().whereType<File>().toList() : [];
+    }
+
+    test('removing the profile deletes its share copies at once', () async {
+      final unrelated = File('${root.path}/share_plus/not-ours.csv')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('keep');
+      expect(await scoped.export(settingNames: []), isA<Shared>());
+      expect(sharer.copies, hasLength(exportRegistryV1.length + 1));
+      await handoffs.removeProfile('other');
+      expect(sharer.copies.every((f) => f.existsSync()), isTrue);
+      await handoffs.removeProfile('p1');
+      expect(sharer.copies.any((f) => f.existsSync()), isFalse);
+      expect(shareCache().map((f) => f.path), [unrelated.path]);
+    });
+
+    test('an export in flight when the profile goes writes nothing', () async {
+      wait = Completer<void>();
+      final running = scoped.export(settingNames: []);
+      await Future<void>.delayed(Duration.zero);
+      // The removal: a new generation, then the profile's cleanup.
+      generation++;
+      await handoffs.removeProfile('p1');
+      wait!.complete();
+      expect(await running, isA<ExportAbandoned>());
+      expect(sharer.files, isEmpty);
+      expect(shareCache(), isEmpty);
+      expect(Directory('${root.path}/export').existsSync(), isFalse);
+    });
+
+    test('a removal before the platform copied still deletes them', () async {
+      sharer.beforeCopy = () async {
+        generation++;
+        removed = true;
+        await handoffs.removeProfile('p1');
+      };
+      expect(await scoped.export(settingNames: []), isA<ExportAbandoned>());
+      expect(sharer.copies, isNotEmpty);
+      expect(shareCache(), isEmpty);
+    });
+
+    test('a removal and then a failing share still deletes them', () async {
+      sharer
+        ..beforeCopy = () async {
+          generation++;
+          removed = true;
+          await handoffs.removeProfile('p1');
+        }
+        ..failAfterCopy = true;
+      expect(await scoped.export(settingNames: []), isA<Failed>());
+      expect(sharer.copies, isNotEmpty);
+      expect(shareCache(), isEmpty);
+    });
+
+    test('a plain switch keeps the copies the recipient reads', () async {
+      sharer.beforeCopy = () async => generation++;
+      expect(await scoped.export(settingNames: []), isA<ExportAbandoned>());
+      expect(sharer.copies.every((f) => f.existsSync()), isTrue);
+    });
+
+    test('an unreadable generation counts as stale', () async {
+      sharer.beforeCopy = () async => generation = -1;
+      final throwing = DataExportService(
+        readSnapshot: ({required settingNames}) async => ExportSnapshot(
+          schemaVersion: 4,
+          rows: {for (final spec in exportRegistryV1) spec.entity: []},
+        ),
+        temporaryDirectory: () async => root,
+        sharer: sharer,
+        now: () => DateTime(2026, 10, 24),
+        appInfo: () async => (version: '0.1.0', build: '1'),
+        handoffs: handoffs,
+        profileKey: () async => 'p1',
+        generation: () =>
+            generation < 0 ? throw StateError('disposed') : generation,
+        profileRemoved: (_) async => throw StateError('disposed'),
+      );
+      expect(await throwing.export(settingNames: []), isA<ExportAbandoned>());
+      expect(shareCache(), isEmpty);
+    });
   });
   test('export works with no network', () async {
     final offlineClient = FakeHttpAdapter();
