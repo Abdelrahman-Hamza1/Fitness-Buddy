@@ -26,6 +26,24 @@ String dayLabelInline(BuildContext context, LocalDate date, LocalDate today) {
   return dayLabel(context, date, today);
 }
 
+/// A short day for a one-line value (A72, WB-011): "today", "yesterday",
+/// the weekday in the week before ("Sat"), else the date ("Oct 17"; with
+/// the year for another year).
+String dayLabelShort(BuildContext context, LocalDate date, LocalDate today) {
+  final l10n = context.l10n;
+  if (date == today) return l10n.diaryDateTodayInline;
+  if (date == today.plusDays(-1)) return l10n.diaryDateYesterdayInline;
+  final locale = Localizations.localeOf(context).toString();
+  final at = DateTime(date.year, date.month, date.day);
+  if (!date.isAfter(today) && date.daysUntil(today) < 7) {
+    return DateFormat.E(locale).format(at);
+  }
+  return (date.year == today.year
+          ? DateFormat.MMMd(locale)
+          : DateFormat.yMMMd(locale))
+      .format(at);
+}
+
 /// Adds the day to a snackbar [message] when it isn't today: "{message} for
 /// yesterday". One ARB string, so a translation can reorder the parts.
 String withDayClause(

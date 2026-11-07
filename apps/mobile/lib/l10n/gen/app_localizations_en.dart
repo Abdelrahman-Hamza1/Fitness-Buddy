@@ -965,11 +965,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String weightCardTrendFromSemantics(String weight, String date) {
-    return 'Weight trend $weight, from $date';
-  }
-
-  @override
   String weightCardEmptySemantics(String message) {
     return 'Weight. $message';
   }
@@ -7060,13 +7055,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get targetsMacrosTitle => 'Macros today';
-
-  @override
-  String get targetsMacrosNote =>
-      'Protein stays the same every day. Carbs follow the day\'s number.';
-
-  @override
   String get targetsHowRow => 'How is this worked out?';
 
   @override
@@ -7490,11 +7478,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String todayGlanceWeight(String weight, String rate) {
     return '$weight · $rate';
-  }
-
-  @override
-  String todayGlanceWeightStale(String weight, String day) {
-    return '$weight · $day';
   }
 
   @override
@@ -8493,4 +8476,171 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get buddyVoiceInterrupted =>
       'Listening stopped when you left the app. Tap Try again to speak.';
+
+  @override
+  String weightReadingLatestTitle(String day) {
+    return 'Weight · $day';
+  }
+
+  @override
+  String get weightReadingTrendTitle => 'Trend weight';
+
+  @override
+  String weightReadingChange(String change, int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days',
+      one: '1 day',
+    );
+    return '$change since last weigh-in ($_temp0)';
+  }
+
+  @override
+  String get weightReadingFirst => 'Your first weigh-in';
+
+  @override
+  String weightReadingLast(String weight, String day) {
+    return 'last $weight · $day';
+  }
+
+  @override
+  String weightReadingLastRate(String weight, String day, String rate) {
+    return 'last $weight · $day · $rate';
+  }
+
+  @override
+  String todayGlanceWeightLatest(String weight, String day) {
+    return '$weight · $day';
+  }
+
+  @override
+  String weightLatestSemantics(String weight, String day) {
+    return 'Weight $weight, weighed $day';
+  }
+
+  @override
+  String weightLatestChangeSemantics(String weight, String day, String change) {
+    return 'Weight $weight, weighed $day, $change since the weigh-in before';
+  }
+
+  @override
+  String weightTrendLastSemantics(String summary, String weight, String day) {
+    return '$summary, last weigh-in $weight $day';
+  }
+
+  @override
+  String profileCurrentWeightTrend(String weight) {
+    return '$weight (trend)';
+  }
+
+  @override
+  String get targetsDailyEveryDay => 'Daily target · every day';
+
+  @override
+  String get targetsDailyDaysDiffer => 'Daily target · some days differ';
+
+  @override
+  String targetsDailyOwn(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Your own number · suggested $kcalString';
+  }
+
+  @override
+  String get targetsDailyOwnOnly => 'Your own number';
+
+  @override
+  String get targetsDailyAdjusted => 'Adjusted to your results';
+
+  @override
+  String get targetsDailyCalculated => 'Suggested for your goal';
+
+  @override
+  String get targetsDailyChange => 'Change';
+
+  @override
+  String get targetsDailyMacrosNote =>
+      'Macros follow the daily number. Protein comes from your goal weight.';
+
+  @override
+  String get targetsDaysTitle => 'Days of the week';
+
+  @override
+  String get targetsDailySheetTitle => 'Calories every day';
+
+  @override
+  String targetsDailyNow(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Now $kcalString';
+  }
+
+  @override
+  String targetsDailySuggestedChip(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Suggested $kcalString';
+  }
+
+  @override
+  String get targetsDailyBecomes => 'Your day becomes';
+
+  @override
+  String targetsDailyWas(int grams) {
+    final intl.NumberFormat gramsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String gramsString = gramsNumberFormat.format(grams);
+
+    return 'was $gramsString g';
+  }
+
+  @override
+  String get targetsDailyNoTarget => 'No target';
+
+  @override
+  String targetsDailyRate(String rate) {
+    return 'About $rate';
+  }
+
+  @override
+  String targetsDailyShares(int protein, int fat, int carbs) {
+    return 'Protein $protein%, fat $fat%, carbs $carbs% of calories';
+  }
+
+  @override
+  String get targetsDailyReplacesDays =>
+      'Every day gets this number; your own day numbers go.';
+
+  @override
+  String targetsDailyUse(int kcal) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+
+    return 'Use $kcalString every day';
+  }
+
+  @override
+  String get targetsDailyAdjustMacros => 'Adjust macros myself';
+
+  @override
+  String profileCurrentWeightValue(String value, String detail) {
+    return '$value\n$detail';
+  }
+
+  @override
+  String profileCurrentWeightSemantics(String summary) {
+    return 'Current weight: $summary';
+  }
 }

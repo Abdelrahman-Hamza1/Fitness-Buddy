@@ -15,7 +15,8 @@ import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// The weight chart for the selected period (IN-004, A16 D8): weigh-ins as
+/// The weight number (WB-011) and the weight chart for the selected period
+/// (IN-004, A16 D8): weigh-ins as
 /// dots, the trend line, the goal line of the period's phase (PA4) and the
 /// phases shaded. No pan or selection here: the card and "Full graph" open
 /// the full weight graph. Under the chart, at most one quiet note about the
@@ -54,6 +55,7 @@ class WeightSection extends ConsumerWidget {
               ),
             ],
           ),
+          const _Reading(),
           switch (weight) {
             AsyncData(:final value) => _Chart(view: value),
             AsyncError() => FbInlineBanner(
@@ -136,6 +138,27 @@ class _Chart extends ConsumerWidget {
             : weightText(l10n, graph.trend.latest!.trendKg, unit),
       ),
       emptyLabel: l10n.progressWeightEmpty,
+    );
+  }
+}
+
+/// The weight number above the chart (WB-011, D-102), as of today: the
+/// latest weigh-in as entered or the trend. Nothing before the first
+/// weigh-in (the chart says so) or while loading (the chart's skeleton
+/// holds the card).
+class _Reading extends ConsumerWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final today = EntryTime.now(ref.read(clockProvider)).localDate;
+    final state = ref.watch(weightCardProvider(today, isToday: true)).value;
+    final reading = state?.reading;
+    if (state == null || reading == null) return const SizedBox.shrink();
+    return WeightReadingHeader(
+      reading: reading,
+      unit: state.units.bodyMass,
+      today: today,
     );
   }
 }

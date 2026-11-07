@@ -112,6 +112,27 @@ final class TargetPlan {
         (factor - confirmed).abs() < 1e-9;
   }
 
+  /// The daily number the macros follow (TG-046, D-102): the planned
+  /// number when all seven weekdays have the same one (within half a
+  /// kcal), so "1,800 every day" moves fat, fiber and carbs whether it was
+  /// set as the user's own target or day by day; else the suggestion
+  /// [baseKcal]. The weekly budget and rebalancing read only the planned
+  /// numbers, so they don't change (A72 P4).
+  double get dailyKcal {
+    final week = plannedWeek.values;
+    final first = week.first;
+    return week.every((kcal) => (kcal - first).abs() < .5) ? first : baseKcal;
+  }
+
+  /// The macros of a day planned at [kcal] with the macro base [dailyKcal]
+  /// and goal/current weight [weightKg] (TG-050–055).
+  DailyMacros macrosFor(double kcal, {required double weightKg}) =>
+      MacroPlan.calculate(
+        baseKcal: dailyKcal,
+        weightKg: weightKg,
+        settings: macros,
+      ).forDay(kcal);
+
   /// Every weekday's planned number.
   Map<DayOfWeek, double> get plannedWeek => {
     for (final day in DayOfWeek.values) day: plannedKcal(day),
@@ -138,11 +159,7 @@ final class TargetPlan {
     final kcal = week?.targets[date] ?? plannedKcal(date.weekday);
     return TargetDay._(
       kcal,
-      MacroPlan.calculate(
-        baseKcal: baseKcal,
-        weightKg: weightKg,
-        settings: macros,
-      ).forDay(kcal),
+      macrosFor(kcal, weightKg: weightKg),
       week,
       manual,
       acknowledged,

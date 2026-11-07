@@ -14,6 +14,7 @@ final class WeightCardState {
     required this.asOf,
     required this.units,
     this.latest,
+    this.reading,
     this.cadence,
     this.showTip = false,
     this.hasHistory = false,
@@ -27,6 +28,11 @@ final class WeightCardState {
   /// The latest weigh-in measured on or before the day (any of the day's
   /// weigh-ins, not only the trend's choice), or `null`.
   final WeighIn? latest;
+
+  /// The main weight number as of the day (WB-011, D-102): the latest
+  /// weigh-in as entered or the trend, by how often the user weighs in;
+  /// `null` when [isEmpty].
+  final WeightReading? reading;
 
   /// The weigh-in cadence of the last 4 weeks, on today's page only, and
   /// only once there is a weekly rate (the "rate after 2 weeks" line says
@@ -126,6 +132,7 @@ AsyncValue<WeightCardState> weightCard(
       asOf: asOf,
       units: units,
       latest: latest,
+      reading: WeightReading.of(trend: trend, weighIns: weighIns, date: date),
       cadence: cadence,
       showTip: showTip,
       hasHistory: true,

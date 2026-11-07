@@ -97,7 +97,7 @@ final class WeightCardProvider
   }
 }
 
-String _$weightCardHash() => r'b5eac226c5ca23eea53f9da0979500a2deda3808';
+String _$weightCardHash() => r'd7098c7cc41ab31aac4dc08e5697dc7f438bb7d7';
 
 /// The weight card's state for [date] (A14 D9). [isToday] adds the
 /// cadence and the suggestion (D10, PA3: today's page only).

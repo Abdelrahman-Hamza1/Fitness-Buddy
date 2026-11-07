@@ -2,6 +2,7 @@ import 'package:alchemist/alchemist.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_domain/testing.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
+import 'package:fb_mobile/features/targets/presentation/daily_target_sheet.dart';
 import 'package:fb_mobile/features/targets/presentation/day_target_sheet.dart';
 import 'package:fb_mobile/features/targets/presentation/how_sheet.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
@@ -73,6 +74,12 @@ TargetsView _targetsView(TargetSettingsRecord version) {
       goals: [_goal],
     ),
     trendKg: 78.6,
+    generated: TargetsTimeline.generated(
+      profile: _profile,
+      goals: [_goal],
+      weightKg: 78.6,
+      date: _today,
+    ),
   );
 }
 
@@ -138,6 +145,17 @@ Future<void> main() async {
       ),
     ),
     height: 900,
+  );
+  await _golden(
+    'targets_daily_sheet',
+    'TG-046 the Change sheet: one number every day, the macro preview',
+    () => Scaffold(
+      body: Align(
+        alignment: AlignmentDirectional.bottomCenter,
+        child: SingleChildScrollView(child: DailyTargetSheet(view: view)),
+      ),
+    ),
+    height: 1500,
   );
   await _golden(
     'targets_how_sheet',

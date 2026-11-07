@@ -2,6 +2,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/buddy/buddy.dart';
+import 'package:fb_mobile/features/ramadan/ramadan.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/application/body_weight.dart';
 import 'package:fb_mobile/features/targets/application/setup_input.dart';
@@ -36,7 +37,7 @@ final class ProfileGoalView {
     required this.profile,
     required this.units,
     required this.weightKg,
-    required this.currentWeightKg,
+    required this.currentWeight,
     required this.active,
     required Iterable<Versioned<GoalPhaseRecord>> past,
     this.goalProblem,
@@ -56,8 +57,9 @@ final class ProfileGoalView {
   /// weight of the version in effect today (D8), else null.
   final double? weightKg;
 
-  /// A14's latest trend weight, or null before the first weigh-in.
-  final double? currentWeightKg;
+  /// The current weight as the app shows it today (WB-011, D-102): the
+  /// latest weigh-in or the trend; null before the first weigh-in.
+  final WeightReading? currentWeight;
 
   /// The phase in effect today, or null in a gap.
   final Versioned<GoalPhaseRecord>? active;
@@ -81,12 +83,18 @@ final class ProfileGoalView {
 Future<ProfileGoalView?> profileGoalView(Ref ref) async {
   final dataFuture = ref.watch(targetsDataProvider.future);
   final unitsFuture = ref.watch(unitSystemProvider.future);
-  final currentFuture = ref.watch(currentWeightKgProvider.future);
+  final weighInsFuture = ref.watch(weighInsProvider.future);
+  final currentFuture = ref.watch(weightTrendProvider.future);
   final today = ref.watch(targetsTodayProvider);
   final trendFuture = ref.watch(bodyWeightProvider(today).future);
   final data = await dataFuture;
   final units = await unitsFuture;
-  final current = await currentFuture;
+  final weighIns = await weighInsFuture;
+  final current = WeightReading.of(
+    trend: await currentFuture,
+    weighIns: weighIns,
+    date: today,
+  );
   final trend = await trendFuture;
   final profile = data.profile;
   if (profile == null) return null;
@@ -119,7 +127,7 @@ Future<ProfileGoalView?> profileGoalView(Ref ref) async {
     profile: profile,
     units: units,
     weightKg: weightKg,
-    currentWeightKg: current,
+    currentWeight: current,
     active: active,
     past: past,
     goalProblem: problem,
@@ -223,6 +231,8 @@ final class TargetsView {
     required this.explanation,
     required this.trendKg,
     this.adapted = false,
+    this.generated,
+    this.suggestedKcal,
   });
 
   /// Today.
@@ -249,6 +259,18 @@ final class TargetsView {
 
   /// A14's trend weight today, or null.
   final double? trendKg;
+
+  /// The calculated target as it would be saved today (TG-021, TG-046):
+  /// today's trend weight (else the basis weight) and the goal in effect
+  /// today ([TargetsTimeline.generated], the same calculation the
+  /// commands save); null when it can't be computed.
+  final TargetCalculation? generated;
+
+  /// For an own number: the daily suggestion "Suggested" would give today
+  /// ([generated] through [TargetsTimeline.suggestedBase]: the floor and
+  /// Ramadan "maintain" applied, as the saved version will be); null
+  /// otherwise or when it can't be computed.
+  final double? suggestedKcal;
 
   /// Whether today's version is the one a weekly check-in wrote (A38 D4):
   /// the base was adjusted to the user's results, not the formula's.
@@ -302,6 +324,42 @@ final class TargetsView {
   double weekTotalWith(DayOfWeek weekday, double kcal) =>
       weekTotalKcal - plannedKcal(weekday) + kcal;
 
+  /// The daily number the macros follow (TG-046, D-102): the planned
+  /// number when every weekday has the same one, else the suggestion.
+  double get dailyKcal => plan.dailyKcal;
+
+  /// Whether every weekday has the same planned number.
+  bool get everyDaySame {
+    final first = plannedKcal(DayOfWeek.values.first);
+    return DayOfWeek.values.every((d) => (plannedKcal(d) - first).abs() < .5);
+  }
+
+  /// The calculated suggestion the Change sheet offers (TG-046): for an own
+  /// number the [generated] target "Suggested" would save, else today's
+  /// suggestion (adapted or calculated), which it keeps; null when it
+  /// can't be computed.
+  double? get calculatedKcal => version.manual ? suggestedKcal : suggestionKcal;
+
+  /// Whether the daily number is the user's own: an own target, or every
+  /// weekday set to the same number away from the suggestion.
+  bool get ownDaily =>
+      version.manual ||
+      (everyDaySame && (dailyKcal - suggestionKcal).abs() >= .5);
+
+  /// The macros of the daily number ("Daily target" card).
+  DailyMacros get dailyMacros =>
+      plan.macrosFor(dailyKcal, weightKg: day.macroWeightKg);
+
+  /// What [kcal] every day would mean (the Change sheet's preview): the
+  /// same maths as the stored plan, the rate from today's calculated
+  /// expenditure ([generated]).
+  DailyTargetPreview previewDaily(double kcal) => DailyTargetPreview.of(
+    plan: plan,
+    kcal: kcal,
+    macroWeightKg: day.macroWeightKg,
+    expenditureKcal: generated?.expenditureKcal,
+  );
+
   /// Whether any weekday has its own number ("Different by day").
   bool get differentByDay => !forcedFixed && plan.dayFactors.isNotEmpty;
 
@@ -325,6 +383,7 @@ Future<TargetsView?> targetsView(Ref ref) async {
   final weekStartFuture = ref.watch(weekStartProvider.future);
   final trendFuture = ref.watch(bodyWeightProvider(today).future);
   final adaptedFuture = ref.watch(adaptedVersionsProvider.future);
+  final ramadanFuture = ref.watch(ramadanCalendarProvider.future);
   final data = await dataFuture;
   final day = await dayFuture;
   final explanation = await explanationFuture;
@@ -335,6 +394,17 @@ Future<TargetsView?> targetsView(Ref ref) async {
   if (day == null || profile == null) return null;
   final row = data.settings.where((s) => s.value.id == day.version.id);
   if (row.isEmpty) return null;
+  // The commands' weight (trend, else the basis weight; TargetRules.input).
+  final weight = usableWeight(trend) ?? usableWeight(day.version.basisWeightKg);
+  final goals = [for (final p in data.phases) p.value];
+  final generated = weight == null
+      ? null
+      : TargetsTimeline.generated(
+          profile: profile.value,
+          goals: goals,
+          weightKg: weight,
+          date: today,
+        );
   return TargetsView(
     today: today,
     shown: VersionedId(day.version.id, row.first.version),
@@ -344,6 +414,18 @@ Future<TargetsView?> targetsView(Ref ref) async {
     calendar: WeekCalendar(weekStart: weekStart),
     explanation: explanation,
     trendKg: trend,
+    generated: generated,
+    suggestedKcal: generated == null || weight == null || !day.version.manual
+        ? null
+        : TargetsTimeline.suggestedBase(
+            version: day.version,
+            calculation: generated,
+            weightKg: weight,
+            profile: profile.value,
+            goals: goals,
+            date: today,
+            ramadanMaintain: (await ramadanFuture).maintainOn(today),
+          ),
     adapted:
         !day.version.manual &&
         (await adaptedFuture).contains((day.version.id, day.version.revision)),

@@ -93,3 +93,89 @@ class _Row extends StatelessWidget {
     );
   }
 }
+
+/// The four macro targets of the daily number side by side (TG-046, D-102,
+/// design board 1): each its colour dot and name, the grams under it. From
+/// text scale 1.4 it is the [MacroSummary] rows, chosen by the scale only.
+/// One merged node per macro for screen readers.
+class MacroTargetsRow extends StatelessWidget {
+  /// Creates the row for [macros].
+  const new({required this.macros, super.key});
+
+  /// The engine's targets for the daily number.
+  final DailyMacros macros;
+
+  @override
+  Widget build(BuildContext context) {
+    if (MediaQuery.textScalerOf(context).scale(14) >= 14 * 1.4) {
+      return MacroSummary(macros: macros);
+    }
+    final l10n = context.l10n;
+    final colors = context.fbColors;
+    String grams(double? g) => g == null
+        ? l10n.targetsMacroNoTarget
+        : l10n.targetsMacroGrams(DisplayRounding.macroTargetGrams(g));
+    final cells = [
+      (l10n.todayMacroProtein, grams(macros.proteinGrams), colors.protein),
+      (l10n.todayMacroCarbs, grams(macros.carbsGrams), colors.carbs),
+      (l10n.todayMacroFat, grams(macros.fatGrams), colors.fat),
+      (l10n.todayMacroFiber, grams(macros.fiberGrams), colors.fiber),
+    ];
+    return Row(
+      key: const ValueKey('targets-macro-row'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: FbSpace.s2,
+      children: [
+        for (final (label, value, color) in cells)
+          Expanded(
+            child: _Cell(label: label, value: value, color: color),
+          ),
+      ],
+    );
+  }
+}
+
+class _Cell extends StatelessWidget {
+  const new({required this.label, required this.value, required this.color});
+
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return MergeSemantics(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: FbSpace.s1,
+        children: [
+          Row(
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                child: const SizedBox.square(dimension: FbSpace.s2),
+              ),
+              const SizedBox(width: FbSpace.s1),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: FbType.bodySmall.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Text(
+            value,
+            style: FbType.numeric(FbType.title)
+                .copyWith(color: scheme.onSurface),
+          ),
+        ],
+      ),
+    );
+  }
+}

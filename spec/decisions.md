@@ -589,3 +589,12 @@ _Entries marked **(provisional)** apply Claude's recommendation to a question th
   - **Widgets only open the app.** Speak opens Buddy listening, Ask opens Buddy with the keyboard, Weigh opens the weigh-in, numbers open Today. Nothing is logged from a widget (D-079).
   - **Privacy.** A "hide numbers" switch shows buttons only; signing out, removing or deleting a profile clears the widget's numbers.
 - Why: The owner logs on the go; speaking and a one-tap entry from the home screen remove the most friction. On-device speech keeps voice free and private.
+
+## D-102 — One daily target up front; the weight number follows how often you weigh in
+- Date / Source: 2026-11-07 · owner, after first use of build 1000 ("I added a weigh in at 107.7k, but the app shows 108.1kg", "I can't specify like: I want 1800 for all days of the week", "after said calories, we should re adjust protien carbs fats", "if a person does weigh in once a week, then show that number as is, if they do multiple times a day, then we can do some smart logic" → design canvas → "Yes yes. Ok get started").
+- Status: Accepted by the owner. Amends WB-011 and TG-043; adds TG-046.
+- Decision:
+  - **Weight number by weigh-in frequency.** Fewer than 3 weigh-in days in the last 14: the big weight number is the latest weigh-in as entered, with its day and the change since the previous weigh-in. 3 or more: the trend, with the latest weigh-in next to it. The weekly rate always uses the trend.
+  - **The daily target leads the Targets screen.** "Daily target: 1,800 kcal · every day" with Change: one number for every day, with − / +, quick picks (including the suggestion) and a live preview of protein, fat, carbs and fiber against the old values. Protein stays from goal weight; fat, fiber and carbs follow the number.
+  - **Seven equal days are a daily number.** Setting every weekday to the same number counts as that daily target, so the macros follow it.
+- Why: In daily use the trend looked like a wrong weight for someone weighing in weekly, and setting one number for every day was hidden behind "How is this calculated", with macros that didn't follow per-day numbers.

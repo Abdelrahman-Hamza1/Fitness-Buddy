@@ -417,11 +417,14 @@ final class TargetsActions {
   /// acknowledgement only ever means "below the floor, seen", so a floor
   /// that later rises above the value is flagged, never honoured
   /// silently). Within the limits → manual, not acknowledged, mode
-  /// unchanged.
+  /// unchanged. [everyDay] (the Change sheet, TG-046) also puts every
+  /// weekday on the number: the weekday factors and their floor
+  /// confirmations go in the same change set.
   Future<TargetsOutcome> setManualTarget(
     VersionedId shown,
     double kcal, {
     bool acknowledged = false,
+    bool everyDay = false,
   }) {
     if (!TargetRules.input.manualKcal(kcal)) {
       return Future.value(const TargetsFailed(TargetsFailure.invalid));
@@ -465,16 +468,77 @@ final class TargetsActions {
           acknowledged: below,
           mode: below ? TargetMode.fixed : null,
           // PA7: below the floor every day is the same number.
-          dayFactors: below ? const {} : null,
+          dayFactors: below || everyDay ? const {} : null,
         ),
         warnings: warnings,
       );
       return _Write([
         ...write.ops,
-        if (below) ...await _acksOps(const {}),
+        if (below || everyDay) ...await _acksOps(const {}),
       ], warnings: write.warnings);
     });
   }
+
+  /// "Suggested" in the Change sheet (TG-046, D-102): the calculated
+  /// target on every day. An own number goes back to the generated target
+  /// at the current weight (as [useCalculatedTarget]); the weekday factors
+  /// and their floor confirmations go. [TargetsUnchanged] when it already
+  /// is; an unresolvable goal is refused with
+  /// [TargetsFailure.goalNeedsUpdate] (PA3). [expectedKcal] is the
+  /// suggestion the sheet showed (`TargetsView.calculatedKcal`): a
+  /// recalculation that no longer gives it (the weight or goal changed
+  /// meanwhile) is refused with [TargetsFailure.changed], nothing written.
+  Future<TargetsOutcome> useSuggestedEveryDay(
+    VersionedId shown, {
+    double? expectedKcal,
+  }) => _settingsPlan(shown, (data, current, today) async {
+    final manual = current.value.manual;
+    final weight = manual ? await _weight(today, current.value) : null;
+    if (manual && weight == null) return _refuse(TargetsFailure.invalid);
+    final calc = weight == null
+        ? null
+        : _generated(data.profile!.value, _values(data.phases), weight, today);
+    if (manual && calc == null) {
+      return _refuse(TargetsFailure.goalNeedsUpdate);
+    }
+    // The suggestion the saved version will have (the floor and Ramadan
+    // "maintain" applied), as the sheet previewed it.
+    if (calc != null && expectedKcal != null) {
+      final result = TargetsTimeline.suggestedBase(
+        version: current.value,
+        calculation: calc,
+        weightKg: weight!,
+        profile: data.profile!.value,
+        goals: _values(data.phases),
+        date: today,
+        ramadanMaintain: await ramadanMaintainOn(today),
+        defaults: defaults,
+      );
+      if (result == null || (result - expectedKcal).abs() >= .5) {
+        return _refuse(TargetsFailure.changed);
+      }
+    }
+    final write = _revision(
+      current,
+      today,
+      (r) => calc == null
+          ? r.copyWith(dayFactors: const {})
+          : r.copyWith(
+              baseKcal: calc.kcal,
+              basisWeightKg: weight,
+              manual: false,
+              acknowledged: false,
+              dayFactors: const {},
+            ),
+      recomputedKcal: calc?.kcal,
+      warnings: calc?.warnings ?? const {},
+    );
+    return _Write(
+      [...write.ops, ...await _acksOps(const {})],
+      recomputedKcal: write.recomputedKcal,
+      warnings: write.warnings,
+    );
+  });
 
   // ---------------------------------------------------------------------
   // Plans.
@@ -751,26 +815,13 @@ final class TargetsActions {
     List<GoalPhaseRecord> goals,
     double weight,
     LocalDate today,
-  ) {
-    final phase = TargetsTimeline.phaseOn(goals, today);
-    final goal = phase == null
-        ? _maintain(weight, today)
-        : TargetsTimeline.resolve(phase, weightKg: weight, date: today);
-    if (goal == null) return null;
-    try {
-      return TargetCalculator.calculate(
-        profile: profile.toProfile(weight),
-        goal: goal,
-        date: today,
-        defaults: defaults,
-      );
-    }
-    // The engine's content-free signal for an impossible input (PA3).
-    // ignore: avoid_catching_errors
-    on ArgumentError {
-      return null;
-    }
-  }
+  ) => TargetsTimeline.generated(
+    profile: profile,
+    goals: goals,
+    weightKg: weight,
+    date: today,
+    defaults: defaults,
+  );
 
   ResolvedGoal? _activeGoal(TargetsData data, LocalDate today, double weight) {
     final phase = TargetsTimeline.phaseOn(_values(data.phases), today);

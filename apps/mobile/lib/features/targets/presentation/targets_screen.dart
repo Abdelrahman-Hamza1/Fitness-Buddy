@@ -8,6 +8,7 @@ import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/targets/application/targets_actions.dart';
 import 'package:fb_mobile/features/targets/application/targets_screens.dart';
+import 'package:fb_mobile/features/targets/presentation/daily_target_sheet.dart';
 import 'package:fb_mobile/features/targets/presentation/day_target_sheet.dart';
 import 'package:fb_mobile/features/targets/presentation/how_sheet.dart';
 import 'package:fb_mobile/features/targets/presentation/macro_sheet.dart';
@@ -72,9 +73,10 @@ class TargetsScreen extends ConsumerWidget {
 }
 
 /// The Targets screen's content for [view] (public for the goldens), the
-/// D-090 layout (sketch `Targets`): the issue banners, the top card
-/// (today's number, the week's total, "Same every day | Different by day"
-/// and the weekday bars), the macros card and three rows: "How is this
+/// D-102 layout (design board 1): the issue banners, the daily-target card
+/// (the number, own or suggested, Change, the four macro targets), the
+/// days card (today's number, the week's total, "Same every day |
+/// Different by day" and the seven days) and three rows: "How is this
 /// worked out?", Goal and More options.
 class TargetsBody extends StatelessWidget {
   /// Shows [view].
@@ -85,7 +87,6 @@ class TargetsBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     return ListView(
       padding: const EdgeInsetsDirectional.fromSTEB(
         FbSpace.s4,
@@ -95,21 +96,9 @@ class TargetsBody extends StatelessWidget {
       ),
       children: [
         _Banners(view: view),
-        _WeekCard(view: view),
+        _DailyCard(view: view),
         const SizedBox(height: FbSpace.s4),
-        FbCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: FbSpace.s3,
-            children: [
-              Text(l10n.targetsMacrosTitle, style: FbType.title),
-              MacroSummary(macros: view.day.day.macros),
-              _Muted(l10n.targetsMacrosNote),
-              if (_energyNote(l10n, view.day.day.macros) case final note?)
-                _Muted(note),
-            ],
-          ),
-        ),
+        _WeekCard(view: view),
         const SizedBox(height: FbSpace.s4),
         _Rows(view: view),
       ],
@@ -125,6 +114,86 @@ class TargetsBody extends StatelessWidget {
     return diff > 0
         ? l10n.targetsMacroEnergyAbove(kcal)
         : l10n.targetsMacroEnergyBelow(kcal);
+  }
+}
+
+/// The daily target first (TG-046, D-102): "Daily target · every day" (or
+/// "· some days differ"), the number, where it comes from ("Your own
+/// number · suggested 2,150", adjusted by the check-in, or calculated),
+/// Change (the "Calories every day" sheet), the four macro targets of the
+/// daily number and how they're set. Under PA7 Change still sets a new own
+/// number.
+class _DailyCard extends StatelessWidget {
+  const new({required this.view});
+
+  final TargetsView view;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final macros = view.dailyMacros;
+    final suggested = view.calculatedKcal;
+    final source = view.ownDaily
+        ? suggested == null
+              ? l10n.targetsDailyOwnOnly
+              : l10n.targetsDailyOwn(DisplayRounding.kcal(suggested))
+        : view.adapted
+        ? l10n.targetsDailyAdjusted
+        : l10n.targetsDailyCalculated;
+    final heading = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Semantics(
+          header: true,
+          child: _Muted(
+            view.everyDaySame
+                ? l10n.targetsDailyEveryDay
+                : l10n.targetsDailyDaysDiffer,
+          ),
+        ),
+        Text(
+          l10n.targetsTodayKcal(DisplayRounding.kcal(view.dailyKcal)),
+          key: const ValueKey('targets-daily-kcal'),
+          style: FbType.numeric(FbType.headline)
+              .copyWith(color: scheme.onSurface),
+        ),
+        _Muted(source),
+      ],
+    );
+    final change = FbButton.secondary(
+      key: const ValueKey('targets-daily-change'),
+      label: l10n.targetsDailyChange,
+      onPressed: () => unawaited(showDailyTargetSheet(context, view: view)),
+    );
+    // From text scale 1.4 Change goes under the number (by the scale only).
+    final large = MediaQuery.textScalerOf(context).scale(14) >= 14 * 1.4;
+    return FbCard(
+      key: const ValueKey('targets-daily'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: FbSpace.s2,
+        children: [
+          if (large) ...[
+            heading,
+            Align(alignment: AlignmentDirectional.centerStart, child: change),
+          ] else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: FbSpace.s2,
+              children: [
+                Expanded(child: heading),
+                change,
+              ],
+            ),
+          const SizedBox(height: FbSpace.s2),
+          MacroTargetsRow(macros: macros),
+          _Muted(l10n.targetsDailyMacrosNote),
+          if (TargetsBody._energyNote(l10n, macros) case final note?)
+            _Muted(note),
+        ],
+      ),
+    );
   }
 }
 
@@ -172,9 +241,9 @@ class _Banners extends ConsumerWidget {
   }
 }
 
-/// Today's number, the week's total and position, "Same every day |
-/// Different by day" and the weekday bars (tap → the day sheet). Under
-/// PA7 the segments and bars are read-only with the note.
+/// "Days of the week": today's number, the week's total and position,
+/// "Same every day | Different by day" and the weekday rows (tap → the day
+/// sheet). Under PA7 the segments and bars are read-only with the note.
 class _WeekCard extends ConsumerStatefulWidget {
   const new({required this.view});
 
@@ -221,6 +290,10 @@ class _WeekCardState extends ConsumerState<_WeekCard> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: FbSpace.s2,
         children: [
+          Semantics(
+            header: true,
+            child: Text(l10n.targetsDaysTitle, style: FbType.title),
+          ),
           _Muted(
             l10n.targetsTodayOn(
               weekdayNameIn(l10n.localeName, view.today.weekday),

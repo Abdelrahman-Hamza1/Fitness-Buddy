@@ -90,6 +90,7 @@ final class DayTargets {
     required this.version,
     required this.floorKcal,
     required this.weightKg,
+    required this.macroWeightKg,
     required this.raisedToFloor,
     required Set<TargetIssue> issues,
     required this.week,
@@ -112,6 +113,10 @@ final class DayTargets {
 
   /// The weight used: the trend weight, else the version's basis weight.
   final double weightKg;
+
+  /// The weight the macros are planned at: the goal's target weight, else
+  /// [weightKg] (TG-050/051). The Change sheet previews with it.
+  final double macroWeightKg;
 
   /// Whether the stored base was below the floor and was raised to it.
   final bool raisedToFloor;
@@ -208,6 +213,73 @@ abstract final class TargetsTimeline {
       date: date,
     ),
   );
+
+  /// The generated (calculated) target for [profile] at [weightKg] on
+  /// [date] with the goal in effect then (maintain in a gap), or null when
+  /// that goal can't be resolved or the profile can't be evaluated (PA3).
+  /// The one prospective calculation: "Use the calculated target" saves it
+  /// and the Change sheet's "Suggested" offers it (TG-021, TG-046).
+  static TargetCalculation? generated({
+    required ProfileRecord profile,
+    required Iterable<GoalPhaseRecord> goals,
+    required double weightKg,
+    required LocalDate date,
+    TargetDefaults defaults = const TargetDefaults(),
+  }) {
+    final phase = phaseOn(goals, date);
+    final goal = phase == null
+        ? _tryEngine(
+            () => ResolvedGoal.resolve(
+              type: GoalType.maintain,
+              expression: GoalExpression.weekly(0),
+              currentKg: weightKg,
+              date: date,
+            ),
+          )
+        : resolve(phase, weightKg: weightKg, date: date);
+    if (goal == null) return null;
+    return _tryEngine(
+      () => TargetCalculator.calculate(
+        profile: profile.toProfile(weightKg),
+        goal: goal,
+        date: date,
+        defaults: defaults,
+      ),
+    );
+  }
+
+  /// The daily suggestion [version] would have on [date] after "Suggested"
+  /// (TG-046): [calculation] as a generated base at [weightKg], no weekday
+  /// numbers, then the same projection as [day] (the floor, Ramadan
+  /// "maintain" via [ramadanMaintain]). What the Change sheet previews and
+  /// what the command checks before saving. Null when [day] can't evaluate
+  /// it.
+  static double? suggestedBase({
+    required TargetSettingsRecord version,
+    required TargetCalculation calculation,
+    required double weightKg,
+    required ProfileRecord profile,
+    required LocalDate date,
+    Iterable<GoalPhaseRecord> goals = const [],
+    bool ramadanMaintain = false,
+    TargetDefaults defaults = const TargetDefaults(),
+  }) => day(
+    date: date,
+    settings: [
+      version.copyWith(
+        baseKcal: calculation.kcal,
+        basisWeightKg: weightKg,
+        manual: false,
+        acknowledged: false,
+        dayFactors: const {},
+      ),
+    ],
+    profile: profile,
+    goals: goals,
+    bodyWeightKg: weightKg,
+    ramadanMaintain: ramadanMaintain,
+    defaults: defaults,
+  )?.plan.baseKcal;
 
   /// The targets for [date], or null without a profile, without a version
   /// in effect, or when the engine can't evaluate the stored values on
@@ -318,6 +390,7 @@ abstract final class TargetsTimeline {
       version: version,
       floorKcal: floor,
       weightKg: weight,
+      macroWeightKg: goalWeight ?? weight,
       raisedToFloor: storedPlan.baseKcal != version.baseKcal,
       issues: {
         if (version.manual &&

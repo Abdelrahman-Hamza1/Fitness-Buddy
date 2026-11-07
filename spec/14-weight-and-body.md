@@ -13,7 +13,7 @@ _Status: **Draft v1** · 2026-10-10 · Main decisions: D-024 to D-026, D-052, D-
 ## 2. Trend weight
 
 - **WB-010** `[R1]` The app calculates a **smoothed trend weight** that handles irregular gaps between weigh-ins. A single weigh-in moves the trend only partly.
-- **WB-011** `[R1]` The trend is the **main number** ("Trend 97.6 kg · −0.4 kg/week"). The latest raw weigh-in is shown next to it, smaller.
+- **WB-011** `[R1]` The main weight number depends on how often you weigh in (D-102): with fewer than 3 weigh-in days in the last 14 it is the **latest weigh-in as entered** (with its day and the change since the previous one); with 3 or more it is the **trend** ("Trend 97.6 kg · −0.4 kg/week") with the latest raw weigh-in next to it, smaller. The weekly rate always uses the trend.
 - **WB-012** `[R1]` With few weigh-ins, the app is honest about it ("based on 1 weigh-in per week — trend updates slowly"), and can gently suggest 2–3 weigh-ins a week, at most once a month and never as a nag (D-054).
 
 ## 3. Weight graph (replacing the owner's note, D-024)

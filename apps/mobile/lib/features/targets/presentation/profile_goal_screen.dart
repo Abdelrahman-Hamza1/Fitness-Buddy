@@ -67,7 +67,6 @@ class _Body extends StatelessWidget {
         today: view.today,
       ),
     );
-    final current = view.currentWeightKg;
     // The same settings-page layout as the rest of Me (A65 M4): the
     // profile rows in one card, the goal card, past goals in one card.
     return ListView(
@@ -100,14 +99,7 @@ class _Body extends StatelessWidget {
               trailing: const Icon(FbIcons.next),
               onTap: () => edit(ProfileField.activity),
             ),
-            FbListRow(
-              title: l10n.profileCurrentWeight,
-              subtitle: current == null
-                  ? l10n.profileCurrentWeightNone
-                  : massText(l10n, current, view.units.bodyMass),
-              trailing: const Icon(FbIcons.next),
-              onTap: () => unawaited(showWeighInSheet(context)),
-            ),
+            _CurrentWeightRow(view: view),
           ],
         ),
         FbSectionHeader(title: l10n.goalSectionTitle),
@@ -284,4 +276,61 @@ String heightText(AppLocalizations l10n, ProfileRecord profile) {
       length.toFeetAndInches().inches,
     ),
   };
+}
+
+/// Me › Profile's current weight (WB-011, D-102): the reading's line and
+/// its supporting line (the change since the weigh-in before, or the
+/// latest next to the trend), read as one node with the shared semantics.
+/// A tap logs a weigh-in.
+class _CurrentWeightRow extends StatelessWidget {
+  const new({required this.view});
+
+  final ProfileGoalView view;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final current = view.currentWeight;
+    final unit = view.units.bodyMass;
+    void log() => unawaited(showWeighInSheet(context));
+    final String subtitle;
+    final String spoken;
+    if (current == null) {
+      subtitle = l10n.profileCurrentWeightNone;
+      spoken = subtitle;
+    } else {
+      final main = switch (current) {
+        LatestWeightReading() => readingLineText(
+          context,
+          current,
+          unit,
+          view.today,
+        ),
+        TrendWeightReading() => l10n.profileCurrentWeightTrend(
+          readingMainText(l10n, current, unit),
+        ),
+      };
+      final first = current is LatestWeightReading && current.changeKg == null;
+      subtitle = first
+          ? main
+          : l10n.profileCurrentWeightValue(
+              main,
+              readingDetailText(context, current, unit, view.today),
+            );
+      spoken = readingSemantics(context, current, unit, view.today);
+    }
+    return Semantics(
+      key: const ValueKey('profile-current-weight'),
+      label: l10n.profileCurrentWeightSemantics(spoken),
+      button: true,
+      onTap: log,
+      excludeSemantics: true,
+      child: FbListRow(
+        title: l10n.profileCurrentWeight,
+        subtitle: subtitle,
+        trailing: const Icon(FbIcons.next),
+        onTap: log,
+      ),
+    );
+  }
 }

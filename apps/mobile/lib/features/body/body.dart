@@ -45,4 +45,5 @@ export 'presentation/measurement_text.dart';
 export 'presentation/weigh_in_sheet.dart' show WeighInSheet, showWeighInSheet;
 export 'presentation/weight_glance.dart' show WeightGlance;
 export 'presentation/weight_history_screen.dart' show WeightHistoryScreen;
+export 'presentation/weight_reading_text.dart';
 export 'presentation/weight_text.dart';

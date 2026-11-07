@@ -227,6 +227,7 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A69](A69-buddy-workouts-body-photos.md) | Buddy workouts, measurements, paste import, meal photos & label scan (was A28b, A29, A37b) | Claude (Opus build), Codex review | A66, **B26** | L | A28b, A29, A37b | **M6** | ✅ |
 | [A70](A70-voice-input.md) | Voice input in Buddy (D-101, R2 work early): mic, on-device speech, transcript to check | Claude (Opus build), Codex review | A66 | S–M | new (owner 2026-11-07) |  | ✅ done (Codex review + 2 fix-checks; A55 checks pending) |
 | [A71](A71-home-widgets.md) | Home-screen widgets (D-101, R2 work early): medium, small numbers, small buttons; open the app only | Claude (Opus build), Codex review (code + security) | A70 (Speak only) | M | new (owner 2026-11-07) |  | ✅ done (Codex code + security, 2 fix-checks; A55 checks pending) |
+| [A72](A72-targets-weight-display.md) | Daily target up front with live macros; seven equal days follow; weight number by weigh-in frequency (D-102) | Claude (Opus plan + build), one Codex review | A13, A14, A57 | M | new (owner 2026-11-07) |  | ✅ done (Codex review + 2 fix-checks; A55 checks pending) |
 
 **A44 runs right after A22 (owner request, 2026-10-29):** the "Embrace" identity (palette, fonts, icon) lands before the remaining screens are built, an exception to "the number is the order" like the dish batches below.
 

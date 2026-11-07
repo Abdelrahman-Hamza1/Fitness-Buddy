@@ -102,7 +102,7 @@ final class ProfileGoalViewProvider
   }
 }
 
-String _$profileGoalViewHash() => r'3cb28c81dc1427e90cfc2517195a6324f6861031';
+String _$profileGoalViewHash() => r'2dfb8057757a6f90ab91f3c06dae2defc2ea5f36';
 
 /// The live [TargetsView], or null before setup (or when today's targets
 /// can't be computed from the stored rows).
@@ -149,7 +149,7 @@ final class TargetsViewProvider
   }
 }
 
-String _$targetsViewHash() => r'd764fd72d2445867412ebf495e3ff4550fd19bea';
+String _$targetsViewHash() => r'ae63b37385db66bc6b249d5f2072517eb79ac873';
 
 /// The settings versions weekly check-ins wrote, as (ID, revision) (A38
 /// D4): from the confirmed `targetChange` rows. Live.

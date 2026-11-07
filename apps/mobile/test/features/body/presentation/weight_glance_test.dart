@@ -48,22 +48,55 @@ List<WeighInDraft> weekly(List<int> daysAgo, List<double> kgs) => [
 
 // Covers: HM-005, WB-011, WB-012
 void main() {
-  testWidgets('HM-005 WB-011 A57 D3 the weight half shows the as-of trend and '
-      'the weekly rate, and opens the weigh-in sheet', (tester) async {
+  testWidgets('HM-005 WB-011 A57 D3 weekly weigh-ins: the weight half shows '
+      'the latest weigh-in as entered and its day, and opens the weigh-in '
+      'sheet', (tester) async {
     final rig = SheetRig();
     await rig.seed(
       tester,
-      weekly([29, 22, 15, 8, 1], [98, 97.5, 97, 96.5, 96]),
+      weekly([29, 22, 15, 8, 1], [98, 97.5, 97, 96.5, 96.2]),
     );
     await pumpIn(tester, rig, WeightGlance(date: day17, isToday: true));
     final tile = tester.widget<FbGlanceTile>(find.byKey(_glance));
     expect(tile.icon, FbIcons.weight);
-    // The numbers are data: the trend and a weekly rate.
-    expect(tile.text, contains('96.5'));
-    expect(tile.text, contains('/'));
+    expect(tile.text, '96.2 kg · yesterday');
+    expect(tile.semanticLabel, contains('since the weigh-in before'));
     await tester.tap(find.byKey(_glance));
     await settle(tester);
     expect(find.byType(WeighInSheet), findsOneWidget);
+    await unmount(tester, rig);
+  });
+
+  testWidgets('HM-005 WB-011 frequent weigh-ins: the weight half shows the '
+      'trend and its weekly rate; Progress shows "last" next to it', (
+    tester,
+  ) async {
+    final rig = SheetRig();
+    await rig.seed(tester, [
+      for (var ago = 20; ago >= 0; ago--)
+        weighInDraft(98 - (20 - ago) * .1, date: day17.plusDays(-ago)),
+    ]);
+    await pumpIn(tester, rig, WeightGlance(date: day17, isToday: true));
+    final tile = tester.widget<FbGlanceTile>(find.byKey(_glance));
+    expect(tile.text, contains('kg/week'));
+    expect(tile.text, isNot(contains('96.0')));
+    expect(tile.semanticLabel, contains('last weigh-in 96.0 kilograms today'));
+    await pumpIn(tester, rig, const WeightSection());
+    expect(find.text('Trend weight'), findsOneWidget);
+    expect(find.textContaining('last 96.0 kg · today · '), findsOneWidget);
+    await unmount(tester, rig);
+  });
+
+  testWidgets('WB-011 weekly weigh-ins: Progress shows the latest as entered '
+      'and the change since the one before', (tester) async {
+    final rig = SheetRig();
+    await rig.seed(tester, weekly([20, 10], [108.8, 107.7]));
+    await pumpIn(tester, rig, const WeightSection());
+    expect(find.text('107.7 kg'), findsOneWidget);
+    expect(
+      find.text('\u22121.1 kg since last weigh-in (10 days)'),
+      findsOneWidget,
+    );
     await unmount(tester, rig);
   });
 

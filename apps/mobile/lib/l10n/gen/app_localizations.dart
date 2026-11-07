@@ -1634,12 +1634,6 @@ abstract class AppLocalizations {
   /// **'Weight trend {weight}, {change} per week'**
   String weightCardTrendRateSemantics(String weight, String change);
 
-  /// Weight card, first row, screen readers: a trend whose last weigh-in is 4 weeks old or older.
-  ///
-  /// In en, this message translates to:
-  /// **'Weight trend {weight}, from {date}'**
-  String weightCardTrendFromSemantics(String weight, String date);
-
   /// Weight card without a weigh-in on or before the day, screen readers: the title and the visible invitation.
   ///
   /// In en, this message translates to:
@@ -10493,18 +10487,6 @@ abstract class AppLocalizations {
   /// **'Every day is back to {kcal} kcal'**
   String targetsSameEveryDayDone(int kcal);
 
-  /// Targets: heading of the macros card.
-  ///
-  /// In en, this message translates to:
-  /// **'Macros today'**
-  String get targetsMacrosTitle;
-
-  /// Targets macros card: how macros follow a day's number (TG-055).
-  ///
-  /// In en, this message translates to:
-  /// **'Protein stays the same every day. Carbs follow the day\'s number.'**
-  String get targetsMacrosNote;
-
   /// Targets row that opens the calculation (D-090).
   ///
   /// In en, this message translates to:
@@ -11014,12 +10996,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{weight} · {rate}'**
   String todayGlanceWeight(String weight, String rate);
-
-  /// Today's slim line, weight half: the trend from an older weigh-in, with its day (D-093).
-  ///
-  /// In en, this message translates to:
-  /// **'{weight} · {day}'**
-  String todayGlanceWeightStale(String weight, String day);
 
   /// Today's slim line, weight half, for a screen reader: weigh-ins couldn't load; a tap retries.
   ///
@@ -12556,6 +12532,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Listening stopped when you left the app. Tap Try again to speak.'**
   String get buddyVoiceInterrupted;
+
+  /// Progress weight card (WB-011, D-102): label over the latest weigh-in when the user weighs in rarely, with its day ("Weight · Sat").
+  ///
+  /// In en, this message translates to:
+  /// **'Weight · {day}'**
+  String weightReadingLatestTitle(String day);
+
+  /// Progress weight card (WB-011, D-102): label over the trend when the user weighs in often.
+  ///
+  /// In en, this message translates to:
+  /// **'Trend weight'**
+  String get weightReadingTrendTitle;
+
+  /// Progress weight card (WB-011): the change of the latest weigh-in since the one before, signed and neutral, and the days between ("−1.1 kg since last weigh-in (10 days)").
+  ///
+  /// In en, this message translates to:
+  /// **'{change} since last weigh-in ({days, plural, =1{1 day} other{{days} days}})'**
+  String weightReadingChange(String change, int days);
+
+  /// Progress weight card (WB-011): under the only weigh-in so far.
+  ///
+  /// In en, this message translates to:
+  /// **'Your first weigh-in'**
+  String get weightReadingFirst;
+
+  /// Progress weight card (WB-011): the latest weigh-in, smaller, next to the trend ("last 107.7 kg · today").
+  ///
+  /// In en, this message translates to:
+  /// **'last {weight} · {day}'**
+  String weightReadingLast(String weight, String day);
+
+  /// Progress weight card (WB-011): the latest weigh-in and the trend's weekly rate ("last 107.7 kg · today · −0.4 kg/week").
+  ///
+  /// In en, this message translates to:
+  /// **'last {weight} · {day} · {rate}'**
+  String weightReadingLastRate(String weight, String day, String rate);
+
+  /// Today's slim line, weight half (WB-011, D-102): the latest weigh-in as entered and its day ("107.7 kg · Sat").
+  ///
+  /// In en, this message translates to:
+  /// **'{weight} · {day}'**
+  String todayGlanceWeightLatest(String weight, String day);
+
+  /// Screen readers (WB-011): the latest weigh-in and its day.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight {weight}, weighed {day}'**
+  String weightLatestSemantics(String weight, String day);
+
+  /// Screen readers (WB-011): the latest weigh-in, its day and the change since the one before.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight {weight}, weighed {day}, {change} since the weigh-in before'**
+  String weightLatestChangeSemantics(String weight, String day, String change);
+
+  /// Screen readers (WB-011): the trend summary and the latest weigh-in with its day.
+  ///
+  /// In en, this message translates to:
+  /// **'{summary}, last weigh-in {weight} {day}'**
+  String weightTrendLastSemantics(String summary, String weight, String day);
+
+  /// Me › Profile, the current weight row (WB-011): the trend when the user weighs in often.
+  ///
+  /// In en, this message translates to:
+  /// **'{weight} (trend)'**
+  String profileCurrentWeightTrend(String weight);
+
+  /// Targets top card (TG-046, D-102): the label when every weekday has the same number.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily target · every day'**
+  String get targetsDailyEveryDay;
+
+  /// Targets top card (TG-046): the label when weekdays have their own numbers; the number shown is the suggestion they start from.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily target · some days differ'**
+  String get targetsDailyDaysDiffer;
+
+  /// Targets top card (TG-046): the daily number is the user's own; the calculated suggestion, e.g. "Your own number · suggested 2,150".
+  ///
+  /// In en, this message translates to:
+  /// **'Your own number · suggested {kcal}'**
+  String targetsDailyOwn(int kcal);
+
+  /// Targets top card (TG-046): the user's own daily number when no suggestion can be computed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own number'**
+  String get targetsDailyOwnOnly;
+
+  /// Targets top card (TG-034): the weekly check-in set the number from the user's results.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjusted to your results'**
+  String get targetsDailyAdjusted;
+
+  /// Targets top card (TG-020): the number is the calculated suggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested for your goal'**
+  String get targetsDailyCalculated;
+
+  /// Targets top card (TG-046): opens the sheet that sets one number for every day.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get targetsDailyChange;
+
+  /// Targets top card (TG-046, TG-050): how the four macro targets are set.
+  ///
+  /// In en, this message translates to:
+  /// **'Macros follow the daily number. Protein comes from your goal weight.'**
+  String get targetsDailyMacrosNote;
+
+  /// Targets: heading of the card with the seven weekday numbers (TG-043).
+  ///
+  /// In en, this message translates to:
+  /// **'Days of the week'**
+  String get targetsDaysTitle;
+
+  /// Change sheet title (TG-046): one daily calorie number for every day.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories every day'**
+  String get targetsDailySheetTitle;
+
+  /// Change sheet chip (TG-046): back to the current daily number, e.g. "Now 1,800".
+  ///
+  /// In en, this message translates to:
+  /// **'Now {kcal}'**
+  String targetsDailyNow(int kcal);
+
+  /// Change sheet chip (TG-046): the calculated suggestion; saving it goes back to the calculated target, e.g. "Suggested 2,150".
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested {kcal}'**
+  String targetsDailySuggestedChip(int kcal);
+
+  /// Change sheet (TG-046): heading of the live macro preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Your day becomes'**
+  String get targetsDailyBecomes;
+
+  /// Change sheet preview (TG-046): a macro's current target, e.g. "was 72 g".
+  ///
+  /// In en, this message translates to:
+  /// **'was {grams} g'**
+  String targetsDailyWas(int grams);
+
+  /// Change sheet preview (TG-054): carbs or fat in "calories and protein only".
+  ///
+  /// In en, this message translates to:
+  /// **'No target'**
+  String get targetsDailyNoTarget;
+
+  /// Change sheet (TG-046): the rough weekly weight change at the number, e.g. "About −0.6 kg/week". Neutral wording.
+  ///
+  /// In en, this message translates to:
+  /// **'About {rate}'**
+  String targetsDailyRate(String rate);
+
+  /// Change sheet, screen readers (TG-046): the share bar of protein, fat and carbs.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein {protein}%, fat {fat}%, carbs {carbs}% of calories'**
+  String targetsDailyShares(int protein, int fat, int carbs);
+
+  /// Change sheet (TG-046): shown when weekdays have their own numbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Every day gets this number; your own day numbers go.'**
+  String get targetsDailyReplacesDays;
+
+  /// Change sheet primary button (TG-046), e.g. "Use 1,800 every day".
+  ///
+  /// In en, this message translates to:
+  /// **'Use {kcal} every day'**
+  String targetsDailyUse(int kcal);
+
+  /// Change sheet link (TG-054): opens the macro settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust macros myself'**
+  String get targetsDailyAdjustMacros;
+
+  /// Me › Profile, the current weight row (WB-011): the weight line and, under it, the change since the weigh-in before or the latest weigh-in next to the trend.
+  ///
+  /// In en, this message translates to:
+  /// **'{value}\n{detail}'**
+  String profileCurrentWeightValue(String value, String detail);
+
+  /// Me › Profile, screen readers (WB-011): the current weight row, with the weight summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Current weight: {summary}'**
+  String profileCurrentWeightSemantics(String summary);
 }
 
 class _AppLocalizationsDelegate
