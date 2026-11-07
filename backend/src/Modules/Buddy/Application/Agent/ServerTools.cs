@@ -9,7 +9,7 @@ namespace FitnessBuddy.Modules.Buddy.Application;
 /// The server tools (06 §4.1): shared data only. Every number the model may mention comes back as a claim; foods come back as
 /// f handles whose facts stay in the workspace for <c>compute</c> and the action tools.
 /// </summary>
-internal sealed class ServerTools(IFoodResolver catalog, IBarcodeFacts barcodes, ICurrentUser user)
+internal sealed class ServerTools(IFoodResolver catalog, IBarcodeFacts barcodes, ICurrentUser user, Exercises exercises, ActionTools actions)
 {
     public Task<string> RunAsync(AgentToolCall call, TurnWorkspace ws, CancellationToken ct) => call.Name switch
     {
@@ -17,6 +17,8 @@ internal sealed class ServerTools(IFoodResolver catalog, IBarcodeFacts barcodes,
         "get_dish" => AgentTools.Bind<GetDishArgs>(call) is { } d ? DishAsync(d, ws, ct) : Invalid(),
         "lookup_barcode" => AgentTools.Bind<LookupBarcodeArgs>(call) is { } b ? BarcodeAsync(b, ws, ct) : Invalid(),
         "compute" => Task.FromResult(AgentTools.Bind<ComputeArgs>(call) is { } c ? Compute(c, ws) : AgentTools.Error("invalidArgs")),
+        "exercise_search" => AgentTools.Bind<ExerciseSearchArgs>(call) is { } x ? ExerciseSearchAsync(x, ws, ct) : Invalid(),
+        "check_fit" => AgentTools.Bind<CheckFitArgs>(call) is { } f ? actions.CheckFitAsync(f, ws, ct) : Invalid(),
         _ => Invalid(),
     };
 
@@ -33,6 +35,23 @@ internal sealed class ServerTools(IFoodResolver catalog, IBarcodeFacts barcodes,
             if (await catalog.DetailsAsync(hit.CatalogKey, ct) is { } facts) { candidates.Add(Describe(ws, From(facts), hit.Kind)); }
         }
         return AgentTools.Result(new { ok = true, candidates });
+    }
+
+    /// <summary>Library exercises by name (B26 D5); handles map back to library codes in propose_workout.</summary>
+    private async Task<string> ExerciseSearchAsync(ExerciseSearchArgs args, TurnWorkspace ws, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(args.Query) || args.Query.Length > 200) { return AgentTools.Error("invalidArgs"); }
+        var hits = Exercises.Search(await exercises.ListAsync(ct), args.Query, Math.Clamp(args.Limit ?? 5, 1, 8)).Select(e => new
+        {
+            exercise = ws.Handle("x", e.Id, e.Name),
+            name = e.Name,
+            aliases = e.Aliases.Take(4).ToArray(),
+            type = e.Type,
+            equipment = e.Equipment,
+            muscleGroup = e.PrimaryMuscle,
+            perDumbbell = e.Equipment == "dumbbell",
+        }).ToArray();
+        return AgentTools.Result(new { ok = true, exercises = hits });
     }
 
     private async Task<string> DishAsync(GetDishArgs args, TurnWorkspace ws, CancellationToken ct)
@@ -107,6 +126,8 @@ internal sealed class ServerTools(IFoodResolver catalog, IBarcodeFacts barcodes,
         state = food.State,
         kind,
         source = food.Source,
+        // FD-081: a warning when the halal setting is on (names only; never a block).
+        halal = ws.Halal && HalalCheck.Flags(food.NameEn, food.NameAr) is { Length: > 0 } flags ? flags.Select(HalalCheck.Code).ToArray() : null,
         per100 = ClaimSet.Nutrients(ws, food.Nutrients, "per100", null, "per 100 g of " + food.NameEn),
         servings = food.Servings.Where(s => s.G is not null).Take(6).Select(s => new
         {

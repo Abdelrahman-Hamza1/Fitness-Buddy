@@ -66,7 +66,7 @@ Future<void> _logIt(WidgetTester tester) async {
 /// throw-away profile, Buddy's answer recorded and served by in-app fake
 /// transports for both the auth and the API clients, with an in-memory session
 /// store (no network, no keystore). The card logs through the single writer.
-/// J2 (estimate) and J3 (Arabic) are host tests and `tools/buddy_eval`.
+/// J2 (estimate) and J3 (Arabic) are host tests.
 void main() {
   patrolTest('AI-030 J1 a Buddy card logs through the chat sheet', ($) async {
     final api = BuddyFakeAdapter();

@@ -38,9 +38,12 @@ internal sealed record RoundControl(Func<bool> DeadlineHit, CancellationToken Tr
 /// wrap-up with no send. The stop button closes the stream, which cancels the in-flight send.
 /// </summary>
 internal sealed partial class BuddyAgent(IAgentLedger ledger, IAgentModel model, IContinuationSealer sealer, ToolRunner tools, ReplyWriter writer,
-    FitnessBuddy.BuildingBlocks.Auth.ICurrentUser user, TimeProvider clock, IOptions<BuddyAgentOptions> options,
+    FitnessBuddy.BuildingBlocks.Auth.ICurrentUser user, TimeProvider clock, IOptions<BuddyAgentOptions> options, Exercises exercises,
     Microsoft.Extensions.Logging.ILogger<BuddyAgent> logger)
 {
+    // agent-v1 plus the exercise library: static per catalog release, first in every send (prompt caching, B26 D5).
+    private string system = AgentPrompt.Text;
+
     public async Task RunAsync(TurnRun run, ITurnEventSink sink, CancellationToken transport, CancellationToken fenced)
     {
         var log = new RoundLog();
@@ -48,7 +51,11 @@ internal sealed partial class BuddyAgent(IAgentLedger ledger, IAgentModel model,
         using var deadline = new CancellationTokenSource(left > TimeSpan.Zero ? left : TimeSpan.Zero, clock);
         using var work = CancellationTokenSource.CreateLinkedTokenSource(fenced, deadline.Token);
         var control = new RoundControl(() => deadline.IsCancellationRequested && !fenced.IsCancellationRequested, transport, work.Token);
-        try { await LoopAsync(run, sink, log, control); }
+        try
+        {
+            system = AgentPrompt.Text + Exercises.PromptBlock(await exercises.ListAsync(control.Work));
+            await LoopAsync(run, sink, log, control);
+        }
         catch (OperationCanceledException) when (control.DeadlineHit() && !transport.IsCancellationRequested)
         {
             // The deadline passed during model or tool work: the deterministic wrap-up (06 §2 step 5) on the live stream.
@@ -66,6 +73,14 @@ internal sealed partial class BuddyAgent(IAgentLedger ledger, IAgentModel model,
     private async Task LoopAsync(TurnRun run, ITurnEventSink sink, RoundLog log, RoundControl control)
     {
         var ws = run.Workspace; var limits = options.Value; var ct = control.Work;
+        if (ws.WeeklyReview)
+        {
+            // B26 D3: no tools; the code header plus at most two guarded observations; a limit or quota keeps the header alone.
+            await sink.EmitAsync(new BuddyStepEvent(BuddyStepCode.WritingReply), ct);
+            var reason = await ReplyWriter.WeeklyAsync(run, this, sink, log, ct);
+            await FinishAsync(run, sink, log, reason, control);
+            return;
+        }
         if (run.Round > 0) { ws.Transcript.Add(AgentMessage.Tools(ToolRunner.IngestPhone(run, ws, log))); }
         if (run.Attempt > 1 && run.PriorAttempt is { } prior) { ws.Transcript.Add(AgentMessage.User(TurnContextBuilder.PriorNote(prior, ws))); }
         var stepShown = false;
@@ -134,9 +149,9 @@ internal sealed partial class BuddyAgent(IAgentLedger ledger, IAgentModel model,
     internal async Task<SendGate> ReserveAsync(TurnRun run, IReadOnlyList<AgentMessage> transcript, IReadOnlyList<AgentToolSpec> specs, CancellationToken cancellationToken)
     {
         static long Bytes(string? s) => s is null ? 0 : System.Text.Encoding.UTF8.GetByteCount(s);
-        var bytes = Bytes(AgentPrompt.Text) + specs.Sum(t => Bytes(t.Name) + Bytes(t.Description) + Bytes(t.Schema.GetRawText()))
+        var bytes = Bytes(system) + specs.Sum(t => Bytes(t.Name) + Bytes(t.Description) + Bytes(t.Schema.GetRawText()))
             + transcript.Sum(m => Bytes(m.Text) + m.Calls.Sum(c => Bytes(c.Name) + Bytes(c.ArgumentsJson)) + m.Results.Sum(r => Bytes(r.ResultJson)));
-        var bound = bytes / 2 + 64 + (run.Round == 0 && transcript == run.Workspace.Transcript && run.Image is not null ? 3000 : 0);
+        var bound = bytes / 2 + 64 + (run.Round == 0 && transcript == run.Workspace.Transcript && run.Image is not null && !run.Workspace.WeeklyReview ? 3000 : 0);
         var gate = await ledger.ReserveSendAsync(run.TurnId, run.Round, run.Attempt, run.Guest, options.Value, bound, cancellationToken);
         if (gate == SendGate.Reserved) { reservedInput = bound; }
         return gate;
@@ -149,7 +164,7 @@ internal sealed partial class BuddyAgent(IAgentLedger ledger, IAgentModel model,
         var limits = options.Value;
         var budget = await ledger.ReadBudgetAsync(run.TurnId, cancellationToken) ?? run.Budget;
         var maxOutput = (int)Math.Clamp(limits.MaxOutputTokens - budget.OutputTokens, 1, limits.StepOutputTokens);
-        var result = await model.SendAsync(new(AgentPrompt.Text, transcript ?? run.Workspace.Transcript, transcript is null && run.Round == 0 ? run.Image : null, specs,
+        var result = await model.SendAsync(new(system, transcript ?? run.Workspace.Transcript, transcript is null && run.Round == 0 && !run.Workspace.WeeklyReview ? run.Image : null, specs,
             maxOutput, TimeSpan.FromSeconds(limits.StepTimeoutSeconds)), cancellationToken);
         using var persist = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         var reserved = reservedInput; reservedInput = 0;

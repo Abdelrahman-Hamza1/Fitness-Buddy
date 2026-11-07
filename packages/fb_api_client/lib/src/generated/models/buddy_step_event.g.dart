@@ -34,5 +34,6 @@ const _$BuddyStepCodeEnumMap = {
   BuddyStepCode.checkingFit: 'checkingFit',
   BuddyStepCode.writingReply: 'writingReply',
   BuddyStepCode.summarizing: 'summarizing',
+  BuddyStepCode.searchingExercises: 'searchingExercises',
   BuddyStepCode.$unknown: r'$unknown',
 };

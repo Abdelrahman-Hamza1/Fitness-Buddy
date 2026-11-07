@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 namespace FitnessBuddy.Modules.Buddy.Domain;
 
 /// <summary>
-/// The pure semantic rules of a parsed intent (B09a), shared by interpret's output validation and the agent's action tools (B25),
+/// The pure semantic rules of a parsed intent (B09a), kept from interpret for the agent's action tools (B25, TD-128),
 /// so the resolvers always get arguments in the shapes they assume.
 /// </summary>
 internal static partial class ParsedIntentRules

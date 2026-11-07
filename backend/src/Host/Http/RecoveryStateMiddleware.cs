@@ -22,8 +22,9 @@ internal sealed class RecoveryStateMiddleware(RequestDelegate next)
             return;
         }
         // These handlers own short recovery/lifecycle transactions. A shared request lease would
-        // block deletion throughout external AI I/O; each Buddy dispatch/completion rechecks recovery.
-        if (name is "deleteAccount" or "interpretMessage")
+        // block deletion throughout external AI I/O (and, for the turn streams, hold a connection for
+        // the whole stream); every Buddy ledger transaction rechecks recovery and fences its generation.
+        if (name is "deleteAccount" or "extractBuddyLabel" or "startBuddyTurn" or "continueBuddyTurn")
         { await lease.DisposeAsync(); await next(context); return; }
         await using (lease) { await next(context); }
     }

@@ -90,6 +90,42 @@ internal sealed partial class ReplyWriter(ILogger<ReplyWriter> logger)
         await sink.EmitAsync(new BuddySummaryEvent(text, compact.PreviousRevision + 1, compact.Watermark), ct);
     }
 
+    /// <summary>
+    /// The weekly review (AI-130/131, B26 D3): the code-made header, then the model's observations, one per line; code keeps at
+    /// most two, each rendered and guarded. Lines that still fail after one rewrite are dropped (never a model number). A send
+    /// denied by the budget or the allowance keeps the header and ends with <c>done limit|quota</c>.
+    /// </summary>
+    public static async Task<BuddyDoneReason> WeeklyAsync(TurnRun run, BuddyAgent agent, ITurnEventSink sink, RoundLog log, CancellationToken ct)
+    {
+        var ws = run.Workspace;
+        var first = await ObservationsAsync(run, agent, log, null, ct);
+        var kept = first.Lines; var denied = first.Denied;
+        if (first.Issues.Length > 0 && denied is null)
+        {
+            var second = await ObservationsAsync(run, agent, log, first.Issues, ct);
+            if (second.Denied is null) { if (second.Lines.Length > 0) { kept = second.Lines; } } else { denied = second.Denied; }
+        }
+        await StreamAsync(kept.Length > 0 ? ws.WeeklyHeader + "\n\n" + string.Join("\n", kept) : ws.WeeklyHeader, sink, ct);
+        return denied switch { SendGate.Quota => BuddyDoneReason.Quota, SendGate.Limit => BuddyDoneReason.Limit, _ => BuddyDoneReason.Answered };
+    }
+
+    private sealed record Observations(string[] Lines, GuardIssue[] Issues, SendGate? Denied = null);
+
+    private static async Task<Observations> ObservationsAsync(TurnRun run, BuddyAgent agent, RoundLog log, GuardIssue[]? rewrite, CancellationToken ct)
+    {
+        var ws = run.Workspace;
+        if (rewrite is not null) { ws.Transcript.Add(AgentMessage.User(RewriteNote(rewrite) + " At most two lines.")); }
+        var gate = await agent.ReserveAsync(run, ws.Transcript, [], ct);
+        if (gate != SendGate.Reserved) { return new([], [], gate); }
+        var result = await agent.SendAsync(run, [], ct);
+        log.Sends++;
+        if (result.Status != AgentModelStatus.Success) { return new([], []); }
+        ws.Transcript.Add(new(AgentRole.Assistant, result.Text, [], []));
+        var checks = result.Text.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(l => l.TrimStart('-', '*', '•', ' ').Trim()).Where(l => l.Length > 0).Take(2).Select(l => Guard(l.Length <= 300 ? l : l[..300], ws)).ToArray();
+        return new([.. checks.Where(c => c.Clean && c.Rendered.Length > 0).Select(c => c.Rendered)], [.. checks.SelectMany(c => c.Issues).Distinct()]);
+    }
+
     private static async Task<string?> RewriteAsync(TurnRun run, BuddyAgent agent, GuardIssue[] issues, RoundLog log, CancellationToken ct)
     {
         run.Workspace.Transcript.Add(AgentMessage.User(RewriteNote(issues)));

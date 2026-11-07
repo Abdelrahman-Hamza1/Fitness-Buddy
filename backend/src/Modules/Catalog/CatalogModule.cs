@@ -33,7 +33,7 @@ public sealed class CatalogModule : IModule
         services.AddScoped<IOffClient, OpenFoodFactsClient>(); services.AddScoped<IOffCache, PostgresOffCache>(); services.AddScoped<BarcodeLookup>(); services.AddScoped<IBarcodeFacts, BarcodeFactsAdapter>();
         services.AddSingleton<OffLookupCounters>(); services.AddSingleton<IOffLookupCounters>(p => p.GetRequiredService<OffLookupCounters>());
         services.AddSingleton<FitnessBuddy.BuildingBlocks.Ops.ICounterFlush>(p => p.GetRequiredService<OffLookupCounters>());
-        services.AddSingleton<ICatalogAdminReads, PostgresCatalogAdminReads>();
+        services.AddSingleton<ICatalogAdminReads, PostgresCatalogAdminReads>(); services.AddSingleton<IExerciseLibrary, PostgresExerciseLibrary>();
         services.AddScoped<IJobHandler, OffCacheExpiryJob>(); services.AddSingleton(OffCacheExpiryJob.Schedule);
         services.AddSingleton(new ModuleMigration("catalog", connection => new CatalogContext(DatabaseConfiguration.ContextOptions<CatalogContext>(connection, "catalog"))));
     }

@@ -8,7 +8,7 @@ using Npgsql;
 namespace FitnessBuddy.Persistence.Tests.Admin;
 
 // B24 WP2: the operator's per-account Buddy daily limit (AD-011). A zero limit allows no physical send, even on a fresh day
-// with no usage row (R#4); other limits replace the default; only the console login can set it; the app login sees only its own.
+// with no usage row (R#4; a label read since interpret's retirement, B26); other limits replace the default; only the console login can set it; the app login sees only its own.
 [Trait("Req", "AD-011")]
 [Trait("Req", "MN-005")]
 public sealed class BuddyLimitOverrideTests(PostgresFixture postgres)
@@ -38,10 +38,10 @@ public sealed class BuddyLimitOverrideTests(PostgresFixture postgres)
 
         for (var day = 0; day < 2; day++)
         {
-            using var limited = await BuddyApiTests.Send(client, h, Guid.CreateVersion7());
+            using var limited = await BuddyApiTests.SendLabel(client);
             Assert.Equal(HttpStatusCode.TooManyRequests, limited.StatusCode);
             Assert.Contains("q=0", string.Join(",", limited.Headers.GetValues("RateLimit-Policy")), StringComparison.Ordinal);
-            Assert.Equal(0, wire.Calls);
+            Assert.Equal(0, api.Label.Calls);
             Assert.Equal(0L, await DailyRowsAsync(tokens.UserId));
             h.Clock.Advance(TimeSpan.FromDays(1)); // UTC rollover: still no row, still nothing sent.
             tokens = (await h.Service.RefreshAsync(tokens.RefreshToken, Ct))!;
@@ -49,9 +49,9 @@ public sealed class BuddyLimitOverrideTests(PostgresFixture postgres)
         }
 
         await SetLimitAsync(tokens.UserId, null);
-        using var allowed = await BuddyApiTests.Send(client, h, Guid.CreateVersion7());
+        using var allowed = await BuddyApiTests.SendLabel(client);
         Assert.Equal(HttpStatusCode.OK, allowed.StatusCode);
-        Assert.Equal(1, wire.Calls);
+        Assert.Equal(1, api.Label.Calls);
     }
 
     [Fact]

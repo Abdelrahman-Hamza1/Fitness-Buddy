@@ -51,7 +51,7 @@ internal static class ProposalIds
     }
 }
 
-/// <summary>Numbers a user message states (TD-092 literal check), and the closed day grammar check (B09 D8): interpret's own rules.</summary>
+/// <summary>Numbers a user message states (TD-092 literal check), and the closed day grammar check (B09 D8): the rules interpret had (TD-128).</summary>
 internal static class MessageNumbers
 {
     public static HashSet<decimal> Parse(string text) => ParsedIntentRules.Numbers(text);

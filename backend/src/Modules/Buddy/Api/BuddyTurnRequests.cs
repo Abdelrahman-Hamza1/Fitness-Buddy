@@ -27,7 +27,24 @@ public enum BuddyLinkScreen { Diary, WeightGraph, Progress, Exercise, Workout }
 public sealed record BuddyTurnStart(Guid TurnId, BuddyTurnMode Mode, BuddyTurnMessage Message,
     [property: MaxLength(12)] BuddyHistoryEntry[] History, BuddyConversationSummary? Summary, BuddyCompaction? Compact,
     [property: MaxLength(20)] BuddyPersonalItem[] Personal, BuddyTurnProfile Profile, BuddyTurnSnapshot Snapshot,
-    BuddyTurnReference? AckTurn, BuddyPriorAttempt? PriorAttempt, bool Trace);
+    BuddyTurnReference? AckTurn, BuddyPriorAttempt? PriorAttempt, bool Trace, BuddyWeeklySummary? Weekly = null);
+
+/// <summary>
+/// B26: the week's aggregates for <c>mode: weeklyReview</c> (AI-130, the app's <c>WeeklySummary</c>): counted days only, no diary
+/// rows, no names. Optional (absent = null); required for that mode. <c>checkIn</c> is the phone's own adaptive check-in (A38),
+/// whose pending card the app attaches to the review.
+/// </summary>
+public sealed record BuddyWeeklySummary(DateOnly Start, DateOnly End, [property: Range(0, 7)] int ElapsedDays, [property: Range(0, 7)] int CountedDays,
+    [property: Range(0, 7)] int TargetDays, [property: Range(0, 7)] int DaysWithinTarget, [property: Range(0, 7)] int ProteinTargetDays,
+    [property: Range(0, 7)] int ProteinDaysHit, [property: Range(0, 20000)] double? AverageKcal, [property: Range(0, 20000)] double? AverageTargetKcal,
+    [property: Range(0, 5000)] double? AverageFiberG, [property: Range(-100, 100)] double? TrendChangeKg, BuddyWeeklyWorkouts? Workouts, bool Estimated,
+    BuddyWeeklyCheckIn? CheckIn);
+public sealed record BuddyWeeklyWorkouts([property: Range(0, 100)] int Sessions, [property: Range(0, 7)] int? Planned, [property: Range(0, 1000)] int Prs);
+public sealed record BuddyWeeklyCheckIn([property: Range(0, 20000)] double CurrentKcal, [property: Range(0, 20000)] double ProposedKcal);
+
+/// <summary>B26: a nutrition-label photo (FD-040): base64 JPEG, at most 1024 px on the long side; never stored or logged.</summary>
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record BuddyLabelRequest([property: MinLength(1), MaxLength(400000)] string Image);
 
 public sealed record BuddyTurnMessage([property: MinLength(1), MaxLength(2000)] string Text, [property: MaxLength(400000)] string? Image);
 public sealed record BuddyHistoryEntry(Guid MessageId, BuddyHistoryRole Role, [property: MaxLength(1000)] string Text,
@@ -99,3 +116,10 @@ public sealed record BuddyClaimValue(BuddyClaimMetric Metric, BuddyClaimOperatio
     Guid? WorkoutId, [property: MaxLength(64)] string? ExerciseRef, [property: MaxLength(64)] string? MuscleGroup);
 public sealed record BuddyCoverage([property: Range(0, 400)] int Days, [property: Range(0, 400)] int LoggedDays);
 public sealed record BuddyQueryLink(BuddyLinkScreen Screen, DateOnly? Date, DateOnly? From, DateOnly? To, [property: MaxLength(64)] string? ExerciseRef, Guid? WorkoutId);
+
+// Shared request shapes (B08 → B25): Ramadan state, meal slots, memory items, per-100 facts and servings.
+public sealed record BuddyRamadan(bool Active, string? Fajr, string? Maghrib);
+public sealed record BuddySlot(Guid Id, string Name, string? Window);
+public sealed record BuddyMemory(string Kind, string Key, string Value);
+public sealed record BuddyNutrientsRequest(double Kcal, double ProteinG, double CarbsG, double FatG, double FiberG);
+public sealed record BuddyServingRequest(string UnitCode, double? G, double? Ml, double? RangeLo, double? RangeHi, string Source);

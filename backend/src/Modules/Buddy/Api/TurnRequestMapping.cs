@@ -10,7 +10,13 @@ internal static class TurnRequestMapping
     public static string? Invalid(BuddyTurnStart r)
     {
         if (!V7(r.TurnId)) { return "turnId"; }
-        if (r.Mode == BuddyTurnMode.WeeklyReview) { return "mode"; } // B26 adds the weekly block (D5)
+        // B26 D3: the weekly aggregates come with weeklyReview and only with it, internally consistent.
+        if ((r.Mode == BuddyTurnMode.WeeklyReview) != (r.Weekly is not null)) { return "weekly"; }
+        // Aggregates only (B26 D3): a weekly review carries no photo.
+        if (r.Mode == BuddyTurnMode.WeeklyReview && r.Message.Image is not null) { return "message"; }
+        if (r.Weekly is { } w && (w.End != w.Start.AddDays(6) || w.CountedDays > w.ElapsedDays || w.TargetDays > w.CountedDays
+            || w.DaysWithinTarget > w.TargetDays || w.ProteinTargetDays > w.CountedDays || w.ProteinDaysHit > w.ProteinTargetDays || !Bounded(w)))
+        { return "weekly"; }
         if (string.IsNullOrWhiteSpace(r.Message.Text)) { return "message"; }
         if (r.Message.Image is { } image && !Jpeg(image)) { return "message"; }
         if (r.Snapshot is null || r.Profile is null || r.History is null || r.Personal is null) { return "snapshot"; }
@@ -46,7 +52,11 @@ internal static class TurnRequestMapping
             new(r.Snapshot.Today.Kcal, r.Snapshot.Today.ProteinG, r.Snapshot.Today.CarbsG, r.Snapshot.Today.FatG, r.Snapshot.Today.FiberG),
             r.Snapshot.Today.Targets is { } t ? new(t.Kcal, t.ProteinG, t.CarbsG, t.FatG, t.FiberG) : null,
             r.Snapshot.OpenCards.Select(o => new TurnOpenCard(o.ProposalId, o.Revision, o.Kind, o.Summary)).ToArray()),
-        r.AckTurn?.TurnId, Prior(r.PriorAttempt), r.Trace);
+        r.AckTurn?.TurnId, Prior(r.PriorAttempt), r.Trace, r.Weekly is { } w ? Weekly(w) : null);
+
+    private static TurnWeekly Weekly(BuddyWeeklySummary w) => new(w.Start, w.End, w.ElapsedDays, w.CountedDays, w.TargetDays, w.DaysWithinTarget,
+        w.ProteinTargetDays, w.ProteinDaysHit, w.AverageKcal, w.AverageTargetKcal, w.AverageFiberG, w.TrendChangeKg,
+        w.Workouts is { } x ? new(x.Sessions, x.Planned, x.Prs) : null, w.Estimated, w.CheckIn is { } c ? new(c.CurrentKcal, c.ProposedKcal) : null);
 
     public static TurnContinueInput ToInput(this BuddyTurnContinue r, JsonSerializerOptions json) => new(r.TurnId, r.Round, r.Continuation,
         r.Results.Select(x => new PhoneResultInput(x.CallId, Name(x), x.Ok, x.Error is { } e ? Code(e) : null, Data(x, json), Rows(x) ?? 0)).ToArray(),
@@ -134,7 +144,7 @@ internal static class TurnRequestMapping
 
     private static string Code<T>(T value) where T : Enum => JsonNamingPolicy.CamelCase.ConvertName(value.ToString());
     private static bool V7(Guid id) => id.ToString("D")[14] == '7' && "89ab".Contains(id.ToString("D")[19], StringComparison.Ordinal);
-    private static bool Jpeg(string base64)
+    internal static bool Jpeg(string base64)
     {
         if (base64.Length < 8) { return false; }
         Span<byte> head = stackalloc byte[3];

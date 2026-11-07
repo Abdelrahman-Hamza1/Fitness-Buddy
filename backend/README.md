@@ -2,8 +2,8 @@
 
 The Fitness Buddy API: an ASP.NET Core (.NET 10) modular monolith. Architecture, modules and rules are in `technical-planning/04-backend.md`. Implemented: the three-role host/module system (S03), transactional Postgres/outbox/jobs/replay
 (S04), Identity sign-in/sessions (B04), registered document sync (B05), atomic account erasure and
-protected recovery (B06), and the global food catalog/search/offline pack service (B07). Buddy interpretation with durable paid-send replay and content-free Usage accounting (B08).
-The B02 CLI remains an isolated offline smoke. OpenAPI conformance gates server changes.
+protected recovery (B06), and the global food catalog/search/offline pack service (B07). The agentic Buddy (B25, B26: turns, label reads; interpret and the B02 CLI retired, TD-128) with content-free Usage accounting.
+OpenAPI conformance gates server changes.
 
 ## Layout
 
@@ -277,7 +277,7 @@ See [sync operations](../docs/runbooks/sync.md) and `05` §5.5. A34 owns real Fl
 
 ## Buddy interpretation spike (B02)
 
-The dark Buddy module has no HTTP endpoints; `backend/tools/BuddySpike` is a local JSONL CLI, with no database or user identity. `make eval` builds it and runs three synthetic provider fixtures through the real OpenAI SDK and Dart graders. CI never loads an API key. `make eval-live` explicitly makes at most three small `gpt-6-luna` calls, using the owner's external 0600 key file; no retries or fallback. `make eval-schema` refreshes the internal C# record schema snapshot. See [Buddy](src/Modules/Buddy/README.md) and [harness](../tools/buddy_eval/README.md). Public contract, production auth/routing/usage and catalog resolution are B08.
+The Buddy module's agent routes, ledger and limits are in [Buddy](src/Modules/Buddy/README.md); there is no offline eval harness any more (TD-128).
 
 ## Identity (B04)
 

@@ -28,8 +28,11 @@ void main() {
       'issues', () async {
     for (final text in [j1Text, j2Text, j3Text]) {
       final body = buddyFixtureFor(text)!;
-      // The generated model accepts it (contract-valid).
-      expect(BuddyInterpretation.fromJson(body).intents, isNotEmpty);
+      // The generated intent union accepts every recorded intent.
+      final intents = (body['intents']! as List<Object?>)
+          .map((i) => BuddyIntent.fromJson(i! as Map<String, Object?>))
+          .toList();
+      expect(intents, isNotEmpty);
       // The real send path turns it into cards with no issue.
       final h = BuddyHarness()..answer(body);
       await h.thread.send(text, texts);

@@ -72,14 +72,13 @@ public sealed class AccountControlsRaceTests(PostgresFixture postgres)
         // Bearer validation reads the session without the lifecycle lock, so the request gets past it and then waits in the
         // ledger behind the uncommitted disable.
         await using var disable = await HoldDisableAsync(admin, tokens.UserId, h.Clock.GetUtcNow());
-        var send = BuddyApiTests.Send(client, h, Guid.CreateVersion7());
+        var send = BuddyApiTests.SendLabel(client);
         await LockWaits.UntilWaitingAsync(postgres, LifecycleLockWait);
         await disable.CommitAsync(Ct);
 
         using var response = await send;
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        Assert.Equal(0, wire.Calls);
-        Assert.Equal(0L, await CountAsync("SELECT count(*) FROM buddy.attempts WHERE user_id=$1", tokens.UserId));
+        Assert.Equal(0, api.Label.Calls);
         Assert.Equal(0L, await CountAsync("SELECT count(*) FROM usage.daily WHERE user_id=$1", tokens.UserId));
     }
 

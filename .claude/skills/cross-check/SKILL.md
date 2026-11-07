@@ -14,9 +14,8 @@ Toolchains: dart and flutter at `~/development/flutter-3.47.7/bin`. Run .NET fro
 | You changed | Also check | How |
 |---|---|---|
 | `data/**` (foods, dishes, exercises, portions, names) or `tools/catalog/**` | Catalog tool tests (search cases T08/T12…, fixture hash, real data) | `make catalog`, then `cd tools/catalog && dart test` (~3 s) |
-| | Server import of the shipped release (schema keywords, recipe ingredients, identities) | `dotnet test --project tests/Persistence.Tests -c Release -- --filter-class FitnessBuddy.Persistence.Tests.CatalogTests`, and the same with `BuddyPublicEvalTests` |
+| | Server import of the shipped release (schema keywords, recipe ingredients, identities) | `dotnet test --project tests/Persistence.Tests -c Release -- --filter-class FitnessBuddy.Persistence.Tests.CatalogTests` |
 | | App labels and catalog reads (new portion unit = new ARB label; released vs draft dishes) | `flutter test` on `test/features/foods/presentation/unit_labels_test.dart` and `test/core/catalog/offline_catalog_test.dart` |
-| | Buddy eval gates and the known-miss baseline (a released dish can change or fix a known miss) | after the `BuddyPublicEvalTests` run above: `python3 tools/scripts/check-buddy-eval.py backend/artifacts/buddy/B09b-aq-m3.json` (and `B09b-aq-b09.json`). A changed miss is re-triaged in `aq_known_misses.json` (same unit, never more entries) |
 | A catalog JSON schema (`contracts/catalog/*.schema.json`, `data/schema/*`) | The server's closed schema vocabulary (`backend/src/Modules/Catalog/Infrastructure/ReleaseSchemas.cs`) supports every keyword you used | grep the keyword, then run the CatalogTests above |
 | The pack layout (a column or table in `pack_builder.dart`) | The fixture hash in `tools/catalog/test/fixture_sql_test.dart` (re-pin it with a comment saying why) and the app's drift catalog reads | catalog tests, then `offline_catalog_test.dart` |
 | `contracts/openapi/**` | Generated client and server conformance | `make gen`, `make check-contract`, the server's contract tests |

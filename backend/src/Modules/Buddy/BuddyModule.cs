@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FitnessBuddy.Modules.Buddy;
 
-/// <summary>Authenticated read-only interpretation with durable paid-send reservations.</summary>
+/// <summary>The Buddy agent (turns, label reads): proposals only, content-free ledger and Usage reservations.</summary>
 public sealed class BuddyModule : IModule
 {
     public string Name => "Buddy";
@@ -20,21 +20,19 @@ public sealed class BuddyModule : IModule
     {
         services.AddValidation();
         services.AddOptions<BuddyOptions>().Bind(configuration.GetSection("Buddy"))
-            .Validate(o => o.MaxOutputTokens is >= 200 and <= 4000 && o.TimeoutSeconds is >= 1 and <= 30 && o.Concurrency is >= 1 and <= 8
-                && o.GuestDailyCalls is >= 1 and <= 100 && o.RegisteredDailyCalls >= o.GuestDailyCalls && o.RegisteredDailyCalls <= 1000
-                && (!o.Enabled || Path.IsPathFullyQualified(o.ApiKeyFile)), "Invalid bounded Buddy configuration.").ValidateOnStart();
+            .Validate(o => !o.Enabled || Path.IsPathFullyQualified(o.ApiKeyFile), "Invalid Buddy configuration.").ValidateOnStart();
         services.AddHttpClient("buddy-openai", client => client.Timeout = Timeout.InfiniteTimeSpan)
             .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
         services.AddSingleton(BuddyClientRegistration.Create);
-        services.AddScoped<IProductionLlmClient, ProductionLlmClient>();
-        services.AddScoped<IInterpretLedger, PostgresInterpretLedger>(); services.AddScoped<InterpretMessage>(); services.AddScoped<ResolveInterpretation>();
-        services.AddSingleton<BuddyConcurrency>(); services.AddScoped<IOutboxHandler, BuddyErasure>(); services.AddScoped<IJobHandler, BuddyCleanup>();
+        services.AddScoped<IOutboxHandler, BuddyErasure>(); services.AddScoped<IJobHandler, BuddyCleanup>();
         // B25: the agent turn routes (06 §2–§3). The seal key is read lazily; without it the routes answer 503.
         services.AddOptions<BuddyAgentOptions>().Bind(configuration.GetSection("Buddy:Agent"))
             .Validate(o => o.Valid(), "Invalid bounded Buddy agent configuration.").ValidateOnStart();
         services.AddSingleton<IContinuationSealer, AesGcmContinuationSealer>(); services.AddSingleton<AgentConcurrency>(); services.AddSingleton<AttemptFences>();
         services.AddScoped<IAgentLedger, PostgresAgentLedger>(); services.AddScoped<BuddyAgent>();
         services.AddScoped<IAgentModel, ChatClientAgentModel>(); services.AddScoped<ToolRunner>(); services.AddScoped<ServerTools>(); services.AddScoped<ActionTools>(); services.AddScoped<ReplyWriter>();
+        services.AddScoped<Exercises>();
+        services.AddScoped<ILabelReader, ChatClientLabelReader>(); services.AddScoped<ExtractLabel>();
         services.AddScoped<RunTurn>();
         services.AddSingleton(new ModuleMigration("buddy", c => new Infrastructure.BuddyContext(DatabaseConfiguration.ContextOptions<Infrastructure.BuddyContext>(c, "buddy"))));
     }

@@ -24,7 +24,7 @@ Subagents can't spawn other agents. **All orchestration happens in the main sess
 | `flutter-engineer` | Implements app work: Flutter, Riverpod, drift, `fb_domain`, `fb_text`, `fb_design_system`, Dart tools | Phase C, app work packages | Yes |
 | `dotnet-engineer` | Implements backend work: ASP.NET Core modules, EF Core, Postgres, contract conformance | Phase C, backend work packages | Yes |
 | `platform-engineer` | CI/CD, OpenTofu, cloud-init, Kamal, Docker, backups, observability, Makefile | Phase C, infra/tooling work packages | Yes |
-| `ai-engineer` | Prompts, model routing, `ILlmClient` adapters, `buddy_eval` cases and graders, eval reports | App-side AI work (e.g. A21's engine fixtures) and the Buddy server's AI work and `buddy_eval` (B09–B12, B15) | Yes |
+| `ai-engineer` | Prompts, model routing, the agent's tools and adapters, live experiments (TD-128) | App-side AI work (e.g. A21's engine fixtures) and the Buddy server's AI work (B09–B12, B15) | Yes |
 | `data-curator` | Reference dishes, basics data, portion words, exercises (`data/`) with cited sources | The dish batches (A04, A17–A19, A30, A32), A03, A05 data work | Data files only |
 | `code-reviewer`, `security-reviewer`, `ux-reviewer` | Diff reviews (correctness and DoD; security and privacy; UX rules) | **Not used while TD-106 stands:** Codex does every review (§3.D) | No |
 | `verifier` | Independently checks every exit criterion with evidence (runs tests, measurements) | End of Phase D, before close | No (may add evidence notes) |
@@ -170,7 +170,7 @@ Rules: one WP per brief. Never ask an engineer to "do the whole step". Never for
 ## 7. Quality gates (all must hold to close a step)
 
 1. The Definition of Done (`10` §9).
-2. CI green on the merge commit (since TD-108 the `merge/**` run of `merge-step.sh` is the step's CI run): lint, tests, architecture checks, contract checks, eval if AI-related.
+2. CI green on the merge commit (since TD-108 the `merge/**` run of `merge-step.sh` is the step's CI run): lint, tests, architecture checks, contract checks (Buddy: a live experiment instead of an eval, TD-128).
 3. Required reviewers report no open blockers or majors.
 4. The verifier passes every exit criterion (or the owner explicitly accepts a ⚠️).
 5. Card Outcome written, board updated, docs current.
@@ -213,7 +213,7 @@ Until 2026-10-28 the work was split between Claude (app) and Codex (backend and 
 | Track | Steps | Main engineers | CI jobs |
 |---|---|---|---|
 | **App** | `A01…` (`steps/README.md` §4.1) | `flutter-engineer`, `data-curator`, `ai-engineer` (app side) | `dart`, `dart-test`, `android`; `android-it` nightly (TD-086) |
-| **Backend** | `B01…` (§4.2) | `dotnet-engineer`, `platform-engineer`, `ai-engineer` (Buddy server, `buddy_eval`) | `dotnet`, `contract`, `image` |
+| **Backend** | `B01…` (§4.2) | `dotnet-engineer`, `platform-engineer`, `ai-engineer` (Buddy server) | `dotnet`, `contract`, `image` |
 
 **Rules**
 - **Tracks stay separate:** a feature that needs both sides is two steps, one per track, joined by an explicit dependency (`steps/README.md` §6). Both follow §3's phases and §7's gates with the same agents and evidence standard.
@@ -221,4 +221,4 @@ Until 2026-10-28 the work was split between Claude (app) and Codex (backend and 
 - **Order:** the orchestrator picks across both tracks by the critical path (`steps/README.md` §7).
 - **Reviews:** Codex reviews every code step; Risky steps get a second, security-focused Codex task (TD-106, `PROCESS.md` B).
 - **Up to three lanes (TD-087):** the clones `~/work/fitness_buddy`, `~/work/fitness_buddy_2`, `~/work/fitness_buddy_3`, one step branch each, from a clean `git status` on the latest `origin/main`. No worktrees. The laptop has 7 GB: heavy commands go through `tools/scripts/heavy.sh` (one at a time machine-wide).
-- **Shared Dart seams:** `fb_domain`'s entry points used by `buddy_eval` (A21) and the sync engine interfaces used by `tools/sync_sim` are public APIs pinned by tests in their package; both tools run in the `dart` CI job. The pub workspace lockfile is shared.
+- **Shared Dart seams:** the sync engine interfaces used by `tools/sync_sim` are public APIs pinned by tests in their package; the tool runs in the `dart` CI job. The pub workspace lockfile is shared.

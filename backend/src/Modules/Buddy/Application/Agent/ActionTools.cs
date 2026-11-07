@@ -12,7 +12,7 @@ internal sealed record ActionOutcome(BuddyProposalEvent? Proposal, string Result
 /// TD-091 reference policy kept) and returns a <c>BuddyIntent</c> for a proposal event. Nothing here writes: the Buddy module
 /// has no user-data write port (an architecture rule). Every ID in an intent comes from the request or a phone result.
 /// </summary>
-internal sealed class ActionTools(IFoodResolver catalog)
+internal sealed class ActionTools(IFoodResolver catalog, Exercises exercises)
 {
     private readonly ResolveFoods foods = new(catalog);
 
@@ -31,6 +31,9 @@ internal sealed class ActionTools(IFoodResolver catalog)
             "propose_memory" => await MemoryAsync(AgentTools.Bind<MemoryArgs>(call), ws, ct),
             "propose_weigh_in" => WeighIn(AgentTools.Bind<WeighInArgs>(call), ws),
             "suggest_foods" => await SuggestAsync(AgentTools.Bind<SuggestArgs>(call), ws, ct),
+            "propose_measurement" => Measurement(AgentTools.Bind<MeasurementArgs>(call), ws),
+            "propose_workout" => await WorkoutAsync(AgentTools.Bind<WorkoutArgs>(call), ws, ct),
+            "propose_import" => Import(AgentTools.Bind<ImportArgs>(call), ws),
             _ => (null, null, "unknownTool"),
         };
         if (intent is null) { return new(null, AgentTools.Error(error ?? "invalidArgs")); }
@@ -50,6 +53,10 @@ internal sealed class ActionTools(IFoodResolver catalog)
         ws.Cards.Add(new(handle, proposalId, revision, Kind(intent), label, true));
         ws.CardsEmitted++;
         var summary = new Dictionary<string, object?> { ["ok"] = true, ["card"] = handle, ["kind"] = Kind(intent), ["summary"] = label };
+        if (intent is BuddyWorkout workout)
+        {
+            summary["exercises"] = workout.Exercises.Select(e => new { mention = e.Mention, matched = e.ExerciseRef is not null, sets = e.Sets.Length }).ToArray();
+        }
         if (intent is BuddyFoodLog food)
         {
             var n = CardMath.Card(food.Items);
@@ -226,12 +233,229 @@ internal sealed class ActionTools(IFoodResolver catalog)
             if (ParseAll(option.Items, ws) is not { } parsed || Rules(Intent(ParsedKind.FoodLog) with { Items = parsed, SlotHint = option.SlotHint }, Input(ws, [])) is not null) { continue; }
             var items = await ResolveItemsAsync(option.Items, parsed, ws, ct);
             if (items.Any(ResolveFoods.Unmatched)) { continue; }
+            // FD-082: with the halal setting on, suggestions keep only options without any halal flag.
+            if (ws.Halal && items.Any(Flagged)) { continue; }
             // Suggestion text is model text: claims rendered, guarded; a failing label becomes the food names (template, AI-175).
             var label = ReplyGuard.Check(option.Label, ws.Claims, ws.MassUnit, ws.LengthUnit);
             options.Add(new(Short(label.Clean ? label.Rendered : string.Join(", ", items.Select(i => i.Match?.NameEn ?? i.Mention)), 120), option.SlotHint, items));
         }
         return options.Count >= 2 ? (new BuddySuggestion(ws.Language, ws.Script, [.. options]), a.Replaces, null) : (null, null, "unmatchedFood");
     }
+
+    private static bool Flagged(BuddyFoodItem item) => HalalCheck.Flags(item.Match?.NameEn, item.Match?.NameAr, item.Mention).Length > 0;
+
+    /// <summary>
+    /// <c>check_fit</c> (B26 D11): each option resolved like a suggestion, its kcal and protein computed by code, compared with what
+    /// is left today (the snapshot's claims). Unknown remaining → <c>fits: null</c>; an option code can't compute says why.
+    /// </summary>
+    public async Task<string> CheckFitAsync(CheckFitArgs a, TurnWorkspace ws, CancellationToken ct)
+    {
+        if (a.Options is not { Length: >= 1 and <= 4 }) { return AgentTools.Error("invalidArgs"); }
+        var context = ws.Claims.Take(ws.ContextClaims).ToArray();
+        var kcalLeft = context.FirstOrDefault(c => c is { Metric: "kcal", Operation: "remaining", Period: "today" })?.Value;
+        var proteinLeft = context.FirstOrDefault(c => c is { Metric: "protein", Operation: "remaining", Period: "today" })?.Value;
+        var results = new List<object>();
+        foreach (var option in a.Options)
+        {
+            if (option.Items is not { Length: > 0 and <= 10 } || ParseAll(option.Items, ws) is not { } parsed) { results.Add(new { error = "invalidArgs" }); continue; }
+            var items = await ResolveItemsAsync(option.Items, parsed, ws, ct);
+            var names = string.Join(", ", items.Select(i => i.Match?.NameEn ?? i.Mention).Take(4));
+            if (items.Any(ResolveFoods.Unmatched)) { results.Add(new { option = names, error = "unmatchedFood" }); continue; }
+            var halal = ws.Halal && items.Any(Flagged);
+            if (CardMath.Card(items) is not { } n) { results.Add(new { option = names, error = "needsAmounts", halalFlag = halal }); continue; }
+            var claims = ClaimSet.Nutrients(ws, n, "option", null, "in " + names);
+            string? after = kcalLeft is { } left ? ws.AddClaim("kcal", "remaining", "today", ClaimSet.Round(left - n.Kcal), null, "kcal", "left today after " + names).Id : null;
+            string? proteinAfter = proteinLeft is { } p ? ws.AddClaim("protein", "remaining", "today", ClaimSet.Round(p - n.ProteinG, 1), null, "g", "protein left today after " + names).Id : null;
+            results.Add(new
+            {
+                option = names,
+                kcal = claims["kcal"],
+                protein = claims["protein"],
+                kcalLeftAfter = after,
+                proteinLeftAfter = proteinAfter,
+                fits = kcalLeft is { } l ? n.Kcal <= l : (bool?)null,
+                halalFlag = halal
+            });
+        }
+        return AgentTools.Result(new { ok = true, options = results });
+    }
+
+    /// <summary>A stated body measurement (B26 D8): built-in kinds only, the unit fits the kind, the value as written (TD-092).</summary>
+    private static (BuddyIntent?, string?, string?) Measurement(MeasurementArgs? a, TurnWorkspace ws)
+    {
+        if (a is null || !Hints(a.DateHint) || !double.IsFinite(a.Value) || a.Value is <= 0 or > 1000) { return (null, null, "invalidArgs"); }
+        if ((a.Kind == MeasurementKindArg.BodyFat) != (a.Unit == MeasurementUnitArg.Percent) || a.Unit == MeasurementUnitArg.Percent && a.Value > 100)
+        { return (null, null, "unitMismatch"); }
+        if (!MessageNumbers.Parse(ws.MessageText).Contains((decimal)a.Value)) { return (null, null, "notStated"); }
+        var kind = Enum.Parse<BuddyBodyMeasurementKind>(a.Kind.ToString());
+        var unit = Enum.Parse<BuddyMeasurementUnit>(a.Unit.ToString());
+        return (new BuddyMeasurement(ws.Language, ws.Script, kind, null, a.Value, unit, a.TimeHint, a.DateHint), a.Replaces, null);
+    }
+
+    /// <summary>
+    /// Pasted rows (WB-030–032, B26 D9): each row's original text is a literal piece of the message, and its value and unit are
+    /// in that text; dates are as read. Unit inference, jumps and duplicates are flagged by the app.
+    /// </summary>
+    private static (BuddyIntent?, string?, string?) Import(ImportArgs? a, TurnWorkspace ws)
+    {
+        if (a is null || a.Rows is not { Length: > 0 and <= 200 } || (a.Metric == ImportMetricArg.Measurement) != (a.MeasurementKind is not null))
+        { return (null, null, "invalidArgs"); }
+        var message = Flat(ws.MessageText);
+        var rows = new List<BuddyImportRow>();
+        foreach (var row in a.Rows)
+        {
+            if (string.IsNullOrWhiteSpace(row.Original) || row.Original.Length > 200 || row.Unit is { Length: 0 or > 16 }) { return (null, null, "invalidArgs"); }
+            var original = Flat(row.Original);
+            // A whole span of the message ("80kg" never inside "180kg", Codex B26 #5); its value a number token in it, its unit
+            // written right after a number in it.
+            if (!Spans.Contains(message, original)) { return (null, null, "originalNotInMessage"); }
+            if (row.Value is { } v && (!double.IsFinite(v) || v is < 0 or > 100000 || !MessageNumbers.Parse(row.Original).Contains((decimal)v))) { return (null, null, "notStated"); }
+            if (row.Unit is { } u && !System.Text.RegularExpressions.Regex.IsMatch(original, "[0-9]\\s*" + System.Text.RegularExpressions.Regex.Escape(Flat(u)) + "(?![\\p{L}])"))
+            { return (null, null, "notStated"); }
+            // The date is read by code from the original (Codex B26 #7); the model's reading is never used.
+            rows.Add(new(ImportDates.Parse(row.Original), row.Value, row.Unit?.Trim(), row.Original.Trim()));
+        }
+        var kind = a.MeasurementKind is { } k ? Enum.Parse<BuddyBodyMeasurementKind>(k.ToString()) : (BuddyBodyMeasurementKind?)null;
+        return (new BuddyImportRows(ws.Language, ws.Script, a.Metric == ImportMetricArg.Weight ? BuddyImportMetric.Weight : BuddyImportMetric.Measurement, kind, [.. rows]), a.Replaces, null);
+    }
+
+    private static string Flat(string text) => string.Join(' ', text.ToLowerInvariant().Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+
+    /// <summary>
+    /// A workout (WO-030–033, B26 D5–D7). Exercises resolve to library codes or the user's own exercise handles (null → the app
+    /// asks). Sets come from the user's own notation read by code (SetNotation); the model's sets are used only when there is no
+    /// notation, and then only with numbers the user stated. "Same as last … but …" copies a session the phone returned.
+    /// </summary>
+    private async Task<(BuddyIntent?, string?, string?)> WorkoutAsync(WorkoutArgs? a, TurnWorkspace ws, CancellationToken ct)
+    {
+        if (a is null || a.Exercises is not { Length: <= 30 } || !Hints(a.DateHint) || a.Name is { Length: > 120 }) { return (null, null, "invalidArgs"); }
+        SeenWorkout? basis = null;
+        if (a.CopyFrom is not null)
+        {
+            if (ws.Resolve(a.CopyFrom, "w") is not { } w || ws.Workouts.FirstOrDefault(x => x.Id.ToString() == w.Id) is not { } seen) { return (null, null, "unknownHandle"); }
+            basis = seen;
+        }
+        if (a.Exercises.Length == 0 && basis is null) { return (null, null, "invalidArgs"); }
+        var library = await exercises.ListAsync(ct);
+        var defaultUnit = ws.MassUnit == "lb" ? BuddyLoadUnit.Lb : BuddyLoadUnit.Kg;
+        var segments = Segments(a.Exercises, ws.MessageText);
+        var argUnit = (WorkoutExerciseArg e) => e.Unit is { } u ? (u == WeightUnit.Lb ? BuddyLoadUnit.Lb : BuddyLoadUnit.Kg) : defaultUnit;
+        var list = (basis?.Exercises ?? []).Select(e => new WorkoutLine(e.Ref, e.Name, [.. e.Sets], ["copied from " + (basis!.Name ?? "your last session")])).ToList();
+        for (var k = 0; k < a.Exercises.Length; k++)
+        {
+            var arg = a.Exercises[k];
+            if (string.IsNullOrWhiteSpace(arg.Mention) || arg.Mention.Length > 200 || arg.Notation is { Length: > 200 } || arg.Sets is { Length: > 50 }) { return (null, null, "invalidArgs"); }
+            string? exerciseRef = null; LibraryExercise? known = null;
+            if (arg.Exercise is { } handle)
+            {
+                if (ws.Resolve(handle, "x") is { } x) { exerciseRef = x.Id; known = library.FirstOrDefault(l => l.Id == x.Id); }
+                else if (library.FirstOrDefault(l => l.Id == handle.Trim()) is { } code) { exerciseRef = code.Id; known = code; }
+                else { return (null, null, "unknownExercise"); }
+            }
+            var existing = exerciseRef is null ? null : list.FirstOrDefault(l => l.Ref == exerciseRef);
+            var assumptions = new List<string>();
+            NotationResult? parsed = null;
+            if (arg.Notation is { Length: > 0 } notation)
+            {
+                if (!SetNotation.InMessage(notation, ws.MessageText)) { return (null, null, "notationNotStated"); }
+                parsed = SetNotation.Parse(notation);
+            }
+            List<NotationSet> sets;
+            if (parsed is { LoadOnly: true } load)
+            {
+                if (existing is null) { return (null, null, "setsNeeded"); }
+                // A new load takes the notation's unit, else the argument's, else the profile's; never the copied session's (#6).
+                var unit = load.Sets[0].Unit ?? argUnit(arg);
+                sets = [.. existing.Sets.Select(x => x with { Weight = load.Sets[0].Weight, Unit = unit })];
+            }
+            else if (parsed is not null)
+            {
+                sets = [.. parsed.Sets];
+                if (arg.Sets is { Length: > 0 } given && !Same(given, sets)) { assumptions.Add("sets read from “" + Short(arg.Notation!, 40) + "”"); }
+            }
+            else if (arg.Sets is { Length: > 0 } given)
+            {
+                // No notation code could read: every number must be a quantity stated in this exercise's part of the message,
+                // in its own unit (minutes stay minutes, Codex B26 #4), and repeated sets need a stated count.
+                if (segments[k] is not { } segment || Stated(given, StatedQuantities.Parse(segment), SetCounts(segment)) is not { } read) { return (null, null, "setsNotStated"); }
+                sets = read;
+            }
+            else { sets = existing?.Sets ?? []; }
+            if (sets.Any(x => x.Reps is < 1 or > 1000 || x.Weight is < 0 or > 10000 || x.DurationSeconds is < 1 or > 86_400 || x.DistanceMeters is < 0 or > 1_000_000))
+            { return (null, null, "invalidArgs"); }
+            if (known is not null && !Exercises.Names(known, arg.Mention)) { assumptions.Insert(0, "matched “" + Short(arg.Mention, 40) + "” → " + known.Name); }
+            var line = new WorkoutLine(exerciseRef, arg.Mention.Trim(), sets, assumptions, known, arg);
+            if (existing is not null) { list[list.IndexOf(existing)] = line with { Assumptions = [.. existing.Assumptions, .. assumptions] }; }
+            else { list.Add(line); }
+        }
+        if (list.Count is 0 or > 30) { return (null, null, "invalidArgs"); }
+        var built = list.Select(l =>
+        {
+            var lib = l.Known ?? library.FirstOrDefault(x => x.Id == l.Ref);
+            var hasLoad = l.Sets.Any(x => x.Weight is not null);
+            var dumbbell = lib?.Equipment == "dumbbell";
+            var perDumbbell = dumbbell ? l.Arg?.PerDumbbell ?? true : l.Arg?.PerDumbbell ?? false;
+            var notes = new List<string>(l.Assumptions);
+            if (hasLoad && dumbbell && l.Arg?.PerDumbbell is null) { notes.Add("weight per dumbbell"); }
+            if (hasLoad && lib?.Type == "bodyweight_reps") { notes.Add("added load"); }
+            if (hasLoad && lib?.Type == "assisted") { notes.Add("assistance weight"); }
+            var unit = l.Arg is { } given ? argUnit(given) : defaultUnit;
+            return new BuddyWorkoutExercise(l.Mention, l.Ref,
+                [.. l.Sets.Take(50).Select(x => new BuddyWorkoutSet(x.Reps, x.Weight, x.Weight is null ? null : x.Unit ?? unit, perDumbbell, x.DurationSeconds, x.DistanceMeters))],
+                [.. notes.Distinct().Take(5).Select(n => Short(n, 120))]);
+        }).ToArray();
+        return (new BuddyWorkout(ws.Language, ws.Script, a.Name?.Trim() is { Length: > 0 } name ? name : basis?.Name, a.TimeHint, a.DateHint, built), a.Replaces, null);
+    }
+
+    /// <summary>Each exercise's part of the message: from its mention to the next exercise's mention (null when not written).</summary>
+    private static string?[] Segments(WorkoutExerciseArg[] args, string message)
+    {
+        var text = SetNotation.Normalize(message);
+        var starts = args.Select(e => string.IsNullOrWhiteSpace(e.Mention) ? -1 : text.IndexOf(SetNotation.Normalize(e.Mention), StringComparison.Ordinal)).ToArray();
+        return [.. starts.Select(start =>
+        {
+            if (start < 0) { return null; }
+            var end = starts.Where(s => s > start).DefaultIfEmpty(text.Length).Min();
+            return text[start..end];
+        })];
+    }
+
+    /// <summary>The model's sets when each number is a stated quantity of its kind, with the unit the user wrote; null otherwise.</summary>
+    private static List<NotationSet>? Stated(WorkoutSetArg[] given, Quantity[] said, HashSet<int> setCounts)
+    {
+        bool Has(decimal v, params QuantityUnit[] units) => said.Any(q => q.Value == v && units.Contains(q.Unit));
+        var sets = new List<NotationSet>();
+        foreach (var g in given)
+        {
+            if (g.Reps is { } r && !Has(r, QuantityUnit.Plain)) { return null; }
+            BuddyLoadUnit? unit = null;
+            if (g.Weight is { } w)
+            {
+                var q = said.FirstOrDefault(x => x.Value == (decimal)w && x.Unit is QuantityUnit.Plain or QuantityUnit.Kg or QuantityUnit.Lb);
+                if (q is null) { return null; }
+                unit = q.Unit switch { QuantityUnit.Kg => BuddyLoadUnit.Kg, QuantityUnit.Lb => BuddyLoadUnit.Lb, _ => null };
+            }
+            if (g.DurationSeconds is { } d && !Has(d, QuantityUnit.Seconds) && !(d % 60 == 0 && Has(d / 60, QuantityUnit.Minutes))) { return null; }
+            if (g.DistanceMeters is { } m && !Has((decimal)m, QuantityUnit.Meters) && !Has((decimal)m / 1000, QuantityUnit.Km)) { return null; }
+            sets.Add(new(g.Reps, g.Weight, unit, g.DurationSeconds, g.DistanceMeters));
+        }
+        // Multiplicity: one set, sets that each differ (each was written), or an explicit set count ("3 sets", "3x8", "3 times");
+        // a rep count or a load never authorizes repetition (fix-check).
+        var repeated = sets.Count > 1 && sets.Distinct().Count() < sets.Count;
+        return !repeated || setCounts.Contains(sets.Count) ? sets : null;
+    }
+
+    /// <summary>Set counts the text states explicitly: "N sets", "N times", or N directly before "x" and a rep count ("3x8").</summary>
+    private static HashSet<int> SetCounts(string segment) =>
+        [.. System.Text.RegularExpressions.Regex.Matches(segment, @"(?<![0-9.])([0-9]{1,2})\s*(?:sets?\b|times\b|x(?=\s*[0-9]))")
+            .Select(m => int.Parse(m.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture))];
+
+    private sealed record WorkoutLine(string? Ref, string Mention, List<NotationSet> Sets, List<string> Assumptions,
+        LibraryExercise? Known = null, WorkoutExerciseArg? Arg = null);
+
+    private static bool Same(WorkoutSetArg[] given, List<NotationSet> sets) =>
+        given.Length == sets.Count && given.Zip(sets).All(p => p.First.Reps == p.Second.Reps && p.First.Weight == p.Second.Weight
+            && p.First.DurationSeconds == p.Second.DurationSeconds && p.First.DistanceMeters == p.Second.DistanceMeters);
 
     /// <summary>
     /// Food items (AI-070): personal slice → catalog → badged estimate. A handle the model passes pins its candidate only when
@@ -324,6 +548,9 @@ internal sealed class ActionTools(IFoodResolver catalog)
         BuddySavedMealLog => "savedMealLog",
         BuddySavedMealCreate => "savedMealCreate",
         BuddySuggestion => "suggestion",
+        BuddyMeasurement => "measurement",
+        BuddyWorkout => "workout",
+        BuddyImportRows => "importRows",
         _ => "other",
     };
 
@@ -347,6 +574,9 @@ internal sealed class ActionTools(IFoodResolver catalog)
             BuddySavedMealCreate s => "save meal " + s.Name,
             BuddyWeighIn => "weigh-in",
             BuddySuggestion s => "ideas: " + string.Join(" / ", s.Options.Select(o => o.Label)),
+            BuddyMeasurement m => "measurement: " + BuddyAgent.JsonCode(m.MeasurementKind),
+            BuddyWorkout w => "workout: " + string.Join(", ", w.Exercises.Select(e => e.Mention).Take(6)),
+            BuddyImportRows i => "import " + BuddyAgent.JsonCode(i.Metric) + " rows",
             _ => "card",
         };
         return text.Length <= 120 ? text : text[..120];

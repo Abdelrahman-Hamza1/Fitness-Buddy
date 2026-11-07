@@ -29,7 +29,6 @@ fitness_buddy/
 │  └─ tests/                      <Module>.Tests (unit + integration) · Architecture.Tests · Contract.Tests
 ├─ data/                          reference_dishes/*.yaml, exercises.yaml, portion_words.yaml, sources/
 ├─ tools/
-│  ├─ buddy_eval/                 AI acceptance suite (Dart)
 │  ├─ catalog/                    catalog build/validate (Dart)
 │  ├─ trace/                      requirement traceability report (Dart)
 │  ├─ contract-tools/             compose file: digest-pinned Redocly, Spectral, oasdiff (offline)
@@ -46,7 +45,7 @@ fitness_buddy/
 └─ README.md                      how to set up, run, test
 ```
 
-**Root `Makefile` targets** (the same commands locally and in CI): `setup`, `gen` (contract bundle + Dart client + drift/freezed codegen), `check` (format + analyze + lint, both stacks), `test`, `test-dart`, `test-dotnet`, `up` / `down` (local API + Postgres), `eval`, `catalog`, `trace`.
+**Root `Makefile` targets** (the same commands locally and in CI): `setup`, `gen` (contract bundle + Dart client + drift/freezed codegen), `check` (format + analyze + lint, both stacks), `test`, `test-dart`, `test-dotnet`, `up` / `down` (local API + Postgres), `catalog`, `trace`.
 
 ## 2. Code conventions
 
@@ -100,7 +99,7 @@ The pyramid is weighted toward pure logic, where the product promises live:
 | **Sync** | Convergence simulation, fault injection, version skew, OF-03 | Dart simulator + real API in Docker | Must pass (`05` §5.3) |
 | **Widget / golden** | One happy-path widget test per screen; goldens only for about 15 key screens (one light cell each, plus one text-scale-2.0 cell on Today); never assert copy (TD-104) | `flutter_test`, `alchemist` | No coverage target |
 | **Integration / E2E** | About 5 journeys (offline launch, log food, weigh-in, sign-in, Buddy J1) + the native Keystore probe | **patrol** on an emulator | Nightly and manual runs only (TD-104) |
-| **AI acceptance** | AQ-01–12 | `tools/buddy_eval` | Thresholds in `spec/40` §2 |
+| **AI acceptance** | AQ-01–12 | experiments and the owner's use (TD-128); AQ-01 by `ConfirmationGuardTests` | Thresholds in `spec/40` §2 |
 | **Performance** | Cold start, Today screen, search | Manual check on the A55 (`make cold-start`), a release-checklist item; no host or emulator timing gates (TD-104) | Budgets in `09` §6 |
 
 **Test data:** synthetic only. Real messages enter the repo only when the owner exports them (TQ-07).
@@ -116,7 +115,7 @@ The pyramid is weighted toward pure logic, where the product promises live:
 
 - **Trunk-based on `main`** (renamed from `master` in S01). Short-lived branches per step: `step/A06-diary-domain`, with Conventional Commits. `main` gets **one squash commit `Sxx: <name>` per step**, whose body keeps the branch's commit subjects (TD-036). **Every change to `main`** (steps, docs, Dependabot, hotfixes) **goes through a CI-verified SHA**: the ruleset requires the `ci` check, blocks force pushes and deletions, and there are no PRs (TD-039, `13` §3.E).
 - **Conventional Commits** (`feat(diary): …`, `fix(api): …`). Release notes come from the `main` commit bodies + step Outcomes.
-- **Step checklist** (run-step E, squash commit body): step ID + spec IDs · tests added · migrations + migration tests if the schema changed · contract updated + client regenerated if the API changed · eval run if AI-related · screenshots if UI · runbook updated if ops changed · no new warnings.
+- **Step checklist** (run-step E, squash commit body): step ID + spec IDs · tests added · migrations + migration tests if the schema changed · contract updated + client regenerated if the API changed · a live experiment if AI-related (TD-128) · screenshots if UI · runbook updated if ops changed · no new warnings.
 - Unfinished work merges behind feature flags.
 - **Releases:** API: tag `api-vX.Y.Z` → prod deploy. App: tag `app-vX.Y.Z` → store tracks. Contract: `contracts-vX.Y.Z` marks a published contract (the oasdiff baseline); the first, `contracts-v1.0.0`, is created with the first `app-v*` release that calls the API (TD-044).
 
@@ -128,10 +127,9 @@ The pyramid is weighted toward pure logic, where the product promises live:
 | `image` (**built in S03**, inside `ci.yml`) | every `ci` run except docs-only merges | `make image-smoke`: pinned non-root container, config/health, console trace correlation, empty/repeated migrations against isolated Postgres, worker schedule/shutdown, DB-down readiness, graceful stop and image size; included in the `ci` gate |
 | `android` (**built in S06b**, inside `ci.yml`) | every `ci` run except docs-only merges (TD-060's step-branch skip retired with step-branch pushes, TD-108); prod flavor on `main` and `merge/**`, staging on manual runs of other branches and PRs | release APK (arm64) with the hardening check; the AAB only on `main`, nightly and manual runs (TD-086) |
 | `android-it` (**built in S06b**, inside `ci.yml`) | nightly on `main` and manual runs only (TD-104; the commit-message push trigger from TD-086 is removed) | Patrol on an API 34 emulator (about 5 journeys, the Keystore probe and the A20 kill/restart probe). A red nightly is the next morning's first task: fix the test or delete it, no retries; `tools/scripts/ci-nightly.sh` reports it |
-| _Later gates_ | | `catalog`, `eval` and Android builds become jobs in `ci.yml` (or reusable workflows called from it) and are added to the gate's `needs:`, so the ruleset never changes |
+| _Later gates_ | | `catalog` and Android builds become jobs in `ci.yml` (or reusable workflows called from it) and are added to the gate's `needs:`, so the ruleset never changes |
 | `contract` (**built in S02**, distributed inside `ci.yml`) | every `ci` run except docs-only merges | Job `contract` (Docker only, pinned images, offline): bundle freshness · Spectral (`fb-*` rules) · rule self-tests · oasdiff breaking report vs the newest `contracts-v*` tag (before the first tag: vs the merge-base with `main`, reported but not blocking, TD-044). Job `dart`: `make gen-check` (committed `fb_api_client` = generator output). Job `dotnet`: `make contract-conformance` (server's build-time OpenAPI = contract, TD-046), before the tests. Locally: `make check-contract` |
 | `catalog` | PRs touching `data/` or `tools/catalog` | validate dishes · build the pack · AT-003 name-resolution test |
-| `eval` | PRs touching prompts, model config, resolver, engine or catalog · nightly | start the API (Docker) · run `buddy_eval` · post the summary · **fail on AQ regression** |
 | `api-deploy` | merge to `main` → staging · tag `api-v*` → prod (approval) | build image → GHCR · `migrate` · `kamal deploy` · smoke test · auto-rollback on failure |
 | `infra` | PRs touching `infra/tofu` | `tofu fmt` · `tofu validate` · `tofu plan` posted to the PR (apply is manual) |
 | `mobile-release` | tag `app-v*` | Android AAB → Play internal testing. iOS → TestFlight from R2 (D-081) |

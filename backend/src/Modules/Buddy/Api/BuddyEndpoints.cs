@@ -14,14 +14,48 @@ internal static class BuddyEndpoints
 
     public static void Map(RouteGroupBuilder group)
     {
-        group.MapPost("/buddy/interpret", Interpret)
-            .RequireAuthorization("any-user").WithName("interpretMessage").ProducesProblem(401).ProducesProblem(409).ProducesProblem(503);
         group.MapPost("/buddy/turns", StartTurn).RequireAuthorization("any-user").WithName("startBuddyTurn")
             .Produces<BuddyTurnEvent>(200, "text/event-stream").ProducesProblem(401).ProducesProblem(409).ProducesProblem(503)
             .WithMetadata(new Microsoft.AspNetCore.Mvc.RequestSizeLimitAttribute(TurnBodyLimit));
         group.MapPost("/buddy/turns/continue", ContinueTurn).RequireAuthorization("any-user").WithName("continueBuddyTurn")
             .Produces<BuddyTurnEvent>(200, "text/event-stream").ProducesProblem(401).ProducesProblem(409).ProducesProblem(503)
             .WithMetadata(new Microsoft.AspNetCore.Mvc.RequestSizeLimitAttribute(TurnBodyLimit));
+        group.MapPost("/buddy/label", ExtractLabel).RequireAuthorization("any-user").WithName("extractBuddyLabel")
+            .ProducesProblem(401).ProducesProblem(503).WithMetadata(new Microsoft.AspNetCore.Mvc.RequestSizeLimitAttribute(LabelBodyLimit));
+    }
+
+    // A label photo (≤ 400,000 base64 characters) plus the JSON around it.
+    private const long LabelBodyLimit = 512 * 1024;
+
+    /// <summary>A label read (FD-040–042): 400 for a body that isn't a JPEG, 429 before any provider call, 503 when Buddy can't answer.</summary>
+    private static async Task<Results<Ok<BuddyLabelExtraction>, ValidationProblem, ProblemHttpResult>> ExtractLabel(BuddyLabelRequest request, HttpContext context,
+        Application.ExtractLabel handler, TimeProvider clock, Microsoft.Extensions.Options.IOptions<BuddyAgentOptions> options, CancellationToken ct)
+    {
+        context.Response.Headers.CacheControl = "no-store";
+        if (!JpegImage.Valid(request.Image))
+        { return TypedResults.ValidationProblem(new Dictionary<string, string[]> { ["image"] = ["A base64 JPEG of at most 1024 px per side is required."] }); }
+        var guest = context.Features.Get<FitnessBuddy.Modules.Identity.Contracts.IdentitySession>()?.IsAnonymous ?? true;
+        LabelOutcome outcome;
+        try { outcome = await handler.ExecuteAsync(request.Image, guest, ct); }
+        catch (FitnessBuddy.BuildingBlocks.Recovery.RecoveryUnavailableException) { return TypedResults.Problem(statusCode: 503); }
+        return outcome.Status switch
+        {
+            LabelStatus.Ok => TypedResults.Ok(outcome.Extraction!),
+            LabelStatus.Unauthorized => TypedResults.Problem(statusCode: 401),
+            LabelStatus.Limited => RateLimited(context, clock, outcome.Limit ?? (guest ? options.Value.GuestDailyMessages : options.Value.RegisteredDailyMessages)),
+            _ => TypedResults.Problem(statusCode: 503),
+        };
+    }
+
+    /// <summary>429 with the daily window's Retry-After and RateLimit headers (the allowance resets at UTC midnight).</summary>
+    private static ProblemHttpResult RateLimited(HttpContext context, TimeProvider clock, int limit)
+    {
+        var now = clock.GetUtcNow();
+        var seconds = (int)Math.Ceiling((new DateTimeOffset(now.UtcDateTime.Date.AddDays(1), TimeSpan.Zero) - now).TotalSeconds);
+        context.Response.Headers.RetryAfter = seconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        context.Response.Headers["RateLimit"] = $"\"buddy\";r=0;t={seconds}";
+        context.Response.Headers["RateLimit-Policy"] = $"\"buddy\";q={limit};w=86400";
+        return TypedResults.Problem(statusCode: 429, type: "/errors/rate-limited", title: "Rate limited");
     }
 
     private static Task<Results<EmptyHttpResult, ValidationProblem, ProblemHttpResult>> StartTurn(BuddyTurnStart request,
@@ -57,13 +91,7 @@ internal static class BuddyEndpoints
             case TurnProblem.AlreadyRan: return TypedResults.Problem(statusCode: 409, detail: "The round already ran.");
             case TurnProblem.Unavailable: return TypedResults.Problem(statusCode: 503);
             case TurnProblem.Limited:
-                var now = clock.GetUtcNow();
-                var seconds = (int)Math.Ceiling((new DateTimeOffset(now.UtcDateTime.Date.AddDays(1), TimeSpan.Zero) - now).TotalSeconds);
-                var limit = prepared.Limit ?? (guest ? options.GuestDailyMessages : options.RegisteredDailyMessages);
-                context.Response.Headers.RetryAfter = seconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
-                context.Response.Headers["RateLimit"] = $"\"buddy\";r=0;t={seconds}";
-                context.Response.Headers["RateLimit-Policy"] = $"\"buddy\";q={limit};w=86400";
-                return TypedResults.Problem(statusCode: 429, type: "/errors/rate-limited", title: "Rate limited");
+                return RateLimited(context, clock, prepared.Limit ?? (guest ? options.GuestDailyMessages : options.RegisteredDailyMessages));
             default: break;
         }
         context.Response.Headers.CacheControl = "no-cache";
@@ -71,27 +99,5 @@ internal static class BuddyEndpoints
         if (prepared.Run is { } run) { await handler.RunAsync(run, writer, context.RequestAborted); }
         else { await writer.EmitAsync(new BuddyErrorEvent(prepared.StreamError ?? BuddyTurnErrorCode.Invalid), context.RequestAborted); }
         return TypedResults.Empty;
-    }
-
-    private static async Task<Results<Ok<BuddyInterpretation>, ValidationProblem, ProblemHttpResult>> Interpret(
-        InterpretRequest request, [Microsoft.AspNetCore.Mvc.FromHeader(Name = "Idempotency-Key")] Guid idempotencyKey, HttpContext context, InterpretMessage handler, TimeProvider clock, Microsoft.Extensions.Options.IOptions<BuddyOptions> options, CancellationToken ct)
-    {
-        context.Response.Headers.CacheControl = "no-store";
-        var keys = context.Request.Headers["Idempotency-Key"];
-        if (keys.Count != 1 || idempotencyKey != request.RequestId || keys[0] != request.RequestId.ToString())
-        { return TypedResults.ValidationProblem(new Dictionary<string, string[]> { ["idempotency-key"] = ["Idempotency-Key must equal the UUIDv7 requestId."] }); }
-        var result = await handler.ExecuteAsync(request.ToInput(), ct);
-        if (result.Status == InterpretStatus.Success) { return TypedResults.Ok(result.Value!); }
-        if (result.Status == InterpretStatus.Limited)
-        {
-            var now = clock.GetUtcNow();
-            var seconds = (int)Math.Ceiling((new DateTimeOffset(now.UtcDateTime.Date.AddDays(1), TimeSpan.Zero) - now).TotalSeconds);
-            var limit = result.Limit ?? (context.Features.Get<FitnessBuddy.Modules.Identity.Contracts.IdentitySession>()!.IsAnonymous ? options.Value.GuestDailyCalls : options.Value.RegisteredDailyCalls);
-            context.Response.Headers.RetryAfter = seconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            context.Response.Headers["RateLimit"] = $"\"buddy\";r=0;t={seconds}";
-            context.Response.Headers["RateLimit-Policy"] = $"\"buddy\";q={limit};w=86400";
-            return TypedResults.Problem(statusCode: 429, type: "/errors/rate-limited", title: "Rate limited");
-        }
-        return TypedResults.Problem(statusCode: result.Status == InterpretStatus.Conflict ? 409 : result.Status == InterpretStatus.Unauthorized ? 401 : 503);
     }
 }

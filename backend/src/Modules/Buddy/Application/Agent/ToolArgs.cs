@@ -11,6 +11,10 @@ internal sealed record GetDishArgs(string Dish);
 internal sealed record LookupBarcodeArgs(string Code);
 internal sealed record ComputeItem(string Food, double Amount, FoodUnit Unit);
 internal sealed record ComputeArgs(ComputeItem[] Items);
+// B26: shared exercise library search and the fit check for suggestions (06 §4.1).
+internal sealed record ExerciseSearchArgs(string Query, int? Limit);
+internal sealed record FitOption(string Label, FoodArg[] Items);
+internal sealed record CheckFitArgs(FitOption[] Options);
 
 // A food the user mentioned (the B08 food rules); `food` may name a search_foods or personal handle.
 internal sealed record FoodEstimateArg(BuddyNutrients Low, BuddyNutrients High);
@@ -40,6 +44,16 @@ internal sealed record MemoryArgs(ParsedMemoryOperation Operation, ParsedMemoryK
 internal sealed record WeighInArgs(double Value, WeightUnit Unit, string? TimeHint, string? DateHint, string? Replaces);
 internal sealed record SuggestOption(string Label, string? SlotHint, FoodArg[] Items);
 internal sealed record SuggestArgs(SuggestOption[] Options, string? Replaces);
+// B26 (06 §4.3): workouts (WO-030–033), measurements and pasted imports (WB-030–032).
+internal sealed record WorkoutSetArg(int? Reps, double? Weight, int? DurationSeconds, double? DistanceMeters);
+internal sealed record WorkoutExerciseArg(string Mention, string? Exercise, string? Notation, WorkoutSetArg[]? Sets, WeightUnit? Unit, bool? PerDumbbell);
+internal sealed record WorkoutArgs(string? Name, WorkoutExerciseArg[] Exercises, string? CopyFrom, string? DateHint, string? TimeHint, string? Replaces);
+internal enum MeasurementKindArg { Waist, Chest, Hips, Arm, Thigh, Neck, BodyFat }
+internal enum MeasurementUnitArg { Cm, In, Percent }
+internal sealed record MeasurementArgs(MeasurementKindArg Kind, double Value, MeasurementUnitArg Unit, string? DateHint, string? TimeHint, string? Replaces);
+internal enum ImportMetricArg { Weight, Measurement }
+internal sealed record ImportRowArg(string Original, DateOnly? Date, double? Value, string? Unit);
+internal sealed record ImportArgs(ImportMetricArg Metric, MeasurementKindArg? MeasurementKind, ImportRowArg[] Rows, string? Replaces);
 
 // Phone tools (06 §4.2): the phone enforces their scopes whatever these say.
 internal sealed record FindMyFoodsToolArgs(string Query, BuddyPersonalKindCode[]? Kinds);

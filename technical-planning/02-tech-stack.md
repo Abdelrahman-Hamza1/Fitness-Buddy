@@ -85,7 +85,7 @@ Selection rules, in order: (1) fits the drivers in `01` §1; (2) mature, maintai
 | Concern | Choice |
 |---|---|
 | Repo | **Monorepo** (`10` §1): Dart pub workspace (app, packages, tools) + a .NET solution (`backend/`) + `contracts/` + `infra/` |
-| Task runner | Root **Makefile**: one entry point for both stacks (`make check`, `make gen`, `make test`, `make eval`, `make up`). Dart **pub workspaces** (one lockfile), no melos (TD-040; revisit at ~6 packages). Toolchains pinned and installed user-local by `make setup` (`.fvmrc`, `backend/global.json`) |
+| Task runner | Root **Makefile**: one entry point for both stacks (`make check`, `make gen`, `make test`, `make up`). Dart **pub workspaces** (one lockfile), no melos (TD-040; revisit at ~6 packages). Toolchains pinned and installed user-local by `make setup` (`.fvmrc`, `backend/global.json`) |
 | Lints | Dart: `very_good_analysis` + import-boundary check. C#: .NET analyzers at `latest-recommended`, warnings as errors, `dotnet format` |
 | CI/CD | **GitHub Actions** (`10` §7). Android builds on Linux runners. iOS builds (R2, D-081) via **Codemagic** or GitHub macOS runners |
 | Distribution | R1: **Google Play internal testing** (owner, Android). R2: + iOS via TestFlight (D-081). R3: stores |

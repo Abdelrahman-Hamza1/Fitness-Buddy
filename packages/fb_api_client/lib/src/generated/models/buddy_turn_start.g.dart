@@ -39,6 +39,9 @@ _BuddyTurnStart _$BuddyTurnStartFromJson(
           json['priorAttempt'] as Map<String, dynamic>,
         ),
   trace: json['trace'] as bool,
+  weekly: json['weekly'] == null
+      ? null
+      : BuddyWeeklySummary.fromJson(json['weekly'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$BuddyTurnStartToJson(_BuddyTurnStart instance) =>
@@ -55,6 +58,7 @@ Map<String, dynamic> _$BuddyTurnStartToJson(_BuddyTurnStart instance) =>
       'ackTurn': instance.ackTurn?.toJson(),
       'priorAttempt': instance.priorAttempt?.toJson(),
       'trace': instance.trace,
+      'weekly': instance.weekly?.toJson(),
     };
 
 const _$BuddyTurnModeEnumMap = {

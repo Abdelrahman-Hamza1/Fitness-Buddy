@@ -58,7 +58,7 @@ Based on Flutter's official architecture guidance (UI layer → domain layer →
 
 Rules:
 1. **Dependencies point down only.** Domain depends on nothing. The UI never touches drift or HTTP directly.
-2. **Domain is pure and deterministic.** Time, IDs and settings are inputs (no `DateTime.now()` inside). 100% unit-testable. Shared with the Dart tools (`buddy_eval`, `catalog`).
+2. **Domain is pure and deterministic.** Time, IDs and settings are inputs (no `DateTime.now()` inside). 100% unit-testable. Shared with the Dart tools (`catalog`, `sync_sim`).
 3. **Reads are reactive.** drift `watch()` → repository stream → Riverpod provider → widget. Confirming a proposal updates every screen by itself (UX-025).
 4. **Writes go through commands → `ChangeSetApplier`** (§5). There is no other path.
 
@@ -73,7 +73,6 @@ packages/
   fb_api_client/      pure Dart · GENERATED from contracts/openapi.yaml (never hand-edited)
   fb_design_system/   Flutter  · tokens, themes, components, chart widgets
 apps/mobile/          Flutter  · features + application + data + platform
-tools/buddy_eval/     Dart CLI · AI acceptance tests (calls the API + runs ProposalEngine)
 tools/catalog/        Dart CLI · builds/validates the food catalog + offline pack
 tools/trace/          Dart CLI · requirement traceability report
 ```

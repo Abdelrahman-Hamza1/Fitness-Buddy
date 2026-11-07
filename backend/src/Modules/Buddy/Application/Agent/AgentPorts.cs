@@ -61,6 +61,10 @@ internal interface IAgentLedger
     Task<TurnBudget?> ReadBudgetAsync(Guid turnId, CancellationToken cancellationToken);
     /// <summary>The terminal event was flushed (completed) or the stream broke first (cancelled); a superseded attempt changes nothing.</summary>
     Task CompleteRoundAsync(Guid turnId, int round, int attempt, bool cancelled, CancellationToken cancellationToken);
+    /// <summary>A label read (B26): one allowance message and one send in one transaction (Run, Limited or Unauthorized).</summary>
+    Task<RoundGate> ReserveLabelAsync(bool guest, CancellationToken cancellationToken);
+    /// <summary>The label send's reported usage for the daily aggregates (nothing when none was reported).</summary>
+    Task RecordLabelAsync(TokenUsage? usage, decimal? estimatedUsd, CancellationToken cancellationToken);
 }
 
 /// <summary>AES-256-GCM continuation (TD-125), bound to user, turn, round and API version.</summary>

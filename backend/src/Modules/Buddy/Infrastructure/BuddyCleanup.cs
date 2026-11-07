@@ -12,6 +12,7 @@ internal sealed class BuddyCleanup(TimeProvider clock, IUsageRecorder usage) : I
     {
         if (session.UserId is not { } owner || owner != message.UserId) { throw new InvalidOperationException("Missing Buddy cleanup owner."); }
         await UserLifecycleLock.AcquireAsync(session, owner, cancellationToken);
+        // Interpret's retired table (no writer since B26) drains by expiry until a later step drops it.
         await using var command = session.Command("DELETE FROM buddy.attempts WHERE user_id=$1 AND expires_at<=$2");
         command.Parameters.AddWithValue(owner); command.Parameters.AddWithValue(clock.GetUtcNow());
         await command.ExecuteNonQueryAsync(cancellationToken);

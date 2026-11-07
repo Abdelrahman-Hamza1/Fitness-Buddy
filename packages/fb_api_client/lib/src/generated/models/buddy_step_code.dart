@@ -26,6 +26,8 @@ enum BuddyStepCode {
   writingReply('writingReply'),
   @JsonValue('summarizing')
   summarizing('summarizing'),
+  @JsonValue('searchingExercises')
+  searchingExercises('searchingExercises'),
 
   /// Default value for all unparsed values, allows backward compatibility when adding new values on the backend.
   $unknown(null);

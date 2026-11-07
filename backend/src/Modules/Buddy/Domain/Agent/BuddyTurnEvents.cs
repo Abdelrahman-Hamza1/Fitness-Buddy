@@ -6,7 +6,7 @@ namespace FitnessBuddy.Modules.Buddy.Domain;
 // B25 WP1: the SSE event union of the agent turn routes (06 §3.3). Each event goes out as one `data:` line
 // with the SSE `id:` {turnId}:{round}:{seq}; the id is framing, not part of the JSON.
 
-internal enum BuddyStepCode { SearchingFoods, ReadingDiary, ReadingYourFoods, ReadingBody, ReadingWorkouts, ReadingMemory, Computing, CheckingFit, WritingReply, Summarizing }
+internal enum BuddyStepCode { SearchingFoods, ReadingDiary, ReadingYourFoods, ReadingBody, ReadingWorkouts, ReadingMemory, Computing, CheckingFit, WritingReply, Summarizing, SearchingExercises }
 internal enum BuddyDoneReason { Answered, Asked, Declined, Limit, Quota }
 internal enum BuddyTurnErrorCode { Unavailable, Timeout, Invalid, RoundAlreadyRan, Expired }
 

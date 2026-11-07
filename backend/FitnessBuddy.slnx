@@ -12,12 +12,8 @@
     <Project Path="src/Modules/UserData/FitnessBuddy.Modules.UserData.csproj" />
     <Project Path="src/Modules/Admin/FitnessBuddy.Modules.Admin.csproj" />
   </Folder>
-  <Folder Name="/tools/">
-    <Project Path="tools/BuddySpike/FitnessBuddy.BuddySpike.csproj" />
-  </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/UserData.Tests/FitnessBuddy.UserData.Tests.csproj" />
-    <Project Path="tests/Buddy.Tests/FitnessBuddy.Buddy.Tests.csproj" />
     <Project Path="tests/Architecture.Tests/FitnessBuddy.Architecture.Tests.csproj" />
     <Project Path="tests/BuildingBlocks.Tests/FitnessBuddy.BuildingBlocks.Tests.csproj" />
     <Project Path="tests/Contract.Tests/FitnessBuddy.Contract.Tests.csproj" />

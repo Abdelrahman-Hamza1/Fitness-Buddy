@@ -21,38 +21,6 @@ class _BuddyClient implements BuddyClient {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<BuddyInterpretation> interpretMessage({
-    required String idempotencyKey,
-    required InterpretRequest body,
-  }) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'Idempotency-Key': idempotencyKey};
-    _headers.removeWhere((k, v) => v == null);
-    final _data = <String, dynamic>{};
-    _data.addAll(body.toJson());
-    final _options = _setStreamType<BuddyInterpretation>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/v1/buddy/interpret',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, Object?>>(_options);
-    late BuddyInterpretation _value;
-    try {
-      _value = BuddyInterpretation.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
   Future<BuddyTurnEvent> startBuddyTurn({
     required String idempotencyKey,
     required BuddyTurnStart body,
@@ -109,6 +77,36 @@ class _BuddyClient implements BuddyClient {
     late BuddyTurnEvent _value;
     try {
       _value = BuddyTurnEvent.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BuddyLabelExtraction> extractBuddyLabel({
+    required BuddyLabelRequest body,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body.toJson());
+    final _options = _setStreamType<BuddyLabelExtraction>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/buddy/label',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, Object?>>(_options);
+    late BuddyLabelExtraction _value;
+    try {
+      _value = BuddyLabelExtraction.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;

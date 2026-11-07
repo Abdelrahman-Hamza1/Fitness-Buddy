@@ -514,25 +514,6 @@ off-coverage: ## A03: unit-test the script, then download the OFF export (~0.9 G
 	PYTHONDONTWRITEBYTECODE=1 python3 -I -m unittest discover -s '$(REPO_ROOT)/tools/scripts' -p 'test_off*.py'
 	bash '$(REPO_ROOT)/tools/scripts/off-coverage.sh'
 
-##@ Buddy interpretation spike (B02)
-
-BUDDY_SPIKE_PROJECT := tools/BuddySpike/FitnessBuddy.BuddySpike.csproj
-BUDDY_SPIKE_DLL := backend/tools/BuddySpike/bin/Release/net10.0/FitnessBuddy.BuddySpike.dll
-
-.PHONY: eval-cli eval eval-live eval-schema
-eval-cli:
-	cd '$(REPO_ROOT)/backend' && '$(DOTNET)' build '$(BUDDY_SPIKE_PROJECT)' -c Release --no-restore -m:1 -nodeReuse:false
-
-eval: eval-cli ## Offline three-case Buddy SDK replay and deterministic parse report (no key)
-	cd '$(REPO_ROOT)' && DOTNET='$(DOTNET)' '$(DART)' run tools/buddy_eval/bin/buddy_eval.dart
-
-eval-live: eval-cli ## PAID: at most three fixed synthetic Luna requests; no retries/fallback
-	cd '$(REPO_ROOT)' && DOTNET='$(DOTNET)' '$(DART)' run tools/buddy_eval/bin/buddy_eval.dart --live
-
-eval-schema: eval-cli ## Regenerate Buddy's internal schema from C# records
-	cd '$(REPO_ROOT)' && '$(DOTNET)' '$(BUDDY_SPIKE_DLL)' --schema > backend/src/Modules/Buddy/Prompts/interpret-v0.schema.json
-	cd '$(REPO_ROOT)' && '$(DOTNET)' '$(BUDDY_SPIKE_DLL)' --schema-v2 > backend/src/Modules/Buddy/Prompts/interpret-v2.schema.json
-
 ##@ Private laptop test server (B03)
 
 PHONE_SERVER := python3 '$(REPO_ROOT)/tools/scripts/phone-server.py'

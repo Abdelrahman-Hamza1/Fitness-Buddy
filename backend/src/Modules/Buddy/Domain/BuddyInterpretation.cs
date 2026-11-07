@@ -91,7 +91,7 @@ internal sealed record BuddySavedMealLog(string Language, string Script, Guid Sa
 internal sealed record BuddySavedMealCreate(string Language, string Script, string Name, Guid? ActiveProposal, [property: MaxLength(30)] Guid[] Targets,
     BuddyDayHint? Source) : BuddyIntent(Language, Script);
 
-// B25 WP1: additive kinds for the agent (06 §4.3), defined now and emitted by B26 / A68. Interpret never emits them.
+// B25 WP1: additive kinds for the agent (06 §4.3), emitted by the B26 action tools.
 internal enum BuddyBodyMeasurementKind { Waist, Chest, Hips, Arm, Thigh, Neck, BodyFat, Custom }
 internal enum BuddyMeasurementUnit { Cm, In, Percent }
 internal enum BuddyLoadUnit { Kg, Lb }
@@ -116,4 +116,3 @@ internal sealed record BuddySuggestion(string Language, string Script, [property
     : BuddyIntent(Language, Script);
 internal sealed record BuddySuggestionOption([property: MaxLength(120)] string Label, string? SlotHint,
     [property: MinLength(1), MaxLength(10)] BuddyFoodItem[] Items);
-internal sealed record BuddyInterpretation(string PromptVersion, string Model, BuddyIntent[] Intents);

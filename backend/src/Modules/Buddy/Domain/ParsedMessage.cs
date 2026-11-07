@@ -1,12 +1,6 @@
 namespace FitnessBuddy.Modules.Buddy.Domain;
 
-/// <summary>The production grammar (B09 D5): its prompt, schema snapshot and every resolved interpretation carry this version (PA10).</summary>
-internal static class ParsedGrammar
-{
-    public const string Version = "interpret-v2";
-}
-
-// Internal provider output, not API DTOs (public shapes are mapped in ResolveInterpretation and never change with a prompt).
+// The agent action tools' parsed intent (B09a grammar, kept from interpret, TD-128): internal, not API DTOs; the resolvers map it to public intents.
 // One flat intent object with grouped nullable sub-objects, not an anyOf union (D5). There is no ambiguity kind:
 // ambiguousReference is public-only and decided by server policy over the linked candidates (D7, TD-091).
 internal enum ParsedKind
@@ -21,7 +15,6 @@ internal enum ParsedMemoryDimension { State, Fat, Variant, Portion }
 internal enum ParsedBatchPath { Quick, Leftovers }
 internal enum ParsedNutrientBasis { Per100g, Per100ml, PerServing }
 
-internal sealed record ParsedMessage(MessageLanguage Language, MessageScript Script, ParsedIntent[] Intents);
 internal sealed record ParsedIntent(ParsedKind Kind, string? TimeHint, string? SlotHint, string? DateHint, string? DishGroup,
     ParsedFood[] Items, WeighIn? WeighIn, DeclineReason? Reason,
     ParsedReference? Reference, ParsedMove? Move, int? ListRef, ParsedPortion? Portion, ParsedMemory? Memory,

@@ -5,8 +5,6 @@
   <ItemGroup><PackageReference Include="Microsoft.Extensions.AI.OpenAI" /></ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Prompts/*.txt" />
-    <InternalsVisibleTo Include="FitnessBuddy.BuddySpike" />
-    <InternalsVisibleTo Include="FitnessBuddy.Buddy.Tests" />
   </ItemGroup>
   <ItemGroup><ProjectReference Include="../Usage/FitnessBuddy.Modules.Usage.csproj" /></ItemGroup>
   <ItemGroup><ProjectReference Include="../Identity/FitnessBuddy.Modules.Identity.csproj" /><InternalsVisibleTo Include="FitnessBuddy.Persistence.Tests" /></ItemGroup>

@@ -3,7 +3,7 @@ using FitnessBuddy.BuildingBlocks.Persistence;
 
 namespace FitnessBuddy.Modules.Buddy.Infrastructure;
 
-/// <summary>Replay content, paid-attempt markers and agent turn rows are erased atomically with the account.</summary>
+/// <summary>Agent turn and round rows, and interpret's retired attempts table (kept until a later drop, B26), are erased atomically with the account.</summary>
 internal sealed class BuddyErasure : IOutboxHandler
 {
     public string EventType => UserErasure.EventType;

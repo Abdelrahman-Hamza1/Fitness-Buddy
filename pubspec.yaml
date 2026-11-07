@@ -15,7 +15,6 @@ workspace:
   - tools/app_check
   - tools/catalog
   - tools/trace
-  - tools/buddy_eval
   - tools/sync_sim
 
 dev_dependencies:

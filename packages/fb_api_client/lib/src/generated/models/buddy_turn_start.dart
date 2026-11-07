@@ -14,6 +14,7 @@ import 'buddy_turn_mode.dart';
 import 'buddy_turn_profile.dart';
 import 'buddy_turn_reference.dart';
 import 'buddy_turn_snapshot.dart';
+import 'buddy_weekly_summary.dart';
 
 part 'buddy_turn_start.freezed.dart';
 part 'buddy_turn_start.g.dart';
@@ -25,7 +26,7 @@ abstract class BuddyTurnStart with _$BuddyTurnStart {
     /// The user chat message ID (UUIDv7); equals Idempotency-Key and names the turn in SSE ids and proposal IDs.
     required String turnId,
 
-    /// chat, or weeklyReview (B26: aggregates only, no phone tools).
+    /// chat, or weeklyReview (B26: the weekly aggregates only, no tools, at most two observations).
     required BuddyTurnMode mode,
     required BuddyTurnMessage message,
 
@@ -51,6 +52,9 @@ abstract class BuddyTurnStart with _$BuddyTurnStart {
 
     /// Dev builds only; honoured only when the server enables Buddy:Agent:TraceEnabled. Adds trace events for the phone, never logged.
     required bool trace,
+
+    /// Mode weeklyReview only, and required there (else 400): the week's aggregates. Optional: absent and null are the same.
+    BuddyWeeklySummary? weekly,
   }) = _BuddyTurnStart;
 
   factory BuddyTurnStart.fromJson(Map<String, Object?> json) =>

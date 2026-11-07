@@ -21,7 +21,14 @@ internal sealed record TurnSnapshot(DateTimeOffset Now, int TzOffsetMin, MealSlo
 internal sealed record TurnPriorCard(Guid ProposalId, string Status, int Revision, string Line);
 internal sealed record TurnPriorAttempt(int Attempt, TurnPriorCard[] Cards);
 internal sealed record TurnStartInput(Guid TurnId, bool WeeklyReview, string Text, string? Image, TurnHistoryEntry[] History, TurnSummary? Summary,
-    TurnCompact? Compact, TurnPersonalItem[] Personal, TurnProfile Profile, TurnSnapshot Snapshot, Guid? AckTurn, TurnPriorAttempt? PriorAttempt, bool Trace);
+    TurnCompact? Compact, TurnPersonalItem[] Personal, TurnProfile Profile, TurnSnapshot Snapshot, Guid? AckTurn, TurnPriorAttempt? PriorAttempt, bool Trace,
+    TurnWeekly? Weekly = null);
+/// <summary>The week's aggregates for a weekly review (AI-130, B26 D3); <paramref name="CheckIn"/> is the phone's own check-in proposal.</summary>
+internal sealed record TurnWeekly(DateOnly Start, DateOnly End, int ElapsedDays, int CountedDays, int TargetDays, int DaysWithinTarget, int ProteinTargetDays,
+    int ProteinDaysHit, double? AverageKcal, double? AverageTargetKcal, double? AverageFiberG, double? TrendChangeKg, TurnWeeklyWorkouts? Workouts, bool Estimated,
+    TurnCheckIn? CheckIn);
+internal sealed record TurnWeeklyWorkouts(int Sessions, int? Planned, int Prs);
+internal sealed record TurnCheckIn(double CurrentKcal, double ProposedKcal);
 /// <summary>A phone-tool result; <paramref name="Data"/> is the tool's data as JSON (already schema-bound), <paramref name="Rows"/> its row count.</summary>
 internal sealed record PhoneResultInput(Guid CallId, string Name, bool Ok, string? Error, JsonElement? Data, int Rows);
 internal sealed record TurnContinueInput(Guid TurnId, int Round, string Continuation, PhoneResultInput[] Results, TurnPriorAttempt? PriorAttempt);
@@ -29,6 +36,9 @@ internal sealed record TurnContinueInput(Guid TurnId, int Round, string Continua
 /// <summary>A phone call the round is waiting for: the server-minted <paramref name="CallId"/>, the provider's call ID and the tool.</summary>
 internal sealed record PendingCall(Guid CallId, string ProviderCallId, string Tool, string ArgsJson);
 internal sealed record CompactState(string? OldSummary, string[] Evicted, int PreviousRevision, Guid Watermark);
+/// <summary>A workout session the phone returned (read_workouts), kept so "same as last push day" can copy it (B26 D6).</summary>
+internal sealed record SeenWorkout(Guid Id, string? Name, SeenExercise[] Exercises);
+internal sealed record SeenExercise(string Ref, string Name, NotationSet[] Sets);
 
 /// <summary>The turn's working state (06 §4): transcript, handle map, claims, cards and the personal data seen so far.</summary>
 internal sealed class TurnWorkspace
@@ -38,6 +48,10 @@ internal sealed class TurnWorkspace
     public string Script { get; set; } = "latin";
     public bool MessageAsks { get; set; }
     public bool Trace { get; set; }
+    public bool Halal { get; set; }
+    /// <summary>A weekly review turn (B26 D3): no tools; the code-made header plus at most two guarded observations.</summary>
+    public bool WeeklyReview { get; set; }
+    public string WeeklyHeader { get; set; } = "";
     public string MassUnit { get; set; } = "kg";
     public string LengthUnit { get; set; } = "cm";
     public DateTimeOffset Now { get; set; }
@@ -58,6 +72,7 @@ internal sealed class TurnWorkspace
     public List<NamedReference> SavedMeals { get; set; } = [];
     public List<NamedReference> OpenBatches { get; set; } = [];
     public List<RecentEntry> Entries { get; set; } = [];
+    public List<SeenWorkout> Workouts { get; set; } = [];
     public CompactState? Compact { get; set; }
     public int CardsEmitted { get; set; }
     public int Questions { get; set; }

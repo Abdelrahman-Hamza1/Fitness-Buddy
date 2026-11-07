@@ -15,7 +15,7 @@ namespace FitnessBuddy.Modules.Buddy.Infrastructure;
 /// <summary>
 /// The content-free turn ledger (06 §3.4, TD-125): one turn row (start, sends, tokens, rounds, message charged) and one row per
 /// round (started | completed | cancelled, attempts, acknowledged). No text, no tool data. Each transaction rechecks the live
-/// session and recovery generation like interpret's ledger; no lock spans provider I/O.
+/// session and recovery generation; no lock spans provider I/O.
 /// </summary>
 internal sealed class PostgresAgentLedger(NpgsqlDataSource source, ICurrentUser user, IIdentityAccess identity, RecoveryBarrier recovery,
     TimeProvider clock, IIdGenerator ids, IUsageRecorder usage, IOptions<BuddyAgentOptions> options) : IAgentLedger
@@ -176,6 +176,32 @@ internal sealed class PostgresAgentLedger(NpgsqlDataSource source, ICurrentUser 
         command.Parameters.AddWithValue(cancelled ? "cancelled" : "completed");
         command.Parameters.AddWithValue(cancelled ? DBNull.Value : clock.GetUtcNow()); command.Parameters.AddWithValue(attempt);
         await command.ExecuteNonQueryAsync(cancellationToken);
+        await session.CommitAsync(cancellationToken);
+    }
+
+    public async Task<RoundGate> ReserveLabelAsync(bool guest, CancellationToken cancellationToken)
+    {
+        await using var session = new DatabaseSession();
+        if (!await OpenAsync(session, cancellationToken)) { return new(RoundGateStatus.Unauthorized); }
+        var limits = options.Value; var day = DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
+        // Both or neither: a denied send rolls back the message reservation (the transaction isn't committed).
+        var message = await usage.ReserveMessageAsync(session, OpenAIClientFactory.Model, guest ? limits.GuestDailyMessages : limits.RegisteredDailyMessages, day, cancellationToken);
+        if (!message.Reserved) { return new(RoundGateStatus.Limited, Limit: message.Ceiling); }
+        var send = await usage.ReserveAsync(session, OpenAIClientFactory.Model, guest ? limits.GuestDailySends : limits.RegisteredDailySends, day, newMessage: false, cancellationToken);
+        if (!send.Reserved) { return new(RoundGateStatus.Limited, Limit: message.Ceiling); }
+        // The same recurring cleanup as a turn, so a label-only account's usage rows still expire (Codex B26 S-minor).
+        await new QueueWriter(session, clock, ids).ScheduleUserAsync("buddy.cleanup:" + user.UserId!.Value, "*/5 * * * *", "buddy.cleanup", clock.GetUtcNow().AddMinutes(5), cancellationToken);
+        await session.CommitAsync(cancellationToken);
+        return new(RoundGateStatus.Run, 1);
+    }
+
+    public async Task RecordLabelAsync(TokenUsage? tokens, decimal? estimatedUsd, CancellationToken cancellationToken)
+    {
+        if (tokens is null || estimatedUsd is not { } cost) { return; }
+        await using var session = new DatabaseSession();
+        if (!await OpenAsync(session, cancellationToken)) { return; }
+        await usage.RecordAsync(session, new(OpenAIClientFactory.Model, tokens.Input, tokens.CachedInput, tokens.Output, cost,
+            DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime)), cancellationToken);
         await session.CommitAsync(cancellationToken);
     }
 

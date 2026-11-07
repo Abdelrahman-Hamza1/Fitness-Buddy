@@ -50,7 +50,7 @@ A Sonnet task that fails or needs a judgment call on code goes back to Opus.
 | Normal | `step-planner` (Opus) + Codex plan review (per step or wave) | Opus engineers | one combined Codex task (code, UX on screens) |
 | Data/docs | the orchestrator or a Sonnet agent | Sonnet (`data-curator` for food data) | validators + CI |
 
-- **Engineers by area:** `flutter-engineer` (app, Dart packages and tools), `dotnet-engineer` (backend modules, EF Core, contract conformance), `platform-engineer` (CI, Docker, infra, deploys, backups, observability), `ai-engineer` (prompts, Buddy server AI, `buddy_eval`), `data-curator` (`data/`).
+- **Engineers by area:** `flutter-engineer` (app, Dart packages and tools), `dotnet-engineer` (backend modules, EF Core, contract conformance), `platform-engineer` (CI, Docker, infra, deploys, backups, observability), `ai-engineer` (prompts, Buddy server AI, live experiments), `data-curator` (`data/`).
 - On Risky steps the orchestrator records the security review's result in `technical-planning/steps/evidence/<ID>-verification.md`.
 - The orchestrator briefs agents with self-contained briefs (`13` §6), checks their claims against diffs and CI, and writes the Outcome.
 - **Cross-check (owner, 2026-10-30):** engineers run the `cross-check` skill (`.claude/skills/cross-check/SKILL.md`) at the end of each WP and after merging `main`: the targeted checks for what a change touches outside its own files. It is judgment, not a full suite and not a forced gate; the orchestrator runs it before `merge-step.sh`.

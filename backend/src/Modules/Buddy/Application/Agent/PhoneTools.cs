@@ -149,6 +149,14 @@ internal static class PhoneTools
         var sessions = data.GetProperty("sessions").EnumerateArray().Select(s =>
         {
             var day = s.GetProperty("date").GetString()!;
+            var id = s.GetProperty("id").GetGuid();
+            if (ws.Workouts.All(w => w.Id != id))
+            {
+                ws.Workouts.Add(new(id, s.TryGetProperty("name", out var n) && n.ValueKind == JsonValueKind.String ? n.GetString() : null,
+                    s.GetProperty("exercises").EnumerateArray().Select(e => new SeenExercise(e.GetProperty("exerciseRef").GetString()!, e.GetProperty("name").GetString()!,
+                        e.GetProperty("sets").EnumerateArray().Select(x => new NotationSet(Int(x, "reps"), Number(x, "kg"), Number(x, "kg") is null ? null : BuddyLoadUnit.Kg,
+                            Int(x, "durationSeconds"), Number(x, "distanceMeters"))).ToArray())).ToArray()));
+            }
             return new
             {
                 workout = ws.Handle("w", s.GetProperty("id").GetGuid().ToString(), day),
@@ -209,6 +217,7 @@ internal static class PhoneTools
             results.Sum(r => r.Data is { } d ? System.Text.Encoding.UTF8.GetByteCount(d.GetRawText()) : 0));
     }
 
+    private static int? Int(JsonElement row, string name) => row.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.Number ? v.GetInt32() : null;
     private static double? Number(JsonElement row, string name) => row.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.Number ? v.GetDouble() : null;
     private static string? Cap(string? s) => s is null ? null : s.Length <= 200 ? s : s[..200];
 

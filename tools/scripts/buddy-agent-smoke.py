@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
-"""B25 exit criterion 2: a scripted Buddy agent turn smoke against a running API (the laptop server).
+"""B25 exit criterion 2 and B26 exit criterion 1: a scripted Buddy agent smoke against a running API (the laptop server).
 
 Paid: every model step is a real provider send. Nothing runs without --live. Scenarios and their sends:
   log     "2 eggs": one proposal, the templated one-liner, done (1 send)
   phone   a diary question: phoneTools, a wrong-call-ID continue (error invalid, no send), the real continue, done (2+ sends)
   retry   a stream killed after its first proposal, retried once with priorAttempt (attempt 2, new card IDs, the same
           single message charge; 2+ sends), then an acknowledged replay that must answer 409 (no send)
+  workout "push day bench 3x8 80, ohp 3x10 40, dips +10 3x8": a workout card with code-read sets (1 send)
+  body    a waist measurement and a pasted weight list in one message: measurement + importRows cards (1 send)
+  weekly  mode weeklyReview with synthetic aggregates: the code header + at most two observations, no tools (1–2 sends)
+  label   POST /v1/buddy/label with --label-photo (a JPEG ≤ 1024 px of a nutrition panel): values and confidences (1 send)
 Pick with --scenario (repeatable; default: log). Uses a fresh guest account; content stays in this terminal only.
 
   python3 tools/scripts/buddy-agent-smoke.py --live --base-url http://127.0.0.1:5199 --scenario log
 """
 import argparse
+import base64
 import http.client
 import json
 import os
@@ -84,10 +89,19 @@ class Api:
         return response.status, events, ''
 
 
-def start_body(turn_id, text, ack=None, prior=None):
+    def post_json(self, path, body):
+        conn = self.connection()
+        conn.request('POST', path, body=json.dumps(body).encode(), headers=dict(self.headers, **{'Content-Type': 'application/json'}))
+        response = conn.getresponse()
+        payload = response.read().decode(errors='replace')
+        conn.close()
+        return response.status, payload
+
+
+def start_body(turn_id, text, ack=None, prior=None, mode='chat', weekly=None):
     now = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
     return {
-        'turnId': turn_id, 'mode': 'chat', 'message': {'text': text, 'image': None}, 'history': [], 'summary': None, 'compact': None,
+        'turnId': turn_id, 'mode': mode, 'weekly': weekly, 'message': {'text': text, 'image': None}, 'history': [], 'summary': None, 'compact': None,
         'personal': [],
         'profile': {'memory': [], 'defaults': [], 'halal': True, 'units': {'mass': 'kg', 'length': 'cm', 'energy': 'kcal'},
                     'ramadan': {'active': False, 'fajr': None, 'maghrib': None}},
@@ -150,7 +164,7 @@ def scenario_retry(api):
     cards = [e for e in first if e['type'] == 'proposal']
     if not check(outcome == 'killed' and cards, 'stream killed after the first proposal'):
         return False
-    prior = {'attempt': 1, 'cards': [{'proposalId': c['proposalId'], 'status': 'pending', 'line': 'breakfast card'} for c in cards]}
+    prior = {'attempt': 1, 'cards': [{'proposalId': c['proposalId'], 'status': 'pending', 'revision': c['revision'], 'line': 'breakfast card'} for c in cards]}
     status, events, _ = api.stream('/v1/buddy/turns', turn, start_body(turn, text, prior=prior))
     retried = [e['proposalId'] for e in events if e['type'] == 'proposal']
     ok = all([check(status == 200 and events and events[-1]['type'] == 'done', 'the retry runs as attempt 2 and finishes'),
@@ -162,12 +176,77 @@ def scenario_retry(api):
     return ok and check(status == 409, 'an acknowledged round answers 409 roundAlreadyRan (no send)')
 
 
+def intents(events):
+    return [e['intent'] for e in events if e['type'] == 'proposal']
+
+
+def scenario_workout(api):
+    turn = uuid7()
+    status, events, _ = api.stream('/v1/buddy/turns', turn, start_body(turn, 'push day bench 3x8 80, ohp 3x10 40, dips +10 3x8'))
+    workout = next((i for i in intents(events) if i['kind'] == 'workout'), None)
+    if not check(status == 200 and workout is not None, 'a workout card'):
+        return False
+    bench = next((x for x in workout['exercises'] if 'bench' in x['mention'].lower()), None)
+    for x in workout['exercises']:
+        print(f"  card  {x['mention']} → {x['exerciseRef']}: {len(x['sets'])} sets {x['assumptions']}")
+    return all([check(len(workout['exercises']) >= 3, 'three exercises'),
+                check(bench is not None and len(bench['sets']) == 3 and all(s['reps'] == 8 and s['weight'] == 80 for s in bench['sets']),
+                      'bench read by code as 3 × 8 at 80'),
+                check(events[-1]['type'] == 'done', 'done')])
+
+
+def scenario_body(api):
+    turn = uuid7()
+    text = 'waist 84.5 cm today. and import my old weights: oct 10 2025: 110k, oct 20 2025: 105kg, nov 1 2025: 103.4'
+    status, events, _ = api.stream('/v1/buddy/turns', turn, start_body(turn, text))
+    kinds = [i['kind'] for i in intents(events)]
+    rows = next((i['rows'] for i in intents(events) if i['kind'] == 'importRows'), [])
+    for r in rows:
+        print(f"  row   {r['date']} {r['value']} {r['unit']}  ← {r['original']}")
+    return all([check(status == 200 and 'measurement' in kinds, 'a measurement card'), check('importRows' in kinds and len(rows) == 3, 'an import table with 3 rows'),
+                check(events[-1]['type'] == 'done', 'done')])
+
+
+WEEKLY = {'start': '2026-10-26', 'end': '2026-11-01', 'elapsedDays': 7, 'countedDays': 6, 'targetDays': 6, 'daysWithinTarget': 4,
+          'proteinTargetDays': 6, 'proteinDaysHit': 3, 'averageKcal': 1850, 'averageTargetKcal': 2100, 'averageFiberG': 22,
+          'trendChangeKg': -0.4, 'workouts': {'sessions': 3, 'planned': 4, 'prs': 2}, 'estimated': False,
+          'checkIn': {'currentKcal': 2100, 'proposedKcal': 2000}}
+
+
+def scenario_weekly(api):
+    turn = uuid7()
+    status, events, _ = api.stream('/v1/buddy/turns', turn, start_body(turn, 'weekly review', mode='weeklyReview', weekly=WEEKLY))
+    text = ''.join(e['text'] for e in events if e['type'] == 'text')
+    print('  review  ' + text.replace('\n', '\n          '))
+    return all([check(status == 200 and text.startswith('Intake: 1,850 kcal'), 'the code-made header'),
+                check(not intents(events) and not any(e['type'] == 'phoneTools' for e in events), 'no cards, no phone tools'),
+                check(len([line for line in (text.split('\n\n', 1) + [''])[1].split('\n') if line.strip()]) <= 2, 'at most two observations'),
+                check(events[-1]['type'] == 'done', 'done')])
+
+
+def scenario_label(api, photo):
+    if not photo:
+        return check(False, '--label-photo is required for the label scenario')
+    with open(photo, 'rb') as f:
+        image = base64.b64encode(f.read()).decode()
+    status, payload = api.post_json('/v1/buddy/label', {'image': image})
+    if not check(status == 200, f'200 (got {status})'):
+        return False
+    read = json.loads(payload)
+    n = read['nutrients']
+    for key in ('kcal', 'proteinG', 'carbsG', 'fatG', 'fiberG', 'sugarG', 'sodiumMg'):
+        print(f"  {key:10} {n[key]['value']!s:>8}  {n[key]['confidence']}")
+    print(f"  basis {read['basis']}  serving {read['serving']}  name {read['name']}  kJ→kcal {n['kcalFromKj']}  salt→sodium {n['sodiumFromSalt']}")
+    return check(read['found'], 'a nutrition panel was read')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--live', action='store_true', help='required: these are paid provider sends')
     parser.add_argument('--base-url', default=os.environ.get('FB_API_BASE_URL', 'http://127.0.0.1:5199'))
     parser.add_argument('--app-version', default='1.0.0')
-    parser.add_argument('--scenario', action='append', choices=['log', 'phone', 'retry'])
+    parser.add_argument('--scenario', action='append', choices=['log', 'phone', 'retry', 'workout', 'body', 'weekly', 'label'])
+    parser.add_argument('--label-photo', help='a JPEG of a nutrition panel (label scenario)')
     args = parser.parse_args()
     if not args.live:
         raise SystemExit('refusing to run without --live (paid provider sends)')
@@ -176,7 +255,9 @@ def main():
     results = []
     for name in args.scenario or ['log']:
         print(f'scenario {name}')
-        results.append({'log': scenario_log, 'phone': scenario_phone, 'retry': scenario_retry}[name](api))
+        runs = {'log': scenario_log, 'phone': scenario_phone, 'retry': scenario_retry, 'workout': scenario_workout, 'body': scenario_body,
+                'weekly': scenario_weekly, 'label': lambda a: scenario_label(a, args.label_photo)}
+        results.append(runs[name](api))
     sys.exit(0 if all(results) else 1)
 
 
